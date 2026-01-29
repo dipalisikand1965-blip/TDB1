@@ -6,6 +6,7 @@ Complete CRUD with Service Desk, Notifications, and Unified Inbox integration
 from fastapi import APIRouter, HTTPException, Query
 from typing import Optional, List
 from datetime import datetime, timezone
+from timestamp_utils import get_utc_timestamp
 import uuid
 import logging
 
@@ -65,8 +66,8 @@ async def create_fitness_request(request_data: dict):
         "notes": request_data.get("notes", ""),
         
         # Tracking
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "created_at": get_utc_timestamp(),
+        "updated_at": get_utc_timestamp(),
         "assigned_to": None,
         "partner_id": None,
         "unified_flow_processed": True
@@ -100,7 +101,7 @@ async def create_fitness_request(request_data: dict):
             "breed": fitness_request["pet_breed"]
         },
         "link": f"/admin?tab=servicedesk&ticket={ticket_id}",
-        "created_at": datetime.now(timezone.utc).isoformat(),
+        "created_at": get_utc_timestamp(),
         "read_at": None
     })
     logger.info(f"[UNIFIED FLOW] Fit notification created: {notification_id}")
@@ -131,8 +132,8 @@ async def create_fitness_request(request_data: dict):
             "id": fitness_request["pet_id"],
             "breed": fitness_request["pet_breed"]
         },
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "created_at": get_utc_timestamp(),
+        "updated_at": get_utc_timestamp(),
         "tags": ["fit", fitness_request["fit_type"], "unified-flow"],
         "unified_flow_processed": True
     }
@@ -169,8 +170,8 @@ async def create_fitness_request(request_data: dict):
         "preview": f"{pet_name} - {', '.join(fitness_request['fitness_goals'][:2]) if fitness_request['fitness_goals'] else fit_type}",
         "message": f"Fitness Request: {fit_type} for {pet_name}",
         "tags": ["fit", fitness_request["fit_type"]],
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "created_at": get_utc_timestamp(),
+        "updated_at": get_utc_timestamp(),
         "unified_flow_processed": True
     }
     
@@ -225,7 +226,7 @@ async def update_fitness_request(request_id: str, update_data: dict):
     """Update a fitness request"""
     db = get_db()
     
-    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    update_data["updated_at"] = get_utc_timestamp()
     update_data.pop("id", None)
     update_data.pop("_id", None)
     
@@ -249,7 +250,7 @@ async def update_fitness_request(request_id: str, update_data: dict):
         if new_ticket_status:
             await db.tickets.update_one(
                 {"source_id": request_id},
-                {"$set": {"status": new_ticket_status, "updated_at": datetime.now(timezone.utc).isoformat()}}
+                {"$set": {"status": new_ticket_status, "updated_at": get_utc_timestamp()}}
             )
     
     return {"message": "Request updated"}
@@ -289,8 +290,8 @@ async def create_fitness_plan(plan_data: dict):
         "id": f"plan-{uuid.uuid4().hex[:8]}",
         **plan_data,
         "is_active": True,
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp(),
+        "updated_at": get_utc_timestamp()
     }
     
     await db.fit_plans.insert_one({k: v for k, v in plan.items() if k != "_id"})
@@ -303,7 +304,7 @@ async def update_fitness_plan(plan_id: str, plan_data: dict):
     """Update a fitness plan"""
     db = get_db()
     
-    plan_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    plan_data["updated_at"] = get_utc_timestamp()
     plan_data.pop("id", None)
     plan_data.pop("_id", None)
     
@@ -373,8 +374,8 @@ async def create_fit_partner(partner_data: dict):
         "id": f"fit-partner-{uuid.uuid4().hex[:8]}",
         **partner_data,
         "is_active": True,
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp(),
+        "updated_at": get_utc_timestamp()
     }
     
     await db.fit_partners.insert_one({k: v for k, v in partner.items() if k != "_id"})
@@ -387,7 +388,7 @@ async def update_fit_partner(partner_id: str, partner_data: dict):
     """Update a fitness partner"""
     db = get_db()
     
-    partner_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    partner_data["updated_at"] = get_utc_timestamp()
     partner_data.pop("id", None)
     partner_data.pop("_id", None)
     
@@ -441,8 +442,8 @@ async def create_fit_product(product_data: dict):
         "id": f"fit-{uuid.uuid4().hex[:8]}",
         "category": "fit",
         **product_data,
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp(),
+        "updated_at": get_utc_timestamp()
     }
     
     await db.products.insert_one({k: v for k, v in product.items() if k != "_id"})
@@ -455,7 +456,7 @@ async def update_fit_product(product_id: str, product_data: dict):
     """Update a fitness product"""
     db = get_db()
     
-    product_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    product_data["updated_at"] = get_utc_timestamp()
     product_data.pop("id", None)
     product_data.pop("_id", None)
     
@@ -502,8 +503,8 @@ async def create_fit_bundle(bundle_data: dict):
         "bundle_type": "fit",
         **bundle_data,
         "is_active": True,
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp(),
+        "updated_at": get_utc_timestamp()
     }
     
     await db.fit_bundles.insert_one({k: v for k, v in bundle.items() if k != "_id"})
@@ -516,7 +517,7 @@ async def update_fit_bundle(bundle_id: str, bundle_data: dict):
     """Update a fitness bundle"""
     db = get_db()
     
-    bundle_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    bundle_data["updated_at"] = get_utc_timestamp()
     bundle_data.pop("id", None)
     bundle_data.pop("_id", None)
     
@@ -556,7 +557,7 @@ async def log_pet_weight(log_data: dict):
         "weight_date": log_data.get("weight_date", datetime.now(timezone.utc).strftime("%Y-%m-%d")),
         "notes": log_data.get("notes", ""),
         "logged_by": log_data.get("logged_by"),
-        "created_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp()
     }
     
     await db.fit_weight_logs.insert_one({k: v for k, v in weight_log.items() if k != "_id"})
@@ -565,7 +566,7 @@ async def log_pet_weight(log_data: dict):
     if log_data.get("pet_id"):
         await db.pets.update_one(
             {"id": log_data["pet_id"]},
-            {"$set": {"current_weight": log_data.get("weight_kg"), "weight_updated_at": datetime.now(timezone.utc).isoformat()}}
+            {"$set": {"current_weight": log_data.get("weight_kg"), "weight_updated_at": get_utc_timestamp()}}
         )
     
     return {"message": "Weight logged", "id": weight_log["id"]}
@@ -603,7 +604,7 @@ async def log_pet_activity(log_data: dict):
         "activity_date": log_data.get("activity_date", datetime.now(timezone.utc).strftime("%Y-%m-%d")),
         "notes": log_data.get("notes", ""),
         "logged_by": log_data.get("logged_by"),
-        "created_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp()
     }
     
     await db.fit_activity_logs.insert_one({k: v for k, v in activity_log.items() if k != "_id"})
@@ -720,7 +721,7 @@ async def update_fit_settings(settings_data: dict):
     db = get_db()
     
     settings_data["pillar"] = "fit"
-    settings_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    settings_data["updated_at"] = get_utc_timestamp()
     
     await db.pillar_settings.update_one(
         {"pillar": "fit"},
@@ -1200,7 +1201,7 @@ async def seed_extra_fit_products():
             "pillar": "fit",
             "image": "https://images.unsplash.com/photo-1601758003122-53c40e686a19?w=800",
             "in_stock": True,
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp()
         },
         {
             "id": f"fit-prod-{uuid.uuid4().hex[:8]}",
@@ -1211,7 +1212,7 @@ async def seed_extra_fit_products():
             "pillar": "fit",
             "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800",
             "in_stock": True,
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp()
         },
         {
             "id": f"fit-prod-{uuid.uuid4().hex[:8]}",
@@ -1222,7 +1223,7 @@ async def seed_extra_fit_products():
             "pillar": "fit",
             "image": "https://images.unsplash.com/photo-1546815693-7533bae19894?w=800",
             "in_stock": True,
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp()
         },
         {
             "id": f"fit-prod-{uuid.uuid4().hex[:8]}",
@@ -1233,7 +1234,7 @@ async def seed_extra_fit_products():
             "pillar": "fit",
             "image": "https://images.unsplash.com/photo-1560743641-3914f2c45636?w=800",
             "in_stock": True,
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp()
         },
         {
             "id": f"fit-prod-{uuid.uuid4().hex[:8]}",
@@ -1244,7 +1245,7 @@ async def seed_extra_fit_products():
             "pillar": "fit",
             "image": "https://images.unsplash.com/photo-1676729274491-579573327bd0?w=800",
             "in_stock": True,
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp()
         }
     ]
     

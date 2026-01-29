@@ -14,6 +14,7 @@ from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 from datetime import datetime, timezone
+from timestamp_utils import get_utc_timestamp
 from bson import ObjectId
 import uuid
 import os
@@ -210,8 +211,8 @@ async def create_experience(experience: ExperienceCreate):
     experience_doc = {
         "id": experience_id,
         **experience.dict(),
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp(),
+        "updated_at": get_utc_timestamp()
     }
     
     await db.enjoy_experiences.insert_one(experience_doc)
@@ -228,7 +229,7 @@ async def update_experience(experience_id: str, experience: ExperienceCreate):
     
     update_doc = {
         **experience.dict(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "updated_at": get_utc_timestamp()
     }
     
     result = await db.enjoy_experiences.update_one(
@@ -320,8 +321,8 @@ async def create_rsvp(rsvp: ExperienceRSVP):
         },
         "paw_points_earned": experience.get("paw_reward_points", 0),
         
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp(),
+        "updated_at": get_utc_timestamp()
     }
     
     await db.enjoy_rsvps.insert_one(rsvp_doc)
@@ -357,8 +358,8 @@ async def create_rsvp(rsvp: ExperienceRSVP):
             "experience_id": rsvp.experience_id,
             "event_date": experience.get("event_date")
         },
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp(),
+        "updated_at": get_utc_timestamp()
     }
     await db.tickets.insert_one(ticket_doc)
     
@@ -375,7 +376,7 @@ async def create_rsvp(rsvp: ExperienceRSVP):
         "pet_info": {"name": rsvp.pet_name, "breed": rsvp.pet_breed},
         "message": f"RSVP for {experience.get('name')} on {experience.get('event_date')}",
         "metadata": {"rsvp_id": rsvp_id, "experience_id": rsvp.experience_id},
-        "created_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp()
     }
     await db.channel_intakes.insert_one(inbox_entry)
     
@@ -419,7 +420,7 @@ async def create_rsvp(rsvp: ExperienceRSVP):
         },
         "action_required": True,
         "action_type": "confirm_rsvp",
-        "created_at": datetime.now(timezone.utc).isoformat(),
+        "created_at": get_utc_timestamp(),
         "read_at": None
     }
     await db.admin_notifications.insert_one(notification_doc)
@@ -458,10 +459,10 @@ async def create_rsvp(rsvp: ExperienceRSVP):
             "sender": "customer",
             "sender_name": rsvp.user_name,
             "content": f"I would like to attend {experience.get('name')} with my pet {rsvp.pet_name}.",
-            "timestamp": datetime.now(timezone.utc).isoformat()
+            "timestamp": get_utc_timestamp()
         }],
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp(),
+        "updated_at": get_utc_timestamp()
     }
     await db.service_desk_tickets.insert_one(service_desk_entry)
     
@@ -471,8 +472,8 @@ async def create_rsvp(rsvp: ExperienceRSVP):
             {"id": rsvp.pet_id},
             {"$set": {
                 "soul.personality": rsvp.pet_personality,
-                "soul.enjoy_history.last_rsvp": datetime.now(timezone.utc).isoformat(),
-                "updated_at": datetime.now(timezone.utc).isoformat()
+                "soul.enjoy_history.last_rsvp": get_utc_timestamp(),
+                "updated_at": get_utc_timestamp()
             }}
         )
     
@@ -522,7 +523,7 @@ async def update_rsvp_status(rsvp_id: str, status: str):
     
     result = await db.enjoy_rsvps.update_one(
         {"rsvp_id": rsvp_id},
-        {"$set": {"status": status, "updated_at": datetime.now(timezone.utc).isoformat()}}
+        {"$set": {"status": status, "updated_at": get_utc_timestamp()}}
     )
     
     if result.matched_count == 0:
@@ -584,8 +585,8 @@ async def create_enjoy_partner(partner: ExperiencePartnerCreate):
     partner_doc = {
         "id": partner_id,
         **partner.dict(),
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp(),
+        "updated_at": get_utc_timestamp()
     }
     
     await db.enjoy_partners.insert_one(partner_doc)
@@ -601,7 +602,7 @@ async def update_enjoy_partner(partner_id: str, partner: ExperiencePartnerCreate
     
     result = await db.enjoy_partners.update_one(
         {"id": partner_id},
-        {"$set": {**partner.dict(), "updated_at": datetime.now(timezone.utc).isoformat()}}
+        {"$set": {**partner.dict(), "updated_at": get_utc_timestamp()}}
     )
     
     if result.matched_count == 0:
@@ -677,8 +678,8 @@ async def create_enjoy_product(product: dict):
     
     product["id"] = f"enjoy-{uuid.uuid4().hex[:8]}"
     product["category"] = "enjoy"
-    product["created_at"] = datetime.now(timezone.utc).isoformat()
-    product["updated_at"] = datetime.now(timezone.utc).isoformat()
+    product["created_at"] = get_utc_timestamp()
+    product["updated_at"] = get_utc_timestamp()
     
     await db.products.insert_one({k: v for k, v in product.items() if k != "_id"})
     
@@ -690,7 +691,7 @@ async def update_enjoy_product(product_id: str, product_data: dict):
     """Update an enjoy product"""
     db = get_db()
     
-    product_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    product_data["updated_at"] = get_utc_timestamp()
     product_data.pop("id", None)
     product_data.pop("_id", None)
     
@@ -743,8 +744,8 @@ async def create_enjoy_bundle(bundle_data: dict):
         "bundle_type": "enjoy",
         **bundle_data,
         "is_active": True,
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp(),
+        "updated_at": get_utc_timestamp()
     }
     
     await db.enjoy_bundles.insert_one({k: v for k, v in bundle.items() if k != "_id"})
@@ -757,7 +758,7 @@ async def update_enjoy_bundle(bundle_id: str, bundle_data: dict):
     """Update an enjoy bundle"""
     db = get_db()
     
-    bundle_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    bundle_data["updated_at"] = get_utc_timestamp()
     bundle_data.pop("id", None)
     bundle_data.pop("_id", None)
     
@@ -1517,8 +1518,8 @@ async def seed_enjoy_data():
     
     # Seed experiences
     for exp in default_experiences:
-        exp["created_at"] = datetime.now(timezone.utc).isoformat()
-        exp["updated_at"] = datetime.now(timezone.utc).isoformat()
+        exp["created_at"] = get_utc_timestamp()
+        exp["updated_at"] = get_utc_timestamp()
         await db.enjoy_experiences.update_one(
             {"id": exp["id"]},
             {"$set": exp},
@@ -1527,8 +1528,8 @@ async def seed_enjoy_data():
     
     # Seed products
     for prod in default_products:
-        prod["created_at"] = datetime.now(timezone.utc).isoformat()
-        prod["updated_at"] = datetime.now(timezone.utc).isoformat()
+        prod["created_at"] = get_utc_timestamp()
+        prod["updated_at"] = get_utc_timestamp()
         await db.products.update_one(
             {"id": prod["id"]},
             {"$set": prod},
@@ -1605,8 +1606,8 @@ async def seed_enjoy_data():
     # Seed bundles
     for bundle in default_bundles:
         bundle["bundle_type"] = "enjoy"
-        bundle["created_at"] = datetime.now(timezone.utc).isoformat()
-        bundle["updated_at"] = datetime.now(timezone.utc).isoformat()
+        bundle["created_at"] = get_utc_timestamp()
+        bundle["updated_at"] = get_utc_timestamp()
         await db.enjoy_bundles.update_one(
             {"id": bundle["id"]},
             {"$set": bundle},
@@ -1649,7 +1650,7 @@ async def update_enjoy_settings(settings: Dict[str, Any]):
     
     await db.app_settings.update_one(
         {"key": "enjoy_settings"},
-        {"$set": {"key": "enjoy_settings", "value": settings, "updated_at": datetime.now(timezone.utc).isoformat()}},
+        {"$set": {"key": "enjoy_settings", "value": settings, "updated_at": get_utc_timestamp()}},
         upsert=True
     )
     

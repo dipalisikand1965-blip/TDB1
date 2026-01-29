@@ -11,6 +11,7 @@ import io
 import shutil
 import resend
 from datetime import datetime, timezone
+from timestamp_utils import get_utc_timestamp
 from typing import Optional, List, Any
 from fastapi import APIRouter, HTTPException, Depends, File, UploadFile, Form
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
@@ -80,7 +81,7 @@ async def seed_dine_bundles_data():
     if existing > 0:
         return {"bundles_seeded": 0, "message": "Bundles exist"}
     for b in sample_bundles:
-        b["created_at"] = datetime.now(timezone.utc).isoformat()
+        b["created_at"] = get_utc_timestamp()
         await db.dine_bundles.insert_one(b)
     return {"bundles_seeded": len(sample_bundles)}
 
@@ -100,7 +101,7 @@ async def seed_dine_products_data():
     if existing > 0:
         return {"products_seeded": 0, "message": "Products exist"}
     for p in sample_products:
-        p["created_at"] = datetime.now(timezone.utc).isoformat()
+        p["created_at"] = get_utc_timestamp()
         await db.products.insert_one(p)
     return {"products_seeded": len(sample_products)}
 
@@ -342,7 +343,7 @@ async def create_reservation(reservation: ReservationRequest):
     ticket_id = f"TKT-DINE-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
     notification_id = f"NOTIF-{uuid.uuid4().hex[:8].upper()}"
     inbox_id = f"INBOX-{uuid.uuid4().hex[:8].upper()}"
-    now = datetime.now(timezone.utc).isoformat()
+    now = get_utc_timestamp()
     
     # Handle pets field - can be int or list of pet objects
     pet_count = 1
@@ -675,7 +676,7 @@ async def admin_update_reservation_status(
     
     await db.reservations.update_one(
         {"id": reservation_id},
-        {"$set": {"status": status, "updated_at": datetime.now(timezone.utc).isoformat()}}
+        {"$set": {"status": status, "updated_at": get_utc_timestamp()}}
     )
     
     # Send notification on status change
@@ -766,8 +767,8 @@ async def admin_create_restaurant(
     restaurant_doc = {
         "id": f"rest-{uuid.uuid4().hex[:12]}",
         **restaurant.model_dump(),
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp(),
+        "updated_at": get_utc_timestamp()
     }
     
     await db.restaurants.insert_one(restaurant_doc)
@@ -791,7 +792,7 @@ async def admin_update_restaurant(
     
     update_data = {
         **restaurant.model_dump(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "updated_at": get_utc_timestamp()
     }
     
     await db.restaurants.update_one(
@@ -816,7 +817,7 @@ async def admin_patch_restaurant(
     
     # Only include non-None fields
     update_data = {k: v for k, v in updates.model_dump().items() if v is not None}
-    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    update_data["updated_at"] = get_utc_timestamp()
     
     if update_data:
         await db.restaurants.update_one(
@@ -852,7 +853,7 @@ async def update_restaurant_paw_reward(
         {"$set": {
             "paw_reward": paw_reward.model_dump(),
             "birthdayPerks": paw_reward.enabled,  # Also update legacy field
-            "updated_at": datetime.now(timezone.utc).isoformat()
+            "updated_at": get_utc_timestamp()
         }}
     )
     
@@ -887,7 +888,7 @@ async def assign_paw_rewards_to_restaurants(
             {"$set": {
                 "paw_reward": default_reward,
                 "birthdayPerks": True,
-                "updated_at": datetime.now(timezone.utc).isoformat()
+                "updated_at": get_utc_timestamp()
             }}
         )
         updated = result.modified_count
@@ -897,7 +898,7 @@ async def assign_paw_rewards_to_restaurants(
             {"$set": {
                 "paw_reward": default_reward,
                 "birthdayPerks": True,
-                "updated_at": datetime.now(timezone.utc).isoformat()
+                "updated_at": get_utc_timestamp()
             }}
         )
         updated = result.modified_count
@@ -1090,7 +1091,7 @@ async def import_restaurants_csv(
                     "website": row.get('website', '').strip() or None,
                     "featured": str(row.get('featured', 'false')).lower() in ['true', '1', 'yes'],
                     "verified": str(row.get('verified', 'false')).lower() in ['true', '1', 'yes'],
-                    "updated_at": datetime.now(timezone.utc).isoformat()
+                    "updated_at": get_utc_timestamp()
                 }
                 
                 # Check if restaurant with same name and city exists
@@ -1109,7 +1110,7 @@ async def import_restaurants_csv(
                 else:
                     # Create new restaurant
                     restaurant_doc["id"] = f"rest-{uuid.uuid4().hex[:12]}"
-                    restaurant_doc["created_at"] = datetime.now(timezone.utc).isoformat()
+                    restaurant_doc["created_at"] = get_utc_timestamp()
                     await db.restaurants.insert_one(restaurant_doc)
                     imported += 1
                     
@@ -1199,10 +1200,10 @@ async def schedule_visit(visit: RestaurantVisit, user_id: Optional[str] = None, 
         "notification_preference": visit.notification_preference,
         # Safety
         "safety_agreed": visit.safety_agreed,
-        "safety_agreed_at": datetime.now(timezone.utc).isoformat() if visit.safety_agreed else None,
+        "safety_agreed_at": get_utc_timestamp() if visit.safety_agreed else None,
         "status": "scheduled",
         "meetup_requests": [],
-        "created_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp()
     }
     
     await db.restaurant_visits.insert_one(visit_doc)
@@ -1356,7 +1357,7 @@ async def send_meetup_request(request: MeetupRequest, user_id: Optional[str] = N
         "time_slot": visit.get("time_slot"),
         "message": request.message,
         "status": "pending",  # pending, accepted, declined
-        "created_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp()
     }
     
     await db.meetup_requests.insert_one(meetup_doc)
@@ -1377,7 +1378,7 @@ async def send_meetup_request(request: MeetupRequest, user_id: Optional[str] = N
             "message": f"Someone wants to meet up with you at {visit.get('restaurant_name')} on {visit.get('date')}",
             "related_id": meetup_doc["id"],
             "read": False,
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp()
         }
         await db.dine_notifications.insert_one(notification)
     
@@ -1610,7 +1611,7 @@ async def respond_to_meetup(request_id: str, accept: bool, user_id: str):
         {
             "$set": {
                 "status": "accepted" if accept else "declined",
-                "responded_at": datetime.now(timezone.utc).isoformat()
+                "responded_at": get_utc_timestamp()
             }
         }
     )
@@ -1631,7 +1632,7 @@ async def respond_to_meetup(request_id: str, accept: bool, user_id: str):
             "message": f"Your meetup request at {meetup.get('restaurant_name')} on {meetup.get('visit_date')} was {status_text}",
             "related_id": request_id,
             "read": False,
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "created_at": get_utc_timestamp()
         }
         await db.dine_notifications.insert_one(notification)
         
@@ -1766,7 +1767,7 @@ async def admin_update_meetup_status(meetup_id: str, status: str, send_notificat
         {"id": meetup_id},
         {"$set": {
             "status": status,
-            "admin_updated_at": datetime.now(timezone.utc).isoformat()
+            "admin_updated_at": get_utc_timestamp()
         }}
     )
     
@@ -1910,7 +1911,7 @@ async def create_notification(
         "message": message,
         "related_id": related_id,
         "read": False,
-        "created_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp()
     }
     
     await db.dine_notifications.insert_one(notification)
@@ -1924,7 +1925,7 @@ async def mark_notification_read(notification_id: str, user_id: str):
     """Mark a notification as read"""
     result = await db.dine_notifications.update_one(
         {"id": notification_id, "user_id": user_id},
-        {"$set": {"read": True, "read_at": datetime.now(timezone.utc).isoformat()}}
+        {"$set": {"read": True, "read_at": get_utc_timestamp()}}
     )
     
     if result.modified_count == 0:
@@ -1938,7 +1939,7 @@ async def mark_all_notifications_read(user_id: str):
     """Mark all notifications as read for a user"""
     result = await db.dine_notifications.update_many(
         {"user_id": user_id, "read": False},
-        {"$set": {"read": True, "read_at": datetime.now(timezone.utc).isoformat()}}
+        {"$set": {"read": True, "read_at": get_utc_timestamp()}}
     )
     
     return {"message": f"Marked {result.modified_count} notifications as read"}
@@ -1955,7 +1956,7 @@ async def send_meetup_notification(target_user_id: str, requester_name: str, res
         "message": f"{requester_name or 'A pet parent'} wants to meet up at {restaurant_name} on {visit_date}",
         "related_id": meetup_id,
         "read": False,
-        "created_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp()
     }
     
     await db.dine_notifications.insert_one(notification)
@@ -2016,7 +2017,7 @@ async def admin_update_visit_status(visit_id: str, status: str, notes: Optional[
     
     update_doc = {
         "status": status,
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "updated_at": get_utc_timestamp()
     }
     
     if notes:
@@ -2211,8 +2212,8 @@ async def order_dine_bundle(
         "status": "pending",
         "payment_status": "unpaid",
         "pillar": "dine",
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp(),
+        "updated_at": get_utc_timestamp()
     }
     
     await db.orders.insert_one(order)
@@ -2288,8 +2289,8 @@ async def admin_create_dine_bundle(
     bundle_doc = {
         "id": bundle_id,
         **bundle.model_dump(),
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp(),
+        "updated_at": get_utc_timestamp()
     }
     
     # Calculate discount if not provided
@@ -2313,7 +2314,7 @@ async def admin_update_dine_bundle(
         raise HTTPException(status_code=404, detail="Bundle not found")
     
     update_data = {k: v for k, v in bundle.model_dump().items() if v is not None}
-    update_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    update_data["updated_at"] = get_utc_timestamp()
     
     # Recalculate discount if prices changed
     new_original = update_data.get("original_price", existing.get("original_price", 0))
@@ -2426,8 +2427,8 @@ async def seed_dine_bundles(username: str = Depends(verify_admin)):
         return {"message": f"Bundles already exist ({existing_count}). Skipping seed.", "seeded": 0}
     
     for bundle in sample_bundles:
-        bundle["created_at"] = datetime.now(timezone.utc).isoformat()
-        bundle["updated_at"] = datetime.now(timezone.utc).isoformat()
+        bundle["created_at"] = get_utc_timestamp()
+        bundle["updated_at"] = get_utc_timestamp()
         await db.dine_bundles.insert_one(bundle)
     
     return {"message": "Dine bundles seeded successfully", "seeded": len(sample_bundles)}
@@ -2509,7 +2510,7 @@ async def import_dine_bundles_csv(
                     "for_occasion": row.get('for_occasion', ''),
                     "featured": str(row.get('featured', '')).lower() in ['true', '1', 'yes'],
                     "active": str(row.get('active', 'true')).lower() in ['true', '1', 'yes'],
-                    "updated_at": datetime.now(timezone.utc).isoformat()
+                    "updated_at": get_utc_timestamp()
                 }
                 
                 # Handle list fields
@@ -2526,7 +2527,7 @@ async def import_dine_bundles_csv(
                     updated += 1
                 else:
                     bundle_data["id"] = f"dine-bundle-{uuid.uuid4().hex[:8]}"
-                    bundle_data["created_at"] = datetime.now(timezone.utc).isoformat()
+                    bundle_data["created_at"] = get_utc_timestamp()
                     await db.dine_bundles.insert_one(bundle_data)
                     imported += 1
                     
@@ -2594,8 +2595,8 @@ async def create_dine_product(product_data: dict, username: str = Depends(verify
         "id": f"dine-{uuid.uuid4().hex[:8]}",
         **product_data,
         "category": "dine",
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp(),
+        "updated_at": get_utc_timestamp()
     }
     
     await db.products.insert_one({k: v for k, v in product.items() if k != "_id"})
@@ -2607,7 +2608,7 @@ async def create_dine_product(product_data: dict, username: str = Depends(verify
 @dine_router.put("/admin/dine/products/{product_id}")
 async def update_dine_product(product_id: str, product_data: dict, username: str = Depends(verify_admin)):
     """Update a dine product"""
-    product_data["updated_at"] = datetime.now(timezone.utc).isoformat()
+    product_data["updated_at"] = get_utc_timestamp()
     product_data.pop("id", None)
     product_data.pop("_id", None)
     
@@ -2814,8 +2815,8 @@ async def seed_dine_products(username: str = Depends(verify_admin)):
     ]
     
     for product in sample_products:
-        product["created_at"] = datetime.now(timezone.utc).isoformat()
-        product["updated_at"] = datetime.now(timezone.utc).isoformat()
+        product["created_at"] = get_utc_timestamp()
+        product["updated_at"] = get_utc_timestamp()
         await db.products.insert_one(product)
     
     return {"message": "Dine products seeded successfully", "seeded": len(sample_products)}
