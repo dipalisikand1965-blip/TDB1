@@ -839,10 +839,7 @@ const MiraContextPanel = ({
                   {quickPrompts.slice(0, 3).map((prompt, idx) => (
                     <button
                       key={idx}
-                      onClick={() => {
-                        setInputValue(prompt.message);
-                        setShowChat(true);
-                      }}
+                      onClick={() => sendDirectMessage(prompt.message)}
                       className="text-xs bg-white border border-gray-200 text-gray-700 px-2 py-1 rounded-full hover:bg-purple-50 hover:border-purple-200 transition-colors"
                       data-testid={`mira-panel-prompt-${idx}`}
                     >
