@@ -368,6 +368,9 @@ async def create_travel_request(request: TravelRequestCreate):
         return {
             "success": True,
             "request_id": request_id,
+            "ticket_id": request_id,
+            "notification_id": notification_id,
+            "inbox_id": inbox_id,
             "status": "submitted",
             "message": f"Your travel request has been submitted. Our concierge will review and contact you within {travel_config['typical_response_time']}.",
             "typical_response_time": travel_config["typical_response_time"],
