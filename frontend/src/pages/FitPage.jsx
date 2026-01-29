@@ -922,7 +922,24 @@ const FitPage = () => {
                         </>
                       )}
                     </div>
-                    <Button className="w-full bg-teal-600 hover:bg-teal-700">Add to Cart</Button>
+                    <Button 
+                      className="w-full bg-teal-600 hover:bg-teal-700"
+                      onClick={() => {
+                        addToCart({
+                          id: bundle.id,
+                          name: bundle.name,
+                          price: bundle.price,
+                          image: bundle.image || '/images/bundle-placeholder.jpg',
+                          pillar: 'fit',
+                          type: 'bundle'
+                        });
+                        toast({ title: '🎉 Added to Cart!', description: `${bundle.name} added to your cart` });
+                      }}
+                      data-testid={`add-bundle-${bundle.id}`}
+                    >
+                      <ShoppingCart className="w-4 h-4 mr-2" />
+                      Add to Cart
+                    </Button>
                   </Card>
                 ))}
               </div>
