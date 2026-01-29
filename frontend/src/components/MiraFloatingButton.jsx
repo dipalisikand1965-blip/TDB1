@@ -153,7 +153,10 @@ const MiraFloatingButton = () => {
           
           {/* Main Button - PULSE */}
           <button
-            onClick={() => setIsOpen(true)}
+            onClick={() => {
+              setIsOpen(true);
+              window.dispatchEvent(new CustomEvent('pulseOpened'));
+            }}
             data-testid="pulse-floating-btn"
             className="w-14 h-14 rounded-full shadow-xl flex items-center justify-center transition-all duration-300 transform hover:scale-110 bg-gradient-to-br from-cyan-500 via-blue-500 to-indigo-500"
             aria-label="Open Pulse"
