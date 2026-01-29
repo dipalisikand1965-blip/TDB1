@@ -320,7 +320,10 @@ const MiraVoiceAssistant = ({
     if (!isMuted) speak(text);
   }, [isMuted, speak]);
   
-  const handleSend = useCallback((text = inputText) => {
+  // Session ID for tracking conversations
+  const sessionIdRef = useRef(`voice-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`);
+  
+  const handleSend = useCallback(async (text = inputText) => {
     if (!text.trim()) return;
     
     // Add user message
@@ -328,25 +331,63 @@ const MiraVoiceAssistant = ({
     setInputText('');
     setIsProcessing(true);
     
-    // Process command
-    setTimeout(() => {
+    try {
+      // Call Mira backend API to save conversation and get response
+      const response = await fetch(`${API_URL}/api/mira/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(localStorage.getItem('token') && { 'Authorization': `Bearer ${localStorage.getItem('token')}` })
+        },
+        body: JSON.stringify({
+          message: text,
+          session_id: sessionIdRef.current,
+          current_pillar: currentPillar,
+          selected_pet_id: petId,
+          source: 'voice_assistant'
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        // Use Mira's actual response from backend
+        const miraResponse = data.response || data.message || getFallbackResponse(petName);
+        addMiraMessage(miraResponse);
+        
+        // Handle navigation if backend suggests it
+        if (data.action?.type === 'navigate' && data.action?.path && onNavigate) {
+          setTimeout(() => {
+            onNavigate(data.action.path);
+            onClose();
+          }, 2000);
+        }
+      } else {
+        // Fallback to local processing if API fails
+        const command = findCommand(text);
+        const fallbackResponse = command 
+          ? command.response(petName, { soulScore: petData?.overall_score || 0 })
+          : getFallbackResponse(petName);
+        addMiraMessage(fallbackResponse);
+        
+        if (command?.action === 'navigate' && command.path && onNavigate) {
+          setTimeout(() => {
+            onNavigate(command.path.replace('{petId}', petId || ''));
+            onClose();
+          }, 2000);
+        }
+      }
+    } catch (err) {
+      console.error('Mira API error:', err);
+      // Fallback to local processing
       const command = findCommand(text);
-      const response = command 
+      const fallbackResponse = command 
         ? command.response(petName, { soulScore: petData?.overall_score || 0 })
         : getFallbackResponse(petName);
-      
-      addMiraMessage(response);
-      setIsProcessing(false);
-      
-      // Navigate if command has action
-      if (command?.action === 'navigate' && command.path && onNavigate) {
-        setTimeout(() => {
-          onNavigate(command.path.replace('{petId}', petId || ''));
-          onClose();
-        }, 2000);
-      }
-    }, 800);
-  }, [inputText, petName, petData, petId, addMiraMessage, onNavigate, onClose]);
+      addMiraMessage(fallbackResponse);
+    }
+    
+    setIsProcessing(false);
+  }, [inputText, petName, petData, petId, currentPillar, API_URL, addMiraMessage, onNavigate, onClose]);
   
   // Scroll to bottom when messages change
   useEffect(() => {
