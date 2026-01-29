@@ -79,7 +79,7 @@
   "rca_of_the_issue": {
     "bug": "MiraVoiceAssistant shows wrong opening message",
     "reproduction_steps": [
-      "1. Open https://furever-home-32.preview.emergentagent.com",
+      "1. Open https://pawsportal-4.preview.emergentagent.com",
       "2. Click on Mira floating button (top right)",
       "3. Observe the first message in the chat modal"
     ],

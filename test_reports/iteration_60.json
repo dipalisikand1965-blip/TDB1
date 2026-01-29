@@ -38,7 +38,7 @@
       "status": "VERIFIED WORKING",
       "details": [
         "Login.jsx line 28 redirects to '/' not '/dashboard'",
-        "Verified via Playwright: after login, URL is https://furever-home-32.preview.emergentagent.com/",
+        "Verified via Playwright: after login, URL is https://pawsportal-4.preview.emergentagent.com/",
         "Users can explore naturally from homepage"
       ]
     },
