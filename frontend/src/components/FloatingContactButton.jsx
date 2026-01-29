@@ -55,19 +55,19 @@ const FloatingContactButton = () => {
     setShowCallbackModal(true);
   };
   
-  const handlePulseVoice = () => {
+  const handleMiraVoice = () => {
     setIsOpen(false);
-    // Dispatch event to open Pulse voice interface
-    window.dispatchEvent(new CustomEvent('openMiraVoice'));
+    // Dispatch event to open Mira AI
+    window.dispatchEvent(new CustomEvent('openMiraAI'));
   };
 
   const contactOptions = [
     {
-      label: 'Pulse',
-      sublabel: 'Voice → Mira',
-      icon: Zap,
-      color: 'bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600',
-      onClick: handlePulseVoice,
+      label: 'Mira',
+      sublabel: 'AI Pet Concierge',
+      icon: Sparkles,
+      color: 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600',
+      onClick: handleMiraVoice,
     },
     {
       label: 'WhatsApp',
