@@ -131,32 +131,94 @@ const MiraVoiceAssistant = ({
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [useElevenLabs, setUseElevenLabs] = useState(true); // Try ElevenLabs first
   
   const recognitionRef = useRef(null);
   const synthRef = useRef(typeof window !== 'undefined' ? window.speechSynthesis : null);
+  const audioRef = useRef(null);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
   
-  // Define functions first
-  const speak = useCallback((text) => {
+  const API_URL = process.env.REACT_APP_BACKEND_URL;
+  
+  // ElevenLabs TTS function
+  const speakWithElevenLabs = useCallback(async (text) => {
+    if (isMuted) return;
+    
+    try {
+      const response = await fetch(`${API_URL}/api/tts/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text })
+      });
+      
+      if (!response.ok) {
+        throw new Error('ElevenLabs TTS failed');
+      }
+      
+      const data = await response.json();
+      
+      // Create audio from base64
+      if (data.audio_base64) {
+        const audioData = `data:audio/mpeg;base64,${data.audio_base64}`;
+        if (audioRef.current) {
+          audioRef.current.pause();
+        }
+        audioRef.current = new Audio(audioData);
+        audioRef.current.onplay = () => setIsSpeaking(true);
+        audioRef.current.onended = () => setIsSpeaking(false);
+        audioRef.current.onerror = () => setIsSpeaking(false);
+        await audioRef.current.play();
+        return true;
+      }
+    } catch (err) {
+      console.log('ElevenLabs TTS unavailable, falling back to Web Speech API');
+      setUseElevenLabs(false);
+      return false;
+    }
+    return false;
+  }, [API_URL, isMuted]);
+  
+  // Web Speech API fallback (with Meera pronunciation fix)
+  const speakWithWebSpeech = useCallback((text) => {
     if (!synthRef.current || isMuted) return;
     
+    // Fix "Mira" pronunciation to "Meera"
+    const fixedText = text.replace(/\bMira\b/gi, 'Meera');
+    
     synthRef.current.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
+    const utterance = new SpeechSynthesisUtterance(fixedText);
     utterance.rate = MIRA_VOICE_CONFIG.rate;
     utterance.pitch = MIRA_VOICE_CONFIG.pitch;
     
     const voices = synthRef.current.getVoices();
+    // Try to find an Indian voice, or fall back to female voice
+    const indianVoice = voices.find(v => v.lang.includes('hi') || v.lang.includes('en-IN'));
     const femaleVoice = voices.find(v => 
-      v.name.includes('Female') || v.name.includes('Samantha') || v.name.includes('Zira')
+      v.name.includes('Female') || v.name.includes('Samantha') || v.name.includes('Zira') || v.name.includes('Google')
     );
-    if (femaleVoice) utterance.voice = femaleVoice;
+    if (indianVoice) utterance.voice = indianVoice;
+    else if (femaleVoice) utterance.voice = femaleVoice;
     
     utterance.onstart = () => setIsSpeaking(true);
     utterance.onend = () => setIsSpeaking(false);
     
     synthRef.current.speak(utterance);
   }, [isMuted]);
+  
+  // Main speak function - tries ElevenLabs first, then falls back
+  const speak = useCallback(async (text) => {
+    if (isMuted) return;
+    
+    if (useElevenLabs) {
+      const success = await speakWithElevenLabs(text);
+      if (!success) {
+        speakWithWebSpeech(text);
+      }
+    } else {
+      speakWithWebSpeech(text);
+    }
+  }, [isMuted, useElevenLabs, speakWithElevenLabs, speakWithWebSpeech]);
   
   const addMiraMessage = useCallback((text) => {
     setMessages(prev => [...prev, { role: 'mira', text, timestamp: new Date() }]);
