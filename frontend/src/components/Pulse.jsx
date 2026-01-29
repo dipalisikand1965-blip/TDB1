@@ -902,14 +902,16 @@ const Pulse = ({
       
       addPulseMessage(pulseResponse);
       
-      // Handle navigation actions
+      // Handle navigation actions - only navigate if explicitly set
+      // Commands without navigation will stay in Pulse for conversation
       if (command.action === 'navigate' && command.path && onNavigate) {
         const finalPath = command.path.replace('{petId}', petId || '');
         setTimeout(() => {
           onNavigate(finalPath);
           onClose();
-        }, 1500);
+        }, 2000); // Give user time to hear the response
       }
+      // For 'respond' action or no action, stay in Pulse and continue conversation
       
       // Ensure ticket is created before finishing
       await createTicketPromise;
@@ -926,13 +928,14 @@ const Pulse = ({
         const miraResponse = data.response || data.message || getFallbackResponse(petName);
         addPulseMessage(`🧠 Mira says: ${miraResponse}`);
         
-        // Handle navigation if backend suggests it
+        // Handle navigation if backend explicitly suggests it
         if (data.action?.type === 'navigate' && data.action?.path && onNavigate) {
           setTimeout(() => {
             onNavigate(data.action.path);
             onClose();
-          }, 2000);
+          }, 2500); // Give user time to hear response
         }
+        // Otherwise stay in Pulse for continued conversation
       } else {
         addPulseMessage(getFallbackResponse(petName));
       }
