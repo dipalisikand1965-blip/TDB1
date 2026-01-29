@@ -349,13 +349,20 @@ async def create_care_request(request: CareRequestCreate):
         await db.care_requests.insert_one(request_doc)
         
         # Create Service Desk ticket
+        ticket_id = request_id
+        notification_id = f"NOTIF-{uuid.uuid4().hex[:8].upper()}"
+        inbox_id = f"INBOX-{uuid.uuid4().hex[:8].upper()}"
+        
         ticket_doc = {
-            "ticket_id": request_id,
+            "ticket_id": ticket_id,
+            "notification_id": notification_id,
+            "inbox_id": inbox_id,
             "source": "care_pillar",
             "pillar": "care",
             "category": request.care_type,
             "status": "new",
             "priority": priority,
+            "urgency": "high" if priority <= 2 else "medium",
             "subject": f"Care Request: {care_config['name']} - {pet_name}",
             "description": f"{user_name or 'Customer'} needs {care_config['name'].lower()} for {pet_name} ({pet_breed or 'pet'}). {description}",
             "member": {
@@ -376,6 +383,14 @@ async def create_care_request(request: CareRequestCreate):
                 "priority": priority,
                 "profile_gaps": missing_fields
             },
+            "tags": ["care", request.care_type, "unified-flow"],
+            "messages": [{
+                "id": str(uuid.uuid4()),
+                "sender": "system",
+                "channel": "web",
+                "message": f"Care request created for {care_config['name']}",
+                "timestamp": datetime.now(timezone.utc).isoformat()
+            }],
             "created_at": datetime.now(timezone.utc).isoformat(),
             "updated_at": datetime.now(timezone.utc).isoformat(),
             "timeline": [{
@@ -384,31 +399,78 @@ async def create_care_request(request: CareRequestCreate):
                 "details": f"Care request submitted via Care Pillar - {care_config['name']}"
             }]
         }
+        # Insert into BOTH collections for unified flow
+        await db.service_desk_tickets.insert_one(ticket_doc)
         await db.tickets.insert_one(ticket_doc)
         
-        # Create Unified Inbox entry
-        inbox_entry = {
-            "request_id": request_id,
-            "channel": "web",
-            "request_type": "care",
+        # ==================== STEP 1: NOTIFICATION (MANDATORY) ====================
+        await db.admin_notifications.insert_one({
+            "id": notification_id,
+            "type": f"care_{request.care_type}",
             "pillar": "care",
-            "status": "pending",
-            "customer_name": user_name,
-            "customer_email": user_email,
-            "customer_phone": user_phone,
-            "pet_info": {
+            "title": f"New {care_config['name']} Request - {pet_name}",
+            "message": f"{user_name or 'Customer'} needs {care_config['name'].lower()} for {pet_name}",
+            "status": "unread",
+            "urgency": "high" if priority <= 2 else "medium",
+            "ticket_id": ticket_id,
+            "inbox_id": inbox_id,
+            "care_type": request.care_type,
+            "customer": {
+                "name": user_name,
+                "email": user_email,
+                "phone": user_phone
+            },
+            "pet": {
                 "name": pet_name,
                 "breed": pet_breed
             },
+            "link": f"/admin?tab=servicedesk&ticket={ticket_id}",
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "read_at": None
+        })
+        logger.info(f"[UNIFIED FLOW] Care request notification created: {notification_id}")
+        
+        # ==================== STEP 2: Unified Inbox entry (MANDATORY) ====================
+        inbox_entry = {
+            "id": inbox_id,
+            "request_id": request_id,
+            "ticket_id": ticket_id,
+            "notification_id": notification_id,
+            "channel": "web",
+            "request_type": "care",
+            "pillar": "care",
+            "category": request.care_type,
+            "status": "new",
+            "urgency": "high" if priority <= 2 else "medium",
+            "customer_name": user_name,
+            "customer_email": user_email,
+            "customer_phone": user_phone,
+            "member": {
+                "name": user_name,
+                "email": user_email,
+                "phone": user_phone
+            },
+            "pet": {
+                "name": pet_name,
+                "breed": pet_breed
+            },
+            "preview": f"Care Request: {care_config['name']} - {description[:100] if description else 'No description'}...",
             "message": f"Care Request: {care_config['name']} - {description[:100] if description else 'No description'}...",
+            "full_content": description,
             "metadata": {
                 "care_request_id": request_id,
                 "care_type": request.care_type,
                 "priority": priority
             },
-            "created_at": datetime.now(timezone.utc).isoformat()
+            "tags": ["care", request.care_type],
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "unified_flow_processed": True
         }
         await db.channel_intakes.insert_one(inbox_entry)
+        logger.info(f"[UNIFIED FLOW] Care request inbox entry created: {inbox_id}")
+        
+        logger.info(f"[UNIFIED FLOW] COMPLETE: Care request {request_id} | Notification({notification_id}) → Ticket({ticket_id}) → Inbox({inbox_id})")
         
         # Progressive profiling: Update pet profile with new info
         if request.pet_id:
