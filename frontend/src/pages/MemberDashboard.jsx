@@ -272,6 +272,10 @@ const MemberDashboard = () => {
   // Pillar Popup State - Shows usage history for each pillar
   const [pillarPopup, setPillarPopup] = useState({ open: false, pillar: null });
   
+  // My Requests (Mira Tickets) State
+  const [myRequests, setMyRequests] = useState([]);
+  const [requestsLoading, setRequestsLoading] = useState(false);
+  
   // First Visit Tour
   const { showTour, startTour, endTour } = useTour();
   
