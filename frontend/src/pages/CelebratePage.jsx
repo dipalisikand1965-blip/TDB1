@@ -251,26 +251,26 @@ const CelebratePage = () => {
       </div>
 
       {/* How Concierge® Works */}
-      <div className="bg-gradient-to-r from-pink-50 to-purple-50 py-16">
+      <div className="bg-gradient-to-r from-pink-50 to-purple-50 py-10 sm:py-16">
         <div className="max-w-6xl mx-auto px-4">
-          <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-10">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center text-gray-900 mb-6 sm:mb-10">
             How Celebrate Concierge® Works
           </h2>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
             {[
               { step: 1, icon: '💬', title: 'Share Your Vision', desc: 'Tell us about your celebration dreams' },
               { step: 2, icon: '✨', title: 'Custom Planning', desc: 'We craft a personalized celebration plan' },
               { step: 3, icon: '🎯', title: 'Perfect Execution', desc: 'Every detail handled with care' },
               { step: 4, icon: '🎉', title: 'Celebrate!', desc: 'Enjoy a stress-free, magical day' }
             ].map((item) => (
-              <Card key={item.step} className="p-6 text-center bg-white">
-                <div className="w-12 h-12 mx-auto mb-4 bg-pink-100 rounded-full flex items-center justify-center text-2xl">
+              <Card key={item.step} className="p-4 sm:p-6 text-center bg-white">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-4 bg-pink-100 rounded-full flex items-center justify-center text-xl sm:text-2xl">
                   {item.icon}
                 </div>
-                <div className="text-pink-500 font-bold mb-2">Step {item.step}</div>
-                <h3 className="font-semibold text-gray-900 mb-1">{item.title}</h3>
-                <p className="text-sm text-gray-600">{item.desc}</p>
+                <div className="text-pink-500 font-bold text-xs sm:text-sm mb-1 sm:mb-2">Step {item.step}</div>
+                <h3 className="font-semibold text-gray-900 text-xs sm:text-base mb-0.5 sm:mb-1 leading-tight">{item.title}</h3>
+                <p className="text-xs sm:text-sm text-gray-600 leading-tight hidden sm:block">{item.desc}</p>
               </Card>
             ))}
           </div>
@@ -278,40 +278,40 @@ const CelebratePage = () => {
       </div>
 
       {/* Featured Products - MOBILE: 2 tiles, DESKTOP: 3 tiles */}
-      <div className="max-w-6xl mx-auto px-4 py-16">
-        <div className="flex items-center justify-between mb-8">
+      <div className="max-w-6xl mx-auto px-4 py-10 sm:py-16">
+        <div className="flex items-center justify-between mb-5 sm:mb-8">
           <div>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">Featured Celebration Items</h2>
-            <p className="text-gray-600">Hand-picked treats and cakes for your celebration</p>
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">Featured Celebration Items</h2>
+            <p className="text-gray-600 text-sm sm:text-base">Hand-picked treats and cakes</p>
           </div>
           <Link to="/celebrate/cakes">
-            <Button variant="outline" className="gap-2">
-              View All <ChevronRight className="w-4 h-4" />
+            <Button variant="outline" size="sm" className="gap-1 sm:gap-2 text-xs sm:text-sm">
+              View All <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
             </Button>
           </Link>
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <Card key={i} className="p-4 md:p-6 animate-pulse">
-                <div className="aspect-square bg-gray-200 rounded-lg mb-4"></div>
-                <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+              <Card key={i} className="p-3 sm:p-4 md:p-6 animate-pulse">
+                <div className="aspect-square bg-gray-200 rounded-lg mb-3 sm:mb-4"></div>
+                <div className="h-3 sm:h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                <div className="h-3 sm:h-4 bg-gray-200 rounded w-1/2"></div>
               </Card>
             ))}
           </div>
         ) : featuredProducts.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
             {featuredProducts.slice(0, 6).map((product) => (
               <ProductCard key={product._id || product.id} product={product} />
             ))}
           </div>
         ) : (
-          <Card className="p-12 text-center">
-            <Cake className="w-12 h-12 text-pink-300 mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Coming Soon!</h3>
-            <p className="text-gray-600">Our celebration products will be available shortly.</p>
+          <Card className="p-8 sm:p-12 text-center">
+            <Cake className="w-10 h-10 sm:w-12 sm:h-12 text-pink-300 mx-auto mb-3 sm:mb-4" />
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">Coming Soon!</h3>
+            <p className="text-sm text-gray-600">Our celebration products will be available shortly.</p>
           </Card>
         )}
       </div>
