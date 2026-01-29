@@ -973,6 +973,13 @@ const Pulse = ({
         setLastSuggestedPath(command.suggestedPath);
       }
       
+      // Show product cards for shopping-related commands
+      if (command.showProducts && command.productCategory) {
+        setTimeout(() => {
+          addProductsToChat(command.productCategory, "Here are some top picks:");
+        }, 800);
+      }
+      
       // Handle navigation actions
       if (command.action === 'navigate' && command.path && onNavigate) {
         // Immediate navigation for important actions (health, urgent)
