@@ -515,17 +515,18 @@ const MiraVoiceAssistant = ({
               )}
             </div>
             
-            {/* Voice Button */}
+            {/* Voice Button - PROMINENT */}
             <button
               onClick={toggleListening}
-              className={`p-3 rounded-full transition-all shadow-md ${
+              className={`p-3 rounded-full transition-all shadow-lg ${
                 isListening 
-                  ? 'bg-red-500 text-white animate-pulse' 
-                  : 'bg-gradient-to-br from-purple-500 to-pink-500 text-white hover:scale-105'
+                  ? 'bg-red-500 text-white animate-pulse scale-110' 
+                  : 'bg-gradient-to-br from-purple-500 to-pink-500 text-white hover:scale-110 hover:shadow-xl'
               }`}
               title={isListening ? 'Stop listening' : 'Speak to Mira'}
+              data-testid="mira-voice-mic-btn"
             >
-              {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+              {isListening ? <MicOff className="w-6 h-6" /> : <Mic className="w-6 h-6" />}
             </button>
             
             {/* Send Button */}
@@ -537,6 +538,13 @@ const MiraVoiceAssistant = ({
               <Send className="w-5 h-5" />
             </button>
           </div>
+          
+          {/* Speak to Mira hint - show when not listening */}
+          {!isListening && !inputText && (
+            <p className="text-center text-xs text-gray-400 mt-1">
+              Tap 🎤 to speak or type below
+            </p>
+          )}
           
           {/* Voice Status */}
           {isListening && (
