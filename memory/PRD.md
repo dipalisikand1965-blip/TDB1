@@ -154,6 +154,57 @@ User (Voice/Text) → Mira detects intent → Auto-creates ticket → Service De
   - 🎉 Completed (green)
   - 🚨 Urgent Response (red - Emergency)
 
+### Phase 44: Member Dashboard - My Requests Section (Jan 29, 2025)
+
+**Frontend (`/app/frontend/src/pages/MemberDashboard.jsx`):**
+- **New "My Requests" Tab**: Full tab with ticket listing, status badges, and refresh button
+- **Quick Access Card**: Overview tab shows top 2 active requests for at-a-glance view
+- **Status Display**: Color-coded badges (green/yellow/blue/red/orange) with icons
+- **Request Details**: Shows ticket ID, pillar, description, pet name, timestamp
+- **Empty State**: Encourages users to chat with Mira to create requests
+
+### Phase 45: Proactive Notifications Engine (Jan 29, 2025)
+
+**Backend (`/app/backend/proactive_notifications.py`):**
+- **Vaccination Reminders**: Checks pets with vaccinations due within 7 days
+- **Birthday Reminders**: Detects upcoming pet birthdays
+- **Ticket Updates**: Notifies on status changes (acknowledged, confirmed, completed)
+- **Order Updates**: Shipped/delivered notifications (template ready)
+- **Concierge Responses**: Alert when human concierge replies
+
+**Notification Templates:**
+- 💉 Vaccination Reminder: "{pet_name}'s {vaccine} is due in {days} days"
+- 🎂 Birthday Reminder: "{pet_name}'s birthday is in {days} days!"
+- 📋 Ticket Update: "Your {pillar} request #{ticket_id} is now {status}"
+- 📦 Order Shipped/Delivered
+- 💬 Concierge Update
+- ✨ Mira's Insight
+
+**API Endpoints:**
+- `POST /api/notifications/check` - Trigger proactive notification check
+- `POST /api/notifications/send-test` - Send test notification
+- `GET /api/notifications/history/{email}` - Get notification history
+
+### Phase 46: WhatsApp → Ticket Sync (Jan 29, 2025)
+
+**Backend (`/app/backend/channel_intake.py`):**
+- **WhatsApp Webhook Handler**: `POST /api/channels/whatsapp/webhook`
+  - Supports multiple formats: Meta Business API, direct webhooks
+  - Auto-detects member by phone number
+  - Creates/updates WhatsApp conversation threads
+  - Auto-creates Service Desk tickets
+  - Auto-detects pillar from message content
+  
+- **WhatsApp Threads Management:**
+  - `GET /api/channels/whatsapp/threads` - List all threads
+  - `GET /api/channels/whatsapp/threads/{id}` - Get specific thread with linked ticket
+  - `POST /api/channels/whatsapp/threads/{id}/reply` - Reply to thread (concierge)
+
+**Multi-Channel Sync:**
+- All channels (Voice, WhatsApp, App Chat) create tickets in `service_desk_tickets`
+- Linked via `whatsapp_thread_id` for conversation continuity
+- Unified view in Admin Service Desk / Unified Inbox
+
 ### Working Features ✅
 - **Pillar-specific Mira with Voice**: MiraContextPanel on Advisory (purple), Care (pink), Emergency (red) pages with Pulse voice capabilities
 - Product images loading from Shopify CDN
