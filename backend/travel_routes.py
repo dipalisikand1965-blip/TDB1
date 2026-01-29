@@ -214,8 +214,8 @@ async def create_travel_request(request: TravelRequestCreate):
             "freeform_query": request.freeform_query,
             
             # Tracking
-            "created_at": datetime.now(timezone.utc).isoformat(),
-            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "created_at": get_consistent_timestamp(),
+            "updated_at": get_consistent_timestamp(),
             "typical_response_time": travel_config["typical_response_time"],
             "concierge_led": travel_config.get("concierge_led", False),
             
