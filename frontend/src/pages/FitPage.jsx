@@ -438,7 +438,7 @@ const ServiceDetailModal = ({ service, isOpen, onClose, onBook, onAskConcierge, 
 // ==================== MAIN FIT PAGE COMPONENT ====================
 const FitPage = () => {
   const { user, token } = useAuth();
-  const { addItem } = useCart();
+  const { addToCart } = useCart();
   const navigate = useNavigate();
   
   // Data states
