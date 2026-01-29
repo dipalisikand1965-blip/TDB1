@@ -171,19 +171,23 @@ const MiraVoiceAssistant = ({
   
   const API_URL = process.env.REACT_APP_BACKEND_URL;
   
-  // Show mandatory opening line when first opened (TEXT only, no voice)
+  // Show personalized opening line when first opened (TEXT only, no voice)
   useEffect(() => {
     if (isOpen && !hasShownOpening && messages.length === 0) {
-      // MANDATORY OPENING LINE - NO VARIATION
+      // PERSONALIZED OPENING LINE with pet name
+      const personalizedOpening = petName && petName !== 'your pup'
+        ? `Hi, I'm Mira! I can help with ${petName}'s needs, guide you to the right place, or connect you with our Concierge.`
+        : MIRA_OPENING;
+      
       setMessages([{
         role: 'mira',
-        text: MIRA_OPENING,
+        text: personalizedOpening,
         timestamp: new Date()
       }]);
       setHasShownOpening(true);
       // DO NOT auto-speak - text is default
     }
-  }, [isOpen, hasShownOpening, messages.length]);
+  }, [isOpen, hasShownOpening, messages.length, petName]);
   
   // ElevenLabs TTS function - max 10-12 seconds
   const speakWithElevenLabs = useCallback(async (text) => {
