@@ -483,10 +483,17 @@ const ProductManager = ({ credentials }) => {
       });
       
       if (response.ok) {
-        setProducts(products.filter(p => p.id !== productId));
+        // Use functional update to avoid stale closure
+        setProducts(prevProducts => prevProducts.filter(p => p.id !== productId));
+        // Show success feedback
+        alert('Product deleted successfully!');
+      } else {
+        const error = await response.json();
+        alert(error.detail || 'Failed to delete product');
       }
     } catch (error) {
       console.error('Delete failed:', error);
+      alert('Failed to delete product. Please try again.');
     }
   };
 
