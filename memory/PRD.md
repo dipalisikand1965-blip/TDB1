@@ -13,6 +13,86 @@
 
 ## What's Been Implemented
 
+### Phase 36: Bug Fixes & Voice Mira Enhancement (Jan 29, 2025)
+
+**Completed Features:**
+
+1. **Checkout Flow Simplified** (COMPLETED) ✅
+   - Removed Store Pickup option completely - delivery only
+   - Updated UnifiedCheckout.jsx (active checkout component)
+   - Added delivery info banner showing free shipping threshold
+   - Cleaned up validation logic to only require delivery address
+   - **Files Modified**: 
+     - `/app/frontend/src/components/UnifiedCheckout.jsx`
+     - `/app/frontend/src/pages/Checkout.jsx`
+
+2. **Voice Mira Enhanced with ElevenLabs** (COMPLETED) 🎙️
+   - Created TTS backend routes with ElevenLabs integration
+   - Features:
+     - Natural Indian female voice support
+     - "Mira" pronounced as "Meera" (mee-rah)
+     - Emoji handling (removes/converts for natural speech)
+     - Graceful fallback to Web Speech API if no API key
+   - **Files Created**: `/app/backend/tts_routes.py`
+   - **API Endpoints**: 
+     - `POST /api/tts/generate` - Generate speech
+     - `GET /api/tts/config` - Get TTS configuration
+     - `GET /api/tts/voices` - List available voices
+   - **Status**: Ready (needs ELEVENLABS_API_KEY in .env)
+
+3. **Global Mira Floating Button** (COMPLETED) 🔮
+   - Created MiraFloatingButton component
+   - Appears on ALL pages (top-right corner)
+   - Features:
+     - Animated pulse effect
+     - "Ask Meera!" tooltip
+     - Opens Mira Voice Assistant
+     - Hides on admin/mira-specific pages
+   - **File Created**: `/app/frontend/src/components/MiraFloatingButton.jsx`
+
+4. **Pawesome Badge System Redesign** (COMPLETED) 🏆
+   - Renamed badges with fun pet-centric names:
+     - Soul Starter → "Curious Pup"
+     - Soul Seeker → "Detective Doggo"
+     - Soul Explorer → "Adventure Buddy"
+     - Soul Guardian → "Loyal Guardian"
+     - Soul Master → "Soul Whisperer"
+     - First Order → "Treat Hunter"
+     - VIP Member → "Paw-rent of the Year"
+   - Added rarity levels (common, uncommon, rare, epic, legendary)
+   - Enhanced visual design with glow effects
+   - Unlock messages for celebrations
+   - **Files Modified**:
+     - `/app/frontend/src/components/dashboard/AchievementSystem.js`
+     - `/app/frontend/src/components/dashboard/GamificationBanner.jsx`
+
+5. **Multi-Pet Onboarding Fix** (COMPLETED) 🐕🐕
+   - "Add Another Dog" button now always visible
+   - Supports 1-15+ pets during onboarding
+   - **File Modified**: `/app/frontend/src/pages/MembershipOnboarding.jsx`
+
+6. **Service Desk Search Enhancement** (COMPLETED) 🔍
+   - Updated search placeholder with helpful tip
+   - Search by Ticket ID, Pet Parent Name, Phone, Email
+   - **File Modified**: `/app/frontend/src/components/admin/ServiceDesk.jsx`
+
+7. **FloatingContactButton Cleanup** (COMPLETED)
+   - Removed WhatsApp and Voice Order from floating widget
+   - Now shows only: Call Now, Request Callback
+   - **File Modified**: `/app/frontend/src/components/FloatingContactButton.jsx`
+
+**Bug Fixes Verified Working:**
+- ✅ Pet Soul Answer Saving (API tested)
+- ✅ Wishlist Add/Get (API tested)
+- ✅ Pet Photo Upload (API tested)
+- ✅ TTS Config endpoint (API tested)
+
+**Testing Results:**
+- Backend: 100% (11/11 tests passed)
+- Test report: `/app/test_reports/iteration_114.json`
+
+---
+
 ### Phase 35: Mira Chat UI Redesign & WhatsApp Integration (Jan 28, 2025)
 
 **Completed Features:**
