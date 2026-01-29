@@ -96,18 +96,23 @@ const PetScoreCard = ({
   }
 
   return (
-    <Card className={`p-6 ${colors.bg} ${colors.border} border`}>
+    <Card className={`p-6 ${colors.bg} ${colors.border} border overflow-hidden relative animate-fade-in-up`}>
+      {/* Animated background glow for high scores */}
+      {score >= 75 && (
+        <div className="absolute inset-0 bg-gradient-to-br from-amber-200/20 via-transparent to-purple-200/20 animate-pulse" />
+      )}
+      
       {/* Header */}
-      <div className="flex items-start justify-between mb-4">
+      <div className="flex items-start justify-between mb-4 relative">
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm text-2xl">
+          <div className={`w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-sm text-2xl transition-transform duration-500 hover:scale-110 ${isComplete ? 'animate-float' : ''}`}>
             {tier?.emoji || '🌱'}
           </div>
           <div>
             <h3 className="font-bold text-gray-900 flex items-center gap-2">
               {isComplete ? (
                 <>
-                  <Trophy className="w-5 h-5 text-amber-500" />
+                  <Trophy className="w-5 h-5 text-amber-500 animate-pulse" />
                   Pet Soul Complete!
                 </>
               ) : (
@@ -125,9 +130,9 @@ const PetScoreCard = ({
           </div>
         </div>
         
-        {/* Score Circle */}
+        {/* Score Circle - Animated */}
         <div className="text-right">
-          <div className={`text-3xl font-bold ${colors.text}`}>
+          <div className={`text-3xl font-bold ${colors.text} transition-all duration-500`}>
             {Math.round(score)}%
           </div>
           <p className="text-xs text-gray-500">
@@ -136,15 +141,15 @@ const PetScoreCard = ({
         </div>
       </div>
 
-      {/* Progress Bar */}
-      <div className="mb-4">
+      {/* Progress Bar - Animated */}
+      <div className="mb-4 relative">
         <div className="flex items-center justify-between text-xs text-gray-500 mb-1">
           <span>{tier?.name}</span>
           {next_tier && <span>{next_tier.name} ({next_tier.min_score}%)</span>}
         </div>
-        <div className="w-full bg-white/60 rounded-full h-3">
+        <div className="w-full bg-white/60 rounded-full h-3 overflow-hidden">
           <div 
-            className={`h-3 rounded-full transition-all duration-500 ${colors.progress}`}
+            className={`h-3 rounded-full transition-all duration-1000 ease-out ${colors.progress}`}
             style={{ width: `${Math.min(score, 100)}%` }}
           />
         </div>
@@ -155,13 +160,14 @@ const PetScoreCard = ({
         )}
       </div>
 
-      {/* Category Scores */}
+      {/* Category Scores - Staggered animation */}
       {categories && Object.keys(categories).length > 0 && (
         <div className="grid grid-cols-3 sm:grid-cols-6 gap-2 mb-4">
-          {Object.entries(categories).map(([key, cat]) => (
+          {Object.entries(categories).map(([key, cat], index) => (
             <div 
               key={key} 
-              className="bg-white/70 rounded-lg p-2 text-center"
+              className="bg-white/70 rounded-lg p-2 text-center transition-all duration-300 hover:scale-105 hover:bg-white hover:shadow-sm animate-fade-in-up"
+              style={{ animationDelay: `${index * 100}ms` }}
               title={cat.name}
             >
               <span className="text-lg">{cat.icon}</span>
