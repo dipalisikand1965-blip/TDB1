@@ -23,30 +23,10 @@ const FloatingContactButton = () => {
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [showCallbackModal, setShowCallbackModal] = useState(false);
-  const [pulseIsOpen, setPulseIsOpen] = useState(false);
-  
-  // Listen for Pulse open/close events
-  useEffect(() => {
-    const handlePulseOpen = () => setPulseIsOpen(true);
-    const handlePulseClose = () => setPulseIsOpen(false);
-    
-    window.addEventListener('pulseOpened', handlePulseOpen);
-    window.addEventListener('pulseClosed', handlePulseClose);
-    
-    return () => {
-      window.removeEventListener('pulseOpened', handlePulseOpen);
-      window.removeEventListener('pulseClosed', handlePulseClose);
-    };
-  }, []);
   
   // Hide on Mira-related pages where dedicated contact options exist
   const hiddenPaths = ['/mira', '/ask-mira', '/voice-order', '/agent', '/admin/service-desk'];
   if (hiddenPaths.some(path => location.pathname.startsWith(path))) {
-    return null;
-  }
-  
-  // Hide when Pulse is open
-  if (pulseIsOpen) {
     return null;
   }
 
