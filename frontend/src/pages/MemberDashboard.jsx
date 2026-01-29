@@ -936,12 +936,14 @@ const MemberDashboard = () => {
         {/* Soul Explainer Video Modal */}
         {showSoulExplainer && (
           <SoulExplainerVideo
-            petName={pets[0]?.name || 'your pet'}
+            petName={pets?.[0]?.name || 'your pet'}
             onClose={() => setShowSoulExplainer(false)}
             onStartJourney={() => {
               setShowSoulExplainer(false);
-              if (pets[0]?.id) {
+              if (pets?.[0]?.id) {
                 navigate(`/pet/${pets[0].id}?tab=personality`);
+              } else {
+                navigate('/my-pets');
               }
             }}
           />
