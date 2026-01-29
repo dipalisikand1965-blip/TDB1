@@ -2822,6 +2822,43 @@ CRITICAL CONCIERGE DOCTRINE:
         
         response = await chat.send_message(UserMessage(text=full_prompt))
         
+        # ==================== CRITICAL GUARD: MIRA MUST NEVER GO SILENT ====================
+        # A Mira turn must always end in: a response, a question, an action, or a visible error.
+        # It may NEVER end in silence.
+        
+        if not response or len(response.strip()) < 20:
+            # Response is empty or too short - FORCE A PROPER RESPONSE
+            logger.warning(f"[MIRA GUARD] Empty/short response detected for session {session_id}. Forcing recovery.")
+            
+            # Generate a recovery response based on context
+            if concierge_action.get("is_affirmative_confirmation"):
+                response = f"""Perfect! I'm on it now. Let me help you with that.
+
+To make sure I get this exactly right, could you tell me:
+- Which area or location would you prefer?
+- What date works best for you?
+
+Our concierge team is standing by and I'll have details for you shortly! 🐾"""
+            elif concierge_action.get("action_needed"):
+                response = f"""Got it! I'm taking care of this for you right now.
+
+I'm checking the best options based on what you've told me. Our live concierge will confirm the details shortly.
+
+Is there anything specific you'd like me to prioritize? 🐾"""
+            else:
+                response = f"""I'm here to help! Let me know more about what you're looking for.
+
+Some things I can help with:
+- Finding pet-friendly places
+- Booking services for your pet
+- Answering questions about pet care
+
+What would you like to explore? 🐾"""
+            
+            logger.info(f"[MIRA GUARD] Recovery response generated for session {session_id}")
+        
+        # ==================== END GUARD ====================
+        
         # 8. Add AI response to ticket
         await add_message_to_ticket(session_id, {
             "type": "mira_response",
