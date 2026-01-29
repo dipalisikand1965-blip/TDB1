@@ -50,6 +50,8 @@ import FirstVisitTour, { useTour } from '../components/FirstVisitTour';
 import MiraDailyTip, { MiraDailyTipInline } from '../components/MiraDailyTip';
 // Voice Assistant
 import MiraVoiceAssistant, { MiraVoiceButton } from '../components/MiraVoiceAssistant';
+// Push Notification Banner
+import PushNotificationBanner from '../components/PushNotificationBanner';
 
 
 // Extracted components: ACHIEVEMENTS, TIER_COLORS, triggerCelebration, QuickScoreBoost, GamificationBanner
