@@ -996,12 +996,9 @@ const Pulse = ({
     }
   }, [isListening, addPulseMessage]);
   
-  const quickCommands = [
-    { icon: ShoppingCart, text: `Order ${petName}'s treats`, color: 'bg-orange-100 text-orange-700' },
-    { icon: Stethoscope, text: 'Book grooming', color: 'bg-teal-100 text-teal-700' },
-    { icon: Calendar, text: 'Next vaccination?', color: 'bg-blue-100 text-blue-700' },
-    { icon: Heart, text: `${petName}'s soul score`, color: 'bg-pink-100 text-pink-700' }
-  ];
+  // Quick commands removed - user prefers unified inbox flow
+  // All interactions go to service desk via Mira API
+  
   
   if (!isOpen) return null;
   
