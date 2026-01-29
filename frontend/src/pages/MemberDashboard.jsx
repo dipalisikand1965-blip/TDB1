@@ -2907,7 +2907,7 @@ const MemberDashboard = () => {
       
       {/* Mobile Bottom Navigation - Pet Life OS */}
       <MobileNavBar 
-        onPulseClick={() => setShowPulse(true)}
+        onPulseClick={() => setShowVoiceAssistant(true)}
       />
       
       {/* Extra bottom padding for mobile nav */}
