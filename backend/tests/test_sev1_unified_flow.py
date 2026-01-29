@@ -209,9 +209,9 @@ class TestFitUnifiedFlow:
     
     def test_fit_request_creates_service_desk_ticket(self):
         """POST /api/fit/request should create service_desk_ticket"""
-        request_id = getattr(self.__class__, 'fit_request_id', None)
-        if not request_id:
-            pytest.skip("No fit request ID from previous test")
+        ticket_id = getattr(self.__class__, 'fit_ticket_id', None)
+        if not ticket_id:
+            pytest.skip("No fit ticket ID from previous test")
         
         # Check service_desk_tickets
         response = requests.get(f"{BASE_URL}/api/tickets")
@@ -219,9 +219,9 @@ class TestFitUnifiedFlow:
         
         data = response.json()
         tickets = data.get("tickets", [])
-        matching = [t for t in tickets if t.get("ticket_id") == request_id]
+        matching = [t for t in tickets if t.get("ticket_id") == ticket_id]
         
-        assert len(matching) > 0, f"No service desk ticket found for fit request {request_id}"
+        assert len(matching) > 0, f"No service desk ticket found for fit ticket {ticket_id}"
         
         ticket = matching[0]
         # Verify ticket has required fields
