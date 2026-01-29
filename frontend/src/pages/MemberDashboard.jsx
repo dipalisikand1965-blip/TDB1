@@ -2666,7 +2666,7 @@ const MemberDashboard = () => {
           <TabsContent value="pets">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-xl font-bold">My Pets</h3>
-              <Button onClick={() => window.location.href='/my-pets'}>Manage Pets</Button>
+              <Button onClick={() => navigate('/my-pets')}>Manage Pets</Button>
             </div>
             <div className="grid md:grid-cols-2 gap-6">
               {pets.map(pet => (
@@ -2711,14 +2711,14 @@ const MemberDashboard = () => {
                       variant="outline" 
                       size="sm" 
                       className="flex-1 text-green-700 border-green-200 hover:bg-green-50"
-                      onClick={() => window.location.href=`/pet-vault/${pet.id}`}
+                      onClick={() => navigate(`/pet-vault/${pet.id}`)}
                     >
                       <Stethoscope className="w-4 h-4 mr-1" /> Health Vault
                     </Button>
                     <Button 
                       size="sm" 
                       className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white"
-                      onClick={() => window.location.href=`/pet/${pet.id}`}
+                      onClick={() => navigate(`/pet/${pet.id}`)}
                     >
                       <Sparkles className="w-4 h-4 mr-1" /> Pet Soul
                     </Button>
@@ -2728,7 +2728,7 @@ const MemberDashboard = () => {
               
               <Card 
                 className="p-6 flex flex-col items-center justify-center border-dashed border-2 cursor-pointer hover:bg-gray-50 transition-colors min-h-[200px]"
-                onClick={() => window.location.href='/my-pets'}
+                onClick={() => navigate('/my-pets')}
               >
                 <div className="w-16 h-16 bg-purple-50 rounded-full flex items-center justify-center mb-4">
                   <PawPrint className="w-8 h-8 text-purple-400" />
