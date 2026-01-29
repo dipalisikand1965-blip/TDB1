@@ -333,8 +333,8 @@ async def create_care_request(request: CareRequestCreate):
             "profile_gaps": missing_fields,
             
             # Tracking
-            "created_at": datetime.now(timezone.utc).isoformat(),
-            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "created_at": get_utc_timestamp(),
+            "updated_at": get_utc_timestamp(),
             "typical_response_time": care_config["typical_response_time"],
             
             # Will be filled by concierge
@@ -392,13 +392,13 @@ async def create_care_request(request: CareRequestCreate):
                 "sender": "system",
                 "channel": "web",
                 "message": f"Care request created for {care_config['name']}",
-                "timestamp": datetime.now(timezone.utc).isoformat()
+                "timestamp": get_utc_timestamp()
             }],
-            "created_at": datetime.now(timezone.utc).isoformat(),
-            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "created_at": get_utc_timestamp(),
+            "updated_at": get_utc_timestamp(),
             "timeline": [{
                 "action": "created",
-                "timestamp": datetime.now(timezone.utc).isoformat(),
+                "timestamp": get_utc_timestamp(),
                 "details": f"Care request submitted via Care Pillar - {care_config['name']}"
             }]
         }
@@ -429,7 +429,7 @@ async def create_care_request(request: CareRequestCreate):
                 "breed": pet_breed
             },
             "link": f"/admin?tab=servicedesk&ticket={ticket_id}",
-            "created_at": datetime.now(timezone.utc).isoformat(),
+            "created_at": get_utc_timestamp(),
             "read_at": None
         })
         logger.info(f"[UNIFIED FLOW] Care request notification created: {notification_id}")
@@ -467,8 +467,8 @@ async def create_care_request(request: CareRequestCreate):
                 "priority": priority
             },
             "tags": ["care", request.care_type],
-            "created_at": datetime.now(timezone.utc).isoformat(),
-            "updated_at": datetime.now(timezone.utc).isoformat(),
+            "created_at": get_utc_timestamp(),
+            "updated_at": get_utc_timestamp(),
             "unified_flow_processed": True
         }
         await db.channel_intakes.insert_one(inbox_entry)
@@ -490,12 +490,12 @@ async def create_care_request(request: CareRequestCreate):
             
             # Track care history
             profile_updates[f"soul.care_history.{request.care_type}"] = {
-                "last_request": datetime.now(timezone.utc).isoformat(),
+                "last_request": get_utc_timestamp(),
                 "request_id": request_id
             }
             
             if profile_updates:
-                profile_updates["updated_at"] = datetime.now(timezone.utc).isoformat()
+                profile_updates["updated_at"] = get_utc_timestamp()
                 await db.pets.update_one(
                     {"id": request.pet_id},
                     {"$set": profile_updates}
@@ -578,7 +578,7 @@ async def update_care_request(request_id: str, update: CareRequestUpdate):
     db = get_db()
     logger = get_logger()
     
-    update_doc = {"updated_at": datetime.now(timezone.utc).isoformat()}
+    update_doc = {"updated_at": get_utc_timestamp()}
     
     if update.status:
         update_doc["status"] = update.status
@@ -623,7 +623,7 @@ async def update_care_request(request_id: str, update: CareRequestUpdate):
             {"ticket_id": request_id},
             {"$set": {
                 "status": ticket_status_map.get(update.status, "in_progress"),
-                "updated_at": datetime.now(timezone.utc).isoformat()
+                "updated_at": get_utc_timestamp()
             }}
         )
     
@@ -716,8 +716,8 @@ async def create_care_product(product: CareProductCreate):
         "id": product_id,
         **product.dict(),
         "category": "care",
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp(),
+        "updated_at": get_utc_timestamp()
     }
     
     await db.products.insert_one(product_doc)
@@ -734,7 +734,7 @@ async def update_care_product(product_id: str, product: CareProductCreate):
     
     update_doc = {
         **product.dict(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "updated_at": get_utc_timestamp()
     }
     
     result = await db.products.update_one(
@@ -825,8 +825,8 @@ async def import_care_products(products: List[Dict[str, Any]]):
                 "paw_reward_points": int(prod.get("paw_reward_points", 0)),
                 "is_birthday_perk": prod.get("is_birthday_perk", "false").lower() == "true" if isinstance(prod.get("is_birthday_perk"), str) else bool(prod.get("is_birthday_perk", False)),
                 "is_member_exclusive": prod.get("is_member_exclusive", "false").lower() == "true" if isinstance(prod.get("is_member_exclusive"), str) else bool(prod.get("is_member_exclusive", False)),
-                "created_at": datetime.now(timezone.utc).isoformat(),
-                "updated_at": datetime.now(timezone.utc).isoformat()
+                "created_at": get_utc_timestamp(),
+                "updated_at": get_utc_timestamp()
             }
             
             await db.products.update_one(
@@ -871,8 +871,8 @@ async def create_care_bundle(bundle: CareBundleCreate):
         "id": bundle_id,
         "bundle_type": "care",
         **bundle.dict(),
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp(),
+        "updated_at": get_utc_timestamp()
     }
     
     await db.product_bundles.insert_one(bundle_doc)
@@ -889,7 +889,7 @@ async def update_care_bundle(bundle_id: str, bundle: CareBundleCreate):
     
     update_doc = {
         **bundle.dict(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "updated_at": get_utc_timestamp()
     }
     
     result = await db.product_bundles.update_one(
@@ -972,8 +972,8 @@ async def import_care_bundles(bundles: List[Dict[str, Any]]):
                 "items": bnd.get("items", "").split(",") if isinstance(bnd.get("items"), str) else bnd.get("items", []),
                 "is_recommended": bnd.get("is_recommended", "true").lower() != "false" if isinstance(bnd.get("is_recommended"), str) else bool(bnd.get("is_recommended", True)),
                 "paw_reward_points": int(bnd.get("paw_reward_points", 0)),
-                "created_at": datetime.now(timezone.utc).isoformat(),
-                "updated_at": datetime.now(timezone.utc).isoformat()
+                "created_at": get_utc_timestamp(),
+                "updated_at": get_utc_timestamp()
             }
             
             await db.product_bundles.update_one(
@@ -1034,8 +1034,8 @@ async def create_care_partner(partner: CarePartnerCreate):
     partner_doc = {
         "id": partner_id,
         **partner.dict(),
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_utc_timestamp(),
+        "updated_at": get_utc_timestamp()
     }
     
     await db.care_partners.insert_one(partner_doc)
@@ -1052,7 +1052,7 @@ async def update_care_partner(partner_id: str, partner: CarePartnerCreate):
     
     update_doc = {
         **partner.dict(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "updated_at": get_utc_timestamp()
     }
     
     result = await db.care_partners.update_one(
@@ -1386,8 +1386,8 @@ async def seed_care_products():
     
     # Insert products
     for product in default_products:
-        product["created_at"] = datetime.now(timezone.utc).isoformat()
-        product["updated_at"] = datetime.now(timezone.utc).isoformat()
+        product["created_at"] = get_utc_timestamp()
+        product["updated_at"] = get_utc_timestamp()
         await db.products.update_one(
             {"id": product["id"]},
             {"$set": product},
@@ -1396,8 +1396,8 @@ async def seed_care_products():
     
     # Insert bundles
     for bundle in default_bundles:
-        bundle["created_at"] = datetime.now(timezone.utc).isoformat()
-        bundle["updated_at"] = datetime.now(timezone.utc).isoformat()
+        bundle["created_at"] = get_utc_timestamp()
+        bundle["updated_at"] = get_utc_timestamp()
         await db.product_bundles.update_one(
             {"id": bundle["id"]},
             {"$set": bundle},
@@ -1466,7 +1466,7 @@ async def update_care_settings(settings: Dict[str, Any]):
         {"$set": {
             "key": "care_settings",
             "value": settings,
-            "updated_at": datetime.now(timezone.utc).isoformat()
+            "updated_at": get_utc_timestamp()
         }},
         upsert=True
     )
