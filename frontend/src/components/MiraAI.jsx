@@ -179,7 +179,7 @@ const MiraAI = () => {
   
   // Hide MiraAI on admin/agent pages AND pillar pages (where MiraContextPanel is embedded)
   const hiddenPaths = ['/admin', '/agent', '/login', '/mira'];
-  const pillarPaths = ['/care', '/celebrate', '/advisory', '/dine', '/stay', '/travel', '/emergency', '/enjoy', '/fit', '/learn', '/farewell', '/adopt', '/paperwork'];
+  const pillarPaths = ['/care', '/celebrate', '/advisory', '/dine', '/stay', '/travel', '/emergency', '/enjoy', '/fit', '/learn', '/farewell', '/adopt', '/paperwork', '/shop', '/all'];
   
   const shouldHide = hiddenPaths.some(path => location.pathname.startsWith(path)) ||
                      pillarPaths.some(path => location.pathname === path || location.pathname.startsWith(path + '/'));
