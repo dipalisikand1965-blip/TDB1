@@ -1391,7 +1391,19 @@ const MemberDashboard = () => {
                     
                     <Button 
                       className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-md"
-                      onClick={() => window.location.href = `/pet/${primaryPet.id}`}
+                      onClick={() => {
+                        // GUARD: Prevent crash if petId is undefined
+                        if (primaryPet?.id) {
+                          navigate(`/pet/${primaryPet.id}`);
+                        } else {
+                          toast({
+                            title: "Unable to load pet profile",
+                            description: "Please try refreshing the page or select a pet first.",
+                            variant: "destructive"
+                          });
+                        }
+                      }}
+                      data-testid="continue-pet-journey-btn"
                     >
                       <Sparkles className="w-4 h-4 mr-2" />
                       Continue Building Soul
