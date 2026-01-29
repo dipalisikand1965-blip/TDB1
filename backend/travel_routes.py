@@ -615,7 +615,7 @@ async def update_travel_product(product_id: str, product: TravelProductCreate):
     
     update_doc = {
         **product.dict(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "updated_at": get_consistent_timestamp()
     }
     
     result = await db.products.update_one(
