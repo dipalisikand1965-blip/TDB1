@@ -422,6 +422,9 @@ async def load_pet_soul(pet_id: str) -> Dict:
     soul_data = pet.get("soul") or {}
     doggy_soul = pet.get("doggy_soul_answers") or {}
     
+    # Calculate soul score (use overall_score if available)
+    soul_score = pet.get("overall_score") or pet.get("soul_score") or 0
+    
     soul = {
         "id": pet.get("id"),
         "name": pet.get("name"),
@@ -444,11 +447,14 @@ async def load_pet_soul(pet_id: str) -> Dict:
         "travel_style": travel.get("preferred_mode") or doggy_soul.get("usual_travel"),
         "crate_trained": travel.get("crate_trained") or doggy_soul.get("crate_trained"),
         "persona": soul_data.get("persona"),
+        # Soul score
+        "soul_score": round(soul_score, 1),
+        "overall_score": round(soul_score, 1),
         # Doggy Soul answers (full)
         "soul_answers": doggy_soul
     }
     
-    return {k: v for k, v in soul.items() if v}  # Remove empty values
+    return {k: v for k, v in soul.items() if v is not None}  # Remove None values but keep 0
 
 def detect_pillar(message: str, current_pillar: str = None) -> str:
     """Detect which pillar the conversation belongs to"""
