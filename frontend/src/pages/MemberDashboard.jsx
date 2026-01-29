@@ -480,6 +480,31 @@ const MemberDashboard = () => {
     fetchMyRequests();
   }, [token, user, API_URL]);
 
+  // Fetch Paw Points History
+  const fetchPawPointsHistory = async () => {
+    if (!token || !user) return;
+    
+    setPawPointsLoading(true);
+    try {
+      const response = await axios.get(`${API_URL}/api/paw-points/history?limit=100`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setPawPointsHistory(response.data.transactions || []);
+    } catch (error) {
+      console.error('Failed to fetch paw points history:', error);
+      toast({ title: 'Error', description: 'Failed to load points history', variant: 'destructive' });
+    } finally {
+      setPawPointsLoading(false);
+    }
+  };
+
+  // Load paw points history when modal opens
+  useEffect(() => {
+    if (showPawPointsBreakdown && pawPointsHistory.length === 0) {
+      fetchPawPointsHistory();
+    }
+  }, [showPawPointsBreakdown]);
+
   // Extract unique addresses from orders
   const savedAddresses = orders
     .map(o => o.delivery)
