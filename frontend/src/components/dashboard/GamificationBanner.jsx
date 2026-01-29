@@ -11,7 +11,7 @@ import {
   ArrowRight, Sparkles, Trophy, CheckCircle2, Users, TrendingUp 
 } from 'lucide-react';
 import { getPetPhotoUrl } from '../../utils/petAvatar';
-import { ACHIEVEMENTS, TIER_COLORS } from './AchievementSystem';
+import { ACHIEVEMENTS, TIER_COLORS, RARITY_COLORS } from './AchievementSystem';
 
 const GamificationBanner = ({ pets, orders, user, onNavigateToPet, onOpenExplainer }) => {
   const safePets = Array.isArray(pets) ? pets : [];
