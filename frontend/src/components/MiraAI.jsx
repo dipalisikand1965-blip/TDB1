@@ -583,10 +583,16 @@ const MiraAI = () => {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
         content: data.response || "I'm sorry, I couldn't process that. Please try again.",
-        researchMode: data.research_mode
+        researchMode: data.research_mode,
+        products: data.products || null // Product cards if backend returns them
       };
 
       setMessages(prev => [...prev, assistantMessage]);
+      
+      // Speak the response if voice is enabled
+      if (voiceEnabled && data.response) {
+        speakText(data.response);
+      }
       
       // Update quick prompts if provided
       if (data.quick_prompts) {
