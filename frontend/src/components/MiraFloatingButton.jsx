@@ -1,19 +1,29 @@
 /**
- * MiraFloatingButton - Global floating button for Mira voice assistant
- * Appears on ALL pages, prominently on top
+ * MiraFloatingButton - Global floating button for Mira guidance layer
  * 
- * Features:
- * - Always visible in top-right corner
- * - Animated pulse effect
- * - Opens Mira chat/voice assistant
- * - Responsive design
+ * CORE RULES:
+ * - Persistent presence (always visible)
+ * - Passive by default
+ * - Text-first interaction
+ * - Voice only when explicitly triggered
+ * 
+ * Activation methods:
+ * - User taps Mira icon
+ * - User taps mic explicitly
+ * - Auto-show (NOT auto-speak) in Care/Emergency/Farewell
  */
 
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Sparkles, MessageCircle, X, Mic } from 'lucide-react';
+import { Sparkles, MessageCircle, X, Mic, Phone } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import MiraVoiceAssistant from './MiraVoiceAssistant';
+
+// Pillars where Mira should auto-show (NOT auto-speak)
+const AUTO_SHOW_PILLARS = ['/care', '/emergency', '/farewell'];
+
+// Pillars where Mira must NEVER auto-speak
+const NO_AUTO_SPEAK = ['/', '/shop', '/checkout', '/celebrate', '/dine', '/stay', '/travel'];
 
 const MiraFloatingButton = () => {
   const location = useLocation();
@@ -22,11 +32,30 @@ const MiraFloatingButton = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [petData, setPetData] = useState(null);
   const [showTooltip, setShowTooltip] = useState(true);
+  const [voicePreference, setVoicePreference] = useState('text'); // 'text' or 'voice'
+  const [hasAskedPreference, setHasAskedPreference] = useState(false);
+  
+  // Check for Care/Emergency/Farewell pillars - auto-show (not auto-speak)
+  useEffect(() => {
+    const isCarePillar = AUTO_SHOW_PILLARS.some(p => location.pathname.startsWith(p));
+    if (isCarePillar && !isOpen) {
+      // Auto-show but DON'T auto-speak
+      setShowTooltip(true);
+    }
+  }, [location.pathname, isOpen]);
   
   // Hide tooltip after 5 seconds
   useEffect(() => {
     const timer = setTimeout(() => setShowTooltip(false), 5000);
     return () => clearTimeout(timer);
+  }, []);
+  
+  // Load voice preference from localStorage
+  useEffect(() => {
+    const savedPref = localStorage.getItem('mira_voice_preference');
+    const asked = localStorage.getItem('mira_asked_preference');
+    if (savedPref) setVoicePreference(savedPref);
+    if (asked) setHasAskedPreference(true);
   }, []);
   
   // Fetch user's pet data for personalization
