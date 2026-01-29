@@ -29,8 +29,9 @@ const PULSE_VOICE_CONFIG = {
   volume: 0.9
 };
 
-// Pulse opening - brief, action-oriented
-const PULSE_OPENING = "Hey! I'm Pulse. Speak or type - I'll get you to Mira fast.";
+// Pulse opening - personalized with pet name (set dynamically)
+// Default fallback if no pet name available
+const PULSE_OPENING_DEFAULT = "Speak or type. Pulse gets things moving.";
 
 // Max voice response time in seconds
 const MAX_VOICE_SECONDS = 8; // Shorter than Mira - Pulse is quick
