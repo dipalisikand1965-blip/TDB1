@@ -44,7 +44,8 @@ const QuickScoreBoost = ({ pet, onAnswerQuestion }) => {
   }, [pet?.id]);
   
   const handleQuickAnswer = async (questionId, answer) => {
-    const token = localStorage.getItem('token');
+    // Try both token keys for compatibility
+    const token = localStorage.getItem('tdb_auth_token') || localStorage.getItem('token');
     if (!token) {
       console.error('No auth token found');
       toast({
