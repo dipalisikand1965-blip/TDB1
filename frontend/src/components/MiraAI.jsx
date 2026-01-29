@@ -643,27 +643,28 @@ const MiraAI = () => {
       {/* Header - Modern gradient theme */}
       <div className="bg-gradient-to-r from-purple-600 via-pink-600 to-rose-500 text-white p-4 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+          <div className={`w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center ${isListening ? 'animate-pulse ring-2 ring-cyan-400' : ''}`}>
             <Sparkles className="w-5 h-5 text-yellow-300" />
           </div>
           <div>
             <h3 className="font-bold tracking-wide">Mira</h3>
-            <p className="text-xs text-white/80">Your Pet Concierge</p>
+            <p className="text-xs text-white/80">
+              {isListening ? '🎤 Listening...' : isSpeaking ? '🔊 Speaking...' : 'Your Pet Concierge'}
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-1">
-          {/* Pulse Voice Mode Button */}
+          {/* Voice Toggle Button */}
           <button
-            className="text-white hover:bg-white/20 h-9 px-3 rounded-full flex items-center justify-center gap-1.5 transition-colors bg-white/10 border border-white/20"
+            className={`h-9 w-9 rounded-full flex items-center justify-center transition-colors ${voiceEnabled ? 'bg-cyan-500/80 text-white' : 'bg-white/10 text-white/50'}`}
             onClick={() => {
-              setIsOpen(false);
-              window.dispatchEvent(new CustomEvent('openPulse', { detail: { startWithVoice: true } }));
+              setVoiceEnabled(!voiceEnabled);
+              if (isSpeaking && synthRef.current) synthRef.current.cancel();
             }}
-            title="Switch to Pulse Voice"
-            data-testid="mira-pulse-btn"
+            title={voiceEnabled ? "Voice responses ON" : "Voice responses OFF"}
+            data-testid="mira-voice-toggle"
           >
-            <Mic className="w-3.5 h-3.5 text-cyan-300" />
-            <span className="text-xs font-medium">Pulse</span>
+            {voiceEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
           </button>
           {/* New Conversation Button */}
           <button
