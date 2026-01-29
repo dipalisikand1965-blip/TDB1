@@ -50,8 +50,8 @@ class TestTravelUnifiedFlow:
         self.__class__.travel_request_id = request_id
         self.__class__.test_pet_name = payload["pet_name"]
         
-        # Verify notification was created
-        notif_response = requests.get(f"{BASE_URL}/api/admin/notifications")
+        # Verify notification was created (requires auth)
+        notif_response = requests.get(f"{BASE_URL}/api/admin/notifications", auth=("aditya", "lola4304"))
         if notif_response.status_code == 200:
             notifications = notif_response.json().get("notifications", [])
             matching = [n for n in notifications if n.get("ticket_id") == request_id]
@@ -186,8 +186,8 @@ class TestFitUnifiedFlow:
         self.__class__.fit_request_id = request_id
         self.__class__.test_pet_name = payload["pet_name"]
         
-        # Verify notification was created
-        notif_response = requests.get(f"{BASE_URL}/api/admin/notifications")
+        # Verify notification was created (requires auth)
+        notif_response = requests.get(f"{BASE_URL}/api/admin/notifications", auth=("aditya", "lola4304"))
         if notif_response.status_code == 200:
             notifications = notif_response.json().get("notifications", [])
             matching = [n for n in notifications if n.get("ticket_id") == request_id]
