@@ -181,23 +181,30 @@ const NotificationBell = ({ credentials, onNavigate }) => {
   const hasNewMemberNotification = notifications.some(
     n => !n.read && (n.category === 'member' || n.type === 'new_member')
   );
+  
+  // Check if there are any urgent/new notifications (within last 5 minutes)
+  const hasRecentNotification = notifications.some(
+    n => !n.read && (new Date() - new Date(n.created_at)) < 5 * 60 * 1000
+  );
 
   return (
     <div className="relative">
-      {/* Bell Button - Buzzes for new members */}
+      {/* Bell Button - Pulses for recent notifications */}
       <Button
         variant="ghost"
         size="icon"
-        className={`relative ${hasNewMemberNotification ? 'animate-bounce' : ''}`}
+        className={`relative ${hasNewMemberNotification ? 'animate-bounce' : hasRecentNotification ? 'animate-pulse' : ''}`}
         onClick={() => setIsOpen(!isOpen)}
         data-testid="notification-bell"
       >
         <Bell className={`w-5 h-5 transition-all ${
           hasNewMemberNotification 
             ? 'text-purple-600 animate-wiggle' 
-            : unreadCount > 0 
-              ? 'text-orange-500' 
-              : 'text-gray-600'
+            : hasRecentNotification
+              ? 'text-red-500'
+              : unreadCount > 0 
+                ? 'text-orange-500' 
+                : 'text-gray-600'
         }`} />
         {unreadCount > 0 && (
           <span className={`absolute -top-1 -right-1 w-5 h-5 text-white text-xs font-bold rounded-full flex items-center justify-center ${
