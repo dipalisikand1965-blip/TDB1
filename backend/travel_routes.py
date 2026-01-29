@@ -915,8 +915,8 @@ async def create_travel_partner(partner: TravelPartnerCreate):
     partner_doc = {
         "id": partner_id,
         **partner.dict(),
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "created_at": get_consistent_timestamp(),
+        "updated_at": get_consistent_timestamp()
     }
     
     await db.travel_partners.insert_one(partner_doc)
