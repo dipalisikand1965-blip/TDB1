@@ -362,7 +362,7 @@ async def create_travel_request(request: TravelRequestCreate):
             
             if profile_updates:
                 profile_updates["soul.last_travel_request"] = request.travel_date
-                profile_updates["updated_at"] = datetime.now(timezone.utc).isoformat()
+                profile_updates["updated_at"] = get_consistent_timestamp()
                 await db.pets.update_one(
                     {"id": request.pet_id},
                     {"$set": profile_updates}
