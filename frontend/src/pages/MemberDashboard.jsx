@@ -52,6 +52,8 @@ import MiraDailyTip, { MiraDailyTipInline } from '../components/MiraDailyTip';
 import Pulse, { PulseButton } from '../components/Pulse';
 // Push Notification Banner
 import PushNotificationBanner from '../components/PushNotificationBanner';
+// Mobile Navigation Bar
+import MobileNavBar from '../components/MobileNavBar';
 
 
 // Extracted components: ACHIEVEMENTS, TIER_COLORS, triggerCelebration, QuickScoreBoost, GamificationBanner
