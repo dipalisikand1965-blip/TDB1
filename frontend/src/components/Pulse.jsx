@@ -867,8 +867,62 @@ const Pulse = ({
     setInputText('');
     setIsProcessing(true);
     
+    // PULSE INTENT MATCHING - Local command processing FIRST for instant responses
+    // This enables fast navigation and personalized responses without API latency
+    const command = findCommand(text);
+    
+    if (command) {
+      // Found a matching command - use Pulse's fast local processing
+      const commandData = { 
+        soulScore: petData?.overall_score || 0,
+        breed: petData?.breed,
+        age: petData?.age,
+        nextVaccination: petData?.next_vaccination
+      };
+      
+      const pulseResponse = typeof command.response === 'function' 
+        ? command.response(petName, commandData)
+        : command.response;
+      
+      addPulseMessage(pulseResponse);
+      
+      // Handle navigation actions
+      if (command.action === 'navigate' && command.path && onNavigate) {
+        const finalPath = command.path.replace('{petId}', petId || '');
+        setTimeout(() => {
+          onNavigate(finalPath);
+          onClose();
+        }, 1500);
+      }
+      
+      // For health escalations, also notify backend
+      if (command.escalation) {
+        try {
+          await fetch(`${API_URL}/api/mira/chat`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              ...(localStorage.getItem('token') && { 'Authorization': `Bearer ${localStorage.getItem('token')}` })
+            },
+            body: JSON.stringify({
+              message: `[ESCALATION] ${text}`,
+              session_id: sessionIdRef.current,
+              current_pillar: currentPillar,
+              selected_pet_id: petId,
+              source: 'pulse_escalation'
+            })
+          });
+        } catch (err) {
+          console.log('Escalation notification failed:', err);
+        }
+      }
+      
+      setIsProcessing(false);
+      return;
+    }
+    
+    // No local command match - fall back to Mira API for conversational/complex queries
     try {
-      // Call Mira backend API - Pulse captures, Mira reasons
       const response = await fetch(`${API_URL}/api/mira/chat`, {
         method: 'POST',
         headers: {
@@ -880,13 +934,12 @@ const Pulse = ({
           session_id: sessionIdRef.current,
           current_pillar: currentPillar,
           selected_pet_id: petId,
-          source: 'pulse_voice'  // Mark as coming from Pulse
+          source: 'pulse_voice'
         })
       });
       
       if (response.ok) {
         const data = await response.json();
-        // Mira's response from backend - Pulse hands off to Mira
         const miraResponse = data.response || data.message || getFallbackResponse(petName);
         addPulseMessage(`🧠 Mira says: ${miraResponse}`);
         
@@ -898,28 +951,11 @@ const Pulse = ({
           }, 2000);
         }
       } else {
-        // Fallback to local processing if API fails
-        const command = findCommand(text);
-        const fallbackResponse = command 
-          ? command.response(petName, { soulScore: petData?.overall_score || 0 })
-          : getFallbackResponse(petName);
-        addPulseMessage(fallbackResponse);
-        
-        if (command?.action === 'navigate' && command.path && onNavigate) {
-          setTimeout(() => {
-            onNavigate(command.path.replace('{petId}', petId || ''));
-            onClose();
-          }, 2000);
-        }
+        addPulseMessage(getFallbackResponse(petName));
       }
     } catch (err) {
       console.error('Pulse → Mira error:', err);
-      // Fallback to local processing
-      const command = findCommand(text);
-      const fallbackResponse = command 
-        ? command.response(petName, { soulScore: petData?.overall_score || 0 })
-        : getFallbackResponse(petName);
-      addPulseMessage(fallbackResponse);
+      addPulseMessage(getFallbackResponse(petName));
     }
     
     setIsProcessing(false);
