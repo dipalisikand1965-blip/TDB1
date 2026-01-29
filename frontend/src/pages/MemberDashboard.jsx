@@ -844,10 +844,14 @@ const MemberDashboard = () => {
                     <p className="text-white text-lg font-bold">{Math.min(100, Math.round(primaryPet.overall_score || 0))}%</p>
                     <p className="text-white/60 text-xs">Pet Soul</p>
                   </div>
-                  <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 text-center">
+                  <div 
+                    className="bg-white/10 backdrop-blur-sm rounded-xl p-3 text-center cursor-pointer hover:bg-white/20 transition-colors"
+                    onClick={() => setShowPawPointsBreakdown(true)}
+                    data-testid="paw-points-card"
+                  >
                     <Gift className="w-5 h-5 mx-auto text-pink-400 mb-1" />
                     <p className="text-white text-lg font-bold">{user.loyalty_points || 0}</p>
-                    <p className="text-white/60 text-xs">Paw Points</p>
+                    <p className="text-white/60 text-xs">Paw Points <ChevronRight className="w-3 h-3 inline" /></p>
                   </div>
                   <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 text-center">
                     <Calendar className="w-5 h-5 mx-auto text-blue-400 mb-1" />
