@@ -867,12 +867,28 @@ const Pulse = ({
     setInputText('');
     setIsProcessing(true);
     
-    // PULSE INTENT MATCHING - Local command processing FIRST for instant responses
-    // This enables fast navigation and personalized responses without API latency
+    // ALWAYS create a ticket in the service desk via Mira API
+    // This ensures unified inbox visibility for ALL interactions
+    const createTicketPromise = fetch(`${API_URL}/api/mira/chat`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(localStorage.getItem('token') && { 'Authorization': `Bearer ${localStorage.getItem('token')}` })
+      },
+      body: JSON.stringify({
+        message: text,
+        session_id: sessionIdRef.current,
+        current_pillar: currentPillar,
+        selected_pet_id: petId,
+        source: 'pulse_voice'
+      })
+    }).catch(err => console.log('Ticket creation background:', err));
+    
+    // PULSE INTENT MATCHING - Fast local processing for instant responses
     const command = findCommand(text);
     
     if (command) {
-      // Found a matching command - use Pulse's fast local processing
+      // Found a matching command - use Pulse's fast local processing for instant UX
       const commandData = { 
         soulScore: petData?.overall_score || 0,
         breed: petData?.breed,
@@ -895,50 +911,17 @@ const Pulse = ({
         }, 1500);
       }
       
-      // For health escalations, also notify backend
-      if (command.escalation) {
-        try {
-          await fetch(`${API_URL}/api/mira/chat`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              ...(localStorage.getItem('token') && { 'Authorization': `Bearer ${localStorage.getItem('token')}` })
-            },
-            body: JSON.stringify({
-              message: `[ESCALATION] ${text}`,
-              session_id: sessionIdRef.current,
-              current_pillar: currentPillar,
-              selected_pet_id: petId,
-              source: 'pulse_escalation'
-            })
-          });
-        } catch (err) {
-          console.log('Escalation notification failed:', err);
-        }
-      }
-      
+      // Ensure ticket is created before finishing
+      await createTicketPromise;
       setIsProcessing(false);
       return;
     }
     
-    // No local command match - fall back to Mira API for conversational/complex queries
+    // No local command match - use Mira API response for conversational/complex queries
     try {
-      const response = await fetch(`${API_URL}/api/mira/chat`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(localStorage.getItem('token') && { 'Authorization': `Bearer ${localStorage.getItem('token')}` })
-        },
-        body: JSON.stringify({
-          message: text,
-          session_id: sessionIdRef.current,
-          current_pillar: currentPillar,
-          selected_pet_id: petId,
-          source: 'pulse_voice'
-        })
-      });
+      const response = await createTicketPromise;
       
-      if (response.ok) {
+      if (response && response.ok) {
         const data = await response.json();
         const miraResponse = data.response || data.message || getFallbackResponse(petName);
         addPulseMessage(`🧠 Mira says: ${miraResponse}`);
