@@ -139,7 +139,7 @@ const COMMAND_PATTERNS = [
   {
     patterns: ['groom', 'grooming', 'haircut', 'bath', 'spa', 'fur', 'coat', 'trim'],
     intent: 'book_grooming',
-    response: (petName) => `A grooming session for ${petName}! Let me show you our trusted grooming partners.`,
+    response: (petName) => `A grooming session for ${petName}! ${petName} is going to look so beautiful. Let me show you our trusted grooming partners.`,
     action: 'navigate',
     path: '/care?type=grooming'
   },
