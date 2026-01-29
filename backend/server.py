@@ -7609,6 +7609,106 @@ async def save_pet_soul_answer(pet_id: str, answer_data: dict, current_user: dic
     }
 
 
+# Alias endpoints to match frontend expectations
+@api_router.get("/pet-soul/profile/{pet_id}")
+async def get_pet_soul_profile(pet_id: str, current_user: dict = Depends(get_current_user_optional)):
+    """Get Pet Soul profile data - alias for frontend compatibility"""
+    pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    soul_answers = pet.get("doggy_soul_answers", {})
+    score_data = calculate_pet_soul_score(soul_answers)
+    
+    return {
+        "pet": pet,
+        "soul_answers": soul_answers,
+        "scores": {
+            "overall": score_data["total_score"],
+            "tier": score_data.get("tier", {}).get("key", "newcomer"),
+            "answered_count": score_data["answered_count"],
+            "categories": score_data.get("category_scores", {})
+        },
+        "next_question": None  # Frontend will handle question selection
+    }
+
+
+@api_router.post("/pet-soul/profile/{pet_id}/answer")
+async def save_pet_soul_answer_alias(pet_id: str, answer_data: dict, current_user: dict = Depends(get_current_user_optional)):
+    """Save Pet Soul answer - alias endpoint for frontend compatibility"""
+    pet = await db.pets.find_one({"id": pet_id})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    question_id = answer_data.get("question_id")
+    answer = answer_data.get("answer")
+    
+    if not question_id or answer is None:
+        raise HTTPException(status_code=400, detail="question_id and answer are required")
+    
+    # Get current soul answers or initialize
+    soul_answers = pet.get("doggy_soul_answers", {})
+    soul_answers[question_id] = answer
+    
+    # Recalculate score
+    score_data = calculate_pet_soul_score(soul_answers)
+    new_score = score_data["total_score"]
+    score_tier = score_data["tier"]["key"] if score_data.get("tier") else "newcomer"
+    
+    # Update pet
+    await db.pets.update_one(
+        {"id": pet_id},
+        {"$set": {
+            "doggy_soul_answers": soul_answers,
+            "overall_score": new_score,
+            "score_tier": score_tier,
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    logger.info(f"Soul answer saved for pet {pet_id}: {question_id} = {answer}, new score: {new_score}")
+    
+    return {
+        "message": "Answer saved",
+        "question_id": question_id,
+        "answer": answer,
+        "scores": {
+            "overall": new_score,
+            "tier": score_tier,
+            "answered_count": score_data["answered_count"]
+        },
+        "next_question": None  # Frontend handles question flow
+    }
+
+
+@api_router.post("/pet-soul/profile/{pet_id}/identity")
+async def update_pet_identity_alias(pet_id: str, identity_data: dict, current_user: dict = Depends(get_current_user_optional)):
+    """Update pet identity data - alias endpoint"""
+    pet = await db.pets.find_one({"id": pet_id})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    update_fields = {}
+    if "name" in identity_data:
+        update_fields["name"] = identity_data["name"]
+    if "breed" in identity_data:
+        update_fields["breed"] = identity_data["breed"]
+    if "gender" in identity_data:
+        update_fields["gender"] = identity_data["gender"]
+    if "birth_date" in identity_data:
+        update_fields["birth_date"] = identity_data["birth_date"]
+    if "gotcha_date" in identity_data:
+        update_fields["gotcha_date"] = identity_data["gotcha_date"]
+    
+    if update_fields:
+        update_fields["updated_at"] = datetime.now(timezone.utc).isoformat()
+        await db.pets.update_one({"id": pet_id}, {"$set": update_fields})
+    
+    return {"message": "Identity updated", "updated_fields": list(update_fields.keys())}
+
+
+
+
 @api_router.patch("/pets/{pet_id}/soul-answers")
 async def patch_pet_soul_answers(pet_id: str, answers: dict):
     """PATCH endpoint to update multiple soul answers at once (used by UnifiedPetPage inline editing)"""
