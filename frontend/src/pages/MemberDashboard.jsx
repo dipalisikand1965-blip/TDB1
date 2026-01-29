@@ -1056,6 +1056,52 @@ const MemberDashboard = () => {
               <MiraDailyTipInline petName={primaryPet?.name || 'your pup'} />
             </div>
             
+            {/* 📋 MY ACTIVE REQUESTS - Quick view of Mira tickets */}
+            {myRequests.length > 0 && (
+              <div className="mb-6">
+                <Card className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="font-semibold text-gray-900 flex items-center gap-2">
+                      <MessageCircle className="w-4 h-4 text-purple-600" />
+                      Active Requests
+                      <Badge variant="secondary" className="text-xs">{myRequests.length}</Badge>
+                    </h4>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="text-purple-600 hover:text-purple-700"
+                      onClick={() => document.querySelector('[value="requests"]')?.click()}
+                    >
+                      View All <ChevronRight className="w-4 h-4 ml-1" />
+                    </Button>
+                  </div>
+                  <div className="space-y-2">
+                    {myRequests.slice(0, 2).map((req) => (
+                      <div key={req.id} className="flex items-center justify-between bg-white rounded-lg p-3 border">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-mono text-gray-500">#{req.id}</span>
+                            <Badge 
+                              variant="outline" 
+                              className={`text-xs ${
+                                req.status_display?.color === 'green' ? 'bg-green-50 text-green-700' :
+                                req.status_display?.color === 'yellow' ? 'bg-yellow-50 text-yellow-700' :
+                                req.status_display?.color === 'blue' ? 'bg-blue-50 text-blue-700' :
+                                'bg-gray-50 text-gray-700'
+                              }`}
+                            >
+                              {req.status_display?.icon} {req.status_display?.label}
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-gray-600 truncate mt-1">{req.description}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </Card>
+              </div>
+            )}
+            
             {/* 📹 EXPLAINER VIDEO TAB - Quick access to Pet Soul explainer */}
             <div className="mb-6">
               <button
