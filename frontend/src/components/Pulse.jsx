@@ -654,6 +654,7 @@ const Pulse = ({
   const [useElevenLabs, setUseElevenLabs] = useState(true);
   const [hasShownOpening, setHasShownOpening] = useState(false);
   const [memories, setMemories] = useState([]);
+  const [lastSuggestedPath, setLastSuggestedPath] = useState(null);
   
   const recognitionRef = useRef(null);
   const synthRef = useRef(typeof window !== 'undefined' ? window.speechSynthesis : null);
