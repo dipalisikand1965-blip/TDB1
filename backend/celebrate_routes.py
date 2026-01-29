@@ -164,25 +164,128 @@ async def get_celebrate_partners(city: Optional[str] = None):
 
 @router.post("/requests")
 async def create_celebrate_request(request: CelebrateRequestCreate):
-    """Create a celebrate request (custom cake, bulk order, etc.)"""
+    """Create a celebrate request (custom cake, bulk order, etc.)
+    
+    UNIFIED FLOW: Every request creates Notification → Ticket → Inbox
+    """
     db = get_db()
     logger = get_logger()
+    from timestamp_utils import get_utc_timestamp
     
     request_id = f"cel-req-{uuid.uuid4().hex[:8]}"
-    now = datetime.now(timezone.utc)
+    notification_id = f"NOTIF-{uuid.uuid4().hex[:8].upper()}"
+    ticket_id = f"TKT-CEL-{uuid.uuid4().hex[:8].upper()}"
+    inbox_id = f"INBOX-{uuid.uuid4().hex[:8].upper()}"
+    now_iso = get_utc_timestamp()
+    
+    user_name = request.user_name or request.customer_name or "Guest"
+    pet_name = request.pet_name or "Pet"
+    request_type = request.request_type or "custom_order"
     
     request_doc = {
         "id": request_id,
         "pillar": "celebrate",
+        "notification_id": notification_id,
+        "ticket_id": ticket_id,
+        "inbox_id": inbox_id,
         **request.dict(),
         "status": "submitted",
         "priority": "normal",
-        "created_at": now,
-        "updated_at": now,
-        "timeline": [{"status": "submitted", "timestamp": now.isoformat(), "note": "Request submitted"}]
+        "created_at": now_iso,
+        "updated_at": now_iso,
+        "unified_flow_processed": True,
+        "timeline": [{"status": "submitted", "timestamp": now_iso, "note": "Request submitted"}]
     }
     
     await db.celebrate_requests.insert_one(request_doc)
+    
+    # ==================== STEP 1: NOTIFICATION (MANDATORY) ====================
+    await db.admin_notifications.insert_one({
+        "id": notification_id,
+        "type": f"celebrate_{request_type}",
+        "pillar": "celebrate",
+        "title": f"Celebrate Request: {request_type.replace('_', ' ').title()} - {pet_name}",
+        "message": f"{user_name} submitted a {request_type.replace('_', ' ')} request for {pet_name}",
+        "read": False,
+        "status": "unread",
+        "urgency": "medium",
+        "ticket_id": ticket_id,
+        "inbox_id": inbox_id,
+        "customer": {
+            "name": user_name,
+            "email": getattr(request, 'user_email', None) or getattr(request, 'customer_email', None),
+            "phone": getattr(request, 'user_phone', None) or getattr(request, 'customer_phone', None)
+        },
+        "pet": {"name": pet_name},
+        "link": f"/admin?tab=servicedesk&ticket={ticket_id}",
+        "created_at": now_iso,
+        "read_at": None
+    })
+    logger.info(f"[UNIFIED FLOW] Celebrate notification created: {notification_id}")
+    
+    # ==================== STEP 2: SERVICE DESK TICKET (MANDATORY) ====================
+    ticket_doc = {
+        "id": ticket_id,
+        "ticket_id": ticket_id,
+        "notification_id": notification_id,
+        "inbox_id": inbox_id,
+        "source": "celebrate_pillar",
+        "source_id": request_id,
+        "pillar": "celebrate",
+        "category": "celebrate",
+        "subcategory": request_type,
+        "subject": f"Celebrate Request: {request_type.replace('_', ' ').title()} for {pet_name}",
+        "description": f"New celebrate request from {user_name} for {pet_name}",
+        "status": "new",
+        "priority": 3,
+        "urgency": "medium",
+        "member": {
+            "name": user_name,
+            "email": getattr(request, 'user_email', None) or getattr(request, 'customer_email', None),
+            "phone": getattr(request, 'user_phone', None) or getattr(request, 'customer_phone', None)
+        },
+        "pet": {"name": pet_name},
+        "created_at": now_iso,
+        "updated_at": now_iso,
+        "tags": ["celebrate", request_type, "unified-flow"],
+        "unified_flow_processed": True
+    }
+    await db.service_desk_tickets.insert_one({k: v for k, v in ticket_doc.items() if k != "_id"})
+    await db.tickets.insert_one({k: v for k, v in ticket_doc.items() if k != "_id"})
+    logger.info(f"[UNIFIED FLOW] Celebrate ticket created: {ticket_id}")
+    
+    # ==================== STEP 3: UNIFIED INBOX (MANDATORY) ====================
+    inbox_entry = {
+        "id": inbox_id,
+        "request_id": request_id,
+        "ticket_id": ticket_id,
+        "notification_id": notification_id,
+        "channel": "web",
+        "request_type": request_type,
+        "pillar": "celebrate",
+        "category": request_type,
+        "status": "new",
+        "urgency": "medium",
+        "customer_name": user_name,
+        "customer_email": getattr(request, 'user_email', None) or getattr(request, 'customer_email', None),
+        "customer_phone": getattr(request, 'user_phone', None) or getattr(request, 'customer_phone', None),
+        "member": {
+            "name": user_name,
+            "email": getattr(request, 'user_email', None) or getattr(request, 'customer_email', None),
+            "phone": getattr(request, 'user_phone', None) or getattr(request, 'customer_phone', None)
+        },
+        "pet": {"name": pet_name},
+        "preview": f"Celebrate: {request_type.replace('_', ' ').title()} - {pet_name}",
+        "message": f"{request_type.replace('_', ' ').title()} request for {pet_name}",
+        "tags": ["celebrate", request_type],
+        "created_at": now_iso,
+        "updated_at": now_iso,
+        "unified_flow_processed": True
+    }
+    await db.channel_intakes.insert_one({k: v for k, v in inbox_entry.items() if k != "_id"})
+    logger.info(f"[UNIFIED FLOW] Celebrate inbox created: {inbox_id}")
+    
+    logger.info(f"[UNIFIED FLOW] COMPLETE: Celebrate {request_id} | Notification({notification_id}) → Ticket({ticket_id}) → Inbox({inbox_id})")
     
     # Get settings for auto-acknowledge
     settings = await db.celebrate_settings.find_one({"type": "general"})
@@ -190,7 +293,7 @@ async def create_celebrate_request(request: CelebrateRequestCreate):
         request_doc["status"] = "acknowledged"
         request_doc["timeline"].append({
             "status": "acknowledged",
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": now_iso,
             "note": "Auto-acknowledged"
         })
         await db.celebrate_requests.update_one(
@@ -198,9 +301,13 @@ async def create_celebrate_request(request: CelebrateRequestCreate):
             {"$set": {"status": "acknowledged", "timeline": request_doc["timeline"]}}
         )
     
-    logger.info(f"Celebrate request created: {request_id}")
-    
-    return {"message": "Request submitted", "request_id": request_id}
+    return {
+        "message": "Request submitted",
+        "request_id": request_id,
+        "ticket_id": ticket_id,
+        "notification_id": notification_id,
+        "inbox_id": inbox_id
+    }
 
 @router.get("/requests")
 async def get_celebrate_requests(status: Optional[str] = None, limit: int = 100):
