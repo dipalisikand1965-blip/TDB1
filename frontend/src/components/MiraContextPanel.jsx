@@ -463,6 +463,86 @@ const MiraContextPanel = ({
     }
   };
   
+  // Send message directly (for quick prompts and suggestions)
+  const sendDirectMessage = async (message) => {
+    if (!message.trim() || isSending) return;
+    
+    setShowChat(true);
+    
+    const userMessage = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: message.trim()
+    };
+    
+    setChatMessages(prev => [...prev, userMessage]);
+    setInputValue('');
+    setIsSending(true);
+    
+    try {
+      const response = await fetch(`${getApiUrl()}/api/mira/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        },
+        body: JSON.stringify({
+          message: message.trim(),
+          session_id: sessionId,
+          source: 'pillar_panel',
+          current_pillar: pillar,
+          selected_pet_id: context?.selected_pet?.id || null,
+          history: chatMessages.filter(m => m.id !== 'welcome').map(m => ({
+            role: m.role,
+            content: m.content
+          }))
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        let displayContent = data.response;
+        
+        if (data.service_desk_ticket_id || data.concierge_action?.action_needed) {
+          const ticketId = data.service_desk_ticket_id || data.ticket_id;
+          displayContent += `\n\n---\n📋 **Request #${ticketId}** created. Our live concierge will get back to you shortly!`;
+        }
+        
+        const assistantMessage = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: displayContent,
+          products: data.products
+        };
+        
+        setChatMessages(prev => [...prev, assistantMessage]);
+        
+        if (voiceEnabled && data.response) {
+          speakText(data.response);
+        }
+        
+        if (data.quick_prompts) {
+          setQuickPrompts(data.quick_prompts);
+        }
+      } else {
+        setChatMessages(prev => [...prev, {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: "I apologise — something went wrong. Please try again."
+        }]);
+      }
+    } catch (error) {
+      console.error('[MiraPanel] Direct message error:', error);
+      setChatMessages(prev => [...prev, {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: "I apologise — something went wrong. Please try again."
+      }]);
+    } finally {
+      setIsSending(false);
+    }
+  };
+  
   // Handle product add to cart
   const handleAddToCart = (product) => {
     addToCart({
