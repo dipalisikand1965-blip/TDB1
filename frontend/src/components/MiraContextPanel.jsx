@@ -72,6 +72,105 @@ const MiraContextPanel = ({
   const synthRef = useRef(typeof window !== 'undefined' ? window.speechSynthesis : null);
   const inputRef = useRef(null);
   
+  // Initialize speech recognition
+  useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      setSpeechSupported(true);
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = true;
+      recognitionRef.current.lang = 'en-IN';
+      
+      recognitionRef.current.onresult = (event) => {
+        const transcript = Array.from(event.results)
+          .map(result => result[0].transcript)
+          .join('');
+        setInputValue(transcript);
+      };
+      
+      recognitionRef.current.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+        setIsListening(false);
+        if (event.error === 'not-allowed') {
+          toast.error('Microphone access denied. Please enable it in your browser settings.');
+        }
+      };
+      
+      recognitionRef.current.onend = () => {
+        setIsListening(false);
+      };
+    }
+  }, []);
+  
+  // Text-to-Speech function
+  const speakText = useCallback((text) => {
+    if (!voiceEnabled || !synthRef.current) return;
+    
+    // Cancel any ongoing speech
+    synthRef.current.cancel();
+    
+    // Clean text for speech
+    const cleanText = text
+      .replace(/[🎉🐕✨🦴💜🎂🏥☀️🌤️🌙🌟]/g, '')
+      .replace(/\*\*/g, '')
+      .replace(/\n/g, ' ')
+      .substring(0, 500);
+    
+    const utterance = new SpeechSynthesisUtterance(cleanText);
+    utterance.rate = 1.0;
+    utterance.pitch = 1.1;
+    utterance.volume = 0.9;
+    
+    // Try to get a good voice
+    const voices = synthRef.current.getVoices();
+    const preferredVoice = voices.find(v => 
+      v.name.toLowerCase().includes('samantha') ||
+      v.name.toLowerCase().includes('google') ||
+      v.lang.startsWith('en')
+    );
+    if (preferredVoice) utterance.voice = preferredVoice;
+    
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+    
+    synthRef.current.speak(utterance);
+  }, [voiceEnabled]);
+  
+  // Toggle voice listening
+  const toggleListening = () => {
+    if (!speechSupported) {
+      toast.error('Voice input is not supported in your browser');
+      return;
+    }
+    
+    if (isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    } else {
+      setInputValue('');
+      recognitionRef.current.start();
+      setIsListening(true);
+    }
+  };
+  
+  // Get time-aware greeting
+  const getTimeGreeting = useCallback(() => {
+    const hour = new Date().getHours();
+    const petName = context?.selected_pet?.name || 'your pet';
+    
+    if (hour >= 5 && hour < 12) {
+      return `Good morning! ☀️ How can I help ${petName} today?`;
+    } else if (hour >= 12 && hour < 17) {
+      return `Good afternoon! 🌤️ What does ${petName} need?`;
+    } else if (hour >= 17 && hour < 21) {
+      return `Good evening! 🌙 How can I assist ${petName}?`;
+    } else {
+      return `Hello! 🌟 I'm here to help ${petName} anytime.`;
+    }
+  }, [context?.selected_pet?.name]);
+  
   // Mira Signal tracking for passive learning
   const { trackPillarVisit, trackClick } = useMiraSignal();
   
