@@ -156,6 +156,181 @@ const DEFAULT_CATEGORIES = [
   { id: 'shop', name: 'Shop', icon: '🛒', description: 'Product inquiries & orders' }
 ];
 
+// ============================================
+// REAL-TIME SLA TIMER COMPONENT
+// Live countdown with visual & audio alerts
+// ============================================
+const SLACountdown = ({ dueAt, compact = false }) => {
+  const [timeLeft, setTimeLeft] = useState({ hours: 0, minutes: 0, seconds: 0, breached: false });
+  
+  useEffect(() => {
+    if (!dueAt) return;
+    
+    const calculateTime = () => {
+      const now = new Date();
+      const due = new Date(dueAt);
+      const diff = due - now;
+      
+      if (diff <= 0) {
+        // SLA Breached
+        const overdueMs = Math.abs(diff);
+        const hours = Math.floor(overdueMs / (1000 * 60 * 60));
+        const minutes = Math.floor((overdueMs % (1000 * 60 * 60)) / (1000 * 60));
+        setTimeLeft({ hours, minutes, seconds: 0, breached: true });
+      } else {
+        // Time remaining
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        setTimeLeft({ hours, minutes, seconds, breached: false });
+      }
+    };
+    
+    calculateTime();
+    const interval = setInterval(calculateTime, 1000); // Update every second
+    
+    return () => clearInterval(interval);
+  }, [dueAt]);
+  
+  if (!dueAt) return null;
+  
+  const { hours, minutes, seconds, breached } = timeLeft;
+  const isWarning = !breached && hours < 4;
+  const isCritical = !breached && hours < 1;
+  
+  if (compact) {
+    return (
+      <span className={`flex items-center gap-1 text-xs px-1.5 py-0.5 rounded font-medium ${
+        breached ? 'bg-red-100 text-red-700 animate-pulse' : 
+        isCritical ? 'bg-red-50 text-red-600' :
+        isWarning ? 'bg-amber-100 text-amber-700' : 
+        'bg-green-100 text-green-700'
+      }`}>
+        <Timer className="w-3 h-3" />
+        {breached 
+          ? `OVERDUE ${hours}h ${minutes}m` 
+          : hours > 0 
+            ? `${hours}h ${minutes}m` 
+            : `${minutes}m ${seconds}s`
+        }
+      </span>
+    );
+  }
+  
+  return (
+    <div className={`flex items-center gap-2 px-3 py-1.5 rounded-lg ${
+      breached ? 'bg-red-50 border border-red-200' : 
+      isCritical ? 'bg-red-50 border border-red-100' :
+      isWarning ? 'bg-amber-50 border border-amber-100' : 
+      'bg-green-50 border border-green-100'
+    }`}>
+      <Timer className={`w-4 h-4 ${breached ? 'text-red-600' : isWarning ? 'text-amber-600' : 'text-green-600'}`} />
+      <span className={`font-mono text-sm font-semibold ${
+        breached ? 'text-red-700' : isWarning ? 'text-amber-700' : 'text-green-700'
+      }`}>
+        {breached 
+          ? `OVERDUE: ${hours}h ${minutes}m` 
+          : `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`
+        }
+      </span>
+    </div>
+  );
+};
+
+// ============================================
+// SLA ATTENTION BANNER COMPONENT
+// Shows count of breached/at-risk tickets
+// ============================================
+const SLAAttentionBanner = ({ tickets, onFilterBreached }) => {
+  const [stats, setStats] = useState({ breached: 0, critical: 0, warning: 0 });
+  const [audioEnabled, setAudioEnabled] = useState(false);
+  const prevBreachedRef = React.useRef(0);
+  
+  useEffect(() => {
+    if (!tickets || tickets.length === 0) {
+      setStats({ breached: 0, critical: 0, warning: 0 });
+      return;
+    }
+    
+    const now = new Date();
+    let breached = 0, critical = 0, warning = 0;
+    
+    tickets.forEach(t => {
+      if (!t.sla_due_at || ['resolved', 'closed'].includes(t.status)) return;
+      
+      const due = new Date(t.sla_due_at);
+      const diff = due - now;
+      const hours = diff / (1000 * 60 * 60);
+      
+      if (diff <= 0) breached++;
+      else if (hours < 1) critical++;
+      else if (hours < 4) warning++;
+    });
+    
+    // Play alert sound if new breach detected
+    if (audioEnabled && breached > prevBreachedRef.current) {
+      try {
+        const audio = new Audio('/sounds/alert.mp3');
+        audio.volume = 0.3;
+        audio.play().catch(() => {});
+      } catch (e) {}
+    }
+    prevBreachedRef.current = breached;
+    
+    setStats({ breached, critical, warning });
+  }, [tickets, audioEnabled]);
+  
+  if (stats.breached === 0 && stats.critical === 0 && stats.warning === 0) return null;
+  
+  return (
+    <div className="bg-gradient-to-r from-red-50 via-amber-50 to-orange-50 border-b border-red-100 px-4 py-2 flex items-center justify-between">
+      <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
+          <AlertTriangle className="w-4 h-4 text-red-500" />
+          <span className="text-sm font-medium text-gray-700">SLA Attention Required:</span>
+        </div>
+        {stats.breached > 0 && (
+          <button 
+            onClick={() => onFilterBreached?.('breached')}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-red-100 hover:bg-red-200 transition-colors"
+          >
+            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+            <span className="text-xs font-semibold text-red-700">{stats.breached} Breached</span>
+          </button>
+        )}
+        {stats.critical > 0 && (
+          <button 
+            onClick={() => onFilterBreached?.('critical')}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-orange-100 hover:bg-orange-200 transition-colors"
+          >
+            <span className="w-2 h-2 rounded-full bg-orange-500" />
+            <span className="text-xs font-semibold text-orange-700">{stats.critical} Critical (&lt;1h)</span>
+          </button>
+        )}
+        {stats.warning > 0 && (
+          <button 
+            onClick={() => onFilterBreached?.('warning')}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-100 hover:bg-amber-200 transition-colors"
+          >
+            <span className="w-2 h-2 rounded-full bg-amber-500" />
+            <span className="text-xs font-semibold text-amber-700">{stats.warning} Warning (&lt;4h)</span>
+          </button>
+        )}
+      </div>
+      <button
+        onClick={() => setAudioEnabled(!audioEnabled)}
+        className={`flex items-center gap-1 px-2 py-1 rounded text-xs ${
+          audioEnabled ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
+        }`}
+        title={audioEnabled ? 'Audio alerts enabled' : 'Click to enable audio alerts'}
+      >
+        {audioEnabled ? <BellRing className="w-3 h-3" /> : <BellRing className="w-3 h-3 opacity-50" />}
+        {audioEnabled ? 'Alerts On' : 'Alerts Off'}
+      </button>
+    </div>
+  );
+};
+
 const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
   // Get current admin user from localStorage
   const getCurrentAdminUser = () => {
