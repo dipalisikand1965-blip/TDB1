@@ -73,6 +73,7 @@ const CareManager = ({ getAuthHeader }) => {
   const [stats, setStats] = useState({});
   const [settings, setSettings] = useState({});
   const [loading, setLoading] = useState(true);
+  const [savingSettings, setSavingSettings] = useState(false);
   
   // Filters
   const [searchQuery, setSearchQuery] = useState('');
@@ -111,6 +112,33 @@ const CareManager = ({ getAuthHeader }) => {
   });
   
   const fileInputRef = useRef(null);
+
+  // Update nested settings
+  const updateSettings = (section, key, value) => {
+    setSettings(prev => ({
+      ...prev,
+      [section]: {
+        ...(prev[section] || {}),
+        [key]: value
+      }
+    }));
+  };
+
+  // Save settings to backend
+  const saveSettings = async () => {
+    setSavingSettings(true);
+    try {
+      const response = await axios.put(`${API_URL}/api/care/admin/settings`, settings);
+      if (response.status === 200) {
+        toast({ title: '✅ Settings Saved', description: 'Care pillar settings updated successfully' });
+      }
+    } catch (error) {
+      console.error('Failed to save settings:', error);
+      toast({ title: 'Error', description: 'Failed to save settings', variant: 'destructive' });
+    } finally {
+      setSavingSettings(false);
+    }
+  };
 
   // Fetch all data
   useEffect(() => {
