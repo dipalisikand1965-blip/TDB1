@@ -971,6 +971,29 @@ const MemberDashboard = () => {
               <MiraDailyTipInline petName={primaryPet?.name || 'your pup'} />
             </div>
             
+            {/* 📹 EXPLAINER VIDEO TAB - Quick access to Pet Soul explainer */}
+            <div className="mb-6">
+              <button
+                onClick={() => setShowSoulExplainer(true)}
+                className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-xl hover:shadow-md transition-all group"
+                data-testid="explainer-video-tab"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-white rounded-lg shadow-sm">
+                    <Play className="w-5 h-5 text-purple-600" />
+                  </div>
+                  <div className="text-left">
+                    <h4 className="font-semibold text-gray-900 flex items-center gap-2">
+                      TDC Insight
+                      <span className="text-xs px-2 py-0.5 bg-purple-100 text-purple-600 rounded-full">1 min</span>
+                    </h4>
+                    <p className="text-sm text-gray-500">Learn how Pet Soul™ works for {primaryPet?.name || 'your pet'}</p>
+                  </div>
+                </div>
+                <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-purple-600 transition-colors" />
+              </button>
+            </div>
+            
             {/* 🎉 MY CELEBRATIONS - Upcoming birthdays, gotcha days, etc */}
             {Array.isArray(pets) && pets.length > 0 && (
               <div className="mb-6">
