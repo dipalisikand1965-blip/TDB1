@@ -47,14 +47,18 @@ const QuickScoreBoost = ({ pet, onAnswerQuestion }) => {
     const token = localStorage.getItem('token');
     if (!token) {
       console.error('No auth token found');
-      alert('Please log in again to save your answer');
+      toast({
+        title: "Session Expired",
+        description: "Please log in again to save your answer",
+        variant: "destructive"
+      });
       return;
     }
     if (!answer.trim()) {
-      console.error('Empty answer');
       return;
     }
     
+    setSaving(true);
     try {
       // Use the correct endpoint: /api/pets/{pet_id}/soul-answer
       const res = await fetch(`${API_URL}/api/pets/${pet.id}/soul-answer`, {
@@ -69,6 +73,10 @@ const QuickScoreBoost = ({ pet, onAnswerQuestion }) => {
       if (res.ok) {
         const data = await res.json();
         console.log('Answer saved successfully:', data);
+        toast({
+          title: "✓ Answer Saved!",
+          description: `${pet.name}'s Soul Score is now ${Math.round(data.new_score)}%`,
+        });
         setQuestions(prev => prev.filter(q => q.id !== questionId));
         setAnswering(null);
         setAnswerInput('');
@@ -76,11 +84,21 @@ const QuickScoreBoost = ({ pet, onAnswerQuestion }) => {
       } else {
         const errorData = await res.json().catch(() => ({}));
         console.error('Failed to save answer:', res.status, errorData);
-        alert(`Failed to save: ${errorData.detail || 'Unknown error'}`);
+        toast({
+          title: "Save Failed",
+          description: errorData.detail || 'Please try again',
+          variant: "destructive"
+        });
       }
     } catch (err) {
       console.error('Error submitting answer:', err);
-      alert('Network error - please try again');
+      toast({
+        title: "Network Error",
+        description: "Please check your connection and try again",
+        variant: "destructive"
+      });
+    } finally {
+      setSaving(false);
     }
   };
   
