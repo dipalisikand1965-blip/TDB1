@@ -599,15 +599,37 @@ const MiraContextPanel = ({
               
               {/* Chat Input */}
               <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-                  placeholder="Ask Mira..."
-                  className="flex-1 text-sm px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                  disabled={isSending}
-                />
+                <div className="flex-1 relative">
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                    placeholder={isListening ? "Listening..." : "Ask Mira..."}
+                    className={`w-full text-sm px-3 py-2 pr-10 border rounded-lg focus:outline-none focus:ring-2 ${
+                      isListening 
+                        ? 'border-cyan-400 ring-2 ring-cyan-400/30' 
+                        : 'border-gray-200 focus:ring-purple-500'
+                    }`}
+                    disabled={isSending}
+                  />
+                  {/* Inline Mic Button */}
+                  {speechSupported && (
+                    <button
+                      onClick={toggleListening}
+                      className={`absolute right-2 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full flex items-center justify-center transition-all ${
+                        isListening 
+                          ? 'bg-cyan-400 text-gray-900 animate-pulse' 
+                          : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                      }`}
+                      title={isListening ? "Stop listening" : "Voice input"}
+                      data-testid="mira-panel-mic-btn"
+                    >
+                      {isListening ? <MicOff className="w-3 h-3" /> : <Mic className="w-3 h-3" />}
+                    </button>
+                  )}
+                </div>
                 <Button
                   size="sm"
                   onClick={sendMessage}
