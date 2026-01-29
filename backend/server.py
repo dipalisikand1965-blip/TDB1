@@ -5451,20 +5451,19 @@ async def unified_service_booking(request: UnifiedBookingRequest):
     
     This endpoint supports booking any service type (grooming, vet, training, walking)
     without requiring a pre-existing service document.
+    
+    ENFORCES UNIFIED FLOW: Notification → Service Desk Ticket → Unified Inbox
     """
+    from unified_flow_middleware import trigger_unified_flow
+    
     # Create booking/ticket IDs
     booking_id = f"BK-{uuid.uuid4().hex[:8].upper()}"
     ticket_id = f"TKT-{uuid.uuid4().hex[:8].upper()}"
+    notification_id = f"NOTIF-{uuid.uuid4().hex[:8].upper()}"
+    inbox_id = f"INBOX-{uuid.uuid4().hex[:8].upper()}"
+    now = datetime.now(timezone.utc).isoformat()
     
-    # Build ticket for service desk
-    ticket = {
-        "id": ticket_id,
-        "ticket_id": ticket_id,
-        "booking_id": booking_id,
-        "type": "service_booking",
-        "category": request.pillar,
-        "subject": f"{request.service_name} Booking - {request.sub_service_name or request.service_type}",
-        "description": f"""Service Booking Request:
+    description = f"""Service Booking Request:
 - Service: {request.service_name} - {request.sub_service_name or 'N/A'}
 - Location: {request.location_type.title()}
 - Date: {request.schedule.get('preferred_date', 'TBD')}
@@ -5477,7 +5476,46 @@ Pet Details:
 - Notes: {request.pet.get('notes') if request.pet else 'None'}
 
 Additional Notes: {request.additional_notes or 'None'}
-""",
+"""
+    
+    customer_name = request.customer.get("name") if request.customer else "Customer"
+    customer_email = request.customer.get("email") if request.customer else None
+    customer_phone = request.customer.get("phone") if request.customer else None
+    pet_name = request.pet.get("name") if request.pet else "Pet"
+    pet_breed = request.pet.get("breed") if request.pet else ""
+    
+    # ==================== STEP 1: NOTIFICATION (MANDATORY) ====================
+    await db.admin_notifications.insert_one({
+        "id": notification_id,
+        "type": f"service_booking_{request.pillar}",
+        "pillar": request.pillar,
+        "title": f"New Service Booking - {request.service_name}",
+        "message": f"{customer_name} booked {request.service_name} for {pet_name}",
+        "read": False,
+        "status": "unread",
+        "urgency": "medium",
+        "ticket_id": ticket_id,
+        "inbox_id": inbox_id,
+        "booking_id": booking_id,
+        "customer": {"name": customer_name, "email": customer_email, "phone": customer_phone},
+        "pet": {"name": pet_name, "breed": pet_breed},
+        "link": f"/admin?tab=servicedesk&ticket={ticket_id}",
+        "created_at": now,
+        "read_at": None
+    })
+    logger.info(f"[UNIFIED FLOW] Service booking notification created: {notification_id}")
+    
+    # ==================== STEP 2: SERVICE DESK TICKET (MANDATORY) ====================
+    ticket = {
+        "id": ticket_id,
+        "ticket_id": ticket_id,
+        "booking_id": booking_id,
+        "notification_id": notification_id,
+        "inbox_id": inbox_id,
+        "type": "service_booking",
+        "category": request.pillar,
+        "subject": f"{request.service_name} Booking - {request.sub_service_name or request.service_type}",
+        "description": description,
         "status": "open",
         "priority": "normal",
         "channel": "web",
@@ -5486,25 +5524,60 @@ Additional Notes: {request.additional_notes or 'None'}
         "sub_service": request.sub_service,
         "location_type": request.location_type,
         "contact": {
-            "name": request.customer.get("name"),
-            "phone": request.customer.get("phone"),
-            "email": request.customer.get("email")
+            "name": customer_name,
+            "phone": customer_phone,
+            "email": customer_email
         },
+        "member": {"name": customer_name, "email": customer_email, "phone": customer_phone},
         "pet_info": request.pet,
         "schedule": request.schedule,
         "additional_notes": request.additional_notes,
-        "created_at": datetime.now(timezone.utc).isoformat(),
-        "updated_at": datetime.now(timezone.utc).isoformat()
+        "created_at": now,
+        "updated_at": now,
+        "unified_flow_processed": True
     }
     
     await db.tickets.insert_one(ticket)
+    await db.service_desk_tickets.insert_one(ticket)
+    logger.info(f"[UNIFIED FLOW] Service desk ticket created: {ticket_id}")
     
-    logger.info(f"Service booking created: {booking_id} - {request.service_name}")
+    # ==================== STEP 3: UNIFIED INBOX (MANDATORY) ====================
+    inbox_entry = {
+        "id": inbox_id,
+        "request_id": booking_id,
+        "ticket_id": ticket_id,
+        "notification_id": notification_id,
+        "channel": "web",
+        "request_type": "service_booking",
+        "pillar": request.pillar,
+        "category": request.service_type,
+        "status": "new",
+        "urgency": "medium",
+        "customer_name": customer_name,
+        "customer_email": customer_email,
+        "customer_phone": customer_phone,
+        "member": {"name": customer_name, "email": customer_email, "phone": customer_phone},
+        "pet": {"name": pet_name, "breed": pet_breed},
+        "preview": f"Service Booking: {request.service_name} - {pet_name}",
+        "message": description[:200] + "...",
+        "full_content": description,
+        "metadata": {"booking_id": booking_id, "service_name": request.service_name},
+        "tags": ["service_booking", request.pillar, request.service_type],
+        "created_at": now,
+        "updated_at": now,
+        "unified_flow_processed": True
+    }
+    await db.channel_intakes.insert_one(inbox_entry)
+    logger.info(f"[UNIFIED FLOW] Unified inbox entry created: {inbox_id}")
+    
+    logger.info(f"[UNIFIED FLOW] COMPLETE: Service booking {booking_id} | Notification({notification_id}) → Ticket({ticket_id}) → Inbox({inbox_id})")
     
     return {
         "success": True,
         "booking_id": booking_id,
         "ticket_id": ticket_id,
+        "notification_id": notification_id,
+        "inbox_id": inbox_id,
         "message": f"Your booking for {request.service_name} has been received. Our team will contact you shortly.",
         "typical_response_time": "2-4 hours"
     }
