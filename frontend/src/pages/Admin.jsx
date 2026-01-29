@@ -1661,6 +1661,7 @@ const Admin = () => {
               { id: 'fulfilment', label: 'Fulfilment', icon: Truck },
               { id: 'product-box', label: 'Product Box', icon: Package },
               { id: 'collections', label: 'Collections', icon: Layers },
+              { id: 'pricing', label: 'Pricing', icon: Tag },
               { id: 'autoship', label: 'Autoship', icon: RefreshCw },
               { id: 'abandoned', label: 'Abandoned', icon: ShoppingBag },
               { id: 'discounts', label: 'Discounts', icon: Tag },
