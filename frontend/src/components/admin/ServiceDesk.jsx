@@ -3193,6 +3193,15 @@ const ServiceDesk = ({ authHeaders, isFullScreen = false }) => {
             </div>
           )}
 
+          {/* SLA Attention Banner - Real-time breach alerts */}
+          <SLAAttentionBanner 
+            tickets={displayTickets} 
+            onFilterBreached={(type) => {
+              if (type === 'breached') setQuickFilter('overdue');
+              // Could add more filters for critical/warning
+            }}
+          />
+
           {/* Select All Row (when no selection) */}
           {selectedTickets.size === 0 && displayTickets.length > 0 && (
             <div className="bg-slate-50 border-b px-4 py-2 flex items-center gap-2">
