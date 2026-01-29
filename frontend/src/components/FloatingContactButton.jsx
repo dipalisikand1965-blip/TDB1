@@ -1,14 +1,14 @@
 /**
  * FloatingContactButton.jsx
  * Floating contact button that appears on most pages
- * Allows users to quickly call, WhatsApp, voice order, or request callback
+ * Allows users to quickly call, WhatsApp, request callback, or Talk to Mira
  * 
  * Hidden on Mira pages where dedicated contact options exist in the sidebar
  */
 
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Phone, MessageCircle, Mic, X, Headphones, PhoneIncoming } from 'lucide-react';
+import { Phone, MessageCircle, Mic, X, Headphones, PhoneIncoming, Sparkles } from 'lucide-react';
 import CallbackRequestModal from './CallbackRequestModal';
 
 const FloatingContactButton = () => {
@@ -26,8 +26,21 @@ const FloatingContactButton = () => {
     setIsOpen(false);
     setShowCallbackModal(true);
   };
+  
+  const handleTalkToMira = () => {
+    setIsOpen(false);
+    // Dispatch event to open Mira floating button
+    window.dispatchEvent(new CustomEvent('openMiraVoice'));
+  };
 
   const contactOptions = [
+    {
+      label: 'Talk to Mira',
+      sublabel: 'Voice assistant',
+      icon: Sparkles,
+      color: 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600',
+      onClick: handleTalkToMira,
+    },
     {
       label: 'Call Now',
       sublabel: '+91 96631 85747',
