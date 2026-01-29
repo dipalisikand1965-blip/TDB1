@@ -36,13 +36,6 @@ const INDIAN_STATES = [
   'Delhi', 'Puducherry', 'Chandigarh'
 ];
 
-// Store locations for pickup
-const STORE_LOCATIONS = [
-  { id: 'bangalore', city: 'Bangalore', address: '147, 8th Main Rd, 3rd Block, Koramangala, Bengaluru 560034' },
-  { id: 'mumbai', city: 'Mumbai', address: 'Shop 9, off Yari Road, Jeet Nagar, Versova, Andheri West, Mumbai 400061' },
-  { id: 'gurugram', city: 'Gurugram', address: 'Ground Floor, Wazirabad Rd, Wazirabad, Sector 52, Gurugram 122003' }
-];
-
 const UnifiedCheckout = () => {
   const { cartItems, getCartTotal, clearCart, addToCart } = useCart();
   const { user, token } = useAuth();
