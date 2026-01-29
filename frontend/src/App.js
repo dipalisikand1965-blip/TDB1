@@ -372,7 +372,7 @@ function MainLayout() {
       <Footer />
       <CartSidebar />
       <MiraAI />
-      <MiraFloatingButton />
+      {/* Pulse removed - voice capabilities now inside MiraAI */}
       <ConditionalFloatingButton />
       <Toaster />
     </div>
