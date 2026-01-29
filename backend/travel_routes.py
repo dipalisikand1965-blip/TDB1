@@ -1304,8 +1304,8 @@ async def seed_travel_products():
     
     # Insert products
     for product in default_products:
-        product["created_at"] = datetime.now(timezone.utc).isoformat()
-        product["updated_at"] = datetime.now(timezone.utc).isoformat()
+        product["created_at"] = get_consistent_timestamp()
+        product["updated_at"] = get_consistent_timestamp()
         await db.products.update_one(
             {"id": product["id"]},
             {"$set": product},
