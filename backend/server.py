@@ -1371,6 +1371,12 @@ from push_notification_routes import (
     set_database as set_push_db
 )
 
+# Import Proactive Notifications
+from proactive_notifications import (
+    proactive_router,
+    set_database as set_proactive_db
+)
+
 # Import Multi-Channel Intake engine
 from channel_intake import (
     channel_router,
