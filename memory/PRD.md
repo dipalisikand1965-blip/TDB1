@@ -113,10 +113,15 @@
 - ✅ Wishlist Add/Get (API tested)
 - ✅ Pet Photo Upload (API tested)
 - ✅ TTS Config endpoint (API tested)
+- ✅ Mobile Two-Tile Layout (all pillar pages)
+- ✅ Voice Mira Indian English priority
+- ✅ Push Notification Banner (dashboard)
+- ✅ Checkout delivery-only (Store Pickup removed)
 
 **Testing Results:**
-- Backend: 100% (11/11 tests passed)
-- Test report: `/app/test_reports/iteration_114.json`
+- Backend: 100% (12/12 tests passed)
+- Frontend: 100% (All features verified)
+- Test report: `/app/test_reports/iteration_115.json`
 
 ---
 
