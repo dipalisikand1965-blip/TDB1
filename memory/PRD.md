@@ -122,6 +122,22 @@
     - Non-medical responses for everyday queries
     - **File Modified**: `/app/frontend/src/components/MiraVoiceAssistant.jsx`
 
+15. **Comprehensive Mira Behavior Framework** (COMPLETED) 🧠
+    - **Core Identity**: Voice-enabled guidance layer, not chat/sales
+    - **Text vs Voice**: Text is default (80%), voice only when explicitly triggered
+    - **Mandatory Opening**: "Hi, I'm Mira. I can help explain things, guide you to the right place, or connect you with our Concierge."
+    - **Section-Aware**: Different behavior for Concierge/Product/Listing/Care sections
+    - **Navigation Rules**: Only move users when confusion/urgency detected
+    - **Voice Limits**: Max 10-12 seconds per response
+    - **Escalation**: Early handoff to Concierge when judgement needed
+    - **Emergency Override**: Immediate action buttons, no chat
+    - **Silence Rule**: If Mira can't help in 5 seconds, remain silent
+    - **Breed Guidance**: AKC-referenced breed traits (framed as "generally")
+    - **Files Modified**: 
+      - `/app/backend/mira_routes.py` (comprehensive system prompt)
+      - `/app/frontend/src/components/MiraVoiceAssistant.jsx` (text-first, voice-earned)
+      - `/app/frontend/src/components/MiraFloatingButton.jsx` (activation rules)
+
 **Bug Fixes Verified Working:**
 - ✅ Pet Soul Answer Saving (API tested)
 - ✅ Wishlist Add/Get (API tested)
