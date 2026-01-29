@@ -2029,21 +2029,34 @@ _GST applicable on final invoice_
                   )}
                 </Card>
 
-                {/* Quick Add-ons */}
-                <Card className="p-6">
-                  <h3 className="font-semibold text-gray-900 mb-3">Quick Add-ons</h3>
-                  <div className="space-y-2">
+                {/* Mira's Recommended Add-ons */}
+                <Card className="p-4 md:p-6">
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-pink-400 rounded-full flex items-center justify-center">
+                      <Sparkles className="w-4 h-4 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900">Mira's Picks</h3>
+                      <p className="text-xs text-gray-500">Perfect add-ons for {formData.petName || 'your pup'}!</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 md:gap-3">
                     {addOns.map(addOn => (
-                      <div key={addOn.id} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
-                        <div className="flex items-center gap-2">
-                          <img src={addOn.image} alt={addOn.name} className="w-10 h-10 object-cover rounded" />
-                          <div>
-                            <p className="text-sm font-medium">{addOn.name}</p>
-                            <p className="text-xs text-gray-500">₹{addOn.price}</p>
-                          </div>
-                        </div>
-                        <Button size="sm" variant="outline" onClick={() => handleAddOn(addOn)}>
-                          Add
+                      <div 
+                        key={addOn.id} 
+                        className="flex flex-col items-center p-3 bg-gradient-to-br from-gray-50 to-purple-50 rounded-xl border border-purple-100 hover:border-purple-300 transition-colors"
+                      >
+                        <img src={addOn.image} alt={addOn.name} className="w-12 h-12 md:w-14 md:h-14 object-cover rounded-lg mb-2" />
+                        <p className="text-xs md:text-sm font-medium text-center line-clamp-1">{addOn.name}</p>
+                        <p className="text-xs text-purple-600 font-semibold">₹{addOn.price}</p>
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          onClick={() => handleAddOn(addOn)}
+                          className="mt-2 h-7 text-xs w-full border-purple-300 text-purple-600 hover:bg-purple-100"
+                          data-testid={`addon-${addOn.id}`}
+                        >
+                          <Plus className="w-3 h-3 mr-1" /> Add
                         </Button>
                       </div>
                     ))}
