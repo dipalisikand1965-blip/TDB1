@@ -15,6 +15,7 @@ import { toast } from '../../hooks/use-toast';
 const QuickScoreBoost = ({ pet, onAnswerQuestion }) => {
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
   const [potentialBoost, setPotentialBoost] = useState(0);
   const [currentScore, setCurrentScore] = useState(0);
   const [answering, setAnswering] = useState(null);
