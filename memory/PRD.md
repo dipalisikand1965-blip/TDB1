@@ -124,6 +124,36 @@
 - **Mobile z-index fix**: Panel now positioned at `z-[10000]` and `bottom-20` to avoid overlap with floating contact button
 - **Chat features preserved**: Ask Mira, Plan My {Pillar}, quick prompts all working with voice
 
+### Phase 43: Mira as the Soul - Conversation → Ticket Flow (Jan 29, 2025)
+
+**The Complete Flow:**
+```
+User (Voice/Text) → Mira detects intent → Auto-creates ticket → Service Desk → Concierge responds
+```
+
+**Backend Enhancements (`/app/backend/mira_routes.py`):**
+- **Ticket Confirmation in Response**: When a concierge action is detected, Mira now includes ticket ID in response
+- **New `/api/mira/my-requests` Endpoint**: Allows users to check status of their requests
+- **Status Query Detection**: Mira recognizes "What's the status of my request?" and fetches relevant tickets
+- **Service Desk Integration**: Every actionable conversation creates both:
+  - `mira_ticket` (conversation record)
+  - `service_desk_ticket` (human concierge action item)
+
+**Frontend Enhancements:**
+- **Ticket Toast Notification**: Shows "Request #XXX created!" when concierge action is triggered
+- **In-Chat Ticket Confirmation**: Displays "📋 Request #XXX created. Our live concierge will get back to you shortly!"
+- Both `MiraContextPanel.jsx` and `MiraAI.jsx` updated with ticket display logic
+
+**Ticket Status Tracking:**
+- Status states with visual indicators:
+  - ⏳ Pending (yellow)
+  - 📥 Received (blue)
+  - 🔄 Being Reviewed (yellow)
+  - ⚙️ Working on it (orange)
+  - ✅ Confirmed (green)
+  - 🎉 Completed (green)
+  - 🚨 Urgent Response (red - Emergency)
+
 ### Working Features ✅
 - **Pillar-specific Mira with Voice**: MiraContextPanel on Advisory (purple), Care (pink), Emergency (red) pages with Pulse voice capabilities
 - Product images loading from Shopify CDN
