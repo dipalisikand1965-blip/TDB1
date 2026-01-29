@@ -22,17 +22,24 @@ def get_db():
 
 @router.post("/request")
 async def create_fitness_request(request_data: dict):
-    """Create a new fitness request with Service Desk integration"""
+    """Create a new fitness request with FULL UNIFIED FLOW integration"""
     db = get_db()
     
+    # Generate IDs for unified flow
     request_id = f"FIT-{datetime.now().strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
+    notification_id = f"NOTIF-{uuid.uuid4().hex[:8].upper()}"
+    inbox_id = f"INBOX-{uuid.uuid4().hex[:8].upper()}"
+    ticket_id = f"TKT-{uuid.uuid4().hex[:8].upper()}"
     
     fitness_request = {
         "id": request_id,
         "request_id": request_id,
-        "fit_type": request_data.get("fit_type", "assessment"),  # assessment, exercise_plan, weight_management, nutrition, activity_tracking
+        "fit_type": request_data.get("fit_type", "assessment"),
         "status": "pending",
         "priority": request_data.get("priority", "normal"),
+        "notification_id": notification_id,
+        "inbox_id": inbox_id,
+        "ticket_id": ticket_id,
         
         # Pet Details
         "pet_id": request_data.get("pet_id"),
@@ -49,11 +56,11 @@ async def create_fitness_request(request_data: dict):
         "user_phone": request_data.get("user_phone"),
         
         # Fitness Details
-        "current_activity_level": request_data.get("current_activity_level"),  # sedentary, light, moderate, active, very_active
-        "fitness_goals": request_data.get("fitness_goals", []),  # weight_loss, muscle_building, endurance, flexibility, senior_mobility
+        "current_activity_level": request_data.get("current_activity_level"),
+        "fitness_goals": request_data.get("fitness_goals", []),
         "health_conditions": request_data.get("health_conditions", []),
         "dietary_restrictions": request_data.get("dietary_restrictions", []),
-        "preferred_activities": request_data.get("preferred_activities", []),  # walking, running, swimming, agility, fetch
+        "preferred_activities": request_data.get("preferred_activities", []),
         "schedule_preference": request_data.get("schedule_preference"),
         "notes": request_data.get("notes", ""),
         
@@ -61,62 +68,123 @@ async def create_fitness_request(request_data: dict):
         "created_at": datetime.now(timezone.utc).isoformat(),
         "updated_at": datetime.now(timezone.utc).isoformat(),
         "assigned_to": None,
-        "partner_id": None
+        "partner_id": None,
+        "unified_flow_processed": True
     }
+    
+    pet_name = fitness_request["pet_name"] or "Pet"
+    user_name = fitness_request["user_name"] or "Customer"
+    fit_type = fitness_request["fit_type"].replace('_', ' ').title()
     
     await db.fit_requests.insert_one({k: v for k, v in fitness_request.items() if k != "_id"})
     
-    # Create Service Desk Ticket
+    # ==================== STEP 1: NOTIFICATION (MANDATORY) ====================
+    await db.admin_notifications.insert_one({
+        "id": notification_id,
+        "type": f"fit_{fitness_request['fit_type']}",
+        "pillar": "fit",
+        "title": f"New Fitness Request: {fit_type} - {pet_name}",
+        "message": f"{user_name} needs {fit_type.lower()} for {pet_name}. Goals: {', '.join(fitness_request['fitness_goals'][:2]) if fitness_request['fitness_goals'] else 'Not specified'}",
+        "read": False,
+        "status": "unread",
+        "urgency": "medium",
+        "ticket_id": ticket_id,
+        "inbox_id": inbox_id,
+        "customer": {
+            "name": user_name,
+            "email": fitness_request["user_email"],
+            "phone": fitness_request["user_phone"]
+        },
+        "pet": {
+            "name": pet_name,
+            "breed": fitness_request["pet_breed"]
+        },
+        "link": f"/admin?tab=servicedesk&ticket={ticket_id}",
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "read_at": None
+    })
+    logger.info(f"[UNIFIED FLOW] Fit notification created: {notification_id}")
+    
+    # ==================== STEP 2: SERVICE DESK TICKET (MANDATORY) ====================
     ticket = {
-        "id": f"TKT-{uuid.uuid4().hex[:8].upper()}",
+        "id": ticket_id,
+        "ticket_id": ticket_id,
+        "notification_id": notification_id,
+        "inbox_id": inbox_id,
         "source": "fit_pillar",
         "source_id": request_id,
+        "pillar": "fit",
         "category": "fitness",
         "subcategory": fitness_request["fit_type"],
-        "subject": f"Fitness Request: {fitness_request['fit_type'].replace('_', ' ').title()} for {fitness_request['pet_name']}",
-        "description": f"New fitness request from {fitness_request['user_name']} for {fitness_request['pet_name']}.\nGoals: {', '.join(fitness_request['fitness_goals'])}\nActivity Level: {fitness_request['current_activity_level']}",
-        "status": "open",
-        "priority": fitness_request["priority"],
+        "subject": f"Fitness Request: {fit_type} for {pet_name}",
+        "description": f"New fitness request from {user_name} for {pet_name}.\nGoals: {', '.join(fitness_request['fitness_goals'])}\nActivity Level: {fitness_request['current_activity_level']}",
+        "status": "new",
+        "priority": 3,
         "urgency": "medium",
-        "customer_name": fitness_request["user_name"],
-        "customer_email": fitness_request["user_email"],
-        "customer_phone": fitness_request["user_phone"],
-        "pet_name": fitness_request["pet_name"],
-        "pet_id": fitness_request["pet_id"],
+        "member": {
+            "name": user_name,
+            "email": fitness_request["user_email"],
+            "phone": fitness_request["user_phone"]
+        },
+        "pet": {
+            "name": pet_name,
+            "id": fitness_request["pet_id"],
+            "breed": fitness_request["pet_breed"]
+        },
         "created_at": datetime.now(timezone.utc).isoformat(),
         "updated_at": datetime.now(timezone.utc).isoformat(),
-        "tags": ["fit", fitness_request["fit_type"]],
-        "pillar": "fit"
+        "tags": ["fit", fitness_request["fit_type"], "unified-flow"],
+        "unified_flow_processed": True
     }
     
+    # Insert into BOTH collections
+    await db.service_desk_tickets.insert_one({k: v for k, v in ticket.items() if k != "_id"})
     await db.tickets.insert_one({k: v for k, v in ticket.items() if k != "_id"})
+    logger.info(f"[UNIFIED FLOW] Fit ticket created: {ticket_id}")
     
-    # Add to Unified Inbox
+    # ==================== STEP 3: UNIFIED INBOX (MANDATORY) ====================
     inbox_item = {
-        "id": f"INB-{uuid.uuid4().hex[:8].upper()}",
-        "type": "fit_request",
-        "source": "fit_pillar",
-        "reference_id": request_id,
-        "ticket_id": ticket["id"],
-        "title": f"New Fitness Request: {fitness_request['fit_type'].replace('_', ' ').title()}",
-        "preview": f"{fitness_request['pet_name']} - {', '.join(fitness_request['fitness_goals'][:2])}",
-        "customer_name": fitness_request["user_name"],
+        "id": inbox_id,
+        "request_id": request_id,
+        "ticket_id": ticket_id,
+        "notification_id": notification_id,
+        "channel": "web",
+        "request_type": "fit",
+        "pillar": "fit",
+        "category": fitness_request["fit_type"],
+        "status": "new",
+        "urgency": "medium",
+        "customer_name": user_name,
         "customer_email": fitness_request["user_email"],
-        "pet_name": fitness_request["pet_name"],
-        "status": "unread",
-        "priority": fitness_request["priority"],
+        "customer_phone": fitness_request["user_phone"],
+        "member": {
+            "name": user_name,
+            "email": fitness_request["user_email"],
+            "phone": fitness_request["user_phone"]
+        },
+        "pet": {
+            "name": pet_name,
+            "breed": fitness_request["pet_breed"]
+        },
+        "preview": f"{pet_name} - {', '.join(fitness_request['fitness_goals'][:2]) if fitness_request['fitness_goals'] else fit_type}",
+        "message": f"Fitness Request: {fit_type} for {pet_name}",
+        "tags": ["fit", fitness_request["fit_type"]],
         "created_at": datetime.now(timezone.utc).isoformat(),
-        "pillar": "fit"
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+        "unified_flow_processed": True
     }
     
-    await db.unified_inbox.insert_one({k: v for k, v in inbox_item.items() if k != "_id"})
+    await db.channel_intakes.insert_one({k: v for k, v in inbox_item.items() if k != "_id"})
+    logger.info(f"[UNIFIED FLOW] Fit inbox created: {inbox_id}")
     
-    logger.info(f"Created fitness request {request_id} with ticket {ticket['id']}")
+    logger.info(f"[UNIFIED FLOW] COMPLETE: Fit request {request_id} | Notification({notification_id}) → Ticket({ticket_id}) → Inbox({inbox_id})")
     
     return {
         "message": "Fitness request submitted successfully",
         "request_id": request_id,
-        "ticket_id": ticket["id"]
+        "ticket_id": ticket_id,
+        "notification_id": notification_id,
+        "inbox_id": inbox_id
     }
 
 
