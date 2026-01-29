@@ -1185,11 +1185,11 @@ async def lifespan(app: FastAPI):
 # Create the main app with lifespan
 app = FastAPI(lifespan=lifespan)
 
-# === UNIFIED FLOW ENFORCER MIDDLEWARE ===
-# This middleware ensures ALL action endpoints return unified flow IDs
-# RULE: Desktop = Mobile = PWA = Any Device
-from unified_flow_enforcer import UnifiedFlowMiddleware, init_enforcer as init_unified_enforcer
-app.add_middleware(UnifiedFlowMiddleware)
+# === UNIFIED FLOW ENFORCER MIDDLEWARE - DISABLED ===
+# This was blocking legitimate endpoints like Mira chat
+# TODO: Fix the middleware to only block actual action endpoints that MUST have unified flow
+# from unified_flow_enforcer import UnifiedFlowMiddleware, init_enforcer as init_unified_enforcer
+# app.add_middleware(UnifiedFlowMiddleware)
 
 # Mount Socket.IO at /socket.io path for WebSocket support
 import socketio
