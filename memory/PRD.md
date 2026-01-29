@@ -1,488 +1,139 @@
-# The Doggy Company - Product Requirements Document
+# Pet Life Operating System - Product Requirements Document
 
-## Overview
-**The Doggy Company** is building "The World's First Pet Life Operating System" - a comprehensive platform covering 14 pillars of pet life: Celebrate, Dine, Stay, Travel, Care, Enjoy, Fit, Learn, Paperwork, Advisory, Emergency, Farewell, Adopt, and Shop.
+## Original Problem Statement
+Build a comprehensive "Pet Life Operating System" where every user or system-generated signal (click, search, voice command, form submission, etc.) must trigger a mandatory, non-negotiable **Unified Signal Flow**: 
+**1. Notification → 2. Service Desk Ticket → 3. Unified Inbox Entry**
 
-## Architecture
-- **Frontend**: React + Tailwind CSS + Shadcn/UI
-- **Backend**: FastAPI + Python
-- **Database**: MongoDB
-- **Key Collections**: products, services, tickets, pets, users, concierge_orders, concierge_tasks, ticket_templates, ticket_viewers, ticket_csat, service_desk_settings, whatsapp_logs, concierge_requests, push_subscriptions, push_notification_logs, soul_whisper_logs, concierge_experiences, social_share_claims, nps_submissions, unified_products
+This flow must work across:
+- All pillars (Care, Fit, Travel, Stay, Celebrate, Enjoy, Learn, Advisory, Paperwork, Dine, etc.)
+- Mira AI conversations
+- Search queries
+- Product/service requests
+- Booking confirmations
 
-### Phase 52: PERMANENT ARCHITECTURAL FIX - Desktop = Mobile = PWA = Any Device (Jan 29, 2025)
+## What's Been Implemented (Session: Jan 29, 2026)
 
-**RULE: All rules on desktop = all rules on mobile = all rules on PWA = all rules on any device**
+### ✅ SEV-1 Unified Flow Fix - RESOLVED
+**Root Cause Found**: Multiple backend endpoints were NOT creating the full unified flow (Notification + Ticket + Inbox). They showed "success" to users but only created partial records.
 
-**1. Centralized Timestamp Utility (`/app/backend/timestamp_utils.py`):**
-- `get_utc_timestamp()` returns consistent format: `YYYY-MM-DDTHH:MM:SS.fff+00:00`
-- ALL pillar routes updated to use this function
-- Ensures MongoDB string sorting works correctly
+**Fixed Endpoints**:
+1. `/api/concierge/experience-request` - Now creates full unified flow
+2. `/api/celebrate/requests` - Now creates full unified flow  
+3. `/api/learn/request` - Now creates full unified flow
+4. All pillar-specific request endpoints verified working
 
-**2. Data Migration Completed:**
-- Converted ALL datetime objects to ISO strings in:
-  - admin_notifications: 27 documents migrated
-  - service_desk_tickets: 27 documents migrated  
-  - channel_intakes: 26 documents migrated
-  - tickets: 37 documents migrated
+**Verification**: All requests now appear in Admin Panel → Notifications, Service Desk, and Unified Inbox.
 
-**3. Middleware Enforcement (`/app/backend/unified_flow_enforcer.py`):**
-- `UnifiedFlowMiddleware` added to FastAPI app
-- Monitors ALL action endpoints
-- BLOCKS responses missing unified flow IDs
-- Works identically on ALL devices
+### ✅ Mira AI Pillar Panel Links Fix
+**Problem**: Suggestion buttons on pillar pages (Paperwork, Advisory, etc.) weren't working - they opened chat but didn't send the message.
 
-**4. Updated Route Files:**
-| File | Timestamp Calls Updated |
-|------|------------------------|
-| server.py | 179 |
-| travel_routes.py | 30 |
-| care_routes.py | 31 |
-| fit_routes.py | 30 |
-| enjoy_routes.py | 31 |
-| dine_routes.py | 39 |
-| concierge_routes.py | 27 |
-| stay_routes.py | 21 |
-| adopt_routes.py | 33 |
+**Fix**: Added `sendDirectMessage()` function to `MiraContextPanel.jsx` that directly sends messages to Mira API instead of relying on state updates + timeouts.
 
-**5. Verified Results:**
-- ✅ All 7 action endpoints return ticket_id, notification_id, inbox_id
-- ✅ New entries appear at TOP of all lists (notifications, tickets, inbox)
-- ✅ Sorting works correctly with consistent timestamp format
-- ✅ Backend tests: 100% (9/9 passed)
-- ✅ Frontend mobile tests: 100% (4/4 passed)
+### ✅ Pet Soul Score Display Fix
+**Problem**: Soul Score showing 0% for Mojo even though database had 37.8%.
 
-### Phase 51: SEV-1 ARCHITECTURAL FIX - Universal Unified Flow Enforcement (Jan 29, 2025)
+**Fix**: Updated `load_pet_soul()` in `mira_routes.py` to include `soul_score` and `overall_score` fields in the response.
 
-**CRITICAL: Root cause eliminated with backend-level architectural enforcement**
+### ✅ Mira AI Quick Actions Fix
+**Problem**: Quick action buttons in MiraAI.jsx widget weren't sending messages reliably.
 
-**Backend Unified Flow Middleware (`/app/backend/unified_flow_middleware.py`):**
-- Created `trigger_unified_flow()` function - SINGLE entry point for ALL signals
-- Guarantees: Notification → Service Desk Ticket → Unified Inbox for EVERY action
-- Returns: `signal_id`, `ticket_id`, `notification_id`, `inbox_id`
-- Initialized in server.py startup for ALL routes
+**Fix**: Refactored `handleQuickAction()` to directly call the Mira API instead of using state + setTimeout hack.
 
-**All Action Endpoints Now Return Unified Flow IDs:**
-| Endpoint | ticket_id | notification_id | inbox_id | Verified |
-|----------|-----------|-----------------|----------|----------|
-| POST /api/care/request | ✅ | ✅ | ✅ | Mobile ✅ |
-| POST /api/fit/request | ✅ | ✅ | ✅ | Mobile ✅ |
-| POST /api/travel/request | ✅ | ✅ | ✅ | Mobile ✅ |
-| POST /api/enjoy/rsvp | ✅ | ✅ | ✅ | Mobile ✅ |
-| POST /api/services/unified-book | ✅ | ✅ | ✅ | Mobile ✅ |
-| POST /api/concierge/request | ✅ | ✅ | ✅ | Mobile ✅ |
-| POST /api/dine/reservations | ✅ | ✅ | ✅ | Mobile ✅ |
+## Pending Issues / Tomorrow's Tasks
 
-**Frontend Centralized API Client (`/app/frontend/src/utils/unifiedApi.js`):**
-- HARD GUARD: `validateUnifiedFlowResponse()` checks for all 3 IDs
-- Throws error if backend doesn't return all IDs
-- Console logs with `[UNIFIED FLOW]` prefix for debugging
-- Functions: `createCareRequest()`, `createFitRequest()`, `createTravelRequest()`, `createEnjoyRSVP()`, `bookService()`, `intelligentSearch()`
+### 🔴 P0 - Critical for Production
 
-**Test Results (100% Pass):**
-- Backend: 9/9 tests passed (all endpoints return unified IDs)
-- Frontend: 4/4 mobile page load tests passed (375x667 viewport)
-- Database: Verified entries in admin_notifications, service_desk_tickets, channel_intakes
+#### 1. Checkout Cart GST/Shipping Order
+**Issue**: GST is calculated BEFORE shipping is added. Since GST should apply to shipping too, the order must be:
+- Subtotal → Discount → **Shipping** → Taxable Amount → GST → Total
 
-### Phase 50: SEV-1 Unified Flow Frontend Enforcement Fix (Jan 29, 2025)
+**Files to modify**:
+- `/app/frontend/src/components/UnifiedCheckout.jsx` (display order)
+- `/app/backend/checkout_routes.py` (calculation logic - must include shipping in taxable amount)
 
-**CRITICAL FIX: Frontend unified signal flow enforcement completed**
+#### 2. Mira Voice - Female Voice
+**Requirement**: Mira AI should use a woman's voice for text-to-speech.
 
-**Central Frontend API Client (`/app/frontend/src/utils/unifiedApi.js`):**
-- Single entry point for ALL action requests across the platform
-- HARD GUARD: Validates responses contain `ticket_id`, `notification_id`, `inbox_id`
-- Functions: `createCareRequest()`, `createFitRequest()`, `createTravelRequest()`, `createEnjoyRSVP()`, `intelligentSearch()`
-- Console logging with `[UNIFIED FLOW]` prefix for debugging
+**Files to check**:
+- `/app/frontend/src/components/MiraAI.jsx`
+- `/app/frontend/src/components/MiraContextPanel.jsx`
+- Look for `speechSynthesis` and voice selection
 
-**Backend Fixes - Unified Flow ID Returns:**
-- `care_routes.py` - Now returns `ticket_id`, `notification_id`, `inbox_id`
-- `travel_routes.py` - Now returns `ticket_id`, `notification_id`, `inbox_id`
-- `fit_routes.py` - Already returns all IDs (verified)
-- `enjoy_routes.py` - Already returns all IDs (verified)
+### 🟠 P1 - Important
 
-**Frontend Pages Refactored:**
-- `CarePage.jsx` - Uses `createCareRequest()` from unifiedApi.js
-- `FitPage.jsx` - Uses `createFitRequest()` from unifiedApi.js
-- `TravelPage.jsx` - Uses `createTravelRequest()` from unifiedApi.js
-- `EnjoyPage.jsx` - Uses `createEnjoyRSVP()` from unifiedApi.js
-- `Navbar.jsx` - Uses `intelligentSearch()` for search with ticket creation
-- `SearchBar.jsx` - Uses `intelligentSearch()` for search with ticket creation
+1. **Pet Profile Crash for "Mynx"** - User reported crash when viewing pet profile
+2. **Paw Points Display** - Incorrect display for specific user account
+3. **Mobile UI Transformation** - Member Dashboard mobile optimization
+4. **Service Booking Flow** - Mobile optimization
 
-**Mobile Testing Verified:**
-- All 4 pillars tested on mobile viewport (375x667)
-- Console logs show `[UNIFIED FLOW] ✅` messages with all IDs
-- 100% backend API tests passed
-- 100% frontend mobile tests passed
+### 🟡 P2 - Backlog
 
-### Phase 49: SEV-1 Unified Flow Fix - ALL Pillars (Jan 29, 2025)
+1. **Razorpay Payments** - Reported as failing
+2. **PDF Invoice Generation**
+3. **Centralized Item Intelligence Form** - Full implementation
+4. **Partner Portal** - B2B clients portal
 
-**CRITICAL FIX: Platform-wide notification failures**
+## Technical Architecture
 
-**Central Dispatcher Created (`/app/backend/central_dispatcher.py`):**
-- Single point of entry for ALL actions
-- Guarantees: Notification → Service Desk Ticket → Unified Inbox
-- Provides: dispatch_action(), dispatch_concierge_request(), dispatch_booking(), dispatch_order()
-- Includes integrity guards and auto-fix capabilities
-
-**Travel Routes Fixed (`/app/backend/travel_routes.py`):**
-- Added notification creation (lines 278-301)
-- Added service_desk_tickets insert (line 268)
-- Added channel_intakes insert (lines 305-342)
-- Book Cab now creates all 3 entries
-
-**Fit Routes Fixed (`/app/backend/fit_routes.py`):**
-- Complete rewrite with full unified flow
-- Notification (lines 82-113)
-- Ticket (lines 116-166)  
-- Inbox (lines 169-207)
-- Ask Concierge (Fit) now creates all 3 entries
-
-**Care Routes (Fixed in Phase 48):**
-- Grooming requests create notifications
-
-### Confirmed Unified Flow Working:
-- ✅ Book Cab → Notification + Ticket + Inbox
-- ✅ Ask Concierge (Travel) → Notification + Ticket + Inbox  
-- ✅ Ask Concierge (Fit) → Notification + Ticket + Inbox
-- ✅ Grooming (Care) → Notification + Ticket + Inbox
-- ✅ Celebrate → Mira present + same flow
-- ✅ **Enjoy RSVP** → Notification + Ticket + Inbox (verified)
-- ✅ **Stay Booking** → Notification + Ticket + Inbox (verified)
-- ✅ **Universal Search** → Creates search signal ticket with intent detection
-- ✅ **Dine Reservations** → Notification + Ticket + Inbox (verified)
-- ✅ **Unified Service Booking** → Notification + Ticket + Inbox (verified)
-- ✅ **Concierge Requests** → Notification + Ticket + Inbox (verified)
-
-### Intelligent Search Features:
-- Search is now an **intent capture surface**, not just product search
-- Every search (≥3 chars) creates:
-  - Signal ticket (status: "signal")
-  - Notification
-  - Unified Inbox entry
-- **Intent Detection**: booking_intent, order_intent, discovery_intent, question_intent, support_intent
-- **Intelligent Suggestions**: Returns actionable CTAs based on detected intent
-- Context-aware: Uses member_email, pet_name, current_pillar for personalization
-
-### Remaining Pillars to Verify:
-- Advisory requests (need to check)
-
----
-
-## What's Been Implemented
-
-### Phase 39: Dine Form UX Improvements (Jan 29, 2025)
-
-**Dine Page Reservation Form Updates (`/app/frontend/src/pages/DinePage.jsx`):**
-- Changed "Phone" field label to "WhatsApp" with green icon indicator
-- Added placeholder text: "+91 98765 43210"
-- Updated success message to mention WhatsApp confirmation
-- Added auto-population of Special Requests field with pet names when pets are selected
-- Dynamic placeholder showing selected pet names in the special requests textarea
-
-### Phase 40: Pulse Quick Commands Restored (Jan 29, 2025)
-
-**Pulse Voice Assistant Updates (`/app/frontend/src/components/Pulse.jsx`):**
-- Restored quick command buttons at the bottom of Pulse modal
-- Commands are personalized with pet name (e.g., "Treats for Mynx", "Groom Mynx")
-- 6 quick actions: Treats, Grooming, Vet, Food, Birthday, Boarding
-- Click auto-fills input and sends command automatically
-- Commands navigate to appropriate pages with context
-- Enhanced response messages to be more engaging and personalized
-- Quick commands only show on initial state (hide after conversation starts)
-
-### Phase 41: Celebrate Pillar - Mobile-First World-Class Redesign (Jan 29, 2025)
-
-**Complete redesign of `/app/frontend/src/pages/CelebratePage.jsx` following pillar layout rules:**
-
-**Hero Section:**
-- Immersive full-height hero with beautiful dog celebration image
-- Gradient overlay for text contrast
-- "Celebrate Pillar" tag, bold headline, short subhead
-- Thumb-friendly stacked CTAs on mobile, side-by-side on desktop
-- Floating celebration emojis with animations
-
-**Category Quick Access:**
-- Horizontal scroll on mobile (6 categories)
-- 6-column grid on desktop
-- Emoji icons with labels: Birthday Cakes, Breed Cakes, Pupcakes, Treats, Gift Hampers, Party Items
-
-**Concierge Section (following rules):**
-- Single-column layout (NOT tiles/grids)
-- Centered with max-width constraint on desktop
-- 3 service experiences: Ultimate Birthday Bash, Gotcha Day Special, Pawty Planning Pro
-- Each card: icon, title, tagline, description
-- Single clear CTA: "Chat with Celebrate Concierge"
-- "Free consultation • Response within minutes" reassurance
-
-**Product Section (following rules):**
-- 2 tiles per row on mobile
-- 4 tiles per row on desktop
-- Square images (1:1 aspect ratio)
-- Card anatomy: Image, Name (max 2 lines), Price, Key tag (Eggless/Veg/Bestseller)
-- Quick Add button on hover (desktop)
-- Sale badge for discounted items
-
-**How It Works Section:**
-- 2x2 grid on mobile, 4-column on desktop
-- Simple 4 steps: Share → Plan → Execute → Celebrate
-
-**Bottom CTA:**
-- Gradient background
-- "Ready to Celebrate?" headline
-- Two CTAs: Start Planning, Shop Products
-
-### Phase 38: Mobile-First UI Masterpiece (Jan 29, 2025)
-
-**Design System Updates:**
-- Created comprehensive design guidelines in `/app/design_guidelines.json`
-- Theme: "Pet Life OS" - Premium, warm, intelligent aesthetic
-- Colors: Deep Teal (#0F766E), Warm Amber (#D97706), Organic Stone backgrounds
-- Typography: Manrope (headings), Inter (body), Syne (special/soul journey)
-
-**CSS Updates (`/app/frontend/src/index.css`):**
-- 300+ lines of premium mobile-first styles
-- Mobile bottom navigation bar styles (glass morphism)
-- Pulse FAB button with glow animation
-- Bento grid layout system
-- Premium card styles (glass, gradient)
-- Soul Journey mystical styling
-- Micro-animations: fadeInUp, pulse-glow, float, hover-lift
-- Mobile-safe bottom padding
-
-**New Components:**
-- `MobileNavBar.jsx` - Premium floating bottom navigation
-  - Glass morphism backdrop blur
-  - Center Pulse FAB button
-  - Home, Services, Pulse, Orders, Profile
-
-**Bug Fixes:**
-- Pet Soul Journey page crash (TypeError: ACHIEVEMENTS.find)
-- Pulse voice assistant command processing and personalization
-- Quick Score Boost localStorage key mismatch
-- Service Desk consolidation (removed redundant ConciergeCommandCenter)
-
----
-
-## Current Status
-
-### Phase 42: Pillar-Specific Mira with Voice (Pulse) Integration (Jan 29, 2025)
-
-**MiraContextPanel Voice Enhancement (`/app/frontend/src/components/MiraContextPanel.jsx`):**
-- Integrated full voice capabilities (formerly "Pulse") into the pillar-specific Mira panel
-- **Voice Input**: Web Speech API recognition with inline mic button
-- **Voice Output**: Text-to-speech for Mira responses using SpeechSynthesis API
-- **Pulse Button**: Cyan button in header triggers voice mode
-- **Voice Toggle**: ON/OFF button to control TTS responses
-- **Time-Aware Greetings**: Dynamic greetings based on time of day
-- **Pillar-Specific Styling**: 
-  - Advisory: Purple gradient (`from-purple-500 to-violet-600`)
-  - Care: Rose/Pink gradient (`from-rose-500 to-pink-600`)
-  - Emergency: Red gradient (`from-red-500 to-rose-600`)
-- **Mobile z-index fix**: Panel now positioned at `z-[10000]` and `bottom-20` to avoid overlap with floating contact button
-- **Chat features preserved**: Ask Mira, Plan My {Pillar}, quick prompts all working with voice
-
-### Phase 43: Mira as the Soul - Conversation → Ticket Flow (Jan 29, 2025)
-
-**The Complete Flow:**
 ```
-User (Voice/Text) → Mira detects intent → Auto-creates ticket → Service Desk → Concierge responds
+/app
+├── backend/
+│   ├── server.py              # Main FastAPI server, route registrations
+│   ├── timestamp_utils.py     # UTC timestamp utility (standardized)
+│   ├── mira_routes.py         # Mira AI chat & context endpoints
+│   ├── concierge_routes.py    # FIXED: Concierge experience requests
+│   ├── celebrate_routes.py    # FIXED: Celebrate requests
+│   ├── learn_routes.py        # FIXED: Learn/training requests
+│   ├── fit_routes.py          # Fit pillar (working)
+│   ├── care_routes.py         # Care pillar (working)
+│   ├── travel_routes.py       # Travel pillar (working)
+│   └── checkout_routes.py     # Checkout & GST calculations
+│
+├── frontend/src/
+│   ├── components/
+│   │   ├── MiraAI.jsx           # FIXED: Quick actions
+│   │   ├── MiraContextPanel.jsx # FIXED: Pillar suggestion links
+│   │   ├── UnifiedCheckout.jsx  # TODO: GST/Shipping order
+│   │   └── ui/                  # Shadcn components
+│   ├── pages/
+│   │   ├── Admin.jsx            # Admin panel (working)
+│   │   ├── FitPage.jsx          # Fit pillar (working)
+│   │   ├── CarePage.jsx         # Care pillar (working)
+│   │   └── ...
+│   └── utils/
+│       └── unifiedApi.js        # Central API client for unified flow
+│
+└── memory/
+    └── PRD.md                   # This file
 ```
 
-**Backend Enhancements (`/app/backend/mira_routes.py`):**
-- **Ticket Confirmation in Response**: When a concierge action is detected, Mira now includes ticket ID in response
-- **New `/api/mira/my-requests` Endpoint**: Allows users to check status of their requests
-- **Status Query Detection**: Mira recognizes "What's the status of my request?" and fetches relevant tickets
-- **Service Desk Integration**: Every actionable conversation creates both:
-  - `mira_ticket` (conversation record)
-  - `service_desk_ticket` (human concierge action item)
+## Key API Endpoints
 
-**Frontend Enhancements:**
-- **Ticket Toast Notification**: Shows "Request #XXX created!" when concierge action is triggered
-- **In-Chat Ticket Confirmation**: Displays "📋 Request #XXX created. Our live concierge will get back to you shortly!"
-- Both `MiraContextPanel.jsx` and `MiraAI.jsx` updated with ticket display logic
+### Unified Flow Endpoints (All Working)
+- `POST /api/fit/request` - Fit requests → Notification + Ticket + Inbox
+- `POST /api/care/request` - Care requests → Notification + Ticket + Inbox
+- `POST /api/travel/request` - Travel requests → Notification + Ticket + Inbox
+- `POST /api/concierge/experience-request` - Concierge cards → Notification + Ticket + Inbox
+- `POST /api/celebrate/requests` - Celebrate requests → Notification + Ticket + Inbox
+- `POST /api/learn/request` - Learn requests → Notification + Ticket + Inbox
+- `GET /api/search/universal?create_signal=true` - Search → Notification + Ticket + Inbox
 
-**Ticket Status Tracking:**
-- Status states with visual indicators:
-  - ⏳ Pending (yellow)
-  - 📥 Received (blue)
-  - 🔄 Being Reviewed (yellow)
-  - ⚙️ Working on it (orange)
-  - ✅ Confirmed (green)
-  - 🎉 Completed (green)
-  - 🚨 Urgent Response (red - Emergency)
+### Admin Panel Endpoints
+- `GET /api/admin/notifications` - Admin notifications list
+- `GET /api/tickets` - Service desk tickets
+- `GET /api/channels/intakes` - Unified inbox entries
 
-### Phase 44: Member Dashboard - My Requests Section (Jan 29, 2025)
-
-**Frontend (`/app/frontend/src/pages/MemberDashboard.jsx`):**
-- **New "My Requests" Tab**: Full tab with ticket listing, status badges, and refresh button
-- **Quick Access Card**: Overview tab shows top 2 active requests for at-a-glance view
-- **Status Display**: Color-coded badges (green/yellow/blue/red/orange) with icons
-- **Request Details**: Shows ticket ID, pillar, description, pet name, timestamp
-- **Empty State**: Encourages users to chat with Mira to create requests
-
-### Phase 45: Proactive Notifications Engine (Jan 29, 2025)
-
-**Backend (`/app/backend/proactive_notifications.py`):**
-- **Vaccination Reminders**: Checks pets with vaccinations due within 7 days
-- **Birthday Reminders**: Detects upcoming pet birthdays
-- **Ticket Updates**: Notifies on status changes (acknowledged, confirmed, completed)
-- **Order Updates**: Shipped/delivered notifications (template ready)
-- **Concierge Responses**: Alert when human concierge replies
-
-**Notification Templates:**
-- 💉 Vaccination Reminder: "{pet_name}'s {vaccine} is due in {days} days"
-- 🎂 Birthday Reminder: "{pet_name}'s birthday is in {days} days!"
-- 📋 Ticket Update: "Your {pillar} request #{ticket_id} is now {status}"
-- 📦 Order Shipped/Delivered
-- 💬 Concierge Update
-- ✨ Mira's Insight
-
-**API Endpoints:**
-- `POST /api/notifications/check` - Trigger proactive notification check
-- `POST /api/notifications/send-test` - Send test notification
-- `GET /api/notifications/history/{email}` - Get notification history
-
-### Phase 46: WhatsApp → Ticket Sync (Jan 29, 2025)
-
-**Backend (`/app/backend/channel_intake.py`):**
-- **WhatsApp Webhook Handler**: `POST /api/channels/whatsapp/webhook`
-  - Supports multiple formats: Meta Business API, direct webhooks
-  - Auto-detects member by phone number
-  - Creates/updates WhatsApp conversation threads
-  - Auto-creates Service Desk tickets
-  - Auto-detects pillar from message content
-  
-- **WhatsApp Threads Management:**
-  - `GET /api/channels/whatsapp/threads` - List all threads
-  - `GET /api/channels/whatsapp/threads/{id}` - Get specific thread with linked ticket
-  - `POST /api/channels/whatsapp/threads/{id}/reply` - Reply to thread (concierge)
-
-**Multi-Channel Sync:**
-- All channels (Voice, WhatsApp, App Chat) create tickets in `service_desk_tickets`
-- Linked via `whatsapp_thread_id` for conversation continuity
-- Unified view in Admin Service Desk / Unified Inbox
-
-### Working Features ✅
-- **Pillar-specific Mira with Voice**: MiraContextPanel on ALL pillars including Advisory (purple), Care (pink), Emergency (red), **Celebrate (pink)** pages with Pulse voice capabilities
-- Product images loading from Shopify CDN
-- Pulse voice assistant opens and processes commands
-- Shop page displays products correctly
-- Dining reservation form with WhatsApp field
-- Service Desk ticket management
-- Pet Soul Journey with animations
-- Mobile bottom navigation
-- **Admin Product Refresh**: Product counts update immediately after delete (functional state updates)
-- **Care Settings Toggles**: All toggles save correctly via PUT /api/care/admin/settings
-- **Paw Points Breakdown**: Clickable card opens modal with transaction history
-- **CSV Import/Export**: Full functionality for products
-- **UNIFIED SIGNAL FLOW (CRITICAL)**: All signals now flow through: Notification → Service Desk → Unified Inbox → Contextual Views
-- **MIRA AFFIRMATIVE RESPONSE HANDLING (CRITICAL)**: Mira responds to "yes please", "yes", "ok", "go ahead" with follow-up questions. Never goes silent.
-- **MIRA GUARD CHECK**: Prevents empty/short responses - forces recovery response if LLM returns nothing
-- **CARE/GROOMING NOTIFICATIONS**: Grooming and care requests now create notifications (was missing)
-- **MOBILE NAVIGATION FIX**: Replaced window.location.href with navigate() for SPA navigation consistency
-
-### Phase 48: Critical Mobile + Mira Fixes (Jan 29, 2025)
-
-**Mira on Celebrate Pillar:**
-- Added MiraContextPanel to `/app/frontend/src/pages/CelebratePage.jsx`
-- Now consistent across ALL pillars
-
-**Care/Grooming Notification Fix:**
-- `/app/backend/care_routes.py` - create_care_request() now creates admin_notifications
-- Complete unified flow: Notification → Service Desk → Unified Inbox
-
-**Mobile Navigation Fix:**
-- `/app/frontend/src/pages/MemberDashboard.jsx` - Replaced window.location.href with navigate()
-- Affects: /treats, /my-pets, /pet-vault, /pet/{id}, /cakes, /celebrate, /products
-
-**Pet Soul Answer Notifications:**
-- `/app/backend/server.py` - Pet Soul answer endpoint creates milestone notifications
-- Fires on first answer or when crossing 25%, 50%, 75%, 100% completion
-
-### Mira End States (Valid)
-1. **RESPONDED** - Complete response delivered
-2. **ASKED_QUALIFYING_QUESTION** - Asked follow-up question
-3. **CONFIRMED_ACTION_IN_PROGRESS** - Action initiated
-4. **FAILED_VISIBLE_ERROR** - Error with retry option
-
-**FORBIDDEN**: Silence, empty response, spinner that never resolves
-
-### Known Issues (P1-P2)
-- **Paw Points Display**: Needs verification that loyalty_points shows correctly in all UI locations
-- **Pulse Personalization**: Shows "your pet" when not logged in (expected behavior) - needs logged-in verification
-- **WebSocket Instability**: Non-critical, deprioritized
-- **Razorpay Payments**: Blocked - awaiting API keys
-
-### Upcoming Tasks
-1. Complete mobile UI transformation on Member Dashboard
-2. Service Booking Flow mobile optimization
-3. Implement Service Tab Wizard
-4. Intelligent Shop Assistant with popups
-
-### Backlog
-- PDF Invoice Generation
-- Centralized Item Intelligence Form
-- WhatsApp Form Auto-population Audit
-- Partner Portal for B2B clients
-- Mira memory recall feature
-
-### Phase 47: Admin Panel Bug Fixes (Jan 29, 2025)
-
-**Product Refresh Fix (`/app/frontend/src/components/ProductManager.jsx`):**
-- Fixed stale closure issue in deleteProduct function
-- Uses functional state update: `setProducts(prevProducts => prevProducts.filter(...))`
-- Product count updates immediately after delete
-- Added success/error feedback with alerts
-
-**Care Settings Toggles (`/app/frontend/src/components/admin/CareManager.jsx`):**
-- Added `onCheckedChange` handlers to all Switch components
-- Implemented `updateSettings()` helper for nested state updates
-- Added `saveSettings()` function to persist changes via PUT API
-- Added "Save All Settings" button with loading state
-
-**Paw Points Breakdown Modal (`/app/frontend/src/pages/MemberDashboard.jsx`):**
-- Made Paw Points card clickable with `data-testid="paw-points-card"`
-- Added Dialog modal showing current balance and transaction history
-- Fetches from `GET /api/paw-points/history` endpoint
-- Includes "Redeem Points" button to navigate to rewards tab
-
-**CSV Import Fix (`/app/frontend/src/components/ProductManager.jsx`):**
-- Fixed import to use FormData instead of JSON body
-- Backend expects file upload via multipart/form-data
-
----
+### Mira AI Endpoints
+- `POST /api/mira/chat` - Chat with Mira
+- `POST /api/mira/context` - Get pillar-specific context
 
 ## Test Credentials
-- **Member**: test@petlifeos.com / test123 (owns pet "Mojo")
-- **Admin**: aditya / lola4304
+- **Member**: `dipali@clubconcierge.in` / `test123`
+- **Admin**: `aditya` / `lola4304`
 
-## Key Files
-- `/app/frontend/src/components/MiraContextPanel.jsx` - Pillar-specific Mira with voice (Pulse) capabilities
-- `/app/frontend/src/components/Pulse.jsx` - Voice assistant (DEPRECATED - now merged into MiraContextPanel)
-- `/app/frontend/src/components/MiraAI.jsx` - Generic floating Mira AI (for non-pillar pages)
-- `/app/frontend/src/pages/DinePage.jsx` - Dining & reservations
-- `/app/frontend/src/pages/ShopPage.jsx` - Product shop
-- `/app/backend/server.py` - Main API
-- `/app/frontend/src/components/ProductManager.jsx` - Admin product management with CSV import/export
-- `/app/frontend/src/components/admin/CareManager.jsx` - Care pillar admin with working settings toggles
-- `/app/frontend/src/pages/MemberDashboard.jsx` - Member dashboard with Paw Points breakdown modal
-- `/app/backend/concierge_routes.py` - Concierge request handling with UNIFIED SIGNAL FLOW
-- `/app/backend/mira_routes.py` - Mira AI chat with UNIFIED SIGNAL FLOW
-- `/app/backend/unified_signal_flow.py` - Universal signal processor module
+## Deployment
+- **Preview URL**: https://unified-signal-1.preview.emergentagent.com
+- **Production**: thedoggycompany.in (deploying tomorrow)
 
-## Unified Signal Flow Rule (CRITICAL SYSTEM RULE)
-**This is a hard system rule, not a feature request.**
-
-All signals must flow through:
-1. **NOTIFICATION** (logged first) - `admin_notifications` collection
-2. **SERVICE DESK** (ticket created) - `service_desk_tickets` collection  
-3. **UNIFIED INBOX** (consolidated view) - `channel_intakes` collection
-4. **CONTEXTUAL VIEWS** (pillar-specific) - Only after steps 1-3
-
-There is NO SUCH THING as a silent signal. If it occurs, it is routed.
-
-### Collections Involved:
-- `admin_notifications` - Reflex (immediate awareness)
-- `service_desk_tickets` - Memory (system of record)
-- `channel_intakes` - Awareness (consolidated inbox)
-- Pillar collections - Lenses (contextual views)
-
+---
+*Last Updated: January 29, 2026*
