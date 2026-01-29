@@ -1055,7 +1055,7 @@ async def update_travel_settings(settings: Dict[str, Any]):
         {"$set": {
             "key": "travel_settings",
             "value": settings,
-            "updated_at": datetime.now(timezone.utc).isoformat()
+            "updated_at": get_consistent_timestamp()
         }},
         upsert=True
     )
