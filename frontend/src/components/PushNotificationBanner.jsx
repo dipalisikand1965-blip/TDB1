@@ -98,7 +98,7 @@ const PushNotificationBanner = ({ userId, petName = 'your pup' }) => {
               Stay Connected with {petName}!
             </h3>
             <p className="text-sm text-gray-600 mt-0.5">
-              Get instant updates: Soul Whispers™, order tracking, celebration reminders & Meera's tips
+              Get instant updates: Soul Whispers™, order tracking, celebration reminders &amp; Meera&apos;s tips
             </p>
           </div>
         </div>
