@@ -177,19 +177,9 @@ const MiraAI = () => {
   const location = useLocation();
   const { user, token } = useAuth();
   
-  // Pages that already have MiraContextPanel - don't show floating button there
-  const pagesWithContextPanel = [
-    '/travel', '/stay', '/care', '/dine', '/celebrate', '/enjoy', 
-    '/shop', '/fit', '/advisory', '/paperwork', '/emergency', '/club',
-    '/ask-mira'
-  ];
-  
-  // Hide MiraAI on admin, agent pages, and pages with context panel
-  const hiddenPaths = ['/admin', '/agent', '/login'];
-  const hasContextPanel = pagesWithContextPanel.some(path => 
-    location.pathname.toLowerCase().startsWith(path)
-  );
-  const shouldHide = hiddenPaths.some(path => location.pathname.startsWith(path)) || hasContextPanel;
+  // Hide MiraAI on admin and agent pages only
+  const hiddenPaths = ['/admin', '/agent', '/login', '/mira'];
+  const shouldHide = hiddenPaths.some(path => location.pathname.startsWith(path));
   
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
