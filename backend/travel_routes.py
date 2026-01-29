@@ -129,8 +129,10 @@ async def create_travel_request(request: TravelRequestCreate):
     logger = get_logger()
     
     try:
-        # Generate request ID
+        # Generate IDs for unified flow
         request_id = f"TRV-{datetime.now().strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
+        notification_id = f"NOTIF-{uuid.uuid4().hex[:8].upper()}"
+        inbox_id = f"INBOX-{uuid.uuid4().hex[:8].upper()}"
         
         # Get travel type config
         travel_config = TRAVEL_TYPES.get(request.travel_type, TRAVEL_TYPES["cab"])
