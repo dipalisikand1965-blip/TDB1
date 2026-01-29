@@ -13,7 +13,7 @@
 
 ## What's Been Implemented
 
-### Phase 37: Pet Soul Journey Crash Fix & Service Desk Testing (Jan 29, 2025)
+### Phase 37: Pet Soul Journey Crash Fix & Pulse Voice Assistant Fixes (Jan 29, 2025)
 
 **Bug Fixes Completed:**
 
@@ -25,7 +25,19 @@
    - **Verification**: Page now loads at `/pet/{petId}?tab=personality` without errors
    - **Testing**: 100% pass rate (iteration_120, iteration_121)
 
-2. **Sample Tickets Seeded for Testing** (COMPLETED) ✅
+2. **Pulse Voice Assistant Not Working** (FIXED) ✅
+   - **Issue 1**: Reference error - `MIRA_VOICE_CONFIG` should be `PULSE_VOICE_CONFIG`
+     - **Fix**: Changed lines 802-803 in Pulse.jsx
+   - **Issue 2**: Commands were calling Mira API first (causing latency/incorrect responses)
+     - **Fix**: handleSend() now tries local COMMAND_PATTERNS matching FIRST
+   - **Issue 3**: Pet name not being fetched from URL on pet pages
+     - **Fix**: MiraFloatingButton.jsx now extracts petId from URL and fetches pet data
+   - **Files Modified**: 
+     - `/app/frontend/src/components/Pulse.jsx`
+     - `/app/frontend/src/components/MiraFloatingButton.jsx`
+   - **Testing**: 100% pass rate (iteration_122)
+
+3. **Sample Tickets Seeded for Testing** (COMPLETED) ✅
    - Created 4 sample tickets for Concierge Command Center testing:
      - TKT-SAMPLE-001: Mira AI Escalation - Travel Query
      - TKT-SAMPLE-002: Callback Request - Birthday Celebration
@@ -33,15 +45,14 @@
      - TKT-MIRA-001: Mira AI Escalation - Emergency Care
    - Tickets stored in `tickets` and `service_desk_tickets` collections
 
-3. **Admin Credentials Seeded** (COMPLETED) ✅
+4. **Admin Credentials Seeded** (COMPLETED) ✅
    - Created admin user: aditya / admin123
    - Stored in `admin_credentials` collection
 
 **Testing Results:**
 - Backend API: 100% (24/24 tests passed - iteration_120)
-- Frontend: 100% (4/4 tests passed - iteration_121)
-- Pet Soul Journey page verified working
-- All 8 Soul Questionnaire categories display correctly
+- Frontend Pet Soul: 100% (4/4 tests passed - iteration_121)
+- Frontend Pulse: 100% (7/7 tests passed - iteration_122)
 
 ---
 
