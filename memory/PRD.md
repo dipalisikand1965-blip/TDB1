@@ -165,6 +165,48 @@
       - `/app/frontend/src/components/MiraVoiceAssistant.jsx`
       - `/app/frontend/src/components/MiraFloatingButton.jsx`
 
+18. **Mira Encyclopedia - Comprehensive Voice Commands** (COMPLETED) ✅ (Jan 29, 2025)
+    - **50+ Voice Command Patterns** added covering ALL pet parent needs:
+      - 🚨 Health Escalation: sick, vomiting, emergency, poison, bleeding (auto-routes to Care Concierge)
+      - 🛒 Shopping: treats, food, toys, beds, collars, bowls, shampoo, reorder, cart, wishlist
+      - 💈 Grooming: grooming, bath, spa, nails, shedding
+      - 🏥 Health: vaccination, vet, tick/flea, allergy, weight, dental, ear, eye
+      - 🎂 Celebrations: birthday, gotcha day, gifts
+      - 🏨 Boarding: boarding, daycare, pet sitter
+      - ✈️ Travel: travel, pet-friendly, flight, train, cab, documents
+      - 🍽️ Dining: restaurant, cafe, pet cafe
+      - 🎾 Activities: walk, training, swimming, park
+      - 📋 Pet Profile: soul score, add pet, update, photo, breed, age
+      - 📱 Account: settings, orders, address, points, notifications
+      - 🔍 Discovery: recommend, new, sale, popular
+      - 📚 Learning: learn, puppy, senior
+      - 💔 Sensitive: farewell, adoption, lost pet
+      - 🤝 Support: help, contact, complaint, refund
+      - 🗣️ Social: hello, thanks, goodbye
+      - 🎤 Voice-specific: stop, repeat, unmute
+    - **Files Modified**: `/app/frontend/src/components/MiraVoiceAssistant.jsx`
+
+19. **Memory Recall Feature** (COMPLETED) ✅ (Jan 29, 2025)
+    - Mira now fetches relevant memories when opening
+    - Displays "I remember..." in opening message
+    - Backend endpoint: `GET /api/mira/memories`
+    - **Files Modified**:
+      - `/app/frontend/src/components/MiraVoiceAssistant.jsx`
+      - `/app/backend/mira_routes.py`
+
+20. **TDC Insight Explainer Tab** (COMPLETED) ✅ (Jan 29, 2025)
+    - Added persistent "TDC Insight" tab on dashboard
+    - Shows below Mira's Daily Tip
+    - One-click access to Pet Soul explainer video
+    - **File Modified**: `/app/frontend/src/pages/MemberDashboard.jsx`
+
+21. **Mobile Settings "Mira Can Understand"** (COMPLETED) ✅ (Jan 29, 2025)
+    - Mobile-only card showing voice command examples
+    - Sample commands: "Order treats", "Book grooming", etc.
+    - Quick "Try Mira Voice Now" button
+    - Hands-free experience promotion
+    - **File Modified**: `/app/frontend/src/pages/MemberDashboard.jsx`
+
 **Bug Fixes Verified Working:**
 - ✅ Pet Soul Answer Saving (API tested)
 - ✅ Wishlist Add/Get (API tested)
