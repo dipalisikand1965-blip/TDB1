@@ -986,43 +986,53 @@ const Pulse = ({
   
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
-      <Card className="w-full sm:max-w-md h-[85vh] sm:h-[600px] bg-white sm:rounded-3xl rounded-t-3xl shadow-2xl flex flex-col overflow-hidden" data-testid="mira-voice-assistant">
-        {/* Header */}
-        <div className="bg-gradient-to-r from-purple-600 via-pink-500 to-orange-400 p-4 text-white flex-shrink-0">
+      <Card className="w-full sm:max-w-md h-[85vh] sm:h-[600px] bg-white sm:rounded-3xl rounded-t-3xl shadow-2xl flex flex-col overflow-hidden" data-testid="pulse-voice-assistant">
+        {/* PULSE Header - Electric Cyan/Blue gradient */}
+        <div className="bg-gradient-to-r from-cyan-500 via-blue-500 to-indigo-500 p-4 text-white flex-shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className={`w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center text-2xl backdrop-blur-sm ${isSpeaking ? 'animate-bounce-gentle' : ''}`}>
-                🐕‍🦺
+              <div className={`w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm ${isListening ? 'animate-pulse' : ''}`}>
+                <Zap className="w-7 h-7 text-yellow-300" />
               </div>
               <div>
-                <h2 className="font-bold text-lg">Mira</h2>
-                <p className="text-white/80 text-xs">AI Concierge • Voice & Chat</p>
+                <h2 className="font-bold text-lg flex items-center gap-2">
+                  Pulse
+                  <Activity className="w-4 h-4 text-yellow-300" />
+                </h2>
+                <p className="text-white/80 text-xs">Voice → Mira</p>
               </div>
             </div>
             <button onClick={onClose} className="p-2 hover:bg-white/20 rounded-full">
               <X className="w-5 h-5" />
             </button>
           </div>
-          {/* Unified indicator */}
-          <div className="mt-2 flex items-center gap-2 text-xs text-white/70">
-            <span className="px-2 py-0.5 bg-white/20 rounded-full">💬 Chat</span>
-            <span className="px-2 py-0.5 bg-white/20 rounded-full">🎤 Voice</span>
-            <span className="px-2 py-0.5 bg-white/20 rounded-full">🧠 Memories</span>
+          {/* Flow indicator */}
+          <div className="mt-2 flex items-center gap-2 text-xs text-white/80">
+            <span className="px-2 py-0.5 bg-white/20 rounded-full flex items-center gap-1">
+              <Mic className="w-3 h-3" /> Capture
+            </span>
+            <span className="text-yellow-300">→</span>
+            <span className="px-2 py-0.5 bg-white/20 rounded-full flex items-center gap-1">
+              <Zap className="w-3 h-3" /> Structure
+            </span>
+            <span className="text-yellow-300">→</span>
+            <span className="px-2 py-0.5 bg-purple-400/50 rounded-full">🧠 Mira</span>
           </div>
         </div>
         
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gradient-to-b from-purple-50/50 to-white">
+        <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gradient-to-b from-cyan-50/30 to-white">
           {messages.map((msg, idx) => (
             <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div className={`max-w-[85%] rounded-2xl p-3 ${
                 msg.role === 'user' 
-                  ? 'bg-purple-600 text-white rounded-br-md' 
-                  : 'bg-white border border-purple-100 shadow-sm rounded-bl-md'
+                  ? 'bg-blue-600 text-white rounded-br-md' 
+                  : 'bg-white border border-cyan-100 shadow-sm rounded-bl-md'
               }`}>
-                {msg.role === 'mira' && (
+                {msg.role === 'pulse' && (
                   <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-medium text-purple-600">🐕‍🦺 Mira</span>
+                    <Zap className="w-3 h-3 text-cyan-500" />
+                    <span className="text-xs font-medium text-cyan-600">Pulse</span>
                   </div>
                 )}
                 <p className={`text-sm leading-relaxed ${msg.role === 'user' ? 'text-white' : 'text-gray-700'}`}>
@@ -1034,10 +1044,10 @@ const Pulse = ({
           
           {isProcessing && (
             <div className="flex justify-start">
-              <div className="bg-white border border-purple-100 rounded-2xl rounded-bl-md p-3 shadow-sm">
+              <div className="bg-white border border-cyan-100 rounded-2xl rounded-bl-md p-3 shadow-sm">
                 <div className="flex items-center gap-2">
-                  <Loader2 className="w-4 h-4 text-purple-500 animate-spin" />
-                  <span className="text-sm text-gray-500">Mira is typing...</span>
+                  <Loader2 className="w-4 h-4 text-cyan-500 animate-spin" />
+                  <span className="text-sm text-gray-500">Routing to Mira...</span>
                 </div>
               </div>
             </div>
