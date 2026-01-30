@@ -2873,6 +2873,11 @@ const Admin = () => {
           </div>
         )}
 
+        {/* Engagement Tab - Phase 1 Features */}
+        {activeTab === 'engagement' && (
+          <AdminEngagement />
+        )}
+
         {/* Discount Codes Tab */}
         {activeTab === 'discounts' && (
           <div className="space-y-6">
