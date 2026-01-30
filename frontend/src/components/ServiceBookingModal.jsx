@@ -597,54 +597,58 @@ const ServiceBookingModal = ({
           </div>
         )}
         
-        {/* Step 4: Review & Confirm */}
+        {/* Step 4: Review & Confirm - Mobile Optimized */}
         {!bookingComplete && step === 4 && (
-          <div className="space-y-4">
-            <h3 className="font-semibold text-gray-900">Review Booking</h3>
+          <div className="space-y-3 sm:space-y-4">
+            <h3 className="font-semibold text-gray-900 text-sm sm:text-base">Review Booking</h3>
             
-            <Card className="p-4 bg-gray-50">
-              <div className="space-y-3">
-                <div className="flex justify-between pb-3 border-b">
-                  <span className="text-gray-500">Service</span>
-                  <span className="font-medium">{service.subServices.find(s => s.id === selectedSubService)?.name}</span>
+            <Card className="p-3 sm:p-4 bg-gray-50">
+              <div className="space-y-2 sm:space-y-3">
+                <div className="flex justify-between pb-2 sm:pb-3 border-b gap-2">
+                  <span className="text-gray-500 text-sm">Service</span>
+                  <span className="font-medium text-sm text-right">{service.subServices.find(s => s.id === selectedSubService)?.name}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Pet</span>
-                  <span className="font-medium">{formData.petName} ({formData.petBreed || 'Not specified'})</span>
+                <div className="flex justify-between gap-2">
+                  <span className="text-gray-500 text-sm">Pet</span>
+                  <span className="font-medium text-sm text-right">{formData.petName} {formData.petBreed && `(${formData.petBreed})`}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Location</span>
-                  <span className="font-medium">{selectedLocation === 'home' ? 'At Home' : 'Salon/Clinic'}</span>
+                <div className="flex justify-between gap-2">
+                  <span className="text-gray-500 text-sm">Location</span>
+                  <span className="font-medium text-sm">{selectedLocation === 'home' ? 'At Home' : 'Salon/Clinic'}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Date</span>
-                  <span className="font-medium">{formData.preferredDate}</span>
+                <div className="flex justify-between gap-2">
+                  <span className="text-gray-500 text-sm">Date</span>
+                  <span className="font-medium text-sm">{formData.preferredDate}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Time</span>
-                  <span className="font-medium">{formData.preferredTime}</span>
+                <div className="flex justify-between gap-2">
+                  <span className="text-gray-500 text-sm">Time</span>
+                  <span className="font-medium text-sm">{formData.preferredTime}</span>
                 </div>
                 {selectedLocation === 'home' && (
-                  <div className="pt-3 border-t">
-                    <span className="text-gray-500 text-sm">Address</span>
-                    <p className="text-sm mt-1">{formData.address}</p>
+                  <div className="pt-2 sm:pt-3 border-t">
+                    <span className="text-gray-500 text-xs sm:text-sm">Address</span>
+                    <p className="text-xs sm:text-sm mt-1 text-gray-700">{formData.address}</p>
                   </div>
                 )}
               </div>
             </Card>
             
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm text-amber-800">
-              <AlertCircle className="w-4 h-4 inline mr-2" />
-              Our team will contact you to confirm availability and pricing before the appointment.
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-2.5 sm:p-3 text-xs sm:text-sm text-amber-800">
+              <AlertCircle className="w-4 h-4 inline mr-1.5" />
+              Our team will confirm availability and pricing before the appointment.
             </div>
           </div>
         )}
         
-        {/* Navigation Buttons */}
+        {/* Navigation Buttons - Mobile Optimized with Sticky Footer */}
         {!bookingComplete && (
-          <div className="flex justify-between pt-4 border-t mt-6">
+          <div className="flex justify-between items-center pt-3 sm:pt-4 border-t mt-4 sm:mt-6 gap-3">
             {step > 1 ? (
-              <Button variant="outline" onClick={() => setStep(s => s - 1)}>
+              <Button 
+                variant="outline" 
+                onClick={() => setStep(s => s - 1)}
+                className="min-h-[44px] px-4 sm:px-6"
+              >
                 Back
               </Button>
             ) : (
@@ -655,7 +659,7 @@ const ServiceBookingModal = ({
               <Button 
                 onClick={() => setStep(s => s + 1)}
                 disabled={!canProceed()}
-                className={`bg-gradient-to-r ${service.gradient} hover:opacity-90`}
+                className={`bg-gradient-to-r ${service.gradient} hover:opacity-90 min-h-[44px] px-4 sm:px-6 flex-1 sm:flex-none max-w-[200px]`}
               >
                 Continue <ChevronRight className="w-4 h-4 ml-1" />
               </Button>
@@ -663,7 +667,7 @@ const ServiceBookingModal = ({
               <Button
                 onClick={handleSubmit}
                 disabled={isSubmitting}
-                className={`bg-gradient-to-r ${service.gradient} hover:opacity-90`}
+                className={`bg-gradient-to-r ${service.gradient} hover:opacity-90 min-h-[44px] px-4 sm:px-6 flex-1 sm:flex-none`}
                 data-testid="booking-submit"
               >
                 {isSubmitting ? (
