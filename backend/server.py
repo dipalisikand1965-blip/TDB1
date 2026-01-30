@@ -3184,6 +3184,132 @@ async def force_seed_all_products():
             await db.products.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
         results["seeded"]["insure"] = len(insure_products)
         
+        # ========== FEED & NUTRITION BUNDLES ==========
+        nutrition_bundles = [
+            {
+                "id": "bundle-nutrition-starter",
+                "name": "Nutrition Starter Pack",
+                "description": "Everything you need to start your pet's healthy diet journey",
+                "pillar": "care",
+                "category": "feed",
+                "items": [
+                    {"name": "Nutrition Consultation", "price": 1499},
+                    {"name": "Custom Meal Plan", "price": 799},
+                    {"name": "Supplement Guide", "price": 499}
+                ],
+                "original_price": 2797,
+                "bundle_price": 2199,
+                "savings": 598,
+                "duration": "One-time",
+                "tags": ["Nutrition", "Bundle", "Starter", "Care", "Feed"]
+            },
+            {
+                "id": "bundle-nutrition-premium",
+                "name": "Premium Nutrition Programme",
+                "description": "Complete nutrition management with ongoing support",
+                "pillar": "care",
+                "category": "feed",
+                "items": [
+                    {"name": "Nutrition Consultation", "price": 1499},
+                    {"name": "Weight Management Programme", "price": 3999},
+                    {"name": "Monthly Check-ins (3 months)", "price": 1500},
+                    {"name": "Recipe Book", "price": 499}
+                ],
+                "original_price": 7497,
+                "bundle_price": 5999,
+                "savings": 1498,
+                "duration": "3 months",
+                "tags": ["Nutrition", "Bundle", "Premium", "Care", "Feed"]
+            },
+            {
+                "id": "bundle-puppy-nutrition",
+                "name": "Puppy Nutrition Bundle",
+                "description": "Set your puppy up for a lifetime of healthy eating",
+                "pillar": "care",
+                "category": "feed",
+                "items": [
+                    {"name": "Puppy Nutrition Programme", "price": 1999},
+                    {"name": "Growth Stage Meal Plans", "price": 999},
+                    {"name": "Puppy Supplement Pack", "price": 799}
+                ],
+                "original_price": 3797,
+                "bundle_price": 2999,
+                "savings": 798,
+                "duration": "6 months",
+                "tags": ["Nutrition", "Bundle", "Puppy", "Care", "Feed"]
+            }
+        ]
+        
+        for b in nutrition_bundles:
+            b["created_at"] = get_utc_timestamp()
+            b["active"] = True
+            b["image"] = "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=800"
+            await db.care_bundles.update_one({"id": b["id"]}, {"$set": b}, upsert=True)
+        results["seeded"]["nutrition_bundles"] = len(nutrition_bundles)
+        
+        # ========== INSURE BUNDLES ==========
+        insure_bundles = [
+            {
+                "id": "bundle-insure-basic",
+                "name": "Insurance Essentials",
+                "description": "Get started with pet insurance the right way",
+                "pillar": "paperwork",
+                "category": "insure",
+                "items": [
+                    {"name": "Free Quote Comparison", "price": 0},
+                    {"name": "Policy Setup Assistance", "price": 499}
+                ],
+                "original_price": 499,
+                "bundle_price": 399,
+                "savings": 100,
+                "duration": "One-time",
+                "tags": ["Insure", "Bundle", "Basic", "Paperwork"]
+            },
+            {
+                "id": "bundle-insure-complete",
+                "name": "Complete Insurance Care",
+                "description": "Full insurance management from quote to claims",
+                "pillar": "paperwork",
+                "category": "insure",
+                "items": [
+                    {"name": "Quote Comparison", "price": 0},
+                    {"name": "Policy Review", "price": 499},
+                    {"name": "Claim Assistance (3 claims)", "price": 897},
+                    {"name": "Renewal Management", "price": 199}
+                ],
+                "original_price": 1595,
+                "bundle_price": 999,
+                "savings": 596,
+                "duration": "Annual",
+                "tags": ["Insure", "Bundle", "Complete", "Paperwork", "Premium"]
+            },
+            {
+                "id": "bundle-insure-annual",
+                "name": "Annual Insurance Concierge",
+                "description": "Year-round insurance management with unlimited support",
+                "pillar": "paperwork",
+                "category": "insure",
+                "items": [
+                    {"name": "Unlimited Claim Assistance", "price": 1999},
+                    {"name": "Policy Optimization", "price": 499},
+                    {"name": "Renewal Management", "price": 199},
+                    {"name": "24/7 Insurance Helpline", "price": 999}
+                ],
+                "original_price": 3696,
+                "bundle_price": 2499,
+                "savings": 1197,
+                "duration": "Annual",
+                "tags": ["Insure", "Bundle", "Annual", "Paperwork", "Premium", "Unlimited"]
+            }
+        ]
+        
+        for b in insure_bundles:
+            b["created_at"] = get_utc_timestamp()
+            b["active"] = True
+            b["image"] = "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800"
+            await db.paperwork_bundles.update_one({"id": b["id"]}, {"$set": b}, upsert=True)
+        results["seeded"]["insure_bundles"] = len(insure_bundles)
+        
         # Calculate total
         results["total"] = sum(results["seeded"].values())
         
