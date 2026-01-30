@@ -1,7 +1,7 @@
 /**
  * FitPage.jsx
  * Premium Pillar Page - Fit (Fitness & Wellness)
- * Airbnb-inspired services layout with expandable cards and detail modals
+ * MakeMyTrip-inspired services layout with smart recommendations
  */
 
 import React, { useState, useEffect } from 'react';
@@ -13,10 +13,8 @@ import { Label } from '../components/ui/label';
 import { Badge } from '../components/ui/badge';
 import { Textarea } from '../components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../components/ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { API_URL } from '../utils/api';
-import { createFitRequest, bookService, showUnifiedFlowSuccess, showUnifiedFlowError } from '../utils/unifiedApi';
+import { createFitRequest, showUnifiedFlowSuccess, showUnifiedFlowError } from '../utils/unifiedApi';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
@@ -26,18 +24,15 @@ import ProductCard from '../components/ProductCard';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import SEOHead from '../components/SEOHead';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
-// New MakeMyTrip-style components for sleek UI
-import PillarServiceCard from '../components/PillarServiceCard';
+// MakeMyTrip-style components for sleek UI
 import PillarServicesGrid from '../components/PillarServicesGrid';
 import MiraPillarRecommendations from '../components/MiraPillarRecommendations';
 import {
   Dumbbell, Heart, TrendingUp, Scale, Activity, Trophy,
   CheckCircle, ChevronRight, Sparkles, Star, Loader2, Send,
-  ArrowRight, Play, ChevronDown, Target, Zap, Timer, PawPrint,
-  Users, Calendar, MapPin, Award, ShoppingBag, AlertCircle,
-  Clock, ArrowUpRight, Plus, Check, X, Phone, Package, Shield,
-  MessageCircle, Info, ChevronUp, Bookmark, Share2, ExternalLink,
-  ShoppingCart
+  ArrowRight, Play, ChevronDown, Target, Zap, PawPrint,
+  Calendar, Award, ShoppingBag, Clock, X, Phone, Package,
+  MessageCircle, Bookmark, Share2, ShoppingCart
 } from 'lucide-react';
 
 // Elevated Concierge® Fit Experiences
