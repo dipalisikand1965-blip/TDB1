@@ -1217,30 +1217,30 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite, onViewDetails, o
           )}
         </div>
 
-        {/* Pet Policy Snapshot */}
+        {/* Pet Policy Snapshot - Hidden on mobile for space */}
         {property.pet_policy_snapshot && (
-          <p className="text-sm text-gray-600 mb-3 line-clamp-2 flex items-start gap-1">
+          <p className="hidden sm:flex text-sm text-gray-600 mb-3 line-clamp-2 items-start gap-1">
             <Dog className="w-4 h-4 flex-shrink-0 mt-0.5" />
             {property.pet_policy_snapshot}
           </p>
         )}
 
-        {/* Badges */}
-        <div className="flex flex-wrap gap-1.5 mb-3">
-          {property.badges?.slice(0, 4).map((badge, idx) => (
-            <span key={idx} className={`text-xs px-2 py-0.5 rounded-full ${getBadgeColor(badge)}`}>
+        {/* Badges - Show fewer on mobile */}
+        <div className="flex flex-wrap gap-1 sm:gap-1.5 mb-2 sm:mb-3">
+          {property.badges?.slice(0, 2).map((badge, idx) => (
+            <span key={idx} className={`text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full ${getBadgeColor(badge)}`}>
               {badge}
             </span>
           ))}
-          {property.badges?.length > 4 && (
-            <span className="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
-              +{property.badges.length - 4} more
+          {property.badges?.length > 2 && (
+            <span className="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
+              +{property.badges.length - 2}
             </span>
           )}
         </div>
 
-        {/* Vibe Tags */}
-        <div className="flex flex-wrap gap-1 mb-4">
+        {/* Vibe Tags - Hidden on mobile */}
+        <div className="hidden sm:flex flex-wrap gap-1 mb-4">
           {property.vibe_tags?.slice(0, 3).map((vibe, idx) => (
             <span key={idx} className="text-xs text-gray-500 bg-gray-50 px-2 py-0.5 rounded">
               {vibe}
