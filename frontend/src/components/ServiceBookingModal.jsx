@@ -437,68 +437,77 @@ const ServiceBookingModal = ({
             {/* Stack on mobile, 2 cols on larger */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
-                <Label htmlFor="petName">Pet Name *</Label>
+                <Label htmlFor="petName" className="text-sm">Pet Name *</Label>
                 <Input
                   id="petName"
                   value={formData.petName}
                   onChange={(e) => setFormData(prev => ({ ...prev, petName: e.target.value }))}
                   placeholder="e.g., Bruno"
+                  className="h-11 sm:h-10"
                   data-testid="booking-pet-name"
                 />
               </div>
               <div>
-                <Label htmlFor="petBreed">Breed</Label>
+                <Label htmlFor="petBreed" className="text-sm">Breed</Label>
                 <Input
                   id="petBreed"
                   value={formData.petBreed}
                   onChange={(e) => setFormData(prev => ({ ...prev, petBreed: e.target.value }))}
                   placeholder="e.g., Labrador"
+                  className="h-11 sm:h-10"
                 />
               </div>
             </div>
             
             <div>
-              <Label htmlFor="petNotes">Special Notes (allergies, behavior, etc.)</Label>
+              <Label htmlFor="petNotes" className="text-sm">Special Notes (allergies, behavior)</Label>
               <Textarea
                 id="petNotes"
                 value={formData.petNotes}
                 onChange={(e) => setFormData(prev => ({ ...prev, petNotes: e.target.value }))}
                 placeholder="Any special requirements..."
                 rows={2}
+                className="text-base"
               />
             </div>
             
-            <h3 className="font-semibold text-gray-900 pt-4">Your Contact Details</h3>
-            <div className="grid grid-cols-2 gap-4">
+            <h3 className="font-semibold text-gray-900 pt-2 sm:pt-4 text-sm sm:text-base">Your Contact Details</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
-                <Label htmlFor="customerName">Your Name *</Label>
+                <Label htmlFor="customerName" className="text-sm">Your Name *</Label>
                 <Input
                   id="customerName"
                   value={formData.customerName}
                   onChange={(e) => setFormData(prev => ({ ...prev, customerName: e.target.value }))}
                   placeholder="Full name"
+                  className="h-11 sm:h-10"
                   data-testid="booking-customer-name"
                 />
               </div>
               <div>
-                <Label htmlFor="customerPhone">Phone *</Label>
+                <Label htmlFor="customerPhone" className="text-sm">Phone *</Label>
                 <Input
                   id="customerPhone"
+                  type="tel"
+                  inputMode="numeric"
                   value={formData.customerPhone}
                   onChange={(e) => setFormData(prev => ({ ...prev, customerPhone: e.target.value }))}
                   placeholder="10-digit number"
+                  className="h-11 sm:h-10"
                   data-testid="booking-customer-phone"
                 />
               </div>
             </div>
             <div>
-              <Label htmlFor="customerEmail">Email</Label>
+              <Label htmlFor="customerEmail" className="text-sm">Email</Label>
               <Input
                 id="customerEmail"
                 type="email"
+                inputMode="email"
                 value={formData.customerEmail}
                 onChange={(e) => setFormData(prev => ({ ...prev, customerEmail: e.target.value }))}
                 placeholder="your@email.com"
+                className="h-11 sm:h-10"
               />
             </div>
           </div>
