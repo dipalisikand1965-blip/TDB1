@@ -398,23 +398,24 @@ const ServiceBookingModal = ({
           </div>
         )}
         
-        {/* Step 2: Pet & Contact Details */}
+        {/* Step 2: Pet & Contact Details - Mobile Optimized */}
         {!bookingComplete && step === 2 && (
-          <div className="space-y-4">
-            <h3 className="font-semibold text-gray-900">Pet Details</h3>
+          <div className="space-y-3 sm:space-y-4">
+            <h3 className="font-semibold text-gray-900 text-sm sm:text-base">Pet Details</h3>
             
-            {/* Pet Selection */}
+            {/* Pet Selection - Horizontal Scroll on Mobile */}
             {userPets.length > 0 && (
-              <div className="mb-4">
-                <Label className="text-sm text-gray-600">Select from your pets</Label>
-                <div className="flex flex-wrap gap-2 mt-2">
+              <div className="mb-3 sm:mb-4">
+                <Label className="text-xs sm:text-sm text-gray-600">Select from your pets</Label>
+                <div className="flex overflow-x-auto gap-2 mt-2 pb-2 -mx-1 px-1 scrollbar-hide">
                   {userPets.map(pet => (
                     <button
                       key={pet.id}
                       onClick={() => handlePetSelect(pet.id)}
-                      className={`px-4 py-2 rounded-full border-2 text-sm transition-all ${
-                        selectedPetId === pet.id ? 'border-purple-500 bg-purple-50' : 'border-gray-200'
+                      className={`px-3 sm:px-4 py-2 rounded-full border-2 text-sm transition-all whitespace-nowrap flex-shrink-0 min-h-[40px] ${
+                        selectedPetId === pet.id ? 'border-purple-500 bg-purple-50 ring-1 ring-purple-200' : 'border-gray-200 active:bg-gray-50'
                       }`}
+                      data-testid={`pet-select-${pet.id}`}
                     >
                       <PawPrint className="w-4 h-4 inline mr-1" />
                       {pet.name}
@@ -422,17 +423,19 @@ const ServiceBookingModal = ({
                   ))}
                   <button
                     onClick={() => handlePetSelect('manual')}
-                    className={`px-4 py-2 rounded-full border-2 text-sm transition-all ${
-                      selectedPetId === 'manual' ? 'border-purple-500 bg-purple-50' : 'border-gray-200'
+                    className={`px-3 sm:px-4 py-2 rounded-full border-2 text-sm transition-all whitespace-nowrap flex-shrink-0 min-h-[40px] ${
+                      selectedPetId === 'manual' ? 'border-purple-500 bg-purple-50' : 'border-gray-200 active:bg-gray-50'
                     }`}
+                    data-testid="pet-select-manual"
                   >
-                    + Add New Pet
+                    + Add New
                   </button>
                 </div>
               </div>
             )}
             
-            <div className="grid grid-cols-2 gap-4">
+            {/* Stack on mobile, 2 cols on larger */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
                 <Label htmlFor="petName">Pet Name *</Label>
                 <Input
