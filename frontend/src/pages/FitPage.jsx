@@ -332,6 +332,7 @@ const FitPage = () => {
   const [bundles, setBundles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [heroIndex, setHeroIndex] = useState(0);
+  const [activeCategory, setActiveCategory] = useState('all');
   
   // UI states
   const [showDetailModal, setShowDetailModal] = useState(false);
