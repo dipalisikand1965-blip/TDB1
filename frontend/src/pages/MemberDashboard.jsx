@@ -3380,6 +3380,20 @@ const MemberDashboard = () => {
       {/* Mobile Bottom Navigation - Pet Life OS */}
       <MobileNavBar />
       
+      {/* Voice Quick Actions Modal - Phase 2 Feature */}
+      <VoiceQuickActions 
+        isOpen={showVoiceActions}
+        onClose={() => setShowVoiceActions(false)}
+        userId={user?.id}
+        petId={pets[0]?.id}
+        onActionComplete={(action) => {
+          if (action.type === 'open_chat') {
+            // Can trigger MiraAI chat here if needed
+            console.log('Voice action:', action);
+          }
+        }}
+      />
+      
       {/* Extra bottom padding for mobile nav */}
       <div className="h-24 md:hidden" />
     </div>
