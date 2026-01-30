@@ -1226,7 +1226,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', onClose }) => {
                                     {testimonial.score}/100
                                 </Badge>
                             </div>
-                            <p className="text-sm text-gray-700 italic">"{testimonial.feedback}"</p>
+                            <p className="text-sm text-gray-700 italic">&ldquo;{testimonial.feedback}&rdquo;</p>
                             <div className="flex items-center justify-between mt-2">
                                 <span className="text-xs text-gray-500">— {testimonial.member_name || 'Happy Pet Parent'}</span>
                                 {testimonial.pet_name && (
