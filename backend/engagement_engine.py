@@ -28,6 +28,86 @@ def set_database(database: AsyncIOMotorDatabase):
     global db
     db = database
 
+async def initialize_engagement_data():
+    """Auto-seed engagement data if collections are empty"""
+    if db is None:
+        logger.warning("Cannot initialize engagement data - database not set")
+        return
+    
+    try:
+        timestamp = datetime.now(timezone.utc)
+        
+        # Check and seed transformation stories
+        stories_count = await db.transformation_stories.count_documents({})
+        if stories_count == 0:
+            logger.info("Seeding transformation stories...")
+            stories = [
+                {
+                    "id": str(ObjectId()),
+                    "pet_name": "Bruno", "breed": "Labrador", "owner_name": "Priya M.",
+                    "before_image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop",
+                    "after_image": "https://images.unsplash.com/photo-1552053831-71594a27632d?w=200&h=200&fit=crop",
+                    "achievement": "Lost 4kg in 10 weeks",
+                    "testimonial": "The trainers understood Bruno perfectly!",
+                    "program": "Weight Journey Partner®", "rating": 5, "pillar": "fit", "is_active": True, "created_at": timestamp
+                },
+                {
+                    "id": str(ObjectId()),
+                    "pet_name": "Coco", "breed": "Beagle", "owner_name": "Rahul S.",
+                    "before_image": "https://images.unsplash.com/photo-1505628346881-b72b27e84530?w=200&h=200&fit=crop",
+                    "after_image": "https://images.unsplash.com/photo-1537151625747-768eb6cf92b2?w=200&h=200&fit=crop",
+                    "achievement": "From couch potato to agility star",
+                    "testimonial": "Coco won her first agility ribbon!",
+                    "program": "Active Lifestyle Curator®", "rating": 5, "pillar": "fit", "is_active": True, "created_at": timestamp
+                },
+                {
+                    "id": str(ObjectId()),
+                    "pet_name": "Max", "breed": "Golden Retriever", "owner_name": "Anita K.",
+                    "before_image": "https://images.unsplash.com/photo-1633722715463-d30f4f325e24?w=200&h=200&fit=crop",
+                    "after_image": "https://images.unsplash.com/photo-1601979031925-424e53b6caaa?w=200&h=200&fit=crop",
+                    "achievement": "Senior mobility restored",
+                    "testimonial": "At 11, Max is moving like a puppy again!",
+                    "program": "Senior Wellness Companion®", "rating": 5, "pillar": "fit", "is_active": True, "created_at": timestamp
+                },
+                {
+                    "id": str(ObjectId()),
+                    "pet_name": "Luna", "breed": "German Shepherd", "owner_name": "Vikram P.",
+                    "before_image": "https://images.unsplash.com/photo-1589941013453-ec89f33b5e95?w=200&h=200&fit=crop",
+                    "after_image": "https://images.unsplash.com/photo-1568572933382-74d440642117?w=200&h=200&fit=crop",
+                    "achievement": "Anxiety reduced, confidence gained",
+                    "testimonial": "Luna was always nervous. Training gave her confidence.",
+                    "program": "Wellness Architect®", "rating": 5, "pillar": "fit", "is_active": True, "created_at": timestamp
+                }
+            ]
+            await db.transformation_stories.insert_many(stories)
+            logger.info(f"✓ Seeded {len(stories)} transformation stories")
+        else:
+            logger.info(f"✓ Transformation stories exist: {stories_count}")
+        
+        # Check and seed quick win tips
+        tips_count = await db.quick_win_tips.count_documents({})
+        if tips_count == 0:
+            logger.info("Seeding quick win tips...")
+            tips = [
+                {"id": str(ObjectId()), "tip": "15-minute morning walks boost metabolism by 20%", "action": "Set reminder", "emoji": "🌅", "category": "weight", "pillar": "fit", "is_active": True, "created_at": timestamp},
+                {"id": str(ObjectId()), "tip": "Swimming burns 3x more calories than walking", "action": "Book session", "emoji": "🏊", "category": "weight", "pillar": "fit", "is_active": True, "created_at": timestamp},
+                {"id": str(ObjectId()), "tip": "Splitting meals into 3 portions aids digestion", "action": "View guide", "emoji": "🍽️", "category": "weight", "pillar": "fit", "is_active": True, "created_at": timestamp},
+                {"id": str(ObjectId()), "tip": "Short 5-min training sessions work best for puppies", "action": "View tips", "emoji": "🎯", "category": "puppy", "pillar": "fit", "is_active": True, "created_at": timestamp},
+                {"id": str(ObjectId()), "tip": "Socialization before 16 weeks shapes lifelong behavior", "action": "Find groups", "emoji": "🐕", "category": "puppy", "pillar": "fit", "is_active": True, "created_at": timestamp},
+                {"id": str(ObjectId()), "tip": "Gentle stretching maintains joint flexibility", "action": "View exercises", "emoji": "🧘", "category": "senior", "pillar": "fit", "is_active": True, "created_at": timestamp},
+                {"id": str(ObjectId()), "tip": "Raised food bowls reduce neck strain", "action": "Shop bowls", "emoji": "🥣", "category": "senior", "pillar": "fit", "is_active": True, "created_at": timestamp},
+                {"id": str(ObjectId()), "tip": "Interactive play strengthens your bond", "action": "Shop toys", "emoji": "💕", "category": "general", "pillar": "fit", "is_active": True, "created_at": timestamp},
+                {"id": str(ObjectId()), "tip": "Consistent meal times regulate energy levels", "action": "Set schedule", "emoji": "⏰", "category": "general", "pillar": "fit", "is_active": True, "created_at": timestamp},
+                {"id": str(ObjectId()), "tip": "A calm environment reduces anxiety", "action": "Learn more", "emoji": "🏡", "category": "general", "pillar": "fit", "is_active": True, "created_at": timestamp},
+            ]
+            await db.quick_win_tips.insert_many(tips)
+            logger.info(f"✓ Seeded {len(tips)} quick win tips")
+        else:
+            logger.info(f"✓ Quick win tips exist: {tips_count}")
+            
+    except Exception as e:
+        logger.error(f"Failed to initialize engagement data: {e}")
+
 # ==================== MODELS ====================
 
 class MilestoneType(BaseModel):
