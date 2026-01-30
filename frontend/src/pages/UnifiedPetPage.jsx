@@ -1136,11 +1136,12 @@ const UnifiedPetPage = () => {
               )}
             </div>
           </div>
+          </div>
         </div>
       </div>
 
-      {/* Tab Navigation */}
-      <div className="bg-white border-b sticky top-[57px] z-10 shadow-sm">
+      {/* Tab Navigation - Hidden on mobile (quick actions in hero), visible on desktop */}
+      <div className="hidden md:block bg-white border-b sticky top-[57px] z-10 shadow-sm">
         <div className="max-w-6xl mx-auto px-4">
           <Tabs value={activeTab} onValueChange={handleTabChange}>
             <TabsList className="h-14 w-full justify-start overflow-x-auto flex-nowrap bg-transparent gap-1">
