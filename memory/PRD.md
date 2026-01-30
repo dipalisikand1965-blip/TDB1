@@ -13,6 +13,48 @@ This flow must work across:
 
 ## What's Been Implemented (Session: Jan 30, 2026 - Latest)
 
+### ✅ AdminQuickEdit Button Overlap - FIXED
+
+**File**: `/app/frontend/src/components/AdminQuickEdit.jsx`
+
+**Changes**:
+- Repositioned to `top-24 right-6` (below navbar, well above Mira/Contact)
+- Changed from gradient button to subtle white/glass button that doesn't distract
+- Desktop (lg+): Full "Edit Page" button with icon
+- Tablet (md-lg): Compact icon-only button
+- Mobile: Hidden completely to avoid touch conflicts
+- Reduced z-index from 50 to 40 to prevent layering issues
+
+---
+
+### ✅ Cart UI Redesign - COMPLETED
+
+**File**: `/app/frontend/src/components/CartSidebar.jsx`
+
+**New Features**:
+1. **Sticky Header**: Cart icon with item count, always visible
+2. **Free Shipping Progress Bar**: Visual progress toward free shipping threshold
+3. **Animated Item Removal**: Slide-out animation when removing items
+4. **Modern Item Cards**: 
+   - Rounded corners with subtle shadows
+   - Autoship ribbon indicator at top
+   - Compact quantity controls with rounded buttons
+   - Per-item price breakdown
+5. **Beautiful Empty State**: Centered icon, friendly message, sparkles CTA
+6. **Sticky Footer Summary**:
+   - Subtotal, discounts, shipping breakdown
+   - Dashed divider before total
+   - Prominent total with strike-through for discounts
+   - Shadow effect for depth
+7. **Safe Checkout Badge**: Trust indicators at bottom
+8. **Mobile Optimizations**:
+   - Proper padding and spacing
+   - Touch-friendly buttons
+   - Scrollable items area
+   - Sticky header and footer
+
+---
+
 ### ✅ SERVICE BOOKING FLOW MOBILE OPTIMIZATION - COMPLETED
 
 **File**: `/app/frontend/src/components/ServiceBookingModal.jsx`
