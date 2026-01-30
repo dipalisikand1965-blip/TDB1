@@ -998,13 +998,24 @@ const FitPage = () => {
         </DialogContent>
       </Dialog>
       
-      {/* ==================== MIRA PANEL ==================== */}
-      <div className="hidden lg:block fixed right-4 top-24 w-72 z-30">
-        <MiraContextPanel pillar="fit" />
-      </div>
-      <div className="lg:hidden fixed bottom-20 right-4 w-80 max-w-[calc(100vw-2rem)] z-30">
-        <MiraContextPanel pillar="fit" position="bottom" />
-      </div>
+      {/* ==================== ANIMATED CONCIERGE MASCOT ==================== */}
+      <AnimatedConciergeMascot
+        petName={userPets[0]?.name}
+        suggestions={[
+          { text: userPets[0]?.name ? `Perfect picks for ${userPets[0].name}!` : 'Find the perfect fitness plan!', action: 'browse' },
+          { text: 'Popular services this week 🔥', action: 'trending' },
+          { text: 'Need help choosing?', action: 'ask' }
+        ]}
+        onSuggestionClick={(suggestion) => {
+          if (suggestion.action === 'browse') {
+            document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' });
+          } else if (suggestion.action === 'ask') {
+            navigate('/mira?context=fit');
+          }
+        }}
+        onAskMira={() => navigate('/mira?context=fit')}
+        position="right"
+      />
       
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="fit" position="bottom-left" />
