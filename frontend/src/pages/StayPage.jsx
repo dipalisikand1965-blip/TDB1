@@ -427,23 +427,70 @@ const StayPage = () => {
         </div>
       </div>
 
-      {/* === ELEVATED CONCIERGE® STAY EXPERIENCES === */}
-      <div className="py-16 bg-gradient-to-br from-emerald-50 via-teal-50 to-green-50">
+      {/* Properties Grid - FIRST after tabs (User requested: properties on top) */}
+      {activeTab === 'stays' && (
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl md:text-2xl font-bold text-gray-800">
+            {loading ? 'Loading...' : `${properties.length} Pet-Friendly Stays`}
+          </h2>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-500 hidden md:inline">View:</span>
+            <Button variant="outline" size="sm" className="hidden md:flex">
+              <Filter className="w-4 h-4 mr-1" /> Filters
+            </Button>
+          </div>
+        </div>
+
+        {loading ? (
+          <div className="flex justify-center py-20">
+            <Loader2 className="w-10 h-10 animate-spin text-green-600" />
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6">
+            {properties.map((property) => (
+              <PropertyCard 
+                key={property.id} 
+                property={property}
+                isFavorite={favorites.includes(property.id)}
+                onToggleFavorite={() => toggleFavorite(property.id)}
+                onViewDetails={() => setSelectedProperty(property)}
+                onBookNow={() => { setSelectedProperty(property); setShowBookingModal(true); }}
+                getPropertyTypeIcon={getPropertyTypeIcon}
+                getBadgeColor={getBadgeColor}
+                PawRatingDisplay={PawRatingDisplay}
+              />
+            ))}
+          </div>
+        )}
+
+        {!loading && properties.length === 0 && (
+          <div className="text-center py-20">
+            <Dog className="w-16 h-16 mx-auto text-gray-300 mb-4" />
+            <h3 className="text-xl font-semibold text-gray-600">No properties found</h3>
+            <p className="text-gray-500">Try adjusting your filters</p>
+          </div>
+        )}
+      </div>
+      )}
+
+      {/* === ELEVATED CONCIERGE® STAY EXPERIENCES - Now below properties === */}
+      <div className="py-12 md:py-16 bg-gradient-to-br from-emerald-50 via-teal-50 to-green-50">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-12">
+          <div className="text-center mb-8 md:mb-12">
             <div className="inline-flex items-center gap-2 bg-emerald-100 text-emerald-700 px-4 py-2 rounded-full mb-4">
               <Sparkles className="w-4 h-4" />
               <span className="text-sm font-medium">Elevated Experiences</span>
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-2xl md:text-4xl font-bold text-gray-900 mb-4">
               Stay <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-teal-600">Concierge®</span> Experiences
             </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              These aren't hotel searches — they're curated stays crafted around your pet's comfort, personality, and your travel vision. Every recommendation is personal.
+            <p className="text-gray-600 max-w-2xl mx-auto text-sm md:text-base">
+              These aren't hotel searches — they're curated stays crafted around your pet's comfort, personality, and your travel vision.
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             {STAY_EXPERIENCES.map((exp, idx) => (
               <ConciergeExperienceCard
                 key={idx}
@@ -459,7 +506,7 @@ const StayPage = () => {
             ))}
           </div>
           
-          <div className="mt-10 text-center">
+          <div className="mt-8 md:mt-10 text-center">
             <p className="text-sm text-gray-500">
               💬 Not sure what you need? <button onClick={() => setShowTripPlanner(true)} className="text-emerald-600 hover:underline font-medium">Start a conversation</button> and let us help plan.
             </p>
