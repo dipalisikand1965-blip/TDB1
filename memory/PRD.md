@@ -39,6 +39,23 @@ This flow must work across:
 **Files Modified**:
 - `/app/frontend/src/components/FloatingContactButton.jsx`
 
+### ✅ Pet Profile (UnifiedPetPage) Mobile UI Optimization - COMPLETED
+**Requirement**: Optimize the Pet Profile page for 99% mobile users - easy to see, one-tap access, self-explanatory.
+
+**Mobile Changes**:
+1. **Compact Header**: Back button, pet name, edit button - no clutter
+2. **Horizontal Pet Card**: Pet photo (smaller) + name + breed + soul score badge + dates in one row
+3. **4 Quick Action Buttons**: Soul, Health, Memories, Services - direct one-tap access with active state highlighting
+4. **Secondary Tab Row**: Chats, Pet Pass, Share - as pill buttons below hero
+5. **Hidden Desktop Tab Bar**: Mobile uses quick actions instead of scrollable tabs
+
+**Desktop Preserved**: Original full layout with large photo, stats cards, and horizontal tab navigation.
+
+**Files Modified**:
+- `/app/frontend/src/pages/UnifiedPetPage.jsx`
+
+---
+
 ### ✅ Pulse Removed - Mira is Primary ✅
 **Change**: Removed redundant Pulse button and replaced with Mira throughout the app.
 
