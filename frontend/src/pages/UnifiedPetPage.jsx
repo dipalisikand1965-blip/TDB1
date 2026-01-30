@@ -807,16 +807,128 @@ const UnifiedPetPage = () => {
       </div>
 
       {/* Pet Profile Header - Premium Mobile-First Design */}
-      <div className="bg-gradient-to-br from-purple-600 via-indigo-600 to-purple-700 py-8 md:py-10 relative overflow-hidden">
+      <div className="bg-gradient-to-br from-purple-600 via-indigo-600 to-purple-700 py-5 md:py-10 relative overflow-hidden">
         {/* Animated Decorative Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-0 left-1/4 w-64 h-64 bg-white/5 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-pink-400/10 rounded-full blur-3xl animate-float"></div>
-          <div className="absolute top-1/2 right-0 w-40 h-40 bg-amber-400/10 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="absolute top-0 left-1/4 w-40 md:w-64 h-40 md:h-64 bg-white/5 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-0 right-1/4 w-48 md:w-80 h-48 md:h-80 bg-pink-400/10 rounded-full blur-3xl animate-float"></div>
         </div>
         
         <div className="max-w-6xl mx-auto px-4 relative">
-          <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-center md:items-start">
+          {/* Mobile Layout - Horizontal Compact */}
+          <div className="md:hidden">
+            <div className="flex items-center gap-4">
+              {/* Pet Photo - Smaller on mobile */}
+              <div className="relative flex-shrink-0">
+                <div className="w-20 h-20 rounded-2xl bg-white shadow-xl overflow-hidden border-2 border-white/50">
+                  <img src={petPhoto} alt={safePet.name} className="w-full h-full object-cover" />
+                  {token && (
+                    <>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        ref={fileInputRef}
+                        onChange={(e) => handlePhotoUpload(e.target.files[0])}
+                      />
+                      <button
+                        onClick={() => fileInputRef.current?.click()}
+                        className="absolute inset-0 bg-black/50 opacity-0 active:opacity-100 transition-opacity flex items-center justify-center"
+                        disabled={uploadingPhoto}
+                      >
+                        {uploadingPhoto ? (
+                          <Loader2 className="w-5 h-5 text-white animate-spin" />
+                        ) : (
+                          <Camera className="w-5 h-5 text-white" />
+                        )}
+                      </button>
+                    </>
+                  )}
+                </div>
+                {/* Soul Score Mini Badge */}
+                <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-lg">
+                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${
+                    displayScore >= 75 ? 'bg-gradient-to-br from-amber-400 to-orange-500 text-white' :
+                    displayScore >= 50 ? 'bg-gradient-to-br from-purple-500 to-pink-500 text-white' :
+                    'bg-gradient-to-br from-blue-400 to-indigo-500 text-white'
+                  }`}>
+                    {Math.round(displayScore)}%
+                  </div>
+                </div>
+              </div>
+              
+              {/* Pet Info - Compact */}
+              <div className="flex-1 min-w-0 text-white">
+                <h1 className="text-xl font-bold truncate">{safePet.name}</h1>
+                <p className="text-sm text-white/70 truncate">{safePet.breed || 'Your furry friend'}</p>
+                <div className="flex items-center gap-3 mt-2">
+                  {safePet.birth_date && (
+                    <div className="flex items-center gap-1 text-white/80 text-xs">
+                      <Calendar className="w-3 h-3" />
+                      <span>{new Date(safePet.birth_date).toLocaleDateString('en-US', {month: 'short', day: 'numeric'})}</span>
+                    </div>
+                  )}
+                  {safePet.pet_pass_number && (
+                    <div className="flex items-center gap-1 text-white/80 text-xs">
+                      <CreditCard className="w-3 h-3" />
+                      <span className="font-mono">{safePet.pet_pass_number}</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+            
+            {/* Mobile Quick Actions - 4 buttons */}
+            <div className="grid grid-cols-4 gap-2 mt-4">
+              <button 
+                onClick={() => handleTabChange('personality')}
+                className={`flex flex-col items-center p-2.5 rounded-xl border transition-all active:scale-95 ${
+                  activeTab === 'personality' 
+                    ? 'bg-white/20 border-white/40' 
+                    : 'bg-white/10 border-white/20'
+                }`}
+              >
+                <Sparkles className="w-5 h-5 text-yellow-300 mb-1" />
+                <span className="text-[10px] text-white font-medium">Soul</span>
+              </button>
+              <button 
+                onClick={() => handleTabChange('health')}
+                className={`flex flex-col items-center p-2.5 rounded-xl border transition-all active:scale-95 ${
+                  activeTab === 'health' 
+                    ? 'bg-white/20 border-white/40' 
+                    : 'bg-white/10 border-white/20'
+                }`}
+              >
+                <Heart className="w-5 h-5 text-red-300 mb-1" />
+                <span className="text-[10px] text-white font-medium">Health</span>
+              </button>
+              <button 
+                onClick={() => handleTabChange('memories')}
+                className={`flex flex-col items-center p-2.5 rounded-xl border transition-all active:scale-95 ${
+                  activeTab === 'memories' 
+                    ? 'bg-white/20 border-white/40' 
+                    : 'bg-white/10 border-white/20'
+                }`}
+              >
+                <Brain className="w-5 h-5 text-purple-300 mb-1" />
+                <span className="text-[10px] text-white font-medium">Memories</span>
+              </button>
+              <button 
+                onClick={() => handleTabChange('pillars')}
+                className={`flex flex-col items-center p-2.5 rounded-xl border transition-all active:scale-95 ${
+                  activeTab === 'pillars' 
+                    ? 'bg-white/20 border-white/40' 
+                    : 'bg-white/10 border-white/20'
+                }`}
+              >
+                <Crown className="w-5 h-5 text-amber-300 mb-1" />
+                <span className="text-[10px] text-white font-medium">Services</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Desktop Layout - Original */}
+          <div className="hidden md:flex flex-col md:flex-row gap-6 md:gap-8 items-center md:items-start">
             {/* Pet Photo - Animated and Prominent */}
             <div className="relative group animate-fade-in-up">
               <div className="w-32 h-32 md:w-40 md:h-40 rounded-3xl bg-white shadow-2xl overflow-hidden border-4 border-white/50 ring-4 ring-white/20 transition-transform duration-500 hover:scale-105">
