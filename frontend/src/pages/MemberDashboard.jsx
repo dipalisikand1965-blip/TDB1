@@ -59,6 +59,9 @@ import SwipeablePetCards from '../components/SwipeablePetCards';
 import PetParentStreak from '../components/PetParentStreak';
 import PullToRefreshIndicator from '../components/PullToRefreshIndicator';
 import usePullToRefresh from '../hooks/usePullToRefresh';
+// Phase 2 Features - Smart Recommendations & Voice Actions
+import SmartRecommendationsCard from '../components/SmartRecommendationsCard';
+import VoiceQuickActions from '../components/VoiceQuickActions';
 
 
 // Extracted components: ACHIEVEMENTS, TIER_COLORS, triggerCelebration, QuickScoreBoost, GamificationBanner
