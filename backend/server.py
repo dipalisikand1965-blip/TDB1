@@ -1057,7 +1057,71 @@ async def auto_seed_all_services():
         }
     ]
     
-    all_services = fit_services + care_services + celebrate_services
+    # Insurance/Insure Services (under Paperwork pillar)
+    insure_services = [
+        {
+            "id": "svc-insure-quote",
+            "name": "Pet Insurance Quote Comparison",
+            "description": "Get quotes from multiple pet insurance providers and find the best coverage for your pet.",
+            "pillar": "paperwork",
+            "category": "insure",
+            "price": 0,
+            "duration": "24-48 hours",
+            "features": ["Multiple Provider Quotes", "Coverage Comparison", "Expert Recommendations", "No Obligation"],
+            "image": "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800",
+            "is_active": True
+        },
+        {
+            "id": "svc-insure-review",
+            "name": "Policy Review & Optimization",
+            "description": "Expert review of your current pet insurance policy to ensure you have the best coverage.",
+            "pillar": "paperwork",
+            "category": "insure",
+            "price": 499,
+            "duration": "2-3 days",
+            "features": ["Coverage Analysis", "Gap Identification", "Upgrade Recommendations", "Cost Optimization"],
+            "image": "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800",
+            "is_active": True
+        },
+        {
+            "id": "svc-insure-claim",
+            "name": "Claim Filing Assistance",
+            "description": "Professional help filing and tracking your pet insurance claims for faster reimbursement.",
+            "pillar": "paperwork",
+            "category": "insure",
+            "price": 299,
+            "duration": "Same day",
+            "features": ["Document Preparation", "Claim Submission", "Status Tracking", "Appeal Support"],
+            "image": "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?w=800",
+            "is_active": True
+        },
+        {
+            "id": "svc-insure-renewal",
+            "name": "Renewal Management Service",
+            "description": "Never miss a renewal with automated reminders and assistance with policy renewals.",
+            "pillar": "paperwork",
+            "category": "insure",
+            "price": 199,
+            "duration": "Annual",
+            "features": ["Renewal Reminders", "Rate Comparison", "Auto-Renewal Setup", "Coverage Updates"],
+            "image": "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800",
+            "is_active": True
+        },
+        {
+            "id": "svc-insure-bundle",
+            "name": "Complete Insurance Package",
+            "description": "End-to-end insurance management - from quote to claims, we handle it all.",
+            "pillar": "paperwork",
+            "category": "insure",
+            "price": 999,
+            "duration": "Annual",
+            "features": ["Quote Comparison", "Policy Setup", "Claims Assistance", "Renewal Management", "24/7 Support"],
+            "image": "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800",
+            "is_active": True
+        }
+    ]
+    
+    all_services = fit_services + care_services + celebrate_services + insure_services
     
     for service in all_services:
         await db.services.update_one({"id": service["id"]}, {"$set": service}, upsert=True)
