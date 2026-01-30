@@ -35,6 +35,62 @@ import {
   MessageCircle, Bookmark, Share2, ShoppingCart
 } from 'lucide-react';
 
+// Elevated Concierge® Fit Experiences
+const FIT_EXPERIENCES = [
+  {
+    title: "Wellness Architect®",
+    description: "Beyond basic fitness plans — we design comprehensive wellness journeys that consider your pet's breed, age, health conditions, and lifestyle. From nutrition to exercise to recovery.",
+    icon: "🏋️",
+    gradient: "from-teal-500 to-emerald-600",
+    badge: "Holistic",
+    badgeColor: "bg-teal-600",
+    highlights: [
+      "Comprehensive health assessment",
+      "Custom nutrition & exercise plan",
+      "Progress tracking & adjustments",
+      "Veterinary coordination"
+    ]
+  },
+  {
+    title: "Weight Journey Partner®",
+    description: "Weight management is a journey, not a quick fix. We create sustainable plans that work with your pet's metabolism, preferences, and your family's routine — celebrating every milestone together.",
+    icon: "⚖️",
+    gradient: "from-green-500 to-teal-600",
+    badge: "Most Requested",
+    badgeColor: "bg-green-600",
+    highlights: [
+      "Body condition scoring",
+      "Calorie-controlled meal planning",
+      "Exercise intensity calibration",
+      "Monthly progress check-ins"
+    ]
+  },
+  {
+    title: "Active Lifestyle Curator®",
+    description: "For pets who need more than walks. We curate swimming sessions, agility play, hiking adventures, and social activities that keep your pet mentally and physically engaged.",
+    icon: "🏃",
+    gradient: "from-emerald-500 to-cyan-600",
+    highlights: [
+      "Activity matching by energy level",
+      "Swimming & hydrotherapy sessions",
+      "Adventure planning & coordination",
+      "Playgroup matchmaking"
+    ]
+  },
+  {
+    title: "Senior Wellness Companion®",
+    description: "Aging gracefully requires special attention. We design gentle fitness routines, mobility support, and comfort measures that help your senior pet live their best years with dignity.",
+    icon: "🦴",
+    gradient: "from-amber-500 to-orange-600",
+    highlights: [
+      "Gentle mobility exercises",
+      "Joint health supplements",
+      "Comfort & pain management",
+      "Quality of life monitoring"
+    ]
+  }
+];
+
 // Service Categories with metadata
 const SERVICE_CATEGORIES = {
   assessment: { 
@@ -594,38 +650,68 @@ const FitPage = () => {
           />
         </div>
       </section>
+              pillar="fit"
+              petId={selectedPet?.id}
+              petName={selectedPet?.name || userPets[0]?.name}
+              userId={user?.id}
+              onSelectService={handleViewDetails}
+              onSelectProduct={(product) => {
+                addToCart({
+                  id: product.id,
+                  name: product.name || product.title,
+                  price: product.price,
+                  image: product.image,
+                  pillar: 'fit',
+                  type: 'product'
+                });
+                toast({ title: '🛒 Added to Cart!', description: `${product.name || product.title} added` });
+              }}
+              className="shadow-xl"
+            />
+          </div>
+        </section>
+      )}
       
       {/* ==================== CONCIERGE® SERVICES SECTION ==================== */}
-      <section id="services" className="py-8 sm:py-12 bg-white">
+      <section id="services" className="py-12 md:py-16 bg-gradient-to-b from-teal-50/30 to-white">
         <div className="max-w-7xl mx-auto px-4">
           {/* Section Header */}
-          <div className="mb-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
-                  {activeCategory === 'all' ? 'All Services' : SERVICE_CATEGORIES[activeCategory]?.name || 'Services'}
-                </h2>
-                <p className="text-gray-500 text-sm mt-1">
-                  {services.filter(s => activeCategory === 'all' || s.category === activeCategory).length} services available
-                </p>
-              </div>
+          <div className="mb-8">
+            <div className="flex items-center gap-2 mb-2">
+              <Sparkles className="w-5 h-5 text-teal-600" />
+              <span className="text-sm font-medium text-teal-600 uppercase tracking-wider">Concierge® Services</span>
             </div>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+              Premium Fitness Services
+            </h2>
+            <p className="text-gray-500 mt-2 max-w-xl">
+              Tap any service for details. Our Concierge® team handles all coordination.
+            </p>
           </div>
           
-          {/* Services Grid - Using PillarServicesGrid but hide its internal category tabs */}
+          {/* MakeMyTrip-Style Services Grid */}
           <PillarServicesGrid
-            services={services
-              .filter(s => activeCategory === 'all' || s.category === activeCategory)
-              .map(s => ({
-                ...s,
-                title: s.name,
-                icon: SERVICE_CATEGORIES[s.category]?.icon ? '🏋️' : null,
-                gradient: SERVICE_CATEGORIES[s.category]?.gradient || 'from-teal-500 to-emerald-500',
-                highlights: s.includes || [],
-                badge: s.is_subscription ? 'Subscription' : null,
-                badgeColor: 'bg-teal-600'
-              }))}
-            categories={[]} // Hide internal category tabs since we use FitCategoryBar
+            services={services.map(s => ({
+              ...s,
+              title: s.name,
+              icon: SERVICE_CATEGORIES[s.category]?.icon ? '🏋️' : null,
+              gradient: SERVICE_CATEGORIES[s.category]?.gradient || 'from-teal-500 to-emerald-500',
+              highlights: s.includes || [],
+              badge: s.is_subscription ? 'Subscription' : null,
+              badgeColor: 'bg-teal-600'
+            }))}
+            categories={availableCategories.map(catKey => ({
+              id: catKey,
+              name: SERVICE_CATEGORIES[catKey]?.name || catKey,
+              icon: catKey === 'assessment' ? '📊' : 
+                    catKey === 'training' ? '🏋️' : 
+                    catKey === 'weight' ? '⚖️' : 
+                    catKey === 'therapy' ? '💆' : 
+                    catKey === 'senior' ? '🦮' :
+                    catKey === 'puppy' ? '🐕' :
+                    catKey === 'agility' ? '⚡' :
+                    catKey === 'wellness' ? '✨' : '🎯'
+            }))}
             onServiceSelect={handleViewDetails}
             onServiceBook={handleQuickBook}
             selectedService={selectedService}
@@ -643,17 +729,20 @@ const FitPage = () => {
       </section>
       
       {/* ==================== PRODUCTS SECTION ==================== */}
-      <section id="products" className="py-8 sm:py-12 bg-gray-50">
+      <section id="products" className="py-12 md:py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-8">
             <div>
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Fitness Gear & Bundles</h2>
-              <p className="text-gray-500 text-sm">Curated products for your pets fitness journey</p>
+              <div className="flex items-center gap-2 mb-2">
+                <ShoppingBag className="w-5 h-5 text-teal-600" />
+                <span className="text-sm font-medium text-teal-600 uppercase tracking-wider">Shop</span>
+              </div>
+              <h2 className="text-3xl font-bold text-gray-900">Fitness Gear & Bundles</h2>
             </div>
             <Button 
               variant="outline" 
               onClick={() => navigate('/shop?pillar=fit')}
-              className="hidden sm:flex items-center gap-2 rounded-full text-sm"
+              className="hidden md:flex items-center gap-2 rounded-full"
             >
               View All <ArrowRight className="w-4 h-4" />
             </Button>
@@ -730,34 +819,33 @@ const FitPage = () => {
         </div>
       </section>
       
-      {/* ==================== COMPACT CTA SECTION ==================== */}
-      <section className="py-8 sm:py-10 bg-gradient-to-r from-teal-600 to-emerald-600">
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="text-center sm:text-left">
-              <h2 className="text-xl sm:text-2xl font-bold text-white">
-                Ready to start your pets fitness journey?
-              </h2>
-              <p className="text-white/80 text-sm mt-1">
-                Free consultation with our Concierge® team
-              </p>
-            </div>
-            <div className="flex gap-3">
-              <Button 
-                onClick={() => handleQuickBook(services[0] || { id: 'consultation', name: 'Free Consultation', price: 0 })}
-                className="bg-white text-teal-700 hover:bg-gray-100 font-semibold px-6 rounded-full shadow-lg"
-              >
-                <Phone className="w-4 h-4 mr-2" />
-                Book Now
-              </Button>
-              <Button 
-                variant="outline"
-                onClick={() => navigate('/mira?context=fit')}
-                className="border-white/50 text-white hover:bg-white/10 px-6 rounded-full"
-              >
-                Ask Mira
-              </Button>
-            </div>
+      {/* ==================== CTA SECTION ==================== */}
+      <section className="py-16 bg-gradient-to-br from-teal-600 to-emerald-700">
+        <div className="max-w-4xl mx-auto px-4 text-center text-white">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            Ready to Transform Your Pet's Fitness?
+          </h2>
+          <p className="text-lg text-white/80 mb-8 max-w-2xl mx-auto">
+            Start with a free consultation. Our Concierge® team will help you find the perfect programme.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button 
+              size="lg"
+              onClick={() => handleQuickBook(services[0] || { id: 'consultation', name: 'Free Consultation', price: 0 })}
+              className="bg-white text-teal-700 hover:bg-gray-100 font-semibold px-10 py-6 text-lg rounded-full shadow-2xl transition-all hover:scale-105"
+            >
+              <Phone className="w-5 h-5 mr-2" />
+              Book Free Consultation
+            </Button>
+            <Button 
+              size="lg"
+              variant="outline"
+              onClick={() => navigate('/mira?context=fit')}
+              className="border-2 border-white/50 text-white hover:bg-white/10 font-semibold px-10 py-6 text-lg rounded-full"
+            >
+              <MessageCircle className="w-5 h-5 mr-2" />
+              Ask Mira
+            </Button>
           </div>
         </div>
       </section>
@@ -943,24 +1031,13 @@ const FitPage = () => {
         </DialogContent>
       </Dialog>
       
-      {/* ==================== ANIMATED CONCIERGE MASCOT ==================== */}
-      <AnimatedConciergeMascot
-        petName={userPets[0]?.name}
-        suggestions={[
-          { text: userPets[0]?.name ? `Perfect picks for ${userPets[0].name}!` : 'Find the perfect fitness plan!', action: 'browse' },
-          { text: 'Popular services this week 🔥', action: 'trending' },
-          { text: 'Need help choosing?', action: 'ask' }
-        ]}
-        onSuggestionClick={(suggestion) => {
-          if (suggestion.action === 'browse') {
-            document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' });
-          } else if (suggestion.action === 'ask') {
-            navigate('/mira?context=fit');
-          }
-        }}
-        onAskMira={() => navigate('/mira?context=fit')}
-        position="right"
-      />
+      {/* ==================== MIRA PANEL ==================== */}
+      <div className="hidden lg:block fixed right-4 top-24 w-72 z-30">
+        <MiraContextPanel pillar="fit" />
+      </div>
+      <div className="lg:hidden fixed bottom-20 right-4 w-80 max-w-[calc(100vw-2rem)] z-30">
+        <MiraContextPanel pillar="fit" position="bottom" />
+      </div>
       
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="fit" position="bottom-left" />
