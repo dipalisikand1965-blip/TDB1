@@ -261,7 +261,13 @@ const MiraOrb = ({
       
       {/* Main orb button */}
       <motion.button
-        onClick={onClick}
+        onClick={(e) => {
+          // Haptic feedback for mobile devices
+          if (navigator.vibrate) {
+            navigator.vibrate(50); // Short vibration pulse
+          }
+          onClick?.(e);
+        }}
         className="relative rounded-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2"
         style={{
           width: config.orb,
