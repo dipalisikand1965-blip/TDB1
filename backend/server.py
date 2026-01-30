@@ -3169,6 +3169,21 @@ async def force_seed_all_products():
             await db.products.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
         results["seeded"]["learn"] = len(learn_products)
         
+        # ========== INSURE PRODUCTS (under Paperwork) ==========
+        insure_products = [
+            {"id": "insure-quote-free", "name": "Free Insurance Quote Comparison", "description": "Get quotes from multiple pet insurance providers - completely free", "price": 0, "category": "insure", "pillar": "paperwork", "tags": ["Insure", "Paperwork", "Quote", "Free"], "in_stock": True},
+            {"id": "insure-policy-review", "name": "Policy Review & Optimization", "description": "Expert review of your current pet insurance policy", "price": 499, "category": "insure", "pillar": "paperwork", "tags": ["Insure", "Paperwork", "Review"], "in_stock": True},
+            {"id": "insure-claim-assist", "name": "Claim Filing Assistance", "description": "Professional help filing and tracking insurance claims", "price": 299, "category": "insure", "pillar": "paperwork", "tags": ["Insure", "Paperwork", "Claims"], "in_stock": True},
+            {"id": "insure-renewal-mgmt", "name": "Renewal Management Service", "description": "Never miss a renewal with automated reminders", "price": 199, "category": "insure", "pillar": "paperwork", "tags": ["Insure", "Paperwork", "Renewal"], "in_stock": True},
+            {"id": "insure-complete-pkg", "name": "Complete Insurance Package", "description": "End-to-end insurance management - quote to claims", "price": 999, "category": "insure", "pillar": "paperwork", "tags": ["Insure", "Paperwork", "Premium", "Bundle"], "in_stock": True},
+        ]
+        
+        for p in insure_products:
+            p["created_at"] = get_utc_timestamp()
+            p["image"] = "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800"
+            await db.products.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
+        results["seeded"]["insure"] = len(insure_products)
+        
         # Calculate total
         results["total"] = sum(results["seeded"].values())
         
