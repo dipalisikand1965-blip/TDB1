@@ -85,10 +85,9 @@ This flow must work across:
 
 ### 🟡 P3 - Backlog
 
-1. **Razorpay Payments** - Reported as failing
-2. **PDF Invoice Generation**
-3. **Centralized Item Intelligence Form** - Full implementation
-4. **Partner Portal** - B2B clients portal
+1. **PDF Invoice Generation**
+2. **Centralized Item Intelligence Form** - Full implementation
+3. **Partner Portal** - B2B clients portal
 
 ## Technical Architecture
 
