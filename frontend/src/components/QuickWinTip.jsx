@@ -130,19 +130,6 @@ const QuickWinTip = ({
                 <p className="text-xs text-amber-600/80">Daily tip to boost wellness</p>
               </div>
             </div>
-            
-            {/* Dismiss */}
-            {dismissible && (
-              <motion.button
-                onClick={() => setDismissed(true)}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                className="w-8 h-8 rounded-full bg-white/80 hover:bg-white flex items-center justify-center 
-                           text-gray-400 hover:text-gray-600 shadow-sm transition-all"
-              >
-                <X className="w-4 h-4" />
-              </motion.button>
-            )}
           </div>
 
           {/* Tip Content */}
