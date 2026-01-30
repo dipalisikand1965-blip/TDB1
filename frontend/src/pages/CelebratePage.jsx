@@ -278,6 +278,60 @@ const CelebratePage = () => {
         </div>
       </div>
 
+      {/* 🎂 SMART CAKE DISCOVERY - Intelligent Filters */}
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 py-6 sm:py-10">
+        <div className="text-center mb-4 sm:mb-6">
+          <h2 className="text-lg sm:text-2xl font-bold text-gray-900 mb-1 sm:mb-2">
+            🎂 Find the Perfect Cake
+          </h2>
+          <p className="text-xs sm:text-sm text-gray-600">Tap what matters most to you</p>
+        </div>
+        
+        {/* Smart Filter Pills - Horizontal scroll on mobile */}
+        <div className="flex gap-2 overflow-x-auto pb-3 scrollbar-hide">
+          {[
+            { emoji: '🐕', label: 'By Breed', filter: 'breed-cakes', desc: 'Labrador, Pug, GSD...' },
+            { emoji: '🎁', label: 'Gift Ready', filter: 'gift-hampers', desc: 'Beautifully packaged' },
+            { emoji: '🥜', label: 'Allergy Safe', filter: 'allergy-free', desc: 'No wheat, no nuts' },
+            { emoji: '💰', label: 'Under ₹500', filter: 'budget', desc: 'Sweet savings' },
+            { emoji: '⚡', label: 'Same Day', filter: 'same-day', desc: 'Order now, get today' },
+            { emoji: '🏆', label: 'Bestsellers', filter: 'bestsellers', desc: 'Fan favorites' },
+            { emoji: '🐱', label: 'Cat Cakes', filter: 'cat-treats', desc: 'Feline friends' },
+            { emoji: '✨', label: 'Premium', filter: 'premium', desc: 'Luxury treats' },
+          ].map((item) => (
+            <Link 
+              key={item.filter}
+              to={`/celebrate/${item.filter}`}
+              className="flex-shrink-0"
+            >
+              <div className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-white border-2 border-pink-200 rounded-full hover:border-pink-400 hover:bg-pink-50 transition-all active:scale-95 cursor-pointer shadow-sm">
+                <span className="text-lg sm:text-xl">{item.emoji}</span>
+                <div className="text-left">
+                  <span className="font-semibold text-xs sm:text-sm text-gray-800 block leading-tight">{item.label}</span>
+                  <span className="text-[10px] sm:text-xs text-gray-500 hidden sm:block">{item.desc}</span>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+        
+        {/* Quick Stats */}
+        <div className="flex justify-center gap-4 sm:gap-8 mt-4 sm:mt-6 text-center">
+          <div>
+            <div className="text-lg sm:text-2xl font-bold text-pink-600">50+</div>
+            <div className="text-[10px] sm:text-xs text-gray-500">Cake Designs</div>
+          </div>
+          <div>
+            <div className="text-lg sm:text-2xl font-bold text-pink-600">4.9★</div>
+            <div className="text-[10px] sm:text-xs text-gray-500">Avg Rating</div>
+          </div>
+          <div>
+            <div className="text-lg sm:text-2xl font-bold text-pink-600">2hr</div>
+            <div className="text-[10px] sm:text-xs text-gray-500">Fastest Delivery</div>
+          </div>
+        </div>
+      </div>
+
       {/* Featured Products - MOBILE: 2 tiles, DESKTOP: 3 tiles */}
       <div className="max-w-6xl mx-auto px-4 py-10 sm:py-16">
         <div className="flex items-center justify-between mb-5 sm:mb-8">
