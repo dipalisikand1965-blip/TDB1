@@ -1213,36 +1213,31 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite, onViewDetails, o
         <div className="flex items-center justify-between mb-1.5 sm:mb-2">
           <PawRatingDisplay rating={property.paw_rating?.overall || 0} />
           {property.pet_policy?.pet_fee_per_night > 0 && (
-            <span className="text-sm text-gray-600">
-              ₹{property.pet_policy.pet_fee_per_night}/night pet fee
+            <span className="text-[10px] sm:text-sm text-gray-600">
+              ₹{property.pet_policy.pet_fee_per_night}/night
             </span>
           )}
         </div>
 
         {/* Pet Policy Snapshot - Hidden on mobile for space */}
         {property.pet_policy_snapshot && (
-          <p className="hidden sm:flex text-sm text-gray-600 mb-3 line-clamp-2 items-start gap-1">
+          <p className="hidden sm:flex text-sm text-gray-600 mb-2 line-clamp-2 items-start gap-1">
             <Dog className="w-4 h-4 flex-shrink-0 mt-0.5" />
             {property.pet_policy_snapshot}
           </p>
         )}
 
-        {/* Badges - Show fewer on mobile */}
-        <div className="flex flex-wrap gap-1 sm:gap-1.5 mb-2 sm:mb-3">
+        {/* Badges - Show 2 on mobile */}
+        <div className="flex flex-wrap gap-0.5 sm:gap-1 mb-1.5 sm:mb-2">
           {property.badges?.slice(0, 2).map((badge, idx) => (
-            <span key={idx} className={`text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full ${getBadgeColor(badge)}`}>
+            <span key={idx} className={`text-[8px] sm:text-xs px-1 sm:px-2 py-0.5 rounded-full ${getBadgeColor(badge)}`}>
               {badge}
             </span>
           ))}
-          {property.badges?.length > 2 && (
-            <span className="text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
-              +{property.badges.length - 2}
-            </span>
-          )}
         </div>
 
         {/* Vibe Tags - Hidden on mobile */}
-        <div className="hidden sm:flex flex-wrap gap-1 mb-4">
+        <div className="hidden sm:flex flex-wrap gap-1 mb-3">
           {property.vibe_tags?.slice(0, 3).map((vibe, idx) => (
             <span key={idx} className="text-xs text-gray-500 bg-gray-50 px-2 py-0.5 rounded">
               {vibe}
@@ -1250,22 +1245,22 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite, onViewDetails, o
           ))}
         </div>
 
-        {/* CTA */}
-        <div className="flex flex-col sm:flex-row gap-2 mt-auto">
+        {/* CTA - Compact buttons */}
+        <div className="flex gap-1.5 sm:gap-2 mt-auto">
           <Button 
             variant="outline" 
             size="sm"
-            className="flex-1 text-xs sm:text-sm py-2"
+            className="flex-1 text-[10px] sm:text-xs py-1.5 sm:py-2 h-auto"
             onClick={(e) => { e.stopPropagation(); onViewDetails(); }}
           >
-            View Details
+            Details
           </Button>
           <Button 
             size="sm"
-            className="flex-1 bg-green-600 hover:bg-green-700 text-xs sm:text-sm py-2"
+            className="flex-1 bg-green-600 hover:bg-green-700 text-[10px] sm:text-xs py-1.5 sm:py-2 h-auto"
             onClick={(e) => { e.stopPropagation(); onBookNow(); }}
           >
-            Book Now
+            Book
           </Button>
         </div>
       </div>
