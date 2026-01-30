@@ -197,22 +197,50 @@ const CelebrateConcierePicker = ({ category = 'cakes', onClose }) => {
   }
   
   return (
-    <div className="bg-gradient-to-r from-purple-50 via-pink-50 to-rose-50 py-8 px-4">
+    <div className="bg-gradient-to-r from-purple-50 via-pink-50 to-rose-50 py-6 sm:py-8 px-3 sm:px-4">
       <div className="max-w-5xl mx-auto">
         {/* Header Label */}
-        <div className="flex items-center gap-2 mb-4">
-          <Sparkles className="w-5 h-5 text-purple-600" />
-          <span className="text-sm font-medium text-purple-700">Planning a full celebration?</span>
+        <div className="flex items-center gap-2 mb-3 sm:mb-4">
+          <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" />
+          <span className="text-xs sm:text-sm font-medium text-purple-700">Planning a full celebration?</span>
         </div>
         
-        {/* Main Card - Rover Style */}
-        <Card className="p-6 md:p-8 border-2 border-purple-200 bg-white/80 backdrop-blur-sm shadow-xl">
-          {/* Celebration Type Tiles */}
-          <div className="mb-6">
-            <Label className="text-sm font-medium text-gray-700 mb-3 block">
+        {/* Main Card - Mobile optimized */}
+        <Card className="p-4 sm:p-6 md:p-8 border-2 border-purple-200 bg-white/80 backdrop-blur-sm shadow-xl">
+          {/* Celebration Type Tiles - Horizontal scroll on mobile */}
+          <div className="mb-4 sm:mb-6">
+            <Label className="text-xs sm:text-sm font-medium text-gray-700 mb-2 sm:mb-3 block">
               What are we celebrating?
             </Label>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+            {/* Mobile: Horizontal scroll */}
+            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide sm:hidden">
+              {CELEBRATION_TYPES.map((type) => {
+                const Icon = type.icon;
+                const isSelected = selectedType === type.id;
+                return (
+                  <button
+                    key={type.id}
+                    onClick={() => setSelectedType(type.id)}
+                    className={`relative flex-shrink-0 p-3 rounded-xl border-2 transition-all text-center w-[80px] ${
+                      isSelected
+                        ? 'border-purple-500 bg-purple-50 shadow-md'
+                        : 'border-gray-200 active:bg-gray-50'
+                    }`}
+                    data-testid={`celebration-type-${type.id}`}
+                  >
+                    {isSelected && (
+                      <div className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-purple-500 rounded-full flex items-center justify-center">
+                        <Check className="w-2.5 h-2.5 text-white" />
+                      </div>
+                    )}
+                    <div className="text-xl mb-0.5">{type.emoji}</div>
+                    <h4 className="font-medium text-[10px] text-gray-900 leading-tight">{type.name}</h4>
+                  </button>
+                );
+              })}
+            </div>
+            {/* Desktop: Grid */}
+            <div className="hidden sm:grid md:grid-cols-3 lg:grid-cols-6 gap-3">
               {CELEBRATION_TYPES.map((type) => {
                 const Icon = type.icon;
                 const isSelected = selectedType === type.id;
@@ -240,16 +268,16 @@ const CelebrateConcierePicker = ({ category = 'cakes', onClose }) => {
             </div>
           </div>
           
-          {/* Input Row + CTA */}
-          <div className="flex flex-col md:flex-row gap-4 items-end">
+          {/* Input Row + CTA - Stack on mobile */}
+          <div className="flex flex-col gap-3 sm:gap-4 sm:flex-row sm:items-end">
             {/* Pet Selector (if multiple pets) */}
             {userPets.length > 1 && (
-              <div className="flex-1 min-w-[180px]">
-                <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                  <PawPrint className="w-4 h-4 inline mr-1" /> Which pet?
+              <div className="w-full sm:flex-1 sm:min-w-[180px]">
+                <Label className="text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2 block">
+                  <PawPrint className="w-3 h-3 sm:w-4 sm:h-4 inline mr-1" /> Which pet?
                 </Label>
                 <Select value={selectedPet?.id || ''} onValueChange={(id) => setSelectedPet(userPets.find(p => p.id === id))}>
-                  <SelectTrigger className="h-12" data-testid="pet-selector">
+                  <SelectTrigger className="h-10 sm:h-12 text-sm" data-testid="pet-selector">
                     <SelectValue placeholder="Select pet" />
                   </SelectTrigger>
                   <SelectContent>
@@ -257,9 +285,9 @@ const CelebrateConcierePicker = ({ category = 'cakes', onClose }) => {
                       <SelectItem key={pet.id} value={pet.id}>
                         <span className="flex items-center gap-2">
                           {pet.photo_url ? (
-                            <img src={getPetPhotoUrl(pet)} alt={pet.name} className="w-6 h-6 rounded-full object-cover" />
+                            <img src={getPetPhotoUrl(pet)} alt={pet.name} className="w-5 h-5 sm:w-6 sm:h-6 rounded-full object-cover" />
                           ) : (
-                            <PawPrint className="w-4 h-4" />
+                            <PawPrint className="w-3 h-3 sm:w-4 sm:h-4" />
                           )}
                           {pet.name}
                         </span>
@@ -270,34 +298,36 @@ const CelebrateConcierePicker = ({ category = 'cakes', onClose }) => {
               </div>
             )}
             
-            {/* City Input */}
-            <div className="flex-1 min-w-[180px]">
-              <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                <MapPin className="w-4 h-4 inline mr-1" /> Where?
-              </Label>
-              <Input
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                placeholder="City / Area"
-                className="h-12"
-                data-testid="city-input"
-              />
-            </div>
-            
-            {/* Date Picker */}
-            <div className="flex-1 min-w-[180px]">
-              <Label className="text-sm font-medium text-gray-700 mb-2 block">
-                <CalendarIcon className="w-4 h-4 inline mr-1" /> When?
-              </Label>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={`w-full h-12 justify-start text-left font-normal ${
-                      !selectedDate && 'text-muted-foreground'
-                    }`}
-                    data-testid="date-picker"
-                  >
+            {/* City and Date Row - Side by side on mobile */}
+            <div className="flex gap-2 sm:gap-4 w-full sm:flex-1">
+              {/* City Input */}
+              <div className="flex-1">
+                <Label className="text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2 block">
+                  <MapPin className="w-3 h-3 sm:w-4 sm:h-4 inline mr-1" /> Where?
+                </Label>
+                <Input
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  placeholder="City"
+                  className="h-10 sm:h-12 text-sm"
+                  data-testid="city-input"
+                />
+              </div>
+              
+              {/* Date Picker */}
+              <div className="flex-1">
+                <Label className="text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2 block">
+                  <CalendarIcon className="w-3 h-3 sm:w-4 sm:h-4 inline mr-1" /> When?
+                </Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={`w-full h-10 sm:h-12 justify-start text-left font-normal text-sm ${
+                        !selectedDate && 'text-muted-foreground'
+                      }`}
+                      data-testid="date-picker"
+                    >
                     {selectedDate ? format(selectedDate, 'PPP') : 'Pick a date (optional)'}
                   </Button>
                 </PopoverTrigger>
