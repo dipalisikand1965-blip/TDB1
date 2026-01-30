@@ -4,22 +4,22 @@
  * 
  * Features:
  * - Glass morphism floating bar
- * - Center Pulse FAB button
+ * - Center Mira FAB button (replaced Pulse)
  * - Micro-animations & haptic feedback
  */
 
 import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { Home, Crown, Package, User, Zap, PawPrint, Sparkles } from 'lucide-react';
+import { Home, Crown, Package, User, Sparkles } from 'lucide-react';
 
-const MobileNavBar = ({ onPulseClick }) => {
+const MobileNavBar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
   const navItems = [
     { id: 'home', icon: Home, label: 'Home', path: '/dashboard' },
     { id: 'services', icon: Crown, label: 'Services', path: '/care' },
-    { id: 'pulse', icon: Zap, label: 'Pulse', isPulse: true },
+    { id: 'mira', icon: Sparkles, label: 'Mira', isMira: true },
     { id: 'orders', icon: Package, label: 'Orders', path: '/dashboard?tab=orders' },
     { id: 'profile', icon: User, label: 'Profile', path: '/dashboard?tab=settings' },
   ];
@@ -31,8 +31,13 @@ const MobileNavBar = ({ onPulseClick }) => {
   };
   
   const handleNavClick = (item) => {
-    if (item.isPulse) {
-      onPulseClick?.();
+    if (item.isMira) {
+      // Haptic feedback
+      if (navigator.vibrate) {
+        navigator.vibrate(50);
+      }
+      // Open Mira AI chat
+      window.dispatchEvent(new CustomEvent('openMiraAI'));
       return;
     }
     navigate(item.path);
@@ -42,15 +47,19 @@ const MobileNavBar = ({ onPulseClick }) => {
     <div className="mobile-nav-container md:hidden">
       <nav className="mobile-nav-bar relative">
         {navItems.map((item, index) => {
-          if (item.isPulse) {
+          if (item.isMira) {
             return (
               <button
                 key={item.id}
                 onClick={() => handleNavClick(item)}
-                className="pulse-fab animate-pulse-glow"
-                aria-label="Open Pulse Assistant"
+                className="mira-fab"
+                aria-label="Open Mira AI"
+                style={{
+                  background: 'linear-gradient(135deg, #9333EA 0%, #EC4899 100%)',
+                  boxShadow: '0 0 20px rgba(147, 51, 234, 0.5)',
+                }}
               >
-                <Zap className="w-7 h-7" strokeWidth={2.5} />
+                <Sparkles className="w-6 h-6 text-white" />
               </button>
             );
           }
