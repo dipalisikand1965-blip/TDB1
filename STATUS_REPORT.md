@@ -1,6 +1,6 @@
 # 🐕 The Doggy Company - Feature Status Report
 **Generated:** January 18, 2026
-**Preview URL:** https://petstack-rescue.preview.emergentagent.com
+**Preview URL:** https://furryhealth-app.preview.emergentagent.com
 
 ---
 

@@ -222,7 +222,7 @@ All Phase 1 features are now integrated:
 - **Admin**: `aditya` / `lola4304`
 
 ## Deployment
-- **Preview URL**: https://petstack-rescue.preview.emergentagent.com
+- **Preview URL**: https://furryhealth-app.preview.emergentagent.com
 - **Production**: thedoggycompany.in (deploying tomorrow)
 
 ---
