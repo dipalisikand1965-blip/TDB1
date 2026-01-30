@@ -1167,8 +1167,8 @@ const StayPage = () => {
 // Property Card Component
 const PropertyCard = ({ property, isFavorite, onToggleFavorite, onViewDetails, onBookNow, getPropertyTypeIcon, getBadgeColor, PawRatingDisplay }) => {
   return (
-    <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 group cursor-pointer" onClick={onViewDetails}>
-      <div className="relative h-48">
+    <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 group cursor-pointer flex flex-col h-full" onClick={onViewDetails}>
+      <div className="relative h-36 sm:h-48 flex-shrink-0">
         <img 
           src={property.photos?.[0] || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800'} 
           alt={property.name}
@@ -1179,43 +1179,36 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite, onViewDetails, o
         {/* Favorite Button */}
         <button 
           onClick={(e) => { e.stopPropagation(); onToggleFavorite(); }}
-          className="absolute top-3 right-3 p-2 bg-white/90 rounded-full hover:bg-white transition-colors"
+          className="absolute top-2 right-2 p-1.5 sm:p-2 bg-white/90 rounded-full hover:bg-white transition-colors"
         >
-          <Heart className={`w-5 h-5 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
+          <Heart className={`w-4 h-4 sm:w-5 sm:h-5 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
         </button>
 
         {/* Property Type Badge */}
-        <div className="absolute top-3 left-3 flex items-center gap-1 px-2 py-1 bg-white/90 rounded-full text-xs font-medium text-gray-700">
+        <div className="absolute top-2 left-2 flex items-center gap-1 px-1.5 py-0.5 sm:px-2 sm:py-1 bg-white/90 rounded-full text-[10px] sm:text-xs font-medium text-gray-700">
           {getPropertyTypeIcon(property.property_type)}
-          {property.property_type?.charAt(0).toUpperCase() + property.property_type?.slice(1)}
+          <span className="hidden sm:inline">{property.property_type?.charAt(0).toUpperCase() + property.property_type?.slice(1)}</span>
         </div>
 
         {/* Featured Badge */}
         {property.featured && (
-          <div className="absolute top-12 left-3 flex items-center gap-1 px-2 py-1 bg-amber-500 rounded-full text-xs font-medium text-white">
-            <Sparkles className="w-3 h-3" /> Featured
-          </div>
-        )}
-        
-        {/* Paw Reward Badge */}
-        {property.paw_reward?.enabled && (
-          <div className="absolute bottom-14 right-3 flex items-center gap-1 px-2 py-1 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full text-xs font-semibold text-white shadow-lg">
-            <Gift className="w-3 h-3" /> Paw Reward
+          <div className="absolute top-9 sm:top-12 left-2 sm:left-3 flex items-center gap-1 px-1.5 py-0.5 sm:px-2 sm:py-1 bg-amber-500 rounded-full text-[10px] sm:text-xs font-medium text-white">
+            <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3" /> Featured
           </div>
         )}
 
         {/* Location & Name */}
-        <div className="absolute bottom-3 left-3 right-3 text-white">
-          <h3 className="font-bold text-lg line-clamp-1">{property.name}</h3>
-          <p className="text-sm opacity-90 flex items-center gap-1">
+        <div className="absolute bottom-2 left-2 right-2 text-white">
+          <h3 className="font-bold text-sm sm:text-lg line-clamp-1">{property.name}</h3>
+          <p className="text-xs sm:text-sm opacity-90 flex items-center gap-1">
             <MapPin className="w-3 h-3" /> {property.area}, {property.city}
           </p>
         </div>
       </div>
 
-      <div className="p-4">
+      <div className="p-3 sm:p-4 flex flex-col flex-grow">
         {/* Paw Rating */}
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mb-2 sm:mb-3">
           <PawRatingDisplay rating={property.paw_rating?.overall || 0} />
           {property.pet_policy?.pet_fee_per_night > 0 && (
             <span className="text-sm text-gray-600">
