@@ -82,12 +82,11 @@ const QuickWinTip = ({
     setTimeout(() => {
       const randomTip = tips[Math.floor(Math.random() * tips.length)];
       setCurrentTip(randomTip);
-      setDismissed(false);
       setIsRefreshing(false);
     }, 300);
   };
 
-  if (dismissed || !currentTip) return null;
+  if (!currentTip) return null;
 
   return (
     <AnimatePresence>
