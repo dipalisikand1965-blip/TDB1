@@ -248,6 +248,115 @@ const MiraPage = () => {
     fetchContext();
   }, [user, token]);
 
+  // Handle URL parameters (context and preset message from goal buttons)
+  useEffect(() => {
+    const context = searchParams.get('context');
+    const presetMessage = searchParams.get('preset');
+    
+    if (context) {
+      // Extract pillar from context (e.g., "fit_weight_loss" -> "fit")
+      const pillarFromContext = context.split('_')[0];
+      if (pillarFromContext) {
+        setPillar(pillarFromContext);
+      }
+    }
+    
+    // If there's a preset message, set it in input and optionally auto-send
+    if (presetMessage) {
+      const decodedMessage = decodeURIComponent(presetMessage);
+      setInput(decodedMessage);
+      
+      // Clear the URL params after using them
+      setSearchParams({});
+      
+      // Auto-send after a brief delay (to let the welcome message show first)
+      setTimeout(() => {
+        // Create a synthetic event to trigger send
+        const syntheticEvent = { preventDefault: () => {} };
+        // We'll manually trigger the send
+        handlePresetMessage(decodedMessage);
+      }, 1500);
+    }
+  }, [searchParams]);
+
+  // Handle preset message from URL params
+  const handlePresetMessage = async (message) => {
+    if (!message.trim() || isLoading) return;
+
+    const userMessage = {
+      id: Date.now().toString(),
+      role: 'user',
+      content: message.trim(),
+      timestamp: new Date().toISOString()
+    };
+
+    setMessages(prev => [...prev, userMessage]);
+    setInput('');
+    setIsLoading(true);
+
+    try {
+      const history = messages
+        .filter(m => m.id !== 'welcome')
+        .map(m => ({ role: m.role, content: m.content }));
+
+      const response = await fetch(`${API_URL}/api/mira/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        },
+        body: JSON.stringify({
+          message: userMessage.content,
+          session_id: sessionId,
+          pet_id: selectedPet?.id,
+          pillar: pillar,
+          history: history.slice(-6),
+          user_context: {
+            name: user?.name,
+            email: user?.email,
+            membership: user?.membership_tier
+          }
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Update pillar if detected
+        if (data.pillar) {
+          setPillar(data.pillar);
+        }
+        
+        // Update ticket ID if created
+        if (data.ticket_id) {
+          setTicketId(data.ticket_id);
+        }
+        
+        // Add assistant response
+        setMessages(prev => [...prev, {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: data.response,
+          pillar: data.pillar,
+          actions: data.actions,
+          timestamp: new Date().toISOString()
+        }]);
+      } else {
+        throw new Error('Failed to get response');
+      }
+    } catch (error) {
+      console.error('Mira chat error:', error);
+      setMessages(prev => [...prev, {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: "I apologize, but I'm having trouble responding right now. Please try again or contact our team directly.",
+        timestamp: new Date().toISOString()
+      }]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Send message to Mira
   const sendMessage = async (e) => {
     e?.preventDefault();
