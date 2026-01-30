@@ -845,6 +845,112 @@ const FitManager = ({ getAuthHeader }) => {
           </div>
         </TabsContent>
 
+        {/* Transformation Stories Tab */}
+        <TabsContent value="stories" className="space-y-4">
+          <Card className="p-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">Transformation Stories</h3>
+              <Button onClick={() => { setEditingStory(null); setStoryForm({ pet_name: '', breed: '', owner_name: '', before_image: '', after_image: '', achievement: '', testimonial: '', program: '', rating: '5', is_active: true }); setShowStoryModal(true); }}>
+                <Plus className="w-4 h-4 mr-1" /> Add Story
+              </Button>
+            </div>
+            <p className="text-sm text-gray-500 mb-4">Before/After pet transformations shown on the Fit page carousel</p>
+            
+            {transformationStories.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <p>No transformation stories yet</p>
+                <Button variant="outline" className="mt-2" onClick={() => axios.post(`${API_URL}/api/engagement/seed-engagement-data`, {}, getAuthHeader()).then(fetchAllData)}>
+                  <Database className="w-4 h-4 mr-1" /> Seed Default Stories
+                </Button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {transformationStories.map((story, idx) => (
+                  <Card key={story.id || idx} className="p-4 border">
+                    <div className="flex gap-4">
+                      <div className="flex gap-2">
+                        <img src={story.before_image} alt="Before" className="w-16 h-16 rounded object-cover grayscale" />
+                        <img src={story.after_image} alt="After" className="w-16 h-16 rounded object-cover" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-start justify-between">
+                          <div>
+                            <h4 className="font-semibold">{story.pet_name}</h4>
+                            <p className="text-xs text-gray-500">{story.breed} • {story.owner_name}</p>
+                          </div>
+                          <Badge className={story.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}>
+                            {story.is_active ? 'Active' : 'Inactive'}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-teal-600 font-medium mt-1">{story.achievement}</p>
+                        <p className="text-xs text-gray-600 mt-1 line-clamp-2">{story.testimonial}</p>
+                        <div className="flex gap-2 mt-2">
+                          <Button variant="outline" size="sm" onClick={() => { setEditingStory(story); setStoryForm({ ...story, rating: String(story.rating) }); setShowStoryModal(true); }}>
+                            <Edit2 className="w-3 h-3" />
+                          </Button>
+                          <Button variant="outline" size="sm" className="text-red-600" onClick={() => { if (confirm('Delete this story?')) axios.delete(`${API_URL}/api/engagement/transformations/${story.id}`, getAuthHeader()).then(fetchAllData); }}>
+                            <Trash2 className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </Card>
+        </TabsContent>
+
+        {/* Quick Win Tips Tab */}
+        <TabsContent value="tips" className="space-y-4">
+          <Card className="p-4">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold">Quick Win Tips</h3>
+              <Button onClick={() => { setEditingTip(null); setTipForm({ tip: '', action: '', emoji: '💡', category: 'general', is_active: true }); setShowTipModal(true); }}>
+                <Plus className="w-4 h-4 mr-1" /> Add Tip
+              </Button>
+            </div>
+            <p className="text-sm text-gray-500 mb-4">Personalized tips shown to members on the Fit page</p>
+            
+            {quickWinTips.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <p>No tips yet</p>
+                <Button variant="outline" className="mt-2" onClick={() => axios.post(`${API_URL}/api/engagement/seed-engagement-data`, {}, getAuthHeader()).then(fetchAllData)}>
+                  <Database className="w-4 h-4 mr-1" /> Seed Default Tips
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {quickWinTips.map((tip, idx) => (
+                  <Card key={tip.id || idx} className="p-3 border flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">{tip.emoji}</span>
+                      <div>
+                        <p className="font-medium">{tip.tip}</p>
+                        <div className="flex gap-2 mt-1">
+                          <Badge variant="outline" className="text-xs">{tip.category}</Badge>
+                          <span className="text-xs text-gray-500">Action: {tip.action}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <Badge className={tip.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}>
+                        {tip.is_active ? 'Active' : 'Inactive'}
+                      </Badge>
+                      <Button variant="outline" size="sm" onClick={() => { setEditingTip(tip); setTipForm({ ...tip }); setShowTipModal(true); }}>
+                        <Edit2 className="w-3 h-3" />
+                      </Button>
+                      <Button variant="outline" size="sm" className="text-red-600" onClick={() => { if (confirm('Delete this tip?')) axios.delete(`${API_URL}/api/engagement/tips/${tip.id}`, getAuthHeader()).then(fetchAllData); }}>
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </Card>
+        </TabsContent>
+
         {/* Settings Tab */}
         <TabsContent value="settings" className="space-y-4">
           <Card className="p-6">
