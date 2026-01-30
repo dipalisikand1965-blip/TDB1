@@ -107,6 +107,45 @@ DOCUMENT_CATEGORIES = {
 
 REMINDER_CHANNELS = ["email", "whatsapp", "both", "app"]
 
+# Insurance Services under Paperwork - "Insure" pillar
+INSURANCE_SERVICES = {
+    "quote_request": {
+        "name": "Get Insurance Quote",
+        "icon": "🛡️",
+        "description": "Get quotes from multiple pet insurance providers",
+        "typical_response_time": "24-48 hours",
+        "requires": ["pet_age", "breed", "health_conditions"]
+    },
+    "policy_review": {
+        "name": "Policy Review",
+        "icon": "📋",
+        "description": "Expert review of your current pet insurance policy",
+        "typical_response_time": "2-3 days",
+        "requires": ["current_policy"]
+    },
+    "claim_assistance": {
+        "name": "Claim Assistance",
+        "icon": "📝",
+        "description": "Help filing and tracking insurance claims",
+        "typical_response_time": "Same day",
+        "requires": ["policy_number", "claim_details"]
+    },
+    "renewal_reminder": {
+        "name": "Renewal Management",
+        "icon": "🔔",
+        "description": "Get reminded before your policy expires",
+        "typical_response_time": "Automated",
+        "requires": ["policy_expiry_date"]
+    },
+    "compare_plans": {
+        "name": "Compare Plans",
+        "icon": "⚖️",
+        "description": "Side-by-side comparison of insurance plans",
+        "typical_response_time": "24 hours",
+        "requires": ["coverage_needs", "budget"]
+    }
+}
+
 
 # ==================== DOCUMENT MANAGEMENT ====================
 
