@@ -49,8 +49,7 @@ import MyCelebrations from '../components/MyCelebrations';
 import FirstVisitTour, { useTour } from '../components/FirstVisitTour';
 // Daily Tips
 import MiraDailyTip, { MiraDailyTipInline } from '../components/MiraDailyTip';
-// Pulse Voice Assistant (Voice → Mira accelerator)
-import Pulse, { PulseButton } from '../components/Pulse';
+// Pulse removed - Mira Orb is now the primary voice/AI interaction
 // Push Notification Banner
 import PushNotificationBanner from '../components/PushNotificationBanner';
 // Mobile Navigation Bar
