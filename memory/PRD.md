@@ -21,12 +21,23 @@ This flow must work across:
 - 5 animated states: idle (breathing), listening (ripples), thinking (swirl), speaking (waves), celebrating (particles)
 - Purple-to-pink gradient with glowing aura
 - Paw print soul symbol inside the orb
+- **Haptic feedback** on mobile tap (50ms vibration pulse)
 - Responsive design for desktop and mobile
 
 **Files Created/Modified**:
-- `/app/frontend/src/components/MiraOrb.jsx` - NEW animated orb component
+- `/app/frontend/src/components/MiraOrb.jsx` - NEW animated orb component with haptic
 - `/app/frontend/src/components/MiraAI.jsx` - Integrated MiraOrb, replaced old FAB button
 - Installed `framer-motion` dependency
+
+### ✅ Floating Contact Button Repositioned
+**Change**: Moved WhatsApp/Call contact stack from RIGHT to LEFT side of screen.
+- Prevents overlap with Mira Orb
+- Removed "Speak to us! 👋" tooltip (Mira is now the primary interaction)
+- Cleaner, smaller button (48px vs 56px)
+- Removed Mira from contact options (redundant - Orb is always visible)
+
+**Files Modified**:
+- `/app/frontend/src/components/FloatingContactButton.jsx`
 
 ---
 
