@@ -105,6 +105,16 @@ CARE_TYPES = {
         "typical_response_time": "4-8 hours",
         "profile_fields_needed": ["feeding_schedule", "medications", "daily_routine"],
         "subtypes": ["feeding_help", "medication_reminder", "routine_check", "wellness_check"]
+    },
+    "feed": {
+        "name": "Feed & Nutrition",
+        "category": "nutrition",
+        "icon": "🍖",
+        "description": "Diet planning, nutrition advice, feeding schedules, weight management",
+        "requires_assessment": True,
+        "typical_response_time": "24-48 hours",
+        "profile_fields_needed": ["weight", "age", "food_allergies", "diet_type", "activity_level"],
+        "subtypes": ["diet_planning", "weight_management", "allergy_diet", "puppy_nutrition", "senior_nutrition", "prescription_diet"]
     }
 }
 
