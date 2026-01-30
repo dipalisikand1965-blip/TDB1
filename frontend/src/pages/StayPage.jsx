@@ -428,25 +428,24 @@ const StayPage = () => {
 
       {/* Properties Grid - FIRST after tabs (User requested: properties on top) */}
       {activeTab === 'stays' && (
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl md:text-2xl font-bold text-gray-800">
-            {loading ? 'Loading...' : `${properties.length} Pet-Friendly Stays`}
+      <div className="max-w-6xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
+        <div className="flex items-center justify-between mb-3 sm:mb-6 px-1">
+          <h2 className="text-base sm:text-xl md:text-2xl font-bold text-gray-800">
+            {loading ? 'Loading...' : `${properties.length} Stays`}
           </h2>
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-500 hidden md:inline">View:</span>
-            <Button variant="outline" size="sm" className="hidden md:flex">
-              <Filter className="w-4 h-4 mr-1" /> Filters
+            <Button variant="outline" size="sm" className="text-xs h-8">
+              <Filter className="w-3 h-3 sm:w-4 sm:h-4 mr-1" /> Filter
             </Button>
           </div>
         </div>
 
         {loading ? (
-          <div className="flex justify-center py-20">
-            <Loader2 className="w-10 h-10 animate-spin text-green-600" />
+          <div className="flex justify-center py-12 sm:py-20">
+            <Loader2 className="w-8 h-8 sm:w-10 sm:h-10 animate-spin text-green-600" />
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4 md:gap-6">
             {properties.map((property) => (
               <PropertyCard 
                 key={property.id} 
@@ -464,10 +463,10 @@ const StayPage = () => {
         )}
 
         {!loading && properties.length === 0 && (
-          <div className="text-center py-20">
-            <Dog className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-            <h3 className="text-xl font-semibold text-gray-600">No properties found</h3>
-            <p className="text-gray-500">Try adjusting your filters</p>
+          <div className="text-center py-12 sm:py-20">
+            <Dog className="w-12 h-12 sm:w-16 sm:h-16 mx-auto text-gray-300 mb-4" />
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-600">No properties found</h3>
+            <p className="text-sm text-gray-500">Try adjusting your filters</p>
           </div>
         )}
       </div>
