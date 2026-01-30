@@ -171,40 +171,47 @@ const Admin = () => {
     setSeedingAll(true);
     try {
       // UNIVERSAL SEED - Seeds ALL 14 pillars with products, services, pricing, shipping
-      toast({ title: '🚀 Universal Seed Started', description: 'Seeding all 14 pillars...' });
+      toast({ title: '🚀 Universal Seed Started', description: 'Seeding all 14 pillars... This may take 30-60 seconds.' });
+      
+      console.log('[Universal Seed] Starting seed to:', `${API_URL}/api/admin/universal-seed`);
       
       const response = await fetch(`${API_URL}/api/admin/universal-seed`, {
-        method: 'POST'
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
+      
+      console.log('[Universal Seed] Response status:', response.status);
       
       if (response.ok) {
         const data = await response.json();
+        console.log('[Universal Seed] Success:', data);
         const results = data.results || {};
         const engagement = results.engagement || {};
         toast({
           title: '✅ Universal Seed Complete!',
-          description: `Products: ${results.products?.created || 0} new | Services: ${results.services?.created || 0} | Stories: ${engagement.stories || 0} | Tips: ${engagement.tips || 0}`,
+          description: `Products: ${results.products?.created || 0} new, ${results.products?.updated || 0} updated | Stories: ${engagement.stories || 0} | Tips: ${engagement.tips || 0}`,
           duration: 8000
         });
       } else {
-        // Fallback to old endpoint
-        const fallbackResponse = await fetch(`${API_URL}/api/admin/seed-all`, {
-          method: 'POST',
-          headers: getAuthHeaders()
+        const errorText = await response.text();
+        console.error('[Universal Seed] Failed:', response.status, errorText);
+        toast({ 
+          title: 'Seed Failed', 
+          description: `Status ${response.status}: ${errorText.slice(0, 100)}`, 
+          variant: 'destructive',
+          duration: 10000 
         });
-        if (fallbackResponse.ok) {
-          const data = await fallbackResponse.json();
-          toast({
-            title: '✅ Pillars Seeded!',
-            description: `${data.totals?.products || 0} products, ${data.totals?.bundles || 0} bundles added`
-          });
-        } else {
-          toast({ title: 'Error', description: 'Failed to seed data', variant: 'destructive' });
-        }
       }
     } catch (error) {
-      console.error('Seed error:', error);
-      toast({ title: 'Error', description: 'Failed to seed data', variant: 'destructive' });
+      console.error('[Universal Seed] Error:', error);
+      toast({ 
+        title: 'Network Error', 
+        description: `Failed to connect: ${error.message}`, 
+        variant: 'destructive',
+        duration: 10000 
+      });
     } finally {
       setSeedingAll(false);
     }
