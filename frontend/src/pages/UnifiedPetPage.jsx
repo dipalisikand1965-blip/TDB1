@@ -1136,7 +1136,6 @@ const UnifiedPetPage = () => {
               )}
             </div>
           </div>
-          </div>
         </div>
       </div>
 
