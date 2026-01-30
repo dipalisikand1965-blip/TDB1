@@ -707,28 +707,7 @@ const MemberDashboard = () => {
         </button>
       )}
       
-      {/* ⚡ Pulse Voice Button */}
-      <PulseButton 
-        onClick={() => setShowVoiceAssistant(true)}
-        petName={primaryPet?.name || 'your pet'}
-      />
-      
-      {/* ⚡ Pulse Voice Assistant Modal */}
-      <Pulse
-        isOpen={showVoiceAssistant}
-        onClose={() => setShowVoiceAssistant(false)}
-        petName={primaryPet?.name || 'your pet'}
-        petId={primaryPet?.id}
-        petData={{
-          overall_score: primaryPet?.overall_score || 0,
-          breed: primaryPet?.breed,
-          age: primaryPet?.age
-        }}
-        onNavigate={(path) => {
-          setShowVoiceAssistant(false);
-          navigate(path);
-        }}
-      />
+      {/* Pulse removed - Mira Orb is now the primary voice/AI interaction point */}
       
       {/* Beautiful Hero Section - Pet-First Design - Mobile Optimized */}
       <div className="relative overflow-hidden bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800">
