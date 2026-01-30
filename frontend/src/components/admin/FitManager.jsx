@@ -1330,6 +1330,150 @@ const FitManager = ({ getAuthHeader }) => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Transformation Story Modal */}
+      <Dialog open={showStoryModal} onOpenChange={setShowStoryModal}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>{editingStory ? 'Edit' : 'Add'} Transformation Story</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Pet Name *</Label>
+                <Input value={storyForm.pet_name} onChange={(e) => setStoryForm({...storyForm, pet_name: e.target.value})} placeholder="Bruno" />
+              </div>
+              <div>
+                <Label>Breed *</Label>
+                <Input value={storyForm.breed} onChange={(e) => setStoryForm({...storyForm, breed: e.target.value})} placeholder="Labrador" />
+              </div>
+            </div>
+            <div>
+              <Label>Owner Name *</Label>
+              <Input value={storyForm.owner_name} onChange={(e) => setStoryForm({...storyForm, owner_name: e.target.value})} placeholder="Priya M." />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Before Image URL *</Label>
+                <Input value={storyForm.before_image} onChange={(e) => setStoryForm({...storyForm, before_image: e.target.value})} placeholder="https://..." />
+              </div>
+              <div>
+                <Label>After Image URL *</Label>
+                <Input value={storyForm.after_image} onChange={(e) => setStoryForm({...storyForm, after_image: e.target.value})} placeholder="https://..." />
+              </div>
+            </div>
+            <div>
+              <Label>Achievement *</Label>
+              <Input value={storyForm.achievement} onChange={(e) => setStoryForm({...storyForm, achievement: e.target.value})} placeholder="Lost 4kg in 10 weeks" />
+            </div>
+            <div>
+              <Label>Testimonial *</Label>
+              <Textarea value={storyForm.testimonial} onChange={(e) => setStoryForm({...storyForm, testimonial: e.target.value})} placeholder="The trainers were amazing..." rows={2} />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Program</Label>
+                <Select value={storyForm.program} onValueChange={(v) => setStoryForm({...storyForm, program: v})}>
+                  <SelectTrigger><SelectValue placeholder="Select program" /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Wellness Architect®">Wellness Architect®</SelectItem>
+                    <SelectItem value="Weight Journey Partner®">Weight Journey Partner®</SelectItem>
+                    <SelectItem value="Active Lifestyle Curator®">Active Lifestyle Curator®</SelectItem>
+                    <SelectItem value="Senior Wellness Companion®">Senior Wellness Companion®</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Rating (1-5)</Label>
+                <Input type="number" min="1" max="5" value={storyForm.rating} onChange={(e) => setStoryForm({...storyForm, rating: e.target.value})} />
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Switch checked={storyForm.is_active} onCheckedChange={(v) => setStoryForm({...storyForm, is_active: v})} />
+              <Label>Active (visible on page)</Label>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setShowStoryModal(false); setEditingStory(null); }}>Cancel</Button>
+            <Button onClick={async () => {
+              try {
+                if (editingStory) {
+                  await axios.put(`${API_URL}/api/engagement/transformations/${editingStory.id}`, {...storyForm, rating: parseInt(storyForm.rating), pillar: 'fit'}, getAuthHeader());
+                } else {
+                  await axios.post(`${API_URL}/api/engagement/transformations`, {...storyForm, rating: parseInt(storyForm.rating), pillar: 'fit'}, getAuthHeader());
+                }
+                toast({ title: 'Success', description: `Story ${editingStory ? 'updated' : 'created'}` });
+                setShowStoryModal(false);
+                setEditingStory(null);
+                fetchAllData();
+              } catch (error) {
+                toast({ title: 'Error', description: 'Failed to save story', variant: 'destructive' });
+              }
+            }}>{editingStory ? 'Update' : 'Create'} Story</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Quick Win Tip Modal */}
+      <Dialog open={showTipModal} onOpenChange={setShowTipModal}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>{editingTip ? 'Edit' : 'Add'} Quick Win Tip</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>Tip Text *</Label>
+              <Textarea value={tipForm.tip} onChange={(e) => setTipForm({...tipForm, tip: e.target.value})} placeholder="15-minute morning walks boost metabolism by 20%" rows={2} />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Action Button Text *</Label>
+                <Input value={tipForm.action} onChange={(e) => setTipForm({...tipForm, action: e.target.value})} placeholder="Set reminder" />
+              </div>
+              <div>
+                <Label>Emoji *</Label>
+                <Input value={tipForm.emoji} onChange={(e) => setTipForm({...tipForm, emoji: e.target.value})} placeholder="💡" />
+              </div>
+            </div>
+            <div>
+              <Label>Category *</Label>
+              <Select value={tipForm.category} onValueChange={(v) => setTipForm({...tipForm, category: v})}>
+                <SelectTrigger><SelectValue placeholder="Select category" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="general">General</SelectItem>
+                  <SelectItem value="weight">Weight Management</SelectItem>
+                  <SelectItem value="puppy">Puppy</SelectItem>
+                  <SelectItem value="senior">Senior</SelectItem>
+                  <SelectItem value="training">Training</SelectItem>
+                  <SelectItem value="nutrition">Nutrition</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-center gap-2">
+              <Switch checked={tipForm.is_active} onCheckedChange={(v) => setTipForm({...tipForm, is_active: v})} />
+              <Label>Active (shown to members)</Label>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setShowTipModal(false); setEditingTip(null); }}>Cancel</Button>
+            <Button onClick={async () => {
+              try {
+                if (editingTip) {
+                  await axios.put(`${API_URL}/api/engagement/tips/${editingTip.id}`, {...tipForm, pillar: 'fit'}, getAuthHeader());
+                } else {
+                  await axios.post(`${API_URL}/api/engagement/tips`, {...tipForm, pillar: 'fit'}, getAuthHeader());
+                }
+                toast({ title: 'Success', description: `Tip ${editingTip ? 'updated' : 'created'}` });
+                setShowTipModal(false);
+                setEditingTip(null);
+                fetchAllData();
+              } catch (error) {
+                toast({ title: 'Error', description: 'Failed to save tip', variant: 'destructive' });
+              }
+            }}>{editingTip ? 'Update' : 'Create'} Tip</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
