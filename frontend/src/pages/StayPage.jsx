@@ -297,36 +297,35 @@ const StayPage = () => {
       {/* SEO Meta Tags */}
       <SEOHead page="stay" path="/stay" />
       
-      {/* Hero Section */}
-      <div className="relative bg-gradient-to-r from-green-600 to-emerald-500 text-white py-16 px-4">
+      {/* Hero Section - Compact on mobile */}
+      <div className="relative bg-gradient-to-r from-green-600 to-emerald-500 text-white py-8 md:py-16 px-4">
         <div className="max-w-6xl mx-auto text-center">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <PawPrint className="w-8 h-8" />
-            <h1 className="text-4xl md:text-5xl font-bold">STAY</h1>
+          <div className="flex items-center justify-center gap-2 mb-2 md:mb-4">
+            <PawPrint className="w-6 h-6 md:w-8 md:h-8" />
+            <h1 className="text-2xl md:text-5xl font-bold">STAY</h1>
           </div>
-          <p className="text-xl md:text-2xl opacity-90 mb-2">
+          <p className="text-base md:text-2xl opacity-90 mb-2">
             Your dog's second home — everywhere.
           </p>
-          <p className="text-sm opacity-75 max-w-2xl mx-auto mb-4">
-            Discover India's most trusted pet-friendly stays. Each property is verified against 
-            The Doggy Company Paw Standards for comfort, safety, and joy.
+          <p className="text-xs md:text-sm opacity-75 max-w-2xl mx-auto mb-3 md:mb-4 px-2">
+            Discover India's most trusted pet-friendly stays.
           </p>
           
           {/* Trip Planner CTA */}
           <Button 
             onClick={() => setShowTripPlanner(true)}
-            className="bg-white text-green-600 hover:bg-green-50 font-semibold px-6 py-3 rounded-full shadow-lg"
+            className="bg-white text-green-600 hover:bg-green-50 font-semibold px-4 md:px-6 py-2 md:py-3 rounded-full shadow-lg text-sm md:text-base"
             data-testid="trip-planner-btn"
           >
-            <Sparkles className="w-5 h-5 mr-2" />
+            <Sparkles className="w-4 h-4 md:w-5 md:h-5 mr-1 md:mr-2" />
             Plan Your Pawcation
           </Button>
         </div>
 
         {/* Search Bar */}
-        <div className="max-w-4xl mx-auto mt-8">
-          <div className="bg-white rounded-2xl shadow-xl p-4">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+        <div className="max-w-4xl mx-auto mt-4 md:mt-8">
+          <div className="bg-white rounded-2xl shadow-xl p-3 md:p-4">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
               <div className="relative">
                 <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <select
