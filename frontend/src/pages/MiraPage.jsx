@@ -51,6 +51,7 @@ const generateSessionId = () => {
 
 const MiraPage = () => {
   const { user, token } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
   
   // State
   const [messages, setMessages] = useState([]);
