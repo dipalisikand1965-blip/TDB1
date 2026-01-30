@@ -80,6 +80,20 @@ const CARE_EXPERIENCES = [
       "Real-time crisis support",
       "Post-emergency follow-up care"
     ]
+  },
+  {
+    title: "Feed & Nutrition Advisor®",
+    description: "Every pet deserves a diet tailored to their unique needs. Our nutrition experts create personalised meal plans, manage weight goals, and navigate food allergies — so your pet thrives from the inside out.",
+    icon: "🍖",
+    gradient: "from-orange-500 to-amber-600",
+    badge: "New",
+    badgeColor: "bg-orange-500",
+    highlights: [
+      "Custom diet planning by nutritionists",
+      "Weight management programmes",
+      "Allergy-safe meal solutions",
+      "Puppy & senior nutrition guidance"
+    ]
   }
 ];
 
