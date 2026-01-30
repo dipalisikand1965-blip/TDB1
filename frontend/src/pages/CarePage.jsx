@@ -138,6 +138,15 @@ const CARE_TYPES = {
     color: 'from-amber-500 to-yellow-500',
     bgColor: 'bg-amber-50',
     textColor: 'text-amber-600'
+  },
+  feed: {
+    id: 'feed',
+    name: 'Feed & Nutrition',
+    icon: Package,
+    description: 'Diet planning, weight management, allergy diets',
+    color: 'from-orange-500 to-amber-500',
+    bgColor: 'bg-orange-50',
+    textColor: 'text-orange-600'
   }
 };
 
