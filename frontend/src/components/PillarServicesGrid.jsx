@@ -189,10 +189,14 @@ const PillarServicesGrid = ({
       )}
 
       {/* Load More (if paginated) */}
-      {filteredServices.length >= 8 && (
-        <div className="text-center pt-4">
-          <Button variant="outline" className="px-8">
-            Load More Services
+      {filteredServices.length >= 8 && visibleCount < filteredServices.length && (
+        <div className="text-center pt-6">
+          <Button 
+            variant="outline" 
+            className="px-8 rounded-full border-2 hover:bg-gray-50"
+            onClick={() => setVisibleCount(prev => prev + 8)}
+          >
+            Load More Services ({filteredServices.length - visibleCount} remaining)
             <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
         </div>
