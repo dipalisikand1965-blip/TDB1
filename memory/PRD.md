@@ -133,7 +133,7 @@ This flow must work across:
 - **Admin**: `aditya` / `lola4304`
 
 ## Deployment
-- **Preview URL**: https://unified-signal-1.preview.emergentagent.com
+- **Preview URL**: https://petstack-rescue.preview.emergentagent.com
 - **Production**: thedoggycompany.in (deploying tomorrow)
 
 ---
