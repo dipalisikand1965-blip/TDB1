@@ -125,14 +125,30 @@ const MiraContextPanel = ({
     utterance.pitch = 1.1;
     utterance.volume = 0.9;
     
-    // Try to get a good voice
+    // Get a female voice for Mira - she's a woman!
     const voices = synthRef.current.getVoices();
-    const preferredVoice = voices.find(v => 
+    const femaleVoice = voices.find(v => 
+      // Priority 1: Specific female voices
       v.name.toLowerCase().includes('samantha') ||
-      v.name.toLowerCase().includes('google') ||
+      v.name.toLowerCase().includes('victoria') ||
+      v.name.toLowerCase().includes('karen') ||
+      v.name.toLowerCase().includes('moira') ||
+      v.name.toLowerCase().includes('tessa') ||
+      v.name.toLowerCase().includes('fiona') ||
+      v.name.toLowerCase().includes('veena') ||
+      v.name.includes('Female') ||
+      v.name.includes('female')
+    ) || voices.find(v =>
+      // Priority 2: Google UK Female or any female-sounding
+      v.name.includes('Google UK English Female') ||
+      v.name.includes('Google US English Female') ||
+      v.name.includes('Microsoft Zira') ||
+      v.name.includes('Microsoft Heera')
+    ) || voices.find(v =>
+      // Priority 3: Any English voice (fallback)
       v.lang.startsWith('en')
     );
-    if (preferredVoice) utterance.voice = preferredVoice;
+    if (femaleVoice) utterance.voice = femaleVoice;
     
     utterance.onstart = () => setIsSpeaking(true);
     utterance.onend = () => setIsSpeaking(false);
