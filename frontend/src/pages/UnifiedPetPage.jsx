@@ -27,22 +27,24 @@ import BreedAutocomplete from '../components/BreedAutocomplete';
 import PetMilestoneTimeline from '../components/PetMilestoneTimeline';
 import ShareablePetCard from '../components/ShareablePetCard';
 
-// Life Pillars configuration
+// 14 Life Pillars - Core services of The Doggy Company
 const LIFE_PILLARS = [
-  { id: 'feed', name: 'Feed', icon: '🍖', path: '/meals', color: 'from-orange-400 to-red-400' },
-  { id: 'celebrate', name: 'Celebrate', icon: '🎂', path: '/celebrate', color: 'from-pink-400 to-rose-400' },
-  { id: 'dine', name: 'Dine', icon: '🍽️', path: '/dine', color: 'from-amber-400 to-orange-400' },
-  { id: 'stay', name: 'Stay', icon: '🏨', path: '/stay', color: 'from-blue-400 to-indigo-400' },
-  { id: 'travel', name: 'Travel', icon: '✈️', path: '/travel', color: 'from-cyan-400 to-blue-400' },
-  { id: 'care', name: 'Care', icon: '🩺', path: '/care', color: 'from-emerald-400 to-teal-400' },
-  { id: 'groom', name: 'Groom', icon: '✂️', path: '/pillar/groom', color: 'from-violet-400 to-purple-400' },
-  { id: 'play', name: 'Play', icon: '🎾', path: '/pillar/play', color: 'from-green-400 to-emerald-400' },
-  { id: 'train', name: 'Train', icon: '🎓', path: '/learn', color: 'from-indigo-400 to-purple-400' },
-  { id: 'insure', name: 'Insure', icon: '🛡️', path: '/pillar/insure', color: 'from-slate-400 to-gray-500' },
-  { id: 'adopt', name: 'Adopt', icon: '🐕', path: '/pillar/adopt', color: 'from-rose-400 to-pink-400' },
-  { id: 'farewell', name: 'Farewell', icon: '🌈', path: '/pillar/farewell', color: 'from-purple-400 to-indigo-400' },
-  { id: 'shop', name: 'Shop', icon: '🛒', path: '/all', color: 'from-teal-400 to-cyan-400' },
-  { id: 'community', name: 'Community', icon: '👥', path: '/pillar/community', color: 'from-yellow-400 to-amber-400' }
+  { id: 'celebrate', name: 'Celebrate', icon: '🎂', path: '/celebrate', color: 'from-pink-400 to-rose-400', description: 'Birthday parties & special occasions' },
+  { id: 'dine', name: 'Dine', icon: '🍽️', path: '/dine', color: 'from-amber-400 to-orange-400', description: 'Pet-friendly restaurants & cafes' },
+  { id: 'stay', name: 'Stay', icon: '🏨', path: '/stay', color: 'from-blue-400 to-indigo-400', description: 'Boarding & pet hotels' },
+  { id: 'travel', name: 'Travel', icon: '✈️', path: '/travel', color: 'from-cyan-400 to-blue-400', description: 'Pet travel & relocation' },
+  { id: 'care', name: 'Care', icon: '💊', path: '/care', color: 'from-emerald-400 to-teal-400', description: 'Vets, clinics & health' },
+  { id: 'enjoy', name: 'Enjoy', icon: '🎾', path: '/enjoy', color: 'from-green-400 to-emerald-400', description: 'Parks, activities & fun' },
+  { id: 'fit', name: 'Fit', icon: '🏃', path: '/fit', color: 'from-orange-400 to-red-400', description: 'Fitness & wellness' },
+  { id: 'learn', name: 'Learn', icon: '🎓', path: '/learn', color: 'from-indigo-400 to-purple-400', description: 'Training & education' },
+  { id: 'paperwork', name: 'Paperwork', icon: '📄', path: '/paperwork', color: 'from-slate-400 to-gray-500', description: 'Documents & registrations' },
+  { id: 'advisory', name: 'Advisory', icon: '📋', path: '/advisory', color: 'from-teal-400 to-cyan-400', description: 'Expert consultations' },
+  { id: 'emergency', name: 'Emergency', icon: '🚨', path: '/emergency', color: 'from-red-500 to-rose-500', description: '24/7 emergency services' },
+  { id: 'farewell', name: 'Farewell', icon: '🌈', path: '/farewell', color: 'from-purple-400 to-indigo-400', description: 'End-of-life care' },
+  { id: 'adopt', name: 'Adopt', icon: '🐕', path: '/adopt', color: 'from-rose-400 to-pink-400', description: 'Adoption & rescue' },
+  { id: 'shop', name: 'Shop', icon: '🛍️', path: '/shop', color: 'from-violet-400 to-purple-400', description: 'Pet products & essentials' },
+  // Community is a feature, not a pillar - kept for future use
+  // { id: 'community', name: 'Community', icon: '👥', path: '/community', color: 'from-yellow-400 to-amber-400', description: 'Pet parent community' }
 ];
 
 // Memory Type Icons and Colors
