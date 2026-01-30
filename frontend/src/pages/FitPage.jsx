@@ -1,7 +1,7 @@
 /**
  * FitPage.jsx
  * Premium Pillar Page - Fit (Fitness & Wellness)
- * MakeMyTrip-inspired compact design with dynamic mascot
+ * MakeMyTrip-inspired services layout with smart recommendations
  */
 
 import React, { useState, useEffect } from 'react';
@@ -18,15 +18,15 @@ import { createFitRequest, showUnifiedFlowSuccess, showUnifiedFlowError } from '
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
+import MiraContextPanel from '../components/MiraContextPanel';
 import AdminQuickEdit from '../components/AdminQuickEdit';
 import ProductCard from '../components/ProductCard';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import SEOHead from '../components/SEOHead';
-// MakeMyTrip-style components
+import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
+// MakeMyTrip-style components for sleek UI
 import PillarServicesGrid from '../components/PillarServicesGrid';
 import MiraPillarRecommendations from '../components/MiraPillarRecommendations';
-import FitCategoryBar from '../components/FitCategoryBar';
-import AnimatedConciergeMascot from '../components/AnimatedConciergeMascot';
 import {
   Dumbbell, Heart, TrendingUp, Scale, Activity, Trophy,
   CheckCircle, ChevronRight, Sparkles, Star, Loader2, Send,
@@ -332,7 +332,6 @@ const FitPage = () => {
   const [bundles, setBundles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [heroIndex, setHeroIndex] = useState(0);
-  const [activeCategory, setActiveCategory] = useState('all');
   
   // UI states
   const [showDetailModal, setShowDetailModal] = useState(false);
@@ -529,127 +528,126 @@ const FitPage = () => {
   }
   
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       
-      {/* ==================== COMPACT HERO SECTION ==================== */}
-      <div className="relative bg-gradient-to-r from-teal-600 via-emerald-600 to-green-600 text-white">
-        <div className="absolute inset-0 opacity-20">
+      {/* ==================== HERO SECTION ==================== */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-teal-900 via-emerald-800 to-green-900 text-white">
+        <div className="absolute inset-0">
           <img 
             src={HERO_IMAGES[heroIndex]} 
             alt="Pet Fitness" 
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover opacity-30 transition-opacity duration-1000"
           />
+          <div className="absolute inset-0 bg-gradient-to-r from-teal-900/90 via-emerald-800/80 to-transparent" />
         </div>
         
-        <div className="relative max-w-7xl mx-auto px-4 py-8 sm:py-12">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            {/* Left: Title & Description */}
-            <div className="flex-1">
-              <div className="flex items-center gap-3 mb-2">
-                <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
-                  <Dumbbell className="w-5 h-5 text-lime-300" />
-                </div>
-                <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold">Pet Fitness & Wellness</h1>
-                  <p className="text-white/80 text-sm">Expert programmes for healthier, happier pets</p>
-                </div>
-              </div>
-              
-              {/* Quick Stats */}
-              <div className="flex flex-wrap gap-4 mt-4">
-                <div className="flex items-center gap-1.5 text-white/90 text-xs sm:text-sm">
-                  <Trophy className="w-4 h-4 text-yellow-300" />
-                  <span>Certified Trainers</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-white/90 text-xs sm:text-sm">
-                  <TrendingUp className="w-4 h-4 text-lime-300" />
-                  <span>Progress Tracking</span>
-                </div>
-                <div className="flex items-center gap-1.5 text-white/90 text-xs sm:text-sm">
-                  <PawPrint className="w-4 h-4 text-emerald-300" />
-                  <span>Earn Paw Points</span>
-                </div>
-              </div>
+        <div className="relative max-w-7xl mx-auto px-4 py-20 md:py-28">
+          <div className="max-w-2xl">
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
+              <Dumbbell className="w-4 h-4 text-lime-400" />
+              <span className="text-sm font-medium">Pet Fitness & Wellness</span>
             </div>
             
-            {/* Right: CTA Buttons */}
-            <div className="flex gap-3">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+              Fit Paws,
+              <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-300 to-emerald-200">
+                Happy Hearts
+              </span>
+            </h1>
+            
+            <p className="text-lg md:text-xl text-white/80 mb-8 max-w-lg">
+              Expert fitness programmes, weight management, and activity tracking. Build a healthier, happier life together with your furry athlete.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4">
               <Button 
                 onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
-                className="bg-white text-teal-700 hover:bg-gray-100 font-semibold px-6 rounded-full shadow-lg"
+                size="lg"
+                className="bg-gradient-to-r from-lime-500 to-emerald-500 hover:from-lime-600 hover:to-emerald-600 text-emerald-950 font-semibold px-8 py-6 text-lg rounded-full shadow-2xl shadow-emerald-500/30 transition-all hover:scale-105"
                 data-testid="get-fit-btn"
               >
-                <Play className="w-4 h-4 mr-2 fill-current" />
-                Browse Services
+                <Play className="w-5 h-5 mr-2 fill-current" />
+                Explore Services
               </Button>
               <Button 
-                onClick={() => navigate('/mira?context=fit')}
+                onClick={() => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })}
                 variant="outline"
-                className="border-white/40 text-white hover:bg-white/10 px-6 rounded-full hidden sm:flex"
+                size="lg"
+                className="border-white/30 text-white hover:bg-white/10 px-8 py-6 text-lg rounded-full"
               >
-                <MessageCircle className="w-4 h-4 mr-2" />
-                Ask Mira
+                <Package className="w-5 h-5 mr-2" />
+                Shop Fitness Gear
               </Button>
             </div>
+            
+            <div className="flex flex-wrap gap-6 mt-12">
+              <div className="flex items-center gap-2 text-white/70">
+                <Trophy className="w-5 h-5 text-lime-400" />
+                <span className="text-sm">Certified Trainers</span>
+              </div>
+              <div className="flex items-center gap-2 text-white/70">
+                <TrendingUp className="w-5 h-5 text-emerald-400" />
+                <span className="text-sm">Progress Tracking</span>
+              </div>
+              <div className="flex items-center gap-2 text-white/70">
+                <PawPrint className="w-5 h-5 text-teal-400" />
+                <span className="text-sm">Earn Paw Points</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce">
+          <ChevronDown className="w-6 h-6 text-white/50" />
+        </div>
+      </div>
+
+      {/* ==================== ELEVATED CONCIERGE® FIT EXPERIENCES ==================== */}
+      <div className="py-16 bg-gradient-to-br from-teal-50 via-emerald-50 to-green-50">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 bg-teal-100 text-teal-700 px-4 py-2 rounded-full mb-4">
+              <Sparkles className="w-4 h-4" />
+              <span className="text-sm font-medium">Elevated Experiences</span>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Fit <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-emerald-600">Concierge®</span> Experiences
+            </h2>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              These aren't fitness programs you sign up for — they're personalized wellness journeys crafted around your pet's unique needs, your goals, and your lifestyle.
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 gap-6">
+            {FIT_EXPERIENCES.map((exp, idx) => (
+              <ConciergeExperienceCard
+                key={idx}
+                pillar="fit"
+                title={exp.title}
+                description={exp.description}
+                icon={exp.icon}
+                gradient={exp.gradient}
+                badge={exp.badge}
+                badgeColor={exp.badgeColor}
+                highlights={exp.highlights}
+              />
+            ))}
+          </div>
+          
+          <div className="mt-10 text-center">
+            <p className="text-sm text-gray-500">
+              💬 Not sure where to start? <button onClick={() => setShowBookingModal(true)} className="text-teal-600 hover:underline font-medium">Tell us about your pet</button> and we&apos;ll design a personalized fitness journey.
+            </p>
           </div>
         </div>
       </div>
 
-      {/* ==================== MMT-STYLE CATEGORY BAR ==================== */}
-      <FitCategoryBar 
-        activeCategory={activeCategory}
-        onCategoryChange={setActiveCategory}
-        serviceCounts={services.reduce((acc, s) => {
-          const cat = s.category || 'other';
-          acc[cat] = (acc[cat] || 0) + 1;
-          return acc;
-        }, {})}
-      />
-
-      {/* ==================== MIRA PERSONALIZED RECOMMENDATIONS (FOR ALL USERS) ==================== */}
-      <section className="py-6 sm:py-8 bg-gradient-to-b from-gray-50 to-white">
-        <div className="max-w-7xl mx-auto px-4">
-          {/* Personalized Section Header */}
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-purple-500" />
-              <h2 className="text-lg sm:text-xl font-bold text-gray-900">
-                {userPets[0]?.name ? `Perfect for ${userPets[0].name}` : 'Recommended for You'}
-              </h2>
-            </div>
-            {!user && (
-              <Button 
-                variant="ghost" 
-                size="sm"
-                onClick={() => navigate('/login')}
-                className="text-purple-600 hover:text-purple-700 text-xs"
-              >
-                Sign in for personalized picks
-              </Button>
-            )}
-          </div>
-          
-          <MiraPillarRecommendations
-            pillar="fit"
-            petId={selectedPet?.id || userPets[0]?.id}
-            petName={selectedPet?.name || userPets[0]?.name}
-            userId={user?.id}
-            onSelectService={handleViewDetails}
-            onSelectProduct={(product) => {
-              addToCart({
-                id: product.id,
-                name: product.name || product.title,
-                price: product.price,
-                image: product.image,
-                pillar: 'fit',
-                type: 'product'
-              });
-              toast({ title: '🛒 Added to Cart!', description: `${product.name || product.title} added` });
-            }}
-            className="shadow-lg rounded-2xl"
-          />
-        </div>
-      </section>
+      {/* ==================== MIRA PERSONALIZED RECOMMENDATIONS ==================== */}
+      {user && (
+        <section className="py-8 md:py-12 bg-white">
+          <div className="max-w-7xl mx-auto px-4">
+            <MiraPillarRecommendations
               pillar="fit"
               petId={selectedPet?.id}
               petName={selectedPet?.name || userPets[0]?.name}
