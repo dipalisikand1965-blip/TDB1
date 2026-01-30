@@ -11626,6 +11626,11 @@ from engagement_engine import router as engagement_router, set_database as set_e
 app.include_router(engagement_router)  # Engagement at /api/engagement/*
 set_engagement_db(db)
 
+# Mira Nudges Engine - Proactive reminders and notifications
+from mira_nudges import router as nudges_router, set_database as set_nudges_db
+app.include_router(nudges_router)  # Nudges at /api/nudges/*
+set_nudges_db(db)
+
 @app.on_event("startup")
 async def startup_load_admin_credentials():
     """Load admin credentials from database on startup"""
