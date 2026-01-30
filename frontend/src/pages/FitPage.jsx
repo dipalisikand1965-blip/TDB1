@@ -329,11 +329,9 @@ const FitPage = () => {
   // Data states
   const [services, setServices] = useState([]);
   const [products, setProducts] = useState([]);
-  const [plans, setPlans] = useState([]);
   const [bundles, setBundles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [heroIndex, setHeroIndex] = useState(0);
-  const [selectedCategory, setSelectedCategory] = useState(null);
   
   // UI states
   const [showDetailModal, setShowDetailModal] = useState(false);
