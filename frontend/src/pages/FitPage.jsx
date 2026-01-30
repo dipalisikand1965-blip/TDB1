@@ -1,7 +1,7 @@
 /**
  * FitPage.jsx
  * Premium Pillar Page - Fit (Fitness & Wellness)
- * MakeMyTrip-inspired services layout with smart recommendations
+ * Elegant, service-soul-driven design
  */
 
 import React, { useState, useEffect } from 'react';
@@ -24,9 +24,8 @@ import ProductCard from '../components/ProductCard';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import SEOHead from '../components/SEOHead';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
-// MakeMyTrip-style components for sleek UI
 import PillarServicesGrid from '../components/PillarServicesGrid';
-import MiraPillarRecommendations from '../components/MiraPillarRecommendations';
+import MiraPicksCarousel from '../components/MiraPicksCarousel';
 import {
   Dumbbell, Heart, TrendingUp, Scale, Activity, Trophy,
   CheckCircle, ChevronRight, Sparkles, Star, Loader2, Send,
