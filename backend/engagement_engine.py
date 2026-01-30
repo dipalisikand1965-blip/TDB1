@@ -499,18 +499,23 @@ async def record_streak_action(user_id: str, action_type: str):
                     )
                     # Trigger notification
                     try:
-                        from central_signal_flow import trigger_unified_flow
-                        await trigger_unified_flow(
-                            db=db,
+                        from central_signal_flow import create_signal
+                        user = await db.users.find_one({"id": user_id}, {"name": 1, "email": 1})
+                        await create_signal(
+                            pillar="engagement",
                             action_type="streak_reward",
-                            user_id=user_id,
-                            data={
+                            title=f"🔥 {reward['badge']} Achieved!",
+                            description=f"{new_streak} day streak! +{reward['points']} Paw Points earned.",
+                            customer_name=user.get("name") if user else None,
+                            customer_email=user.get("email") if user else None,
+                            urgency="low",
+                            source="engagement_engine",
+                            extra_data={
                                 "streak_days": new_streak,
                                 "badge": reward["badge"],
                                 "points": reward["points"],
                                 "icon": reward.get("icon", "🔥")
-                            },
-                            source="engagement_engine"
+                            }
                         )
                     except Exception as e:
                         logger.warning(f"Could not trigger unified flow for streak: {e}")
