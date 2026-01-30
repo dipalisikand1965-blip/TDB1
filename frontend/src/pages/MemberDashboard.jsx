@@ -2907,12 +2907,12 @@ const MemberDashboard = () => {
                   <Sparkles className="w-5 h-5 text-purple-600" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-900">Mira Can Understand</h3>
+                  <h3 className="font-bold text-gray-900">Voice Quick Actions</h3>
                   <p className="text-xs text-gray-500">Hands-free voice commands</p>
                 </div>
               </div>
               <div className="flex flex-wrap gap-2 mt-2">
-                {['Order treats', 'Book grooming', 'Next vaccination?', 'Soul score', 'Recommendations'].map((cmd) => (
+                {['Book grooming', 'Schedule vet', 'Order food', 'Find walker', 'Plan birthday'].map((cmd) => (
                   <span 
                     key={cmd}
                     className="px-3 py-1.5 bg-white rounded-full text-xs font-medium text-purple-700 border border-purple-200"
@@ -2922,10 +2922,10 @@ const MemberDashboard = () => {
                 ))}
               </div>
               <button 
-                onClick={() => window.dispatchEvent(new CustomEvent('openMiraVoice'))}
+                onClick={() => setShowVoiceActions(true)}
                 className="w-full mt-3 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg text-sm font-medium hover:opacity-90 transition-opacity"
               >
-                Try Mira Voice Now
+                🎙️ Try Voice Quick Actions
               </button>
             </Card>
 
