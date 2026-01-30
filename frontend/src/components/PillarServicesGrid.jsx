@@ -4,7 +4,7 @@
  * Features: Category tabs, responsive grid, hover effects, smart filtering
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
