@@ -974,11 +974,25 @@ const UnifiedCheckout = () => {
                   </div>
                 )}
 
-                {/* GST Display */}
+                {/* Shipping - BEFORE GST since GST applies to shipping */}
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Shipping</span>
+                  <span className={shippingFee === 0 ? 'text-green-600 font-medium' : ''}>
+                    {shippingFee === 0 ? 'FREE' : `₹${shippingFee.toFixed(2)}`}
+                  </span>
+                </div>
+
+                {subtotal < (config?.free_shipping_threshold || 3000) && delivery.method === 'delivery' && (
+                  <p className="text-xs text-amber-600 bg-amber-50 p-2 rounded">
+                    Add ₹{((config?.free_shipping_threshold || 3000) - subtotal).toFixed(0)} more for FREE shipping!
+                  </p>
+                )}
+
+                {/* GST Display - AFTER Shipping */}
                 {gstDetails && (
                   <>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600">Taxable Amount</span>
+                    <div className="flex justify-between text-sm border-t pt-2 mt-2">
+                      <span className="text-gray-600">Taxable Amount (incl. shipping)</span>
                       <span>₹{gstDetails.taxable_amount?.toFixed(2)}</span>
                     </div>
                     {gstDetails.gst_details?.is_same_state ? (
@@ -1001,19 +1015,6 @@ const UnifiedCheckout = () => {
                   </>
                 )}
 
-                <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Shipping</span>
-                  <span className={shippingFee === 0 ? 'text-green-600 font-medium' : ''}>
-                    {shippingFee === 0 ? 'FREE' : `₹${shippingFee.toFixed(2)}`}
-                  </span>
-                </div>
-
-                {subtotal < (config?.free_shipping_threshold || 3000) && delivery.method === 'delivery' && (
-                  <p className="text-xs text-amber-600 bg-amber-50 p-2 rounded">
-                    Add ₹{((config?.free_shipping_threshold || 3000) - subtotal).toFixed(0)} more for FREE shipping!
-                  </p>
-                )}
-
                 <div className="border-t pt-3 flex justify-between font-bold text-lg">
                   <span>Total</span>
                   <span className="text-purple-600">
@@ -1026,7 +1027,7 @@ const UnifiedCheckout = () => {
                 </div>
 
                 <p className="text-xs text-gray-500 text-center">
-                  *Inclusive of 18% GST
+                  *Inclusive of 18% GST on products & shipping
                 </p>
               </div>
 
