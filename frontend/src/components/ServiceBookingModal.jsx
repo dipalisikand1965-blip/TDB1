@@ -513,29 +513,30 @@ const ServiceBookingModal = ({
           </div>
         )}
         
-        {/* Step 3: Schedule */}
+        {/* Step 3: Schedule - Mobile Optimized */}
         {!bookingComplete && step === 3 && (
-          <div className="space-y-4">
-            <h3 className="font-semibold text-gray-900">Select Date & Time</h3>
+          <div className="space-y-3 sm:space-y-4">
+            <h3 className="font-semibold text-gray-900 text-sm sm:text-base">Select Date & Time</h3>
             
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
-                <Label htmlFor="preferredDate">Preferred Date *</Label>
+                <Label htmlFor="preferredDate" className="text-sm">Preferred Date *</Label>
                 <Input
                   id="preferredDate"
                   type="date"
                   value={formData.preferredDate}
                   min={new Date().toISOString().split('T')[0]}
                   onChange={(e) => setFormData(prev => ({ ...prev, preferredDate: e.target.value }))}
+                  className="h-11 sm:h-10"
                   data-testid="booking-date"
                 />
               </div>
               <div>
-                <Label>Preferred Time *</Label>
+                <Label className="text-sm">Preferred Time *</Label>
                 <select
                   value={formData.preferredTime}
                   onChange={(e) => setFormData(prev => ({ ...prev, preferredTime: e.target.value }))}
-                  className="w-full h-10 px-3 rounded-md border border-gray-200 bg-white"
+                  className="w-full h-11 sm:h-10 px-3 rounded-md border border-gray-200 bg-white text-base"
                   data-testid="booking-time"
                 >
                   <option value="">Select time</option>
@@ -546,28 +547,51 @@ const ServiceBookingModal = ({
               </div>
             </div>
             
+            {/* Quick Time Selection for Mobile */}
+            <div className="sm:hidden">
+              <Label className="text-sm text-gray-600 mb-2 block">Or tap to select:</Label>
+              <div className="grid grid-cols-3 gap-2">
+                {['09:00 AM', '10:00 AM', '11:00 AM', '02:00 PM', '04:00 PM', '06:00 PM'].map(slot => (
+                  <button
+                    key={slot}
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, preferredTime: slot }))}
+                    className={`py-2 px-2 text-xs rounded-lg border transition-all ${
+                      formData.preferredTime === slot 
+                        ? 'border-purple-500 bg-purple-50 text-purple-700 font-medium' 
+                        : 'border-gray-200 text-gray-600 active:bg-gray-50'
+                    }`}
+                  >
+                    {slot}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
             {selectedLocation === 'home' && (
               <div>
-                <Label htmlFor="address">Service Address *</Label>
+                <Label htmlFor="address" className="text-sm">Service Address *</Label>
                 <Textarea
                   id="address"
                   value={formData.address}
                   onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
-                  placeholder="Full address including flat/house number, building, street, area, city, pincode"
+                  placeholder="Full address: flat/house, building, street, area, city, pincode"
                   rows={3}
+                  className="text-base"
                   data-testid="booking-address"
                 />
               </div>
             )}
             
             <div>
-              <Label htmlFor="additionalNotes">Additional Notes</Label>
+              <Label htmlFor="additionalNotes" className="text-sm">Additional Notes</Label>
               <Textarea
                 id="additionalNotes"
                 value={formData.additionalNotes}
                 onChange={(e) => setFormData(prev => ({ ...prev, additionalNotes: e.target.value }))}
-                placeholder="Any special requests or instructions..."
+                placeholder="Any special requests..."
                 rows={2}
+                className="text-base"
               />
             </div>
           </div>
