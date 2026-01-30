@@ -3,17 +3,17 @@
  * Unified floating contact stack - consolidated communication hub
  * 
  * Stack includes:
- * - Pulse (Voice → Mira accelerator)
  * - WhatsApp Chat
  * - Call Now
  * - Request Callback
  * 
+ * Positioned on LEFT side to not conflict with Mira Orb on RIGHT
  * Mobile-first design with stacked options
  */
 
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Phone, MessageCircle, X, Headphones, PhoneIncoming, Sparkles } from 'lucide-react';
+import { Phone, MessageCircle, X, Headphones, PhoneIncoming } from 'lucide-react';
 import CallbackRequestModal from './CallbackRequestModal';
 
 const WHATSAPP_NUMBER = '919663185747';
@@ -34,21 +34,9 @@ const FloatingContactButton = () => {
     setIsOpen(false);
     setShowCallbackModal(true);
   };
-  
-  const handleMiraVoice = () => {
-    setIsOpen(false);
-    // Dispatch event to open Mira AI
-    window.dispatchEvent(new CustomEvent('openMiraAI'));
-  };
 
+  // Contact options - removed Mira (now handled by MiraOrb on right side)
   const contactOptions = [
-    {
-      label: 'Mira',
-      sublabel: 'AI Pet Concierge',
-      icon: Sparkles,
-      color: 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600',
-      onClick: handleMiraVoice,
-    },
     {
       label: 'WhatsApp',
       sublabel: 'Chat with us',
@@ -75,7 +63,8 @@ const FloatingContactButton = () => {
 
   return (
     <>
-      <div className="fixed bottom-4 right-4 z-[9999] flex flex-col items-end gap-2" data-testid="floating-contact">
+      {/* Positioned on LEFT side to not conflict with Mira Orb */}
+      <div className="fixed bottom-4 left-4 z-[9990] flex flex-col items-start gap-2" data-testid="floating-contact">
         {/* Expanded Options */}
         {isOpen && (
           <div className="flex flex-col gap-2 mb-2 animate-in slide-in-from-bottom-4 fade-in duration-200">
@@ -118,29 +107,23 @@ const FloatingContactButton = () => {
           </div>
         )}
 
-        {/* Main FAB Button */}
+        {/* Main FAB Button - Clean, no tooltip */}
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className={`w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all transform hover:scale-110 ${
+          className={`w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition-all transform hover:scale-110 ${
             isOpen 
-              ? 'bg-gray-700 hover:bg-gray-800 rotate-0' 
-              : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 animate-pulse'
+              ? 'bg-gray-700 hover:bg-gray-800' 
+              : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600'
           }`}
           data-testid="floating-contact-btn"
+          aria-label="Contact options"
         >
           {isOpen ? (
-            <X className="w-6 h-6 text-white" />
+            <X className="w-5 h-5 text-white" />
           ) : (
-            <Headphones className="w-6 h-6 text-white" />
+            <Headphones className="w-5 h-5 text-white" />
           )}
         </button>
-        
-        {/* Tooltip when closed */}
-        {!isOpen && (
-          <div className="absolute bottom-0 right-16 bg-gray-900 text-white text-xs px-3 py-1.5 rounded-lg whitespace-nowrap animate-bounce">
-            Speak to us! 👋
-          </div>
-        )}
       </div>
       
       {/* Callback Request Modal */}
