@@ -1638,6 +1638,7 @@ const Admin = () => {
               { id: 'pets', label: 'Pet Profiles', icon: PawPrint },
               { id: 'membership', label: 'Membership', icon: Crown },
               { id: 'loyalty', label: 'Loyalty', icon: Star },
+              { id: 'engagement', label: 'Engagement', icon: Flame },
               { id: 'celebrations', label: 'Celebrations', icon: Calendar },
             ].map((tab) => (
               <Button
