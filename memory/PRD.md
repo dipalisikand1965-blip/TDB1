@@ -39,6 +39,20 @@ This flow must work across:
 **Files Modified**:
 - `/app/frontend/src/components/FloatingContactButton.jsx`
 
+### ✅ Member Dashboard Mobile UI Optimization - COMPLETED
+**Requirement**: Optimize the Member Dashboard for 99% mobile users - easy to see, one-tap access, no double flows.
+
+**Mobile Changes**:
+1. **Compact Pet Hero Card**: Pet photo + name + soul score + points + birthday in a horizontal layout
+2. **4 Quick Action Buttons**: My Pet, Celebrate, Shop, Ask Mira - direct one-tap access
+3. **Single-Row Scrollable Tabs**: Home, Pets, Services, Orders, Rewards, More - with active gradient highlight
+4. **Removed Two-Row Grid**: Cleaner, less overwhelming navigation
+
+**Desktop Preserved**: Original full hero layout with large pet photo, stats cards, and action buttons.
+
+**Files Modified**:
+- `/app/frontend/src/pages/MemberDashboard.jsx`
+
 ---
 
 ## What's Been Implemented (Session: Jan 29, 2026)
