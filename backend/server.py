@@ -1157,8 +1157,25 @@ async def lifespan(app: FastAPI):
         replace_existing=True
     )
     
+    # Add proactive Mira nudges processor (runs daily at 10 AM IST = 4:30 AM UTC)
+    async def process_mira_nudges():
+        """Process all pets for proactive nudges"""
+        try:
+            from mira_nudges import process_all_pets
+            result = await process_all_pets()
+            logger.info(f"Mira nudges processed: {result.get('pets_processed', 0)} pets, {result.get('total_nudges_generated', 0)} nudges generated")
+        except Exception as e:
+            logger.error(f"Error processing Mira nudges: {e}")
+    
+    scheduler.add_job(
+        process_mira_nudges,
+        CronTrigger(hour=4, minute=30),  # 10 AM IST = 4:30 AM UTC
+        id="mira_nudges",
+        replace_existing=True
+    )
+    
     scheduler.start()
-    logger.info("Schedulers started: celebration reminders, abandoned cart, feedback, daily reports, escalation checks (15 min), health reminders (daily 9 AM)")
+    logger.info("Schedulers started: celebration reminders, abandoned cart, feedback, daily reports, escalation checks (15 min), health reminders (daily 9 AM), Mira nudges (daily 10 AM)")
     
     yield
     
