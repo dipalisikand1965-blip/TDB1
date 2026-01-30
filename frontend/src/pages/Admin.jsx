@@ -180,9 +180,10 @@ const Admin = () => {
       if (response.ok) {
         const data = await response.json();
         const results = data.results || {};
+        const engagement = results.engagement || {};
         toast({
           title: '✅ Universal Seed Complete!',
-          description: `Products: ${results.products?.created || 0} new, ${results.products?.updated || 0} updated | Services: ${results.services?.created || 0} new | Unified: ${results.unified?.migrated || 0}`,
+          description: `Products: ${results.products?.created || 0} new | Services: ${results.services?.created || 0} | Stories: ${engagement.stories || 0} | Tips: ${engagement.tips || 0}`,
           duration: 8000
         });
       } else {
