@@ -11924,7 +11924,7 @@ set_report_builder_db(db)
 set_verify_admin(verify_admin)
 
 # Engagement Engine - Milestones, Streaks, Shareable Cards
-from engagement_engine import router as engagement_router, set_database as set_engagement_db
+from engagement_engine import router as engagement_router, set_database as set_engagement_db, initialize_engagement_data
 app.include_router(engagement_router)  # Engagement at /api/engagement/*
 set_engagement_db(db)
 
