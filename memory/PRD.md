@@ -27,15 +27,18 @@ This flow must work across:
 - **Nudge Types**: vaccination_reminder, grooming_reminder, birthday_reminder, gotcha_day_reminder, health_checkup, dental_checkup, flea_tick_prevention, food_reorder, insurance_renewal, license_renewal, weight_check, training_followup, soul_incomplete, activity_reminder
 - **Admin Configurable**: All nudge types can be enabled/disabled and customized via admin panel
 
-#### 3. Pillar Restructuring - COMPLETED
-- **Feed/Nutrition added to Care**: `/app/backend/care_routes.py`
-  - New `feed` care type with category='nutrition', icon='🍖'
-  - Subtypes: diet_planning, weight_management, allergy_diet, puppy_nutrition, senior_nutrition, prescription_diet
-- **Insure services added to Paperwork**: `/app/backend/paperwork_routes.py`
-  - New `INSURANCE_SERVICES` configuration with 5 service types
-  - Endpoints: `GET /api/paperwork/insure/services`, `POST /api/paperwork/insure/request`, `GET /api/paperwork/insure/requests`
-  - Service types: quote_request, policy_review, claim_assistance, renewal_reminder, compare_plans
-  - Full integration with Service Desk, Unified Inbox, and Admin Notifications
+#### 3. Pillar Restructuring Done - WITH SEEDED PRODUCTS & BUNDLES:
+- **Feed/Nutrition** added to Care pillar - 6 subtypes (diet_planning, weight_management, etc.)
+  - **Products Seeded**: Nutrition Consultation, Weight Management Programme, Allergy-Safe Diet, Puppy/Senior Nutrition, Prescription Diet Coordination
+  - **Bundles Seeded**: Nutrition Starter Pack (₹2,199), Premium Nutrition Programme (₹5,999), Puppy Nutrition Bundle (₹2,999)
+  - **APIs**: `GET /api/care/products?care_type=feed`, `GET /api/care/bundles?category=feed`
+  
+- **Insure** services added to Paperwork pillar - 5 service types (quote_request, policy_review, claim_assistance, renewal_reminder, compare_plans)
+  - **Products Seeded**: Free Quote Comparison, Policy Review (₹499), Claim Assistance (₹299), Renewal Mgmt (₹199), Complete Package (₹999)
+  - **Bundles Seeded**: Insurance Essentials (₹399), Complete Insurance Care (₹999), Annual Concierge (₹2,499)
+  - **APIs**: `GET /api/paperwork/insure/services`, `POST /api/paperwork/insure/request`, `GET /api/paperwork/bundles?category=insure`
+  
+- **Unified Flow Integration**: All insurance requests automatically create Service Desk tickets, Unified Inbox entries, and Admin notifications
 
 ---
 
