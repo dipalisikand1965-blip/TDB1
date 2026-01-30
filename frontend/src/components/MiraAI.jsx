@@ -762,7 +762,7 @@ const MiraAI = () => {
 
   if (!isOpen) {
     return (
-      <div className="fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-[200]" data-testid="mira-orb-container">
+      <div className="fixed bottom-24 right-4 sm:bottom-8 sm:right-8 z-[9998]" data-testid="mira-orb-container">
         <MiraOrb 
           state={getOrbState()}
           onClick={() => setIsOpen(true)}
