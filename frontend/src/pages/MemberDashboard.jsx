@@ -1313,6 +1313,18 @@ const MemberDashboard = () => {
               </div>
             )}
             
+            {/* SMART RECOMMENDATIONS - AI-Powered Phase 2 */}
+            {user?.id && pets.length > 0 && (
+              <div className="mb-8">
+                <SmartRecommendationsCard 
+                  userId={user.id}
+                  petId={pets[0]?.id}
+                  limit={4}
+                  showTitle={true}
+                />
+              </div>
+            )}
+            
             {/* ALL 14 LIFE PILLARS - PROMINENT AT TOP */}
             <Card className="p-6 bg-gradient-to-r from-teal-800 via-teal-700 to-teal-800 text-white border-none shadow-xl mb-8">
               <div className="flex items-center gap-3 mb-5">
