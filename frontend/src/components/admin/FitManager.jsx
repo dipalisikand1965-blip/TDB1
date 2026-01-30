@@ -474,12 +474,14 @@ const FitManager = ({ getAuthHeader }) => {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid grid-cols-6 w-full max-w-2xl">
+        <TabsList className="grid grid-cols-8 w-full max-w-3xl">
           <TabsTrigger value="requests" data-testid="fit-tab-requests">Requests</TabsTrigger>
           <TabsTrigger value="plans" data-testid="fit-tab-plans">Plans</TabsTrigger>
           <TabsTrigger value="partners" data-testid="fit-tab-partners">Partners</TabsTrigger>
           <TabsTrigger value="products" data-testid="fit-tab-products">Products</TabsTrigger>
           <TabsTrigger value="bundles" data-testid="fit-tab-bundles">Bundles</TabsTrigger>
+          <TabsTrigger value="stories" data-testid="fit-tab-stories">Stories</TabsTrigger>
+          <TabsTrigger value="tips" data-testid="fit-tab-tips">Tips</TabsTrigger>
           <TabsTrigger value="settings" data-testid="fit-tab-settings">Settings</TabsTrigger>
         </TabsList>
 
