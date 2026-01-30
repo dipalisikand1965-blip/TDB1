@@ -717,44 +717,20 @@ const UnifiedPetPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-pink-50" data-testid="unified-pet-page">
-      {/* Header */}
+      {/* Header - Mobile Optimized */}
       <div className="bg-white border-b sticky top-0 z-20">
-        <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')} className="text-purple-600 hover:text-purple-800 hover:bg-purple-50">
-              <ArrowLeft className="w-4 h-4 mr-2" /> Back to My Account
+        <div className="max-w-6xl mx-auto px-4 py-3">
+          {/* Mobile Header - Compact */}
+          <div className="md:hidden flex items-center justify-between">
+            <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')} className="text-purple-600 hover:text-purple-800 -ml-2 px-2">
+              <ArrowLeft className="w-5 h-5" />
             </Button>
-            <div className="h-6 w-px bg-gray-200" />
             <div className="flex items-center gap-2">
               <img src={petPhoto} alt={safePet.name} className="w-8 h-8 rounded-full object-cover border-2 border-purple-200" />
-              <span className="font-semibold text-gray-900">{safePet.name}</span>
-              {safePet.pet_pass_number && (
-                <Badge className="bg-purple-600 text-white text-xs ml-1">
-                  {safePet.pet_pass_number}
-                </Badge>
-              )}
+              <span className="font-bold text-gray-900">{safePet.name}</span>
             </div>
-          </div>
-          
-          {token && (
-            <div className="flex gap-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => setShowShareModal(true)}
-                className="bg-white/10 border-white/30 text-gray-700 hover:bg-white"
-              >
-                <Share2 className="w-4 h-4 mr-2" /> Share
-              </Button>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => window.print()}
-                className="bg-white/10 border-white/30 text-gray-700 hover:bg-white"
-              >
-                <Printer className="w-4 h-4 mr-2" /> Print
-              </Button>
-              <Button variant="outline" size="sm" onClick={() => {
+            {token && (
+              <Button variant="ghost" size="sm" onClick={() => {
                 setEditing(!editing);
                 if (!editing) {
                   setEditForm({
@@ -766,12 +742,67 @@ const UnifiedPetPage = () => {
                     gotcha_date: safePet.gotcha_date || ''
                   });
                 }
-              }}>
-                {editing ? <X className="w-4 h-4 mr-2" /> : <Edit className="w-4 h-4 mr-2" />}
-                {editing ? 'Cancel' : 'Edit'}
+              }} className="text-purple-600 -mr-2 px-2">
+                {editing ? <X className="w-5 h-5" /> : <Edit className="w-5 h-5" />}
               </Button>
+            )}
+          </div>
+          
+          {/* Desktop Header - Full */}
+          <div className="hidden md:flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard')} className="text-purple-600 hover:text-purple-800 hover:bg-purple-50">
+                <ArrowLeft className="w-4 h-4 mr-2" /> Back to My Account
+              </Button>
+              <div className="h-6 w-px bg-gray-200" />
+              <div className="flex items-center gap-2">
+                <img src={petPhoto} alt={safePet.name} className="w-8 h-8 rounded-full object-cover border-2 border-purple-200" />
+                <span className="font-semibold text-gray-900">{safePet.name}</span>
+                {safePet.pet_pass_number && (
+                  <Badge className="bg-purple-600 text-white text-xs ml-1">
+                    {safePet.pet_pass_number}
+                  </Badge>
+                )}
+              </div>
             </div>
-          )}
+            
+            {token && (
+              <div className="flex gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setShowShareModal(true)}
+                  className="bg-white/10 border-white/30 text-gray-700 hover:bg-white"
+                >
+                  <Share2 className="w-4 h-4 mr-2" /> Share
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => window.print()}
+                  className="bg-white/10 border-white/30 text-gray-700 hover:bg-white"
+                >
+                  <Printer className="w-4 h-4 mr-2" /> Print
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => {
+                  setEditing(!editing);
+                  if (!editing) {
+                    setEditForm({
+                      name: safePet.name || '',
+                      breed: safePet.breed || '',
+                      species: safePet.species || 'dog',
+                      gender: safePet.gender || 'male',
+                      birth_date: safePet.birth_date || '',
+                      gotcha_date: safePet.gotcha_date || ''
+                    });
+                  }
+                }}>
+                  {editing ? <X className="w-4 h-4 mr-2" /> : <Edit className="w-4 h-4 mr-2" />}
+                  {editing ? 'Cancel' : 'Edit'}
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
