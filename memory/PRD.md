@@ -324,17 +324,20 @@ All Phase 1 features are now integrated:
 
 **Fix**: Refactored `handleQuickAction()` to directly call the Mira API instead of using state + setTimeout hack.
 
-## Pending Issues / Tomorrow's Tasks
+## Pending Issues / Upcoming Tasks
 
-### 🔴 P1 - High Priority
+### 🔴 P0 - Immediate Priority
 
-#### 1. Pet Profile Crash for "Mynx"
-**Issue**: User reported crash when viewing pet profile for pet named "Mynx".
-**Debug Steps**:
-1. Log in as the user
-2. Navigate to pet profile for "Mynx"
-3. Check browser console and backend logs
-4. Inspect database for corrupt/unexpected values
+#### 1. Apply MakeMyTrip Design to Other Pillar Pages
+**Task**: Apply the new MakeMyTrip-style design from Fit page to all other pillar pages:
+- Care, Celebrate, Dine, Stay, Travel, Enjoy, Learn, Advisory, Paperwork
+**Components to Reuse**: `PillarServicesGrid`, `PillarServiceCard`, `MiraPillarRecommendations`
+
+### 🟠 P1 - Medium Priority
+
+#### 1. Abandoned Cart Recovery Nudges
+**Task**: Implement Mira proactive nudges for users who have left items in their cart
+**Backend**: Extend `mira_nudges.py` with abandoned_cart nudge type
 
 #### 2. Paw Points Display Issue  
 **Issue**: Incorrect paw points display for specific user account.
@@ -343,13 +346,14 @@ All Phase 1 features are now integrated:
 2. Verify calculation logic
 3. Compare database value with displayed value
 
-### 🟠 P2 - Medium Priority
+#### 3. Razorpay Payments Failing
+**Issue**: Payment gateway integration not working
+**Debug Steps**:
+1. Attempt test payment
+2. Check `/api/checkout/create_checkout_order` logs
+3. Inspect Razorpay dashboard
 
-1. **Razorpay Payments Failing** - Debug payment gateway integration
-2. **Mobile UI Transformation** - Member Dashboard mobile optimization
-3. **Service Booking Flow** - Mobile optimization
-
-### 🟡 P3 - Backlog
+### 🟡 P2 - Backlog
 
 1. **PDF Invoice Generation**
 2. **Centralized Item Intelligence Form** - Full implementation
