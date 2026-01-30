@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
 import { getApiUrl } from '../utils/api';
 import { resolvePetAvatar } from '../utils/petAvatar';
+import MiraOrb from './MiraOrb';
 
 // Markdown components for ReactMarkdown - defined outside component to avoid re-creation
 const markdownComponents = {
