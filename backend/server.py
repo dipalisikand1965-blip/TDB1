@@ -11621,6 +11621,11 @@ app.include_router(report_builder_router)  # Report Builder at /api/admin/report
 set_report_builder_db(db)
 set_verify_admin(verify_admin)
 
+# Engagement Engine - Milestones, Streaks, Shareable Cards
+from engagement_engine import router as engagement_router, set_database as set_engagement_db
+app.include_router(engagement_router)  # Engagement at /api/engagement/*
+set_engagement_db(db)
+
 @app.on_event("startup")
 async def startup_load_admin_credentials():
     """Load admin credentials from database on startup"""
