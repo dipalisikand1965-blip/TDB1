@@ -888,11 +888,15 @@ async def delete_paperwork_product(product_id: str):
 # ==================== BUNDLES ====================
 
 @router.get("/bundles")
-async def get_paperwork_bundles(limit: int = 20):
-    """Get paperwork bundles"""
+async def get_paperwork_bundles(category: Optional[str] = None, limit: int = 20):
+    """Get paperwork bundles including Insure bundles"""
     db = get_db()
     
-    bundles = await db.paperwork_bundles.find({"is_active": True}, {"_id": 0}).to_list(limit)
+    query = {"$or": [{"is_active": True}, {"active": True}]}
+    if category:
+        query = {"$and": [query, {"category": category}]}
+    
+    bundles = await db.paperwork_bundles.find(query, {"_id": 0}).to_list(limit)
     
     return {"bundles": bundles, "total": len(bundles)}
 
