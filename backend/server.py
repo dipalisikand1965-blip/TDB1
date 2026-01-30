@@ -881,6 +881,79 @@ async def auto_seed_all_services():
             "features": ["Feeding", "Walks", "Playtime", "Photo Updates"],
             "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800",
             "is_active": True
+        },
+        # Feed & Nutrition Services (NEW)
+        {
+            "id": "svc-care-nutrition-consult",
+            "name": "Nutrition Consultation",
+            "description": "One-on-one consultation with a certified pet nutritionist for personalized diet planning.",
+            "pillar": "care",
+            "category": "feed",
+            "price": 1499,
+            "duration": "60 min",
+            "features": ["Diet Assessment", "Custom Meal Plan", "Supplement Advice", "Follow-up Support"],
+            "image": "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=800",
+            "is_active": True
+        },
+        {
+            "id": "svc-care-weight-management",
+            "name": "Weight Management Programme",
+            "description": "Structured weight loss or gain programme with nutritionist guidance and progress tracking.",
+            "pillar": "care",
+            "category": "feed",
+            "price": 3999,
+            "duration": "8 weeks",
+            "features": ["Initial Assessment", "Custom Diet Plan", "Weekly Check-ins", "Progress Reports", "Meal Prep Guide"],
+            "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800",
+            "is_active": True
+        },
+        {
+            "id": "svc-care-allergy-diet",
+            "name": "Allergy-Safe Diet Planning",
+            "description": "Specialized diet planning for pets with food allergies or sensitivities.",
+            "pillar": "care",
+            "category": "feed",
+            "price": 2499,
+            "duration": "Ongoing",
+            "features": ["Allergy Testing Review", "Elimination Diet Guide", "Safe Food List", "Recipe Suggestions"],
+            "image": "https://images.unsplash.com/photo-1601758003122-53c40e686a19?w=800",
+            "is_active": True
+        },
+        {
+            "id": "svc-care-puppy-nutrition",
+            "name": "Puppy Nutrition Programme",
+            "description": "Age-appropriate nutrition guidance for growing puppies from weaning to adulthood.",
+            "pillar": "care",
+            "category": "feed",
+            "price": 1999,
+            "duration": "6 months",
+            "features": ["Growth Stage Plans", "Portion Guides", "Supplement Recommendations", "Milestone Check-ins"],
+            "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800",
+            "is_active": True
+        },
+        {
+            "id": "svc-care-senior-nutrition",
+            "name": "Senior Pet Nutrition",
+            "description": "Specialized nutrition support for aging pets to maintain health and vitality.",
+            "pillar": "care",
+            "category": "feed",
+            "price": 1999,
+            "duration": "Ongoing",
+            "features": ["Senior Diet Assessment", "Joint Support Foods", "Digestive Health", "Cognitive Support"],
+            "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800",
+            "is_active": True
+        },
+        {
+            "id": "svc-care-prescription-diet",
+            "name": "Prescription Diet Coordination",
+            "description": "Help sourcing and managing prescription diets for pets with medical conditions.",
+            "pillar": "care",
+            "category": "feed",
+            "price": 999,
+            "duration": "Ongoing",
+            "features": ["Vet Coordination", "Diet Sourcing", "Transition Support", "Compliance Tracking"],
+            "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800",
+            "is_active": True
         }
     ]
     
