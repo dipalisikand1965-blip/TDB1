@@ -584,3 +584,279 @@ async def sync_user_data(user_id: str):
         "active_tickets": tickets_count,
         "synced_at": datetime.now(timezone.utc).isoformat()
     }
+
+
+# ==================== TRANSFORMATION STORIES ====================
+
+class TransformationStory(BaseModel):
+    pet_name: str
+    breed: str
+    owner_name: str
+    before_image: str
+    after_image: str
+    achievement: str
+    testimonial: str
+    program: str
+    rating: int = 5
+    pillar: str = "fit"
+    is_active: bool = True
+
+@router.get("/transformations")
+async def get_transformation_stories(pillar: str = "fit", active_only: bool = True):
+    """Get transformation stories for a pillar"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    query = {"pillar": pillar}
+    if active_only:
+        query["is_active"] = True
+    
+    stories = await db.transformation_stories.find(query, {"_id": 0}).sort("created_at", -1).to_list(50)
+    return {"stories": stories, "count": len(stories)}
+
+@router.post("/transformations")
+async def create_transformation_story(story: TransformationStory):
+    """Admin: Create transformation story"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    story_dict = story.dict()
+    story_dict["created_at"] = datetime.now(timezone.utc)
+    story_dict["id"] = str(ObjectId())
+    
+    await db.transformation_stories.insert_one(story_dict)
+    return {"id": story_dict["id"], "message": "Story created"}
+
+# ==================== QUICK WIN TIPS ====================
+
+class QuickWinTip(BaseModel):
+    tip: str
+    action: str
+    emoji: str
+    category: str
+    pillar: str = "fit"
+    breed_specific: Optional[str] = None
+    is_active: bool = True
+
+@router.get("/tips")
+async def get_quick_win_tips(pillar: str = "fit", category: str = None):
+    """Get quick win tips"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    query = {"pillar": pillar, "is_active": True}
+    if category:
+        query["category"] = category
+    
+    tips = await db.quick_win_tips.find(query, {"_id": 0}).to_list(100)
+    return {"tips": tips, "count": len(tips)}
+
+@router.post("/tips")
+async def create_quick_win_tip(tip: QuickWinTip):
+    """Admin: Create quick win tip"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    tip_dict = tip.dict()
+    tip_dict["created_at"] = datetime.now(timezone.utc)
+    tip_dict["id"] = str(ObjectId())
+    
+    await db.quick_win_tips.insert_one(tip_dict)
+    return {"id": tip_dict["id"], "message": "Tip created"}
+
+# ==================== GOAL INTERACTIONS (UNIVERSAL FLOW) ====================
+
+class GoalInteraction(BaseModel):
+    goal_id: str
+    goal_label: str
+    pet_id: Optional[str] = None
+    pet_name: Optional[str] = None
+    user_id: Optional[str] = None
+    user_email: Optional[str] = None
+    pillar: str = "fit"
+    message: Optional[str] = None
+
+@router.post("/goal-interaction")
+async def record_goal_interaction(interaction: GoalInteraction):
+    """
+    Record fitness goal click - triggers Universal Signal Flow:
+    1. Notification
+    2. Service Desk Ticket
+    3. Unified Inbox Entry
+    4. Pet Soul Update
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    timestamp = datetime.now(timezone.utc)
+    
+    # 1. Create Notification
+    notification = {
+        "user_id": interaction.user_id,
+        "type": "goal_interest",
+        "title": f"Fitness Goal: {interaction.goal_label}",
+        "message": interaction.message or f"Interested in {interaction.goal_label}",
+        "pillar": interaction.pillar,
+        "read": False,
+        "created_at": timestamp
+    }
+    await db.notifications.insert_one(notification)
+    
+    # 2. Create Service Desk Ticket
+    ticket = {
+        "ticket_type": "fitness_goal_interest",
+        "source": "conversational_entry",
+        "pillar": interaction.pillar,
+        "user_id": interaction.user_id,
+        "pet_id": interaction.pet_id,
+        "pet_name": interaction.pet_name,
+        "status": "new",
+        "priority": "normal",
+        "data": {
+            "goal_id": interaction.goal_id,
+            "goal_label": interaction.goal_label,
+            "message": interaction.message
+        },
+        "created_at": timestamp
+    }
+    ticket_result = await db.service_desk_tickets.insert_one(ticket)
+    
+    # 3. Create Unified Inbox Entry
+    inbox_entry = {
+        "type": "goal_interest",
+        "source": "engagement",
+        "pillar": interaction.pillar,
+        "user_id": interaction.user_id,
+        "pet_id": interaction.pet_id,
+        "ticket_id": str(ticket_result.inserted_id),
+        "summary": f"{interaction.pet_name or 'User'} interested in {interaction.goal_label}",
+        "status": "unread",
+        "created_at": timestamp
+    }
+    await db.unified_inbox.insert_one(inbox_entry)
+    
+    # 4. Update Pet Soul
+    if interaction.pet_id:
+        try:
+            pet_query = {"_id": ObjectId(interaction.pet_id)} if ObjectId.is_valid(interaction.pet_id) else {"id": interaction.pet_id}
+            await db.pets.update_one(
+                pet_query,
+                {
+                    "$push": {
+                        "soul.fitness_interests": {
+                            "goal": interaction.goal_label,
+                            "timestamp": timestamp
+                        }
+                    },
+                    "$set": {
+                        "soul.last_interaction": timestamp,
+                        f"soul.pillar_engagement.{interaction.pillar}": timestamp
+                    },
+                    "$inc": {"soul.total_interactions": 1}
+                }
+            )
+        except Exception as e:
+            logger.warning(f"Failed to update pet soul: {e}")
+    
+    return {
+        "message": "Goal interaction recorded",
+        "ticket_id": str(ticket_result.inserted_id),
+        "notification_sent": True,
+        "pet_soul_updated": bool(interaction.pet_id)
+    }
+
+# ==================== SOCIAL PROOF STATS ====================
+
+@router.get("/stats/{pillar}")
+async def get_social_proof_stats(pillar: str = "fit"):
+    """Get social proof stats for a pillar"""
+    if db is None:
+        return {
+            "journeys_started": 847,
+            "weekly_bookings": 12,
+            "satisfaction_rate": 98,
+            "pillar": pillar
+        }
+    
+    stats = await db.social_proof_stats.find_one({"pillar": pillar}, {"_id": 0})
+    
+    if not stats:
+        return {
+            "journeys_started": 847,
+            "weekly_bookings": 12,
+            "satisfaction_rate": 98,
+            "pillar": pillar
+        }
+    
+    return stats
+
+@router.put("/stats/{pillar}")
+async def update_social_proof_stats(pillar: str, stats: Dict[str, Any]):
+    """Admin: Update social proof stats"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    stats["pillar"] = pillar
+    stats["updated_at"] = datetime.now(timezone.utc)
+    
+    await db.social_proof_stats.update_one(
+        {"pillar": pillar},
+        {"$set": stats},
+        upsert=True
+    )
+    
+    return {"message": "Stats updated"}
+
+# ==================== SEED DEFAULTS ====================
+
+@router.post("/seed-engagement-data")
+async def seed_engagement_defaults():
+    """Admin: Seed default transformation stories and tips"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    timestamp = datetime.now(timezone.utc)
+    
+    # Default stories
+    stories = [
+        {
+            "id": str(ObjectId()),
+            "pet_name": "Bruno", "breed": "Labrador", "owner_name": "Priya M.",
+            "before_image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop",
+            "after_image": "https://images.unsplash.com/photo-1552053831-71594a27632d?w=200&h=200&fit=crop",
+            "achievement": "Lost 4kg in 10 weeks",
+            "testimonial": "The trainers understood Bruno perfectly!",
+            "program": "Weight Journey Partner®", "rating": 5, "pillar": "fit", "is_active": True, "created_at": timestamp
+        },
+        {
+            "id": str(ObjectId()),
+            "pet_name": "Coco", "breed": "Beagle", "owner_name": "Rahul S.",
+            "before_image": "https://images.unsplash.com/photo-1505628346881-b72b27e84530?w=200&h=200&fit=crop",
+            "after_image": "https://images.unsplash.com/photo-1537151625747-768eb6cf92b2?w=200&h=200&fit=crop",
+            "achievement": "From couch potato to agility star",
+            "testimonial": "Coco won her first agility ribbon!",
+            "program": "Active Lifestyle Curator®", "rating": 5, "pillar": "fit", "is_active": True, "created_at": timestamp
+        }
+    ]
+    
+    # Default tips
+    tips = [
+        {"id": str(ObjectId()), "tip": "15-minute morning walks boost metabolism by 20%", "action": "Set reminder", "emoji": "🌅", "category": "weight", "pillar": "fit", "is_active": True, "created_at": timestamp},
+        {"id": str(ObjectId()), "tip": "Swimming burns 3x more calories than walking", "action": "Book session", "emoji": "🏊", "category": "weight", "pillar": "fit", "is_active": True, "created_at": timestamp},
+        {"id": str(ObjectId()), "tip": "Interactive play strengthens your bond", "action": "Shop toys", "emoji": "💕", "category": "general", "pillar": "fit", "is_active": True, "created_at": timestamp},
+    ]
+    
+    for story in stories:
+        await db.transformation_stories.update_one(
+            {"pet_name": story["pet_name"], "pillar": story["pillar"]},
+            {"$setOnInsert": story}, upsert=True
+        )
+    
+    for tip in tips:
+        await db.quick_win_tips.update_one(
+            {"tip": tip["tip"]},
+            {"$setOnInsert": tip}, upsert=True
+        )
+    
+    return {"message": "Seeded", "stories": len(stories), "tips": len(tips)}
+
