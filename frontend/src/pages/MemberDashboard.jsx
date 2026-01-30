@@ -3288,9 +3288,7 @@ const MemberDashboard = () => {
       </Dialog>
       
       {/* Mobile Bottom Navigation - Pet Life OS */}
-      <MobileNavBar 
-        onPulseClick={() => setShowVoiceAssistant(true)}
-      />
+      <MobileNavBar />
       
       {/* Extra bottom padding for mobile nav */}
       <div className="h-24 md:hidden" />
