@@ -243,7 +243,7 @@ class TestVoiceQuickActionsAPI:
         """Test POST /api/voice-actions/process with emergency command"""
         response = requests.post(
             f"{BASE_URL}/api/voice-actions/process",
-            params={"text": "My dog is sick, need help urgently"}
+            params={"text": "Emergency! My pet is injured"}
         )
         
         assert response.status_code == 200
