@@ -5,11 +5,11 @@ import { Edit3 } from 'lucide-react';
 
 /**
  * AdminQuickEdit - A floating button for admins to quickly edit pillar page content
- * Only visible to admin users
+ * Only visible to admin users on desktop (hidden on mobile to avoid overlap with Mira)
  * 
  * Usage:
  * <AdminQuickEdit pillar="celebrate" />
- * <AdminQuickEdit pillar="advisory" position="bottom-right" />
+ * <AdminQuickEdit pillar="advisory" position="top-right" />
  */
 const AdminQuickEdit = ({ pillar, position = 'top-right' }) => {
   const { user } = useAuth();
@@ -22,11 +22,12 @@ const AdminQuickEdit = ({ pillar, position = 'top-right' }) => {
   
   if (!isAdmin) return null;
   
+  // Always use top-right to avoid overlap with Mira Orb (bottom-right) and Contact (bottom-left)
   const positionClasses = {
-    'top-right': 'top-4 right-4',
-    'top-left': 'top-4 left-4',
-    'bottom-right': 'bottom-4 right-4',
-    'bottom-left': 'bottom-4 left-4'
+    'top-right': 'top-20 right-4',
+    'top-left': 'top-20 left-4',
+    'bottom-right': 'top-20 right-4', // Redirect to top-right
+    'bottom-left': 'top-20 left-4'    // Redirect to top-left
   };
   
   const handleClick = () => {
@@ -35,7 +36,7 @@ const AdminQuickEdit = ({ pillar, position = 'top-right' }) => {
   };
   
   return (
-    <div className={`fixed ${positionClasses[position]} z-50`}>
+    <div className={`fixed ${positionClasses[position]} z-50 hidden md:block`}>
       <Button
         onClick={handleClick}
         size="sm"
