@@ -26,6 +26,10 @@ import ProductCard from '../components/ProductCard';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import SEOHead from '../components/SEOHead';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
+// New MakeMyTrip-style components for sleek UI
+import PillarServiceCard from '../components/PillarServiceCard';
+import PillarServicesGrid from '../components/PillarServicesGrid';
+import MiraPillarRecommendations from '../components/MiraPillarRecommendations';
 import {
   Dumbbell, Heart, TrendingUp, Scale, Activity, Trophy,
   CheckCircle, ChevronRight, Sparkles, Star, Loader2, Send,
