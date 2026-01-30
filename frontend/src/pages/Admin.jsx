@@ -221,25 +221,46 @@ const Admin = () => {
   const seedProductionData = async () => {
     setSeedingProduction(true);
     try {
+      console.log('[Seed Production] Starting...');
+      toast({ title: '🚀 Seeding Production Data...', description: 'Adding FAQs, Collections, Tickets' });
+      
       const response = await fetch(`${API_URL}/api/admin/seed-production-data`, {
         method: 'POST',
-        headers: getAuthHeaders()
+        headers: {
+          'Content-Type': 'application/json',
+          ...getAuthHeaders()
+        }
       });
+      
+      console.log('[Seed Production] Response status:', response.status);
+      
       if (response.ok) {
         const data = await response.json();
+        console.log('[Seed Production] Success:', data);
         toast({
           title: '✅ Production Data Seeded!',
-          description: `${data.results.faqs} FAQs, ${data.results.collections} Collections, ${typeof data.results.tickets === 'number' ? data.results.tickets : 0} Tickets added`,
+          description: `${data.results?.faqs || 0} FAQs, ${data.results?.collections || 0} Collections seeded`,
           duration: 5000
         });
-        // Refresh dashboard to show new data
         fetchDashboard();
       } else {
-        const errorData = await response.json();
-        toast({ title: 'Error', description: errorData.detail || 'Failed to seed production data', variant: 'destructive' });
+        const errorText = await response.text();
+        console.error('[Seed Production] Failed:', response.status, errorText);
+        toast({ 
+          title: 'Seed Failed', 
+          description: `Status ${response.status}: ${errorText.slice(0, 100)}`, 
+          variant: 'destructive',
+          duration: 8000 
+        });
       }
     } catch (error) {
-      toast({ title: 'Error', description: 'Failed to seed production data', variant: 'destructive' });
+      console.error('[Seed Production] Error:', error);
+      toast({ 
+        title: 'Network Error', 
+        description: `Failed: ${error.message}`, 
+        variant: 'destructive',
+        duration: 8000 
+      });
     } finally {
       setSeedingProduction(false);
     }
