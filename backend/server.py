@@ -11952,6 +11952,10 @@ async def startup_load_admin_credentials():
     
     # Auto-seed blog posts if none exist
     await auto_seed_blog_posts()
+    
+    # Auto-seed engagement data (stories, tips) if none exist
+    await initialize_engagement_data()
+    logger.info("Engagement data initialization complete")
 
 # ==================== BLOG AUTO-SEED ====================
 
