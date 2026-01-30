@@ -513,13 +513,8 @@ const FitPage = () => {
     }
   };
 
-  // Filter services by category
-  const filteredServices = selectedCategory 
-    ? services.filter(s => s.category === selectedCategory)
-    : services;
-  
-  // Get unique categories from services
-  const availableCategories = [...new Set(services.map(s => s.category))];
+  // Get unique categories from services for the filter bar
+  const availableCategories = [...new Set(services.map(s => s.category).filter(Boolean))];
   
   if (loading) {
     return (
