@@ -255,19 +255,21 @@ async def create_milestone(milestone: PetMilestone):
     
     # Trigger notification via unified flow
     try:
-        from central_signal_flow import trigger_unified_flow
-        await trigger_unified_flow(
-            db=db,
+        from central_signal_flow import create_signal
+        await create_signal(
+            pillar="engagement",
             action_type="milestone_achieved",
-            user_id=pet.get("user_id") if pet else None,
+            title=f"🎉 {milestone.title}",
+            description=f"Pet milestone achieved! +{points} Paw Points awarded.",
+            pet_name=pet.get("name") if pet else None,
             pet_id=milestone.pet_id,
-            data={
+            urgency="low",
+            source="engagement_engine",
+            extra_data={
                 "milestone_type": milestone.milestone_type,
-                "title": milestone.title,
                 "points": points,
                 "icon": milestone_type_config.get("icon", "🎉") if milestone_type_config else "🎉"
-            },
-            source="engagement_engine"
+            }
         )
     except Exception as e:
         logger.warning(f"Could not trigger unified flow for milestone: {e}")
