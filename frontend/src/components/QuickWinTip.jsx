@@ -51,11 +51,9 @@ const QuickWinTip = ({
   petBreed,
   petAge,
   className = '',
-  onActionClick,
-  dismissible = true
+  onActionClick
 }) => {
   const [currentTip, setCurrentTip] = useState(null);
-  const [dismissed, setDismissed] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
