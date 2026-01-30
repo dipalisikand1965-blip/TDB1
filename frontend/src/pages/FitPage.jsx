@@ -650,74 +650,51 @@ const FitPage = () => {
           />
         </div>
       </section>
-              pillar="fit"
-              petId={selectedPet?.id}
-              petName={selectedPet?.name || userPets[0]?.name}
-              userId={user?.id}
-              onSelectService={handleViewDetails}
-              onSelectProduct={(product) => {
-                addToCart({
-                  id: product.id,
-                  name: product.name || product.title,
-                  price: product.price,
-                  image: product.image,
-                  pillar: 'fit',
-                  type: 'product'
-                });
-                toast({ title: '🛒 Added to Cart!', description: `${product.name || product.title} added` });
-              }}
-              className="shadow-xl"
-            />
-          </div>
-        </section>
-      )}
       
       {/* ==================== CONCIERGE® SERVICES SECTION ==================== */}
-      <section id="services" className="py-12 md:py-16 bg-gradient-to-b from-teal-50/30 to-white">
+      <section id="services" className="py-8 sm:py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           {/* Section Header */}
-          <div className="mb-8">
-            <div className="flex items-center gap-2 mb-2">
-              <Sparkles className="w-5 h-5 text-teal-600" />
-              <span className="text-sm font-medium text-teal-600 uppercase tracking-wider">Concierge® Services</span>
+          <div className="mb-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-xl sm:text-2xl font-bold text-gray-900">
+                  {activeCategory === 'all' ? 'All Services' : SERVICE_CATEGORIES[activeCategory]?.name || 'Services'}
+                </h2>
+                <p className="text-gray-500 text-sm mt-1">
+                  {services.filter(s => activeCategory === 'all' || s.category === activeCategory).length} services available
+                </p>
+              </div>
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-              Premium Fitness Services
-            </h2>
-            <p className="text-gray-500 mt-2 max-w-xl">
-              Tap any service for details. Our Concierge® team handles all coordination.
-            </p>
           </div>
           
-          {/* MakeMyTrip-Style Services Grid */}
+          {/* Services Grid - Using PillarServicesGrid but hide its internal category tabs */}
           <PillarServicesGrid
-            services={services.map(s => ({
-              ...s,
-              title: s.name,
-              icon: SERVICE_CATEGORIES[s.category]?.icon ? '🏋️' : null,
-              gradient: SERVICE_CATEGORIES[s.category]?.gradient || 'from-teal-500 to-emerald-500',
-              highlights: s.includes || [],
-              badge: s.is_subscription ? 'Subscription' : null,
-              badgeColor: 'bg-teal-600'
-            }))}
-            categories={availableCategories.map(catKey => ({
-              id: catKey,
-              name: SERVICE_CATEGORIES[catKey]?.name || catKey,
-              icon: catKey === 'assessment' ? '📊' : 
-                    catKey === 'training' ? '🏋️' : 
-                    catKey === 'weight' ? '⚖️' : 
-                    catKey === 'therapy' ? '💆' : 
-                    catKey === 'senior' ? '🦮' :
-                    catKey === 'puppy' ? '🐕' :
-                    catKey === 'agility' ? '⚡' :
-                    catKey === 'wellness' ? '✨' : '🎯'
-            }))}
+            services={services
+              .filter(s => activeCategory === 'all' || s.category === activeCategory)
+              .map(s => ({
+                ...s,
+                title: s.name,
+                icon: SERVICE_CATEGORIES[s.category]?.icon ? '🏋️' : null,
+                gradient: SERVICE_CATEGORIES[s.category]?.gradient || 'from-teal-500 to-emerald-500',
+                highlights: s.includes || [],
+                badge: s.is_subscription ? 'Subscription' : null,
+                badgeColor: 'bg-teal-600'
+              }))}
+            categories={[]} // Hide internal category tabs since we use FitCategoryBar
             onServiceSelect={handleViewDetails}
             onServiceBook={handleQuickBook}
             selectedService={selectedService}
             relatedProducts={products.reduce((acc, p) => {
               const cat = p.category || 'general';
               if (!acc[cat]) acc[cat] = [];
+              acc[cat].push(p);
+              return acc;
+            }, {})}
+            pillarGradient="from-teal-500 to-emerald-500"
+            pillarColor="teal"
+            showFilters={true}
+          />
               acc[cat].push(p);
               return acc;
             }, {})}
