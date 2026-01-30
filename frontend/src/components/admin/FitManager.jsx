@@ -39,6 +39,9 @@ const FitManager = ({ getAuthHeader }) => {
   const [bundles, setBundles] = useState([]);
   const [stats, setStats] = useState({});
   const [settings, setSettings] = useState({});
+  // Engagement data
+  const [transformationStories, setTransformationStories] = useState([]);
+  const [quickWinTips, setQuickWinTips] = useState([]);
   
   // Filters
   const [searchQuery, setSearchQuery] = useState('');
