@@ -1035,49 +1035,32 @@ const MemberDashboard = () => {
               </TabsTrigger>
             </TabsList>
             
-            {/* Mobile: Clean 2-row grid navigation */}
-            <div className="md:hidden space-y-2">
-              {/* Primary Row - Most used */}
-              <TabsList className="bg-white p-1 rounded-xl border shadow-sm grid grid-cols-4 gap-1">
-                <TabsTrigger value="overview" className="rounded-lg flex flex-col items-center py-2 px-1 text-xs">
-                  <Home className="w-5 h-5 mb-1" />
+            {/* Mobile: Single-row scrollable navigation - Premium feel */}
+            <div className="md:hidden">
+              <TabsList className="bg-white/95 backdrop-blur-md p-1.5 rounded-2xl border border-gray-200/50 shadow-lg flex overflow-x-auto gap-1 scrollbar-hide">
+                <TabsTrigger value="overview" className="rounded-xl flex items-center gap-1.5 py-2.5 px-4 text-sm font-medium whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white transition-all">
+                  <Home className="w-4 h-4" />
                   Home
                 </TabsTrigger>
-                <TabsTrigger value="services" className="rounded-lg flex flex-col items-center py-2 px-1 text-xs">
-                  <Crown className="w-5 h-5 mb-1" />
-                  Services
-                </TabsTrigger>
-                <TabsTrigger value="mira" className="rounded-lg flex flex-col items-center py-2 px-1 text-xs">
-                  <Sparkles className="w-5 h-5 mb-1" />
-                  Mira
-                </TabsTrigger>
-                <TabsTrigger value="orders" className="rounded-lg flex flex-col items-center py-2 px-1 text-xs">
-                  <Package className="w-5 h-5 mb-1" />
-                  Orders
-                </TabsTrigger>
-              </TabsList>
-              
-              {/* Secondary Row - Less frequent */}
-              <TabsList className="bg-gray-50 p-1 rounded-xl border grid grid-cols-5 gap-1">
-                <TabsTrigger value="rewards" className="rounded-lg flex flex-col items-center py-1.5 px-1 text-[10px]">
-                  <Gift className="w-4 h-4 mb-0.5" />
-                  Rewards
-                </TabsTrigger>
-                <TabsTrigger value="pets" className="rounded-lg flex flex-col items-center py-1.5 px-1 text-[10px]">
-                  <PawPrint className="w-4 h-4 mb-0.5" />
+                <TabsTrigger value="pets" className="rounded-xl flex items-center gap-1.5 py-2.5 px-4 text-sm font-medium whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white transition-all">
+                  <PawPrint className="w-4 h-4" />
                   Pets
                 </TabsTrigger>
-                <TabsTrigger value="autoship" className="rounded-lg flex flex-col items-center py-1.5 px-1 text-[10px]">
-                  <RefreshCw className="w-4 h-4 mb-0.5" />
-                  Autoship
+                <TabsTrigger value="services" className="rounded-xl flex items-center gap-1.5 py-2.5 px-4 text-sm font-medium whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white transition-all">
+                  <Crown className="w-4 h-4" />
+                  Services
                 </TabsTrigger>
-                <TabsTrigger value="addresses" className="rounded-lg flex flex-col items-center py-1.5 px-1 text-[10px]">
-                  <MapPin className="w-4 h-4 mb-0.5" />
-                  Addresses
+                <TabsTrigger value="orders" className="rounded-xl flex items-center gap-1.5 py-2.5 px-4 text-sm font-medium whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white transition-all">
+                  <Package className="w-4 h-4" />
+                  Orders
                 </TabsTrigger>
-                <TabsTrigger value="settings" className="rounded-lg flex flex-col items-center py-1.5 px-1 text-[10px]">
-                  <Settings className="w-4 h-4 mb-0.5" />
-                  Settings
+                <TabsTrigger value="rewards" className="rounded-xl flex items-center gap-1.5 py-2.5 px-4 text-sm font-medium whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white transition-all">
+                  <Gift className="w-4 h-4" />
+                  Rewards
+                </TabsTrigger>
+                <TabsTrigger value="settings" className="rounded-xl flex items-center gap-1.5 py-2.5 px-4 text-sm font-medium whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white transition-all">
+                  <Settings className="w-4 h-4" />
+                  More
                 </TabsTrigger>
               </TabsList>
             </div>
