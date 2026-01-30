@@ -702,12 +702,14 @@ async def get_care_products(care_type: Optional[str] = None, limit: int = 50):
     
     query = {"$or": [
         {"category": "care"},
+        {"pillar": "care"},
+        {"category": "feed"},  # Feed & Nutrition products
         {"care_type": {"$exists": True}},
-        {"tags": {"$in": ["care", "grooming", "training", "walking", "wellness", "health"]}}
+        {"tags": {"$in": ["care", "grooming", "training", "walking", "wellness", "health", "feed", "nutrition"]}}
     ]}
     
     if care_type:
-        query = {"$and": [query, {"$or": [{"care_type": care_type}, {"tags": care_type}]}]}
+        query = {"$and": [query, {"$or": [{"care_type": care_type}, {"category": care_type}, {"tags": care_type}]}]}
     
     products = await db.products.find(query, {"_id": 0}).limit(limit).to_list(limit)
     
