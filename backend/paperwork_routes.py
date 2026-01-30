@@ -586,6 +586,151 @@ async def update_paperwork_request(request_id: str, update_data: dict):
     return {"message": "Request updated"}
 
 
+# ==================== INSURE SERVICES ====================
+
+@router.get("/insure/services")
+async def get_insurance_services():
+    """Get available insurance services under Paperwork/Insure"""
+    return {
+        "services": INSURANCE_SERVICES,
+        "pillar": "paperwork",
+        "sub_pillar": "insure",
+        "description": "Pet insurance assistance and management services"
+    }
+
+
+@router.post("/insure/request")
+async def create_insurance_request(request_data: dict):
+    """Create an insurance assistance request"""
+    db = get_db()
+    
+    request_id = f"INS-{datetime.now().strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
+    service_type = request_data.get("service_type", "quote_request")
+    
+    ins_request = {
+        "id": request_id,
+        "service_type": service_type,
+        "status": "pending",
+        "priority": request_data.get("priority", "normal"),
+        
+        # Pet Details
+        "pet_id": request_data.get("pet_id"),
+        "pet_name": request_data.get("pet_name"),
+        "pet_breed": request_data.get("pet_breed"),
+        "pet_age": request_data.get("pet_age"),
+        
+        # User Details
+        "user_id": request_data.get("user_id"),
+        "user_name": request_data.get("user_name"),
+        "user_email": request_data.get("user_email"),
+        "user_phone": request_data.get("user_phone"),
+        
+        # Insurance Details
+        "current_policy": request_data.get("current_policy"),
+        "policy_number": request_data.get("policy_number"),
+        "coverage_needs": request_data.get("coverage_needs", []),
+        "budget_range": request_data.get("budget_range"),
+        "health_conditions": request_data.get("health_conditions", []),
+        
+        # Request Details
+        "description": request_data.get("description", ""),
+        "notes": request_data.get("notes", ""),
+        
+        # Tracking
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "updated_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.insurance_requests.insert_one({k: v for k, v in ins_request.items() if k != "_id"})
+    
+    # Get service config
+    service_config = INSURANCE_SERVICES.get(service_type, {})
+    
+    # Create Service Desk Ticket
+    ticket = {
+        "id": f"TKT-{uuid.uuid4().hex[:8].upper()}",
+        "source": "insure_pillar",
+        "source_id": request_id,
+        "category": "insurance",
+        "subcategory": service_type,
+        "subject": f"Insurance Request: {service_config.get('name', service_type)} for {ins_request.get('pet_name', 'Pet')}",
+        "description": f"Insurance assistance request from {ins_request['user_name']}.\nService: {service_config.get('name', service_type)}\n{ins_request['description']}",
+        "status": "open",
+        "priority": ins_request["priority"],
+        "customer_name": ins_request["user_name"],
+        "customer_email": ins_request["user_email"],
+        "customer_phone": ins_request["user_phone"],
+        "pet_name": ins_request["pet_name"],
+        "pet_id": ins_request["pet_id"],
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "tags": ["insurance", "insure", service_type, "paperwork"],
+        "pillar": "paperwork"
+    }
+    
+    await db.tickets.insert_one({k: v for k, v in ticket.items() if k != "_id"})
+    
+    # Unified Inbox
+    inbox_item = {
+        "id": f"INB-{uuid.uuid4().hex[:8].upper()}",
+        "type": "insurance_request",
+        "source": "insure_pillar",
+        "source_id": request_id,
+        "title": f"🛡️ Insurance: {service_config.get('name', service_type)}",
+        "summary": f"{ins_request['user_name']} needs {service_config.get('name', 'insurance assistance')} for {ins_request.get('pet_name', 'their pet')}",
+        "customer_name": ins_request["user_name"],
+        "customer_email": ins_request["user_email"],
+        "pet_name": ins_request.get("pet_name"),
+        "status": "new",
+        "priority": ins_request["priority"],
+        "pillar": "paperwork",
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.unified_inbox.insert_one({k: v for k, v in inbox_item.items() if k != "_id"})
+    
+    # Admin notification
+    admin_notif = {
+        "id": f"NOTIF-{uuid.uuid4().hex[:8].upper()}",
+        "type": "new_insurance_request",
+        "title": f"🛡️ New Insurance Request: {service_config.get('name', service_type)}",
+        "message": f"{ins_request['user_name']} needs {service_config.get('name', 'insurance assistance')} for {ins_request.get('pet_name', 'their pet')}",
+        "category": "insurance",
+        "priority": ins_request["priority"],
+        "read": False,
+        "link_to": f"/admin?tab=insurance&request={request_id}",
+        "created_at": datetime.now(timezone.utc).isoformat()
+    }
+    
+    await db.admin_notifications.insert_one({k: v for k, v in admin_notif.items() if k != "_id"})
+    
+    return {
+        "message": "Insurance request created successfully",
+        "request_id": request_id,
+        "estimated_response": service_config.get("typical_response_time", "24-48 hours"),
+        "ticket_id": ticket["id"]
+    }
+
+
+@router.get("/insure/requests")
+async def get_insurance_requests(
+    status: Optional[str] = None,
+    service_type: Optional[str] = None,
+    limit: int = 50
+):
+    """Get all insurance requests"""
+    db = get_db()
+    
+    query = {}
+    if status:
+        query["status"] = status
+    if service_type:
+        query["service_type"] = service_type
+    
+    requests = await db.insurance_requests.find(query, {"_id": 0}).sort("created_at", -1).to_list(limit)
+    
+    return {"requests": requests, "total": len(requests)}
+
+
 # ==================== PRODUCTS ====================
 
 @router.get("/products")
