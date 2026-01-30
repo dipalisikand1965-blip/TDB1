@@ -11,7 +11,7 @@ import {
   Crown, Camera, Heart, Sparkles, Stethoscope, Syringe, Pill, 
   AlertCircle, Loader2, Check, MessageCircle, Upload, Brain, 
   CreditCard, HelpCircle, ChevronDown, ChevronUp, Home, Settings,
-  Share2, Copy, Printer, Download, FileText
+  Share2, Copy, Printer, Download, FileText, Trophy
 } from 'lucide-react';
 import { API_URL } from '../utils/api';
 import { toast } from '../hooks/use-toast';
@@ -24,6 +24,8 @@ import PetSoulAnswers from '../components/PetSoulAnswers';
 import { AchievementsGrid, ACHIEVEMENTS, celebrateAchievement } from '../components/PetAchievements';
 import BreedHealthCard from '../components/BreedHealthCard';
 import BreedAutocomplete from '../components/BreedAutocomplete';
+import PetMilestoneTimeline from '../components/PetMilestoneTimeline';
+import ShareablePetCard from '../components/ShareablePetCard';
 
 // Life Pillars configuration
 const LIFE_PILLARS = [
