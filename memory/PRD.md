@@ -60,33 +60,30 @@ This flow must work across:
 
 ## Pending Issues / Tomorrow's Tasks
 
-### 🔴 P0 - Critical for Production
+### 🔴 P1 - High Priority
 
-#### 1. Checkout Cart GST/Shipping Order
-**Issue**: GST is calculated BEFORE shipping is added. Since GST should apply to shipping too, the order must be:
-- Subtotal → Discount → **Shipping** → Taxable Amount → GST → Total
+#### 1. Pet Profile Crash for "Mynx"
+**Issue**: User reported crash when viewing pet profile for pet named "Mynx".
+**Debug Steps**:
+1. Log in as the user
+2. Navigate to pet profile for "Mynx"
+3. Check browser console and backend logs
+4. Inspect database for corrupt/unexpected values
 
-**Files to modify**:
-- `/app/frontend/src/components/UnifiedCheckout.jsx` (display order)
-- `/app/backend/checkout_routes.py` (calculation logic - must include shipping in taxable amount)
+#### 2. Paw Points Display Issue  
+**Issue**: Incorrect paw points display for specific user account.
+**Debug Steps**:
+1. Check API endpoint for paw points
+2. Verify calculation logic
+3. Compare database value with displayed value
 
-#### 2. Mira Voice - Female Voice
-**Requirement**: Mira AI should use a woman's voice for text-to-speech.
+### 🟠 P2 - Medium Priority
 
-**Files to check**:
-- `/app/frontend/src/components/MiraAI.jsx`
-- `/app/frontend/src/components/MiraContextPanel.jsx`
-- Look for `speechSynthesis` and voice selection
+1. **Razorpay Payments Failing** - Debug payment gateway integration
+2. **Mobile UI Transformation** - Member Dashboard mobile optimization
+3. **Service Booking Flow** - Mobile optimization
 
-### 🟠 P1 - Important
-
-1. **Stay Page Layout Redo** - Pet properties should be displayed on TOP of the page
-2. **Pet Profile Crash for "Mynx"** - User reported crash when viewing pet profile
-3. **Paw Points Display** - Incorrect display for specific user account
-4. **Mobile UI Transformation** - Member Dashboard mobile optimization
-5. **Service Booking Flow** - Mobile optimization
-
-### 🟡 P2 - Backlog
+### 🟡 P3 - Backlog
 
 1. **Razorpay Payments** - Reported as failing
 2. **PDF Invoice Generation**
