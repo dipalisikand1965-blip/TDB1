@@ -54,6 +54,11 @@ import MiraDailyTip, { MiraDailyTipInline } from '../components/MiraDailyTip';
 import PushNotificationBanner from '../components/PushNotificationBanner';
 // Mobile Navigation Bar
 import MobileNavBar from '../components/MobileNavBar';
+// Phase 1 Engagement Features
+import SwipeablePetCards from '../components/SwipeablePetCards';
+import PetParentStreak from '../components/PetParentStreak';
+import PullToRefreshIndicator from '../components/PullToRefreshIndicator';
+import usePullToRefresh from '../hooks/usePullToRefresh';
 
 
 // Extracted components: ACHIEVEMENTS, TIER_COLORS, triggerCelebration, QuickScoreBoost, GamificationBanner
