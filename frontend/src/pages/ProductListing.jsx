@@ -939,7 +939,6 @@ const ProductListing = ({ category = 'all' }) => {
                   onClick={() => {
                     setSelectedPet(null);
                     setPetRecommendations([]);
-                    setFilterByAllergies(false);
                   }}
                   className="text-xs border-amber-300 hover:bg-amber-100"
                 >
