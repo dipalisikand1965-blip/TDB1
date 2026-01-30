@@ -283,9 +283,6 @@ const MemberDashboard = () => {
   
   // First Visit Tour
   const { showTour, startTour, endTour } = useTour();
-  
-  // Voice Assistant
-  const [showVoiceAssistant, setShowVoiceAssistant] = useState(false);
 
   // Redirect to login if not authenticated (after auth check completes)
   useEffect(() => {
