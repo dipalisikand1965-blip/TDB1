@@ -858,17 +858,28 @@ async def import_care_products(products: List[Dict[str, Any]]):
 # ==================== BUNDLES ENDPOINTS ====================
 
 @router.get("/bundles")
-async def get_care_bundles(care_type: Optional[str] = None):
-    """Get care bundles"""
+async def get_care_bundles(care_type: Optional[str] = None, category: Optional[str] = None):
+    """Get care bundles including Feed/Nutrition bundles"""
     db = get_db()
     
-    query = {"bundle_type": "care"}
+    # Check both collections for care bundles
+    query = {"$or": [{"bundle_type": "care"}, {"pillar": "care"}, {"active": True}]}
     if care_type:
-        query["care_type"] = care_type
+        query = {"$and": [query, {"$or": [{"care_type": care_type}, {"category": care_type}]}]}
+    if category:
+        query = {"$and": [query, {"category": category}]}
     
-    bundles = await db.product_bundles.find(query, {"_id": 0}).to_list(50)
+    # Fetch from both collections
+    bundles_legacy = await db.product_bundles.find(query, {"_id": 0}).to_list(50)
+    bundles_new = await db.care_bundles.find({"$or": [{"active": True}, {"is_active": True}]}, {"_id": 0}).to_list(50)
     
-    return {"bundles": bundles, "total": len(bundles)}
+    # Filter new bundles by category if specified
+    if category:
+        bundles_new = [b for b in bundles_new if b.get("category") == category]
+    
+    all_bundles = bundles_legacy + bundles_new
+    
+    return {"bundles": all_bundles, "total": len(all_bundles)}
 
 
 @router.post("/admin/bundles")
