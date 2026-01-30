@@ -289,6 +289,46 @@ const MemberDashboard = () => {
   // First Visit Tour
   const { showTour, startTour, endTour } = useTour();
 
+  // Pull-to-Refresh Handler
+  const handlePullToRefresh = useCallback(async () => {
+    if (!token || !user?.id) return;
+    
+    try {
+      // Sync all data via engagement API
+      const response = await axios.get(`${API_URL}/api/engagement/sync/${user.id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      
+      if (response.data) {
+        // Update pets
+        if (response.data.pets) {
+          setPets(response.data.pets);
+        }
+        // Update orders
+        if (response.data.recent_orders) {
+          setOrders(response.data.recent_orders);
+        }
+        // Record streak action
+        try {
+          await axios.post(`${API_URL}/api/engagement/streak/${user.id}/action?action_type=pet_update`, {}, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+        } catch (e) {
+          // Silent fail for streak
+        }
+      }
+      
+      toast({ title: 'Refreshed! ✨', description: 'Your data is up to date' });
+    } catch (error) {
+      console.error('Refresh failed:', error);
+    }
+  }, [token, user?.id]);
+
+  // Pull-to-Refresh Hook
+  const { isPulling, pullProgress, isRefreshing } = usePullToRefresh(handlePullToRefresh, {
+    enabled: typeof window !== 'undefined' && window.innerWidth < 768
+  });
+
   // Redirect to login if not authenticated (after auth check completes)
   useEffect(() => {
     if (!authLoading && !user) {
