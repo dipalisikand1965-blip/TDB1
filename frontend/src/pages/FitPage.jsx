@@ -379,10 +379,9 @@ const FitPage = () => {
   const fetchAllData = async () => {
     setLoading(true);
     try {
-      const [servicesRes, productsRes, plansRes, bundlesRes] = await Promise.all([
+      const [servicesRes, productsRes, bundlesRes] = await Promise.all([
         fetch(`${API_URL}/api/services?pillar=fit`),
         fetch(`${API_URL}/api/products?pillar=fit&limit=10`),
-        fetch(`${API_URL}/api/fit/plans`),
         fetch(`${API_URL}/api/fit/bundles`)
       ]);
       
@@ -394,11 +393,6 @@ const FitPage = () => {
       if (productsRes.ok) {
         const data = await productsRes.json();
         setProducts(data.products || []);
-      }
-      
-      if (plansRes.ok) {
-        const data = await plansRes.json();
-        setPlans(data.plans || []);
       }
       
       if (bundlesRes.ok) {
