@@ -289,6 +289,9 @@ const MemberDashboard = () => {
   const [pawPointsHistory, setPawPointsHistory] = useState([]);
   const [pawPointsLoading, setPawPointsLoading] = useState(false);
   
+  // Voice Quick Actions Modal
+  const [showVoiceActions, setShowVoiceActions] = useState(false);
+  
   // First Visit Tour
   const { showTour, startTour, endTour } = useTour();
 
