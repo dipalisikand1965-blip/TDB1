@@ -665,47 +665,6 @@ const StayPage = () => {
         </div>
       )}
 
-      {/* Properties Grid - Only show when activeTab is 'stays' */}
-      {activeTab === 'stays' && (
-      <div className="max-w-6xl mx-auto px-4 pb-12">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">
-            {loading ? 'Loading...' : `${properties.length} Pet-Friendly Stays`}
-          </h2>
-        </div>
-
-        {loading ? (
-          <div className="flex justify-center py-20">
-            <Loader2 className="w-10 h-10 animate-spin text-green-600" />
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6">
-            {properties.map((property) => (
-              <PropertyCard 
-                key={property.id} 
-                property={property}
-                isFavorite={favorites.includes(property.id)}
-                onToggleFavorite={() => toggleFavorite(property.id)}
-                onViewDetails={() => setSelectedProperty(property)}
-                onBookNow={() => { setSelectedProperty(property); setShowBookingModal(true); }}
-                getPropertyTypeIcon={getPropertyTypeIcon}
-                getBadgeColor={getBadgeColor}
-                PawRatingDisplay={PawRatingDisplay}
-              />
-            ))}
-          </div>
-        )}
-
-        {!loading && properties.length === 0 && (
-          <div className="text-center py-20">
-            <Dog className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-            <h3 className="text-xl font-semibold text-gray-600">No properties found</h3>
-            <p className="text-gray-500">Try adjusting your filters</p>
-          </div>
-        )}
-      </div>
-      )}
-
       {/* Stay Products / Travel Essentials Section */}
       {bundles.length > 0 && (
         <div id="essentials" className="bg-gradient-to-b from-amber-50 to-white py-12 px-4">
