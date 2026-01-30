@@ -607,6 +607,59 @@ const FitPage = () => {
         </div>
       </div>
 
+      {/* ==================== SOCIAL PROOF BANNER ==================== */}
+      <div className="bg-white border-b border-gray-100 py-3">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6">
+          <FitnessJourneyCounter />
+          <RotatingSocialProof 
+            petName={userPets[0]?.name} 
+            breedName={userPets[0]?.breed} 
+          />
+        </div>
+      </div>
+
+      {/* ==================== CONVERSATIONAL ENTRY + QUICK WIN ==================== */}
+      <div className="py-6 bg-gradient-to-b from-gray-50 to-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Conversational Entry */}
+            <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+              <ConversationalEntry 
+                petName={userPets[0]?.name}
+                onGoalSelect={(goal, message) => {
+                  navigate(`/mira?context=fit_${goal.id}&preset=${encodeURIComponent(message)}`);
+                }}
+              />
+            </div>
+            
+            {/* Quick Win Tip */}
+            <QuickWinTip
+              petName={userPets[0]?.name}
+              petBreed={userPets[0]?.breed}
+              petAge={userPets[0]?.age}
+              onActionClick={(tip) => {
+                toast({ title: 'Coming soon!', description: tip.action });
+              }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* ==================== TRANSFORMATION STORIES ==================== */}
+      <div className="py-8 bg-white border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-4">
+          <TransformationStories 
+            onViewProgram={(program) => {
+              // Find matching experience and open modal
+              const exp = FIT_EXPERIENCES.find(e => e.title.includes(program?.split('®')[0]));
+              if (exp) {
+                toast({ title: `Learn more about ${exp.title}`, description: 'Opening details...' });
+              }
+            }}
+          />
+        </div>
+      </div>
+
       {/* ==================== CONCIERGE® FIT EXPERIENCES - COMPACT ==================== */}
       <div className="py-10 bg-gradient-to-b from-white to-teal-50/30">
         <div className="max-w-7xl mx-auto px-4">
