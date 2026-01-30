@@ -752,18 +752,24 @@ const MiraAI = () => {
     return null;
   }
 
+  // Determine orb state based on current activity
+  const getOrbState = () => {
+    if (isListening) return 'listening';
+    if (isSpeaking) return 'speaking';
+    if (isLoading) return 'thinking';
+    return 'idle';
+  };
+
   if (!isOpen) {
     return (
-      <button
-        onClick={() => setIsOpen(true)}
-        className="fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-[200] bg-gradient-to-r from-purple-600 to-pink-600 text-white p-3 sm:p-4 rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300 flex items-center gap-2 group"
-        data-testid="mira-fab-button"
-      >
-        <Sparkles className="w-5 h-5 sm:w-6 sm:h-6" />
-        <span className="hidden sm:inline-block max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 whitespace-nowrap font-medium text-sm">
-          Ask Mira
-        </span>
-      </button>
+      <div className="fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-[200]" data-testid="mira-orb-container">
+        <MiraOrb 
+          state={getOrbState()}
+          onClick={() => setIsOpen(true)}
+          size="md"
+          showLabel={true}
+        />
+      </div>
     );
   }
 
