@@ -379,13 +379,17 @@ async def create_checkout_order(request: CreateOrderRequest):
         return await create_whatsapp_order(request)
     
     try:
-        # Calculate totals with GST
+        # Calculate totals with GST (GST applies to subtotal - discount + shipping)
         subtotal = request.subtotal
         discount = request.discount_amount + request.loyalty_discount
-        taxable_amount = max(0, subtotal - discount)
-        gst_details = calculate_gst(taxable_amount, request.delivery.state or "Karnataka")
         shipping = request.shipping_fee
-        grand_total = round(taxable_amount + gst_details["total_tax"] + shipping, 2)
+        
+        # Taxable amount includes shipping (GST applies to shipping too)
+        taxable_amount = max(0, subtotal - discount + shipping)
+        gst_details = calculate_gst(taxable_amount, request.delivery.state or "Karnataka")
+        
+        # Grand total = taxable_amount + GST
+        grand_total = round(taxable_amount + gst_details["total_tax"], 2)
         
         # Generate order ID
         order_id = f"TDC-{datetime.now().strftime('%y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
