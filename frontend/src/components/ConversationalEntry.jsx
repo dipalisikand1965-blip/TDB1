@@ -49,10 +49,30 @@ const ConversationalEntry = ({
     }
   }, [fullText, isTyping]);
 
-  const handleGoalClick = (goal) => {
+  const handleGoalClick = async (goal) => {
     const message = petName 
       ? `I want to help ${petName} with ${goal.label.toLowerCase()}`
       : `I'm interested in ${goal.label.toLowerCase()} for my pet`;
+    
+    // Record interaction via API (triggers Universal Signal Flow)
+    try {
+      const token = localStorage.getItem('token');
+      await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/engagement/goal-interaction`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        },
+        body: JSON.stringify({
+          goal_id: goal.id,
+          goal_label: goal.label,
+          pillar: 'fit',
+          message: message
+        })
+      });
+    } catch (err) {
+      console.debug('Goal interaction logging failed:', err);
+    }
     
     if (onGoalSelect) {
       onGoalSelect(goal, message);
