@@ -730,40 +730,22 @@ const MemberDashboard = () => {
         }}
       />
       
-      {/* Beautiful Hero Section - Pet-First Design */}
+      {/* Beautiful Hero Section - Pet-First Design - Mobile Optimized */}
       <div className="relative overflow-hidden bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-800">
-        {/* Animated Background Elements */}
+        {/* Animated Background Elements - Reduced on mobile */}
         <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute top-10 left-10 w-64 h-64 bg-teal-500/30 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-10 right-10 w-80 h-80 bg-cyan-500/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl"></div>
+          <div className="absolute top-10 left-10 w-40 md:w-64 h-40 md:h-64 bg-teal-500/30 rounded-full blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-10 right-10 w-48 md:w-80 h-48 md:h-80 bg-cyan-500/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
         </div>
 
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-          {/* Top Bar - Member Status */}
-          <div className="flex items-center justify-between mb-8">
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
-              <Crown className="w-4 h-4 text-yellow-400" />
-              <span className="text-sm font-medium text-white">Pet Pass Member</span>
-              <Badge className={`ml-2 ${user.membership_tier === 'pending' ? 'bg-amber-400 text-amber-900' : 'bg-green-400 text-green-900'} border-0`}>
-                {user.membership_tier === 'pending' ? 'Setup Pending' : 'Active'}
-              </Badge>
-            </div>
-            <div className="hidden md:flex items-center gap-3">
-              <div className="bg-white/10 backdrop-blur-sm rounded-lg px-3 py-1.5 text-white text-sm">
-                <span className="text-white/60">Points:</span> <span className="font-bold">{(user.loyalty_points || 0).toLocaleString()}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Main Hero Content */}
-          <div className="grid md:grid-cols-5 gap-8 items-center">
-            {/* Left - Pet Photo Hero (larger) */}
-            {primaryPet && (
-              <div className="md:col-span-2 flex justify-center">
-                <div className="relative">
-                  {/* Large Pet Photo Circle */}
-                  <div className="w-48 h-48 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-white/30 shadow-2xl">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 md:py-12">
+          {/* Mobile: Compact Pet Hero Card */}
+          <div className="md:hidden">
+            {primaryPet ? (
+              <div className="flex items-center gap-4 mb-4">
+                {/* Pet Photo - Smaller on mobile */}
+                <div className="relative flex-shrink-0">
+                  <div className="w-20 h-20 rounded-2xl overflow-hidden border-2 border-white/30 shadow-xl">
                     <img 
                       src={petPhotoUrl} 
                       alt={primaryPet.name}
@@ -771,100 +753,202 @@ const MemberDashboard = () => {
                       onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop'; }}
                     />
                   </div>
-                  
-                  {/* Soul Score Badge */}
-                  <div className="absolute -bottom-2 -right-2 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-full p-1">
-                    <div className="bg-white rounded-full w-16 h-16 flex flex-col items-center justify-center">
-                      <span className="text-xl font-bold text-teal-700">{Math.min(100, Math.round(primaryPet.overall_score || 0))}%</span>
-                      <span className="text-[10px] text-gray-500 font-medium">Soul</span>
+                  {/* Soul Score Mini Badge */}
+                  <div className="absolute -bottom-1 -right-1 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-full p-0.5">
+                    <div className="bg-white rounded-full w-7 h-7 flex items-center justify-center">
+                      <span className="text-xs font-bold text-teal-700">{Math.min(100, Math.round(primaryPet.overall_score || 0))}%</span>
                     </div>
                   </div>
-                  
-                  {/* Pet Pass Number Badge */}
-                  {primaryPet.pet_pass_number && (
-                    <div className="absolute -top-2 left-1/2 -translate-x-1/2 bg-white/20 backdrop-blur-md text-white text-xs px-3 py-1 rounded-full font-mono">
-                      {primaryPet.pet_pass_number}
-                    </div>
-                  )}
                 </div>
+                
+                {/* Pet Info - Compact */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h1 className="text-xl font-bold text-white truncate">{primaryPet.name}</h1>
+                    <span className="text-lg">🐾</span>
+                  </div>
+                  <p className="text-sm text-white/70 truncate">{primaryPet.breed || 'Your furry friend'}</p>
+                  <div className="flex items-center gap-3 mt-2">
+                    <div className="flex items-center gap-1 text-white/80 text-xs">
+                      <Gift className="w-3 h-3 text-pink-400" />
+                      <span className="font-medium">{user.loyalty_points || 0}</span>
+                    </div>
+                    {primaryPet.birth_date && (
+                      <div className="flex items-center gap-1 text-white/80 text-xs">
+                        <Calendar className="w-3 h-3 text-blue-400" />
+                        <span>{new Date(primaryPet.birth_date).toLocaleDateString('en-US', {month: 'short', day: 'numeric'})}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-4">
+                <h1 className="text-xl font-bold text-white mb-1">Welcome, {user.name?.split(' ')[0]}! 👋</h1>
+                <p className="text-sm text-white/70">Add your pet to get started</p>
               </div>
             )}
             
-            {/* Right - Welcome Message & Quick Actions */}
-            <div className={`${primaryPet ? 'md:col-span-3' : 'md:col-span-5'} text-white`}>
-              <h1 className="text-3xl md:text-4xl font-bold mb-2">
-                {primaryPet ? (
-                  <>
-                    Hello, <span className="text-yellow-300">{primaryPet.name}</span>! 
-                    <span className="text-2xl ml-2">🐾</span>
-                  </>
-                ) : (
-                  <>Welcome back, {user.name?.split(' ')[0]}!</>
-                )}
-              </h1>
-              
-              <p className="text-lg text-white/70 mb-4">
-                {primaryPet ? (
-                  <>
-                    <span className="text-white/90">{user.name?.split(' ')[0]}</span>, we&apos;re here to take care of {primaryPet.name}.
-                    {primaryPet.breed && <span className="text-teal-300"> Your beautiful {primaryPet.breed}.</span>}
-                  </>
-                ) : (
-                  <>Start your pet parenting journey with personalized care & services.</>
-                )}
-              </p>
-              
-              {/* No Pet - Prominent Add Pet CTA */}
-              {!primaryPet && (
-                <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 mb-6">
-                  <div className="flex flex-col md:flex-row items-center gap-4">
-                    <div className="w-20 h-20 bg-gradient-to-r from-teal-400 to-cyan-400 rounded-full flex items-center justify-center">
-                      <PawPrint className="w-10 h-10 text-white" />
-                    </div>
-                    <div className="flex-1 text-center md:text-left">
-                      <h3 className="text-xl font-bold text-white mb-1">Add Your First Pet</h3>
-                      <p className="text-white/70 text-sm">Tell us about your furry friend to unlock personalized recommendations, health tips, and exclusive services.</p>
-                    </div>
-                    <Button 
-                      onClick={() => navigate('/my-pets')}
-                      className="bg-gradient-to-r from-teal-400 to-cyan-400 hover:from-teal-500 hover:to-cyan-500 text-white font-semibold px-6 py-3"
-                    >
-                      <PawPrint className="w-5 h-5 mr-2" />
-                      Add Pet Now
-                    </Button>
-                  </div>
+            {/* Mobile Quick Actions - 4 prominent buttons */}
+            <div className="grid grid-cols-4 gap-2 mt-3">
+              <button 
+                onClick={() => primaryPet?.id ? navigate(`/pet/${primaryPet.id}`) : navigate('/my-pets')}
+                className="flex flex-col items-center p-3 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 active:scale-95 transition-transform"
+              >
+                <PawPrint className="w-5 h-5 text-purple-300 mb-1" />
+                <span className="text-[10px] text-white/90 font-medium">My Pet</span>
+              </button>
+              <button 
+                onClick={() => navigate('/celebrate')}
+                className="flex flex-col items-center p-3 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 active:scale-95 transition-transform"
+              >
+                <Cake className="w-5 h-5 text-pink-300 mb-1" />
+                <span className="text-[10px] text-white/90 font-medium">Celebrate</span>
+              </button>
+              <button 
+                onClick={() => navigate('/shop')}
+                className="flex flex-col items-center p-3 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 active:scale-95 transition-transform"
+              >
+                <ShoppingBag className="w-5 h-5 text-amber-300 mb-1" />
+                <span className="text-[10px] text-white/90 font-medium">Shop</span>
+              </button>
+              <button 
+                onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI'))}
+                className="flex flex-col items-center p-3 bg-gradient-to-r from-purple-500/30 to-pink-500/30 backdrop-blur-sm rounded-xl border border-purple-400/30 active:scale-95 transition-transform"
+              >
+                <Sparkles className="w-5 h-5 text-yellow-300 mb-1" />
+                <span className="text-[10px] text-white font-medium">Ask Mira</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Desktop: Original full hero layout */}
+          <div className="hidden md:block">
+            {/* Top Bar - Member Status */}
+            <div className="flex items-center justify-between mb-8">
+              <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full">
+                <Crown className="w-4 h-4 text-yellow-400" />
+                <span className="text-sm font-medium text-white">Pet Pass Member</span>
+                <Badge className={`ml-2 ${user.membership_tier === 'pending' ? 'bg-amber-400 text-amber-900' : 'bg-green-400 text-green-900'} border-0`}>
+                  {user.membership_tier === 'pending' ? 'Setup Pending' : 'Active'}
+                </Badge>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="bg-white/10 backdrop-blur-sm rounded-lg px-3 py-1.5 text-white text-sm">
+                  <span className="text-white/60">Points:</span> <span className="font-bold">{(user.loyalty_points || 0).toLocaleString()}</span>
                 </div>
-              )}
-              
-              {/* Pet Quick Info Cards */}
+              </div>
+            </div>
+
+            {/* Main Hero Content */}
+            <div className="grid md:grid-cols-5 gap-8 items-center">
+              {/* Left - Pet Photo Hero (larger) */}
               {primaryPet && (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
-                  <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 text-center">
-                    <Sparkles className="w-5 h-5 mx-auto text-yellow-400 mb-1" />
-                    <p className="text-white text-lg font-bold">{Math.min(100, Math.round(primaryPet.overall_score || 0))}%</p>
-                    <p className="text-white/60 text-xs">Pet Soul</p>
-                  </div>
-                  <div 
-                    className="bg-white/10 backdrop-blur-sm rounded-xl p-3 text-center cursor-pointer hover:bg-white/20 transition-colors"
-                    onClick={() => setShowPawPointsBreakdown(true)}
-                    data-testid="paw-points-card"
-                  >
-                    <Gift className="w-5 h-5 mx-auto text-pink-400 mb-1" />
-                    <p className="text-white text-lg font-bold">{user.loyalty_points || 0}</p>
-                    <p className="text-white/60 text-xs">Paw Points <ChevronRight className="w-3 h-3 inline" /></p>
-                  </div>
-                  <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 text-center">
-                    <Calendar className="w-5 h-5 mx-auto text-blue-400 mb-1" />
-                    <p className="text-white text-lg font-bold">{primaryPet.birth_date ? new Date(primaryPet.birth_date).toLocaleDateString('en-US', {month: 'short', day: 'numeric'}) : '—'}</p>
-                    <p className="text-white/60 text-xs">Birthday</p>
-                  </div>
-                  <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 text-center">
-                    <Heart className="w-5 h-5 mx-auto text-red-400 mb-1" />
-                    <p className="text-white text-lg font-bold">{pets.length}</p>
-                    <p className="text-white/60 text-xs">{pets.length === 1 ? 'Pet' : 'Pets'}</p>
+                <div className="md:col-span-2 flex justify-center">
+                  <div className="relative">
+                    {/* Large Pet Photo Circle */}
+                    <div className="w-48 h-48 md:w-56 md:h-56 rounded-full overflow-hidden border-4 border-white/30 shadow-2xl">
+                      <img 
+                        src={petPhotoUrl} 
+                        alt={primaryPet.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop'; }}
+                      />
+                    </div>
+                    
+                    {/* Soul Score Badge */}
+                    <div className="absolute -bottom-2 -right-2 bg-gradient-to-r from-teal-500 to-cyan-500 rounded-full p-1">
+                      <div className="bg-white rounded-full w-16 h-16 flex flex-col items-center justify-center">
+                        <span className="text-xl font-bold text-teal-700">{Math.min(100, Math.round(primaryPet.overall_score || 0))}%</span>
+                        <span className="text-[10px] text-gray-500 font-medium">Soul</span>
+                      </div>
+                    </div>
+                    
+                    {/* Pet Pass Number Badge */}
+                    {primaryPet.pet_pass_number && (
+                      <div className="absolute -top-2 left-1/2 -translate-x-1/2 bg-white/20 backdrop-blur-md text-white text-xs px-3 py-1 rounded-full font-mono">
+                        {primaryPet.pet_pass_number}
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
+              
+              {/* Right - Welcome Message & Quick Actions */}
+              <div className={`${primaryPet ? 'md:col-span-3' : 'md:col-span-5'} text-white`}>
+                <h1 className="text-3xl md:text-4xl font-bold mb-2">
+                  {primaryPet ? (
+                    <>
+                      Hello, <span className="text-yellow-300">{primaryPet.name}</span>! 
+                      <span className="text-2xl ml-2">🐾</span>
+                    </>
+                  ) : (
+                    <>Welcome back, {user.name?.split(' ')[0]}!</>
+                  )}
+                </h1>
+                
+                <p className="text-lg text-white/70 mb-4">
+                  {primaryPet ? (
+                    <>
+                      <span className="text-white/90">{user.name?.split(' ')[0]}</span>, we&apos;re here to take care of {primaryPet.name}.
+                      {primaryPet.breed && <span className="text-teal-300"> Your beautiful {primaryPet.breed}.</span>}
+                    </>
+                  ) : (
+                    <>Start your pet parenting journey with personalized care & services.</>
+                  )}
+                </p>
+                
+                {/* No Pet - Prominent Add Pet CTA */}
+                {!primaryPet && (
+                  <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 mb-6">
+                    <div className="flex flex-col md:flex-row items-center gap-4">
+                      <div className="w-20 h-20 bg-gradient-to-r from-teal-400 to-cyan-400 rounded-full flex items-center justify-center">
+                        <PawPrint className="w-10 h-10 text-white" />
+                      </div>
+                      <div className="flex-1 text-center md:text-left">
+                        <h3 className="text-xl font-bold text-white mb-1">Add Your First Pet</h3>
+                        <p className="text-white/70 text-sm">Tell us about your furry friend to unlock personalized recommendations, health tips, and exclusive services.</p>
+                      </div>
+                      <Button 
+                        onClick={() => navigate('/my-pets')}
+                        className="bg-gradient-to-r from-teal-400 to-cyan-400 hover:from-teal-500 hover:to-cyan-500 text-white font-semibold px-6 py-3"
+                      >
+                        <PawPrint className="w-5 h-5 mr-2" />
+                        Add Pet Now
+                      </Button>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Pet Quick Info Cards */}
+                {primaryPet && (
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+                    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 text-center">
+                      <Sparkles className="w-5 h-5 mx-auto text-yellow-400 mb-1" />
+                      <p className="text-white text-lg font-bold">{Math.min(100, Math.round(primaryPet.overall_score || 0))}%</p>
+                      <p className="text-white/60 text-xs">Pet Soul</p>
+                    </div>
+                    <div 
+                      className="bg-white/10 backdrop-blur-sm rounded-xl p-3 text-center cursor-pointer hover:bg-white/20 transition-colors"
+                      onClick={() => setShowPawPointsBreakdown(true)}
+                      data-testid="paw-points-card"
+                    >
+                      <Gift className="w-5 h-5 mx-auto text-pink-400 mb-1" />
+                      <p className="text-white text-lg font-bold">{user.loyalty_points || 0}</p>
+                      <p className="text-white/60 text-xs">Paw Points <ChevronRight className="w-3 h-3 inline" /></p>
+                    </div>
+                    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 text-center">
+                      <Calendar className="w-5 h-5 mx-auto text-blue-400 mb-1" />
+                      <p className="text-white text-lg font-bold">{primaryPet.birth_date ? new Date(primaryPet.birth_date).toLocaleDateString('en-US', {month: 'short', day: 'numeric'}) : '—'}</p>
+                      <p className="text-white/60 text-xs">Birthday</p>
+                    </div>
+                    <div className="bg-white/10 backdrop-blur-sm rounded-xl p-3 text-center">
+                      <Heart className="w-5 h-5 mx-auto text-red-400 mb-1" />
+                      <p className="text-white text-lg font-bold">{pets.length}</p>
+                      <p className="text-white/60 text-xs">{pets.length === 1 ? 'Pet' : 'Pets'}</p>
+                    </div>
+                  </div>
+                )}
               
               {/* Quick Action Buttons */}
               <div className="flex flex-wrap gap-3">
