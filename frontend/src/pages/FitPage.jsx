@@ -1,7 +1,7 @@
 /**
  * FitPage.jsx
  * Premium Pillar Page - Fit (Fitness & Wellness)
- * Elegant, service-soul-driven design
+ * Elegant, service-soul-driven design with social proof & engagement
  */
 
 import React, { useState, useEffect } from 'react';
@@ -26,6 +26,11 @@ import SEOHead from '../components/SEOHead';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import PillarServicesGrid from '../components/PillarServicesGrid';
 import MiraPicksCarousel from '../components/MiraPicksCarousel';
+// New engagement components
+import { FitnessJourneyCounter, RotatingSocialProof } from '../components/SocialProofBadges';
+import TransformationStories from '../components/TransformationStories';
+import ConversationalEntry from '../components/ConversationalEntry';
+import QuickWinTip from '../components/QuickWinTip';
 import {
   Dumbbell, Heart, TrendingUp, Scale, Activity, Trophy,
   CheckCircle, ChevronRight, Sparkles, Star, Loader2, Send,
