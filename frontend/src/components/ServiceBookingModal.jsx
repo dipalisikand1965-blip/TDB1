@@ -299,92 +299,99 @@ const ServiceBookingModal = ({
           </div>
         )}
         
-        {/* Booking Complete */}
+        {/* Booking Complete - Mobile Optimized */}
         {bookingComplete && (
-          <div className="text-center py-8">
-            <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
-              <CheckCircle className="w-10 h-10 text-green-600" />
+          <div className="text-center py-6 sm:py-8">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
+              <CheckCircle className="w-8 h-8 sm:w-10 sm:h-10 text-green-600" />
             </div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-2">Booking Confirmed!</h3>
-            <p className="text-gray-600 mb-4">
-              Booking ID: <span className="font-mono font-bold text-purple-600">{bookingId}</span>
+            <h3 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Booking Confirmed!</h3>
+            <p className="text-gray-600 mb-4 text-sm sm:text-base">
+              Booking ID: <span className="font-mono font-bold text-purple-600 break-all">{bookingId}</span>
             </p>
-            <div className="bg-gray-50 rounded-xl p-4 text-left max-w-sm mx-auto">
+            <div className="bg-gray-50 rounded-xl p-3 sm:p-4 text-left max-w-sm mx-auto">
               <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
+                <div className="flex justify-between gap-2">
                   <span className="text-gray-500">Service</span>
-                  <span className="font-medium">{service.subServices.find(s => s.id === selectedSubService)?.name}</span>
+                  <span className="font-medium text-right">{service.subServices.find(s => s.id === selectedSubService)?.name}</span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between gap-2">
                   <span className="text-gray-500">Pet</span>
                   <span className="font-medium">{formData.petName}</span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between gap-2">
                   <span className="text-gray-500">Date</span>
                   <span className="font-medium">{formData.preferredDate}</span>
                 </div>
-                <div className="flex justify-between">
+                <div className="flex justify-between gap-2">
                   <span className="text-gray-500">Time</span>
                   <span className="font-medium">{formData.preferredTime}</span>
                 </div>
               </div>
             </div>
-            <p className="text-sm text-gray-500 mt-4">
+            <p className="text-xs sm:text-sm text-gray-500 mt-4">
               📱 You&apos;ll receive a confirmation message on WhatsApp shortly.
             </p>
-            <Button onClick={handleClose} className="mt-6">Done</Button>
+            <Button onClick={handleClose} className="mt-6 w-full sm:w-auto min-h-[44px]">Done</Button>
           </div>
         )}
         
-        {/* Step 1: Select Service */}
+        {/* Step 1: Select Service - Mobile Optimized */}
         {!bookingComplete && step === 1 && (
           <div className="space-y-4">
-            <h3 className="font-semibold text-gray-900">Select Service Type</h3>
-            <div className="grid grid-cols-2 gap-3">
+            <h3 className="font-semibold text-gray-900 text-sm sm:text-base">Select Service Type</h3>
+            {/* Stack on mobile, grid on larger screens */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
               {service.subServices.map(sub => (
                 <button
                   key={sub.id}
                   onClick={() => setSelectedSubService(sub.id)}
-                  className={`p-4 rounded-xl border-2 text-left transition-all ${
+                  className={`p-3 sm:p-4 rounded-xl border-2 text-left transition-all min-h-[70px] ${
                     selectedSubService === sub.id 
-                      ? `border-${service.color}-500 bg-${service.color}-50` 
-                      : 'border-gray-200 hover:border-gray-300'
+                      ? `border-${service.color}-500 bg-${service.color}-50 ring-2 ring-${service.color}-200` 
+                      : 'border-gray-200 hover:border-gray-300 active:bg-gray-50'
                   }`}
                   data-testid={`service-option-${sub.id}`}
                 >
-                  <p className="font-medium text-gray-900">{sub.name}</p>
-                  <div className="flex items-center gap-2 mt-2 text-xs text-gray-500">
-                    <Clock className="w-3 h-3" />
-                    <span>{sub.duration}</span>
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-gray-900 text-sm sm:text-base">{sub.name}</p>
+                      <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
+                        <Clock className="w-3 h-3 flex-shrink-0" />
+                        <span>{sub.duration}</span>
+                      </div>
+                    </div>
+                    <p className="text-sm font-semibold text-purple-600 ml-2 whitespace-nowrap">{sub.price}</p>
                   </div>
-                  <p className="text-sm font-medium text-purple-600 mt-1">{sub.price}</p>
                 </button>
               ))}
             </div>
             
-            {/* Location preference */}
-            <div className="mt-6">
-              <h3 className="font-semibold text-gray-900 mb-3">Preferred Location</h3>
-              <div className="flex gap-3">
+            {/* Location preference - Mobile Optimized */}
+            <div className="mt-4 sm:mt-6">
+              <h3 className="font-semibold text-gray-900 mb-2 sm:mb-3 text-sm sm:text-base">Preferred Location</h3>
+              <div className="grid grid-cols-2 gap-2 sm:gap-3">
                 <button
                   onClick={() => setSelectedLocation('home')}
-                  className={`flex-1 p-4 rounded-xl border-2 transition-all ${
-                    selectedLocation === 'home' ? 'border-purple-500 bg-purple-50' : 'border-gray-200'
+                  className={`p-3 sm:p-4 rounded-xl border-2 transition-all text-center min-h-[80px] ${
+                    selectedLocation === 'home' ? 'border-purple-500 bg-purple-50 ring-2 ring-purple-200' : 'border-gray-200 active:bg-gray-50'
                   }`}
+                  data-testid="location-home"
                 >
-                  <Home className="w-6 h-6 mb-2 text-purple-600" />
-                  <p className="font-medium">At Home</p>
-                  <p className="text-xs text-gray-500">We come to you</p>
+                  <Home className="w-5 h-5 sm:w-6 sm:h-6 mb-1 sm:mb-2 text-purple-600 mx-auto" />
+                  <p className="font-medium text-sm sm:text-base">At Home</p>
+                  <p className="text-xs text-gray-500 hidden sm:block">We come to you</p>
                 </button>
                 <button
                   onClick={() => setSelectedLocation('salon')}
-                  className={`flex-1 p-4 rounded-xl border-2 transition-all ${
-                    selectedLocation === 'salon' ? 'border-purple-500 bg-purple-50' : 'border-gray-200'
+                  className={`p-3 sm:p-4 rounded-xl border-2 transition-all text-center min-h-[80px] ${
+                    selectedLocation === 'salon' ? 'border-purple-500 bg-purple-50 ring-2 ring-purple-200' : 'border-gray-200 active:bg-gray-50'
                   }`}
+                  data-testid="location-salon"
                 >
-                  <Building2 className="w-6 h-6 mb-2 text-purple-600" />
-                  <p className="font-medium">Visit Salon/Clinic</p>
-                  <p className="text-xs text-gray-500">Drop off your pet</p>
+                  <Building2 className="w-5 h-5 sm:w-6 sm:h-6 mb-1 sm:mb-2 text-purple-600 mx-auto" />
+                  <p className="font-medium text-sm sm:text-base">Salon/Clinic</p>
+                  <p className="text-xs text-gray-500 hidden sm:block">Drop off your pet</p>
                 </button>
               </div>
             </div>
