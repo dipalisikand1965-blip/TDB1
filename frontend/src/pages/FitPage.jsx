@@ -602,23 +602,30 @@ const FitPage = () => {
         </div>
       </div>
 
-      {/* ==================== ELEVATED CONCIERGE® FIT EXPERIENCES ==================== */}
-      <div className="py-16 bg-gradient-to-br from-teal-50 via-emerald-50 to-green-50">
+      {/* ==================== CONCIERGE® FIT EXPERIENCES - COMPACT ==================== */}
+      <div className="py-10 bg-gradient-to-b from-white to-teal-50/30">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 bg-teal-100 text-teal-700 px-4 py-2 rounded-full mb-4">
-              <Sparkles className="w-4 h-4" />
-              <span className="text-sm font-medium">Elevated Experiences</span>
+          {/* Elegant Header */}
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-xl md:text-2xl font-semibold text-gray-900">
+                Fit <span className="text-teal-600">Concierge®</span> Experiences
+              </h2>
+              <p className="text-sm text-gray-500 mt-1">
+                Personalized wellness journeys, not just programs
+              </p>
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Fit <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-600 to-emerald-600">Concierge®</span> Experiences
-            </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              These aren't fitness programs you sign up for — they're personalized wellness journeys crafted around your pet's unique needs, your goals, and your lifestyle.
-            </p>
+            <Button 
+              variant="ghost" 
+              className="text-teal-600 hover:text-teal-700 text-sm hidden sm:flex"
+              onClick={() => setShowBookingModal(true)}
+            >
+              Not sure? Tell us about your pet <ChevronRight className="w-4 h-4 ml-1" />
+            </Button>
           </div>
           
-          <div className="grid md:grid-cols-2 gap-6">
+          {/* Compact Experience Cards - Use compact prop */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
             {FIT_EXPERIENCES.map((exp, idx) => (
               <ConciergeExperienceCard
                 key={idx}
@@ -630,44 +637,37 @@ const FitPage = () => {
                 badge={exp.badge}
                 badgeColor={exp.badgeColor}
                 highlights={exp.highlights}
+                compact={true}
               />
             ))}
-          </div>
-          
-          <div className="mt-10 text-center">
-            <p className="text-sm text-gray-500">
-              💬 Not sure where to start? <button onClick={() => setShowBookingModal(true)} className="text-teal-600 hover:underline font-medium">Tell us about your pet</button> and we&apos;ll design a personalized fitness journey.
-            </p>
           </div>
         </div>
       </div>
 
-      {/* ==================== MIRA PERSONALIZED RECOMMENDATIONS ==================== */}
-      {user && (
-        <section className="py-8 md:py-12 bg-white">
-          <div className="max-w-7xl mx-auto px-4">
-            <MiraPillarRecommendations
-              pillar="fit"
-              petId={selectedPet?.id}
-              petName={selectedPet?.name || userPets[0]?.name}
-              userId={user?.id}
-              onSelectService={handleViewDetails}
-              onSelectProduct={(product) => {
-                addToCart({
-                  id: product.id,
-                  name: product.name || product.title,
-                  price: product.price,
-                  image: product.image,
-                  pillar: 'fit',
-                  type: 'product'
-                });
-                toast({ title: '🛒 Added to Cart!', description: `${product.name || product.title} added` });
-              }}
-              className="shadow-xl"
-            />
-          </div>
-        </section>
-      )}
+      {/* ==================== MIRA PICKS - SUBTLE CAROUSEL ==================== */}
+      <section className="py-6 bg-white border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-4">
+          <MiraPicksCarousel
+            pillar="fit"
+            petId={selectedPet?.id || userPets[0]?.id}
+            petName={selectedPet?.name || userPets[0]?.name}
+            petPhoto={selectedPet ? getPetPhotoUrl(selectedPet) : userPets[0] ? getPetPhotoUrl(userPets[0]) : null}
+            userId={user?.id}
+            onSelectService={handleViewDetails}
+            onSelectProduct={(product) => {
+              addToCart({
+                id: product.id,
+                name: product.name || product.title,
+                price: product.price,
+                image: product.image,
+                pillar: 'fit',
+                type: 'product'
+              });
+              toast({ title: '🛒 Added to Cart!', description: `${product.name || product.title} added` });
+            }}
+          />
+        </div>
+      </section>
       
       {/* ==================== CONCIERGE® SERVICES SECTION ==================== */}
       <section id="services" className="py-12 md:py-16 bg-gradient-to-b from-teal-50/30 to-white">
