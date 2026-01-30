@@ -360,7 +360,7 @@ All Phase 1 features are now integrated:
 - **Admin**: `aditya` / `lola4304`
 
 ## Deployment
-- **Preview URL**: https://furryhealth-app.preview.emergentagent.com
+- **Preview URL**: https://petclub-modern.preview.emergentagent.com
 - **Production**: thedoggycompany.in (deploying tomorrow)
 
 ---
