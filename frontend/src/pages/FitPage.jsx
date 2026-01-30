@@ -777,113 +777,86 @@ const FitPage = () => {
         </div>
       </div>
 
-      {/* ==================== CATEGORY FILTER BAR ==================== */}
-      <div className="bg-white border-b shadow-sm sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center gap-3 overflow-x-auto scrollbar-hide pb-1">
-            <button
-              onClick={() => setSelectedCategory(null)}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-full transition-all whitespace-nowrap font-medium ${
-                !selectedCategory 
-                  ? 'bg-teal-600 text-white shadow-lg' 
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              All Services
-              <Badge variant="secondary" className={!selectedCategory ? 'bg-white/20 text-white' : 'bg-gray-200'}>
-                {services.length}
-              </Badge>
-            </button>
-            {availableCategories.map((catKey) => {
-              const cat = SERVICE_CATEGORIES[catKey] || SERVICE_CATEGORIES.assessment;
-              const Icon = cat.icon;
-              const count = services.filter(s => s.category === catKey).length;
-              
-              return (
-                <button
-                  key={catKey}
-                  onClick={() => setSelectedCategory(selectedCategory === catKey ? null : catKey)}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-full transition-all whitespace-nowrap ${
-                    selectedCategory === catKey 
-                      ? `bg-gradient-to-r ${cat.gradient} text-white shadow-lg` 
-                      : `${cat.lightBg} ${cat.text} hover:shadow-md`
-                  }`}
-                  data-testid={`category-${catKey}`}
-                >
-                  <Icon className="w-4 h-4" />
-                  <span className="text-sm font-medium">{cat.name}</span>
-                  <span className={`text-xs px-1.5 py-0.5 rounded-full ${
-                    selectedCategory === catKey ? 'bg-white/20' : 'bg-white'
-                  }`}>
-                    {count}
-                  </span>
-                </button>
-              );
-            })}
+      {/* ==================== MIRA PERSONALIZED RECOMMENDATIONS ==================== */}
+      {user && (
+        <section className="py-8 md:py-12 bg-white">
+          <div className="max-w-7xl mx-auto px-4">
+            <MiraPillarRecommendations
+              pillar="fit"
+              petId={selectedPet?.id}
+              petName={selectedPet?.name || userPets[0]?.name}
+              userId={user?.id}
+              onSelectService={handleViewDetails}
+              onSelectProduct={(product) => {
+                addToCart({
+                  id: product.id,
+                  name: product.name || product.title,
+                  price: product.price,
+                  image: product.image,
+                  pillar: 'fit',
+                  type: 'product'
+                });
+                toast({ title: '🛒 Added to Cart!', description: `${product.name || product.title} added` });
+              }}
+              className="shadow-xl"
+            />
           </div>
-        </div>
-      </div>
+        </section>
+      )}
       
       {/* ==================== CONCIERGE® SERVICES SECTION ==================== */}
       <section id="services" className="py-12 md:py-16 bg-gradient-to-b from-teal-50/30 to-white">
         <div className="max-w-7xl mx-auto px-4">
           {/* Section Header */}
-          <div className="flex items-end justify-between mb-8">
-            <div>
-              <div className="flex items-center gap-2 mb-2">
-                <Sparkles className="w-5 h-5 text-teal-600" />
-                <span className="text-sm font-medium text-teal-600 uppercase tracking-wider">Concierge® Services</span>
-              </div>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
-                {selectedCategory 
-                  ? `${SERVICE_CATEGORIES[selectedCategory]?.name || 'Fitness'} Services`
-                  : 'Premium Fitness Services'
-                }
-              </h2>
-              <p className="text-gray-500 mt-2 max-w-xl">
-                Click on any service to see details, or book directly. Our Concierge® team handles all coordination.
-              </p>
+          <div className="mb-8">
+            <div className="flex items-center gap-2 mb-2">
+              <Sparkles className="w-5 h-5 text-teal-600" />
+              <span className="text-sm font-medium text-teal-600 uppercase tracking-wider">Concierge® Services</span>
             </div>
-            {selectedCategory && (
-              <Button 
-                variant="ghost" 
-                onClick={() => setSelectedCategory(null)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <X className="w-4 h-4 mr-1" />
-                Clear filter
-              </Button>
-            )}
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+              Premium Fitness Services
+            </h2>
+            <p className="text-gray-500 mt-2 max-w-xl">
+              Tap any service for details. Our Concierge® team handles all coordination.
+            </p>
           </div>
           
-          {/* Services Grid - Two tiles on mobile */}
-          {filteredServices.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6">
-              {filteredServices.map((service) => (
-                <ServiceCard 
-                  key={service.id} 
-                  service={service} 
-                  onViewDetails={handleViewDetails}
-                  onQuickBook={handleQuickBook}
-                />
-              ))}
-            </div>
-          ) : (
-            <Card className="p-12 text-center bg-gray-50 border-dashed border-2">
-              <Activity className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No Services Found</h3>
-              <p className="text-gray-500 mb-4">
-                {selectedCategory 
-                  ? `No ${SERVICE_CATEGORIES[selectedCategory]?.name} services available yet.`
-                  : 'Services are being set up. Check back soon!'}
-              </p>
-              {selectedCategory && (
-                <Button variant="outline" onClick={() => setSelectedCategory(null)}>
-                  View All Services
-                </Button>
-              )}
-            </Card>
-          )}
+          {/* MakeMyTrip-Style Services Grid */}
+          <PillarServicesGrid
+            services={services.map(s => ({
+              ...s,
+              title: s.name,
+              icon: SERVICE_CATEGORIES[s.category]?.icon ? '🏋️' : null,
+              gradient: SERVICE_CATEGORIES[s.category]?.gradient || 'from-teal-500 to-emerald-500',
+              highlights: s.includes || [],
+              badge: s.is_subscription ? 'Subscription' : null,
+              badgeColor: 'bg-teal-600'
+            }))}
+            categories={availableCategories.map(catKey => ({
+              id: catKey,
+              name: SERVICE_CATEGORIES[catKey]?.name || catKey,
+              icon: catKey === 'assessment' ? '📊' : 
+                    catKey === 'training' ? '🏋️' : 
+                    catKey === 'weight' ? '⚖️' : 
+                    catKey === 'therapy' ? '💆' : 
+                    catKey === 'senior' ? '🦮' :
+                    catKey === 'puppy' ? '🐕' :
+                    catKey === 'agility' ? '⚡' :
+                    catKey === 'wellness' ? '✨' : '🎯'
+            }))}
+            onServiceSelect={handleViewDetails}
+            onServiceBook={handleQuickBook}
+            selectedService={selectedService}
+            relatedProducts={products.reduce((acc, p) => {
+              const cat = p.category || 'general';
+              if (!acc[cat]) acc[cat] = [];
+              acc[cat].push(p);
+              return acc;
+            }, {})}
+            pillarGradient="from-teal-500 to-emerald-500"
+            pillarColor="teal"
+            showFilters={true}
+          />
         </div>
       </section>
       
