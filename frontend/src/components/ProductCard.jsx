@@ -1171,13 +1171,13 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', onClose }) => {
             {npsScore !== null ? (
                 <div className="text-center mb-6">
                     <div className="inline-flex items-center gap-2 bg-white px-6 py-3 rounded-full shadow-sm border border-amber-200">
-                        {/* Paw Rating */}
+                        {/* Paw Rating - 5 paws for 0-10 scale (2 points per paw) */}
                         <div className="flex items-center gap-1">
                             {[1, 2, 3, 4, 5].map((paw) => (
                                 <PawPrint 
                                     key={paw}
                                     className={`w-6 h-6 ${
-                                        paw <= Math.round(npsScore / 20) 
+                                        paw <= Math.round(npsScore / 2) 
                                             ? 'fill-amber-500 text-amber-500' 
                                             : 'text-gray-300'
                                     }`}
@@ -1185,7 +1185,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', onClose }) => {
                             ))}
                         </div>
                         <span className="text-2xl font-bold text-amber-600">{npsScore}</span>
-                        <span className="text-gray-500 text-sm">/100</span>
+                        <span className="text-gray-500 text-sm">/10</span>
                     </div>
                     <p className="text-xs text-gray-500 mt-2">Based on customer satisfaction surveys</p>
                 </div>
