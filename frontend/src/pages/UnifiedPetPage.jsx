@@ -1168,8 +1168,40 @@ const UnifiedPetPage = () => {
         </div>
       </div>
 
+      {/* Mobile Secondary Tab Row - For additional options */}
+      <div className="md:hidden bg-white border-b px-4 py-2">
+        <div className="flex gap-2 overflow-x-auto scrollbar-hide">
+          <button
+            onClick={() => handleTabChange('mira-history')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
+              activeTab === 'mira-history' 
+                ? 'bg-purple-100 text-purple-700' 
+                : 'bg-gray-100 text-gray-600'
+            }`}
+          >
+            <MessageCircle className="w-3.5 h-3.5" /> Chats
+          </button>
+          <button
+            onClick={() => handleTabChange('identity')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
+              activeTab === 'identity' 
+                ? 'bg-purple-100 text-purple-700' 
+                : 'bg-gray-100 text-gray-600'
+            }`}
+          >
+            <CreditCard className="w-3.5 h-3.5" /> Pet Pass
+          </button>
+          <button
+            onClick={() => setShowShareModal(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium whitespace-nowrap bg-gray-100 text-gray-600"
+          >
+            <Share2 className="w-3.5 h-3.5" /> Share
+          </button>
+        </div>
+      </div>
+
       {/* Tab Content */}
-      <div className="max-w-6xl mx-auto px-4 py-8">
+      <div className="max-w-6xl mx-auto px-4 py-4 md:py-8">
         <Tabs value={activeTab} onValueChange={handleTabChange}>
           {/* Overview Tab */}
           <TabsContent value="overview" className="mt-0 space-y-6">
