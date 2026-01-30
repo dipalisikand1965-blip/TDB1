@@ -997,6 +997,7 @@ const MemberDashboard = () => {
                 </Button>
               </div>
             </div>
+            </div>
           </div>
         </div>
       </div>
