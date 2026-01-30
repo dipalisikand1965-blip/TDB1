@@ -428,3 +428,51 @@ All Phase 1 features are now integrated:
 
 ---
 *Last Updated: January 30, 2026*
+
+---
+
+## Session: Jan 30, 2026 - Deployment Fix
+
+### ✅ AUTO-SEEDING FIX - COMPLETED
+
+**Issue**: Production deployment had empty data for engagement components (Stories, Tips, Products)
+
+**Solution Implemented**:
+1. **Startup Auto-Seeding**: `initialize_engagement_data()` runs on server startup, seeding:
+   - 4 Transformation Stories for Fit pillar
+   - 10 Quick Win Tips for Fit pillar
+   - Only seeds if collections are empty (safe for existing data)
+
+2. **Universal Seed Button Enhancement**: Updated `/api/admin/universal-seed` endpoint to include:
+   - Products, Services, Unified Products
+   - Pricing Tiers, Shipping Rules
+   - Hardcoded Product Options (Base, Flavour, Size)
+   - **NEW: FAQs, Collections, Services (critical data)**
+   - **NEW: Engagement Data (Stories, Tips)**
+
+3. **Admin UI Updated**: Toast message now shows Stories and Tips count after Universal Seed
+
+### ✅ DEPLOYMENT BLOCKER FIX - COMPLETED
+
+**Issue**: .gitignore was blocking .env files, preventing Emergent deployment
+
+**Fixes Applied**:
+1. Cleaned `.gitignore` - removed all `*.env` and `*.env.*` blocking patterns (reduced from 1490 to 86 lines)
+2. Simplified `CORS_ORIGINS=*` in backend/.env for Emergent Kubernetes deployment
+3. Verified all deployment requirements pass
+
+### Pending Issues (P2)
+- Razorpay Payments Failing
+- Paw Points display incorrect for specific user
+- Pawmeter Score bug (needs user clarification - 0-100 vs 0-10)
+
+### Upcoming Tasks (P1)
+- Redesign all Concierge Experience pages (Care, Celebrate, Dine, Stay, Travel)
+- Abandoned Cart Recovery Nudges
+
+### Future/Backlog (P2-P3)
+- Centralised Item Intelligence Form
+- Partner Portal for B2B
+- PDF Invoice Generation
+- Community Challenges, Pet Expense Tracker
+- Subscription Box Builder & Referral Program
