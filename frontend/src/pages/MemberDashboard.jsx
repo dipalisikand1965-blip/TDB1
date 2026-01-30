@@ -879,6 +879,8 @@ const MemberDashboard = () => {
                 </Badge>
               </div>
               <div className="flex items-center gap-3">
+                {/* Streak Indicator - Desktop */}
+                {user?.id && <PetParentStreak userId={user.id} compact={true} />}
                 <div className="bg-white/10 backdrop-blur-sm rounded-lg px-3 py-1.5 text-white text-sm">
                   <span className="text-white/60">Points:</span> <span className="font-bold">{(user.loyalty_points || 0).toLocaleString()}</span>
                 </div>
