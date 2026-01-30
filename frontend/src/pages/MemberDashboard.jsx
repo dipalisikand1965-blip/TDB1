@@ -759,9 +759,34 @@ const MemberDashboard = () => {
         </div>
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 md:py-12">
+          {/* Pull-to-Refresh Indicator */}
+          <PullToRefreshIndicator 
+            progress={pullProgress} 
+            isRefreshing={isRefreshing} 
+            show={isPulling} 
+          />
+
           {/* Mobile: Compact Pet Hero Card */}
           <div className="md:hidden">
-            {primaryPet ? (
+            {/* Streak Badge - Top Right */}
+            {user?.id && (
+              <div className="absolute top-2 right-4 z-10">
+                <PetParentStreak userId={user.id} compact={true} />
+              </div>
+            )}
+
+            {/* Multi-Pet Swiper or Single Pet Card */}
+            {pets.length > 1 ? (
+              <div className="mb-4">
+                <SwipeablePetCards 
+                  pets={pets} 
+                  activePetId={primaryPet?.id}
+                  onPetChange={(pet) => {
+                    // Update primary pet view
+                  }}
+                />
+              </div>
+            ) : primaryPet ? (
               <div className="flex items-center gap-4 mb-4">
                 {/* Pet Photo - Smaller on mobile */}
                 <div className="relative flex-shrink-0">
