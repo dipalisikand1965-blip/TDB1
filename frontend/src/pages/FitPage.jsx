@@ -730,33 +730,34 @@ const FitPage = () => {
         </div>
       </section>
       
-      {/* ==================== CTA SECTION ==================== */}
-      <section className="py-16 bg-gradient-to-br from-teal-600 to-emerald-700">
-        <div className="max-w-4xl mx-auto px-4 text-center text-white">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Ready to Transform Your Pet's Fitness?
-          </h2>
-          <p className="text-lg text-white/80 mb-8 max-w-2xl mx-auto">
-            Start with a free consultation. Our Concierge® team will help you find the perfect programme.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button 
-              size="lg"
-              onClick={() => handleQuickBook(services[0] || { id: 'consultation', name: 'Free Consultation', price: 0 })}
-              className="bg-white text-teal-700 hover:bg-gray-100 font-semibold px-10 py-6 text-lg rounded-full shadow-2xl transition-all hover:scale-105"
-            >
-              <Phone className="w-5 h-5 mr-2" />
-              Book Free Consultation
-            </Button>
-            <Button 
-              size="lg"
-              variant="outline"
-              onClick={() => navigate('/mira?context=fit')}
-              className="border-2 border-white/50 text-white hover:bg-white/10 font-semibold px-10 py-6 text-lg rounded-full"
-            >
-              <MessageCircle className="w-5 h-5 mr-2" />
-              Ask Mira
-            </Button>
+      {/* ==================== COMPACT CTA SECTION ==================== */}
+      <section className="py-8 sm:py-10 bg-gradient-to-r from-teal-600 to-emerald-600">
+        <div className="max-w-5xl mx-auto px-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="text-center sm:text-left">
+              <h2 className="text-xl sm:text-2xl font-bold text-white">
+                Ready to start your pets fitness journey?
+              </h2>
+              <p className="text-white/80 text-sm mt-1">
+                Free consultation with our Concierge® team
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <Button 
+                onClick={() => handleQuickBook(services[0] || { id: 'consultation', name: 'Free Consultation', price: 0 })}
+                className="bg-white text-teal-700 hover:bg-gray-100 font-semibold px-6 rounded-full shadow-lg"
+              >
+                <Phone className="w-4 h-4 mr-2" />
+                Book Now
+              </Button>
+              <Button 
+                variant="outline"
+                onClick={() => navigate('/mira?context=fit')}
+                className="border-white/50 text-white hover:bg-white/10 px-6 rounded-full"
+              >
+                Ask Mira
+              </Button>
+            </div>
           </div>
         </div>
       </section>
