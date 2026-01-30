@@ -1144,7 +1144,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', onClose }) => {
                           <Star className="w-4 h-4 text-green-500 fill-green-500" />
                         </div>
                       </div>
-                      <p className="text-sm text-gray-600 italic">"{testimonial.feedback}"</p>
+                      <p className="text-sm text-gray-600 italic">&ldquo;{testimonial.feedback}&rdquo;</p>
                       {testimonial.responded_at && (
                         <p className="text-xs text-gray-400 mt-2">
                           {new Date(testimonial.responded_at).toLocaleDateString()}
