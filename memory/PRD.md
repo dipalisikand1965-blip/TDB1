@@ -39,6 +39,23 @@ This flow must work across:
 **Files Modified**:
 - `/app/frontend/src/components/FloatingContactButton.jsx`
 
+### ✅ Pulse Removed - Mira is Primary ✅
+**Change**: Removed redundant Pulse button and replaced with Mira throughout the app.
+
+**What was removed**:
+- PulseButton and Pulse components from MemberDashboard
+- Pulse FAB from MobileNavBar (replaced with Mira FAB)
+
+**What was added**:
+- Mira FAB in MobileNavBar center position (purple/pink gradient with pulse animation)
+- Haptic feedback on Mira tap
+- Opens MiraAI chat via custom event dispatch
+
+**Files Modified**:
+- `/app/frontend/src/pages/MemberDashboard.jsx` - Removed Pulse imports and components
+- `/app/frontend/src/components/MobileNavBar.jsx` - Replaced Pulse with Mira FAB
+- `/app/frontend/src/index.css` - Added .mira-fab CSS styles
+
 ### ✅ Member Dashboard Mobile UI Optimization - COMPLETED
 **Requirement**: Optimize the Member Dashboard for 99% mobile users - easy to see, one-tap access, no double flows.
 
