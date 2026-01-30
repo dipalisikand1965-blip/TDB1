@@ -91,6 +91,16 @@ const FitManager = ({ getAuthHeader }) => {
     is_birthday_perk: false, birthday_discount_percent: ''
   });
 
+  // Engagement forms
+  const [storyForm, setStoryForm] = useState({
+    pet_name: '', breed: '', owner_name: '', before_image: '', after_image: '',
+    achievement: '', testimonial: '', program: '', rating: '5', is_active: true
+  });
+  
+  const [tipForm, setTipForm] = useState({
+    tip: '', action: '', emoji: '💡', category: 'general', is_active: true
+  });
+
   useEffect(() => {
     fetchAllData();
   }, []);
@@ -98,14 +108,16 @@ const FitManager = ({ getAuthHeader }) => {
   const fetchAllData = async () => {
     setLoading(true);
     try {
-      const [reqRes, planRes, partnerRes, productRes, bundleRes, statsRes, settingsRes] = await Promise.all([
+      const [reqRes, planRes, partnerRes, productRes, bundleRes, statsRes, settingsRes, storiesRes, tipsRes] = await Promise.all([
         axios.get(`${API_URL}/api/fit/requests`, getAuthHeader()),
         axios.get(`${API_URL}/api/fit/plans`, getAuthHeader()),
         axios.get(`${API_URL}/api/fit/admin/partners`, getAuthHeader()),
         axios.get(`${API_URL}/api/fit/products`, getAuthHeader()),
         axios.get(`${API_URL}/api/fit/bundles`, getAuthHeader()),
         axios.get(`${API_URL}/api/fit/stats`, getAuthHeader()),
-        axios.get(`${API_URL}/api/fit/admin/settings`, getAuthHeader())
+        axios.get(`${API_URL}/api/fit/admin/settings`, getAuthHeader()),
+        axios.get(`${API_URL}/api/engagement/transformations?pillar=fit`, getAuthHeader()).catch(() => ({ data: { stories: [] } })),
+        axios.get(`${API_URL}/api/engagement/tips?pillar=fit`, getAuthHeader()).catch(() => ({ data: { tips: [] } }))
       ]);
       
       setRequests(reqRes.data.requests || []);
