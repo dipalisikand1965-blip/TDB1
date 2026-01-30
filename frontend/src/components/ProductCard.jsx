@@ -1215,7 +1215,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', onClose }) => {
                                         <PawPrint 
                                             key={paw}
                                             className={`w-4 h-4 ${
-                                                paw <= Math.round((testimonial.score || 0) / 20) 
+                                                paw <= Math.round((testimonial.score || 0) / 2) 
                                                     ? 'fill-amber-500 text-amber-500' 
                                                     : 'text-gray-300'
                                             }`}
@@ -1223,7 +1223,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', onClose }) => {
                                     ))}
                                 </div>
                                 <Badge className="bg-amber-100 text-amber-700 text-xs">
-                                    {testimonial.score}/100
+                                    {testimonial.score}/10
                                 </Badge>
                             </div>
                             <p className="text-sm text-gray-700 italic">&ldquo;{testimonial.feedback}&rdquo;</p>
