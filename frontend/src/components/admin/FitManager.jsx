@@ -53,10 +53,14 @@ const FitManager = ({ getAuthHeader }) => {
   const [showPartnerModal, setShowPartnerModal] = useState(false);
   const [showProductModal, setShowProductModal] = useState(false);
   const [showBundleModal, setShowBundleModal] = useState(false);
+  const [showStoryModal, setShowStoryModal] = useState(false);
+  const [showTipModal, setShowTipModal] = useState(false);
   const [editingPlan, setEditingPlan] = useState(null);
   const [editingPartner, setEditingPartner] = useState(null);
   const [editingProduct, setEditingProduct] = useState(null);
   const [editingBundle, setEditingBundle] = useState(null);
+  const [editingStory, setEditingStory] = useState(null);
+  const [editingTip, setEditingTip] = useState(null);
   const [selectedRequest, setSelectedRequest] = useState(null);
   
   // Forms
