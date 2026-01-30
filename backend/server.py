@@ -3423,11 +3423,15 @@ async def universal_seed_endpoint():
     - Pricing Tiers
     - Shipping Rules
     - HARDCODED Product Options (Base, Flavour, Size for cakes)
+    - Engagement Data (Stories, Tips)
+    - FAQs
+    - Collections
     
     No auth required - designed to be called on deployment.
     """
     from scripts.universal_pillar_protocol import universal_seed
     from scripts.hardcode_product_options import hardcode_product_options
+    from engagement_engine import initialize_engagement_data
     
     try:
         # Step 1: Run universal pillar seed
@@ -3443,9 +3447,29 @@ async def universal_seed_endpoint():
             logger.error(f"Hardcode product options failed (non-blocking): {hc_error}")
             results["hardcoded_options"] = {"error": str(hc_error)}
         
+        # Step 3: Seed critical data (FAQs, Collections, Services)
+        try:
+            await auto_seed_critical_data()
+            results["critical_data"] = "seeded"
+            logger.info("Critical data seeded (FAQs, Collections, Services)")
+        except Exception as cd_error:
+            logger.error(f"Critical data seed failed (non-blocking): {cd_error}")
+            results["critical_data"] = {"error": str(cd_error)}
+        
+        # Step 4: Seed engagement data (Stories, Tips)
+        try:
+            await initialize_engagement_data()
+            stories_count = await db.transformation_stories.count_documents({})
+            tips_count = await db.quick_win_tips.count_documents({})
+            results["engagement"] = {"stories": stories_count, "tips": tips_count}
+            logger.info(f"Engagement data seeded: {stories_count} stories, {tips_count} tips")
+        except Exception as eng_error:
+            logger.error(f"Engagement data seed failed (non-blocking): {eng_error}")
+            results["engagement"] = {"error": str(eng_error)}
+        
         return {
             "success": True,
-            "message": "Universal seed complete (including hardcoded product options)",
+            "message": "Universal seed complete (Products, Services, Options, FAQs, Stories, Tips)",
             "results": results
         }
     except Exception as e:
