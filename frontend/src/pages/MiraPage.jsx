@@ -8,9 +8,11 @@
  * - Ticket creation and tracking
  * - Voice input support
  * - Research mode for factual queries
+ * - URL params: ?context=fit_weight_loss&preset=message
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/ui/button';
