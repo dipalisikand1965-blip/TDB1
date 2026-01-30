@@ -274,25 +274,25 @@ const ServiceBookingModal = ({
   
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <DialogHeader>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto sm:max-w-lg md:max-w-2xl p-4 sm:p-6">
+        {/* Header - Mobile Optimized */}
+        <DialogHeader className="pb-2">
           <DialogTitle className="flex items-center gap-3">
-            <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${service.gradient} flex items-center justify-center`}>
-              <ServiceIcon className="w-5 h-5 text-white" />
+            <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br ${service.gradient} flex items-center justify-center flex-shrink-0`}>
+              <ServiceIcon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </div>
-            <div>
-              <span className="text-xl">Book {service.name}</span>
+            <div className="min-w-0">
+              <span className="text-lg sm:text-xl font-bold">Book {service.name}</span>
               {!bookingComplete && (
-                <p className="text-sm text-gray-500 font-normal">Step {step} of 4</p>
+                <p className="text-xs sm:text-sm text-gray-500 font-normal">Step {step} of 4</p>
               )}
             </div>
           </DialogTitle>
         </DialogHeader>
         
-        {/* Progress Bar */}
+        {/* Progress Bar - Mobile Touch Friendly */}
         {!bookingComplete && (
-          <div className="flex gap-2 mb-6">
+          <div className="flex gap-1.5 sm:gap-2 mb-4 sm:mb-6">
             {[1, 2, 3, 4].map(s => (
               <div key={s} className={`flex-1 h-2 rounded-full ${s <= step ? `bg-gradient-to-r ${service.gradient}` : 'bg-gray-200'}`} />
             ))}
