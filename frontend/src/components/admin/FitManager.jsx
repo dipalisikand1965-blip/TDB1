@@ -127,6 +127,8 @@ const FitManager = ({ getAuthHeader }) => {
       setBundles(bundleRes.data.bundles || []);
       setStats(statsRes.data || {});
       setSettings(settingsRes.data || {});
+      setTransformationStories(storiesRes.data.stories || []);
+      setQuickWinTips(tipsRes.data.tips || []);
     } catch (error) {
       toast({ title: 'Error', description: 'Failed to load fitness data', variant: 'destructive' });
     } finally {
