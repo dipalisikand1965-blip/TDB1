@@ -695,31 +695,21 @@ const FitPage = () => {
             pillarColor="teal"
             showFilters={true}
           />
-              acc[cat].push(p);
-              return acc;
-            }, {})}
-            pillarGradient="from-teal-500 to-emerald-500"
-            pillarColor="teal"
-            showFilters={true}
-          />
         </div>
       </section>
       
       {/* ==================== PRODUCTS SECTION ==================== */}
-      <section id="products" className="py-12 md:py-16 bg-white">
+      <section id="products" className="py-8 sm:py-12 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center justify-between mb-6">
             <div>
-              <div className="flex items-center gap-2 mb-2">
-                <ShoppingBag className="w-5 h-5 text-teal-600" />
-                <span className="text-sm font-medium text-teal-600 uppercase tracking-wider">Shop</span>
-              </div>
-              <h2 className="text-3xl font-bold text-gray-900">Fitness Gear & Bundles</h2>
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Fitness Gear & Bundles</h2>
+              <p className="text-gray-500 text-sm">Curated products for your pets fitness journey</p>
             </div>
             <Button 
               variant="outline" 
               onClick={() => navigate('/shop?pillar=fit')}
-              className="hidden md:flex items-center gap-2 rounded-full"
+              className="hidden sm:flex items-center gap-2 rounded-full text-sm"
             >
               View All <ArrowRight className="w-4 h-4" />
             </Button>
