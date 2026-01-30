@@ -11933,6 +11933,16 @@ from mira_nudges import router as nudges_router, set_database as set_nudges_db
 app.include_router(nudges_router)  # Nudges at /api/nudges/*
 set_nudges_db(db)
 
+# Smart Recommendations Engine - AI-powered personalized recommendations
+from smart_recommendations import router as smart_rec_router, set_database as set_smart_rec_db
+app.include_router(smart_rec_router)  # Smart Recommendations at /api/recommendations/*
+set_smart_rec_db(db)
+
+# Voice Quick Actions - Process voice commands
+from voice_quick_actions import router as voice_actions_router, set_database as set_voice_actions_db
+app.include_router(voice_actions_router)  # Voice Actions at /api/voice-actions/*
+set_voice_actions_db(db)
+
 @app.on_event("startup")
 async def startup_load_admin_credentials():
     """Load admin credentials from database on startup"""
