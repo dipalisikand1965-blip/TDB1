@@ -328,7 +328,7 @@ const CelebrateConcierePicker = ({ category = 'cakes', onClose }) => {
                       }`}
                       data-testid="date-picker"
                     >
-                    {selectedDate ? format(selectedDate, 'PPP') : 'Pick a date (optional)'}
+                    {selectedDate ? format(selectedDate, 'MMM d') : 'Date'}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
@@ -341,39 +341,40 @@ const CelebrateConcierePicker = ({ category = 'cakes', onClose }) => {
                   />
                 </PopoverContent>
               </Popover>
+              </div>
             </div>
             
-            {/* CTA Button */}
+            {/* CTA Button - Full width on mobile */}
             <Button
               onClick={handlePlanCelebration}
               disabled={isSubmitting}
-              className="h-12 px-8 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold whitespace-nowrap"
+              className="w-full sm:w-auto h-10 sm:h-12 px-4 sm:px-8 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold text-sm sm:text-base whitespace-nowrap"
               data-testid="plan-celebration-btn"
             >
               {isSubmitting ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
+                <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin" />
               ) : (
                 <>
-                  <Sparkles className="w-5 h-5 mr-2" />
-                  Plan the Celebration
+                  <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2" />
+                  Plan Celebration
                 </>
               )}
             </Button>
           </div>
           
-          {/* Brand Stats */}
-          <div className="mt-6 pt-6 border-t border-purple-100 flex flex-wrap justify-center gap-6 md:gap-10">
+          {/* Brand Stats - Compact on mobile */}
+          <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t border-purple-100 flex justify-center gap-4 sm:gap-6 md:gap-10">
             {BRAND_STATS.map((stat, idx) => (
               <div key={idx} className="text-center">
-                <div className="text-lg md:text-xl font-bold text-purple-600">{stat.number}</div>
-                <div className="text-xs text-gray-500">{stat.label}</div>
+                <div className="text-sm sm:text-lg md:text-xl font-bold text-purple-600">{stat.number}</div>
+                <div className="text-[10px] sm:text-xs text-gray-500">{stat.label}</div>
               </div>
             ))}
           </div>
         </Card>
         
         {/* Helper Text */}
-        <p className="text-center text-sm text-gray-500 mt-4">
+        <p className="text-center text-xs sm:text-sm text-gray-500 mt-3 sm:mt-4">
           Don't need planning help? Just scroll down to shop! 🛒
         </p>
       </div>
