@@ -165,7 +165,7 @@ const PillarServicesGrid = ({
             }
           `}
         >
-          {filteredServices.map((service, idx) => (
+          {filteredServices.slice(0, visibleCount).map((service, idx) => (
             <PillarServiceCard
               key={service.id || idx}
               service={service}
