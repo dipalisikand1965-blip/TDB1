@@ -1256,19 +1256,21 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite, onViewDetails, o
         </div>
 
         {/* CTA */}
-        <div className="flex gap-2">
+        <div className="flex flex-col sm:flex-row gap-2 mt-auto">
           <Button 
             variant="outline" 
-            className="flex-1 text-sm"
+            size="sm"
+            className="flex-1 text-xs sm:text-sm py-2"
             onClick={(e) => { e.stopPropagation(); onViewDetails(); }}
           >
             View Details
           </Button>
           <Button 
-            className="flex-1 bg-green-600 hover:bg-green-700 text-sm"
+            size="sm"
+            className="flex-1 bg-green-600 hover:bg-green-700 text-xs sm:text-sm py-2"
             onClick={(e) => { e.stopPropagation(); onBookNow(); }}
           >
-            Request Booking
+            Book Now
           </Button>
         </div>
       </div>
