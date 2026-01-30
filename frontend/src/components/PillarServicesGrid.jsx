@@ -29,6 +29,7 @@ const PillarServicesGrid = ({
   const [activeCategory, setActiveCategory] = useState('all');
   const [viewMode, setViewMode] = useState('grid'); // grid or list
   const [sortBy, setSortBy] = useState('popular'); // popular, price-low, price-high, rating
+  const [visibleCount, setVisibleCount] = useState(8); // For load more
 
   // Filter and sort services
   const filteredServices = useMemo(() => {
@@ -61,6 +62,11 @@ const PillarServicesGrid = ({
     
     return filtered;
   }, [services, activeCategory, sortBy]);
+
+  // Reset visible count when category changes
+  useEffect(() => {
+    setVisibleCount(8);
+  }, [activeCategory]);
 
   // All categories including 'all'
   const allCategories = [
