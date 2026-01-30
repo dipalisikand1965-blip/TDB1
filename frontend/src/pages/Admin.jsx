@@ -116,8 +116,10 @@ import {
   Crown,
   Database,
   TrendingUp,
-  GraduationCap
+  GraduationCap,
+  Flame
 } from 'lucide-react';
+import AdminEngagement from '../components/AdminEngagement';
 
 const Admin = () => {
   const navigate = useNavigate();
