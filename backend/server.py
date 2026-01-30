@@ -3114,6 +3114,13 @@ async def force_seed_all_products():
             {"id": "care-sitting-1", "name": "Pet Sitting (8 hours)", "description": "Professional pet sitting at your home", "price": 1200, "category": "sitting", "pillar": "care", "tags": ["Care", "Sitting", "Home Visit"], "in_stock": True},
             {"id": "care-training-1", "name": "Basic Obedience Training", "description": "5-session package for basic commands", "price": 5000, "category": "training", "pillar": "care", "tags": ["Care", "Training", "Obedience"], "in_stock": True},
             {"id": "care-vet-1", "name": "Vet Consultation Booking", "description": "Book appointments with trusted vets", "price": 300, "category": "vet", "pillar": "care", "tags": ["Care", "Vet", "Health"], "in_stock": True},
+            # Feed & Nutrition Products (NEW)
+            {"id": "care-nutrition-consult", "name": "Nutrition Consultation", "description": "One-on-one consultation with certified pet nutritionist", "price": 1499, "category": "feed", "pillar": "care", "tags": ["Care", "Nutrition", "Feed", "Diet"], "in_stock": True},
+            {"id": "care-weight-program", "name": "Weight Management Programme", "description": "8-week structured weight loss/gain programme with nutritionist", "price": 3999, "category": "feed", "pillar": "care", "tags": ["Care", "Nutrition", "Weight", "Feed"], "in_stock": True},
+            {"id": "care-allergy-diet", "name": "Allergy-Safe Diet Planning", "description": "Specialized diet planning for pets with food allergies", "price": 2499, "category": "feed", "pillar": "care", "tags": ["Care", "Nutrition", "Allergy", "Feed"], "in_stock": True},
+            {"id": "care-puppy-nutrition", "name": "Puppy Nutrition Programme", "description": "Age-appropriate nutrition guidance for growing puppies", "price": 1999, "category": "feed", "pillar": "care", "tags": ["Care", "Nutrition", "Puppy", "Feed"], "in_stock": True},
+            {"id": "care-senior-nutrition", "name": "Senior Pet Nutrition", "description": "Specialized nutrition support for aging pets", "price": 1999, "category": "feed", "pillar": "care", "tags": ["Care", "Nutrition", "Senior", "Feed"], "in_stock": True},
+            {"id": "care-prescription-diet", "name": "Prescription Diet Coordination", "description": "Help sourcing and managing prescription diets", "price": 999, "category": "feed", "pillar": "care", "tags": ["Care", "Nutrition", "Prescription", "Feed"], "in_stock": True},
         ]
         
         for p in care_products:
