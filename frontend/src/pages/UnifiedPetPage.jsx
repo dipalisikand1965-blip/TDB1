@@ -1900,6 +1900,19 @@ const UnifiedPetPage = () => {
 
           {/* Mira Memories Tab - What Mira Knows About This Pet */}
           <TabsContent value="memories" className="mt-0 space-y-6">
+            {/* Milestone Timeline - Phase 1 Feature */}
+            <Card className="p-4 md:p-6">
+              <PetMilestoneTimeline 
+                petId={petId} 
+                petName={safePet.name} 
+                onMilestoneAdd={() => {
+                  // Refresh pet data after milestone added
+                  fetchPet();
+                }} 
+              />
+            </Card>
+            
+            {/* Mira AI Memories */}
             <MiraMemoriesSection petId={petId} petName={pet?.name} token={token} />
           </TabsContent>
 
