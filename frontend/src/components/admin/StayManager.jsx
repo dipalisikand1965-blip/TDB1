@@ -396,6 +396,14 @@ const StayManager = ({ getAuthHeader }) => {
     setEditingStory(null);
   };
 
+  const resetBundleForm = () => {
+    setBundleForm({
+      name: '', description: '', price: '', original_price: '', image: '',
+      items: '', paw_reward_points: 0, is_recommended: true
+    });
+    setEditingBundle(null);
+  };
+
   // Filter data
   const filteredRequests = requests.filter(r => {
     if (searchQuery && !JSON.stringify(r).toLowerCase().includes(searchQuery.toLowerCase())) return false;
