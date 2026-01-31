@@ -711,7 +711,6 @@ const MiraAI = () => {
 
         const data = await response.json();
 
-        if (data.ticket_id) setTicketId(data.ticket_id);
         if (data.pillar) {
           setPreviousPillar(currentPillar);
           setCurrentPillar(data.pillar);
