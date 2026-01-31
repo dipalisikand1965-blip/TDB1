@@ -1,6 +1,41 @@
 # Pet Life Operating System - Product Requirements Document
 
-## Latest Update: January 31, 2026 - Session 2
+## Latest Update: January 31, 2026 - Session 3
+
+### ✅ TRAVEL PAGE ENHANCEMENTS - COMPLETED (Jan 31, 2026)
+
+**Features Added**:
+1. **WhatsApp "Ask Concierge" Button** - Floating green button at bottom-left
+   - `data-testid="whatsapp-ask-concierge-btn"` for testing
+   - Links to wa.me/919663185747 with pre-populated travel message
+   - Personalizes message when user has selected pets
+
+2. **MiraPicksCarousel Integration** - Personalized product recommendations
+   - Shows on Travel page when user is logged in AND has selected pets
+   - Displays travel-specific recommendations from the recommendations API
+
+3. **useNavigate Integration** - Proper navigation support added
+
+**Code Location**: `/app/frontend/src/pages/TravelPage.jsx`
+
+---
+
+### ✅ LOGIN STREAK RECORDING - FIXED (Jan 31, 2026)
+
+**Issue**: "0 days" streak counter on member dashboard was not updating
+
+**Root Cause**:
+1. Login was not a qualifying action for streak
+2. `record_streak_action()` was not being called during login
+
+**Fixes Applied**:
+1. `auth_routes.py` line 343-347: Added `record_streak_action(user_id, "login")` call after successful login
+2. `engagement_engine.py` line 188: Added "login" to DEFAULT_STREAK_CONFIG `qualifying_actions`
+3. Database: Updated `app_settings.streak_config.value.qualifying_actions` to include "login"
+
+**Testing**: 100% backend tests passed, streak now increments on login (Iteration 148)
+
+---
 
 ### ✅ P0 QUICK BOOK SERVICE TYPE BUG - FIXED
 
