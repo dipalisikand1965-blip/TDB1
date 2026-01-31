@@ -696,7 +696,7 @@ const MiraChatWidget = ({
                   e.stopPropagation();
                   toggleListening();
                 }}
-                className={`px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1 transition-all ${
+                className={`px-2 py-1 rounded-full text-[10px] sm:text-xs font-medium flex items-center gap-1 transition-all ${
                   isListening 
                     ? 'bg-cyan-400 text-gray-900 animate-pulse' 
                     : 'bg-white/20 hover:bg-white/30 text-white'
@@ -704,28 +704,28 @@ const MiraChatWidget = ({
                 data-testid="mira-header-pulse"
               >
                 <Zap className="w-3 h-3" />
-                Pulse
+                <span className="hidden sm:inline">Pulse</span>
               </button>
             )}
             {/* Voice toggle */}
             <button
               onClick={(e) => { e.stopPropagation(); setVoiceEnabled(!voiceEnabled); }}
-              className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${voiceEnabled ? 'bg-white/20' : 'bg-white/10'}`}
+              className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-colors ${voiceEnabled ? 'bg-white/20' : 'bg-white/10'}`}
               title={voiceEnabled ? "Voice ON" : "Voice OFF"}
             >
-              {voiceEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+              {voiceEnabled ? <Volume2 className="w-3 h-3 sm:w-4 sm:h-4" /> : <VolumeX className="w-3 h-3 sm:w-4 sm:h-4" />}
             </button>
             {/* Minimize */}
             <button
               onClick={(e) => { e.stopPropagation(); setIsMinimized(!isMinimized); }}
-              className="w-8 h-8 rounded-full flex items-center justify-center bg-white/20 hover:bg-white/30 transition-colors"
+              className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center bg-white/20 hover:bg-white/30 transition-colors"
             >
-              <ChevronDown className={`w-4 h-4 transition-transform ${isMinimized ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`w-3 h-3 sm:w-4 sm:h-4 transition-transform ${isMinimized ? 'rotate-180' : ''}`} />
             </button>
             {/* Close */}
             <button
               onClick={(e) => { e.stopPropagation(); setIsOpen(false); }}
-              className="w-8 h-8 rounded-full flex items-center justify-center bg-white/20 hover:bg-white/30 transition-colors"
+              className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center bg-white/20 hover:bg-white/30 transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
