@@ -53,6 +53,11 @@ const MiraChatWidget = ({
   const [selectedPet, setSelectedPet] = useState(null);
   const [pets, setPets] = useState([]);
   
+  // Pet-specific recommendations & soul intelligence
+  const [petRecommendations, setPetRecommendations] = useState([]);
+  const [petSoulInsights, setPetSoulInsights] = useState(null);
+  const [quickActions, setQuickActions] = useState([]);
+  
   // Voice state
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
