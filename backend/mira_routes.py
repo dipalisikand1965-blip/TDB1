@@ -3103,36 +3103,162 @@ What would you like to explore? 🐾"""
             except Exception as e:
                 logger.warning(f"Error storing relationship memories: {e}")
         
-        # 11. Search for relevant products if user is asking for products
+        # 11. INTELLIGENT PRODUCT SEARCH - Context-aware based on conversation
         products = []
-        product_keywords = ["treat", "cake", "food", "toy", "product", "buy", "show me", "want", "need", "looking for", "recommend", "suggest"]
-        is_product_query = any(kw in user_message.lower() for kw in product_keywords)
+        kit_items = []
+        handoff_to_concierge = False
+        handoff_reason = None
         
-        if is_product_query:
-            # Search products based on user query and current pillar
-            search_terms = user_message.lower().split()
-            query = {
-                "$or": [
-                    {"pillar": pillar},
-                    {"category": pillar},
-                    {"tags": {"$in": search_terms}},
-                    {"name": {"$regex": "|".join(search_terms), "$options": "i"}},
-                    {"description": {"$regex": "|".join(search_terms[:3]), "$options": "i"}}
-                ]
+        # Extract product needs from conversation history
+        def extract_product_needs_from_context(message: str, history: list) -> dict:
+            """Analyze conversation to understand what products user actually needs"""
+            all_text = message.lower()
+            if history:
+                for h in history[-10:]:  # Last 10 messages for context
+                    all_text += " " + h.get("content", "").lower()
+            
+            # Product category mappings
+            PRODUCT_CATEGORIES = {
+                "travel_kit": {
+                    "keywords": ["travel kit", "road trip", "ooty", "goa", "travel bag", "go bag", "trip"],
+                    "items": ["bowl", "water bottle", "leash", "towel", "mat", "wipes", "treats", "carrier", "harness"],
+                    "pillar": "travel"
+                },
+                "grooming_kit": {
+                    "keywords": ["grooming kit", "grooming products", "bath", "shampoo"],
+                    "items": ["shampoo", "brush", "comb", "nail clipper", "ear cleaner", "towel"],
+                    "pillar": "care"
+                },
+                "birthday_kit": {
+                    "keywords": ["birthday", "celebration", "party", "cake"],
+                    "items": ["cake", "treats", "party supplies", "bandana", "hat"],
+                    "pillar": "celebrate"
+                },
+                "training_kit": {
+                    "keywords": ["training", "learn", "obedience"],
+                    "items": ["treats", "clicker", "leash", "harness"],
+                    "pillar": "learn"
+                },
+                "health_kit": {
+                    "keywords": ["health", "first aid", "vet", "medical"],
+                    "items": ["supplements", "vitamins", "first aid", "wipes"],
+                    "pillar": "care"
+                }
             }
             
-            found_products = await db.products.find(query, {"_id": 0}).limit(6).to_list(6)
+            detected_kit = None
+            detected_items = []
+            target_pillar = None
             
-            # If no products found for specific query, get pillar products
-            if not found_products:
-                found_products = await db.products.find(
-                    {"$or": [{"pillar": pillar}, {"category": pillar}]},
-                    {"_id": 0}
-                ).limit(6).to_list(6)
+            # Check for kit type
+            for kit_type, config in PRODUCT_CATEGORIES.items():
+                if any(kw in all_text for kw in config["keywords"]):
+                    detected_kit = kit_type
+                    detected_items = config["items"]
+                    target_pillar = config["pillar"]
+                    break
             
-            products = found_products
+            # Also check for specific items mentioned
+            specific_items = []
+            item_keywords = [
+                "bowl", "bottle", "leash", "towel", "mat", "wipes", "treats", "carrier",
+                "harness", "shampoo", "brush", "comb", "cake", "bandana", "collar",
+                "food", "snacks", "toy", "bed", "blanket", "crate", "id tag"
+            ]
+            for item in item_keywords:
+                if item in all_text:
+                    specific_items.append(item)
             
-            # If products found, enhance the response to mention them
+            return {
+                "kit_type": detected_kit,
+                "kit_items": detected_items,
+                "specific_items": specific_items,
+                "target_pillar": target_pillar,
+                "is_kit_request": detected_kit is not None
+            }
+        
+        # Check if this is a product/kit query
+        product_keywords = ["treat", "cake", "food", "toy", "product", "buy", "show me", "want", "need", "looking for", "recommend", "suggest", "kit", "items", "specific products"]
+        is_product_query = any(kw in user_message.lower() for kw in product_keywords)
+        
+        # Analyze conversation context
+        product_context = extract_product_needs_from_context(user_message, history)
+        
+        if is_product_query or product_context["is_kit_request"]:
+            # Determine what to search for
+            search_items = product_context["specific_items"] or product_context["kit_items"] or []
+            search_pillar = product_context["target_pillar"] or pillar
+            
+            if search_items:
+                # Search for each specific item type
+                all_found_products = []
+                missing_items = []
+                
+                for item in search_items[:8]:  # Limit to 8 items
+                    item_query = {
+                        "$or": [
+                            {"name": {"$regex": item, "$options": "i"}},
+                            {"tags": {"$in": [item]}},
+                            {"category": {"$regex": item, "$options": "i"}},
+                            {"description": {"$regex": item, "$options": "i"}}
+                        ]
+                    }
+                    found = await db.products.find(item_query, {"_id": 0}).limit(2).to_list(2)
+                    
+                    if found:
+                        for p in found:
+                            if p not in all_found_products:
+                                p["kit_category"] = item  # Tag which category this fulfills
+                                all_found_products.append(p)
+                    else:
+                        missing_items.append(item)
+                
+                products = all_found_products[:8]
+                
+                # If we couldn't find enough items for the kit, hand off to concierge
+                if product_context["is_kit_request"] and len(missing_items) > len(search_items) // 2:
+                    handoff_to_concierge = True
+                    handoff_reason = f"Kit assembly needed - missing items: {', '.join(missing_items)}"
+            
+            else:
+                # Fallback: search by pillar/message
+                search_terms = user_message.lower().split()
+                query = {
+                    "$or": [
+                        {"pillar": search_pillar},
+                        {"category": search_pillar},
+                        {"tags": {"$in": search_terms}},
+                        {"name": {"$regex": "|".join(search_terms[:5]), "$options": "i"}}
+                    ]
+                }
+                found_products = await db.products.find(query, {"_id": 0}).limit(6).to_list(6)
+                
+                if not found_products:
+                    found_products = await db.products.find(
+                        {"$or": [{"pillar": search_pillar}, {"category": search_pillar}]},
+                        {"_id": 0}
+                    ).limit(6).to_list(6)
+                
+                products = found_products
+            
+            # Fix image URLs for all products
+            for p in products:
+                img = p.get("image", "")
+                if not img or not img.startswith("http"):
+                    images = p.get("images", [])
+                    if images and images[0].startswith("http"):
+                        p["image"] = images[0]
+                    else:
+                        # Pillar-specific fallback
+                        FALLBACK_IMAGES = {
+                            "travel": "https://images.unsplash.com/photo-1544568100-847a948585b9?w=300&h=300&fit=crop",
+                            "celebrate": "https://images.unsplash.com/photo-1530041539828-114de669390e?w=300&h=300&fit=crop",
+                            "care": "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?w=300&h=300&fit=crop",
+                            "dine": "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=300&h=300&fit=crop",
+                        }
+                        p["image"] = FALLBACK_IMAGES.get(search_pillar, "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=300&h=300&fit=crop")
+            
+            # If products found, enhance the response
             if products:
                 response += f"\n\n✨ I found some options for you! Check out these {len(products)} products below."
         
