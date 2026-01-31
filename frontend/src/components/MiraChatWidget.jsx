@@ -334,22 +334,61 @@ const MiraChatWidget = ({
     }
   };
   
-  const speakText = (text) => {
+  // Text-to-Speech function - MIRA IS A WOMAN with "Meera" pronunciation
+  const speakText = useCallback((text) => {
     if (!synthRef.current || !voiceEnabled) return;
     
+    // Cancel any ongoing speech
     synthRef.current.cancel();
-    const cleanText = text.replace(/[*#_~`]/g, '').replace(/\[.*?\]/g, '');
+    
+    // Clean text for speech
+    let cleanText = text
+      .replace(/[🎉🐕✨🦴💜🎂🏥☀️🌤️🌙🌟🐾]/g, '')
+      .replace(/\*\*/g, '')
+      .replace(/[*#_~`]/g, '')
+      .replace(/\[.*?\]/g, '')
+      .replace(/\n/g, ' ')
+      .substring(0, 500);
+    
+    // Fix "Mira" pronunciation to "Meera" (phonetic spelling)
+    cleanText = cleanText.replace(/\bMira\b/gi, 'Meera');
+    
     const utterance = new SpeechSynthesisUtterance(cleanText);
     utterance.rate = 1.0;
-    utterance.pitch = 1.0;
-    utterance.lang = 'en-IN';
+    utterance.pitch = 1.1;  // Slightly higher for feminine voice
+    utterance.volume = 0.9;
+    
+    // Get a FEMALE voice for Mira - she's a woman!
+    const voices = synthRef.current.getVoices();
+    const femaleVoice = voices.find(v => 
+      // Priority 1: Specific female voices
+      v.name.toLowerCase().includes('samantha') ||
+      v.name.toLowerCase().includes('victoria') ||
+      v.name.toLowerCase().includes('karen') ||
+      v.name.toLowerCase().includes('moira') ||
+      v.name.toLowerCase().includes('tessa') ||
+      v.name.toLowerCase().includes('fiona') ||
+      v.name.toLowerCase().includes('veena') ||
+      v.name.includes('Female') ||
+      v.name.includes('female')
+    ) || voices.find(v =>
+      // Priority 2: Google UK Female or any female-sounding
+      v.name.includes('Google UK English Female') ||
+      v.name.includes('Google US English Female') ||
+      v.name.includes('Microsoft Zira') ||
+      v.name.includes('Microsoft Heera')
+    ) || voices.find(v =>
+      // Priority 3: Any English voice (fallback)
+      v.lang.startsWith('en')
+    );
+    if (femaleVoice) utterance.voice = femaleVoice;
     
     utterance.onstart = () => setIsSpeaking(true);
     utterance.onend = () => setIsSpeaking(false);
     utterance.onerror = () => setIsSpeaking(false);
     
     synthRef.current.speak(utterance);
-  };
+  }, [voiceEnabled]);
   
   const sendMessage = async () => {
     if (!inputValue.trim() || isSending) return;
