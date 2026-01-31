@@ -711,16 +711,17 @@ const StayManager = ({ getAuthHeader }) => {
             <div className="flex gap-2">
               <Button variant="outline" onClick={async () => {
                 try {
-                  const response = await fetch(`${API_URL}/api/stay/admin/seed-data`, {
+                  const response = await fetch(`${API_URL}/api/stay/admin/seed-bundles`, {
                     method: 'POST',
                     headers: getAuthHeader()
                   });
                   if (response.ok) {
-                    toast({ title: 'Data Seeded', description: 'Bundles and products refreshed' });
+                    const data = await response.json();
+                    toast({ title: 'Bundles Seeded', description: `${data.bundles_seeded} bundles added` });
                     fetchBundles();
                   }
                 } catch (error) {
-                  toast({ title: 'Error', description: 'Failed to seed data', variant: 'destructive' });
+                  toast({ title: 'Error', description: 'Failed to seed bundles', variant: 'destructive' });
                 }
               }}>
                 <Database className="w-4 h-4 mr-2" /> Seed Bundles
