@@ -3125,7 +3125,7 @@ What would you like to explore? 🐾"""
                     "pillar": "travel"
                 },
                 "grooming_kit": {
-                    "keywords": ["grooming kit", "grooming products", "bath", "shampoo", "grooming", "groom"],
+                    "keywords": ["grooming kit", "grooming products", "grooming supplies", "bath products", "shampoo"],
                     "items": ["shampoo", "brush", "comb", "nail clipper", "ear cleaner", "towel"],
                     "services": ["full grooming", "bath & brush", "nail trim", "ear cleaning"],
                     "pillar": "care"
