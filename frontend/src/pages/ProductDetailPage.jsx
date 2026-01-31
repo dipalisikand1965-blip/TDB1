@@ -478,8 +478,8 @@ const ProductDetailPage = () => {
         </div>
       </div>
       
-      {/* Mira Context Panel */}
-      <MiraContextPanel pillar="shop" />
+      {/* Mira Floating Chat Widget */}
+      <MiraChatWidget pillar="shop" />
     </div>
   );
 };
