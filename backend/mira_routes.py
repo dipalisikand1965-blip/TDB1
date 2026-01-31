@@ -647,11 +647,18 @@ async def create_mira_ticket(
     })
     
     # ==================== UNIFIED FLOW: NOTIFICATION ====================
+    # Generate meaningful notification title from description
+    notif_subject = description.strip()
+    if '. ' in notif_subject:
+        notif_subject = notif_subject.split('. ')[0]
+    notif_subject = notif_subject.replace('\n', ' ').strip()[:60]
+    pet_prefix = f"{pet_info.get('name')} - " if pet_info and pet_info.get('name') else ""
+    
     await db.admin_notifications.insert_one({
         "id": notification_id,
         "type": f"mira_{ticket_type}",
         "pillar": pillar,
-        "title": f"Mira Chat: {pillar_name} - {ticket_type.replace('_', ' ').title()}",
+        "title": f"{pet_prefix}{notif_subject or f'{pillar_name} Request'}",
         "message": description[:150] + "..." if len(description) > 150 else description,
         "read": False,
         "status": "unread",
