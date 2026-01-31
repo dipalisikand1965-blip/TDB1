@@ -3210,16 +3210,30 @@ What would you like to explore? 🐾"""
                         for p in found:
                             if p not in all_found_products:
                                 p["kit_category"] = item  # Tag which category this fulfills
+                                p["in_stock"] = True
                                 all_found_products.append(p)
                     else:
+                        # Add as concierge-sourced item (not in stock but can be sourced)
                         missing_items.append(item)
+                        concierge_item = {
+                            "id": f"concierge-{item.replace(' ', '-')}",
+                            "name": item.title(),
+                            "description": f"This item will be sourced by our concierge® team",
+                            "price": None,  # Price TBD
+                            "image": None,  # No image
+                            "kit_category": item,
+                            "in_stock": False,
+                            "concierge_sourced": True,
+                            "pillar": search_pillar
+                        }
+                        all_found_products.append(concierge_item)
                 
-                products = all_found_products[:8]
+                products = all_found_products[:10]  # Allow more items for mixed stock
                 
-                # If we couldn't find enough items for the kit, hand off to concierge
-                if product_context["is_kit_request"] and len(missing_items) > len(search_items) // 2:
+                # If ALL items need to be sourced, hand off to concierge
+                if product_context["is_kit_request"] and len(missing_items) == len(search_items):
                     handoff_to_concierge = True
-                    handoff_reason = f"Kit assembly needed - missing items: {', '.join(missing_items)}"
+                    handoff_reason = f"Full kit sourcing needed - items: {', '.join(missing_items)}"
             
             else:
                 # Fallback: search by pillar/message
