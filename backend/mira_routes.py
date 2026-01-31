@@ -3098,7 +3098,40 @@ What would you like to explore? 🐾"""
             except Exception as e:
                 logger.warning(f"Error storing relationship memories: {e}")
         
-        # 11. Return response with additional metadata
+        # 11. Search for relevant products if user is asking for products
+        products = []
+        product_keywords = ["treat", "cake", "food", "toy", "product", "buy", "show me", "want", "need", "looking for", "recommend", "suggest"]
+        is_product_query = any(kw in user_message.lower() for kw in product_keywords)
+        
+        if is_product_query:
+            # Search products based on user query and current pillar
+            search_terms = user_message.lower().split()
+            query = {
+                "$or": [
+                    {"pillar": pillar},
+                    {"category": pillar},
+                    {"tags": {"$in": search_terms}},
+                    {"name": {"$regex": "|".join(search_terms), "$options": "i"}},
+                    {"description": {"$regex": "|".join(search_terms[:3]), "$options": "i"}}
+                ]
+            }
+            
+            found_products = await db.products.find(query, {"_id": 0}).limit(6).to_list(6)
+            
+            # If no products found for specific query, get pillar products
+            if not found_products:
+                found_products = await db.products.find(
+                    {"$or": [{"pillar": pillar}, {"category": pillar}]},
+                    {"_id": 0}
+                ).limit(6).to_list(6)
+            
+            products = found_products
+            
+            # If products found, enhance the response to mention them
+            if products:
+                response += f"\n\n✨ I found some options for you! Check out these {len(products)} products below."
+        
+        # 12. Return response with products and additional metadata
         return {
             "response": response,
             "session_id": session_id,
@@ -3106,6 +3139,7 @@ What would you like to explore? 🐾"""
             "service_desk_ticket_id": service_desk_ticket_id,
             "pillar": pillar,
             "ticket_type": intent,
+            "products": products,  # Include products in response!
             "concierge_action": concierge_action if concierge_action.get("action_needed") else None,
             "pets": [{"id": p.get("id"), "name": p.get("name")} for p in pets] if pets else [],
             "selected_pet": selected_pet.get("name") if selected_pet else None,
