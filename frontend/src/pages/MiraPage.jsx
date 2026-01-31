@@ -1006,48 +1006,107 @@ const MiraPage = () => {
               </div>
             </div>
 
-            {/* Speak to Us Section */}
-            <div className="mt-6 pt-6 border-t border-gray-100">
-              <h4 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                <Phone className="w-4 h-4 text-green-500" />
-                Prefer to Talk?
-              </h4>
-              <div className="space-y-2">
-                <a 
-                  href="tel:+919663185747"
-                  className="flex items-center gap-3 p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg hover:from-green-100 hover:to-emerald-100 transition-colors"
-                >
-                  <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center">
-                    <Phone className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-900 text-sm">Call Us Now</p>
-                    <p className="text-xs text-gray-500">+91 96631 85747</p>
-                  </div>
-                </a>
-                <a 
-                  href="https://wa.me/919663185747?text=Hi%20I%20need%20help%20with..."
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg hover:from-green-100 hover:to-emerald-100 transition-colors"
-                >
-                  <div className="w-10 h-10 rounded-full bg-green-600 flex items-center justify-center">
-                    <MessageCircle className="w-5 h-5 text-white" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-900 text-sm">WhatsApp Us</p>
-                    <p className="text-xs text-gray-500">Quick response</p>
-                  </div>
-                </a>
-                <Button 
-                  variant="outline" 
-                  className="w-full border-purple-200 text-purple-600 hover:bg-purple-50"
-                  onClick={() => window.location.href = '/voice-order'}
-                >
-                  <Mic className="w-4 h-4 mr-2" />
-                  Voice Order
-                </Button>
+            {/* Suggestions for Selected Pet */}
+            {selectedPet && (
+              <div className="mt-6 pt-6 border-t border-gray-100">
+                <h4 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-purple-500" />
+                  Suggestions for {selectedPet.name}
+                </h4>
+                <div className="space-y-2">
+                  {/* Dynamic suggestions based on pillar context */}
+                  <button
+                    onClick={() => setInput(`Find the best stay options for ${selectedPet.name}`)}
+                    className="w-full flex items-center gap-3 p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg hover:from-purple-100 hover:to-pink-100 transition-colors text-left"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center">
+                      <Home className="w-4 h-4 text-purple-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-gray-900 text-sm">Pet-friendly stays</p>
+                      <p className="text-xs text-gray-500 truncate">Perfect for {selectedPet.breed || 'your pet'}</p>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-gray-400" />
+                  </button>
+                  
+                  <button
+                    onClick={() => setInput(`What grooming does ${selectedPet.name} need?`)}
+                    className="w-full flex items-center gap-3 p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg hover:from-green-100 hover:to-emerald-100 transition-colors text-left"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+                      <Scissors className="w-4 h-4 text-green-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-gray-900 text-sm">Grooming care</p>
+                      <p className="text-xs text-gray-500 truncate">Based on {selectedPet.name}'s coat</p>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-gray-400" />
+                  </button>
+                  
+                  <button
+                    onClick={() => setInput(`Show me food options safe for ${selectedPet.name}`)}
+                    className="w-full flex items-center gap-3 p-3 bg-gradient-to-r from-orange-50 to-amber-50 rounded-lg hover:from-orange-100 hover:to-amber-100 transition-colors text-left"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center">
+                      <UtensilsCrossed className="w-4 h-4 text-orange-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-gray-900 text-sm">Safe treats & food</p>
+                      <p className="text-xs text-gray-500 truncate">
+                        {selectedPet.allergies?.length > 0 
+                          ? `Avoiding ${selectedPet.allergies[0]}` 
+                          : 'Tailored to diet'}
+                      </p>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-gray-400" />
+                  </button>
+                  
+                  <button
+                    onClick={() => setInput(`Plan ${selectedPet.name}'s birthday celebration`)}
+                    className="w-full flex items-center gap-3 p-3 bg-gradient-to-r from-pink-50 to-rose-50 rounded-lg hover:from-pink-100 hover:to-rose-100 transition-colors text-left"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-pink-100 flex items-center justify-center">
+                      <PartyPopper className="w-4 h-4 text-pink-600" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-gray-900 text-sm">Plan a celebration</p>
+                      <p className="text-xs text-gray-500 truncate">Birthday, gotcha day, etc.</p>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-gray-400" />
+                  </button>
+                </div>
               </div>
+            )}
+            
+            {/* Quick Contact - Collapsed */}
+            <div className="mt-6 pt-6 border-t border-gray-100">
+              <details className="group">
+                <summary className="flex items-center justify-between cursor-pointer list-none">
+                  <h4 className="text-sm font-semibold text-gray-600 flex items-center gap-2">
+                    <Phone className="w-4 h-4 text-green-500" />
+                    Need human help?
+                  </h4>
+                  <ChevronRight className="w-4 h-4 text-gray-400 group-open:rotate-90 transition-transform" />
+                </summary>
+                <div className="mt-3 space-y-2">
+                  <a 
+                    href="tel:+919663185747"
+                    className="flex items-center gap-3 p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                  >
+                    <Phone className="w-4 h-4 text-green-500" />
+                    <span className="text-sm text-gray-700">+91 96631 85747</span>
+                  </a>
+                  <a 
+                    href="https://wa.me/919663185747"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-3 p-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                  >
+                    <MessageCircle className="w-4 h-4 text-green-600" />
+                    <span className="text-sm text-gray-700">WhatsApp</span>
+                  </a>
+                </div>
+              </details>
             </div>
 
             {/* Emergency CTA */}
