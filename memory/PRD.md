@@ -13,6 +13,46 @@ This flow must work across:
 
 ## What's Been Implemented (Session: Jan 31, 2026 - Latest)
 
+### ✅ SERVICE REQUEST FLOW VERIFIED - WORKING
+
+**Tested**: Every Mira chat interaction creates a ticket with proper flow:
+1. **Ticket Created** ✅ - Unique ID generated (e.g., `CNC-20260131-0001`)
+2. **Subject Populated** ✅ - Uses actual message content (e.g., "I want to book a grooming session for my Golden Retriever named Buddy")
+3. **Pillar Routing** ✅ - Tickets routed to pillar-specific collections (`care_requests`, `stay_requests`, etc.)
+4. **Status Tracking** ✅ - Status set to "new"
+5. **Notification Created** ✅ - Admin notifications working
+
+**Collections Updated**:
+- `mira_tickets` - Central Mira conversation tickets
+- `care_requests`, `stay_requests`, etc. - Pillar-specific queues
+- `admin_notifications` - Real-time notifications
+- `service_desk_tickets` - Unified service desk
+
+### ✅ CARE BUNDLES ADMIN VERIFIED - WORKING
+
+**Verified in Admin Panel**:
+- 6 Care bundles with images displayed
+- Edit and Delete buttons functional
+- Paw Points badges visible
+- Discount percentages showing
+- Add Bundle functionality available
+
+### ✅ FOOTER IS UNIVERSAL
+
+**Verified**: Footer is rendered once in `App.js` (line 372) and appears on ALL pages:
+- Mobile layout: Collapsible sections, social icons, WhatsApp CTA
+- Desktop layout: 5-column grid with all navigation
+
+### ✅ MOBILE MIRA BUTTON FIXED
+
+**All pillar pages now have floating "Ask Mira" button**:
+- FitPage: Purple gradient
+- CarePage: Pink/rose gradient
+- StayPage: Purple/indigo gradient
+- No content overlap - positioned at `bottom-24 right-4`
+
+---
+
 ### ✅ ADMIN BUNDLES COMPLETE WITH IMAGES & CRUD - COMPLETED
 
 **Issues Fixed**:
