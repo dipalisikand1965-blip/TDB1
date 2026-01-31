@@ -212,7 +212,7 @@ const MiraAI = () => {
   const inputRef = useRef(null);
   
   // Text-to-Speech function
-  const speakText = (text) => {
+  const speakText = useCallback((text) => {
     if (!voiceEnabled || !synthRef.current) return;
     
     // Cancel any ongoing speech
@@ -263,7 +263,7 @@ const MiraAI = () => {
     utterance.onerror = () => setIsSpeaking(false);
     
     synthRef.current.speak(utterance);
-  };
+  }, [voiceEnabled]);
   
   // Get time-aware greeting
   const getTimeGreeting = () => {
