@@ -508,9 +508,7 @@ const StayPage = () => {
               petName={userPets[0]?.name}
               petBreed={userPets[0]?.breed}
               petAge={userPets[0]?.age}
-              onActionClick={(tip) => {
-                toast({ title: 'Coming soon!', description: tip.action });
-              }}
+              onActionClick={handleChecklistAction}
             />
           </div>
         </div>
