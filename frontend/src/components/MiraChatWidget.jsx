@@ -27,13 +27,31 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-// Generate session ID for Mira conversations
+// Generate session ID for Mira conversations - PERSISTS across pillar switches
 const generateSessionId = () => {
   const stored = sessionStorage.getItem('mira_widget_session');
   if (stored) return stored;
   const newId = `mira-widget-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   sessionStorage.setItem('mira_widget_session', newId);
   return newId;
+};
+
+// Store and retrieve messages from sessionStorage - PERSISTS across pillar switches
+const getStoredMessages = () => {
+  try {
+    const stored = sessionStorage.getItem('mira_messages');
+    return stored ? JSON.parse(stored) : [];
+  } catch (e) {
+    return [];
+  }
+};
+
+const storeMessages = (messages) => {
+  try {
+    sessionStorage.setItem('mira_messages', JSON.stringify(messages));
+  } catch (e) {
+    console.debug('Failed to store messages:', e);
+  }
 };
 
 const MiraChatWidget = ({ 
@@ -49,13 +67,14 @@ const MiraChatWidget = ({
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   
-  // Chat state
-  const [messages, setMessages] = useState([]);
+  // Chat state - Initialize from sessionStorage to persist across pillar switches
+  const [messages, setMessages] = useState(() => getStoredMessages());
   const [inputValue, setInputValue] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [sessionId] = useState(generateSessionId);
   const [selectedPet, setSelectedPet] = useState(null);
   const [pets, setPets] = useState([]);
+  const [currentPillar, setCurrentPillar] = useState(pillar);
   
   // Pet-specific recommendations & soul intelligence
   const [petRecommendations, setPetRecommendations] = useState([]);
