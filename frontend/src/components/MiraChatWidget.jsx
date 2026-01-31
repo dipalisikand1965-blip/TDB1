@@ -123,10 +123,11 @@ const MiraChatWidget = ({
     
     return () => {
       if (recognitionRef.current) {
-        try { recognitionRef.current.abort(); } catch(e) {}
+        try { recognitionRef.current.abort(); } catch(e) { /* ignore */ }
       }
-      if (synthRef.current) {
-        try { synthRef.current.cancel(); } catch(e) {}
+      const synth = synthRef.current;
+      if (synth) {
+        try { synth.cancel(); } catch(e) { /* ignore */ }
       }
     };
   }, []);
