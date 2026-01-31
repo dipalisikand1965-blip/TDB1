@@ -4241,7 +4241,11 @@ async def quick_book(
         "notify_via": ["email", "whatsapp"]
     }
     
-    await db.quick_bookings.insert_one(booking_doc)
+    try:
+        await db.quick_bookings.insert_one(booking_doc)
+        logger.info(f"Inserted quick_booking: {booking_id}")
+    except Exception as e:
+        logger.error(f"Failed to insert quick_booking: {e}")
     
     # Also create a service desk ticket
     ticket_id = f"QBK-{uuid.uuid4().hex[:8].upper()}"
@@ -4264,25 +4268,33 @@ async def quick_book(
         "updated_at": now
     }
     
-    await db.service_desk_tickets.insert_one(ticket_doc)
+    try:
+        await db.service_desk_tickets.insert_one(ticket_doc)
+        logger.info(f"Inserted service_desk_ticket: {ticket_id}")
+    except Exception as e:
+        logger.error(f"Failed to insert service_desk_ticket: {e}")
     
     # Add to channel intakes for unified inbox
     inbox_id = f"INBOX-{uuid.uuid4().hex[:8].upper()}"
-    await db.channel_intakes.insert_one({
-        "id": inbox_id,
-        "request_id": booking_id,
-        "ticket_id": ticket_id,
-        "channel": "mira_quick_book",
-        "request_type": f"quick_book_{request.serviceType}",
-        "status": "new",
-        "urgency": "medium",
-        "customer_name": user.get("name") if user else "Guest",
-        "customer_email": user.get("email") if user else None,
-        "preview": f"Quick Book: {request.serviceType} on {request.date} at {request.time}",
-        "message": request.notes or f"Service booking request for {request.serviceType}",
-        "created_at": now,
-        "updated_at": now
-    })
+    try:
+        await db.channel_intakes.insert_one({
+            "id": inbox_id,
+            "request_id": booking_id,
+            "ticket_id": ticket_id,
+            "channel": "mira_quick_book",
+            "request_type": f"quick_book_{request.serviceType}",
+            "status": "new",
+            "urgency": "medium",
+            "customer_name": user.get("name") if user else "Guest",
+            "customer_email": user.get("email") if user else None,
+            "preview": f"Quick Book: {request.serviceType} on {request.date} at {request.time}",
+            "message": request.notes or f"Service booking request for {request.serviceType}",
+            "created_at": now,
+            "updated_at": now
+        })
+        logger.info(f"Inserted channel_intake: {inbox_id}")
+    except Exception as e:
+        logger.error(f"Failed to insert channel_intake: {e}")
     
     logger.info(f"Quick book created: {booking_id} | Ticket: {ticket_id} | Service: {request.serviceType}")
     
