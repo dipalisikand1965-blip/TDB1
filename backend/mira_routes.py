@@ -4114,3 +4114,122 @@ async def get_mira_stats():
         "by_type": by_type,
         "by_pillar": by_pillar
     }
+
+
+# ==================== QUICK BOOK ENDPOINT ====================
+class QuickBookRequest(BaseModel):
+    date: str
+    time: str
+    notes: Optional[str] = None
+    serviceType: str
+    session_id: Optional[str] = None
+    pet_id: Optional[str] = None
+
+@router.post("/quick-book")
+async def quick_book(
+    request: QuickBookRequest,
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Quick booking endpoint for inline service booking from Mira chat.
+    Creates a booking request and notifies concierge team.
+    """
+    db = get_db()
+    
+    # Get user from token
+    user = None
+    user_id = None
+    if authorization and authorization.startswith("Bearer "):
+        token = authorization.split(" ")[1]
+        try:
+            from server import decode_token
+            payload = decode_token(token)
+            user_id = payload.get("user_id")
+            user = await db.users.find_one({"id": user_id}, {"_id": 0, "password": 0})
+        except:
+            pass
+    
+    # Get pet info if provided
+    pet = None
+    if request.pet_id:
+        pet = await db.pets.find_one({"id": request.pet_id}, {"_id": 0})
+    
+    # Create booking ID
+    booking_id = f"BK-{uuid.uuid4().hex[:8].upper()}"
+    now = datetime.now(timezone.utc)
+    
+    # Create booking document
+    booking_doc = {
+        "id": booking_id,
+        "type": "quick_book",
+        "service_type": request.serviceType,
+        "date": request.date,
+        "time": request.time,
+        "notes": request.notes,
+        "status": "pending",
+        "user_id": user_id,
+        "user_name": user.get("name") if user else "Guest",
+        "user_email": user.get("email") if user else None,
+        "user_phone": user.get("phone") if user else None,
+        "pet_id": request.pet_id,
+        "pet_name": pet.get("name") if pet else None,
+        "pet_breed": pet.get("breed") if pet else None,
+        "session_id": request.session_id,
+        "source": "mira_quick_book",
+        "created_at": now,
+        "updated_at": now,
+        "notify_via": ["email", "whatsapp"]
+    }
+    
+    await db.quick_bookings.insert_one(booking_doc)
+    
+    # Also create a service desk ticket
+    ticket_id = f"QBK-{uuid.uuid4().hex[:8].upper()}"
+    ticket_doc = {
+        "id": ticket_id,
+        "booking_id": booking_id,
+        "type": "quick_book_request",
+        "service_type": request.serviceType,
+        "pillar": request.serviceType if request.serviceType in PILLARS else "care",
+        "status": "new",
+        "priority": "medium",
+        "customer_name": user.get("name") if user else "Guest",
+        "customer_email": user.get("email") if user else None,
+        "customer_phone": user.get("phone") if user else None,
+        "pet_name": pet.get("name") if pet else None,
+        "request_date": request.date,
+        "request_time": request.time,
+        "notes": request.notes,
+        "created_at": now,
+        "updated_at": now
+    }
+    
+    await db.service_desk_tickets.insert_one(ticket_doc)
+    
+    # Add to channel intakes for unified inbox
+    inbox_id = f"INBOX-{uuid.uuid4().hex[:8].upper()}"
+    await db.channel_intakes.insert_one({
+        "id": inbox_id,
+        "request_id": booking_id,
+        "ticket_id": ticket_id,
+        "channel": "mira_quick_book",
+        "request_type": f"quick_book_{request.serviceType}",
+        "status": "new",
+        "urgency": "medium",
+        "customer_name": user.get("name") if user else "Guest",
+        "customer_email": user.get("email") if user else None,
+        "preview": f"Quick Book: {request.serviceType} on {request.date} at {request.time}",
+        "message": request.notes or f"Service booking request for {request.serviceType}",
+        "created_at": now,
+        "updated_at": now
+    })
+    
+    logger.info(f"Quick book created: {booking_id} | Ticket: {ticket_id} | Service: {request.serviceType}")
+    
+    return {
+        "success": True,
+        "booking_id": booking_id,
+        "ticket_id": ticket_id,
+        "status": "pending",
+        "message": f"Your {request.serviceType} booking request for {request.date} at {request.time} has been submitted. Our team will confirm shortly."
+    }
