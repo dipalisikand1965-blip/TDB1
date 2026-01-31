@@ -945,7 +945,19 @@ const MiraChatWidget = ({
                         : 'bg-gray-100 text-gray-800 rounded-bl-sm'
                     }`}
                   >
-                    <p className="text-sm font-semibold whitespace-pre-wrap">{msg.content}</p>
+                    <div className="text-sm whitespace-pre-wrap prose prose-sm max-w-none [&_p]:mb-1 [&_ul]:mb-1 [&_ol]:mb-1 [&_li]:mb-0.5 [&_strong]:font-bold">
+                      <ReactMarkdown
+                        components={{
+                          p: ({ children }) => <span className="block mb-1 last:mb-0">{children}</span>,
+                          strong: ({ children }) => <strong className="font-bold">{children}</strong>,
+                          ul: ({ children }) => <ul className="list-disc pl-4 my-1">{children}</ul>,
+                          ol: ({ children }) => <ol className="list-decimal pl-4 my-1">{children}</ol>,
+                          li: ({ children }) => <li className="mb-0.5">{children}</li>,
+                        }}
+                      >
+                        {msg.content}
+                      </ReactMarkdown>
+                    </div>
                     
                     {/* Product Cards (if Mira recommends products) */}
                     {msg.products && msg.products.length > 0 && (
