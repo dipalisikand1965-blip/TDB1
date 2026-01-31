@@ -1023,7 +1023,7 @@ const TravelPage = () => {
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">You're All Set!</h3>
               <p className="text-gray-600 mb-6">
-                Your travel request for <strong>{selectedPet?.name}</strong> has been submitted.
+                Your travel request for <strong>{selectedPets.length > 0 ? selectedPets.map(p => p.name).join(', ') : formData.pet_name}</strong> has been submitted.
                 <br />Our concierge team will reach out within 24 hours.
               </p>
               
