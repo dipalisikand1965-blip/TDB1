@@ -186,6 +186,7 @@ const HERO_IMAGES = [
 const CarePage = () => {
   const { user, token } = useAuth();
   const { addToCart } = useCart();
+  const navigate = useNavigate();
   const formRef = useRef(null);
   
   // State
