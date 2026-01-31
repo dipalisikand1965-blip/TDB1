@@ -134,7 +134,10 @@ const EnjoyPage = () => {
     number_of_humans: 1,
     special_requirements: '',
     guest_pet_name: '',
-    guest_pet_breed: ''
+    guest_pet_breed: '',
+    guest_name: '',
+    guest_phone: '',
+    guest_email: ''
   });
 
   // Multi-pet selection helpers
