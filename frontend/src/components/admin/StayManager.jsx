@@ -1378,6 +1378,112 @@ const StayManager = ({ getAuthHeader }) => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Product Modal */}
+      <Dialog open={showProductModal} onOpenChange={setShowProductModal}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>{editingProduct ? 'Edit Product' : 'Add New Product'}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 max-h-[60vh] overflow-y-auto">
+            <div>
+              <Label>Product Name *</Label>
+              <Input 
+                value={productForm.name}
+                onChange={(e) => setProductForm({ ...productForm, name: e.target.value })}
+                placeholder="e.g., Travel Carrier Bag"
+                className="mt-1"
+              />
+            </div>
+            <div>
+              <Label>Description</Label>
+              <Textarea 
+                value={productForm.description}
+                onChange={(e) => setProductForm({ ...productForm, description: e.target.value })}
+                placeholder="Product description..."
+                className="mt-1"
+                rows={3}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Price (₹) *</Label>
+                <Input 
+                  type="number"
+                  value={productForm.price}
+                  onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
+                  placeholder="999"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label>Original Price (₹)</Label>
+                <Input 
+                  type="number"
+                  value={productForm.original_price}
+                  onChange={(e) => setProductForm({ ...productForm, original_price: e.target.value })}
+                  placeholder="1299"
+                  className="mt-1"
+                />
+              </div>
+            </div>
+            <div>
+              <Label>Image URL</Label>
+              <Input 
+                value={productForm.image}
+                onChange={(e) => setProductForm({ ...productForm, image: e.target.value })}
+                placeholder="https://..."
+                className="mt-1"
+              />
+              {productForm.image && (
+                <img src={productForm.image} alt="Preview" className="mt-2 w-20 h-20 object-cover rounded" />
+              )}
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Category</Label>
+                <Select 
+                  value={productForm.category} 
+                  onValueChange={(v) => setProductForm({ ...productForm, category: v })}
+                >
+                  <SelectTrigger className="mt-1">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="travel">Travel</SelectItem>
+                    <SelectItem value="boarding">Boarding</SelectItem>
+                    <SelectItem value="accessories">Accessories</SelectItem>
+                    <SelectItem value="comfort">Comfort</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Paw Points</Label>
+                <Input 
+                  type="number"
+                  value={productForm.paw_reward_points}
+                  onChange={(e) => setProductForm({ ...productForm, paw_reward_points: parseInt(e.target.value) || 0 })}
+                  placeholder="10"
+                  className="mt-1"
+                />
+              </div>
+            </div>
+            <div>
+              <Label>Tags (comma-separated)</Label>
+              <Input 
+                value={productForm.tags}
+                onChange={(e) => setProductForm({ ...productForm, tags: e.target.value })}
+                placeholder="travel, essential, comfort"
+                className="mt-1"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setShowProductModal(false); resetProductForm(); }}>Cancel</Button>
+            <Button onClick={saveProduct}>{editingProduct ? 'Update' : 'Create'}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
