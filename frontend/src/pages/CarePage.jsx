@@ -567,6 +567,122 @@ const CarePage = () => {
         </div>
       </div>
 
+      {/* ==================== TRANSFORMATION STORIES ==================== */}
+      <div className="py-12 bg-white">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl font-bold text-gray-900">Real Transformations</h2>
+            <p className="text-gray-600">Stories from our pet care community</p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Story 1: Grooming Transformation */}
+            <div className="bg-gradient-to-br from-pink-50 to-rose-50 rounded-2xl p-5 border border-pink-100 hover:shadow-lg transition-all">
+              <div className="flex gap-3 mb-4">
+                <div className="text-center">
+                  <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-white shadow-md mb-1">
+                    <img src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop" alt="Before" className="w-full h-full object-cover" />
+                  </div>
+                  <span className="text-xs text-gray-500">Before</span>
+                </div>
+                <div className="flex items-center">
+                  <ChevronRight className="w-5 h-5 text-pink-400" />
+                </div>
+                <div className="text-center">
+                  <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-pink-300 shadow-md mb-1">
+                    <img src="https://images.unsplash.com/photo-1552053831-71594a27632d?w=200&h=200&fit=crop" alt="After" className="w-full h-full object-cover" />
+                  </div>
+                  <span className="text-xs text-pink-600 font-medium">After</span>
+                </div>
+              </div>
+              <h4 className="font-bold text-gray-900">Bruno</h4>
+              <p className="text-sm text-gray-500 mb-2">Golden Retriever</p>
+              <p className="text-sm text-pink-700 font-medium mb-2">From matted to magnificent</p>
+              <p className="text-xs text-gray-600 italic">"The groomer was so gentle with Bruno's anxiety. He actually enjoyed it!"</p>
+              <p className="text-xs text-gray-400 mt-2">— Priya M., Mumbai</p>
+            </div>
+
+            {/* Story 2: Vet Care */}
+            <div className="bg-gradient-to-br from-rose-50 to-red-50 rounded-2xl p-5 border border-rose-100 hover:shadow-lg transition-all">
+              <div className="flex gap-3 mb-4">
+                <div className="text-center">
+                  <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-white shadow-md mb-1">
+                    <img src="https://images.unsplash.com/photo-1505628346881-b72b27e84530?w=200&h=200&fit=crop" alt="Before" className="w-full h-full object-cover" />
+                  </div>
+                  <span className="text-xs text-gray-500">Sick</span>
+                </div>
+                <div className="flex items-center">
+                  <ChevronRight className="w-5 h-5 text-rose-400" />
+                </div>
+                <div className="text-center">
+                  <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-rose-300 shadow-md mb-1">
+                    <img src="https://images.unsplash.com/photo-1537151625747-768eb6cf92b2?w=200&h=200&fit=crop" alt="After" className="w-full h-full object-cover" />
+                  </div>
+                  <span className="text-xs text-rose-600 font-medium">Healthy</span>
+                </div>
+              </div>
+              <h4 className="font-bold text-gray-900">Coco</h4>
+              <p className="text-sm text-gray-500 mb-2">Beagle</p>
+              <p className="text-sm text-rose-700 font-medium mb-2">Emergency care saved his life</p>
+              <p className="text-xs text-gray-600 italic">"They found a 24/7 vet at 2am. Forever grateful for their emergency support."</p>
+              <p className="text-xs text-gray-400 mt-2">— Rahul S., Bangalore</p>
+            </div>
+
+            {/* Story 3: Senior Care */}
+            <div className="bg-gradient-to-br from-teal-50 to-green-50 rounded-2xl p-5 border border-teal-100 hover:shadow-lg transition-all">
+              <div className="flex gap-3 mb-4">
+                <div className="text-center">
+                  <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-white shadow-md mb-1">
+                    <img src="https://images.unsplash.com/photo-1633722715463-d30f4f325e24?w=200&h=200&fit=crop" alt="Before" className="w-full h-full object-cover" />
+                  </div>
+                  <span className="text-xs text-gray-500">Struggling</span>
+                </div>
+                <div className="flex items-center">
+                  <ChevronRight className="w-5 h-5 text-teal-400" />
+                </div>
+                <div className="text-center">
+                  <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-teal-300 shadow-md mb-1">
+                    <img src="https://images.unsplash.com/photo-1601979031925-424e53b6caaa?w=200&h=200&fit=crop" alt="After" className="w-full h-full object-cover" />
+                  </div>
+                  <span className="text-xs text-teal-600 font-medium">Thriving</span>
+                </div>
+              </div>
+              <h4 className="font-bold text-gray-900">Max</h4>
+              <p className="text-sm text-gray-500 mb-2">Labrador, 11 years</p>
+              <p className="text-sm text-teal-700 font-medium mb-2">Senior mobility restored</p>
+              <p className="text-xs text-gray-600 italic">"The physiotherapy sessions gave Max a new lease on life at 11!"</p>
+              <p className="text-xs text-gray-400 mt-2">— Anita K., Delhi</p>
+            </div>
+
+            {/* Story 4: Training Success */}
+            <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-2xl p-5 border border-purple-100 hover:shadow-lg transition-all">
+              <div className="flex gap-3 mb-4">
+                <div className="text-center">
+                  <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-white shadow-md mb-1">
+                    <img src="https://images.unsplash.com/photo-1589941013453-ec89f33b5e95?w=200&h=200&fit=crop" alt="Before" className="w-full h-full object-cover" />
+                  </div>
+                  <span className="text-xs text-gray-500">Anxious</span>
+                </div>
+                <div className="flex items-center">
+                  <ChevronRight className="w-5 h-5 text-purple-400" />
+                </div>
+                <div className="text-center">
+                  <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-purple-300 shadow-md mb-1">
+                    <img src="https://images.unsplash.com/photo-1568572933382-74d440642117?w=200&h=200&fit=crop" alt="After" className="w-full h-full object-cover" />
+                  </div>
+                  <span className="text-xs text-purple-600 font-medium">Confident</span>
+                </div>
+              </div>
+              <h4 className="font-bold text-gray-900">Luna</h4>
+              <p className="text-sm text-gray-500 mb-2">German Shepherd</p>
+              <p className="text-sm text-purple-700 font-medium mb-2">Anxiety to confidence</p>
+              <p className="text-xs text-gray-600 italic">"The trainer understood Luna's fears perfectly. She's a different dog now!"</p>
+              <p className="text-xs text-gray-400 mt-2">— Vikram P., Gurgaon</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* === CARE TYPES STRIP === */}
       <div className="bg-white border-b shadow-sm sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 py-4">
