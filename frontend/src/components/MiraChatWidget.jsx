@@ -632,9 +632,10 @@ const MiraChatWidget = ({
   };
   
   // Floating Button (when closed) - Uses the beautiful MiraOrb!
+  // SAME on mobile and desktop
   if (!isOpen) {
     return (
-      <div className={`fixed bottom-6 right-6 z-[9999] flex flex-col items-end gap-3 ${className}`}>
+      <div className={`fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[9999] flex flex-col items-end gap-3 ${className}`}>
         {/* Main Mira Orb Button */}
         <div
           onClick={() => setIsOpen(true)}
@@ -652,10 +653,14 @@ const MiraChatWidget = ({
     );
   }
   
-  // Chat Widget (when open)
+  // Chat Widget (when open) - RESPONSIVE for mobile
+  // Mobile: Full width with proper margins
+  // Desktop: Fixed width 360px
   return (
     <div 
-      className={`fixed bottom-6 right-6 z-[9999] ${className}`}
+      className={`fixed z-[9999] ${className}
+        bottom-0 right-0 left-0 sm:bottom-6 sm:right-6 sm:left-auto
+      `}
       data-testid="mira-chat-widget"
     >
       <div className={`w-[360px] max-w-[calc(100vw-48px)] bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col transition-all duration-300 ${isMinimized ? 'h-16' : 'h-[500px] max-h-[80vh]'}`}>
