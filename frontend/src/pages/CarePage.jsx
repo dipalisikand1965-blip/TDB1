@@ -647,6 +647,7 @@ const CarePage = () => {
                 badge={exp.badge}
                 badgeColor={exp.badgeColor}
                 highlights={exp.highlights}
+                image={exp.image}
               />
             ))}
           </div>
