@@ -1042,7 +1042,7 @@ const CarePage = () => {
                 <Textarea
                   value={formData.special_requirements}
                   onChange={(e) => setFormData({...formData, special_requirements: e.target.value})}
-                  placeholder={`Any specific needs for ${selectedPet?.name || 'your pet'}? (anxiety, handling preferences, etc.)`}
+                  placeholder={`Any specific needs for ${selectedPets.length > 0 ? selectedPets.map(p => p.name).join(', ') : 'your pet'}? (anxiety, handling preferences, etc.)`}
                   rows={2}
                 />
               </div>
