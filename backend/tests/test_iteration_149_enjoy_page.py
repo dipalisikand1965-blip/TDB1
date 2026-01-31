@@ -203,16 +203,15 @@ class TestEnjoyRSVPFlow:
         experiences = exp_response.json().get("experiences", [])
         experience = experiences[1] if len(experiences) > 1 else experiences[0]
         
-        # Create RSVP
+        # Create RSVP - API requires pet_name field
         rsvp_data = {
             "experience_id": experience.get("id"),
-            "experience_name": experience.get("name"),
-            "user_email": self.user.get("email"),
-            "user_name": self.user.get("name"),
-            "pet_names": "Test Pet",
+            "pet_name": "Test Pet",  # Required field
             "number_of_pets": 1,
             "number_of_humans": 2,
-            "special_requirements": "Checking service desk ticket creation"
+            "special_requirements": "Checking service desk ticket creation",
+            "user_name": self.user.get("name"),
+            "user_email": self.user.get("email")
         }
         
         response = self.session.post(f"{BASE_URL}/api/enjoy/rsvp", json=rsvp_data)
