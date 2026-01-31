@@ -146,6 +146,7 @@ const TravelPage = () => {
   const [travelBundles, setTravelBundles] = useState([]);
   const [requestResult, setRequestResult] = useState(null);
   const [heroIndex, setHeroIndex] = useState(0);
+  const [productsToShow, setProductsToShow] = useState(10); // Load More state
   
   // Form Data
   const [formData, setFormData] = useState({
