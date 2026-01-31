@@ -666,6 +666,21 @@ async def create_mira_ticket(
     })
     logger.info(f"[UNIFIED FLOW] Mira notification created: {notification_id}")
     
+    # Generate meaningful subject from description
+    # Extract first sentence or use truncated description
+    subject_text = description.strip()
+    if '. ' in subject_text:
+        subject_text = subject_text.split('. ')[0]
+    # Clean up and truncate
+    subject_text = subject_text.replace('\n', ' ').strip()
+    if len(subject_text) > 80:
+        subject_text = subject_text[:77] + "..."
+    
+    # Build complete subject with context
+    pet_name = pet_info.get("name") if pet_info else None
+    final_subject = f"{pet_name} - " if pet_name else ""
+    final_subject += subject_text if subject_text and subject_text != "No subject" else f"{pillar_name} Request"
+    
     # ==================== UNIFIED FLOW: SERVICE DESK TICKET ====================
     await db.service_desk_tickets.insert_one({
         "id": ticket_id,
@@ -675,7 +690,7 @@ async def create_mira_ticket(
         "type": f"mira_{ticket_type}",
         "category": pillar,
         "pillar": pillar,
-        "subject": f"Mira Chat: {pillar_name}",
+        "subject": final_subject,
         "description": description,
         "status": "new",
         "priority": "high" if urgency == "high" else "normal",
