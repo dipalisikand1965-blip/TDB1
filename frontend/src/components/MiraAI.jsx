@@ -1010,7 +1010,7 @@ const MiraAI = () => {
                                 body: JSON.stringify({
                                   ...bookingData,
                                   session_id: sessionId,
-                                  pet_id: selectedPet?.id
+                                  pet_id: pets?.[0]?.id
                                 })
                               });
                               const data = await res.json();
