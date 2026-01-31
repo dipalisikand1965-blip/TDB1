@@ -910,6 +910,128 @@ const MiraPage = () => {
           </div>
         </div>
       </div>
+
+      {/* ==================== CHECKLIST POPUP - Beautiful & Mobile-First ==================== */}
+      <Dialog open={showChecklistPopup} onOpenChange={setShowChecklistPopup}>
+        <DialogContent className="max-w-lg w-[95vw] max-h-[90vh] overflow-hidden flex flex-col p-0 gap-0 rounded-2xl">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-purple-600 to-pink-600 px-5 py-4 text-white">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                  <List className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg">{checklistData?.title || 'Your Checklist'}</h3>
+                  <p className="text-white/80 text-sm">{checklistData?.subtitle || 'Personalized for your pet'}</p>
+                </div>
+              </div>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => setShowChecklistPopup(false)}
+                className="text-white hover:bg-white/20 rounded-full"
+              >
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+          </div>
+          
+          {/* Scrollable Content */}
+          <div className="flex-1 overflow-y-auto p-5 space-y-5">
+            {/* Checklist Items */}
+            {checklistData?.items && (
+              <div className="space-y-3">
+                <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">Checklist</h4>
+                {checklistData.items.map((item, idx) => (
+                  <div 
+                    key={idx}
+                    className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl hover:bg-purple-50 transition-colors"
+                  >
+                    <div className="w-6 h-6 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <CheckCircle className="w-4 h-4 text-purple-600" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-gray-900">{item.text || item}</p>
+                      {item.tip && (
+                        <p className="text-xs text-gray-500 mt-1">{item.tip}</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            {/* Related Products */}
+            {checklistProducts.length > 0 && (
+              <div className="space-y-3">
+                <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
+                  Recommended Products
+                </h4>
+                <div className="grid grid-cols-2 gap-3">
+                  {checklistProducts.map((product, idx) => (
+                    <div 
+                      key={idx}
+                      className="bg-white border border-gray-100 rounded-xl p-3 hover:shadow-md transition-all cursor-pointer"
+                      onClick={() => {
+                        addToCart({
+                          id: product.id,
+                          name: product.name || product.title,
+                          price: product.price,
+                          image: product.image,
+                          pillar: product.pillar || pillar
+                        });
+                        toast.success(`Added ${product.name || product.title} to cart!`);
+                      }}
+                    >
+                      <div className="aspect-square rounded-lg bg-gray-100 mb-2 overflow-hidden">
+                        {product.image ? (
+                          <img 
+                            src={product.image} 
+                            alt={product.name || product.title}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <ShoppingCart className="w-8 h-8 text-gray-300" />
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-xs font-medium text-gray-900 line-clamp-2">{product.name || product.title}</p>
+                      {product.price && (
+                        <p className="text-sm font-bold text-purple-600 mt-1">₹{product.price}</p>
+                      )}
+                      <Button 
+                        size="sm" 
+                        className="w-full mt-2 bg-purple-100 text-purple-700 hover:bg-purple-200 text-xs"
+                      >
+                        <ShoppingCart className="w-3 h-3 mr-1" />
+                        Add to Cart
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {/* Action Button */}
+            <div className="pt-3">
+              <Button 
+                onClick={() => {
+                  setShowChecklistPopup(false);
+                  if (checklistData?.action_url) {
+                    navigate(checklistData.action_url);
+                  }
+                }}
+                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 py-5"
+              >
+                <ExternalLink className="w-4 h-4 mr-2" />
+                {checklistData?.action_text || 'Explore More'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
