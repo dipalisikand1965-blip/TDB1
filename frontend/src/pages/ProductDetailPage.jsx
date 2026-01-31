@@ -16,7 +16,7 @@ import {
   ArrowLeft, ShoppingCart, Heart, Truck, Shield, Star,
   Plus, Minus, Check, Package, Clock, RefreshCw
 } from 'lucide-react';
-import MiraContextPanel from '../components/MiraContextPanel';
+import MiraChatWidget from '../components/MiraChatWidget';
 
 const ProductDetailPage = () => {
   const { productId } = useParams();

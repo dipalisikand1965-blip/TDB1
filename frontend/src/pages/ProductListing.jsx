@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { SlidersHorizontal, Loader2, ChevronDown, Sparkles, PawPrint, Cake, Gift, Star, Heart, MapPin } from 'lucide-react';
 import { useSearchParams, useLocation } from 'react-router-dom';
 import { API_URL, getApiUrl } from '../utils/api';
-import MiraContextPanel from '../components/MiraContextPanel';
+import MiraChatWidget from '../components/MiraChatWidget';
 import CelebrateConcierePicker from '../components/CelebrateConcierePicker';
 import { useAuth } from '../context/AuthContext';
 import SEOHead from '../components/SEOHead';

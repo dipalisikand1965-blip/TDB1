@@ -13,7 +13,7 @@ import {
   Syringe, Pill, Stethoscope, FileText, AlertCircle, Plus,
   Edit2, Save, X, ChevronDown, ChevronUp
 } from 'lucide-react';
-import MiraContextPanel from '../components/MiraContextPanel';
+import MiraChatWidget from '../components/MiraChatWidget';
 import { API_URL } from '../utils/api';
 import { toast } from '../hooks/use-toast';
 
