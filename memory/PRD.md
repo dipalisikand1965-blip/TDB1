@@ -21,6 +21,20 @@
 
 **Fix**: Added dedicated useEffect that triggers speech when `welcomeGenerated` and `isOpen` are both true
 
+### ✅ UNIFIED FLOW FIXES - FIXED (Jan 31, 2026)
+
+**Issues Fixed**:
+1. **"No subject" in Service Desk** - Tickets now have meaningful subjects generated from action_type + message
+2. **"Hotel Booking" notifications for grooming** - Notifications now use `category` (Care, Enjoy, etc.) instead of `action_type`
+
+**Changes Made**:
+- `mira_routes.py` line 1180: Added subject generation: `f"{action_type_display}: {message[:80]}"`
+- `mira_routes.py` line 1285: Changed notification title to use `category` instead of `action_type`
+
+**Example Results**:
+- Ticket: `CARE-20260131-0470: Care Appointment: I need grooming for my dog Bruno`
+- Notification: `Mira AI Request: Care`
+
 ---
 
 ## Original Problem Statement
