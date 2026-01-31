@@ -126,12 +126,29 @@ const MiraPage = () => {
     }
     
     if (isListening) {
-      recognitionRef.current.stop();
+      try {
+        recognitionRef.current.stop();
+      } catch (e) {
+        console.debug('Recognition stop:', e);
+      }
       setIsListening(false);
     } else {
       setInput('');
-      recognitionRef.current.start();
-      setIsListening(true);
+      try {
+        // Only start if not already running
+        if (recognitionRef.current) {
+          recognitionRef.current.start();
+          setIsListening(true);
+        }
+      } catch (e) {
+        // If already started, just set the state
+        if (e.name === 'InvalidStateError') {
+          setIsListening(true);
+        } else {
+          console.error('Recognition start error:', e);
+          toast.error('Could not start voice recognition');
+        }
+      }
     }
   };
 
