@@ -295,7 +295,7 @@ const MyTickets = () => {
                   ) : (
                     <div className="text-center py-8 text-gray-500">
                       <MessageCircle className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                      <p>Our concierge team is reviewing your request.</p>
+                      <p>Our concierge® team is reviewing your request.</p>
                       <p className="text-sm">You'll receive an update soon!</p>
                     </div>
                   )}

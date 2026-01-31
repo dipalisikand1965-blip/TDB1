@@ -598,11 +598,11 @@ const MiraAI = () => {
       // If a service desk ticket was created, show confirmation
       if (data.service_desk_ticket_id || data.concierge_action?.action_needed) {
         const ticketId = data.service_desk_ticket_id || data.ticket_id;
-        displayContent += `\n\n---\n📋 **Request #${ticketId}** created. Our live concierge will get back to you shortly!`;
+        displayContent += `\n\n---\n📋 **Request #${ticketId}** created. Our live concierge® will get back to you shortly!`;
         
         // Show toast notification
         toast.success(`Request #${ticketId} created!`, {
-          description: 'Our concierge team will contact you shortly.'
+          description: 'Our concierge® team will contact you shortly.'
         });
       }
       

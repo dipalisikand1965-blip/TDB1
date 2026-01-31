@@ -613,7 +613,7 @@ const AboutPage = () => {
 
           <div className="prose prose-lg mx-auto text-gray-600 leading-relaxed mb-8">
             <p>
-              At the heart of The Doggy Company® is a human-led concierge team trained not just to respond, but to <strong className="text-gray-900">understand</strong>.
+              At the heart of The Doggy Company® is a human-led concierge® team trained not just to respond, but to <strong className="text-gray-900">understand</strong>.
             </p>
             <p>
               Our concierges are chosen for <strong className="text-gray-900">judgement</strong>, <strong className="text-gray-900">empathy</strong>, and <strong className="text-gray-900">calm decision-making</strong> — the qualities that matter most when care is personal and situations are unpredictable. They don't work from scripts. They work from context, memory, and responsibility.

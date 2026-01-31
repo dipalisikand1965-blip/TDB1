@@ -347,7 +347,7 @@ const ConciergeModal = ({
             </div>
             <h3 className="text-xl font-bold text-gray-900 mb-2">You're All Set!</h3>
             <p className="text-gray-600 mb-6">
-              Our concierge team will review your request and reach out within 24 hours.
+              Our concierge® team will review your request and reach out within 24 hours.
             </p>
             <Button onClick={onClose} className="w-full">Close</Button>
           </div>

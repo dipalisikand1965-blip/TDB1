@@ -442,7 +442,7 @@ const MiraContextPanel = ({
         // If a service desk ticket was created, show confirmation
         if (data.service_desk_ticket_id || data.concierge_action?.action_needed) {
           const ticketId = data.service_desk_ticket_id || data.ticket_id;
-          displayContent += `\n\n---\n📋 **Request #${ticketId}** created. Our live concierge will get back to you shortly!`;
+          displayContent += `\n\n---\n📋 **Request #${ticketId}** created. Our live concierge® will get back to you shortly!`;
         }
         
         setChatMessages(prev => [...prev, {
@@ -457,7 +457,7 @@ const MiraContextPanel = ({
         // Show toast notification for ticket creation
         if (data.service_desk_ticket_id) {
           toast.success(`Request #${data.service_desk_ticket_id} created!`, {
-            description: 'Our concierge team will contact you shortly.'
+            description: 'Our concierge® team will contact you shortly.'
           });
         }
         
@@ -521,7 +521,7 @@ const MiraContextPanel = ({
         
         if (data.service_desk_ticket_id || data.concierge_action?.action_needed) {
           const ticketId = data.service_desk_ticket_id || data.ticket_id;
-          displayContent += `\n\n---\n📋 **Request #${ticketId}** created. Our live concierge will get back to you shortly!`;
+          displayContent += `\n\n---\n📋 **Request #${ticketId}** created. Our live concierge® will get back to you shortly!`;
         }
         
         const assistantMessage = {

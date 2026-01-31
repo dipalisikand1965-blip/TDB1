@@ -628,7 +628,7 @@ const PaperworkPage = () => {
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-2xl md:text-3xl font-bold mb-4">Need Help Organizing Documents?</h2>
           <p className="text-lg text-blue-100 mb-8">
-            Our concierge team can help you organize, digitize, and set up reminders for all your pet's important paperwork.
+            Our concierge® team can help you organize, digitize, and set up reminders for all your pet's important paperwork.
           </p>
           <Button 
             size="lg" 
@@ -805,7 +805,7 @@ const PaperworkPage = () => {
             <div className="text-center">
               <FileText className="w-12 h-12 mx-auto text-blue-500 mb-2" />
               <p className="text-sm text-gray-600">
-                Our concierge team can help organize, digitize, and manage your pet's paperwork.
+                Our concierge® team can help organize, digitize, and manage your pet's paperwork.
               </p>
             </div>
             

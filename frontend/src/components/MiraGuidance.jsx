@@ -1,6 +1,6 @@
 /**
  * MiraGuidance - A warm, dog-friendly guidance system
- * Mira is your personal pet concierge who helps you navigate the platform
+ * Mira is your personal pet concierge® who helps you navigate the platform
  * 
  * Features:
  * - Contextual inline tips based on page/action
@@ -19,7 +19,7 @@ const GUIDANCE_MESSAGES = {
   // Dashboard states
   dashboard_new_user: {
     title: "Welcome to your pet parent HQ! 🏠",
-    message: "I'm Mira, your personal pet concierge! Let me show you around. Start by telling me about your furry friend - the more I know, the better I can help!",
+    message: "I'm Mira, your personal pet concierge®! Let me show you around. Start by telling me about your furry friend - the more I know, the better I can help!",
     action: "Add Your Pet",
     actionPath: "/my-pets",
     icon: "🐾"

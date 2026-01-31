@@ -35,7 +35,7 @@ const TOUR_STEPS = [
     highlight: "The World's First Pet Life Operating System",
     description: "Everything your furry friend needs - from birthday cakes to vet visits, all in one place.",
     features: ['🎂 Celebrations', '🍽️ Dining', '🏨 Stay', '💊 Care'],
-    miraMessage: "I'm Mira, your personal pet concierge! I'll remember everything about your pup and help you give them the best life ever!",
+    miraMessage: "I'm Mira, your personal pet concierge®! I'll remember everything about your pup and help you give them the best life ever!",
     bgGradient: 'from-purple-600 via-pink-600 to-orange-500',
     iconBg: 'bg-purple-500'
   },
