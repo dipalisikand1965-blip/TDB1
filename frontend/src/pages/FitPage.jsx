@@ -1119,11 +1119,20 @@ const FitPage = () => {
       </Dialog>
       
       {/* ==================== MIRA PANEL ==================== */}
+      {/* Desktop: Fixed sidebar panel */}
       <div className="hidden lg:block fixed right-4 top-24 w-72 z-30">
         <MiraContextPanel pillar="fit" />
       </div>
-      <div className="lg:hidden fixed bottom-20 right-4 w-80 max-w-[calc(100vw-2rem)] z-30">
-        <MiraContextPanel pillar="fit" position="bottom" />
+      {/* Mobile: Just a floating button that opens Mira page */}
+      <div className="lg:hidden fixed bottom-24 right-4 z-[9999]">
+        <Button
+          onClick={() => navigate('/mira?context=fit')}
+          className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full px-4 py-3 shadow-lg hover:shadow-xl transition-all flex items-center gap-2"
+          data-testid="mira-mobile-btn"
+        >
+          <PawPrint className="w-5 h-5" />
+          <span>Ask Mira</span>
+        </Button>
       </div>
       
       {/* Admin Quick Edit */}
