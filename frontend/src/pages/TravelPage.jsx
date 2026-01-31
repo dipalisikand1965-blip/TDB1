@@ -1053,15 +1053,8 @@ const TravelPage = () => {
         </DialogContent>
       </Dialog>
       
-      {/* Mira Contextual Panel - Fixed on right side for desktop */}
-      <div className="hidden lg:block fixed right-4 top-24 w-72 z-30">
-        <MiraContextPanel pillar="travel" />
-      </div>
-      
-      {/* Mira Contextual Panel - Bottom slide-up for mobile */}
-      <div className="lg:hidden fixed bottom-20 right-4 w-80 max-w-[calc(100vw-2rem)] z-30">
-        <MiraContextPanel pillar="travel" position="bottom" />
-      </div>
+      {/* Mira Floating Chat Widget */}
+      <MiraChatWidget pillar="travel" />
       
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="travel" position="bottom-left" />
