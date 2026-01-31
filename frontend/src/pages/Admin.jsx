@@ -1647,6 +1647,7 @@ const Admin = () => {
               { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
               { id: 'servicedesk', label: 'Service Desk', icon: Ticket },
               { id: 'inbox', label: 'Unified Inbox', icon: Inbox },
+              { id: 'pillar-queues', label: 'Pillar Queues', icon: Package },
             ].map((tab) => (
               <Button
                 key={tab.id}
