@@ -1075,13 +1075,15 @@ const MiraAI = () => {
                                 })
                               });
                               const data = await res.json();
+                              // Use the service type from the API response for accurate display
+                              const confirmedServiceType = data.service_type || bookingData.serviceType || 'service';
                               toast.success('Booking request submitted!', {
                                 description: `Reference: ${data.booking_id || 'Pending'}`
                               });
                               setMessages(prev => [...prev, {
                                 id: Date.now().toString(),
                                 role: 'assistant',
-                                content: `Great! I've submitted your ${bookingData.serviceType?.replace('_', ' ')} booking request for ${bookingData.date} at ${bookingData.time}. Our team will confirm shortly! 🐾`
+                                content: `Great! I've submitted your ${confirmedServiceType.replace(/_/g, ' ')} booking request for ${bookingData.date} at ${bookingData.time}. Our team will confirm shortly! 🐾`
                               }]);
                             } catch (err) {
                               toast.error('Failed to submit booking');
