@@ -503,6 +503,51 @@ async def delete_fit_product(product_id: str):
     return {"message": "Product deleted"}
 
 
+@router.post("/admin/seed-products")
+async def seed_fit_products():
+    """Seed default fitness products"""
+    db = get_db()
+    now = get_utc_timestamp()
+    
+    default_products = [
+        {"id": "fit-prod-treadmill", "name": "Dog Treadmill (Small)", "description": "Indoor exercise treadmill for small dogs", "price": 15999, "original_price": 19999, "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600", "category": "fit", "tags": ["equipment", "exercise", "indoor"], "pillar": "fit"},
+        {"id": "fit-prod-weights", "name": "Weighted Vest for Dogs", "description": "Adjustable weight vest for strength training", "price": 2499, "original_price": 2999, "image": "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600", "category": "fit", "tags": ["equipment", "strength", "training"], "pillar": "fit"},
+        {"id": "fit-prod-agility", "name": "Agility Training Kit", "description": "Complete agility course set with tunnels, jumps", "price": 4999, "original_price": 5999, "image": "https://images.unsplash.com/photo-1507146426996-ef05306b995a?w=600", "category": "fit", "tags": ["agility", "training", "kit"], "pillar": "fit"},
+        {"id": "fit-prod-tracker", "name": "GPS Fitness Tracker Collar", "description": "Activity and health monitoring collar", "price": 3999, "original_price": 4999, "image": "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=600", "category": "fit", "tags": ["tracker", "gps", "health"], "pillar": "fit"},
+        {"id": "fit-prod-ball", "name": "Exercise Ball Launcher", "description": "Automatic ball launcher for fetch exercises", "price": 2999, "original_price": 3499, "image": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=600", "category": "fit", "tags": ["launcher", "fetch", "exercise"], "pillar": "fit"},
+        {"id": "fit-prod-pool", "name": "Hydrotherapy Pool Kit", "description": "Inflatable pool for water exercises", "price": 1999, "original_price": 2499, "image": "https://images.unsplash.com/photo-1534361960057-19889db9621e?w=600", "category": "fit", "tags": ["pool", "hydrotherapy", "water"], "pillar": "fit"},
+    ]
+    
+    seeded = 0
+    for product in default_products:
+        product["created_at"] = now
+        product["updated_at"] = now
+        result = await db.products.update_one({"id": product["id"]}, {"$set": product}, upsert=True)
+        if result.upserted_id or result.modified_count:
+            seeded += 1
+    
+    return {"message": f"Seeded {seeded} fit products", "products_seeded": seeded}
+
+
+@router.post("/admin/products/import")
+async def import_fit_products(products: List[dict]):
+    """Import fitness products from CSV/JSON"""
+    db = get_db()
+    now = get_utc_timestamp()
+    
+    imported = 0
+    for product in products:
+        product["id"] = product.get("id") or f"fit-{uuid.uuid4().hex[:8]}"
+        product["category"] = "fit"
+        product["pillar"] = "fit"
+        product["created_at"] = now
+        product["updated_at"] = now
+        await db.products.update_one({"id": product["id"]}, {"$set": product}, upsert=True)
+        imported += 1
+    
+    return {"message": f"Imported {imported} products", "imported": imported}
+
+
 # ==================== BUNDLES ====================
 
 @router.get("/bundles")
