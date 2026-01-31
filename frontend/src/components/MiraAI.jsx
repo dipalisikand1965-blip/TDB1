@@ -618,7 +618,7 @@ const MiraAI = () => {
         kitAssembly: data.kit_assembly || null, // Kit assembly info
         handoff: data.handoff || null, // Concierge handoff info
         showQuickBookForm: data.concierge_action?.show_quick_book_form || false,
-        serviceType: data.concierge_action?.action_type || null
+        serviceType: data.concierge_action?.service_type || data.concierge_action?.action_type || null
       };
 
       setMessages(prev => [...prev, assistantMessage]);
