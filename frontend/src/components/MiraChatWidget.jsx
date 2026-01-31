@@ -621,18 +621,72 @@ const MiraChatWidget = ({
               <div className="px-4 py-2 border-b bg-gray-50 shrink-0">
                 <div className="flex items-center gap-2 overflow-x-auto pb-1">
                   <span className="text-xs text-gray-500 shrink-0">Talking about:</span>
-                  {pets.slice(0, 3).map(pet => (
+                  {pets.map(pet => (
                     <button
                       key={pet.id}
-                      onClick={() => setSelectedPet(pet)}
-                      className={`px-2 py-1 rounded-full text-xs flex items-center gap-1 transition-all shrink-0 ${
+                      onClick={() => {
+                        setSelectedPet(pet);
+                        // Track pet switch
+                        trackClick('pet_switch', pet.id, { pillar, from_pet: selectedPet?.id });
+                      }}
+                      className={`px-3 py-1.5 rounded-full text-xs flex items-center gap-1.5 transition-all shrink-0 ${
                         selectedPet?.id === pet.id 
-                          ? 'bg-purple-100 text-purple-700 ring-1 ring-purple-300' 
+                          ? `bg-gradient-to-r ${config.color} text-white shadow-sm` 
                           : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                       }`}
+                      data-testid={`pet-select-${pet.id}`}
                     >
                       <PawPrint className="w-3 h-3" />
-                      {pet.name}
+                      <span className="font-medium">{pet.name}</span>
+                      {pet.breed && <span className="text-[10px] opacity-75">({pet.breed})</span>}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {/* SUGGESTED FOR [PET] - Product Recommendations */}
+            {selectedPet && petRecommendations.length > 0 && (
+              <div className="px-4 py-3 border-b bg-gradient-to-r from-purple-50 to-pink-50 shrink-0">
+                <p className="text-xs font-bold text-purple-700 uppercase tracking-wider mb-2">
+                  ✨ Suggested for {selectedPet.name}
+                </p>
+                <div className="flex gap-2 overflow-x-auto pb-1">
+                  {petRecommendations.slice(0, 4).map(product => (
+                    <div 
+                      key={product.id}
+                      onClick={() => handleProductClick(product)}
+                      className="flex-shrink-0 w-24 bg-white rounded-lg p-2 shadow-sm cursor-pointer hover:shadow-md transition-all hover:scale-105"
+                    >
+                      {product.image && (
+                        <img src={product.image} alt={product.name} className="w-full h-14 rounded object-cover mb-1" />
+                      )}
+                      <p className="text-[10px] font-medium text-gray-800 truncate">{product.name}</p>
+                      <div className="flex items-center justify-between mt-0.5">
+                        <span className="text-[10px] text-purple-600 font-bold">₹{product.price}</span>
+                        <span className="text-[9px] text-purple-500">View →</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {/* Quick Action Buttons */}
+            {quickActions.length > 0 && (
+              <div className="px-4 py-2 border-b shrink-0">
+                <div className="flex gap-2 overflow-x-auto">
+                  {quickActions.map((action, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        setInputValue(action);
+                        sendMessage();
+                      }}
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all
+                        bg-gradient-to-r ${config.color} text-white shadow-sm hover:shadow-md hover:scale-105`}
+                    >
+                      {action}
                     </button>
                   ))}
                 </div>
@@ -649,7 +703,7 @@ const MiraChatWidget = ({
                   <div
                     className={`max-w-[85%] rounded-2xl px-4 py-2.5 ${
                       msg.role === 'user'
-                        ? 'bg-purple-600 text-white rounded-br-sm'
+                        ? `bg-gradient-to-r ${config.color} text-white rounded-br-sm`
                         : 'bg-gray-100 text-gray-800 rounded-bl-sm'
                     }`}
                   >
@@ -668,6 +722,9 @@ const MiraChatWidget = ({
                               <img src={product.image} alt={product.name} className="w-12 h-12 rounded object-cover" />
                             )}
                             <div className="flex-1 min-w-0">
+                              <p className="text-xs font-medium text-gray-800 truncate">{product.name}</p>
+                              <p className="text-xs text-purple-600 font-semibold">₹{product.price}</p>
+                            </div>
                               <p className="text-xs font-medium text-gray-800 truncate">{product.name}</p>
                               <p className="text-xs text-purple-600 font-semibold">₹{product.price}</p>
                             </div>
