@@ -992,9 +992,6 @@ const FitPage = () => {
               pillarColor="teal"
               label="Select Pet(s) for This Service"
             />
-                </p>
-              )}
-            </div>
             
             {/* Contact info */}
             <div className="space-y-3">
