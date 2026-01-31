@@ -4247,16 +4247,32 @@ async def quick_book(
     except Exception as e:
         logger.error(f"Failed to insert quick_booking: {e}")
     
-    # Also create a service desk ticket
+    # Also create a service desk ticket (matching expected structure)
     ticket_id = f"QBK-{uuid.uuid4().hex[:8].upper()}"
     ticket_doc = {
-        "id": ticket_id,
+        "ticket_id": ticket_id,  # Use ticket_id not id
+        "id": ticket_id,  # Keep for backwards compatibility
         "booking_id": booking_id,
         "type": "quick_book_request",
+        "category": "care",  # Required field
         "service_type": request.serviceType,
         "pillar": request.serviceType if request.serviceType in PILLARS else "care",
         "status": "new",
+        "urgency": "medium",  # Use urgency not priority
         "priority": "medium",
+        "subject": f"Quick Book: {request.serviceType.replace('_', ' ').title()} - {request.date}",
+        "description": request.notes or f"Service booking request for {request.serviceType}",
+        "member": {
+            "name": user.get("name") if user else "Guest",
+            "email": user.get("email") if user else None,
+            "phone": user.get("phone") if user else None,
+            "id": user_id
+        },
+        "pet_info": {
+            "name": pet.get("name") if pet else None,
+            "id": request.pet_id,
+            "breed": pet.get("breed") if pet else None
+        } if pet else None,
         "customer_name": user.get("name") if user else "Guest",
         "customer_email": user.get("email") if user else None,
         "customer_phone": user.get("phone") if user else None,
@@ -4264,6 +4280,8 @@ async def quick_book(
         "request_date": request.date,
         "request_time": request.time,
         "notes": request.notes,
+        "source": "mira_quick_book",
+        "assigned_to": None,
         "created_at": now,
         "updated_at": now
     }
@@ -4273,6 +4291,16 @@ async def quick_book(
         logger.info(f"Inserted service_desk_ticket: {ticket_id}")
     except Exception as e:
         logger.error(f"Failed to insert service_desk_ticket: {e}")
+    
+    # Also add to main tickets collection for better visibility
+    try:
+        await db.tickets.insert_one({
+            **ticket_doc,
+            "_id": None  # Let MongoDB generate new _id
+        })
+        logger.info(f"Inserted to tickets collection: {ticket_id}")
+    except Exception as e:
+        logger.error(f"Failed to insert to tickets: {e}")
     
     # Add to channel intakes for unified inbox
     inbox_id = f"INBOX-{uuid.uuid4().hex[:8].upper()}"
