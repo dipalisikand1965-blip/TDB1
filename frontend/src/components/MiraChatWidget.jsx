@@ -64,6 +64,15 @@ const MiraChatWidget = ({
   const chatEndRef = useRef(null);
   const inputRef = useRef(null);
   
+  // Mira Signal tracking for passive learning & personalization
+  const { trackPillarVisit, trackClick, trackSearch } = useMiraSignal();
+  
+  // Dynamic quick prompts from API
+  const [dynamicPrompts, setDynamicPrompts] = useState([]);
+  
+  // Personalized context from Mira
+  const [miraContext, setMiraContext] = useState(null);
+  
   // Pillar-specific configurations
   const pillarConfig = {
     general: { icon: '🐾', name: 'General', color: 'from-purple-600 to-indigo-600' },
