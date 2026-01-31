@@ -2,24 +2,112 @@
  * ConversationalEntry.jsx
  * PREMIUM VERSION - Polished, interactive, delightful
  * Feels like chatting with a real AI assistant
+ * NOW PILLAR-AWARE: Shows relevant goals per pillar
  */
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, Sparkles, ChevronRight, Target, Scale, Zap, Heart, Baby, Award, ArrowRight } from 'lucide-react';
+import { MessageCircle, Sparkles, ChevronRight, Target, Scale, Zap, Heart, Baby, Award, ArrowRight, Plane, Home, Hotel, Utensils, Cake, Music, GraduationCap, Scissors, Stethoscope, MapPin, Calendar, Gift, Users, Dog, TreePine, Building, PartyPopper } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
-const FITNESS_GOALS = [
-  { id: 'weight_loss', label: 'Weight loss', icon: Scale, gradient: 'from-emerald-400 to-teal-500', bg: 'bg-gradient-to-br from-emerald-50 to-teal-50' },
-  { id: 'build_muscle', label: 'Build strength', icon: Zap, gradient: 'from-amber-400 to-orange-500', bg: 'bg-gradient-to-br from-amber-50 to-orange-50' },
-  { id: 'senior_mobility', label: 'Senior care', icon: Award, gradient: 'from-violet-400 to-purple-500', bg: 'bg-gradient-to-br from-violet-50 to-purple-50' },
-  { id: 'puppy_energy', label: 'Puppy training', icon: Baby, gradient: 'from-pink-400 to-rose-500', bg: 'bg-gradient-to-br from-pink-50 to-rose-50' },
-  { id: 'anxiety_calm', label: 'Calm anxiety', icon: Heart, gradient: 'from-cyan-400 to-blue-500', bg: 'bg-gradient-to-br from-cyan-50 to-blue-50' },
-  { id: 'general_fitness', label: 'Stay active', icon: Target, gradient: 'from-lime-400 to-green-500', bg: 'bg-gradient-to-br from-lime-50 to-green-50' },
-];
+// PILLAR-SPECIFIC GOALS - Each pillar has its own relevant options
+const PILLAR_GOALS = {
+  fit: {
+    title: (petName) => petName ? `What's your fitness goal for ${petName}?` : "What's your pet's fitness goal?",
+    goals: [
+      { id: 'weight_loss', label: 'Weight loss', icon: Scale, gradient: 'from-emerald-400 to-teal-500', bg: 'bg-gradient-to-br from-emerald-50 to-teal-50' },
+      { id: 'build_muscle', label: 'Build strength', icon: Zap, gradient: 'from-amber-400 to-orange-500', bg: 'bg-gradient-to-br from-amber-50 to-orange-50' },
+      { id: 'senior_mobility', label: 'Senior care', icon: Award, gradient: 'from-violet-400 to-purple-500', bg: 'bg-gradient-to-br from-violet-50 to-purple-50' },
+      { id: 'puppy_energy', label: 'Puppy training', icon: Baby, gradient: 'from-pink-400 to-rose-500', bg: 'bg-gradient-to-br from-pink-50 to-rose-50' },
+      { id: 'anxiety_calm', label: 'Calm anxiety', icon: Heart, gradient: 'from-cyan-400 to-blue-500', bg: 'bg-gradient-to-br from-cyan-50 to-blue-50' },
+      { id: 'general_fitness', label: 'Stay active', icon: Target, gradient: 'from-lime-400 to-green-500', bg: 'bg-gradient-to-br from-lime-50 to-green-50' },
+    ]
+  },
+  stay: {
+    title: (petName) => petName ? `Planning a trip with ${petName}?` : "What kind of stay are you looking for?",
+    goals: [
+      { id: 'vacation', label: 'Vacation getaway', icon: TreePine, gradient: 'from-emerald-400 to-teal-500', bg: 'bg-gradient-to-br from-emerald-50 to-teal-50' },
+      { id: 'boarding', label: 'Pet boarding', icon: Home, gradient: 'from-purple-400 to-violet-500', bg: 'bg-gradient-to-br from-purple-50 to-violet-50' },
+      { id: 'staycation', label: 'Local staycation', icon: Building, gradient: 'from-blue-400 to-indigo-500', bg: 'bg-gradient-to-br from-blue-50 to-indigo-50' },
+      { id: 'business', label: 'Business trip', icon: Hotel, gradient: 'from-slate-400 to-gray-500', bg: 'bg-gradient-to-br from-slate-50 to-gray-50' },
+      { id: 'weekend', label: 'Weekend escape', icon: MapPin, gradient: 'from-amber-400 to-orange-500', bg: 'bg-gradient-to-br from-amber-50 to-orange-50' },
+      { id: 'multi_pet', label: 'Multi-pet trip', icon: Users, gradient: 'from-pink-400 to-rose-500', bg: 'bg-gradient-to-br from-pink-50 to-rose-50' },
+    ]
+  },
+  travel: {
+    title: (petName) => petName ? `Where is ${petName} traveling?` : "How can we help with travel?",
+    goals: [
+      { id: 'flight', label: 'Flight booking', icon: Plane, gradient: 'from-blue-400 to-cyan-500', bg: 'bg-gradient-to-br from-blue-50 to-cyan-50' },
+      { id: 'road_trip', label: 'Road trip', icon: MapPin, gradient: 'from-emerald-400 to-teal-500', bg: 'bg-gradient-to-br from-emerald-50 to-teal-50' },
+      { id: 'relocation', label: 'Pet relocation', icon: Home, gradient: 'from-purple-400 to-violet-500', bg: 'bg-gradient-to-br from-purple-50 to-violet-50' },
+      { id: 'documents', label: 'Travel documents', icon: Award, gradient: 'from-amber-400 to-orange-500', bg: 'bg-gradient-to-br from-amber-50 to-orange-50' },
+      { id: 'taxi', label: 'Pet taxi', icon: Target, gradient: 'from-rose-400 to-pink-500', bg: 'bg-gradient-to-br from-rose-50 to-pink-50' },
+      { id: 'international', label: 'International', icon: Sparkles, gradient: 'from-indigo-400 to-blue-500', bg: 'bg-gradient-to-br from-indigo-50 to-blue-50' },
+    ]
+  },
+  care: {
+    title: (petName) => petName ? `What care does ${petName} need?` : "What care are you looking for?",
+    goals: [
+      { id: 'grooming', label: 'Grooming', icon: Scissors, gradient: 'from-pink-400 to-rose-500', bg: 'bg-gradient-to-br from-pink-50 to-rose-50' },
+      { id: 'vet_visit', label: 'Vet consultation', icon: Stethoscope, gradient: 'from-red-400 to-rose-500', bg: 'bg-gradient-to-br from-red-50 to-rose-50' },
+      { id: 'training', label: 'Training', icon: Award, gradient: 'from-amber-400 to-orange-500', bg: 'bg-gradient-to-br from-amber-50 to-orange-50' },
+      { id: 'walking', label: 'Dog walking', icon: Dog, gradient: 'from-emerald-400 to-teal-500', bg: 'bg-gradient-to-br from-emerald-50 to-teal-50' },
+      { id: 'daycare', label: 'Pet daycare', icon: Home, gradient: 'from-purple-400 to-violet-500', bg: 'bg-gradient-to-br from-purple-50 to-violet-50' },
+      { id: 'spa', label: 'Pet spa', icon: Sparkles, gradient: 'from-cyan-400 to-blue-500', bg: 'bg-gradient-to-br from-cyan-50 to-blue-50' },
+    ]
+  },
+  dine: {
+    title: (petName) => petName ? `Taking ${petName} out to eat?` : "What's the dining occasion?",
+    goals: [
+      { id: 'date_night', label: 'Date night', icon: Heart, gradient: 'from-rose-400 to-pink-500', bg: 'bg-gradient-to-br from-rose-50 to-pink-50' },
+      { id: 'birthday', label: 'Birthday outing', icon: Cake, gradient: 'from-amber-400 to-orange-500', bg: 'bg-gradient-to-br from-amber-50 to-orange-50' },
+      { id: 'casual', label: 'Casual dining', icon: Utensils, gradient: 'from-emerald-400 to-teal-500', bg: 'bg-gradient-to-br from-emerald-50 to-teal-50' },
+      { id: 'brunch', label: 'Pet-friendly brunch', icon: Calendar, gradient: 'from-yellow-400 to-amber-500', bg: 'bg-gradient-to-br from-yellow-50 to-amber-50' },
+      { id: 'cafe', label: 'Cafe hopping', icon: Target, gradient: 'from-purple-400 to-violet-500', bg: 'bg-gradient-to-br from-purple-50 to-violet-50' },
+      { id: 'group', label: 'Group dining', icon: Users, gradient: 'from-blue-400 to-indigo-500', bg: 'bg-gradient-to-br from-blue-50 to-indigo-50' },
+    ]
+  },
+  celebrate: {
+    title: (petName) => petName ? `Celebrating with ${petName}?` : "What's the celebration?",
+    goals: [
+      { id: 'birthday', label: 'Birthday party', icon: Cake, gradient: 'from-pink-400 to-rose-500', bg: 'bg-gradient-to-br from-pink-50 to-rose-50' },
+      { id: 'adoption_day', label: 'Adoption day', icon: Heart, gradient: 'from-red-400 to-rose-500', bg: 'bg-gradient-to-br from-red-50 to-rose-50' },
+      { id: 'gotcha_day', label: 'Gotcha day', icon: PartyPopper, gradient: 'from-amber-400 to-orange-500', bg: 'bg-gradient-to-br from-amber-50 to-orange-50' },
+      { id: 'holiday', label: 'Holiday treats', icon: Gift, gradient: 'from-emerald-400 to-teal-500', bg: 'bg-gradient-to-br from-emerald-50 to-teal-50' },
+      { id: 'milestone', label: 'Pet milestone', icon: Award, gradient: 'from-purple-400 to-violet-500', bg: 'bg-gradient-to-br from-purple-50 to-violet-50' },
+      { id: 'photoshoot', label: 'Photo session', icon: Sparkles, gradient: 'from-cyan-400 to-blue-500', bg: 'bg-gradient-to-br from-cyan-50 to-blue-50' },
+    ]
+  },
+  enjoy: {
+    title: (petName) => petName ? `Fun activities for ${petName}?` : "What fun are you looking for?",
+    goals: [
+      { id: 'playdate', label: 'Playdate', icon: Users, gradient: 'from-pink-400 to-rose-500', bg: 'bg-gradient-to-br from-pink-50 to-rose-50' },
+      { id: 'outdoor', label: 'Outdoor adventure', icon: TreePine, gradient: 'from-emerald-400 to-teal-500', bg: 'bg-gradient-to-br from-emerald-50 to-teal-50' },
+      { id: 'swimming', label: 'Swimming', icon: Target, gradient: 'from-blue-400 to-cyan-500', bg: 'bg-gradient-to-br from-blue-50 to-cyan-50' },
+      { id: 'event', label: 'Pet events', icon: Calendar, gradient: 'from-purple-400 to-violet-500', bg: 'bg-gradient-to-br from-purple-50 to-violet-50' },
+      { id: 'social', label: 'Social meetup', icon: Heart, gradient: 'from-amber-400 to-orange-500', bg: 'bg-gradient-to-br from-amber-50 to-orange-50' },
+      { id: 'agility', label: 'Agility fun', icon: Zap, gradient: 'from-lime-400 to-green-500', bg: 'bg-gradient-to-br from-lime-50 to-green-50' },
+    ]
+  },
+  learn: {
+    title: (petName) => petName ? `What should ${petName} learn?` : "What training are you interested in?",
+    goals: [
+      { id: 'obedience', label: 'Obedience', icon: Award, gradient: 'from-blue-400 to-indigo-500', bg: 'bg-gradient-to-br from-blue-50 to-indigo-50' },
+      { id: 'tricks', label: 'Fun tricks', icon: Sparkles, gradient: 'from-amber-400 to-orange-500', bg: 'bg-gradient-to-br from-amber-50 to-orange-50' },
+      { id: 'puppy_basics', label: 'Puppy basics', icon: Baby, gradient: 'from-pink-400 to-rose-500', bg: 'bg-gradient-to-br from-pink-50 to-rose-50' },
+      { id: 'behavior', label: 'Behavior issues', icon: Heart, gradient: 'from-red-400 to-rose-500', bg: 'bg-gradient-to-br from-red-50 to-rose-50' },
+      { id: 'agility', label: 'Agility training', icon: Zap, gradient: 'from-emerald-400 to-teal-500', bg: 'bg-gradient-to-br from-emerald-50 to-teal-50' },
+      { id: 'socialization', label: 'Socialization', icon: Users, gradient: 'from-purple-400 to-violet-500', bg: 'bg-gradient-to-br from-purple-50 to-violet-50' },
+    ]
+  }
+};
+
+// Fallback to fit goals if pillar not found
+const FITNESS_GOALS = PILLAR_GOALS.fit.goals;
 
 const ConversationalEntry = ({ 
   petName,
+  pillar = 'fit', // NEW: Accept pillar prop
   onGoalSelect,
   className = '' 
 }) => {
@@ -28,6 +116,10 @@ const ConversationalEntry = ({
   const [isTyping, setIsTyping] = useState(true);
   const [displayText, setDisplayText] = useState('');
   
+  // Get pillar-specific config
+  const pillarConfig = PILLAR_GOALS[pillar] || PILLAR_GOALS.fit;
+  const goals = pillarConfig.goals;
+  const fullText = pillarConfig.title(petName);
   const fullText = petName 
     ? `What's your fitness goal for ${petName}?`
     : "What's your pet's fitness goal?";
