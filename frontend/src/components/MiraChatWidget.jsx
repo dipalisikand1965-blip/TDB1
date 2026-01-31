@@ -142,6 +142,43 @@ const MiraChatWidget = ({
     };
   }, []);
   
+  // Track pillar visit and fetch personalized context
+  useEffect(() => {
+    trackPillarVisit(pillar);
+    
+    // Fetch pillar-specific quick prompts
+    const fetchQuickPrompts = async () => {
+      try {
+        const response = await fetch(`${getApiUrl()}/api/mira/quick-prompts/${pillar}`);
+        if (response.ok) {
+          const data = await response.json();
+          setDynamicPrompts(data.prompts || []);
+        }
+      } catch (error) {
+        console.debug('Quick prompts fetch failed:', error);
+      }
+    };
+    
+    // Fetch personalized Mira context
+    const fetchMiraContext = async () => {
+      if (!token) return;
+      try {
+        const response = await fetch(`${getApiUrl()}/api/mira/context/${pillar}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setMiraContext(data);
+        }
+      } catch (error) {
+        console.debug('Mira context fetch failed:', error);
+      }
+    };
+    
+    fetchQuickPrompts();
+    fetchMiraContext();
+  }, [pillar, trackPillarVisit, token]);
+  
   // Fetch user's pets
   useEffect(() => {
     if (!user || !token) return;
