@@ -772,6 +772,7 @@ async def create_mira_ticket(
             "channel": source,
             "urgency": urgency,
             "status": "new",
+            "subject": final_subject,  # Use meaningful subject
             "description": description,
             "member": member_info,
             "pet": pet_info,
