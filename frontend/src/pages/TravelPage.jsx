@@ -656,7 +656,7 @@ const TravelPage = () => {
             <Card className="p-12 text-center bg-gray-50">
               <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">Travel Bundles Coming Soon</h3>
-              <p className="text-gray-500">We're preparing amazing travel kits for your furry friend!</p>
+              <p className="text-gray-500">We&apos;re preparing amazing travel kits for your furry friend!</p>
             </Card>
           )}
         </div>
