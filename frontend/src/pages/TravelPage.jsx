@@ -800,7 +800,7 @@ const TravelPage = () => {
           {/* Step 2: Select Pet(s) - Multi-Pet Support */}
           {wizardStep === 2 && (
             <div className="space-y-4">
-              <p className="text-gray-600">Who's traveling? <span className="text-purple-600 text-sm">(Select one or more pets)</span></p>
+              <p className="text-gray-600">Who&apos;s traveling? <span className="text-purple-600 text-sm">(Select one or more pets)</span></p>
               
               {userPets.length === 0 ? (
                 <div className="space-y-4">
