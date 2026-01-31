@@ -114,7 +114,62 @@ const CareManager = ({ getAuthHeader }) => {
     home_service: false, salon_service: false
   });
   
+  const [tipForm, setTipForm] = useState({
+    tip: '', action: '', emoji: '💡', category: 'general',
+    action_type: '', action_url: ''
+  });
+  
   const fileInputRef = useRef(null);
+  
+  // Reset tip form
+  const resetTipForm = () => {
+    setTipForm({ tip: '', action: '', emoji: '💡', category: 'general', action_type: '', action_url: '' });
+    setEditingTip(null);
+  };
+  
+  // Fetch tips
+  const fetchTips = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/engagement/tips?pillar=care`, {
+        headers: getAuthHeader()
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setQuickWinTips(data.tips || []);
+      }
+    } catch (error) {
+      console.error('Error fetching tips:', error);
+    }
+  };
+  
+  // Save tip
+  const saveTip = async () => {
+    try {
+      const tipData = { ...tipForm, pillar: 'care', is_active: true };
+      
+      if (editingTip) {
+        await fetch(`${API_URL}/api/engagement/tips/${editingTip.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+          body: JSON.stringify(tipData)
+        });
+        toast({ title: 'Tip updated' });
+      } else {
+        await fetch(`${API_URL}/api/engagement/tips`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+          body: JSON.stringify(tipData)
+        });
+        toast({ title: 'Tip created' });
+      }
+      
+      setShowTipModal(false);
+      resetTipForm();
+      fetchTips();
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to save tip', variant: 'destructive' });
+    }
+  };
 
   // Update nested settings
   const updateSettings = (section, key, value) => {
