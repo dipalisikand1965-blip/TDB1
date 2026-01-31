@@ -4424,5 +4424,6 @@ async def quick_book(
         "booking_id": booking_id,
         "ticket_id": ticket_id,
         "status": "pending",
+        "service_type": request.serviceType,  # Return the service type for frontend display
         "message": f"Your {request.serviceType} booking request for {request.date} at {request.time} has been submitted. Our team will confirm shortly."
     }
