@@ -709,7 +709,7 @@ const MiraPage = () => {
                 className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
                 <div
-                  className={`max-w-[70%] rounded-2xl px-4 py-3 ${
+                  className={`max-w-[85%] sm:max-w-[70%] rounded-2xl px-4 py-3 ${
                     message.role === 'user'
                       ? 'bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-br-md'
                       : 'bg-white shadow-sm border border-gray-100 text-gray-800 rounded-bl-md'
@@ -731,6 +731,19 @@ const MiraPage = () => {
                     className="text-sm leading-relaxed whitespace-pre-wrap"
                     dangerouslySetInnerHTML={{ __html: formatContent(message.content) }}
                   />
+                  
+                  {/* Action Button - For checklist/guide messages */}
+                  {message.role === 'assistant' && messageHasAction(message.content) && (
+                    <Button
+                      size="sm"
+                      className="mt-3 w-full bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 hover:from-purple-200 hover:to-pink-200 border border-purple-200"
+                      onClick={() => handleChecklistAction('checklist', pillar)}
+                    >
+                      <List className="w-4 h-4 mr-2" />
+                      View Checklist & Products
+                    </Button>
+                  )}
+                  
                   <p className={`text-xs mt-2 ${message.role === 'user' ? 'text-white/70' : 'text-gray-400'}`}>
                     {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </p>
