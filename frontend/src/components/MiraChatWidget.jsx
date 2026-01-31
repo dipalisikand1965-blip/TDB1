@@ -23,7 +23,7 @@ import MiraOrb from './MiraOrb';
 import { 
   X, Send, Loader2, Mic, MicOff, Volume2, VolumeX, 
   ChevronDown, Sparkles, PawPrint, MessageCircle, Zap,
-  ArrowLeft, ShoppingCart, Plus, Heart
+  ArrowLeft, ShoppingCart, Plus, Heart, ShoppingBag
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
