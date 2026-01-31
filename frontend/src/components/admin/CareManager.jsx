@@ -70,6 +70,7 @@ const CareManager = ({ getAuthHeader }) => {
   const [partners, setPartners] = useState([]);
   const [products, setProducts] = useState([]);
   const [bundles, setBundles] = useState([]);
+  const [quickWinTips, setQuickWinTips] = useState([]);
   const [stats, setStats] = useState({});
   const [settings, setSettings] = useState({});
   const [loading, setLoading] = useState(true);
