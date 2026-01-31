@@ -21,6 +21,23 @@
 
 **Fix**: Added dedicated useEffect that triggers speech when `welcomeGenerated` and `isOpen` are both true
 
+### ✅ STAY PAGE PROPERTY IMAGES - FIXED (Jan 31, 2026)
+
+**Issue**: Stay page showing placeholder icons instead of property images
+
+**Root Cause**:
+1. `stay_properties` collection had no `image` field
+2. `PropertyCard` component only looked for `photos[0]`, not `image`
+
+**Fixes Applied**:
+1. Added images to 32 properties in `stay_properties` collection (Unsplash URLs by property type)
+2. Added images to 6 blog posts
+3. Updated `PropertyCard` in StayPage.jsx to use `property.image || property.thumbnail || property.photos?.[0]`
+
+**Verified**: Stay page now shows beautiful resort/hotel images for The Leela Goa, W Goa, SUJAN Jawai, etc.
+
+---
+
 ### ✅ SAVE KITS TO PROFILE - IMPLEMENTED (Jan 31, 2026)
 
 **Feature**: Members can save assembled kits to their profile for easy reordering
