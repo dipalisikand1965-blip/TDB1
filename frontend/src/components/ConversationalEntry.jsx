@@ -231,7 +231,7 @@ const ConversationalEntry = ({
 
         {/* Goal Pills - Premium Design */}
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-          {FITNESS_GOALS.map((goal) => {
+          {goals.map((goal) => {
             const Icon = goal.icon;
             const isHovered = hoveredGoal === goal.id;
             
@@ -284,7 +284,7 @@ const ConversationalEntry = ({
 
         {/* Custom message link */}
         <motion.button
-          onClick={() => navigate('/mira?context=fit')}
+          onClick={() => navigate(`/mira?context=${pillar}`)}
           whileHover={{ x: 5 }}
           className="mt-5 flex items-center gap-2 text-sm text-gray-500 hover:text-purple-600 transition-colors group"
         >
