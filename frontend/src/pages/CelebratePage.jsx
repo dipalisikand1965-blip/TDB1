@@ -395,18 +395,8 @@ const CelebratePage = () => {
         </div>
       </div>
       
-      {/* Mira AI Panel - MANDATORY on ALL pillars */}
-      <MiraContextPanel 
-        pillar="celebrate"
-        pillarColor="pink"
-        pillarIcon="🎂"
-        pillarName="Celebrate"
-        contextualPrompts={[
-          "I want to order a birthday cake for my pet",
-          "What celebration options do you have?",
-          "Plan a pet birthday party"
-        ]}
-      />
+      {/* Mira Floating Chat Widget */}
+      <MiraChatWidget pillar="celebrate" />
     </div>
   );
 };
