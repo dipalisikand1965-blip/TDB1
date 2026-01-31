@@ -598,7 +598,7 @@ const CarePage = () => {
               <h4 className="font-bold text-gray-900">Bruno</h4>
               <p className="text-sm text-gray-500 mb-2">Golden Retriever</p>
               <p className="text-sm text-pink-700 font-medium mb-2">From matted to magnificent</p>
-              <p className="text-xs text-gray-600 italic">"The groomer was so gentle with Bruno's anxiety. He actually enjoyed it!"</p>
+              <p className="text-xs text-gray-600 italic">&quot;The groomer was so gentle with Bruno&apos;s anxiety. He actually enjoyed it!&quot;</p>
               <p className="text-xs text-gray-400 mt-2">— Priya M., Mumbai</p>
             </div>
 
@@ -624,7 +624,7 @@ const CarePage = () => {
               <h4 className="font-bold text-gray-900">Coco</h4>
               <p className="text-sm text-gray-500 mb-2">Beagle</p>
               <p className="text-sm text-rose-700 font-medium mb-2">Emergency care saved his life</p>
-              <p className="text-xs text-gray-600 italic">"They found a 24/7 vet at 2am. Forever grateful for their emergency support."</p>
+              <p className="text-xs text-gray-600 italic">&quot;They found a 24/7 vet at 2am. Forever grateful for their emergency support.&quot;</p>
               <p className="text-xs text-gray-400 mt-2">— Rahul S., Bangalore</p>
             </div>
 
@@ -650,7 +650,7 @@ const CarePage = () => {
               <h4 className="font-bold text-gray-900">Max</h4>
               <p className="text-sm text-gray-500 mb-2">Labrador, 11 years</p>
               <p className="text-sm text-teal-700 font-medium mb-2">Senior mobility restored</p>
-              <p className="text-xs text-gray-600 italic">"The physiotherapy sessions gave Max a new lease on life at 11!"</p>
+              <p className="text-xs text-gray-600 italic">&quot;The physiotherapy sessions gave Max a new lease on life at 11!&quot;</p>
               <p className="text-xs text-gray-400 mt-2">— Anita K., Delhi</p>
             </div>
 
@@ -676,7 +676,7 @@ const CarePage = () => {
               <h4 className="font-bold text-gray-900">Luna</h4>
               <p className="text-sm text-gray-500 mb-2">German Shepherd</p>
               <p className="text-sm text-purple-700 font-medium mb-2">Anxiety to confidence</p>
-              <p className="text-xs text-gray-600 italic">"The trainer understood Luna's fears perfectly. She's a different dog now!"</p>
+              <p className="text-xs text-gray-600 italic">&quot;The trainer understood Luna&apos;s fears perfectly. She&apos;s a different dog now!&quot;</p>
               <p className="text-xs text-gray-400 mt-2">— Vikram P., Gurgaon</p>
             </div>
           </div>
