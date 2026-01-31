@@ -476,52 +476,72 @@ const MiraPage = () => {
       <div className="flex h-screen">
         {/* Main Chat Area */}
         <div className="flex-1 flex flex-col">
-          {/* Header */}
-          <div className="bg-white/80 backdrop-blur-sm border-b border-gray-100 px-6 py-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-lg">
-                  <Sparkles className="w-6 h-6 text-white" />
+          {/* Header - Premium Design with Back Button */}
+          <div className="bg-white/90 backdrop-blur-lg border-b border-purple-100 px-4 md:px-6 py-3 md:py-4 sticky top-0 z-20">
+            <div className="flex items-center justify-between gap-2">
+              {/* Left: Back + Mira Info */}
+              <div className="flex items-center gap-2 md:gap-3">
+                {/* BACK BUTTON - Prominent on mobile */}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => navigate(-1)}
+                  className="w-10 h-10 rounded-full hover:bg-purple-100 transition-colors"
+                  data-testid="mira-back-btn"
+                >
+                  <ArrowLeft className="w-5 h-5 text-gray-700" />
+                </Button>
+                
+                {/* Mira Avatar & Title */}
+                <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-rose-500 flex items-center justify-center shadow-lg shadow-purple-200 animate-pulse">
+                  <Sparkles className="w-5 h-5 md:w-6 md:h-6 text-white" />
                 </div>
-                <div>
-                  <h1 className="text-xl font-bold text-gray-900">Ask Mira</h1>
-                  <p className="text-sm text-gray-500">Your Personal Pet Concierge</p>
+                <div className="hidden sm:block">
+                  <h1 className="text-lg md:text-xl font-bold text-gray-900">Ask Mira</h1>
+                  <p className="text-xs md:text-sm text-gray-500">Your Personal Pet Concierge</p>
                 </div>
+                <span className="sm:hidden text-lg font-bold text-gray-900">Mira</span>
               </div>
               
-              <div className="flex items-center gap-3">
-                {/* New Conversation Button */}
+              {/* Right: Actions */}
+              <div className="flex items-center gap-2">
+                {/* Pillar Badge */}
+                {pillar && (
+                  <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs px-2 py-1">
+                    {pillar.charAt(0).toUpperCase() + pillar.slice(1)}
+                  </Badge>
+                )}
+                
+                {/* Ticket Badge */}
+                {ticketId && (
+                  <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200 text-xs hidden sm:flex">
+                    {ticketId}
+                  </Badge>
+                )}
+                
+                {/* New Chat */}
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={startNewConversation}
-                  className="gap-1"
+                  className="gap-1 text-xs"
                   data-testid="mira-new-conversation"
                 >
                   <RotateCcw className="w-4 h-4" />
-                  New Chat
+                  <span className="hidden sm:inline">New</span>
                 </Button>
-                {/* History Button */}
+                
+                {/* History */}
                 {token && (
                   <Button
                     variant="ghost"
-                    size="sm"
+                    size="icon"
                     onClick={() => setShowHistory(!showHistory)}
-                    className="gap-1"
+                    className={`w-9 h-9 ${showHistory ? 'bg-purple-100 text-purple-700' : ''}`}
                     data-testid="mira-history-toggle"
                   >
                     <History className="w-4 h-4" />
                   </Button>
-                )}
-                {ticketId && (
-                  <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200">
-                    {ticketId}
-                  </Badge>
-                )}
-                {pillar && (
-                  <Badge className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
-                    {pillar.charAt(0).toUpperCase() + pillar.slice(1)}
-                  </Badge>
                 )}
               </div>
             </div>
