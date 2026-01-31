@@ -1,6 +1,6 @@
 # 🐕 The Doggy Company - Feature Status Report
 **Generated:** January 18, 2026
-**Preview URL:** https://responsive-app-10.preview.emergentagent.com
+**Preview URL:** https://aijourney-revamp.preview.emergentagent.com
 
 ---
 
