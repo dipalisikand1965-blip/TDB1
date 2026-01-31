@@ -744,6 +744,40 @@ async def create_quick_win_tip(tip: QuickWinTip):
     await db.quick_win_tips.insert_one(tip_dict)
     return {"id": tip_dict["id"], "message": "Tip created"}
 
+
+@router.put("/tips/{tip_id}")
+async def update_quick_win_tip(tip_id: str, tip: QuickWinTip):
+    """Admin: Update quick win tip"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    tip_dict = tip.dict()
+    tip_dict["updated_at"] = datetime.now(timezone.utc)
+    
+    result = await db.quick_win_tips.update_one(
+        {"id": tip_id},
+        {"$set": tip_dict}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Tip not found")
+    
+    return {"message": "Tip updated"}
+
+
+@router.delete("/tips/{tip_id}")
+async def delete_quick_win_tip(tip_id: str):
+    """Admin: Delete quick win tip"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    result = await db.quick_win_tips.delete_one({"id": tip_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Tip not found")
+    
+    return {"message": "Tip deleted"}
+
 # ==================== GOAL INTERACTIONS (UNIVERSAL FLOW) ====================
 
 class GoalInteraction(BaseModel):
