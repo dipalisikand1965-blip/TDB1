@@ -713,7 +713,7 @@ const TravelPage = () => {
             Ready to Travel with Your Best Friend?
           </h2>
           <p className="text-white/80 text-lg mb-8 max-w-2xl mx-auto">
-            Our concierge team is ready to make your pet's journey safe, comfortable, and stress-free.
+            Our concierge team is ready to make your pet&apos;s journey safe, comfortable, and stress-free.
           </p>
           <Button 
             onClick={handleStartPlanning}
