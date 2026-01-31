@@ -3885,6 +3885,27 @@ async def get_my_requests(
             "source": "service_desk"
         })
     
+    # Also fetch quick_bookings
+    quick_bookings = await db.quick_bookings.find(
+        {"user_email": user_email},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    for booking in quick_bookings:
+        requests.append({
+            "id": booking.get("id"),
+            "type": "quick_book",
+            "service_type": booking.get("service_type"),
+            "pillar": booking.get("service_type") if booking.get("service_type") in ["grooming", "vet", "boarding", "training"] else "care",
+            "status": booking.get("status", "pending"),
+            "status_display": get_status_display(booking.get("status", "pending")),
+            "description": f"{booking.get('service_type', '').replace('_', ' ').title()} - {booking.get('date')} at {booking.get('time')}",
+            "created_at": booking.get("created_at"),
+            "updated_at": booking.get("updated_at"),
+            "pet_name": booking.get("pet_name"),
+            "source": "quick_book"
+        })
+    
     # Sort by created_at descending
     requests.sort(key=lambda x: x.get("created_at", ""), reverse=True)
     
