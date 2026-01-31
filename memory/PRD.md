@@ -642,7 +642,7 @@ All 14 pillar admin managers are already implemented and integrated:
 - **Admin**: `aditya` / `lola4304`
 
 ## Deployment
-- **Preview URL**: https://mobilepaw.preview.emergentagent.com
+- **Preview URL**: https://responsive-app-10.preview.emergentagent.com
 - **Production**: thedoggycompany.in (deploying tomorrow)
 
 ---

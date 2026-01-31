@@ -10,7 +10,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://mobilepaw.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://responsive-app-10.preview.emergentagent.com').rstrip('/')
 
 class TestAdoptAPIs:
     """Test Adopt Pillar API endpoints"""
