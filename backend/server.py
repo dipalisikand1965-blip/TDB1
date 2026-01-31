@@ -6238,57 +6238,74 @@ async def get_pet_recommendations(pet_id: str, limit: int = 20):
         except:
             pass
     
-    # Build recommendation query
-    # Find products matching size and age, excluding allergies
+    # Build recommendation query - more inclusive
+    # Start by getting products that are in stock (or not explicitly out of stock)
     query = {
-        "in_stock": {"$ne": False},
-        "tags": {"$in": [size_category, age_category, "all-sizes", "all-ages"]}
+        "$or": [
+            {"in_stock": True},
+            {"in_stock": {"$exists": False}}
+        ]
     }
     
-    # Exclude products with allergy-related tags
-    if allergies:
-        allergy_exclusions = []
-        for allergy in allergies:
-            allergy_exclusions.extend([allergy, f"{allergy}-free"])
-        # Products should NOT have the allergen in tags but SHOULD have allergen-free
-        query["$or"] = [
-            {"tags": {"$nin": allergies}},  # Doesn't contain allergen
-            {"tags": {"$in": [f"{a}-free" for a in allergies]}}  # OR is allergen-free
-        ]
+    # Exclude products with allergies in their tags if allergies exist
+    if allergies and len(allergies) > 0 and allergies[0].lower() not in ['no', 'none', '']:
+        clean_allergies = [a.lower() for a in allergies if a.lower() not in ['no', 'none', '']]
+        if clean_allergies:
+            query["tags"] = {"$nin": clean_allergies}
     
-    # Fetch matching products
-    products = await db.products.find(query, {"_id": 0}).limit(limit * 2).to_list(limit * 2)
+    # Fetch products - get more variety
+    products = await db.products.find(query, {"_id": 0}).limit(limit * 3).to_list(limit * 3)
     
-    # Score products based on relevance
+    # Also get celebrate products (cakes, treats)
+    celebrate_products = await db.celebrate_products.find({}, {"_id": 0}).limit(10).to_list(10)
+    products.extend(celebrate_products)
+    
+    # Score products based on relevance to pet
     scored_products = []
     for p in products:
         score = 0
         tags = [t.lower() for t in (p.get("tags") or [])]
+        name_lower = (p.get("name") or p.get("title") or "").lower()
+        category = (p.get("category") or "").lower()
+        
+        # Category bonuses for treats/food
+        if category in ["treats", "food", "snacks", "cakes"]:
+            score += 15
+        if "treat" in name_lower or "cake" in name_lower or "snack" in name_lower:
+            score += 10
         
         # Size match bonus
-        if size_category in tags or "all-sizes" in tags:
+        if size_category in tags or "all-sizes" in tags or any(size_category.replace("-", " ") in t for t in tags):
             score += 10
+        # Small dogs usually like smaller treats
+        if size_category == "small-dog" and any(word in name_lower for word in ["mini", "small", "bite", "tiny"]):
+            score += 8
         
         # Age match bonus  
         if age_category in tags or "all-ages" in tags:
             score += 10
         
-        # Allergy-safe bonus
+        # Allergy safety check
         is_safe = True
-        for allergy in allergies:
-            if allergy.lower() in tags:
-                is_safe = False
-                break
-            if f"{allergy.lower()}-free" in tags:
-                score += 5  # Bonus for explicitly allergen-free
+        if allergies:
+            for allergy in allergies:
+                if allergy.lower() not in ['no', 'none', ''] and allergy.lower() in tags:
+                    is_safe = False
+                    break
+                if f"{allergy.lower()}-free" in tags:
+                    score += 5  # Bonus for explicitly allergen-free
         
         if not is_safe:
             continue  # Skip products containing allergens
         
         # Treat size preference
         if treat_size:
-            if treat_size.lower() in p.get("name", "").lower():
+            if treat_size.lower() in name_lower:
                 score += 5
+        
+        # Has image bonus (important for display)
+        if p.get("image"):
+            score += 3
         
         scored_products.append((score, p))
     
