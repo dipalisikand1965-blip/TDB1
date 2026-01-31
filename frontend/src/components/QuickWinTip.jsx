@@ -156,7 +156,59 @@ const QuickWinTip = ({
     fetchApiTips();
   }, [pillar]);
 
-  const selectTip = React.useCallback(() => {
+  // Select a random tip when dependencies change
+  useEffect(() => {
+    let tips = [];
+    
+    // PRIORITY 1: Use API tips if available
+    if (apiTips.length > 0) {
+      tips = apiTips.map(t => ({
+        tip: t.tip,
+        action: t.action,
+        emoji: t.emoji || '💡',
+        actionType: t.action_type,
+        actionUrl: t.action_url,
+        checklistId: t.checklist_id
+      }));
+    } else {
+      // PRIORITY 2: Get pillar-specific tips from local database
+      const pillarTips = TIPS_DATABASE[pillar]?.general || [];
+      if (pillarTips.length > 0) {
+        tips = [...pillarTips];
+      }
+    }
+    
+    // Only add breed/age tips if NO pillar tips or if pillar is 'fit' (generic)
+    if (tips.length === 0 || pillar === 'fit') {
+      // Add breed-specific tips
+      if (petBreed) {
+        const breedKey = petBreed.toLowerCase().replace(/\s+/g, '_');
+        if (TIPS_DATABASE[breedKey]) {
+          tips = [...tips, ...TIPS_DATABASE[breedKey]];
+        }
+      }
+      
+      // Add age-specific tips
+      if (petAge && TIPS_DATABASE.fit) {
+        const ageNum = parseInt(petAge);
+        if (ageNum < 2 && TIPS_DATABASE.fit.puppy) tips = [...tips, ...TIPS_DATABASE.fit.puppy];
+        else if (ageNum > 7 && TIPS_DATABASE.fit.senior) tips = [...tips, ...TIPS_DATABASE.fit.senior];
+      }
+      
+      // Fallback to fit general if still empty
+      if (tips.length === 0) {
+        tips = TIPS_DATABASE.fit?.general || [];
+      }
+    }
+    
+    // Set a random tip
+    if (tips.length > 0) {
+      const randomTip = tips[Math.floor(Math.random() * tips.length)];
+      setCurrentTip(randomTip);
+    }
+  }, [apiTips, pillar, petBreed, petAge, petName]);
+
+  const selectTip = () => {
     setIsRefreshing(true);
     let tips = [];
     
