@@ -1,6 +1,6 @@
 # 🐕 The Doggy Company - Feature Status Report
 **Generated:** January 18, 2026
-**Preview URL:** https://mirasoul.preview.emergentagent.com
+**Preview URL:** https://mira-concierge-2.preview.emergentagent.com
 
 ---
 
