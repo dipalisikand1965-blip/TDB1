@@ -994,6 +994,112 @@ const MiraChatWidget = ({
                             </div>
                           );
                         })}
+                        
+                        {/* Add All to Cart button for kit assembly */}
+                        {msg.kitAssembly?.can_add_all_to_cart && msg.products.length > 1 && (
+                          <button
+                            onClick={() => {
+                              msg.products.forEach(p => addToCart(p));
+                              toast.success(`Added ${msg.products.length} items to cart!`, {
+                                description: 'Your kit is ready to checkout'
+                              });
+                            }}
+                            className="w-full mt-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg text-sm font-bold hover:from-purple-700 hover:to-pink-700 transition-all flex items-center justify-center gap-2"
+                          >
+                            <ShoppingBag className="w-4 h-4" />
+                            Add All {msg.products.length} Items to Cart
+                          </button>
+                        )}
+                      </div>
+                    )}
+                    
+                    {/* Quick Book Form (inline service booking) */}
+                    {msg.showQuickBookForm && (
+                      <div className="mt-3 p-3 bg-white rounded-lg border border-purple-200">
+                        <p className="text-xs font-bold text-purple-700 uppercase mb-2">📅 Quick Book</p>
+                        <form onSubmit={(e) => {
+                          e.preventDefault();
+                          const formData = new FormData(e.target);
+                          const bookingData = {
+                            date: formData.get('date'),
+                            time: formData.get('time'),
+                            notes: formData.get('notes'),
+                            serviceType: msg.serviceType
+                          };
+                          // Submit booking
+                          fetch(`${getApiUrl()}/api/mira/quick-book`, {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                              ...(token && { 'Authorization': `Bearer ${token}` })
+                            },
+                            body: JSON.stringify({
+                              ...bookingData,
+                              session_id: sessionId,
+                              pet_id: selectedPet?.id
+                            })
+                          }).then(res => res.json()).then(data => {
+                            toast.success('Booking request submitted!', {
+                              description: `Reference: ${data.booking_id || 'Pending'}`
+                            });
+                            setMessages(prev => [...prev, {
+                              id: Date.now().toString(),
+                              role: 'assistant',
+                              content: `Great! I've submitted your ${msg.serviceType} booking request for ${bookingData.date} at ${bookingData.time}. Our team will confirm shortly! 🐾`
+                            }]);
+                          }).catch(() => {
+                            toast.error('Failed to submit booking');
+                          });
+                        }} className="space-y-2">
+                          <div className="flex gap-2">
+                            <input
+                              type="date"
+                              name="date"
+                              required
+                              min={new Date().toISOString().split('T')[0]}
+                              className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            />
+                            <select
+                              name="time"
+                              required
+                              className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                            >
+                              <option value="">Time</option>
+                              <option value="09:00">9:00 AM</option>
+                              <option value="10:00">10:00 AM</option>
+                              <option value="11:00">11:00 AM</option>
+                              <option value="12:00">12:00 PM</option>
+                              <option value="14:00">2:00 PM</option>
+                              <option value="15:00">3:00 PM</option>
+                              <option value="16:00">4:00 PM</option>
+                              <option value="17:00">5:00 PM</option>
+                            </select>
+                          </div>
+                          <input
+                            type="text"
+                            name="notes"
+                            placeholder="Any special requests..."
+                            className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                          />
+                          <button
+                            type="submit"
+                            className="w-full px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg text-sm font-bold hover:from-purple-700 hover:to-pink-700"
+                          >
+                            Confirm Booking
+                          </button>
+                        </form>
+                      </div>
+                    )}
+                    
+                    {/* Concierge Handoff Notice */}
+                    {msg.handoff?.needed && (
+                      <div className="mt-3 p-3 bg-amber-50 rounded-lg border border-amber-200">
+                        <p className="text-xs font-bold text-amber-700 flex items-center gap-1">
+                          <span>📦</span> Custom Kit Request Sent
+                        </p>
+                        <p className="text-xs text-amber-600 mt-1">
+                          Our concierge® will curate your kit and send details via email/WhatsApp.
+                        </p>
                       </div>
                     )}
                   </div>
