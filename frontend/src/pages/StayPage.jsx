@@ -29,7 +29,7 @@ import {
   Home, Building2, Building, Tent, CheckCircle, X, Users, Clock, Loader2,
   PawPrint, AlertTriangle, MessageCircle, ChevronDown, ShoppingBag,
   Package, Percent, PartyPopper, Camera, Footprints, Gift, Play, Trophy,
-  TrendingUp, ArrowRight
+  TrendingUp, ArrowRight, List, ShoppingCart
 } from 'lucide-react';
 
 // Hero Images for Stay pillar
