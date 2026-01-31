@@ -1,6 +1,6 @@
 # 🐕 The Doggy Company - Feature Status Report
 **Generated:** January 18, 2026
-**Preview URL:** https://mobile-soul-ux.preview.emergentagent.com
+**Preview URL:** https://mobilepaw.preview.emergentagent.com
 
 ---
 

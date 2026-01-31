@@ -29,7 +29,7 @@
   },
   "test_credentials": {
     "test_pet_id": "pet-99a708f1722a",
-    "API_URL": "https://mobile-soul-ux.preview.emergentagent.com"
+    "API_URL": "https://mobilepaw.preview.emergentagent.com"
   },
   "seed_data_creation": "None - used existing pet data",
   "retest_needed": false,

@@ -423,7 +423,7 @@ All Phase 1 features are now integrated:
 - **Admin**: `aditya` / `lola4304`
 
 ## Deployment
-- **Preview URL**: https://mobile-soul-ux.preview.emergentagent.com
+- **Preview URL**: https://mobilepaw.preview.emergentagent.com
 - **Production**: thedoggycompany.in (deploying tomorrow)
 
 ---
