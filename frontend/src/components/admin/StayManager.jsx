@@ -699,25 +699,129 @@ const StayManager = ({ getAuthHeader }) => {
         {/* Bundles Tab */}
         <TabsContent value="bundles" className="space-y-4">
           <div className="flex justify-between items-center">
-            <h3 className="font-semibold">Travel Bundles</h3>
-            <Button onClick={() => setShowBundleModal(true)}>
-              <Plus className="w-4 h-4 mr-2" /> Add Bundle
-            </Button>
+            <h3 className="font-semibold">Stay Bundles ({bundles.length})</h3>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={async () => {
+                try {
+                  const response = await fetch(`${API_URL}/api/stay/admin/seed-data`, {
+                    method: 'POST',
+                    headers: getAuthHeader()
+                  });
+                  if (response.ok) {
+                    toast({ title: 'Data Seeded', description: 'Bundles and products refreshed' });
+                    fetchBundles();
+                  }
+                } catch (error) {
+                  toast({ title: 'Error', description: 'Failed to seed data', variant: 'destructive' });
+                }
+              }}>
+                <Database className="w-4 h-4 mr-2" /> Seed Bundles
+              </Button>
+              <Button onClick={() => { resetBundleForm(); setShowBundleModal(true); }}>
+                <Plus className="w-4 h-4 mr-2" /> Add Bundle
+              </Button>
+            </div>
           </div>
           <div className="grid md:grid-cols-2 gap-4">
             {bundles.map((bundle) => (
-              <Card key={bundle.id} className="p-4">
-                <h4 className="font-medium">{bundle.name}</h4>
-                <p className="text-sm text-gray-500 mt-1">{bundle.description}</p>
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="text-lg font-bold text-emerald-600">₹{bundle.price}</span>
-                  {bundle.original_price && (
-                    <span className="text-sm text-gray-400 line-through">₹{bundle.original_price}</span>
-                  )}
+              <Card key={bundle.id} className="p-4 hover:shadow-md transition-shadow">
+                <div className="flex gap-4">
+                  {/* Bundle Image */}
+                  <div className="w-24 h-24 rounded-lg bg-gray-100 overflow-hidden flex-shrink-0">
+                    {bundle.image ? (
+                      <img src={bundle.image} alt={bundle.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-purple-50 to-pink-50">
+                        <Package className="w-8 h-8 text-purple-300" />
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Bundle Details */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between">
+                      <h4 className="font-medium text-gray-900">{bundle.name}</h4>
+                      <div className="flex gap-1 flex-shrink-0">
+                        <Button 
+                          size="sm" 
+                          variant="ghost" 
+                          className="h-7 w-7 p-0"
+                          onClick={() => {
+                            setEditingBundle(bundle);
+                            setBundleForm({
+                              name: bundle.name || '',
+                              description: bundle.description || '',
+                              price: bundle.price?.toString() || '',
+                              original_price: bundle.original_price?.toString() || '',
+                              image: bundle.image || '',
+                              items: Array.isArray(bundle.items) ? bundle.items.join(', ') : '',
+                              paw_reward_points: bundle.paw_reward_points || 0,
+                              is_recommended: bundle.is_recommended || false
+                            });
+                            setShowBundleModal(true);
+                          }}
+                        >
+                          <Edit2 className="w-3 h-3" />
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="ghost" 
+                          className="h-7 w-7 p-0 text-red-500 hover:text-red-600 hover:bg-red-50"
+                          onClick={async () => {
+                            if (!window.confirm('Delete this bundle?')) return;
+                            try {
+                              await fetch(`${API_URL}/api/stay/admin/bundles/${bundle.id}`, {
+                                method: 'DELETE',
+                                headers: getAuthHeader()
+                              });
+                              toast({ title: 'Bundle deleted' });
+                              fetchBundles();
+                            } catch (error) {
+                              toast({ title: 'Error', description: 'Failed to delete bundle', variant: 'destructive' });
+                            }
+                          }}
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    </div>
+                    <p className="text-sm text-gray-500 mt-1 line-clamp-2">{bundle.description}</p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <span className="text-lg font-bold text-emerald-600">₹{bundle.price}</span>
+                      {bundle.original_price && bundle.original_price > bundle.price && (
+                        <span className="text-sm text-gray-400 line-through">₹{bundle.original_price}</span>
+                      )}
+                      {bundle.paw_reward_points > 0 && (
+                        <Badge className="text-xs bg-amber-100 text-amber-700">+{bundle.paw_reward_points} paws</Badge>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </Card>
             ))}
           </div>
+          
+          {bundles.length === 0 && (
+            <Card className="p-8 text-center">
+              <Package className="w-12 h-12 mx-auto text-gray-300 mb-3" />
+              <h4 className="font-semibold mb-2">No Bundles Yet</h4>
+              <p className="text-sm text-gray-500 mb-4">Click &quot;Seed Bundles&quot; to auto-populate with curated travel bundles</p>
+              <Button onClick={async () => {
+                try {
+                  await fetch(`${API_URL}/api/stay/admin/seed-data`, {
+                    method: 'POST',
+                    headers: getAuthHeader()
+                  });
+                  toast({ title: 'Bundles seeded!' });
+                  fetchBundles();
+                } catch (error) {
+                  toast({ title: 'Error seeding bundles', variant: 'destructive' });
+                }
+              }}>
+                <Database className="w-4 h-4 mr-2" /> Seed Stay Bundles
+              </Button>
+            </Card>
+          )}
         </TabsContent>
 
         {/* Stories Tab */}
