@@ -540,6 +540,33 @@ const MiraChatWidget = ({
         const data = await response.json();
         let displayContent = data.response;
         
+        // Handle concierge_action for navigation
+        if (data.concierge_action) {
+          const action = data.concierge_action;
+          
+          // Navigation actions
+          if (action.navigate_to) {
+            toast.info(`Taking you to ${action.navigate_to.replace('/', '').replace('-', ' ')}...`);
+            setTimeout(() => {
+              navigate(action.navigate_to);
+            }, 1500);
+          }
+          
+          // Scroll to section actions
+          if (action.scroll_to_section) {
+            const section = document.getElementById(action.scroll_to_section);
+            if (section) {
+              section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+          
+          // Show service wizard
+          if (action.show_wizard) {
+            // Could trigger a wizard modal here
+            toast.info(`Opening ${action.show_wizard} wizard...`);
+          }
+        }
+        
         // Add ticket info if created
         if (data.service_desk_ticket_id || data.concierge_action?.action_needed) {
           const ticketId = data.service_desk_ticket_id || data.ticket_id;
