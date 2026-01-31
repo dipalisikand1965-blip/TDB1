@@ -247,7 +247,19 @@ const QuickWinTip = ({
           {/* Actions */}
           <div className="flex items-center justify-between mt-4">
             <motion.button
-              onClick={() => onActionClick?.(currentTip)}
+              onClick={() => {
+                // Handle different action types
+                if (currentTip?.actionType === 'checklist') {
+                  // Show checklist popup via callback
+                  onActionClick?.({ ...currentTip, type: 'checklist' });
+                } else if (currentTip?.actionType === 'navigate' && currentTip?.actionUrl) {
+                  // Navigate to URL
+                  window.location.href = currentTip.actionUrl;
+                } else {
+                  // Default callback
+                  onActionClick?.(currentTip);
+                }
+              }}
               whileHover={{ scale: 1.02, x: 5 }}
               whileTap={{ scale: 0.98 }}
               className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 
