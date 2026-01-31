@@ -210,6 +210,64 @@ const MiraChatWidget = ({
     fetchPets();
   }, [user, token]);
   
+  // Fetch pet-specific recommendations and soul insights when pet changes
+  useEffect(() => {
+    if (!selectedPet?.id) return;
+    
+    const fetchPetIntelligence = async () => {
+      try {
+        // Fetch product recommendations for this pet + pillar
+        const recsResponse = await fetch(
+          `${getApiUrl()}/api/mira/pet-recommendations/${selectedPet.id}?pillar=${pillar}`,
+          { headers: token ? { 'Authorization': `Bearer ${token}` } : {} }
+        );
+        if (recsResponse.ok) {
+          const recsData = await recsResponse.json();
+          setPetRecommendations(recsData.recommendations || []);
+        }
+        
+        // Fetch pet soul insights
+        const soulResponse = await fetch(
+          `${getApiUrl()}/api/pets/${selectedPet.id}/soul`,
+          { headers: token ? { 'Authorization': `Bearer ${token}` } : {} }
+        );
+        if (soulResponse.ok) {
+          const soulData = await soulResponse.json();
+          setPetSoulInsights(soulData);
+        }
+        
+        // Set pillar-specific quick actions
+        const pillarActions = {
+          stay: ['Book Stay', 'Find Hotels', 'Pet-Friendly Resorts'],
+          care: ['Book Grooming', 'Vet Consult', 'Wellness Check'],
+          fit: ['Start Workout', 'Track Activity', 'Fitness Plan'],
+          travel: ['Plan Trip', 'Travel Kit', 'Pet Passport'],
+          celebrate: ['Order Cake', 'Party Planning', 'Custom Treats'],
+          dine: ['Order Food', 'Special Diet', 'Meal Plan'],
+          enjoy: ['Find Playdate', 'Dog Park', 'Social Events'],
+          learn: ['Start Training', 'Book Class', 'Behavior Tips'],
+          paperwork: ['Get Insurance', 'Registration', 'Health Records'],
+          advisory: ['Expert Consult', 'Nutrition Plan', 'Behavior Help'],
+          emergency: ['24/7 Vet', 'First Aid', 'Emergency Contacts'],
+          farewell: ['Memorial', 'Support', 'Rainbow Bridge'],
+          adopt: ['Browse Pets', 'Apply', 'Foster'],
+          shop: ['Best Sellers', 'Deals', 'New Arrivals']
+        };
+        setQuickActions(pillarActions[pillar] || ['Help', 'Browse', 'Book']);
+        
+      } catch (error) {
+        console.debug('Failed to fetch pet intelligence:', error);
+      }
+    };
+    
+    fetchPetIntelligence();
+    
+    // Reset messages when pet changes to show new personalized greeting
+    if (isOpen) {
+      setMessages([]);
+    }
+  }, [selectedPet?.id, pillar, token, isOpen]);
+  
   // Add welcome message when widget opens
   useEffect(() => {
     if (isOpen && messages.length === 0) {
