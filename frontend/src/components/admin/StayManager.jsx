@@ -188,7 +188,7 @@ const StayManager = ({ getAuthHeader }) => {
 
   const fetchBundles = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/stay/bundles`, {
+      const response = await fetch(`${API_URL}/api/stay/admin/bundles`, {
         headers: getAuthHeader()
       });
       if (response.ok) {
