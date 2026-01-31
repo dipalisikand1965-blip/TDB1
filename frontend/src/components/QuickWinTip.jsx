@@ -258,12 +258,7 @@ const QuickWinTip = ({
       setCurrentTip(randomTip);
       setIsRefreshing(false);
     }, 300);
-  }, [apiTips, pillar, petBreed, petAge]);
-
-  // Call selectTip when dependencies change
-  useEffect(() => {
-    selectTip();
-  }, [selectTip, petName]);
+  };
 
   if (!currentTip) return null;
 
