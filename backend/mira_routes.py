@@ -4687,3 +4687,215 @@ async def quick_book(
         "service_type": request.serviceType,  # Return the service type for frontend display
         "message": f"Your {request.serviceType} booking request for {request.date} at {request.time} has been submitted. Our team will confirm shortly."
     }
+
+
+# ==================== SAVED KITS API ====================
+
+class SaveKitRequest(BaseModel):
+    """Request model for saving a kit to member profile"""
+    kit_name: str
+    kit_type: str
+    products: List[dict]
+    pet_id: Optional[str] = None
+    occasion: Optional[str] = None
+    notes: Optional[str] = None
+
+@router.post("/kits/save")
+async def save_kit_to_profile(
+    request: SaveKitRequest,
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Save an assembled kit to member's profile for easy reordering.
+    Creates a saved kit that can be viewed, edited, and reordered later.
+    """
+    db = get_db()
+    
+    # Get user from token (required for saving)
+    user = None
+    if authorization and authorization.startswith("Bearer "):
+        token = authorization.split(" ")[1]
+        try:
+            import jwt
+            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            user_email = payload.get("sub") or payload.get("user_id")
+            if user_email:
+                user = await db.users.find_one(
+                    {"$or": [{"email": user_email}, {"id": user_email}]}, 
+                    {"_id": 0}
+                )
+        except Exception as e:
+            logger.warning(f"Token decode error in save_kit: {e}")
+    
+    if not user:
+        raise HTTPException(status_code=401, detail="Login required to save kits")
+    
+    now = datetime.now(timezone.utc)
+    kit_id = f"KIT-{uuid.uuid4().hex[:8].upper()}"
+    
+    # Calculate kit totals
+    total_price = 0
+    product_count = 0
+    for p in request.products:
+        if p.get("price") and not p.get("is_service"):
+            try:
+                total_price += float(p.get("price", 0))
+                product_count += 1
+            except:
+                pass
+    
+    # Get pet info if pet_id provided
+    pet_info = None
+    if request.pet_id:
+        pet_info = await db.pets.find_one({"id": request.pet_id}, {"_id": 0, "name": 1, "breed": 1, "image": 1})
+    
+    saved_kit = {
+        "id": kit_id,
+        "user_id": user.get("id"),
+        "user_email": user.get("email"),
+        "kit_name": request.kit_name,
+        "kit_type": request.kit_type,
+        "products": request.products,
+        "product_count": product_count,
+        "service_count": len([p for p in request.products if p.get("is_service")]),
+        "estimated_total": total_price,
+        "pet_id": request.pet_id,
+        "pet_info": pet_info,
+        "occasion": request.occasion,
+        "notes": request.notes,
+        "created_at": now,
+        "updated_at": now,
+        "last_ordered_at": None,
+        "order_count": 0,
+        "status": "active"  # active, archived
+    }
+    
+    await db.saved_kits.insert_one(saved_kit)
+    logger.info(f"Saved kit {kit_id} for user {user.get('email')}")
+    
+    return {
+        "success": True,
+        "kit_id": kit_id,
+        "message": f"Kit '{request.kit_name}' saved to your profile! You can find it in My Kits anytime.",
+        "kit": {
+            "id": kit_id,
+            "name": request.kit_name,
+            "type": request.kit_type,
+            "product_count": product_count,
+            "estimated_total": total_price
+        }
+    }
+
+
+@router.get("/kits/saved")
+async def get_saved_kits(
+    authorization: Optional[str] = Header(None),
+    status: str = "active"
+):
+    """
+    Get all saved kits for the logged-in user.
+    """
+    db = get_db()
+    
+    # Get user from token
+    user = None
+    if authorization and authorization.startswith("Bearer "):
+        token = authorization.split(" ")[1]
+        try:
+            import jwt
+            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+            user_email = payload.get("sub") or payload.get("user_id")
+            if user_email:
+                user = await db.users.find_one(
+                    {"$or": [{"email": user_email}, {"id": user_email}]}, 
+                    {"_id": 0}
+                )
+        except Exception as e:
+            logger.warning(f"Token decode error: {e}")
+    
+    if not user:
+        return {"kits": [], "total": 0}
+    
+    # Query saved kits
+    query = {"user_email": user.get("email")}
+    if status != "all":
+        query["status"] = status
+    
+    kits = await db.saved_kits.find(query, {"_id": 0}).sort("created_at", -1).to_list(50)
+    
+    return {
+        "kits": kits,
+        "total": len(kits)
+    }
+
+
+@router.get("/kits/saved/{kit_id}")
+async def get_saved_kit_detail(
+    kit_id: str,
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Get details of a specific saved kit.
+    """
+    db = get_db()
+    
+    kit = await db.saved_kits.find_one({"id": kit_id}, {"_id": 0})
+    if not kit:
+        raise HTTPException(status_code=404, detail="Kit not found")
+    
+    return {"kit": kit}
+
+
+@router.delete("/kits/saved/{kit_id}")
+async def delete_saved_kit(
+    kit_id: str,
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Archive (soft delete) a saved kit.
+    """
+    db = get_db()
+    
+    result = await db.saved_kits.update_one(
+        {"id": kit_id},
+        {"$set": {"status": "archived", "updated_at": datetime.now(timezone.utc)}}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Kit not found")
+    
+    return {"success": True, "message": "Kit archived successfully"}
+
+
+@router.post("/kits/saved/{kit_id}/reorder")
+async def reorder_saved_kit(
+    kit_id: str,
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Get kit products for adding to cart (reorder flow).
+    Updates the last_ordered_at timestamp.
+    """
+    db = get_db()
+    
+    kit = await db.saved_kits.find_one({"id": kit_id}, {"_id": 0})
+    if not kit:
+        raise HTTPException(status_code=404, detail="Kit not found")
+    
+    # Update reorder stats
+    await db.saved_kits.update_one(
+        {"id": kit_id},
+        {
+            "$set": {"last_ordered_at": datetime.now(timezone.utc)},
+            "$inc": {"order_count": 1}
+        }
+    )
+    
+    return {
+        "success": True,
+        "kit_id": kit_id,
+        "kit_name": kit.get("kit_name"),
+        "products": kit.get("products", []),
+        "message": f"Ready to add {len(kit.get('products', []))} items to your cart!"
+    }
+
