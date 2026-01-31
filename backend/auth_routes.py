@@ -339,6 +339,13 @@ async def login_user(user: UserLogin):
         new_hash = get_password_hash_secure(user.password)
         await db.users.update_one({"email": user.email}, {"$set": {"password_hash": new_hash}})
     
+    # Record login as a streak action
+    try:
+        from engagement_engine import record_streak_action
+        await record_streak_action(db_user["id"], "login")
+    except Exception as e:
+        logger.warning(f"Failed to record streak action: {e}")
+    
     # Get membership access info
     access = await check_mira_access(user.email)
     
