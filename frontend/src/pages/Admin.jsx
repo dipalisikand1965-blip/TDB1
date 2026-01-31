@@ -1936,6 +1936,11 @@ const Admin = () => {
           <UnifiedInbox credentials={{ username, password }} />
         )}
 
+        {/* Pillar Queues */}
+        {activeTab === 'pillar-queues' && (
+          <PillarQueues authHeaders={getAuthHeaders()} />
+        )}
+
         {/* Celebrations Calendar */}
         {activeTab === 'celebrations' && (
           <CelebrationsCalendar />
