@@ -15,12 +15,12 @@ const Footer = () => {
   const { user } = useAuth();
   
   return (
-    <footer className="bg-gray-900 text-gray-300">
+    <footer className="bg-gray-900 text-gray-300 relative z-10">
       {/* WhatsApp floating button moved to FloatingContactButton.jsx stack */}
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* 5-Column Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        {/* Mobile: 1 column stacked, Tablet: 2-3 columns, Desktop: 5 columns */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 sm:gap-8">
           
           {/* COLUMN 1 — THE SYSTEM (CORE IDENTITY) */}
           <div className="col-span-2 md:col-span-1">
