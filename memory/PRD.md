@@ -21,6 +21,23 @@
 
 **Fix**: Added dedicated useEffect that triggers speech when `welcomeGenerated` and `isOpen` are both true
 
+### ✅ SAVE KITS TO PROFILE - IMPLEMENTED (Jan 31, 2026)
+
+**Feature**: Members can save assembled kits to their profile for easy reordering
+
+**Backend Endpoints**:
+- `POST /api/mira/kits/save` - Save a kit
+- `GET /api/mira/kits/saved` - List saved kits
+- `GET /api/mira/kits/saved/{kit_id}` - Get kit details
+- `DELETE /api/mira/kits/saved/{kit_id}` - Archive a kit
+- `POST /api/mira/kits/saved/{kit_id}/reorder` - Get products for reorder
+
+**Frontend**: "Save Kit to My Profile" button with Heart icon in Mira chat
+
+**Database**: `saved_kits` collection tracks kit_name, products, estimated_total, order_count, last_ordered_at
+
+---
+
 ### ✅ CONVERSATIONAL KIT ASSEMBLY - IMPLEMENTED (Jan 31, 2026)
 
 **Feature**: Mira now gathers info before assembling kits instead of immediately showing products
