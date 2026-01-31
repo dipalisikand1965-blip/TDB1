@@ -143,7 +143,7 @@ const TravelPage = () => {
   const [showWizard, setShowWizard] = useState(false);
   const [wizardStep, setWizardStep] = useState(1); // 1: type, 2: pet, 3: details, 4: confirm
   const [userPets, setUserPets] = useState([]);
-  const [selectedPet, setSelectedPet] = useState(null);
+  const [selectedPets, setSelectedPets] = useState([]); // Multi-pet support
   const [selectedType, setSelectedType] = useState(null);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -174,6 +174,20 @@ const TravelPage = () => {
     contact_email: '',
     contact_phone: ''
   });
+
+  // Multi-pet selection helpers
+  const handlePetToggle = (pet) => {
+    setSelectedPets(prev => {
+      const isSelected = prev.some(p => (p.id || p._id) === (pet.id || pet._id));
+      if (isSelected) {
+        return prev.filter(p => (p.id || p._id) !== (pet.id || pet._id));
+      }
+      return [...prev, pet];
+    });
+  };
+  
+  const handleSelectAllPets = () => setSelectedPets([...userPets]);
+  const handleClearAllPets = () => setSelectedPets([]);
 
   // Scroll to top on mount, or to hash if present
   useEffect(() => {
