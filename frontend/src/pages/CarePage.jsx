@@ -949,7 +949,7 @@ const CarePage = () => {
           )}
 
           {/* Step 3: Care Details */}
-          {wizardStep === 3 && selectedType && (selectedPet || formData.pet_name) && (
+          {wizardStep === 3 && selectedType && (selectedPets.length > 0 || formData.pet_name) && (
             <div className="space-y-4" ref={formRef}>
               {/* Selected Summary */}
               <Card className="p-3 bg-pink-50 border-pink-200 flex items-center gap-3">
@@ -959,7 +959,12 @@ const CarePage = () => {
                 <div className="flex-1">
                   <span className="text-sm text-pink-600">{CARE_TYPES[selectedType]?.name}</span>
                   <span className="mx-2 text-pink-300">•</span>
-                  <span className="text-sm font-medium text-pink-900">{selectedPet.name}</span>
+                  <span className="text-sm font-medium text-pink-900">
+                    {selectedPets.length > 0 
+                      ? selectedPets.map(p => p.name).join(', ')
+                      : formData.pet_name}
+                    {selectedPets.length > 1 && <Badge className="ml-2 bg-pink-200 text-pink-700 text-[10px]">Multi-pet</Badge>}
+                  </span>
                 </div>
                 <button onClick={() => setWizardStep(1)} className="text-sm text-pink-600 hover:underline">
                   Change
@@ -968,11 +973,11 @@ const CarePage = () => {
               
               {/* Care Form */}
               <div>
-                <Label>Describe what {selectedPet.name} needs</Label>
+                <Label>Describe what {selectedPets.length > 0 ? selectedPets.map(p => p.name).join(' & ') : formData.pet_name} need(s)</Label>
                 <Textarea
                   value={formData.description}
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
-                  placeholder={`E.g., ${selectedPet.name} needs a full groom with nail trimming...`}
+                  placeholder={`E.g., ${selectedPets[0]?.name || formData.pet_name || 'Pet'} needs a full groom with nail trimming...`}
                   rows={3}
                   required
                 />
