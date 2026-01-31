@@ -600,7 +600,7 @@ const CarePage = () => {
               We Know Your Pet, So Care Is Personal
             </h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Every care request starts with your pet's profile — their needs, preferences, and history guide everything.
+              Every care request starts with your pet&apos;s profile — their needs, preferences, and history guide everything.
             </p>
           </div>
           
@@ -656,7 +656,7 @@ const CarePage = () => {
               Care <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-600 to-pink-600">Concierge®</span> Experiences
             </h2>
             <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto px-4">
-              Comprehensive care journeys managed with your pet's unique needs at heart.
+              Comprehensive care journeys managed with your pet&apos;s unique needs at heart.
             </p>
           </div>
           
@@ -764,7 +764,7 @@ const CarePage = () => {
             <Card className="p-12 text-center bg-gray-50">
               <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">Care Bundles Coming Soon</h3>
-              <p className="text-gray-500">We're preparing amazing care kits for your furry friend!</p>
+              <p className="text-gray-500">We&apos;re preparing amazing care kits for your furry friend!</p>
             </Card>
           )}
         </div>
@@ -802,7 +802,7 @@ const CarePage = () => {
             Your Pet Deserves Care That Understands Them
           </h2>
           <p className="text-white/80 text-lg mb-8 max-w-2xl mx-auto">
-            From grooming to training, every service is personalized because we know your pet's unique needs.
+            From grooming to training, every service is personalized because we know your pet&apos;s unique needs.
           </p>
           <Button 
             onClick={handleStartCare}
