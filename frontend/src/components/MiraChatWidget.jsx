@@ -346,14 +346,59 @@ const MiraChatWidget = ({
       addToCart(product);
       toast.success(`${product.name} added to cart!`);
     }
+    // Track the click for personalization
+    trackClick('product_recommendation', product.id, { pillar, source: 'mira_chat' });
   };
   
-  const quickPrompts = [
-    `Tell me about ${pillar} services`,
-    selectedPet ? `What's best for ${selectedPet.name}?` : 'Help me choose a service',
-    'Show me popular products',
-    'I need to book an appointment'
-  ];
+  // Generate personalized quick prompts based on context
+  const getPersonalizedPrompts = () => {
+    // Use dynamic prompts from API if available
+    if (dynamicPrompts.length > 0) {
+      return dynamicPrompts.slice(0, 4);
+    }
+    
+    // Fallback to context-aware prompts
+    const petName = selectedPet?.name;
+    const petBreed = selectedPet?.breed;
+    const petAge = selectedPet?.age;
+    
+    const basePrompts = [];
+    
+    // Pet-specific prompts
+    if (petName) {
+      basePrompts.push(`What's recommended for ${petName}?`);
+      if (petBreed) {
+        basePrompts.push(`${petBreed}-specific ${pillar} tips`);
+      }
+      if (petAge && parseInt(petAge) > 7) {
+        basePrompts.push(`Senior ${pillar} options for ${petName}`);
+      }
+    }
+    
+    // Pillar-specific prompts
+    const pillarPrompts = {
+      stay: ['Find pet-friendly hotels', 'Book a staycation', 'Pet boarding options'],
+      care: ['Book grooming session', 'Vet consultation', 'Wellness checkup'],
+      fit: ['Exercise routines', 'Fitness tracking', 'Weight management'],
+      travel: ['Pet travel checklist', 'Flight-friendly carriers', 'Road trip essentials'],
+      celebrate: ['Plan birthday party', 'Custom pet cakes', 'Party supplies'],
+      dine: ['Pet-friendly restaurants', 'Special diet options', 'Meal delivery'],
+      enjoy: ['Outdoor activities', 'Dog parks nearby', 'Social meetups'],
+      learn: ['Training courses', 'Behavior tips', 'Puppy school'],
+      paperwork: ['Pet insurance', 'Registration help', 'Health records'],
+      advisory: ['Pet expert advice', 'Nutrition guidance', 'Behavior consultation'],
+      emergency: ['24/7 vet help', 'First aid tips', 'Emergency contacts'],
+      farewell: ['Memorial services', 'Grief support', 'Rainbow bridge'],
+      adopt: ['Adoption process', 'Foster programs', 'Rescue pets nearby'],
+      shop: ['Best sellers', 'New arrivals', 'Sale items']
+    };
+    
+    const specific = pillarPrompts[pillar] || ['Show me options', 'What do you recommend?', 'Help me choose'];
+    
+    return [...basePrompts, ...specific].slice(0, 4);
+  };
+  
+  const quickPrompts = getPersonalizedPrompts();
   
   // Floating Button (when closed)
   if (!isOpen) {
