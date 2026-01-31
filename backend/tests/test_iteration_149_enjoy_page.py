@@ -174,17 +174,16 @@ class TestEnjoyRSVPFlow:
         pets_response = self.session.get(f"{BASE_URL}/api/pets/my-pets")
         pets = pets_response.json().get("pets", [])
         
-        # Create RSVP
+        # Create RSVP - API requires pet_name field (not pet_names)
         rsvp_data = {
             "experience_id": experience.get("id"),
-            "experience_name": experience.get("name"),
-            "user_email": self.user.get("email"),
-            "user_name": self.user.get("name"),
-            "pet_ids": [pets[0].get("id") or pets[0].get("_id")] if pets else [],
-            "pet_names": pets[0].get("name") if pets else "Test Pet",
+            "pet_name": pets[0].get("name") if pets else "Test Pet",  # Required field
+            "pet_id": pets[0].get("id") or pets[0].get("_id") if pets else None,
             "number_of_pets": 1,
             "number_of_humans": 1,
-            "special_requirements": "Test RSVP from iteration 149"
+            "special_requirements": "Test RSVP from iteration 149",
+            "user_name": self.user.get("name"),
+            "user_email": self.user.get("email")
         }
         
         response = self.session.post(f"{BASE_URL}/api/enjoy/rsvp", json=rsvp_data)
