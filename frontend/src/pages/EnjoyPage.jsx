@@ -475,27 +475,12 @@ const EnjoyPage = () => {
         </div>
       </div>
 
-      {/* ==================== MIRA'S PERSONALIZED PICKS ==================== */}
-      {user && selectedPets.length > 0 && (
-        <div className="py-10 bg-gradient-to-b from-white to-red-50/30">
-          <div className="max-w-6xl mx-auto px-4">
-            <MiraPicksCarousel
-              pillar="enjoy"
-              petId={selectedPets[0]?.id || selectedPets[0]?._id}
-              petName={selectedPets[0]?.name}
-              petPhoto={selectedPets[0]?.photo}
-              userId={user?.id}
-              onSelectService={(service) => handleRsvp(service)}
-              onSelectProduct={(product) => {
-                addToCart({ ...product, quantity: 1, type: 'product' });
-                toast({ title: "Added to cart!", description: `${product.name} added` });
-              }}
-              onQuickAdd={(item) => addToCart({ ...item, quantity: 1, type: item.type || 'product' })}
-              className="mb-8"
-            />
-          </div>
+      {/* ==================== PERSONALIZED PICKS ==================== */}
+      <div className="py-10 bg-gradient-to-b from-white to-red-50/30">
+        <div className="max-w-6xl mx-auto px-4">
+          <PersonalizedPicks pillar="enjoy" />
         </div>
-      )}
+      </div>
 
       {/* ==================== TRANSFORMATION STORIES ==================== */}
       <div className="py-12 bg-white">
