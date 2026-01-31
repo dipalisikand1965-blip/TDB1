@@ -376,9 +376,10 @@ const CarePage = () => {
       
       setRequestResult(result);
       setWizardStep(4);
+      const petNames = petsData.map(p => p.name).join(', ') || 'your pet';
       toast({
         title: "Request Submitted! 🐾",
-        description: `We'll review ${selectedPet?.name || 'your pet'}'s care needs and get back to you soon. Ticket: ${result.ticket_id}`
+        description: `We'll review ${petNames}'s care needs and get back to you soon. Ticket: ${result.ticket_id}`
       });
     } catch (error) {
       console.error('Error submitting care request:', error);
