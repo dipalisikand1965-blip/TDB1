@@ -95,11 +95,12 @@ const DinePage = () => {
           setBundles(bundlesData.bundles || []);
         }
         
-        // Fetch dine products
-        const productsRes = await fetch(`${API_URL}/api/dine/products`);
+        // Fetch dine products using pillar resolver
+        const productsRes = await fetch(`${API_URL}/api/pillar-resolver/products/dine?limit=30`);
         if (productsRes.ok) {
           const productsData = await productsRes.json();
           setProducts(productsData.products || []);
+          console.log(`[DinePage] Loaded ${productsData.count} products via pillar resolver`);
         }
       } catch (error) {
         console.error('Error fetching data:', error);
