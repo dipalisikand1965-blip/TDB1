@@ -375,9 +375,11 @@ const MiraChatWidget = ({
   
   // Generate personalized quick prompts based on context
   const getPersonalizedPrompts = () => {
-    // Use dynamic prompts from API if available
+    // Use dynamic prompts from API if available - ensure they're all strings
     if (dynamicPrompts.length > 0) {
-      return dynamicPrompts.slice(0, 4);
+      return dynamicPrompts
+        .filter(p => typeof p === 'string')
+        .slice(0, 4);
     }
     
     // Fallback to context-aware prompts
