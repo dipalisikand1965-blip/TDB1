@@ -470,20 +470,21 @@ const LearnPage = () => {
       {/* === ELEVATED CONCIERGE® LEARN EXPERIENCES === */}
       <div className="py-16 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-4 py-2 rounded-full mb-4">
-              <Sparkles className="w-4 h-4" />
-              <span className="text-sm font-medium">Elevated Experiences</span>
+          <div className="text-center mb-8 sm:mb-12">
+            <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full mb-3 sm:mb-4">
+              <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span className="text-xs sm:text-sm font-medium">Elevated Experiences</span>
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
               Learn <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Concierge®</span> Experiences
             </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Beyond training classes — we understand your pet's learning style, match them with the right specialists, and support your entire journey from assessment to transformation.
+            <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto px-4">
+              We match your pet with the right specialists for their unique learning style.
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 gap-6">
+          {/* 2x2 grid on mobile */}
+          <div className="grid grid-cols-2 md:grid-cols-2 gap-3 sm:gap-6">
             {LEARN_EXPERIENCES.map((exp, idx) => (
               <ConciergeExperienceCard
                 key={idx}
@@ -499,9 +500,9 @@ const LearnPage = () => {
             ))}
           </div>
           
-          <div className="mt-10 text-center">
-            <p className="text-sm text-gray-500">
-              💬 Not sure where to start? <button onClick={() => setShowRequestModal(true)} className="text-blue-600 hover:underline font-medium">Tell us about your pet</button> and we'll guide the way.
+          <div className="mt-6 sm:mt-10 text-center">
+            <p className="text-xs sm:text-sm text-gray-500">
+              💬 Not sure where to start? <button onClick={() => setShowRequestModal(true)} className="text-blue-600 hover:underline font-medium">Tell us about your pet</button>
             </p>
           </div>
         </div>
