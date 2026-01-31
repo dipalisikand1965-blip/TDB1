@@ -853,13 +853,32 @@ const FitPage = () => {
             </div>
           )}
           
-          {/* Products Grid */}
+          {/* Products Grid with Load More */}
           {products.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-              {products.slice(0, 10).map((product) => (
-                <ProductCard key={product.id} product={product} pillar="fit" />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+                {products.slice(0, productsToShow).map((product) => (
+                  <ProductCard key={product.id} product={product} pillar="fit" />
+                ))}
+              </div>
+              
+              {/* Load More Button */}
+              {products.length > productsToShow && (
+                <div className="text-center mt-8">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setProductsToShow(prev => prev + 10)}
+                    className="px-8 py-3 rounded-full border-2 border-teal-300 text-teal-600 hover:bg-teal-50"
+                  >
+                    Load More Products
+                    <ChevronDown className="w-4 h-4 ml-2" />
+                  </Button>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Showing {Math.min(productsToShow, products.length)} of {products.length}
+                  </p>
+                </div>
+              )}
+            </>
           ) : (
             <Card className="p-12 text-center border-gray-100">
               <ShoppingBag className="w-16 h-16 text-gray-300 mx-auto mb-4" />
