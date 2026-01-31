@@ -3175,6 +3175,7 @@ What would you like to explore? 🐾"""
             return {
                 "kit_type": detected_kit,
                 "kit_items": detected_items,
+                "kit_services": PRODUCT_CATEGORIES.get(detected_kit, {}).get("services", []) if detected_kit else [],
                 "specific_items": specific_items,
                 "target_pillar": target_pillar,
                 "is_kit_request": detected_kit is not None
