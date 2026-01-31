@@ -81,6 +81,7 @@ const TRAVEL_EXPERIENCES = [
     gradient: "from-violet-500 to-purple-600",
     badge: "Most Popular",
     badgeColor: "bg-amber-500",
+    image: "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=80",
     highlights: [
       "Airline policy navigation & booking assistance",
       "IATA-compliant crate sizing & procurement",
@@ -93,6 +94,7 @@ const TRAVEL_EXPERIENCES = [
     description: "Planning a scenic drive with your pet? We map out pet-friendly stops, dining spots, and overnight stays — ensuring your four-legged co-pilot enjoys every mile.",
     icon: "🚗",
     gradient: "from-blue-500 to-cyan-500",
+    image: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=800&q=80",
     highlights: [
       "Custom route planning with pet stops",
       "Pet-friendly restaurant & café bookings",
@@ -107,6 +109,7 @@ const TRAVEL_EXPERIENCES = [
     gradient: "from-amber-500 to-orange-500",
     badge: "White Glove",
     badgeColor: "bg-purple-600",
+    image: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&q=80",
     highlights: [
       "End-to-end relocation coordination",
       "International & domestic paperwork",
@@ -119,6 +122,7 @@ const TRAVEL_EXPERIENCES = [
     description: "Taking your pet to the vet shouldn't be stressful. We arrange comfortable transport, wait with your pet if needed, and ensure they arrive calm and cared for.",
     icon: "🏥",
     gradient: "from-rose-500 to-pink-500",
+    image: "https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?w=800&q=80",
     highlights: [
       "Comfortable, climate-controlled transport",
       "Vetted drivers trained in pet handling",
