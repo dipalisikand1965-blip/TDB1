@@ -171,6 +171,33 @@ const StayPage = () => {
     }
   }, []);
   
+  // Hero image rotation
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setHeroIndex(prev => (prev + 1) % HERO_IMAGES.length);
+    }, 6000);
+    return () => clearInterval(interval);
+  }, []);
+  
+  // Fetch user's pets
+  useEffect(() => {
+    const fetchUserPets = async () => {
+      if (!token) return;
+      try {
+        const response = await fetch(`${API_URL}/api/pets`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setUserPets(data.pets || []);
+        }
+      } catch (error) {
+        console.debug('Pets fetch error:', error);
+      }
+    };
+    fetchUserPets();
+  }, [token]);
+  
   const fetchBoardingFacilities = async () => {
     try {
       const params = new URLSearchParams();
