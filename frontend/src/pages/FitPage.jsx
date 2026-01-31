@@ -737,9 +737,9 @@ const FitPage = () => {
         <div className="max-w-7xl mx-auto px-4">
           <MiraPicksCarousel
             pillar="fit"
-            petId={selectedPet?.id || userPets[0]?.id}
-            petName={selectedPet?.name || userPets[0]?.name}
-            petPhoto={selectedPet ? getPetPhotoUrl(selectedPet) : userPets[0] ? getPetPhotoUrl(userPets[0]) : null}
+            petId={selectedPets[0]?.id || userPets[0]?.id}
+            petName={selectedPets[0]?.name || userPets[0]?.name}
+            petPhoto={selectedPets[0] ? getPetPhotoUrl(selectedPets[0]) : userPets[0] ? getPetPhotoUrl(userPets[0]) : null}
             userId={user?.id}
             onSelectService={handleViewDetails}
             onSelectProduct={(product) => {
