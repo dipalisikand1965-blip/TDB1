@@ -442,6 +442,7 @@ const StayPage = () => {
         <div className="max-w-6xl mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-6 items-stretch">
             <ConversationalEntry 
+              pillar="stay"
               petName={userPets[0]?.name}
               onGoalSelect={(goal, message) => {
                 navigate(`/mira?context=stay_${goal.id}&preset=${encodeURIComponent(message)}`);
