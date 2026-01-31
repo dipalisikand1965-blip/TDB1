@@ -946,7 +946,7 @@ const TravelPage = () => {
                 <Textarea
                   value={formData.special_requirements}
                   onChange={(e) => setFormData({...formData, special_requirements: e.target.value})}
-                  placeholder={`Any specific needs for ${selectedPet?.name || 'your pet'}? (anxiety, medication, feeding schedule, etc.)`}
+                  placeholder={`Any specific needs for ${selectedPets.length > 0 ? selectedPets.map(p => p.name).join(', ') : 'your pet'}? (anxiety, medication, feeding schedule, etc.)`}
                   rows={3}
                 />
               </div>
