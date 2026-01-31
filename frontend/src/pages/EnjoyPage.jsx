@@ -241,16 +241,16 @@ const EnjoyPage = () => {
     try {
       const rsvpData = {
         experience_id: selectedExperience.id,
-        experience_name: selectedExperience.name,
-        user_email: user?.email || rsvpForm.guest_email || '',
-        user_name: user?.name || rsvpForm.guest_name || '',
-        pet_ids: selectedPets.map(p => p.id || p._id),
-        pet_names: selectedPets.length > 0 
+        pet_id: selectedPets.length > 0 ? (selectedPets[0].id || selectedPets[0]._id) : null,
+        pet_name: selectedPets.length > 0 
           ? selectedPets.map(p => p.name).join(', ') 
           : rsvpForm.guest_pet_name,
+        pet_breed: selectedPets.length > 0 ? selectedPets[0].breed : rsvpForm.guest_pet_breed,
         number_of_pets: selectedPets.length || rsvpForm.number_of_pets,
         number_of_humans: rsvpForm.number_of_humans,
-        special_requirements: rsvpForm.special_requirements
+        special_requirements: rsvpForm.special_requirements,
+        user_name: user?.name || rsvpForm.guest_name || '',
+        user_email: user?.email || rsvpForm.guest_email || ''
       };
       
       const result = await createEnjoyRSVP(rsvpData);
