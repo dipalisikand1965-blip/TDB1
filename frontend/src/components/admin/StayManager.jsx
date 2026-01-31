@@ -174,7 +174,7 @@ const StayManager = ({ getAuthHeader }) => {
 
   const fetchProducts = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/products?pillar=stay&limit=100`, {
+      const response = await fetch(`${API_URL}/api/admin/stay/products`, {
         headers: getAuthHeader()
       });
       if (response.ok) {
