@@ -404,6 +404,54 @@ const StayManager = ({ getAuthHeader }) => {
     setEditingBundle(null);
   };
 
+  const resetProductForm = () => {
+    setProductForm({
+      name: '', description: '', price: '', original_price: '', image: '',
+      category: 'travel', tags: '', stock: '100', paw_reward_points: 0
+    });
+    setEditingProduct(null);
+  };
+
+  // Save product (create or update)
+  const saveProduct = async () => {
+    try {
+      const productData = {
+        name: productForm.name,
+        description: productForm.description,
+        price: parseFloat(productForm.price) || 0,
+        original_price: parseFloat(productForm.original_price) || null,
+        image: productForm.image,
+        category: productForm.category || 'travel',
+        tags: productForm.tags ? productForm.tags.split(',').map(t => t.trim()).filter(Boolean) : [],
+        stock: parseInt(productForm.stock) || 100,
+        paw_reward_points: parseInt(productForm.paw_reward_points) || 0,
+        pillar: 'stay'
+      };
+
+      if (editingProduct) {
+        await fetch(`${API_URL}/api/admin/stay/products/${editingProduct.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+          body: JSON.stringify(productData)
+        });
+        toast({ title: 'Product updated' });
+      } else {
+        await fetch(`${API_URL}/api/admin/stay/products`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+          body: JSON.stringify(productData)
+        });
+        toast({ title: 'Product created' });
+      }
+
+      setShowProductModal(false);
+      resetProductForm();
+      fetchProducts();
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to save product', variant: 'destructive' });
+    }
+  };
+
   // Filter data
   const filteredRequests = requests.filter(r => {
     if (searchQuery && !JSON.stringify(r).toLowerCase().includes(searchQuery.toLowerCase())) return false;
