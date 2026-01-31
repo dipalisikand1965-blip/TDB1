@@ -1300,6 +1300,22 @@ const TravelPage = () => {
         </DialogContent>
       </Dialog>
       
+      {/* Floating WhatsApp "Ask Concierge" Button */}
+      <a
+        href={`https://wa.me/919663185747?text=${encodeURIComponent(
+          selectedPets.length > 0 
+            ? `Hi! I need help with travel arrangements for my pet${selectedPets.length > 1 ? 's' : ''} ${selectedPets.map(p => p.name).join(', ')}. Can you assist?`
+            : `Hi! I'm interested in pet travel services. Can you help me plan a trip?`
+        )}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-20 left-4 z-40 bg-green-500 hover:bg-green-600 text-white px-4 py-3 rounded-full shadow-lg flex items-center gap-2 transition-all hover:scale-105"
+        data-testid="whatsapp-ask-concierge-btn"
+      >
+        <MessageCircle className="w-5 h-5" />
+        <span className="font-medium text-sm hidden sm:inline">Ask Concierge</span>
+      </a>
+      
       {/* Mira Floating Chat Widget */}
       <MiraChatWidget pillar="travel" />
       
