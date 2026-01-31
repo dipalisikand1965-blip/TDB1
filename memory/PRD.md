@@ -1,5 +1,28 @@
 # Pet Life Operating System - Product Requirements Document
 
+## Latest Update: January 31, 2026 - Session 2
+
+### ✅ P0 QUICK BOOK SERVICE TYPE BUG - FIXED
+
+**Issue**: Quick Book confirmation message showed wrong service type (e.g., "hotel_booking" for grooming requests)
+
+**Root Cause**: "grooming" keyword was matching "room" (from stay category) due to substring matching
+
+**Fixes Applied**:
+1. `mira_routes.py` line 1106: Added word boundary regex (`\b`) for keyword detection
+2. `mira_routes.py` line 4430: Backend returns `service_type` in quick-book response
+3. `MiraAI.jsx` line 1084: Frontend uses `data.service_type` from API response
+
+**Testing**: 11/11 backend tests passed (Iteration 146)
+
+### ✅ WELCOME MESSAGE AUTO-SPEAK - FIXED
+
+**Issue**: Welcome message was not spoken automatically when Mira opened
+
+**Fix**: Added dedicated useEffect that triggers speech when `welcomeGenerated` and `isOpen` are both true
+
+---
+
 ## Original Problem Statement
 Build a comprehensive "Pet Life Operating System" where every user or system-generated signal (click, search, voice command, form submission, etc.) must trigger a mandatory, non-negotiable **Unified Signal Flow**: 
 **1. Notification → 2. Service Desk Ticket → 3. Unified Inbox Entry**
