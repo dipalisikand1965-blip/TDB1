@@ -2,10 +2,13 @@
  * MiraChatWidget - Floating Chat Widget for Mira AI
  * 
  * MakeMyTrip-style floating chat widget that:
- * - Shows as a small circular button when closed
+ * - Shows as the beautiful MiraOrb when closed
  * - Opens as a clean chat modal when clicked
  * - Non-blocking and can be minimized anytime
  * - Works on all pages (pillar pages, homepage, etc.)
+ * 
+ * IMPORTANT: This is a UI wrapper around Mira's intelligence.
+ * All core Mira logic (voice, ticket creation, recommendations) is preserved.
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
@@ -16,6 +19,7 @@ import { Badge } from './ui/badge';
 import { getApiUrl } from '../utils/api';
 import { toast } from 'sonner';
 import { useMiraSignal } from '../hooks/useMiraSignal';
+import MiraOrb from './MiraOrb';
 import { 
   X, Send, Loader2, Mic, MicOff, Volume2, VolumeX, 
   ChevronDown, Sparkles, PawPrint, MessageCircle, Zap,
