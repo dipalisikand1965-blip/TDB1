@@ -242,6 +242,125 @@ async def delete_adoptable_pet(pet_id: str):
     return {"success": True, "message": "Pet removed from listings"}
 
 
+# ==================== PRODUCTS ====================
+
+@router.get("/products")
+async def get_adopt_products(limit: int = 50):
+    """Get adoption-related products"""
+    db = get_db()
+    products = await db.products.find(
+        {"$or": [{"pillar": "adopt"}, {"category": "adopt"}, {"tags": {"$in": ["adopt", "adoption", "rescue"]}}]},
+        {"_id": 0}
+    ).limit(limit).to_list(limit)
+    return {"products": products, "total": len(products)}
+
+
+@router.post("/admin/products")
+async def create_adopt_product(product: dict):
+    """Create a new adopt product"""
+    db = get_db()
+    product_id = f"adopt-{uuid.uuid4().hex[:8]}"
+    
+    product_doc = {
+        "id": product_id,
+        "name": product.get("name", ""),
+        "description": product.get("description", ""),
+        "price": float(product.get("price", 0)),
+        "original_price": float(product.get("original_price", 0)) if product.get("original_price") else None,
+        "image": product.get("image", ""),
+        "category": "adopt",
+        "pillar": "adopt",
+        "tags": product.get("tags", []),
+        "created_at": get_utc_timestamp(),
+        "updated_at": get_utc_timestamp()
+    }
+    
+    await db.products.insert_one(product_doc)
+    return {"message": "Product created", "id": product_id}
+
+
+@router.put("/admin/products/{product_id}")
+async def update_adopt_product(product_id: str, product: dict):
+    """Update an adopt product"""
+    db = get_db()
+    
+    product["updated_at"] = get_utc_timestamp()
+    product.pop("id", None)
+    product.pop("_id", None)
+    
+    result = await db.products.update_one({"id": product_id}, {"$set": product})
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    return {"message": "Product updated"}
+
+
+@router.delete("/admin/products/{product_id}")
+async def delete_adopt_product(product_id: str):
+    """Delete an adopt product"""
+    db = get_db()
+    result = await db.products.delete_one({"id": product_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    return {"message": "Product deleted"}
+
+
+@router.post("/admin/seed-products")
+async def seed_adopt_products():
+    """Seed default adopt products"""
+    db = get_db()
+    now = get_utc_timestamp()
+    
+    default_products = [
+        {"id": "adopt-prod-kit", "name": "New Pet Welcome Kit", "description": "Essentials for newly adopted pets: bowl, collar, tag, treats", "price": 1499, "original_price": 1899, "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600", "category": "adopt", "tags": ["kit", "welcome", "essentials"], "pillar": "adopt"},
+        {"id": "adopt-prod-crate", "name": "Comfort Crate for New Pets", "description": "Cozy crate to help adopted pets feel safe", "price": 2999, "original_price": 3499, "image": "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600", "category": "adopt", "tags": ["crate", "comfort", "safety"], "pillar": "adopt"},
+        {"id": "adopt-prod-calming", "name": "Rescue Calming Supplement", "description": "Natural calming aid for anxious rescue pets", "price": 899, "original_price": 1099, "image": "https://images.unsplash.com/photo-1507146426996-ef05306b995a?w=600", "category": "adopt", "tags": ["calming", "supplement", "rescue"], "pillar": "adopt"},
+        {"id": "adopt-prod-bed", "name": "Orthopedic Comfort Bed", "description": "Memory foam bed for senior rescues", "price": 2499, "original_price": 2999, "image": "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=600", "category": "adopt", "tags": ["bed", "orthopedic", "senior"], "pillar": "adopt"},
+        {"id": "adopt-prod-guide", "name": "Adoption Success Guide Book", "description": "Complete guide to helping rescued pets adjust", "price": 499, "original_price": 649, "image": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=600", "category": "adopt", "tags": ["guide", "book", "training"], "pillar": "adopt"},
+        {"id": "adopt-prod-donation", "name": "Shelter Donation Gift Card", "description": "Support local shelters with a donation", "price": 500, "original_price": 500, "image": "https://images.unsplash.com/photo-1534361960057-19889db9621e?w=600", "category": "adopt", "tags": ["donation", "shelter", "support"], "pillar": "adopt"},
+    ]
+    
+    seeded = 0
+    for product in default_products:
+        product["created_at"] = now
+        product["updated_at"] = now
+        result = await db.products.update_one({"id": product["id"]}, {"$set": product}, upsert=True)
+        if result.upserted_id or result.modified_count:
+            seeded += 1
+    
+    return {"message": f"Seeded {seeded} adopt products", "products_seeded": seeded}
+
+
+@router.get("/admin/products/export")
+async def export_adopt_products():
+    """Export adopt products as CSV-ready data"""
+    db = get_db()
+    products = await db.products.find({"pillar": "adopt"}, {"_id": 0}).to_list(500)
+    return {"products": products, "total": len(products)}
+
+
+@router.post("/admin/products/import")
+async def import_adopt_products(products: List[dict]):
+    """Import adopt products from CSV/JSON"""
+    db = get_db()
+    now = get_utc_timestamp()
+    
+    imported = 0
+    for product in products:
+        product["id"] = product.get("id") or f"adopt-{uuid.uuid4().hex[:8]}"
+        product["category"] = "adopt"
+        product["pillar"] = "adopt"
+        product["created_at"] = now
+        product["updated_at"] = now
+        await db.products.update_one({"id": product["id"]}, {"$set": product}, upsert=True)
+        imported += 1
+    
+    return {"message": f"Imported {imported} products", "imported": imported}
+
+
 # ============== ADOPTION APPLICATIONS ==============
 
 @router.post("/applications")
