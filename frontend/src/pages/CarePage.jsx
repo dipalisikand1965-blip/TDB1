@@ -617,19 +617,20 @@ const CarePage = () => {
       <div className="py-16 bg-gradient-to-br from-rose-50 via-pink-50 to-red-50">
         <div className="max-w-7xl mx-auto px-4">
           <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 bg-rose-100 text-rose-700 px-4 py-2 rounded-full mb-4">
-              <Sparkles className="w-4 h-4" />
-              <span className="text-sm font-medium">Elevated Experiences</span>
+            <div className="inline-flex items-center gap-2 bg-rose-100 text-rose-700 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full mb-3 sm:mb-4">
+              <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span className="text-xs sm:text-sm font-medium">Elevated Experiences</span>
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
               Care <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-600 to-pink-600">Concierge®</span> Experiences
             </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              These aren't simple bookings — they're comprehensive care journeys managed with your pet's unique needs at heart. We coordinate, you relax.
+            <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto px-4">
+              Comprehensive care journeys managed with your pet's unique needs at heart.
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 gap-6">
+          {/* 2x2 grid on mobile */}
+          <div className="grid grid-cols-2 md:grid-cols-2 gap-3 sm:gap-6">
             {CARE_EXPERIENCES.map((exp, idx) => (
               <ConciergeExperienceCard
                 key={idx}
@@ -645,9 +646,9 @@ const CarePage = () => {
             ))}
           </div>
           
-          <div className="mt-10 text-center">
-            <p className="text-sm text-gray-500">
-              💬 Need guidance? <button onClick={handleStartCare} className="text-rose-600 hover:underline font-medium">Start a conversation</button> and we'll help you navigate care options.
+          <div className="mt-6 sm:mt-10 text-center">
+            <p className="text-xs sm:text-sm text-gray-500">
+              💬 Need guidance? <button onClick={handleStartCare} className="text-rose-600 hover:underline font-medium">Start a conversation</button>
             </p>
           </div>
         </div>
