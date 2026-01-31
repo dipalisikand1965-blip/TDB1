@@ -1,0 +1,195 @@
+# Product Intelligence Taxonomy v1.0 (LOCKED)
+# The Doggy Company - Base Product Tags
+# Last Updated: January 31, 2026
+
+# =============================================================================
+# GOLDEN RULES
+# =============================================================================
+# 1. Products store FACTS only (what it IS)
+# 2. Pillars store INTENT logic (when/why it matters)
+# 3. Never tag pillars or occasions on products
+# 4. Confidence < 0.7 → flag for human review
+# 5. Taxonomy must reflect how the PET experiences the product
+
+# =============================================================================
+# INTERACTION TYPE (single-select, REQUIRED)
+# =============================================================================
+# What does the dog physically do with it?
+interaction_type:
+  - consumable      # eaten, drunk, licked (food, treats, supplements, cakes)
+  - play            # toy, activity, enrichment
+  - wearable        # collars, harnesses, clothing (PET-WORN items only)
+  - care            # grooming, hygiene, medical accessories
+  - document        # paperwork, certificates, guides
+  - containment     # crates, carriers, cages (spatial containment) [NEW]
+
+# =============================================================================
+# BENEFITS (multi-select, OPTIONAL)
+# =============================================================================
+# Only tag if EXPLICITLY supported by description/ingredients
+benefits:
+  # Health & Body
+  - digestion
+  - dental_health
+  - skin_coat
+  - joint_support
+  - immunity
+  - weight_management
+  - urinary_health
+  - cognitive_support
+  # Behavior & Mind
+  - calming
+  - training_support
+  - boredom_relief
+  - anxiety_relief
+  - mental_stimulation
+
+# =============================================================================
+# USAGE FREQUENCY (single-select, REQUIRED)
+# =============================================================================
+usage_frequency:
+  - one_time        # cakes, birthday items, festive treats, emergency kits
+  - occasional      # cookies, celebratory treats, toys, chews, rewards
+  - daily           # regular meals, daily chews, supplements, bowls
+
+# =============================================================================
+# MESS LEVEL (single-select, REQUIRED for consumables)
+# =============================================================================
+mess_level:
+  - low             # dry treats, collars, wipes
+  - medium          # wet food, toys
+  - high            # cakes, liquids, raw food, fresh meals
+
+# =============================================================================
+# FORMAT (multi-select, OPTIONAL)
+# =============================================================================
+format:
+  - dry
+  - soft
+  - liquid
+  - chew
+  - baked
+  - frozen
+  - powder
+
+# =============================================================================
+# DIET TYPE (multi-select, OPTIONAL)
+# =============================================================================
+diet_type:
+  - grain_free
+  - gluten_free
+  - vegetarian
+  - single_protein
+  - limited_ingredient
+
+# =============================================================================
+# PROTEIN SOURCE (multi-select, OPTIONAL)
+# =============================================================================
+protein_source:
+  - chicken
+  - lamb
+  - beef
+  - fish
+  - egg
+  - peanut
+  - dairy
+  - none
+
+# =============================================================================
+# LIFE STAGE (multi-select, OPTIONAL)
+# =============================================================================
+# Default to 'adult' if not explicitly stated safe for all stages
+life_stage:
+  - puppy
+  - adult
+  - senior
+  - all_stages      # ONLY if explicitly stated safe for all
+
+# =============================================================================
+# BREED SIZE (multi-select, OPTIONAL)
+# =============================================================================
+breed_size:
+  - toy
+  - small
+  - medium
+  - large
+  - giant
+
+# =============================================================================
+# SAFETY & CONSTRAINTS
+# =============================================================================
+allergens:          # multi-select
+  - chicken
+  - beef
+  - grain
+  - dairy
+  - peanut
+
+age_min_weeks: null # number or null
+supervision_required: # single-select
+  - yes
+  - no
+
+# =============================================================================
+# COMMERCIAL SIGNALS
+# =============================================================================
+price_tier:         # single-select
+  - budget          # <₹300
+  - mid             # ₹300-₹1000
+  - premium         # >₹1000
+
+purchase_pattern:   # single-select
+  - impulse         # toys, accessories, one-time
+  - replenishment   # food, supplements, daily items
+  - celebration     # cakes, birthday, festive
+
+# =============================================================================
+# CATEGORY (HIERARCHICAL)
+# =============================================================================
+category_primary:   # single-select, REQUIRED
+  - food
+  - treats
+  - cakes
+  - toys
+  - grooming
+  - accessories
+  - supplements
+  - services
+
+category_secondary: # single-select, OPTIONAL
+  # Treats
+  - biscuit
+  - soft_chew
+  - hard_chew
+  - training_treat
+  - celebration_treat   # [NEW] non-functional celebratory treats
+  # Cakes
+  - birthday_cake
+  - mini_cake
+  # Food
+  - fresh_food          # [NEW]
+  - wet_food            # [NEW]
+  - dry_food            # [NEW]
+  - topper
+  # Toys
+  - squeaky_toy         # [NEW] sound-based play
+  - plush_toy           # [NEW]
+  - puzzle_toy          # cognitive engagement ONLY
+  - chew_toy
+  # Accessories
+  - travel_accessory
+  - grooming_tool
+  - collar
+  - leash
+  - harness
+
+# =============================================================================
+# TAGGING RULES
+# =============================================================================
+# 1. Every product MUST have: interaction_type, category_primary, usage_frequency
+# 2. Consumables MUST have: mess_level
+# 3. Food items MUST have: category_secondary (fresh_food/wet_food/dry_food)
+# 4. Default life_stage to 'adult' unless explicitly stated safe for all
+# 5. Travel crates → interaction_type: containment (NOT wearable)
+# 6. Squeaky toys → category_secondary: squeaky_toy (NOT puzzle_toy)
+# 7. Celebration treats without nutritional benefits → celebration_treat
