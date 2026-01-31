@@ -169,6 +169,21 @@ export const CartProvider = ({ children }) => {
     setCartItems(cartItems.filter(item => item.itemId !== itemId));
   };
 
+  // Listen for addToCart custom events from Mira and other components
+  useEffect(() => {
+    const handleAddToCartEvent = (event) => {
+      const product = event.detail;
+      if (product) {
+        addToCart(product, null, null, 1);
+      }
+    };
+    
+    window.addEventListener('addToCart', handleAddToCartEvent);
+    return () => {
+      window.removeEventListener('addToCart', handleAddToCartEvent);
+    };
+  }, [addToCart]);
+
   const updateQuantity = (itemId, quantity) => {
     if (quantity <= 0) {
       removeFromCart(itemId);
