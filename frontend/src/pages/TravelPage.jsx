@@ -797,10 +797,10 @@ const TravelPage = () => {
             </div>
           )}
 
-          {/* Step 2: Select Pet */}
+          {/* Step 2: Select Pet(s) - Multi-Pet Support */}
           {wizardStep === 2 && (
             <div className="space-y-4">
-              <p className="text-gray-600">Who's traveling?</p>
+              <p className="text-gray-600">Who's traveling? <span className="text-purple-600 text-sm">(Select one or more pets)</span></p>
               
               {userPets.length === 0 ? (
                 <div className="space-y-4">
@@ -823,10 +823,7 @@ const TravelPage = () => {
                     </div>
                   </Card>
                   <Button 
-                    onClick={() => {
-                      setSelectedPet({ id: 'manual', name: formData.pet_name || 'Pet', breed: formData.pet_breed });
-                      setWizardStep(3);
-                    }}
+                    onClick={() => setWizardStep(3)}
                     className="w-full"
                     disabled={!formData.pet_name}
                   >
@@ -834,35 +831,25 @@ const TravelPage = () => {
                   </Button>
                 </div>
               ) : (
-                <div className="space-y-3">
-                  {userPets.map((pet) => (
-                    <button
-                      key={pet.id}
-                      onClick={() => {
-                        setSelectedPet(pet);
-                        setWizardStep(3);
-                      }}
-                      className={`w-full p-4 rounded-xl border-2 transition-all text-left hover:shadow-md flex items-center gap-4 ${
-                        selectedPet?.id === pet.id 
-                          ? 'border-purple-500 bg-purple-50' 
-                          : 'border-gray-200 hover:border-purple-200'
-                      }`}
-                      data-testid={`wizard-pet-${pet.id}`}
-                    >
-                      <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center overflow-hidden flex-shrink-0">
-                        <img 
-                          src={getPetPhotoUrl(pet)} 
-                          alt={pet.name} 
-                          className="w-full h-full object-cover" 
-                        />
-                      </div>
-                      <div className="flex-1">
-                        <h4 className="font-semibold text-gray-900">{pet.name}</h4>
-                        <p className="text-sm text-gray-500">{pet.breed} {pet.age && `• ${pet.age}`}</p>
-                      </div>
-                      <ChevronRight className="w-5 h-5 text-gray-400" />
-                    </button>
-                  ))}
+                <div className="space-y-4">
+                  <MultiPetSelector
+                    userPets={userPets}
+                    selectedPets={selectedPets}
+                    onPetToggle={handlePetToggle}
+                    onSelectAll={handleSelectAllPets}
+                    onClearAll={handleClearAllPets}
+                    multiSelect={true}
+                    pillarColor="purple"
+                    label="Select Pet(s) for Travel"
+                  />
+                  
+                  <Button 
+                    onClick={() => setWizardStep(3)}
+                    className="w-full bg-gradient-to-r from-purple-600 to-violet-600"
+                    disabled={selectedPets.length === 0}
+                  >
+                    Continue with {selectedPets.length} Pet{selectedPets.length !== 1 ? 's' : ''} <ChevronRight className="w-4 h-4 ml-2" />
+                  </Button>
                 </div>
               )}
               
