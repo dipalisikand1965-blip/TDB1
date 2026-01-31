@@ -719,6 +719,51 @@ async def delete_enjoy_product(product_id: str):
     return {"message": "Product deleted"}
 
 
+@router.post("/admin/seed-products")
+async def seed_enjoy_products():
+    """Seed default enjoy products"""
+    db = get_db()
+    now = get_utc_timestamp()
+    
+    default_products = [
+        {"id": "enjoy-prod-frisbee", "name": "Flying Disc Fetch Toy", "description": "Soft rubber frisbee safe for teeth", "price": 399, "original_price": 499, "image": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=600", "category": "enjoy", "tags": ["outdoor", "fetch", "toy"], "pillar": "enjoy"},
+        {"id": "enjoy-prod-ball", "name": "Squeaky Ball Set (3 pack)", "description": "Durable tennis balls with squeaker", "price": 299, "original_price": 399, "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600", "category": "enjoy", "tags": ["ball", "fetch", "play"], "pillar": "enjoy"},
+        {"id": "enjoy-prod-tug", "name": "Rope Tug Toy", "description": "Cotton rope for interactive play", "price": 349, "original_price": 449, "image": "https://images.unsplash.com/photo-1507146426996-ef05306b995a?w=600", "category": "enjoy", "tags": ["tug", "rope", "interactive"], "pillar": "enjoy"},
+        {"id": "enjoy-prod-puzzle", "name": "Treat Puzzle Toy", "description": "Mental stimulation puzzle feeder", "price": 799, "original_price": 999, "image": "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600", "category": "enjoy", "tags": ["puzzle", "mental", "treat"], "pillar": "enjoy"},
+        {"id": "enjoy-prod-pool", "name": "Portable Dog Pool", "description": "Foldable splash pool for summer fun", "price": 1499, "original_price": 1899, "image": "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=600", "category": "enjoy", "tags": ["pool", "summer", "outdoor"], "pillar": "enjoy"},
+        {"id": "enjoy-prod-bandana", "name": "Party Bandana Set", "description": "Stylish bandanas for meetups & events", "price": 249, "original_price": 349, "image": "https://images.unsplash.com/photo-1534361960057-19889db9621e?w=600", "category": "enjoy", "tags": ["fashion", "party", "social"], "pillar": "enjoy"},
+    ]
+    
+    seeded = 0
+    for product in default_products:
+        product["created_at"] = now
+        product["updated_at"] = now
+        result = await db.products.update_one({"id": product["id"]}, {"$set": product}, upsert=True)
+        if result.upserted_id or result.modified_count:
+            seeded += 1
+    
+    return {"message": f"Seeded {seeded} enjoy products", "products_seeded": seeded}
+
+
+@router.post("/admin/products/import")
+async def import_enjoy_products(products: List[dict]):
+    """Import enjoy products from CSV/JSON"""
+    db = get_db()
+    now = get_utc_timestamp()
+    
+    imported = 0
+    for product in products:
+        product["id"] = product.get("id") or f"enjoy-{uuid.uuid4().hex[:8]}"
+        product["category"] = "enjoy"
+        product["pillar"] = "enjoy"
+        product["created_at"] = now
+        product["updated_at"] = now
+        await db.products.update_one({"id": product["id"]}, {"$set": product}, upsert=True)
+        imported += 1
+    
+    return {"message": f"Imported {imported} products", "imported": imported}
+
+
 # ==================== BUNDLES ====================
 
 @router.get("/bundles")
