@@ -12,7 +12,7 @@ import { createCareRequest, showUnifiedFlowSuccess, showUnifiedFlowError } from 
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { toast } from '../hooks/use-toast';
-import MiraContextPanel from '../components/MiraContextPanel';
+import MiraChatWidget from '../components/MiraChatWidget';
 import ProductCard from '../components/ProductCard';
 import AdminQuickEdit from '../components/AdminQuickEdit';
 import MultiPetSelector from '../components/MultiPetSelector';
