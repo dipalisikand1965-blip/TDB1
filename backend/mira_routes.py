@@ -3540,7 +3540,29 @@ What would you like to explore? 🐾"""
             # If products found, enhance the response
             if products:
                 if product_context["is_kit_request"]:
-                    response += f"\n\n🎒 I've assembled a kit for you! Here are {len(products)} items you can add to your cart."
+                    # Mark kit assembly as complete
+                    if kit_assembly_state:
+                        gathered_info = kit_assembly_state.get("gathered_info", {})
+                        await db.kit_assembly_sessions.update_one(
+                            {"session_id": session_id},
+                            {"$set": {
+                                "stage": "complete",
+                                "products_shown": len(products),
+                                "completed_at": datetime.now(timezone.utc)
+                            }}
+                        )
+                        # Personalized response based on gathered info
+                        pet_name = pets[0].get("name") if pets else "your furry friend"
+                        occasion = gathered_info.get("occasion", "")
+                        kit_type = kit_assembly_state.get("kit_type", "custom").replace("_", " ")
+                        
+                        response += f"\n\n🎒✨ **Your {kit_type} is ready!** Based on what you shared"
+                        if occasion:
+                            response += f" about {occasion}"
+                        response += f", here are {len(products)} perfect items for {pet_name}."
+                        response += "\n\nYou can add individual items or grab the whole kit at once!"
+                    else:
+                        response += f"\n\n🎒 I've assembled a kit for you! Here are {len(products)} items you can add to your cart."
                 else:
                     response += f"\n\n✨ I found some options for you! Check out these {len(products)} products below."
         
