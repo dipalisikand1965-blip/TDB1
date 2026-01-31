@@ -87,9 +87,11 @@ const CareManager = ({ getAuthHeader }) => {
   const [showBundleModal, setShowBundleModal] = useState(false);
   const [showPartnerModal, setShowPartnerModal] = useState(false);
   const [showRequestModal, setShowRequestModal] = useState(false);
+  const [showTipModal, setShowTipModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [editingBundle, setEditingBundle] = useState(null);
   const [editingPartner, setEditingPartner] = useState(null);
+  const [editingTip, setEditingTip] = useState(null);
   const [selectedRequest, setSelectedRequest] = useState(null);
   
   // Form states
