@@ -3182,6 +3182,12 @@ What would you like to explore? 🐾"""
                     "items": ["supplements", "vitamins", "first aid", "wipes"],
                     "services": ["vet consultation", "health checkup", "vaccination"],
                     "pillar": "care"
+                },
+                "fitness_kit": {
+                    "keywords": ["fitness kit", "exercise kit", "workout kit", "activity kit", "fit kit"],
+                    "items": ["leash", "harness", "ball", "frisbee", "agility equipment", "water bottle", "treats"],
+                    "services": ["fitness assessment", "agility training", "swimming session"],
+                    "pillar": "fit"
                 }
             }
             
