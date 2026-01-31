@@ -764,25 +764,32 @@ const MiraChatWidget = ({
                         : 'bg-gray-100 text-gray-800 rounded-bl-sm'
                     }`}
                   >
-                    <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                    <p className="text-sm font-semibold whitespace-pre-wrap">{msg.content}</p>
                     
                     {/* Product Cards (if Mira recommends products) */}
                     {msg.products && msg.products.length > 0 && (
                       <div className="mt-3 space-y-2">
-                        {msg.products.slice(0, 3).map(product => (
+                        <p className="text-xs font-bold text-purple-700 uppercase">✨ Recommended for you:</p>
+                        {msg.products.slice(0, 4).map(product => (
                           <div 
                             key={product.id}
-                            className="bg-white rounded-lg p-2 flex items-center gap-2 cursor-pointer hover:shadow-md transition-shadow"
+                            className="bg-white rounded-lg p-2 flex items-center gap-2 cursor-pointer hover:shadow-md transition-shadow border border-purple-100"
                             onClick={() => handleProductClick(product)}
                           >
                             {product.image && (
-                              <img src={product.image} alt={product.name} className="w-12 h-12 rounded object-cover" />
+                              <img src={product.image} alt={product.name} className="w-14 h-14 rounded object-cover" />
                             )}
                             <div className="flex-1 min-w-0">
-                              <p className="text-xs font-medium text-gray-800 truncate">{product.name}</p>
-                              <p className="text-xs text-purple-600 font-semibold">₹{product.price}</p>
+                              <p className="text-xs font-bold text-gray-800 truncate">{product.name}</p>
+                              <p className="text-xs text-purple-600 font-bold">₹{product.price}</p>
+                              {product.original_price && product.original_price > product.price && (
+                                <p className="text-[10px] text-gray-400 line-through">₹{product.original_price}</p>
+                              )}
                             </div>
-                            <Plus className="w-4 h-4 text-purple-600 shrink-0" />
+                            <div className="flex flex-col items-center gap-1">
+                              <Plus className="w-5 h-5 text-purple-600" />
+                              <span className="text-[9px] text-purple-500 font-medium">Add</span>
+                            </div>
                           </div>
                         ))}
                       </div>
