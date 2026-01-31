@@ -444,8 +444,8 @@ const CarePage = () => {
       {/* SEO Meta Tags */}
       <SEOHead page="care" path="/care" />
       
-      {/* === HERO SECTION - Wellness Transformation Theme === */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-teal-900 via-emerald-800 to-green-900 text-white">
+      {/* === HERO SECTION - Pet Care Theme === */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-rose-900 via-pink-800 to-red-900 text-white">
         {/* Background Image */}
         <div className="absolute inset-0">
           <img 
@@ -453,7 +453,7 @@ const CarePage = () => {
             alt="Pet Care" 
             className="w-full h-full object-cover opacity-30 transition-opacity duration-1000"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-teal-900/90 via-emerald-800/80 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-rose-900/90 via-pink-800/80 to-transparent" />
         </div>
         
         {/* Content */}
@@ -461,21 +461,21 @@ const CarePage = () => {
           <div className="max-w-2xl">
             {/* Badge */}
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
-              <Sparkles className="w-4 h-4 text-emerald-300" />
-              <span className="text-sm font-medium">The Wellness Transformation</span>
+              <Heart className="w-4 h-4 text-pink-300 fill-current" />
+              <span className="text-sm font-medium">Profile-First Pet Care</span>
             </div>
             
             {/* Main Headline */}
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-              Where Wellness
+              Care That
               <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-teal-200">
-                Meets Wag
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-300 to-yellow-300">
+                Knows Your Pet
               </span>
             </h1>
             
             <p className="text-lg md:text-xl text-white/80 mb-8 max-w-lg">
-              Your pet&apos;s spa day starts here. From pampering grooming sessions to preventive care, we make wellness feel like a treat.
+              From grooming to training, walks to wellness — we understand your pet&apos;s unique needs and connect you with the right care, every time.
             </p>
             
             {/* CTA Buttons */}
@@ -483,11 +483,11 @@ const CarePage = () => {
               <Button 
                 onClick={handleStartCare}
                 size="lg"
-                className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-8 py-6 text-lg rounded-full shadow-2xl shadow-emerald-500/30 transition-all hover:scale-105"
+                className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-8 py-6 text-lg rounded-full shadow-2xl shadow-pink-500/30 transition-all hover:scale-105"
                 data-testid="get-care-btn"
               >
                 <Sparkles className="w-5 h-5 mr-2" />
-                Start Wellness Journey
+                Get Care Now
               </Button>
               <Button 
                 onClick={scrollToProducts}
@@ -504,7 +504,7 @@ const CarePage = () => {
             {/* Trust Indicators */}
             <div className="flex flex-wrap gap-6 mt-12">
               <div className="flex items-center gap-2 text-white/70">
-                <Shield className="w-5 h-5 text-emerald-400" />
+                <Shield className="w-5 h-5 text-green-400" />
                 <span className="text-sm">Certified Groomers</span>
               </div>
               <div className="flex items-center gap-2 text-white/70">
