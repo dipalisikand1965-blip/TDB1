@@ -254,7 +254,7 @@ const EnjoyPage = () => {
       };
       
       const result = await createEnjoyRSVP(rsvpData);
-      showUnifiedFlowSuccess("You're in! 🎉", `RSVP confirmed for ${selectedExperience.name}`);
+      showUnifiedFlowSuccess("RSVP", result);
       setShowRsvpModal(false);
       fetchExperiences();
     } catch (error) {
