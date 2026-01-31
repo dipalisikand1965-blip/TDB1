@@ -544,8 +544,29 @@ const MiraChatWidget = ({
         if (data.concierge_action) {
           const action = data.concierge_action;
           
-          // Navigation actions
-          if (action.navigate_to) {
+          // Show Quick Book form inline instead of navigating
+          if (action.show_quick_book_form) {
+            // Don't navigate, show the form in chat instead
+            setMessages(prev => [...prev, {
+              id: (Date.now() + 1).toString(),
+              role: 'assistant',
+              content: displayContent,
+              products: data.products,
+              ticketId: data.ticket_id,
+              showQuickBookForm: true,
+              formType: action.form_type,
+              serviceType: action.action_type || pillar
+            }]);
+            
+            if (voiceEnabled) {
+              speakText(data.response);
+            }
+            setIsSending(false);
+            return; // Don't continue to regular message handling
+          }
+          
+          // Navigation actions (only if no form)
+          if (action.navigate_to && !action.show_quick_book_form) {
             toast.info(`Taking you to ${action.navigate_to.replace('/', '').replace('-', ' ')}...`);
             setTimeout(() => {
               navigate(action.navigate_to);
@@ -554,17 +575,25 @@ const MiraChatWidget = ({
           
           // Scroll to section actions
           if (action.scroll_to_section) {
-            const section = document.getElementById(action.scroll_to_section);
-            if (section) {
-              section.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }
+            setTimeout(() => {
+              const section = document.getElementById(action.scroll_to_section);
+              if (section) {
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+            }, 1600);
           }
-          
-          // Show service wizard
-          if (action.show_wizard) {
-            // Could trigger a wizard modal here
-            toast.info(`Opening ${action.show_wizard} wizard...`);
-          }
+        }
+        
+        // Handle kit assembly response
+        if (data.kit_assembly?.is_kit) {
+          displayContent += `\n\n🎒 **Kit Ready!** ${data.kit_assembly.items_found} items found. You can add all to cart below.`;
+        }
+        
+        // Handle concierge handoff
+        if (data.handoff?.needed) {
+          toast.info('Our concierge® team will send you details via email/WhatsApp', {
+            duration: 5000
+          });
         }
         
         // Add ticket info if created
@@ -581,7 +610,9 @@ const MiraChatWidget = ({
           role: 'assistant',
           content: displayContent,
           products: data.products,
-          ticketId: data.ticket_id
+          ticketId: data.ticket_id,
+          kitAssembly: data.kit_assembly,
+          handoff: data.handoff
         }]);
         
         if (voiceEnabled) {
