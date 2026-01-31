@@ -350,6 +350,27 @@ const MiraChatWidget = ({
     }
   }, [isOpen, selectedPet, miraContext, config.name, voiceEnabled]);
   
+  // Store messages when they change - PERSIST across pillar switches
+  useEffect(() => {
+    if (messages.length > 0) {
+      storeMessages(messages);
+    }
+  }, [messages]);
+  
+  // Track pillar changes - add a notification to chat when pillar switches
+  useEffect(() => {
+    if (pillar !== currentPillar && messages.length > 0) {
+      setCurrentPillar(pillar);
+      // Add pillar switch notification to chat
+      setMessages(prev => [...prev, {
+        id: `pillar-switch-${Date.now()}`,
+        role: 'assistant',
+        content: `📍 You're now in ${config.name}. How can I help you here?`,
+        isPillarSwitch: true
+      }]);
+    }
+  }, [pillar, currentPillar, config.name, messages.length]);
+  
   // Scroll to bottom when new messages arrive
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
