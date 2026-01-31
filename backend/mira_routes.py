@@ -3422,10 +3422,35 @@ async def get_pet_recommendations(
     # Sort by relevance score and return top products
     scored_products.sort(key=lambda x: x.get("relevance_score", 0), reverse=True)
     
-    # Remove internal scoring from response
+    # Pillar-specific fallback images
+    PILLAR_FALLBACK_IMAGES = {
+        "travel": "https://images.unsplash.com/photo-1544568100-847a948585b9?w=300&h=300&fit=crop",
+        "stay": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=300&h=300&fit=crop",
+        "care": "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?w=300&h=300&fit=crop",
+        "fit": "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=300&h=300&fit=crop",
+        "celebrate": "https://images.unsplash.com/photo-1530041539828-114de669390e?w=300&h=300&fit=crop",
+        "dine": "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=300&h=300&fit=crop",
+        "enjoy": "https://images.unsplash.com/photo-1601758124510-52d02ddb7cbd?w=300&h=300&fit=crop",
+        "learn": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=300&h=300&fit=crop",
+    }
+    default_fallback = "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=300&h=300&fit=crop"
+    
+    # Remove internal scoring and fix images
     recommendations = []
     for p in scored_products[:limit]:
         p.pop("relevance_score", None)
+        
+        # Fix image URL if it's a local path
+        img = p.get("image", "")
+        if not img or not img.startswith("http"):
+            # Check images array
+            images = p.get("images", [])
+            if images and images[0].startswith("http"):
+                p["image"] = images[0]
+            else:
+                # Use pillar-specific fallback
+                p["image"] = PILLAR_FALLBACK_IMAGES.get(pillar, default_fallback)
+        
         recommendations.append(p)
     
     return {
