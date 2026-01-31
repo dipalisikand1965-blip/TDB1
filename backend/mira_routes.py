@@ -3338,8 +3338,15 @@ What would you like to explore? 🐾"""
                 enhanced_concierge_action["navigate_to"] = "/dine"
             elif category in PILLAR_ROUTES:
                 enhanced_concierge_action["navigate_to"] = PILLAR_ROUTES[category]
+            
+            # Add quick booking form trigger for service requests
+            SERVICE_WIZARD_TRIGGERS = ["grooming", "vet", "boarding", "training", "walking", "sitting"]
+            if any(trigger in message_lower for trigger in SERVICE_WIZARD_TRIGGERS):
+                enhanced_concierge_action["show_quick_book_form"] = True
+                enhanced_concierge_action["form_type"] = "service_booking"
+                enhanced_concierge_action["form_fields"] = ["date", "time", "notes"]
         
-        # 13. Return response with products and additional metadata
+        # 14. Return response with products and additional metadata
         return {
             "response": response,
             "session_id": session_id,
@@ -3347,13 +3354,24 @@ What would you like to explore? 🐾"""
             "service_desk_ticket_id": service_desk_ticket_id,
             "pillar": pillar,
             "ticket_type": intent,
-            "products": products,  # Include products in response!
+            "products": products,
             "concierge_action": enhanced_concierge_action,
+            "kit_assembly": {
+                "is_kit": product_context.get("is_kit_request", False),
+                "kit_type": product_context.get("kit_type"),
+                "items_found": len(products),
+                "can_add_all_to_cart": len(products) > 0
+            } if product_context.get("is_kit_request") else None,
+            "handoff": {
+                "needed": handoff_to_concierge,
+                "reason": handoff_reason,
+                "notify_via": ["email", "whatsapp"]
+            } if handoff_to_concierge else None,
             "pets": [{"id": p.get("id"), "name": p.get("name")} for p in pets] if pets else [],
             "selected_pet": selected_pet.get("name") if selected_pet else None,
             "research_mode": research_context is not None,
             "quick_prompts": get_pillar_quick_prompts(pillar),
-            "end_state": "RESPONDED"  # Valid end state per Mira doctrine
+            "end_state": "RESPONDED"
         }
         
     except Exception as e:
