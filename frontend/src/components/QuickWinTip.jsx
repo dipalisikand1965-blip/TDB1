@@ -37,12 +37,12 @@ const TIPS_DATABASE = {
   // Stay pillar tips
   stay: {
     general: [
-      { tip: 'Book pet-friendly stays 2 weeks ahead for best rates', action: 'Search stays', emoji: '🏨' },
-      { tip: 'Pack familiar bedding to help your pet feel at home', action: 'View checklist', emoji: '🛏️' },
-      { tip: 'Request ground floor rooms for easier outdoor access', action: 'View tips', emoji: '🚪' },
-      { tip: 'Check the property\'s pet policy before booking', action: 'Learn more', emoji: '📋' },
-      { tip: 'Bring your pet\'s favorite toys to reduce anxiety', action: 'Shop toys', emoji: '🧸' },
-      { tip: 'Ask about nearby vet clinics when booking', action: 'Find vets', emoji: '🏥' },
+      { tip: 'Book pet-friendly stays 2 weeks ahead for best rates', action: 'Search stays', emoji: '🏨', actionType: 'navigate', actionUrl: '/stay' },
+      { tip: 'Pack familiar bedding to help your pet feel at home', action: 'View travel checklist', emoji: '🛏️', actionType: 'checklist', checklistId: 'travel' },
+      { tip: 'Request ground floor rooms for easier outdoor access', action: 'View tips', emoji: '🚪', actionType: 'checklist', checklistId: 'stay' },
+      { tip: 'Check the property\'s pet policy before booking', action: 'View checklist', emoji: '📋', actionType: 'checklist', checklistId: 'stay' },
+      { tip: 'Bring your pet\'s favorite blanket to reduce anxiety', action: 'Travel accessories', emoji: '🧸', actionType: 'navigate', actionUrl: '/shop?category=travel' },
+      { tip: 'Ask about nearby vet clinics when booking', action: 'Find vets', emoji: '🏥', actionType: 'navigate', actionUrl: '/care?type=vet' },
     ],
   },
   // Travel pillar tips
