@@ -1064,6 +1064,373 @@ async def update_travel_settings(settings: Dict[str, Any]):
     return {"success": True, "message": "Settings updated"}
 
 
+# ==================== TRAVEL PLANS ====================
+
+@router.get("/plans")
+async def get_travel_plans():
+    """Get all travel plans/packages"""
+    db = get_db()
+    plans = await db.travel_plans.find({}, {"_id": 0}).sort("created_at", -1).to_list(100)
+    return {"plans": plans, "total": len(plans)}
+
+
+@router.post("/admin/plans")
+async def create_travel_plan(plan: Dict[str, Any]):
+    """Create a new travel plan/package"""
+    db = get_db()
+    logger = get_logger()
+    
+    plan_doc = {
+        "id": f"plan-{uuid.uuid4().hex[:8]}",
+        "name": plan.get("name"),
+        "description": plan.get("description"),
+        "destination": plan.get("destination"),
+        "duration": plan.get("duration"),
+        "price": plan.get("price"),
+        "compare_price": plan.get("compare_price"),
+        "image": plan.get("image"),
+        "includes": plan.get("includes", []),
+        "highlights": plan.get("highlights", []),
+        "pet_friendly_features": plan.get("pet_friendly_features", []),
+        "badges": plan.get("badges", []),
+        "active": plan.get("active", True),
+        "created_at": get_consistent_timestamp(),
+        "updated_at": get_consistent_timestamp()
+    }
+    
+    await db.travel_plans.insert_one(plan_doc)
+    logger.info(f"Created travel plan: {plan_doc['id']}")
+    
+    return {"success": True, "plan": {k: v for k, v in plan_doc.items() if k != "_id"}}
+
+
+@router.put("/admin/plans/{plan_id}")
+async def update_travel_plan(plan_id: str, plan: Dict[str, Any]):
+    """Update a travel plan"""
+    db = get_db()
+    
+    plan["updated_at"] = get_consistent_timestamp()
+    result = await db.travel_plans.update_one(
+        {"id": plan_id},
+        {"$set": plan}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Plan not found")
+    
+    return {"success": True, "message": "Plan updated"}
+
+
+@router.delete("/admin/plans/{plan_id}")
+async def delete_travel_plan(plan_id: str):
+    """Delete a travel plan"""
+    db = get_db()
+    
+    result = await db.travel_plans.delete_one({"id": plan_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Plan not found")
+    
+    return {"success": True, "message": "Plan deleted"}
+
+
+@router.get("/admin/plans/export")
+async def export_travel_plans():
+    """Export travel plans as CSV"""
+    db = get_db()
+    import csv
+    import io
+    
+    plans = await db.travel_plans.find({}, {"_id": 0}).to_list(1000)
+    
+    if not plans:
+        return {"csv": "", "count": 0}
+    
+    output = io.StringIO()
+    writer = csv.DictWriter(output, fieldnames=["id", "name", "destination", "duration", "price", "active"])
+    writer.writeheader()
+    for plan in plans:
+        writer.writerow({
+            "id": plan.get("id"),
+            "name": plan.get("name"),
+            "destination": plan.get("destination"),
+            "duration": plan.get("duration"),
+            "price": plan.get("price"),
+            "active": plan.get("active", True)
+        })
+    
+    return {"csv": output.getvalue(), "count": len(plans)}
+
+
+# ==================== TRAVEL STORIES ====================
+
+@router.get("/stories")
+async def get_travel_stories():
+    """Get all travel success stories"""
+    db = get_db()
+    stories = await db.travel_stories.find({"active": True}, {"_id": 0}).sort("created_at", -1).to_list(100)
+    return {"stories": stories, "total": len(stories)}
+
+
+@router.post("/admin/stories")
+async def create_travel_story(story: Dict[str, Any]):
+    """Create a new travel success story"""
+    db = get_db()
+    logger = get_logger()
+    
+    story_doc = {
+        "id": f"story-{uuid.uuid4().hex[:8]}",
+        "pet_name": story.get("pet_name"),
+        "pet_breed": story.get("pet_breed"),
+        "owner_name": story.get("owner_name"),
+        "owner_city": story.get("owner_city"),
+        "from_city": story.get("from_city"),
+        "to_city": story.get("to_city"),
+        "travel_type": story.get("travel_type"),  # flight, road, train, relocation
+        "title": story.get("title"),
+        "quote": story.get("quote"),
+        "before_image": story.get("before_image"),
+        "after_image": story.get("after_image"),
+        "featured": story.get("featured", False),
+        "active": story.get("active", True),
+        "created_at": get_consistent_timestamp(),
+        "updated_at": get_consistent_timestamp()
+    }
+    
+    await db.travel_stories.insert_one(story_doc)
+    logger.info(f"Created travel story: {story_doc['id']}")
+    
+    return {"success": True, "story": {k: v for k, v in story_doc.items() if k != "_id"}}
+
+
+@router.put("/admin/stories/{story_id}")
+async def update_travel_story(story_id: str, story: Dict[str, Any]):
+    """Update a travel story"""
+    db = get_db()
+    
+    story["updated_at"] = get_consistent_timestamp()
+    result = await db.travel_stories.update_one(
+        {"id": story_id},
+        {"$set": story}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Story not found")
+    
+    return {"success": True, "message": "Story updated"}
+
+
+@router.delete("/admin/stories/{story_id}")
+async def delete_travel_story(story_id: str):
+    """Delete a travel story"""
+    db = get_db()
+    
+    result = await db.travel_stories.delete_one({"id": story_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Story not found")
+    
+    return {"success": True, "message": "Story deleted"}
+
+
+@router.get("/admin/stories/export")
+async def export_travel_stories():
+    """Export travel stories as CSV"""
+    db = get_db()
+    import csv
+    import io
+    
+    stories = await db.travel_stories.find({}, {"_id": 0}).to_list(1000)
+    
+    if not stories:
+        return {"csv": "", "count": 0}
+    
+    output = io.StringIO()
+    writer = csv.DictWriter(output, fieldnames=["id", "pet_name", "from_city", "to_city", "travel_type", "title", "featured"])
+    writer.writeheader()
+    for story in stories:
+        writer.writerow({
+            "id": story.get("id"),
+            "pet_name": story.get("pet_name"),
+            "from_city": story.get("from_city"),
+            "to_city": story.get("to_city"),
+            "travel_type": story.get("travel_type"),
+            "title": story.get("title"),
+            "featured": story.get("featured", False)
+        })
+    
+    return {"csv": output.getvalue(), "count": len(stories)}
+
+
+@router.post("/admin/stories/import")
+async def import_travel_stories(data: Dict[str, Any]):
+    """Import travel stories from CSV"""
+    db = get_db()
+    import csv
+    import io
+    
+    csv_content = data.get("csv", "")
+    if not csv_content:
+        raise HTTPException(status_code=400, detail="No CSV content provided")
+    
+    reader = csv.DictReader(io.StringIO(csv_content))
+    imported = 0
+    
+    for row in reader:
+        story_doc = {
+            "id": row.get("id") or f"story-{uuid.uuid4().hex[:8]}",
+            "pet_name": row.get("pet_name"),
+            "from_city": row.get("from_city"),
+            "to_city": row.get("to_city"),
+            "travel_type": row.get("travel_type"),
+            "title": row.get("title"),
+            "quote": row.get("quote", ""),
+            "featured": row.get("featured", "").lower() == "true",
+            "active": True,
+            "created_at": get_consistent_timestamp(),
+            "updated_at": get_consistent_timestamp()
+        }
+        
+        await db.travel_stories.update_one(
+            {"id": story_doc["id"]},
+            {"$set": story_doc},
+            upsert=True
+        )
+        imported += 1
+    
+    return {"success": True, "imported": imported}
+
+
+# ==================== TRAVEL TIPS ====================
+
+@router.get("/tips")
+async def get_travel_tips():
+    """Get all travel tips"""
+    db = get_db()
+    tips = await db.travel_tips.find({"active": True}, {"_id": 0}).sort("order", 1).to_list(100)
+    return {"tips": tips, "total": len(tips)}
+
+
+@router.post("/admin/tips")
+async def create_travel_tip(tip: Dict[str, Any]):
+    """Create a new travel tip"""
+    db = get_db()
+    logger = get_logger()
+    
+    tip_doc = {
+        "id": f"tip-{uuid.uuid4().hex[:8]}",
+        "title": tip.get("title"),
+        "content": tip.get("content"),
+        "category": tip.get("category"),  # flight, road, train, general
+        "icon": tip.get("icon"),
+        "image": tip.get("image"),
+        "order": tip.get("order", 0),
+        "featured": tip.get("featured", False),
+        "active": tip.get("active", True),
+        "created_at": get_consistent_timestamp(),
+        "updated_at": get_consistent_timestamp()
+    }
+    
+    await db.travel_tips.insert_one(tip_doc)
+    logger.info(f"Created travel tip: {tip_doc['id']}")
+    
+    return {"success": True, "tip": {k: v for k, v in tip_doc.items() if k != "_id"}}
+
+
+@router.put("/admin/tips/{tip_id}")
+async def update_travel_tip(tip_id: str, tip: Dict[str, Any]):
+    """Update a travel tip"""
+    db = get_db()
+    
+    tip["updated_at"] = get_consistent_timestamp()
+    result = await db.travel_tips.update_one(
+        {"id": tip_id},
+        {"$set": tip}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Tip not found")
+    
+    return {"success": True, "message": "Tip updated"}
+
+
+@router.delete("/admin/tips/{tip_id}")
+async def delete_travel_tip(tip_id: str):
+    """Delete a travel tip"""
+    db = get_db()
+    
+    result = await db.travel_tips.delete_one({"id": tip_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Tip not found")
+    
+    return {"success": True, "message": "Tip deleted"}
+
+
+@router.get("/admin/tips/export")
+async def export_travel_tips():
+    """Export travel tips as CSV"""
+    db = get_db()
+    import csv
+    import io
+    
+    tips = await db.travel_tips.find({}, {"_id": 0}).to_list(1000)
+    
+    if not tips:
+        return {"csv": "", "count": 0}
+    
+    output = io.StringIO()
+    writer = csv.DictWriter(output, fieldnames=["id", "title", "category", "order", "featured"])
+    writer.writeheader()
+    for tip in tips:
+        writer.writerow({
+            "id": tip.get("id"),
+            "title": tip.get("title"),
+            "category": tip.get("category"),
+            "order": tip.get("order", 0),
+            "featured": tip.get("featured", False)
+        })
+    
+    return {"csv": output.getvalue(), "count": len(tips)}
+
+
+@router.post("/admin/tips/import")
+async def import_travel_tips(data: Dict[str, Any]):
+    """Import travel tips from CSV"""
+    db = get_db()
+    import csv
+    import io
+    
+    csv_content = data.get("csv", "")
+    if not csv_content:
+        raise HTTPException(status_code=400, detail="No CSV content provided")
+    
+    reader = csv.DictReader(io.StringIO(csv_content))
+    imported = 0
+    
+    for row in reader:
+        tip_doc = {
+            "id": row.get("id") or f"tip-{uuid.uuid4().hex[:8]}",
+            "title": row.get("title"),
+            "content": row.get("content", ""),
+            "category": row.get("category", "general"),
+            "order": int(row.get("order", 0)),
+            "featured": row.get("featured", "").lower() == "true",
+            "active": True,
+            "created_at": get_consistent_timestamp(),
+            "updated_at": get_consistent_timestamp()
+        }
+        
+        await db.travel_tips.update_one(
+            {"id": tip_doc["id"]},
+            {"$set": tip_doc},
+            upsert=True
+        )
+        imported += 1
+    
+    return {"success": True, "imported": imported}
+
+
 # Seed default travel products
 @router.post("/admin/seed-products")
 async def seed_travel_products():
