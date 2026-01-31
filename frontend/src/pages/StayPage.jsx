@@ -27,8 +27,16 @@ import {
   ChevronRight, Sparkles, Shield, TreePine, Sun, Waves, Mountain,
   Home, Building2, Building, Tent, CheckCircle, X, Users, Clock, Loader2,
   PawPrint, AlertTriangle, MessageCircle, ChevronDown, ShoppingBag,
-  Package, Percent, PartyPopper, Camera, Footprints, Gift
+  Package, Percent, PartyPopper, Camera, Footprints, Gift, Play, Trophy,
+  TrendingUp, ArrowRight
 } from 'lucide-react';
+
+// Hero Images for Stay pillar
+const HERO_IMAGES = [
+  'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=1200&q=80',
+  'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1200&q=80',
+  'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=1200&q=80'
+];
 
 // Elevated Concierge® Stay Experiences
 const STAY_EXPERIENCES = [
