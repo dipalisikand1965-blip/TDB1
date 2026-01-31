@@ -108,8 +108,8 @@ class TestStreakAPI:
     """Test streak API endpoints"""
     
     def test_streak_config_endpoint(self):
-        """Test GET /api/engagement/streak-config returns config"""
-        response = requests.get(f"{BASE_URL}/api/engagement/streak-config")
+        """Test GET /api/engagement/admin/streak-config returns config"""
+        response = requests.get(f"{BASE_URL}/api/engagement/admin/streak-config")
         assert response.status_code == 200, f"Streak config endpoint failed: {response.text}"
         
         config = response.json()
@@ -121,7 +121,7 @@ class TestStreakAPI:
         print(f"   Qualifying actions: {config['qualifying_actions']}")
     
     def test_record_streak_action_endpoint(self):
-        """Test POST /api/engagement/streak/record endpoint"""
+        """Test POST /api/engagement/streak/{user_id}/action endpoint"""
         # Login first
         login_response = requests.post(f"{BASE_URL}/api/auth/login", json={
             "email": "dipali@clubconcierge.in",
@@ -133,8 +133,8 @@ class TestStreakAPI:
         
         # Record a streak action
         record_response = requests.post(
-            f"{BASE_URL}/api/engagement/streak/record",
-            json={"user_id": user_id, "action_type": "mira_chat"},
+            f"{BASE_URL}/api/engagement/streak/{user_id}/action",
+            json={"action_type": "mira_chat"},
             headers={"Authorization": f"Bearer {token}"}
         )
         
