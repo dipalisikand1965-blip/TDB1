@@ -3363,6 +3363,16 @@ What would you like to explore? 🐾"""
                     "3. **Specific concerns?** (joint health, digestion, skin & coat?)",
                     "",
                     "Let me know and I'll curate health essentials just for them!"
+                ],
+                "fitness_kit": [
+                    f"Fitness kit {pet_text}! Let's get active! 💪🏃",
+                    "",
+                    "A few questions to build the perfect kit:",
+                    "1. **Activity level?** (couch potato, moderately active, very energetic?)",
+                    "2. **Preferred activities?** (walking, running, swimming, agility?)",
+                    "3. **Any physical limitations?** (age, joint issues, weight management?)",
+                    "",
+                    "I'll put together everything you need for an active lifestyle!"
                 ]
             }
             
