@@ -266,11 +266,21 @@ const TravelPage = () => {
     
     setSubmitting(true);
     try {
+      // Support multi-pet travel requests
+      const petsData = selectedPets.length > 0 
+        ? selectedPets.map(p => ({ id: p.id || p._id, name: p.name, breed: p.breed, species: p.species || 'dog' }))
+        : formData.pet_name ? [{ id: 'manual', name: formData.pet_name, breed: formData.pet_breed }] : [];
+      
       const requestPayload = {
         travel_type: selectedType,
-        pet_id: selectedPet?.id !== 'manual' ? selectedPet?.id : null,
-        pet_name: selectedPet?.name || formData.pet_name || '',
-        pet_breed: selectedPet?.breed || formData.pet_breed || '',
+        // Multi-pet support
+        pets: petsData,
+        pet_count: petsData.length,
+        is_multi_pet: petsData.length > 1,
+        // Legacy fields for backward compatibility
+        pet_id: petsData[0]?.id !== 'manual' ? petsData[0]?.id : null,
+        pet_name: petsData.map(p => p.name).join(', ') || formData.pet_name || '',
+        pet_breed: petsData[0]?.breed || formData.pet_breed || '',
         ...formData,
         user_email: user?.email || formData.contact_email,
         user_phone: user?.phone || formData.contact_phone,
@@ -296,9 +306,10 @@ const TravelPage = () => {
       
       setRequestResult(result);
       setWizardStep(4);
+      const petNames = petsData.map(p => p.name).join(', ') || 'your pet';
       toast({
         title: "Request Submitted! 🐾",
-        description: `We'll review ${selectedPet?.name || 'your pet'}'s travel needs and get back to you soon. Ticket: ${result.ticket_id || result.request_id}`
+        description: `We'll review ${petNames}'s travel needs and get back to you soon. Ticket: ${result.ticket_id || result.request_id}`
       });
     } catch (error) {
       console.error('Error submitting travel request:', error);
