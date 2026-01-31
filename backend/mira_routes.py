@@ -3376,9 +3376,13 @@ What would you like to explore? 🐾"""
                 }}
             )
             
-            # Check if user is ready to proceed (after 1+ exchanges or explicit confirmation)
-            ready_keywords = ["yes", "ready", "go ahead", "show me", "build", "create", "assemble", "proceed", "let's do it", "sounds good", "perfect"]
-            user_ready = any(kw in message_lower for kw in ready_keywords) or questions_asked >= 2
+            # Check if user is ready to proceed
+            # ONLY proceed if user explicitly confirms OR after 2+ exchanges
+            ready_keywords = ["yes", "ready", "go ahead", "show me", "build", "create", "assemble", "proceed", "let's do it", "sounds good", "perfect", "sure", "ok", "okay"]
+            user_explicitly_ready = any(kw in message_lower for kw in ready_keywords)
+            had_enough_exchanges = questions_asked >= 3  # Require at least 2 full exchanges before auto-proceeding
+            
+            user_ready = user_explicitly_ready or had_enough_exchanges
             
             if user_ready:
                 # Move to assembly stage
