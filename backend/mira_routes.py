@@ -4225,10 +4225,17 @@ async def quick_book(
         try:
             from server import decode_token
             payload = decode_token(token)
-            user_id = payload.get("user_id")
-            user = await db.users.find_one({"id": user_id}, {"_id": 0, "password": 0})
-        except:
-            pass
+            # Token uses 'sub' for email, not 'user_id'
+            user_email = payload.get("sub") or payload.get("user_id")
+            if user_email:
+                # Look up user by email or id
+                user = await db.users.find_one(
+                    {"$or": [{"email": user_email}, {"id": user_email}]}, 
+                    {"_id": 0, "password": 0}
+                )
+                user_id = user.get("id") if user else user_email
+        except Exception as e:
+            logger.error(f"Failed to get user from token: {e}")
     
     # Get pet info if provided
     pet = None
