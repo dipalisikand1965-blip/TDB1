@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -20,12 +21,16 @@ import BreedAutocomplete from '../components/BreedAutocomplete';
 import SEOHead from '../components/SEOHead';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import ServiceBookingModal from '../components/ServiceBookingModal';
+// NEW: FitPage-style engagement components
+import { FitnessJourneyCounter, RotatingSocialProof } from '../components/SocialProofBadges';
+import ConversationalEntry from '../components/ConversationalEntry';
+import QuickWinTip from '../components/QuickWinTip';
 import {
   Scissors, PawPrint, GraduationCap, Stethoscope, AlertTriangle, Heart,
   ClipboardList, MapPin, Calendar, Clock, CheckCircle, MessageCircle,
   ChevronRight, Sparkles, Package, Star, Loader2, Info, Send,
   ArrowRight, Users, Play, ChevronDown, Gift, Zap, Shield, Phone,
-  Home, Building2, AlertCircle
+  Home, Building2, AlertCircle, Trophy
 } from 'lucide-react';
 
 // Elevated Concierge® Care Experiences
