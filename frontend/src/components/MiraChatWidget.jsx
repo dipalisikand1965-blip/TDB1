@@ -207,14 +207,32 @@ const MiraChatWidget = ({
   useEffect(() => {
     if (isOpen && messages.length === 0) {
       const greeting = getTimeBasedGreeting();
-      const petName = selectedPet?.name || 'your furry friend';
+      const petName = selectedPet?.name;
+      const petBreed = selectedPet?.breed;
+      const pillarName = config.name;
+      
+      // Personalized welcome based on context
+      let welcomeMsg = `${greeting}! I'm Mira, your personal pet concierge.`;
+      
+      if (miraContext?.pillar_note) {
+        welcomeMsg = miraContext.pillar_note;
+      } else if (petName && petBreed) {
+        welcomeMsg += ` I see you're browsing ${pillarName} for ${petName}, your lovely ${petBreed}. How can I help today?`;
+      } else if (petName) {
+        welcomeMsg += ` How can I help you with ${petName}'s ${pillarName.toLowerCase()} needs today?`;
+      } else {
+        welcomeMsg += ` I'm here to help with all your ${pillarName.toLowerCase()} needs. What can I do for you?`;
+      }
+      
+      welcomeMsg += ' 🐾';
+      
       setMessages([{
         id: 'welcome',
         role: 'assistant',
-        content: `${greeting}! I'm Mira, your personal pet concierge. ${selectedPet ? `How can I help you with ${petName} today?` : 'How can I help you today?'} 🐾`
+        content: welcomeMsg
       }]);
     }
-  }, [isOpen, selectedPet]);
+  }, [isOpen, selectedPet, miraContext, config.name]);
   
   // Scroll to bottom when new messages arrive
   useEffect(() => {
