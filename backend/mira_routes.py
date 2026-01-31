@@ -3269,6 +3269,8 @@ What would you like to explore? 🐾"""
         actual_current_pillar = request.current_pillar
         allowed_kits = PILLAR_TO_KIT.get(actual_current_pillar)
         
+        logger.info(f"[KIT GUARD DEBUG] detected_kit={detected_kit}, actual_current_pillar={actual_current_pillar}, allowed_kits={allowed_kits}, is_kit_request={product_context.get('is_kit_request')}")
+        
         # If detected kit doesn't match current pillar, reset it
         if detected_kit and actual_current_pillar and actual_current_pillar != "shop":
             if isinstance(allowed_kits, list):
@@ -3278,6 +3280,11 @@ What would you like to explore? 🐾"""
                     product_context["kit_type"] = None
             elif allowed_kits and detected_kit != allowed_kits:
                 logger.info(f"[KIT GUARD] Detected kit '{detected_kit}' doesn't match pillar '{actual_current_pillar}' (expected '{allowed_kits}'). Resetting.")
+                product_context["is_kit_request"] = False
+                product_context["kit_type"] = None
+            elif not allowed_kits:
+                # No kit allowed for this pillar (not in PILLAR_TO_KIT or None)
+                logger.info(f"[KIT GUARD] No kit allowed for pillar '{actual_current_pillar}'. Resetting.")
                 product_context["is_kit_request"] = False
                 product_context["kit_type"] = None
         
