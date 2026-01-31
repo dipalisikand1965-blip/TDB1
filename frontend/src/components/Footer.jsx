@@ -240,9 +240,6 @@ const Footer = () => {
                 <a href="https://www.youtube.com/@TheDoggyBakery" target="_blank" rel="noopener noreferrer" className="hover:text-red-400 transition-colors p-1">
                   <Youtube className="w-5 h-5" />
                 </a>
-                <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="hover:text-green-400 transition-colors p-1">
-                  <MessageCircle className="w-5 h-5" />
-                </a>
               </div>
             </div>
 
