@@ -216,7 +216,7 @@ const StayManager = ({ getAuthHeader }) => {
 
   const fetchTips = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/engagement/quick-win-tips?pillar=stay`, {
+      const response = await fetch(`${API_URL}/api/engagement/tips?pillar=stay`, {
         headers: getAuthHeader()
       });
       if (response.ok) {
