@@ -462,7 +462,7 @@ const MiraChatWidget = ({
           const ticketId = data.service_desk_ticket_id || data.ticket_id;
           displayContent += `\n\n📋 **Request #${ticketId}** created!`;
           toast.success(`Request #${ticketId} created!`, {
-            description: 'Our concierge team will contact you shortly.'
+            description: 'Our concierge® team will contact you shortly.'
           });
         }
         
