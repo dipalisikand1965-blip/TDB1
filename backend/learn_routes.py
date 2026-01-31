@@ -870,6 +870,59 @@ async def delete_learn_product(product_id: str):
     return {"success": True, "message": "Product deleted"}
 
 
+@router.post("/admin/seed-products")
+async def seed_learn_products():
+    """Seed default learning products"""
+    db = get_db()
+    now = datetime.now(timezone.utc).isoformat()
+    
+    default_products = [
+        {"id": "learn-prod-course", "name": "Basic Obedience Online Course", "description": "12-week video course for puppy training", "price": 2999, "original_price": 3999, "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600", "category": "learn", "tags": ["course", "obedience", "online"], "pillar": "learn"},
+        {"id": "learn-prod-clicker", "name": "Professional Clicker Training Kit", "description": "Training clicker with guide book", "price": 499, "original_price": 699, "image": "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600", "category": "learn", "tags": ["clicker", "training", "kit"], "pillar": "learn"},
+        {"id": "learn-prod-treats", "name": "Training Treat Pouch + Treats", "description": "Treat pouch with premium training treats", "price": 799, "original_price": 999, "image": "https://images.unsplash.com/photo-1507146426996-ef05306b995a?w=600", "category": "learn", "tags": ["treats", "pouch", "training"], "pillar": "learn"},
+        {"id": "learn-prod-book", "name": "Dog Psychology Handbook", "description": "Understanding canine behavior guide", "price": 649, "original_price": 799, "image": "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=600", "category": "learn", "tags": ["book", "psychology", "behavior"], "pillar": "learn"},
+        {"id": "learn-prod-whistle", "name": "Ultrasonic Training Whistle", "description": "Professional dog training whistle", "price": 399, "original_price": 499, "image": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=600", "category": "learn", "tags": ["whistle", "training", "professional"], "pillar": "learn"},
+        {"id": "learn-prod-video", "name": "Advanced Tricks Masterclass", "description": "Video course for advanced dog tricks", "price": 1999, "original_price": 2499, "image": "https://images.unsplash.com/photo-1534361960057-19889db9621e?w=600", "category": "learn", "tags": ["video", "tricks", "advanced"], "pillar": "learn"},
+    ]
+    
+    seeded = 0
+    for product in default_products:
+        product["created_at"] = now
+        product["updated_at"] = now
+        result = await db.learn_products.update_one({"id": product["id"]}, {"$set": product}, upsert=True)
+        if result.upserted_id or result.modified_count:
+            seeded += 1
+    
+    return {"message": f"Seeded {seeded} learn products", "products_seeded": seeded}
+
+
+@router.get("/admin/products/export")
+async def export_learn_products():
+    """Export learn products as CSV-ready data"""
+    db = get_db()
+    products = await db.learn_products.find({}, {"_id": 0}).to_list(500)
+    return {"products": products, "total": len(products)}
+
+
+@router.post("/admin/products/import")
+async def import_learn_products(products: List[dict]):
+    """Import learn products from CSV/JSON"""
+    db = get_db()
+    now = datetime.now(timezone.utc).isoformat()
+    
+    imported = 0
+    for product in products:
+        product["id"] = product.get("id") or f"learn-{uuid.uuid4().hex[:8]}"
+        product["category"] = "learn"
+        product["pillar"] = "learn"
+        product["created_at"] = now
+        product["updated_at"] = now
+        await db.learn_products.update_one({"id": product["id"]}, {"$set": product}, upsert=True)
+        imported += 1
+    
+    return {"message": f"Imported {imported} products", "imported": imported}
+
+
 @router.post("/admin/bundles")
 async def create_learn_bundle(bundle_data: dict):
     """Create a new learning bundle"""
