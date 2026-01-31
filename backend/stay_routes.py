@@ -1090,6 +1090,145 @@ async def seed_default_tags(username: str = Depends(verify_admin)):
     return {"message": f"Seeded {seeded} tags", "total": len(default_tags)}
 
 
+@stay_admin_router.post("/seed-bundles")
+async def seed_stay_bundles(username: str = Depends(verify_admin)):
+    """Seed default stay/travel bundles with images"""
+    now = get_utc_timestamp()
+    
+    default_bundles = [
+        {
+            "id": "stay-bundle-weekend",
+            "name": "Weekend Getaway Kit",
+            "description": "Everything for a short trip: travel bowl, portable bed, and treats.",
+            "price": 1499,
+            "original_price": 1797,
+            "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600",
+            "category": "travel",
+            "items": ["travel-bowl", "portable-bed", "travel-treats"],
+            "featured": True,
+            "active": True,
+            "paw_reward_points": 15,
+            "is_birthday_perk": False
+        },
+        {
+            "id": "stay-bundle-beach",
+            "name": "Beach Pawcation Pack",
+            "description": "Sun & sand essentials: cooling mat, dog sunscreen, and beach towel.",
+            "price": 1799,
+            "original_price": 2097,
+            "image": "https://images.unsplash.com/photo-1507146426996-ef05306b995a?w=600",
+            "category": "beach",
+            "items": ["cooling-mat", "dog-sunscreen", "beach-towel"],
+            "featured": True,
+            "active": True,
+            "paw_reward_points": 20,
+            "is_birthday_perk": True,
+            "birthday_discount_percent": 15
+        },
+        {
+            "id": "stay-bundle-mountain",
+            "name": "Mountain Adventure Bundle",
+            "description": "Hiking essentials: hiking booties, backpack carrier, and energy treats.",
+            "price": 2499,
+            "original_price": 2997,
+            "image": "https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=600",
+            "category": "adventure",
+            "items": ["hiking-booties", "backpack-carrier", "energy-treats"],
+            "featured": True,
+            "active": True,
+            "paw_reward_points": 30,
+            "is_birthday_perk": False
+        },
+        {
+            "id": "stay-bundle-roadtrip",
+            "name": "Road Trip Essentials",
+            "description": "Long drive comfort: car seat cover, safety harness, and travel water bottle.",
+            "price": 1999,
+            "original_price": 2397,
+            "image": "https://images.unsplash.com/photo-1541364983171-a8ba01e95cfc?w=600",
+            "category": "travel",
+            "items": ["car-seat-cover", "safety-harness", "travel-bottle"],
+            "featured": True,
+            "active": True,
+            "paw_reward_points": 25,
+            "is_birthday_perk": False
+        },
+        {
+            "id": "stay-bundle-first-stay",
+            "name": "First Stay Starter Pack",
+            "description": "New traveler kit: anxiety wrap, familiar scent blanket, and calming treats.",
+            "price": 1299,
+            "original_price": 1497,
+            "image": "https://images.unsplash.com/photo-1601758124096-1fd661873b95?w=600",
+            "category": "comfort",
+            "items": ["anxiety-wrap", "scent-blanket", "calming-treats"],
+            "featured": True,
+            "active": True,
+            "paw_reward_points": 15,
+            "is_birthday_perk": False
+        },
+        {
+            "id": "stay-bundle-luxury",
+            "name": "Luxury Pawcation Suite",
+            "description": "Premium travel: orthopedic travel bed, gourmet treats, and grooming kit.",
+            "price": 3499,
+            "original_price": 4197,
+            "image": "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=600",
+            "category": "luxury",
+            "items": ["orthopedic-bed", "gourmet-treats", "travel-grooming-kit"],
+            "featured": True,
+            "active": True,
+            "paw_reward_points": 50,
+            "is_birthday_perk": True,
+            "birthday_discount_percent": 20
+        },
+        {
+            "id": "stay-bundle-boarding",
+            "name": "Boarding Comfort Kit",
+            "description": "Make boarding feel like home: comfort toy, familiar blanket, and treats.",
+            "price": 999,
+            "original_price": 1197,
+            "image": "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600",
+            "category": "boarding",
+            "items": ["comfort-toy", "home-blanket", "favorite-treats"],
+            "featured": True,
+            "active": True,
+            "paw_reward_points": 10,
+            "is_birthday_perk": False
+        },
+        {
+            "id": "stay-bundle-staycation",
+            "name": "Local Staycation Bundle",
+            "description": "Day trip essentials: collapsible bowl, poop bag holder, and snack pack.",
+            "price": 699,
+            "original_price": 847,
+            "image": "https://images.unsplash.com/photo-1534361960057-19889db9621e?w=600",
+            "category": "local",
+            "items": ["collapsible-bowl", "poop-bag-holder", "snack-pack"],
+            "featured": True,
+            "active": True,
+            "paw_reward_points": 8,
+            "is_birthday_perk": False
+        }
+    ]
+    
+    seeded = 0
+    for bundle in default_bundles:
+        bundle["created_at"] = now
+        bundle["updated_at"] = now
+        bundle["created_by"] = username
+        
+        result = await db.stay_bundles.update_one(
+            {"id": bundle["id"]},
+            {"$set": bundle},
+            upsert=True
+        )
+        if result.upserted_id or result.modified_count:
+            seeded += 1
+    
+    return {"message": f"Seeded {seeded} stay bundles", "bundles_seeded": seeded}
+
+
 @stay_admin_router.post("/properties/{property_id}/paw-reward")
 async def update_property_paw_reward(
     property_id: str, 
