@@ -523,8 +523,6 @@ async def record_streak_action(user_id: str, action_type: str):
     config = await db.app_settings.find_one({"key": "streak_config"}, {"_id": 0})
     streak_config = config.get("value", DEFAULT_STREAK_CONFIG) if config else DEFAULT_STREAK_CONFIG
     
-    logger.info(f"[STREAK] Action type: {action_type}, Qualifying: {streak_config.get('qualifying_actions', [])}")
-    
     # Check if action qualifies
     if action_type not in streak_config.get("qualifying_actions", []):
         return {"status": "ignored", "message": "Action does not qualify for streak"}
