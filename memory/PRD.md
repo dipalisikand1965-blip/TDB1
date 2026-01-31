@@ -21,19 +21,19 @@
 
 **Fix**: Added dedicated useEffect that triggers speech when `welcomeGenerated` and `isOpen` are both true
 
-### ✅ UNIFIED FLOW FIXES - FIXED (Jan 31, 2026)
+### ✅ CONVERSATIONAL KIT ASSEMBLY - IMPLEMENTED (Jan 31, 2026)
 
-**Issues Fixed**:
-1. **"No subject" in Service Desk** - Tickets now have meaningful subjects generated from action_type + message
-2. **"Hotel Booking" notifications for grooming** - Notifications now use `category` (Care, Enjoy, etc.) instead of `action_type`
+**Feature**: Mira now gathers info before assembling kits instead of immediately showing products
 
-**Changes Made**:
-- `mira_routes.py` line 1180: Added subject generation: `f"{action_type_display}: {message[:80]}"`
-- `mira_routes.py` line 1285: Changed notification title to use `category` instead of `action_type`
+**Implementation**:
+- New `kit_assembly_sessions` MongoDB collection tracks conversation state
+- 3-stage flow: `gathering_info` → `confirming` → `assembling`
+- Kit-specific questions (travel, grooming, birthday, training, health)
+- Only proceeds to assembly after explicit user confirmation
 
-**Example Results**:
-- Ticket: `CARE-20260131-0470: Care Appointment: I need grooming for my dog Bruno`
-- Notification: `Mira AI Request: Care`
+**Code Location**: `mira_routes.py` lines 3197-3430
+
+**Testing**: 13/13 backend tests, 4/4 frontend tests passed (Iteration 147)
 
 ---
 
