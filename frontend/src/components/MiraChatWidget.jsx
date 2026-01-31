@@ -281,7 +281,7 @@ const MiraChatWidget = ({
       const pillarName = config.name;
       
       // Personalized welcome based on context
-      let welcomeMsg = `${greeting}! I'm Mira, your personal pet concierge.`;
+      let welcomeMsg = `${greeting}!`;
       
       // Safely get pillar note - ensure it's a string
       const pillarNote = typeof miraContext?.pillar_note === 'string' ? miraContext.pillar_note : null;
@@ -298,13 +298,28 @@ const MiraChatWidget = ({
       
       welcomeMsg += ' 🐾';
       
-      // First time message - always speak the introduction
+      // First time message - speak the introduction with female voice
       const isFirstTime = !sessionStorage.getItem('mira_introduced');
-      if (isFirstTime) {
+      if (isFirstTime && synthRef.current && voiceEnabled) {
         sessionStorage.setItem('mira_introduced', 'true');
-        // Speak the introduction with female voice
         setTimeout(() => {
-          speakText(`Hi, I am Meera, your pet concierge. ${welcomeMsg}`);
+          // Use speakText function logic directly to avoid dependency issues
+          const synth = synthRef.current;
+          if (!synth) return;
+          synth.cancel();
+          const utterance = new SpeechSynthesisUtterance('Hi, I am Meera, your pet concierge.');
+          utterance.pitch = 1.1;
+          utterance.rate = 1.0;
+          // Get female voice
+          const voices = synth.getVoices();
+          const femaleVoice = voices.find(v => 
+            v.name.toLowerCase().includes('samantha') ||
+            v.name.toLowerCase().includes('victoria') ||
+            v.name.toLowerCase().includes('karen') ||
+            v.name.includes('Female')
+          ) || voices.find(v => v.lang.startsWith('en'));
+          if (femaleVoice) utterance.voice = femaleVoice;
+          synth.speak(utterance);
         }, 500);
       }
       
@@ -314,7 +329,7 @@ const MiraChatWidget = ({
         content: `Hi, I am Mira, your pet concierge! ${welcomeMsg}`
       }]);
     }
-  }, [isOpen, selectedPet, miraContext, config.name, speakText]);
+  }, [isOpen, selectedPet, miraContext, config.name, voiceEnabled]);
   
   // Scroll to bottom when new messages arrive
   useEffect(() => {
