@@ -120,6 +120,31 @@ async def create_order(order: dict):
     
     await db.orders.insert_one(order)
     
+    # Determine pillar from items
+    items = order.get("items", [])
+    pillar = "shop"  # Default
+    for item in items:
+        item_pillar = (item.get("pillar") or "").lower()
+        item_category = (item.get("category") or "").lower()
+        item_name = (item.get("name") or "").lower()
+        
+        # Determine pillar from item
+        if item_pillar:
+            pillar = item_pillar
+            break
+        elif "cake" in item_name or "cake" in item_category or item_category in ["celebration", "cakes"]:
+            pillar = "celebrate"
+            break
+        elif item_category in ["fit", "fitness", "exercise"]:
+            pillar = "fit"
+            break
+        elif item_category in ["care", "health", "grooming"]:
+            pillar = "care"
+            break
+        elif item_category in ["travel"]:
+            pillar = "travel"
+            break
+    
     # Create channel intake entry for Unified Inbox
     try:
         customer = order.get("customer") or {}
@@ -130,7 +155,7 @@ async def create_order(order: dict):
             "request_id": f"order-{order.get('orderId')}",
             "channel": "web",
             "request_type": "order",
-            "pillar": "celebrate",
+            "pillar": pillar,  # Dynamic pillar
             "status": "pending",
             "customer_name": customer.get("parentName"),
             "customer_email": customer.get("email"),
@@ -153,7 +178,32 @@ async def create_order(order: dict):
             "created_at": datetime.now(timezone.utc).isoformat()
         }
         await db.channel_intakes.insert_one(channel_intake_record)
-        logger.info(f"Created channel intake for order {order.get('orderId')}")
+        logger.info(f"Created channel intake for order {order.get('orderId')} in pillar: {pillar}")
+        
+        # Route to pillar-specific collection
+        pillar_collection_map = {
+            "fit": "fit_requests",
+            "care": "care_requests",
+            "celebrate": "celebrate_requests",
+            "dine": "dine_requests",
+            "stay": "stay_requests",
+            "travel": "travel_requests",
+            "learn": "learn_requests",
+            "enjoy": "enjoy_requests",
+            "shop": "shop_requests"
+        }
+        
+        pillar_collection = pillar_collection_map.get(pillar)
+        if pillar_collection:
+            pillar_request = {
+                **channel_intake_record,
+                "source_collection": "orders",
+                "order_id": order.get("orderId"),
+                "routed_at": datetime.now(timezone.utc).isoformat()
+            }
+            await db[pillar_collection].insert_one(pillar_request)
+            logger.info(f"[PILLAR ROUTING] Order {order.get('orderId')} routed to {pillar_collection}")
+            
     except Exception as e:
         logger.error(f"Failed to create channel intake for order: {e}")
     
