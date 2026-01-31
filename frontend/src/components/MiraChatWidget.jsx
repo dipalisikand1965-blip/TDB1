@@ -124,9 +124,36 @@ const MiraChatWidget = ({
   
   const config = pillarConfig[pillar] || pillarConfig.general;
   
-  // Initialize speech recognition
+  // State for voices
+  const [voicesLoaded, setVoicesLoaded] = useState(false);
+  
+  // Initialize speech recognition and preload voices
   useEffect(() => {
     if (typeof window === 'undefined') return;
+    
+    // Preload voices - critical for mobile browsers
+    const synth = window.speechSynthesis;
+    if (synth) {
+      // Force voices to load
+      const loadVoices = () => {
+        const voices = synth.getVoices();
+        if (voices.length > 0) {
+          setVoicesLoaded(true);
+          console.log('[Mira Voice] Loaded', voices.length, 'voices');
+        }
+      };
+      
+      // Some browsers need this event
+      if (synth.onvoiceschanged !== undefined) {
+        synth.onvoiceschanged = loadVoices;
+      }
+      
+      // Try loading immediately too
+      loadVoices();
+      
+      // Fallback: try again after 500ms
+      setTimeout(loadVoices, 500);
+    }
     
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (SpeechRecognition) {
