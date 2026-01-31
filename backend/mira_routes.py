@@ -3234,6 +3234,24 @@ What would you like to explore? 🐾"""
                 
                 products = all_found_products[:10]  # Allow more items for mixed stock
                 
+                # Add services to the kit if applicable
+                kit_services = product_context.get("kit_services", [])
+                if kit_services:
+                    for service_name in kit_services[:3]:  # Limit to 3 services
+                        service_item = {
+                            "id": f"service-{service_name.replace(' ', '-').lower()}",
+                            "name": service_name.title(),
+                            "description": f"Book a {service_name} session",
+                            "price": None,  # Price varies
+                            "image": None,
+                            "kit_category": "service",
+                            "in_stock": True,
+                            "is_service": True,
+                            "service_type": service_name.lower().replace(' ', '_'),
+                            "pillar": search_pillar
+                        }
+                        products.append(service_item)
+                
                 # If ALL items need to be sourced, hand off to concierge
                 if product_context["is_kit_request"] and len(missing_items) == len(search_items):
                     handoff_to_concierge = True
