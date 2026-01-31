@@ -502,29 +502,11 @@ const StayPage = () => {
         </div>
       </div>
 
-      {/* ==================== MIRA PICKS - PERSONALIZED ==================== */}
+      {/* ==================== PET JOURNEY RECOMMENDATIONS ==================== */}
       <section className="py-6 bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4">
-          <MiraPicksCarousel
-            pillar="stay"
-            petId={selectedPets[0]?.id || userPets[0]?.id}
-            petName={selectedPets[0]?.name || userPets[0]?.name}
-            petPhoto={selectedPets[0] ? getPetPhotoUrl(selectedPets[0]) : userPets[0] ? getPetPhotoUrl(userPets[0]) : null}
-            userId={user?.id}
-            onSelectService={(property) => {
-              setSelectedProperty(property);
-            }}
-            onSelectProduct={(product) => {
-              addToCart({
-                id: product.id,
-                name: product.name || product.title,
-                price: product.price,
-                image: product.image,
-                pillar: 'stay',
-                type: 'product'
-              });
-              toast({ title: '🛒 Added to Cart!', description: `${product.name || product.title} added` });
-            }}
+          <PetJourneyRecommendations 
+            currentPillar="stay"
           />
         </div>
       </section>
