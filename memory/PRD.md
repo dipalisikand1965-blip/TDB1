@@ -15,6 +15,37 @@ This flow must work across:
 
 ## What's Been Implemented (Session: Jan 31, 2026 - Latest Update)
 
+### ✅ MIRA AI PRODUCT CARDS & SIDE DRAWER FIX - COMPLETED (Jan 31, 2026)
+
+**Issues Addressed**:
+1. **Product Images Fixed** - COMPLETED
+   - Backend `pet-recommendations` endpoint now adds Unsplash fallback images for local paths
+   - Products now have proper `https://` URLs (Shopify CDN or Unsplash fallback)
+   - No more broken "IATA Approved" placeholder images
+   
+2. **View vs Add Buttons** - COMPLETED
+   - Product cards now have separate "View" and "Add" buttons
+   - "View" navigates to product page
+   - "Add" adds to cart with success toast
+   
+3. **Desktop Side Drawer** - COMPLETED
+   - Mira now opens as full-height side drawer on desktop (420px width, anchored to right edge)
+   - Mobile still opens from bottom (85vh, rounded top corners)
+   
+4. **Voice Preloading** - COMPLETED
+   - Added `onvoiceschanged` listener to preload voices on mobile
+   - Voices now load before first speech attempt
+
+**Testing Results (Iteration 142)**:
+- Backend API Tests: 100% (6/6 passed)
+- Frontend UI Tests: 90% (5/6 verified)
+- Desktop side drawer: ✅ PASS (x=1500, width=420px, full height)
+- Mobile layout: ✅ PASS (full width, 85vh from bottom)
+- Product cards: ✅ PASS (View/Add buttons with proper images)
+- Voice wizard: ✅ PASS (modal with service buttons)
+
+---
+
 ### ✅ MOBILE UI/UX POLISH & MULTI-PET DROPDOWN - COMPLETED (Jan 31, 2026)
 
 **Issues Addressed**:
