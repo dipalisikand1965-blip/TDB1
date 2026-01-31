@@ -231,6 +231,8 @@ const EnjoyPage = () => {
 
   const submitRsvp = async () => {
     const hasPetInfo = selectedPets.length > 0 || rsvpForm.guest_pet_name;
+    const hasContactInfo = user || (rsvpForm.guest_name && rsvpForm.guest_phone);
+    
     if (!hasPetInfo || !selectedExperience) {
       toast({
         title: "Missing Information",
@@ -240,10 +242,20 @@ const EnjoyPage = () => {
       return;
     }
     
+    if (!hasContactInfo) {
+      toast({
+        title: "Missing Contact Info",
+        description: "Please enter your name and phone number",
+        variant: "destructive"
+      });
+      return;
+    }
+    
     setSubmitting(true);
     try {
       const rsvpData = {
         experience_id: selectedExperience.id,
+        experience_name: selectedExperience.name,
         pet_id: selectedPets.length > 0 ? (selectedPets[0].id || selectedPets[0]._id) : null,
         pet_name: selectedPets.length > 0 
           ? selectedPets.map(p => p.name).join(', ') 
@@ -253,12 +265,25 @@ const EnjoyPage = () => {
         number_of_humans: rsvpForm.number_of_humans,
         special_requirements: rsvpForm.special_requirements,
         user_name: user?.name || rsvpForm.guest_name || '',
-        user_email: user?.email || rsvpForm.guest_email || ''
+        user_email: user?.email || rsvpForm.guest_email || '',
+        user_phone: user?.phone || rsvpForm.guest_phone || ''
       };
       
       const result = await createEnjoyRSVP(rsvpData);
       showUnifiedFlowSuccess("RSVP", result);
       setShowRsvpModal(false);
+      // Reset form
+      setRsvpForm({
+        number_of_pets: 1,
+        number_of_humans: 1,
+        special_requirements: '',
+        guest_pet_name: '',
+        guest_pet_breed: '',
+        guest_name: '',
+        guest_phone: '',
+        guest_email: ''
+      });
+      setSelectedPets([]);
       fetchExperiences();
     } catch (error) {
       showUnifiedFlowError("RSVP failed", error.message);
