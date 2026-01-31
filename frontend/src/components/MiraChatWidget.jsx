@@ -559,42 +559,31 @@ const MiraChatWidget = ({
     }, 500);
   };
   
-  // Floating Button (when closed)
+  // Get orb state based on current activity
+  const getOrbState = () => {
+    if (isListening) return 'listening';
+    if (isSpeaking) return 'speaking';
+    if (isSending) return 'thinking';
+    return 'idle';
+  };
+  
+  // Floating Button (when closed) - Uses the beautiful MiraOrb!
   if (!isOpen) {
     return (
-      <div className={`fixed bottom-6 right-6 z-[9999] flex flex-col items-end gap-2 ${className}`}>
-        {/* Pulse Voice Button */}
-        {speechSupported && (
-          <button
-            onClick={handlePulseClick}
-            className="group relative"
-            data-testid="mira-pulse-button"
-          >
-            <div className="w-10 h-10 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-xl">
-              <Zap className="w-5 h-5 text-white" />
-            </div>
-            <div className="absolute bottom-full right-0 mb-2 px-2 py-1 bg-cyan-600 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-              Pulse Voice
-            </div>
-          </button>
-        )}
-        
-        {/* Main Chat Button */}
-        <button
+      <div className={`fixed bottom-6 right-6 z-[9999] flex flex-col items-end gap-3 ${className}`}>
+        {/* Main Mira Orb Button */}
+        <div
           onClick={() => setIsOpen(true)}
-          className="group relative"
+          className="cursor-pointer"
           data-testid="mira-widget-button"
         >
-          <div className={`relative w-14 h-14 bg-gradient-to-r ${config.color} rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-xl`}>
-            <MessageCircle className="w-6 h-6 text-white" />
-            {/* Online indicator */}
-            <span className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white animate-pulse" />
-          </div>
-          {/* Tooltip */}
-          <div className="absolute bottom-full right-0 mb-2 px-3 py-1.5 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-            Chat with Mira
-          </div>
-        </button>
+          <MiraOrb 
+            state={getOrbState()}
+            size="md"
+            showLabel={true}
+            onClick={() => setIsOpen(true)}
+          />
+        </div>
       </div>
     );
   }
