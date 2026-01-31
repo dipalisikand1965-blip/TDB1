@@ -725,9 +725,6 @@ const MiraChatWidget = ({
                               <p className="text-xs font-medium text-gray-800 truncate">{product.name}</p>
                               <p className="text-xs text-purple-600 font-semibold">₹{product.price}</p>
                             </div>
-                              <p className="text-xs font-medium text-gray-800 truncate">{product.name}</p>
-                              <p className="text-xs text-purple-600 font-semibold">₹{product.price}</p>
-                            </div>
                             <Plus className="w-4 h-4 text-purple-600 shrink-0" />
                           </div>
                         ))}
