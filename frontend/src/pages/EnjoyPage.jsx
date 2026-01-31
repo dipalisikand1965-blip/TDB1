@@ -747,20 +747,21 @@ const EnjoyPage = () => {
       {viewMode === 'list' && (
       <div className="py-16 bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 bg-amber-100 text-amber-700 px-4 py-2 rounded-full mb-4">
-              <Sparkles className="w-4 h-4" />
-              <span className="text-sm font-medium">Elevated Experiences</span>
+          <div className="text-center mb-8 sm:mb-12">
+            <div className="inline-flex items-center gap-2 bg-amber-100 text-amber-700 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full mb-3 sm:mb-4">
+              <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span className="text-xs sm:text-sm font-medium">Elevated Experiences</span>
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
               Enjoy <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 to-orange-600">Concierge®</span> Experiences
             </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              More than event listings — we curate, coordinate, and ensure your pet's social calendar is filled with joy. Every experience is matched to your pet's personality.
+            <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto px-4">
+              Curated experiences matched to your pet's personality. We coordinate the joy.
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 gap-6">
+          {/* 2x2 grid on mobile */}
+          <div className="grid grid-cols-2 md:grid-cols-2 gap-3 sm:gap-6">
             {ENJOY_EXPERIENCES.map((exp, idx) => (
               <ConciergeExperienceCard
                 key={idx}
@@ -776,8 +777,8 @@ const EnjoyPage = () => {
             ))}
           </div>
           
-          <div className="mt-10 text-center">
-            <p className="text-sm text-gray-500">
+          <div className="mt-6 sm:mt-10 text-center">
+            <p className="text-xs sm:text-sm text-gray-500">
               💬 Looking for something specific? <button onClick={() => setShowRsvpModal(true)} className="text-amber-600 hover:underline font-medium">Tell us what you're dreaming of</button>.
             </p>
           </div>
