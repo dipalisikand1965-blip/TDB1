@@ -603,11 +603,14 @@ const MiraPage = () => {
                   variant="ghost"
                   size="icon"
                   onClick={() => {
-                    // Check if there's history to go back to
-                    if (window.history.length > 1) {
+                    // Navigate back to the pillar page if we have pillar context
+                    if (pillar && pillar !== 'general') {
+                      navigate(`/${pillar}`);
+                    } else if (window.history.length > 2) {
+                      // Try to go back if we have history
                       navigate(-1);
                     } else {
-                      // Fallback to dashboard or home
+                      // Fallback to dashboard
                       navigate('/dashboard');
                     }
                   }}
@@ -628,6 +631,16 @@ const MiraPage = () => {
                 <span className="sm:hidden text-lg font-bold text-gray-900">Mira</span>
               </div>
               
+              {/* Pillar Indicator - Shows where user came from */}
+              {pillar && pillar !== 'general' && (
+                <Badge 
+                  variant="outline" 
+                  className="hidden sm:flex items-center gap-1 text-xs capitalize cursor-pointer hover:bg-purple-50"
+                  onClick={() => navigate(`/${pillar}`)}
+                >
+                  Back to {pillar}
+                </Badge>
+              )}
               {/* Right: Actions */}
               <div className="flex items-center gap-2">
                 {/* Pillar Badge */}
