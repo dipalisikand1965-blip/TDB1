@@ -431,9 +431,9 @@ const DinePage = () => {
                 </div>
               )}
 
-              {/* All Restaurants */}
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredRestaurants.filter(r => !r.featured).map((restaurant) => (
+              {/* All Restaurants - 2x2 on mobile with Load More */}
+              <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
+                {filteredRestaurants.filter(r => !r.featured).slice(0, restaurantsToShow).map((restaurant) => (
                   <RestaurantCard 
                     key={restaurant.id} 
                     restaurant={restaurant}
@@ -444,6 +444,23 @@ const DinePage = () => {
                   />
                 ))}
               </div>
+              
+              {/* Load More Button */}
+              {filteredRestaurants.filter(r => !r.featured).length > restaurantsToShow && (
+                <div className="text-center mt-8">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setRestaurantsToShow(prev => prev + 8)}
+                    className="px-8 py-3 rounded-full border-2 border-orange-300 text-orange-600 hover:bg-orange-50"
+                  >
+                    Load More Restaurants
+                    <ChevronDown className="w-4 h-4 ml-2" />
+                  </Button>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Showing {Math.min(restaurantsToShow, filteredRestaurants.filter(r => !r.featured).length)} of {filteredRestaurants.filter(r => !r.featured).length}
+                  </p>
+                </div>
+              )}
 
               {filteredRestaurants.length === 0 && (
                 <Card className="p-12 text-center">
