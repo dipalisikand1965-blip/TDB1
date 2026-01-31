@@ -22,7 +22,7 @@ import {
   ClipboardList, Bell, Building2, Package, Gift, Settings, Search,
   Plus, Edit2, Trash2, RefreshCw, Upload, Download, ChevronRight,
   Clock, CheckCircle, XCircle, User, Phone, Mail, MapPin, Star,
-  Calendar, Filter, Eye
+  Calendar, Filter, Eye, Sparkles, Database
 } from 'lucide-react';
 
 // Care Type Icons
