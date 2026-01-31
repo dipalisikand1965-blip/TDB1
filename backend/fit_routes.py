@@ -103,11 +103,11 @@ async def create_fitness_request(request_data: dict):
         "id": notification_id,
         "type": f"fit_{fitness_request['fit_type']}",
         "pillar": "fit",
-        "title": f"New Fitness Request: {fit_type} - {pet_name}",
-        "message": f"{user_name} needs {fit_type.lower()} for {pet_name}. Goals: {', '.join(fitness_request['fitness_goals'][:2]) if fitness_request['fitness_goals'] else 'Not specified'}",
+        "title": f"New Fitness Request: {fit_type} - {pet_display_name}{multi_pet_badge}",
+        "message": f"{user_name} needs {fit_type.lower()} for {pet_display_name}. Goals: {', '.join(fitness_request['fitness_goals'][:2]) if fitness_request['fitness_goals'] else 'Not specified'}",
         "read": False,
         "status": "unread",
-        "urgency": "medium",
+        "urgency": "medium" if not is_multi_pet else "high",  # Multi-pet requests get higher priority
         "ticket_id": ticket_id,
         "inbox_id": inbox_id,
         "customer": {
@@ -116,14 +116,17 @@ async def create_fitness_request(request_data: dict):
             "phone": fitness_request["user_phone"]
         },
         "pet": {
-            "name": pet_name,
-            "breed": fitness_request["pet_breed"]
+            "name": pet_display_name,
+            "breed": fitness_request["pet_breed"],
+            "count": pet_count,
+            "is_multi_pet": is_multi_pet,
+            "pets": pets_data
         },
         "link": f"/admin?tab=servicedesk&ticket={ticket_id}",
         "created_at": get_utc_timestamp(),
         "read_at": None
     })
-    logger.info(f"[UNIFIED FLOW] Fit notification created: {notification_id}")
+    logger.info(f"[UNIFIED FLOW] Fit notification created: {notification_id} (multi_pet={is_multi_pet})")
     
     # ==================== STEP 2: SERVICE DESK TICKET (MANDATORY) ====================
     ticket = {
