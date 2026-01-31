@@ -3906,8 +3906,14 @@ async def get_my_requests(
             "source": "quick_book"
         })
     
-    # Sort by created_at descending
-    requests.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+    # Sort by created_at descending - handle mixed types
+    def get_sort_key(x):
+        created = x.get("created_at", "")
+        if isinstance(created, datetime):
+            return created.isoformat()
+        return str(created) if created else ""
+    
+    requests.sort(key=get_sort_key, reverse=True)
     
     return {
         "requests": requests[:limit],
