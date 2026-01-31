@@ -3196,6 +3196,10 @@ What would you like to explore? 🐾"""
                 "is_kit_request": detected_kit is not None
             }
         
+        # ==================== CONVERSATIONAL KIT ASSEMBLY STATE ====================
+        # Check if we're in the middle of a kit assembly conversation
+        kit_assembly_state = await db.kit_assembly_sessions.find_one({"session_id": session_id}, {"_id": 0})
+        
         # Check if this is a product/kit query - ONLY trigger on explicit product requests
         # NOT on service booking requests like "book grooming"
         product_keywords = ["treat", "cake", "food", "toy", "product", "buy", "show me products", 
@@ -3210,9 +3214,224 @@ What would you like to explore? 🐾"""
         conversation_history = request.history or []
         product_context = extract_product_needs_from_context(user_message, conversation_history)
         
-        # Only search for products if user explicitly asks for products/kit
-        # Skip if this is just a service booking request (gather info first!)
-        if (is_product_query or product_context["is_kit_request"]) and not is_service_only:
+        # ==================== CONVERSATIONAL KIT FLOW ====================
+        # STEP 1: If kit intent detected but NO state exists, start gathering info
+        if product_context["is_kit_request"] and not kit_assembly_state and not is_service_only:
+            kit_type = product_context.get("kit_type", "custom")
+            kit_display = kit_type.replace("_", " ").title()
+            
+            # Create initial kit assembly state
+            await db.kit_assembly_sessions.insert_one({
+                "session_id": session_id,
+                "user_email": user.get("email") if user else None,
+                "kit_type": kit_type,
+                "target_pillar": product_context.get("target_pillar"),
+                "stage": "gathering_info",  # Stages: gathering_info, confirming, assembling, complete
+                "gathered_info": {
+                    "pet_count": len(pets) if pets else None,
+                    "pet_names": [p.get("name") for p in pets] if pets else [],
+                    "occasion": None,
+                    "preferences": [],
+                    "budget": None,
+                    "urgency": None,
+                    "special_requirements": []
+                },
+                "questions_asked": 0,
+                "created_at": datetime.now(timezone.utc)
+            })
+            
+            # Generate clarifying questions based on kit type
+            pet_text = f"for {pets[0].get('name')}" if pets and len(pets) == 1 else f"for your {len(pets)} pets" if pets else ""
+            
+            kit_questions = {
+                "travel_kit": [
+                    f"I'd love to help you put together a travel kit {pet_text}! 🚗✨",
+                    "",
+                    "To make sure I get everything just right, can you tell me:",
+                    "1. **Where are you headed?** (weekend trip, long road trip, flight?)",
+                    "2. **Any specific concerns?** (car sickness, anxiety, first time traveling?)",
+                    "3. **What essentials do you already have?** (carrier, bowls, etc.)",
+                    "",
+                    "Once I understand your needs better, I'll curate the perfect travel kit! 🎒"
+                ],
+                "grooming_kit": [
+                    f"A grooming kit {pet_text}! Great choice for keeping them looking fab! ✨🛁",
+                    "",
+                    "Quick questions to personalize your kit:",
+                    "1. **Coat type?** (short, long, double-coated, curly?)",
+                    "2. **Any skin sensitivities or allergies?**",
+                    "3. **Home grooming or between salon visits?**",
+                    "",
+                    "Let me know and I'll put together the perfect grooming essentials!"
+                ],
+                "birthday_kit": [
+                    f"Yay! A birthday celebration {pet_text}! 🎂🎉",
+                    "",
+                    "Let me make this pawsome! Tell me:",
+                    "1. **How old are they turning?**",
+                    "2. **Indoor party or outdoor celebration?**",
+                    "3. **Any dietary restrictions?** (grain-free, allergies?)",
+                    "4. **Guest count?** (other dogs joining?)",
+                    "",
+                    "I'll create a celebration kit they'll never forget! 🥳"
+                ],
+                "training_kit": [
+                    f"Training kit {pet_text}! Let's set them up for success! 🌟",
+                    "",
+                    "A few questions to tailor this perfectly:",
+                    "1. **What are you working on?** (basic obedience, specific behavior, tricks?)",
+                    "2. **Puppy or adult dog?**",
+                    "3. **Any experience level?** (first time training or building on existing skills?)",
+                    "",
+                    "Once I know, I'll recommend the best training essentials!"
+                ],
+                "health_kit": [
+                    f"Health & wellness kit {pet_text}! Prevention is the best medicine! 💚",
+                    "",
+                    "To customize for your pet's needs:",
+                    "1. **Age and any health conditions?**",
+                    "2. **Current supplements or medications?**",
+                    "3. **Specific concerns?** (joint health, digestion, skin & coat?)",
+                    "",
+                    "Let me know and I'll curate health essentials just for them!"
+                ]
+            }
+            
+            # Get questions for this kit type (or use generic)
+            questions = kit_questions.get(kit_type, [
+                f"I'd love to put together a custom kit {pet_text}! 🎁",
+                "",
+                "Help me understand what you need:",
+                "1. **What's the main purpose?** (travel, grooming, celebration, etc.)",
+                "2. **Any must-have items?**",
+                "3. **Budget range?** (flexible, moderate, no limit?)",
+                "",
+                "Share the details and I'll create something special!"
+            ])
+            
+            response = "\n".join(questions)
+            
+            # Return early - we're gathering info, not assembling yet
+            await add_message_to_ticket(session_id, {
+                "type": "mira_response",
+                "content": response,
+                "sender": "mira_ai",
+                "is_internal": False,
+                "metadata": {"kit_assembly_stage": "gathering_info", "kit_type": kit_type}
+            })
+            
+            return {
+                "response": response,
+                "session_id": session_id,
+                "ticket_id": ticket_id,
+                "pillar": pillar,
+                "urgency": urgency,
+                "kit_assembly": {
+                    "stage": "gathering_info",
+                    "kit_type": kit_type,
+                    "awaiting_user_input": True
+                }
+            }
+        
+        # STEP 2: If we have kit assembly state, process user's response
+        if kit_assembly_state and kit_assembly_state.get("stage") == "gathering_info":
+            # Parse user's response to extract info
+            gathered = kit_assembly_state.get("gathered_info", {})
+            message_lower = user_message.lower()
+            
+            # Extract occasion/destination mentions
+            if any(place in message_lower for place in ["goa", "ooty", "manali", "weekend", "trip", "flight", "road"]):
+                gathered["occasion"] = user_message
+            
+            # Extract budget mentions
+            if any(word in message_lower for word in ["budget", "affordable", "premium", "expensive", "cheap", "no limit"]):
+                if "no limit" in message_lower or "premium" in message_lower:
+                    gathered["budget"] = "premium"
+                elif "affordable" in message_lower or "budget" in message_lower or "cheap" in message_lower:
+                    gathered["budget"] = "budget"
+                else:
+                    gathered["budget"] = "moderate"
+            
+            # Extract specific requirements
+            requirements = []
+            if any(word in message_lower for word in ["anxiety", "nervous", "scared", "first time"]):
+                requirements.append("anxiety management")
+            if any(word in message_lower for word in ["car sick", "motion", "nausea"]):
+                requirements.append("motion sickness")
+            if any(word in message_lower for word in ["allergy", "sensitive", "grain free", "hypoallergenic"]):
+                requirements.append("allergy-friendly")
+            if requirements:
+                gathered["special_requirements"] = requirements
+            
+            # Update state
+            questions_asked = kit_assembly_state.get("questions_asked", 0) + 1
+            
+            await db.kit_assembly_sessions.update_one(
+                {"session_id": session_id},
+                {"$set": {
+                    "gathered_info": gathered,
+                    "questions_asked": questions_asked,
+                    "last_user_input": user_message,
+                    "updated_at": datetime.now(timezone.utc)
+                }}
+            )
+            
+            # Check if user is ready to proceed (after 1+ exchanges or explicit confirmation)
+            ready_keywords = ["yes", "ready", "go ahead", "show me", "build", "create", "assemble", "proceed", "let's do it", "sounds good", "perfect"]
+            user_ready = any(kw in message_lower for kw in ready_keywords) or questions_asked >= 2
+            
+            if user_ready:
+                # Move to assembly stage
+                await db.kit_assembly_sessions.update_one(
+                    {"session_id": session_id},
+                    {"$set": {"stage": "assembling"}}
+                )
+                
+                # Continue to product search below
+                product_context["is_kit_request"] = True
+                product_context["kit_type"] = kit_assembly_state.get("kit_type")
+                product_context["gathered_info"] = gathered
+            else:
+                # Ask follow-up or confirm
+                kit_type = kit_assembly_state.get("kit_type", "custom")
+                pet_name = pets[0].get("name") if pets else "your furry friend"
+                
+                follow_up = f"Thanks for sharing! So for {pet_name}'s {kit_type.replace('_', ' ')}"
+                if gathered.get("occasion"):
+                    follow_up += f" for {gathered['occasion']}"
+                
+                follow_up += ".\n\n"
+                follow_up += "**Ready for me to assemble your kit?** Just say 'yes' or 'go ahead' and I'll curate the perfect selection! 🎁\n\n"
+                follow_up += "_Or share any other preferences you'd like me to consider._"
+                
+                await add_message_to_ticket(session_id, {
+                    "type": "mira_response",
+                    "content": follow_up,
+                    "sender": "mira_ai",
+                    "is_internal": False,
+                    "metadata": {"kit_assembly_stage": "confirming"}
+                })
+                
+                return {
+                    "response": follow_up,
+                    "session_id": session_id,
+                    "ticket_id": ticket_id,
+                    "pillar": pillar,
+                    "urgency": urgency,
+                    "kit_assembly": {
+                        "stage": "confirming",
+                        "kit_type": kit_type,
+                        "gathered_info": gathered,
+                        "awaiting_user_input": True
+                    }
+                }
+        
+        # Only search for products if user explicitly asks for products/kit OR we're in assembly stage
+        should_search_products = (is_product_query or product_context["is_kit_request"]) and not is_service_only
+        if kit_assembly_state and kit_assembly_state.get("stage") == "assembling":
+            should_search_products = True
+        
+        if should_search_products:
             # Determine what to search for
             search_items = product_context["specific_items"] or product_context["kit_items"] or []
             search_pillar = product_context["target_pillar"] or pillar
