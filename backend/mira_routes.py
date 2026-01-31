@@ -3260,9 +3260,37 @@ What would you like to explore? 🐾"""
             
             # If products found, enhance the response
             if products:
-                response += f"\n\n✨ I found some options for you! Check out these {len(products)} products below."
+                if product_context["is_kit_request"]:
+                    response += f"\n\n🎒 I've assembled a kit for you! Here are {len(products)} items you can add to your cart."
+                else:
+                    response += f"\n\n✨ I found some options for you! Check out these {len(products)} products below."
         
-        # 12. Build enhanced concierge_action with navigation
+        # 12. Handle concierge handoff for custom kit assembly
+        if handoff_to_concierge:
+            # Create a handoff notification
+            handoff_id = f"KIT-{uuid.uuid4().hex[:8].upper()}"
+            handoff_doc = {
+                "id": handoff_id,
+                "type": "kit_assembly_request",
+                "user_id": user_id,
+                "user_name": user.get("name") if user else "Guest",
+                "user_email": user.get("email") if user else None,
+                "user_phone": user.get("phone") if user else None,
+                "kit_type": product_context.get("kit_type"),
+                "requested_items": product_context.get("kit_items", []),
+                "conversation_context": user_message,
+                "pillar": pillar,
+                "status": "pending",
+                "notify_via": ["email", "whatsapp"],
+                "created_at": datetime.now(timezone.utc),
+                "notes": handoff_reason
+            }
+            await db.concierge_handoffs.insert_one(handoff_doc)
+            
+            # Update response to inform user
+            response += f"\n\n📦 I've noted down your complete kit requirements. Our concierge® team will curate a custom kit for you and send details via email/WhatsApp shortly. Reference: #{handoff_id}"
+        
+        # 13. Build enhanced concierge_action with navigation
         enhanced_concierge_action = None
         if concierge_action.get("action_needed"):
             enhanced_concierge_action = concierge_action.copy()
