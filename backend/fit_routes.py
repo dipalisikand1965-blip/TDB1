@@ -32,6 +32,19 @@ async def create_fitness_request(request_data: dict):
     inbox_id = f"INBOX-{uuid.uuid4().hex[:8].upper()}"
     ticket_id = f"TKT-{uuid.uuid4().hex[:8].upper()}"
     
+    # Handle multi-pet data
+    pets_data = request_data.get("pets", [])
+    is_multi_pet = request_data.get("is_multi_pet", len(pets_data) > 1)
+    pet_count = request_data.get("pet_count", len(pets_data))
+    
+    # For backward compatibility, also support single pet fields
+    single_pet_name = request_data.get("pet_name") or (pets_data[0].get("name") if pets_data else None)
+    single_pet_breed = request_data.get("pet_breed") or (pets_data[0].get("breed") if pets_data else None)
+    single_pet_id = request_data.get("pet_id") or (pets_data[0].get("id") if pets_data else None)
+    
+    # Multi-pet names for display
+    all_pet_names = ", ".join([p.get("name", "Pet") for p in pets_data]) if pets_data else single_pet_name
+    
     fitness_request = {
         "id": request_id,
         "request_id": request_id,
@@ -42,10 +55,15 @@ async def create_fitness_request(request_data: dict):
         "inbox_id": inbox_id,
         "ticket_id": ticket_id,
         
-        # Pet Details
-        "pet_id": request_data.get("pet_id"),
-        "pet_name": request_data.get("pet_name"),
-        "pet_breed": request_data.get("pet_breed"),
+        # Multi-pet support
+        "pets": pets_data,
+        "pet_count": pet_count,
+        "is_multi_pet": is_multi_pet,
+        
+        # Legacy single pet fields (for backward compatibility)
+        "pet_id": single_pet_id,
+        "pet_name": all_pet_names,
+        "pet_breed": single_pet_breed,
         "pet_age": request_data.get("pet_age"),
         "pet_weight": request_data.get("pet_weight"),
         "pet_size": request_data.get("pet_size"),
@@ -73,9 +91,10 @@ async def create_fitness_request(request_data: dict):
         "unified_flow_processed": True
     }
     
-    pet_name = fitness_request["pet_name"] or "Pet"
+    pet_display_name = all_pet_names or "Pet"
     user_name = fitness_request["user_name"] or "Customer"
     fit_type = fitness_request["fit_type"].replace('_', ' ').title()
+    multi_pet_badge = f" ({pet_count} pets)" if is_multi_pet else ""
     
     await db.fit_requests.insert_one({k: v for k, v in fitness_request.items() if k != "_id"})
     
