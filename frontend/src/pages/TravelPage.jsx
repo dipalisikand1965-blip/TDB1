@@ -342,7 +342,7 @@ const TravelPage = () => {
   const resetWizard = () => {
     setShowWizard(false);
     setWizardStep(1);
-    setSelectedPet(null);
+    setSelectedPets([]);
     setSelectedType(null);
     setRequestResult(null);
     setFormData({
@@ -356,7 +356,9 @@ const TravelPage = () => {
       is_round_trip: false,
       special_requirements: '',
       pet_weight: '',
-      crate_trained: null
+      crate_trained: null,
+      pet_name: '',
+      pet_breed: ''
     });
   };
 
