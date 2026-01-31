@@ -191,13 +191,129 @@ const Navbar = () => {
   const [primaryPet, setPrimaryPet] = useState(null);
   const [showSearchSuggestions, setShowSearchSuggestions] = useState(false);
   const [searchSuggestions, setSearchSuggestions] = useState([]);
+  const [showVoiceWizard, setShowVoiceWizard] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const [voiceTranscript, setVoiceTranscript] = useState('');
   const dropdownRef = useRef(null);
   const searchRef = useRef(null);
   const dropdownTimeoutRef = useRef(null);
+  const recognitionRef = useRef(null);
   const { getCartCount, setIsCartOpen } = useCart();
   const { user, token, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+
+  // Initialize speech recognition
+  useEffect(() => {
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = true;
+      recognitionRef.current.interimResults = true;
+      recognitionRef.current.lang = 'en-US';
+      
+      recognitionRef.current.onresult = (event) => {
+        let transcript = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          transcript += event.results[i][0].transcript;
+        }
+        setVoiceTranscript(transcript);
+        
+        // If final result, process the command
+        if (event.results[event.results.length - 1].isFinal) {
+          processVoiceCommand(transcript.trim());
+        }
+      };
+      
+      recognitionRef.current.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+        setIsListening(false);
+      };
+      
+      recognitionRef.current.onend = () => {
+        if (isListening) {
+          recognitionRef.current.start(); // Keep listening
+        }
+      };
+    }
+  }, []);
+
+  // Process voice commands - Service Wizard
+  const processVoiceCommand = async (command) => {
+    const lowerCommand = command.toLowerCase();
+    
+    // Service intent mapping
+    const serviceIntents = {
+      grooming: { pillar: 'care', path: '/care?type=grooming', keywords: ['groomer', 'grooming', 'haircut', 'bath', 'spa'] },
+      vet: { pillar: 'care', path: '/care?type=vet', keywords: ['vet', 'veterinary', 'doctor', 'checkup', 'vaccination'] },
+      training: { pillar: 'learn', path: '/learn', keywords: ['trainer', 'training', 'obedience', 'behavior', 'puppy class'] },
+      walking: { pillar: 'care', path: '/care?type=walking', keywords: ['walker', 'walking', 'walk my dog'] },
+      sitting: { pillar: 'care', path: '/care?type=sitting', keywords: ['sitter', 'pet sitting', 'babysitter'] },
+      boarding: { pillar: 'stay', path: '/stay?type=boarding', keywords: ['boarding', 'kennel', 'leave my pet'] },
+      hotel: { pillar: 'stay', path: '/stay', keywords: ['hotel', 'pet hotel', 'staycation'] },
+      travel: { pillar: 'travel', path: '/travel', keywords: ['travel', 'flight', 'taxi', 'cab', 'transport'] },
+      cake: { pillar: 'celebrate', path: '/celebrate/cakes', keywords: ['cake', 'birthday cake', 'birthday'] },
+      food: { pillar: 'dine', path: '/dine', keywords: ['food', 'meal', 'restaurant', 'eat', 'feed'] },
+      event: { pillar: 'enjoy', path: '/enjoy', keywords: ['event', 'meetup', 'playdate', 'social'] },
+      fitness: { pillar: 'fit', path: '/fit', keywords: ['fitness', 'exercise', 'weight', 'active'] },
+    };
+    
+    // Find matching intent
+    for (const [service, config] of Object.entries(serviceIntents)) {
+      for (const keyword of config.keywords) {
+        if (lowerCommand.includes(keyword)) {
+          // Navigate to the service page
+          navigate(config.path);
+          setShowVoiceWizard(false);
+          setIsListening(false);
+          setVoiceTranscript('');
+          
+          // Also send to Mira for context
+          try {
+            await fetch(`${API_URL}/api/mira/chat`, {
+              method: 'POST',
+              headers: { 
+                'Content-Type': 'application/json',
+                ...(token && { 'Authorization': `Bearer ${token}` })
+              },
+              body: JSON.stringify({
+                message: command,
+                session_id: `voice-wizard-${Date.now()}`,
+                source: 'voice_wizard',
+                pillar: config.pillar
+              })
+            });
+          } catch (err) {
+            console.error('Failed to log voice command:', err);
+          }
+          return;
+        }
+      }
+    }
+    
+    // If no specific intent matched, navigate to Mira with context
+    navigate(`/mira?context=${encodeURIComponent(command)}`);
+    setShowVoiceWizard(false);
+    setIsListening(false);
+    setVoiceTranscript('');
+  };
+
+  // Toggle voice listening
+  const toggleVoiceWizard = () => {
+    if (isListening) {
+      recognitionRef.current?.stop();
+      setIsListening(false);
+    } else {
+      setShowVoiceWizard(true);
+      setVoiceTranscript('');
+      try {
+        recognitionRef.current?.start();
+        setIsListening(true);
+      } catch (err) {
+        console.error('Failed to start recognition:', err);
+      }
+    }
+  };
 
   // Fetch Pet Soul score
   useEffect(() => {
