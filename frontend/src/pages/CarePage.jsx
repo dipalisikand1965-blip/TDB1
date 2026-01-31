@@ -412,7 +412,7 @@ const CarePage = () => {
   const resetWizard = () => {
     setShowWizard(false);
     setWizardStep(1);
-    setSelectedPet(null);
+    setSelectedPets([]);
     setSelectedType(null);
     setRequestResult(null);
     setFormData({
