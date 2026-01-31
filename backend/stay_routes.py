@@ -1311,6 +1311,218 @@ async def update_stay_bundle(bundle_id: str, bundle: dict, username: str = Depen
     return {"message": "Bundle updated", "id": bundle_id}
 
 
+# ==================== PRODUCTS CRUD ====================
+
+@stay_admin_router.post("/seed-products")
+async def seed_stay_products(username: str = Depends(verify_admin)):
+    """Seed default stay/travel products with images"""
+    now = get_utc_timestamp()
+    
+    default_products = [
+        {
+            "id": "stay-prod-carrier",
+            "name": "Pet Travel Carrier Bag",
+            "description": "Airline-approved soft-sided carrier with mesh ventilation and shoulder strap.",
+            "price": 2499,
+            "original_price": 2999,
+            "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600",
+            "category": "travel",
+            "tags": ["carrier", "airline", "travel"],
+            "stock": 50,
+            "paw_reward_points": 25,
+            "pillar": "stay"
+        },
+        {
+            "id": "stay-prod-bowl",
+            "name": "Collapsible Travel Bowl Set",
+            "description": "Food and water bowls that collapse flat for easy packing.",
+            "price": 499,
+            "original_price": 649,
+            "image": "https://images.unsplash.com/photo-1601758124096-1fd661873db9?w=600",
+            "category": "accessories",
+            "tags": ["bowl", "collapsible", "portable"],
+            "stock": 100,
+            "paw_reward_points": 5,
+            "pillar": "stay"
+        },
+        {
+            "id": "stay-prod-bed",
+            "name": "Portable Travel Pet Bed",
+            "description": "Lightweight, foldable bed with memory foam base for comfort on-the-go.",
+            "price": 1799,
+            "original_price": 2199,
+            "image": "https://images.unsplash.com/photo-1507146426996-ef05306b995a?w=600",
+            "category": "comfort",
+            "tags": ["bed", "portable", "memory foam"],
+            "stock": 30,
+            "paw_reward_points": 20,
+            "pillar": "stay"
+        },
+        {
+            "id": "stay-prod-cooling",
+            "name": "Pet Cooling Mat",
+            "description": "Pressure-activated cooling gel mat for hot weather travel.",
+            "price": 1299,
+            "original_price": 1599,
+            "image": "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600",
+            "category": "comfort",
+            "tags": ["cooling", "summer", "mat"],
+            "stock": 45,
+            "paw_reward_points": 15,
+            "pillar": "stay"
+        },
+        {
+            "id": "stay-prod-harness",
+            "name": "Car Safety Harness",
+            "description": "Crash-tested vehicle safety harness with seatbelt attachment.",
+            "price": 1499,
+            "original_price": 1799,
+            "image": "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=600",
+            "category": "travel",
+            "tags": ["safety", "car", "harness"],
+            "stock": 60,
+            "paw_reward_points": 18,
+            "pillar": "stay"
+        },
+        {
+            "id": "stay-prod-anxiety",
+            "name": "Travel Anxiety Calming Kit",
+            "description": "Includes calming treats, anxiety wrap, and lavender spray.",
+            "price": 1199,
+            "original_price": 1449,
+            "image": "https://images.unsplash.com/photo-1534361960057-19889db9621e?w=600",
+            "category": "comfort",
+            "tags": ["anxiety", "calming", "travel"],
+            "stock": 40,
+            "paw_reward_points": 12,
+            "pillar": "stay"
+        },
+        {
+            "id": "stay-prod-firstaid",
+            "name": "Pet First Aid Travel Kit",
+            "description": "Compact first aid kit with bandages, antiseptic, and emergency supplies.",
+            "price": 899,
+            "original_price": 1099,
+            "image": "https://images.unsplash.com/photo-1541364983171-a8ba01e95cfc?w=600",
+            "category": "accessories",
+            "tags": ["first-aid", "emergency", "safety"],
+            "stock": 75,
+            "paw_reward_points": 10,
+            "pillar": "stay"
+        },
+        {
+            "id": "stay-prod-waterbottle",
+            "name": "Portable Water Bottle & Bowl",
+            "description": "2-in-1 water bottle with flip-out bowl for walks and travel.",
+            "price": 599,
+            "original_price": 749,
+            "image": "https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=600",
+            "category": "accessories",
+            "tags": ["water", "portable", "bowl"],
+            "stock": 90,
+            "paw_reward_points": 6,
+            "pillar": "stay"
+        }
+    ]
+    
+    seeded = 0
+    for product in default_products:
+        product["created_at"] = now
+        product["updated_at"] = now
+        product["created_by"] = username
+        
+        result = await db.products.update_one(
+            {"id": product["id"]},
+            {"$set": product},
+            upsert=True
+        )
+        if result.upserted_id or result.modified_count:
+            seeded += 1
+    
+    return {"message": f"Seeded {seeded} stay products", "products_seeded": seeded}
+
+
+@stay_admin_router.get("/products")
+async def get_admin_stay_products(username: str = Depends(verify_admin)):
+    """Get all stay products for admin"""
+    products = await db.products.find(
+        {"pillar": "stay"},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(100)
+    return {"products": products, "count": len(products)}
+
+
+@stay_admin_router.post("/products")
+async def create_stay_product(product: dict, username: str = Depends(verify_admin)):
+    """Create a new stay product"""
+    product_id = f"stay-prod-{str(ObjectId())[:8]}"
+    now = get_utc_timestamp()
+    
+    product_doc = {
+        "id": product_id,
+        "name": product.get("name", ""),
+        "description": product.get("description", ""),
+        "price": float(product.get("price", 0)),
+        "original_price": float(product.get("original_price", 0)) if product.get("original_price") else None,
+        "image": product.get("image", ""),
+        "category": product.get("category", "travel"),
+        "tags": product.get("tags", []) if isinstance(product.get("tags"), list) else [t.strip() for t in str(product.get("tags", "")).split(",") if t.strip()],
+        "stock": int(product.get("stock", 100)),
+        "paw_reward_points": int(product.get("paw_reward_points", 0)),
+        "pillar": "stay",
+        "created_at": now,
+        "updated_at": now,
+        "created_by": username
+    }
+    
+    await db.products.insert_one(product_doc)
+    return {"message": "Product created", "id": product_id, "product": {k: v for k, v in product_doc.items() if k != "_id"}}
+
+
+@stay_admin_router.put("/products/{product_id}")
+async def update_stay_product(product_id: str, product: dict, username: str = Depends(verify_admin)):
+    """Update a stay product"""
+    now = get_utc_timestamp()
+    
+    update_doc = {
+        "name": product.get("name"),
+        "description": product.get("description"),
+        "price": float(product.get("price", 0)),
+        "original_price": float(product.get("original_price", 0)) if product.get("original_price") else None,
+        "image": product.get("image"),
+        "category": product.get("category"),
+        "tags": product.get("tags", []) if isinstance(product.get("tags"), list) else [t.strip() for t in str(product.get("tags", "")).split(",") if t.strip()],
+        "stock": int(product.get("stock", 100)),
+        "paw_reward_points": int(product.get("paw_reward_points", 0)),
+        "updated_at": now,
+        "updated_by": username
+    }
+    
+    # Remove None values
+    update_doc = {k: v for k, v in update_doc.items() if v is not None}
+    
+    result = await db.products.update_one(
+        {"id": product_id},
+        {"$set": update_doc}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    return {"message": "Product updated", "id": product_id}
+
+
+@stay_admin_router.delete("/products/{product_id}")
+async def delete_stay_product(product_id: str, username: str = Depends(verify_admin)):
+    """Delete a stay product"""
+    result = await db.products.delete_one({"id": product_id})
+    
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    return {"message": "Product deleted", "id": product_id}
+
+
 @stay_admin_router.post("/properties/{property_id}/paw-reward")
 async def update_property_paw_reward(
     property_id: str, 
