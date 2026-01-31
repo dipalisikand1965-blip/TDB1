@@ -474,11 +474,14 @@ const ProductListing = ({ category = 'all' }) => {
   // PET SOUL FILTERING - Filter out products based on pet's allergies/restrictions
   // This implements the doctrine: "Commerce obeys Pet Soul"
   const activePet = userPets?.[0]; // Use first pet for filtering (safe access)
-  const petAllergies = activePet?.doggy_soul_answers?.food_allergies || 
-                       activePet?.preferences?.allergies || 
-                       activePet?.health?.allergies || [];
   
-  if (Array.isArray(petAllergies) && petAllergies.length > 0 && !petAllergies.includes('No') && !petAllergies.includes('None')) {
+  // Safely get allergies - ensure it's always an array
+  const rawAllergies = activePet?.doggy_soul_answers?.food_allergies || 
+                       activePet?.preferences?.allergies || 
+                       activePet?.health?.allergies;
+  const petAllergies = Array.isArray(rawAllergies) ? rawAllergies : [];
+  
+  if (petAllergies.length > 0 && !petAllergies.includes('No') && !petAllergies.includes('None')) {
     const allergyKeywords = petAllergies.map(a => (a || '').toLowerCase()).filter(a => a && a !== 'no' && a !== 'none' && a !== 'other');
     
     if (allergyKeywords.length > 0) {
