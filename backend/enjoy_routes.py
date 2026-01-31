@@ -1561,10 +1561,22 @@ async def seed_enjoy_data():
         }
     ]
     
-    # Seed experiences
+    # Seed experiences - add images based on type if missing
+    experience_images = {
+        'meetup': 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=800&q=80',
+        'trail': 'https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=800&q=80',
+        'cafe': 'https://images.unsplash.com/photo-1601758174114-e711c0cbaa69?w=800&q=80',
+        'workshop': 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800&q=80',
+        'wellness': 'https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?w=800&q=80',
+        'event': 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=800&q=80'
+    }
+    
     for exp in default_experiences:
         exp["created_at"] = get_utc_timestamp()
         exp["updated_at"] = get_utc_timestamp()
+        # Add image if missing
+        if not exp.get("image"):
+            exp["image"] = experience_images.get(exp.get("experience_type", "event"), experience_images["event"])
         await db.enjoy_experiences.update_one(
             {"id": exp["id"]},
             {"$set": exp},
