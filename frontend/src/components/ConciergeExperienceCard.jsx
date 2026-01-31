@@ -171,33 +171,34 @@ const ConciergeExperienceCard = ({
     });
   };
 
+  // Compact card for mobile 2x2 grid
   if (compact) {
     return (
       <>
         <Card 
-          className="group overflow-hidden hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-purple-200"
+          className="group overflow-hidden hover:shadow-lg transition-all cursor-pointer border border-gray-100 hover:border-purple-200 rounded-2xl"
           onClick={() => setShowModal(true)}
           data-testid={`concierge-exp-${title.toLowerCase().replace(/\s+/g, '-')}`}
         >
-          <div className={`p-4 bg-gradient-to-br ${gradient}`}>
-            <div className="flex items-start gap-3">
-              <div className="text-2xl">{icon}</div>
-              <div className="flex-1 text-white">
-                <h4 className="font-bold text-sm leading-tight">{title}</h4>
+          <div className={`p-3 sm:p-4 bg-gradient-to-br ${gradient}`}>
+            <div className="flex items-start gap-2 sm:gap-3">
+              <div className="text-xl sm:text-2xl flex-shrink-0">{icon}</div>
+              <div className="flex-1 text-white min-w-0">
+                <h4 className="font-bold text-xs sm:text-sm leading-tight truncate">{title}</h4>
               </div>
               {badge && (
-                <Badge className={`${badgeColor} text-white text-[10px] px-1.5 py-0.5`}>
+                <Badge className={`${badgeColor} text-white text-[8px] sm:text-[10px] px-1 sm:px-1.5 py-0.5 flex-shrink-0`}>
                   {badge}
                 </Badge>
               )}
             </div>
           </div>
-          <div className="p-3 bg-white">
-            <p className="text-xs text-gray-600 line-clamp-2 mb-2">{description}</p>
-            <div className="flex items-center gap-1 text-xs text-purple-600 font-medium group-hover:translate-x-1 transition-transform">
-              <Sparkles className="w-3 h-3" />
-              <span>{ctaText}</span>
-              <ChevronRight className="w-3 h-3" />
+          <div className="p-2 sm:p-3 bg-white">
+            <p className="text-[10px] sm:text-xs text-gray-600 line-clamp-2 mb-2">{description}</p>
+            <div className="flex items-center gap-1 text-[10px] sm:text-xs text-purple-600 font-medium group-hover:translate-x-1 transition-transform">
+              <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+              <span className="truncate">{ctaText}</span>
+              <ChevronRight className="w-2.5 h-2.5 sm:w-3 sm:h-3 flex-shrink-0" />
             </div>
           </div>
         </Card>
@@ -221,45 +222,46 @@ const ConciergeExperienceCard = ({
     );
   }
 
+  // Full card - Elegant design matching Fit page style
   return (
     <>
       <Card 
-        className="group overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer border-2 border-transparent hover:border-purple-200"
+        className="group overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer border border-gray-100 hover:border-purple-200 rounded-2xl"
         onClick={() => setShowModal(true)}
         data-testid={`concierge-exp-${title.toLowerCase().replace(/\s+/g, '-')}`}
       >
-        {/* Card Header with Gradient */}
-        <div className={`h-32 bg-gradient-to-br ${gradient} p-5 relative overflow-hidden`}>
-          {/* Background icon */}
-          <div className="absolute -right-4 -bottom-4 opacity-20 text-7xl">
+        {/* Card Header with Gradient - More elegant, less boxy */}
+        <div className={`h-24 sm:h-28 md:h-32 bg-gradient-to-br ${gradient} p-4 sm:p-5 relative overflow-hidden`}>
+          {/* Background icon - subtle */}
+          <div className="absolute -right-2 sm:-right-4 -bottom-2 sm:-bottom-4 opacity-15 text-5xl sm:text-7xl">
             {icon}
           </div>
           
           {/* Badge */}
           {badge && (
-            <Badge className={`${badgeColor} text-white text-xs absolute top-4 right-4`}>
+            <Badge className={`${badgeColor} text-white text-[10px] sm:text-xs absolute top-3 sm:top-4 right-3 sm:right-4`}>
               {badge}
             </Badge>
           )}
           
           {/* Icon and Title */}
           <div className="relative z-10">
-            <div className="text-3xl mb-2">{icon}</div>
-            <h3 className="text-white font-bold text-lg leading-tight">{title}</h3>
+            <div className="text-2xl sm:text-3xl mb-1 sm:mb-2">{icon}</div>
+            <h3 className="text-white font-bold text-base sm:text-lg leading-tight">{title}</h3>
           </div>
         </div>
 
         {/* Card Body */}
-        <div className="p-5 bg-white">
-          <p className="text-gray-600 text-sm mb-4 line-clamp-3">{description}</p>
+        <div className="p-4 sm:p-5 bg-white">
+          <p className="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-2 sm:line-clamp-3">{description}</p>
           
-          {/* Highlights */}
+          {/* Highlights - Hidden on mobile for cleaner look */}
           {highlights.length > 0 && (
-            <div className="space-y-1.5 mb-4">
+            <div className="hidden sm:block space-y-1.5 mb-4">
               {highlights.slice(0, 3).map((item, idx) => (
                 <div key={idx} className="flex items-start gap-2 text-xs text-gray-500">
                   <CheckCircle className="w-3.5 h-3.5 text-green-500 mt-0.5 flex-shrink-0" />
-                  <span>{item}</span>
+                  <span className="line-clamp-1">{item}</span>
                 </div>
               ))}
             </div>
@@ -267,10 +269,10 @@ const ConciergeExperienceCard = ({
           
           {/* CTA */}
           <Button 
-            className={`w-full bg-gradient-to-r ${gradient} hover:opacity-90 text-white group-hover:scale-[1.02] transition-transform`}
+            className={`w-full bg-gradient-to-r ${gradient} hover:opacity-90 text-white group-hover:scale-[1.02] transition-transform text-xs sm:text-sm py-2 sm:py-2.5 rounded-xl`}
             onClick={(e) => { e.stopPropagation(); setShowModal(true); }}
           >
-            <Sparkles className="w-4 h-4 mr-2" />
+            <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 sm:mr-2" />
             {ctaText}
           </Button>
         </div>
