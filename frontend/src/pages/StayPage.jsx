@@ -2719,6 +2719,128 @@ const SocialDetailsModal = ({ social, onClose }) => {
         </div>
       </Card>
       
+      {/* ==================== CHECKLIST POPUP - Beautiful & Mobile-First ==================== */}
+      <Dialog open={showChecklistPopup} onOpenChange={setShowChecklistPopup}>
+        <DialogContent className="max-w-lg w-[95vw] max-h-[90vh] overflow-hidden flex flex-col p-0 gap-0 rounded-2xl">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-emerald-600 to-teal-600 px-5 py-4 text-white">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
+                  <List className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg">{checklistData?.title || 'Your Checklist'}</h3>
+                  <p className="text-white/80 text-sm">{checklistData?.subtitle || 'Personalized for your pet'}</p>
+                </div>
+              </div>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => setShowChecklistPopup(false)}
+                className="text-white hover:bg-white/20 rounded-full"
+              >
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+          </div>
+          
+          {/* Scrollable Content */}
+          <div className="flex-1 overflow-y-auto p-5 space-y-5">
+            {/* Checklist Items */}
+            {checklistData?.items && (
+              <div className="space-y-3">
+                <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">Checklist</h4>
+                {checklistData.items.map((item, idx) => (
+                  <div 
+                    key={idx}
+                    className="flex items-start gap-3 p-3 bg-gray-50 rounded-xl hover:bg-emerald-50 transition-colors"
+                  >
+                    <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <CheckCircle className="w-4 h-4 text-emerald-600" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-gray-900">{item.text || item}</p>
+                      {item.tip && (
+                        <p className="text-xs text-gray-500 mt-1">{item.tip}</p>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            
+            {/* Related Products - Travel Accessories */}
+            {checklistProducts.length > 0 && (
+              <div className="space-y-3">
+                <h4 className="text-sm font-semibold text-gray-900 uppercase tracking-wide">
+                  Travel Accessories
+                </h4>
+                <div className="grid grid-cols-2 gap-3">
+                  {checklistProducts.map((product, idx) => (
+                    <div 
+                      key={idx}
+                      className="bg-white border border-gray-100 rounded-xl p-3 hover:shadow-md transition-all cursor-pointer"
+                      onClick={() => {
+                        addToCart({
+                          id: product.id,
+                          name: product.name || product.title,
+                          price: product.price,
+                          image: product.image,
+                          pillar: 'stay'
+                        });
+                        toast({ title: '🛒 Added!', description: `${product.name || product.title} added to cart` });
+                      }}
+                    >
+                      <div className="aspect-square rounded-lg bg-gray-100 mb-2 overflow-hidden">
+                        {product.image ? (
+                          <img 
+                            src={product.image} 
+                            alt={product.name || product.title}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <ShoppingCart className="w-8 h-8 text-gray-300" />
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-xs font-medium text-gray-900 line-clamp-2">{product.name || product.title}</p>
+                      {product.price && (
+                        <p className="text-sm font-bold text-emerald-600 mt-1">₹{product.price}</p>
+                      )}
+                      <Button 
+                        size="sm" 
+                        className="w-full mt-2 bg-emerald-100 text-emerald-700 hover:bg-emerald-200 text-xs"
+                      >
+                        <ShoppingCart className="w-3 h-3 mr-1" />
+                        Add to Cart
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {/* Action Button */}
+            <div className="pt-3">
+              <Button 
+                onClick={() => {
+                  setShowChecklistPopup(false);
+                  if (checklistData?.action_url) {
+                    navigate(checklistData.action_url);
+                  }
+                }}
+                className="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 py-5"
+              >
+                <ShoppingBag className="w-4 h-4 mr-2" />
+                {checklistData?.action_text || 'Shop Travel Accessories'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+      
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="stay" position="bottom-left" />
     </div>
