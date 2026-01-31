@@ -3442,19 +3442,50 @@ What would you like to explore? 🐾"""
             search_pillar = product_context["target_pillar"] or pillar
             
             if search_items:
+                # =======================================================================
+                # NEW: Get pillar exclusion rules to filter out irrelevant items
+                # This prevents cakes/food from appearing in travel kits, etc.
+                # =======================================================================
+                resolver = get_resolver()
+                pillar_exclude_query = {}
+                
+                if resolver.validate_pillar(search_pillar):
+                    pillar_rules = resolver.rules.get(search_pillar, {})
+                    product_rules = pillar_rules.get("products", {})
+                    exclude_rules = product_rules.get("exclude", {})
+                    
+                    # Build exclusion query from pillar rules
+                    for field, value in exclude_rules.items():
+                        if value:
+                            if isinstance(value, list):
+                                pillar_exclude_query[f"base_tags.{field}"] = {"$nin": value}
+                            else:
+                                pillar_exclude_query[f"base_tags.{field}"] = {"$ne": value}
+                    
+                    logger.info(f"[PILLAR RESOLVER] Applying exclusion rules for '{search_pillar}': {pillar_exclude_query}")
+                
                 # Search for each specific item type
                 all_found_products = []
                 missing_items = []
                 
                 for item in search_items[:8]:  # Limit to 8 items
+                    # Build item search query with pillar exclusions
                     item_query = {
-                        "$or": [
-                            {"name": {"$regex": item, "$options": "i"}},
-                            {"tags": {"$in": [item]}},
-                            {"category": {"$regex": item, "$options": "i"}},
-                            {"description": {"$regex": item, "$options": "i"}}
+                        "$and": [
+                            {"$or": [
+                                {"name": {"$regex": item, "$options": "i"}},
+                                {"tags": {"$in": [item]}},
+                                {"category": {"$regex": item, "$options": "i"}},
+                                {"description": {"$regex": item, "$options": "i"}}
+                            ]},
                         ]
                     }
+                    
+                    # Add pillar exclusion rules if available
+                    if pillar_exclude_query:
+                        for field, condition in pillar_exclude_query.items():
+                            item_query["$and"].append({field: condition})
+                    
                     found = await db.products.find(item_query, {"_id": 0}).limit(2).to_list(2)
                     
                     if found:
