@@ -452,7 +452,120 @@ const MiraPage = () => {
     inputRef.current?.focus();
   };
 
-  // Format message content with markdown-like styling
+  // Handle "View checklist" and similar action buttons from Mira's responses
+  const handleChecklistAction = async (actionType, pillarContext) => {
+    // Define checklists per pillar
+    const CHECKLISTS = {
+      stay: {
+        title: 'Pet Travel Checklist',
+        subtitle: 'Everything you need for the perfect trip',
+        items: [
+          { text: 'Confirm pet policy with accommodation', tip: 'Call ahead to verify pet size/breed restrictions' },
+          { text: 'Pack familiar bedding and toys', tip: 'Reduces anxiety in new environments' },
+          { text: 'Bring health certificates', tip: 'Required for most interstate travel' },
+          { text: 'Stock up on regular food', tip: 'Avoid sudden diet changes while traveling' },
+          { text: 'Update ID tags with travel details', tip: 'Include your mobile number' },
+          { text: 'Locate nearby emergency vet', tip: 'Research before you arrive' },
+        ],
+        action_url: '/shop?category=travel',
+        action_text: 'Shop Travel Essentials'
+      },
+      travel: {
+        title: 'Flight Preparation Checklist',
+        subtitle: 'Safe travels for your furry friend',
+        items: [
+          { text: 'Get airline-approved crate', tip: 'Must be large enough for pet to stand and turn' },
+          { text: 'Visit vet for health certificate', tip: 'Required within 10 days of travel' },
+          { text: 'Complete vaccination records', tip: 'Rabies certification is mandatory' },
+          { text: 'Practice crate training', tip: 'Start 2 weeks before travel' },
+          { text: 'Avoid feeding 4 hours before flight', tip: 'Prevents motion sickness' },
+          { text: 'Attach ID and destination tags', tip: 'Include your contact at destination' },
+        ],
+        action_url: '/travel',
+        action_text: 'Book Pet Travel'
+      },
+      care: {
+        title: 'Grooming Preparation',
+        subtitle: 'Get your pet ready for their spa day',
+        items: [
+          { text: 'Brush coat before appointment', tip: 'Removes loose hair and mats' },
+          { text: 'Check for skin issues', tip: 'Alert groomer to any concerns' },
+          { text: 'Trim nails if overgrown', tip: 'Or include in grooming package' },
+          { text: 'Clean ears gently', tip: 'Or request ear cleaning service' },
+          { text: 'Ensure pet is calm', tip: 'A walk before helps release energy' },
+        ],
+        action_url: '/care',
+        action_text: 'Book Grooming'
+      },
+      celebrate: {
+        title: 'Birthday Party Checklist',
+        subtitle: 'Make it a paw-some celebration!',
+        items: [
+          { text: 'Order pet-safe cake', tip: 'No chocolate, xylitol, or grapes' },
+          { text: 'Invite furry friends', tip: 'Keep guest list manageable' },
+          { text: 'Prepare dog-friendly treats', tip: 'For all guests to enjoy' },
+          { text: 'Set up safe play area', tip: 'Remove hazards and breakables' },
+          { text: 'Plan photo opportunities', tip: 'Capture the memories!' },
+          { text: 'Get birthday bandana/outfit', tip: 'Optional but adorable' },
+        ],
+        action_url: '/celebrate',
+        action_text: 'Shop Party Supplies'
+      },
+      fit: {
+        title: 'Fitness Plan Checklist',
+        subtitle: 'Start your pet\'s health journey',
+        items: [
+          { text: 'Vet checkup before starting', tip: 'Rule out any health issues' },
+          { text: 'Set realistic weight goal', tip: '1-2% body weight loss per week is healthy' },
+          { text: 'Measure food portions', tip: 'Use a scale for accuracy' },
+          { text: 'Schedule daily exercise', tip: 'Consistency is key' },
+          { text: 'Track progress weekly', tip: 'Take photos and measurements' },
+        ],
+        action_url: '/fit',
+        action_text: 'Start Fitness Journey'
+      }
+    };
+
+    const currentPillar = pillarContext || pillar || 'stay';
+    const checklist = CHECKLISTS[currentPillar] || CHECKLISTS.stay;
+    
+    setChecklistData(checklist);
+    
+    // Fetch related products from backend
+    try {
+      const response = await fetch(`${API_URL}/api/products?pillar=${currentPillar}&limit=4`);
+      if (response.ok) {
+        const data = await response.json();
+        setChecklistProducts(data.products || []);
+      }
+    } catch (error) {
+      console.debug('Failed to fetch checklist products:', error);
+      setChecklistProducts([]);
+    }
+    
+    setShowChecklistPopup(true);
+    
+    // Record intent (creates ticket)
+    try {
+      await fetch(`${API_URL}/api/engagement/checklist-viewed`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        },
+        body: JSON.stringify({
+          checklist_type: actionType,
+          pillar: currentPillar,
+          pet_id: selectedPet?.id,
+          pet_name: selectedPet?.name
+        })
+      });
+    } catch (err) {
+      console.debug('Checklist view logging:', err);
+    }
+  };
+
+  // Format message content with markdown-like styling AND action buttons
   const formatContent = (content) => {
     if (!content) return '';
     // Convert **text** to bold - handle multiple occurrences
@@ -462,6 +575,13 @@ const MiraPage = () => {
     // Convert newlines to <br>
     formatted = formatted.replace(/\n/g, '<br>');
     return formatted;
+  };
+
+  // Check if message contains action keywords like "View checklist"
+  const messageHasAction = (content) => {
+    if (!content) return false;
+    const actionKeywords = ['view checklist', 'checklist', 'view guide', 'see tips', 'preparation list'];
+    return actionKeywords.some(kw => content.toLowerCase().includes(kw));
   };
 
   return (
