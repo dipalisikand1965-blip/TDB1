@@ -568,6 +568,13 @@ const CarePage = () => {
         </div>
       </div>
 
+      {/* ==================== PERSONALIZED PICKS ==================== */}
+      <div className="py-10 bg-gradient-to-b from-white to-pink-50/30">
+        <div className="max-w-6xl mx-auto px-4">
+          <PersonalizedPicks pillar="care" />
+        </div>
+      </div>
+
       {/* ==================== TRANSFORMATION STORIES ==================== */}
       <div className="py-12 bg-white">
         <div className="max-w-6xl mx-auto px-4">
