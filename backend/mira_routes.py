@@ -3385,10 +3385,25 @@ What would you like to explore? 🐾"""
                 enhanced_concierge_action["navigate_to"] = PILLAR_ROUTES[category]
             
             # Add quick booking form trigger for service requests
-            SERVICE_WIZARD_TRIGGERS = ["grooming", "vet", "boarding", "training", "walking", "sitting"]
-            if any(trigger in message_lower for trigger in SERVICE_WIZARD_TRIGGERS):
+            SERVICE_WIZARD_TRIGGERS = {
+                "grooming": "grooming",
+                "groom": "grooming", 
+                "vet": "vet_consultation",
+                "boarding": "boarding",
+                "training": "training",
+                "walking": "dog_walking",
+                "sitting": "pet_sitting"
+            }
+            detected_service = None
+            for trigger, service_type in SERVICE_WIZARD_TRIGGERS.items():
+                if trigger in message_lower:
+                    detected_service = service_type
+                    break
+            
+            if detected_service:
                 enhanced_concierge_action["show_quick_book_form"] = True
                 enhanced_concierge_action["form_type"] = "service_booking"
+                enhanced_concierge_action["service_type"] = detected_service
                 enhanced_concierge_action["form_fields"] = ["date", "time", "notes"]
         
         # 14. Return response with products and additional metadata
