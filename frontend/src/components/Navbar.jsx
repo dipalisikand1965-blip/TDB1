@@ -350,6 +350,9 @@ const Navbar = () => {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
         setShowSearchSuggestions(false);
       }
+      if (petDropdownRef.current && !petDropdownRef.current.contains(event.target)) {
+        setShowPetDropdown(false);
+      }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
