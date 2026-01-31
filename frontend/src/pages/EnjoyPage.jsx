@@ -1208,13 +1208,13 @@ const EnjoyPage = () => {
                 </Button>
                 <Button
                   onClick={submitRsvp}
-                  disabled={(!selectedPet && !rsvpForm.guest_pet_name) || submitting}
+                  disabled={(selectedPets.length === 0 && !rsvpForm.guest_pet_name) || submitting}
                   className="flex-1 bg-gradient-to-r from-orange-500 to-rose-500 hover:from-orange-600 hover:to-rose-600"
                 >
                   {submitting ? (
                     <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Submitting...</>
                   ) : (
-                    <><Send className="w-4 h-4 mr-2" /> Submit RSVP</>
+                    <><Send className="w-4 h-4 mr-2" /> Submit RSVP {selectedPets.length > 1 && `(${selectedPets.length} pets)`}</>
                   )}
                 </Button>
               </div>
