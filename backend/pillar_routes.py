@@ -508,3 +508,152 @@ async def public_get_category_products(pillar_slug: str, category_slug: str):
         "category": category,
         "products": products
     }
+
+
+# ==================== PILLAR QUEUE ROUTES ====================
+# Endpoints for viewing pillar-specific service requests/tickets
+
+PILLAR_COLLECTION_MAP = {
+    "fit": "fit_requests",
+    "care": "care_requests",
+    "celebrate": "celebrate_requests",
+    "dine": "dine_requests",
+    "stay": "stay_requests",
+    "travel": "travel_requests",
+    "learn": "learn_requests",
+    "enjoy": "enjoy_requests",
+    "advisory": "advisory_requests",
+    "paperwork": "paperwork_requests",
+    "emergency": "emergency_requests",
+    "adopt": "adopt_requests",
+    "farewell": "farewell_requests",
+    "shop": "shop_requests"
+}
+
+@router.get("/queues")
+async def get_pillar_queues_overview(username: str = Depends(lambda: verify_admin)):
+    """Get overview of all pillar queues with counts"""
+    queues = []
+    
+    for pillar, collection in PILLAR_COLLECTION_MAP.items():
+        try:
+            total = await db[collection].count_documents({})
+            pending = await db[collection].count_documents({"status": {"$in": ["pending", "open", "new"]}})
+            in_progress = await db[collection].count_documents({"status": "in_progress"})
+            
+            queues.append({
+                "pillar": pillar,
+                "collection": collection,
+                "total": total,
+                "pending": pending,
+                "in_progress": in_progress,
+                "icon": get_pillar_icon(pillar)
+            })
+        except Exception as e:
+            queues.append({
+                "pillar": pillar,
+                "collection": collection,
+                "total": 0,
+                "pending": 0,
+                "in_progress": 0,
+                "icon": get_pillar_icon(pillar),
+                "error": str(e)
+            })
+    
+    return {"queues": queues}
+
+@router.get("/queues/{pillar}")
+async def get_pillar_queue(
+    pillar: str,
+    status: Optional[str] = None,
+    limit: int = 50,
+    skip: int = 0,
+    username: str = Depends(lambda: verify_admin)
+):
+    """Get requests from a specific pillar's queue"""
+    collection_name = PILLAR_COLLECTION_MAP.get(pillar)
+    if not collection_name:
+        raise HTTPException(status_code=404, detail=f"Unknown pillar: {pillar}")
+    
+    query = {}
+    if status:
+        query["status"] = status
+    
+    requests = await db[collection_name].find(
+        query,
+        {"_id": 0}
+    ).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+    
+    total = await db[collection_name].count_documents(query)
+    
+    # Get stats
+    stats = {
+        "total": total,
+        "pending": await db[collection_name].count_documents({"status": {"$in": ["pending", "open", "new"]}}),
+        "in_progress": await db[collection_name].count_documents({"status": "in_progress"}),
+        "completed": await db[collection_name].count_documents({"status": {"$in": ["completed", "resolved", "closed"]}})
+    }
+    
+    return {
+        "pillar": pillar,
+        "requests": requests,
+        "stats": stats,
+        "pagination": {
+            "total": total,
+            "limit": limit,
+            "skip": skip,
+            "has_more": skip + limit < total
+        }
+    }
+
+@router.put("/queues/{pillar}/{request_id}")
+async def update_pillar_request(
+    pillar: str,
+    request_id: str,
+    status: Optional[str] = None,
+    assigned_to: Optional[str] = None,
+    notes: Optional[str] = None,
+    username: str = Depends(lambda: verify_admin)
+):
+    """Update a request in a pillar queue"""
+    collection_name = PILLAR_COLLECTION_MAP.get(pillar)
+    if not collection_name:
+        raise HTTPException(status_code=404, detail=f"Unknown pillar: {pillar}")
+    
+    update_data = {"updated_at": datetime.now(timezone.utc).isoformat()}
+    if status:
+        update_data["status"] = status
+    if assigned_to:
+        update_data["assigned_to"] = assigned_to
+    if notes:
+        update_data["notes"] = notes
+    
+    result = await db[collection_name].update_one(
+        {"$or": [{"id": request_id}, {"request_id": request_id}, {"ticket_id": request_id}]},
+        {"$set": update_data}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Request not found")
+    
+    return {"message": "Request updated", "pillar": pillar, "request_id": request_id}
+
+def get_pillar_icon(pillar: str) -> str:
+    """Get icon emoji for a pillar"""
+    icons = {
+        "fit": "🏃",
+        "care": "💊",
+        "celebrate": "🎂",
+        "dine": "🍽️",
+        "stay": "🏨",
+        "travel": "✈️",
+        "learn": "🎓",
+        "enjoy": "🎾",
+        "advisory": "📋",
+        "paperwork": "📄",
+        "emergency": "🚨",
+        "adopt": "🐾",
+        "farewell": "🌈",
+        "shop": "🛒"
+    }
+    return icons.get(pillar, "📦")
