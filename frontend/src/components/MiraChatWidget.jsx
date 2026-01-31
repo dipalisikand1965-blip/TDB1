@@ -540,10 +540,6 @@ const MiraChatWidget = ({
         const data = await response.json();
         let displayContent = data.response;
         
-        // Debug logging for Quick Book form
-        console.log('[Mira] concierge_action:', data.concierge_action);
-        console.log('[Mira] show_quick_book_form:', data.concierge_action?.show_quick_book_form);
-        
         // Handle concierge_action for navigation
         if (data.concierge_action) {
           const action = data.concierge_action;
