@@ -326,7 +326,7 @@ const MiraChatWidget = ({
       setMessages([{
         id: 'welcome',
         role: 'assistant',
-        content: `Hi, I am Mira, your pet concierge! ${welcomeMsg}`
+        content: `Hi, I am Mira, your pet concierge®! ${welcomeMsg}`
       }]);
     }
   }, [isOpen, selectedPet, miraContext, config.name, voiceEnabled]);
