@@ -534,16 +534,7 @@ const MiraAI = () => {
       setTimeout(() => inputRef.current?.focus(), 100);
       // Fetch chat history when opened
       fetchChatHistory();
-      
-      // Auto-speak welcome message when Mira first opens
-      if (messages.length > 0 && voiceEnabled) {
-        const welcomeMsg = messages[0];
-        if (welcomeMsg.role === 'assistant' && welcomeMsg.content) {
-          // Extract first paragraph for speaking (don't read the whole thing)
-          const firstPara = welcomeMsg.content.split('\n')[0];
-          setTimeout(() => speakText(firstPara), 500);
-        }
-      }
+      // Note: Welcome message auto-speak is handled by the dedicated effect above
     }
   }, [isOpen, isMinimized, token]);
   
