@@ -1,6 +1,30 @@
 # Pet Life Operating System - Product Requirements Document
 
-## Latest Update: January 31, 2026 - Session 3
+## Latest Update: January 31, 2026 - Session 4
+
+### ✅ PILLAR RESOLVER INTEGRATION - COMPLETED (Jan 31, 2026)
+
+**Issue**: Mira's Guided Kit Assembly was showing irrelevant products (e.g., cakes and food for travel kits)
+
+**Root Cause**: Kit assembly was searching products by name/tags without applying pillar-specific filtering rules
+
+**Solution Implemented**:
+1. **Integrated PillarResolver into mira_routes.py** - Added import for `pillar_resolver.py`
+2. **Applied exclusion rules during kit item search** - When searching for kit items, the system now applies pillar rules from `pillar_rules_v1.yaml`
+3. **For Travel pillar**: Excludes `category_primary: [cakes, food]` and `format: frozen`
+4. **Fallback to legacy system** - If resolver finds no products, falls back to old pillar field search
+
+**Files Modified**:
+- `/app/backend/mira_routes.py` - Added pillar_resolver import (line 26), integrated exclusion rules (lines 3444-3520), added rule-based product filtering (lines 3540-3610)
+
+**Testing Results (Iteration 152)**:
+- 100% pass rate (11/11 backend tests)
+- Travel kit: 0 cakes, 0 food, 0 frozen items ✅
+- Travel kit contains: Portable Bowl Set, Water Bottle, Leash, Towel, Wipes ✅
+- Celebrate kit: Correctly includes 6 celebration items including cakes ✅
+- Care kit: Correctly includes 5 grooming items ✅
+
+---
 
 ### ✅ KIT ASSEMBLY PRODUCT FIX - COMPLETED (Jan 31, 2026)
 
