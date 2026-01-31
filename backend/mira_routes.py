@@ -3131,7 +3131,56 @@ What would you like to explore? 🐾"""
             if products:
                 response += f"\n\n✨ I found some options for you! Check out these {len(products)} products below."
         
-        # 12. Return response with products and additional metadata
+        # 12. Build enhanced concierge_action with navigation
+        enhanced_concierge_action = None
+        if concierge_action.get("action_needed"):
+            enhanced_concierge_action = concierge_action.copy()
+            
+            # Add navigation based on pillar and action type
+            PILLAR_ROUTES = {
+                "celebrate": "/celebrate",
+                "dine": "/dine", 
+                "care": "/care",
+                "fit": "/fit",
+                "stay": "/stay",
+                "travel": "/travel",
+                "enjoy": "/enjoy",
+                "learn": "/learn",
+                "adopt": "/adopt",
+                "remember": "/remember",
+                "insure": "/insure",
+                "groom": "/groom",
+                "walk": "/walk",
+                "sitter": "/sitter"
+            }
+            
+            # Determine navigation based on keywords
+            action_type = concierge_action.get("action_type", "").lower()
+            category = concierge_action.get("category", "").lower()
+            message_lower = user_message.lower()
+            
+            # Navigation rules
+            if "cake" in message_lower or "birthday" in message_lower:
+                enhanced_concierge_action["navigate_to"] = "/celebrate/cakes"
+                enhanced_concierge_action["scroll_to_section"] = "cake-selection"
+            elif "grooming" in message_lower or "groom" in message_lower:
+                enhanced_concierge_action["navigate_to"] = "/groom"
+                enhanced_concierge_action["show_wizard"] = "grooming_booking"
+            elif "vet" in message_lower or "doctor" in message_lower:
+                enhanced_concierge_action["navigate_to"] = "/care"
+                enhanced_concierge_action["scroll_to_section"] = "vet-services"
+            elif "training" in message_lower or "train" in message_lower:
+                enhanced_concierge_action["navigate_to"] = "/learn"
+            elif "boarding" in message_lower or "hotel" in message_lower:
+                enhanced_concierge_action["navigate_to"] = "/stay"
+            elif "travel" in message_lower or "flight" in message_lower:
+                enhanced_concierge_action["navigate_to"] = "/travel"
+            elif "food" in message_lower or "treats" in message_lower:
+                enhanced_concierge_action["navigate_to"] = "/dine"
+            elif category in PILLAR_ROUTES:
+                enhanced_concierge_action["navigate_to"] = PILLAR_ROUTES[category]
+        
+        # 13. Return response with products and additional metadata
         return {
             "response": response,
             "session_id": session_id,
@@ -3140,7 +3189,7 @@ What would you like to explore? 🐾"""
             "pillar": pillar,
             "ticket_type": intent,
             "products": products,  # Include products in response!
-            "concierge_action": concierge_action if concierge_action.get("action_needed") else None,
+            "concierge_action": enhanced_concierge_action,
             "pets": [{"id": p.get("id"), "name": p.get("name")} for p in pets] if pets else [],
             "selected_pet": selected_pet.get("name") if selected_pet else None,
             "research_mode": research_context is not None,
