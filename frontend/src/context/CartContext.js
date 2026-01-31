@@ -140,7 +140,7 @@ export const CartProvider = ({ children }) => {
     }
   }, []);
 
-  const addToCart = (product, selectedSize, selectedFlavor, quantity = 1) => {
+  const addToCart = useCallback((product, selectedSize, selectedFlavor, quantity = 1) => {
     const itemId = `${product.id}-${selectedSize}-${selectedFlavor}`;
     
     setCartItems(prevItems => {
@@ -163,7 +163,7 @@ export const CartProvider = ({ children }) => {
       }
     });
     setIsCartOpen(true);
-  };
+  }, []);
 
   const removeFromCart = (itemId) => {
     setCartItems(cartItems.filter(item => item.itemId !== itemId));
