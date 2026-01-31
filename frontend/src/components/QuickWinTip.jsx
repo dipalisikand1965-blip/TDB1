@@ -2,36 +2,116 @@
  * QuickWinTip.jsx
  * PREMIUM VERSION - Elegant, delightful, feels like care
  * A gentle nudge that feels personal
+ * NOW PILLAR-AWARE: Shows relevant tips per pillar
  */
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Lightbulb, RefreshCw, ArrowRight } from 'lucide-react';
 
-// Tips database
+// Tips database - Now organized by pillar
 const TIPS_DATABASE = {
-  weight: [
-    { tip: '15-minute morning walks boost metabolism by 20%', action: 'Set reminder', emoji: '🌅' },
-    { tip: 'Splitting meals into 3 portions aids digestion', action: 'View guide', emoji: '🍽️' },
-    { tip: 'Swimming burns 3x more calories than walking', action: 'Book session', emoji: '🏊' },
-  ],
-  puppy: [
-    { tip: 'Short 5-min training sessions work best', action: 'View tips', emoji: '🎯' },
-    { tip: 'Socialization before 16 weeks shapes behavior', action: 'Find groups', emoji: '🐕' },
-    { tip: 'Mental games tire puppies more than running', action: 'Shop toys', emoji: '🧩' },
-  ],
-  senior: [
-    { tip: 'Gentle stretching maintains joint flexibility', action: 'View exercises', emoji: '🧘' },
-    { tip: 'Raised bowls reduce neck strain', action: 'Shop bowls', emoji: '🥣' },
-    { tip: 'Shorter, frequent walks are easier on joints', action: 'Adjust plan', emoji: '🚶' },
-  ],
-  general: [
-    { tip: 'Consistent meal times regulate energy levels', action: 'Set schedule', emoji: '⏰' },
-    { tip: 'Interactive play strengthens your bond', action: 'Shop toys', emoji: '💕' },
-    { tip: 'Grooming sessions double as health checks', action: 'Book grooming', emoji: '✨' },
-    { tip: 'Fresh water throughout the day boosts energy', action: 'View tips', emoji: '💧' },
-    { tip: 'A calm environment reduces anxiety', action: 'Learn more', emoji: '🏡' },
-  ],
+  // Fit pillar tips
+  fit: {
+    weight: [
+      { tip: '15-minute morning walks boost metabolism by 20%', action: 'Set reminder', emoji: '🌅' },
+      { tip: 'Splitting meals into 3 portions aids digestion', action: 'View guide', emoji: '🍽️' },
+      { tip: 'Swimming burns 3x more calories than walking', action: 'Book session', emoji: '🏊' },
+    ],
+    puppy: [
+      { tip: 'Short 5-min training sessions work best', action: 'View tips', emoji: '🎯' },
+      { tip: 'Socialization before 16 weeks shapes behavior', action: 'Find groups', emoji: '🐕' },
+      { tip: 'Mental games tire puppies more than running', action: 'Shop toys', emoji: '🧩' },
+    ],
+    senior: [
+      { tip: 'Gentle stretching maintains joint flexibility', action: 'View exercises', emoji: '🧘' },
+      { tip: 'Raised bowls reduce neck strain', action: 'Shop bowls', emoji: '🥣' },
+      { tip: 'Shorter, frequent walks are easier on joints', action: 'Adjust plan', emoji: '🚶' },
+    ],
+    general: [
+      { tip: 'Consistent meal times regulate energy levels', action: 'Set schedule', emoji: '⏰' },
+      { tip: 'Interactive play strengthens your bond', action: 'Shop toys', emoji: '💕' },
+      { tip: 'Grooming sessions double as health checks', action: 'Book grooming', emoji: '✨' },
+    ],
+  },
+  // Stay pillar tips
+  stay: {
+    general: [
+      { tip: 'Book pet-friendly stays 2 weeks ahead for best rates', action: 'Search stays', emoji: '🏨' },
+      { tip: 'Pack familiar bedding to help your pet feel at home', action: 'View checklist', emoji: '🛏️' },
+      { tip: 'Request ground floor rooms for easier outdoor access', action: 'View tips', emoji: '🚪' },
+      { tip: 'Check the property\'s pet policy before booking', action: 'Learn more', emoji: '📋' },
+      { tip: 'Bring your pet\'s favorite toys to reduce anxiety', action: 'Shop toys', emoji: '🧸' },
+      { tip: 'Ask about nearby vet clinics when booking', action: 'Find vets', emoji: '🏥' },
+    ],
+  },
+  // Travel pillar tips
+  travel: {
+    general: [
+      { tip: 'Book cargo-approved crates 3 weeks before flights', action: 'Shop crates', emoji: '✈️' },
+      { tip: 'Stop every 2 hours for walks on road trips', action: 'Plan route', emoji: '🚗' },
+      { tip: 'Carry health certificates for interstate travel', action: 'Get docs', emoji: '📄' },
+      { tip: 'Microchip your pet before any long journey', action: 'Find clinic', emoji: '💉' },
+      { tip: 'Keep water accessible during travel', action: 'Shop bottles', emoji: '💧' },
+      { tip: 'Avoid feeding 4 hours before flights', action: 'View guide', emoji: '🍽️' },
+    ],
+  },
+  // Care pillar tips
+  care: {
+    general: [
+      { tip: 'Regular grooming prevents skin issues', action: 'Book grooming', emoji: '✨' },
+      { tip: 'Dental chews reduce tartar by up to 70%', action: 'Shop dental', emoji: '🦷' },
+      { tip: 'Nail trimming every 3 weeks prevents pain', action: 'Book session', emoji: '✂️' },
+      { tip: 'Brush teeth 3x weekly for optimal health', action: 'Shop brushes', emoji: '🪥' },
+      { tip: 'Check ears weekly for signs of infection', action: 'View guide', emoji: '👂' },
+      { tip: 'Seasonal flea prevention is essential', action: 'Shop meds', emoji: '🐛' },
+    ],
+  },
+  // Dine pillar tips
+  dine: {
+    general: [
+      { tip: 'Call restaurants ahead to confirm pet policy', action: 'View list', emoji: '📞' },
+      { tip: 'Bring a portable water bowl for dining out', action: 'Shop bowls', emoji: '🥣' },
+      { tip: 'Choose outdoor seating for relaxed pet dining', action: 'Find spots', emoji: '☀️' },
+      { tip: 'Pack treats to reward calm behavior', action: 'Shop treats', emoji: '🦴' },
+      { tip: 'Visit during off-peak hours for quieter experience', action: 'Plan visit', emoji: '🕐' },
+      { tip: 'Practice restaurant etiquette at home first', action: 'View tips', emoji: '🎓' },
+    ],
+  },
+  // Celebrate pillar tips
+  celebrate: {
+    general: [
+      { tip: 'Pet-safe cakes use peanut butter, not chocolate', action: 'Shop cakes', emoji: '🎂' },
+      { tip: 'Plan party activities around your pet\'s energy', action: 'Get ideas', emoji: '🎈' },
+      { tip: 'Keep celebration noises at pet-friendly levels', action: 'View guide', emoji: '🔊' },
+      { tip: 'Take photos in natural light for best results', action: 'Book shoot', emoji: '📸' },
+      { tip: 'Include pet-safe decorations only', action: 'Shop decor', emoji: '🎉' },
+      { tip: 'Consider a "gotcha day" celebration too', action: 'Plan event', emoji: '💝' },
+    ],
+  },
+  // Enjoy pillar tips
+  enjoy: {
+    general: [
+      { tip: 'Dog parks are best visited during cooler hours', action: 'Find parks', emoji: '🌳' },
+      { tip: 'Playdates with similar energy dogs work best', action: 'Find buddies', emoji: '🐕' },
+      { tip: 'Swimming is excellent low-impact exercise', action: 'Find pools', emoji: '🏊' },
+      { tip: 'Check event reviews from other pet parents', action: 'View events', emoji: '⭐' },
+      { tip: 'Bring poop bags to every outdoor activity', action: 'Shop bags', emoji: '🧹' },
+      { tip: 'Keep your pet on leash until familiar with area', action: 'View tips', emoji: '🦮' },
+    ],
+  },
+  // Learn pillar tips
+  learn: {
+    general: [
+      { tip: 'Positive reinforcement creates lasting habits', action: 'View guide', emoji: '🌟' },
+      { tip: 'Short training sessions beat long ones', action: 'Start course', emoji: '⏱️' },
+      { tip: 'Consistency across family members is key', action: 'Get tips', emoji: '👨‍👩‍👧' },
+      { tip: 'Reward timing matters - within 2 seconds!', action: 'Learn more', emoji: '⚡' },
+      { tip: 'End training on a positive note always', action: 'View tips', emoji: '✅' },
+      { tip: 'Mental stimulation prevents boredom behaviors', action: 'Shop puzzles', emoji: '🧩' },
+    ],
+  },
+  // Breed-specific tips (shared across pillars)
   labrador: [
     { tip: 'Labs love water - swimming is perfect for them', action: 'Book pool', emoji: '🏊' },
     { tip: 'Labs gain weight easily - watch portions', action: 'Calculate', emoji: '⚖️' },
@@ -50,6 +130,7 @@ const QuickWinTip = ({
   petName,
   petBreed,
   petAge,
+  pillar = 'fit', // NEW: Accept pillar prop
   className = '',
   onActionClick
 }) => {
@@ -58,12 +139,17 @@ const QuickWinTip = ({
 
   useEffect(() => {
     selectTip();
-  }, [petName, petBreed, petAge]);
+  }, [petName, petBreed, petAge, pillar]);
 
   const selectTip = () => {
     setIsRefreshing(true);
     let tips = [];
     
+    // Get pillar-specific tips
+    const pillarTips = TIPS_DATABASE[pillar]?.general || TIPS_DATABASE.fit?.general || [];
+    tips = [...tips, ...pillarTips];
+    
+    // Add breed-specific tips
     if (petBreed) {
       const breedKey = petBreed.toLowerCase().replace(/\s+/g, '_');
       if (TIPS_DATABASE[breedKey]) {
@@ -71,13 +157,12 @@ const QuickWinTip = ({
       }
     }
     
-    if (petAge) {
+    // Add age-specific tips (from fit pillar as they're universal)
+    if (petAge && TIPS_DATABASE.fit) {
       const ageNum = parseInt(petAge);
-      if (ageNum < 2) tips = [...tips, ...TIPS_DATABASE.puppy];
-      else if (ageNum > 7) tips = [...tips, ...TIPS_DATABASE.senior];
+      if (ageNum < 2 && TIPS_DATABASE.fit.puppy) tips = [...tips, ...TIPS_DATABASE.fit.puppy];
+      else if (ageNum > 7 && TIPS_DATABASE.fit.senior) tips = [...tips, ...TIPS_DATABASE.fit.senior];
     }
-    
-    tips = [...tips, ...TIPS_DATABASE.general];
     
     setTimeout(() => {
       const randomTip = tips[Math.floor(Math.random() * tips.length)];
