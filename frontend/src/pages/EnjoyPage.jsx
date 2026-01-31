@@ -788,7 +788,7 @@ const EnjoyPage = () => {
               Enjoy <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-600 to-orange-600">Concierge®</span> Experiences
             </h2>
             <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto px-4">
-              Curated experiences matched to your pet's personality. We coordinate the joy.
+              Curated experiences matched to your pet&apos;s personality. We coordinate the joy.
             </p>
           </div>
           
@@ -812,7 +812,7 @@ const EnjoyPage = () => {
           
           <div className="mt-6 sm:mt-10 text-center">
             <p className="text-xs sm:text-sm text-gray-500">
-              💬 Looking for something specific? <button onClick={() => setShowRsvpModal(true)} className="text-amber-600 hover:underline font-medium">Tell us what you're dreaming of</button>.
+              💬 Looking for something specific? <button onClick={() => setShowRsvpModal(true)} className="text-amber-600 hover:underline font-medium">Tell us what you&apos;re dreaming of</button>.
             </p>
           </div>
         </div>
