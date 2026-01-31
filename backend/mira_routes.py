@@ -3504,19 +3504,57 @@ What would you like to explore? 🐾"""
                     handoff_reason = f"Full kit sourcing needed - items: {', '.join(missing_items)}"
             
             else:
-                # Fallback: search by pillar/message
+                # Fallback: search by pillar/message - PRIORITIZE what user asked for
                 search_terms = user_message.lower().split()
-                query = {
-                    "$or": [
-                        {"pillar": search_pillar},
-                        {"category": search_pillar},
-                        {"tags": {"$in": search_terms}},
-                        {"name": {"$regex": "|".join(search_terms[:5]), "$options": "i"}}
-                    ]
-                }
+                
+                # Check if user is asking for specific category (food vs toys vs treats)
+                is_food_request = any(word in user_message.lower() for word in ["food", "meal", "kibble", "diet", "eating", "eat", "nutrition"])
+                is_treat_request = any(word in user_message.lower() for word in ["treat", "snack", "reward", "chew"])
+                is_toy_request = any(word in user_message.lower() for word in ["toy", "play", "ball", "fetch", "tug"])
+                
+                # Build targeted query based on what user actually wants
+                if is_food_request:
+                    query = {
+                        "$and": [
+                            {"$or": [
+                                {"category": {"$regex": "food|dine|meal|nutrition", "$options": "i"}},
+                                {"tags": {"$in": ["food", "meals", "nutrition", "diet"]}},
+                                {"name": {"$regex": "food|meal|kibble", "$options": "i"}}
+                            ]},
+                            {"name": {"$not": {"$regex": "toy|game|ball", "$options": "i"}}}  # Exclude toys
+                        ]
+                    }
+                elif is_treat_request:
+                    query = {
+                        "$or": [
+                            {"category": {"$regex": "treat|snack", "$options": "i"}},
+                            {"tags": {"$in": ["treats", "snacks", "rewards", "chews"]}},
+                            {"name": {"$regex": "treat|snack|chew", "$options": "i"}}
+                        ]
+                    }
+                elif is_toy_request:
+                    query = {
+                        "$or": [
+                            {"category": {"$regex": "toy|play", "$options": "i"}},
+                            {"tags": {"$in": ["toys", "play", "interactive"]}},
+                            {"name": {"$regex": "toy|ball|tug|fetch", "$options": "i"}}
+                        ]
+                    }
+                else:
+                    # General search
+                    query = {
+                        "$or": [
+                            {"pillar": search_pillar},
+                            {"category": search_pillar},
+                            {"tags": {"$in": search_terms}},
+                            {"name": {"$regex": "|".join(search_terms[:5]), "$options": "i"}}
+                        ]
+                    }
+                
                 found_products = await db.products.find(query, {"_id": 0}).limit(6).to_list(6)
                 
                 if not found_products:
+                    # Fallback to pillar search
                     found_products = await db.products.find(
                         {"$or": [{"pillar": search_pillar}, {"category": search_pillar}]},
                         {"_id": 0}
