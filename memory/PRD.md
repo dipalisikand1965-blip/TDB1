@@ -13,6 +13,35 @@ This flow must work across:
 
 ## What's Been Implemented (Session: Jan 31, 2026 - Latest)
 
+### ✅ MIRA PAGE ENHANCEMENTS - COMPLETED
+
+**User Request**: Fix duplicate messages, link pets to profile, replace contact section with suggestions.
+
+**Issues Fixed**:
+1. **Duplicate messages appearing twice** - FIXED
+   - Changed useEffect to run only once on mount
+   - Removed `setInput()` call that was causing duplicate display
+   - Clear URL params before sending preset message
+
+2. **Pets should link to pet profile** - FIXED
+   - Added ExternalLink button on each pet card
+   - Clicking navigates to `/pet/{petId}` profile page
+   - Selection still works by clicking pet name/avatar
+
+3. **Replace contact section with pet suggestions** - IMPLEMENTED
+   - New "Suggestions for {PetName}" section with 4 quick actions:
+     - Pet-friendly stays
+     - Grooming care (based on coat)
+     - Safe treats & food (respects allergies)
+     - Plan a celebration
+   - Contact section now collapsed under "Need human help?" expandable
+   - Each suggestion auto-fills Mira chat input
+
+**Files Modified**:
+- `/app/frontend/src/pages/MiraPage.jsx` - All three fixes
+
+---
+
 ### ✅ STAY PILLAR PERFECTED AS TEMPLATE - COMPLETED
 
 **User Request**: Perfect the Stay pillar (frontend, backend, admin, mobile) so it can be duplicated for other pages.
