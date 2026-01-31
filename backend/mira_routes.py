@@ -4322,10 +4322,8 @@ async def quick_book(
     
     # Also add to main tickets collection for better visibility
     try:
-        await db.tickets.insert_one({
-            **ticket_doc,
-            "_id": None  # Let MongoDB generate new _id
-        })
+        ticket_for_main = {k: v for k, v in ticket_doc.items() if k != '_id'}  # Remove _id if present
+        await db.tickets.insert_one(ticket_for_main)
         logger.info(f"Inserted to tickets collection: {ticket_id}")
     except Exception as e:
         logger.error(f"Failed to insert to tickets: {e}")
