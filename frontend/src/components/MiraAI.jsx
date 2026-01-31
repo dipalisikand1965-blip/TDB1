@@ -1048,6 +1048,47 @@ const MiraAI = () => {
                               Add All {message.products.length} Items to Cart
                             </button>
                           )}
+                          
+                          {/* Save Kit to Profile Button */}
+                          {message.kitAssembly?.is_kit && message.products.length > 0 && token && (
+                            <button
+                              onClick={async () => {
+                                const kitName = prompt('Name your kit:', `My ${message.kitAssembly?.kit_type?.replace('_', ' ') || 'Custom'} Kit`);
+                                if (!kitName) return;
+                                
+                                try {
+                                  const res = await fetch(`${getApiUrl()}/api/mira/kits/save`, {
+                                    method: 'POST',
+                                    headers: {
+                                      'Content-Type': 'application/json',
+                                      'Authorization': `Bearer ${token}`
+                                    },
+                                    body: JSON.stringify({
+                                      kit_name: kitName,
+                                      kit_type: message.kitAssembly?.kit_type || 'custom',
+                                      products: message.products,
+                                      pet_id: userPets?.[0]?.id,
+                                      occasion: message.kitAssembly?.gathered_info?.occasion
+                                    })
+                                  });
+                                  const data = await res.json();
+                                  if (data.success) {
+                                    toast.success('Kit saved to your profile!', {
+                                      description: 'Find it in My Account → My Kits'
+                                    });
+                                  } else {
+                                    toast.error('Could not save kit');
+                                  }
+                                } catch (err) {
+                                  toast.error('Failed to save kit');
+                                }
+                              }}
+                              className="w-full mt-2 px-4 py-2 bg-white border-2 border-purple-300 text-purple-700 rounded-xl text-sm font-semibold hover:bg-purple-50 transition-all flex items-center justify-center gap-2"
+                            >
+                              <Heart className="w-4 h-4" />
+                              Save Kit to My Profile
+                            </button>
+                          )}
                         </div>
                       )}
                       
