@@ -3228,12 +3228,54 @@ What would you like to explore? 🐾"""
                            "specific products", "what products", "shopping"]
         service_only_keywords = ["book", "appointment", "schedule", "reserve", "booking"]
         
-        is_product_query = any(kw in user_message.lower() for kw in product_keywords)
-        is_service_only = any(kw in user_message.lower() for kw in service_only_keywords) and not is_product_query
+        # ==================== EXPLICIT KIT DETECTION ====================
+        # Kit assembly should ONLY trigger when user explicitly says "kit"
+        # And it should MATCH the current pillar context
+        message_lower = user_message.lower()
+        explicit_kit_keywords = ["kit", "build me a", "assemble", "put together", "curate"]
+        is_explicit_kit_request = any(kw in message_lower for kw in explicit_kit_keywords)
         
-        # Analyze conversation context (use request.history)
+        is_product_query = any(kw in message_lower for kw in product_keywords)
+        is_service_only = any(kw in message_lower for kw in service_only_keywords) and not is_product_query
+        
+        # Analyze conversation context - BUT only for kit details, not triggering
         conversation_history = request.history or []
         product_context = extract_product_needs_from_context(user_message, conversation_history)
+        
+        # ==================== PILLAR-SPECIFIC KIT VALIDATION ====================
+        # Only allow kit assembly if:
+        # 1. User explicitly asked for a kit, AND
+        # 2. The detected kit matches the current pillar OR it's a general/explicit request
+        PILLAR_TO_KIT = {
+            "travel": "travel_kit",
+            "care": ["grooming_kit", "health_kit"],
+            "celebrate": "birthday_kit",
+            "learn": "training_kit",
+            "fit": "fitness_kit",  # NEW: Add fitness_kit for fit pillar
+            "dine": "food_kit",
+            "enjoy": "activity_kit",
+            "shop": None  # Shop can have any kit
+        }
+        
+        detected_kit = product_context.get("kit_type")
+        allowed_kits = PILLAR_TO_KIT.get(pillar)
+        
+        # If detected kit doesn't match current pillar, reset it
+        if detected_kit and pillar and pillar != "shop":
+            if isinstance(allowed_kits, list):
+                if detected_kit not in allowed_kits:
+                    logger.info(f"[KIT GUARD] Detected kit '{detected_kit}' doesn't match pillar '{pillar}'. Resetting.")
+                    product_context["is_kit_request"] = False
+                    product_context["kit_type"] = None
+            elif allowed_kits and detected_kit != allowed_kits:
+                logger.info(f"[KIT GUARD] Detected kit '{detected_kit}' doesn't match pillar '{pillar}' (expected '{allowed_kits}'). Resetting.")
+                product_context["is_kit_request"] = False
+                product_context["kit_type"] = None
+        
+        # Also reset if user didn't explicitly ask for a kit
+        if product_context["is_kit_request"] and not is_explicit_kit_request and not kit_assembly_state:
+            logger.info(f"[KIT GUARD] Kit detected but no explicit request. User said: '{user_message[:50]}'. Not triggering kit flow.")
+            product_context["is_kit_request"] = False
         
         # ==================== CONVERSATIONAL KIT FLOW ====================
         # STEP 1: If kit intent detected but NO state exists, start gathering info
