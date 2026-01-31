@@ -21,6 +21,7 @@ import { getPetPhotoUrl } from '../utils/petAvatar';
 import SEOHead from '../components/SEOHead';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import MiraPicksCarousel from '../components/MiraPicksCarousel';
+import PersonalizedPicks from '../components/PersonalizedPicks';
 import { FitnessJourneyCounter, RotatingSocialProof } from '../components/SocialProofBadges';
 import {
   PartyPopper, Calendar, MapPin, Users, Clock, PawPrint,
