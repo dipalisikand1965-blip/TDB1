@@ -1101,7 +1101,10 @@ def detect_concierge_action_needed(message: str, pillar: str = None, conversatio
     # ==================== STANDARD KEYWORD DETECTION ====================
     for category, config in CONCIERGE_ACTION_TRIGGERS.items():
         for keyword in config["keywords"]:
-            if keyword in message_lower:
+            # Use word boundary matching to avoid false positives
+            # e.g., "grooming" should not match "room"
+            pattern = r'\b' + re.escape(keyword) + r'\b'
+            if re.search(pattern, message_lower):
                 return {
                     "action_needed": True,
                     "category": category,
