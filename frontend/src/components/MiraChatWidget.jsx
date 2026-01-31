@@ -418,24 +418,61 @@ const MiraChatWidget = ({
   
   const quickPrompts = getPersonalizedPrompts();
   
+  // Handle Pulse (voice) activation from floating button
+  const handlePulseClick = (e) => {
+    e.stopPropagation();
+    setIsOpen(true);
+    // Start voice recognition after a short delay to allow widget to render
+    setTimeout(() => {
+      if (speechSupported && recognitionRef.current) {
+        try {
+          recognitionRef.current.start();
+          setIsListening(true);
+          toast.success('🎤 Listening... Speak to Mira!');
+        } catch (err) {
+          console.error('Failed to start voice:', err);
+        }
+      }
+    }, 500);
+  };
+  
   // Floating Button (when closed)
   if (!isOpen) {
     return (
-      <button
-        onClick={() => setIsOpen(true)}
-        className={`fixed bottom-6 right-6 z-[9999] group ${className}`}
-        data-testid="mira-widget-button"
-      >
-        <div className={`relative w-14 h-14 bg-gradient-to-r ${config.color} rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-xl`}>
-          <MessageCircle className="w-6 h-6 text-white" />
-          {/* Pulse animation */}
-          <span className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white animate-pulse" />
-        </div>
-        {/* Tooltip */}
-        <div className="absolute bottom-full right-0 mb-2 px-3 py-1.5 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-          Chat with Mira
-        </div>
-      </button>
+      <div className={`fixed bottom-6 right-6 z-[9999] flex flex-col items-end gap-2 ${className}`}>
+        {/* Pulse Voice Button */}
+        {speechSupported && (
+          <button
+            onClick={handlePulseClick}
+            className="group relative"
+            data-testid="mira-pulse-button"
+          >
+            <div className="w-10 h-10 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-xl">
+              <Zap className="w-5 h-5 text-white" />
+            </div>
+            <div className="absolute bottom-full right-0 mb-2 px-2 py-1 bg-cyan-600 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+              Pulse Voice
+            </div>
+          </button>
+        )}
+        
+        {/* Main Chat Button */}
+        <button
+          onClick={() => setIsOpen(true)}
+          className="group relative"
+          data-testid="mira-widget-button"
+        >
+          <div className={`relative w-14 h-14 bg-gradient-to-r ${config.color} rounded-full shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-xl`}>
+            <MessageCircle className="w-6 h-6 text-white" />
+            {/* Online indicator */}
+            <span className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white animate-pulse" />
+          </div>
+          {/* Tooltip */}
+          <div className="absolute bottom-full right-0 mb-2 px-3 py-1.5 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+            Chat with Mira
+          </div>
+        </button>
+      </div>
     );
   }
   
