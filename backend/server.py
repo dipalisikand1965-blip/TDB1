@@ -60,6 +60,10 @@ from pillar_routes import (
     set_pillar_db, 
     set_pillar_admin_verify
 )
+from pillar_resolver_routes import (
+    router as pillar_resolver_router,
+    set_resolver_db
+)
 from collection_routes import (
     router as enhanced_collection_router,
     public_router as collection_public_router,
