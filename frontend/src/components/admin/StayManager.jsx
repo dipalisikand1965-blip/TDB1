@@ -711,7 +711,7 @@ const StayManager = ({ getAuthHeader }) => {
             <div className="flex gap-2">
               <Button variant="outline" onClick={async () => {
                 try {
-                  const response = await fetch(`${API_URL}/api/stay/admin/seed-bundles`, {
+                  const response = await fetch(`${API_URL}/api/admin/stay/seed-bundles`, {
                     method: 'POST',
                     headers: getAuthHeader()
                   });
@@ -779,7 +779,7 @@ const StayManager = ({ getAuthHeader }) => {
                           onClick={async () => {
                             if (!window.confirm('Delete this bundle?')) return;
                             try {
-                              await fetch(`${API_URL}/api/stay/admin/bundles/${bundle.id}`, {
+                              await fetch(`${API_URL}/api/admin/stay/bundles/${bundle.id}`, {
                                 method: 'DELETE',
                                 headers: getAuthHeader()
                               });
@@ -817,7 +817,7 @@ const StayManager = ({ getAuthHeader }) => {
               <p className="text-sm text-gray-500 mb-4">Click &quot;Seed Bundles&quot; to auto-populate with curated travel bundles</p>
               <Button onClick={async () => {
                 try {
-                  const response = await fetch(`${API_URL}/api/stay/admin/seed-bundles`, {
+                  const response = await fetch(`${API_URL}/api/admin/stay/seed-bundles`, {
                     method: 'POST',
                     headers: getAuthHeader()
                   });
