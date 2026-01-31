@@ -15,36 +15,44 @@ This flow must work across:
 
 ## What's Been Implemented (Session: Jan 31, 2026 - Latest Update)
 
-### ✅ MIRA AI CONTEXT-AWARE KIT ASSEMBLY & QUICK BOOK - COMPLETED (Jan 31, 2026)
+### ✅ GUIDED KIT ASSEMBLY V1 - COMPLETED (Jan 31, 2026)
 
-**Issues Addressed**:
+**Major Features Implemented**:
+
 1. **Context-Aware Product Search** - COMPLETED
-   - Mira now analyzes conversation history to understand user's actual needs
-   - "Travel kit for Ooty" → Searches for bowls, bottles, leashes, towels (not cakes!)
-   - Extracts kit type (travel_kit, grooming_kit, birthday_kit, health_kit)
-   - Returns products tagged with `kit_category` for each item
+   - Mira analyzes conversation to understand user's needs
+   - "Travel kit for Ooty" → bowls, bottles, leashes, towels (not cakes!)
+   - Kit types: travel_kit, grooming_kit, birthday_kit, health_kit, training_kit
 
-2. **Kit Assembly with "Add All to Cart"** - COMPLETED
-   - Backend returns `kit_assembly.is_kit=true` and `kit_assembly.can_add_all_to_cart=true`
-   - Frontend MiraAI.jsx shows "Add All X Items to Cart" button
-   - Users can add entire kit to cart in one click
+2. **Mixed Kit Assembly (Products + Services + Concierge)** - COMPLETED
+   - **In-Stock Products**: Purple cards with images and "Add" button
+   - **Services**: Blue cards with ✨ icon and "📅 Book" button (triggers Quick Book form)
+   - **Concierge-Sourced**: Amber cards with 🔔 bell, "Price & payment link sent separately"
 
-3. **Quick Book Inline Form** - COMPLETED
-   - Service requests (grooming, vet, boarding) show inline booking form
-   - Form includes: Date picker, Time dropdown, Notes field
-   - Submits to `/api/mira/quick-book` endpoint
-   - Creates booking + service desk ticket + channel intake
+3. **"Add All to Cart" Button** - COMPLETED
+   - Shows for kit responses with multiple items
+   - One-click adds entire kit to cart
+   - Cart event listener in CartContext.js handles addToCart events
 
-4. **Concierge Handoff** - COMPLETED
-   - If products aren't available, creates handoff request
-   - User notified: "Our concierge® will send details via email/WhatsApp"
-   - Stored in `concierge_handoffs` collection
+4. **Quick Book Inline Form** - COMPLETED
+   - Date picker, Time dropdown, Notes field
+   - Submits to `/api/mira/quick-book`
+   - Creates booking + service desk ticket
 
-**Testing Results (Iteration 144)**:
-- Backend: 91% (10/11 tests passed)
-- Travel kit returns 8 relevant products with kit_assembly.is_kit=true
-- Grooming request returns show_quick_book_form=true
-- Quick book endpoint creates booking and returns booking_id
+5. **Add to Cart Bug Fix** - COMPLETED
+   - Added event listener in CartContext.js for 'addToCart' custom events
+   - Cart no longer jams after adding items
+
+**Testing Results (Iteration 145)**:
+- Backend: 100% (13/13 tests passed)
+- Frontend: 100% (All features verified)
+- Grooming kit: 8 products + 1 concierge item + 3 services = 12 items
+
+**Next Phase: Cinematic Kit Assembly**
+- 3D transparent modal overlay
+- Items appearing with animations
+- Live assembly visualization
+- Mobile bottom sheet / Desktop side panel
 
 ---
 
