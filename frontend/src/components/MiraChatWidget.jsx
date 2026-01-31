@@ -663,23 +663,24 @@ const MiraChatWidget = ({
   }
   
   // Chat Widget (when open) - RESPONSIVE for mobile
-  // Mobile: Full width with proper margins
-  // Desktop: Fixed width 360px
+  // Mobile: Full screen from bottom
+  // Desktop: Side drawer on right (fixed to right edge)
   return (
     <div 
       className={`fixed z-[9999] ${className}
-        bottom-0 right-0 left-0 sm:bottom-6 sm:right-6 sm:left-auto
+        bottom-0 right-0 left-0 
+        sm:bottom-0 sm:right-0 sm:left-auto sm:top-0
       `}
       data-testid="mira-chat-widget"
     >
       {/* Chat container - MOBILE RESPONSIVE */}
-      {/* Mobile: Full width, rounded top only */}
-      {/* Desktop: Fixed width 360px, fully rounded */}
+      {/* Mobile: Full width, rounded top only, from bottom */}
+      {/* Desktop: Side drawer, full height, fixed width on right edge */}
       <div className={`
-        w-full sm:w-[380px] 
+        w-full sm:w-[400px] lg:w-[420px]
         bg-white shadow-2xl overflow-hidden flex flex-col transition-all duration-300
-        rounded-t-2xl sm:rounded-2xl
-        ${isMinimized ? 'h-16' : 'h-[85vh] sm:h-[550px] sm:max-h-[80vh]'}
+        rounded-t-2xl sm:rounded-none sm:border-l sm:border-gray-200
+        ${isMinimized ? 'h-16 sm:h-full' : 'h-[85vh] sm:h-full'}
       `}>
         {/* Header */}
         <div 
