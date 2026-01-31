@@ -476,6 +476,20 @@ const MiraAI = () => {
     }
   }, [token, welcomeGenerated, generateWelcomeMessage]);
 
+  // Auto-speak welcome message when it's first generated and Mira is open
+  const [welcomeSpoken, setWelcomeSpoken] = useState(false);
+  useEffect(() => {
+    if (isOpen && welcomeGenerated && voiceEnabled && !welcomeSpoken && messages.length > 0) {
+      const welcomeMsg = messages.find(m => m.id === 'welcome');
+      if (welcomeMsg && welcomeMsg.content) {
+        // Extract first paragraph for speaking (don't read the whole thing)
+        const firstPara = welcomeMsg.content.split('\n')[0].replace(/\*\*/g, '');  // Remove markdown bold
+        setTimeout(() => speakText(firstPara), 500);
+        setWelcomeSpoken(true);
+      }
+    }
+  }, [isOpen, welcomeGenerated, voiceEnabled, welcomeSpoken, messages, speakText]);
+
   // Scroll to bottom when messages change
   const scrollToBottom = useCallback(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
