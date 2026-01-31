@@ -889,26 +889,42 @@ const MiraPage = () => {
                   {pets.map((pet) => (
                     <div
                       key={pet.id}
-                      onClick={() => setSelectedPet(pet)}
-                      className={`p-3 rounded-lg border cursor-pointer transition-all ${
+                      className={`p-3 rounded-lg border transition-all ${
                         selectedPet?.id === pet.id 
                           ? 'border-purple-300 bg-purple-50'
                           : 'border-gray-100 hover:border-purple-200 hover:bg-purple-50/50'
                       }`}
                     >
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center">
+                        <div 
+                          className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center cursor-pointer"
+                          onClick={() => setSelectedPet(pet)}
+                        >
                           <PawPrint className="w-5 h-5 text-amber-600" />
                         </div>
-                        <div>
+                        <div 
+                          className="flex-1 cursor-pointer"
+                          onClick={() => setSelectedPet(pet)}
+                        >
                           <p className="font-medium text-gray-900">{pet.name}</p>
                           <p className="text-xs text-gray-500">{pet.breed}</p>
                         </div>
-                        {selectedPet?.id === pet.id && (
-                          <div className="ml-auto">
+                        <div className="flex items-center gap-2">
+                          {selectedPet?.id === pet.id && (
                             <div className="w-2 h-2 rounded-full bg-purple-500" />
-                          </div>
-                        )}
+                          )}
+                          {/* Link to Pet Profile */}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/pet/${pet.id}`);
+                            }}
+                            className="p-1.5 rounded-full hover:bg-purple-100 transition-colors"
+                            title={`View ${pet.name}'s profile`}
+                          >
+                            <ExternalLink className="w-4 h-4 text-purple-500" />
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))}
