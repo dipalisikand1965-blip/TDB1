@@ -614,7 +614,11 @@ const MiraAI = () => {
         products: data.products || null, // Product cards if backend returns them
         ticketId: data.ticket_id,
         serviceTicketId: data.service_desk_ticket_id,
-        conciergeAction: data.concierge_action
+        conciergeAction: data.concierge_action,
+        kitAssembly: data.kit_assembly || null, // Kit assembly info
+        handoff: data.handoff || null, // Concierge handoff info
+        showQuickBookForm: data.concierge_action?.show_quick_book_form || false,
+        serviceType: data.concierge_action?.action_type || null
       };
 
       setMessages(prev => [...prev, assistantMessage]);
