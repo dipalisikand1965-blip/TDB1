@@ -272,23 +272,20 @@ const MiraPage = () => {
       }
     }
     
-    // If there's a preset message, set it in input and optionally auto-send
+    // If there's a preset message, auto-send it (only once)
     if (presetMessage) {
       const decodedMessage = decodeURIComponent(presetMessage);
-      setInput(decodedMessage);
       
-      // Clear the URL params after using them
+      // Clear the URL params FIRST to prevent re-triggering
       setSearchParams({});
       
       // Auto-send after a brief delay (to let the welcome message show first)
       setTimeout(() => {
-        // Create a synthetic event to trigger send
-        const syntheticEvent = { preventDefault: () => {} };
-        // We'll manually trigger the send
         handlePresetMessage(decodedMessage);
       }, 1500);
     }
-  }, [searchParams]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once on mount
 
   // Handle preset message from URL params
   const handlePresetMessage = async (message) => {
