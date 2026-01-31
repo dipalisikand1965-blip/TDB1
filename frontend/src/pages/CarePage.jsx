@@ -469,7 +469,7 @@ const CarePage = () => {
             </h1>
             
             <p className="text-lg md:text-xl text-white/80 mb-8 max-w-lg">
-              From grooming to training, walks to wellness — we understand your pet's unique needs and connect you with the right care, every time.
+              From grooming to training, walks to wellness — we understand your pet&apos;s unique needs and connect you with the right care, every time.
             </p>
             
             {/* CTA Buttons */}
