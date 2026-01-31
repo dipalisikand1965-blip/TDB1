@@ -20,6 +20,7 @@ import { getApiUrl } from '../utils/api';
 import { toast } from 'sonner';
 import { useMiraSignal } from '../hooks/useMiraSignal';
 import MiraOrb from './MiraOrb';
+import ReactMarkdown from 'react-markdown';
 import { 
   X, Send, Loader2, Mic, MicOff, Volume2, VolumeX, 
   ChevronDown, Sparkles, PawPrint, MessageCircle, Zap,
