@@ -3394,8 +3394,7 @@ const MemberDashboard = () => {
         }}
       />
       
-      {/* Extra bottom padding for mobile nav */}
-      <div className="h-24 md:hidden" />
+      {/* Extra bottom padding removed - mobile nav removed */}
     </div>
   );
 };
