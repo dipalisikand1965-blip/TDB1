@@ -1214,22 +1214,8 @@ const CarePage = () => {
         </DialogContent>
       </Dialog>
       
-      {/* Mira Contextual Panel */}
-      {/* Desktop: Fixed sidebar panel */}
-      <div className="hidden lg:block fixed right-4 top-24 w-72 z-30">
-        <MiraContextPanel pillar="care" />
-      </div>
-      {/* Mobile: Just a floating button that opens Mira page */}
-      <div className="lg:hidden fixed bottom-24 right-4 z-[9999]">
-        <Button
-          onClick={() => navigate('/mira?context=care')}
-          className="bg-gradient-to-r from-pink-500 to-rose-500 text-white rounded-full px-4 py-3 shadow-lg hover:shadow-xl transition-all flex items-center gap-2"
-          data-testid="mira-mobile-btn"
-        >
-          <PawPrint className="w-5 h-5" />
-          <span>Ask Mira</span>
-        </Button>
-      </div>
+      {/* Mira Floating Chat Widget */}
+      <MiraChatWidget pillar="care" />
       
       {/* Service Booking Modal */}
       <ServiceBookingModal
