@@ -343,45 +343,201 @@ const StayPage = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-green-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-white">
       {/* SEO Meta Tags */}
       <SEOHead page="stay" path="/stay" />
       
-      {/* Hero Section - Compact on mobile */}
-      <div className="relative bg-gradient-to-r from-green-600 to-emerald-500 text-white py-8 md:py-16 px-4">
-        <div className="max-w-6xl mx-auto text-center">
-          <div className="flex items-center justify-center gap-2 mb-2 md:mb-4">
-            <PawPrint className="w-6 h-6 md:w-8 md:h-8" />
-            <h1 className="text-2xl md:text-5xl font-bold">STAY</h1>
-          </div>
-          <p className="text-base md:text-2xl opacity-90 mb-2">
-            Your dog's second home — everywhere.
-          </p>
-          <p className="text-xs md:text-sm opacity-75 max-w-2xl mx-auto mb-3 md:mb-4 px-2">
-            Discover India's most trusted pet-friendly stays.
-          </p>
-          
-          {/* Trip Planner CTA */}
-          <Button 
-            onClick={() => setShowTripPlanner(true)}
-            className="bg-white text-green-600 hover:bg-green-50 font-semibold px-4 md:px-6 py-2 md:py-3 rounded-full shadow-lg text-sm md:text-base"
-            data-testid="trip-planner-btn"
-          >
-            <Sparkles className="w-4 h-4 md:w-5 md:h-5 mr-1 md:mr-2" />
-            Plan Your Pawcation
-          </Button>
+      {/* ==================== ELEGANT HERO - FitPage Style ==================== */}
+      <div className="relative min-h-[70vh] md:min-h-[80vh] overflow-hidden">
+        {/* Animated Background */}
+        <div className="absolute inset-0">
+          {HERO_IMAGES.map((img, idx) => (
+            <div
+              key={idx}
+              className={`absolute inset-0 transition-opacity duration-1000 ${
+                idx === heroIndex ? 'opacity-100' : 'opacity-0'
+              }`}
+            >
+              <img src={img} alt="" className="w-full h-full object-cover" />
+            </div>
+          ))}
+          <div className="absolute inset-0 bg-gradient-to-r from-emerald-900/90 via-emerald-800/80 to-teal-900/70" />
         </div>
+        
+        <div className="relative max-w-7xl mx-auto px-4 py-20 md:py-28">
+          <div className="max-w-2xl">
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
+              <Building className="w-4 h-4 text-emerald-300" />
+              <span className="text-sm font-medium text-white">Pet-Friendly Stays & Boarding</span>
+            </div>
+            
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-white">
+              Your Dog&apos;s
+              <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-teal-200">
+                Second Home
+              </span>
+            </h1>
+            
+            <p className="text-lg md:text-xl text-white/80 mb-8 max-w-lg">
+              Discover India&apos;s most trusted pet-friendly stays. From luxury resorts to cozy homestays, we&apos;ve vetted every property for genuine pet hospitality.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Button 
+                onClick={() => setShowTripPlanner(true)}
+                size="lg"
+                className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold px-8 py-6 text-lg rounded-full shadow-2xl shadow-emerald-500/30 transition-all hover:scale-105"
+                data-testid="trip-planner-btn"
+              >
+                <Sparkles className="w-5 h-5 mr-2" />
+                Plan Your Pawcation
+              </Button>
+              <Button 
+                onClick={() => document.getElementById('stays-grid')?.scrollIntoView({ behavior: 'smooth' })}
+                variant="outline"
+                size="lg"
+                className="border-white/30 text-white hover:bg-white/10 px-8 py-6 text-lg rounded-full"
+              >
+                <Building className="w-5 h-5 mr-2" />
+                Browse Stays
+              </Button>
+            </div>
+            
+            <div className="flex flex-wrap gap-6 mt-12">
+              <div className="flex items-center gap-2 text-white/70">
+                <Shield className="w-5 h-5 text-emerald-400" />
+                <span className="text-sm">Verified Pet-Friendly</span>
+              </div>
+              <div className="flex items-center gap-2 text-white/70">
+                <Trophy className="w-5 h-5 text-amber-400" />
+                <span className="text-sm">Trusted by 10,000+ Pets</span>
+              </div>
+              <div className="flex items-center gap-2 text-white/70">
+                <PawPrint className="w-5 h-5 text-teal-400" />
+                <span className="text-sm">Earn Paw Points</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce">
+          <ChevronDown className="w-6 h-6 text-white/50" />
+        </div>
+      </div>
 
-        {/* Search Bar */}
-        <div className="max-w-4xl mx-auto mt-4 md:mt-8">
-          <div className="bg-white rounded-2xl shadow-xl p-3 md:p-4">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3">
+      {/* ==================== SOCIAL PROOF BANNER ==================== */}
+      <div className="bg-white border-b border-gray-100 py-3">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6">
+          <FitnessJourneyCounter />
+          <RotatingSocialProof 
+            petName={userPets[0]?.name} 
+            breedName={userPets[0]?.breed} 
+          />
+        </div>
+      </div>
+
+      {/* ==================== CONVERSATIONAL ENTRY + QUICK WIN ==================== */}
+      <div className="py-10 bg-gradient-to-b from-gray-50/50 to-white">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-6 items-stretch">
+            <ConversationalEntry 
+              petName={userPets[0]?.name}
+              onGoalSelect={(goal, message) => {
+                navigate(`/mira?context=stay_${goal.id}&preset=${encodeURIComponent(message)}`);
+              }}
+            />
+            <QuickWinTip
+              petName={userPets[0]?.name}
+              petBreed={userPets[0]?.breed}
+              petAge={userPets[0]?.age}
+              onActionClick={(tip) => {
+                toast({ title: 'Coming soon!', description: tip.action });
+              }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* ==================== CONCIERGE® STAY EXPERIENCES - COMPACT ==================== */}
+      <div className="py-10 bg-gradient-to-b from-white to-emerald-50/30">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h2 className="text-xl md:text-2xl font-semibold text-gray-900">
+                Stay <span className="text-emerald-600">Concierge®</span> Experiences
+              </h2>
+              <p className="text-sm text-gray-500 mt-1">
+                Let us handle the details of your pawcation
+              </p>
+            </div>
+            <Button 
+              variant="ghost" 
+              className="text-emerald-600 hover:text-emerald-700 text-sm hidden sm:flex"
+              onClick={() => setShowTripPlanner(true)}
+            >
+              Tell us about your trip <ChevronRight className="w-4 h-4 ml-1" />
+            </Button>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+            {STAY_EXPERIENCES.map((exp, idx) => (
+              <ConciergeExperienceCard
+                key={idx}
+                pillar="stay"
+                title={exp.title}
+                description={exp.description}
+                icon={exp.icon}
+                gradient={exp.gradient}
+                badge={exp.badge}
+                badgeColor={exp.badgeColor}
+                highlights={exp.highlights}
+                compact={true}
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ==================== MIRA PICKS - PERSONALIZED ==================== */}
+      <section className="py-6 bg-white border-b border-gray-100">
+        <div className="max-w-7xl mx-auto px-4">
+          <MiraPicksCarousel
+            pillar="stay"
+            petId={selectedPets[0]?.id || userPets[0]?.id}
+            petName={selectedPets[0]?.name || userPets[0]?.name}
+            petPhoto={selectedPets[0] ? getPetPhotoUrl(selectedPets[0]) : userPets[0] ? getPetPhotoUrl(userPets[0]) : null}
+            userId={user?.id}
+            onSelectService={(property) => {
+              setSelectedProperty(property);
+            }}
+            onSelectProduct={(product) => {
+              addToCart({
+                id: product.id,
+                name: product.name || product.title,
+                price: product.price,
+                image: product.image,
+                pillar: 'stay',
+                type: 'product'
+              });
+              toast({ title: '🛒 Added to Cart!', description: `${product.name || product.title} added` });
+            }}
+          />
+        </div>
+      </section>
+
+      {/* ==================== SEARCH & FILTERS SECTION ==================== */}
+      <div className="py-8 bg-emerald-50/50">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="bg-white rounded-2xl shadow-xl p-4 md:p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Find Your Perfect Stay</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <div className="relative">
                 <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <select
                   value={filters.city}
                   onChange={(e) => setFilters({...filters, city: e.target.value})}
-                  className="w-full pl-10 pr-4 py-3 border rounded-xl text-gray-700 focus:ring-2 focus:ring-green-500"
+                  className="w-full pl-10 pr-4 py-3 border rounded-xl text-gray-700 focus:ring-2 focus:ring-emerald-500"
                 >
                   <option value="">All Cities</option>
                   {cities.map(city => (
@@ -395,7 +551,7 @@ const StayPage = () => {
                 <select
                   value={filters.propertyType}
                   onChange={(e) => setFilters({...filters, propertyType: e.target.value})}
-                  className="w-full pl-10 pr-4 py-3 border rounded-xl text-gray-700 focus:ring-2 focus:ring-green-500"
+                  className="w-full pl-10 pr-4 py-3 border rounded-xl text-gray-700 focus:ring-2 focus:ring-emerald-500"
                 >
                   <option value="">All Types</option>
                   <option value="resort">Resort</option>
@@ -411,7 +567,7 @@ const StayPage = () => {
                 <select
                   value={filters.minRating}
                   onChange={(e) => setFilters({...filters, minRating: e.target.value})}
-                  className="w-full pl-10 pr-4 py-3 border rounded-xl text-gray-700 focus:ring-2 focus:ring-green-500"
+                  className="w-full pl-10 pr-4 py-3 border rounded-xl text-gray-700 focus:ring-2 focus:ring-emerald-500"
                 >
                   <option value="">Any Rating</option>
                   <option value="4.5">4.5+ Paws</option>
@@ -422,7 +578,7 @@ const StayPage = () => {
 
               <Button 
                 onClick={fetchProperties}
-                className="bg-green-600 hover:bg-green-700 text-white py-3 rounded-xl"
+                className="bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl"
               >
                 <Search className="w-5 h-5 mr-2" /> Search
               </Button>
