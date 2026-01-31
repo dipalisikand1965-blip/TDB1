@@ -201,6 +201,7 @@ const CareManager = ({ getAuthHeader }) => {
   // Fetch all data
   useEffect(() => {
     fetchAllData();
+    fetchTips();
   }, []);
 
   const fetchAllData = async () => {
