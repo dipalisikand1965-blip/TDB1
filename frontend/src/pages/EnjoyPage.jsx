@@ -126,7 +126,7 @@ const EnjoyPage = () => {
   const [showRsvpModal, setShowRsvpModal] = useState(false);
   const [selectedExperience, setSelectedExperience] = useState(null);
   const [userPets, setUserPets] = useState([]);
-  const [selectedPet, setSelectedPet] = useState(null);
+  const [selectedPets, setSelectedPets] = useState([]); // Multi-pet support
   const [submitting, setSubmitting] = useState(false);
   const [heroIndex, setHeroIndex] = useState(0);
   
@@ -140,8 +140,24 @@ const EnjoyPage = () => {
   const [rsvpForm, setRsvpForm] = useState({
     number_of_pets: 1,
     number_of_humans: 1,
-    special_requirements: ''
+    special_requirements: '',
+    guest_pet_name: '',
+    guest_pet_breed: ''
   });
+
+  // Multi-pet selection helpers
+  const handlePetToggle = (pet) => {
+    setSelectedPets(prev => {
+      const isSelected = prev.some(p => (p.id || p._id) === (pet.id || pet._id));
+      if (isSelected) {
+        return prev.filter(p => (p.id || p._id) !== (pet.id || pet._id));
+      }
+      return [...prev, pet];
+    });
+  };
+  
+  const handleSelectAllPets = () => setSelectedPets([...userPets]);
+  const handleClearAllPets = () => setSelectedPets([]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
