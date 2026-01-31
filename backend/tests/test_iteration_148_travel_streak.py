@@ -131,10 +131,9 @@ class TestStreakAPI:
         user_id = login_response.json()["user"]["id"]
         token = login_response.json()["access_token"]
         
-        # Record a streak action
+        # Record a streak action (action_type is a query parameter)
         record_response = requests.post(
-            f"{BASE_URL}/api/engagement/streak/{user_id}/action",
-            json={"action_type": "mira_chat"},
+            f"{BASE_URL}/api/engagement/streak/{user_id}/action?action_type=mira_chat",
             headers={"Authorization": f"Bearer {token}"}
         )
         
