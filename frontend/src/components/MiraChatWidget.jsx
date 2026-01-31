@@ -65,9 +65,19 @@ const MiraChatWidget = ({
   const inputRef = useRef(null);
   
   // Mira Signal tracking for passive learning & personalization
-  const miraSignal = useMiraSignal();
-  const trackPillarVisit = miraSignal?.trackPillarVisit || (() => {});
-  const trackClick = miraSignal?.trackClick || (() => {});
+  // Wrap in try-catch to prevent crashes
+  let trackPillarVisit = () => {};
+  let trackClick = () => {};
+  
+  try {
+    const miraSignal = useMiraSignal();
+    if (miraSignal) {
+      trackPillarVisit = miraSignal.trackPillarVisit || (() => {});
+      trackClick = miraSignal.trackClick || (() => {});
+    }
+  } catch (e) {
+    console.debug('MiraSignal hook not available:', e);
+  }
   
   // Dynamic quick prompts from API
   const [dynamicPrompts, setDynamicPrompts] = useState([]);
