@@ -446,21 +446,40 @@ const StayPage = () => {
             <Loader2 className="w-8 h-8 sm:w-10 sm:h-10 animate-spin text-green-600" />
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4 md:gap-6">
-            {properties.map((property) => (
-              <PropertyCard 
-                key={property.id} 
-                property={property}
-                isFavorite={favorites.includes(property.id)}
-                onToggleFavorite={() => toggleFavorite(property.id)}
-                onViewDetails={() => setSelectedProperty(property)}
-                onBookNow={() => { setSelectedProperty(property); setShowBookingModal(true); }}
-                getPropertyTypeIcon={getPropertyTypeIcon}
-                getBadgeColor={getBadgeColor}
-                PawRatingDisplay={PawRatingDisplay}
-              />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4 md:gap-6">
+              {properties.slice(0, propertiesToShow).map((property) => (
+                <PropertyCard 
+                  key={property.id} 
+                  property={property}
+                  isFavorite={favorites.includes(property.id)}
+                  onToggleFavorite={() => toggleFavorite(property.id)}
+                  onViewDetails={() => setSelectedProperty(property)}
+                  onBookNow={() => { setSelectedProperty(property); setShowBookingModal(true); }}
+                  getPropertyTypeIcon={getPropertyTypeIcon}
+                  getBadgeColor={getBadgeColor}
+                  PawRatingDisplay={PawRatingDisplay}
+                />
+              ))}
+            </div>
+            
+            {/* Load More Button */}
+            {properties.length > propertiesToShow && (
+              <div className="text-center mt-8">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setPropertiesToShow(prev => prev + 8)}
+                  className="px-8 py-3 rounded-full border-2 border-emerald-300 text-emerald-600 hover:bg-emerald-50"
+                >
+                  Load More Properties
+                  <ChevronDown className="w-4 h-4 ml-2" />
+                </Button>
+                <p className="text-xs text-gray-500 mt-2">
+                  Showing {Math.min(propertiesToShow, properties.length)} of {properties.length}
+                </p>
+              </div>
+            )}
+          </>
         )}
 
         {!loading && properties.length === 0 && (
