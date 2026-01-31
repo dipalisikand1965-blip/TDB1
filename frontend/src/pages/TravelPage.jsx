@@ -532,7 +532,6 @@ const TravelPage = () => {
                 badge={exp.badge}
                 badgeColor={exp.badgeColor}
                 highlights={exp.highlights}
-                compact={window.innerWidth < 640}
               />
             ))}
           </div>
