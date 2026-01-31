@@ -185,7 +185,7 @@ DEFAULT_STREAK_CONFIG = {
         {"days": 100, "points": 3000, "badge": "Legendary Parent", "icon": "🌟"},
     ],
     "reset_hour": 0,
-    "qualifying_actions": ["order", "pet_update", "mira_chat", "service_booking", "review", "photo_upload"]
+    "qualifying_actions": ["login", "order", "pet_update", "mira_chat", "service_booking", "review", "photo_upload"]
 }
 
 # ==================== ADMIN CONFIG ENDPOINTS ====================
