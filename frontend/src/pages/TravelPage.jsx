@@ -630,21 +630,40 @@ const TravelPage = () => {
       </div>
 
       {/* === TRAVEL PRODUCTS === */}
-      <div className="py-16 bg-slate-50">
+      <div className="py-10 sm:py-16 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center justify-between mb-6 sm:mb-8">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900">Travel Essentials</h2>
-              <p className="text-gray-600 mt-1">Individual items for every journey</p>
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">Travel Essentials</h2>
+              <p className="text-sm sm:text-base text-gray-600 mt-1">Individual items for every journey</p>
             </div>
           </div>
           
           {travelProducts.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-              {travelProducts.map((product) => (
-                <ProductCard key={product.id} product={product} pillar="travel" />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+                {travelProducts.slice(0, productsToShow).map((product) => (
+                  <ProductCard key={product.id} product={product} pillar="travel" />
+                ))}
+              </div>
+              
+              {/* Load More Button */}
+              {travelProducts.length > productsToShow && (
+                <div className="text-center mt-8">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => setProductsToShow(prev => prev + 10)}
+                    className="px-8 py-3 rounded-full border-2 border-violet-300 text-violet-600 hover:bg-violet-50"
+                  >
+                    Load More Products
+                    <ChevronDown className="w-4 h-4 ml-2" />
+                  </Button>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Showing {Math.min(productsToShow, travelProducts.length)} of {travelProducts.length}
+                  </p>
+                </div>
+              )}
+            </>
           ) : (
             <Card className="p-12 text-center bg-white">
               <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
