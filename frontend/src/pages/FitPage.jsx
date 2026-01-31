@@ -258,7 +258,7 @@ const ServiceDetailModal = ({ service, isOpen, onClose, onBook, onAskConcierge, 
           {/* What's Included */}
           {service.includes && service.includes.length > 0 && (
             <div>
-              <h3 className="font-semibold text-gray-900 mb-3">What's included</h3>
+              <h3 className="font-semibold text-gray-900 mb-3">What&apos;s included</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {service.includes.map((item, idx) => (
                   <div key={idx} className="flex items-center gap-2 p-2 rounded-lg bg-teal-50">
@@ -279,7 +279,7 @@ const ServiceDetailModal = ({ service, isOpen, onClose, onBook, onAskConcierge, 
               <div>
                 <h4 className="font-semibold text-purple-900 mb-1">Why Concierge®?</h4>
                 <p className="text-sm text-purple-700">
-                  Our Concierge® team handles all coordination - scheduling, follow-ups, and personalised recommendations based on your pet's profile.
+                  Our Concierge® team handles all coordination - scheduling, follow-ups, and personalised recommendations based on your pet&apos;s profile.
                 </p>
               </div>
             </div>
@@ -935,7 +935,7 @@ const FitPage = () => {
       <section className="py-16 bg-gradient-to-br from-teal-600 to-emerald-700">
         <div className="max-w-4xl mx-auto px-4 text-center text-white">
           <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Ready to Transform Your Pet's Fitness?
+            Ready to Transform Your Pet&apos;s Fitness?
           </h2>
           <p className="text-lg text-white/80 mb-8 max-w-2xl mx-auto">
             Start with a free consultation. Our Concierge® team will help you find the perfect programme.
