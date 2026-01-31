@@ -504,22 +504,23 @@ const TravelPage = () => {
       </div>
 
       {/* === ELEVATED CONCIERGE® EXPERIENCES === */}
-      <div className="py-16 bg-gradient-to-br from-violet-50 via-purple-50 to-pink-50">
+      <div className="py-10 sm:py-16 bg-gradient-to-br from-violet-50 via-purple-50 to-pink-50">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 bg-violet-100 text-violet-700 px-4 py-2 rounded-full mb-4">
-              <Sparkles className="w-4 h-4" />
-              <span className="text-sm font-medium">Elevated Experiences</span>
+          <div className="text-center mb-8 sm:mb-12">
+            <div className="inline-flex items-center gap-2 bg-violet-100 text-violet-700 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full mb-3 sm:mb-4">
+              <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              <span className="text-xs sm:text-sm font-medium">Elevated Experiences</span>
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
               Travel <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-purple-600">Concierge®</span> Experiences
             </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              These aren't bookable services — they're curated experiences that evolve through conversation, judgment, and care. Every journey is unique, just like your pet.
+            <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto px-4">
+              Curated experiences that evolve through conversation. Every journey is unique.
             </p>
           </div>
           
-          <div className="grid md:grid-cols-2 gap-6">
+          {/* 2x2 grid on mobile, 2 columns on desktop */}
+          <div className="grid grid-cols-2 md:grid-cols-2 gap-3 sm:gap-6">
             {TRAVEL_EXPERIENCES.map((exp, idx) => (
               <ConciergeExperienceCard
                 key={idx}
@@ -531,13 +532,14 @@ const TravelPage = () => {
                 badge={exp.badge}
                 badgeColor={exp.badgeColor}
                 highlights={exp.highlights}
+                compact={window.innerWidth < 640}
               />
             ))}
           </div>
           
-          <div className="mt-10 text-center">
-            <p className="text-sm text-gray-500">
-              💬 Not sure which experience fits your needs? <button onClick={handleStartPlanning} className="text-violet-600 hover:underline font-medium">Start a conversation</button> and let us guide you.
+          <div className="mt-6 sm:mt-10 text-center">
+            <p className="text-xs sm:text-sm text-gray-500">
+              💬 Not sure which experience fits? <button onClick={handleStartPlanning} className="text-violet-600 hover:underline font-medium">Start a conversation</button>
             </p>
           </div>
         </div>
