@@ -61,6 +61,7 @@ const DinePage = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
+  const [restaurantsToShow, setRestaurantsToShow] = useState(8); // Load More state
 
   // Update currentUser when authUser changes
   useEffect(() => {
