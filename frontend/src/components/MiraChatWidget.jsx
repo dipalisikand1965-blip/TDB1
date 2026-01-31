@@ -15,10 +15,11 @@ import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { getApiUrl } from '../utils/api';
 import { toast } from 'sonner';
+import { useMiraSignal } from '../hooks/useMiraSignal';
 import { 
   X, Send, Loader2, Mic, MicOff, Volume2, VolumeX, 
   ChevronDown, Sparkles, PawPrint, MessageCircle, Zap,
-  ArrowLeft, ShoppingCart, Plus
+  ArrowLeft, ShoppingCart, Plus, Heart
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
