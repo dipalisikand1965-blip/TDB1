@@ -329,6 +329,7 @@ const Navbar = () => {
         if (res.ok) {
           const data = await res.json();
           const pets = data.pets || [];
+          setAllPets(pets);
           if (pets.length > 0) {
             setPrimaryPet(pets[0]);
             setPetSoulScore(Math.round(pets[0].overall_score || 0));
