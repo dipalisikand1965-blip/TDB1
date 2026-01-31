@@ -719,7 +719,49 @@ async def create_mira_ticket(
     })
     logger.info(f"[UNIFIED FLOW] Mira unified inbox created: {inbox_id}")
     
-    logger.info(f"[UNIFIED FLOW] COMPLETE: Mira | N:{notification_id} → T:{ticket_id} → I:{inbox_id}")
+    # ==================== PILLAR-SPECIFIC COLLECTION ROUTING ====================
+    # Route Mira ticket to pillar-specific collection for pillar-wise agent access
+    pillar_collection_map = {
+        "fit": "fit_requests",
+        "care": "care_requests",
+        "celebrate": "celebrate_requests",
+        "dine": "dine_requests",
+        "stay": "stay_requests",
+        "travel": "travel_requests",
+        "learn": "learn_requests",
+        "enjoy": "enjoy_requests",
+        "advisory": "advisory_requests",
+        "shop": "shop_requests",
+        "discover": "discover_requests",
+        "protect": "protect_requests",
+        "connect": "connect_requests",
+        "gift": "gift_requests"
+    }
+    
+    pillar_collection = pillar_collection_map.get(pillar.lower())
+    if pillar_collection:
+        pillar_request = {
+            "ticket_id": ticket_id,
+            "notification_id": notification_id,
+            "inbox_id": inbox_id,
+            "mira_session_id": session_id,
+            "ticket_type": ticket_type,
+            "pillar": pillar,
+            "channel": source,
+            "urgency": urgency,
+            "status": "new",
+            "description": description,
+            "member": member_info,
+            "pet": pet_info,
+            "source": "mira_ai",
+            "source_collection": "mira_tickets",
+            "created_at": now,
+            "routed_at": now
+        }
+        await db[pillar_collection].insert_one(pillar_request)
+        logger.info(f"[PILLAR ROUTING] Mira ticket {ticket_id} routed to {pillar_collection}")
+    
+    logger.info(f"[UNIFIED FLOW] COMPLETE: Mira | N:{notification_id} → T:{ticket_id} → I:{inbox_id} → P:{pillar_collection or 'none'}")
     
     return ticket_id
 
