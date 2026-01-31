@@ -531,7 +531,7 @@ const CareManager = ({ getAuthHeader }) => {
 
       {/* Sub-tabs */}
       <Tabs value={activeSubTab} onValueChange={setActiveSubTab}>
-        <TabsList className="bg-white border">
+        <TabsList className="bg-white border flex-wrap">
           <TabsTrigger value="requests" data-testid="care-tab-requests">
             <Bell className="w-4 h-4 mr-2" /> Requests
           </TabsTrigger>
@@ -543,6 +543,9 @@ const CareManager = ({ getAuthHeader }) => {
           </TabsTrigger>
           <TabsTrigger value="bundles" data-testid="care-tab-bundles">
             <Gift className="w-4 h-4 mr-2" /> Bundles
+          </TabsTrigger>
+          <TabsTrigger value="tips" data-testid="care-tab-tips">
+            <Sparkles className="w-4 h-4 mr-2" /> Tips
           </TabsTrigger>
           <TabsTrigger value="settings" data-testid="care-tab-settings">
             <Settings className="w-4 h-4 mr-2" /> Settings
