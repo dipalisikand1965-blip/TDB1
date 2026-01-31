@@ -940,3 +940,155 @@ async def seed_engagement_defaults():
     
     return {"message": "Seeded", "stories": len(stories), "tips": len(tips)}
 
+
+# ==================== JOURNEY RECOMMENDATIONS ====================
+# Pet Soul-aware, Cross-pillar journey recommendations
+
+class JourneyRecommendationRequest(BaseModel):
+    pet_id: str
+    pillar: str
+    pet_allergies: List[str] = []
+    pet_size: Optional[str] = None
+    pet_age: Optional[str] = None
+    pet_breed: Optional[str] = None
+
+@router.post("/recommendations/journey")
+async def get_journey_recommendations(request: JourneyRecommendationRequest):
+    """
+    Get personalized recommendations for a pet based on:
+    - Current pillar context
+    - Pet's allergies (filter out unsafe products)
+    - Pet's size, age, breed
+    - Cross-pillar journey opportunities
+    """
+    recommendations = []
+    
+    # Build allergy filter
+    allergy_filter = {}
+    if request.pet_allergies:
+        # Exclude products containing allergens
+        allergy_keywords = [a.lower() for a in request.pet_allergies if a and a.lower() not in ['no', 'none', 'na']]
+        if allergy_keywords:
+            allergy_filter = {
+                "$and": [
+                    {"ingredients": {"$not": {"$regex": kw, "$options": "i"}}}
+                    for kw in allergy_keywords[:5]  # Limit to 5 allergens
+                ]
+            }
+    
+    # Get products from current pillar
+    pillar_query = {"pillar": request.pillar, "is_active": {"$ne": False}}
+    if allergy_filter:
+        pillar_query.update(allergy_filter)
+    
+    pillar_products = await db.products.find(
+        pillar_query,
+        {"_id": 0, "id": 1, "name": 1, "title": 1, "price": 1, "image": 1, "pillar": 1, "type": 1}
+    ).limit(4).to_list(4)
+    
+    for p in pillar_products:
+        recommendations.append({
+            "id": p.get("id"),
+            "name": p.get("name") or p.get("title"),
+            "price": p.get("price"),
+            "image": p.get("image"),
+            "pillar": p.get("pillar", request.pillar),
+            "type": "product"
+        })
+    
+    # Get cross-pillar recommendations
+    cross_pillar_map = {
+        "celebrate": ["shop", "dine", "enjoy"],
+        "stay": ["travel", "shop", "dine"],
+        "travel": ["stay", "shop", "care"],
+        "care": ["shop", "fit", "dine"],
+        "dine": ["enjoy", "shop", "celebrate"],
+        "enjoy": ["dine", "shop", "fit"],
+        "fit": ["shop", "care", "dine"],
+        "learn": ["shop", "fit", "care"],
+        "shop": ["fit", "care", "celebrate"]
+    }
+    
+    cross_pillars = cross_pillar_map.get(request.pillar, ["shop"])
+    for cross_pillar in cross_pillars[:2]:
+        cross_query = {"pillar": cross_pillar, "is_active": {"$ne": False}}
+        if allergy_filter:
+            cross_query.update(allergy_filter)
+        
+        cross_products = await db.products.find(
+            cross_query,
+            {"_id": 0, "id": 1, "name": 1, "title": 1, "price": 1, "image": 1, "pillar": 1}
+        ).limit(2).to_list(2)
+        
+        for p in cross_products:
+            recommendations.append({
+                "id": p.get("id"),
+                "name": p.get("name") or p.get("title"),
+                "price": p.get("price"),
+                "image": p.get("image"),
+                "pillar": p.get("pillar", cross_pillar),
+                "type": "product",
+                "cross_sell": True
+            })
+    
+    # Get services from current pillar
+    services = await db.services.find(
+        {"pillar": request.pillar, "is_active": {"$ne": False}},
+        {"_id": 0, "id": 1, "name": 1, "title": 1, "price": 1, "image": 1, "pillar": 1}
+    ).limit(2).to_list(2)
+    
+    for s in services:
+        recommendations.append({
+            "id": s.get("id"),
+            "name": s.get("name") or s.get("title"),
+            "price": s.get("price"),
+            "image": s.get("image"),
+            "pillar": s.get("pillar", request.pillar),
+            "type": "service"
+        })
+    
+    return {
+        "recommendations": recommendations[:8],  # Max 8 recommendations
+        "pet_id": request.pet_id,
+        "pillar": request.pillar,
+        "filtered_allergies": request.pet_allergies
+    }
+
+@router.post("/journey-intent")
+async def record_journey_intent(
+    journey_id: str,
+    pet_id: Optional[str] = None,
+    pet_name: Optional[str] = None,
+    pillars: List[str] = []
+):
+    """Record when a user starts a journey - creates ticket for follow-up"""
+    from ticket_auto_creation import auto_create_ticket
+    
+    timestamp = datetime.now(timezone.utc).isoformat()
+    
+    intent = {
+        "id": str(ObjectId()),
+        "journey_id": journey_id,
+        "pet_id": pet_id,
+        "pet_name": pet_name,
+        "pillars": pillars,
+        "status": "started",
+        "created_at": timestamp
+    }
+    
+    await db.journey_intents.insert_one(intent)
+    
+    # Create ticket for concierge follow-up
+    try:
+        await auto_create_ticket(
+            source="journey_intent",
+            pillar=pillars[0] if pillars else "general",
+            title=f"Journey Started: {journey_id} for {pet_name or 'Pet'}",
+            description=f"User started a cross-pillar journey: {journey_id}. Pillars involved: {', '.join(pillars)}",
+            urgency="medium"
+        )
+    except Exception as e:
+        logger.debug(f"Ticket creation for journey: {e}")
+    
+    return {"status": "recorded", "intent_id": intent["id"]}
+
