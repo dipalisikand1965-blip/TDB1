@@ -336,11 +336,21 @@ const CarePage = () => {
     
     setSubmitting(true);
     try {
+      // Multi-pet support
+      const petsData = selectedPets.length > 0 
+        ? selectedPets.map(p => ({ id: p.id || p._id, name: p.name, breed: p.breed, species: p.species || 'dog' }))
+        : formData.pet_name ? [{ id: 'manual', name: formData.pet_name, breed: formData.pet_breed }] : [];
+      
       const requestPayload = {
         care_type: selectedType,
-        pet_id: selectedPet?.id !== 'manual' ? selectedPet?.id : null,
-        pet_name: selectedPet?.name || formData.pet_name || '',
-        pet_breed: selectedPet?.breed || formData.pet_breed || '',
+        // Multi-pet support
+        pets: petsData,
+        pet_count: petsData.length,
+        is_multi_pet: petsData.length > 1,
+        // Legacy fields for backward compatibility
+        pet_id: petsData[0]?.id !== 'manual' ? petsData[0]?.id : null,
+        pet_name: petsData.map(p => p.name).join(', ') || formData.pet_name || '',
+        pet_breed: petsData[0]?.breed || formData.pet_breed || '',
         ...formData,
         user_email: user?.email || formData.contact_email,
         user_phone: user?.phone || formData.contact_phone,
