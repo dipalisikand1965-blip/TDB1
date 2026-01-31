@@ -1046,35 +1046,69 @@ const EnjoyPage = () => {
                 </p>
               </Card>
 
-              {/* Pet Selection - Works for both logged in and guest users */}
+              {/* Pet Selection - Multi-pet support for both logged in and guest users */}
               <div>
-                <Label className="mb-2 block">Your Pet's Details</Label>
+                <Label className="mb-2 block">Which pet(s) are joining? <span className="text-orange-600 text-sm">(Select one or more)</span></Label>
                 {userPets.length > 0 ? (
                   <div className="space-y-2">
-                    {userPets.map((pet) => (
-                      <button
-                        key={pet.id}
-                        onClick={() => setSelectedPet(pet)}
-                        className={`w-full p-3 rounded-lg border-2 text-left flex items-center gap-3 transition-all ${
-                          selectedPet?.id === pet.id ? 'border-orange-500 bg-orange-50' : 'border-gray-200 hover:border-orange-200'
-                        }`}
-                      >
-                        <div className="w-10 h-10 rounded-full overflow-hidden bg-orange-100 flex items-center justify-center">
-                          <img 
-                            src={getPetPhotoUrl(pet)} 
-                            alt={pet.name}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <div>
-                          <p className="font-medium">{pet.name}</p>
-                          <p className="text-sm text-gray-500">{pet.breed}</p>
-                        </div>
-                        {selectedPet?.id === pet.id && (
-                          <CheckCircle className="w-5 h-5 text-orange-600 ml-auto" />
+                    {/* Select/Clear All */}
+                    {userPets.length > 1 && (
+                      <div className="flex gap-2 mb-2">
+                        <Button 
+                          type="button" 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={handleSelectAllPets}
+                          className="text-xs"
+                        >
+                          Select All ({userPets.length})
+                        </Button>
+                        {selectedPets.length > 0 && (
+                          <Button 
+                            type="button" 
+                            variant="ghost" 
+                            size="sm" 
+                            onClick={handleClearAllPets}
+                            className="text-xs text-gray-500"
+                          >
+                            Clear
+                          </Button>
                         )}
-                      </button>
-                    ))}
+                      </div>
+                    )}
+                    {userPets.map((pet) => {
+                      const isSelected = selectedPets.some(p => (p.id || p._id) === (pet.id || pet._id));
+                      return (
+                        <button
+                          key={pet.id}
+                          type="button"
+                          onClick={() => handlePetToggle(pet)}
+                          className={`w-full p-3 rounded-lg border-2 text-left flex items-center gap-3 transition-all ${
+                            isSelected ? 'border-orange-500 bg-orange-50' : 'border-gray-200 hover:border-orange-200'
+                          }`}
+                        >
+                          <div className="w-10 h-10 rounded-full overflow-hidden bg-orange-100 flex items-center justify-center">
+                            <img 
+                              src={getPetPhotoUrl(pet)} 
+                              alt={pet.name}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                          <div>
+                            <p className="font-medium">{pet.name}</p>
+                            <p className="text-sm text-gray-500">{pet.breed}</p>
+                          </div>
+                          {isSelected && (
+                            <CheckCircle className="w-5 h-5 text-orange-600 ml-auto" />
+                          )}
+                        </button>
+                      );
+                    })}
+                    {selectedPets.length > 0 && (
+                      <p className="text-sm text-orange-600 mt-2">
+                        {selectedPets.length} pet{selectedPets.length > 1 ? 's' : ''} joining: {selectedPets.map(p => p.name).join(', ')}
+                      </p>
+                    )}
                   </div>
                 ) : (
                   <div className="space-y-3">
