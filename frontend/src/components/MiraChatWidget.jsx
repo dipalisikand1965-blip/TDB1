@@ -780,22 +780,45 @@ const MiraChatWidget = ({
                   ✨ Suggested for {selectedPet.name}
                 </p>
                 <div className="flex gap-2 overflow-x-auto pb-1">
-                  {petRecommendations.slice(0, 4).map(product => (
-                    <div 
-                      key={product.id}
-                      onClick={() => handleProductClick(product)}
-                      className="flex-shrink-0 w-24 bg-white rounded-lg p-2 shadow-sm cursor-pointer hover:shadow-md transition-all hover:scale-105"
-                    >
-                      {product.image && (
-                        <img src={product.image} alt={product.name} className="w-full h-14 rounded object-cover mb-1" />
-                      )}
-                      <p className="text-[10px] font-medium text-gray-800 truncate">{product.name}</p>
-                      <div className="flex items-center justify-between mt-0.5">
-                        <span className="text-[10px] text-purple-600 font-bold">₹{product.price}</span>
-                        <span className="text-[9px] text-purple-500">View →</span>
+                  {petRecommendations.slice(0, 4).map(product => {
+                    // Use fallback image if product image is a local path or missing
+                    const imageUrl = product.image && product.image.startsWith('http') 
+                      ? product.image 
+                      : product.images?.[0] || `https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop`;
+                    
+                    return (
+                      <div 
+                        key={product.id}
+                        className="flex-shrink-0 w-28 bg-white rounded-lg p-2 shadow-sm cursor-pointer hover:shadow-md transition-all hover:scale-105 border border-purple-100"
+                      >
+                        <img 
+                          src={imageUrl} 
+                          alt={product.name} 
+                          className="w-full h-16 rounded object-cover mb-1.5"
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop';
+                          }}
+                        />
+                        <p className="text-[10px] font-medium text-gray-800 truncate">{product.name}</p>
+                        <p className="text-[10px] text-purple-600 font-bold mb-1">₹{product.price}</p>
+                        <div className="flex gap-1">
+                          <button
+                            onClick={(e) => { e.stopPropagation(); handleProductClick(product); }}
+                            className="flex-1 px-1 py-1 bg-purple-100 text-purple-700 rounded text-[9px] font-medium hover:bg-purple-200"
+                          >
+                            View
+                          </button>
+                          <button
+                            onClick={(e) => { e.stopPropagation(); addToCart(product); toast.success('Added!'); }}
+                            className="flex-1 px-1 py-1 bg-purple-600 text-white rounded text-[9px] font-medium hover:bg-purple-700"
+                          >
+                            Add
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             )}
