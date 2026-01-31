@@ -851,7 +851,7 @@ All 14 pillar admin managers are already implemented and integrated:
 - **Admin**: `aditya` / `lola4304`
 
 ## Deployment
-- **Preview URL**: https://aijourney-revamp.preview.emergentagent.com
+- **Preview URL**: https://petchat.preview.emergentagent.com
 - **Production**: thedoggycompany.in (deploying tomorrow)
 
 ---
