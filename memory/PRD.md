@@ -2,6 +2,27 @@
 
 ## Latest Update: January 31, 2026 - Session 4
 
+### ✅ MIRA CHAT UX FIXES - COMPLETED (Jan 31, 2026)
+
+**Issues Fixed**:
+1. **Markdown rendering** - Added ReactMarkdown to MiraChatWidget.jsx. Bold text (`**text**`) now renders correctly instead of showing raw `**` characters.
+2. **Cart z-index** - Updated Sheet component (cart sidebar) z-index from `z-50` to `z-[10001]`. Cart now appears ABOVE Mira chat (z-9999).
+3. **Duplicate WhatsApp buttons** - Removed all WhatsApp buttons from Footer.jsx. WhatsApp is now ONLY in the left floating "Ask Concierge" stack.
+4. **Auto-flow ticket capture** - Products recommended by Mira are now saved to ticket messages along with conversation history.
+
+**Files Modified**:
+- `/app/frontend/src/components/MiraChatWidget.jsx` - Added ReactMarkdown import and rendering (lines 23, 949-968)
+- `/app/frontend/src/components/ui/sheet.jsx` - Updated z-index to 10001 (lines 19, 28)
+- `/app/frontend/src/components/Footer.jsx` - Removed 3 WhatsApp buttons (mobile CTA, desktop CTA, social icon)
+- `/app/backend/mira_routes.py` - Added products_recommended to ticket messages (lines 3061-3090)
+
+**Testing Results (Iteration 154)**:
+- Markdown rendering: PASS
+- Cart z-index: PASS
+- WhatsApp consolidation: PASS (only in Ask Concierge now)
+
+---
+
 ### ✅ SERVICE TAGGING - COMPLETED (Jan 31, 2026)
 
 **Task**: Tag all services with `base_tags` using AI script (similar to products)
