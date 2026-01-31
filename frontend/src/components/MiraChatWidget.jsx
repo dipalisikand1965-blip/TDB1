@@ -663,24 +663,32 @@ const MiraChatWidget = ({
       `}
       data-testid="mira-chat-widget"
     >
-      <div className={`w-[360px] max-w-[calc(100vw-48px)] bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col transition-all duration-300 ${isMinimized ? 'h-16' : 'h-[500px] max-h-[80vh]'}`}>
+      {/* Chat container - MOBILE RESPONSIVE */}
+      {/* Mobile: Full width, rounded top only */}
+      {/* Desktop: Fixed width 360px, fully rounded */}
+      <div className={`
+        w-full sm:w-[380px] 
+        bg-white shadow-2xl overflow-hidden flex flex-col transition-all duration-300
+        rounded-t-2xl sm:rounded-2xl
+        ${isMinimized ? 'h-16' : 'h-[85vh] sm:h-[550px] sm:max-h-[80vh]'}
+      `}>
         {/* Header */}
         <div 
-          className={`bg-gradient-to-r ${config.color} text-white p-4 cursor-pointer flex items-center justify-between shrink-0`}
+          className={`bg-gradient-to-r ${config.color} text-white p-3 sm:p-4 cursor-pointer flex items-center justify-between shrink-0`}
           onClick={() => isMinimized && setIsMinimized(false)}
         >
-          <div className="flex items-center gap-3">
-            <div className={`w-10 h-10 bg-white/20 rounded-full flex items-center justify-center ${isListening ? 'animate-pulse ring-2 ring-cyan-400' : ''}`}>
-              <PawPrint className="w-5 h-5" />
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className={`w-9 h-9 sm:w-10 sm:h-10 bg-white/20 rounded-full flex items-center justify-center ${isListening ? 'animate-pulse ring-2 ring-cyan-400' : ''}`}>
+              <PawPrint className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
             <div>
-              <p className="font-semibold">Mira</p>
-              <p className="text-xs opacity-80">
-                {isListening ? '🎤 Listening...' : isSpeaking ? '🔊 Speaking...' : 'Your Pet Concierge'}
+              <p className="font-semibold text-sm sm:text-base">Mira</p>
+              <p className="text-[10px] sm:text-xs opacity-80">
+                {isListening ? '🎤 Listening...' : isSpeaking ? '🔊 Speaking...' : 'Your Pet Concierge®'}
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             {/* Pulse Voice Button */}
             {speechSupported && (
               <button
