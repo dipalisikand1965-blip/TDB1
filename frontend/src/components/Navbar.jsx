@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { ShoppingCart, Menu, X, Search, User, ChevronDown, Sparkles, PawPrint, LogOut, Mic, MicOff, Loader2 } from 'lucide-react';
+import { ShoppingCart, Menu, X, Search, User, ChevronDown, ChevronUp, Sparkles, PawPrint, LogOut, Mic, MicOff, Loader2 } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { intelligentSearch } from '../utils/unifiedApi';
@@ -189,6 +189,9 @@ const Navbar = () => {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [petSoulScore, setPetSoulScore] = useState(0);
   const [primaryPet, setPrimaryPet] = useState(null);
+  const [allPets, setAllPets] = useState([]);
+  const [showPetDropdown, setShowPetDropdown] = useState(false);
+  const petDropdownRef = useRef(null);
   const [showSearchSuggestions, setShowSearchSuggestions] = useState(false);
   const [searchSuggestions, setSearchSuggestions] = useState([]);
   const [showVoiceWizard, setShowVoiceWizard] = useState(false);
