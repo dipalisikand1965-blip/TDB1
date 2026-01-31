@@ -1174,6 +1174,10 @@ async def create_service_desk_ticket(
             "allergies": pet.get("allergies") or pet_prefs.get("allergies", [])
         })
     
+    # Generate a meaningful subject from the message
+    action_type_display = action_details.get("action_type", "request").replace("_", " ").title()
+    subject = f"{action_type_display}: {message[:80]}" if message else action_type_display
+    
     ticket_doc = {
         "ticket_id": ticket_id,
         "mira_session_id": session_id,
@@ -1183,6 +1187,9 @@ async def create_service_desk_ticket(
         "pillar": pillar,
         "priority": action_details.get("priority", "medium"),
         "status": "pending",
+        
+        # Subject for display in Service Desk
+        "subject": subject,
         
         # Request details
         "original_request": message,
