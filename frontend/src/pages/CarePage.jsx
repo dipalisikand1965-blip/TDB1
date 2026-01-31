@@ -444,8 +444,8 @@ const CarePage = () => {
       {/* SEO Meta Tags */}
       <SEOHead page="care" path="/care" />
       
-      {/* === HERO SECTION === */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-rose-900 via-pink-800 to-red-900 text-white">
+      {/* === HERO SECTION - Wellness Transformation Theme === */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-teal-900 via-emerald-800 to-green-900 text-white">
         {/* Background Image */}
         <div className="absolute inset-0">
           <img 
@@ -453,7 +453,7 @@ const CarePage = () => {
             alt="Pet Care" 
             className="w-full h-full object-cover opacity-30 transition-opacity duration-1000"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-rose-900/90 via-pink-800/80 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-teal-900/90 via-emerald-800/80 to-transparent" />
         </div>
         
         {/* Content */}
@@ -461,21 +461,21 @@ const CarePage = () => {
           <div className="max-w-2xl">
             {/* Badge */}
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
-              <Heart className="w-4 h-4 text-pink-300 fill-current" />
-              <span className="text-sm font-medium">Profile-First Pet Wellbeing</span>
+              <Sparkles className="w-4 h-4 text-emerald-300" />
+              <span className="text-sm font-medium">The Wellness Transformation</span>
             </div>
             
             {/* Main Headline */}
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-              Care That
+              Where Wellness
               <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-300 to-yellow-300">
-                Knows Your Pet
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-teal-200">
+                Meets Wag
               </span>
             </h1>
             
             <p className="text-lg md:text-xl text-white/80 mb-8 max-w-lg">
-              From grooming to training, walks to wellness — we understand your pet&apos;s unique needs and connect you with the right care, every time.
+              Your pet&apos;s spa day starts here. From pampering grooming sessions to preventive care, we make wellness feel like a treat.
             </p>
             
             {/* CTA Buttons */}
@@ -483,11 +483,11 @@ const CarePage = () => {
               <Button 
                 onClick={handleStartCare}
                 size="lg"
-                className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-8 py-6 text-lg rounded-full shadow-2xl shadow-pink-500/30 transition-all hover:scale-105"
+                className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white px-8 py-6 text-lg rounded-full shadow-2xl shadow-emerald-500/30 transition-all hover:scale-105"
                 data-testid="get-care-btn"
               >
-                <Play className="w-5 h-5 mr-2 fill-current" />
-                Get Care Now
+                <Sparkles className="w-5 h-5 mr-2" />
+                Start Wellness Journey
               </Button>
               <Button 
                 onClick={scrollToProducts}
@@ -504,16 +504,16 @@ const CarePage = () => {
             {/* Trust Indicators */}
             <div className="flex flex-wrap gap-6 mt-12">
               <div className="flex items-center gap-2 text-white/70">
-                <Shield className="w-5 h-5 text-green-400" />
-                <span className="text-sm">Profile-First Approach</span>
+                <Shield className="w-5 h-5 text-emerald-400" />
+                <span className="text-sm">Certified Groomers</span>
               </div>
               <div className="flex items-center gap-2 text-white/70">
-                <Users className="w-5 h-5 text-blue-400" />
-                <span className="text-sm">Verified Partners</span>
+                <Trophy className="w-5 h-5 text-amber-400" />
+                <span className="text-sm">10,000+ Spa Sessions</span>
               </div>
               <div className="flex items-center gap-2 text-white/70">
                 <Heart className="w-5 h-5 text-pink-400" />
-                <span className="text-sm">They Know Your Pet</span>
+                <span className="text-sm">Vet-Approved Products</span>
               </div>
             </div>
           </div>
@@ -522,6 +522,48 @@ const CarePage = () => {
         {/* Scroll Indicator */}
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce">
           <ChevronDown className="w-6 h-6 text-white/50" />
+        </div>
+      </div>
+
+      {/* ==================== SOCIAL PROOF BANNER ==================== */}
+      <div className="bg-white border-b border-gray-100 py-3">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6">
+          <FitnessJourneyCounter />
+          <RotatingSocialProof 
+            petName={userPets[0]?.name} 
+            breedName={userPets[0]?.breed} 
+          />
+        </div>
+      </div>
+
+      {/* ==================== CONVERSATIONAL ENTRY + QUICK WIN ==================== */}
+      <div className="py-10 bg-gradient-to-b from-gray-50/50 to-white">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-6 items-stretch">
+            <ConversationalEntry 
+              pillar="care"
+              petName={userPets[0]?.name}
+              onGoalSelect={(goal, message) => {
+                navigate(`/mira?context=care_${goal.id}&preset=${encodeURIComponent(message)}`);
+              }}
+            />
+            <QuickWinTip
+              pillar="care"
+              petName={userPets[0]?.name}
+              petBreed={userPets[0]?.breed}
+              petAge={userPets[0]?.age}
+              onActionClick={(tip) => {
+                if (tip?.actionType === 'navigate' && tip?.actionUrl) {
+                  navigate(tip.actionUrl);
+                } else if (tip?.actionType === 'checklist') {
+                  // Show care checklist
+                  toast({ title: tip.action, description: 'Care checklist coming soon!' });
+                } else {
+                  toast({ title: tip.action, description: 'Coming soon!' });
+                }
+              }}
+            />
+          </div>
         </div>
       </div>
 
