@@ -1278,11 +1278,16 @@ async def create_service_desk_ticket(
     
     # ==================== UNIFIED FLOW: ADD TO ADMIN_NOTIFICATIONS ====================
     notification_id = f"NOTIF-{uuid.uuid4().hex[:8].upper()}"
+    
+    # Create a meaningful notification title based on the category
+    category_display = action_details.get("category", "general").replace("_", " ").title()
+    notification_title = f"Mira AI Request: {category_display}"
+    
     await db.admin_notifications.insert_one({
         "id": notification_id,
-        "type": f"mira_{action_details.get('action_type', 'request')}",
+        "type": f"mira_{action_details.get('category', 'request')}",
         "pillar": pillar,
-        "title": f"Mira AI Request: {action_details.get('action_type', 'General').replace('_', ' ').title()}",
+        "title": notification_title,
         "message": f"{user.get('name') if user else 'Guest'} requested via Mira AI: {message[:100]}...",
         "priority": action_details.get("priority", "medium"),
         "urgency": action_details.get("priority", "medium"),
