@@ -188,8 +188,8 @@ const Footer = () => {
             )}
           </div>
           
-          {/* Policies - Compact row */}
-          <div className="flex flex-wrap justify-center gap-x-3 gap-y-2 text-xs text-gray-500 mb-4">
+          {/* Policies - Compact rows */}
+          <div className="flex flex-wrap justify-center gap-x-3 gap-y-2 text-xs text-gray-500 mb-3">
             <Link to="/shipping-policy" className="hover:text-pink-400">Shipping</Link>
             <span className="text-gray-700">•</span>
             <Link to="/refund-policy" className="hover:text-pink-400">Refunds</Link>
@@ -197,6 +197,11 @@ const Footer = () => {
             <Link to="/privacy-policy" className="hover:text-pink-400">Privacy</Link>
             <span className="text-gray-700">•</span>
             <Link to="/terms" className="hover:text-pink-400">Terms</Link>
+          </div>
+          <div className="flex flex-wrap justify-center gap-x-3 gap-y-2 text-xs text-gray-500 mb-4">
+            <Link to="/franchise" className="hover:text-pink-400">Own A Bakery</Link>
+            <span className="text-gray-700">•</span>
+            <Link to="/partner" className="hover:text-pink-400">Partner With Us</Link>
           </div>
           
           {/* Copyright */}
