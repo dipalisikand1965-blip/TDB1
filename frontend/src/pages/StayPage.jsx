@@ -449,6 +449,7 @@ const StayPage = () => {
               }}
             />
             <QuickWinTip
+              pillar="stay"
               petName={userPets[0]?.name}
               petBreed={userPets[0]?.breed}
               petAge={userPets[0]?.age}
