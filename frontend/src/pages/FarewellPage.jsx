@@ -566,13 +566,8 @@ const FarewellPage = () => {
         </div>
       </section>
 
-      {/* Mira Contextual Panel - Fixed Position */}
-      <div className="hidden lg:block fixed right-4 top-24 w-72 z-30">
-        <MiraContextPanel pillar="farewell" />
-      </div>
-      <div className="lg:hidden fixed bottom-20 right-4 w-80 max-w-[calc(100vw-2rem)] z-30">
-        <MiraContextPanel pillar="farewell" position="bottom" />
-      </div>
+      {/* Mira Floating Chat Widget */}
+      <MiraChatWidget pillar="farewell" />
 
       {/* Service Request Modal */}
       <Dialog open={showServiceModal} onOpenChange={setShowServiceModal}>

@@ -888,13 +888,8 @@ const PaperworkPage = () => {
         </DialogContent>
       </Dialog>
       
-      {/* Mira Contextual Panel */}
-      <div className="hidden lg:block fixed right-4 top-24 w-72 z-30">
-        <MiraContextPanel pillar="paperwork" />
-      </div>
-      <div className="lg:hidden fixed bottom-20 right-4 w-80 max-w-[calc(100vw-2rem)] z-30">
-        <MiraContextPanel pillar="paperwork" position="bottom" />
-      </div>
+      {/* Mira Floating Chat Widget */}
+      <MiraChatWidget pillar="paperwork" />
       
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="paperwork" position="bottom-left" />

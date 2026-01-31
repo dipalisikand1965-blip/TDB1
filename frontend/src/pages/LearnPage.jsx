@@ -389,13 +389,8 @@ const LearnPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white" data-testid="learn-page">
-      {/* Mira Contextual Panel - Fixed Position like other pillars */}
-      <div className="hidden lg:block fixed right-4 top-24 w-72 z-30">
-        <MiraContextPanel pillar="learn" />
-      </div>
-      <div className="lg:hidden fixed bottom-20 right-4 w-80 max-w-[calc(100vw-2rem)] z-30">
-        <MiraContextPanel pillar="learn" position="bottom" />
-      </div>
+      {/* Mira Floating Chat Widget */}
+      <MiraChatWidget pillar="learn" />
 
       {/* Hero Section */}
       <div className="relative h-[500px] overflow-hidden">
