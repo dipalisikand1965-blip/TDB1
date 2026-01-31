@@ -336,6 +336,7 @@ const FitPage = () => {
   const [bundles, setBundles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [heroIndex, setHeroIndex] = useState(0);
+  const [productsToShow, setProductsToShow] = useState(10); // Load More state
   
   // UI states
   const [showDetailModal, setShowDetailModal] = useState(false);
