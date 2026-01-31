@@ -3295,6 +3295,172 @@ async def get_quick_prompts(pillar: str):
         "prompts": prompts
     }
 
+
+@router.get("/pet-recommendations/{pet_id}")
+async def get_pet_recommendations(
+    pet_id: str,
+    pillar: str = "general",
+    limit: int = 6
+):
+    """
+    Get personalized product recommendations for a specific pet.
+    Uses pet's soul profile (breed, age, health conditions) to suggest relevant products.
+    """
+    db = get_db()
+    
+    # Fetch pet details
+    pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
+    if not pet:
+        return {"recommendations": [], "message": "Pet not found"}
+    
+    # Build search criteria based on pet profile
+    pet_breed = pet.get("breed", "").lower()
+    pet_age = int(pet.get("age", 0)) if pet.get("age") else 0
+    pet_size = pet.get("size", "medium").lower()
+    pet_health_conditions = pet.get("health_conditions", [])
+    
+    # Determine age category
+    age_category = "puppy" if pet_age < 1 else "senior" if pet_age > 7 else "adult"
+    
+    # Build product query
+    query = {
+        "$or": [
+            {"pillar": pillar},
+            {"category": pillar},
+            {"tags": {"$in": [pillar]}}
+        ]
+    }
+    
+    # Get products for this pillar
+    products = await db.products.find(query, {"_id": 0}).limit(50).to_list(50)
+    
+    # Score and rank products based on pet profile
+    scored_products = []
+    for product in products:
+        score = 0
+        tags = [t.lower() for t in product.get("tags", [])]
+        name = product.get("name", "").lower()
+        desc = product.get("description", "").lower()
+        
+        # Score based on breed match
+        if pet_breed and (pet_breed in name or pet_breed in desc or pet_breed in tags):
+            score += 10
+        
+        # Score based on size
+        if pet_size in tags or pet_size in name:
+            score += 5
+        
+        # Score based on age category
+        if age_category in tags or age_category in name:
+            score += 5
+        if age_category == "senior" and ("senior" in tags or "orthopedic" in tags or "comfort" in tags):
+            score += 8
+        if age_category == "puppy" and ("puppy" in tags or "training" in tags or "gentle" in tags):
+            score += 8
+        
+        # Score based on health conditions
+        for condition in pet_health_conditions:
+            if condition.lower() in tags or condition.lower() in desc:
+                score += 7
+        
+        # Pillar-specific scoring
+        pillar_keywords = {
+            "stay": ["travel", "carrier", "portable", "comfort", "bed"],
+            "care": ["grooming", "health", "wellness", "shampoo", "spa"],
+            "fit": ["exercise", "fitness", "agility", "activity", "training"],
+            "celebrate": ["cake", "party", "birthday", "treat", "celebration"],
+            "dine": ["food", "meal", "nutrition", "diet", "healthy"],
+            "enjoy": ["toy", "play", "fun", "outdoor", "ball"],
+            "learn": ["training", "course", "education", "book", "guide"]
+        }
+        
+        for keyword in pillar_keywords.get(pillar, []):
+            if keyword in tags or keyword in name or keyword in desc:
+                score += 3
+        
+        # Add base relevance score if product has good data
+        if product.get("image") and product.get("price"):
+            score += 2
+        
+        product["relevance_score"] = score
+        scored_products.append(product)
+    
+    # Sort by relevance score and return top products
+    scored_products.sort(key=lambda x: x.get("relevance_score", 0), reverse=True)
+    
+    # Remove internal scoring from response
+    recommendations = []
+    for p in scored_products[:limit]:
+        p.pop("relevance_score", None)
+        recommendations.append(p)
+    
+    return {
+        "pet_id": pet_id,
+        "pet_name": pet.get("name", "Your pet"),
+        "pillar": pillar,
+        "recommendations": recommendations,
+        "personalization_factors": {
+            "breed": pet_breed,
+            "age_category": age_category,
+            "size": pet_size,
+            "health_conditions": pet_health_conditions
+        }
+    }
+
+
+@router.get("/context/{pillar}")
+async def get_mira_context(
+    pillar: str,
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Get personalized Mira context for a pillar.
+    Returns pillar-specific notes and proactive suggestions.
+    """
+    db = get_db()
+    
+    user_id = None
+    if authorization and authorization.startswith("Bearer "):
+        try:
+            token = authorization.split(" ")[1]
+            decoded = jwt.decode(token, os.environ.get("JWT_SECRET", "your-secret-key"), algorithms=["HS256"])
+            user_id = decoded.get("user_id")
+        except:
+            pass
+    
+    pillar_info = PILLARS.get(pillar, PILLARS.get("advisory"))
+    
+    context = {
+        "pillar": pillar,
+        "pillar_name": pillar_info.get("name", pillar.title()),
+        "pillar_icon": pillar_info.get("icon", "📋"),
+        "pillar_note": None,
+        "proactive_suggestions": []
+    }
+    
+    # If user is logged in, personalize the context
+    if user_id:
+        # Get user's recent activity in this pillar
+        recent_tickets = await db.mira_tickets.find(
+            {"user_id": user_id, "pillar": pillar},
+            {"_id": 0}
+        ).sort("created_at", -1).limit(5).to_list(5)
+        
+        # Get user's pets
+        pets = await db.pets.find({"user_id": user_id}, {"_id": 0}).to_list(10)
+        
+        if pets:
+            pet_names = [p.get("name", "") for p in pets if p.get("name")]
+            if pet_names:
+                context["pillar_note"] = f"Welcome back! Ready to explore {pillar_info['name']} options for {', '.join(pet_names[:2])}?"
+        
+        # Add proactive suggestions based on activity
+        if recent_tickets:
+            context["proactive_suggestions"].append(f"You recently asked about {pillar} - need any follow-up?")
+    
+    return context
+
+
 @router.get("/tickets")
 async def list_mira_tickets(
     status: Optional[str] = None,
