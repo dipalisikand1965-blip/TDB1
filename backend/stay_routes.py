@@ -1229,6 +1229,87 @@ async def seed_stay_bundles(username: str = Depends(verify_admin)):
     return {"message": f"Seeded {seeded} stay bundles", "bundles_seeded": seeded}
 
 
+@stay_admin_router.get("/bundles")
+async def get_admin_stay_bundles(username: str = Depends(verify_admin)):
+    """Get all stay bundles for admin"""
+    bundles = await db.stay_bundles.find({}, {"_id": 0}).sort("created_at", -1).to_list(100)
+    return {"bundles": bundles, "count": len(bundles)}
+
+
+@stay_admin_router.delete("/bundles/{bundle_id}")
+async def delete_stay_bundle(bundle_id: str, username: str = Depends(verify_admin)):
+    """Delete a stay bundle"""
+    result = await db.stay_bundles.delete_one({"id": bundle_id})
+    if result.deleted_count == 0:
+        raise HTTPException(status_code=404, detail="Bundle not found")
+    return {"message": "Bundle deleted", "id": bundle_id}
+
+
+@stay_admin_router.post("/bundles")
+async def create_stay_bundle(bundle: dict, username: str = Depends(verify_admin)):
+    """Create a new stay bundle"""
+    bundle_id = f"stay-bundle-{str(ObjectId())[:8]}"
+    now = get_utc_timestamp()
+    
+    bundle_doc = {
+        "id": bundle_id,
+        "name": bundle.get("name", ""),
+        "description": bundle.get("description", ""),
+        "price": float(bundle.get("price", 0)),
+        "original_price": float(bundle.get("original_price", 0)) if bundle.get("original_price") else None,
+        "image": bundle.get("image", ""),
+        "category": bundle.get("category", "travel"),
+        "items": bundle.get("items", []),
+        "featured": bundle.get("featured", True),
+        "active": bundle.get("active", True),
+        "paw_reward_points": int(bundle.get("paw_reward_points", 0)),
+        "is_birthday_perk": bundle.get("is_birthday_perk", False),
+        "birthday_discount_percent": bundle.get("birthday_discount_percent"),
+        "created_at": now,
+        "updated_at": now,
+        "created_by": username
+    }
+    
+    await db.stay_bundles.insert_one(bundle_doc)
+    return {"message": "Bundle created", "id": bundle_id, "bundle": bundle_doc}
+
+
+@stay_admin_router.put("/bundles/{bundle_id}")
+async def update_stay_bundle(bundle_id: str, bundle: dict, username: str = Depends(verify_admin)):
+    """Update a stay bundle"""
+    now = get_utc_timestamp()
+    
+    update_doc = {
+        "name": bundle.get("name"),
+        "description": bundle.get("description"),
+        "price": float(bundle.get("price", 0)),
+        "original_price": float(bundle.get("original_price", 0)) if bundle.get("original_price") else None,
+        "image": bundle.get("image"),
+        "category": bundle.get("category"),
+        "items": bundle.get("items", []),
+        "featured": bundle.get("featured", True),
+        "active": bundle.get("active", True),
+        "paw_reward_points": int(bundle.get("paw_reward_points", 0)),
+        "is_birthday_perk": bundle.get("is_birthday_perk", False),
+        "birthday_discount_percent": bundle.get("birthday_discount_percent"),
+        "updated_at": now,
+        "updated_by": username
+    }
+    
+    # Remove None values
+    update_doc = {k: v for k, v in update_doc.items() if v is not None}
+    
+    result = await db.stay_bundles.update_one(
+        {"id": bundle_id},
+        {"$set": update_doc}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Bundle not found")
+    
+    return {"message": "Bundle updated", "id": bundle_id}
+
+
 @stay_admin_router.post("/properties/{property_id}/paw-reward")
 async def update_property_paw_reward(
     property_id: str, 
