@@ -418,8 +418,15 @@ const MiraChatWidget = ({
     // Fix "Mira" pronunciation to "Meera" (phonetic spelling)
     cleanText = cleanText.replace(/\bMira\b/gi, 'Meera');
     
-    // Fix "concierge" pronunciation to "con-see-airzh" (phonetic spelling)
-    cleanText = cleanText.replace(/concierge®?/gi, 'con-see-airzh');
+    // Fix "concierge" pronunciation - replace with phonetic spelling
+    // Must handle "pet concierge", "your concierge", "concierge®" etc.
+    cleanText = cleanText
+      .replace(/pet concierge®?/gi, 'pet con-see-airzh')
+      .replace(/your concierge®?/gi, 'your con-see-airzh')
+      .replace(/our concierge®?/gi, 'our con-see-airzh')
+      .replace(/the concierge®?/gi, 'the con-see-airzh')
+      .replace(/concierge®? team/gi, 'con-see-airzh team')
+      .replace(/\bconcierge®?\b/gi, 'con-see-airzh');
     
     const utterance = new SpeechSynthesisUtterance(cleanText);
     utterance.rate = 0.95;  // Slightly slower for clarity
