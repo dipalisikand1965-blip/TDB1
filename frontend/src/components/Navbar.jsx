@@ -533,7 +533,7 @@ const Navbar = () => {
               </div>
             </Link>
 
-            {/* Search Bar with Suggestions */}
+            {/* Search Bar with Voice + Suggestions */}
             <div className="flex-1 max-w-xl relative" ref={searchRef}>
               <form onSubmit={handleSearch}>
                 <div className="flex">
@@ -549,6 +549,16 @@ const Navbar = () => {
                     className="w-full px-4 py-2 text-sm text-gray-900 bg-white rounded-l-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                     data-testid="navbar-search-input"
                   />
+                  {/* Voice Wizard Button */}
+                  <button 
+                    type="button"
+                    onClick={toggleVoiceWizard}
+                    className={`px-3 transition-all ${isListening ? 'bg-red-500 animate-pulse' : 'bg-purple-400 hover:bg-purple-500'}`}
+                    title="Voice Service Wizard - Say what you need!"
+                    data-testid="voice-wizard-btn"
+                  >
+                    {isListening ? <MicOff className="w-5 h-5 text-white" /> : <Mic className="w-5 h-5 text-white" />}
+                  </button>
                   <button 
                     type="submit"
                     className="px-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-r-md transition-colors"
@@ -558,6 +568,52 @@ const Navbar = () => {
                   </button>
                 </div>
               </form>
+              
+              {/* Voice Wizard Modal */}
+              {showVoiceWizard && (
+                <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border border-purple-200 p-6 z-50">
+                  <div className="text-center">
+                    <div className={`w-20 h-20 mx-auto rounded-full flex items-center justify-center mb-4 transition-all ${
+                      isListening ? 'bg-red-100 animate-pulse' : 'bg-purple-100'
+                    }`}>
+                      {isListening ? (
+                        <Mic className="w-10 h-10 text-red-500 animate-bounce" />
+                      ) : (
+                        <Mic className="w-10 h-10 text-purple-500" />
+                      )}
+                    </div>
+                    <h3 className="text-lg font-bold text-gray-900 mb-2">
+                      {isListening ? 'Listening...' : 'Voice Service Wizard'}
+                    </h3>
+                    <p className="text-sm text-gray-600 mb-4">
+                      {isListening ? 'Speak now: "I need a groomer" or "Book a vet"' : 'Click the mic and tell me what you need'}
+                    </p>
+                    
+                    {/* Transcript */}
+                    {voiceTranscript && (
+                      <div className="bg-gray-50 rounded-lg p-3 mb-4">
+                        <p className="text-sm text-gray-700 italic">"{voiceTranscript}"</p>
+                      </div>
+                    )}
+                    
+                    {/* Quick Service Buttons */}
+                    <div className="flex flex-wrap gap-2 justify-center">
+                      <button onClick={() => processVoiceCommand('I need a groomer')} className="px-3 py-1.5 text-xs bg-pink-100 text-pink-700 rounded-full hover:bg-pink-200">Grooming</button>
+                      <button onClick={() => processVoiceCommand('I need a vet')} className="px-3 py-1.5 text-xs bg-rose-100 text-rose-700 rounded-full hover:bg-rose-200">Vet Care</button>
+                      <button onClick={() => processVoiceCommand('I need a trainer')} className="px-3 py-1.5 text-xs bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200">Training</button>
+                      <button onClick={() => processVoiceCommand('I need boarding')} className="px-3 py-1.5 text-xs bg-emerald-100 text-emerald-700 rounded-full hover:bg-emerald-200">Boarding</button>
+                      <button onClick={() => processVoiceCommand('I need a cake')} className="px-3 py-1.5 text-xs bg-amber-100 text-amber-700 rounded-full hover:bg-amber-200">Birthday Cake</button>
+                    </div>
+                    
+                    <button 
+                      onClick={() => { setShowVoiceWizard(false); setIsListening(false); recognitionRef.current?.stop(); }}
+                      className="mt-4 text-xs text-gray-500 hover:text-gray-700"
+                    >
+                      Close
+                    </button>
+                  </div>
+                </div>
+              )}
 
               {/* Search Suggestions Dropdown - Universal Search Results */}
               {showSearchSuggestions && searchSuggestions.length > 0 && (
