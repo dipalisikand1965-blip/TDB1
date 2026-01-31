@@ -3195,7 +3195,9 @@ What would you like to explore? 🐾"""
         conversation_history = request.history or []
         product_context = extract_product_needs_from_context(user_message, conversation_history)
         
-        if is_product_query or product_context["is_kit_request"]:
+        # Only search for products if user explicitly asks for products/kit
+        # Skip if this is just a service booking request (gather info first!)
+        if (is_product_query or product_context["is_kit_request"]) and not is_service_only:
             # Determine what to search for
             search_items = product_context["specific_items"] or product_context["kit_items"] or []
             search_pillar = product_context["target_pillar"] or pillar
