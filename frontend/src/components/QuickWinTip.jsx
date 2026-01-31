@@ -156,11 +156,7 @@ const QuickWinTip = ({
     fetchApiTips();
   }, [pillar]);
 
-  useEffect(() => {
-    selectTip();
-  }, [petName, petBreed, petAge, pillar, apiTips]);
-
-  const selectTip = () => {
+  const selectTip = React.useCallback(() => {
     setIsRefreshing(true);
     let tips = [];
     
