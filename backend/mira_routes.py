@@ -4224,7 +4224,7 @@ async def quick_book(
         token = authorization.split(" ")[1]
         try:
             import jwt
-            payload = jwt.decode(token, JWT_SECRET, algorithms=[ALGORITHM])
+            payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
             # Token uses 'sub' for email, not 'user_id'
             user_email = payload.get("sub") or payload.get("user_id")
             if user_email:
