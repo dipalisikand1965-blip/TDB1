@@ -94,6 +94,8 @@ const STAY_EXPERIENCES = [
 
 const StayPage = () => {
   const { addToCart } = useCart();
+  const { user, token } = useAuth();
+  const navigate = useNavigate();
   const [activeSection, setActiveSection] = useState('stays');
   const [properties, setProperties] = useState([]);
   const [bundles, setBundles] = useState([]);
@@ -102,6 +104,9 @@ const StayPage = () => {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('stays'); // 'stays' or 'boarding'
   const [propertiesToShow, setPropertiesToShow] = useState(8); // Load More state
+  const [heroIndex, setHeroIndex] = useState(0);
+  const [userPets, setUserPets] = useState([]);
+  const [selectedPets, setSelectedPets] = useState([]);
   const [filters, setFilters] = useState({
     city: '',
     propertyType: '',
