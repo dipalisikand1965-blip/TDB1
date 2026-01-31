@@ -12,7 +12,7 @@ import { createEnjoyRSVP, showUnifiedFlowSuccess, showUnifiedFlowError } from '.
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
-import MiraContextPanel from '../components/MiraContextPanel';
+import MiraChatWidget from '../components/MiraChatWidget';
 import ProductCard from '../components/ProductCard';
 import AdminQuickEdit from '../components/AdminQuickEdit';
 import { getPetPhotoUrl } from '../utils/petAvatar';

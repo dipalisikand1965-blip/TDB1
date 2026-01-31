@@ -19,7 +19,7 @@ import { API_URL } from '../utils/api';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import ProductCard from '../components/ProductCard';
 import SEOHead from '../components/SEOHead';
-import MiraContextPanel from '../components/MiraContextPanel';
+import MiraChatWidget from '../components/MiraChatWidget';
 
 // Product categories for Celebrate pillar
 const celebrateCategories = [
