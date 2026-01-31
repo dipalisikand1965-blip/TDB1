@@ -21,6 +21,7 @@ import SEOHead from '../components/SEOHead';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import MultiPetSelector from '../components/MultiPetSelector';
 import MiraPicksCarousel from '../components/MiraPicksCarousel';
+import PersonalizedPicks from '../components/PersonalizedPicks';
 import {
   Car, Train, Plane, Truck, MapPin, Calendar, Clock, PawPrint,
   Shield, Heart, CheckCircle, AlertTriangle, MessageCircle, Phone,
