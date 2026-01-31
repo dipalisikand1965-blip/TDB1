@@ -605,7 +605,15 @@ const MiraPage = () => {
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => navigate(-1)}
+                  onClick={() => {
+                    // Check if there's history to go back to
+                    if (window.history.length > 1) {
+                      navigate(-1);
+                    } else {
+                      // Fallback to dashboard or home
+                      navigate('/dashboard');
+                    }
+                  }}
                   className="w-10 h-10 rounded-full hover:bg-purple-100 transition-colors"
                   data-testid="mira-back-btn"
                 >
