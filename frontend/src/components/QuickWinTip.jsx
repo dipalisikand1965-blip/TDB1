@@ -136,19 +136,50 @@ const QuickWinTip = ({
 }) => {
   const [currentTip, setCurrentTip] = useState(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [apiTips, setApiTips] = useState([]);
+
+  // Fetch tips from API on mount/pillar change
+  useEffect(() => {
+    const fetchApiTips = async () => {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/engagement/tips?pillar=${pillar}`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.tips && data.tips.length > 0) {
+            setApiTips(data.tips);
+          }
+        }
+      } catch (error) {
+        console.debug('Tips API fetch:', error);
+      }
+    };
+    fetchApiTips();
+  }, [pillar]);
 
   useEffect(() => {
     selectTip();
-  }, [petName, petBreed, petAge, pillar]);
+  }, [petName, petBreed, petAge, pillar, apiTips]);
 
   const selectTip = () => {
     setIsRefreshing(true);
     let tips = [];
     
-    // PRIORITY 1: Get pillar-specific tips FIRST
-    const pillarTips = TIPS_DATABASE[pillar]?.general || [];
-    if (pillarTips.length > 0) {
-      tips = [...pillarTips];
+    // PRIORITY 1: Use API tips if available
+    if (apiTips.length > 0) {
+      tips = apiTips.map(t => ({
+        tip: t.tip,
+        action: t.action,
+        emoji: t.emoji || '💡',
+        actionType: t.action_type,
+        actionUrl: t.action_url,
+        checklistId: t.checklist_id
+      }));
+    } else {
+      // PRIORITY 2: Get pillar-specific tips from local database
+      const pillarTips = TIPS_DATABASE[pillar]?.general || [];
+      if (pillarTips.length > 0) {
+        tips = [...pillarTips];
+      }
     }
     
     // Only add breed/age tips if NO pillar tips or if pillar is 'fit' (generic)
