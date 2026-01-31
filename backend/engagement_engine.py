@@ -941,6 +941,182 @@ async def seed_engagement_defaults():
     return {"message": "Seeded", "stories": len(stories), "tips": len(tips)}
 
 
+@router.post("/seed-pillar-tips")
+async def seed_all_pillar_tips(force_refresh: bool = False):
+    """
+    Seed tips for ALL pillars with pillar-specific content.
+    Set force_refresh=true to delete and reseed all tips.
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    timestamp = datetime.now(timezone.utc)
+    
+    # COMPREHENSIVE PILLAR-SPECIFIC TIPS
+    all_tips = [
+        # ========== FIT PILLAR ==========
+        {"tip": "15-minute morning walks boost metabolism by 20%", "action": "Set reminder", "emoji": "🌅", "category": "weight", "pillar": "fit", "action_type": "link", "action_url": "/fit"},
+        {"tip": "Swimming burns 3x more calories than walking", "action": "Book session", "emoji": "🏊", "category": "weight", "pillar": "fit", "action_type": "navigate", "action_url": "/fit?type=swimming"},
+        {"tip": "Splitting meals into 3 portions aids digestion", "action": "View guide", "emoji": "🍽️", "category": "weight", "pillar": "fit", "action_type": "checklist", "checklist_id": "fit"},
+        {"tip": "Short 5-min training sessions work best for puppies", "action": "View tips", "emoji": "🎯", "category": "puppy", "pillar": "fit"},
+        {"tip": "Socialization before 16 weeks shapes lifelong behavior", "action": "Find groups", "emoji": "🐕", "category": "puppy", "pillar": "fit"},
+        {"tip": "Gentle stretching maintains joint flexibility", "action": "View exercises", "emoji": "🧘", "category": "senior", "pillar": "fit"},
+        {"tip": "Raised food bowls reduce neck strain in seniors", "action": "Shop bowls", "emoji": "🥣", "category": "senior", "pillar": "fit", "action_type": "navigate", "action_url": "/shop?category=senior"},
+        
+        # ========== STAY PILLAR ==========
+        {"tip": "Book pet-friendly stays 2 weeks ahead for best rates", "action": "Search stays", "emoji": "🏨", "category": "general", "pillar": "stay", "action_type": "navigate", "action_url": "/stay"},
+        {"tip": "Pack familiar bedding to help your pet feel at home", "action": "View checklist", "emoji": "🛏️", "category": "general", "pillar": "stay", "action_type": "checklist", "checklist_id": "stay"},
+        {"tip": "Request ground floor rooms for easier outdoor access", "action": "View tips", "emoji": "🚪", "category": "general", "pillar": "stay", "action_type": "checklist", "checklist_id": "stay"},
+        {"tip": "Check the property's pet policy before booking", "action": "View checklist", "emoji": "📋", "category": "general", "pillar": "stay", "action_type": "checklist", "checklist_id": "stay"},
+        {"tip": "Bring your pet's favorite blanket to reduce anxiety", "action": "Shop travel items", "emoji": "🧸", "category": "general", "pillar": "stay", "action_type": "navigate", "action_url": "/shop?category=travel"},
+        {"tip": "Ask about nearby vet clinics when booking", "action": "Find vets", "emoji": "🏥", "category": "general", "pillar": "stay", "action_type": "navigate", "action_url": "/care?type=vet"},
+        {"tip": "Bring waterproof mats for hotel room floors", "action": "Shop mats", "emoji": "💧", "category": "general", "pillar": "stay", "action_type": "navigate", "action_url": "/shop?category=travel"},
+        {"tip": "Pack portable food and water bowls", "action": "Shop accessories", "emoji": "🥣", "category": "general", "pillar": "stay", "action_type": "navigate", "action_url": "/shop?category=travel"},
+        
+        # ========== TRAVEL PILLAR ==========
+        {"tip": "Book cargo-approved crates 3 weeks before flights", "action": "Shop crates", "emoji": "✈️", "category": "general", "pillar": "travel", "action_type": "navigate", "action_url": "/shop?category=crates"},
+        {"tip": "Stop every 2 hours for walks on road trips", "action": "Plan route", "emoji": "🚗", "category": "general", "pillar": "travel", "action_type": "checklist", "checklist_id": "travel"},
+        {"tip": "Carry health certificates for interstate travel", "action": "Get docs", "emoji": "📄", "category": "general", "pillar": "travel", "action_type": "navigate", "action_url": "/care?type=vet"},
+        {"tip": "Microchip your pet before any long journey", "action": "Find clinic", "emoji": "💉", "category": "general", "pillar": "travel", "action_type": "navigate", "action_url": "/care?type=vet"},
+        {"tip": "Keep water accessible during travel", "action": "Shop bottles", "emoji": "💧", "category": "general", "pillar": "travel", "action_type": "navigate", "action_url": "/shop?category=travel"},
+        {"tip": "Avoid feeding 4 hours before flights", "action": "View guide", "emoji": "🍽️", "category": "general", "pillar": "travel", "action_type": "checklist", "checklist_id": "travel"},
+        {"tip": "Practice crate training weeks before travel", "action": "View tips", "emoji": "📦", "category": "general", "pillar": "travel"},
+        
+        # ========== CARE PILLAR ==========
+        {"tip": "Regular grooming prevents skin issues", "action": "Book grooming", "emoji": "✨", "category": "general", "pillar": "care", "action_type": "navigate", "action_url": "/care?type=grooming"},
+        {"tip": "Dental chews reduce tartar by up to 70%", "action": "Shop dental", "emoji": "🦷", "category": "general", "pillar": "care", "action_type": "navigate", "action_url": "/shop?category=dental"},
+        {"tip": "Nail trimming every 3 weeks prevents pain", "action": "Book session", "emoji": "✂️", "category": "general", "pillar": "care", "action_type": "navigate", "action_url": "/care?type=grooming"},
+        {"tip": "Brush teeth 3x weekly for optimal health", "action": "Shop brushes", "emoji": "🪥", "category": "general", "pillar": "care", "action_type": "navigate", "action_url": "/shop?category=dental"},
+        {"tip": "Check ears weekly for signs of infection", "action": "View guide", "emoji": "👂", "category": "general", "pillar": "care", "action_type": "checklist", "checklist_id": "care"},
+        {"tip": "Seasonal flea prevention is essential", "action": "Shop meds", "emoji": "🐛", "category": "general", "pillar": "care", "action_type": "navigate", "action_url": "/shop?category=flea"},
+        
+        # ========== CELEBRATE PILLAR ==========
+        {"tip": "Pet-safe cakes use peanut butter, not chocolate", "action": "Shop cakes", "emoji": "🎂", "category": "general", "pillar": "celebrate", "action_type": "navigate", "action_url": "/celebrate/cakes"},
+        {"tip": "Plan party activities around your pet's energy", "action": "Get ideas", "emoji": "🎈", "category": "general", "pillar": "celebrate", "action_type": "checklist", "checklist_id": "celebrate"},
+        {"tip": "Keep celebration noises at pet-friendly levels", "action": "View guide", "emoji": "🔊", "category": "general", "pillar": "celebrate"},
+        {"tip": "Take photos in natural light for best results", "action": "Book shoot", "emoji": "📸", "category": "general", "pillar": "celebrate", "action_type": "navigate", "action_url": "/celebrate?type=photoshoot"},
+        {"tip": "Include only pet-safe decorations", "action": "Shop decor", "emoji": "🎉", "category": "general", "pillar": "celebrate", "action_type": "navigate", "action_url": "/shop?category=party"},
+        {"tip": "Consider a 'gotcha day' celebration too", "action": "Plan event", "emoji": "💝", "category": "general", "pillar": "celebrate"},
+        
+        # ========== DINE PILLAR ==========
+        {"tip": "Call restaurants ahead to confirm pet policy", "action": "View list", "emoji": "📞", "category": "general", "pillar": "dine", "action_type": "navigate", "action_url": "/dine"},
+        {"tip": "Bring a portable water bowl for dining out", "action": "Shop bowls", "emoji": "🥣", "category": "general", "pillar": "dine", "action_type": "navigate", "action_url": "/shop?category=travel"},
+        {"tip": "Choose outdoor seating for relaxed pet dining", "action": "Find spots", "emoji": "☀️", "category": "general", "pillar": "dine", "action_type": "navigate", "action_url": "/dine?filter=outdoor"},
+        {"tip": "Pack treats to reward calm behavior", "action": "Shop treats", "emoji": "🦴", "category": "general", "pillar": "dine", "action_type": "navigate", "action_url": "/shop?category=treats"},
+        {"tip": "Visit during off-peak hours for quieter experience", "action": "Plan visit", "emoji": "🕐", "category": "general", "pillar": "dine"},
+        {"tip": "Practice restaurant etiquette at home first", "action": "View tips", "emoji": "🎓", "category": "general", "pillar": "dine"},
+        
+        # ========== ENJOY PILLAR ==========
+        {"tip": "Dog parks are best visited during cooler hours", "action": "Find parks", "emoji": "🌳", "category": "general", "pillar": "enjoy", "action_type": "navigate", "action_url": "/enjoy?type=parks"},
+        {"tip": "Playdates with similar energy dogs work best", "action": "Find buddies", "emoji": "🐕", "category": "general", "pillar": "enjoy"},
+        {"tip": "Swimming is excellent low-impact exercise", "action": "Find pools", "emoji": "🏊", "category": "general", "pillar": "enjoy", "action_type": "navigate", "action_url": "/enjoy?type=swimming"},
+        {"tip": "Check event reviews from other pet parents", "action": "View events", "emoji": "⭐", "category": "general", "pillar": "enjoy", "action_type": "navigate", "action_url": "/enjoy"},
+        {"tip": "Bring poop bags to every outdoor activity", "action": "Shop bags", "emoji": "🧹", "category": "general", "pillar": "enjoy", "action_type": "navigate", "action_url": "/shop?category=waste"},
+        {"tip": "Keep your pet on leash until familiar with area", "action": "View tips", "emoji": "🦮", "category": "general", "pillar": "enjoy"},
+        
+        # ========== LEARN PILLAR ==========
+        {"tip": "Positive reinforcement creates lasting habits", "action": "View guide", "emoji": "🌟", "category": "general", "pillar": "learn", "action_type": "checklist", "checklist_id": "learn"},
+        {"tip": "Short training sessions beat long ones", "action": "Start course", "emoji": "⏱️", "category": "general", "pillar": "learn", "action_type": "navigate", "action_url": "/learn"},
+        {"tip": "Consistency across family members is key", "action": "Get tips", "emoji": "👨‍👩‍👧", "category": "general", "pillar": "learn"},
+        {"tip": "Reward timing matters - within 2 seconds!", "action": "Learn more", "emoji": "⚡", "category": "general", "pillar": "learn"},
+        {"tip": "End training on a positive note always", "action": "View tips", "emoji": "✅", "category": "general", "pillar": "learn"},
+        {"tip": "Mental stimulation prevents boredom behaviors", "action": "Shop puzzles", "emoji": "🧩", "category": "general", "pillar": "learn", "action_type": "navigate", "action_url": "/shop?category=toys"},
+    ]
+    
+    if force_refresh:
+        # Delete all existing tips
+        result = await db.quick_win_tips.delete_many({})
+        logger.info(f"Deleted {result.deleted_count} existing tips for refresh")
+    
+    seeded_count = 0
+    for tip_data in all_tips:
+        tip = {
+            "id": str(ObjectId()),
+            "tip": tip_data["tip"],
+            "action": tip_data["action"],
+            "emoji": tip_data.get("emoji", "💡"),
+            "category": tip_data.get("category", "general"),
+            "pillar": tip_data["pillar"],
+            "action_type": tip_data.get("action_type"),
+            "action_url": tip_data.get("action_url"),
+            "checklist_id": tip_data.get("checklist_id"),
+            "is_active": True,
+            "created_at": timestamp
+        }
+        
+        # Upsert - update if exists, insert if not
+        result = await db.quick_win_tips.update_one(
+            {"tip": tip["tip"], "pillar": tip["pillar"]},
+            {"$setOnInsert": tip},
+            upsert=True
+        )
+        if result.upserted_id:
+            seeded_count += 1
+    
+    # Count tips per pillar
+    pillar_counts = {}
+    for pillar in ["fit", "stay", "travel", "care", "celebrate", "dine", "enjoy", "learn"]:
+        count = await db.quick_win_tips.count_documents({"pillar": pillar})
+        pillar_counts[pillar] = count
+    
+    return {
+        "message": f"Seeded {seeded_count} new tips",
+        "total_new": seeded_count,
+        "pillar_counts": pillar_counts
+    }
+
+
+@router.post("/tips/csv-upload")
+async def upload_tips_from_csv(
+    pillar: str,
+    csv_content: str
+):
+    """
+    Upload tips from CSV content.
+    CSV format: tip,action,emoji,category,action_type,action_url
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    import csv
+    from io import StringIO
+    
+    timestamp = datetime.now(timezone.utc)
+    reader = csv.DictReader(StringIO(csv_content))
+    
+    seeded = 0
+    errors = []
+    
+    for row in reader:
+        try:
+            tip = {
+                "id": str(ObjectId()),
+                "tip": row.get("tip", "").strip(),
+                "action": row.get("action", "View").strip(),
+                "emoji": row.get("emoji", "💡").strip(),
+                "category": row.get("category", "general").strip(),
+                "pillar": pillar,
+                "action_type": row.get("action_type", "").strip() or None,
+                "action_url": row.get("action_url", "").strip() or None,
+                "is_active": True,
+                "created_at": timestamp
+            }
+            
+            if not tip["tip"]:
+                continue
+            
+            await db.quick_win_tips.update_one(
+                {"tip": tip["tip"], "pillar": pillar},
+                {"$set": tip},
+                upsert=True
+            )
+            seeded += 1
+        except Exception as e:
+            errors.append(f"Row error: {str(e)}")
+    
+    return {"seeded": seeded, "errors": errors if errors else None}
+
+
 # ==================== JOURNEY RECOMMENDATIONS ====================
 # Pet Soul-aware, Cross-pillar journey recommendations
 
