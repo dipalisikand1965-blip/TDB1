@@ -12,22 +12,26 @@
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { API_URL } from '../utils/api';
 import { toast } from 'sonner';
 import SEOHead from '../components/SEOHead';
+import { useCart } from '../context/CartContext';
+import { getPetPhotoUrl } from '../utils/petAvatar';
 import {
   Send, Loader2, PawPrint, Sparkles, MessageCircle, 
   Phone, Mail, ChevronDown, Heart, Shield, Star,
   Car, Home, Scissors, UtensilsCrossed, PartyPopper,
   HelpCircle, FileText, AlertTriangle, Crown, Calendar,
   MapPin, Zap, ArrowRight, User, ChevronRight, Mic, MicOff, 
-  RotateCcw, History, Search
+  RotateCcw, History, Search, ArrowLeft, X, ShoppingCart,
+  CheckCircle, ExternalLink, List
 } from 'lucide-react';
 
 // Pillar Quick Actions
