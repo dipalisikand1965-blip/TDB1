@@ -111,10 +111,8 @@ const PetSoulPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white" data-testid="pet-soul-page">
-      {/* Mira Context Panel - Fixed higher z-index */}
-      <div className="hidden lg:block fixed right-4 top-24 w-72 z-[60]">
-        <MiraContextPanel pillar="general" />
-      </div>
+      {/* Mira Floating Chat Widget */}
+      <MiraChatWidget pillar="general" />
 
       {/* Logged-in User's Pets Banner */}
       {user && userPets.length > 0 && (
