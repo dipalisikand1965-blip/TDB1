@@ -16,6 +16,7 @@ import ProductCard from '../components/ProductCard';
 import SEOHead from '../components/SEOHead';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import MiraPicksCarousel from '../components/MiraPicksCarousel';
+import PetJourneyRecommendations from '../components/PetJourneyRecommendations';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 // FitPage-style engagement components
 import { FitnessJourneyCounter, RotatingSocialProof } from '../components/SocialProofBadges';
