@@ -141,6 +141,60 @@ const StayPage = () => {
   });
   const [tripOptions, setTripOptions] = useState({ cities: [], trip_types: [] });
 
+  // Checklist Popup state
+  const [showChecklistPopup, setShowChecklistPopup] = useState(false);
+  const [checklistData, setChecklistData] = useState(null);
+  const [checklistProducts, setChecklistProducts] = useState([]);
+
+  // Stay checklist data
+  const STAY_CHECKLIST = {
+    title: 'Pet Travel Checklist',
+    subtitle: 'Everything you need for the perfect pawcation',
+    items: [
+      { text: 'Confirm pet policy with accommodation', tip: 'Call ahead to verify pet size/breed restrictions' },
+      { text: 'Pack familiar bedding and blanket', tip: 'Reduces anxiety in new environments' },
+      { text: 'Bring health certificates & vaccination records', tip: 'Required for most interstate travel' },
+      { text: 'Stock up on regular food (avoid sudden diet changes)', tip: 'Bring 2 extra days worth' },
+      { text: 'Update ID tags with travel contact details', tip: 'Include your mobile number' },
+      { text: 'Research nearby emergency vet clinics', tip: 'Save the number before you travel' },
+      { text: 'Pack pet first-aid kit', tip: 'Bandages, antiseptic, medications' },
+      { text: 'Bring portable water bowl and food containers', tip: 'Collapsible bowls are best' },
+    ],
+    action_url: '/shop?category=travel',
+    action_text: 'Shop Travel Accessories'
+  };
+
+  // Handle checklist popup
+  const handleChecklistAction = async (tip) => {
+    if (tip?.type === 'checklist') {
+      setChecklistData(STAY_CHECKLIST);
+      
+      // Fetch travel accessories products
+      try {
+        const response = await fetch(`${API_URL}/api/products?pillar=travel&limit=4`);
+        if (response.ok) {
+          const data = await response.json();
+          setChecklistProducts(data.products || []);
+        } else {
+          // Fallback to stay products
+          const fallbackResponse = await fetch(`${API_URL}/api/products?pillar=stay&limit=4`);
+          if (fallbackResponse.ok) {
+            const fallbackData = await fallbackResponse.json();
+            setChecklistProducts(fallbackData.products || []);
+          }
+        }
+      } catch (error) {
+        console.debug('Failed to fetch checklist products:', error);
+        setChecklistProducts([]);
+      }
+      
+      setShowChecklistPopup(true);
+    } else {
+      // Default action
+      toast({ title: tip.action, description: 'Coming soon!' });
+    }
+  };
+
   useEffect(() => {
     // Check URL params for type=boarding
     const params = new URLSearchParams(window.location.search);
