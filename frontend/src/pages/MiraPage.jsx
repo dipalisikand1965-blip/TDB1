@@ -1038,7 +1038,7 @@ const MiraPage = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-gray-900 text-sm">Grooming care</p>
-                      <p className="text-xs text-gray-500 truncate">Based on {selectedPet.name}'s coat</p>
+                      <p className="text-xs text-gray-500 truncate">Based on {selectedPet.name}&apos;s coat</p>
                     </div>
                     <ChevronRight className="w-4 h-4 text-gray-400" />
                   </button>
