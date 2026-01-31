@@ -65,7 +65,9 @@ const MiraChatWidget = ({
   const inputRef = useRef(null);
   
   // Mira Signal tracking for passive learning & personalization
-  const { trackPillarVisit, trackClick, trackSearch } = useMiraSignal();
+  const miraSignal = useMiraSignal();
+  const trackPillarVisit = miraSignal?.trackPillarVisit || (() => {});
+  const trackClick = miraSignal?.trackClick || (() => {});
   
   // Dynamic quick prompts from API
   const [dynamicPrompts, setDynamicPrompts] = useState([]);
