@@ -1118,31 +1118,8 @@ const FitPage = () => {
         </DialogContent>
       </Dialog>
       
-      {/* ==================== MIRA PANEL ==================== */}
-      {/* Desktop: Floating button that opens Mira page (consistent with mobile) */}
-      <div className="hidden lg:block fixed bottom-8 right-8 z-[9999]">
-        <Button
-          onClick={() => navigate('/mira?context=fit')}
-          className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full px-6 py-4 shadow-xl hover:shadow-2xl hover:scale-105 transition-all flex items-center gap-3"
-          data-testid="mira-desktop-btn"
-        >
-          <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-            <Sparkles className="w-5 h-5" />
-          </div>
-          <span className="font-semibold">Ask Mira</span>
-        </Button>
-      </div>
-      {/* Mobile: Just a floating button that opens Mira page */}
-      <div className="lg:hidden fixed bottom-24 right-4 z-[9999]">
-        <Button
-          onClick={() => navigate('/mira?context=fit')}
-          className="bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-full px-4 py-3 shadow-lg hover:shadow-xl transition-all flex items-center gap-2"
-          data-testid="mira-mobile-btn"
-        >
-          <PawPrint className="w-5 h-5" />
-          <span>Ask Mira</span>
-        </Button>
-      </div>
+      {/* Mira Floating Chat Widget */}
+      <MiraChatWidget pillar="fit" />
       
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="fit" position="bottom-left" />
