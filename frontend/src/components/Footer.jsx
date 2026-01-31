@@ -59,17 +59,6 @@ const Footer = () => {
                 <Youtube className="w-5 h-5" />
               </a>
             </div>
-            
-            {/* WhatsApp CTA Button */}
-            <a 
-              href={WHATSAPP_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-full text-sm font-semibold transition-colors shadow-lg"
-            >
-              <MessageCircle className="w-5 h-5" />
-              Chat on WhatsApp
-            </a>
           </div>
           
           {/* Divider */}
