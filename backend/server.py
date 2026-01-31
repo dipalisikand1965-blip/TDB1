@@ -10774,6 +10774,9 @@ set_admin_notification_handler(create_admin_notification)
 set_pillar_db(db)
 set_pillar_admin_verify(verify_admin)
 
+# Set database for pillar resolver routes
+set_resolver_db(db)
+
 # Set database for enhanced collection routes
 set_collection_db(db)
 set_collection_admin_verify(verify_admin)
