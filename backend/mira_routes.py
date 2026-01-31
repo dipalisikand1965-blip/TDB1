@@ -3264,17 +3264,20 @@ What would you like to explore? 🐾"""
         }
         
         detected_kit = product_context.get("kit_type")
-        allowed_kits = PILLAR_TO_KIT.get(pillar)
+        # Use the ACTUAL current pillar from request, not the auto-detected one
+        # This prevents "travel kit" request on fit page from overriding the pillar context
+        actual_current_pillar = request.current_pillar
+        allowed_kits = PILLAR_TO_KIT.get(actual_current_pillar)
         
         # If detected kit doesn't match current pillar, reset it
-        if detected_kit and pillar and pillar != "shop":
+        if detected_kit and actual_current_pillar and actual_current_pillar != "shop":
             if isinstance(allowed_kits, list):
                 if detected_kit not in allowed_kits:
-                    logger.info(f"[KIT GUARD] Detected kit '{detected_kit}' doesn't match pillar '{pillar}'. Resetting.")
+                    logger.info(f"[KIT GUARD] Detected kit '{detected_kit}' doesn't match pillar '{actual_current_pillar}'. Resetting.")
                     product_context["is_kit_request"] = False
                     product_context["kit_type"] = None
             elif allowed_kits and detected_kit != allowed_kits:
-                logger.info(f"[KIT GUARD] Detected kit '{detected_kit}' doesn't match pillar '{pillar}' (expected '{allowed_kits}'). Resetting.")
+                logger.info(f"[KIT GUARD] Detected kit '{detected_kit}' doesn't match pillar '{actual_current_pillar}' (expected '{allowed_kits}'). Resetting.")
                 product_context["is_kit_request"] = False
                 product_context["kit_type"] = None
         
