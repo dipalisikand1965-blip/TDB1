@@ -4223,8 +4223,8 @@ async def quick_book(
     if authorization and authorization.startswith("Bearer "):
         token = authorization.split(" ")[1]
         try:
-            from server import decode_token
-            payload = decode_token(token)
+            import jwt
+            payload = jwt.decode(token, JWT_SECRET, algorithms=[ALGORITHM])
             # Token uses 'sub' for email, not 'user_id'
             user_email = payload.get("sub") or payload.get("user_id")
             if user_email:
