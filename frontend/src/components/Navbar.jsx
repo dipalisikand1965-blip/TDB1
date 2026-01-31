@@ -976,6 +976,47 @@ const Navbar = () => {
                     )}
                   </div>
                 </Link>
+                
+                {/* Mobile: My Pets Section with Scores */}
+                {allPets.length > 0 && (
+                  <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+                    <div className="px-4 py-2 bg-gradient-to-r from-purple-50 to-pink-50 border-b border-gray-100">
+                      <span className="font-bold text-gray-900 text-sm flex items-center gap-2">
+                        <PawPrint className="w-4 h-4 text-purple-600" />
+                        My Pets
+                      </span>
+                    </div>
+                    <div className="divide-y divide-gray-100">
+                      {allPets.map((pet) => (
+                        <Link
+                          key={pet.id}
+                          to={`/pet/${pet.id}`}
+                          onClick={() => setIsMenuOpen(false)}
+                          className="flex items-center justify-between px-4 py-3 hover:bg-purple-50 transition-colors"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white overflow-hidden">
+                              {pet.profile_image ? (
+                                <img src={pet.profile_image} alt={pet.name} className="w-full h-full object-cover" />
+                              ) : (
+                                <PawPrint className="w-5 h-5" />
+                              )}
+                            </div>
+                            <div>
+                              <p className="font-medium text-gray-900">{pet.name}</p>
+                              <p className="text-xs text-gray-500">{pet.breed || 'Pet'}</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1 bg-purple-100 px-3 py-1 rounded-full">
+                            <PawPrint className="w-3 h-3 text-purple-600" />
+                            <span className="font-bold text-purple-600 text-sm">{Math.round(pet.overall_score || 0)}%</span>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
                 <button
                   onClick={() => { logout(); setIsMenuOpen(false); navigate('/'); }}
                   className="w-full flex items-center justify-center gap-2 p-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
