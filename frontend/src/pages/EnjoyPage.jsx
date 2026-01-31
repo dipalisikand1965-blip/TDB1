@@ -35,6 +35,7 @@ const ENJOY_EXPERIENCES = [
     gradient: "from-amber-500 to-orange-600",
     badge: "Popular",
     badgeColor: "bg-amber-500",
+    image: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800&q=80",
     highlights: [
       "Curated event discovery",
       "Pet temperament matching",
@@ -47,6 +48,7 @@ const ENJOY_EXPERIENCES = [
     description: "Ready for something beyond the usual walk? We plan outdoor adventures, trail days, and pet-friendly excursions that match your pet's energy level and your sense of adventure.",
     icon: "🏕️",
     gradient: "from-green-500 to-teal-600",
+    image: "https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=800&q=80",
     highlights: [
       "Trail & hike planning",
       "Pet-friendly picnic spots",
@@ -59,6 +61,7 @@ const ENJOY_EXPERIENCES = [
     description: "Looking for playmates for your pup? We connect you with compatible pets and their humans — organizing playdates, breed meetups, and social gatherings that become lasting friendships.",
     icon: "🐾",
     gradient: "from-purple-500 to-violet-600",
+    image: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=800&q=80",
     highlights: [
       "Temperament-based matching",
       "Playdate coordination",
@@ -71,6 +74,7 @@ const ENJOY_EXPERIENCES = [
     description: "Brunch with your bestie? We find cafés and restaurants that truly welcome pets — not just tolerate them. Expect water bowls, treats, and maybe even a menu for your four-legged friend.",
     icon: "☕",
     gradient: "from-rose-500 to-pink-600",
+    image: "https://images.unsplash.com/photo-1601758174114-e711c0cbaa69?w=800&q=80",
     highlights: [
       "Pet-welcoming venue discovery",
       "Reservation handling",
