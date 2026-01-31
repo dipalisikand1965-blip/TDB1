@@ -3125,8 +3125,9 @@ What would you like to explore? 🐾"""
                     "pillar": "travel"
                 },
                 "grooming_kit": {
-                    "keywords": ["grooming kit", "grooming products", "bath", "shampoo"],
+                    "keywords": ["grooming kit", "grooming products", "bath", "shampoo", "grooming", "groom"],
                     "items": ["shampoo", "brush", "comb", "nail clipper", "ear cleaner", "towel"],
+                    "services": ["full grooming", "bath & brush", "nail trim", "ear cleaning"],
                     "pillar": "care"
                 },
                 "birthday_kit": {
@@ -3137,11 +3138,13 @@ What would you like to explore? 🐾"""
                 "training_kit": {
                     "keywords": ["training", "learn", "obedience"],
                     "items": ["treats", "clicker", "leash", "harness"],
+                    "services": ["basic training session", "puppy training", "behavior consultation"],
                     "pillar": "learn"
                 },
                 "health_kit": {
                     "keywords": ["health", "first aid", "vet", "medical"],
                     "items": ["supplements", "vitamins", "first aid", "wipes"],
+                    "services": ["vet consultation", "health checkup", "vaccination"],
                     "pillar": "care"
                 }
             }
