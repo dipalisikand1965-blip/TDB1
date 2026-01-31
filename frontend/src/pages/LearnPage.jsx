@@ -34,6 +34,7 @@ const LEARN_EXPERIENCES = [
     gradient: "from-blue-500 to-indigo-600",
     badge: "Most Requested",
     badgeColor: "bg-blue-600",
+    image: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800&q=80",
     highlights: [
       "Behavioral assessment & diagnosis",
       "Specialist matching by issue type",
@@ -48,6 +49,7 @@ const LEARN_EXPERIENCES = [
     gradient: "from-pink-500 to-rose-600",
     badge: "Critical Period",
     badgeColor: "bg-pink-600",
+    image: "https://images.unsplash.com/photo-1546527868-ccb7ee7dfa6a?w=800&q=80",
     highlights: [
       "Age-appropriate milestone planning",
       "Socialization scheduling",
@@ -60,6 +62,7 @@ const LEARN_EXPERIENCES = [
     description: "Ready to level up? From agility to therapy dog certification, we connect you with specialized trainers who take your pet from good to exceptional. Perfect for those who want more.",
     icon: "🏆",
     gradient: "from-amber-500 to-orange-600",
+    image: "https://images.unsplash.com/photo-1558929996-da64ba858215?w=800&q=80",
     highlights: [
       "Agility & sport training",
       "Therapy dog preparation",
@@ -72,6 +75,7 @@ const LEARN_EXPERIENCES = [
     description: "Adopted a rescue with unknown history? We specialize in rehabilitation journeys — building trust, addressing trauma, and helping your new family member feel safe and loved.",
     icon: "💚",
     gradient: "from-green-500 to-teal-600",
+    image: "https://images.unsplash.com/photo-1601758174493-4e6f3f1e8b3e?w=800&q=80",
     highlights: [
       "Trauma-informed approach",
       "Trust building protocols",
