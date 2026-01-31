@@ -864,28 +864,50 @@ const MiraChatWidget = ({
                     {msg.products && msg.products.length > 0 && (
                       <div className="mt-3 space-y-2">
                         <p className="text-xs font-bold text-purple-700 uppercase">✨ Recommended for you:</p>
-                        {msg.products.slice(0, 4).map(product => (
-                          <div 
-                            key={product.id}
-                            className="bg-white rounded-lg p-2 flex items-center gap-2 cursor-pointer hover:shadow-md transition-shadow border border-purple-100"
-                            onClick={() => handleProductClick(product)}
-                          >
-                            {product.image && (
-                              <img src={product.image} alt={product.name} className="w-14 h-14 rounded object-cover" />
-                            )}
-                            <div className="flex-1 min-w-0">
-                              <p className="text-xs font-bold text-gray-800 truncate">{product.name}</p>
-                              <p className="text-xs text-purple-600 font-bold">₹{product.price}</p>
-                              {product.original_price && product.original_price > product.price && (
-                                <p className="text-[10px] text-gray-400 line-through">₹{product.original_price}</p>
-                              )}
+                        {msg.products.slice(0, 4).map(product => {
+                          // Use fallback image if product image is a local path or missing
+                          const imageUrl = product.image && product.image.startsWith('http') 
+                            ? product.image 
+                            : product.images?.[0] || `https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop`;
+                          
+                          return (
+                            <div 
+                              key={product.id}
+                              className="bg-white rounded-lg p-2 flex items-center gap-2 border border-purple-100"
+                            >
+                              <img 
+                                src={imageUrl} 
+                                alt={product.name} 
+                                className="w-14 h-14 rounded object-cover"
+                                onError={(e) => {
+                                  e.target.onerror = null;
+                                  e.target.src = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop';
+                                }}
+                              />
+                              <div className="flex-1 min-w-0">
+                                <p className="text-xs font-bold text-gray-800 truncate">{product.name}</p>
+                                <p className="text-xs text-purple-600 font-bold">₹{product.price}</p>
+                                {product.original_price && product.original_price > product.price && (
+                                  <p className="text-[10px] text-gray-400 line-through">₹{product.original_price}</p>
+                                )}
+                              </div>
+                              <div className="flex flex-col gap-1">
+                                <button
+                                  onClick={() => handleProductClick(product)}
+                                  className="px-2 py-1 bg-purple-100 text-purple-700 rounded text-[10px] font-medium hover:bg-purple-200"
+                                >
+                                  View
+                                </button>
+                                <button
+                                  onClick={() => { addToCart(product); toast.success('Added!'); }}
+                                  className="px-2 py-1 bg-purple-600 text-white rounded text-[10px] font-medium hover:bg-purple-700"
+                                >
+                                  Add
+                                </button>
+                              </div>
                             </div>
-                            <div className="flex flex-col items-center gap-1">
-                              <Plus className="w-5 h-5 text-purple-600" />
-                              <span className="text-[9px] text-purple-500 font-medium">Add</span>
-                            </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     )}
                   </div>
