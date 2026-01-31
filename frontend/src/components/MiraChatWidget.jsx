@@ -418,32 +418,41 @@ const MiraChatWidget = ({
     // Fix "Mira" pronunciation to "Meera" (phonetic spelling)
     cleanText = cleanText.replace(/\bMira\b/gi, 'Meera');
     
+    // Fix "concierge" pronunciation to "con-see-airzh" (phonetic spelling)
+    cleanText = cleanText.replace(/concierge®?/gi, 'con-see-airzh');
+    
     const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.rate = 1.0;
+    utterance.rate = 0.95;  // Slightly slower for clarity
     utterance.pitch = 1.1;  // Slightly higher for feminine voice
     utterance.volume = 0.9;
     
     // Get a FEMALE voice for Mira - she's a woman!
     const voices = synthRef.current.getVoices();
     const femaleVoice = voices.find(v => 
-      // Priority 1: Specific female voices
+      // Priority 1: Specific female voices (Indian English preferred)
+      v.name.toLowerCase().includes('veena') ||
+      v.name.toLowerCase().includes('aditi') ||
+      v.name.toLowerCase().includes('raveena') ||
       v.name.toLowerCase().includes('samantha') ||
       v.name.toLowerCase().includes('victoria') ||
       v.name.toLowerCase().includes('karen') ||
       v.name.toLowerCase().includes('moira') ||
       v.name.toLowerCase().includes('tessa') ||
       v.name.toLowerCase().includes('fiona') ||
-      v.name.toLowerCase().includes('veena') ||
       v.name.includes('Female') ||
       v.name.includes('female')
     ) || voices.find(v =>
-      // Priority 2: Google UK Female or any female-sounding
+      // Priority 2: Google Female or Microsoft Female
       v.name.includes('Google UK English Female') ||
       v.name.includes('Google US English Female') ||
       v.name.includes('Microsoft Zira') ||
-      v.name.includes('Microsoft Heera')
+      v.name.includes('Microsoft Heera') ||
+      (v.name.includes('Google') && v.name.includes('Female'))
     ) || voices.find(v =>
-      // Priority 3: Any English voice (fallback)
+      // Priority 3: Any English female voice
+      v.lang.startsWith('en') && (v.name.toLowerCase().includes('female') || !v.name.toLowerCase().includes('male'))
+    ) || voices.find(v =>
+      // Priority 4: Any English voice (fallback)
       v.lang.startsWith('en')
     );
     if (femaleVoice) utterance.voice = femaleVoice;
