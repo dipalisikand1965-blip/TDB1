@@ -139,6 +139,7 @@ const TRAVEL_EXPERIENCES = [
 const TravelPage = () => {
   const { user, token } = useAuth();
   const { addToCart } = useCart();
+  const navigate = useNavigate();
   const formRef = useRef(null);
   
   // State
