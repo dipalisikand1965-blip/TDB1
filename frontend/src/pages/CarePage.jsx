@@ -315,13 +315,15 @@ const CarePage = () => {
   const fetchCareProducts = async () => {
     try {
       const [productsRes, bundlesRes] = await Promise.all([
-        fetch(`${API_URL}/api/care/products`),
+        // Use new pillar resolver API for rule-based product filtering
+        fetch(`${API_URL}/api/pillar-resolver/products/care?limit=50`),
         fetch(`${API_URL}/api/care/bundles`)
       ]);
       
       if (productsRes.ok) {
         const data = await productsRes.json();
         setCareProducts(data.products || []);
+        console.log(`[CarePage] Loaded ${data.count} products via pillar resolver`);
       }
       if (bundlesRes.ok) {
         const data = await bundlesRes.json();
