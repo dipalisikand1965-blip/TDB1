@@ -1037,6 +1037,11 @@ CONCIERGE_ACTION_TRIGGERS = {
         "priority": "high",
         "action_type": "care_appointment"
     },
+    "celebrate": {
+        "keywords": ["cake", "birthday", "party", "celebration", "order cake", "birthday cake", "pup-cake", "cupcake", "treats", "gift"],
+        "priority": "medium",
+        "action_type": "celebrate_order"
+    },
     "verification": {
         "keywords": ["is it pet-friendly", "do they allow pets", "pet policy", "can i bring my dog", "are pets allowed", "verify", "check if", "confirm if"],
         "priority": "medium",
