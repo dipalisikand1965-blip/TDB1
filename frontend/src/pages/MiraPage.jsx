@@ -55,6 +55,8 @@ const generateSessionId = () => {
 
 const MiraPage = () => {
   const { user, token } = useAuth();
+  const { addToCart } = useCart();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   
   // State
@@ -66,6 +68,11 @@ const MiraPage = () => {
   const [pillar, setPillar] = useState(null);
   const [chatHistory, setChatHistory] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
+  
+  // Checklist popup state
+  const [showChecklistPopup, setShowChecklistPopup] = useState(false);
+  const [checklistData, setChecklistData] = useState(null);
+  const [checklistProducts, setChecklistProducts] = useState([]);
   
   // Pet context
   const [pets, setPets] = useState([]);
