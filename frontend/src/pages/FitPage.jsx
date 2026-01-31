@@ -981,39 +981,17 @@ const FitPage = () => {
               </div>
             )}
             
-            {/* Pet selection */}
-            <div>
-              <Label className="mb-2 block font-semibold">Select Your Pet (Optional)</Label>
-              {userPets.length > 0 ? (
-                <div className="grid grid-cols-2 gap-2">
-                  {userPets.map((pet) => (
-                    <button
-                      key={pet.id}
-                      onClick={() => setSelectedPet(selectedPet?.id === pet.id ? null : pet)}
-                      className={`p-3 rounded-xl border-2 text-left flex items-center gap-3 transition-all ${
-                        selectedPet?.id === pet.id 
-                          ? 'border-teal-500 bg-teal-50' 
-                          : 'border-gray-200 hover:border-teal-200'
-                      }`}
-                    >
-                      <img 
-                        src={getPetPhotoUrl(pet)} 
-                        alt={pet.name}
-                        className="w-10 h-10 rounded-full object-cover"
-                      />
-                      <div>
-                        <p className="font-medium text-sm">{pet.name}</p>
-                        <p className="text-xs text-gray-500">{pet.breed}</p>
-                      </div>
-                      {selectedPet?.id === pet.id && (
-                        <CheckCircle className="w-4 h-4 text-teal-600 ml-auto" />
-                      )}
-                    </button>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-sm text-gray-500 p-3 bg-gray-50 rounded-lg">
-                  Sign in to select from your pets, or we'll ask about your pet when we call.
+            {/* Multi-Pet selection */}
+            <MultiPetSelector
+              userPets={userPets}
+              selectedPets={selectedPets}
+              onPetToggle={handlePetToggle}
+              onSelectAll={handleSelectAllPets}
+              onClearAll={handleClearAllPets}
+              multiSelect={true}
+              pillarColor="teal"
+              label="Select Pet(s) for This Service"
+            />
                 </p>
               )}
             </div>
