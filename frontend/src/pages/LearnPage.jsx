@@ -176,7 +176,8 @@ const LearnPage = () => {
         fetch(`${API_URL}/api/learn/programs`),
         fetch(`${API_URL}/api/learn/programs?is_featured=true`),
         fetch(`${API_URL}/api/learn/trainers?is_featured=true`),
-        fetch(`${API_URL}/api/learn/products`),
+        // Use new pillar resolver API for rule-based product filtering
+        fetch(`${API_URL}/api/pillar-resolver/products/learn?limit=20`),
         fetch(`${API_URL}/api/learn/bundles`)
       ]);
 
@@ -195,6 +196,7 @@ const LearnPage = () => {
       if (productsRes.ok) {
         const data = await productsRes.json();
         setProducts(data.products || []);
+        console.log(`[LearnPage] Loaded ${data.count} products via pillar resolver`);
       }
       if (bundlesRes.ok) {
         const data = await bundlesRes.json();
