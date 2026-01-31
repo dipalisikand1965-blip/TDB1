@@ -764,9 +764,23 @@ const EnjoyPage = () => {
           </DialogHeader>
           
           <div className="space-y-4 mt-4">
+            {/* Event Details */}
+            {selectedExperience && (
+              <Card className="p-3 bg-red-50 border-red-200">
+                <div className="flex items-center gap-3">
+                  <Calendar className="w-5 h-5 text-red-500" />
+                  <div className="text-sm">
+                    <p className="font-medium text-red-900">{selectedExperience.name}</p>
+                    <p className="text-red-700">{selectedExperience.event_date} • {selectedExperience.venue_name || selectedExperience.city}</p>
+                    <p className="text-red-600 font-semibold">{selectedExperience.is_free ? 'Free' : `₹${selectedExperience.price}`}</p>
+                  </div>
+                </div>
+              </Card>
+            )}
+            
             {/* Pet Selection */}
             <div>
-              <Label className="text-sm font-medium mb-2 block">Who&apos;s joining?</Label>
+              <Label className="text-sm font-medium mb-2 block">Who&apos;s joining? *</Label>
               {userPets.length > 0 ? (
                 <MultiPetSelector
                   userPets={userPets}
@@ -780,46 +794,95 @@ const EnjoyPage = () => {
                 />
               ) : (
                 <div className="space-y-3">
-                  <Input
-                    placeholder="Pet's Name"
-                    value={rsvpForm.guest_pet_name}
-                    onChange={(e) => setRsvpForm({...rsvpForm, guest_pet_name: e.target.value})}
-                  />
-                  <Input
-                    placeholder="Pet's Breed"
-                    value={rsvpForm.guest_pet_breed}
-                    onChange={(e) => setRsvpForm({...rsvpForm, guest_pet_breed: e.target.value})}
-                  />
+                  <div>
+                    <Label className="text-xs text-gray-500 mb-1 block">Pet Name *</Label>
+                    <Input
+                      placeholder="e.g., Mojo"
+                      value={rsvpForm.guest_pet_name}
+                      onChange={(e) => setRsvpForm({...rsvpForm, guest_pet_name: e.target.value})}
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs text-gray-500 mb-1 block">Breed</Label>
+                    <Input
+                      placeholder="e.g., Labrador"
+                      value={rsvpForm.guest_pet_breed}
+                      onChange={(e) => setRsvpForm({...rsvpForm, guest_pet_breed: e.target.value})}
+                    />
+                  </div>
                 </div>
               )}
             </div>
             
-            {/* Number of Humans */}
-            <div>
-              <Label className="text-sm font-medium mb-2 block">Number of humans attending</Label>
-              <Select value={String(rsvpForm.number_of_humans)} onValueChange={(val) => setRsvpForm({...rsvpForm, number_of_humans: parseInt(val)})}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {[1,2,3,4,5].map(n => <SelectItem key={n} value={String(n)}>{n}</SelectItem>)}
-                </SelectContent>
-              </Select>
+            {/* Number of Pets and Humans */}
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Number of Pets *</Label>
+                <Select value={String(rsvpForm.number_of_pets)} onValueChange={(val) => setRsvpForm({...rsvpForm, number_of_pets: parseInt(val)})}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {[1,2,3,4,5].map(n => <SelectItem key={n} value={String(n)}>{n}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label className="text-sm font-medium mb-2 block">Number of Humans *</Label>
+                <Select value={String(rsvpForm.number_of_humans)} onValueChange={(val) => setRsvpForm({...rsvpForm, number_of_humans: parseInt(val)})}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {[1,2,3,4,5].map(n => <SelectItem key={n} value={String(n)}>{n}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
             
             {/* Special Requirements */}
             <div>
               <Label className="text-sm font-medium mb-2 block">Special Requirements (optional)</Label>
               <Textarea
-                placeholder="Any special needs or accessibility requirements?"
+                placeholder="Any special needs for your pet?"
                 value={rsvpForm.special_requirements}
                 onChange={(e) => setRsvpForm({...rsvpForm, special_requirements: e.target.value})}
-                rows={3}
+                rows={2}
               />
             </div>
+            
+            {/* Contact Details for non-logged-in users */}
+            {!user && (
+              <div className="space-y-3 pt-2 border-t">
+                <Label className="text-sm font-medium block text-gray-700">Contact Details</Label>
+                <div>
+                  <Label className="text-xs text-gray-500 mb-1 block">Your Name *</Label>
+                  <Input
+                    placeholder="Full name"
+                    value={rsvpForm.guest_name || ''}
+                    onChange={(e) => setRsvpForm({...rsvpForm, guest_name: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs text-gray-500 mb-1 block">Phone *</Label>
+                  <Input
+                    placeholder="Mobile number"
+                    value={rsvpForm.guest_phone || ''}
+                    onChange={(e) => setRsvpForm({...rsvpForm, guest_phone: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs text-gray-500 mb-1 block">Email</Label>
+                  <Input
+                    type="email"
+                    placeholder="your@email.com"
+                    value={rsvpForm.guest_email || ''}
+                    onChange={(e) => setRsvpForm({...rsvpForm, guest_email: e.target.value})}
+                  />
+                </div>
+              </div>
+            )}
             
             {/* Submit */}
             <Button 
               onClick={submitRsvp}
-              disabled={submitting || (!selectedPets.length && !rsvpForm.guest_pet_name)}
+              disabled={submitting || (!selectedPets.length && !rsvpForm.guest_pet_name) || (!user && !rsvpForm.guest_name)}
               className="w-full bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600"
               data-testid="submit-rsvp-btn"
             >
