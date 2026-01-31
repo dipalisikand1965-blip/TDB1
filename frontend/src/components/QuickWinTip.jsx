@@ -145,23 +145,33 @@ const QuickWinTip = ({
     setIsRefreshing(true);
     let tips = [];
     
-    // Get pillar-specific tips
-    const pillarTips = TIPS_DATABASE[pillar]?.general || TIPS_DATABASE.fit?.general || [];
-    tips = [...tips, ...pillarTips];
-    
-    // Add breed-specific tips
-    if (petBreed) {
-      const breedKey = petBreed.toLowerCase().replace(/\s+/g, '_');
-      if (TIPS_DATABASE[breedKey]) {
-        tips = [...tips, ...TIPS_DATABASE[breedKey]];
-      }
+    // PRIORITY 1: Get pillar-specific tips FIRST
+    const pillarTips = TIPS_DATABASE[pillar]?.general || [];
+    if (pillarTips.length > 0) {
+      tips = [...pillarTips];
     }
     
-    // Add age-specific tips (from fit pillar as they're universal)
-    if (petAge && TIPS_DATABASE.fit) {
-      const ageNum = parseInt(petAge);
-      if (ageNum < 2 && TIPS_DATABASE.fit.puppy) tips = [...tips, ...TIPS_DATABASE.fit.puppy];
-      else if (ageNum > 7 && TIPS_DATABASE.fit.senior) tips = [...tips, ...TIPS_DATABASE.fit.senior];
+    // Only add breed/age tips if NO pillar tips or if pillar is 'fit' (generic)
+    if (tips.length === 0 || pillar === 'fit') {
+      // Add breed-specific tips
+      if (petBreed) {
+        const breedKey = petBreed.toLowerCase().replace(/\s+/g, '_');
+        if (TIPS_DATABASE[breedKey]) {
+          tips = [...tips, ...TIPS_DATABASE[breedKey]];
+        }
+      }
+      
+      // Add age-specific tips
+      if (petAge && TIPS_DATABASE.fit) {
+        const ageNum = parseInt(petAge);
+        if (ageNum < 2 && TIPS_DATABASE.fit.puppy) tips = [...tips, ...TIPS_DATABASE.fit.puppy];
+        else if (ageNum > 7 && TIPS_DATABASE.fit.senior) tips = [...tips, ...TIPS_DATABASE.fit.senior];
+      }
+      
+      // Fallback to fit general if still empty
+      if (tips.length === 0) {
+        tips = TIPS_DATABASE.fit?.general || [];
+      }
     }
     
     setTimeout(() => {
