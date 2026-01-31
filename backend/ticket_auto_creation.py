@@ -167,10 +167,40 @@ async def create_auto_ticket(
         }
         await database.channel_intakes.insert_one(inbox_entry)
         
+        # ==================== PILLAR-SPECIFIC COLLECTION ROUTING ====================
+        # Route ticket to pillar-specific collection for pillar-wise agent access
+        pillar_collection_map = {
+            "fit": "fit_requests",
+            "care": "care_requests",
+            "celebrate": "celebrate_requests",
+            "dine": "dine_requests",
+            "stay": "stay_requests",
+            "travel": "travel_requests",
+            "learn": "learn_requests",
+            "enjoy": "enjoy_requests",
+            "advisory": "advisory_requests",
+            "shop": "shop_requests",
+            "discover": "discover_requests",
+            "protect": "protect_requests",
+            "connect": "connect_requests",
+            "gift": "gift_requests"
+        }
+        
+        pillar_collection = pillar_collection_map.get(pillar.lower())
+        if pillar_collection:
+            pillar_request = {
+                **ticket,
+                "source_collection": "service_desk_tickets",
+                "routed_at": datetime.now(timezone.utc).isoformat()
+            }
+            await database[pillar_collection].insert_one(pillar_request)
+            logger.info(f"[PILLAR ROUTING] Ticket {ticket_id} routed to {pillar_collection}")
+        
         return {
             "success": True,
             "ticket_id": ticket_id,
-            "event_type": event_type
+            "event_type": event_type,
+            "pillar_collection": pillar_collection
         }
     except Exception as e:
         logger.error(f"Failed to auto-create ticket: {e}")
