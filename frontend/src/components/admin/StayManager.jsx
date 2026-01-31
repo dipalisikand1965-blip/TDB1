@@ -817,12 +817,15 @@ const StayManager = ({ getAuthHeader }) => {
               <p className="text-sm text-gray-500 mb-4">Click &quot;Seed Bundles&quot; to auto-populate with curated travel bundles</p>
               <Button onClick={async () => {
                 try {
-                  await fetch(`${API_URL}/api/stay/admin/seed-data`, {
+                  const response = await fetch(`${API_URL}/api/stay/admin/seed-bundles`, {
                     method: 'POST',
                     headers: getAuthHeader()
                   });
-                  toast({ title: 'Bundles seeded!' });
-                  fetchBundles();
+                  if (response.ok) {
+                    const data = await response.json();
+                    toast({ title: 'Bundles seeded!', description: `${data.bundles_seeded} bundles added` });
+                    fetchBundles();
+                  }
                 } catch (error) {
                   toast({ title: 'Error seeding bundles', variant: 'destructive' });
                 }
