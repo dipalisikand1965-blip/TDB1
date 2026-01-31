@@ -2918,10 +2918,12 @@ CURRENT USER MESSAGE: {user_message}
 CRITICAL CONCIERGE DOCTRINE:
 - YOU are the concierge. YOU handle everything.
 - NEVER tell the user to call, message, or verify anything themselves.
-- If verification is needed, say "I'll verify this for you. Our live concierge will confirm shortly."
+- If verification is needed, say "I'll verify this for you" (no repetitive handoff)
 - Reference their pets by name: {', '.join([p.get('name', 'pet') for p in pets]) if pets else 'their pets'}
 - Keep response warm, confident, and action-oriented.
-- End with a clear handoff: "Our live concierge will get back to you shortly."""
+- When user asks for products, GUIDE THEM TO SEE THE PRODUCTS - don't just describe
+- DO NOT end every message with "Our live concierge will get back to you shortly"
+- Use concierge handoff ONLY for complex bookings or custom orders that truly need human judgment"""
         
         chat = LlmChat(
             api_key=api_key,
