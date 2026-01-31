@@ -475,13 +475,28 @@ const FitPage = () => {
     
     setSubmitting(true);
     try {
+      // Prepare multi-pet data
+      const petsData = selectedPets.length > 0 
+        ? selectedPets.map(pet => ({
+            id: pet.id || pet._id,
+            name: pet.name,
+            breed: pet.breed,
+            species: pet.species || 'dog'
+          }))
+        : [];
+      
       // Use unified API client for consistent flow enforcement
       const requestPayload = {
         fit_type: selectedService?.category || 'assessment',
         service_id: selectedService?.id,
-        pet_id: selectedPet?.id,
-        pet_name: selectedPet?.name,
-        pet_breed: selectedPet?.breed,
+        // Multi-pet support
+        pets: petsData,
+        pet_count: petsData.length,
+        is_multi_pet: petsData.length > 1,
+        // Legacy single pet fields for backward compatibility
+        pet_id: petsData[0]?.id,
+        pet_name: petsData.map(p => p.name).join(', '),
+        pet_breed: petsData.map(p => p.breed).join(', '),
         preferred_date: bookingForm.preferred_date,
         fitness_goals: bookingForm.fitness_goals,
         current_activity_level: bookingForm.current_activity_level,
@@ -507,14 +522,15 @@ const FitPage = () => {
         inbox_id: result.inbox_id
       });
       
+      const petNames = petsData.map(p => p.name).join(', ');
       toast({
         title: "Booking Confirmed! 💪",
-        description: result.message || `Your fitness request #${result.ticket_id || result.request_id} has been received.`
+        description: result.message || `Fitness request #${result.ticket_id || result.request_id} received${petNames ? ` for ${petNames}` : ''}.`
       });
       setShowBookingModal(false);
       setShowDetailModal(false);
       setSelectedService(null);
-      setSelectedPet(null);
+      setSelectedPets([]);
       setBookingForm(prev => ({
         ...prev,
         preferred_date: '',
