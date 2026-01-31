@@ -769,18 +769,79 @@ const Navbar = () => {
                 )}
               </Link>
 
-              {/* Pet Soul Score */}
-              {user && primaryPet && (
-                <Link 
-                  to="/my-pets"
-                  className="hidden lg:flex flex-col items-start text-xs hover:bg-white/10 rounded p-1.5"
-                  data-testid="navbar-pet-soul"
-                >
-                  <span className="text-gray-400 text-[10px]">{primaryPet.name}</span>
-                  <span className="font-semibold text-purple-400 flex items-center gap-1">
-                    <PawPrint className="w-3 h-3" /> {petSoulScore}%
-                  </span>
-                </Link>
+              {/* Pet Soul Score - Multi-Pet Dropdown */}
+              {user && allPets.length > 0 && (
+                <div className="relative hidden lg:block" ref={petDropdownRef}>
+                  <button 
+                    onClick={() => setShowPetDropdown(!showPetDropdown)}
+                    className="flex items-center gap-2 text-xs hover:bg-white/10 rounded px-2 py-1.5 transition-colors"
+                    data-testid="navbar-pet-soul"
+                  >
+                    <div className="flex flex-col items-start">
+                      <span className="text-gray-400 text-[10px]">My Pets</span>
+                      <span className="font-semibold text-purple-400 flex items-center gap-1">
+                        <PawPrint className="w-3 h-3" /> 
+                        {primaryPet?.name || 'Select Pet'}
+                      </span>
+                    </div>
+                    {showPetDropdown ? (
+                      <ChevronUp className="w-3 h-3 text-gray-400" />
+                    ) : (
+                      <ChevronDown className="w-3 h-3 text-gray-400" />
+                    )}
+                  </button>
+                  
+                  {/* Pet Dropdown */}
+                  {showPetDropdown && (
+                    <div className="absolute top-full right-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden z-50 min-w-[200px]">
+                      {/* Header */}
+                      <div className="px-4 py-2 bg-gradient-to-r from-purple-50 to-pink-50 border-b border-gray-100">
+                        <span className="font-bold text-gray-900 text-sm">My Pets</span>
+                      </div>
+                      
+                      {/* Pet List */}
+                      <div className="py-1">
+                        {allPets.map((pet) => (
+                          <Link
+                            key={pet.id}
+                            to={`/pet/${pet.id}`}
+                            onClick={() => setShowPetDropdown(false)}
+                            className="flex items-center justify-between px-4 py-2.5 hover:bg-purple-50 transition-colors"
+                          >
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white text-sm">
+                                {pet.profile_image ? (
+                                  <img src={pet.profile_image} alt={pet.name} className="w-full h-full rounded-full object-cover" />
+                                ) : (
+                                  <PawPrint className="w-4 h-4" />
+                                )}
+                              </div>
+                              <div>
+                                <p className="font-medium text-gray-900 text-sm">{pet.name}</p>
+                                <p className="text-[10px] text-gray-500">{pet.breed || 'Pet'}</p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-1 bg-purple-100 px-2 py-0.5 rounded-full">
+                              <PawPrint className="w-3 h-3 text-purple-600" />
+                              <span className="font-bold text-purple-600 text-xs">{Math.round(pet.overall_score || 0)}%</span>
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                      
+                      {/* Footer Link */}
+                      <div className="px-4 py-2 border-t border-gray-100 bg-gray-50">
+                        <Link
+                          to="/my-pets"
+                          onClick={() => setShowPetDropdown(false)}
+                          className="text-xs font-semibold text-purple-600 hover:text-purple-700 flex items-center gap-1"
+                        >
+                          View All Pets →
+                        </Link>
+                      </div>
+                    </div>
+                  )}
+                </div>
               )}
 
               {/* Ask Mira Button */}
