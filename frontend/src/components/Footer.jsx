@@ -23,7 +23,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 sm:gap-8">
           
           {/* COLUMN 1 — THE SYSTEM (CORE IDENTITY) */}
-          <div className="col-span-2 md:col-span-1">
+          <div className="sm:col-span-2 md:col-span-1">
             <div className="flex items-center gap-2 mb-3">
               <div className="h-8 w-8 bg-white rounded-lg p-1 flex items-center justify-center">
                 <img src="/logo-new.png" alt="The Doggy Company" className="h-6 w-6 object-contain" />
@@ -40,17 +40,17 @@ const Footer = () => {
             <p className="text-sm text-gray-400 mb-4 leading-relaxed">
               Your Pet&apos;s Life, Thoughtfully Orchestrated.
             </p>
-            <div className="flex space-x-3">
-              <a href="https://www.facebook.com/thedoggybakery" target="_blank" rel="noopener noreferrer" className="hover:text-pink-400 transition-colors">
+            <div className="flex space-x-4">
+              <a href="https://www.facebook.com/thedoggybakery" target="_blank" rel="noopener noreferrer" className="hover:text-pink-400 transition-colors p-1">
                 <Facebook className="w-5 h-5" />
               </a>
-              <a href="https://www.instagram.com/the_doggy_bakery/" target="_blank" rel="noopener noreferrer" className="hover:text-pink-400 transition-colors">
+              <a href="https://www.instagram.com/the_doggy_bakery/" target="_blank" rel="noopener noreferrer" className="hover:text-pink-400 transition-colors p-1">
                 <Instagram className="w-5 h-5" />
               </a>
-              <a href="https://www.youtube.com/@TheDoggyBakery" target="_blank" rel="noopener noreferrer" className="hover:text-red-400 transition-colors">
+              <a href="https://www.youtube.com/@TheDoggyBakery" target="_blank" rel="noopener noreferrer" className="hover:text-red-400 transition-colors p-1">
                 <Youtube className="w-5 h-5" />
               </a>
-              <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="hover:text-green-400 transition-colors">
+              <a href={WHATSAPP_URL} target="_blank" rel="noopener noreferrer" className="hover:text-green-400 transition-colors p-1">
                 <MessageCircle className="w-5 h-5" />
               </a>
             </div>
