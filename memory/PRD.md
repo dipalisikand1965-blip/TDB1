@@ -2,6 +2,68 @@
 
 ## Latest Update: January 31, 2026 - Session 4
 
+### ✅ SERVICE TAGGING - COMPLETED (Jan 31, 2026)
+
+**Task**: Tag all services with `base_tags` using AI script (similar to products)
+
+**Implementation**:
+1. Created `/app/backend/ai_service_tagger.py` - AI-powered service tagging script
+2. Tagged all 73 services across 3 collections: `services` (58), `care_services` (12), `grooming_services` (3)
+3. Services now have `base_tags` with fields:
+   - `service_type` (grooming, training, fitness, wellness, medical, boarding, etc.)
+   - `delivery_mode` (in_store, at_home, virtual, outdoor, pickup_drop)
+   - `session_type` (single, package, subscription, program)
+   - `duration` (30min, 60min, 90min, etc.)
+   - `provider_type`, `life_stage`, `breed_size`, `benefits`, `price_tier`, `booking_type`
+
+**Testing Results (Iteration 153)**:
+- 100% of services tagged (73/73)
+- Care services: 17 services with base_tags
+- All base_tags follow service_taxonomy_v1.yaml schema
+
+---
+
+### ✅ PILLAR RESOLVER API - COMPLETED (Jan 31, 2026)
+
+**Task**: Create API endpoints for pillar resolver to enable frontend pages to use rule-based filtering
+
+**New Endpoints**:
+- `GET /api/pillar-resolver/products/{pillar}` - Get products by pillar rules
+- `GET /api/pillar-resolver/services/{pillar}` - Get services by pillar rules
+- `GET /api/pillar-resolver/all/{pillar}` - Get both products and services
+- `GET /api/pillar-resolver/rules/{pillar}` - Get pillar rules (debugging)
+- `GET /api/pillar-resolver/list` - List all 14 pillars
+
+**Files Created**:
+- `/app/backend/pillar_resolver_routes.py` - New API routes
+
+**Testing Results (Iteration 153)**:
+- 100% pass rate (23/23 backend tests)
+- All 14 pillars accessible via API
+- Travel pillar correctly excludes cakes/food/frozen
+
+---
+
+### ✅ FRONTEND PILLAR PAGES UPDATED - COMPLETED (Jan 31, 2026)
+
+**Task**: Integrate pillar resolver API into frontend pillar pages
+
+**Pages Updated**:
+- `TravelPage.jsx` - Uses `/api/pillar-resolver/products/travel`
+- `CarePage.jsx` - Uses `/api/pillar-resolver/products/care`
+- `EnjoyPage.jsx` - Uses `/api/pillar-resolver/products/enjoy`
+- `FitPage.jsx` - Uses `/api/pillar-resolver/products/fit`
+- `LearnPage.jsx` - Uses `/api/pillar-resolver/products/learn`
+- `CelebratePage.jsx` - Uses `/api/pillar-resolver/products/celebrate`
+- `DinePage.jsx` - Uses `/api/pillar-resolver/products/dine`
+
+**Benefits**:
+- Consistent rule-based filtering across all pillar pages
+- No more irrelevant products (e.g., cakes in travel)
+- Centralized rules management via `pillar_rules_v1.yaml`
+
+---
+
 ### ✅ PILLAR RESOLVER INTEGRATION - COMPLETED (Jan 31, 2026)
 
 **Issue**: Mira's Guided Kit Assembly was showing irrelevant products (e.g., cakes and food for travel kits)
