@@ -23,6 +23,7 @@ import httpx
 import json
 import re
 from dotenv import load_dotenv
+from pillar_resolver import get_resolver, PillarResolver
 
 load_dotenv()
 
