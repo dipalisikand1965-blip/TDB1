@@ -860,7 +860,7 @@ const TravelPage = () => {
           )}
 
           {/* Step 3: Journey Details */}
-          {wizardStep === 3 && selectedType && (selectedPet || formData.pet_name) && (
+          {wizardStep === 3 && selectedType && (selectedPets.length > 0 || formData.pet_name) && (
             <div className="space-y-4" ref={formRef}>
               {/* Selected Summary */}
               <Card className="p-3 bg-purple-50 border-purple-200 flex items-center gap-3">
@@ -870,7 +870,12 @@ const TravelPage = () => {
                 <div className="flex-1">
                   <span className="text-sm text-purple-600">{TRAVEL_TYPES[selectedType]?.name}</span>
                   <span className="mx-2 text-purple-300">•</span>
-                  <span className="text-sm font-medium text-purple-900">{selectedPet.name}</span>
+                  <span className="text-sm font-medium text-purple-900">
+                    {selectedPets.length > 0 
+                      ? selectedPets.map(p => p.name).join(', ')
+                      : formData.pet_name}
+                    {selectedPets.length > 1 && <Badge className="ml-2 bg-purple-200 text-purple-700 text-[10px]">Multi-pet</Badge>}
+                  </span>
                 </div>
                 <button onClick={() => setWizardStep(1)} className="text-sm text-purple-600 hover:underline">
                   Change
