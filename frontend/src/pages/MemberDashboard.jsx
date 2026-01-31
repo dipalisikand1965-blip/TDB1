@@ -3377,8 +3377,8 @@ const MemberDashboard = () => {
         </DialogContent>
       </Dialog>
       
-      {/* Mobile Bottom Navigation - Pet Life OS */}
-      <MobileNavBar />
+      {/* Mobile Bottom Navigation - REMOVED per user request to fix footer overlap */}
+      {/* <MobileNavBar /> */}
       
       {/* Voice Quick Actions Modal - Phase 2 Feature */}
       <VoiceQuickActions 
