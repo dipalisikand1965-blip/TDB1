@@ -3181,9 +3181,15 @@ What would you like to explore? 🐾"""
                 "is_kit_request": detected_kit is not None
             }
         
-        # Check if this is a product/kit query
-        product_keywords = ["treat", "cake", "food", "toy", "product", "buy", "show me", "want", "need", "looking for", "recommend", "suggest", "kit", "items", "specific products"]
+        # Check if this is a product/kit query - ONLY trigger on explicit product requests
+        # NOT on service booking requests like "book grooming"
+        product_keywords = ["treat", "cake", "food", "toy", "product", "buy", "show me products", 
+                           "recommend products", "suggest products", "kit", "items from shop", 
+                           "specific products", "what products", "shopping"]
+        service_only_keywords = ["book", "appointment", "schedule", "reserve", "booking"]
+        
         is_product_query = any(kw in user_message.lower() for kw in product_keywords)
+        is_service_only = any(kw in user_message.lower() for kw in service_only_keywords) and not is_product_query
         
         # Analyze conversation context (use request.history)
         conversation_history = request.history or []
