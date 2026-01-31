@@ -298,13 +298,23 @@ const MiraChatWidget = ({
       
       welcomeMsg += ' 🐾';
       
+      // First time message - always speak the introduction
+      const isFirstTime = !sessionStorage.getItem('mira_introduced');
+      if (isFirstTime) {
+        sessionStorage.setItem('mira_introduced', 'true');
+        // Speak the introduction with female voice
+        setTimeout(() => {
+          speakText(`Hi, I am Meera, your pet concierge. ${welcomeMsg}`);
+        }, 500);
+      }
+      
       setMessages([{
         id: 'welcome',
         role: 'assistant',
-        content: welcomeMsg
+        content: `Hi, I am Mira, your pet concierge! ${welcomeMsg}`
       }]);
     }
-  }, [isOpen, selectedPet, miraContext, config.name]);
+  }, [isOpen, selectedPet, miraContext, config.name, speakText]);
   
   // Scroll to bottom when new messages arrive
   useEffect(() => {
