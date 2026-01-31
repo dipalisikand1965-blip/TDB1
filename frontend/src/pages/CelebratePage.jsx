@@ -108,35 +108,19 @@ const CelebratePage = () => {
         </div>
       </div>
 
-      {/* Quick Categories - Horizontal scroll on mobile, grid on desktop */}
+      {/* Quick Categories - 2x2 grid on mobile, 6 cols on desktop */}
       <div className="max-w-6xl mx-auto px-4 -mt-6 sm:-mt-8 relative z-10">
-        {/* Mobile: Horizontal scroll */}
-        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-hide sm:hidden">
-          {celebrateCategories.map((cat) => {
-            const Icon = cat.icon;
-            return (
-              <Link key={cat.id} to={cat.path} className="flex-shrink-0">
-                <Card className="p-3 text-center hover:shadow-lg transition-all active:scale-95 cursor-pointer bg-white w-[100px]">
-                  <div className={`w-10 h-10 mx-auto mb-2 rounded-xl flex items-center justify-center ${cat.color}`}>
-                    <Icon className="w-5 h-5" />
-                  </div>
-                  <h3 className="font-medium text-gray-900 text-xs leading-tight">{cat.name}</h3>
-                </Card>
-              </Link>
-            );
-          })}
-        </div>
-        {/* Desktop: Grid */}
-        <div className="hidden sm:grid md:grid-cols-3 lg:grid-cols-6 gap-4">
+        {/* 2x2 grid on mobile, 6 cols on desktop */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
           {celebrateCategories.map((cat) => {
             const Icon = cat.icon;
             return (
               <Link key={cat.id} to={cat.path}>
-                <Card className="p-4 text-center hover:shadow-lg transition-all hover:-translate-y-1 cursor-pointer bg-white">
-                  <div className={`w-12 h-12 mx-auto mb-3 rounded-xl flex items-center justify-center ${cat.color}`}>
-                    <Icon className="w-6 h-6" />
+                <Card className="p-3 sm:p-4 text-center hover:shadow-lg transition-all active:scale-95 cursor-pointer bg-white">
+                  <div className={`w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-3 rounded-xl flex items-center justify-center ${cat.color}`}>
+                    <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
                   </div>
-                  <h3 className="font-medium text-gray-900 text-sm">{cat.name}</h3>
+                  <h3 className="font-medium text-gray-900 text-xs sm:text-sm leading-tight">{cat.name}</h3>
                 </Card>
               </Link>
             );
