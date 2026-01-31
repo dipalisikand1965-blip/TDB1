@@ -453,6 +453,212 @@ const TravelPage = () => {
         </div>
       </div>
 
+      {/* ==================== SOCIAL PROOF BANNER ==================== */}
+      <div className="bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 py-4 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex items-center justify-center gap-8 md:gap-16 flex-wrap text-white">
+            <div className="flex items-center gap-2">
+              <Plane className="w-5 h-5 text-yellow-300" />
+              <span className="font-bold text-lg">500+</span>
+              <span className="text-white/80 text-sm">trips completed</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Shield className="w-5 h-5 text-green-300" />
+              <span className="font-bold text-lg">100%</span>
+              <span className="text-white/80 text-sm">safe arrivals</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <Star className="w-5 h-5 text-yellow-300 fill-yellow-300" />
+              <span className="font-bold text-lg">4.9</span>
+              <span className="text-white/80 text-sm">travel rating</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <MapPin className="w-5 h-5 text-pink-300" />
+              <span className="font-bold text-lg">50+</span>
+              <span className="text-white/80 text-sm">cities covered</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ==================== CONVERSATIONAL ENTRY ==================== */}
+      <div className="py-12 bg-gradient-to-b from-slate-50 to-white">
+        <div className="max-w-4xl mx-auto px-4">
+          <div className="bg-white rounded-3xl shadow-xl border border-purple-100 overflow-hidden">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                  <Sparkles className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-white font-bold">What type of travel are you planning?</h3>
+                  <p className="text-white/70 text-sm">Mira will help you every step of the way</p>
+                </div>
+              </div>
+            </div>
+            
+            {/* Goal Buttons */}
+            <div className="p-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {[
+                  { icon: '🚗', label: 'Vet Trip', type: 'cab', color: 'bg-blue-50 hover:bg-blue-100 text-blue-700 border-blue-200' },
+                  { icon: '✈️', label: 'Flight', type: 'flight', color: 'bg-purple-50 hover:bg-purple-100 text-purple-700 border-purple-200' },
+                  { icon: '🚆', label: 'Train Journey', type: 'train', color: 'bg-green-50 hover:bg-green-100 text-green-700 border-green-200' },
+                  { icon: '📦', label: 'Relocation', type: 'relocation', color: 'bg-amber-50 hover:bg-amber-100 text-amber-700 border-amber-200' },
+                  { icon: '🏖️', label: 'Vacation', type: 'cab', color: 'bg-cyan-50 hover:bg-cyan-100 text-cyan-700 border-cyan-200' },
+                  { icon: '🏥', label: 'Emergency', type: 'cab', color: 'bg-red-50 hover:bg-red-100 text-red-700 border-red-200' },
+                  { icon: '🎪', label: 'Event/Show', type: 'cab', color: 'bg-pink-50 hover:bg-pink-100 text-pink-700 border-pink-200' },
+                  { icon: '💬', label: 'Other', type: 'cab', color: 'bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200' }
+                ].map((goal, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => {
+                      setSelectedType(goal.type);
+                      handleStartPlanning();
+                    }}
+                    className={`flex items-center gap-2 px-4 py-3 rounded-xl border-2 transition-all hover:scale-[1.02] ${goal.color}`}
+                  >
+                    <span className="text-xl">{goal.icon}</span>
+                    <span className="font-medium text-sm">{goal.label}</span>
+                  </button>
+                ))}
+              </div>
+              
+              {/* Quick Win */}
+              <div className="mt-6 p-4 bg-gradient-to-r from-amber-50 to-yellow-50 rounded-xl border border-amber-200">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Zap className="w-4 h-4 text-amber-600" />
+                  </div>
+                  <div>
+                    <p className="font-semibold text-amber-800 text-sm">Quick Win</p>
+                    <p className="text-amber-700 text-sm">Start acclimating your pet to their carrier 2 weeks before travel. Leave it open with treats inside!</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ==================== TRANSFORMATION STORIES ==================== */}
+      <div className="py-12 bg-white">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="text-center mb-8">
+            <Badge className="bg-purple-100 text-purple-700 mb-3">Success Stories</Badge>
+            <h2 className="text-2xl font-bold text-gray-900">Happy Travels, Happy Tails</h2>
+            <p className="text-gray-600">Real journeys from our travel community</p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {/* Story 1: Flight Success */}
+            <div className="bg-gradient-to-br from-purple-50 to-violet-50 rounded-2xl p-5 border border-purple-100 hover:shadow-lg transition-all">
+              <div className="flex gap-3 mb-4">
+                <div className="text-center">
+                  <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-white shadow-md mb-1">
+                    <img src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop" alt="Before" className="w-full h-full object-cover" />
+                  </div>
+                  <span className="text-xs text-gray-500">Mumbai</span>
+                </div>
+                <div className="flex items-center">
+                  <Plane className="w-5 h-5 text-purple-400" />
+                </div>
+                <div className="text-center">
+                  <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-purple-300 shadow-md mb-1">
+                    <img src="https://images.unsplash.com/photo-1552053831-71594a27632d?w=200&h=200&fit=crop" alt="After" className="w-full h-full object-cover" />
+                  </div>
+                  <span className="text-xs text-purple-600 font-medium">Bangalore</span>
+                </div>
+              </div>
+              <h4 className="font-bold text-gray-900">Rocky</h4>
+              <p className="text-sm text-gray-500 mb-2">Golden Retriever</p>
+              <p className="text-sm text-purple-700 font-medium mb-2">First flight at 3 years old!</p>
+              <p className="text-xs text-gray-600 italic">&quot;They handled all the airline paperwork. Rocky was calm the entire journey!&quot;</p>
+              <p className="text-xs text-gray-400 mt-2">— Neha P., Mumbai</p>
+            </div>
+
+            {/* Story 2: Road Trip */}
+            <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-5 border border-blue-100 hover:shadow-lg transition-all">
+              <div className="flex gap-3 mb-4">
+                <div className="text-center">
+                  <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-white shadow-md mb-1">
+                    <img src="https://images.unsplash.com/photo-1537151625747-768eb6cf92b2?w=200&h=200&fit=crop" alt="Before" className="w-full h-full object-cover" />
+                  </div>
+                  <span className="text-xs text-gray-500">Delhi</span>
+                </div>
+                <div className="flex items-center">
+                  <Car className="w-5 h-5 text-blue-400" />
+                </div>
+                <div className="text-center">
+                  <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-blue-300 shadow-md mb-1">
+                    <img src="https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=200&h=200&fit=crop" alt="After" className="w-full h-full object-cover" />
+                  </div>
+                  <span className="text-xs text-blue-600 font-medium">Manali</span>
+                </div>
+              </div>
+              <h4 className="font-bold text-gray-900">Simba &amp; Luna</h4>
+              <p className="text-sm text-gray-500 mb-2">Huskies</p>
+              <p className="text-sm text-blue-700 font-medium mb-2">600km road trip with 2 dogs</p>
+              <p className="text-xs text-gray-600 italic">&quot;They planned every pet-friendly stop. Both dogs loved the mountain adventure!&quot;</p>
+              <p className="text-xs text-gray-400 mt-2">— Arjun M., Delhi</p>
+            </div>
+
+            {/* Story 3: International Relocation */}
+            <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-5 border border-amber-100 hover:shadow-lg transition-all">
+              <div className="flex gap-3 mb-4">
+                <div className="text-center">
+                  <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-white shadow-md mb-1">
+                    <img src="https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=200&h=200&fit=crop" alt="Before" className="w-full h-full object-cover" />
+                  </div>
+                  <span className="text-xs text-gray-500">Bangalore</span>
+                </div>
+                <div className="flex items-center">
+                  <Truck className="w-5 h-5 text-amber-400" />
+                </div>
+                <div className="text-center">
+                  <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-amber-300 shadow-md mb-1">
+                    <img src="https://images.unsplash.com/photo-1517849845537-4d257902454a?w=200&h=200&fit=crop" alt="After" className="w-full h-full object-cover" />
+                  </div>
+                  <span className="text-xs text-amber-600 font-medium">Dubai</span>
+                </div>
+              </div>
+              <h4 className="font-bold text-gray-900">Milo</h4>
+              <p className="text-sm text-gray-500 mb-2">French Bulldog</p>
+              <p className="text-sm text-amber-700 font-medium mb-2">International relocation</p>
+              <p className="text-xs text-gray-600 italic">&quot;All the import permits, quarantine paperwork — they handled everything flawlessly.&quot;</p>
+              <p className="text-xs text-gray-400 mt-2">— Priya S., Bangalore</p>
+            </div>
+
+            {/* Story 4: Train Journey */}
+            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-5 border border-green-100 hover:shadow-lg transition-all">
+              <div className="flex gap-3 mb-4">
+                <div className="text-center">
+                  <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-white shadow-md mb-1">
+                    <img src="https://images.unsplash.com/photo-1568572933382-74d440642117?w=200&h=200&fit=crop" alt="Before" className="w-full h-full object-cover" />
+                  </div>
+                  <span className="text-xs text-gray-500">Chennai</span>
+                </div>
+                <div className="flex items-center">
+                  <Train className="w-5 h-5 text-green-400" />
+                </div>
+                <div className="text-center">
+                  <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-green-300 shadow-md mb-1">
+                    <img src="https://images.unsplash.com/photo-1544568100-847a948585b9?w=200&h=200&fit=crop" alt="After" className="w-full h-full object-cover" />
+                  </div>
+                  <span className="text-xs text-green-600 font-medium">Ooty</span>
+                </div>
+              </div>
+              <h4 className="font-bold text-gray-900">Cookie</h4>
+              <p className="text-sm text-gray-500 mb-2">Indie Mix</p>
+              <p className="text-sm text-green-700 font-medium mb-2">First train journey</p>
+              <p className="text-xs text-gray-600 italic">&quot;They secured the pet compartment and even packed snacks. Cookie slept the whole way!&quot;</p>
+              <p className="text-xs text-gray-400 mt-2">— Kavitha R., Chennai</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* === TRAVEL TYPES STRIP === */}
       <div className="bg-white border-b shadow-sm sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 py-4">
