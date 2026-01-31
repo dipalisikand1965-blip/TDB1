@@ -759,36 +759,131 @@ const StayManager = ({ getAuthHeader }) => {
 
         {/* Tips Tab */}
         <TabsContent value="tips" className="space-y-4">
-          <div className="flex justify-between items-center">
-            <h3 className="font-semibold">Stay Tips</h3>
-            <Button onClick={() => { resetTipForm(); setShowTipModal(true); }}>
-              <Plus className="w-4 h-4 mr-2" /> Add Tip
-            </Button>
+          <div className="flex flex-wrap justify-between items-center gap-2">
+            <h3 className="font-semibold">Stay Tips ({quickWinTips.length})</h3>
+            <div className="flex gap-2">
+              <Button 
+                variant="outline" 
+                onClick={async () => {
+                  try {
+                    const response = await fetch(`${API_URL}/api/engagement/seed-pillar-tips?force_refresh=false`, {
+                      method: 'POST',
+                      headers: getAuthHeader()
+                    });
+                    const data = await response.json();
+                    toast({ title: 'Tips Seeded', description: `${data.total_new} new tips added. Stay: ${data.pillar_counts?.stay || 0}` });
+                    fetchTips();
+                  } catch (error) {
+                    toast({ title: 'Error', description: 'Failed to seed tips', variant: 'destructive' });
+                  }
+                }}
+              >
+                <Database className="w-4 h-4 mr-2" /> Seed Tips
+              </Button>
+              <Button 
+                variant="outline"
+                onClick={() => {
+                  // Generate CSV template
+                  const csvTemplate = "tip,action,emoji,category,action_type,action_url\n" +
+                    "\"Book pet-friendly stays 2 weeks ahead\",\"Search stays\",\"🏨\",\"general\",\"navigate\",\"/stay\"\n" +
+                    "\"Pack familiar bedding for comfort\",\"View checklist\",\"🛏️\",\"general\",\"checklist\",\"stay\"";
+                  const blob = new Blob([csvTemplate], { type: 'text/csv' });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = 'stay_tips_template.csv';
+                  a.click();
+                }}
+              >
+                <Download className="w-4 h-4 mr-2" /> CSV Template
+              </Button>
+              <Button onClick={() => { resetTipForm(); setShowTipModal(true); }}>
+                <Plus className="w-4 h-4 mr-2" /> Add Tip
+              </Button>
+            </div>
           </div>
-          <div className="space-y-3">
+          
+          {/* Tips Grid */}
+          <div className="grid md:grid-cols-2 gap-3">
             {quickWinTips.map((tip) => (
-              <Card key={tip.id} className="p-4">
+              <Card key={tip.id} className="p-4 hover:shadow-md transition-shadow">
                 <div className="flex items-start justify-between">
-                  <div className="flex items-start gap-3">
-                    <span className="text-2xl">{tip.emoji || '💡'}</span>
-                    <div>
-                      <p className="font-medium">{tip.tip}</p>
-                      <Badge variant="outline" className="mt-1">{tip.action}</Badge>
+                  <div className="flex items-start gap-3 flex-1">
+                    <span className="text-2xl flex-shrink-0">{tip.emoji || '💡'}</span>
+                    <div className="min-w-0">
+                      <p className="font-medium text-sm line-clamp-2">{tip.tip}</p>
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        <Badge variant="outline" className="text-xs">{tip.action}</Badge>
+                        {tip.action_type && (
+                          <Badge className="text-xs bg-purple-100 text-purple-700">{tip.action_type}</Badge>
+                        )}
+                      </div>
                     </div>
                   </div>
-                  <div className="flex gap-2">
-                    <Button size="sm" variant="outline" onClick={() => {
+                  <div className="flex gap-1 flex-shrink-0 ml-2">
+                    <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => {
                       setEditingTip(tip);
-                      setTipForm(tip);
+                      setTipForm({
+                        tip: tip.tip,
+                        action: tip.action,
+                        emoji: tip.emoji,
+                        category: tip.category || 'general',
+                        action_type: tip.action_type || '',
+                        action_url: tip.action_url || ''
+                      });
                       setShowTipModal(true);
                     }}>
                       <Edit2 className="w-3 h-3" />
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="ghost" 
+                      className="h-7 w-7 p-0 text-red-500 hover:text-red-600 hover:bg-red-50"
+                      onClick={async () => {
+                        if (!window.confirm('Delete this tip?')) return;
+                        try {
+                          await fetch(`${API_URL}/api/engagement/tips/${tip.id}`, {
+                            method: 'DELETE',
+                            headers: getAuthHeader()
+                          });
+                          toast({ title: 'Tip deleted' });
+                          fetchTips();
+                        } catch (error) {
+                          toast({ title: 'Error', description: 'Failed to delete tip', variant: 'destructive' });
+                        }
+                      }}
+                    >
+                      <Trash2 className="w-3 h-3" />
                     </Button>
                   </div>
                 </div>
               </Card>
             ))}
           </div>
+          
+          {quickWinTips.length === 0 && (
+            <Card className="p-8 text-center">
+              <Sparkles className="w-12 h-12 mx-auto text-amber-400 mb-3" />
+              <h4 className="font-semibold mb-2">No Tips Yet</h4>
+              <p className="text-sm text-gray-500 mb-4">Click "Seed Tips" to auto-populate with curated stay tips</p>
+              <Button 
+                onClick={async () => {
+                  try {
+                    await fetch(`${API_URL}/api/engagement/seed-pillar-tips?force_refresh=false`, {
+                      method: 'POST',
+                      headers: getAuthHeader()
+                    });
+                    toast({ title: 'Tips seeded!' });
+                    fetchTips();
+                  } catch (error) {
+                    toast({ title: 'Error seeding tips', variant: 'destructive' });
+                  }
+                }}
+              >
+                <Database className="w-4 h-4 mr-2" /> Seed Stay Tips
+              </Button>
+            </Card>
+          )}
         </TabsContent>
 
         {/* Settings Tab */}
