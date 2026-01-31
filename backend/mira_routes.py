@@ -3058,14 +3058,23 @@ What would you like to explore? 🐾"""
         
         # ==================== END GUARD ====================
         
-        # 8. Add AI response to ticket
+        # 8. Add AI response to ticket (with products if any)
         await add_message_to_ticket(session_id, {
             "type": "mira_response",
             "content": response,
             "sender": "mira",
             "channel": request.source,
             "is_internal": False,
-            "research_mode": research_context is not None
+            "research_mode": research_context is not None,
+            "products_recommended": [
+                {"id": p.get("id"), "name": p.get("name"), "price": p.get("price")}
+                for p in products[:10]
+            ] if products else [],
+            "kit_info": {
+                "is_kit": product_context.get("is_kit_request", False),
+                "kit_type": product_context.get("kit_type"),
+                "items_count": len(products)
+            } if product_context.get("is_kit_request") else None
         })
         
         # 9. Check for enrichments to save to Pet Soul (ADVANCED)
