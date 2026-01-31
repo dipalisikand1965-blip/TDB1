@@ -3181,8 +3181,9 @@ What would you like to explore? 🐾"""
         product_keywords = ["treat", "cake", "food", "toy", "product", "buy", "show me", "want", "need", "looking for", "recommend", "suggest", "kit", "items", "specific products"]
         is_product_query = any(kw in user_message.lower() for kw in product_keywords)
         
-        # Analyze conversation context
-        product_context = extract_product_needs_from_context(user_message, history)
+        # Analyze conversation context (use request.history)
+        conversation_history = request.history or []
+        product_context = extract_product_needs_from_context(user_message, conversation_history)
         
         if is_product_query or product_context["is_kit_request"]:
             # Determine what to search for
