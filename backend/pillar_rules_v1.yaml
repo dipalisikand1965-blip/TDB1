@@ -1,0 +1,265 @@
+# Pillar Intent Rules v1.0
+# The Doggy Company
+# Last Updated: January 31, 2026
+#
+# ARCHITECTURE:
+# - Products have base_tags (facts)
+# - Services have base_tags (facts)
+# - Pillars are VIEWS defined by these rules
+# - Query: Pillar → Rules → MongoDB filter
+#
+# RULE STRUCTURE:
+#   pillar_name:
+#     products:
+#       must: {field: value}      ← required match
+#       boost: {field: value}     ← prefer but not required
+#       exclude: {field: value}   ← never include
+#     services:
+#       must: {...}
+#       boost: {...}
+#       exclude: {...}
+
+# =============================================================================
+# 🎂 CELEBRATE — Birthdays, parties, special occasions
+# =============================================================================
+celebrate:
+  products:
+    must:
+      purchase_pattern: celebration
+    boost:
+      category_primary: cakes
+      category_secondary: [birthday_cake, celebration_treat]
+    exclude: {}
+  services:
+    must:
+      service_type: [party_planning, photography]
+    boost:
+      session_type: single
+    exclude: {}
+
+# =============================================================================
+# 🍽️ DINE — Daily nutrition, meals, treats
+# =============================================================================
+dine:
+  products:
+    must:
+      interaction_type: consumable
+      category_primary: [food, treats]
+    boost:
+      usage_frequency: daily
+      purchase_pattern: replenishment
+    exclude:
+      category_primary: cakes
+  services:
+    must: {}
+    boost: {}
+    exclude: {}
+
+# =============================================================================
+# 🏨 STAY — Boarding, daycare, home stays
+# =============================================================================
+stay:
+  products:
+    must:
+      interaction_type: [play, containment]
+    boost:
+      benefits: [calming, anxiety_relief]
+      format: soft
+    exclude: {}
+  services:
+    must:
+      service_type: [boarding, sitting]
+    boost:
+      delivery_mode: [in_store, at_home]
+    exclude: {}
+
+# =============================================================================
+# ✈️ TRAVEL — Travel gear, transport services
+# =============================================================================
+travel:
+  products:
+    must:
+      interaction_type: [containment, wearable]
+      mess_level: low
+    boost:
+      category_secondary: travel_accessory
+    exclude:
+      category_primary: [cakes, food]
+      format: frozen
+  services:
+    must:
+      service_type: transport
+    boost:
+      delivery_mode: pickup_drop
+    exclude: {}
+
+# =============================================================================
+# 💊 CARE — Health, grooming, wellness products
+# =============================================================================
+care:
+  products:
+    must:
+      category_primary: [supplements, grooming]
+    boost:
+      benefits: [immunity, skin_coat, dental_health]
+    exclude: {}
+  services:
+    must:
+      service_type: [grooming, medical, wellness]
+    boost:
+      provider_type: [groomer, vet, vet_nurse]
+    exclude: {}
+
+# =============================================================================
+# 🎾 ENJOY — Toys, enrichment, fun activities
+# =============================================================================
+enjoy:
+  products:
+    must:
+      interaction_type: play
+    boost:
+      benefits: [boredom_relief, mental_stimulation]
+      category_primary: toys
+    exclude: {}
+  services:
+    must:
+      service_type: [walking, party_planning]
+    boost:
+      delivery_mode: outdoor
+    exclude: {}
+
+# =============================================================================
+# 🏃 FIT — Fitness, weight management, exercise
+# =============================================================================
+fit:
+  products:
+    must:
+      benefits: weight_management
+    boost:
+      interaction_type: play
+    exclude: {}
+  services:
+    must:
+      service_type: [fitness, training, walking]
+    boost:
+      benefits: [weight_management, mobility]
+    exclude: {}
+
+# =============================================================================
+# 🎓 LEARN — Training, education, skill building
+# =============================================================================
+learn:
+  products:
+    must:
+      benefits: training_support
+    boost:
+      category_secondary: training_treat
+    exclude: {}
+  services:
+    must:
+      service_type: [training, consultation]
+    boost:
+      provider_type: certified_trainer
+      session_type: [package, program]
+    exclude: {}
+
+# =============================================================================
+# 📄 PAPERWORK — Documents, ID tags, certificates
+# =============================================================================
+paperwork:
+  products:
+    must:
+      interaction_type: document
+    boost:
+      category_primary: accessories
+    exclude: {}
+  services:
+    must:
+      service_type: consultation
+      booking_type: consultation
+    boost: {}
+    exclude: {}
+
+# =============================================================================
+# 📋 ADVISORY — Expert consultations, health advice
+# =============================================================================
+advisory:
+  products:
+    must:
+      category_primary: supplements
+    boost:
+      benefits: [joint_support, cognitive_support]
+    exclude: {}
+  services:
+    must:
+      service_type: [consultation, medical]
+    boost:
+      provider_type: vet
+      delivery_mode: virtual
+    exclude: {}
+
+# =============================================================================
+# 🚨 EMERGENCY — Urgent needs, one-time essentials
+# =============================================================================
+emergency:
+  products:
+    must:
+      usage_frequency: one_time
+    boost:
+      category_secondary: travel_accessory
+    exclude: {}
+  services:
+    must:
+      service_type: [medical, transport]
+    boost:
+      booking_type: instant
+    exclude:
+      session_type: subscription
+
+# =============================================================================
+# 🌈 FAREWELL — End-of-life, memorial (handle delicately)
+# =============================================================================
+farewell:
+  products:
+    must:
+      purchase_pattern: celebration
+    boost:
+      interaction_type: consumable
+    exclude: {}
+  services:
+    must:
+      service_type: [photography, consultation]
+    boost:
+      delivery_mode: at_home
+    exclude: {}
+
+# =============================================================================
+# 🐾 ADOPT — New pet essentials, puppy starter
+# =============================================================================
+adopt:
+  products:
+    must:
+      life_stage: puppy
+    boost:
+      purchase_pattern: impulse
+      usage_frequency: daily
+    exclude: {}
+  services:
+    must:
+      service_type: [training, consultation]
+    boost:
+      life_stage: puppy
+    exclude: {}
+
+# =============================================================================
+# 🛒 SHOP — Default catch-all, browse everything
+# =============================================================================
+shop:
+  products:
+    must: {}
+    boost: {}
+    exclude: {}
+  services:
+    must: {}
+    boost: {}
+    exclude: {}
