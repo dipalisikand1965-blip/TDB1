@@ -899,7 +899,7 @@ const ProductListing = ({ category = 'all' }) => {
             <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
               {petRecommendations.slice(0, 6).map(product => (
                 <div key={product.id} className="flex-shrink-0 w-40">
-                  <a href={`/shop/${product.handle || product.id}`} className="block group">
+                  <a href={`/product/${product.id}`} className="block group">
                     <div className="relative bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
                       <div className="aspect-square bg-gray-100">
                         {product.image && (
