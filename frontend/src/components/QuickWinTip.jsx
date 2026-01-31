@@ -5,7 +5,7 @@
  * NOW PILLAR-AWARE: Shows relevant tips per pillar
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Lightbulb, RefreshCw, ArrowRight } from 'lucide-react';
 
