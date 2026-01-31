@@ -3384,20 +3384,81 @@ What would you like to explore? 🐾"""
             elif category in PILLAR_ROUTES:
                 enhanced_concierge_action["navigate_to"] = PILLAR_ROUTES[category]
             
-            # Add quick booking form trigger for service requests
+            # Add quick booking form trigger for service requests - ALL 14 PILLARS
             SERVICE_WIZARD_TRIGGERS = {
+                # Care pillar
                 "grooming": "grooming",
                 "groom": "grooming", 
                 "vet": "vet_consultation",
+                "vaccination": "vaccination",
+                "checkup": "health_checkup",
+                # Stay pillar
                 "boarding": "boarding",
+                "hotel": "pet_hotel",
+                "daycare": "daycare",
+                # Learn pillar
                 "training": "training",
+                "class": "training_class",
+                "obedience": "obedience_training",
+                # Walk pillar
                 "walking": "dog_walking",
-                "sitting": "pet_sitting"
+                "walk": "dog_walking",
+                # Sitter pillar
+                "sitting": "pet_sitting",
+                "sitter": "pet_sitting",
+                # Enjoy pillar
+                "meetup": "pet_meetup",
+                "playdate": "playdate",
+                "park": "park_visit",
+                "activity": "pet_activity",
+                "event": "pet_event",
+                # Celebrate pillar
+                "birthday": "birthday_party",
+                "party": "birthday_party",
+                "photoshoot": "photoshoot",
+                # Dine pillar
+                "reservation": "dining_reservation",
+                "restaurant": "dining_reservation",
+                "cafe": "cafe_booking",
+                # Travel pillar
+                "flight": "flight_booking",
+                "relocation": "pet_relocation",
+                "transport": "pet_transport",
+                # Fit pillar
+                "swimming": "swimming_session",
+                "fitness": "fitness_session",
+                "spa": "spa_session",
+                # Adopt pillar
+                "adoption": "adoption_inquiry",
+                "adopt": "adoption_inquiry",
+                # Insure pillar
+                "insurance": "insurance_inquiry",
+                "insure": "insurance_inquiry",
+                # Remember pillar
+                "memorial": "memorial_service",
+                "remember": "memorial_service"
             }
             detected_service = None
             for trigger, service_type in SERVICE_WIZARD_TRIGGERS.items():
                 if trigger in message_lower:
                     detected_service = service_type
+                    # Also set pillar based on service type
+                    SERVICE_TO_PILLAR = {
+                        "grooming": "care", "vet_consultation": "care", "vaccination": "care", "health_checkup": "care",
+                        "boarding": "stay", "pet_hotel": "stay", "daycare": "stay",
+                        "training": "learn", "training_class": "learn", "obedience_training": "learn",
+                        "dog_walking": "walk",
+                        "pet_sitting": "sitter",
+                        "pet_meetup": "enjoy", "playdate": "enjoy", "park_visit": "enjoy", "pet_activity": "enjoy", "pet_event": "enjoy",
+                        "birthday_party": "celebrate", "photoshoot": "celebrate",
+                        "dining_reservation": "dine", "cafe_booking": "dine",
+                        "flight_booking": "travel", "pet_relocation": "travel", "pet_transport": "travel",
+                        "swimming_session": "fit", "fitness_session": "fit", "spa_session": "fit",
+                        "adoption_inquiry": "adopt",
+                        "insurance_inquiry": "insure",
+                        "memorial_service": "remember"
+                    }
+                    enhanced_concierge_action["service_pillar"] = SERVICE_TO_PILLAR.get(service_type, pillar)
                     break
             
             if detected_service:
