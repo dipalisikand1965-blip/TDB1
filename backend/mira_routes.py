@@ -3505,7 +3505,10 @@ What would you like to explore? 🐾"""
                     handoff_reason = f"Full kit sourcing needed - items: {', '.join(missing_items)}"
             
             else:
-                # Fallback: search by pillar/message - PRIORITIZE what user asked for
+                # =======================================================================
+                # NEW: Use PillarResolver for rule-based product filtering
+                # This replaces the old pillar field search with base_tags-based rules
+                # =======================================================================
                 search_terms = user_message.lower().split()
                 
                 # Check if user is asking for specific category (food vs toys vs treats)
@@ -3525,6 +3528,7 @@ What would you like to explore? 🐾"""
                             {"name": {"$not": {"$regex": "toy|game|ball", "$options": "i"}}}  # Exclude toys
                         ]
                     }
+                    found_products = await db.products.find(query, {"_id": 0}).limit(6).to_list(6)
                 elif is_treat_request:
                     query = {
                         "$or": [
@@ -3533,6 +3537,7 @@ What would you like to explore? 🐾"""
                             {"name": {"$regex": "treat|snack|chew", "$options": "i"}}
                         ]
                     }
+                    found_products = await db.products.find(query, {"_id": 0}).limit(6).to_list(6)
                 elif is_toy_request:
                     query = {
                         "$or": [
@@ -3541,21 +3546,46 @@ What would you like to explore? 🐾"""
                             {"name": {"$regex": "toy|ball|tug|fetch", "$options": "i"}}
                         ]
                     }
+                    found_products = await db.products.find(query, {"_id": 0}).limit(6).to_list(6)
                 else:
-                    # General search
-                    query = {
-                        "$or": [
-                            {"pillar": search_pillar},
-                            {"category": search_pillar},
-                            {"tags": {"$in": search_terms}},
-                            {"name": {"$regex": "|".join(search_terms[:5]), "$options": "i"}}
-                        ]
-                    }
+                    # ===================================================================
+                    # Use the NEW PillarResolver for pillar-based searches
+                    # This uses the rule-based base_tags system instead of pillar field
+                    # ===================================================================
+                    resolver = get_resolver()
+                    
+                    # Try to get products via the new resolver first
+                    if resolver.validate_pillar(search_pillar):
+                        # Get the MongoDB query from the resolver
+                        pillar_query = resolver.get_product_query(search_pillar)
+                        
+                        if pillar_query:
+                            # Add is_active filter
+                            pillar_query["is_active"] = {"$ne": False}
+                            
+                            logger.info(f"[PILLAR RESOLVER] Using rule-based query for pillar '{search_pillar}': {pillar_query}")
+                            found_products = await db.products.find(pillar_query, {"_id": 0}).limit(8).to_list(8)
+                            logger.info(f"[PILLAR RESOLVER] Found {len(found_products)} products for '{search_pillar}'")
+                        else:
+                            found_products = []
+                    else:
+                        # Pillar not in resolver - use text search fallback
+                        logger.warning(f"[PILLAR RESOLVER] Unknown pillar '{search_pillar}', using text search fallback")
+                        found_products = []
+                    
+                    # If resolver didn't find products, try text search as secondary fallback
+                    if not found_products:
+                        text_query = {
+                            "$or": [
+                                {"tags": {"$in": search_terms}},
+                                {"name": {"$regex": "|".join(search_terms[:5]), "$options": "i"}}
+                            ]
+                        }
+                        found_products = await db.products.find(text_query, {"_id": 0}).limit(6).to_list(6)
                 
-                found_products = await db.products.find(query, {"_id": 0}).limit(6).to_list(6)
-                
+                # Legacy fallback: if still no products, try the old pillar field (for transition period)
                 if not found_products:
-                    # Fallback to pillar search
+                    logger.info(f"[PILLAR RESOLVER] No products via new system, falling back to legacy pillar field")
                     found_products = await db.products.find(
                         {"$or": [{"pillar": search_pillar}, {"category": search_pillar}]},
                         {"_id": 0}
