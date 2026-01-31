@@ -36,6 +36,7 @@ const CARE_EXPERIENCES = [
     gradient: "from-rose-500 to-pink-600",
     badge: "Essential",
     badgeColor: "bg-rose-600",
+    image: "https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?w=800&q=80",
     highlights: [
       "Vet selection & appointment booking",
       "Medical record management",
@@ -50,6 +51,7 @@ const CARE_EXPERIENCES = [
     gradient: "from-pink-500 to-purple-600",
     badge: "Popular",
     badgeColor: "bg-amber-500",
+    image: "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?w=800&q=80",
     highlights: [
       "Groomer matching by breed expertise",
       "Temperament-sensitive handling",
@@ -62,6 +64,7 @@ const CARE_EXPERIENCES = [
     description: "Need a reliable walker, sitter, or overnight carer? We vet, match, and coordinate trusted companions who treat your pet like family — not just another client.",
     icon: "🐕",
     gradient: "from-green-500 to-teal-600",
+    image: "https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=800&q=80",
     highlights: [
       "Background-verified walkers & sitters",
       "Personality & energy matching",
@@ -74,6 +77,7 @@ const CARE_EXPERIENCES = [
     description: "When emergencies strike, you need more than a phone number. We guide you through crisis moments — locating 24/7 vets, arranging urgent transport, and staying with you until your pet is safe.",
     icon: "🚨",
     gradient: "from-red-500 to-orange-600",
+    image: "https://images.unsplash.com/photo-1612531386530-97286d97c2d2?w=800&q=80",
     highlights: [
       "24/7 emergency vet locator",
       "Urgent transport coordination",
@@ -88,6 +92,7 @@ const CARE_EXPERIENCES = [
     gradient: "from-orange-500 to-amber-600",
     badge: "New",
     badgeColor: "bg-orange-500",
+    image: "https://images.unsplash.com/photo-1585846416120-3a7354ed7d39?w=800&q=80",
     highlights: [
       "Custom diet planning by nutritionists",
       "Weight management programmes",
