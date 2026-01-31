@@ -177,7 +177,8 @@ const EnjoyPage = () => {
         fetch(`${API_URL}/api/enjoy/experiences`),
         fetch(`${API_URL}/api/enjoy/experiences?is_featured=true`),
         fetch(`${API_URL}/api/enjoy/calendar`),
-        fetch(`${API_URL}/api/enjoy/products`),
+        // Use new pillar resolver API for rule-based product filtering
+        fetch(`${API_URL}/api/pillar-resolver/products/enjoy?limit=50`),
         fetch(`${API_URL}/api/enjoy/bundles`)
       ]);
       
@@ -198,6 +199,7 @@ const EnjoyPage = () => {
       if (productsRes.ok) {
         const data = await productsRes.json();
         setProducts(data.products || []);
+        console.log(`[EnjoyPage] Loaded ${data.count} products via pillar resolver`);
       }
       if (bundlesRes.ok) {
         const data = await bundlesRes.json();
