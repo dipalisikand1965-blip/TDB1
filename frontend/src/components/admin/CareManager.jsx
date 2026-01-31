@@ -1538,6 +1538,78 @@ const CareManager = ({ getAuthHeader }) => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      
+      {/* Tip Modal */}
+      <Dialog open={showTipModal} onOpenChange={setShowTipModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{editingTip ? 'Edit Care Tip' : 'Add Care Tip'}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <Label>Tip Text</Label>
+              <Textarea 
+                value={tipForm.tip}
+                onChange={(e) => setTipForm({ ...tipForm, tip: e.target.value })}
+                placeholder="Enter the tip content..."
+                className="mt-1"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Action Button Text</Label>
+                <Input 
+                  value={tipForm.action}
+                  onChange={(e) => setTipForm({ ...tipForm, action: e.target.value })}
+                  placeholder="e.g., Book grooming"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label>Emoji</Label>
+                <Input 
+                  value={tipForm.emoji}
+                  onChange={(e) => setTipForm({ ...tipForm, emoji: e.target.value })}
+                  placeholder="e.g., ✨"
+                  className="mt-1"
+                />
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Action Type</Label>
+                <Select 
+                  value={tipForm.action_type || 'none'} 
+                  onValueChange={(v) => setTipForm({ ...tipForm, action_type: v === 'none' ? '' : v })}
+                >
+                  <SelectTrigger className="mt-1">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">None</SelectItem>
+                    <SelectItem value="navigate">Navigate</SelectItem>
+                    <SelectItem value="checklist">Show Checklist</SelectItem>
+                    <SelectItem value="link">External Link</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label>Action URL</Label>
+                <Input 
+                  value={tipForm.action_url}
+                  onChange={(e) => setTipForm({ ...tipForm, action_url: e.target.value })}
+                  placeholder="e.g., /care?type=grooming"
+                  className="mt-1"
+                />
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setShowTipModal(false); resetTipForm(); }}>Cancel</Button>
+            <Button onClick={saveTip}>{editingTip ? 'Update' : 'Create'}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
