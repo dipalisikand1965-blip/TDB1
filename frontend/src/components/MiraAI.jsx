@@ -936,10 +936,14 @@ const MiraAI = () => {
                               }`}
                               onClick={() => !product.concierge_sourced && (window.location.href = `/product/${product.id || product._id}`)}
                             >
-                              {/* Product Image or Concierge Bell */}
+                              {/* Product Image / Concierge Bell / Service Icon */}
                               {product.concierge_sourced ? (
                                 <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center flex-shrink-0">
                                   <span className="text-2xl">🔔</span>
+                                </div>
+                              ) : product.is_service ? (
+                                <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center flex-shrink-0">
+                                  <span className="text-2xl">✨</span>
                                 </div>
                               ) : (
                                 <img 
@@ -966,6 +970,28 @@ const MiraAI = () => {
                                     <p className="text-[10px] text-amber-600 mt-0.5">
                                       Price & payment link sent separately
                                     </p>
+                                  </div>
+                                ) : product.is_service ? (
+                                  <div className="mt-1">
+                                    <span className="text-[10px] text-blue-600 font-medium">
+                                      ✨ Service - Book Now
+                                    </span>
+                                    <button 
+                                      className="mt-1.5 text-[10px] font-medium text-white bg-blue-500 hover:bg-blue-600 px-2.5 py-1 rounded-full transition-colors"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        // Show quick book form for this service
+                                        setMessages(prev => [...prev, {
+                                          id: Date.now().toString(),
+                                          role: 'assistant',
+                                          content: `Great choice! Let's book your ${product.name} session.`,
+                                          showQuickBookForm: true,
+                                          serviceType: product.service_type || product.name.toLowerCase()
+                                        }]);
+                                      }}
+                                    >
+                                      📅 Book
+                                    </button>
                                   </div>
                                 ) : (
                                   <>
