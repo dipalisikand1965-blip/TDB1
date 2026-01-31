@@ -3059,6 +3059,9 @@ What would you like to explore? 🐾"""
         # ==================== END GUARD ====================
         
         # 8. Add AI response to ticket (with products if any)
+        # Safely get products - may not be defined if no product search happened
+        products_for_ticket = products if 'products' in dir() and products else []
+        
         await add_message_to_ticket(session_id, {
             "type": "mira_response",
             "content": response,
@@ -3068,13 +3071,13 @@ What would you like to explore? 🐾"""
             "research_mode": research_context is not None,
             "products_recommended": [
                 {"id": p.get("id"), "name": p.get("name"), "price": p.get("price")}
-                for p in products[:10]
-            ] if products else [],
+                for p in products_for_ticket[:10]
+            ] if products_for_ticket else [],
             "kit_info": {
-                "is_kit": product_context.get("is_kit_request", False),
-                "kit_type": product_context.get("kit_type"),
-                "items_count": len(products)
-            } if product_context.get("is_kit_request") else None
+                "is_kit": product_context.get("is_kit_request", False) if 'product_context' in dir() else False,
+                "kit_type": product_context.get("kit_type") if 'product_context' in dir() else None,
+                "items_count": len(products_for_ticket)
+            } if 'product_context' in dir() and product_context.get("is_kit_request") else None
         })
         
         # 9. Check for enrichments to save to Pet Soul (ADVANCED)
