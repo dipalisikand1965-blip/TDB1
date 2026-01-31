@@ -216,8 +216,11 @@ const MiraChatWidget = ({
       // Personalized welcome based on context
       let welcomeMsg = `${greeting}! I'm Mira, your personal pet concierge.`;
       
-      if (miraContext?.pillar_note) {
-        welcomeMsg = miraContext.pillar_note;
+      // Safely get pillar note - ensure it's a string
+      const pillarNote = typeof miraContext?.pillar_note === 'string' ? miraContext.pillar_note : null;
+      
+      if (pillarNote) {
+        welcomeMsg = pillarNote;
       } else if (petName && petBreed) {
         welcomeMsg += ` I see you're browsing ${pillarName} for ${petName}, your lovely ${petBreed}. How can I help today?`;
       } else if (petName) {
