@@ -1386,7 +1386,7 @@ const PropertyCard = ({ property, isFavorite, onToggleFavorite, onViewDetails, o
       {/* Image - Compact on mobile */}
       <div className="relative h-28 sm:h-40 flex-shrink-0">
         <img 
-          src={property.photos?.[0] || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800'} 
+          src={property.image || property.thumbnail || property.photos?.[0] || 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800'} 
           alt={property.name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
