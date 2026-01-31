@@ -222,7 +222,16 @@ const QuickWinTip = ({
                 <p className="font-semibold text-gray-800">
                   {petName ? `Quick win for ${petName}` : 'Quick Win'}
                 </p>
-                <p className="text-xs text-amber-600/80">Daily tip to boost wellness</p>
+                <p className="text-xs text-amber-600/80">
+                  {pillar === 'stay' ? 'Tips for your pawcation' :
+                   pillar === 'travel' ? 'Travel tips for pet parents' :
+                   pillar === 'care' ? 'Care & grooming tips' :
+                   pillar === 'celebrate' ? 'Party planning tips' :
+                   pillar === 'dine' ? 'Dining out with pets' :
+                   pillar === 'enjoy' ? 'Fun activities for pets' :
+                   pillar === 'learn' ? 'Training & learning tips' :
+                   'Daily tip to boost wellness'}
+                </p>
               </div>
             </div>
           </div>
