@@ -232,17 +232,17 @@ const EnjoyPage = () => {
   const handleRsvp = (experience) => {
     // Open for all - no login required
     setSelectedExperience(experience);
-    setSelectedPet(null);
+    setSelectedPets([]);
     setShowRsvpModal(true);
   };
 
   const submitRsvp = async () => {
     // Check for pet info (either from profile or guest entry)
-    const hasPetInfo = selectedPet || rsvpForm.guest_pet_name;
+    const hasPetInfo = selectedPets.length > 0 || rsvpForm.guest_pet_name;
     if (!hasPetInfo || !selectedExperience) {
       toast({
         title: "Missing Information",
-        description: "Please enter your pet's details",
+        description: "Please select or enter your pet's details",
         variant: "destructive"
       });
       return;
@@ -250,23 +250,35 @@ const EnjoyPage = () => {
     
     setSubmitting(true);
     try {
-      const petData = selectedPet ? {
-        pet_id: selectedPet.id,
-        pet_name: selectedPet.name,
-        pet_breed: selectedPet.breed,
-        pet_size: selectedPet.size,
-      } : {
-        pet_id: null,
-        pet_name: rsvpForm.guest_pet_name,
-        pet_breed: rsvpForm.guest_pet_breed || '',
-        pet_size: '',
-      };
+      // Multi-pet support
+      const petsData = selectedPets.length > 0 
+        ? selectedPets.map(p => ({ 
+            pet_id: p.id || p._id, 
+            pet_name: p.name, 
+            pet_breed: p.breed, 
+            pet_size: p.size 
+          }))
+        : [{ 
+            pet_id: null, 
+            pet_name: rsvpForm.guest_pet_name, 
+            pet_breed: rsvpForm.guest_pet_breed || '', 
+            pet_size: '' 
+          }];
 
       // Use unified API client for consistent flow across all devices
       const requestPayload = {
         experience_id: selectedExperience.id,
-        ...petData,
+        // Multi-pet support
+        pets: petsData,
+        pet_count: petsData.length,
+        is_multi_pet: petsData.length > 1,
+        // Legacy fields for backward compatibility
+        pet_id: petsData[0]?.pet_id,
+        pet_name: petsData.map(p => p.pet_name).join(', '),
+        pet_breed: petsData[0]?.pet_breed,
+        pet_size: petsData[0]?.pet_size,
         ...rsvpForm,
+        number_of_pets: petsData.length,
         user_name: user?.name || rsvpForm.guest_name || '',
         user_email: user?.email || rsvpForm.guest_email || '',
         user_phone: user?.phone || rsvpForm.guest_phone || ''
