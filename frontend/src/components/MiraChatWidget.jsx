@@ -552,9 +552,11 @@ const MiraChatWidget = ({
     if (onProductClick) {
       onProductClick(product);
     } else {
-      // Default: add to cart
-      addToCart(product);
-      toast.success(`${product.name} added to cart!`);
+      // Navigate to product page instead of adding to cart
+      const productUrl = product.url || product.shopify_handle 
+        ? `/product/${product.shopify_handle || product.url}`
+        : `/product/${product.id}`;
+      navigate(productUrl);
     }
     // Track the click for personalization
     trackClick('product_recommendation', product.id, { pillar, source: 'mira_chat' });
