@@ -158,7 +158,7 @@ const ConversationalEntry = ({
         body: JSON.stringify({
           goal_id: goal.id,
           goal_label: goal.label,
-          pillar: 'fit',
+          pillar: pillar, // Use the actual pillar
           message: message
         })
       });
@@ -169,7 +169,7 @@ const ConversationalEntry = ({
     if (onGoalSelect) {
       onGoalSelect(goal, message);
     } else {
-      navigate(`/mira?context=fit_${goal.id}&preset=${encodeURIComponent(message)}`);
+      navigate(`/mira?context=${pillar}_${goal.id}&preset=${encodeURIComponent(message)}`);
     }
   };
 
