@@ -38,6 +38,7 @@ import { toast } from '../hooks/use-toast';
  * @param {string} props.badgeColor - Badge color (e.g., "bg-amber-500")
  * @param {string[]} props.highlights - Optional list of highlights/what's included
  * @param {boolean} props.compact - If true, renders a smaller card
+ * @param {string} props.image - Optional background image URL
  */
 const ConciergeExperienceCard = ({
   pillar,
@@ -49,7 +50,8 @@ const ConciergeExperienceCard = ({
   badge,
   badgeColor = "bg-amber-500",
   highlights = [],
-  compact = false
+  compact = false,
+  image = null
 }) => {
   const { user, token } = useAuth();
   const [showModal, setShowModal] = useState(false);
