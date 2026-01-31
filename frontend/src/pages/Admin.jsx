@@ -49,6 +49,7 @@ import AutomatedRemindersManager from '../components/admin/AutomatedRemindersMan
 import AdvancedAnalyticsDashboard from '../components/admin/AdvancedAnalyticsDashboard';
 import UnifiedProductBox from '../components/admin/UnifiedProductBox';
 import ConciergeExperiencesAdmin from '../components/admin/ConciergeExperiencesAdmin';
+import PillarQueues from '../components/admin/PillarQueues';
 import { testimonials as mockTestimonials, faqs as mockFaqs } from '../mockData';
 import { API_URL } from '../utils/api';
 import { getPetPhotoUrl } from '../utils/petAvatar';
