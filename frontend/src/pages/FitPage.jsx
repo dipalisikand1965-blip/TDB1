@@ -343,8 +343,23 @@ const FitPage = () => {
   const [selectedService, setSelectedService] = useState(null);
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [userPets, setUserPets] = useState([]);
-  const [selectedPet, setSelectedPet] = useState(null);
+  const [selectedPets, setSelectedPets] = useState([]); // Multi-pet selection
   const [submitting, setSubmitting] = useState(false);
+  
+  // Multi-pet selection handlers
+  const handlePetToggle = (pet) => {
+    setSelectedPets(prev => {
+      const petId = pet.id || pet._id;
+      const isSelected = prev.some(p => (p.id || p._id) === petId);
+      if (isSelected) {
+        return prev.filter(p => (p.id || p._id) !== petId);
+      }
+      return [...prev, pet];
+    });
+  };
+  
+  const handleSelectAllPets = () => setSelectedPets([...userPets]);
+  const handleClearAllPets = () => setSelectedPets([]);
   
   // Form state
   const [bookingForm, setBookingForm] = useState({
