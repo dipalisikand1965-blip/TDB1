@@ -500,6 +500,24 @@ const MiraChatWidget = ({
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {/* Pulse Voice Button */}
+            {speechSupported && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleListening();
+                }}
+                className={`px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1 transition-all ${
+                  isListening 
+                    ? 'bg-cyan-400 text-gray-900 animate-pulse' 
+                    : 'bg-white/20 hover:bg-white/30 text-white'
+                }`}
+                data-testid="mira-header-pulse"
+              >
+                <Zap className="w-3 h-3" />
+                Pulse
+              </button>
+            )}
             {/* Voice toggle */}
             <button
               onClick={(e) => { e.stopPropagation(); setVoiceEnabled(!voiceEnabled); }}
