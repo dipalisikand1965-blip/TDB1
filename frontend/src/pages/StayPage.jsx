@@ -84,6 +84,7 @@ const StayPage = () => {
   const [boardingFacilities, setBoardingFacilities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('stays'); // 'stays' or 'boarding'
+  const [propertiesToShow, setPropertiesToShow] = useState(8); // Load More state
   const [filters, setFilters] = useState({
     city: '',
     propertyType: '',
