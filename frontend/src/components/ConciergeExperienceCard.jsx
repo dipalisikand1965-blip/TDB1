@@ -232,24 +232,38 @@ const ConciergeExperienceCard = ({
         onClick={() => setShowModal(true)}
         data-testid={`concierge-exp-${title.toLowerCase().replace(/\s+/g, '-')}`}
       >
-        {/* Card Header with Gradient - More elegant, less boxy */}
-        <div className={`h-24 sm:h-28 md:h-32 bg-gradient-to-br ${gradient} p-4 sm:p-5 relative overflow-hidden`}>
+        {/* Card Header with Image or Gradient */}
+        <div className={`h-28 sm:h-32 md:h-36 relative overflow-hidden`}>
+          {/* Background Image or Gradient */}
+          {image ? (
+            <>
+              <img 
+                src={image} 
+                alt={title} 
+                className="absolute inset-0 w-full h-full object-cover"
+              />
+              <div className={`absolute inset-0 bg-gradient-to-t ${gradient} opacity-70`} />
+            </>
+          ) : (
+            <div className={`absolute inset-0 bg-gradient-to-br ${gradient}`} />
+          )}
+          
           {/* Background icon - subtle */}
-          <div className="absolute -right-2 sm:-right-4 -bottom-2 sm:-bottom-4 opacity-15 text-5xl sm:text-7xl">
+          <div className="absolute -right-2 sm:-right-4 -bottom-2 sm:-bottom-4 opacity-20 text-5xl sm:text-7xl text-white">
             {icon}
           </div>
           
           {/* Badge */}
           {badge && (
-            <Badge className={`${badgeColor} text-white text-[10px] sm:text-xs absolute top-3 sm:top-4 right-3 sm:right-4`}>
+            <Badge className={`${badgeColor} text-white text-[10px] sm:text-xs absolute top-3 sm:top-4 right-3 sm:right-4 z-10`}>
               {badge}
             </Badge>
           )}
           
           {/* Icon and Title */}
-          <div className="relative z-10">
-            <div className="text-2xl sm:text-3xl mb-1 sm:mb-2">{icon}</div>
-            <h3 className="text-white font-bold text-base sm:text-lg leading-tight">{title}</h3>
+          <div className="relative z-10 p-4 sm:p-5 h-full flex flex-col justify-end">
+            <div className="text-2xl sm:text-3xl mb-1 sm:mb-2 drop-shadow-lg">{icon}</div>
+            <h3 className="text-white font-bold text-base sm:text-lg leading-tight drop-shadow-lg">{title}</h3>
           </div>
         </div>
 
