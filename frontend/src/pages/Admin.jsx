@@ -20,7 +20,7 @@ import PillarCategoryManager from '../components/PillarCategoryManager';
 import EnhancedCollectionManager from '../components/EnhancedCollectionManager';
 import PartnerManager from '../components/PartnerManager';
 import PricingHub from '../components/PricingHub';
-import StayManager from '../components/StayManager';
+import StayManager from '../components/admin/StayManager';
 import TravelManager from '../components/admin/TravelManager';
 import CareManager from '../components/admin/CareManager';
 import EnjoyManager from '../components/admin/EnjoyManager';
