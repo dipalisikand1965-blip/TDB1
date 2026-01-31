@@ -402,7 +402,8 @@ const FitPage = () => {
     try {
       const [servicesRes, productsRes, bundlesRes] = await Promise.all([
         fetch(`${API_URL}/api/services?pillar=fit`),
-        fetch(`${API_URL}/api/products?pillar=fit&limit=10`),
+        // Use new pillar resolver API for rule-based product filtering
+        fetch(`${API_URL}/api/pillar-resolver/products/fit?limit=20`),
         fetch(`${API_URL}/api/fit/bundles`)
       ]);
       
@@ -414,6 +415,7 @@ const FitPage = () => {
       if (productsRes.ok) {
         const data = await productsRes.json();
         setProducts(data.products || []);
+        console.log(`[FitPage] Loaded ${data.count} products via pillar resolver`);
       }
       
       if (bundlesRes.ok) {
