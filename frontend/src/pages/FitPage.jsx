@@ -657,6 +657,7 @@ const FitPage = () => {
           <div className="grid lg:grid-cols-2 gap-6 items-stretch">
             {/* Conversational Entry - Component has its own styling now */}
             <ConversationalEntry 
+              pillar="fit"
               petName={userPets[0]?.name}
               onGoalSelect={(goal, message) => {
                 navigate(`/mira?context=fit_${goal.id}&preset=${encodeURIComponent(message)}`);
@@ -665,11 +666,18 @@ const FitPage = () => {
             
             {/* Quick Win Tip - Component has its own styling now */}
             <QuickWinTip
+              pillar="fit"
               petName={userPets[0]?.name}
               petBreed={userPets[0]?.breed}
               petAge={userPets[0]?.age}
               onActionClick={(tip) => {
-                toast({ title: 'Coming soon!', description: tip.action });
+                if (tip?.actionType === 'navigate' && tip?.actionUrl) {
+                  navigate(tip.actionUrl);
+                } else if (tip?.actionType === 'checklist') {
+                  toast({ title: tip.action, description: 'Fitness checklist coming soon!' });
+                } else {
+                  toast({ title: tip.action, description: 'Coming soon!' });
+                }
               }}
             />
           </div>
