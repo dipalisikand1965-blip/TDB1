@@ -120,9 +120,6 @@ const ConversationalEntry = ({
   const pillarConfig = PILLAR_GOALS[pillar] || PILLAR_GOALS.fit;
   const goals = pillarConfig.goals;
   const fullText = pillarConfig.title(petName);
-  const fullText = petName 
-    ? `What's your fitness goal for ${petName}?`
-    : "What's your pet's fitness goal?";
 
   // Typing animation effect
   useEffect(() => {
