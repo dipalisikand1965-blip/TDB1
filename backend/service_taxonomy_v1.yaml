@@ -1,0 +1,139 @@
+# Service Intelligence Taxonomy v1.0 (LOCKED)
+# The Doggy Company - Base Service Tags
+# Last Updated: January 31, 2026
+
+# =============================================================================
+# GOLDEN RULES (SAME AS PRODUCTS)
+# =============================================================================
+# 1. Services store FACTS only (what it IS)
+# 2. Pillars store INTENT logic (when/why it matters)
+# 3. Never tag pillars or occasions on services
+# 4. Confidence < 0.7 → flag for human review
+
+# =============================================================================
+# SERVICE TYPE (single-select, REQUIRED)
+# =============================================================================
+service_type:
+  - grooming          # bathing, haircuts, nail trim, spa
+  - training          # obedience, behavior, tricks
+  - fitness           # exercise programs, agility, weight management
+  - wellness          # yoga, massage, relaxation
+  - medical           # vet consultation, health checks, vaccinations
+  - boarding          # overnight stay, daycare
+  - walking           # dog walking, park visits
+  - sitting           # pet sitting at home
+  - photography       # photoshoots, portraits
+  - party_planning    # birthday parties, celebrations
+  - consultation      # advisory, behavioral assessment
+  - transport         # pet taxi, airport pickup
+
+# =============================================================================
+# DELIVERY MODE (single-select, REQUIRED)
+# =============================================================================
+delivery_mode:
+  - in_store          # at your facility/salon
+  - at_home           # provider goes to customer's home
+  - virtual           # video call consultation
+  - outdoor           # parks, trails, outdoor venues
+  - pickup_drop       # pet picked up and returned
+
+# =============================================================================
+# SESSION TYPE (single-select, REQUIRED)
+# =============================================================================
+session_type:
+  - single            # one-time session
+  - package           # bundle of sessions (4, 8, 12)
+  - subscription      # ongoing monthly
+  - program           # structured multi-week program
+
+# =============================================================================
+# DURATION (single-select, REQUIRED)
+# =============================================================================
+duration:
+  - 30min
+  - 60min
+  - 90min
+  - 120min
+  - half_day          # 4 hours
+  - full_day          # 8 hours
+  - overnight
+  - multi_day
+
+# =============================================================================
+# PROVIDER REQUIREMENT (single-select)
+# =============================================================================
+provider_type:
+  - certified_trainer
+  - groomer
+  - vet
+  - vet_nurse
+  - photographer
+  - handler
+  - any_staff
+
+# =============================================================================
+# PET REQUIREMENTS
+# =============================================================================
+life_stage:           # multi-select
+  - puppy
+  - adult
+  - senior
+  - all_stages
+
+breed_size:           # multi-select
+  - toy
+  - small
+  - medium
+  - large
+  - giant
+
+temperament:          # multi-select (service-specific)
+  - calm
+  - anxious
+  - energetic
+  - aggressive
+  - social
+  - shy
+
+# =============================================================================
+# BENEFITS (multi-select, only if explicit)
+# =============================================================================
+benefits:
+  # Physical
+  - coat_health
+  - hygiene
+  - weight_management
+  - mobility
+  - dental_health
+  # Behavioral
+  - training_support
+  - socialization
+  - anxiety_relief
+  - mental_stimulation
+  - bonding
+
+# =============================================================================
+# COMMERCIAL SIGNALS
+# =============================================================================
+price_tier:           # single-select
+  - budget            # <₹500
+  - mid               # ₹500-₹2000
+  - premium           # >₹2000
+
+booking_type:         # single-select
+  - instant           # book immediately
+  - request           # requires confirmation
+  - consultation      # needs assessment first
+
+cancellation:         # single-select
+  - flexible          # free cancellation
+  - moderate          # 24hr notice
+  - strict            # non-refundable
+
+# =============================================================================
+# TAGGING RULES
+# =============================================================================
+# 1. Every service MUST have: service_type, delivery_mode, session_type, duration
+# 2. Default life_stage to 'all_stages' unless restricted
+# 3. Medical services → provider_type: vet or vet_nurse
+# 4. Training services → provider_type: certified_trainer
