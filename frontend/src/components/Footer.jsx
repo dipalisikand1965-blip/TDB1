@@ -205,8 +205,17 @@ const Footer = () => {
           </div>
           
           {/* Copyright */}
-          <div className="text-center text-xs text-gray-500">
-            <p>© 2026 The Doggy Company®</p>
+          <div className="text-center text-xs text-gray-500 space-y-2">
+            <p className="text-gray-400">© 2026 The Doggy Company®. All rights reserved.</p>
+            <p className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
+              <span>Les Concierges® (1998)</span>
+              <span className="text-gray-700">•</span>
+              <span>Club Concierge®</span>
+              <span className="text-gray-700">•</span>
+              <span>The Doggy Bakery® (2020)</span>
+              <span className="text-gray-700">•</span>
+              <span>Mira®</span>
+            </p>
           </div>
         </div>
         
