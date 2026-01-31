@@ -138,7 +138,7 @@ class TestEnjoyRSVPFlow:
         
         if login_response.status_code == 200:
             data = login_response.json()
-            self.token = data.get("token")
+            self.token = data.get("access_token")  # API returns access_token
             self.user = data.get("user")
             self.session.headers.update({"Authorization": f"Bearer {self.token}"})
             print(f"✅ Logged in as {self.user.get('email')}")
