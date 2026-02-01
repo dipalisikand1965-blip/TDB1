@@ -978,7 +978,10 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="lg:hidden bg-white border-t border-gray-200 shadow-lg max-h-[80vh] overflow-y-auto">
+        <div 
+          className="lg:hidden bg-white border-t border-gray-200 shadow-lg max-h-[80vh] overflow-y-auto"
+          style={{ touchAction: 'pan-y', WebkitOverflowScrolling: 'touch' }}
+        >
           <div className="px-4 py-4 space-y-2">
             
             {/* Mobile Account */}
@@ -986,8 +989,9 @@ const Navbar = () => {
               <div className="space-y-2">
                 <Link
                   to="/dashboard"
-                  onClick={() => setIsMenuOpen(false)}
+                  onClick={(e) => { e.stopPropagation(); setIsMenuOpen(false); }}
                   className="flex items-center gap-3 p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg"
+                  style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                   data-testid="mobile-dashboard-link"
                 >
                   <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
