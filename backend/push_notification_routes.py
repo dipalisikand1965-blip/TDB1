@@ -548,3 +548,181 @@ async def get_user_subscriptions(user_id: str):
         "subscriptions": subscriptions,
         "count": len(subscriptions)
     }
+
+
+
+# ==================== TICKET NOTIFICATIONS ====================
+
+class TicketNotification(BaseModel):
+    """Model for ticket update notifications"""
+    ticket_id: str
+    user_email: str
+    update_type: str = Field(..., description="Type of update: status_change, agent_reply, assignment, resolution, new_ticket, booking_confirmed")
+    details: Optional[Dict[str, Any]] = None
+
+async def notify_ticket_update(
+    ticket_id: str, 
+    user_email: str, 
+    update_type: str, 
+    details: Optional[Dict[str, Any]] = None
+) -> Dict[str, Any]:
+    """
+    Send push notification when a ticket is updated.
+    Called from service desk when agents update tickets.
+    
+    Args:
+        ticket_id: The ticket ID (e.g., CNC-20260201-0001)
+        user_email: Email of the user to notify
+        update_type: One of: status_change, agent_reply, assignment, resolution, new_ticket, booking_confirmed
+        details: Optional extra details (new_status, agent_name, etc.)
+    """
+    if db is None:
+        logger.warning("Cannot send ticket notification - database not configured")
+        return {"success": False, "reason": "no_database"}
+    
+    # Find user's active push subscriptions
+    subscriptions = await db.push_subscriptions.find({
+        "user_email": user_email,
+        "active": True
+    }).to_list(10)
+    
+    # Also try by user_id lookup
+    if not subscriptions:
+        user = await db.users.find_one({"email": user_email})
+        if user:
+            subscriptions = await db.push_subscriptions.find({
+                "user_id": str(user.get("_id")),
+                "active": True
+            }).to_list(10)
+    
+    if not subscriptions:
+        logger.info(f"No push subscriptions for {user_email} - ticket notification not sent")
+        return {"success": False, "reason": "no_subscriptions"}
+    
+    # Build notification content based on update type
+    short_id = ticket_id[:12] if len(ticket_id) > 12 else ticket_id
+    
+    notification_config = {
+        "status_change": {
+            "title": "Request Status Updated 📋",
+            "body": f"Your request #{short_id} status is now: {details.get('new_status', 'updated').replace('_', ' ').title()}",
+            "require_interaction": False
+        },
+        "agent_reply": {
+            "title": "New Message on Your Request 💬",
+            "body": f"An agent replied to #{short_id}: {details.get('preview', 'Check your request for details')[:100]}",
+            "require_interaction": True
+        },
+        "assignment": {
+            "title": "Agent Assigned ✨",
+            "body": f"Agent {details.get('agent_name', 'A team member')} is now handling your request #{short_id}",
+            "require_interaction": False
+        },
+        "resolution": {
+            "title": "Request Resolved ✅",
+            "body": f"Your request #{short_id} has been resolved. Thank you for using our service!",
+            "require_interaction": True
+        },
+        "new_ticket": {
+            "title": "Request Received 🎉",
+            "body": f"We've received your request #{short_id}. Our team will get back to you soon!",
+            "require_interaction": False
+        },
+        "booking_confirmed": {
+            "title": "Booking Confirmed! 🐕",
+            "body": f"Your booking #{short_id} is confirmed for {details.get('date', 'the scheduled time')}",
+            "require_interaction": True
+        }
+    }
+    
+    config = notification_config.get(update_type, {
+        "title": "Request Update",
+        "body": f"Update on your request #{short_id}",
+        "require_interaction": False
+    })
+    
+    # Send to all active subscriptions
+    results = []
+    for sub in subscriptions:
+        try:
+            subscription_info = {
+                "endpoint": sub["endpoint"],
+                "keys": sub["keys"]
+            }
+            
+            result = await send_push_notification(
+                subscription_info=subscription_info,
+                title=config["title"],
+                body=config["body"],
+                icon="/logo-new.png",
+                badge="/logo-new.png",
+                tag=f"ticket-{ticket_id}",
+                data={
+                    "type": "ticket_update",
+                    "update_type": update_type,
+                    "ticket_id": ticket_id,
+                    "url": f"/my-tickets?id={ticket_id}"
+                },
+                require_interaction=config.get("require_interaction", False)
+            )
+            results.append(result)
+        except Exception as e:
+            logger.error(f"Error sending ticket push to subscription: {e}")
+            results.append({"success": False, "error": str(e)})
+    
+    successful = sum(1 for r in results if r.get("success"))
+    
+    # Log the notification
+    await db.push_notification_logs.insert_one({
+        "type": "ticket_update",
+        "ticket_id": ticket_id,
+        "user_email": user_email,
+        "update_type": update_type,
+        "successful": successful,
+        "total_attempted": len(subscriptions),
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    })
+    
+    return {
+        "success": successful > 0,
+        "sent": successful,
+        "failed": len(subscriptions) - successful
+    }
+
+
+@push_router.post("/notify-ticket")
+async def api_notify_ticket_update(notification: TicketNotification):
+    """
+    API endpoint to send ticket update notification.
+    Used by service desk when agents update tickets.
+    """
+    result = await notify_ticket_update(
+        ticket_id=notification.ticket_id,
+        user_email=notification.user_email,
+        update_type=notification.update_type,
+        details=notification.details
+    )
+    return result
+
+
+@push_router.post("/test-ticket-notification")
+async def test_ticket_notification(user_email: str, update_type: str = "agent_reply"):
+    """
+    Test endpoint to verify ticket notifications work.
+    Sends a test notification to the specified user.
+    """
+    result = await notify_ticket_update(
+        ticket_id="TEST-" + datetime.now().strftime("%Y%m%d-%H%M%S"),
+        user_email=user_email,
+        update_type=update_type,
+        details={
+            "new_status": "in_progress",
+            "preview": "This is a test notification from the Doggy Company team!",
+            "agent_name": "Mira AI",
+            "date": datetime.now().strftime("%B %d, %Y")
+        }
+    )
+    return {
+        "message": "Test notification sent",
+        "result": result
+    }
