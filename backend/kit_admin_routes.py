@@ -92,7 +92,7 @@ async def get_kit_template(template_id: str):
     
     try:
         template = await db.kit_templates.find_one({"_id": ObjectId(template_id)})
-    except:
+    except Exception:
         template = await db.kit_templates.find_one({"slug": template_id})
     
     if not template:
@@ -149,7 +149,7 @@ async def update_kit_template(template_id: str, template: KitTemplate):
             {"_id": ObjectId(template_id)},
             {"$set": template_dict}
         )
-    except:
+    except Exception:
         result = await db.kit_templates.update_one(
             {"slug": template_id},
             {"$set": template_dict}
@@ -168,7 +168,7 @@ async def delete_kit_template(template_id: str):
     
     try:
         result = await db.kit_templates.delete_one({"_id": ObjectId(template_id)})
-    except:
+    except Exception:
         result = await db.kit_templates.delete_one({"slug": template_id})
     
     if result.deleted_count == 0:
@@ -299,7 +299,7 @@ async def preview_voice_script(
     if kit_template_id:
         try:
             template = await db.kit_templates.find_one({"_id": ObjectId(kit_template_id)})
-        except:
+        except Exception:
             template = await db.kit_templates.find_one({"slug": kit_template_id})
         
         if template:
@@ -322,7 +322,7 @@ async def get_all_voice_scripts(template_id: str):
     
     try:
         template = await db.kit_templates.find_one({"_id": ObjectId(template_id)})
-    except:
+    except Exception:
         template = await db.kit_templates.find_one({"slug": template_id})
     
     if not template:
