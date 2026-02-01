@@ -275,6 +275,70 @@ const KitAssemblyManager = () => {
     }
   };
 
+  // Seed default kits
+  const handleSeedDefaults = async () => {
+    if (!confirm('This will create/update default kit templates (Travel, Cinema, Birthday, Grooming, Puppy). Continue?')) return;
+    
+    try {
+      const res = await fetch(`${API_URL}/api/admin/kits/seed-defaults`, {
+        method: 'POST'
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        toast({ 
+          title: 'Success', 
+          description: `Seeded ${data.created} new kits, updated ${data.updated} existing` 
+        });
+        fetchData();
+      } else {
+        throw new Error('Failed to seed defaults');
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    }
+  };
+
+  // Export kits to CSV
+  const handleExportCSV = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/admin/kits/export/csv`);
+      if (res.ok) {
+        const data = await res.json();
+        const blob = new Blob([data.csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'kit-templates.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+        toast({ title: 'Exported', description: `${data.count} kits exported to CSV` });
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to export', variant: 'destructive' });
+    }
+  };
+
+  // Export Mira picks to CSV
+  const handleExportPicksCSV = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/admin/kits/mira-picks/export/csv`);
+      if (res.ok) {
+        const data = await res.json();
+        const blob = new Blob([data.csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'mira-picks.csv';
+        a.click();
+        URL.revokeObjectURL(url);
+        toast({ title: 'Exported', description: `${data.count} picks exported to CSV` });
+      }
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to export', variant: 'destructive' });
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
