@@ -462,7 +462,7 @@ const MiraChatWidget = ({
     
     // Clean text for speech
     let cleanText = text
-      .replace(/[🎉🐕✨🦴💜🎂🏥☀️🌤️🌙🌟🐾🎒📅]/g, '')
+      .replace(/[🎉🐕✨🦴💜🎂🏥☀️🌤️🌙🌟🐾🎒📅📋]/g, '')
       .replace(/\*\*/g, '')
       .replace(/[*#_~`]/g, '')
       .replace(/\[.*?\]/g, '')
@@ -483,33 +483,50 @@ const MiraChatWidget = ({
     
     const utterance = new SpeechSynthesisUtterance(cleanText);
     utterance.rate = 0.92;  // Slightly slower for mobile clarity
-    utterance.pitch = 1.05;  // Slightly higher for feminine voice
-    utterance.volume = 0.9;
+    utterance.pitch = 1.1;  // Slightly higher for feminine voice
+    utterance.volume = 1.0;
     
     // Get a FEMALE voice for Mira - Prioritized list for best quality
     const voices = synthRef.current.getVoices();
     
-    // Premium voices to use (best quality female voices)
+    // Log available voices for debugging (useful on mobile)
+    if (voices.length > 0) {
+      console.log('[Mira Voice] Available voices:', voices.length, voices.map(v => `${v.name} (${v.lang})`).slice(0, 5));
+    }
+    
+    // Premium voices to use (best quality female voices) - ordered by preference
     const premiumVoiceNames = [
-      // iOS/macOS high quality
-      'Samantha',
-      'Victoria', 
-      'Karen',
-      'Moira',
-      'Tessa',
-      'Fiona',
-      // Indian English
+      // iOS/Safari high quality (most mobile users on iPhone)
+      'Samantha',        // US English - very natural
+      'Karen',           // Australian English
+      'Moira',           // Irish English
+      'Tessa',           // South African
+      'Victoria',        // US English
+      'Fiona',           // Scottish
+      // Indian English (for India users)
       'Veena',
-      'Aditi',
-      'Raveena',
-      // Google high quality
+      'Lekha',           // Hindi-influenced
+      'Rishi',           // Alternative
+      // Android/Chrome high quality
       'Google UK English Female',
-      'Google US English Female',
-      // Microsoft high quality
+      'Google US English Female', 
+      'Google हिन्दी',     // Hindi
+      'English India',
+      'English United Kingdom Female',
+      'English United States Female',
+      // Microsoft (Windows mobile, Edge)
       'Microsoft Zira',
       'Microsoft Heera',
       'Microsoft Aria',
-      // Android
+      'Zira',
+      'Heera',
+      // Samsung voices
+      'Samsung',
+      // Generic enhanced
+      'Enhanced',
+      'Premium',
+      'Natural',
+      // Wavenet (Google Cloud - rare on mobile but excellent)
       'en-US-Wavenet-F',
       'en-IN-Wavenet-A',
       'en-GB-Wavenet-A'
@@ -518,39 +535,60 @@ const MiraChatWidget = ({
     // Find best available voice
     let selectedVoice = null;
     
-    // Try premium voices first
+    // Try premium voices first (exact match)
     for (const voiceName of premiumVoiceNames) {
       selectedVoice = voices.find(v => 
-        v.name.includes(voiceName) || v.name.toLowerCase() === voiceName.toLowerCase()
+        v.name === voiceName || 
+        v.name.includes(voiceName) || 
+        v.name.toLowerCase().includes(voiceName.toLowerCase())
       );
-      if (selectedVoice) break;
+      if (selectedVoice) {
+        console.log('[Mira Voice] Found premium voice:', selectedVoice.name);
+        break;
+      }
     }
     
-    // Fallback: any female English voice
+    // Fallback 1: Any English voice with "female" in name or without "male"
     if (!selectedVoice) {
       selectedVoice = voices.find(v => 
         v.lang.startsWith('en') && 
         (v.name.toLowerCase().includes('female') || 
          v.name.toLowerCase().includes('woman') ||
-         !v.name.toLowerCase().includes('male'))
+         // Prefer voices that don't explicitly say "male"
+         (!v.name.toLowerCase().includes('male') && !v.name.toLowerCase().includes('david') && !v.name.toLowerCase().includes('alex')))
       );
+      if (selectedVoice) console.log('[Mira Voice] Using English female fallback:', selectedVoice.name);
     }
     
-    // Last fallback: any English voice
+    // Fallback 2: Any English voice (last resort)
     if (!selectedVoice) {
       selectedVoice = voices.find(v => v.lang.startsWith('en'));
+      if (selectedVoice) console.log('[Mira Voice] Using any English fallback:', selectedVoice.name);
+    }
+    
+    // Fallback 3: First available voice (absolute last resort)
+    if (!selectedVoice && voices.length > 0) {
+      selectedVoice = voices[0];
+      console.log('[Mira Voice] Using first available voice:', selectedVoice.name);
     }
     
     if (selectedVoice) {
       utterance.voice = selectedVoice;
-      console.log('[Mira Voice] Using:', selectedVoice.name);
+    } else {
+      console.log('[Mira Voice] No voices available, using browser default');
     }
     
     utterance.onstart = () => setIsSpeaking(true);
     utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = () => setIsSpeaking(false);
+    utterance.onerror = (e) => {
+      console.error('[Mira Voice] Speech error:', e);
+      setIsSpeaking(false);
+    };
     
-    synthRef.current.speak(utterance);
+    // On some mobile browsers, we need to trigger speech with a small delay
+    setTimeout(() => {
+      synthRef.current.speak(utterance);
+    }, 50);
   }, [voiceEnabled]);
   
   const sendMessage = async () => {
