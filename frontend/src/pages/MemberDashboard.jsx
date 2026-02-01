@@ -768,7 +768,7 @@ const MemberDashboard = () => {
           <SoulExplainerVideo 
             open={showSoulExplainer} 
             onClose={() => setShowSoulExplainer(false)} 
-            petName={primaryPet?.name}
+            petName={currentPet?.name}
           />
         )}
       </Suspense>
