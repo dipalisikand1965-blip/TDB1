@@ -159,28 +159,25 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
     setBooking(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/api/quick-book`, {
+      const response = await fetch(`${API_URL}/api/mira/quick-book`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           ...(token && { 'Authorization': `Bearer ${token}` })
         },
         body: JSON.stringify({
-          service_type: selectedService.id,
-          service_name: selectedService.name,
+          serviceType: selectedService.id,
+          serviceName: selectedService.name,
           pillar: pillar,
           city: priceConfig.city,
-          pet_size: priceConfig.petSize,
-          pet_count: priceConfig.petCount,
-          add_ons: priceConfig.selectedAddOns,
-          calculated_price: calculatedPrice?.total || selectedService.base_price,
-          preferred_date: bookingData.date,
-          preferred_time: bookingData.time,
+          petSize: priceConfig.petSize,
+          petCount: priceConfig.petCount,
+          addOns: priceConfig.selectedAddOns,
+          calculatedPrice: calculatedPrice?.total || selectedService.base_price,
+          preferredDate: bookingData.date,
+          preferredTime: bookingData.time,
           notes: bookingData.notes,
-          pet_id: bookingData.petId,
-          user_email: user?.email,
-          user_name: user?.name,
-          user_phone: user?.phone
+          petId: bookingData.petId
         })
       });
 
