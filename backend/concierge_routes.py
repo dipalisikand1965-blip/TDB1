@@ -26,6 +26,15 @@ from ticket_intelligence import (
     set_intelligence_db
 )
 
+# Import push notification for ticket updates
+try:
+    from push_notification_routes import notify_ticket_update
+    PUSH_AVAILABLE = True
+except ImportError:
+    PUSH_AVAILABLE = False
+    async def notify_ticket_update(*args, **kwargs):
+        return {"success": False, "reason": "push_not_available"}
+
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/concierge", tags=["concierge"])
