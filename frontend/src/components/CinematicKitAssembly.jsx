@@ -156,7 +156,7 @@ const CinematicKitAssembly = ({
   onComplete,
   onClose,
   addToCart,
-  petInfo = {} // { name, breed, size, age }
+  petInfo = {} // { name, breed, size, age, favorites, allergies, activityLevel, personality }
 }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedItems, setSelectedItems] = useState([]);
