@@ -2,6 +2,29 @@
 
 ## Latest Update: February 1, 2026 - Session 6
 
+### ✅ SERVICE CATALOG PUBLIC UI - COMPLETED (Feb 1, 2026)
+
+**Public-facing Service Catalog with Dynamic Pricing** on Care Page
+
+**Component Built** (`/app/frontend/src/components/ServiceCatalogSection.jsx`):
+- Reusable component for any pillar page
+- Fetches services from `/api/service-catalog/services`
+- Service cards with badges (FREE, 24x7, Consult)
+- Click-to-open price calculator modal
+
+**Price Calculator Features**:
+- City selection (Mumbai +15%, Delhi +10%, Bangalore base)
+- Pet size selection (Toy, Small, Medium, Large, Giant)
+- Number of pets (1, 2, 3 - with multipliers)
+- Add-ons with checkboxes and prices
+- Live price calculation breakdown
+- Book Now flow to date/time selection
+
+**Test Results (Iteration 157)**: 100% pass rate (22/22 tests)
+- Price: ₹800 × 1.15 (Mumbai) × 1.3 (Large) × 1.8 (2 pets) = ₹2,152.80 ✅
+
+---
+
 ### ✅ SERVICE BOX ADMIN - COMPLETED (Feb 1, 2026)
 
 **Full CRUD Admin Panel for Services** under COMMERCE section
