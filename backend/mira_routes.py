@@ -3274,12 +3274,18 @@ What would you like to explore? 🐾"""
         # 2. The detected kit matches the current pillar OR it's a general/explicit request
         PILLAR_TO_KIT = {
             "travel": "travel_kit",
-            "care": ["grooming_kit", "health_kit"],
+            "care": ["grooming_kit", "health_kit", "wellness_kit"],
             "celebrate": "birthday_kit",
             "learn": "training_kit",
-            "fit": "fitness_kit",  # NEW: Add fitness_kit for fit pillar
+            "fit": "fitness_kit",
             "dine": "food_kit",
             "enjoy": "activity_kit",
+            "stay": "boarding_kit",
+            "adopt": "new_pet_kit",
+            "emergency": "emergency_kit",
+            "farewell": "memorial_kit",
+            "advisory": "consultation_kit",
+            "paperwork": "documentation_kit",
             "shop": None  # Shop can have any kit
         }
         
