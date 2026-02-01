@@ -412,6 +412,7 @@ function MainLayout() {
       <MiraAI />
       {/* Pulse removed - voice capabilities now inside MiraAI */}
       <ConditionalFloatingButton />
+      <ConditionalMobileNav />
       <Toaster />
     </div>
   );
