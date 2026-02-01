@@ -1157,6 +1157,14 @@ const LearnPage = () => {
         </DialogContent>
       </Dialog>
       
+      {/* === SERVICE CATALOG WITH PRICING === */}
+      <ServiceCatalogSection 
+        pillar="learn"
+        title="Learn, Personalised"
+        subtitle="See your personalized price based on your city, pet size, and requirements"
+        maxServices={8}
+      />
+      
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="learn" position="bottom-left" />
     </div>
