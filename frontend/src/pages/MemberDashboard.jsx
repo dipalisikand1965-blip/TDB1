@@ -974,6 +974,16 @@ const MemberDashboard = () => {
             </Suspense>
           </TabsContent>
 
+          <TabsContent value="documents">
+            <Suspense fallback={<TabLoader />}>
+              <DocumentsTab 
+                pets={pets}
+                token={token}
+                API_URL={API_URL}
+              />
+            </Suspense>
+          </TabsContent>
+
           <TabsContent value="dining">
             <Suspense fallback={<TabLoader />}>
               <DiningTab diningHistory={diningHistory} />
