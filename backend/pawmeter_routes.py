@@ -50,7 +50,7 @@ class PawRatingResponse(BaseModel):
 @router.post("/rate")
 async def submit_paw_rating(rating: PawRatingCreate):
     """Submit a PawMeter rating for a product"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
     
     # Validate paw score
