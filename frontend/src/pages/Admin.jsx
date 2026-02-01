@@ -2145,6 +2145,11 @@ const Admin = () => {
           <MiraMemoryManager />
         )}
 
+        {/* Kit Assembly Manager Tab */}
+        {activeTab === 'kit-assembly' && (
+          <KitAssemblyManager />
+        )}
+
         {/* Orders Tab */}
         {activeTab === 'orders' && (
           <OrdersTab 
