@@ -462,7 +462,7 @@ const MiraChatWidget = ({
     
     // Clean text for speech
     let cleanText = text
-      .replace(/[🎉🐕✨🦴💜🎂🏥☀️🌤️🌙🌟🐾]/g, '')
+      .replace(/[🎉🐕✨🦴💜🎂🏥☀️🌤️🌙🌟🐾🎒📅]/g, '')
       .replace(/\*\*/g, '')
       .replace(/[*#_~`]/g, '')
       .replace(/\[.*?\]/g, '')
@@ -472,12 +472,12 @@ const MiraChatWidget = ({
     // Fix "Mira" pronunciation to "Meera" (phonetic spelling)
     cleanText = cleanText.replace(/\bMira\b/gi, 'Meera');
     
-    // Fix "concierge" pronunciation - replace with phonetic spelling
-    // Must handle "pet concierge", "your concierge", "concierge®" etc.
+    // Fix "concierge" pronunciation - "kon-see-airzh" (French style)
+    // This is the correct pronunciation: /ˌkɒnsiˈeəʒ/
     cleanText = cleanText
-      .replace(/pet concierge®?/gi, 'pet con-see-airzh')
-      .replace(/your concierge®?/gi, 'your con-see-airzh')
-      .replace(/our concierge®?/gi, 'our con-see-airzh')
+      .replace(/pet concierge®?/gi, 'pet kon-see-airzh')
+      .replace(/your concierge®?/gi, 'your kon-see-airzh')
+      .replace(/our concierge®?/gi, 'our kon-see-airzh')
       .replace(/the concierge®?/gi, 'the con-see-airzh')
       .replace(/concierge®? team/gi, 'con-see-airzh team')
       .replace(/\bconcierge®?\b/gi, 'con-see-airzh');
