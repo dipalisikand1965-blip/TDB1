@@ -659,9 +659,12 @@ const KitEditorDialog = ({ open, kit, categories, products, onSave, onClose, onT
   const [formData, setFormData] = useState(kit || {});
   const [productSearch, setProductSearch] = useState('');
 
-  useEffect(() => {
+  // Update form data when kit changes (controlled sync)
+  const kitRef = React.useRef(kit);
+  if (kit !== kitRef.current) {
+    kitRef.current = kit;
     if (kit) setFormData(kit);
-  }, [kit]);
+  }
 
   if (!open || !kit) return null;
 
