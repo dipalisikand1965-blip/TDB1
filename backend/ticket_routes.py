@@ -2187,6 +2187,35 @@ async def assign_ticket(ticket_id: str, assignee: str = Form(...)):
     
     return {"success": True, "assigned_to": assignee}
 
+@router.post("/{ticket_id}/lock")
+async def toggle_ticket_lock(ticket_id: str, data: dict = None):
+    """Lock or unlock a ticket to prevent customer replies"""
+    db = get_db()
+    
+    if not data:
+        data = {}
+    
+    is_locked = data.get("is_locked", True)
+    
+    result = await db.tickets.update_one(
+        {"ticket_id": ticket_id},
+        {"$set": {"is_locked": is_locked, "updated_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    if result.matched_count == 0:
+        try:
+            result = await db.tickets.update_one(
+                {"_id": ObjectId(ticket_id)},
+                {"$set": {"is_locked": is_locked, "updated_at": datetime.now(timezone.utc).isoformat()}}
+            )
+        except:
+            pass
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    
+    return {"success": True, "is_locked": is_locked}
+
 @router.delete("/{ticket_id}")
 async def delete_ticket(ticket_id: str):
     """Delete a ticket"""
