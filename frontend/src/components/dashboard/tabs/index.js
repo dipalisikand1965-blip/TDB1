@@ -15,6 +15,8 @@ export const TravelTab = React.lazy(() => import('./TravelTab'));
 export const AutoshipTab = React.lazy(() => import('./AutoshipTab'));
 export const ReviewsTab = React.lazy(() => import('./ReviewsTab'));
 export const AddressesTab = React.lazy(() => import('./AddressesTab'));
+export const RewardsTab = React.lazy(() => import('./RewardsTab'));
+export const MiraTab = React.lazy(() => import('./MiraTab'));
 
 // Tab loading fallback component
 export const TabLoader = () => (
