@@ -148,7 +148,10 @@ Build a complete service booking experience and admin management interface for t
 - [x] Kit Assembly Admin Controls (COMPLETED)
 - [x] Mira Picks Admin Dashboard (COMPLETED)
 - [x] Fix Cinema Kit voice cutting off (COMPLETED)
+- [x] Fix Mira Chat duplicate messages bug (COMPLETED Feb 1)
+- [x] Fix Mobile Footer missing AI disclaimer (COMPLETED Feb 1)
 - [ ] Implement Membership Business Model (Freemium vs Members-Only)
+- [ ] Verify all recent features are mobile-friendly
 
 ### P1 (Medium Priority)
 - [ ] "Pet Parent Magnet" features (First box free, Pet Parent Score)
