@@ -1850,6 +1850,14 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge, currentUser, a
         </form>
       </Card>
       
+      {/* === SERVICE CATALOG WITH PRICING === */}
+      <ServiceCatalogSection 
+        pillar="dine"
+        title="Dine, Personalised"
+        subtitle="See your personalized price based on your city, pet size, and requirements"
+        maxServices={8}
+      />
+      
       {/* Mira Floating Chat Widget */}
       <MiraChatWidget pillar="dine" />
     </div>
