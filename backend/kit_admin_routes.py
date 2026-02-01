@@ -404,140 +404,342 @@ async def get_kit_categories():
     }
 
 # ============================================
-# SEED DEFAULT KITS
+# SEED DEFAULT KITS - ALL 14 LIFE PILLARS
 # ============================================
 
 @router.post("/seed-defaults")
 async def seed_default_kits():
-    """Seed default kit templates with sample products"""
+    """Seed default kit templates for all 14 Life Pillars with sample products"""
     if db is None:
         raise HTTPException(status_code=500, detail="Database not connected")
     
-    # Get some products to use in kits
-    travel_products = await db.products.find({
-        "$or": [
-            {"tags": {"$in": ["travel", "carrier", "leash", "harness", "bowl", "bottle"]}},
-            {"category": {"$regex": "travel|carrier|accessories", "$options": "i"}},
-            {"title": {"$regex": "travel|carrier|leash|harness|bowl|bottle", "$options": "i"}}
-        ]
-    }).limit(10).to_list(10)
+    # Get products by category for kit assembly
+    async def get_products_by_keywords(keywords, limit=10):
+        return await db.products.find({
+            "$or": [
+                {"tags": {"$in": keywords}},
+                {"category": {"$regex": "|".join(keywords), "$options": "i"}},
+                {"title": {"$regex": "|".join(keywords), "$options": "i"}}
+            ]
+        }).limit(limit).to_list(limit)
     
-    treat_products = await db.products.find({
-        "$or": [
-            {"tags": {"$in": ["treat", "snack", "biscuit"]}},
-            {"category": {"$regex": "treat|snack", "$options": "i"}},
-            {"title": {"$regex": "treat|biscuit|cookie|snack", "$options": "i"}}
-        ]
-    }).limit(10).to_list(10)
+    # Fetch products for different categories
+    travel_products = await get_products_by_keywords(["travel", "carrier", "leash", "harness", "bowl", "bottle", "portable"])
+    treat_products = await get_products_by_keywords(["treat", "snack", "biscuit", "cookie", "chew"])
+    toy_products = await get_products_by_keywords(["toy", "ball", "plush", "rope", "interactive"])
+    grooming_products = await get_products_by_keywords(["grooming", "shampoo", "brush", "comb", "nail", "bath"])
+    cake_products = await get_products_by_keywords(["cake", "birthday", "celebration"])
+    health_products = await get_products_by_keywords(["health", "supplement", "vitamin", "dental", "wellness"])
+    food_products = await get_products_by_keywords(["food", "kibble", "meal", "nutrition"])
+    bed_products = await get_products_by_keywords(["bed", "blanket", "mat", "cushion", "comfort"])
+    training_products = await get_products_by_keywords(["training", "clicker", "whistle", "agility"])
+    safety_products = await get_products_by_keywords(["safety", "first aid", "emergency", "medical"])
+    collar_products = await get_products_by_keywords(["collar", "tag", "id", "microchip"])
+    outdoor_products = await get_products_by_keywords(["outdoor", "rain", "jacket", "boot", "paw"])
     
-    toy_products = await db.products.find({
-        "$or": [
-            {"tags": {"$in": ["toy", "ball", "chew"]}},
-            {"category": {"$regex": "toy", "$options": "i"}},
-            {"title": {"$regex": "toy|ball|chew|plush", "$options": "i"}}
-        ]
-    }).limit(10).to_list(10)
+    # All products as fallback
+    all_products = await db.products.find({}).limit(50).to_list(50)
     
-    grooming_products = await db.products.find({
-        "$or": [
-            {"tags": {"$in": ["grooming", "shampoo", "brush", "nail"]}},
-            {"category": {"$regex": "grooming|bath", "$options": "i"}},
-            {"title": {"$regex": "shampoo|brush|comb|nail", "$options": "i"}}
+    def make_items(products, narration_template):
+        return [
+            {"product_id": p.get("id"), "position": i+1, "custom_narration": narration_template.format(name=p.get('title', p.get('name', 'this item')))}
+            for i, p in enumerate(products[:5]) if p.get("id")
         ]
-    }).limit(10).to_list(10)
     
-    cake_products = await db.products.find({
-        "$or": [
-            {"tags": {"$in": ["cake", "birthday"]}},
-            {"category": {"$regex": "cake|birthday", "$options": "i"}},
-            {"title": {"$regex": "cake|birthday", "$options": "i"}}
-        ]
-    }).limit(5).to_list(5)
-    
-    # Default kit templates
+    # =============================================
+    # 14 LIFE PILLARS KITS
+    # =============================================
     default_kits = [
+        # 1. CELEBRATE 🎉
         {
-            "name": "Travel Essentials Kit",
-            "slug": "travel-essentials",
-            "description": "Everything your furry friend needs for a safe and comfortable journey. Perfect for road trips, flights, or any adventure!",
-            "category": "travel",
-            "intro_narration": "Hi! I'm Mira, your pet concierge. Planning a trip with your fur baby? Let me show you the Travel Essentials Kit I've curated! These items will keep your pet safe and comfortable on any adventure.",
-            "outro_narration": "And that's your complete Travel Essentials Kit! Everything hand-picked to make your journey pawfect. Safe travels!",
+            "name": "Birthday Celebration Kit",
+            "slug": "celebrate-birthday",
+            "description": "Make your pet's birthday unforgettable! Cakes, treats, party accessories and gifts.",
+            "category": "celebrate",
+            "pillar": "celebrate",
+            "intro_narration": "Happy Birthday to your fur baby! I'm Mira, and I've put together the perfect Birthday Celebration Kit to make this day extra special!",
+            "outro_narration": "That's your pawty kit ready! Time to celebrate your best friend's special day. May it be filled with treats, belly rubs, and lots of love!",
             "is_active": True,
             "priority": 100,
             "target_pet_type": "dog",
-            "items": [
-                {"product_id": p.get("id"), "position": i+1, "custom_narration": f"First up, the {p.get('title', 'item')}! A must-have for travel comfort."}
-                for i, p in enumerate(travel_products[:5])
-            ]
+            "items": make_items(cake_products + treat_products, "For the celebration - {name}! A must-have for the big day!")
         },
         {
-            "name": "Cinema Night Kit",
-            "slug": "cinema-night",
-            "description": "Cozy movie night essentials for you and your pet. Snacks, comfort items, and entertainment!",
-            "category": "cinema",
-            "intro_narration": "Movie night with your best friend? I love it! Let me show you the Cinema Night Kit - everything you need for the pawfect cozy evening together.",
-            "outro_narration": "That's your Cinema Night Kit complete! Now grab the popcorn, dim the lights, and enjoy quality time with your furry movie buddy!",
-            "is_active": True,
-            "priority": 90,
-            "target_pet_type": "dog",
-            "items": [
-                {"product_id": p.get("id"), "position": i+1, "custom_narration": f"For movie snacking, the {p.get('title', 'treat')}! Healthy and delicious."}
-                for i, p in enumerate(treat_products[:3])
-            ] + [
-                {"product_id": p.get("id"), "position": i+4, "custom_narration": f"And for entertainment during slow scenes, the {p.get('title', 'toy')}!"}
-                for i, p in enumerate(toy_products[:2])
-            ]
-        },
-        {
-            "name": "Birthday Celebration Kit",
-            "slug": "birthday-celebration",
-            "description": "Make your pet's special day unforgettable! Cakes, treats, party accessories and gifts.",
-            "category": "birthday",
-            "intro_narration": "Happy Birthday to your fur baby! Let me show you our Birthday Celebration Kit - everything to make this day extra special!",
-            "outro_narration": "That's your pawty kit ready! Time to celebrate your best friend's special day. May it be filled with treats, belly rubs, and lots of love!",
+            "name": "Gotcha Day Kit",
+            "slug": "celebrate-gotcha",
+            "description": "Celebrate the anniversary of when your pet joined your family!",
+            "category": "celebrate",
+            "pillar": "celebrate",
+            "intro_narration": "It's your Gotcha Day anniversary! Let me help you celebrate the day your fur baby became family with this special kit!",
+            "outro_narration": "Happy Gotcha Day! Here's to many more years of unconditional love and wagging tails!",
             "is_active": True,
             "priority": 95,
             "target_pet_type": "dog",
-            "items": [
-                {"product_id": p.get("id"), "position": i+1, "custom_narration": f"The star of the show - a delicious {p.get('title', 'cake')}! Made with pet-safe ingredients."}
-                for i, p in enumerate(cake_products[:2])
-            ] + [
-                {"product_id": p.get("id"), "position": i+3, "custom_narration": f"Birthday treats! The {p.get('title', 'treat')} - because every birthday needs extra yummies!"}
-                for i, p in enumerate(treat_products[:2])
-            ]
+            "items": make_items(treat_products + toy_products, "A special treat for this special day - {name}!")
+        },
+        
+        # 2. DINE 🍽️
+        {
+            "name": "Gourmet Dining Kit",
+            "slug": "dine-gourmet",
+            "description": "Premium dining essentials for the discerning pet palate. Elevated bowls, gourmet treats, and dining accessories.",
+            "category": "dine",
+            "pillar": "dine",
+            "intro_narration": "Time to elevate your pet's dining experience! I've curated the Gourmet Dining Kit with premium items for your furry foodie!",
+            "outro_narration": "Your pet's dining setup is now restaurant-worthy! Bon appétit, little one!",
+            "is_active": True,
+            "priority": 88,
+            "target_pet_type": "dog",
+            "items": make_items(food_products + treat_products, "For fine dining - {name}! Your pet deserves the best!")
+        },
+        
+        # 3. STAY 🏨
+        {
+            "name": "Staycation Comfort Kit",
+            "slug": "stay-comfort",
+            "description": "Everything for a cozy staycation or hotel stay. Portable bed, comfort items, and calming essentials.",
+            "category": "stay",
+            "pillar": "stay",
+            "intro_narration": "Planning a staycation or hotel stay with your pet? The Comfort Kit has everything to make any place feel like home!",
+            "outro_narration": "Your pet's home-away-from-home kit is ready! Sweet dreams wherever you stay!",
+            "is_active": True,
+            "priority": 85,
+            "target_pet_type": "dog",
+            "items": make_items(bed_products + toy_products, "For comfort away from home - {name}!")
+        },
+        
+        # 4. TRAVEL ✈️
+        {
+            "name": "Travel Essentials Kit",
+            "slug": "travel-essentials",
+            "description": "Everything for safe and comfortable pet travel. Carriers, portable bowls, and journey essentials.",
+            "category": "travel",
+            "pillar": "travel",
+            "intro_narration": "Adventure awaits! I'm Mira, and I've prepared the Travel Essentials Kit to keep your pet safe and happy on any journey!",
+            "outro_narration": "Your travel kit is packed and ready! Safe travels to you and your furry co-pilot!",
+            "is_active": True,
+            "priority": 92,
+            "target_pet_type": "dog",
+            "items": make_items(travel_products, "Essential for travel - {name}! A must-have for the journey!")
+        },
+        
+        # 5. CARE 💊
+        {
+            "name": "Wellness Care Kit",
+            "slug": "care-wellness",
+            "description": "Daily health and wellness essentials. Supplements, dental care, and preventive health products.",
+            "category": "care",
+            "pillar": "care",
+            "intro_narration": "Your pet's health is precious! The Wellness Care Kit has everything for daily health maintenance and preventive care.",
+            "outro_narration": "Prevention is the best medicine! Your pet's wellness routine is now complete!",
+            "is_active": True,
+            "priority": 90,
+            "target_pet_type": "dog",
+            "items": make_items(health_products, "For daily wellness - {name}! Keeping your pet healthy and happy!")
         },
         {
             "name": "Grooming Spa Kit",
-            "slug": "grooming-spa",
-            "description": "Pamper your pet with professional-grade grooming essentials. Bath time made easy and enjoyable!",
-            "category": "grooming",
-            "intro_narration": "Spa day for your fur baby! Let me show you our Grooming Spa Kit - professional-grade products to keep your pet looking and smelling amazing!",
-            "outro_narration": "Your Grooming Spa Kit is complete! Your pet is going to look absolutely gorgeous. Enjoy the pamper session!",
+            "slug": "care-grooming",
+            "description": "Professional-grade grooming essentials. Bath products, brushes, and pampering supplies.",
+            "category": "care",
+            "pillar": "care",
+            "intro_narration": "Spa day for your fur baby! The Grooming Spa Kit has professional-grade products to keep your pet looking and smelling amazing!",
+            "outro_narration": "Your pet is going to look absolutely gorgeous! Enjoy the pamper session!",
+            "is_active": True,
+            "priority": 87,
+            "target_pet_type": "dog",
+            "items": make_items(grooming_products, "For a fresh look - {name}! Grooming made easy!")
+        },
+        
+        # 6. ENJOY 🎬
+        {
+            "name": "Cinema Night Kit",
+            "slug": "enjoy-cinema",
+            "description": "Cozy movie night essentials. Snacks, comfort items, and entertainment for you and your pet.",
+            "category": "enjoy",
+            "pillar": "enjoy",
+            "intro_narration": "Movie night with your best friend? I love it! The Cinema Night Kit has everything for the pawfect cozy evening together!",
+            "outro_narration": "Grab the popcorn, dim the lights, and enjoy quality time with your furry movie buddy!",
+            "is_active": True,
+            "priority": 82,
+            "target_pet_type": "dog",
+            "items": make_items(treat_products + toy_products + bed_products, "For cozy movie nights - {name}!")
+        },
+        {
+            "name": "Playtime Fun Kit",
+            "slug": "enjoy-playtime",
+            "description": "Hours of entertainment! Interactive toys, balls, and enrichment activities.",
+            "category": "enjoy",
+            "pillar": "enjoy",
+            "intro_narration": "Let's have some fun! The Playtime Kit is packed with toys and activities to keep your pet entertained and mentally stimulated!",
+            "outro_narration": "Playtime is the best time! Get ready for wagging tails and happy zoomies!",
             "is_active": True,
             "priority": 80,
             "target_pet_type": "dog",
-            "items": [
-                {"product_id": p.get("id"), "position": i+1, "custom_narration": f"Essential for a fresh coat - the {p.get('title', 'grooming product')}!"}
-                for i, p in enumerate(grooming_products[:5])
-            ]
+            "items": make_items(toy_products, "For endless fun - {name}! Let the games begin!")
         },
+        
+        # 7. FIT 💪
         {
-            "name": "Puppy Starter Kit",
-            "slug": "puppy-starter",
-            "description": "Welcome your new family member with all the essentials! Perfect for first-time pet parents.",
-            "category": "puppy",
-            "intro_narration": "Congratulations on your new puppy! Let me help you get started with the Puppy Starter Kit - everything a new fur parent needs!",
-            "outro_narration": "That's everything for your new bundle of joy! Welcome to the amazing journey of pet parenthood. Your puppy is lucky to have you!",
+            "name": "Fitness & Exercise Kit",
+            "slug": "fit-exercise",
+            "description": "Stay active together! Agility toys, fetch gear, and exercise essentials for healthy pets.",
+            "category": "fit",
+            "pillar": "fit",
+            "intro_narration": "Let's get moving! The Fitness Kit has everything to keep your pet active, healthy, and full of energy!",
+            "outro_narration": "A fit pet is a happy pet! Time to burn some energy and have a blast!",
+            "is_active": True,
+            "priority": 78,
+            "target_pet_type": "dog",
+            "items": make_items(toy_products + training_products + outdoor_products, "For an active lifestyle - {name}!")
+        },
+        
+        # 8. LEARN 📚
+        {
+            "name": "Training Starter Kit",
+            "slug": "learn-training",
+            "description": "Essential training tools and treats. Perfect for teaching new tricks and reinforcing good behavior.",
+            "category": "learn",
+            "pillar": "learn",
+            "intro_narration": "Ready to teach some new tricks? The Training Starter Kit has all the tools for effective, positive reinforcement training!",
+            "outro_narration": "With patience and these tools, your pet will be a star student! Happy training!",
+            "is_active": True,
+            "priority": 75,
+            "target_pet_type": "dog",
+            "items": make_items(training_products + treat_products, "For successful training - {name}! Positive reinforcement for the win!")
+        },
+        
+        # 9. PAPERWORK 📋
+        {
+            "name": "Pet Documentation Kit",
+            "slug": "paperwork-docs",
+            "description": "Organization essentials for pet parents. Document holders, ID tags, and record keeping supplies.",
+            "category": "paperwork",
+            "pillar": "paperwork",
+            "intro_narration": "Stay organized with the Documentation Kit! Everything you need to keep your pet's important records safe and accessible.",
+            "outro_narration": "Organization is key! Your pet's paperwork is now sorted and ready for any situation!",
+            "is_active": True,
+            "priority": 65,
+            "target_pet_type": "dog",
+            "items": make_items(collar_products + safety_products, "For organization - {name}! Keep everything in order!")
+        },
+        
+        # 10. ADVISORY 🎓
+        {
+            "name": "New Pet Parent Kit",
+            "slug": "advisory-newparent",
+            "description": "Everything a first-time pet parent needs. Starter essentials plus guidance for new beginnings.",
+            "category": "advisory",
+            "pillar": "advisory",
+            "intro_narration": "Welcome to pet parenthood! This New Pet Parent Kit has all the essentials plus tips for your exciting journey ahead!",
+            "outro_narration": "You're going to be an amazing pet parent! This kit has you covered for the adventure ahead!",
             "is_active": True,
             "priority": 85,
             "target_pet_type": "dog",
             "target_size": "small",
-            "items": [
-                {"product_id": p.get("id"), "position": i+1, "custom_narration": f"A puppy essential - the {p.get('title', 'item')}! Perfect for your little one."}
-                for i, p in enumerate((treat_products[:2] + toy_products[:2] + grooming_products[:1]))
-            ]
-        }
+            "items": make_items(food_products + toy_products + grooming_products + collar_products, "A starter essential - {name}! Perfect for new pet parents!")
+        },
+        
+        # 11. EMERGENCY 🚨
+        {
+            "name": "Pet First Aid Kit",
+            "slug": "emergency-firstaid",
+            "description": "Be prepared for emergencies. First aid supplies, emergency contacts holder, and safety essentials.",
+            "category": "emergency",
+            "pillar": "emergency",
+            "intro_narration": "Safety first! The Pet First Aid Kit prepares you for any emergency. Because being prepared means peace of mind.",
+            "outro_narration": "You're now prepared for the unexpected. Stay safe, and hopefully you'll never need to use this kit!",
+            "is_active": True,
+            "priority": 88,
+            "target_pet_type": "dog",
+            "items": make_items(safety_products + health_products, "For emergencies - {name}! Safety is our priority!")
+        },
+        
+        # 12. FAREWELL 🌈
+        {
+            "name": "Memorial & Comfort Kit",
+            "slug": "farewell-memorial",
+            "description": "Thoughtful items for honoring a beloved pet's memory. Memorial keepsakes and comfort items.",
+            "category": "farewell",
+            "pillar": "farewell",
+            "intro_narration": "Losing a pet is never easy. This Memorial Kit helps honor your beloved friend's memory with thoughtful keepsakes.",
+            "outro_narration": "They may be gone, but they're never forgotten. May these items bring you comfort and beautiful memories.",
+            "is_active": True,
+            "priority": 60,
+            "target_pet_type": "dog",
+            "items": make_items(all_products[:3], "To cherish memories - {name}. A thoughtful keepsake.")
+        },
+        
+        # 13. ADOPT 🏠
+        {
+            "name": "Adoption Welcome Kit",
+            "slug": "adopt-welcome",
+            "description": "Welcome your newly adopted pet home! All the essentials for a smooth transition.",
+            "category": "adopt",
+            "pillar": "adopt",
+            "intro_narration": "Congratulations on your new family member! The Adoption Welcome Kit has everything for a smooth, loving transition to their forever home!",
+            "outro_narration": "Welcome home, little one! You've just changed their life forever, and they'll change yours too!",
+            "is_active": True,
+            "priority": 90,
+            "target_pet_type": "dog",
+            "items": make_items(bed_products + food_products + toy_products + collar_products, "Welcome home essential - {name}! For your new family member!")
+        },
+        
+        # 14. INSURE 🛡️
+        {
+            "name": "Pet Safety & ID Kit",
+            "slug": "insure-safety",
+            "description": "Protect your pet with proper identification and safety gear. GPS tags, ID collars, and registration essentials.",
+            "category": "insure",
+            "pillar": "insure",
+            "intro_narration": "Protection and peace of mind! The Safety & ID Kit ensures your pet can always find their way back to you.",
+            "outro_narration": "Your pet is now protected and identifiable! Safety first, always!",
+            "is_active": True,
+            "priority": 82,
+            "target_pet_type": "dog",
+            "items": make_items(collar_products + safety_products, "For protection - {name}! Keep your pet safe and identifiable!")
+        },
+        
+        # BONUS: Seasonal Kits
+        {
+            "name": "Summer Cool Kit",
+            "slug": "seasonal-summer",
+            "description": "Beat the heat! Cooling mats, portable water bottles, and summer essentials.",
+            "category": "seasonal",
+            "pillar": "enjoy",
+            "intro_narration": "Summer is here! The Cool Kit has everything to keep your pet comfortable and safe during the hot months!",
+            "outro_narration": "Stay cool, stay hydrated! Your pet is ready for summer fun!",
+            "is_active": True,
+            "priority": 70,
+            "target_pet_type": "dog",
+            "items": make_items(travel_products + outdoor_products, "For summer comfort - {name}! Beat the heat!")
+        },
+        {
+            "name": "Monsoon Ready Kit",
+            "slug": "seasonal-monsoon",
+            "description": "Rainy day essentials! Raincoats, paw protectors, and indoor entertainment.",
+            "category": "seasonal",
+            "pillar": "enjoy",
+            "intro_narration": "Monsoon season is here! The Monsoon Kit keeps your pet dry, clean, and entertained during rainy days!",
+            "outro_narration": "Rain or shine, your pet is covered! Enjoy the monsoon without the mess!",
+            "is_active": True,
+            "priority": 68,
+            "target_pet_type": "dog",
+            "items": make_items(outdoor_products + grooming_products + toy_products, "For rainy days - {name}! Stay dry and have fun!")
+        },
+        {
+            "name": "Diwali Safety Kit",
+            "slug": "seasonal-diwali",
+            "description": "Keep your pet calm and safe during festivals. Calming treats, comfort items, and safety essentials.",
+            "category": "seasonal",
+            "pillar": "celebrate",
+            "intro_narration": "Festival time! The Diwali Safety Kit helps keep your pet calm and secure during the celebrations.",
+            "outro_narration": "Happy Diwali! May your pet feel safe and loved during the festivities!",
+            "is_active": True,
+            "priority": 85,
+            "target_pet_type": "dog",
+            "items": make_items(health_products + bed_products + treat_products, "For festival safety - {name}! Keep calm and celebrate!")
+        },
     ]
     
     # Insert or update kits
@@ -562,10 +764,11 @@ async def seed_default_kits():
             created += 1
     
     return {
-        "message": "Default kits seeded successfully",
+        "message": "All 14 Life Pillars kits seeded successfully",
         "created": created,
         "updated": updated,
-        "total_kits": len(default_kits)
+        "total_kits": len(default_kits),
+        "pillars_covered": ["celebrate", "dine", "stay", "travel", "care", "enjoy", "fit", "learn", "paperwork", "advisory", "emergency", "farewell", "adopt", "insure"]
     }
 
 # ============================================
