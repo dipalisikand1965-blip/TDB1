@@ -418,16 +418,19 @@ const MyCelebrations = ({ pets = [], onNavigate, onAddToCart }) => {
       </div>
       
       {/* Occasion Box Builder Modal */}
-      <OccasionBoxBuilder
-        isOpen={showBoxBuilder}
-        onClose={() => {
-          setShowBoxBuilder(false);
-          setBoxBuilderData({ occasionType: null, petName: '' });
-        }}
-        occasionType={boxBuilderData.occasionType}
-        petName={boxBuilderData.petName}
-        onAddToCart={onAddToCart}
-      />
+      {boxBuilderData.occasionType && (
+        <OccasionBoxBuilder
+          key={boxBuilderData.occasionType}
+          isOpen={showBoxBuilder}
+          onClose={() => {
+            setShowBoxBuilder(false);
+            setBoxBuilderData({ occasionType: null, petName: '' });
+          }}
+          occasionType={boxBuilderData.occasionType}
+          petName={boxBuilderData.petName}
+          onAddToCart={onAddToCart}
+        />
+      )}
     </Card>
   );
 };
