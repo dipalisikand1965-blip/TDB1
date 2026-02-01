@@ -1334,6 +1334,18 @@ const MemberDashboard = () => {
                 <MyCelebrations 
                   pets={pets} 
                   onNavigate={(path) => navigate(path)}
+                  onAddToCart={(items) => {
+                    // Add all items to cart
+                    items.forEach(item => {
+                      addToCart({
+                        id: item.id,
+                        title: item.title || item.name,
+                        price: item.price,
+                        image: item.image_url || item.images?.[0],
+                        quantity: 1
+                      });
+                    });
+                  }}
                 />
               </div>
             )}
