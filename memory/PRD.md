@@ -49,6 +49,23 @@ Build a complete service booking experience and admin management interface for t
 - Fixed Chrome TTS bug in `CinematicKitAssembly.jsx` that caused voice to cut off after ~15 seconds
 - Added pause/resume workaround every 10 seconds to keep speech synthesis active
 
+**Mira Nutrition/Diet Bug Fix:**
+- Fixed issue where "meal plan" queries were incorrectly routed to "dine" pillar (restaurants)
+- Added nutrition-specific keywords to "fit" pillar
+- Smart override: nutrition queries in "dine" context → switch to "fit" pillar
+
+**AI Disclaimer Implementation:**
+- Added nutrition disclaimer to Mira responses: "This is general guidance... consult your veterinarian"
+- Added footer disclaimer: "Mira is powered by AI and can make mistakes"
+- Created `/ai-disclaimer` page in Policies section with full AI terms
+- Updated Terms of Service with AI limitations
+
+**Mira System Prompt Enhancement:**
+- Added Section 9.5 with nutrition guidance rules
+- Breed-specific nutrition facts (Labrador, Golden, GSD, French Bulldog, etc.)
+- Clear boundaries: what Mira CAN vs CANNOT provide
+- Standard disclaimer template for nutrition responses
+
 ### Previous Session Accomplishments
 - Member Dashboard Refactor: 3,500+ line file split into 15 lazy-loaded components
 - File Upload Implementation: Proper upload endpoint and UI
