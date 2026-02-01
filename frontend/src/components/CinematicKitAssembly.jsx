@@ -4,32 +4,141 @@
  * Features:
  * - Step-by-step product reveal with animations
  * - Visual storytelling for each kit item
+ * - Mira's voice narration explaining each product
  * - Progress indicator
  * - Smooth transitions between items
  * - Final summary with "Add All" option
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   ChevronRight, ChevronLeft, ShoppingBag, Sparkles, 
-  Check, X, Star, Package, Heart, PawPrint 
+  Check, X, Star, Package, Heart, PawPrint, Volume2, VolumeX 
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { Badge } from './ui/badge';
+
+// Product narration templates - Mira explains why each item is in the kit
+const getProductNarration = (product, kitName, petName = "your furry friend") => {
+  const name = product.title || product.name || "this item";
+  const price = product.price ? `at just ${product.price} rupees` : "";
+  
+  // Category-specific narrations
+  const category = (product.category || product.collections?.[0] || "").toLowerCase();
+  
+  if (category.includes("carrier") || name.toLowerCase().includes("carrier")) {
+    return `Next up, the ${name}! Perfect for keeping ${petName} safe and comfortable during travel. ${price}`;
+  }
+  if (category.includes("bowl") || name.toLowerCase().includes("bowl") || name.toLowerCase().includes("bottle")) {
+    return `Here's the ${name}! Hydration is key, especially on adventures. ${price}`;
+  }
+  if (category.includes("treat") || name.toLowerCase().includes("treat")) {
+    return `And of course, the ${name}! Because every good pup deserves rewards. ${price}`;
+  }
+  if (category.includes("leash") || name.toLowerCase().includes("leash") || name.toLowerCase().includes("harness")) {
+    return `The ${name}! Essential for safe walks and outings. ${price}`;
+  }
+  if (category.includes("toy") || name.toLowerCase().includes("toy")) {
+    return `Fun time with the ${name}! Keeping ${petName} entertained is so important. ${price}`;
+  }
+  if (category.includes("groom") || category.includes("shampoo") || category.includes("brush")) {
+    return `For grooming, the ${name}! Keeping ${petName} looking fabulous. ${price}`;
+  }
+  if (category.includes("train") || category.includes("clicker")) {
+    return `Training essential: ${name}! Great for building good habits. ${price}`;
+  }
+  
+  // Default narration
+  return `I've selected the ${name} for your kit. It's a great choice ${price}!`;
+};
 
 const CinematicKitAssembly = ({ 
   kitName = "Your Pawfect Kit",
   items = [],
   onComplete,
   onClose,
-  addToCart 
+  addToCart,
+  petName = "your furry friend"
 }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedItems, setSelectedItems] = useState([]);
   const [isRevealing, setIsRevealing] = useState(true);
   const [showSummary, setShowSummary] = useState(false);
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  
+  // Speech synthesis ref
+  const synthRef = useRef(null);
+  
+  // Initialize speech synthesis
+  useEffect(() => {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      synthRef.current = window.speechSynthesis;
+    }
+    return () => {
+      if (synthRef.current) {
+        synthRef.current.cancel();
+      }
+    };
+  }, []);
+  
+  // Speak introduction on mount
+  useEffect(() => {
+    if (voiceEnabled && synthRef.current && items.length > 0) {
+      const intro = `Hi! I'm Meera, your pet concierge. Let me show you the ${kitName} I've curated just for ${petName}. ${items.length} amazing items await!`;
+      speakText(intro);
+    }
+  }, []); // Only on mount
+  
+  // Text-to-Speech function - MIRA IS A WOMAN
+  const speakText = useCallback((text) => {
+    if (!synthRef.current || !voiceEnabled) return;
+    
+    // Cancel any ongoing speech
+    synthRef.current.cancel();
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 0.95;
+    utterance.pitch = 1.1;
+    utterance.volume = 1.0;
+    
+    // Get voices and select best female voice
+    const voices = synthRef.current.getVoices();
+    const preferredVoices = ['Samantha', 'Victoria', 'Karen', 'Google UK English Female', 'Google US English Female', 'Microsoft Zira'];
+    
+    let selectedVoice = null;
+    for (const voiceName of preferredVoices) {
+      selectedVoice = voices.find(v => v.name.includes(voiceName));
+      if (selectedVoice) break;
+    }
+    
+    // Fallback to any English female voice
+    if (!selectedVoice) {
+      selectedVoice = voices.find(v => v.lang.startsWith('en') && !v.name.toLowerCase().includes('male'));
+    }
+    
+    if (selectedVoice) {
+      utterance.voice = selectedVoice;
+    }
+    
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+    
+    setTimeout(() => {
+      synthRef.current.speak(utterance);
+    }, 100);
+  }, [voiceEnabled]);
+  
+  // Narrate current product when revealed
+  useEffect(() => {
+    if (!isRevealing && items[currentStep] && voiceEnabled) {
+      const narration = getProductNarration(items[currentStep], kitName, petName);
+      speakText(narration);
+    }
+  }, [isRevealing, currentStep, items, kitName, petName, voiceEnabled, speakText]);
   
   // Initialize with all items selected by default
   useEffect(() => {
