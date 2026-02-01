@@ -269,7 +269,9 @@ const OverviewTab = ({
         <Card 
           className="p-4 cursor-pointer hover:shadow-lg transition-all border-2 border-transparent hover:border-purple-200 bg-gradient-to-br from-purple-50 to-white"
           onClick={() => {
-            if (pets.length > 0) {
+            if (currentPet) {
+              navigate(`/pet/${currentPet.id}?tab=personality`);
+            } else if (pets.length > 0) {
               navigate(`/pet/${pets[0].id}?tab=personality`);
             } else {
               navigate('/my-pets');
@@ -279,8 +281,8 @@ const OverviewTab = ({
           <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mb-3">
             <PawPrint className="w-5 h-5 text-purple-600" />
           </div>
-          <h3 className="font-semibold text-gray-900">My Pets</h3>
-          <p className="text-sm text-gray-500">{pets.length} active</p>
+          <h3 className="font-semibold text-gray-900">{currentPet?.name || 'My Pets'}</h3>
+          <p className="text-sm text-gray-500">{currentPet ? `View ${currentPet.name}'s profile` : `${pets.length} active`}</p>
         </Card>
         
         <Card 
@@ -320,7 +322,7 @@ const OverviewTab = ({
       {/* MEMBERSHIP CARD & STATS GRID */}
       <div className="grid md:grid-cols-3 gap-6">
         <React.Suspense fallback={<div className="h-40 bg-gray-100 animate-pulse rounded-xl" />}>
-          <MembershipCardTiers user={user} pet={pets[0]} />
+          <MembershipCardTiers user={user} pet={currentPet || pets[0]} />
         </React.Suspense>
 
         <Card className="p-6 shadow-sm hover:shadow-md transition-shadow">
