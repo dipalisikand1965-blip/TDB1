@@ -20,6 +20,7 @@ import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import ProductCard from '../components/ProductCard';
 import SEOHead from '../components/SEOHead';
 import MiraChatWidget from '../components/MiraChatWidget';
+import ServiceCatalogSection from '../components/ServiceCatalogSection';
 
 // Product categories for Celebrate pillar
 const celebrateCategories = [
