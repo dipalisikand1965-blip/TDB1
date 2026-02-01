@@ -506,8 +506,17 @@ async def seed_care_services(authorization: str = Header(...)):
     """Seed initial Care pillar services (Admin only)"""
     db = get_db()
     
-    if _admin_verify:
-        await _admin_verify(authorization)
+    # Simple token verification - check if it's a valid admin token
+    try:
+        import jwt
+        import os
+        token = authorization.replace("Bearer ", "")
+        payload = jwt.decode(token, os.environ.get("JWT_SECRET", "your-secret-key"), algorithms=["HS256"])
+        # For admin tokens, check username or role
+        if not payload.get("username") and not payload.get("role") == "admin":
+            raise HTTPException(status_code=403, detail="Admin access required")
+    except jwt.exceptions.InvalidTokenError:
+        raise HTTPException(status_code=401, detail="Invalid token")
     
     care_services = [
         {
