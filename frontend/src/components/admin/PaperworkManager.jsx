@@ -401,9 +401,12 @@ const PaperworkManager = () => {
 
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-4 bg-blue-50">
+        <TabsList className="grid w-full grid-cols-5 bg-blue-50">
           <TabsTrigger value="requests" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">
             <FileText className="w-4 h-4 mr-2" /> Requests
+          </TabsTrigger>
+          <TabsTrigger value="vault" className="data-[state=active]:bg-green-600 data-[state=active]:text-white">
+            <Shield className="w-4 h-4 mr-2" /> Document Vault
           </TabsTrigger>
           <TabsTrigger value="products" className="data-[state=active]:bg-blue-600 data-[state=active]:text-white">
             <Package className="w-4 h-4 mr-2" /> Products
@@ -415,6 +418,135 @@ const PaperworkManager = () => {
             <Settings className="w-4 h-4 mr-2" /> Settings
           </TabsTrigger>
         </TabsList>
+
+        {/* Document Vault Tab */}
+        <TabsContent value="vault" className="mt-4">
+          <Card className="p-4">
+            <div className="flex flex-wrap gap-4 mb-4">
+              <div className="flex-1 min-w-[200px]">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                  <Input 
+                    placeholder="Search documents by pet name, owner..."
+                    value={vaultSearch}
+                    onChange={(e) => setVaultSearch(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+              <select
+                value={vaultCategory}
+                onChange={(e) => setVaultCategory(e.target.value)}
+                className="border rounded-lg px-4 py-2"
+              >
+                <option value="all">All Categories</option>
+                <option value="identity">Identity</option>
+                <option value="medical">Medical</option>
+                <option value="travel">Travel</option>
+                <option value="insurance">Insurance</option>
+                <option value="care">Care</option>
+                <option value="legal">Legal</option>
+              </select>
+              <Button onClick={fetchVaultDocuments} variant="outline" disabled={vaultLoading}>
+                <RefreshCw className={`w-4 h-4 mr-2 ${vaultLoading ? 'animate-spin' : ''}`} />
+                Refresh
+              </Button>
+            </div>
+
+            {/* Stats Row */}
+            <div className="grid grid-cols-7 gap-3 mb-4">
+              <div className="p-3 bg-gray-50 rounded-lg text-center">
+                <p className="text-2xl font-bold text-gray-900">{vaultStats.total || 0}</p>
+                <p className="text-xs text-gray-500">Total</p>
+              </div>
+              {Object.entries(vaultStats.by_category || {}).map(([cat, count]) => (
+                <div key={cat} className="p-3 bg-gray-50 rounded-lg text-center">
+                  <p className="text-2xl font-bold text-blue-600">{count}</p>
+                  <p className="text-xs text-gray-500 capitalize">{cat}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Documents Table */}
+            {vaultLoading ? (
+              <div className="flex justify-center py-8">
+                <RefreshCw className="w-8 h-8 animate-spin text-blue-600" />
+              </div>
+            ) : vaultDocuments.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">Document</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">Category</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">Pet</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">Owner</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">Date</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">Expiry</th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y">
+                    {vaultDocuments.map((doc) => (
+                      <tr key={doc.id} className="hover:bg-gray-50">
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-2">
+                            <FileText className="w-4 h-4 text-blue-500" />
+                            <div>
+                              <p className="font-medium text-gray-900 text-sm">{doc.document_name}</p>
+                              <p className="text-xs text-gray-500">{doc.id}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-4 py-3">
+                          <Badge variant="outline" className="capitalize">{doc.category}</Badge>
+                          {doc.subcategory && <span className="text-xs text-gray-400 ml-1">/ {doc.subcategory}</span>}
+                        </td>
+                        <td className="px-4 py-3">
+                          <p className="text-sm font-medium">{doc.pet_name || 'Unknown'}</p>
+                          <p className="text-xs text-gray-500">{doc.pet_breed}</p>
+                        </td>
+                        <td className="px-4 py-3">
+                          <p className="text-sm">{doc.owner_name || 'Unknown'}</p>
+                          <p className="text-xs text-gray-500">{doc.owner_email}</p>
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-500">
+                          {doc.document_date || '-'}
+                        </td>
+                        <td className="px-4 py-3">
+                          {doc.expiry_date ? (
+                            <Badge className={new Date(doc.expiry_date) < new Date() ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}>
+                              {doc.expiry_date}
+                            </Badge>
+                          ) : '-'}
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex gap-2">
+                            {doc.file_url && (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => window.open(doc.file_url.startsWith('/') ? `${API_URL}${doc.file_url}` : doc.file_url, '_blank')}
+                              >
+                                <Download className="w-4 h-4" />
+                              </Button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <Shield className="w-12 h-12 mx-auto text-gray-300 mb-4" />
+                <p className="text-gray-500">No documents uploaded yet</p>
+                <p className="text-sm text-gray-400 mt-1">Member documents will appear here once uploaded</p>
+              </div>
+            )}
+          </Card>
+        </TabsContent>
 
         {/* Requests Tab */}
         <TabsContent value="requests" className="mt-4">
