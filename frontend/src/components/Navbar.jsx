@@ -1060,7 +1060,8 @@ const Navbar = () => {
               <div className="flex gap-2 mb-4">
                 <Link
                   to="/login"
-                  onClick={() => setIsMenuOpen(false)}
+                  onClick={(e) => { e.stopPropagation(); setIsMenuOpen(false); }}
+                  style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                   className="flex-1 py-2.5 text-center bg-slate-900 text-white rounded-lg font-medium"
                   data-testid="mobile-signin-btn"
                 >
@@ -1068,7 +1069,8 @@ const Navbar = () => {
                 </Link>
                 <Link
                   to="/membership"
-                  onClick={() => setIsMenuOpen(false)}
+                  onClick={(e) => { e.stopPropagation(); setIsMenuOpen(false); }}
+                  style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                   className="flex-1 py-2.5 text-center bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg font-medium"
                   data-testid="mobile-join-btn"
                 >
