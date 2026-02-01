@@ -3272,21 +3272,80 @@ What would you like to explore? 🐾"""
         logger.info(f"[KIT GUARD DEBUG] detected_kit={detected_kit}, actual_current_pillar={actual_current_pillar}, allowed_kits={allowed_kits}, is_kit_request={product_context.get('is_kit_request')}")
         
         # If detected kit doesn't match current pillar, reset it
+        # Track if kit was blocked due to pillar mismatch - for redirect response
+        kit_blocked_pillar_mismatch = False
+        blocked_kit_type = None
+        suggested_kit_for_pillar = None
+        
         if detected_kit and actual_current_pillar and actual_current_pillar != "shop":
             if isinstance(allowed_kits, list):
                 if detected_kit not in allowed_kits:
                     logger.info(f"[KIT GUARD] Detected kit '{detected_kit}' doesn't match pillar '{actual_current_pillar}'. Resetting.")
+                    kit_blocked_pillar_mismatch = True
+                    blocked_kit_type = detected_kit
+                    suggested_kit_for_pillar = allowed_kits[0] if allowed_kits else None
                     product_context["is_kit_request"] = False
                     product_context["kit_type"] = None
             elif allowed_kits and detected_kit != allowed_kits:
                 logger.info(f"[KIT GUARD] Detected kit '{detected_kit}' doesn't match pillar '{actual_current_pillar}' (expected '{allowed_kits}'). Resetting.")
+                kit_blocked_pillar_mismatch = True
+                blocked_kit_type = detected_kit
+                suggested_kit_for_pillar = allowed_kits
                 product_context["is_kit_request"] = False
                 product_context["kit_type"] = None
             elif not allowed_kits:
                 # No kit allowed for this pillar (not in PILLAR_TO_KIT or None)
                 logger.info(f"[KIT GUARD] No kit allowed for pillar '{actual_current_pillar}'. Resetting.")
+                kit_blocked_pillar_mismatch = True
+                blocked_kit_type = detected_kit
                 product_context["is_kit_request"] = False
                 product_context["kit_type"] = None
+        
+        # ==================== PILLAR KIT MISMATCH - EARLY RETURN ====================
+        # If user asked for a kit that doesn't match current pillar, redirect them
+        if kit_blocked_pillar_mismatch and is_explicit_kit_request:
+            blocked_display = blocked_kit_type.replace("_", " ").title() if blocked_kit_type else "that kit"
+            pillar_display = actual_current_pillar.title()
+            suggested_display = suggested_kit_for_pillar.replace("_", " ").title() if suggested_kit_for_pillar else None
+            
+            # Map pillar to URL
+            pillar_url_map = {
+                "travel": "/travel", "care": "/care", "fit": "/fit",
+                "celebrate": "/celebrate", "learn": "/learn", "dine": "/dine",
+                "shop": "/shop", "enjoy": "/enjoy", "stay": "/stay"
+            }
+            # Map kit type to its correct pillar
+            kit_to_pillar_map = {
+                "travel_kit": "travel", "grooming_kit": "care", "health_kit": "care",
+                "birthday_kit": "celebrate", "training_kit": "learn", "fitness_kit": "fit",
+                "food_kit": "dine", "activity_kit": "enjoy"
+            }
+            
+            correct_pillar_for_kit = kit_to_pillar_map.get(blocked_kit_type, "shop")
+            correct_url = pillar_url_map.get(correct_pillar_for_kit, "/shop")
+            
+            redirect_response = f"""I'd love to help with a **{blocked_display}**! 🎒
+
+However, you're currently on the **{pillar_display}** page. For the best experience with a {blocked_display}, head over to our **[{correct_pillar_for_kit.title()} page]({correct_url})** where I can curate it properly for you!"""
+            
+            if suggested_display:
+                redirect_response += f"""
+
+Or, if you'd like to stay here, I can help you build a **{suggested_display}** instead! Just say "build me a {suggested_display.lower()}" and I'll get started. 💪"""
+            
+            logger.info(f"[KIT GUARD] Returning redirect response for blocked kit '{blocked_kit_type}' on pillar '{actual_current_pillar}'")
+            
+            return {
+                "response": redirect_response,
+                "ticket_id": ticket_id,
+                "session_id": session_id,
+                "pillar": pillar,
+                "services": [],
+                "products": [],
+                "kit_blocked": True,
+                "blocked_kit_type": blocked_kit_type,
+                "suggested_pillar": correct_pillar_for_kit
+            }
         
         # Also reset if user didn't explicitly ask for a kit
         if product_context["is_kit_request"] and not is_explicit_kit_request and not kit_assembly_state:
