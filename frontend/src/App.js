@@ -250,9 +250,10 @@ function AppRouter() {
         {/* Membership Onboarding Form - NO navbar/footer for focused flow */}
         <Route path="/pet-soul-onboard" element={<MembershipOnboarding />} />
       
-      {/* Main app routes - WITH navbar */}
-      <Route path="/*" element={<MainLayout />} />
-    </Routes>
+        {/* Main app routes - WITH navbar */}
+        <Route path="/*" element={<MainLayout />} />
+      </Routes>
+    </Suspense>
   );
 }
 
