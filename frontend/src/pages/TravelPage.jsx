@@ -882,7 +882,7 @@ const TravelPage = () => {
       </div>
 
       {/* === TRAVEL PRODUCTS === */}
-      <div className="py-10 sm:py-16 bg-slate-50">
+      <div id="travel-products" className="py-10 sm:py-16 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between mb-6 sm:mb-8">
             <div>
@@ -893,7 +893,7 @@ const TravelPage = () => {
           
           {travelProducts.length > 0 ? (
             <>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
                 {travelProducts.slice(0, productsToShow).map((product) => (
                   <ProductCard key={product.id} product={product} pillar="travel" />
                 ))}
@@ -917,9 +917,9 @@ const TravelPage = () => {
               )}
             </>
           ) : (
-            <Card className="p-12 text-center bg-white">
-              <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Products Loading...</h3>
+            <Card className="p-8 sm:p-12 text-center bg-white">
+              <Package className="w-12 h-12 sm:w-16 sm:h-16 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">Products Loading...</h3>
             </Card>
           )}
         </div>
