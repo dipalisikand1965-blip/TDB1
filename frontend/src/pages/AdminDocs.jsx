@@ -35,13 +35,17 @@ const AdminDocs = () => {
 
   const sections = {
     'session-updates': {
-      title: '🔥 Session Updates (Jan 29)',
+      title: '🔥 Session Updates (Feb 1)',
       icon: AlertTriangle,
       color: 'bg-red-500',
       items: [
+        { id: 'occasion-box-builder', title: '🎁 Occasion Box Builder ⭐', icon: Gift },
+        { id: 'intelligent-search', title: '🔍 Intelligent Search for Occasions', icon: Search },
+        { id: 'code-splitting', title: '⚡ Code Splitting (80% Faster)', icon: Sparkles },
+        { id: 'mobile-improvements', title: '📱 Mobile Touch Targets', icon: PawPrint },
+        { id: 'pillar-seeding', title: '🌱 Pillar Services & Products', icon: Database },
         { id: 'unified-flow-fix', title: '✅ Unified Flow Fix (SEV-1)', icon: Check },
         { id: 'mira-fixes', title: '✅ Mira AI Fixes', icon: Brain },
-        { id: 'tomorrow-tasks', title: '📋 Tomorrow Tasks', icon: FileText },
         { id: 'pending-bugs', title: '🐛 Pending Bugs', icon: AlertTriangle },
       ]
     },
