@@ -1356,6 +1356,14 @@ async def claim_item(ticket_id: str, request: ClaimRequest):
     db = get_db()
     now = get_utc_timestamp()
     
+    # First, get the ticket to find member email
+    ticket = await db.service_desk_tickets.find_one({"ticket_id": ticket_id}, {"_id": 0})
+    collection = db.service_desk_tickets
+    
+    if not ticket:
+        ticket = await db.tickets.find_one({"ticket_id": ticket_id}, {"_id": 0})
+        collection = db.tickets
+    
     # Try to update in service_desk_tickets
     result = await db.service_desk_tickets.update_one(
         {"ticket_id": ticket_id},
@@ -1404,7 +1412,22 @@ async def claim_item(ticket_id: str, request: ClaimRequest):
     if result.modified_count == 0:
         raise HTTPException(status_code=404, detail="Item not found")
     
-    return {"success": True, "message": f"Claimed by {request.agent_name}"}
+    # Send push notification for assignment
+    push_result = None
+    member_email = ticket.get("member_email") or ticket.get("customer", {}).get("email") if ticket else None
+    if member_email:
+        try:
+            push_result = await notify_ticket_update(
+                ticket_id=ticket_id,
+                user_email=member_email,
+                update_type="assignment",
+                details={"agent_name": request.agent_name}
+            )
+            logger.info(f"Push notification sent for ticket assignment {ticket_id}: {push_result}")
+        except Exception as e:
+            logger.warning(f"Failed to send push notification: {e}")
+    
+    return {"success": True, "message": f"Claimed by {request.agent_name}", "push_notification": push_result}
 
 
 @router.post("/item/{ticket_id}/unclaim")
