@@ -524,59 +524,62 @@ const LearnPage = () => {
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
             {(featuredPrograms.length > 0 ? featuredPrograms : programs).map((program) => (
               <Card key={program.id} className="overflow-hidden hover:shadow-xl transition-all" data-testid={`program-${program.id}`}>
-                <div className="aspect-video bg-gradient-to-br from-blue-100 to-indigo-100 relative">
+                <div className="aspect-[4/3] sm:aspect-video bg-gradient-to-br from-blue-100 to-indigo-100 relative">
                   {program.image ? (
                     <img src={program.image} alt={program.name} className="w-full h-full object-cover" />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center">
-                      <GraduationCap className="w-16 h-16 text-blue-300" />
+                      <GraduationCap className="w-8 h-8 sm:w-16 sm:h-16 text-blue-300" />
                     </div>
                   )}
                   {program.is_featured && (
-                    <Badge className="absolute top-3 right-3 bg-amber-500">
-                      <Star className="w-3 h-3 mr-1" /> Featured
+                    <Badge className="absolute top-2 right-2 sm:top-3 sm:right-3 bg-amber-500 text-[10px] sm:text-xs">
+                      <Star className="w-2 h-2 sm:w-3 sm:h-3 mr-0.5 sm:mr-1" /> Featured
                     </Badge>
                   )}
                 </div>
-                <div className="p-5">
-                  <h3 className="font-bold text-lg text-gray-900 mb-2">{program.name}</h3>
-                  <p className="text-sm text-gray-600 mb-4 line-clamp-2">{program.description}</p>
+                <div className="p-2.5 sm:p-5">
+                  <h3 className="font-bold text-xs sm:text-lg text-gray-900 mb-1 sm:mb-2 line-clamp-2">{program.name}</h3>
+                  <p className="text-[10px] sm:text-sm text-gray-600 mb-2 sm:mb-4 line-clamp-2 hidden sm:block">{program.description}</p>
                   
-                  <div className="flex items-center gap-4 text-sm text-gray-500 mb-4">
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-4 h-4" /> {program.duration}
+                  <div className="flex items-center gap-2 sm:gap-4 text-[10px] sm:text-sm text-gray-500 mb-2 sm:mb-4">
+                    <span className="flex items-center gap-0.5 sm:gap-1">
+                      <Clock className="w-3 h-3 sm:w-4 sm:h-4" /> {program.duration}
                     </span>
-                    <span className="flex items-center gap-1">
-                      <Calendar className="w-4 h-4" /> {program.sessions} sessions
+                    <span className="flex items-center gap-0.5 sm:gap-1 hidden sm:flex">
+                      <Calendar className="w-3 h-3 sm:w-4 sm:h-4" /> {program.sessions} sessions
                     </span>
                   </div>
 
-                  {program.includes && (
-                    <div className="mb-4">
-                      <p className="text-xs font-medium text-gray-500 mb-2">INCLUDES:</p>
-                      <div className="flex flex-wrap gap-1">
-                        {program.includes.slice(0, 3).map((item, i) => (
-                          <Badge key={i} variant="secondary" className="text-xs">
-                            <CheckCircle className="w-3 h-3 mr-1 text-green-500" />
-                            {item}
-                          </Badge>
-                        ))}
+                  <div className="hidden sm:block">
+                    {program.includes && (
+                      <div className="mb-4">
+                        <p className="text-xs font-medium text-gray-500 mb-2">INCLUDES:</p>
+                        <div className="flex flex-wrap gap-1">
+                          {program.includes.slice(0, 3).map((item, i) => (
+                            <Badge key={i} variant="secondary" className="text-xs">
+                              <CheckCircle className="w-3 h-3 mr-1 text-green-500" />
+                              {item}
+                            </Badge>
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
+                  </div>
 
-                  <div className="flex items-center justify-between pt-4 border-t">
+                  <div className="flex items-center justify-between pt-2 sm:pt-4 border-t">
                     <div>
-                      <span className="text-2xl font-bold text-blue-600">₹{program.price?.toLocaleString()}</span>
+                      <span className="text-sm sm:text-2xl font-bold text-blue-600">₹{program.price?.toLocaleString()}</span>
                     </div>
                     <Button 
                       onClick={() => {
                         setSelectedProgram(program);
                         setShowEnrollModal(true);
                       }}
-                      className="bg-blue-600 hover:bg-blue-700"
+                      className="bg-blue-600 hover:bg-blue-700 text-[10px] sm:text-sm px-2 py-1 sm:px-4 sm:py-2 h-auto"
+                      size="sm"
                     >
-                      Enroll Now
+                      Enroll
                     </Button>
                   </div>
                 </div>
