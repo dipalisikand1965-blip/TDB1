@@ -393,6 +393,7 @@ const MyCelebrations = ({ pets = [], onNavigate, onAddToCart }) => {
               key={celebration.id}
               celebration={celebration}
               onAction={handleAction}
+              onBuildBox={handleBuildBox}
             />
           ))}
         </div>
@@ -413,6 +414,18 @@ const MyCelebrations = ({ pets = [], onNavigate, onAddToCart }) => {
         <div className="flex items-center gap-2 text-sm text-purple-700">
           <Bell className="w-4 h-4" />
           <span>We&apos;ll remind you before each celebration!</span>
+        </div>
+      </div>
+      
+      {/* Occasion Box Builder Modal */}
+      <OccasionBoxBuilder
+        isOpen={showBoxBuilder}
+        onClose={() => setShowBoxBuilder(false)}
+        occasionType={selectedOccasion}
+        petName={selectedPetName}
+        onAddToCart={onAddToCart}
+      />
+    </Card>
         </div>
       </div>
     </Card>
