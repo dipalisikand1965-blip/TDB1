@@ -1,10 +1,47 @@
 # Pet Life Operating System - Product Requirements Document
 
-## Latest Update: February 1, 2026 - Session 5
+## Latest Update: February 1, 2026 - Session 6
+
+### ✅ PILLAR KIT GUARD FIX - COMPLETED (Feb 1, 2026)
+
+**Issue**: Users could request a "travel kit" on the "Fit" page, and Mira would start building it instead of redirecting them to the correct pillar.
+
+**Fix Implemented** (`/app/backend/mira_routes.py` lines 3275-3348):
+- Added early return when kit type doesn't match current pillar
+- Returns `kit_blocked: true` with redirect response
+- Suggests the correct pillar-specific kit (e.g., "fitness_kit" on /fit page)
+- Maps kit types to their correct pillars and provides navigation link
+
+**Test Results (Iteration 156)**: 100% pass rate (14/14 tests)
+- Travel kit on /fit → BLOCKED with redirect to /travel
+- Fitness kit on /fit → ALLOWED
+- Grooming kit on /fit → BLOCKED with redirect to /care
+
+---
+
+### ✅ SERVICE CATALOG FULLY SEEDED - COMPLETED (Feb 1, 2026)
+
+**87 Services Across 14 Pillars** via `/app/backend/seed_master_services.py`:
+- Celebrate: 7 services (birthday parties, gotcha day, milestones)
+- Dine: 5 services (restaurant discovery, reservations)
+- Stay: 5 services (hotel discovery, boarding)
+- Travel: 7 services (airline policy, relocation)
+- Care: 13 services (grooming, vet, nutrition)
+- Enjoy: 5 services (parks, playdates, events)
+- Fit: 8 services (walking, swimming, weight management)
+- Learn: 7 services (training, behavior)
+- Paperwork: 6 services (registration, documentation)
+- Advisory: 5 services (life planning, housing)
+- Emergency: 5 services (vet discovery, transport)
+- Farewell: 5 services (end-of-life, memorial)
+- Adopt: 5 services (discovery, readiness)
+- Shop: 4 services (personal shopping, sourcing)
+
+---
 
 ### 🏗️ SERVICE BOOKING FLOW - IN PROGRESS (Feb 1, 2026)
 
-**Major Architecture Addition**: Unified Service Booking Flow for Care Pillar
+**Major Architecture Addition**: Unified Service Booking Flow
 
 **Components Built**:
 1. **Service Catalog API** (`/app/backend/service_catalog_routes.py`):
@@ -15,10 +52,7 @@
    - Configurable payment timing (upfront, deposit, at_service)
    - Service cart and checkout
 
-2. **Care Services Seeded** (3 services):
-   - Basic Grooming: ₹800 (60 min) + add-ons
-   - Full Spa Grooming: ₹1500 (120 min) with 30% deposit
-   - Vet Consultation: ₹600 (30 min) upfront payment
+2. **All 87 Services Seeded** across 14 pillars (see above)
 
 3. **Ticket Recall & Update** (`/api/mira/ticket/{id}`, `/api/mira/ticket/update`):
    - Customers can recall tickets by ID from Mira or dashboard
