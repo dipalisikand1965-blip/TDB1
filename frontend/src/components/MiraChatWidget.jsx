@@ -1275,8 +1275,8 @@ const MiraChatWidget = ({
                     return (
                       <button
                         key={idx}
-                        onClick={() => { setInputValue(prompt); inputRef.current?.focus(); }}
-                        className={`px-3 py-2 text-xs rounded-full transition-colors font-medium ${
+                        onClick={() => sendMessage(prompt)}
+                        className={`px-3 py-2 text-xs rounded-full transition-colors font-medium min-h-[44px] touch-manipulation ${
                           isKitPrompt 
                             ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-sm hover:from-purple-700 hover:to-pink-700' 
                             : 'bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200'
