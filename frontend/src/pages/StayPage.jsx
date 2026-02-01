@@ -35,7 +35,7 @@ import {
 
 // Hero Images for Stay pillar
 const HERO_IMAGES = [
-  'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=1200&q=80',
+  'https://images.unsplash.com/photo-1765604551468-2b012465ba59?w=1200&q=80',
   'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1200&q=80',
   'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=1200&q=80'
 ];
