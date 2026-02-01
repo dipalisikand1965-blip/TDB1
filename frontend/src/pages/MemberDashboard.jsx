@@ -224,6 +224,7 @@ const PillarPopup = ({ pillar, onClose, onExplore, data }) => {
 
 const MemberDashboard = () => {
   const { user, logout, token, loading: authLoading, refreshUser } = useAuth();
+  const { addToCart } = useCart();
   const [orders, setOrders] = useState([]);
   const [pets, setPets] = useState([]);
   const [autoships, setAutoships] = useState([]);
