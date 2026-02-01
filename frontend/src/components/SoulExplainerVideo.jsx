@@ -337,10 +337,14 @@ const SoulExplainerVideo = ({ onClose, onStartJourney, petName = 'your pet' }) =
           </div>
         </Card>
         
-        {/* Skip Button */}
+        {/* Skip Button - Larger touch target for mobile */}
         <button 
-          onClick={onClose}
-          className="w-full mt-4 text-center text-white/60 hover:text-white/80 text-sm transition-colors"
+          onClick={(e) => {
+            e.stopPropagation();
+            onClose();
+          }}
+          className="w-full mt-4 py-3 text-center text-white/60 hover:text-white/80 active:text-white text-base transition-colors touch-manipulation"
+          data-testid="soul-explainer-skip"
         >
           Skip for now
         </button>
