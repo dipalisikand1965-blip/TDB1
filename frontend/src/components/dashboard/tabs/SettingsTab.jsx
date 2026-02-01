@@ -46,7 +46,7 @@ const SettingsTab = ({
               key={cmd}
               className="px-3 py-1.5 bg-white rounded-full text-xs font-medium text-purple-700 border border-purple-200"
             >
-              🎤 "{cmd}"
+              🎤 &quot;{cmd}&quot;
             </span>
           ))}
         </div>
@@ -230,7 +230,7 @@ const SettingsTab = ({
                             <CheckCircle2 className="w-4 h-4" /> Notifications Active
                           </p>
                           <p className="text-xs text-green-600 mt-1">
-                            You'll receive Soul Whispers™, order updates & concierge® replies
+                            You&apos;ll receive Soul Whispers™, order updates & concierge® replies
                           </p>
                         </div>
                         <Button
