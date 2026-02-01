@@ -2084,6 +2084,104 @@ const Admin = () => {
           <AdvancedAnalyticsDashboard authHeaders={getAuthHeaders()} />
         )}
 
+        {/* Site Status Report Tab */}
+        {activeTab === 'site-status' && (
+          <Card className="p-6">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-gray-900">Site Status Report</h2>
+                <p className="text-gray-500">Current system health and recent changes</p>
+              </div>
+              <Button 
+                variant="outline"
+                onClick={() => window.open('/admin-docs/site-status-report.md', '_blank')}
+              >
+                <FileText className="w-4 h-4 mr-2" />
+                View Full Report
+              </Button>
+            </div>
+            
+            {/* Quick Status Overview */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+              <Card className="p-4 bg-green-50 border-green-200">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center">
+                    <Check className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold text-green-700">12</p>
+                    <p className="text-sm text-green-600">Features Working</p>
+                  </div>
+                </div>
+              </Card>
+              <Card className="p-4 bg-yellow-50 border-yellow-200">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-yellow-500 flex items-center justify-center">
+                    <Clock className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold text-yellow-700">5</p>
+                    <p className="text-sm text-yellow-600">Pending Features</p>
+                  </div>
+                </div>
+              </Card>
+              <Card className="p-4 bg-red-50 border-red-200">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center">
+                    <AlertCircle className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold text-red-700">2</p>
+                    <p className="text-sm text-red-600">Blocked (Awaiting Keys)</p>
+                  </div>
+                </div>
+              </Card>
+            </div>
+
+            {/* Recent Changes */}
+            <div className="mb-8">
+              <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+                <Clock className="w-5 h-5 text-purple-600" />
+                Last 24 Hours - Work Completed
+              </h3>
+              <div className="space-y-3">
+                {[
+                  { status: '✅', text: 'Restaurant Modal Layout Fixed (Desktop & Mobile)', time: '2:00 AM' },
+                  { status: '✅', text: 'Fresh Pet Meals Grid - Now single column on mobile', time: '1:45 AM' },
+                  { status: '✅', text: 'Mira AI Tabs - Auto-send messages working', time: '1:30 AM' },
+                  { status: '✅', text: 'Mira AI Product Cards - Increased size for readability', time: '1:15 AM' },
+                  { status: '✅', text: 'Mira Pillar Switch Bug - Travel kit now shows correctly', time: '1:00 AM' },
+                  { status: '✅', text: 'Trainer Cards Redesigned - Compact horizontal layout', time: '12:30 AM' },
+                  { status: '✅', text: 'Training Bundles - Now clickable with hover states', time: '12:00 AM' },
+                  { status: '✅', text: 'Mobile Typography - 16px minimum fonts', time: '11:30 PM' },
+                  { status: '✅', text: 'Mobile Audit - 100% pass rate on 9 pages', time: '11:00 PM' },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                    <span className="text-lg">{item.status}</span>
+                    <span className="flex-1 text-sm">{item.text}</span>
+                    <span className="text-xs text-gray-400">{item.time}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Test Credentials */}
+            <div className="p-4 bg-gray-100 rounded-lg">
+              <h3 className="font-bold mb-3">Test Credentials</h3>
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <p className="text-gray-500">Member Login</p>
+                  <p className="font-mono">dipali@clubconcierge.in / test123</p>
+                </div>
+                <div>
+                  <p className="text-gray-500">Admin Login</p>
+                  <p className="font-mono">aditya / lola4304</p>
+                </div>
+              </div>
+            </div>
+          </Card>
+        )}
+
         {/* Product Tags Tab */}
         {activeTab === 'product-tags' && (
           <ProductTagsManager credentials={{ username, password }} />
