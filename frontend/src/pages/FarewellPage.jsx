@@ -359,10 +359,10 @@ const FarewellPage = () => {
         </div>
       </section>
 
-      {/* Service Categories */}
+      {/* Service Categories - 2x2 on mobile, 4 cols on desktop */}
       <section className="py-12 px-4 -mt-8 relative z-10">
         <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             {Object.values(SERVICE_CATEGORIES).map((cat) => {
               const Icon = cat.icon;
               return (
