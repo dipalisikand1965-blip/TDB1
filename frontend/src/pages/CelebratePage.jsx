@@ -40,6 +40,22 @@ const CelebratePage = () => {
   const [showBoxBuilder, setShowBoxBuilder] = useState(false);
   const [boxOccasion, setBoxOccasion] = useState('birthday');
   const { addToCart } = useCart();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  // Check for build_box URL param from reminder emails/links
+  useEffect(() => {
+    const buildBoxParam = searchParams.get('build_box');
+    if (buildBoxParam) {
+      // Valid occasions: birthday, gotcha_day, festival
+      const validOccasions = ['birthday', 'gotcha_day', 'festival'];
+      const occasion = validOccasions.includes(buildBoxParam) ? buildBoxParam : 'birthday';
+      setBoxOccasion(occasion);
+      setShowBoxBuilder(true);
+      // Clear the param from URL
+      searchParams.delete('build_box');
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   useEffect(() => {
     fetchFeaturedProducts();
