@@ -179,7 +179,7 @@ const Policies = () => {
 
               <p className="text-gray-700 mb-4">
                 This website is operated by The Doggy Company. By visiting our site and/or 
-                purchasing something from us, you engage in our "Service" and agree to be 
+                purchasing something from us, you engage in our &ldquo;Service&rdquo; and agree to be 
                 bound by the following terms and conditions.
               </p>
 
