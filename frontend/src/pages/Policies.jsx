@@ -234,7 +234,7 @@ const Policies = () => {
               <h3 className="text-lg font-semibold mt-6 mb-3">8. Disclaimer & Liability</h3>
               <p className="text-gray-700 mb-4">
                 We do not guarantee uninterrupted or error-free service. The service is 
-                provided 'as is'. We shall not be liable for any damages arising from 
+                provided &ldquo;as is&rdquo;. We shall not be liable for any damages arising from 
                 your use of the service.
               </p>
 
