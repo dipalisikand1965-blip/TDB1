@@ -67,10 +67,40 @@ const SearchResults = () => {
   const [activeTab, setActiveTab] = useState('all');
   const [pet, setPet] = useState(null);
   
+  // Occasion Box Builder state
+  const [showBoxBuilder, setShowBoxBuilder] = useState(false);
+  const [detectedOccasion, setDetectedOccasion] = useState(null);
+  
   // Filters
   const [priceRange, setPriceRange] = useState([0, 10000]);
   const [selectedPillar, setSelectedPillar] = useState('');
   const [sortBy, setSortBy] = useState('relevance');
+  
+  // Detect occasion from search query
+  const detectOccasion = useCallback((searchQuery) => {
+    if (!searchQuery) return null;
+    const lowerQuery = searchQuery.toLowerCase();
+    
+    for (const [occasion, keywords] of Object.entries(OCCASION_KEYWORDS)) {
+      if (keywords.some(kw => lowerQuery.includes(kw))) {
+        return occasion;
+      }
+    }
+    return null;
+  }, []);
+  
+  // Handle adding items to cart from box builder
+  const handleAddToCart = (items) => {
+    items.forEach(item => {
+      addToCart({
+        id: item.id,
+        title: item.title || item.name,
+        price: item.price,
+        image: item.image_url || item.image || item.images?.[0],
+        quantity: 1
+      });
+    });
+  };
 
   // Fetch user's pet for personalization
   useEffect(() => {
