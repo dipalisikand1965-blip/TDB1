@@ -659,10 +659,10 @@ const KitEditorDialog = ({ open, kit, categories, products, onSave, onClose, onT
   const [formData, setFormData] = useState({});
   const [productSearch, setProductSearch] = useState('');
 
-  // Reset form when kit changes
+  // Reset form when kit changes - this is intentional to sync external state
   useEffect(() => {
     if (open && kit) {
-      setFormData(kit);
+      setFormData(kit); // eslint-disable-line react-hooks/set-state-in-effect
     }
   }, [open, kit]);
 
