@@ -1978,8 +1978,8 @@ const MemberDashboard = () => {
             <Card className="p-6">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-bold flex items-center gap-2">
-                  <MessageCircle className="w-5 h-5 text-purple-600" />
-                  My Requests
+                  <Calendar className="w-5 h-5 text-purple-600" />
+                  My Bookings & Requests
                 </h3>
                 <Button 
                   variant="outline" 
