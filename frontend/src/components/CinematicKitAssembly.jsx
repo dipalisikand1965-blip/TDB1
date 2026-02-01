@@ -21,32 +21,61 @@ import { Card } from './ui/card';
 import { Badge } from './ui/badge';
 
 // Product narration templates - Mira explains why each item is in the kit
-// Personalized with pet info when available
+// Personalized with pet info when available (name, breed, size, favorites, allergies)
 const getProductNarration = (product, kitName, petInfo = {}) => {
   const name = product.title || product.name || "this item";
   const price = product.price ? `at just ${product.price} rupees` : "";
   const petName = petInfo.name || "your furry friend";
   const petBreed = petInfo.breed || "";
   const petSize = petInfo.size || "";
+  const favorites = petInfo.favorites || []; // e.g., ["chicken", "peanut butter"]
+  const allergies = petInfo.allergies || []; // e.g., ["beef", "grain"]
+  const activityLevel = petInfo.activityLevel || "";
+  const personality = petInfo.personality || "";
   
   // Category-specific narrations with personalization
   const category = (product.category || product.collections?.[0] || "").toLowerCase();
   const productName = name.toLowerCase();
+  const productTags = (product.tags || []).map(t => t.toLowerCase()).join(' ');
+  
+  // Check if product matches favorites
+  const matchesFavorite = favorites.some(fav => 
+    productName.includes(fav.toLowerCase()) || productTags.includes(fav.toLowerCase())
+  );
+  
+  // Check for allergy concerns (to avoid or note)
+  const hasAllergyWarning = allergies.some(allergy => 
+    productName.includes(allergy.toLowerCase()) || productTags.includes(allergy.toLowerCase())
+  );
+  
+  // Personalized favorite match prefix
+  const favoritePrefix = matchesFavorite && favorites.length > 0
+    ? `Ooh! I know ${petName} loves ${favorites[0]}! ` 
+    : "";
   
   // Carrier recommendations
   if (category.includes("carrier") || productName.includes("carrier")) {
     if (petSize === "small" || petSize === "toy") {
-      return `Next up, the ${name}! Perfect size for ${petName}'s compact frame, keeping them safe during travel. ${price}`;
+      return `${favoritePrefix}Next up, the ${name}! Perfect size for ${petName}'s compact frame, keeping them safe during travel. ${price}`;
     } else if (petSize === "large" || petSize === "giant") {
-      return `The ${name}! Spacious enough for ${petName}'s size, with great ventilation for comfort. ${price}`;
+      return `${favoritePrefix}The ${name}! Spacious enough for ${petName}'s size, with great ventilation for comfort. ${price}`;
     }
-    return `Next up, the ${name}! Perfect for keeping ${petName} safe and comfortable during travel. ${price}`;
+    return `${favoritePrefix}Next up, the ${name}! Perfect for keeping ${petName} safe and comfortable during travel. ${price}`;
   }
   
-  // Food and treats - can reference preferences
+  // Food and treats - can reference preferences and favorites
   if (category.includes("treat") || productName.includes("treat")) {
+    // Match favorite flavors
+    if (matchesFavorite) {
+      return `${petName} is going to love this! The ${name} - one of their favorites! Healthy and delicious. ${price}`;
+    }
+    // Breed-specific
     if (petBreed.toLowerCase().includes("lab") || petBreed.toLowerCase().includes("retriever")) {
       return `${petName} being a ${petBreed}, I know they'll love these ${name}! Healthy and delicious. ${price}`;
+    }
+    // Activity-based
+    if (activityLevel === "high" || activityLevel === "very_active") {
+      return `High-energy treats for an active pup like ${petName}! The ${name} will keep them fueled. ${price}`;
     }
     return `The ${name}! Because ${petName} deserves tasty, healthy rewards. ${price}`;
   }
@@ -56,16 +85,25 @@ const getProductNarration = (product, kitName, petInfo = {}) => {
     return `Here's the ${name}! Keeping ${petName} hydrated is so important, especially on adventures. ${price}`;
   }
   
-  // Leash and harness
+  // Leash and harness - consider activity level
   if (category.includes("leash") || productName.includes("leash") || productName.includes("harness")) {
     if (petSize === "large" || petSize === "giant") {
       return `A sturdy ${name} for ${petName}! Essential for safe, controlled walks. ${price}`;
     }
+    if (activityLevel === "high" || personality === "adventurer") {
+      return `For ${petName}'s adventures, the ${name}! Built for active pups who love to explore. ${price}`;
+    }
     return `The ${name}! Perfect for ${petName}'s walks and outings. ${price}`;
   }
   
-  // Toys
+  // Toys - consider personality
   if (category.includes("toy") || productName.includes("toy")) {
+    if (personality === "playful" || personality === "energetic") {
+      return `${petName} the playful one will go crazy for the ${name}! Hours of entertainment guaranteed. ${price}`;
+    }
+    if (activityLevel === "low" || activityLevel === "calm") {
+      return `A gentle ${name} for ${petName}'s cozy play sessions. Perfect for quiet time together. ${price}`;
+    }
     return `Play time with the ${name}! Keeping ${petName} happy and entertained is so important. ${price}`;
   }
   
@@ -74,20 +112,41 @@ const getProductNarration = (product, kitName, petInfo = {}) => {
     if (petBreed && (petBreed.toLowerCase().includes("poodle") || petBreed.toLowerCase().includes("shih") || petBreed.toLowerCase().includes("maltese"))) {
       return `For ${petName}'s gorgeous coat, the ${name}! ${petBreed}s need special care. ${price}`;
     }
+    if (petBreed && (petBreed.toLowerCase().includes("husky") || petBreed.toLowerCase().includes("golden"))) {
+      return `Essential for ${petName}'s thick coat! The ${name} will make grooming a breeze. ${price}`;
+    }
     return `For grooming, the ${name}! Keeping ${petName} looking fabulous. ${price}`;
   }
   
   // Training
   if (category.includes("train") || category.includes("clicker")) {
+    if (personality === "smart" || personality === "eager_to_please") {
+      return `${petName} is such a quick learner! The ${name} will make training sessions even better. ${price}`;
+    }
     return `Training essential: ${name}! Great for building ${petName}'s good habits. ${price}`;
   }
   
   // Beds and comfort
   if (category.includes("bed") || productName.includes("bed") || productName.includes("blanket")) {
+    if (petSize === "large" || petSize === "giant") {
+      return `A cozy ${name} sized just right for ${petName}! Big dogs deserve big comfort. ${price}`;
+    }
     return `The ${name} for ${petName}'s comfort! Every pup deserves a cozy spot. ${price}`;
   }
   
-  // Default narration
+  // Health and supplements - mention allergies if relevant
+  if (category.includes("health") || category.includes("supplement")) {
+    if (allergies.length > 0) {
+      return `I've checked and this ${name} is safe for ${petName}'s dietary needs. Great for their wellbeing! ${price}`;
+    }
+    return `For ${petName}'s health, the ${name}! Keeping them in top shape. ${price}`;
+  }
+  
+  // Default narration with favorite match
+  if (matchesFavorite) {
+    return `${petName} will love this! I picked the ${name} knowing their preferences. A perfect addition! ${price}`;
+  }
+  
   return `I've selected the ${name} especially for ${petName}'s kit. A great choice ${price}!`;
 };
 
