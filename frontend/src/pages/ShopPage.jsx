@@ -335,13 +335,17 @@ const ShopPage = () => {
   const filteredProducts = useMemo(() => {
     let result = products;
     
-    // Search filter
+    // Search filter - intelligent search across multiple fields
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       result = result.filter(p => 
         p.title?.toLowerCase().includes(query) ||
         p.description?.toLowerCase().includes(query) ||
-        p.tags?.some(t => t.toLowerCase().includes(query))
+        p.tags?.some(t => t.toLowerCase().includes(query)) ||
+        p.product_type?.toLowerCase().includes(query) ||
+        p.vendor?.toLowerCase().includes(query) ||
+        p.pillar?.toLowerCase().includes(query) ||
+        p.category?.toLowerCase().includes(query)
       );
     }
     
@@ -350,15 +354,34 @@ const ShopPage = () => {
       (p.price || 0) >= priceRange[0] && (p.price || 0) <= priceRange[1]
     );
     
-    // Quick filters
+    // Quick filters - multiple can be active at once
     if (activeFilters.includes('best-sellers')) {
-      result = result.filter(p => p.tags?.includes('best-seller'));
+      result = result.filter(p => 
+        p.tags?.some(t => t.toLowerCase().includes('best-seller') || t.toLowerCase().includes('bestseller'))
+      );
     }
     if (activeFilters.includes('new-arrivals')) {
-      result = result.filter(p => p.tags?.includes('new'));
+      result = result.filter(p => 
+        p.tags?.some(t => t.toLowerCase().includes('new'))
+      );
     }
     if (activeFilters.includes('on-sale')) {
       result = result.filter(p => p.compare_at_price && p.compare_at_price > p.price);
+    }
+    if (activeFilters.includes('grain-free')) {
+      result = result.filter(p => 
+        p.tags?.some(t => t.toLowerCase().includes('grain-free') || t.toLowerCase().includes('grainfree'))
+      );
+    }
+    if (activeFilters.includes('organic')) {
+      result = result.filter(p => 
+        p.tags?.some(t => t.toLowerCase().includes('organic') || t.toLowerCase().includes('natural'))
+      );
+    }
+    if (activeFilters.includes('subscription')) {
+      result = result.filter(p => 
+        p.tags?.some(t => t.toLowerCase().includes('subscription') || t.toLowerCase().includes('autoship'))
+      );
     }
     
     return result;
