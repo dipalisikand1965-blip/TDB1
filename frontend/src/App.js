@@ -7,6 +7,7 @@ import { useEffect, useCallback, Suspense, lazy } from "react";
 import ErrorBoundary from "./components/ErrorBoundary";
 import FloatingContactButton from "./components/FloatingContactButton";
 import MiraFloatingButton from "./components/MiraFloatingButton";
+import MobileNavBar from "./components/MobileNavBar";
 import { useAppBadge } from "./hooks/useAppBadge";
 import { API_URL } from "./utils/api";
 
