@@ -119,11 +119,14 @@
 | | Shop | ✅ | ✅ | 20 prod, 4 svc |
 | **Mira AI** | Chat button | ✅ | ✅ | Floating |
 | | Chat API | ✅ | ✅ | |
-| **Dashboard** | Page loads | ✅ | ✅ | |
-| | Pet cards | ✅ | 🟡 | |
+| **Dashboard** | Page loads | ✅ | ✅ | Refactored to lazy tabs |
+| | Pet cards | ✅ | ✅ | |
 | | Orders | ✅ | ✅ | 6 orders |
 | | Celebrations | ✅ | ✅ | 18 total |
 | | Paw Points | ✅ | ✅ | 670 points |
+| **Admin Service Desk** | Lock ticket | ✅ | N/A | NEW - Prevent replies |
+| | Delete ticket | ✅ | N/A | NEW - Permanent delete |
+| | Merge tickets | ✅ | N/A | Existing feature |
 | **Pets** | My Pets page | ✅ | ✅ | 5 pets |
 | | Pet profile | ✅ | ✅ | |
 | **Cart** | Cart drawer | ✅ | ✅ | |
