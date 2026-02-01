@@ -1344,7 +1344,12 @@ const MiraChatWidget = ({
         <CinematicKitAssembly
           kitName={cinematicKitData.name}
           items={cinematicKitData.items}
-          petName={miraContext?.pets?.[0]?.name || "your furry friend"}
+          petInfo={{
+            name: miraContext?.pets?.[0]?.name,
+            breed: miraContext?.pets?.[0]?.breed,
+            size: miraContext?.pets?.[0]?.size,
+            age: miraContext?.pets?.[0]?.age
+          }}
           onComplete={(items) => {
             toast.success(`Added ${items.length} items to cart!`, {
               description: 'Your kit is ready to checkout'
