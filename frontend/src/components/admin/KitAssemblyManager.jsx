@@ -662,7 +662,7 @@ const KitEditorDialog = ({ open, kit, categories, products, onSave, onClose, onT
   // Reset form when kit changes - this is intentional to sync external state
   useEffect(() => {
     if (open && kit) {
-      setFormData(kit); // eslint-disable-line react-hooks/set-state-in-effect
+      setFormData(kit);
     }
   }, [open, kit]);
 
@@ -933,7 +933,7 @@ const PickEditorDialog = ({ open, pick, products, onSave, onClose, onTestVoice }
   // Reset form when pick changes
   useEffect(() => {
     if (open && pick) {
-      setFormData(pick); // eslint-disable-line react-hooks/set-state-in-effect
+      setFormData(pick);
     }
   }, [open, pick]);
 
