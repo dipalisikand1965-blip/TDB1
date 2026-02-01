@@ -5178,6 +5178,30 @@ async def quick_book(
     except Exception as e:
         logger.error(f"Failed to insert channel_intake: {e}")
     
+    # ==================== ADMIN BELL NOTIFICATION ====================
+    admin_notif_id = f"NOTIF-{uuid.uuid4().hex[:8].upper()}"
+    try:
+        await db.admin_notifications.insert_one({
+            "id": admin_notif_id,
+            "type": "booking_request",
+            "pillar": request.pillar or request.serviceType.split("_")[0] if "_" in request.serviceType else "care",
+            "title": f"New {request.serviceType.replace('_', ' ').title()} Booking",
+            "message": f"{user.get('name', 'Guest')} booked {request.serviceType.replace('_', ' ')} for {request.date} at {request.time}",
+            "customer_name": user.get("name") if user else "Guest",
+            "customer_email": user.get("email") if user else None,
+            "pet_name": pet.get("name") if pet else None,
+            "ticket_id": ticket_id,
+            "booking_id": booking_id,
+            "link": f"/admin?tab=servicedesk&ticket={ticket_id}",
+            "priority": "high",
+            "read": False,
+            "created_at": now.isoformat(),
+            "timestamp": now.isoformat()
+        })
+        logger.info(f"Created admin notification: {admin_notif_id}")
+    except Exception as e:
+        logger.error(f"Failed to create admin notification: {e}")
+    
     logger.info(f"Quick book created: {booking_id} | Ticket: {ticket_id} | Service: {request.serviceType}")
     
     # Send push notification to user about new booking ticket
