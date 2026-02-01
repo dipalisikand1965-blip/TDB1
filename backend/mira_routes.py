@@ -3072,7 +3072,7 @@ CRITICAL CONCIERGE DOCTRINE:
                 "enjoy": "Your activity preferences are noted. Our team will find the best pet-friendly options for you!"
             }
             
-            handoff_msg = handoff_messages.get(current_pillar, "I've noted your request. Our concierge team is on it and will get back to you with personalized options shortly!")
+            handoff_msg = handoff_messages.get(pillar, "I've noted your request. Our concierge team is on it and will get back to you with personalized options shortly!")
             
             # Replace looping response with handoff
             response = f"""Got it! {handoff_msg}
