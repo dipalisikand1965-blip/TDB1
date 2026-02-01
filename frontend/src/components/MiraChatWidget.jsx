@@ -933,7 +933,7 @@ const MiraChatWidget = ({
         {/* Content - Hidden when minimized */}
         {!isMinimized && (
           <>
-            {/* Pet Selector (if user has pets) - Compact */}
+            {/* Pet Selector + Suggestions Row - Compact */}
             {pets.length > 0 && (
               <div className="px-3 py-1.5 border-b bg-gray-50 shrink-0">
                 <div className="flex items-center gap-2 overflow-x-auto">
@@ -960,8 +960,40 @@ const MiraChatWidget = ({
               </div>
             )}
             
-            {/* Quick Actions - Inline with suggestions */}
-            <div className="px-3 py-2 border-b bg-gradient-to-r from-purple-50/50 to-pink-50/50 shrink-0">
+            {/* SUGGESTED FOR [PET] - Compact horizontal scroll */}
+            {selectedPet && petRecommendations.length > 0 && (
+              <div className="px-3 py-2 border-b bg-gradient-to-r from-purple-50/50 to-pink-50/50 shrink-0">
+                <p className="text-[10px] font-bold text-purple-700 uppercase tracking-wider mb-1.5">
+                  ✨ For {selectedPet.name}
+                </p>
+                <div className="flex gap-2 overflow-x-auto pb-1">
+                  {petRecommendations.slice(0, 4).map(product => {
+                    const imageUrl = product.image?.startsWith('http') 
+                      ? product.image 
+                      : product.images?.[0] || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=100&h=100&fit=crop';
+                    return (
+                      <div 
+                        key={product.id}
+                        onClick={() => handleProductClick(product)}
+                        className="flex-shrink-0 w-20 bg-white rounded-lg p-1.5 shadow-sm cursor-pointer border border-purple-100 active:scale-95"
+                      >
+                        <img 
+                          src={imageUrl} 
+                          alt={product.name} 
+                          className="w-full h-12 rounded object-cover mb-1"
+                          onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=100'; }}
+                        />
+                        <p className="text-[9px] font-medium text-gray-800 truncate">{product.name}</p>
+                        <p className="text-[9px] text-purple-600 font-bold">₹{product.price}</p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+            
+            {/* Quick Actions */}
+            <div className="px-3 py-2 border-b shrink-0">
               <div className="flex gap-1.5 overflow-x-auto">
                 {quickActions.slice(0, 3).map((action, idx) => {
                   const isKitAction = action.toLowerCase().includes('build');
@@ -975,7 +1007,7 @@ const MiraChatWidget = ({
                       className={`px-3 py-1.5 rounded-full text-[10px] font-semibold whitespace-nowrap ${
                         isKitAction 
                           ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white' 
-                          : 'bg-white text-gray-700 border border-gray-200'
+                          : 'bg-gray-100 text-gray-700'
                       }`}
                       data-testid={`quick-action-${idx}`}
                     >
