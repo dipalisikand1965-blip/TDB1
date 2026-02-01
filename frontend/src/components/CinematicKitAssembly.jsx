@@ -21,37 +21,74 @@ import { Card } from './ui/card';
 import { Badge } from './ui/badge';
 
 // Product narration templates - Mira explains why each item is in the kit
-const getProductNarration = (product, kitName, petName = "your furry friend") => {
+// Personalized with pet info when available
+const getProductNarration = (product, kitName, petInfo = {}) => {
   const name = product.title || product.name || "this item";
   const price = product.price ? `at just ${product.price} rupees` : "";
+  const petName = petInfo.name || "your furry friend";
+  const petBreed = petInfo.breed || "";
+  const petSize = petInfo.size || "";
   
-  // Category-specific narrations
+  // Category-specific narrations with personalization
   const category = (product.category || product.collections?.[0] || "").toLowerCase();
+  const productName = name.toLowerCase();
   
-  if (category.includes("carrier") || name.toLowerCase().includes("carrier")) {
+  // Carrier recommendations
+  if (category.includes("carrier") || productName.includes("carrier")) {
+    if (petSize === "small" || petSize === "toy") {
+      return `Next up, the ${name}! Perfect size for ${petName}'s compact frame, keeping them safe during travel. ${price}`;
+    } else if (petSize === "large" || petSize === "giant") {
+      return `The ${name}! Spacious enough for ${petName}'s size, with great ventilation for comfort. ${price}`;
+    }
     return `Next up, the ${name}! Perfect for keeping ${petName} safe and comfortable during travel. ${price}`;
   }
-  if (category.includes("bowl") || name.toLowerCase().includes("bowl") || name.toLowerCase().includes("bottle")) {
-    return `Here's the ${name}! Hydration is key, especially on adventures. ${price}`;
+  
+  // Food and treats - can reference preferences
+  if (category.includes("treat") || productName.includes("treat")) {
+    if (petBreed.toLowerCase().includes("lab") || petBreed.toLowerCase().includes("retriever")) {
+      return `${petName} being a ${petBreed}, I know they'll love these ${name}! Healthy and delicious. ${price}`;
+    }
+    return `The ${name}! Because ${petName} deserves tasty, healthy rewards. ${price}`;
   }
-  if (category.includes("treat") || name.toLowerCase().includes("treat")) {
-    return `And of course, the ${name}! Because every good pup deserves rewards. ${price}`;
+  
+  // Bowls and bottles
+  if (category.includes("bowl") || productName.includes("bowl") || productName.includes("bottle")) {
+    return `Here's the ${name}! Keeping ${petName} hydrated is so important, especially on adventures. ${price}`;
   }
-  if (category.includes("leash") || name.toLowerCase().includes("leash") || name.toLowerCase().includes("harness")) {
-    return `The ${name}! Essential for safe walks and outings. ${price}`;
+  
+  // Leash and harness
+  if (category.includes("leash") || productName.includes("leash") || productName.includes("harness")) {
+    if (petSize === "large" || petSize === "giant") {
+      return `A sturdy ${name} for ${petName}! Essential for safe, controlled walks. ${price}`;
+    }
+    return `The ${name}! Perfect for ${petName}'s walks and outings. ${price}`;
   }
-  if (category.includes("toy") || name.toLowerCase().includes("toy")) {
-    return `Fun time with the ${name}! Keeping ${petName} entertained is so important. ${price}`;
+  
+  // Toys
+  if (category.includes("toy") || productName.includes("toy")) {
+    return `Play time with the ${name}! Keeping ${petName} happy and entertained is so important. ${price}`;
   }
+  
+  // Grooming
   if (category.includes("groom") || category.includes("shampoo") || category.includes("brush")) {
+    if (petBreed && (petBreed.toLowerCase().includes("poodle") || petBreed.toLowerCase().includes("shih") || petBreed.toLowerCase().includes("maltese"))) {
+      return `For ${petName}'s gorgeous coat, the ${name}! ${petBreed}s need special care. ${price}`;
+    }
     return `For grooming, the ${name}! Keeping ${petName} looking fabulous. ${price}`;
   }
+  
+  // Training
   if (category.includes("train") || category.includes("clicker")) {
-    return `Training essential: ${name}! Great for building good habits. ${price}`;
+    return `Training essential: ${name}! Great for building ${petName}'s good habits. ${price}`;
+  }
+  
+  // Beds and comfort
+  if (category.includes("bed") || productName.includes("bed") || productName.includes("blanket")) {
+    return `The ${name} for ${petName}'s comfort! Every pup deserves a cozy spot. ${price}`;
   }
   
   // Default narration
-  return `I've selected the ${name} for your kit. It's a great choice ${price}!`;
+  return `I've selected the ${name} especially for ${petName}'s kit. A great choice ${price}!`;
 };
 
 const CinematicKitAssembly = ({ 
