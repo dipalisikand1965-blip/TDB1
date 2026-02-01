@@ -1096,7 +1096,8 @@ const Navbar = () => {
                 <Link
                   key={pillar.id}
                   to={pillar.path}
-                  onClick={() => setIsMenuOpen(false)}
+                  onClick={(e) => { e.stopPropagation(); setIsMenuOpen(false); }}
+                  style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                   className={`flex items-center gap-2 p-3 rounded-lg border ${
                     isActive(pillar.path) 
                       ? 'bg-purple-50 border-purple-200 text-purple-700' 
