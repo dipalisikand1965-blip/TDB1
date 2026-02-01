@@ -219,35 +219,36 @@ function AppRouter() {
   // Check URL fragment (not query params) for session_id - SYNCHRONOUS CHECK
   // REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
   if (location.hash?.includes('session_id=')) {
-    return <AuthCallback />;
+    return <Suspense fallback={<PageLoader />}><AuthCallback /></Suspense>;
   }
   
   return (
-    <Routes>
-      {/* Embed routes - NO navbar/footer for Shopify integration */}
-      <Route path="/pet-soul-embed" element={<PetProfile isEmbed={true} />} />
-      <Route path="/mira-embed" element={<MiraEmbed />} />
-      <Route path="/mira-landing-embed" element={<MiraLandingEmbed />} />
-      <Route path="/concierge-embed" element={<MiraConciergeEmbed />} />
-      
-      {/* Agent Portal - Standalone Service Desk for agents */}
-      <Route path="/agent" element={<AgentPortal />} />
-      
-      {/* Full-Screen Service Desk - NO navbar/footer */}
-      <Route path="/admin/service-desk" element={<ServiceDeskPage />} />
-      
-      {/* Full-Screen Concierge® Dashboard - NO navbar/footer */}
-      <Route path="/admin/concierge" element={<ConciergeRequestsDashboard />} />
-      
-      {/* Full-Screen Mira Pages - NO navbar/footer for immersive experience */}
-      <Route path="/mira" element={<MiraPage />} />
-      <Route path="/ask-mira" element={<MiraPage />} />
-      
-      {/* Membership Landing Page - NO navbar/footer for clean entry */}
-      <Route path="/membership" element={<MembershipPage />} />
-      
-      {/* Membership Onboarding Form - NO navbar/footer for focused flow */}
-      <Route path="/pet-soul-onboard" element={<MembershipOnboarding />} />
+    <Suspense fallback={<PageLoader />}>
+      <Routes>
+        {/* Embed routes - NO navbar/footer for Shopify integration */}
+        <Route path="/pet-soul-embed" element={<PetProfile isEmbed={true} />} />
+        <Route path="/mira-embed" element={<MiraEmbed />} />
+        <Route path="/mira-landing-embed" element={<MiraLandingEmbed />} />
+        <Route path="/concierge-embed" element={<MiraConciergeEmbed />} />
+        
+        {/* Agent Portal - Standalone Service Desk for agents */}
+        <Route path="/agent" element={<AgentPortal />} />
+        
+        {/* Full-Screen Service Desk - NO navbar/footer */}
+        <Route path="/admin/service-desk" element={<ServiceDeskPage />} />
+        
+        {/* Full-Screen Concierge® Dashboard - NO navbar/footer */}
+        <Route path="/admin/concierge" element={<ConciergeRequestsDashboard />} />
+        
+        {/* Full-Screen Mira Pages - NO navbar/footer for immersive experience */}
+        <Route path="/mira" element={<MiraPage />} />
+        <Route path="/ask-mira" element={<MiraPage />} />
+        
+        {/* Membership Landing Page - NO navbar/footer for clean entry */}
+        <Route path="/membership" element={<MembershipPage />} />
+        
+        {/* Membership Onboarding Form - NO navbar/footer for focused flow */}
+        <Route path="/pet-soul-onboard" element={<MembershipOnboarding />} />
       
       {/* Main app routes - WITH navbar */}
       <Route path="/*" element={<MainLayout />} />
