@@ -12047,6 +12047,10 @@ from voice_quick_actions import router as voice_actions_router, set_database as 
 app.include_router(voice_actions_router)  # Voice Actions at /api/voice-actions/*
 set_voice_actions_db(db)
 
+# PawMeter Rating System - 1-10 paw ratings for products
+app.include_router(pawmeter_router)  # PawMeter at /api/pawmeter/*
+set_pawmeter_db(db)
+
 @app.on_event("startup")
 async def startup_load_admin_credentials():
     """Load admin credentials from database on startup"""
