@@ -4790,12 +4790,25 @@ async def quick_book(
     except Exception as e:
         logger.error(f"Failed to insert quick_booking: {e}")
     
+    # ==================== LINK TO MIRA SESSION TICKET ====================
+    # Get the conversation history from the Mira session to include in ticket
+    conversation_history = []
+    if request.session_id:
+        mira_ticket = await db.tickets.find_one(
+            {"mira_session_id": request.session_id},
+            {"_id": 0, "messages": 1, "ticket_id": 1}
+        )
+        if mira_ticket:
+            conversation_history = mira_ticket.get("messages", [])[-20:]  # Last 20 messages
+            logger.info(f"[QUICK BOOK] Linked to Mira ticket {mira_ticket.get('ticket_id')} with {len(conversation_history)} messages")
+    
     # Also create a service desk ticket (matching expected structure)
     ticket_id = f"QBK-{uuid.uuid4().hex[:8].upper()}"
     ticket_doc = {
         "ticket_id": ticket_id,  # Use ticket_id not id
         "id": ticket_id,  # Keep for backwards compatibility
         "booking_id": booking_id,
+        "mira_session_id": request.session_id,  # Link to Mira session
         "type": "quick_book_request",
         "category": "care",  # Required field
         "service_type": request.serviceType,
