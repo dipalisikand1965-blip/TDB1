@@ -1,165 +1,167 @@
 <analysis>**original_problem_statement**: The user's primary goal is to build a complete service booking experience and an admin management interface for a Pet Life Operating System.
 
-The user's most recent requests from this session include:
-1.  **Fix Critical Bugs**: The user reported numerous issues via screenshots, including a double Mira AI button, a non-functional member dashboard (empty sections, unclickable links), and incorrect branding/text.
-2.  **Improve Mobile Experience**: A key focus was fixing the mobile UI, specifically requesting a fixed bottom navigation bar and addressing an annoying text-to-speech voice pronunciation.
-3.  **Complete Feature Implementation**: The user wants to see the Occasion Box Builder working and easily accessible. They are also deciding on a core membership model strategy.
-4.  **Content and Data Integrity**: Ensure all products, especially for the Fit and Celebrate pillars, have proper images and complete specifications (stock, MRP).
-5.  **Security and Code Health**: Audit the application for security vulnerabilities (like admin login) and clean up unused/redundant code (like old Service Desk components).
-6.  **Integration Verification**: Confirm that the Resend (email) integration is fully functional. The user is in the process of acquiring keys for Razorpay and WhatsApp.
+The most recent user requests include:
+1.  **Fix Mira Chat Bugs**: The user reported that messages are appearing duplicated in the  chat interface and that the send functionality is unreliable.
+2.  **Ensure Mobile Friendliness**: The user wants to confirm that all recently added features (Admin Kit Manager, updated dashboard, Mira chat) are responsive and work correctly on mobile devices.
+3.  **Create Admin Kit/Mira Picks Manager**: The user requested an admin dashboard to manage Kits (curated product bundles with voice narrations) and Mira Picks (AI recommendations).
+4.  **Fix Voice Cut-Off**: The user reported that the voice narration for the Cinema Kit was cutting off.
+5.  **Fix Member Dashboard Pet Selector**: The user found a bug where selecting a different pet on the dashboard updated the UI but not the underlying data being displayed.
+6.  **Fix Mira's Contextual Understanding**: The user reported that asking for a meal plan incorrectly triggered a restaurant booking flow.
+7.  **Add Factual Data and AI Disclaimers**: The user requested that Mira's nutrition advice be based on factual data and that appropriate AI disclaimers be added to the application.
 
 **User's preferred language**: English
 
 **what currently exists?**
-The application is a full-stack React and FastAPI project with a MongoDB database. Most core pillars and features are in place but required significant debugging and enhancement during this session. Key components like the Member Dashboard, Mira AI chat, and various service/product pages exist. The agent has just completed a series of rapid fixes and enhancements based on direct user feedback, including a major branding and security overhaul, and refactored a significant amount of code. A new fixed mobile navigation bar has been globally implemented.
+The application is a full-stack React/FastAPI project with a MongoDB database. The agent has successfully implemented several major features and fixes in this session:
+- A new **Admin Kit Assembly Manager** now allows an admin to perform full CRUD operations on product Kits and Mira Picks. This includes a voice narration preview.
+- The **Mira AI is now fully integrated with the admin panel**. It dynamically uses the admin-configured kits, product selections, and voice narrations for its chat responses and recommendations.
+- A comprehensive set of **19 default kits covering all 14 Life Pillars** has been seeded into the database.
+- A critical bug was fixed where **Mira confused meal plan with restaurant**. The pillar detection logic was corrected to handle nutrition queries properly.
+- **AI disclaimers** have been added to the site-wide footer and the policies page. Mira's system prompt has been updated to provide factual, disclaimer--accompanied health advice.
+- A bug on the **Member Dashboard** where the pet selector didn't update the displayed data has been fixed.
 
 **Last working item**:
--   **Last item agent was working**: The agent was performing a comprehensive audit and cleanup of the codebase as requested by the user. The final action was identifying and deleting over 6,500 lines of unused code from old Service Desk components (, ), keeping the active .
--   **Status**: FINISHED
--   **Agent Testing Done**: Y
--   **Which testing method agent to use?**: NA (Task is complete and build was verified)
+-   **Last item agent was working**: Investigating two critical bugs on the  chat page reported by the user: 1) User messages appear duplicated in the chat history, and 2) The message sending functionality is unreliable. The agent had just started analyzing the frontend code, suspecting a conflict between two different  functions in .
+-   **Status**: IN PROGRESS
+-   **Agent Testing Done**: N
+-   **Which testing method agent to use?**: Frontend testing agent
 -   **User Testing Done**: N
 
 **All Pending/In progress Issue list**:
--   **Issue 1: Member Dashboard Performance & Stability (P0)**
--   **Issue 2: Verify Occasion Box Builder Visibility on Dashboard (P1)**
+-   **Issue 1: Duplicate messages in Mira Chat (P0)**
+-   **Issue 2: Mira Chat message not sending (P0)**
+-   **Issue 3: Ensure all recent features are mobile-friendly (P1)**
 
 **Issues Detail**:
--   **Issue 1: Member Dashboard Performance & Stability (P0)**
-    -   **Attempted fixes**: The agent identified that the  file is over 3,500 lines with 15 tabs, causing browser crashes. A preliminary fix to lazy-load tab content was implemented.
+-   **Issue 1: Duplicate messages in Mira Chat (P0)**
+    -   **Attempted fixes**: The agent identified that  contains two conflicting functions ( and ) that both handle sending messages, which is the likely cause.
     -   **Next debug checklist**:
-        1.  Create separate component files for each of the 15 tabs within  (e.g., , ).
-        2.  Refactor  to be a lightweight container that lazy-loads these new tab components.
-        3.  Ensure state management is handled efficiently and doesn't cause all tabs to re-render unnecessarily.
-    -   **Why fix this issue and what will be achieved with the fix?**: This is a critical blocker. The dashboard is unusable for both the user and testing tools, preventing verification of many features. Fixing this will dramatically improve user experience and unblock further development on member-specific features.
+        1.  Refactor  to use a single, unified function for sending messages.
+        2.  Ensure  is called only once per user and AI response to avoid race conditions.
+        3.  Investigate  hooks in both  and  for potential double-firing issues caused by React's StrictMode.
+    -   **Why fix this issue and what will be achieved with the fix?**: This is a critical UI bug that makes the primary AI chat feature confusing and unusable. Fixing it will restore core functionality.
     -   **Status**: IN PROGRESS
-    -   **Is recurring issue?**: Y
-    -   **Should Test frontend/backend/both after fix?**: Frontend (using the testing agent to confirm the dashboard now loads without crashing).
-    -   **Blocked on other issue**: No.
-
--   **Issue 2: Verify Occasion Box Builder Visibility on Dashboard (P1)**
-    -   **Attempted fixes**: The agent identified that the  component (which contains the builder) was rendering too far down the page. It was moved to a more prominent position. However, visual confirmation is impossible due to the dashboard crashing. A workaround was created by making a dedicated  page.
-    -   **Next debug checklist**: Once Issue 1 is resolved, log in as a test user with pets and upcoming celebrations and visually confirm that the  component and its Build a Box buttons are visible and functional on the main dashboard overview.
-    -   **Why fix this issue and what will be achieved with the fix?**: This is a key user-facing feature that the user has repeatedly asked about. It's a core part of the celebration pillar.
-    -   **Status**: BLOCKED
-    -   **Is recurring issue?**: Y
+    -   **Is recurring issue?**: N
     -   **Should Test frontend/backend/both after fix?**: Frontend
-    -   **Blocked on other issue**: Issue 1: Member Dashboard Performance & Stability
+    -   **Blocked on other issue**: Potentially blocks the fix for Issue 2.
+
+-   **Issue 2: Mira Chat message not sending (P0)**
+    -   **Attempted fixes**: Investigation is linked to Issue 1. The conflicting send logic is likely causing the form submission to fail.
+    -   **Next debug checklist**:
+        1.  Complete the refactor outlined in Issue 1.
+        2.  Verify the  handler for the chat form is correctly implemented and calls the single, unified send function.
+        3.  Check the browser's developer tools to confirm the network request is being sent reliably on form submission.
+    -   **Why fix this issue and what will be achieved with the fix?**: The user cannot reliably communicate with the AI, which is a core feature failure.
+    -   **Status**: IN PROGRESS
+    -   **Is recurring issue?**: N
+    -   **Should Test frontend/backend/both after fix?**: Frontend
+    -   **Blocked on other issue**: Issue 1: Duplicate messages in Mira Chat
+
+-   **Issue 3: Ensure all recent features are mobile-friendly (P1)**
+    -   **Attempted fixes**: None yet.
+    -   **Next debug checklist**:
+        1.  After fixing the chat bugs, use the frontend testing agent or screenshots to review the layout and usability of the Member Dashboard,  page, and the new  admin page on mobile viewports.
+    -   **Why fix this issue and what will be achieved with the fix?**: Fulfills a direct user request and ensures a consistent experience across devices.
+    -   **Status**: NOT STARTED
+    -   **Is recurring issue?**: N
+    -   **Should Test frontend/backend/both after fix?**: Frontend
+    -   **Blocked on other issue**: No
 
 **In progress Task List**:
--   **Task 1: Complete Member Dashboard Refactor (P0)**
-    -   **Where to resume**: The  file. The next step is to break its 15 internal tabs into separate, lazy-loaded components.
-    -   **What will be achieved with this?**: A stable, performant member dashboard that no longer crashes browsers, enabling further development and testing.
-    -   **Status**: IN PROGRESS
-    -   **Should Test frontend/backend/both after fix?**: Frontend
-    -   **Blocked on something**: No.
+-   None. The current focus is on fixing the P0 bugs.
 
 **Upcoming and Future Tasks**
 -   **Upcoming Tasks**:
-    -   **(P0) Implement Membership Business Model**: The user is currently deciding between four strategies proposed by the agent (e.g., Freemium, Members-Only). The next step is to implement the chosen strategy, which will involve creating feature flags, tiered pricing/discounts, and potentially locking features like Mira AI or personalization behind a paywall.
-    -   **(P1) Implement Pet Parent Magnet Features**: Based on the user's enthusiastic approval, begin implementing the brainstormed ideas:
-        -   First box free promotional logic.
-        -   Pet Parent Score gamification system.
-        -   Priority booking for services.
-    -   **(P2) Razorpay Payment Integration**: Integrate Razorpay once the user provides the API keys.
-    -   **(P2) WhatsApp Business Integration**: Integrate with the WhatsApp API once the user gets approval from Meta.
+    -   **(P0) Implement Membership Business Model**: Decide on a strategy (e.g., Freemium, Members-Only) and implement feature flags and tiered access.
+    -   **(P1) Implement Pet Parent Magnet Features**: Begin work on ideas like First box free logic and a Pet Parent Score system.
+    -   **(P2) Razorpay Payment Integration**: Integrate Razorpay once the user provides API keys.
+    -   **(P2) WhatsApp Business Integration**: Integrate with the WhatsApp API once the user gets Meta's approval.
 -   **Future Tasks**:
     -   Finalize the Rewards Program logic.
     -   Build UI for Saved Kits in the Member Dashboard.
     -   Develop the Partner Portal.
-    -   Expand Occasion Box templates for other events (e.g., gotcha day, puppy shower).
+    -   Refactor the 5,000+ line  component.
 
 **Completed work in this session**
--   **Comprehensive System Audit**: Performed a full security, branding, and feature audit, implementing dozens of fixes.
--   **Security Hardening**: Added rate limiting to the admin login endpoint to prevent brute-force attacks.
--   **Branding Overhaul**: Replaced all instances of old branding with The Doggy Company and Pet Concierge®, and updated the homepage hero with the new tagline.
--   **Critical Bug Fixes**:
-    -   Resolved the double Mira bug by consolidating mobile AI interactions into a single button in the new nav bar.
-    -   Fixed broken links and empty content cards on the Member Dashboard.
-    -   Corrected an unpleasant text-to-speech voice pronunciation.
--   **Mobile UI/UX Rework**: Implemented a new, fixed bottom navigation bar () that is now used globally on mobile viewports, greatly improving mobile usability.
--   **Content Seeding & Enhancement**: Updated hundreds of products with high-quality images and complete specifications (stock, MRP, active status).
--   **Feature Accessibility**: Created a dedicated, direct-access page for the **Occasion Box Builder** at  as a workaround for the crashing dashboard.
--   **Code Refactoring**: Cleaned up the codebase by deleting over 6,500 lines of unused code from deprecated Service Desk components.
--   **Integration Verified**: Confirmed that the **Resend** email API is correctly configured and functional for all 35+ automated email triggers.
+-   **Fixed Member Dashboard Pet Selector**: Resolved a bug where  and  were not using the currently selected pet's data, instead defaulting to the first pet.
+-   **Created Admin Kit & Mira Picks Manager**: Built a new admin UI () and backend () for full CRUD management of product kits and AI recommendations, including a voice preview feature.
+-   **Fixed Voice Narration Bug**: Implemented a workaround in  to prevent a Chrome-specific issue from cutting off speech synthesis.
+-   **Integrated Mira AI with Admin Panel**: Modified  and  so that Mira's chat recommendations now pull directly from the database of admin-managed kits and picks.
+-   **Seeded All 14 Life Pillar Kits**: Wrote and executed a seeder to populate the database with 19 comprehensive default kits.
+-   **Fixed Mira's Meal Plan Context Bug**: Corrected pillar detection logic in  to differentiate nutrition queries (fit pillar) from restaurant queries (dine pillar).
+-   **Implemented AI Disclaimers & Factual Data**: Updated Mira's system prompt to use factual data and add disclaimers for health advice. Added an AI disclaimer to  and .
 
 **Earlier issues found/mentioned but not fixed**
--   **Issue 1: Service Desk Ticket Actions**
-    -   **Debug checklist**: The user request from the initial handoff to add lock, merge, and delete functionality to service desk tickets in  was not addressed.
-    -   **Why to solve this issue and what will be achieved with this?**: This will complete the feature set for the admin service desk, improving operational efficiency.
-    -   **Should Test frontend/backend/both after fix**: Both
-    -   **Is recurring issue?**: N
+-   None.
 
 **Known issue recurrence from previous fork**
--   **Screenshot Tool Crashing**: The automation tool consistently crashes on memory-intensive pages, particularly the Member Dashboard. This is an environmental limitation. The root cause is the dashboard's monolithic structure, which is now the top priority (Issue 1) to fix.
+-   **Screenshot Tool Crashing**: The screenshot tool remains unstable on memory-intensive pages. The agent successfully used  and the testing agent as alternatives.
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
--   **Component Refactoring**: The critical need to break down the monolithic  into smaller, lazy-loaded components to solve performance crashes. This is the most important next technical step.
--   **Conditional Rendering for UI/UX**: Using  and viewport-aware CSS () to create a consistent but context-specific UI, ensuring only one primary Mira button is visible at any time.
--   **API Rate Limiting**: Implemented a simple, effective in-memory rate limiter on the backend to enhance security for the admin login endpoint.
--   **Code Cleanup & Health**: Proactively identifying and deleting large, unused components () to reduce codebase complexity and improve build times.
+-   **State Management Bug**: Fixed a React bug where child components were incorrectly using a stale prop () instead of the updated state (), causing a UI/data mismatch.
+-   **Dynamic AI Configuration**: Refactored the core AI logic to fetch its configuration (kits, picks, narrations) from a database that is managed by a new admin panel, making the AI's behavior dynamically configurable.
+-   **Data Seeding**: Implemented a backend endpoint to programmatically populate the database with a comprehensive set of default data (19 kits).
+-   **AI Prompt Engineering & Guardrails**: Refined Mira's system prompt and surrounding logic to enforce factual accuracy, add disclaimers, and correctly route user intents (nutrition vs. dining).
 
 **key DB schema**
--   ****: No schema change, but this collection was heavily updated to ensure all relevant documents contain  (array of strings),  (number),  (number), and correctly structured .
+-   **kit_templates**: 
+-   **mira_picks**: 
 
 **All files of reference**
--   : The main source of current performance issues and the target for the next major refactoring task.
--   : The new global component for mobile navigation.
--   : Location of the global routing and conditional rendering logic for the mobile nav.
--   : The new standalone page for the Occasion Box Builder.
--   : Contains the new security rate-limiting logic.
+-   **/app/frontend/src/pages/MiraPage.jsx**: **(Priority File)** Contains conflicting code that is the likely source of the current chat bugs.
+-   **/app/frontend/src/components/MiraChatWidget.jsx**: The popup chat widget, also under investigation for the duplicate message bug.
+-   **/app/backend/mira_routes.py**: Contains all core logic for the Mira AI chat.
+-   **/app/frontend/src/components/admin/KitAssemblyManager.jsx**: The new admin UI for managing kits.
+-   **/app/backend/kit_admin_routes.py**: The backend API for the new kit manager.
 
 **Areas that need refactoring**:
--   ****: This is the highest priority. The 3500+ line file with 15 tabs must be broken down into individual, lazy-loaded components to prevent the application from crashing.
+-   **/app/frontend/src/pages/MiraPage.jsx**: Contains two conflicting implementations for sending messages ( and ) that must be unified to fix the current bugs.
+-   ****: A 5,000+ line file that remains a candidate for future component breakdown.
 
 **Critical Info for New Agent**
--   **Your #1 priority is to refactor **. This is a major blocker for the user and for testing. Break it into smaller, lazy-loaded components for each tab.
--   The user is highly engaged and provides feedback rapidly with screenshots. Analyze them carefully and prioritize the reported issues.
--   The double Mira bug was fixed by making the new 's center button the sole entry point on mobile. The floating orbs from  and  are now hidden on mobile. Verify this holds true across all pages.
--   Awaiting a major strategic decision from the user on the **membership model**. Do not implement any new paid/membership features until they provide direction. Once they decide, this will become the next major implementation task.
+-   **Your immediate and highest priority is to fix the duplicate message and send failure bugs in the Mira chat.** The user is blocked. Start by refactoring  to consolidate the two different message sending functions into a single, reliable one.
+-   After fixing the chat, address the user's request to **verify mobile-friendliness** for all recent features.
+-   The new Kit Assembly Manager and its integration with Mira AI is a major new feature that is working correctly. Be careful not to introduce regressions to this functionality while fixing the chat bugs.
 
 **documents and test reports created in this job**
 -   
 -   
--   
--   The PRD.md file at  was updated multiple times with audit results.
+-    (updated multiple times to reflect new features and fixes)
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **User**: Approved of the Pet Parent Magnet ideas for user acquisition. (COMPLETED)
-2.  **User**: Asked for advice on the membership business model (freemium vs. paid). (PENDING DECISION)
-3.  **User**: Confirmed they are getting Razorpay/WhatsApp keys and asked to check the Resend integration. (COMPLETED)
-4.  **User**: Requested a security and branding audit. (COMPLETED)
-5.  **User**: Provided detailed branding guidelines and reported a text-to-speech voice bug. (COMPLETED)
-6.  **User**: Reported three new bugs on the dashboard: empty Active Requests, double Mira on mobile, and unclickable Pillar buttons. (COMPLETED - Fixes applied)
-7.  **User**: Asked why the Occasion Box Builder was not visible on their dashboard. (COMPLETED - Explained and created a direct-access page)
-8.  **User**: Asked how to fix the dashboard crashing issue. (IN PROGRESS - Refactoring started)
-9.  **User**: Asked to clarify the difference between  and  and to refactor. (COMPLETED)
-10. **User**: Asked for more cleanup suggestions. (COMPLETED)
+1.  **User**: Reported duplicate messages and send failures in  chat with a screenshot. (IN PROGRESS)
+2.  **User**: Requested that Mira provide factual nutrition advice with disclaimers and that an AI disclaimer be added to the site. (COMPLETED)
+3.  **User**: Reported that Mira confused a meal plan request with a restaurant booking, providing a chat log. (COMPLETED)
+4.  **User**: Confirmed the agent should proceed with wiring Mira AI to use the new admin-managed kits. (COMPLETED)
+5.  **User**: Asked if the new admin kits would be used by Mira AI and if they could be exported to CSV. (COMPLETED)
+6.  **User**: Clarified that kits for all 14 Life Pillars should be seeded, not just a few. (COMPLETED)
+7.  **User**: Confirmed the dashboard pet selector bug and approved the plan to build the Kit Preview feature. (COMPLETED)
+8.  **User**: Prioritized fixing the member dashboard bugs first. (COMPLETED)
+9.  **User**: Requested the creation of an admin dashboard for Kit Assembly and Mira Picks, and reported that a voice narration was cutting off. (COMPLETED)
 
 **Project Health Check:**
 -   **Broken**:
-    -    is functionally broken due to its size, causing the page to crash. This blocks the verification of several features within it.
+    -   Mira Chat ( page and widget): Unusable due to duplicate messages and unreliable send functionality.
 -   **Mocked**: None.
 
 **3rd Party Integrations**
--   **OpenAI GPT-4o**: Used for the Mira AI chat backend.
--   **Resend**: Used for transactional emails (e.g., welcome, order confirmation). Verified as fully functional.
--   **Razorpay**: Pending integration (awaiting keys from user).
--   **WhatsApp**: Pending integration (awaiting keys/approval from user).
+-   **OpenAI GPT-4o**: Powers the Mira AI chat backend.
+-   **Resend**: Handles transactional emails.
+-   **Razorpay**: Pending integration (awaiting user API keys).
+-   **WhatsApp**: Pending integration (awaiting user approval from Meta).
 
 **Testing status**
--   **Testing agent used after significant changes**: YES, a comprehensive mobile frontend test was run.
+-   **Testing agent used after significant changes**: YES, it was used to verify dashboard fixes and found/corrected invalid ESLint comments.
 -   **Troubleshoot agent used after agent stuck in loop**: NO
 -   **Test files created**: None.
--   **Known regressions**: None identified in this session; multiple issues were fixed.
+-   **Known regressions**: The Mira chat functionality, previously working, is now broken with duplicate messages and send failures.
 
 **Credentials to test flow:**
 -   **Member Login**:  / 
 -   **Admin Panel**:  / 
--   **Alternate Member Login**:  / 
 
 **What agent forgot to execute**
--   The agent did not implement the Service Desk Ticket Actions (lock, merge, delete) that were noted as a pending P1 task in the initial handoff summary. The focus was shifted to the user's more immediate and critical bug reports from this session.</analysis>
+-   The agent was actively investigating the user's latest bug report and had not forgotten any tasks.</analysis>

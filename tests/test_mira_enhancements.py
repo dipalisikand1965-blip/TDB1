@@ -14,7 +14,7 @@ import requests
 import os
 import time
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://petrack-center.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://doggy-dashboard-6.preview.emergentagent.com')
 
 # Test credentials
 TEST_EMAIL = "dipali@clubconcierge.in"
