@@ -4712,6 +4712,210 @@ async def get_mira_stats():
     }
 
 
+# ==================== TICKET RECALL & UPDATE ====================
+
+class TicketUpdateRequest(BaseModel):
+    """Request to update an existing ticket"""
+    ticket_id: str
+    update_type: str  # "reschedule", "cancel", "add_note", "change_service"
+    new_date: Optional[str] = None
+    new_time: Optional[str] = None
+    notes: Optional[str] = None
+    session_id: Optional[str] = None
+
+
+@router.get("/ticket/{ticket_id}")
+async def get_ticket_details(
+    ticket_id: str,
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Get ticket details by ticket ID.
+    Customer can use this from Mira chat or dashboard to recall their booking.
+    """
+    db = get_db()
+    
+    # Search in multiple collections
+    ticket = await db.service_desk_tickets.find_one(
+        {"$or": [{"ticket_id": ticket_id}, {"id": ticket_id}]},
+        {"_id": 0}
+    )
+    
+    if not ticket:
+        ticket = await db.tickets.find_one(
+            {"$or": [{"ticket_id": ticket_id}, {"id": ticket_id}]},
+            {"_id": 0}
+        )
+    
+    if not ticket:
+        ticket = await db.mira_tickets.find_one(
+            {"$or": [{"ticket_id": ticket_id}, {"id": ticket_id}]},
+            {"_id": 0}
+        )
+    
+    if not ticket:
+        raise HTTPException(status_code=404, detail=f"Ticket {ticket_id} not found")
+    
+    return {
+        "ticket": ticket,
+        "conversation_history": ticket.get("conversation_history", []),
+        "messages": ticket.get("messages", []),
+        "booking_details": ticket.get("booking_details"),
+        "status": ticket.get("status", "unknown")
+    }
+
+
+@router.post("/ticket/update")
+async def update_ticket(
+    request: TicketUpdateRequest,
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Update an existing ticket (reschedule, cancel, add note, etc.)
+    This allows customers to modify their bookings via Mira or dashboard.
+    """
+    db = get_db()
+    now = datetime.now(timezone.utc)
+    
+    # Find the ticket
+    ticket = await db.service_desk_tickets.find_one(
+        {"$or": [{"ticket_id": request.ticket_id}, {"id": request.ticket_id}]},
+        {"_id": 0}
+    )
+    
+    collection_name = "service_desk_tickets"
+    if not ticket:
+        ticket = await db.tickets.find_one(
+            {"$or": [{"ticket_id": request.ticket_id}, {"id": request.ticket_id}]},
+            {"_id": 0}
+        )
+        collection_name = "tickets"
+    
+    if not ticket:
+        raise HTTPException(status_code=404, detail=f"Ticket {request.ticket_id} not found")
+    
+    # Build update
+    update_doc = {"updated_at": now}
+    message_content = ""
+    
+    if request.update_type == "reschedule":
+        if request.new_date:
+            update_doc["booking_details.date"] = request.new_date
+            update_doc["request_date"] = request.new_date
+        if request.new_time:
+            update_doc["booking_details.time"] = request.new_time
+            update_doc["request_time"] = request.new_time
+        message_content = f"Appointment rescheduled to {request.new_date or 'same date'} at {request.new_time or 'same time'}"
+        update_doc["status"] = "rescheduled"
+        
+    elif request.update_type == "cancel":
+        update_doc["status"] = "cancelled"
+        message_content = f"Booking cancelled by customer. Reason: {request.notes or 'Not specified'}"
+        
+    elif request.update_type == "add_note":
+        message_content = f"Customer note: {request.notes}"
+        
+    elif request.update_type == "change_service":
+        message_content = f"Service change requested: {request.notes}"
+        update_doc["status"] = "pending_change"
+    
+    # Add message to ticket
+    new_message = {
+        "type": "customer_update",
+        "content": message_content,
+        "sender": "customer",
+        "update_type": request.update_type,
+        "timestamp": now.isoformat(),
+        "session_id": request.session_id
+    }
+    
+    # Perform update
+    collection = db[collection_name]
+    await collection.update_one(
+        {"$or": [{"ticket_id": request.ticket_id}, {"id": request.ticket_id}]},
+        {
+            "$set": update_doc,
+            "$push": {"messages": new_message}
+        }
+    )
+    
+    # Also update the Mira session ticket if linked
+    if request.session_id:
+        await db.mira_tickets.update_one(
+            {"mira_session_id": request.session_id},
+            {
+                "$push": {"messages": new_message},
+                "$set": {"updated_at": now}
+            }
+        )
+    
+    return {
+        "success": True,
+        "ticket_id": request.ticket_id,
+        "update_type": request.update_type,
+        "message": message_content,
+        "status": update_doc.get("status", ticket.get("status"))
+    }
+
+
+@router.get("/my-tickets")
+async def get_my_tickets(
+    authorization: str = Header(...),
+    status: Optional[str] = None,
+    limit: int = 20
+):
+    """
+    Get all tickets for the current user.
+    Allows customers to see all their bookings and reference ticket IDs.
+    """
+    db = get_db()
+    
+    # Get user from token
+    try:
+        token = authorization.split(" ")[1]
+        decoded = jwt.decode(token, os.environ.get("JWT_SECRET", "your-secret-key"), algorithms=["HS256"])
+        user_email = decoded.get("sub") or decoded.get("user_id")
+    except:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+    user = await db.users.find_one({"email": user_email}, {"_id": 0})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    user_id = user.get("id") or user.get("email")
+    
+    # Build query
+    query = {
+        "$or": [
+            {"member.id": user_id},
+            {"member.email": user_email},
+            {"user_id": user_id},
+            {"customer_email": user_email}
+        ]
+    }
+    if status:
+        query["status"] = status
+    
+    # Get tickets from multiple collections
+    service_tickets = await db.service_desk_tickets.find(
+        query, {"_id": 0}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    mira_tickets = await db.mira_tickets.find(
+        {"$or": [{"user_id": user_id}, {"user_email": user_email}]},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    # Combine and sort
+    all_tickets = service_tickets + mira_tickets
+    all_tickets.sort(key=lambda x: x.get("created_at", datetime.min), reverse=True)
+    
+    return {
+        "tickets": all_tickets[:limit],
+        "count": len(all_tickets[:limit])
+    }
+
+
 # ==================== QUICK BOOK ENDPOINT ====================
 class QuickBookRequest(BaseModel):
     date: str
