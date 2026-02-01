@@ -68,6 +68,7 @@ import {
   Clock,
   MapPin,
   ChevronRight,
+  ChevronDown,
   LogOut,
   LayoutDashboard,
   X,
