@@ -69,6 +69,10 @@ from service_catalog_routes import (
     set_service_catalog_db,
     set_service_catalog_admin
 )
+from service_box_routes import (
+    router as service_box_router,
+    set_service_box_db
+)
 from collection_routes import (
     router as enhanced_collection_router,
     public_router as collection_public_router,
