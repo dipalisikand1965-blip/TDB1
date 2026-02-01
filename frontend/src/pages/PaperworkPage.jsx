@@ -888,6 +888,14 @@ const PaperworkPage = () => {
         </DialogContent>
       </Dialog>
       
+      {/* === SERVICE CATALOG WITH PRICING === */}
+      <ServiceCatalogSection 
+        pillar="paperwork"
+        title="Paperwork, Personalised"
+        subtitle="Documentation services with transparent pricing"
+        maxServices={8}
+      />
+      
       {/* Mira Floating Chat Widget */}
       <MiraChatWidget pillar="paperwork" />
       
