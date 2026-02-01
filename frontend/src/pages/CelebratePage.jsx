@@ -423,6 +423,15 @@ const CelebratePage = () => {
       
       {/* Mira Floating Chat Widget */}
       <MiraChatWidget pillar="celebrate" />
+      
+      {/* Occasion Box Builder Modal */}
+      <OccasionBoxBuilder
+        isOpen={showBoxBuilder}
+        onClose={() => setShowBoxBuilder(false)}
+        occasionType={boxOccasion}
+        petName="your pet"
+        onAddToCart={handleAddToCart}
+      />
     </div>
   );
 };
