@@ -34,7 +34,16 @@ Build a complete service booking experience and admin management interface for t
   - Custom voice narration per item
   - Voice preview with TTS testing
   - Mira Picks management with voice scripts
-  - 9 kit categories (Travel, Cinema, Birthday, Wellness, Grooming, Puppy, Senior, Seasonal, Adventure)
+  - 14 Life Pillars + bonus categories (17 total)
+  - CSV export for both kits and picks
+  - Seed defaults button (19 pre-built kits)
+
+**Mira AI Integration (WIRED):**
+- Kit templates now feed directly into Mira chat
+- When users ask for kits (birthday, travel, etc.), Mira uses admin-configured products and narrations
+- Smart recommendations endpoint uses admin-curated Mira Picks
+- Products display with `is_admin_curated`, `mira_tagline`, `mira_voice_script` flags
+- Original gathering/personalization flow preserved - admin templates used at assembly stage
 
 **Voice Cutoff Fix:**
 - Fixed Chrome TTS bug in `CinematicKitAssembly.jsx` that caused voice to cut off after ~15 seconds
