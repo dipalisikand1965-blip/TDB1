@@ -32,11 +32,14 @@ function ScrollToTop() {
   return null;
 }
 
-// ConditionalFloatingButton - Hide on Mira page to prevent overlap
+// ConditionalFloatingButton - Hide on Mira page and pillar pages (they have MiraChatWidget)
 function ConditionalFloatingButton() {
   const { pathname } = useLocation();
-  // Don't show on /mira or /admin pages
-  if (pathname === '/mira' || pathname.startsWith('/admin')) {
+  // Don't show on /mira, /admin pages, or pillar pages (which have their own MiraChatWidget)
+  const pillarPaths = ['/care', '/celebrate', '/advisory', '/dine', '/stay', '/travel', '/emergency', '/enjoy', '/fit', '/learn', '/farewell', '/adopt', '/paperwork', '/shop'];
+  const isOnPillarPage = pillarPaths.some(path => pathname === path || pathname.startsWith(path + '/'));
+  
+  if (pathname === '/mira' || pathname.startsWith('/admin') || isOnPillarPage) {
     return null;
   }
   return <FloatingContactButton />;
