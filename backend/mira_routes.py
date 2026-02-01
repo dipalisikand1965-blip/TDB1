@@ -25,6 +25,15 @@ import re
 from dotenv import load_dotenv
 from pillar_resolver import get_resolver, PillarResolver
 
+# Import push notification for ticket updates
+try:
+    from push_notification_routes import notify_ticket_update
+    PUSH_AVAILABLE = True
+except ImportError:
+    PUSH_AVAILABLE = False
+    async def notify_ticket_update(*args, **kwargs):
+        return {"success": False, "reason": "push_not_available"}
+
 load_dotenv()
 
 logger = logging.getLogger(__name__)
