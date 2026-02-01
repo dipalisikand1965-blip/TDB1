@@ -717,13 +717,60 @@ const PaperworkPage = () => {
             </div>
 
             <div>
-              <Label>File URL *</Label>
-              <Input 
-                value={uploadForm.file_url}
-                onChange={(e) => setUploadForm({...uploadForm, file_url: e.target.value})}
-                placeholder="https://..."
-              />
-              <p className="text-xs text-gray-500 mt-1">Upload your file to cloud storage and paste the URL</p>
+              <Label>Upload Document *</Label>
+              <div className="mt-2 space-y-3">
+                {/* File Input */}
+                <div className="relative">
+                  <input 
+                    type="file" 
+                    id="document-file-input"
+                    className="hidden"
+                    accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        setUploadForm({...uploadForm, file: file, file_url: ''});
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => document.getElementById('document-file-input')?.click()}
+                    className="w-full p-4 border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors flex flex-col items-center justify-center gap-2"
+                  >
+                    <Upload className="w-8 h-8 text-gray-400" />
+                    {uploadForm.file ? (
+                      <div className="text-center">
+                        <p className="font-medium text-green-600">✅ {uploadForm.file.name}</p>
+                        <p className="text-xs text-gray-500">{(uploadForm.file.size / 1024).toFixed(1)} KB</p>
+                      </div>
+                    ) : (
+                      <>
+                        <p className="text-sm font-medium text-gray-700">Click to upload or drag and drop</p>
+                        <p className="text-xs text-gray-500">PDF, JPG, PNG, DOC up to 10MB</p>
+                      </>
+                    )}
+                  </button>
+                </div>
+                
+                {/* OR Divider */}
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <div className="w-full border-t border-gray-200"></div>
+                  </div>
+                  <div className="relative flex justify-center text-xs">
+                    <span className="px-2 bg-white text-gray-400">OR paste URL</span>
+                  </div>
+                </div>
+                
+                {/* URL Input */}
+                <Input 
+                  value={uploadForm.file_url}
+                  onChange={(e) => setUploadForm({...uploadForm, file_url: e.target.value, file: null})}
+                  placeholder="https://drive.google.com/..."
+                  disabled={!!uploadForm.file}
+                />
+              </div>
             </div>
 
             <div>
