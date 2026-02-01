@@ -456,9 +456,9 @@ const ServicesPage = () => {
               variant="outline"
               size="sm"
               onClick={() => setFilterFree(!filterFree)}
-              className={filterFree ? 'bg-green-50 border-green-300 text-green-700' : ''}
+              className={filterFree ? 'bg-emerald-50 border-emerald-300 text-emerald-700' : ''}
             >
-              Free Only
+              Complimentary
             </Button>
             <Button
               variant="outline"
@@ -490,7 +490,7 @@ const ServicesPage = () => {
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
             {filteredServices.map((service) => {
               const pillarInfo = getPillarInfo(service.pillar);
               return (
@@ -500,22 +500,22 @@ const ServicesPage = () => {
                   onClick={() => handleServiceClick(service)}
                   data-testid={`service-card-${service.id}`}
                 >
-                  {/* Gradient Header */}
-                  <div className={`h-20 bg-gradient-to-br ${pillarInfo.color} flex items-center justify-center relative`}>
-                    <span className="text-3xl">{pillarInfo.icon}</span>
-                    <Badge className="absolute top-2 right-2 bg-white/20 text-white text-xs">
+                  {/* Gradient Header - Smaller on mobile */}
+                  <div className={`h-14 sm:h-20 bg-gradient-to-br ${pillarInfo.color} flex items-center justify-center relative`}>
+                    <span className="text-2xl sm:text-3xl">{pillarInfo.icon}</span>
+                    <Badge className="absolute top-1 sm:top-2 right-1 sm:right-2 bg-white/20 text-white text-[10px] sm:text-xs px-1.5">
                       {service.pillar_name || service.pillar}
                     </Badge>
                   </div>
                   
-                  <div className="p-4">
+                  <div className="p-2 sm:p-4">
                     {/* Badges */}
-                    <div className="flex flex-wrap gap-1 mb-2">
+                    <div className="flex flex-wrap gap-1 mb-1 sm:mb-2">
                       {service.is_free && (
-                        <Badge className="bg-green-100 text-green-700 text-xs">FREE</Badge>
+                        <Badge className="bg-emerald-100 text-emerald-700 text-[10px] sm:text-xs px-1.5 py-0.5">Complimentary</Badge>
                       )}
                       {service.is_24x7 && (
-                        <Badge className="bg-red-100 text-red-700 text-xs">24x7</Badge>
+                        <Badge className="bg-red-100 text-red-700 text-[10px] sm:text-xs px-1.5 py-0.5">24x7</Badge>
                       )}
                       {service.requires_consultation && (
                         <Badge className="bg-amber-100 text-amber-700 text-xs">Consult</Badge>
