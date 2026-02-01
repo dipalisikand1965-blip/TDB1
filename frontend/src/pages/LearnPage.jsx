@@ -687,7 +687,7 @@ const LearnPage = () => {
               {bundles.map((bundle) => (
                 <Card 
                   key={bundle.id} 
-                  className="p-3 sm:p-6 flex items-center gap-3 sm:gap-6 cursor-pointer hover:shadow-lg transition-all" 
+                  className="p-3 sm:p-6 flex items-center gap-3 sm:gap-6 cursor-pointer hover:shadow-lg hover:bg-blue-50/50 transition-all border-2 border-transparent hover:border-blue-200 active:scale-[0.99]" 
                   data-testid={`bundle-${bundle.id}`}
                   onClick={() => handleAddBundleToCart(bundle)}
                 >
@@ -701,17 +701,22 @@ const LearnPage = () => {
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-sm sm:text-lg text-gray-900 mb-0.5 sm:mb-1 line-clamp-1">{bundle.name}</h3>
-                    <p className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2 line-clamp-2 hidden sm:block">{bundle.description}</p>
+                    <h3 className="font-bold text-base sm:text-lg text-gray-900 mb-0.5 sm:mb-1 line-clamp-2">{bundle.name}</h3>
+                    <p className="text-sm text-gray-600 mb-2 line-clamp-2">{bundle.description}</p>
                     
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm sm:text-xl font-bold text-blue-600">₹{bundle.price?.toLocaleString()}</span>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-lg sm:text-xl font-bold text-blue-600">₹{bundle.price?.toLocaleString()}</span>
                       {bundle.original_price && (
-                        <span className="text-xs text-gray-400 line-through">₹{bundle.original_price?.toLocaleString()}</span>
+                        <>
+                          <span className="text-sm text-gray-400 line-through">₹{bundle.original_price?.toLocaleString()}</span>
+                          <Badge className="bg-green-100 text-green-700 text-xs">Save ₹{(bundle.original_price - bundle.price)?.toLocaleString()}</Badge>
+                        </>
                       )}
                     </div>
                   </div>
-                  <Button size="sm" className="text-xs sm:text-sm px-3 sm:px-4 h-8 sm:h-10 flex-shrink-0">Add</Button>
+                  <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-sm px-4 h-10 flex-shrink-0 whitespace-nowrap">
+                    Add to Cart
+                  </Button>
                 </Card>
               ))}
             </div>
