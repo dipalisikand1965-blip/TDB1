@@ -197,27 +197,39 @@ const CelebrationCard = ({ celebration, onAction, onBuildBox }) => {
 };
 
 // Main component
-const MyCelebrations = ({ pets = [], onNavigate }) => {
+const MyCelebrations = ({ pets = [], onNavigate, onAddToCart }) => {
   const [celebrations, setCelebrations] = useState([]);
   const [showAll, setShowAll] = useState(false);
+  const [showBoxBuilder, setShowBoxBuilder] = useState(false);
+  const [selectedOccasion, setSelectedOccasion] = useState(null);
+  const [selectedPetName, setSelectedPetName] = useState('');
   
   useEffect(() => {
     const today = new Date();
-    const upcomingCelebrations = [];
+    const allCelebrations = [];
     
     pets.forEach(pet => {
-      // Birthday check (within 60 days)
+      // Birthday check (within 60 days AND recent past 7 days)
       if (pet.birth_date) {
         const birthDate = new Date(pet.birth_date);
         const thisYearBirthday = new Date(today.getFullYear(), birthDate.getMonth(), birthDate.getDate());
-        if (thisYearBirthday < today) {
-          thisYearBirthday.setFullYear(today.getFullYear() + 1);
-        }
-        const daysUntil = Math.ceil((thisYearBirthday - today) / (1000 * 60 * 60 * 24));
         
-        if (daysUntil <= 60) {
+        // Check if birthday already passed this year
+        let daysUntil = Math.ceil((thisYearBirthday - today) / (1000 * 60 * 60 * 24));
+        
+        // If birthday was in the past 7 days, show it as "recent"
+        if (daysUntil < -7) {
+          // Move to next year
+          thisYearBirthday.setFullYear(today.getFullYear() + 1);
+          daysUntil = Math.ceil((thisYearBirthday - today) / (1000 * 60 * 60 * 24));
+        }
+        
+        // Show upcoming (60 days) OR recent (past 7 days)
+        if (daysUntil <= 60 && daysUntil >= -7) {
           const age = thisYearBirthday.getFullYear() - birthDate.getFullYear();
-          upcomingCelebrations.push({
+          const isRecent = daysUntil < 0;
+          
+          allCelebrations.push({
             id: `${pet.id}-birthday`,
             type: 'birthday',
             petName: pet.name,
@@ -226,23 +238,29 @@ const MyCelebrations = ({ pets = [], onNavigate }) => {
             date: thisYearBirthday,
             label: `${age}${getOrdinalSuffix(age)} Birthday`,
             detail: daysUntil === 0 ? `Happy Birthday ${pet.name}! 🎉` : 
+                    isRecent ? `${pet.name}'s birthday was ${Math.abs(daysUntil)} days ago - still time to celebrate!` :
                     daysUntil <= 7 ? `Time to plan the pawty!` : null
           });
         }
       }
       
-      // Gotcha Day check (within 60 days)
+      // Gotcha Day check (within 60 days AND recent past 7 days)
       if (pet.gotcha_date) {
         const gotchaDate = new Date(pet.gotcha_date);
         const thisYearGotcha = new Date(today.getFullYear(), gotchaDate.getMonth(), gotchaDate.getDate());
-        if (thisYearGotcha < today) {
-          thisYearGotcha.setFullYear(today.getFullYear() + 1);
-        }
-        const daysUntil = Math.ceil((thisYearGotcha - today) / (1000 * 60 * 60 * 24));
         
-        if (daysUntil <= 60 && daysUntil > 0) {
+        let daysUntil = Math.ceil((thisYearGotcha - today) / (1000 * 60 * 60 * 24));
+        
+        if (daysUntil < -7) {
+          thisYearGotcha.setFullYear(today.getFullYear() + 1);
+          daysUntil = Math.ceil((thisYearGotcha - today) / (1000 * 60 * 60 * 24));
+        }
+        
+        if (daysUntil <= 60 && daysUntil >= -7) {
           const years = thisYearGotcha.getFullYear() - gotchaDate.getFullYear();
-          upcomingCelebrations.push({
+          const isRecent = daysUntil < 0;
+          
+          allCelebrations.push({
             id: `${pet.id}-gotcha`,
             type: 'gotcha_day',
             petName: pet.name,
@@ -250,7 +268,9 @@ const MyCelebrations = ({ pets = [], onNavigate }) => {
             daysUntil,
             date: thisYearGotcha,
             label: `${years} Year${years > 1 ? 's' : ''} Together`,
-            detail: `${years} amazing year${years > 1 ? 's' : ''} since ${pet.name} joined the family!`
+            detail: isRecent 
+              ? `${years} years since ${pet.name} joined - celebrate now!`
+              : `${years} amazing year${years > 1 ? 's' : ''} since ${pet.name} joined the family!`
           });
         }
       }
@@ -263,7 +283,7 @@ const MyCelebrations = ({ pets = [], onNavigate }) => {
           const daysUntil = Math.ceil((dueDate - today) / (1000 * 60 * 60 * 24));
           
           if (daysUntil <= 30 && daysUntil >= -7) {
-            upcomingCelebrations.push({
+            allCelebrations.push({
               id: `${pet.id}-vax-${vax.name}`,
               type: 'vaccination',
               petName: pet.name,
@@ -277,15 +297,18 @@ const MyCelebrations = ({ pets = [], onNavigate }) => {
           }
         }
       });
-      
-      // Check celebration_types from onboarding
-      const celebrationTypes = pet.celebration_types || [];
-      // Future: Add grooming schedules, training milestones, etc.
     });
     
-    // Sort by closest first
-    upcomingCelebrations.sort((a, b) => a.daysUntil - b.daysUntil);
-    setCelebrations(upcomingCelebrations);
+    // Sort: recent celebrations first, then by closest upcoming
+    allCelebrations.sort((a, b) => {
+      // Put recent (negative days) first
+      if (a.daysUntil < 0 && b.daysUntil >= 0) return -1;
+      if (b.daysUntil < 0 && a.daysUntil >= 0) return 1;
+      // Then sort by absolute value (closest first)
+      return Math.abs(a.daysUntil) - Math.abs(b.daysUntil);
+    });
+    
+    setCelebrations(allCelebrations);
   }, [pets]);
   
   // Helper for ordinal suffix
@@ -293,6 +316,12 @@ const MyCelebrations = ({ pets = [], onNavigate }) => {
     const s = ['th', 'st', 'nd', 'rd'];
     const v = n % 100;
     return s[(v - 20) % 10] || s[v] || s[0];
+  };
+  
+  const handleBuildBox = (occasionType, petName) => {
+    setSelectedOccasion(occasionType);
+    setSelectedPetName(petName);
+    setShowBoxBuilder(true);
   };
   
   const handleAction = (path) => {
