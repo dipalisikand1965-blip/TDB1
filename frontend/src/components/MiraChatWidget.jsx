@@ -1088,22 +1088,23 @@ const MiraChatWidget = ({
                           return (
                             <div 
                               key={product.id}
-                              className="bg-white rounded-lg p-2 flex items-center gap-2 border border-purple-100"
+                              className="bg-white rounded-lg p-2.5 flex items-center gap-3 border border-purple-100 cursor-pointer active:bg-purple-50"
+                              onClick={() => handleProductClick(product)}
                             >
                               <img 
                                 src={imageUrl} 
                                 alt={product.name} 
-                                className="w-14 h-14 rounded object-cover"
+                                className="w-16 h-16 rounded object-cover flex-shrink-0"
                                 onError={(e) => {
                                   e.target.onerror = null;
                                   e.target.src = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop';
                                 }}
                               />
                               <div className="flex-1 min-w-0">
-                                <p className="text-xs font-bold text-gray-800 truncate">{product.name}</p>
-                                <p className="text-xs text-purple-600 font-bold">₹{product.price}</p>
+                                <p className="text-sm font-bold text-gray-800 line-clamp-2">{product.name}</p>
+                                <p className="text-sm text-purple-600 font-bold">₹{product.price}</p>
                                 {product.original_price && product.original_price > product.price && (
-                                  <p className="text-[10px] text-gray-400 line-through">₹{product.original_price}</p>
+                                  <p className="text-xs text-gray-400 line-through">₹{product.original_price}</p>
                                 )}
                               </div>
                               <div className="flex flex-col gap-1">
