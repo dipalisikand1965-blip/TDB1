@@ -63,6 +63,10 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
     petId: ''
   });
   const [booking, setBooking] = useState(false);
+  
+  // Cross-sell state
+  const [showCrossSell, setShowCrossSell] = useState(false);
+  const [bookedService, setBookedService] = useState(null);
 
   // Fetch services
   useEffect(() => {
