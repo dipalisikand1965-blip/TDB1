@@ -425,8 +425,8 @@ const MyCelebrations = ({ pets = [], onNavigate, onAddToCart }) => {
       <OccasionBoxBuilder
         isOpen={showBoxBuilder}
         onClose={() => setShowBoxBuilder(false)}
-        occasionType={selectedOccasion}
-        petName={selectedPetName}
+        occasionType={selectedOccasion || 'birthday'}
+        petName={selectedPetName || 'your pet'}
         onAddToCart={onAddToCart}
       />
     </Card>
