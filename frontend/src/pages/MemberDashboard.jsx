@@ -841,7 +841,7 @@ const MemberDashboard = () => {
         </div>
 
         {/* Main Tabs */}
-        <Tabs defaultValue="overview" className="w-full">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           {/* Desktop Tab Navigation */}
           <TabsList className="hidden md:flex bg-white/80 backdrop-blur-sm p-1.5 rounded-xl border shadow-sm mb-6 flex-wrap gap-1">
             <TabsTrigger value="overview" className="rounded-lg flex-shrink-0">
@@ -864,6 +864,9 @@ const MemberDashboard = () => {
             </TabsTrigger>
             <TabsTrigger value="orders" className="rounded-lg flex-shrink-0">
               <Package className="w-4 h-4 mr-1" /> Orders
+            </TabsTrigger>
+            <TabsTrigger value="documents" className="rounded-lg flex-shrink-0">
+              <Shield className="w-4 h-4 mr-1" /> Documents
             </TabsTrigger>
             <TabsTrigger value="autoship" className="rounded-lg flex-shrink-0">
               <RefreshCw className="w-4 h-4 mr-1" /> Autoship
@@ -888,17 +891,18 @@ const MemberDashboard = () => {
               <TabsTrigger value="overview" className="rounded-xl flex items-center gap-1.5 py-2.5 px-4 text-sm font-medium whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white transition-all">
                 <Home className="w-4 h-4" /> Home
               </TabsTrigger>
+              <TabsTrigger value="requests" className="rounded-xl flex items-center gap-1.5 py-2.5 px-4 text-sm font-medium whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white transition-all">
+                <Calendar className="w-4 h-4" /> Requests
+                {myRequests.length > 0 && <span className="ml-1 text-xs">({myRequests.length})</span>}
+              </TabsTrigger>
               <TabsTrigger value="pets" className="rounded-xl flex items-center gap-1.5 py-2.5 px-4 text-sm font-medium whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white transition-all">
                 <PawPrint className="w-4 h-4" /> Pets
               </TabsTrigger>
-              <TabsTrigger value="services" className="rounded-xl flex items-center gap-1.5 py-2.5 px-4 text-sm font-medium whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white transition-all">
-                <Crown className="w-4 h-4" /> Services
+              <TabsTrigger value="documents" className="rounded-xl flex items-center gap-1.5 py-2.5 px-4 text-sm font-medium whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white transition-all">
+                <Shield className="w-4 h-4" /> Docs
               </TabsTrigger>
               <TabsTrigger value="orders" className="rounded-xl flex items-center gap-1.5 py-2.5 px-4 text-sm font-medium whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white transition-all">
                 <Package className="w-4 h-4" /> Orders
-              </TabsTrigger>
-              <TabsTrigger value="rewards" className="rounded-xl flex items-center gap-1.5 py-2.5 px-4 text-sm font-medium whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white transition-all">
-                <Gift className="w-4 h-4" /> Rewards
               </TabsTrigger>
               <TabsTrigger value="settings" className="rounded-xl flex items-center gap-1.5 py-2.5 px-4 text-sm font-medium whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white transition-all">
                 <Settings className="w-4 h-4" /> More
