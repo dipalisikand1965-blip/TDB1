@@ -532,7 +532,7 @@ const EmergencyPage = () => {
       <section className="py-12 bg-white">
         <div className="max-w-7xl mx-auto px-4">
           <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Emergency First Aid Tips</h2>
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6">
             <Card className="p-6 border-l-4 border-red-500">
               <h3 className="font-semibold text-gray-900 mb-2">🩹 Bleeding</h3>
               <p className="text-sm text-gray-600">Apply firm pressure with clean cloth. Keep pet calm. Seek vet immediately for deep wounds.</p>

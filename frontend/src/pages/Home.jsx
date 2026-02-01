@@ -219,7 +219,7 @@ const Home = () => {
           </div>
 
           {/* Visual Flow */}
-          <div className="grid md:grid-cols-4 gap-6 mb-16">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mb-16">
             {[
               { icon: <PawPrint className="w-8 h-8" />, title: 'Your Pet', desc: 'Start with who they are', color: 'from-pink-500 to-rose-500' },
               { icon: <MessageCircle className="w-8 h-8" />, title: 'Interactions', desc: 'Orders, chats, bookings', color: 'from-purple-500 to-indigo-500' },
@@ -415,7 +415,7 @@ const Home = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6">
             <Card className="p-6 bg-white/5 border-white/10 text-white">
               <Lock className="w-10 h-10 text-green-400 mb-4" />
               <h3 className="font-bold text-lg mb-2">Your Data Stays Yours</h3>
@@ -463,7 +463,7 @@ const Home = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-8">
             {/* Les Concierges */}
             <Card className="p-6 text-center hover:shadow-xl transition-all border-2 border-transparent hover:border-purple-200">
               <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-2xl flex items-center justify-center">

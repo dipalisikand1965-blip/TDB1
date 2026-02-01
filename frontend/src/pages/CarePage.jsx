@@ -787,7 +787,7 @@ const CarePage = () => {
             </p>
           </div>
           
-          <div className="grid md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
             {[
               { step: 1, icon: MessageCircle, title: 'Tell Us', desc: 'Share what care your pet needs', color: 'from-pink-500 to-rose-500' },
               { step: 2, icon: PawPrint, title: 'We Read Profile', desc: 'Your pet\'s preferences guide matching', color: 'from-purple-500 to-violet-500' },

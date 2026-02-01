@@ -488,7 +488,7 @@ const AdoptPage = () => {
         <div className="max-w-7xl mx-auto">
           <h2 className="text-2xl font-bold text-gray-900 text-center mb-8">How Would You Like to Help?</h2>
           
-          <div className="grid md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
             {Object.values(ADOPT_CATEGORIES).map(category => {
               const Icon = category.icon;
               return (
@@ -569,7 +569,7 @@ const AdoptPage = () => {
               <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
             </div>
           ) : pets.length > 0 ? (
-            <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
               {pets.map(pet => (
                 <AdoptablePetCard key={pet.pet_id} pet={pet} onApply={handleApply} />
               ))}
@@ -616,7 +616,7 @@ const AdoptPage = () => {
               Our Partner Shelters
             </h2>
             
-            <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
               {shelters.map(shelter => (
                 <Card key={shelter.shelter_id} className="p-4">
                   <h3 className="font-semibold text-gray-900">{shelter.name}</h3>
