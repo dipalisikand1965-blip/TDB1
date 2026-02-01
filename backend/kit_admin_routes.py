@@ -388,18 +388,28 @@ async def get_all_voice_scripts(template_id: str):
 
 @router.get("/categories")
 async def get_kit_categories():
-    """Get available kit categories"""
+    """Get available kit categories based on 14 Life Pillars"""
     return {
         "categories": [
-            {"id": "travel", "name": "Travel Kits", "icon": "✈️", "description": "Everything for pet travel"},
-            {"id": "cinema", "name": "Cinema Night", "icon": "🎬", "description": "Movie night with your pet"},
-            {"id": "birthday", "name": "Birthday Kits", "icon": "🎂", "description": "Birthday celebration essentials"},
-            {"id": "wellness", "name": "Wellness Kits", "icon": "💊", "description": "Health and wellness products"},
-            {"id": "grooming", "name": "Grooming Kits", "icon": "✨", "description": "Grooming essentials"},
-            {"id": "puppy", "name": "Puppy Starter", "icon": "🐕", "description": "New puppy essentials"},
-            {"id": "senior", "name": "Senior Care", "icon": "🏆", "description": "Products for senior pets"},
-            {"id": "seasonal", "name": "Seasonal Kits", "icon": "🌸", "description": "Season-specific products"},
-            {"id": "adventure", "name": "Adventure Kits", "icon": "🏕️", "description": "Outdoor adventure gear"}
+            # 14 Life Pillars
+            {"id": "celebrate", "name": "Celebrate", "icon": "🎉", "description": "Birthday, Gotcha Day, festivals & celebrations", "pillar": True},
+            {"id": "dine", "name": "Dine", "icon": "🍽️", "description": "Gourmet meals, dining accessories & treats", "pillar": True},
+            {"id": "stay", "name": "Stay", "icon": "🏨", "description": "Staycation, hotel stays & comfort essentials", "pillar": True},
+            {"id": "travel", "name": "Travel", "icon": "✈️", "description": "Road trips, flights & adventure gear", "pillar": True},
+            {"id": "care", "name": "Care", "icon": "💊", "description": "Health, wellness & grooming essentials", "pillar": True},
+            {"id": "enjoy", "name": "Enjoy", "icon": "🎬", "description": "Entertainment, playtime & bonding activities", "pillar": True},
+            {"id": "fit", "name": "Fit", "icon": "💪", "description": "Exercise, agility & fitness products", "pillar": True},
+            {"id": "learn", "name": "Learn", "icon": "📚", "description": "Training tools & educational products", "pillar": True},
+            {"id": "paperwork", "name": "Paperwork", "icon": "📋", "description": "Documentation, ID tags & organization", "pillar": True},
+            {"id": "advisory", "name": "Advisory", "icon": "🎓", "description": "New pet parent guidance & starter kits", "pillar": True},
+            {"id": "emergency", "name": "Emergency", "icon": "🚨", "description": "First aid, safety & emergency preparedness", "pillar": True},
+            {"id": "farewell", "name": "Farewell", "icon": "🌈", "description": "Memorial keepsakes & comfort items", "pillar": True},
+            {"id": "adopt", "name": "Adopt", "icon": "🏠", "description": "Adoption welcome kits & transition essentials", "pillar": True},
+            {"id": "insure", "name": "Insure", "icon": "🛡️", "description": "Safety, protection & identification", "pillar": True},
+            # Bonus categories
+            {"id": "seasonal", "name": "Seasonal", "icon": "🌸", "description": "Summer, monsoon, winter & festival kits", "pillar": False},
+            {"id": "puppy", "name": "Puppy", "icon": "🐕", "description": "New puppy essentials", "pillar": False},
+            {"id": "senior", "name": "Senior", "icon": "🏆", "description": "Senior pet care products", "pillar": False}
         ]
     }
 
