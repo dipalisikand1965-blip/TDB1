@@ -41,6 +41,7 @@ const CelebratePage = () => {
   const [boxOccasion, setBoxOccasion] = useState('birthday');
   const { addToCart } = useCart();
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   // Check for build_box URL param from reminder emails/links
   useEffect(() => {
