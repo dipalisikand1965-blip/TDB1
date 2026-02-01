@@ -10,8 +10,6 @@ import { Badge } from '../components/ui/badge';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../components/ui/dialog';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 import MiraChatWidget from '../components/MiraChatWidget';
 import { 
   Search, Filter, Clock, MapPin, DollarSign, Check, ChevronRight, 
