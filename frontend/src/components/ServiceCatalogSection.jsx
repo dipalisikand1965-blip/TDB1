@@ -192,6 +192,11 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
           description: `Request #${data.request_id || data.booking_id} created. We'll confirm shortly.` 
         });
         setShowBookingModal(false);
+        
+        // Show cross-sell recommendations
+        setBookedService(selectedService);
+        setShowCrossSell(true);
+        
         setSelectedService(null);
       } else {
         throw new Error(data.detail || 'Booking failed');
