@@ -1506,6 +1506,66 @@ const DoggyServiceDesk = ({ authHeaders }) => {
     }
   };
 
+  // ==================== TICKET LOCK/UNLOCK ====================
+  
+  const toggleTicketLock = async (ticketId, currentlyLocked) => {
+    try {
+      const res = await fetch(`${getApiUrl()}/api/tickets/${ticketId}/lock`, {
+        method: 'POST',
+        headers: { ...authHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_locked: !currentlyLocked })
+      });
+      
+      if (res.ok) {
+        // Update local state
+        setSelectedTicket(prev => prev ? { ...prev, is_locked: !currentlyLocked } : null);
+        setTickets(prev => prev.map(t => 
+          t.ticket_id === ticketId ? { ...t, is_locked: !currentlyLocked } : t
+        ));
+      }
+    } catch (err) {
+      console.error('Lock toggle error:', err);
+    }
+  };
+
+  // ==================== TICKET DELETE ====================
+  
+  const confirmDeleteTicket = (ticket) => {
+    setTicketToDelete(ticket);
+    setShowDeleteConfirm(true);
+  };
+  
+  const deleteTicket = async () => {
+    if (!ticketToDelete) return;
+    
+    setDeleteLoading(true);
+    try {
+      const res = await fetch(`${getApiUrl()}/api/tickets/${ticketToDelete.ticket_id}`, {
+        method: 'DELETE',
+        headers: authHeaders
+      });
+      
+      if (res.ok) {
+        // Close detail panel if this ticket was selected
+        if (selectedTicket?.ticket_id === ticketToDelete.ticket_id) {
+          setSelectedTicket(null);
+        }
+        // Remove from local state
+        setTickets(prev => prev.filter(t => t.ticket_id !== ticketToDelete.ticket_id));
+        setShowDeleteConfirm(false);
+        setTicketToDelete(null);
+      } else {
+        const errData = await res.json().catch(() => ({}));
+        alert(errData.detail || 'Failed to delete ticket');
+      }
+    } catch (err) {
+      console.error('Delete error:', err);
+      alert('Failed to delete ticket');
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
   // ==================== AGENT PERFORMANCE ====================
   
   const fetchAgentPerformance = async () => {
