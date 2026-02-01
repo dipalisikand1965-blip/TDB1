@@ -220,18 +220,30 @@ const MiraAI = () => {
     
     // Clean text for speech
     let cleanText = text
-      .replace(/[🎉🐕✨🦴💜🎂🏥🐾]/g, '')
-      .replace(/\*\*/g, '')
-      .replace(/\n/g, ' ')
+      .replace(/[🎉🐕✨🦴💜🎂🏥🐾📋🎤]/g, '')  // Remove emojis
+      .replace(/\*\*/g, '')  // Remove markdown bold
+      .replace(/\n/g, ' ')   // Replace newlines with spaces
+      .replace(/---/g, '')   // Remove horizontal rules
       .substring(0, 500);
     
-    // Fix "Mira" pronunciation to "Meera" (phonetic spelling)
+    // Fix pronunciations for speech synthesis
+    // "Mira" → "Meera" (phonetic)
     cleanText = cleanText.replace(/\bMira\b/gi, 'Meera');
     
+    // "Concierge" → "kon-see-airzh" (French pronunciation)
+    cleanText = cleanText
+      .replace(/Pet Concierge®?/gi, 'Pet kon-see-airzh')
+      .replace(/pet concierge®?/gi, 'pet kon-see-airzh')
+      .replace(/your concierge®?/gi, 'your kon-see-airzh')
+      .replace(/our concierge®?/gi, 'our kon-see-airzh')
+      .replace(/the concierge®?/gi, 'the kon-see-airzh')
+      .replace(/concierge®? team/gi, 'kon-see-airzh team')
+      .replace(/\bconcierge®?\b/gi, 'kon-see-airzh');
+    
     const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.rate = 1.0;
-    utterance.pitch = 1.1;
-    utterance.volume = 0.9;
+    utterance.rate = 0.95;  // Slightly slower for clarity
+    utterance.pitch = 1.1;  // Slightly higher for feminine tone
+    utterance.volume = 0.95;
     
     // Get a premium female voice for Mira - she's sophisticated!
     const voices = synthRef.current.getVoices();
