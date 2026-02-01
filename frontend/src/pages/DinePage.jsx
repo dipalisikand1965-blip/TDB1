@@ -658,49 +658,44 @@ const RestaurantCard = ({ restaurant, getPetMenuBadge, getPetPolicyText, feature
     className={`overflow-hidden hover:shadow-xl transition-all ${featured ? 'ring-2 ring-orange-400' : ''}`}
     data-testid={`restaurant-${restaurant.id}`}
   >
-    <div className="relative h-48 cursor-pointer" onClick={() => onSelect(restaurant)}>
+    <div className="relative h-28 sm:h-48 cursor-pointer" onClick={() => onSelect(restaurant)}>
       <img 
         src={restaurant.image || 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800'} 
         alt={restaurant.name}
         className="w-full h-full object-cover"
       />
       {featured && (
-        <div className="absolute top-3 left-3">
-          <Badge className="bg-orange-500 text-white">
-            <Star className="w-3 h-3 mr-1" /> Featured
+        <div className="absolute top-2 left-2 sm:top-3 sm:left-3">
+          <Badge className="bg-orange-500 text-white text-[10px] sm:text-xs">
+            <Star className="w-2 h-2 sm:w-3 sm:h-3 mr-0.5 sm:mr-1" /> Featured
           </Badge>
         </div>
       )}
-      <div className="absolute top-3 right-3 flex flex-col gap-1">
-        {getPetMenuBadge(restaurant.petMenuAvailable)}
-        {restaurant.birthdayPerks && (
-          <Badge className="bg-pink-500 text-white">
-            🎂 Birthday Perks
-          </Badge>
-        )}
+      <div className="absolute top-2 right-2 sm:top-3 sm:right-3 flex flex-col gap-1">
+        <span className="hidden sm:block">{getPetMenuBadge(restaurant.petMenuAvailable)}</span>
       </div>
-      <div className="absolute bottom-3 left-3 flex gap-2">
-        <Badge className="bg-black/70 text-white backdrop-blur-sm">
+      <div className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 flex gap-1 sm:gap-2">
+        <Badge className="bg-black/70 text-white backdrop-blur-sm text-[10px] sm:text-xs">
           {restaurant.priceRange || '₹₹'}
         </Badge>
-        <Badge className="bg-black/70 text-white backdrop-blur-sm flex items-center gap-1">
-          <Star className="w-3 h-3 text-yellow-400" />
+        <Badge className="bg-black/70 text-white backdrop-blur-sm flex items-center gap-0.5 sm:gap-1 text-[10px] sm:text-xs">
+          <Star className="w-2 h-2 sm:w-3 sm:h-3 text-yellow-400" />
           {restaurant.rating || 4.0}
         </Badge>
       </div>
     </div>
-    <div className="p-4">
-      <h3 className="font-bold text-lg text-gray-900 mb-1 cursor-pointer hover:text-orange-600" onClick={() => onSelect(restaurant)}>
+    <div className="p-2 sm:p-4">
+      <h3 className="font-bold text-xs sm:text-lg text-gray-900 mb-0.5 sm:mb-1 cursor-pointer hover:text-orange-600 line-clamp-1" onClick={() => onSelect(restaurant)}>
         {restaurant.name}
       </h3>
-      <p className="text-sm text-gray-500 flex items-center gap-1 mb-2">
-        <MapPin className="w-4 h-4" />
-        {restaurant.area}, {restaurant.city}
+      <p className="text-[10px] sm:text-sm text-gray-500 flex items-center gap-0.5 sm:gap-1 mb-1 sm:mb-2">
+        <MapPin className="w-3 h-3 sm:w-4 sm:h-4" />
+        <span className="line-clamp-1">{restaurant.area}</span>
       </p>
       
-      {/* Concierge® Recommendation */}
+      {/* Concierge® Recommendation - hidden on mobile */}
       {restaurant.conciergeRecommendation && (
-        <div className="p-2 bg-purple-50 rounded-lg mb-3 border border-purple-100">
+        <div className="hidden sm:block p-2 bg-purple-50 rounded-lg mb-3 border border-purple-100">
           <p className="text-xs text-purple-700 flex items-start gap-1">
             <Sparkles className="w-3 h-3 mt-0.5 flex-shrink-0" />
             <span className="line-clamp-2"><strong>Concierge®:</strong> {restaurant.conciergeRecommendation}</span>
@@ -708,24 +703,25 @@ const RestaurantCard = ({ restaurant, getPetMenuBadge, getPetPolicyText, feature
         </div>
       )}
       
-      <div className="flex flex-wrap gap-1 mb-3">
+      <div className="hidden sm:flex flex-wrap gap-1 mb-3">
         {(Array.isArray(restaurant.cuisine) ? restaurant.cuisine : [restaurant.cuisine]).filter(Boolean).slice(0, 3).map((c, idx) => (
           <Badge key={idx} variant="outline" className="text-xs">{c}</Badge>
         ))}
       </div>
       <div className="flex items-center justify-between">
-        <span className="text-xs text-gray-500 flex items-center gap-1">
-          <Dog className="w-3 h-3" />
-          {getPetPolicyText(restaurant.petPolicy)}
+        <span className="text-[10px] sm:text-xs text-gray-500 flex items-center gap-0.5 sm:gap-1">
+          <Dog className="w-2 h-2 sm:w-3 sm:h-3" />
+          <span className="hidden sm:inline">{getPetPolicyText(restaurant.petPolicy)}</span>
+          <span className="sm:hidden">Pet OK</span>
         </span>
-        <div className="flex gap-2">
+        <div className="flex gap-1 sm:gap-2">
           <Button 
             size="sm" 
             variant="outline"
             onClick={(e) => { e.stopPropagation(); onBuddy(restaurant); }}
-            className="text-purple-600 border-purple-200 hover:bg-purple-50"
+            className="text-purple-600 border-purple-200 hover:bg-purple-50 text-[10px] sm:text-xs px-1.5 sm:px-3 h-6 sm:h-8"
           >
-            <Users className="w-3 h-3 mr-1" /> Buddy
+            <Users className="w-2 h-2 sm:w-3 sm:h-3 sm:mr-1" /> <span className="hidden sm:inline">Buddy</span>
           </Button>
           <Button 
             size="sm" 
