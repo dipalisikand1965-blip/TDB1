@@ -194,6 +194,26 @@ const OccasionBoxBuilder = ({
     }
   };
 
+  if (!isOpen) {
+    return null;
+  }
+
+  if (!occasionType) {
+    return (
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="max-w-md">
+          <div className="text-center py-8">
+            <Gift className="w-16 h-16 mx-auto text-gray-300 mb-4" />
+            <h3 className="text-xl font-semibold mb-2">Select an Occasion</h3>
+            <p className="text-gray-500">
+              Please select an occasion type to build a box.
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
+
   if (loading) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
@@ -204,10 +224,6 @@ const OccasionBoxBuilder = ({
         </DialogContent>
       </Dialog>
     );
-  }
-
-  if (!isOpen) {
-    return null;
   }
 
   if (!template) {
