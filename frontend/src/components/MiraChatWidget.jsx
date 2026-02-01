@@ -911,23 +911,34 @@ const MiraChatWidget = ({
               </div>
             )}
             
-            {/* Quick Action Buttons */}
+            {/* Quick Action Tabs - Pillar-specific actions including Build Kit */}
             {quickActions.length > 0 && (
-              <div className="px-4 py-2 border-b shrink-0">
-                <div className="flex gap-2 overflow-x-auto">
-                  {quickActions.map((action, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => {
-                        setInputValue(action);
-                        sendMessage();
-                      }}
-                      className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all
-                        bg-gradient-to-r ${config.color} text-white shadow-sm hover:shadow-md hover:scale-105`}
-                    >
-                      {action}
-                    </button>
-                  ))}
+              <div className="px-4 py-3 border-b bg-gradient-to-r from-gray-50 to-white shrink-0">
+                <p className="text-[10px] text-gray-500 mb-2 uppercase tracking-wider font-medium">Quick Actions</p>
+                <div className="flex gap-2 overflow-x-auto pb-1">
+                  {quickActions.map((action, idx) => {
+                    const isKitAction = action.toLowerCase().includes('build');
+                    return (
+                      <button
+                        key={idx}
+                        onClick={() => {
+                          setInputValue(action);
+                          // Auto-send for kit actions
+                          if (isKitAction) {
+                            setTimeout(() => sendMessage(), 100);
+                          }
+                        }}
+                        className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
+                          isKitAction 
+                            ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-md hover:shadow-lg hover:scale-105' 
+                            : `bg-gradient-to-r ${config.color} text-white shadow-sm hover:shadow-md hover:scale-105`
+                        }`}
+                        data-testid={`quick-action-${idx}`}
+                      >
+                        {isKitAction && '🎒 '}{action}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}
