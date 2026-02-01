@@ -420,9 +420,12 @@ const MyCelebrations = ({ pets = [], onNavigate, onAddToCart }) => {
       {/* Occasion Box Builder Modal */}
       <OccasionBoxBuilder
         isOpen={showBoxBuilder}
-        onClose={() => setShowBoxBuilder(false)}
-        occasionType={selectedOccasion || 'birthday'}
-        petName={selectedPetName || 'your pet'}
+        onClose={() => {
+          setShowBoxBuilder(false);
+          setBoxBuilderData({ occasionType: null, petName: '' });
+        }}
+        occasionType={boxBuilderData.occasionType}
+        petName={boxBuilderData.petName}
         onAddToCart={onAddToCart}
       />
     </Card>
