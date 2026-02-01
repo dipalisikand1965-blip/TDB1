@@ -640,13 +640,14 @@ const MiraChatWidget = ({
     }, 50);
   }, [voiceEnabled]);
   
-  const sendMessage = async () => {
-    if (!inputValue.trim() || isSending) return;
+  const sendMessage = async (directMessage = null) => {
+    const messageToSend = directMessage || inputValue.trim();
+    if (!messageToSend || isSending) return;
     
     const userMessage = {
       id: Date.now().toString(),
       role: 'user',
-      content: inputValue.trim()
+      content: messageToSend
     };
     
     setMessages(prev => [...prev, userMessage]);
