@@ -342,7 +342,9 @@ const OverviewTab = ({
               <PawPrint className="w-6 h-6" />
             </div>
             <Button variant="outline" size="sm" className="h-8" onClick={() => {
-              if (pets.length > 0) {
+              if (currentPet) {
+                navigate(`/pet/${currentPet.id}?tab=personality`);
+              } else if (pets.length > 0) {
                 navigate(`/pet/${pets[0].id}?tab=personality`);
               } else {
                 navigate('/my-pets');
@@ -351,9 +353,9 @@ const OverviewTab = ({
               Manage
             </Button>
           </div>
-          <h3 className="text-lg font-medium text-gray-600">My Pets</h3>
-          <p className="text-4xl font-bold text-gray-900 mt-1">{pets.length}</p>
-          <p className="text-sm text-gray-500 mt-2">Active profiles</p>
+          <h3 className="text-lg font-medium text-gray-600">{currentPet?.name || 'My Pets'}</h3>
+          <p className="text-4xl font-bold text-gray-900 mt-1">{currentPet ? (currentPet.overall_score || 0) + '%' : pets.length}</p>
+          <p className="text-sm text-gray-500 mt-2">{currentPet ? 'Soul completion' : 'Active profiles'}</p>
         </Card>
       </div>
       
@@ -369,17 +371,17 @@ const OverviewTab = ({
       </div>
       
       {/* BREED TIPS ENGINE */}
-      {pets.length > 0 && pets[0]?.breed && (
+      {currentPet?.breed && (
         <div className="mt-6">
           <React.Suspense fallback={<div className="h-40 bg-gray-100 animate-pulse rounded-xl" />}>
-            <BreedTipsEngine pet={pets[0]} />
+            <BreedTipsEngine pet={currentPet} />
           </React.Suspense>
         </div>
       )}
       
       {/* Pet Soul Completion CTA */}
-      {Array.isArray(pets) && pets.length > 0 && (() => {
-        const pet = pets[0] || {};
+      {currentPet && (() => {
+        const pet = currentPet;
         const avgScore = Math.min(100, Math.round(pet?.overall_score || 0));
         
         if (avgScore >= 80) return null;
