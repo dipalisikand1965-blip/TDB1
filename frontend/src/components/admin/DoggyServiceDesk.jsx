@@ -3570,6 +3570,34 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                         <Bell className="w-3.5 h-3.5" />
                         Add Reminder
                       </button>
+                      
+                      {/* Lock/Unlock Button */}
+                      <button
+                        onClick={() => toggleTicketLock(selectedTicket.ticket_id, selectedTicket.is_locked)}
+                        className={`flex items-center gap-1 px-3 py-1.5 text-xs rounded-full transition-colors ${
+                          selectedTicket.is_locked 
+                            ? 'bg-amber-100 text-amber-700 border border-amber-200 hover:bg-amber-200' 
+                            : 'bg-white border hover:bg-gray-50'
+                        }`}
+                        title={selectedTicket.is_locked ? 'Unlock ticket (allow customer replies)' : 'Lock ticket (prevent customer replies)'}
+                      >
+                        {selectedTicket.is_locked ? (
+                          <>🔒 Locked</>
+                        ) : (
+                          <>🔓 Lock</>
+                        )}
+                      </button>
+                      
+                      {/* Delete Button */}
+                      <button
+                        onClick={() => confirmDeleteTicket(selectedTicket)}
+                        className="flex items-center gap-1 px-3 py-1.5 text-xs bg-white border border-red-200 text-red-600 rounded-full hover:bg-red-50 hover:border-red-300"
+                        title="Delete ticket permanently"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        Delete
+                      </button>
+                      
                       {/* Merge Button */}
                       {selectedTicketIds.length > 0 && selectedTicketIds.includes(selectedTicket?.ticket_id) && (
                         <button
