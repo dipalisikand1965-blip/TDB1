@@ -242,10 +242,32 @@ const MembershipPage = () => {
       {/* SEO Meta Tags */}
       <SEOHead page="membership" path="/membership" />
 
+      {/* Simple Fixed Header for Navigation */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-gradient-to-br from-teal-500 to-pink-500 rounded-lg flex items-center justify-center">
+              <PawPrint className="w-5 h-5 text-white" />
+            </div>
+            <span className="font-bold text-gray-900">The Doggy Company</span>
+          </Link>
+          <div className="flex items-center gap-4">
+            <Link to="/login" className="text-gray-600 hover:text-gray-900 text-sm font-medium">
+              Sign in
+            </Link>
+            <Link to="/pet-soul-onboard">
+              <Button size="sm" className="bg-teal-600 hover:bg-teal-700 text-white rounded-full px-4">
+                Join now
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </header>
+
       {/* Hero Section - Pet Pass Introduction */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-teal-700 via-teal-800 to-slate-900 text-white">
-        {/* Background pattern */}
-        <div className="absolute inset-0 opacity-20">
+      <div className="relative overflow-hidden bg-gradient-to-br from-teal-700 via-teal-800 to-slate-900 text-white pt-16">
+        {/* Background pattern - using will-change for smooth rendering */}
+        <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ willChange: 'transform' }}>
           <div className="absolute top-20 -left-10 w-72 h-72 bg-teal-400 rounded-full blur-3xl"></div>
           <div className="absolute bottom-20 -right-10 w-96 h-96 bg-purple-500 rounded-full blur-3xl"></div>
         </div>
