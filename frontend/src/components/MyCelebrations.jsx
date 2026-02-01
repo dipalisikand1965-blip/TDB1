@@ -201,8 +201,7 @@ const MyCelebrations = ({ pets = [], onNavigate, onAddToCart }) => {
   const [celebrations, setCelebrations] = useState([]);
   const [showAll, setShowAll] = useState(false);
   const [showBoxBuilder, setShowBoxBuilder] = useState(false);
-  const [selectedOccasion, setSelectedOccasion] = useState(null);
-  const [selectedPetName, setSelectedPetName] = useState('');
+  const [boxBuilderData, setBoxBuilderData] = useState({ occasionType: null, petName: '' });
   
   // Helper for ordinal suffix - declared before useEffect
   const getOrdinalSuffix = (n) => {
