@@ -538,9 +538,20 @@ const MiraAI = () => {
     scrollToBottom();
   }, [messages, scrollToBottom]);
 
-  // Listen for custom event to open Mira
+  // Listen for custom event to open Mira (consolidated - handles both desktop and mobile with pillar context)
   useEffect(() => {
-    const handleOpenMira = () => setIsOpen(true);
+    const handleOpenMira = (event) => {
+      setIsOpen(true);
+      // If pillar context is passed (from MobileNavBar), update the current pillar
+      if (event.detail?.pillar) {
+        setCurrentPillar(event.detail.pillar);
+        console.log('[MiraAI] Opened with pillar context:', event.detail.pillar);
+      }
+      // If a preset message is passed, set it
+      if (event.detail?.message) {
+        setInputValue(event.detail.message);
+      }
+    };
     window.addEventListener('openMiraAI', handleOpenMira);
     return () => window.removeEventListener('openMiraAI', handleOpenMira);
   }, []);
