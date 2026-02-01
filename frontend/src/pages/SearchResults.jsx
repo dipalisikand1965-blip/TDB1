@@ -127,6 +127,10 @@ const SearchResults = () => {
   const performSearch = useCallback(async () => {
     const searchQuery = searchParams.get('q');
     if (!searchQuery) return;
+    
+    // Detect if this is an occasion-based search
+    const occasion = detectOccasion(searchQuery);
+    setDetectedOccasion(occasion);
 
     setIsLoading(true);
     try {
