@@ -269,10 +269,10 @@ const ServicesPage = () => {
           petCount: priceConfig.petCount,
           addOns: priceConfig.selectedAddOns,
           calculatedPrice: calculatedPrice?.total || selectedService.base_price,
-          preferredDate: bookingData.date,
-          preferredTime: bookingData.time,
+          date: bookingData.date,
+          time: bookingData.time,
           notes: bookingData.notes,
-          petId: bookingData.petId
+          pet_id: bookingData.petId
         })
       });
 
