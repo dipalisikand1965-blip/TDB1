@@ -451,63 +451,63 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
                 {calculating ? (
                   <div className="flex items-center justify-center py-2">
                     <Loader2 className="w-5 h-5 animate-spin mr-2" />
-                    Calculating...
+                    <span className="text-sm">Calculating...</span>
                   </div>
                 ) : calculatedPrice ? (
-                  <div>
-                    <div className="flex justify-between items-center mb-2">
+                  <div className="text-sm">
+                    <div className="flex justify-between items-center mb-1.5">
                       <span className="text-gray-400">Base Price</span>
                       <span>₹{calculatedPrice.base_price}</span>
                     </div>
                     {calculatedPrice.modifiers?.city?.multiplier !== 1 && (
-                      <div className="flex justify-between items-center mb-2 text-sm">
-                        <span className="text-gray-400">{calculatedPrice.modifiers.city.value} pricing</span>
+                      <div className="flex justify-between items-center mb-1.5 text-xs">
+                        <span className="text-gray-400">{calculatedPrice.modifiers.city.value}</span>
                         <span>×{calculatedPrice.modifiers.city.multiplier}</span>
                       </div>
                     )}
                     {calculatedPrice.modifiers?.pet_size?.multiplier !== 1 && (
-                      <div className="flex justify-between items-center mb-2 text-sm">
-                        <span className="text-gray-400">{calculatedPrice.modifiers.pet_size.value} size</span>
+                      <div className="flex justify-between items-center mb-1.5 text-xs">
+                        <span className="text-gray-400">{calculatedPrice.modifiers.pet_size.value}</span>
                         <span>×{calculatedPrice.modifiers.pet_size.multiplier}</span>
                       </div>
                     )}
                     {calculatedPrice.modifiers?.pet_count?.value > 1 && (
-                      <div className="flex justify-between items-center mb-2 text-sm">
+                      <div className="flex justify-between items-center mb-1.5 text-xs">
                         <span className="text-gray-400">{calculatedPrice.modifiers.pet_count.value} pets</span>
                         <span>×{calculatedPrice.modifiers.pet_count.multiplier}</span>
                       </div>
                     )}
                     {calculatedPrice.add_ons_total > 0 && (
-                      <div className="flex justify-between items-center mb-2 text-sm">
+                      <div className="flex justify-between items-center mb-1.5 text-xs">
                         <span className="text-gray-400">Add-ons</span>
                         <span>+₹{calculatedPrice.add_ons_total}</span>
                       </div>
                     )}
-                    <div className="flex justify-between items-center pt-3 border-t border-gray-700">
-                      <span className="text-lg font-bold">Your Price</span>
-                      <span className="text-2xl font-bold text-rose-400">₹{calculatedPrice.total.toLocaleString()}</span>
+                    <div className="flex justify-between items-center pt-2 border-t border-gray-700">
+                      <span className="font-bold">Your Price</span>
+                      <span className="text-xl sm:text-2xl font-bold text-rose-400">₹{calculatedPrice.total.toLocaleString()}</span>
                     </div>
                     {calculatedPrice.deposit_amount && (
-                      <div className="mt-2 text-sm text-gray-400">
+                      <div className="mt-2 text-xs text-gray-400">
                         <Info className="w-3 h-3 inline mr-1" />
                         Pay ₹{calculatedPrice.deposit_amount} deposit to book
                       </div>
                     )}
                   </div>
                 ) : (
-                  <div className="text-center py-2 text-gray-400">Select options above</div>
+                  <div className="text-center py-2 text-gray-400 text-sm">Select options above</div>
                 )}
               </div>
             </div>
           )}
           
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowPriceModal(false)}>
+          <DialogFooter className="mt-4 flex gap-2">
+            <Button variant="outline" onClick={() => setShowPriceModal(false)} className="flex-1 sm:flex-none">
               Cancel
             </Button>
             <Button 
               onClick={proceedToBooking}
-              className="bg-rose-500 hover:bg-rose-600"
+              className="bg-rose-500 hover:bg-rose-600 flex-1 sm:flex-none"
               disabled={calculating || !calculatedPrice}
             >
               Book Now
