@@ -112,16 +112,19 @@ body {
    The heart of Pet Life OS
    ============================================ */
 
-/* Mobile Nav Container - HIDDEN per user request to fix footer overlap */
+/* Mobile Nav Container - Fixed bottom navigation bar */
 .mobile-nav-container {
-  display: none !important;
-  /* Original styles preserved but hidden:
   position: fixed;
-  bottom: 1.5rem;
-  left: 1.5rem;
-  right: 1.5rem;
-  z-index: 50;
-  */
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 9995;
+  padding: 0.5rem 1rem;
+  padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .mobile-nav-bar {
