@@ -48,6 +48,7 @@ import AutomatedRemindersManager from '../components/admin/AutomatedRemindersMan
 // ConciergeCommandCenter DEPRECATED - features merged into ServiceDesk
 import AdvancedAnalyticsDashboard from '../components/admin/AdvancedAnalyticsDashboard';
 import UnifiedProductBox from '../components/admin/UnifiedProductBox';
+import ServiceBox from '../components/admin/ServiceBox';
 import ConciergeExperiencesAdmin from '../components/admin/ConciergeExperiencesAdmin';
 import PillarQueues from '../components/admin/PillarQueues';
 import { testimonials as mockTestimonials, faqs as mockFaqs } from '../mockData';
