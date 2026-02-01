@@ -16,6 +16,7 @@ import {
 import { API_URL } from '../utils/api';
 import { toast } from '../hooks/use-toast';
 import { useAuth } from '../context/AuthContext';
+import CrossSellSection from './CrossSellSection';
 
 // Pet size options
 const PET_SIZES = [
