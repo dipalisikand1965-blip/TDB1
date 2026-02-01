@@ -249,7 +249,7 @@ async def update_product_paw_score(product_id: str):
 @router.get("/admin/all")
 async def get_all_ratings(limit: int = 50, skip: int = 0, status: str = None):
     """Admin: Get all ratings with optional status filter"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
     
     query = {}
