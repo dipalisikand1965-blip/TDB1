@@ -371,18 +371,18 @@ const MiraChatWidget = ({
           synth.cancel();
           
           // Build full greeting with phonetic "concierge" pronunciation
-          // "concierge" should sound like "kon-see-airzh" (French pronunciation)
+          // Using "con-see-erzh" for better TTS pronunciation
           const petName = selectedPet?.name || '';
           const petBreed = selectedPet?.breed || '';
           const pillarName = config.name || 'our services';
           
-          let fullGreeting = `Hi, I am Meera, your pet kon-see-airzh.`;
+          let fullGreeting = `Hi, I am Meera, your pet con-see-erzh.`;
           if (petName && petBreed) {
-            fullGreeting = `Hi, I am Meera, your pet kon-see-airzh! Good ${getTimeOfDay()}! I see you're browsing ${pillarName} for ${petName}, your lovely ${petBreed}. How can I help today?`;
+            fullGreeting = `Hi, I am Meera, your pet con-see-erzh! Good ${getTimeOfDay()}! I see you're browsing ${pillarName} for ${petName}, your lovely ${petBreed}. How can I help today?`;
           } else if (petName) {
-            fullGreeting = `Hi, I am Meera, your pet kon-see-airzh! Good ${getTimeOfDay()}! I see you're here for ${petName}. How can I help today?`;
+            fullGreeting = `Hi, I am Meera, your pet con-see-erzh! Good ${getTimeOfDay()}! I see you're here for ${petName}. How can I help today?`;
           } else {
-            fullGreeting = `Hi, I am Meera, your pet kon-see-airzh! Good ${getTimeOfDay()}! How can I help you today?`;
+            fullGreeting = `Hi, I am Meera, your pet con-see-erzh! Good ${getTimeOfDay()}! How can I help you today?`;
           }
           
           const utterance = new SpeechSynthesisUtterance(fullGreeting);

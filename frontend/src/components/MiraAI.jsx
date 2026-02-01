@@ -235,15 +235,16 @@ const MiraAI = () => {
     // "Mira" → "Meera" (phonetic)
     cleanText = cleanText.replace(/\bMira\b/gi, 'Meera');
     
-    // "Concierge" → "kon-see-airzh" (French pronunciation)
+    // "Concierge" → phonetic spelling for correct French pronunciation
+    // Using "con-see-erzh" which TTS engines handle better
     cleanText = cleanText
-      .replace(/Pet Concierge®?/gi, 'Pet kon-see-airzh')
-      .replace(/pet concierge®?/gi, 'pet kon-see-airzh')
-      .replace(/your concierge®?/gi, 'your kon-see-airzh')
-      .replace(/our concierge®?/gi, 'our kon-see-airzh')
-      .replace(/the concierge®?/gi, 'the kon-see-airzh')
-      .replace(/concierge®? team/gi, 'kon-see-airzh team')
-      .replace(/\bconcierge®?\b/gi, 'kon-see-airzh');
+      .replace(/Pet Concierge®?/gi, 'Pet con-see-erzh')
+      .replace(/pet concierge®?/gi, 'pet con-see-erzh')
+      .replace(/your concierge®?/gi, 'your con-see-erzh')
+      .replace(/our concierge®?/gi, 'our con-see-erzh')
+      .replace(/the concierge®?/gi, 'the con-see-erzh')
+      .replace(/concierge®? team/gi, 'con-see-erzh team')
+      .replace(/\bconcierge®?\b/gi, 'con-see-erzh');
     
     const utterance = new SpeechSynthesisUtterance(cleanText);
     utterance.rate = 0.90;  // Measured pace for British English
