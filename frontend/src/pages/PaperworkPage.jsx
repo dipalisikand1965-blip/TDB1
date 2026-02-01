@@ -61,7 +61,8 @@ const PaperworkPage = () => {
     reminder_enabled: false,
     reminder_date: '',
     reminder_channel: 'email',
-    file_url: ''
+    file_url: '',
+    file: null
   });
   const [uploading, setUploading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
