@@ -329,6 +329,96 @@ const Policies = () => {
               </div>
             </div>
           )}
+
+          {/* AI Disclaimer */}
+          {activePolicy === 'ai' && (
+            <div className="prose max-w-none" data-testid="ai-disclaimer">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+                <Sparkles className="w-6 h-6 text-purple-600" />
+                Mira AI Disclaimer
+              </h2>
+              
+              <div className="bg-purple-50 border-l-4 border-purple-500 p-4 mb-6">
+                <p className="text-purple-900 font-medium flex items-center gap-2">
+                  <Brain className="w-5 h-5" />
+                  Mira is powered by artificial intelligence and can make mistakes. Always verify important information.
+                </p>
+              </div>
+
+              <h3 className="text-lg font-semibold mt-6 mb-3">About Mira AI</h3>
+              <p className="text-gray-700 mb-4">
+                Mira is our AI-powered pet concierge designed to assist you with product recommendations, 
+                pet care information, and general guidance. Mira uses advanced language models and our 
+                curated pet care database to provide helpful responses.
+              </p>
+
+              <h3 className="text-lg font-semibold mt-6 mb-3">Information Sources</h3>
+              <p className="text-gray-700 mb-4">
+                Mira's knowledge is based on:
+              </p>
+              <ul className="list-disc pl-6 text-gray-700 mb-4">
+                <li>Our product catalog and inventory data</li>
+                <li>General pet care guidelines from established sources (PetMD, AKC, The Spruce Pets)</li>
+                <li>Breed-specific information from veterinary databases</li>
+                <li>Our curated kit templates and recommendations</li>
+              </ul>
+
+              <h3 className="text-lg font-semibold mt-6 mb-3">Limitations</h3>
+              <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 mb-6">
+                <p className="text-yellow-800 font-medium mb-2">Important Notice</p>
+                <ul className="list-disc pl-6 text-yellow-900">
+                  <li><strong>NOT Veterinary Advice:</strong> Mira does not provide veterinary diagnosis, treatment plans, or medical advice. Always consult a qualified veterinarian for health concerns.</li>
+                  <li><strong>AI Limitations:</strong> Mira may occasionally produce inaccurate or outdated information. Please verify any critical information.</li>
+                  <li><strong>Product Availability:</strong> Product recommendations may not always reflect current stock availability.</li>
+                </ul>
+              </div>
+
+              <h3 className="text-lg font-semibold mt-6 mb-3">What Mira Can Help With</h3>
+              <ul className="list-disc pl-6 text-gray-700 mb-4">
+                <li>Product recommendations and comparisons</li>
+                <li>General pet care tips and guidance</li>
+                <li>Breed-specific dietary considerations</li>
+                <li>Kit assembly for special occasions</li>
+                <li>Service booking assistance</li>
+                <li>Order status and account information</li>
+              </ul>
+
+              <h3 className="text-lg font-semibold mt-6 mb-3">What Mira Cannot Help With</h3>
+              <ul className="list-disc pl-6 text-gray-700 mb-4">
+                <li>Veterinary diagnosis or medical treatment</li>
+                <li>Specific medication dosages</li>
+                <li>Emergency medical situations (call your vet immediately)</li>
+                <li>Legal advice</li>
+                <li>Guaranteed health outcomes</li>
+              </ul>
+
+              <h3 className="text-lg font-semibold mt-6 mb-3">Data Privacy</h3>
+              <p className="text-gray-700 mb-4">
+                Your conversations with Mira are stored securely to improve service quality and provide 
+                personalized recommendations. We do not share your conversation data with third parties 
+                for advertising purposes. For more details, please see our Privacy Policy.
+              </p>
+
+              <h3 className="text-lg font-semibold mt-6 mb-3">Feedback</h3>
+              <p className="text-gray-700 mb-4">
+                We're continuously improving Mira. If you encounter any issues or have suggestions, 
+                please reach out to us:
+              </p>
+              <div className="flex flex-col gap-2">
+                <p className="flex items-center gap-2 text-gray-700">
+                  <Mail className="w-4 h-4 text-purple-600" />
+                  <a href="mailto:woof@thedoggycompany.in" className="hover:text-purple-600">woof@thedoggycompany.in</a>
+                </p>
+              </div>
+
+              <div className="mt-8 p-4 bg-gray-50 rounded-lg">
+                <p className="text-sm text-gray-600 italic">
+                  By using Mira AI, you acknowledge that you have read and understood this disclaimer. 
+                  Mira is a helpful assistant but not a replacement for professional veterinary care.
+                </p>
+              </div>
+            </div>
+          )}
         </Card>
 
         {/* Last Updated */}
