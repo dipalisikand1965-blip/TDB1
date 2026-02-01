@@ -521,21 +521,15 @@ const AdvisoryPage = () => {
                       </div>
                       <p className="text-[10px] sm:text-sm text-gray-600 mb-2 sm:mb-3 line-clamp-2 hidden sm:block">{bundle.description}</p>
                       {bundle.includes_consultation && (
-                        <Badge variant="outline" className="text-violet-600 mb-2">
-                          <Video className="w-3 h-3 mr-1" /> Includes Consultation
+                        <Badge variant="outline" className="text-violet-600 mb-1 sm:mb-2 text-[10px] sm:text-xs hidden sm:inline-flex">
+                          <Video className="w-2 h-2 sm:w-3 sm:h-3 mr-0.5 sm:mr-1" /> Includes Call
                         </Badge>
                       )}
-                      <div className="flex items-center gap-2 mb-3">
-                        <span className="text-xl font-bold text-violet-600">₹{bundle.price}</span>
-                        <span className="text-sm text-gray-400 line-through">₹{bundle.original_price}</span>
-                        <Badge variant="outline" className="text-violet-600">
-                          Save ₹{bundle.original_price - bundle.price}
-                        </Badge>
+                      <div className="flex items-center gap-1 sm:gap-2 mb-2 sm:mb-3">
+                        <span className="text-sm sm:text-xl font-bold text-violet-600">₹{bundle.price}</span>
+                        <span className="text-[10px] sm:text-sm text-gray-400 line-through">₹{bundle.original_price}</span>
                       </div>
-                      {bundle.paw_reward_points > 0 && (
-                        <p className="text-xs text-violet-600 mb-3">🐾 Earn {bundle.paw_reward_points} Paw Points</p>
-                      )}
-                      <Button className="w-full bg-violet-500 hover:bg-violet-600">Add to Cart</Button>
+                      <Button className="w-full bg-violet-500 hover:bg-violet-600 text-[10px] sm:text-sm h-7 sm:h-9">Add</Button>
                     </Card>
                   ))}
                 </div>
