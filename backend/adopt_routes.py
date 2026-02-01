@@ -310,47 +310,424 @@ async def delete_adopt_product(product_id: str):
 
 @router.post("/admin/seed-products")
 async def seed_adopt_products():
-    """Seed default adopt products"""
+    """Seed default adopt products with proper base_tags for pillar resolver"""
     db = get_db()
     now = get_utc_timestamp()
     
     default_products = [
         # Welcome Kits
-        {"id": "adopt-prod-kit-puppy", "name": "Puppy Welcome Kit", "description": "Everything a new puppy needs: training treats, chew toys, puppy pad, collar & leash set", "price": 1999, "original_price": 2499, "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600", "category": "adopt-kit", "tags": ["kit", "welcome", "puppy", "essentials"], "pillar": "adopt", "stock": 50, "paw_reward_points": 20},
-        {"id": "adopt-prod-kit-adult", "name": "Adult Dog Welcome Kit", "description": "Essentials for adult rescues: comfort bed, feeding bowls, enrichment toys, calming spray", "price": 2499, "original_price": 2999, "image": "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600", "category": "adopt-kit", "tags": ["kit", "welcome", "adult", "essentials"], "pillar": "adopt", "stock": 40, "paw_reward_points": 25},
-        {"id": "adopt-prod-kit-senior", "name": "Senior Pet Comfort Kit", "description": "Special care for senior rescues: orthopedic bed, joint supplements, gentle grooming tools", "price": 2999, "original_price": 3599, "image": "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=600", "category": "adopt-kit", "tags": ["kit", "senior", "comfort", "health"], "pillar": "adopt", "stock": 30, "paw_reward_points": 30},
-        {"id": "adopt-prod-kit-cat", "name": "Cat Adoption Kit", "description": "Complete cat welcome kit: litter box, scratching post, cozy hideaway, interactive toys", "price": 1799, "original_price": 2199, "image": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=600", "category": "adopt-kit", "tags": ["kit", "cat", "welcome", "essentials"], "pillar": "adopt", "stock": 45, "paw_reward_points": 18},
+        {
+            "id": "adopt-prod-kit-puppy", 
+            "name": "Puppy Welcome Kit", 
+            "description": "Everything a new puppy needs: training treats, chew toys, puppy pad, collar & leash set", 
+            "price": 1999, 
+            "original_price": 2499, 
+            "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600", 
+            "category": "adopt-kit", 
+            "tags": ["kit", "welcome", "puppy", "essentials"], 
+            "pillar": "adopt", 
+            "stock": 50, 
+            "paw_reward_points": 20,
+            "base_tags": {
+                "life_stage": "puppy",
+                "interaction_type": "containment",
+                "benefits": ["comfort", "training"],
+                "purchase_pattern": "impulse",
+                "usage_frequency": "daily",
+                "category_primary": "kit",
+                "price_tier": "mid"
+            }
+        },
+        {
+            "id": "adopt-prod-kit-adult", 
+            "name": "Adult Dog Welcome Kit", 
+            "description": "Essentials for adult rescues: comfort bed, feeding bowls, enrichment toys, calming spray", 
+            "price": 2499, 
+            "original_price": 2999, 
+            "image": "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600", 
+            "category": "adopt-kit", 
+            "tags": ["kit", "welcome", "adult", "essentials"], 
+            "pillar": "adopt", 
+            "stock": 40, 
+            "paw_reward_points": 25,
+            "base_tags": {
+                "life_stage": "adult",
+                "interaction_type": "containment",
+                "benefits": ["comfort", "calming"],
+                "purchase_pattern": "impulse",
+                "usage_frequency": "daily",
+                "category_primary": "kit",
+                "price_tier": "mid"
+            }
+        },
+        {
+            "id": "adopt-prod-kit-senior", 
+            "name": "Senior Pet Comfort Kit", 
+            "description": "Special care for senior rescues: orthopedic bed, joint supplements, gentle grooming tools", 
+            "price": 2999, 
+            "original_price": 3599, 
+            "image": "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=600", 
+            "category": "adopt-kit", 
+            "tags": ["kit", "senior", "comfort", "health"], 
+            "pillar": "adopt", 
+            "stock": 30, 
+            "paw_reward_points": 30,
+            "base_tags": {
+                "life_stage": "senior",
+                "interaction_type": "containment",
+                "benefits": ["comfort", "joint_support"],
+                "purchase_pattern": "planned",
+                "usage_frequency": "daily",
+                "category_primary": "kit",
+                "price_tier": "premium"
+            }
+        },
+        {
+            "id": "adopt-prod-kit-cat", 
+            "name": "Cat Adoption Kit", 
+            "description": "Complete cat welcome kit: litter box, scratching post, cozy hideaway, interactive toys", 
+            "price": 1799, 
+            "original_price": 2199, 
+            "image": "https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=600", 
+            "category": "adopt-kit", 
+            "tags": ["kit", "cat", "welcome", "essentials"], 
+            "pillar": "adopt", 
+            "stock": 45, 
+            "paw_reward_points": 18,
+            "base_tags": {
+                "life_stage": "all",
+                "interaction_type": "play",
+                "benefits": ["comfort", "enrichment"],
+                "purchase_pattern": "impulse",
+                "usage_frequency": "daily",
+                "category_primary": "kit",
+                "species": "cat",
+                "price_tier": "mid"
+            }
+        },
         
         # Calming & Anxiety Products
-        {"id": "adopt-prod-calming-treats", "name": "Rescue Calming Treats", "description": "Natural calming treats with chamomile & L-theanine for anxious rescue pets", "price": 699, "original_price": 899, "image": "https://images.unsplash.com/photo-1507146426996-ef05306b995a?w=600", "category": "adopt-calming", "tags": ["calming", "treats", "anxiety", "natural"], "pillar": "adopt", "stock": 100, "paw_reward_points": 7},
-        {"id": "adopt-prod-calming-diffuser", "name": "Pheromone Calming Diffuser", "description": "Plug-in diffuser releasing calming pheromones to ease transition anxiety", "price": 1299, "original_price": 1599, "image": "https://images.unsplash.com/photo-1541364983171-a8ba01e95cfc?w=600", "category": "adopt-calming", "tags": ["calming", "pheromone", "diffuser", "anxiety"], "pillar": "adopt", "stock": 60, "paw_reward_points": 13},
-        {"id": "adopt-prod-anxiety-wrap", "name": "ThunderShirt Anxiety Wrap", "description": "Pressure wrap that applies gentle, constant pressure to reduce anxiety", "price": 1899, "original_price": 2299, "image": "https://images.unsplash.com/photo-1534361960057-19889db9621e?w=600", "category": "adopt-calming", "tags": ["anxiety", "wrap", "pressure", "calming"], "pillar": "adopt", "stock": 45, "paw_reward_points": 19},
+        {
+            "id": "adopt-prod-calming-treats", 
+            "name": "Rescue Calming Treats", 
+            "description": "Natural calming treats with chamomile & L-theanine for anxious rescue pets", 
+            "price": 699, 
+            "original_price": 899, 
+            "image": "https://images.unsplash.com/photo-1507146426996-ef05306b995a?w=600", 
+            "category": "adopt-calming", 
+            "tags": ["calming", "treats", "anxiety", "natural"], 
+            "pillar": "adopt", 
+            "stock": 100, 
+            "paw_reward_points": 7,
+            "base_tags": {
+                "life_stage": "all",
+                "interaction_type": "consumable",
+                "benefits": ["calming", "anxiety_relief"],
+                "purchase_pattern": "recurring",
+                "usage_frequency": "daily",
+                "category_primary": "supplements",
+                "price_tier": "budget"
+            }
+        },
+        {
+            "id": "adopt-prod-calming-diffuser", 
+            "name": "Pheromone Calming Diffuser", 
+            "description": "Plug-in diffuser releasing calming pheromones to ease transition anxiety", 
+            "price": 1299, 
+            "original_price": 1599, 
+            "image": "https://images.unsplash.com/photo-1541364983171-a8ba01e95cfc?w=600", 
+            "category": "adopt-calming", 
+            "tags": ["calming", "pheromone", "diffuser", "anxiety"], 
+            "pillar": "adopt", 
+            "stock": 60, 
+            "paw_reward_points": 13,
+            "base_tags": {
+                "life_stage": "all",
+                "interaction_type": "environmental",
+                "benefits": ["calming", "anxiety_relief"],
+                "purchase_pattern": "recurring",
+                "usage_frequency": "daily",
+                "category_primary": "wellness",
+                "price_tier": "mid"
+            }
+        },
+        {
+            "id": "adopt-prod-anxiety-wrap", 
+            "name": "ThunderShirt Anxiety Wrap", 
+            "description": "Pressure wrap that applies gentle, constant pressure to reduce anxiety", 
+            "price": 1899, 
+            "original_price": 2299, 
+            "image": "https://images.unsplash.com/photo-1534361960057-19889db9621e?w=600", 
+            "category": "adopt-calming", 
+            "tags": ["anxiety", "wrap", "pressure", "calming"], 
+            "pillar": "adopt", 
+            "stock": 45, 
+            "paw_reward_points": 19,
+            "base_tags": {
+                "life_stage": "all",
+                "interaction_type": "wearable",
+                "benefits": ["calming", "anxiety_relief"],
+                "purchase_pattern": "planned",
+                "usage_frequency": "as_needed",
+                "category_primary": "wellness",
+                "price_tier": "mid"
+            }
+        },
         
         # Comfort & Bedding
-        {"id": "adopt-prod-crate-soft", "name": "Soft-Sided Comfort Crate", "description": "Cozy collapsible crate with plush lining - perfect safe space for new pets", "price": 2499, "original_price": 2999, "image": "https://images.unsplash.com/photo-1601758124096-1fd661873db9?w=600", "category": "adopt-comfort", "tags": ["crate", "soft", "comfort", "safe"], "pillar": "adopt", "stock": 35, "paw_reward_points": 25},
-        {"id": "adopt-prod-hideaway", "name": "Covered Pet Hideaway Bed", "description": "Cave-style bed providing security for nervous rescues", "price": 1799, "original_price": 2199, "image": "https://images.unsplash.com/photo-1518882605630-8307abd49bcc?w=600", "category": "adopt-comfort", "tags": ["bed", "hideaway", "cave", "security"], "pillar": "adopt", "stock": 40, "paw_reward_points": 18},
-        {"id": "adopt-prod-orthopedic-bed", "name": "Orthopedic Memory Foam Bed", "description": "Premium memory foam bed for senior or injured rescue pets", "price": 2999, "original_price": 3599, "image": "https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=600", "category": "adopt-comfort", "tags": ["bed", "orthopedic", "memory-foam", "senior"], "pillar": "adopt", "stock": 25, "paw_reward_points": 30},
+        {
+            "id": "adopt-prod-crate-soft", 
+            "name": "Soft-Sided Comfort Crate", 
+            "description": "Cozy collapsible crate with plush lining - perfect safe space for new pets", 
+            "price": 2499, 
+            "original_price": 2999, 
+            "image": "https://images.unsplash.com/photo-1601758124096-1fd661873db9?w=600", 
+            "category": "adopt-comfort", 
+            "tags": ["crate", "soft", "comfort", "safe"], 
+            "pillar": "adopt", 
+            "stock": 35, 
+            "paw_reward_points": 25,
+            "base_tags": {
+                "life_stage": "all",
+                "interaction_type": "containment",
+                "benefits": ["comfort", "security"],
+                "purchase_pattern": "planned",
+                "usage_frequency": "daily",
+                "category_primary": "beds",
+                "format": "soft",
+                "price_tier": "mid"
+            }
+        },
+        {
+            "id": "adopt-prod-hideaway", 
+            "name": "Covered Pet Hideaway Bed", 
+            "description": "Cave-style bed providing security for nervous rescues", 
+            "price": 1799, 
+            "original_price": 2199, 
+            "image": "https://images.unsplash.com/photo-1518882605630-8307abd49bcc?w=600", 
+            "category": "adopt-comfort", 
+            "tags": ["bed", "hideaway", "cave", "security"], 
+            "pillar": "adopt", 
+            "stock": 40, 
+            "paw_reward_points": 18,
+            "base_tags": {
+                "life_stage": "all",
+                "interaction_type": "containment",
+                "benefits": ["comfort", "security", "anxiety_relief"],
+                "purchase_pattern": "planned",
+                "usage_frequency": "daily",
+                "category_primary": "beds",
+                "format": "soft",
+                "price_tier": "mid"
+            }
+        },
+        {
+            "id": "adopt-prod-orthopedic-bed", 
+            "name": "Orthopedic Memory Foam Bed", 
+            "description": "Premium memory foam bed for senior or injured rescue pets", 
+            "price": 2999, 
+            "original_price": 3599, 
+            "image": "https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=600", 
+            "category": "adopt-comfort", 
+            "tags": ["bed", "orthopedic", "memory-foam", "senior"], 
+            "pillar": "adopt", 
+            "stock": 25, 
+            "paw_reward_points": 30,
+            "base_tags": {
+                "life_stage": "senior",
+                "interaction_type": "containment",
+                "benefits": ["comfort", "joint_support"],
+                "purchase_pattern": "planned",
+                "usage_frequency": "daily",
+                "category_primary": "beds",
+                "format": "foam",
+                "price_tier": "premium"
+            }
+        },
         
         # Training & Enrichment
-        {"id": "adopt-prod-training-kit", "name": "Positive Training Starter Kit", "description": "Clicker, treat pouch, training treats, and beginner guide", "price": 899, "original_price": 1099, "image": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=600", "category": "adopt-training", "tags": ["training", "clicker", "beginner", "positive"], "pillar": "adopt", "stock": 70, "paw_reward_points": 9},
-        {"id": "adopt-prod-puzzle-toys", "name": "Enrichment Puzzle Toy Set", "description": "3-piece puzzle toy set to keep rescue pets mentally stimulated", "price": 1299, "original_price": 1599, "image": "https://images.unsplash.com/photo-1535930891776-0c2dfb7fda1a?w=600", "category": "adopt-enrichment", "tags": ["puzzle", "enrichment", "mental", "toys"], "pillar": "adopt", "stock": 55, "paw_reward_points": 13},
-        {"id": "adopt-prod-snuffle-mat", "name": "Snuffle Mat for Slow Feeding", "description": "Interactive feeding mat that encourages natural foraging behavior", "price": 799, "original_price": 999, "image": "https://images.unsplash.com/photo-1544568100-847a948585b9?w=600", "category": "adopt-enrichment", "tags": ["snuffle", "feeding", "enrichment", "foraging"], "pillar": "adopt", "stock": 65, "paw_reward_points": 8},
+        {
+            "id": "adopt-prod-training-kit", 
+            "name": "Positive Training Starter Kit", 
+            "description": "Clicker, treat pouch, training treats, and beginner guide", 
+            "price": 899, 
+            "original_price": 1099, 
+            "image": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=600", 
+            "category": "adopt-training", 
+            "tags": ["training", "clicker", "beginner", "positive"], 
+            "pillar": "adopt", 
+            "stock": 70, 
+            "paw_reward_points": 9,
+            "base_tags": {
+                "life_stage": "puppy",
+                "interaction_type": "training",
+                "benefits": ["training", "bonding"],
+                "purchase_pattern": "impulse",
+                "usage_frequency": "daily",
+                "category_primary": "training",
+                "price_tier": "budget"
+            }
+        },
+        {
+            "id": "adopt-prod-puzzle-toys", 
+            "name": "Enrichment Puzzle Toy Set", 
+            "description": "3-piece puzzle toy set to keep rescue pets mentally stimulated", 
+            "price": 1299, 
+            "original_price": 1599, 
+            "image": "https://images.unsplash.com/photo-1535930891776-0c2dfb7fda1a?w=600", 
+            "category": "adopt-enrichment", 
+            "tags": ["puzzle", "enrichment", "mental", "toys"], 
+            "pillar": "adopt", 
+            "stock": 55, 
+            "paw_reward_points": 13,
+            "base_tags": {
+                "life_stage": "all",
+                "interaction_type": "play",
+                "benefits": ["enrichment", "mental_stimulation"],
+                "purchase_pattern": "planned",
+                "usage_frequency": "daily",
+                "category_primary": "toys",
+                "price_tier": "mid"
+            }
+        },
+        {
+            "id": "adopt-prod-snuffle-mat", 
+            "name": "Snuffle Mat for Slow Feeding", 
+            "description": "Interactive feeding mat that encourages natural foraging behavior", 
+            "price": 799, 
+            "original_price": 999, 
+            "image": "https://images.unsplash.com/photo-1544568100-847a948585b9?w=600", 
+            "category": "adopt-enrichment", 
+            "tags": ["snuffle", "feeding", "enrichment", "foraging"], 
+            "pillar": "adopt", 
+            "stock": 65, 
+            "paw_reward_points": 8,
+            "base_tags": {
+                "life_stage": "all",
+                "interaction_type": "feeding",
+                "benefits": ["enrichment", "slow_feeding"],
+                "purchase_pattern": "impulse",
+                "usage_frequency": "daily",
+                "category_primary": "feeding",
+                "price_tier": "budget"
+            }
+        },
         
         # Health & Wellness
-        {"id": "adopt-prod-probiotic", "name": "Digestive Health Probiotic", "description": "Probiotic supplement to help rescued pets adjust to new diet", "price": 999, "original_price": 1249, "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600", "category": "adopt-health", "tags": ["probiotic", "digestive", "health", "supplement"], "pillar": "adopt", "stock": 80, "paw_reward_points": 10},
-        {"id": "adopt-prod-immune-boost", "name": "Immune Support Supplement", "description": "Boost immunity during the transition period with vitamins & antioxidants", "price": 1199, "original_price": 1449, "image": "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600", "category": "adopt-health", "tags": ["immune", "vitamin", "health", "supplement"], "pillar": "adopt", "stock": 75, "paw_reward_points": 12},
+        {
+            "id": "adopt-prod-probiotic", 
+            "name": "Digestive Health Probiotic", 
+            "description": "Probiotic supplement to help rescued pets adjust to new diet", 
+            "price": 999, 
+            "original_price": 1249, 
+            "image": "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600", 
+            "category": "adopt-health", 
+            "tags": ["probiotic", "digestive", "health", "supplement"], 
+            "pillar": "adopt", 
+            "stock": 80, 
+            "paw_reward_points": 10,
+            "base_tags": {
+                "life_stage": "all",
+                "interaction_type": "consumable",
+                "benefits": ["digestive_health"],
+                "purchase_pattern": "recurring",
+                "usage_frequency": "daily",
+                "category_primary": "supplements",
+                "price_tier": "budget"
+            }
+        },
+        {
+            "id": "adopt-prod-immune-boost", 
+            "name": "Immune Support Supplement", 
+            "description": "Boost immunity during the transition period with vitamins & antioxidants", 
+            "price": 1199, 
+            "original_price": 1449, 
+            "image": "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600", 
+            "category": "adopt-health", 
+            "tags": ["immune", "vitamin", "health", "supplement"], 
+            "pillar": "adopt", 
+            "stock": 75, 
+            "paw_reward_points": 12,
+            "base_tags": {
+                "life_stage": "all",
+                "interaction_type": "consumable",
+                "benefits": ["immune_support"],
+                "purchase_pattern": "recurring",
+                "usage_frequency": "daily",
+                "category_primary": "supplements",
+                "price_tier": "mid"
+            }
+        },
         
         # Grooming
-        {"id": "adopt-prod-gentle-shampoo", "name": "Gentle Rescue Pet Shampoo", "description": "Hypoallergenic, tear-free shampoo for sensitive rescue pets", "price": 499, "original_price": 649, "image": "https://images.unsplash.com/photo-1507146426996-ef05306b995a?w=600", "category": "adopt-grooming", "tags": ["shampoo", "gentle", "hypoallergenic", "sensitive"], "pillar": "adopt", "stock": 90, "paw_reward_points": 5},
-        {"id": "adopt-prod-deshedding-tool", "name": "De-shedding Brush Kit", "description": "Gentle de-shedding tools for rescue pets with neglected coats", "price": 899, "original_price": 1099, "image": "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=600", "category": "adopt-grooming", "tags": ["brush", "deshedding", "grooming", "coat"], "pillar": "adopt", "stock": 60, "paw_reward_points": 9},
+        {
+            "id": "adopt-prod-gentle-shampoo", 
+            "name": "Gentle Rescue Pet Shampoo", 
+            "description": "Hypoallergenic, tear-free shampoo for sensitive rescue pets", 
+            "price": 499, 
+            "original_price": 649, 
+            "image": "https://images.unsplash.com/photo-1507146426996-ef05306b995a?w=600", 
+            "category": "adopt-grooming", 
+            "tags": ["shampoo", "gentle", "hypoallergenic", "sensitive"], 
+            "pillar": "adopt", 
+            "stock": 90, 
+            "paw_reward_points": 5,
+            "base_tags": {
+                "life_stage": "all",
+                "interaction_type": "grooming",
+                "benefits": ["skin_health"],
+                "purchase_pattern": "recurring",
+                "usage_frequency": "weekly",
+                "category_primary": "grooming",
+                "price_tier": "budget"
+            }
+        },
+        {
+            "id": "adopt-prod-deshedding-tool", 
+            "name": "De-shedding Brush Kit", 
+            "description": "Gentle de-shedding tools for rescue pets with neglected coats", 
+            "price": 899, 
+            "original_price": 1099, 
+            "image": "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=600", 
+            "category": "adopt-grooming", 
+            "tags": ["brush", "deshedding", "grooming", "coat"], 
+            "pillar": "adopt", 
+            "stock": 60, 
+            "paw_reward_points": 9,
+            "base_tags": {
+                "life_stage": "all",
+                "interaction_type": "grooming",
+                "benefits": ["coat_health"],
+                "purchase_pattern": "planned",
+                "usage_frequency": "weekly",
+                "category_primary": "grooming",
+                "price_tier": "budget"
+            }
+        },
         
         # Books & Guides
-        {"id": "adopt-prod-guide-book", "name": "Adoption Success Handbook", "description": "Complete guide to helping your rescue pet adjust and thrive", "price": 449, "original_price": 599, "image": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=600", "category": "adopt-guide", "tags": ["guide", "book", "training", "adoption"], "pillar": "adopt", "stock": 100, "paw_reward_points": 5},
-        {"id": "adopt-prod-behavior-guide", "name": "Understanding Rescue Behavior", "description": "Expert guide on common rescue pet behaviors and how to help", "price": 549, "original_price": 699, "image": "https://images.unsplash.com/photo-1534361960057-19889db9621e?w=600", "category": "adopt-guide", "tags": ["guide", "behavior", "training", "rescue"], "pillar": "adopt", "stock": 85, "paw_reward_points": 6},
-        
-        # Gift Cards & Donations
-        {"id": "adopt-prod-donation-500", "name": "Shelter Support - ₹500", "description": "Donate to local shelters and support rescue operations", "price": 500, "original_price": 500, "image": "https://images.unsplash.com/photo-1541364983171-a8ba01e95cfc?w=600", "category": "adopt-donation", "tags": ["donation", "shelter", "support", "charity"], "pillar": "adopt", "stock": 999, "paw_reward_points": 50},
-        {"id": "adopt-prod-donation-1000", "name": "Shelter Support - ₹1000", "description": "Generous donation to help rescue more animals in need", "price": 1000, "original_price": 1000, "image": "https://images.unsplash.com/photo-1534361960057-19889db9621e?w=600", "category": "adopt-donation", "tags": ["donation", "shelter", "support", "charity"], "pillar": "adopt", "stock": 999, "paw_reward_points": 100},
+        {
+            "id": "adopt-prod-guide-book", 
+            "name": "Adoption Success Handbook", 
+            "description": "Complete guide to helping your rescue pet adjust and thrive", 
+            "price": 449, 
+            "original_price": 599, 
+            "image": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=600", 
+            "category": "adopt-guide", 
+            "tags": ["guide", "book", "training", "adoption"], 
+            "pillar": "adopt", 
+            "stock": 100, 
+            "paw_reward_points": 5,
+            "base_tags": {
+                "life_stage": "all",
+                "interaction_type": "educational",
+                "benefits": ["training", "knowledge"],
+                "purchase_pattern": "impulse",
+                "usage_frequency": "occasional",
+                "category_primary": "books",
+                "price_tier": "budget"
+            }
+        },
     ]
     
     seeded = 0
