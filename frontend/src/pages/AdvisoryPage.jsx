@@ -515,7 +515,7 @@ const AdvisoryPage = () => {
             {bundles.length > 0 && (
               <div className="mb-8">
                 <h3 className="text-lg font-semibold text-gray-700 mb-4">🎁 Consultation Bundles</h3>
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                   {bundles.map((bundle) => (
                     <Card key={bundle.id} className="p-4 border-2 border-violet-200 bg-violet-50/50" data-testid={`bundle-${bundle.id}`}>
                       <div className="flex items-start justify-between mb-2">
