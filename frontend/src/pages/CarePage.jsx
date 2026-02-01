@@ -945,26 +945,38 @@ const CarePage = () => {
       </div>
 
       {/* === CARE PRODUCTS === */}
-      <div className="py-16 bg-slate-50">
+      <div id="care-products" className="py-12 sm:py-16 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center justify-between mb-6 sm:mb-8">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900">Care Essentials</h2>
-              <p className="text-gray-600 mt-1">Individual items for everyday care</p>
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Care Essentials</h2>
+              <p className="text-sm sm:text-base text-gray-600 mt-1">Individual items for everyday care</p>
             </div>
           </div>
           
           {careProducts.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-              {careProducts.map((product) => (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+              {careProducts.slice(0, 10).map((product) => (
                 <ProductCard key={product.id} product={product} pillar="care" />
               ))}
             </div>
           ) : (
-            <Card className="p-12 text-center bg-white">
-              <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">Products Loading...</h3>
+            <Card className="p-8 sm:p-12 text-center bg-white">
+              <Package className="w-12 h-12 sm:w-16 sm:h-16 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">Products Loading...</h3>
             </Card>
+          )}
+          
+          {careProducts.length > 10 && (
+            <div className="text-center mt-6">
+              <Button
+                variant="outline"
+                onClick={() => window.location.href = '/shop?pillar=care'}
+                className="rounded-full"
+              >
+                View All Care Products ({careProducts.length})
+              </Button>
+            </div>
           )}
         </div>
       </div>
