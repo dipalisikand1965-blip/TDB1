@@ -260,7 +260,11 @@ const MiraPicksCard = ({
 
         {/* View More */}
         <div className="flex justify-center mt-6">
-          <Button variant="outline" className="px-8">
+          <Button 
+            variant="outline" 
+            className="px-8"
+            onClick={() => window.location.href = '/shop'}
+          >
             <ShoppingBag className="w-4 h-4 mr-2" />
             Browse All Recommendations
           </Button>
