@@ -3,11 +3,12 @@ Product Tags Export API
 Provides downloadable CSV/JSON export of all products with their tags
 """
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Response
 from fastapi.responses import StreamingResponse
 from datetime import datetime
 import io
 import csv
+import json
 
 router = APIRouter(prefix="/api/admin/export", tags=["export"])
 
