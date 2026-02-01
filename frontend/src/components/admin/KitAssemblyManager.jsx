@@ -531,7 +531,7 @@ const KitAssemblyManager = () => {
                     <Mic className="w-3 h-3" />
                     What Mira Says:
                   </div>
-                  <p className="text-sm text-gray-700 italic">"{pick.voice_script}"</p>
+                  <p className="text-sm text-gray-700 italic">&ldquo;{pick.voice_script}&rdquo;</p>
                 </div>
               </Card>
             ))}
