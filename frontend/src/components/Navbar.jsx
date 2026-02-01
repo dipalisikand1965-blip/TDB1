@@ -520,7 +520,7 @@ const Navbar = () => {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-white shadow-sm">
+    <header className={`sticky top-0 bg-white shadow-sm ${isMenuOpen ? 'z-[10000]' : 'z-50'}`}>
       {/* Top Banner */}
       <div className="bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 text-white py-1.5 px-4 text-center text-xs font-medium">
         <span>✨ The World's First Pet Life Operating System — Your Pet Concierge® </span>
