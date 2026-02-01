@@ -345,6 +345,9 @@ function MainLayout() {
         {/* ALL Life Pillars - Open for browsing (login required only at checkout) */}
         {/* Celebrate Pillar - Dedicated page with Concierge® Experiences */}
         <Route path="/celebrate" element={<CelebratePage />} />
+        <Route path="/occasion-box/:type" element={<OccasionBoxPage />} />
+        <Route path="/occasion-box" element={<OccasionBoxPage />} />
+        <Route path="/build-box" element={<OccasionBoxPage />} />
         <Route path="/celebrate/cakes" element={<ProductListing category="cakes" />} />
         <Route path="/celebrate/birthday-cakes" element={<ProductListing category="cakes" />} />
         <Route path="/celebrate/breed-cakes" element={<ProductListing category="breed-cakes" />} />
