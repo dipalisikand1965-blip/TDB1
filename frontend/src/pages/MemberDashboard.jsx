@@ -926,6 +926,10 @@ const MemberDashboard = () => {
                 setShowSoulExplainer={setShowSoulExplainer}
                 setShowPawPointsBreakdown={setShowPawPointsBreakdown}
                 addToCart={addToCart}
+                onTabChange={setActiveTab}
+                selectedPetId={selectedPetId}
+                onPetChange={setSelectedPetId}
+              />
               />
             </Suspense>
           </TabsContent>
