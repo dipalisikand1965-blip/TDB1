@@ -638,6 +638,15 @@ const SearchResults = () => {
           </div>
         )}
       </div>
+      
+      {/* Occasion Box Builder Modal */}
+      <OccasionBoxBuilder
+        isOpen={showBoxBuilder}
+        onClose={() => setShowBoxBuilder(false)}
+        occasionType={detectedOccasion || 'birthday'}
+        petName={pet?.name || 'your pet'}
+        onAddToCart={handleAddToCart}
+      />
     </div>
   );
 };
