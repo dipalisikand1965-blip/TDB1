@@ -1593,15 +1593,16 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge, currentUser, a
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
-              <label className="text-sm font-medium text-gray-700">Your Name</label>
+              <label className="text-sm sm:text-base font-medium text-gray-700">Your Name</label>
               <Input 
                 value={formData.name}
                 onChange={(e) => setFormData({...formData, name: e.target.value})}
                 required
+                className="text-base"
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700 flex items-center gap-1">
+              <label className="text-sm sm:text-base font-medium text-gray-700 flex items-center gap-1">
                 <MessageCircle className="w-3 h-3 text-green-600" /> WhatsApp
               </label>
               <Input 
@@ -1610,39 +1611,42 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge, currentUser, a
                 value={formData.phone}
                 onChange={(e) => setFormData({...formData, phone: e.target.value})}
                 required
+                className="text-base"
               />
             </div>
           </div>
 
           <div>
-            <label className="text-sm font-medium text-gray-700">Email</label>
+            <label className="text-sm sm:text-base font-medium text-gray-700">Email</label>
             <Input 
               type="email"
               value={formData.email}
               onChange={(e) => setFormData({...formData, email: e.target.value})}
               required
+              className="text-base"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
-              <label className="text-sm font-medium text-gray-700">Date</label>
+              <label className="text-sm sm:text-base font-medium text-gray-700">Date</label>
               <Input 
                 type="date"
                 value={formData.date}
                 onChange={(e) => setFormData({...formData, date: e.target.value})}
                 min={new Date().toISOString().split('T')[0]}
                 required
+                className="text-base"
                 data-testid="reservation-date"
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700">Time</label>
+              <label className="text-sm sm:text-base font-medium text-gray-700">Time</label>
               <select 
                 value={formData.time}
                 onChange={(e) => setFormData({...formData, time: e.target.value})}
                 required
-                className="w-full h-10 px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                className="w-full h-10 px-3 py-2 text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
               >
                 <option value="">Select time</option>
                 {/* Generate 30-min intervals for 24 hours */}
@@ -1661,19 +1665,20 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge, currentUser, a
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
-              <label className="text-sm font-medium text-gray-700">Guests</label>
+              <label className="text-sm sm:text-base font-medium text-gray-700">Guests</label>
               <Input 
                 type="number"
                 min="1"
                 value={formData.guests}
                 onChange={(e) => setFormData({...formData, guests: parseInt(e.target.value)})}
+                className="text-base"
               />
             </div>
             <div>
-              <label className="text-sm font-medium text-gray-700">Number of Pets</label>
-              <div className="h-10 flex items-center text-sm text-gray-700 bg-gray-50 px-3 rounded-md border">
+              <label className="text-sm sm:text-base font-medium text-gray-700">Number of Pets</label>
+              <div className="h-10 flex items-center text-base text-gray-700 bg-gray-50 px-3 rounded-md border">
                 {selectedPets.length || 'Select below'}
               </div>
             </div>
