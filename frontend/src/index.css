@@ -518,6 +518,47 @@ body {
   .hover-lift:active {
     transform: scale(0.98);
   }
+  
+  /* ============================================
+     MOBILE TYPOGRAPHY ENHANCEMENTS
+     Ensure readability on small screens
+     ============================================ */
+  
+  /* Base text size increase for mobile readability */
+  body {
+    font-size: 16px;
+    line-height: 1.6;
+  }
+  
+  /* Card content should be readable */
+  .card-premium p,
+  .card-clean p,
+  .bento-card p {
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+  
+  /* Form inputs should be readable */
+  input, select, textarea {
+    font-size: 16px !important; /* Prevents iOS zoom on focus */
+  }
+  
+  /* Modal content readability */
+  [role="dialog"] p,
+  [role="dialog"] label {
+    font-size: 0.9375rem;
+  }
+  
+  /* Badge text minimum */
+  .badge, [class*="Badge"] {
+    font-size: 0.75rem;
+    min-height: 1.5rem;
+  }
+  
+  /* Button text minimum */
+  button {
+    font-size: 0.875rem;
+  }
 }
 
 /* ============================================
