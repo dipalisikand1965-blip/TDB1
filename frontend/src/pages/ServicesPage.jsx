@@ -437,8 +437,64 @@ const ServicesPage = () => {
         </div>
       )}
 
+      {/* === FOR YOUR PETS - Personalized Section === */}
+      {user && pets && pets.length > 0 && (
+        <div className="bg-gradient-to-r from-violet-50 to-purple-50 py-6">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-violet-100 flex items-center justify-center">
+                <PawPrint className="w-5 h-5 text-violet-600" />
+              </div>
+              <div>
+                <h2 className="font-bold text-gray-900">For Your Pets</h2>
+                <p className="text-sm text-gray-500">Personalized recommendations based on your pet profiles</p>
+              </div>
+            </div>
+            
+            {/* Pet Pills */}
+            <div className="flex flex-wrap gap-2 mb-4">
+              {pets.map(pet => (
+                <button
+                  key={pet.id || pet._id}
+                  className="flex items-center gap-2 px-4 py-2 rounded-full bg-white shadow-sm border border-violet-100 hover:border-violet-300 transition-all"
+                >
+                  <span className="text-lg">{pet.species === 'cat' ? '🐱' : '🐕'}</span>
+                  <span className="font-medium text-gray-900">{pet.name}</span>
+                  <span className="text-xs text-gray-500">({pet.breed || pet.species})</span>
+                </button>
+              ))}
+            </div>
+            
+            {/* Quick Recommendations */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {[
+                { icon: '💊', label: 'Health Check', service: 'vet', desc: 'Based on age' },
+                { icon: '✂️', label: 'Grooming', service: 'grooming', desc: 'Coat care' },
+                { icon: '🎓', label: 'Training', service: 'training', desc: 'Behavior support' },
+                { icon: '🏃', label: 'Fitness', service: 'fitness', desc: 'Stay active' }
+              ].map((rec, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => {
+                    setSearchTerm(rec.service);
+                    handleSearch(rec.service);
+                  }}
+                  className="flex items-center gap-3 p-3 bg-white rounded-xl shadow-sm border border-violet-100 hover:border-violet-300 hover:shadow-md transition-all text-left"
+                >
+                  <span className="text-2xl">{rec.icon}</span>
+                  <div>
+                    <p className="font-medium text-gray-900 text-sm">{rec.label}</p>
+                    <p className="text-xs text-gray-500">{rec.desc}</p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Services Grid */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         {/* Results Header */}
         <div className="flex items-center justify-between mb-6">
           <div>
