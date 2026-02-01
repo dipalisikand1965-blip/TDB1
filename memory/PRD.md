@@ -1737,7 +1737,7 @@ All 14 pillar admin managers are already implemented and integrated:
 - **Admin**: `aditya` / `lola4304`
 
 ## Deployment
-- **Preview URL**: https://concierge-hub-22.preview.emergentagent.com
+- **Preview URL**: https://occasion-boxes.preview.emergentagent.com
 - **Production**: thedoggycompany.in (deploying tomorrow)
 
 ---

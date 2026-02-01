@@ -12,7 +12,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://concierge-hub-22.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://occasion-boxes.preview.emergentagent.com')
 
 # Admin credentials
 ADMIN_USERNAME = "aditya"

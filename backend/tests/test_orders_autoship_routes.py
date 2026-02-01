@@ -10,7 +10,7 @@ import uuid
 from datetime import datetime
 
 # Base URL from environment
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://concierge-hub-22.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://occasion-boxes.preview.emergentagent.com')
 
 # Test credentials
 TEST_USER_EMAIL = "dipali@clubconcierge.in"
