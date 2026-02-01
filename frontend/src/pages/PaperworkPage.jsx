@@ -211,7 +211,8 @@ const PaperworkPage = () => {
           reminder_enabled: false,
           reminder_date: '',
           reminder_channel: 'email',
-          file_url: ''
+          file_url: '',
+          file: null
         });
         fetchPetDocuments(selectedPet.id);
       } else {
