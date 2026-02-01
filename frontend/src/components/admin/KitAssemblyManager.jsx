@@ -617,7 +617,7 @@ const KitAssemblyManager = () => {
                     <span className="text-sm text-gray-600">{script.product_name}</span>
                   )}
                 </div>
-                <p className="text-sm text-gray-700 italic">"{script.script}"</p>
+                <p className="text-sm text-gray-700 italic">&ldquo;{script.script}&rdquo;</p>
                 <div className="flex items-center gap-2 mt-2">
                   <Button 
                     size="sm" 
