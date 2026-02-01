@@ -381,6 +381,14 @@ const CelebratePage = () => {
         </div>
       </div>
       
+      {/* === SERVICE CATALOG WITH PRICING === */}
+      <ServiceCatalogSection 
+        pillar="celebrate"
+        title="Celebrate, Personalised"
+        subtitle="See your personalized price based on your city, pet size, and requirements"
+        maxServices={8}
+      />
+      
       {/* Mira Floating Chat Widget */}
       <MiraChatWidget pillar="celebrate" />
     </div>
