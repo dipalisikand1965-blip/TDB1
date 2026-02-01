@@ -9,7 +9,9 @@ import {
   ChevronDown,
   ChevronUp,
   Mail,
-  Phone
+  Phone,
+  Sparkles,
+  Brain
 } from 'lucide-react';
 
 const Policies = () => {
@@ -20,6 +22,7 @@ const Policies = () => {
     { id: 'privacy', name: 'Privacy Policy', icon: Shield },
     { id: 'terms', name: 'Terms of Service', icon: ScrollText },
     { id: 'shipping', name: 'Shipping Policy', icon: Truck },
+    { id: 'ai', name: 'AI Disclaimer', icon: Sparkles },
   ];
 
   return (
