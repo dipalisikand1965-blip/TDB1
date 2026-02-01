@@ -237,29 +237,6 @@ body {
 /* ============================================
    MOBILE TOUCH FIX - Global styles for iOS
    ============================================ */
-@media (max-width: 1023px) {
-  /* Fix all buttons and links for mobile touch */
-  button, a, [role="button"] {
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
-    cursor: pointer;
-  }
-  
-  /* Ensure mobile menu items are tappable */
-  .lg\:hidden button,
-  .lg\:hidden a {
-    min-height: 44px;
-    position: relative;
-    z-index: 10;
-  }
-  
-  /* Fix z-index stacking for mobile menu */
-  header {
-    position: relative;
-    z-index: 9999;
-  }
-}
-
 .mira-fab:hover {
   transform: translateX(-50%) scale(1.1);
   box-shadow: 0 0 35px rgba(147, 51, 234, 0.7);
