@@ -10790,6 +10790,9 @@ set_resolver_db(db)
 set_service_catalog_db(db)
 set_service_catalog_admin(verify_admin)
 
+# Set database for service box routes
+set_service_box_db(db)
+
 # Set database for enhanced collection routes
 set_collection_db(db)
 set_collection_admin_verify(verify_admin)
