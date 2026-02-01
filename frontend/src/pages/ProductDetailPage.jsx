@@ -475,7 +475,38 @@ const ProductDetailPage = () => {
                 </>
               )}
             </div>
+            
+            {/* PawMeter Score Display */}
+            {(product.paw_score > 0 || product.paw_ratings_count > 0) && (
+              <div className="flex items-center gap-3 pt-4 border-t">
+                <PawMeterDisplay 
+                  score={product.paw_score || 0} 
+                  totalRatings={product.paw_ratings_count || 0} 
+                  size="md"
+                />
+              </div>
+            )}
           </div>
+        </div>
+        
+        {/* PawMeter Rating Section */}
+        <div className="mt-12 max-w-2xl mx-auto">
+          <PawMeterInteractive
+            productId={product.id}
+            productName={product.name || product.title}
+            currentScore={product.paw_score || 0}
+            onRatingSubmit={(data) => {
+              setProduct(prev => ({
+                ...prev,
+                paw_score: data.new_average,
+                paw_ratings_count: (prev.paw_ratings_count || 0) + 1
+              }));
+              toast({
+                title: "Thanks for rating! 🐾",
+                description: `You gave ${data.paw_score}/10 paws`
+              });
+            }}
+          />
         </div>
       </div>
       
