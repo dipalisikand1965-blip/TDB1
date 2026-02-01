@@ -96,7 +96,7 @@ async def submit_paw_rating(rating: PawRatingCreate):
 @router.get("/product/{product_id}")
 async def get_product_ratings(product_id: str, limit: int = 20, skip: int = 0):
     """Get all PawMeter ratings for a product"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
     
     # Get ratings
