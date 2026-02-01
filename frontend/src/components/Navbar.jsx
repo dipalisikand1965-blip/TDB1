@@ -886,7 +886,16 @@ const Navbar = () => {
               {/* Mobile Menu Button - Larger touch target for accessibility */}
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="lg:hidden p-2.5 min-w-[44px] min-h-[44px] hover:bg-white/10 rounded-lg flex items-center justify-center touch-manipulation"
+                onTouchEnd={(e) => {
+                  e.preventDefault();
+                  setIsMenuOpen(!isMenuOpen);
+                }}
+                className="lg:hidden p-2.5 min-w-[44px] min-h-[44px] hover:bg-white/10 rounded-lg flex items-center justify-center"
+                style={{ 
+                  touchAction: 'manipulation',
+                  WebkitTapHighlightColor: 'transparent',
+                  cursor: 'pointer'
+                }}
                 data-testid="navbar-mobile-menu-btn"
                 aria-label={isMenuOpen ? "Close menu" : "Open menu"}
               >
