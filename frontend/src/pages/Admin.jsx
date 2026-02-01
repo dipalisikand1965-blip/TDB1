@@ -18,6 +18,7 @@ import ReportsManager from '../components/ReportsManager';
 import MISDashboard from '../components/admin/MISDashboard';
 import PillarCategoryManager from '../components/PillarCategoryManager';
 import EnhancedCollectionManager from '../components/EnhancedCollectionManager';
+import OccasionBoxManager from '../components/OccasionBoxManager';
 import PartnerManager from '../components/PartnerManager';
 import PricingHub from '../components/PricingHub';
 import StayManager from '../components/admin/StayManager';
