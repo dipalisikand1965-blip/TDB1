@@ -318,13 +318,10 @@ const MyCelebrations = ({ pets = [], onNavigate, onAddToCart }) => {
   }, [pets, getOrdinalSuffix]);
   
   const handleBuildBox = (occasionType, petName) => {
-    console.log('Building box for:', occasionType, petName);
-    setSelectedOccasion(occasionType);
-    setSelectedPetName(petName);
-    // Use setTimeout to ensure state is updated before opening modal
-    setTimeout(() => {
-      setShowBoxBuilder(true);
-    }, 0);
+    console.log('MyCelebrations: Building box for:', occasionType, petName);
+    // Set both data AND open modal in one state update
+    setBoxBuilderData({ occasionType, petName });
+    setShowBoxBuilder(true);
   };
   
   const handleAction = (path) => {
