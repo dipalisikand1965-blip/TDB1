@@ -417,7 +417,7 @@ const DinePage = () => {
                     <Star className="w-5 h-5 text-yellow-500" />
                     Featured
                   </h3>
-                  <div className="grid md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-2 gap-3 sm:gap-6">
                     {filteredRestaurants.filter(r => r.featured).map((restaurant) => (
                       <RestaurantCard 
                         key={restaurant.id} 
