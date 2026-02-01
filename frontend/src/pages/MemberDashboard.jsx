@@ -1362,28 +1362,6 @@ const MemberDashboard = () => {
               </button>
             </div>
             
-            {/* 🎉 MY CELEBRATIONS - Upcoming birthdays, gotcha days, etc */}
-            {Array.isArray(pets) && pets.length > 0 && (
-              <div className="mb-6">
-                <MyCelebrations 
-                  pets={pets} 
-                  onNavigate={(path) => navigate(path)}
-                  onAddToCart={(items) => {
-                    // Add all items to cart
-                    items.forEach(item => {
-                      addToCart({
-                        id: item.id,
-                        title: item.title || item.name,
-                        price: item.price,
-                        image: item.image_url || item.images?.[0],
-                        quantity: 1
-                      });
-                    });
-                  }}
-                />
-              </div>
-            )}
-            
             {/* MIRA'S PICKS - Smart Recommendations */}
             {user?.id && (
               <div className="mb-8">
