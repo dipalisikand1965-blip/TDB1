@@ -354,7 +354,7 @@ const Policies = () => {
 
               <h3 className="text-lg font-semibold mt-6 mb-3">Information Sources</h3>
               <p className="text-gray-700 mb-4">
-                Mira's knowledge is based on:
+                Mira&apos;s knowledge is based on:
               </p>
               <ul className="list-disc pl-6 text-gray-700 mb-4">
                 <li>Our product catalog and inventory data</li>
