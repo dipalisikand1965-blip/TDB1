@@ -264,39 +264,40 @@ function MainLayout() {
       <ScrollToTop />
       <AppBadgeManager />
       <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        
-        {/* Auth Routes */}
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<MemberDashboard />} />
-        
-        {/* Member Password Reset - New Pages */}
-        <Route path="/member/forgot-password" element={<MemberForgotPassword />} />
-        <Route path="/reset-password" element={<MemberResetPassword />} />
-        
-        {/* Search Results */}
-        <Route path="/search" element={<SearchResults />} />
-        
-        {/* Special Pages */}
-        <Route path="/custom-cake" element={<ProtectedRoute><CustomCakeDesigner /></ProtectedRoute>} />
-        <Route path="/concierge" element={<MiraConcierge />} />
-        <Route path="/checkout" element={<ProtectedRoute><UnifiedCheckout /></ProtectedRoute>} />
-        <Route path="/checkout-old" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
-        <Route path="/about" element={<AboutPage />} />
-        {/* Membership route is defined outside MainLayout for clean entry */}
-        <Route path="/autoship" element={<Autoship />} />
-        <Route path="/autoship-products" element={<ProductListing category="autoship" />} />
-        <Route path="/meal-plan" element={<MealPlanPage />} />
-        <Route path="/admin/forgot-password" element={<ForgotPassword />} />
-        <Route path="/admin/reset-password" element={<ResetPassword />} />
-        <Route path="/admin" element={<Admin />} />
-        <Route path="/admin/docs" element={<AdminDocs />} />
-        <Route path="/voice-order" element={<ProtectedRoute><VoiceOrder /></ProtectedRoute>} />
-        
-        {/* NPS Feedback - Public access */}
-        <Route path="/feedback" element={<NPSFeedbackPage />} />
+      <Suspense fallback={<PageLoader />}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          
+          {/* Auth Routes */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/dashboard" element={<MemberDashboard />} />
+          
+          {/* Member Password Reset - New Pages */}
+          <Route path="/member/forgot-password" element={<MemberForgotPassword />} />
+          <Route path="/reset-password" element={<MemberResetPassword />} />
+          
+          {/* Search Results */}
+          <Route path="/search" element={<SearchResults />} />
+          
+          {/* Special Pages */}
+          <Route path="/custom-cake" element={<ProtectedRoute><CustomCakeDesigner /></ProtectedRoute>} />
+          <Route path="/concierge" element={<MiraConcierge />} />
+          <Route path="/checkout" element={<ProtectedRoute><UnifiedCheckout /></ProtectedRoute>} />
+          <Route path="/checkout-old" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+          <Route path="/about" element={<AboutPage />} />
+          {/* Membership route is defined outside MainLayout for clean entry */}
+          <Route path="/autoship" element={<Autoship />} />
+          <Route path="/autoship-products" element={<ProductListing category="autoship" />} />
+          <Route path="/meal-plan" element={<MealPlanPage />} />
+          <Route path="/admin/forgot-password" element={<ForgotPassword />} />
+          <Route path="/admin/reset-password" element={<ResetPassword />} />
+          <Route path="/admin" element={<Admin />} />
+          <Route path="/admin/docs" element={<AdminDocs />} />
+          <Route path="/voice-order" element={<ProtectedRoute><VoiceOrder /></ProtectedRoute>} />
+          
+          {/* NPS Feedback - Public access */}
+          <Route path="/feedback" element={<NPSFeedbackPage />} />
         
         {/* Pet Profile - Accessible without login */}
         <Route path="/pet-profile" element={<PetProfile />} />
