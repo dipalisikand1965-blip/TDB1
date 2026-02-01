@@ -183,6 +183,13 @@ from whatsapp_routes import router as whatsapp_router
 # TTS Routes (ElevenLabs)
 from tts_routes import tts_router
 
+# Push Notifications for PWA
+from push_notifications import (
+    router as push_router,
+    set_db as set_push_db,
+    notify_ticket_update
+)
+
 # APScheduler for background jobs
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
