@@ -337,9 +337,10 @@ const Footer = () => {
                     <Brain className="w-5 h-5" />
                     Your Pet Soul Journey
                   </Link>
+                  {/* Hide on mobile - floating Mira widget always visible */}
                   <button 
                     onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI'))}
-                    className="inline-flex items-center gap-2 px-6 py-3 border border-purple-500 text-purple-400 rounded-full font-semibold hover:bg-purple-500/10 transition-all"
+                    className="hidden md:inline-flex items-center gap-2 px-6 py-3 border border-purple-500 text-purple-400 rounded-full font-semibold hover:bg-purple-500/10 transition-all"
                   >
                     <Sparkles className="w-5 h-5" />
                     Ask Mira
@@ -354,9 +355,10 @@ const Footer = () => {
                     <Heart className="w-5 h-5" />
                     Start Your Pet Soul Journey
                   </Link>
+                  {/* Hide on mobile - floating Mira widget always visible */}
                   <button 
                     onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI'))}
-                    className="inline-flex items-center gap-2 px-6 py-3 border border-purple-500 text-purple-400 rounded-full font-semibold hover:bg-purple-500/10 transition-all"
+                    className="hidden md:inline-flex items-center gap-2 px-6 py-3 border border-purple-500 text-purple-400 rounded-full font-semibold hover:bg-purple-500/10 transition-all"
                   >
                     <Sparkles className="w-5 h-5" />
                     Meet Mira AI
