@@ -2037,6 +2037,11 @@ const Admin = () => {
           <UnifiedProductBox />
         )}
 
+        {/* Service Box Tab */}
+        {activeTab === 'service-box' && (
+          <ServiceBox />
+        )}
+
         {/* Concierge Experiences Admin Tab */}
         {activeTab === 'concierge-experiences' && (
           <ConciergeExperiencesAdmin />
