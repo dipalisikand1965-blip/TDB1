@@ -1,6 +1,7 @@
 /**
  * MyCelebrations - Dashboard widget showing upcoming pet celebrations
  * Shows birthdays, gotcha days, vaccinations with countdown timers
+ * Now includes "Build Box" buttons for occasion box ordering
  */
 
 import React, { useState, useEffect } from 'react';
@@ -9,8 +10,9 @@ import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { 
   Calendar, Gift, Heart, Cake, Home, Syringe, 
-  Sparkles, ChevronRight, PartyPopper, Clock, Bell
+  Sparkles, ChevronRight, PartyPopper, Clock, Bell, ShoppingBag
 } from 'lucide-react';
+import OccasionBoxBuilder from './OccasionBoxBuilder';
 
 const CELEBRATION_TYPES = {
   birthday: {
@@ -20,8 +22,10 @@ const CELEBRATION_TYPES = {
     bgColor: 'bg-pink-50',
     borderColor: 'border-pink-200',
     textColor: 'text-pink-700',
-    actionText: 'Order Birthday Cake',
-    actionPath: '/celebrate/cakes'
+    actionText: 'Build Birthday Box',
+    actionPath: '/celebrate/cakes',
+    hasBox: true,
+    occasionType: 'birthday'
   },
   gotcha_day: {
     icon: '💝',
@@ -30,8 +34,10 @@ const CELEBRATION_TYPES = {
     bgColor: 'bg-purple-50',
     borderColor: 'border-purple-200',
     textColor: 'text-purple-700',
-    actionText: 'Celebrate Together',
-    actionPath: '/celebrate'
+    actionText: 'Build Gotcha Box',
+    actionPath: '/celebrate',
+    hasBox: true,
+    occasionType: 'gotcha_day'
   },
   vaccination: {
     icon: '💉',
@@ -41,7 +47,8 @@ const CELEBRATION_TYPES = {
     borderColor: 'border-blue-200',
     textColor: 'text-blue-700',
     actionText: 'Book Vet Visit',
-    actionPath: '/care?type=vet'
+    actionPath: '/care?type=vet',
+    hasBox: false
   },
   grooming: {
     icon: '✂️',
