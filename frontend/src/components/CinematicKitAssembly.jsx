@@ -174,10 +174,10 @@ const CinematicKitAssembly = ({
   // Narrate current product when revealed
   useEffect(() => {
     if (!isRevealing && items[currentStep] && voiceEnabled) {
-      const narration = getProductNarration(items[currentStep], kitName, petName);
+      const narration = getProductNarration(items[currentStep], kitName, petInfo);
       speakText(narration);
     }
-  }, [isRevealing, currentStep, items, kitName, petName, voiceEnabled, speakText]);
+  }, [isRevealing, currentStep, items, kitName, petInfo, voiceEnabled, speakText]);
   
   // Initialize with all items selected by default
   useEffect(() => {
