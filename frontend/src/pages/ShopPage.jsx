@@ -392,7 +392,7 @@ const ShopPage = () => {
       <SEOHead page="shop" path="/shop" />
       
       {/* Hero Section */}
-      <section className="bg-teal-600 text-white py-10 px-4">
+      <section className="bg-gradient-to-r from-teal-600 to-emerald-600 text-white py-10 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
@@ -426,6 +426,48 @@ const ShopPage = () => {
                 )}
               </div>
             </div>
+          </div>
+          
+          {/* Pillar Filter Pills - Services Hub style */}
+          <div className="mt-6 flex flex-wrap gap-2 justify-center md:justify-start">
+            {PILLAR_FILTERS.map((pillarItem) => (
+              <button
+                key={pillarItem.id}
+                onClick={() => {
+                  setSelectedPillar(pillarItem.id);
+                  setSearchParams(prev => {
+                    if (pillarItem.id === 'all') prev.delete('pillar');
+                    else prev.set('pillar', pillarItem.id);
+                    return prev;
+                  });
+                }}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                  selectedPillar === pillarItem.id
+                    ? 'bg-white text-teal-700 shadow-md'
+                    : 'bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm'
+                }`}
+                data-testid={`pillar-pill-${pillarItem.id}`}
+              >
+                <span className="mr-1">{pillarItem.icon}</span>
+                {pillarItem.label}
+              </button>
+            ))}
+          </div>
+          
+          {/* Quick Stats - Services Hub style */}
+          <div className="mt-4 flex flex-wrap gap-4 justify-center md:justify-start text-sm text-teal-100">
+            <span className="flex items-center gap-1">
+              <Package className="w-4 h-4" />
+              {products.length} Products
+            </span>
+            <span className="flex items-center gap-1">
+              <Tag className="w-4 h-4" />
+              14 Pillars
+            </span>
+            <span className="flex items-center gap-1">
+              <Truck className="w-4 h-4" />
+              Free Delivery 500+
+            </span>
           </div>
         </div>
       </section>
