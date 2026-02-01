@@ -3579,6 +3579,15 @@ What would you like to explore? 🐾"""
                 await db.kit_assembly_sessions.delete_one({"session_id": session_id})
                 kit_assembly_state = None  # Reset so new session gets created
         
+        # Also clear kit session if user is on a DIFFERENT pillar than the kit's target pillar
+        if kit_assembly_state:
+            old_target_pillar = kit_assembly_state.get("target_pillar")
+            current_pillar_from_request = request.current_pillar
+            if old_target_pillar and current_pillar_from_request and old_target_pillar != current_pillar_from_request:
+                logger.info(f"[PILLAR SWITCH] User switched from pillar '{old_target_pillar}' to '{current_pillar_from_request}'. Clearing old kit session.")
+                await db.kit_assembly_sessions.delete_one({"session_id": session_id})
+                kit_assembly_state = None  # Reset so new session gets created
+        
         # ==================== PILLAR-SPECIFIC KIT VALIDATION ====================
         # Only allow kit assembly if:
         # 1. User explicitly asked for a kit, AND
