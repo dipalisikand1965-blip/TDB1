@@ -3,12 +3,22 @@ import { HelmetProvider } from "react-helmet-async";
 import { CartProvider } from "./context/CartContext";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { Toaster } from "./components/ui/toaster";
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, Suspense, lazy } from "react";
 import ErrorBoundary from "./components/ErrorBoundary";
 import FloatingContactButton from "./components/FloatingContactButton";
 import MiraFloatingButton from "./components/MiraFloatingButton";
 import { useAppBadge } from "./hooks/useAppBadge";
 import { API_URL } from "./utils/api";
+
+// Loading fallback component
+const PageLoader = () => (
+  <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="text-center">
+      <div className="w-12 h-12 border-4 border-purple-200 border-t-purple-600 rounded-full animate-spin mx-auto mb-4"></div>
+      <p className="text-gray-600">Loading...</p>
+    </div>
+  </div>
+);
 
 // ScrollToTop component - scrolls to top on route change
 function ScrollToTop() {
