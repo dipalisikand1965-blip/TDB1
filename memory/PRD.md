@@ -81,8 +81,8 @@ Build a complete service booking experience and admin management interface for t
 
 ## API Endpoints
 
-### Kit Assembly Admin (NEW)
-- GET /api/admin/kits/categories - Get kit categories
+### Kit Assembly Admin
+- GET /api/admin/kits/categories - Get kit categories (9 categories)
 - GET /api/admin/kits/templates - List all kit templates
 - POST /api/admin/kits/templates - Create kit template
 - PUT /api/admin/kits/templates/{id} - Update kit template
@@ -93,6 +93,11 @@ Build a complete service booking experience and admin management interface for t
 - DELETE /api/admin/kits/mira-picks/{id} - Delete Mira pick
 - POST /api/admin/kits/preview-voice - Preview voice script
 - GET /api/admin/kits/voice-scripts/{id} - Get all scripts for a kit
+- **POST /api/admin/kits/seed-defaults** - Seed 5 default kits (Travel, Cinema, Birthday, Grooming, Puppy)
+- **GET /api/admin/kits/mira/recommendations** - Kits for Mira AI to recommend
+- **GET /api/admin/kits/mira/picks** - Active Mira picks for AI
+- **GET /api/admin/kits/export/csv** - Export kit templates as CSV
+- **GET /api/admin/kits/mira-picks/export/csv** - Export Mira picks as CSV
 
 ### Existing Endpoints
 - POST /api/auth/login
