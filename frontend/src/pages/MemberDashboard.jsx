@@ -1280,24 +1280,37 @@ const MemberDashboard = () => {
                   </div>
                   <div className="space-y-2">
                     {myRequests.slice(0, 2).map((req) => (
-                      <div key={req.id} className="flex items-center justify-between bg-white rounded-lg p-3 border">
+                      <div 
+                        key={req.id} 
+                        className="flex items-center justify-between bg-white rounded-lg p-3 border cursor-pointer hover:bg-purple-50 transition-colors"
+                        onClick={() => document.querySelector('[value="requests"]')?.click()}
+                      >
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs font-mono text-gray-500">#{req.id}</span>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="text-xs font-mono text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">#{req.id?.slice(-8) || 'N/A'}</span>
                             <Badge 
                               variant="outline" 
                               className={`text-xs ${
-                                req.status_display?.color === 'green' ? 'bg-green-50 text-green-700' :
-                                req.status_display?.color === 'yellow' ? 'bg-yellow-50 text-yellow-700' :
-                                req.status_display?.color === 'blue' ? 'bg-blue-50 text-blue-700' :
-                                'bg-gray-50 text-gray-700'
+                                req.status_display?.color === 'green' ? 'bg-green-50 text-green-700 border-green-200' :
+                                req.status_display?.color === 'yellow' ? 'bg-yellow-50 text-yellow-700 border-yellow-200' :
+                                req.status_display?.color === 'blue' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+                                'bg-gray-50 text-gray-700 border-gray-200'
                               }`}
                             >
-                              {req.status_display?.icon} {req.status_display?.label}
+                              {req.status_display?.icon} {req.status_display?.label || req.status || 'Pending'}
                             </Badge>
+                            {req.pillar && (
+                              <Badge variant="secondary" className="text-xs bg-purple-100 text-purple-700">
+                                {req.pillar}
+                              </Badge>
+                            )}
                           </div>
-                          <p className="text-sm text-gray-600 truncate mt-1">{req.description}</p>
+                          <p className="text-sm text-gray-800 font-medium truncate mt-1">{req.description || req.service_type || 'Service Request'}</p>
+                          {req.pet_name && (
+                            <p className="text-xs text-gray-500 mt-0.5">🐾 {req.pet_name}</p>
+                          )}
                         </div>
+                        <ChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0 ml-2" />
                       </div>
                     ))}
                   </div>
