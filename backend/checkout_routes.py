@@ -65,7 +65,7 @@ BUSINESS_DETAILS = {
     "gstin": "29AABCT1332L1ZC",  # Placeholder - update with real GSTIN
     "pan": "AABCT1332L",
     "address": "147, 8th Main Rd, 3rd Block, Koramangala, Bengaluru 560034",
-    "email": "billing@thedoggybakery.in",
+    "email": "woof@thedoggycompany.in",
     "phone": "+91 9663185747",
     "state": "Karnataka",
     "state_code": "29"

@@ -459,7 +459,7 @@ async def send_status_notification(order: dict, status: str) -> Optional[dict]:
         "personalised": f"✨ We're adding the personal touches to {pet_name}'s order! Making it extra special just for them.",
         "packed": f"💜 Packed with love! {pet_name}'s goodies are all boxed up and ready to make their journey to you.",
         "out_for_delivery": f"🚗 On the way! Your order is out for delivery. {pet_name} will be celebrating soon!",
-        "delivered": f"🎉 Delivered & Celebrated! We hope {pet_name} loves their treats! Share their joy with us on Instagram @thedoggybakery 📸"
+        "delivered": f"🎉 Delivered & Celebrated! We hope {pet_name} loves their treats! Share their joy with us on Instagram @thedoggycompany 📸"
     }
     
     message = status_messages.get(status)

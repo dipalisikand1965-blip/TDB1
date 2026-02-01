@@ -4958,28 +4958,28 @@ async def get_site_content(username: str = Depends(verify_admin)):
                     "title": "Behind the Scenes: Baking with Love",
                     "thumbnail": "https://images.unsplash.com/photo-1612940960267-4549a58fb257?w=600",
                     "description": "Watch how we craft each cake with care in our kitchen",
-                    "videoUrl": "https://www.instagram.com/the_doggy_bakery/"
+                    "videoUrl": "https://www.instagram.com/thedoggycompany/"
                 },
                 {
                     "id": "2",
                     "title": "Customer Celebrations",
                     "thumbnail": "https://images.unsplash.com/photo-1537204696486-967f1b7198c8?w=600",
                     "description": "Real celebrations from our happy customers",
-                    "videoUrl": "https://www.instagram.com/the_doggy_bakery/"
+                    "videoUrl": "https://www.instagram.com/thedoggycompany/"
                 },
                 {
                     "id": "3",
                     "title": "How to Store Your Cake",
                     "thumbnail": "https://images.unsplash.com/photo-1646157763904-d7d184329c72?w=600",
                     "description": "Tips for keeping treats fresh and delicious",
-                    "videoUrl": "https://www.instagram.com/the_doggy_bakery/"
+                    "videoUrl": "https://www.instagram.com/thedoggycompany/"
                 },
                 {
                     "id": "4",
                     "title": "Meet Our Team",
                     "thumbnail": "https://images.unsplash.com/photo-1534361960057-19889db9621e?w=600",
                     "description": "The passionate team behind The Doggy Bakery",
-                    "videoUrl": "https://www.instagram.com/the_doggy_bakery/"
+                    "videoUrl": "https://www.instagram.com/thedoggycompany/"
                 }
             ],
             "heroSlides": [
@@ -5464,10 +5464,10 @@ async def get_public_videos():
         return {"videos": content["videos"]}
     # Default videos
     return {"videos": [
-        {"id": "1", "title": "Behind the Scenes", "thumbnail": "https://images.unsplash.com/photo-1612940960267-4549a58fb257?w=600", "description": "Watch how we craft each cake", "videoUrl": "https://www.instagram.com/the_doggy_bakery/"},
-        {"id": "2", "title": "Customer Celebrations", "thumbnail": "https://images.unsplash.com/photo-1537204696486-967f1b7198c8?w=600", "description": "Real celebrations", "videoUrl": "https://www.instagram.com/the_doggy_bakery/"},
-        {"id": "3", "title": "How to Store Your Cake", "thumbnail": "https://images.unsplash.com/photo-1646157763904-d7d184329c72?w=600", "description": "Tips for keeping treats fresh", "videoUrl": "https://www.instagram.com/the_doggy_bakery/"},
-        {"id": "4", "title": "Meet Our Team", "thumbnail": "https://images.unsplash.com/photo-1534361960057-19889db9621e?w=600", "description": "The passionate team", "videoUrl": "https://www.instagram.com/the_doggy_bakery/"}
+        {"id": "1", "title": "Behind the Scenes", "thumbnail": "https://images.unsplash.com/photo-1612940960267-4549a58fb257?w=600", "description": "Watch how we craft each cake", "videoUrl": "https://www.instagram.com/thedoggycompany/"},
+        {"id": "2", "title": "Customer Celebrations", "thumbnail": "https://images.unsplash.com/photo-1537204696486-967f1b7198c8?w=600", "description": "Real celebrations", "videoUrl": "https://www.instagram.com/thedoggycompany/"},
+        {"id": "3", "title": "How to Store Your Cake", "thumbnail": "https://images.unsplash.com/photo-1646157763904-d7d184329c72?w=600", "description": "Tips for keeping treats fresh", "videoUrl": "https://www.instagram.com/thedoggycompany/"},
+        {"id": "4", "title": "Meet Our Team", "thumbnail": "https://images.unsplash.com/photo-1534361960057-19889db9621e?w=600", "description": "The passionate team", "videoUrl": "https://www.instagram.com/thedoggycompany/"}
     ]}
 
 

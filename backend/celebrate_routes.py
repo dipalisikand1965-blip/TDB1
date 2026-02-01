@@ -960,7 +960,7 @@ async def seed_celebrate_data():
             "type": "bakery",
             "description": "Original Doggy Company bakery - premium pet cakes since 2018",
             "logo": "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=200",
-            "contact_email": "mumbai@thedoggybakery.com",
+            "contact_email": "woof@thedoggycompany.in",
             "contact_phone": "+91 98765 43210",
             "cities": ["Mumbai", "Thane", "Navi Mumbai"],
             "specializations": ["Birthday Cakes", "Breed Cakes", "Custom Designs"],
