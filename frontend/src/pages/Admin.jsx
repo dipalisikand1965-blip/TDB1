@@ -3621,6 +3621,11 @@ const Admin = () => {
           <EnhancedCollectionManager getAuthHeader={getAuthHeaders} />
         )}
 
+        {/* Occasion Boxes Tab */}
+        {activeTab === 'occasion-boxes' && (
+          <OccasionBoxManager getAuthHeader={getAuthHeaders} />
+        )}
+
         {/* Proactive Notifications Tab */}
         {activeTab === 'proactive' && (
           <Card className="p-6">
