@@ -3030,6 +3030,39 @@ CRITICAL CONCIERGE DOCTRINE:
         
         response = await chat.send_message(UserMessage(text=full_prompt))
         
+        # ==================== RESPONSE HANDOFF CHECK ====================
+        # If user is asking for listings/options and we don't have them, add handoff
+        show_keywords = ["show me", "show", "options", "what are", "list", "give me", "find me"]
+        is_asking_to_show = any(kw in user_message.lower() for kw in show_keywords)
+        
+        if is_asking_to_show and concierge_action.get("action_needed"):
+            # Check if our response contains actual listings/options
+            has_listings = any(indicator in response.lower() for indicator in [
+                "option 1", "option 2", "₹", "per night", "per day", "here are",
+                "check-in", "property", "hotel", "restaurant", "available"
+            ])
+            
+            if not has_listings:
+                # Add handoff message if we couldn't provide listings
+                handoff_type = concierge_action.get("action_type", "request")
+                handoff_messages = {
+                    "hotel_booking": "I've captured all your preferences. Our concierge team is now searching for pet-friendly stays in your area and will share the best options with you here shortly. You'll receive a notification when options are ready!",
+                    "restaurant_booking": "I've noted your dining preferences. Our concierge team is checking pet-friendly restaurant availability and will share options here. Stay tuned for a notification!",
+                    "boarding_booking": "Your boarding request is logged. Our team is checking availability with partner facilities and will get back to you with options.",
+                    "stay_confirmed": "Perfect! Your stay request is being processed. Our concierge team will source the best pet-friendly options and share them here within 2 hours.",
+                    "travel_confirmed": "Wonderful! I've logged your travel plans. Our team will curate personalized pet-friendly options and get back to you shortly."
+                }
+                
+                handoff_msg = handoff_messages.get(handoff_type, "I've noted your request. Our concierge team will research options and get back to you shortly with personalized recommendations.")
+                
+                # If response is asking more questions after user said "show me", replace with handoff
+                if len(response) > 100 and ("?" in response[-200:]):
+                    response = f"""Got it! {handoff_msg}
+
+📋 Request #{service_desk_ticket_id or ticket_id} is being processed.
+
+In the meantime, is there anything else I can help you with? 🐾"""
+        
         # ==================== CRITICAL GUARD: MIRA MUST NEVER GO SILENT ====================
         # A Mira turn must always end in: a response, a question, an action, or a visible error.
         # It may NEVER end in silence.
