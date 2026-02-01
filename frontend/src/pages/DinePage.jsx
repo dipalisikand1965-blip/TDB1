@@ -17,6 +17,7 @@ import { API_URL } from '../utils/api';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import MiraChatWidget from '../components/MiraChatWidget';
+import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import AdminQuickEdit from '../components/AdminQuickEdit';
 import ProductCard from '../components/ProductCard';
 import DiningConciergePicker from '../components/DiningConciergePicker';
