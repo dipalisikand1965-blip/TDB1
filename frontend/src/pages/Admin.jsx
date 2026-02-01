@@ -1945,6 +1945,7 @@ const Admin = () => {
             <span className="text-xs text-gray-500 px-2 py-1 font-bold uppercase bg-rose-100 rounded">📣 Marketing</span>
             {[
               { id: 'campaigns', label: 'Campaigns', icon: Megaphone },
+              { id: 'occasion-boxes', label: 'Occasion Boxes', icon: Gift },
               { id: 'proactive', label: 'Proactive', icon: Bell },
               { id: 'notifications', label: 'Push', icon: Bell },
             ].map((tab) => (
