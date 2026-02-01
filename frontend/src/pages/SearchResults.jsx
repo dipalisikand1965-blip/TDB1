@@ -3,20 +3,30 @@ import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { 
   Search, Filter, X, ChevronDown, Loader2, SlidersHorizontal, 
   Grid, List, Sparkles, PawPrint, ShoppingBag, HelpCircle,
-  MapPin, Calendar, Heart, Star, Tag, Clock, ChevronRight
+  MapPin, Calendar, Heart, Star, Tag, Clock, ChevronRight, Gift, Package
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
+import { Card } from '../components/ui/card';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { API_URL } from '../utils/api';
+import OccasionBoxBuilder from '../components/OccasionBoxBuilder';
 
 /**
  * Super Intelligent Search - The One Place to Find Everything
  * 
  * Searches: Products, Services, FAQs, Articles, Events, Pillars
  * Personalizes: By pet profile, allergies, preferences
+ * Now triggers Occasion Box Builder for celebration searches!
  */
+
+// Occasion keywords for triggering box builder
+const OCCASION_KEYWORDS = {
+  birthday: ['birthday', 'bday', 'birth day', 'birthday box', 'birthday kit', 'birthday cake'],
+  gotcha_day: ['gotcha', 'gotcha day', 'adoption day', 'adoption anniversary', 'gotcha box'],
+  festival: ['diwali', 'christmas', 'holi', 'festival', 'celebration']
+};
 
 // Quick search categories
 const QUICK_CATEGORIES = [
