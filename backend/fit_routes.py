@@ -186,11 +186,11 @@ async def create_fitness_request(request_data: dict):
             "phone": fitness_request["user_phone"]
         },
         "pet": {
-            "name": pet_name,
+            "name": pet_display_name,
             "breed": fitness_request["pet_breed"]
         },
-        "preview": f"{pet_name} - {', '.join(fitness_request['fitness_goals'][:2]) if fitness_request['fitness_goals'] else fit_type}",
-        "message": f"Fitness Request: {fit_type} for {pet_name}",
+        "preview": f"{pet_display_name} - {', '.join(fitness_request['fitness_goals'][:2]) if fitness_request['fitness_goals'] else fit_type}",
+        "message": f"Fitness Request: {fit_type} for {pet_display_name}",
         "tags": ["fit", fitness_request["fit_type"]],
         "created_at": get_utc_timestamp(),
         "updated_at": get_utc_timestamp(),
