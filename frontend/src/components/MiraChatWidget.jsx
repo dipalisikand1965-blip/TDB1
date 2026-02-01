@@ -997,16 +997,16 @@ const MiraChatWidget = ({
                       <div 
                         key={product.id}
                         onClick={() => handleProductClick(product)}
-                        className="flex-shrink-0 w-20 bg-white rounded-lg p-1.5 shadow-sm cursor-pointer border border-purple-100 active:scale-95"
+                        className="flex-shrink-0 w-28 bg-white rounded-lg p-2 shadow-sm cursor-pointer border border-purple-100 active:scale-95"
                       >
                         <img 
                           src={imageUrl} 
                           alt={product.name} 
-                          className="w-full h-12 rounded object-cover mb-1"
+                          className="w-full h-16 rounded object-cover mb-1.5"
                           onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=100'; }}
                         />
-                        <p className="text-[9px] font-medium text-gray-800 truncate">{product.name}</p>
-                        <p className="text-[9px] text-purple-600 font-bold">₹{product.price}</p>
+                        <p className="text-xs font-medium text-gray-800 truncate">{product.name}</p>
+                        <p className="text-xs text-purple-600 font-bold">₹{product.price}</p>
                       </div>
                     );
                   })}
