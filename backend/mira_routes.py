@@ -3199,6 +3199,18 @@ CRITICAL CONCIERGE DOCTRINE:
                              "senior food", "adult food", "weight loss diet", "healthy food for"]
         is_nutrition_query = any(kw in user_message.lower() for kw in nutrition_keywords)
         
+        # =======================================================================
+        # ADD NUTRITION DISCLAIMER: If this is a nutrition/diet query, append disclaimer
+        # =======================================================================
+        if is_nutrition_query and response:
+            # Check if response already contains dietary/nutrition information (not just asking questions)
+            response_lower = str(response).lower()
+            gives_advice = any(kw in response_lower for kw in ["feed", "meal", "portion", "calorie", "diet", "nutrition", "food", "protein", "vitamin"])
+            still_asking_questions = response_lower.count("?") > 1  # Multiple questions = still gathering info
+            
+            if gives_advice and not still_asking_questions:
+                response = str(response) + "\n\n📋 *Disclaimer: This is general guidance based on pet nutrition research. Every pet is unique. Please consult your veterinarian for personalized dietary advice, especially for puppies, seniors, or pets with health conditions.*"
+        
         # Also check conversation history for nutrition context
         if request.history:
             history_text = " ".join([m.get("content", "") for m in request.history[-5:]])
