@@ -4839,12 +4839,29 @@ async def quick_book(
         "source": "mira_quick_book",
         "assigned_to": None,
         "created_at": now,
-        "updated_at": now
+        "updated_at": now,
+        # ==================== CONVERSATION HISTORY ====================
+        "conversation_history": conversation_history,
+        "messages": [
+            {
+                "type": "booking_created",
+                "content": f"Booking request created: {request.serviceType.replace('_', ' ').title()} on {request.date} at {request.time}",
+                "sender": "system",
+                "timestamp": now.isoformat(),
+                "booking_details": {
+                    "service_type": request.serviceType,
+                    "date": request.date,
+                    "time": request.time,
+                    "notes": request.notes,
+                    "pet_name": pet.get("name") if pet else None
+                }
+            }
+        ]
     }
     
     try:
         await db.service_desk_tickets.insert_one(ticket_doc)
-        logger.info(f"Inserted service_desk_ticket: {ticket_id}")
+        logger.info(f"Inserted service_desk_ticket: {ticket_id} with conversation history")
     except Exception as e:
         logger.error(f"Failed to insert service_desk_ticket: {e}")
     
