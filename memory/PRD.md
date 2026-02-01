@@ -17,7 +17,11 @@ Build a complete service booking experience and admin management interface for t
 
 ## What's Been Implemented
 
-### Session: February 1, 2026 (Latest)
+### Session: February 1, 2026 (Latest - Updated)
+
+**Mira Chat Bug Fixes:**
+1. ✅ **Duplicate Messages Bug Fixed** - Consolidated two conflicting functions (`handlePresetMessage` and `sendMessage`) in `/app/frontend/src/pages/MiraPage.jsx` into a single unified `sendMessage` function that handles both manual input and preset messages
+2. ✅ **Mobile Footer AI Disclaimer Added** - Added the AI disclaimer ("Mira is powered by AI and can make mistakes") to the mobile section of `/app/frontend/src/components/Footer.jsx`
 
 **Member Dashboard Fixes (All 4 Bugs Fixed):**
 1. ✅ **My Requests Clickable** - Cards navigate to requests tab via `onTabChange('requests')`
