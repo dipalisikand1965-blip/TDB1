@@ -1097,9 +1097,8 @@ const Navbar = () => {
             {/* Quick Links - Mobile */}
             <Link
               to="/membership"
-              onClick={(e) => { e.stopPropagation(); setIsMenuOpen(false); }}
-              style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
-              className="flex items-center gap-2 p-3 text-purple-600 font-medium"
+              onClick={() => setIsMenuOpen(false)}
+              className="flex items-center gap-2 p-3 text-purple-600 font-medium active:bg-purple-50 rounded-lg"
             >
               <PawPrint className="w-4 h-4" />
               Pet Life Pass
