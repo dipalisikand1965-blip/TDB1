@@ -79,13 +79,17 @@ const OccasionBoxBuilder = ({
   }, [occasionType]);
 
   useEffect(() => {
+    // Reset state when modal opens or occasion type changes
     if (isOpen && occasionType) {
-      fetchTemplateData();
+      setTemplate(null); // Reset template to trigger reload
+      setProducts({});
       setCurrentStep(0);
       setSelectedItems({});
       setShowSummary(false);
+      setLoading(true);
+      fetchTemplateData();
     }
-  }, [isOpen, fetchTemplateData, occasionType]);
+  }, [isOpen, occasionType]); // Removed fetchTemplateData from deps to avoid infinite loop
 
   const categories = template?.categories || [];
   const currentCategory = categories[currentStep];
