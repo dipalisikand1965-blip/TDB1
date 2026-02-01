@@ -355,6 +355,39 @@ const SearchResults = () => {
                 </div>
               </div>
             </div>
+            
+            {/* Occasion Box Suggestion - Show when search matches celebration keywords */}
+            {detectedOccasion && (
+              <Card className="mb-6 p-4 sm:p-6 bg-gradient-to-r from-pink-50 via-purple-50 to-pink-50 border-purple-200">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center text-2xl shadow-lg">
+                    {detectedOccasion === 'birthday' ? '🎂' : detectedOccasion === 'gotcha_day' ? '💝' : '🎉'}
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-bold text-gray-900">
+                      {detectedOccasion === 'birthday' ? 'Planning a Birthday Celebration?' : 
+                       detectedOccasion === 'gotcha_day' ? 'Celebrating a Gotcha Day?' : 
+                       'Festival Time!'}
+                    </h3>
+                    <p className="text-gray-600 text-sm mt-1">
+                      {detectedOccasion === 'birthday' 
+                        ? 'Build a complete birthday box with cake, treats, toys & accessories - all in one curated package!' 
+                        : detectedOccasion === 'gotcha_day'
+                        ? 'Create a special gotcha day box to celebrate your furry family member!'
+                        : 'Build a festive box with themed treats and accessories!'}
+                    </p>
+                  </div>
+                  <Button 
+                    onClick={() => setShowBoxBuilder(true)}
+                    className="bg-gradient-to-r from-pink-500 to-purple-600 text-white hover:opacity-90 gap-2 w-full sm:w-auto"
+                    data-testid="build-box-search-cta"
+                  >
+                    <Package className="w-4 h-4" />
+                    Build {detectedOccasion === 'birthday' ? 'Birthday' : detectedOccasion === 'gotcha_day' ? 'Gotcha Day' : 'Festival'} Box
+                  </Button>
+                </div>
+              </Card>
+            )}
 
             {/* Tabs */}
             <div className="flex gap-2 mb-6 border-b border-gray-200 overflow-x-auto pb-2">
