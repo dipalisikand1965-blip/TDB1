@@ -3385,6 +3385,16 @@ What would you like to explore? 🐾"""
         conversation_history = request.history or []
         product_context = extract_product_needs_from_context(user_message, conversation_history)
         
+        # ==================== KIT TYPE CHANGE DETECTION ====================
+        # If user asks for a DIFFERENT kit type than what's in the session, delete old session
+        detected_kit = product_context.get("kit_type")
+        if kit_assembly_state and detected_kit and is_explicit_kit_request:
+            old_kit_type = kit_assembly_state.get("kit_type")
+            if old_kit_type and old_kit_type != detected_kit:
+                logger.info(f"[KIT SWITCH] User switched from '{old_kit_type}' to '{detected_kit}'. Clearing old session.")
+                await db.kit_assembly_sessions.delete_one({"session_id": session_id})
+                kit_assembly_state = None  # Reset so new session gets created
+        
         # ==================== PILLAR-SPECIFIC KIT VALIDATION ====================
         # Only allow kit assembly if:
         # 1. User explicitly asked for a kit, AND
