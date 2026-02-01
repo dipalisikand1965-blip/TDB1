@@ -2,6 +2,36 @@
 
 ## Latest Update: February 1, 2026 - Session 16
 
+### ✅ PRODUCTS TAGGED WITH PILLAR RULES (Feb 1, 2026)
+
+**What was done**:
+- Added `base_tags` structure to adopt and stay products
+- Products now compatible with `pillar_resolver.py` logic
+- All products have: images, pricing, stock, paw_reward_points
+
+**base_tags Structure**:
+```json
+{
+  "life_stage": "puppy|adult|senior|all",
+  "interaction_type": "containment|consumable|wearable|play|feeding",
+  "benefits": ["calming", "anxiety_relief", "comfort", "safety"],
+  "purchase_pattern": "impulse|planned|recurring",
+  "usage_frequency": "daily|weekly|as_needed",
+  "category_primary": "kit|wellness|beds|carrier|safety",
+  "price_tier": "budget|mid|premium"
+}
+```
+
+**Products Updated**:
+- adopt: 34 products with base_tags
+- stay: 92 products with base_tags
+
+**Verification**:
+- `/api/pillar-resolver/products/adopt` ✅ Returns products with images
+- `/api/pillar-resolver/products/stay` ✅ Returns products with images
+
+---
+
 ### ✅ SEEDING COMPLETE - ALL PILLARS (Feb 1, 2026)
 
 **Services Seeded** (86 total across 14 pillars):
