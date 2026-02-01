@@ -37,6 +37,9 @@ const celebrateCategories = [
 const CelebratePage = () => {
   const [featuredProducts, setFeaturedProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showBoxBuilder, setShowBoxBuilder] = useState(false);
+  const [boxOccasion, setBoxOccasion] = useState('birthday');
+  const { addToCart } = useCart();
 
   useEffect(() => {
     fetchFeaturedProducts();
@@ -56,6 +59,23 @@ const CelebratePage = () => {
     } finally {
       setLoading(false);
     }
+  };
+  
+  const handleBuildBox = (occasion) => {
+    setBoxOccasion(occasion);
+    setShowBoxBuilder(true);
+  };
+  
+  const handleAddToCart = (items) => {
+    items.forEach(item => {
+      addToCart({
+        id: item.id,
+        title: item.title || item.name,
+        price: item.price,
+        image: item.image_url || item.image || item.images?.[0],
+        quantity: 1
+      });
+    });
   };
 
   return (
