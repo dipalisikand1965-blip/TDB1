@@ -8,52 +8,37 @@ Build a complete service booking experience and admin management interface for t
 - 14 Life Pillars (Celebrate, Dine, Stay, Travel, Care, Enjoy, Fit, Learn, Paperwork, Advisory, Emergency, Farewell, Adopt, Insure)
 - Mira AI Concierge for personalized recommendations
 - Member Dashboard with comprehensive pet management
-- Admin Panel with Service Desk, Paperwork Manager, and more
+- Admin Panel with Service Desk, Paperwork Manager, Kit Assembly, and more
 
 ## User Personas
 1. **Pet Parents (Members)**: Users managing pets, ordering products, booking services
-2. **Admin Staff**: Managing orders, service requests, documents, tickets
+2. **Admin Staff**: Managing orders, service requests, documents, tickets, kits
 3. **Mira AI**: AI-powered concierge for recommendations and assistance
-
-## Core Requirements
-
-### Member Dashboard
-- ✅ Overview with pet selector for multi-pet households
-- ✅ Clickable request cards navigating to requests tab
-- ✅ Documents tab for viewing pet documents
-- ✅ Browse Recommendations button linked to shop
-- ✅ Lazy-loaded tab components for performance
-- ✅ Pet Soul completion progress
-- ✅ Quick reorder widget
-- ✅ Upcoming events (birthdays, vaccinations)
-
-### Admin Panel
-- ✅ Service Desk with ticket management (lock/delete)
-- ✅ Paperwork Manager with Document Vault
-- ✅ Member management
-- ✅ Order management
-
-### Integrations
-- ✅ OpenAI GPT-4o for Mira AI chat
-- ✅ Resend for transactional emails
-- 🔄 Razorpay (pending user API keys)
-- 🔄 WhatsApp Business (pending Meta approval)
 
 ## What's Been Implemented
 
-### Session: February 1, 2026
-**Bug Fixes Completed:**
-1. ✅ Fixed duplicate `/>` syntax error in MemberDashboard.jsx
-2. ✅ Added Documents TabsContent with proper props (pets, token, API_URL)
-3. ✅ Fixed SmartRecommendationsCard "View All" button - added onClick handler
-4. ✅ Verified pet selector already implemented in OverviewTab
-5. ✅ Verified request cards already clickable with onTabChange handler
+### Session: February 1, 2026 (Latest)
 
-**All 4 Dashboard Bugs Fixed:**
-- Bug 1: "My Requests" cards now clickable → navigate to requests tab
-- Bug 2: Pet selector dropdown shows for users with multiple pets
-- Bug 3: "Browse Recommendations" buttons navigate to /shop
-- Bug 4: Documents tab visible in both desktop and mobile navigation
+**Member Dashboard Fixes (All 4 Bugs Fixed):**
+1. ✅ **My Requests Clickable** - Cards navigate to requests tab via `onTabChange('requests')`
+2. ✅ **Pet Selector Working** - Dropdown shows when user has multiple pets, changes header to show selected pet's name, breed, and soul completion
+3. ✅ **Browse Recommendations Linked** - Both MiraPicksCard and SmartRecommendationsCard buttons navigate to `/shop`
+4. ✅ **Documents Tab Added** - Added to both desktop and mobile navigation with proper DocumentsTab component
+
+**Kit Assembly Admin Controls (NEW):**
+- Created `/app/backend/kit_admin_routes.py` with full CRUD for kit templates and Mira picks
+- Created `/app/frontend/src/components/admin/KitAssemblyManager.jsx` admin UI
+- Features:
+  - Create/Edit/Delete kit templates
+  - Manage products in each kit
+  - Custom voice narration per item
+  - Voice preview with TTS testing
+  - Mira Picks management with voice scripts
+  - 9 kit categories (Travel, Cinema, Birthday, Wellness, Grooming, Puppy, Senior, Seasonal, Adventure)
+
+**Voice Cutoff Fix:**
+- Fixed Chrome TTS bug in `CinematicKitAssembly.jsx` that caused voice to cut off after ~15 seconds
+- Added pause/resume workaround every 10 seconds to keep speech synthesis active
 
 ### Previous Session Accomplishments
 - Member Dashboard Refactor: 3,500+ line file split into 15 lazy-loaded components
@@ -67,6 +52,7 @@ Build a complete service booking experience and admin management interface for t
 /app
 ├── backend
 │   ├── server.py                    # Main FastAPI server
+│   ├── kit_admin_routes.py          # NEW: Kit Assembly & Mira Picks admin
 │   ├── paperwork_routes.py          # File upload & admin docs
 │   ├── ticket_routes.py             # Service desk tickets
 │   └── mira_routes.py               # Mira AI endpoints
@@ -74,22 +60,47 @@ Build a complete service booking experience and admin management interface for t
     └── src
         ├── App.js                   # Main routing
         ├── pages
-        │   ├── MemberDashboard.jsx  # Lazy-loading container
+        │   ├── MemberDashboard.jsx  # Lazy-loading container with pet selector
+        │   ├── Admin.jsx            # Admin panel with Kit Assembly tab
         │   └── PaperworkPage.jsx    # Document upload UI
         ├── components
         │   ├── admin/
+        │   │   ├── KitAssemblyManager.jsx  # NEW: Kit & Mira Picks admin
         │   │   ├── DoggyServiceDesk.jsx
         │   │   └── PaperworkManager.jsx
         │   ├── dashboard/tabs/      # 15+ tab components
-        │   │   ├── OverviewTab.jsx
-        │   │   ├── DocumentsTab.jsx
-        │   │   └── ...
+        │   │   ├── OverviewTab.jsx  # Pet selector, uses currentPet
+        │   │   └── DocumentsTab.jsx
+        │   ├── CinematicKitAssembly.jsx   # Fixed TTS cutoff
         │   ├── MiraPicksCard.jsx
         │   └── SmartRecommendationsCard.jsx
         └── context/
             ├── AuthContext.js
             └── CartContext.js
 ```
+
+## API Endpoints
+
+### Kit Assembly Admin (NEW)
+- GET /api/admin/kits/categories - Get kit categories
+- GET /api/admin/kits/templates - List all kit templates
+- POST /api/admin/kits/templates - Create kit template
+- PUT /api/admin/kits/templates/{id} - Update kit template
+- DELETE /api/admin/kits/templates/{id} - Delete kit template
+- GET /api/admin/kits/mira-picks - List Mira picks
+- POST /api/admin/kits/mira-picks - Create Mira pick
+- PUT /api/admin/kits/mira-picks/{id} - Update Mira pick
+- DELETE /api/admin/kits/mira-picks/{id} - Delete Mira pick
+- POST /api/admin/kits/preview-voice - Preview voice script
+- GET /api/admin/kits/voice-scripts/{id} - Get all scripts for a kit
+
+### Existing Endpoints
+- POST /api/auth/login
+- GET /api/pets/my-pets
+- GET /api/paperwork/documents/{pet_id}
+- GET /api/mira/my-requests
+- POST /api/paperwork/documents/upload
+- GET /api/paperwork/admin/documents
 
 ## Test Credentials
 - **Member Login**: dipali@clubconcierge.in / test123
@@ -98,10 +109,11 @@ Build a complete service booking experience and admin management interface for t
 ## Prioritized Backlog
 
 ### P0 (High Priority)
+- [x] Fix Member Dashboard bugs (COMPLETED)
+- [x] Kit Assembly Admin Controls (COMPLETED)
+- [x] Mira Picks Admin Dashboard (COMPLETED)
+- [x] Fix Cinema Kit voice cutting off (COMPLETED)
 - [ ] Implement Membership Business Model (Freemium vs Members-Only)
-- [ ] Kit Assembly Admin Controls
-- [ ] Mira Picks Admin Dashboard
-- [ ] Fix Cinema Kit voice cutting off issue
 
 ### P1 (Medium Priority)
 - [ ] "Pet Parent Magnet" features (First box free, Pet Parent Score)
@@ -117,14 +129,11 @@ Build a complete service booking experience and admin management interface for t
 - [ ] DoggyServiceDesk.jsx (5000+ lines) needs component extraction
 
 ## Known Issues
-- Dashboard page is memory-intensive and may crash Playwright screenshot tools
+- Dashboard page is memory-intensive and may crash Playwright screenshot tools (known issue, not blocking for users)
 - Meilisearch unavailable (non-blocking for core functionality)
 
-## API Endpoints Reference
-- POST /api/auth/login
-- GET /api/pets/my-pets
-- GET /api/paperwork/documents/{pet_id}
-- GET /api/mira/my-requests
-- GET /api/user/bookings
-- POST /api/paperwork/documents/upload
-- GET /api/paperwork/admin/documents
+## 3rd Party Integrations
+- **OpenAI GPT-4o**: Mira AI chat backend
+- **Resend**: Transactional emails (functional)
+- **Razorpay**: Pending (awaiting keys)
+- **WhatsApp**: Pending (awaiting Meta approval)
