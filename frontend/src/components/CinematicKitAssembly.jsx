@@ -159,20 +159,33 @@ const CinematicKitAssembly = ({
   }, [isRevealing, currentStep]);
   
   const goToNext = useCallback(() => {
+    if (synthRef.current) synthRef.current.cancel(); // Stop current speech
     if (currentStep < totalSteps - 1) {
       setIsRevealing(true);
       setCurrentStep(prev => prev + 1);
     } else {
       setShowSummary(true);
+      if (voiceEnabled) {
+        setTimeout(() => {
+          speakText(`And that's your complete ${kitName}! ${items.length} items hand-picked for ${petName}. You can customize your selection before adding to cart.`);
+        }, 500);
+      }
     }
-  }, [currentStep, totalSteps]);
+  }, [currentStep, totalSteps, voiceEnabled, kitName, items.length, petName, speakText]);
   
   const goToPrev = useCallback(() => {
+    if (synthRef.current) synthRef.current.cancel(); // Stop current speech
     if (currentStep > 0) {
       setIsRevealing(true);
       setCurrentStep(prev => prev - 1);
     }
   }, [currentStep]);
+  
+  const toggleVoice = useCallback(() => {
+    if (synthRef.current) synthRef.current.cancel();
+    setVoiceEnabled(prev => !prev);
+    setIsSpeaking(false);
+  }, []);
   
   const toggleItem = (itemId) => {
     setSelectedItems(prev => 
