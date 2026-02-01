@@ -238,8 +238,8 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
           </p>
         </div>
 
-        {/* Services Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {/* Services Grid - Mobile First: 2x2 */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
           {services.map((service) => (
             <Card 
               key={service.id}
@@ -247,37 +247,42 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
               onClick={() => handleServiceClick(service)}
               data-testid={`service-card-${service.id}`}
             >
-              {/* Image or Gradient Header */}
-              <div className={`h-24 bg-gradient-to-br ${
+              {/* Image or Gradient Header - Smaller on mobile */}
+              <div className={`h-16 sm:h-24 bg-gradient-to-br ${
                 service.pillar === 'care' ? 'from-rose-400 to-pink-500' :
                 service.pillar === 'fit' ? 'from-green-400 to-emerald-500' :
                 service.pillar === 'travel' ? 'from-blue-400 to-indigo-500' :
+                service.pillar === 'celebrate' ? 'from-pink-400 to-rose-500' :
+                service.pillar === 'dine' ? 'from-orange-400 to-amber-500' :
+                service.pillar === 'stay' ? 'from-blue-400 to-sky-500' :
+                service.pillar === 'enjoy' ? 'from-green-400 to-teal-500' :
+                service.pillar === 'learn' ? 'from-purple-400 to-indigo-500' :
                 'from-purple-400 to-violet-500'
               } flex items-center justify-center`}>
-                <span className="text-4xl">{service.pillar_icon || '💊'}</span>
+                <span className="text-2xl sm:text-4xl">{service.pillar_icon || '💊'}</span>
               </div>
               
-              <div className="p-4">
+              <div className="p-2 sm:p-4">
                 {/* Badges */}
-                <div className="flex flex-wrap gap-1 mb-2">
+                <div className="flex flex-wrap gap-1 mb-1 sm:mb-2">
                   {service.is_free && (
-                    <Badge className="bg-green-100 text-green-700 text-xs">FREE</Badge>
+                    <Badge className="bg-emerald-100 text-emerald-700 text-[10px] sm:text-xs px-1.5 py-0.5">Complimentary</Badge>
                   )}
                   {service.is_24x7 && (
-                    <Badge className="bg-red-100 text-red-700 text-xs">24x7</Badge>
+                    <Badge className="bg-red-100 text-red-700 text-[10px] sm:text-xs px-1.5 py-0.5">24x7</Badge>
                   )}
                   {service.requires_consultation && (
-                    <Badge className="bg-amber-100 text-amber-700 text-xs">Consult</Badge>
+                    <Badge className="bg-amber-100 text-amber-700 text-[10px] sm:text-xs px-1.5 py-0.5">Consult</Badge>
                   )}
                 </div>
                 
                 {/* Title */}
-                <h3 className="font-bold text-gray-900 mb-1 group-hover:text-rose-600 transition-colors line-clamp-2">
+                <h3 className="font-bold text-gray-900 text-sm sm:text-base mb-0.5 sm:mb-1 group-hover:text-rose-600 transition-colors line-clamp-2">
                   {service.name}
                 </h3>
                 
-                {/* Description */}
-                <p className="text-sm text-gray-500 mb-3 line-clamp-2">
+                {/* Description - Hidden on mobile for space */}
+                <p className="hidden sm:block text-sm text-gray-500 mb-3 line-clamp-2">
                   {service.description}
                 </p>
                 
@@ -285,28 +290,28 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
                 <div className="flex items-center justify-between">
                   <div>
                     {service.is_free ? (
-                      <span className="text-lg font-bold text-green-600">Free</span>
+                      <span className="text-sm sm:text-lg font-bold text-emerald-600">Complimentary</span>
                     ) : service.base_price ? (
-                      <span className="text-lg font-bold text-gray-900">
+                      <span className="text-sm sm:text-lg font-bold text-gray-900">
                         ₹{service.base_price.toLocaleString()}
-                        <span className="text-xs text-gray-400 font-normal">+</span>
+                        <span className="text-[10px] sm:text-xs text-gray-400 font-normal">+</span>
                       </span>
                     ) : (
-                      <span className="text-sm text-gray-500">Quote on request</span>
+                      <span className="text-xs sm:text-sm text-gray-500">Quote</span>
                     )}
                   </div>
                   {service.duration_minutes && (
-                    <div className="flex items-center text-sm text-gray-500">
-                      <Clock className="w-3 h-3 mr-1" />
-                      {service.duration_minutes} min
+                    <div className="flex items-center text-[10px] sm:text-sm text-gray-500">
+                      <Clock className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5 sm:mr-1" />
+                      {service.duration_minutes}m
                     </div>
                   )}
                 </div>
                 
-                {/* CTA */}
-                <div className="mt-3 pt-3 border-t flex items-center justify-between">
-                  <span className="text-xs text-gray-400">
-                    {service.is_bookable ? 'Click to book' : 'Learn more'}
+                {/* CTA - Simplified on mobile */}
+                <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t flex items-center justify-between">
+                  <span className="text-[10px] sm:text-xs text-gray-400">
+                    {service.is_bookable ? 'Tap to book' : 'Learn more'}
                   </span>
                   <ChevronRight className="w-4 h-4 text-rose-500 group-hover:translate-x-1 transition-transform" />
                 </div>
