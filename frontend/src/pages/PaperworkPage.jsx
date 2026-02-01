@@ -836,7 +836,7 @@ const PaperworkPage = () => {
               </Button>
               <Button 
                 onClick={handleUpload}
-                disabled={uploading || !uploadForm.document_name || !uploadForm.file_url}
+                disabled={uploading || !uploadForm.document_name || (!uploadForm.file_url && !uploadForm.file)}
                 className="flex-1 bg-blue-600 hover:bg-blue-700"
               >
                 {uploading ? (
