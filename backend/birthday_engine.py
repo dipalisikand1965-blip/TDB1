@@ -462,6 +462,14 @@ The Doggy Company Team 🐕
                         <p style="margin: 5px 0 0; font-size: 12px; color: #666;">Valid until {expiry_date.strftime('%B %d, %Y')}</p>
                     </div>
                     
+                    <!-- Build Celebration Box CTA -->
+                    <div style="background: linear-gradient(135deg, #fdf2f8, #fae8ff); border-radius: 12px; padding: 20px; text-align: center; margin: 20px 0;">
+                        <p style="font-size: 16px; margin: 0 0 15px 0;">✨ Build a personalized {celebration_info['label']} Box!</p>
+                        <a href="{box_builder_link}" style="display: inline-block; background: linear-gradient(135deg, #ec4899, #9333ea); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 14px;">
+                            🎁 Build {pet_name}'s Box
+                        </a>
+                    </div>
+                    
                     {products_html}
                     
                     <div style="text-align: center; margin-top: 25px;">
