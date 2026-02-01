@@ -903,7 +903,7 @@ const ServicesPage = () => {
       </Dialog>
 
       <Footer />
-      <MiraChatWidget />
+      <MiraChatWidget pillar="services" />
     </div>
   );
 };
