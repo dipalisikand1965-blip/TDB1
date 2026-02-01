@@ -931,7 +931,6 @@ const MemberDashboard = () => {
                 selectedPetId={selectedPetId}
                 onPetChange={setSelectedPetId}
               />
-              />
             </Suspense>
           </TabsContent>
 
