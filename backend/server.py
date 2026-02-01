@@ -11928,6 +11928,10 @@ set_memory_routes_db(db)  # Initialize Memory with database
 app.include_router(user_tickets_router)  # User tickets at /api/user/*
 set_user_tickets_db(db)  # Initialize User Tickets with database
 
+# Export Routes (Product/Service tags download)
+app.include_router(export_router)  # Export at /api/admin/export/*
+set_export_db(db)  # Initialize Export with database
+
 # Concierge Command Center
 app.include_router(concierge_command_router)  # Command Center at /api/concierge/*
 app.include_router(health_vault_router)  # Health Vault at /api/health-vault/*
