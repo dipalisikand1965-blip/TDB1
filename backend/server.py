@@ -10816,6 +10816,10 @@ set_cross_sell_db(db)
 set_collection_db(db)
 set_collection_admin_verify(verify_admin)
 
+# Set database for occasion box routes
+set_occasion_box_db(db)
+set_occasion_box_admin_verify(verify_admin)
+
 # Set database for partner routes
 set_partner_db(db)
 set_partner_admin_verify(verify_admin)
