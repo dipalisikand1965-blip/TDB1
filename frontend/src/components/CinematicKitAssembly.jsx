@@ -182,15 +182,7 @@ const CinematicKitAssembly = ({
     };
   }, []);
   
-  // Speak introduction on mount
-  useEffect(() => {
-    if (voiceEnabled && synthRef.current && items.length > 0) {
-      const intro = `Hi! I'm Meera, your pet concierge. Let me show you the ${kitName} I've curated just for ${petName}. ${items.length} amazing items await!`;
-      speakText(intro);
-    }
-  }, []); // Only on mount
-  
-  // Text-to-Speech function - MIRA IS A WOMAN
+  // Text-to-Speech function - MIRA IS A WOMAN (moved before its usage)
   const speakText = useCallback((text) => {
     if (!synthRef.current || !voiceEnabled) return;
     
@@ -229,6 +221,15 @@ const CinematicKitAssembly = ({
       synthRef.current.speak(utterance);
     }, 100);
   }, [voiceEnabled]);
+  
+  // Speak introduction on mount (after speakText is declared)
+  useEffect(() => {
+    if (voiceEnabled && synthRef.current && items.length > 0) {
+      const intro = `Hi! I'm Meera, your pet concierge. Let me show you the ${kitName} I've curated just for ${petName}. ${items.length} amazing items await!`;
+      speakText(intro);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only on mount
   
   // Narrate current product when revealed
   useEffect(() => {
