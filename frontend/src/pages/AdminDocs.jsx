@@ -149,6 +149,235 @@ const AdminDocs = () => {
 
   // Documentation content for each section
   const docs = {
+    'occasion-box-builder': {
+      title: '🎁 Occasion Box Builder',
+      subtitle: 'Create personalized celebration boxes for birthdays and gotcha days',
+      badge: 'NEW - Feb 1, 2026',
+      files: {
+        backend: '/app/backend/occasion_box_routes.py',
+        frontend: '/app/frontend/src/components/OccasionBoxBuilder.jsx, /app/frontend/src/components/MyCelebrations.jsx'
+      },
+      sections: [
+        {
+          title: 'Overview',
+          content: `The Occasion Box Builder allows members to create personalized gift boxes for pet celebrations.
+
+**Supported Occasions:**
+• Birthday Box - Cake, treats, toys, accessories
+• Gotcha Day Box - Special treats, toys, photo accessories
+• Festival Box - Themed treats and accessories
+
+**Access Points:**
+1. Member Dashboard → My Celebrations → "Build Box" button
+2. Celebrate Page → "Build Birthday Box" hero button
+3. Search → Type "birthday" → Click "Build Birthday Box" CTA
+4. Email/WhatsApp reminders → Direct link to builder`
+        },
+        {
+          title: 'Backend API',
+          content: `**Template Endpoints:**
+GET /api/occasion-boxes/by-occasion/{occasion_type}
+  → Returns template with categories and rules
+
+GET /api/occasion-boxes/{slug}/products
+  → Returns products for each category
+
+**Template Structure:**
+{
+  "name": "Birthday Box",
+  "occasion_type": "birthday",
+  "categories": [
+    {"id": "cake", "name": "Birthday Cake", "required": true},
+    {"id": "treats", "name": "Special Treats", "required": false},
+    {"id": "toys", "name": "Toys & Games", "required": false}
+  ]
+}`
+        },
+        {
+          title: 'How to Add New Templates',
+          content: `1. Go to Admin Panel → Marketing → Occasion Boxes
+2. Click "Create Template"
+3. Fill in:
+   - Name (e.g., "Diwali Box")
+   - Occasion Type (e.g., "festival")
+   - Categories with product rules
+4. Save and test via /celebrate?build_box=festival`
+        }
+      ]
+    },
+    'intelligent-search': {
+      title: '🔍 Intelligent Search for Occasions',
+      subtitle: 'Search triggers occasion box builder for celebration queries',
+      badge: 'NEW - Feb 1, 2026',
+      files: {
+        frontend: '/app/frontend/src/pages/SearchResults.jsx'
+      },
+      sections: [
+        {
+          title: 'How It Works',
+          content: `When users search for celebration-related terms, the search results page shows a special "Build Box" CTA.
+
+**Detected Keywords:**
+• Birthday: "birthday", "bday", "birth day", "birthday box", "birthday kit"
+• Gotcha Day: "gotcha", "gotcha day", "adoption day", "adoption anniversary"
+• Festival: "diwali", "christmas", "holi", "festival", "celebration"
+
+**User Flow:**
+1. User types "birthday cake" in search
+2. Search detects "birthday" keyword
+3. Shows special CTA: "Planning a Birthday Celebration?"
+4. User clicks "Build Birthday Box"
+5. Opens OccasionBoxBuilder modal`
+        },
+        {
+          title: 'Configuration',
+          content: `Keywords are defined in SearchResults.jsx:
+
+const OCCASION_KEYWORDS = {
+  birthday: ['birthday', 'bday', 'birth day', ...],
+  gotcha_day: ['gotcha', 'gotcha day', 'adoption day', ...],
+  festival: ['diwali', 'christmas', 'holi', ...]
+};
+
+To add new occasions, add to this object and create a matching template in the backend.`
+        }
+      ]
+    },
+    'code-splitting': {
+      title: '⚡ Code Splitting (80% Bundle Reduction)',
+      subtitle: 'React.lazy() implementation for faster page loads',
+      badge: 'PERFORMANCE - Feb 1, 2026',
+      files: {
+        frontend: '/app/frontend/src/App.js'
+      },
+      sections: [
+        {
+          title: 'Results',
+          content: `**Before:** Single 5.5MB bundle
+**After:** 1.1MB initial + lazy-loaded chunks
+
+**What's Lazy Loaded:**
+• Admin pages (Admin.jsx, ServiceDeskPage.jsx, etc.)
+• Member Dashboard
+• All Pillar Pages (Dine, Stay, Travel, etc.)
+• Special pages (CustomCakeDesigner, VoiceOrder, etc.)
+
+**What's Always Loaded (Core):**
+• Home, Login, Register
+• Navbar, Footer, Cart
+• ShopPage, ProductDetail
+• SearchResults`
+        },
+        {
+          title: 'How It Works',
+          content: `Uses React.lazy() with Suspense:
+
+// Lazy load admin pages
+const Admin = lazy(() => import("./pages/Admin"));
+
+// Wrap routes in Suspense
+<Suspense fallback={<PageLoader />}>
+  <Routes>
+    <Route path="/admin" element={<Admin />} />
+  </Routes>
+</Suspense>
+
+The PageLoader shows a spinning animation while chunks download.`
+        }
+      ]
+    },
+    'mobile-improvements': {
+      title: '📱 Mobile Touch Targets',
+      subtitle: 'Improved touch targets for mobile accessibility',
+      badge: 'UX FIX - Feb 1, 2026',
+      files: {
+        frontend: '/app/frontend/src/components/Navbar.jsx, /app/frontend/src/components/SoulExplainerVideo.jsx'
+      },
+      sections: [
+        {
+          title: 'What Was Fixed',
+          content: `**Problem:** Small touch targets causing "jammed keys" on mobile
+
+**Fixes Applied:**
+• Mobile menu button: min-w-[44px] min-h-[44px] + touch-manipulation
+• Cart button: min-w-[44px] min-h-[44px] + touch-manipulation  
+• SoulExplainerVideo close: 48px + z-[60] for proper layering
+
+**WCAG 2.1 Standard:** Minimum 44px × 44px touch targets`
+        },
+        {
+          title: 'CSS Classes Used',
+          content: `touch-manipulation - Optimizes touch response
+min-w-[44px] min-h-[44px] - Ensures minimum touch target
+z-[60] - Proper z-index for overlays
+
+Example:
+<button className="p-2.5 min-w-[44px] min-h-[44px] touch-manipulation">
+  <Menu className="w-6 h-6" />
+</button>`
+        }
+      ]
+    },
+    'pillar-seeding': {
+      title: '🌱 Pillar Services & Products Seeding',
+      subtitle: 'Universal seed system for all pillars',
+      badge: 'DEPLOYMENT - Feb 1, 2026',
+      files: {
+        backend: '/app/backend/seed_master_services.py, /app/backend/adopt_routes.py, /app/backend/stay_routes.py'
+      },
+      sections: [
+        {
+          title: 'Services (86 Total)',
+          content: `**By Pillar:**
+• care: 12 services (Grooming, Vet Consult, etc.)
+• fit: 8 services (Training, Agility, etc.)
+• celebrate: 7 services (Party Planning, Photography)
+• travel: 7 services (Pet Taxi, Relocation)
+• learn: 7 services (Puppy School, Obedience)
+• dine: 5 services (Meal Plans, Nutrition)
+• stay: 5 services (Boarding, Daycare)
+• enjoy: 5 services (Activities, Events)
+• farewell: 5 services (Memorial, Cremation)
+• emergency: 5 services (After-Hours Vet, Lost Pet)
+• advisory: 5 services (Life Planning, Behavior)
+• paperwork: 6 services (Registration, Travel Docs)
+• adopt: 5 services (Adoption Support)
+• shop: 4 services (Personal Shopper)`
+        },
+        {
+          title: 'Products with base_tags',
+          content: `**base_tags Structure:**
+{
+  "life_stage": "puppy|adult|senior|all",
+  "interaction_type": "containment|consumable|wearable|play",
+  "benefits": ["calming", "anxiety_relief", "comfort"],
+  "purchase_pattern": "impulse|planned|recurring",
+  "category_primary": "kit|wellness|beds|carrier",
+  "price_tier": "budget|mid|premium"
+}
+
+**Seeded Products:**
+• adopt: 34 products (kits, calming, comfort, training)
+• stay: 92 products (carriers, bowls, safety, health)`
+        },
+        {
+          title: 'Deployment Commands',
+          content: `Run these on each deployment:
+
+# 1. Seed all services (86)
+cd /app/backend
+python3 -c "from seed_master_services import seed_all_services; import asyncio; asyncio.run(seed_all_services())"
+
+# 2. Seed adopt products (34)
+curl -X POST /api/adopt/admin/seed-products -u admin:pass
+
+# 3. Seed stay products (19+)
+curl -X POST /api/admin/stay/seed-products -u admin:pass
+
+# 4. Other pillar products (run from Admin → each pillar → Seed)`
+        }
+      ]
+    },
     'unified-flow-fix': {
       title: '✅ SEV-1 Unified Flow Fix',
       subtitle: 'Critical fix for the Notification → Ticket → Inbox flow',
