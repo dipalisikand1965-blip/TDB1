@@ -888,14 +888,24 @@ const MiraAI = () => {
 
   if (!isOpen) {
     return (
-      // Hide on mobile (< 768px) when MobileNavBar is visible - use sm:block to show on desktop only
-      <div className="fixed bottom-24 right-4 sm:bottom-8 sm:right-8 z-[9998] hidden sm:block" data-testid="mira-orb-container">
-        <MiraOrb 
-          state={getOrbState()}
+      // Now shown on mobile since MobileNavBar has been removed
+      <div 
+        className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-[9998]" 
+        style={{ touchAction: 'manipulation' }}
+        data-testid="mira-orb-container"
+      >
+        <div
           onClick={() => setIsOpen(true)}
-          size="md"
-          showLabel={true}
-        />
+          onTouchEnd={(e) => { e.preventDefault(); setIsOpen(true); }}
+          style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+        >
+          <MiraOrb 
+            state={getOrbState()}
+            onClick={() => setIsOpen(true)}
+            size="md"
+            showLabel={true}
+          />
+        </div>
       </div>
     );
   }
