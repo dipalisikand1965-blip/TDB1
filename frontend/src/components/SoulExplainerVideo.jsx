@@ -168,14 +168,20 @@ const SoulExplainerVideo = ({ onClose, onStartJourney, petName = 'your pet' }) =
   
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4" data-testid="soul-explainer">
+      {/* Close Button - Fixed position with high z-index for mobile */}
+      <button 
+        onClick={(e) => {
+          e.stopPropagation();
+          onClose();
+        }}
+        className="fixed top-4 right-4 z-[60] w-12 h-12 min-w-[48px] min-h-[48px] bg-white/20 hover:bg-white/30 active:bg-white/40 rounded-full flex items-center justify-center text-white transition-colors touch-manipulation"
+        aria-label="Close"
+        data-testid="soul-explainer-close"
+      >
+        <X className="w-6 h-6" />
+      </button>
+      
       <div className="w-full max-w-2xl">
-        {/* Close Button */}
-        <button 
-          onClick={onClose}
-          className="absolute top-4 right-4 w-10 h-10 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-colors"
-        >
-          <X className="w-5 h-5" />
-        </button>
         
         {/* Progress Dots */}
         <div className="flex justify-center gap-2 mb-4">
