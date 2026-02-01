@@ -657,10 +657,10 @@ const LearnPage = () => {
               <p className="text-gray-600 mt-2">Everything you need to train at home</p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               {bundles.map((bundle) => (
-                <Card key={bundle.id} className="p-6 flex gap-6" data-testid={`bundle-${bundle.id}`}>
-                  <div className="w-32 h-32 rounded-lg bg-gradient-to-br from-blue-100 to-indigo-100 flex-shrink-0 overflow-hidden">
+                <Card key={bundle.id} className="p-4 sm:p-6 flex flex-col sm:flex-row gap-4 sm:gap-6" data-testid={`bundle-${bundle.id}`}>
+                  <div className="w-full sm:w-32 h-32 rounded-lg bg-gradient-to-br from-blue-100 to-indigo-100 flex-shrink-0 overflow-hidden">
                     {bundle.image ? (
                       <img src={bundle.image} alt={bundle.name} className="w-full h-full object-cover" />
                     ) : (
