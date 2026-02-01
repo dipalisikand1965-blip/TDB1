@@ -11,10 +11,9 @@ import { Badge } from './ui/badge';
 import { toast } from 'sonner';
 import { API_URL } from '../utils/api';
 import {
-  Gift, ChevronLeft, ChevronRight, Check, Plus, Minus, ShoppingCart,
-  Loader2, Sparkles, X, PartyPopper
+  Gift, ChevronLeft, ChevronRight, Check, ShoppingCart,
+  Loader2, Sparkles, PartyPopper
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 
 const OccasionBoxBuilder = ({ 
   isOpen, 
