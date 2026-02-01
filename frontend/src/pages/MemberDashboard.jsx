@@ -1259,6 +1259,27 @@ const MemberDashboard = () => {
               <MiraDailyTipInline petName={primaryPet?.name || 'your pup'} />
             </div>
             
+            {/* 🎉 MY CELEBRATIONS - Upcoming birthdays, gotcha days, etc - PROMINENT POSITION */}
+            {Array.isArray(pets) && pets.length > 0 && (
+              <div className="mb-6">
+                <MyCelebrations 
+                  pets={pets} 
+                  onNavigate={(path) => navigate(path)}
+                  onAddToCart={(items) => {
+                    items.forEach(item => {
+                      addToCart({
+                        id: item.id,
+                        title: item.title || item.name,
+                        price: item.price,
+                        image: item.image_url || item.images?.[0],
+                        quantity: 1
+                      });
+                    });
+                  }}
+                />
+              </div>
+            )}
+            
             {/* 📋 MY ACTIVE REQUESTS - Quick view of Mira tickets */}
             {myRequests.length > 0 && (
               <div className="mb-6">
