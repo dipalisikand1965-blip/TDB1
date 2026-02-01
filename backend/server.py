@@ -73,6 +73,10 @@ from service_box_routes import (
     router as service_box_router,
     set_service_box_db
 )
+from cross_sell_routes import (
+    router as cross_sell_router,
+    set_cross_sell_db
+)
 from collection_routes import (
     router as enhanced_collection_router,
     public_router as collection_public_router,
