@@ -70,13 +70,13 @@ const OccasionBoxBuilder = ({
   }, [occasionType]);
 
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && occasionType) {
       fetchTemplateData();
       setCurrentStep(0);
       setSelectedItems({});
       setShowSummary(false);
     }
-  }, [isOpen, fetchTemplateData]);
+  }, [isOpen, fetchTemplateData, occasionType]);
 
   const categories = template?.categories || [];
   const currentCategory = categories[currentStep];
