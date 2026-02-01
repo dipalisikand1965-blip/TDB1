@@ -1118,18 +1118,36 @@ const MiraChatWidget = ({
                         
                         {/* Add All to Cart button for kit assembly */}
                         {msg.kitAssembly?.can_add_all_to_cart && msg.products.length > 1 && (
-                          <button
-                            onClick={() => {
-                              msg.products.forEach(p => addToCart(p));
-                              toast.success(`Added ${msg.products.length} items to cart!`, {
-                                description: 'Your kit is ready to checkout'
-                              });
-                            }}
-                            className="w-full mt-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg text-sm font-bold hover:from-purple-700 hover:to-pink-700 transition-all flex items-center justify-center gap-2"
-                          >
-                            <ShoppingBag className="w-4 h-4" />
-                            Add All {msg.products.length} Items to Cart
-                          </button>
+                          <div className="mt-2 space-y-2">
+                            {/* Cinematic Kit Experience Button */}
+                            <button
+                              onClick={() => {
+                                setCinematicKitData({
+                                  name: msg.kitAssembly?.kit_name || `${pillar.charAt(0).toUpperCase() + pillar.slice(1)} Kit`,
+                                  items: msg.products
+                                });
+                                setShowCinematicKit(true);
+                              }}
+                              className="w-full px-4 py-3 bg-gradient-to-r from-violet-600 via-purple-600 to-pink-600 text-white rounded-lg text-sm font-bold hover:from-violet-700 hover:via-purple-700 hover:to-pink-700 transition-all flex items-center justify-center gap-2 shadow-lg"
+                            >
+                              <Play className="w-4 h-4" />
+                              View Kit Experience
+                              <Badge className="bg-white/20 text-white text-[10px] ml-2">✨ New</Badge>
+                            </button>
+                            {/* Quick Add All */}
+                            <button
+                              onClick={() => {
+                                msg.products.forEach(p => addToCart(p));
+                                toast.success(`Added ${msg.products.length} items to cart!`, {
+                                  description: 'Your kit is ready to checkout'
+                                });
+                              }}
+                              className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-all flex items-center justify-center gap-2"
+                            >
+                              <ShoppingBag className="w-4 h-4" />
+                              Quick Add All {msg.products.length} Items
+                            </button>
+                          </div>
                         )}
                       </div>
                     )}
