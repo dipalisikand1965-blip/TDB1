@@ -758,6 +758,14 @@ const EmergencyPage = () => {
         </DialogContent>
       </Dialog>
       
+      {/* === SERVICE CATALOG WITH PRICING === */}
+      <ServiceCatalogSection 
+        pillar="emergency"
+        title="Emergency, Personalised"
+        subtitle="24x7 emergency services with transparent pricing"
+        maxServices={8}
+      />
+      
       {/* Mira Floating Chat Widget */}
       <MiraChatWidget pillar="emergency" />
       
