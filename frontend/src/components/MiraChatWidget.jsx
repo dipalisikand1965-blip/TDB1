@@ -933,116 +933,58 @@ const MiraChatWidget = ({
         {/* Content - Hidden when minimized */}
         {!isMinimized && (
           <>
-            {/* Pet Selector (if user has pets) */}
+            {/* Pet Selector (if user has pets) - Compact */}
             {pets.length > 0 && (
-              <div className="px-4 py-2 border-b bg-gray-50 shrink-0">
-                <div className="flex items-center gap-2 overflow-x-auto pb-1">
-                  <span className="text-xs text-gray-500 shrink-0">Talking about:</span>
+              <div className="px-3 py-1.5 border-b bg-gray-50 shrink-0">
+                <div className="flex items-center gap-2 overflow-x-auto">
+                  <span className="text-[10px] text-gray-500 shrink-0">For:</span>
                   {pets.map(pet => (
                     <button
                       key={pet.id}
                       onClick={() => {
                         setSelectedPet(pet);
-                        // Track pet switch
                         trackClick('pet_switch', pet.id, { pillar, from_pet: selectedPet?.id });
                       }}
-                      className={`px-3 py-1.5 rounded-full text-xs flex items-center gap-1.5 transition-all shrink-0 ${
+                      className={`px-2 py-1 rounded-full text-[10px] flex items-center gap-1 transition-all shrink-0 ${
                         selectedPet?.id === pet.id 
-                          ? `bg-gradient-to-r ${config.color} text-white shadow-sm` 
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          ? `bg-gradient-to-r ${config.color} text-white` 
+                          : 'bg-gray-100 text-gray-600'
                       }`}
                       data-testid={`pet-select-${pet.id}`}
                     >
-                      <PawPrint className="w-3 h-3" />
+                      <PawPrint className="w-2.5 h-2.5" />
                       <span className="font-medium">{pet.name}</span>
-                      {pet.breed && <span className="text-[10px] opacity-75">({pet.breed})</span>}
                     </button>
                   ))}
                 </div>
               </div>
             )}
             
-            {/* SUGGESTED FOR [PET] - Product Recommendations */}
-            {selectedPet && petRecommendations.length > 0 && (
-              <div className="px-4 py-3 border-b bg-gradient-to-r from-purple-50 to-pink-50 shrink-0">
-                <p className="text-xs font-bold text-purple-700 uppercase tracking-wider mb-2">
-                  ✨ Suggested for {selectedPet.name}
-                </p>
-                <div className="flex gap-2 overflow-x-auto pb-1">
-                  {petRecommendations.slice(0, 4).map(product => {
-                    // Use fallback image if product image is a local path or missing
-                    const imageUrl = product.image && product.image.startsWith('http') 
-                      ? product.image 
-                      : product.images?.[0] || `https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop`;
-                    
-                    return (
-                      <div 
-                        key={product.id}
-                        className="flex-shrink-0 w-28 bg-white rounded-lg p-2 shadow-sm cursor-pointer hover:shadow-md transition-all hover:scale-105 border border-purple-100"
-                      >
-                        <img 
-                          src={imageUrl} 
-                          alt={product.name} 
-                          className="w-full h-16 rounded object-cover mb-1.5"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop';
-                          }}
-                        />
-                        <p className="text-[10px] font-medium text-gray-800 truncate">{product.name}</p>
-                        <p className="text-[10px] text-purple-600 font-bold mb-1">₹{product.price}</p>
-                        <div className="flex gap-1">
-                          <button
-                            onClick={(e) => { e.stopPropagation(); handleProductClick(product); }}
-                            className="flex-1 px-1 py-1 bg-purple-100 text-purple-700 rounded text-[9px] font-medium hover:bg-purple-200"
-                          >
-                            View
-                          </button>
-                          <button
-                            onClick={(e) => { e.stopPropagation(); addToCart(product); toast.success('Added!'); }}
-                            className="flex-1 px-1 py-1 bg-purple-600 text-white rounded text-[9px] font-medium hover:bg-purple-700"
-                          >
-                            Add
-                          </button>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
+            {/* Quick Actions - Inline with suggestions */}
+            <div className="px-3 py-2 border-b bg-gradient-to-r from-purple-50/50 to-pink-50/50 shrink-0">
+              <div className="flex gap-1.5 overflow-x-auto">
+                {quickActions.slice(0, 3).map((action, idx) => {
+                  const isKitAction = action.toLowerCase().includes('build');
+                  return (
+                    <button
+                      key={idx}
+                      onClick={() => {
+                        setInputValue(action);
+                        if (isKitAction) setTimeout(() => sendMessage(), 100);
+                      }}
+                      className={`px-3 py-1.5 rounded-full text-[10px] font-semibold whitespace-nowrap ${
+                        isKitAction 
+                          ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white' 
+                          : 'bg-white text-gray-700 border border-gray-200'
+                      }`}
+                      data-testid={`quick-action-${idx}`}
+                    >
+                      {isKitAction && '🎒 '}{action}
+                    </button>
+                  );
+                })}
               </div>
-            )}
-            
-            {/* Quick Action Tabs - Pillar-specific actions including Build Kit */}
-            {quickActions.length > 0 && (
-              <div className="px-4 py-3 border-b bg-gradient-to-r from-gray-50 to-white shrink-0">
-                <p className="text-[10px] text-gray-500 mb-2 uppercase tracking-wider font-medium">Quick Actions</p>
-                <div className="flex gap-2 overflow-x-auto pb-1">
-                  {quickActions.map((action, idx) => {
-                    const isKitAction = action.toLowerCase().includes('build');
-                    return (
-                      <button
-                        key={idx}
-                        onClick={() => {
-                          setInputValue(action);
-                          // Auto-send for kit actions
-                          if (isKitAction) {
-                            setTimeout(() => sendMessage(), 100);
-                          }
-                        }}
-                        className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
-                          isKitAction 
-                            ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-md hover:shadow-lg hover:scale-105' 
-                            : `bg-gradient-to-r ${config.color} text-white shadow-sm hover:shadow-md hover:scale-105`
-                        }`}
-                        data-testid={`quick-action-${idx}`}
-                      >
-                        {isKitAction && '🎒 '}{action}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
+            </div>
             
             {/* Messages */}
             <div className="flex-1 overflow-y-auto p-4 space-y-3">
