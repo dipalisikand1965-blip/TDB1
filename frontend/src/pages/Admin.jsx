@@ -1640,9 +1640,69 @@ const Admin = () => {
         </div>
       </nav>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Reorganized Tabs - Cleaner Layout */}
-        <div className="mb-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+        {/* Mobile Tab Selector */}
+        <div className="md:hidden mb-4">
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="w-full flex items-center justify-between p-3 bg-white rounded-xl border shadow-sm"
+            data-testid="admin-mobile-menu-btn"
+          >
+            <span className="flex items-center gap-2">
+              <LayoutDashboard className="w-5 h-5 text-purple-600" />
+              <span className="font-medium">{activeTab.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
+            </span>
+            <ChevronDown className={`w-5 h-5 transition-transform ${mobileMenuOpen ? 'rotate-180' : ''}`} />
+          </button>
+          
+          {mobileMenuOpen && (
+            <div className="mt-2 bg-white rounded-xl border shadow-lg p-2 max-h-[60vh] overflow-y-auto">
+              {/* Quick Access */}
+              <p className="px-3 py-1 text-xs font-bold text-gray-500 uppercase">Quick Access</p>
+              {[
+                { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+                { id: 'servicedesk', label: 'Service Desk', icon: Ticket },
+                { id: 'orders', label: 'Orders', icon: Package },
+                { id: 'member-directory', label: 'Pet Parents', icon: Users },
+              ].map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => { setActiveTab(tab.id); setMobileMenuOpen(false); }}
+                  className={`w-full flex items-center gap-2 p-3 rounded-lg text-left ${activeTab === tab.id ? 'bg-purple-100 text-purple-700' : 'hover:bg-gray-50'}`}
+                >
+                  <tab.icon className="w-4 h-4" />
+                  {tab.label}
+                </button>
+              ))}
+              
+              <div className="border-t my-2"></div>
+              <p className="px-3 py-1 text-xs font-bold text-gray-500 uppercase">All Sections</p>
+              {[
+                { id: 'inbox', label: 'Unified Inbox' },
+                { id: 'pillar-queues', label: 'Pillar Queues' },
+                { id: 'pets', label: 'Pet Profiles' },
+                { id: 'membership', label: 'Membership' },
+                { id: 'loyalty', label: 'Loyalty' },
+                { id: 'fulfilment', label: 'Fulfilment' },
+                { id: 'product-box', label: 'Product Box' },
+                { id: 'service-box', label: 'Service Box' },
+                { id: 'analytics', label: 'Analytics' },
+                { id: 'communications', label: 'Communications' },
+              ].map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => { setActiveTab(tab.id); setMobileMenuOpen(false); }}
+                  className={`w-full flex items-center gap-2 p-2 pl-6 rounded-lg text-left text-sm ${activeTab === tab.id ? 'bg-purple-100 text-purple-700' : 'hover:bg-gray-50'}`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+        
+        {/* Desktop Tabs - Reorganized Tabs - Cleaner Layout */}
+        <div className="mb-8 hidden md:block">
           {/* Command Center - Most Used Daily */}
           <div className="flex gap-2 flex-wrap items-center mb-4">
             <span className="text-xs text-gray-500 px-2 py-1 font-bold uppercase bg-purple-100 rounded">🎯 Command Center</span>
