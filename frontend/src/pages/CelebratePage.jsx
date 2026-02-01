@@ -117,16 +117,25 @@ const CelebratePage = () => {
           
           {/* Mobile: Stack buttons, Desktop: Side by side */}
           <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 px-4 sm:px-0 animate-fade-in-up" style={{animationDelay: '0.3s'}}>
+            <Button 
+              size="lg" 
+              onClick={() => handleBuildBox('birthday')}
+              className="w-full sm:w-auto bg-white text-pink-600 hover:bg-pink-50 gap-2 h-12 sm:h-11 text-base font-semibold shadow-lg active:scale-95 transition-transform"
+              data-testid="build-birthday-box-btn"
+            >
+              <Package className="w-5 h-5" />
+              Build Birthday Box
+            </Button>
             <Link to="/celebrate/birthday-cakes" className="w-full sm:w-auto">
-              <Button size="lg" className="w-full sm:w-auto bg-white text-pink-600 hover:bg-pink-50 gap-2 h-12 sm:h-11 text-base font-semibold shadow-lg active:scale-95 transition-transform">
+              <Button size="lg" variant="outline" className="w-full sm:w-auto border-white text-white hover:bg-white/20 gap-2 h-12 sm:h-11 text-base active:scale-95 transition-transform">
                 <Cake className="w-5 h-5" />
-                Shop Birthday Cakes
+                Shop Cakes
               </Button>
             </Link>
-            <Link to="/celebrate/custom-cake" className="w-full sm:w-auto">
+            <Link to="/custom-cake" className="w-full sm:w-auto">
               <Button size="lg" variant="outline" className="w-full sm:w-auto border-white text-white hover:bg-white/20 gap-2 h-12 sm:h-11 text-base active:scale-95 transition-transform">
                 <Palette className="w-5 h-5" />
-                Design Custom Cake
+                Custom Cake
               </Button>
             </Link>
           </div>
