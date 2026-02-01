@@ -29,7 +29,7 @@ async def get_user_tickets(
     Get all tickets for a user by their email address.
     Returns tickets from service_desk_tickets, tickets, and mira_tickets collections.
     """
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not connected")
     
     all_tickets = []
