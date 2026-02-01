@@ -670,17 +670,22 @@ const LearnPage = () => {
 
       {/* Training Bundles */}
       {bundles.length > 0 && (
-        <div className="py-16 bg-gradient-to-br from-blue-50 to-indigo-50">
+        <div className="py-8 sm:py-16 bg-gradient-to-br from-blue-50 to-indigo-50">
           <div className="max-w-7xl mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-900">Training Bundles</h2>
-              <p className="text-gray-600 mt-2">Everything you need to train at home</p>
+            <div className="text-center mb-6 sm:mb-12">
+              <h2 className="text-xl sm:text-3xl font-bold text-gray-900">Training Bundles</h2>
+              <p className="text-sm sm:text-base text-gray-600 mt-1">Everything for home training</p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
+            <div className="grid grid-cols-1 gap-3 sm:gap-6">
               {bundles.map((bundle) => (
-                <Card key={bundle.id} className="p-3 sm:p-6 flex flex-col sm:flex-row gap-3 sm:gap-6" data-testid={`bundle-${bundle.id}`}>
-                  <div className="w-full sm:w-32 h-24 sm:h-32 rounded-lg bg-gradient-to-br from-blue-100 to-indigo-100 flex-shrink-0 overflow-hidden">
+                <Card 
+                  key={bundle.id} 
+                  className="p-3 sm:p-6 flex items-center gap-3 sm:gap-6 cursor-pointer hover:shadow-lg transition-all" 
+                  data-testid={`bundle-${bundle.id}`}
+                  onClick={() => handleAddBundleToCart(bundle)}
+                >
+                  <div className="w-20 h-20 sm:w-32 sm:h-32 rounded-lg bg-gradient-to-br from-blue-100 to-indigo-100 flex-shrink-0 overflow-hidden">
                     {bundle.image ? (
                       <img src={bundle.image} alt={bundle.name} className="w-full h-full object-cover" />
                     ) : (
@@ -689,26 +694,18 @@ const LearnPage = () => {
                       </div>
                     )}
                   </div>
-                  <div className="flex-1">
-                    <h3 className="font-bold text-sm sm:text-lg text-gray-900 mb-1">{bundle.name}</h3>
-                    <p className="text-xs sm:text-sm text-gray-600 mb-2 sm:mb-3 line-clamp-2">{bundle.description}</p>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-sm sm:text-lg text-gray-900 mb-0.5 sm:mb-1 line-clamp-1">{bundle.name}</h3>
+                    <p className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2 line-clamp-2 hidden sm:block">{bundle.description}</p>
                     
-                    <div className="flex flex-wrap gap-1 mb-2 sm:mb-3 hidden sm:flex">
-                      {bundle.items?.map((item, i) => (
-                        <Badge key={i} variant="secondary" className="text-xs">{item}</Badge>
-                      ))}
-                    </div>
-
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <span className="text-base sm:text-xl font-bold text-blue-600">₹{bundle.price?.toLocaleString()}</span>
-                        {bundle.original_price && (
-                          <span className="text-xs sm:text-sm text-gray-400 line-through ml-1 sm:ml-2">₹{bundle.original_price?.toLocaleString()}</span>
-                        )}
-                      </div>
-                      <Button onClick={() => handleAddBundleToCart(bundle)} size="sm" className="text-xs sm:text-sm px-2 sm:px-4">Add</Button>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm sm:text-xl font-bold text-blue-600">₹{bundle.price?.toLocaleString()}</span>
+                      {bundle.original_price && (
+                        <span className="text-xs text-gray-400 line-through">₹{bundle.original_price?.toLocaleString()}</span>
+                      )}
                     </div>
                   </div>
+                  <Button size="sm" className="text-xs sm:text-sm px-3 sm:px-4 h-8 sm:h-10 flex-shrink-0">Add</Button>
                 </Card>
               ))}
             </div>
