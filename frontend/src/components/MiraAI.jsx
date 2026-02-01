@@ -593,8 +593,22 @@ const MiraAI = () => {
   }, [messages, scrollToBottom]);
 
   // Listen for custom event to open Mira (consolidated - handles both desktop and mobile with pillar context)
+  // On pillar pages, let MiraChatWidget handle the event instead
   useEffect(() => {
     const handleOpenMira = (event) => {
+      // If we're on a pillar page and this event has a pillar context,
+      // let MiraChatWidget handle it (it's embedded in the pillar page)
+      const pillarPaths = ['/care', '/celebrate', '/advisory', '/dine', '/stay', '/travel', '/emergency', '/enjoy', '/fit', '/learn', '/farewell', '/adopt', '/paperwork', '/shop'];
+      const isOnPillarPage = pillarPaths.some(path => 
+        location.pathname === path || location.pathname.startsWith(path + '/')
+      );
+      
+      if (isOnPillarPage && event.detail?.source === 'mobile_nav') {
+        // Let MiraChatWidget on the pillar page handle this
+        console.log('[MiraAI] Deferring to MiraChatWidget for pillar page:', location.pathname);
+        return;
+      }
+      
       setIsOpen(true);
       // If pillar context is passed (from MobileNavBar), update the current pillar
       if (event.detail?.pillar) {
@@ -608,7 +622,7 @@ const MiraAI = () => {
     };
     window.addEventListener('openMiraAI', handleOpenMira);
     return () => window.removeEventListener('openMiraAI', handleOpenMira);
-  }, []);
+  }, [location.pathname]);
 
   // Fetch user's pets when logged in
   useEffect(() => {
