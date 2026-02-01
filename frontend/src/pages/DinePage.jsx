@@ -1391,6 +1391,7 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge, currentUser, a
   const [loadingPets, setLoadingPets] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [step, setStep] = useState(1); // Step 1: Form, Step 2: Services
   
   const [formData, setFormData] = useState({
     name: currentUser?.name || '',
