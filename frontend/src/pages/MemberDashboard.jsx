@@ -299,6 +299,10 @@ const MemberDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [showSoulExplainer, setShowSoulExplainer] = useState(false);
   
+  // Tab and Pet Selection State
+  const [activeTab, setActiveTab] = useState('overview');
+  const [selectedPetId, setSelectedPetId] = useState(null);
+  
   // Push Notifications Hook
   const { 
     isPushSupported, 
