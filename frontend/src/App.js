@@ -392,6 +392,7 @@ function MainLayout() {
         <Route path="/partner" element={<PartnerOnboarding />} />
         <Route path="/become-a-partner" element={<PartnerOnboarding />} />
       </Routes>
+      </Suspense>
       <Footer />
       <CartSidebar />
       <MiraAI />
