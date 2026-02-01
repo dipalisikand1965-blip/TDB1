@@ -1211,8 +1211,10 @@ async def lifespan(app: FastAPI):
     set_shopify_db(db)
     logger.info("Shopify sync module initialized")
     
-    # Import on_order_placed for ticket creation (must be before set_orders_deps)
-    from ticket_auto_creation import on_order_placed as order_placed_handler
+    # Initialize Auto Ticket Creation System FIRST (needed for order_placed_handler)
+    from ticket_auto_creation import set_auto_ticket_db, on_order_placed as order_placed_handler
+    set_auto_ticket_db(db)
+    logger.info("Auto ticket creation system initialized")
     
     # Initialize orders routes database connection
     set_orders_db(db)
