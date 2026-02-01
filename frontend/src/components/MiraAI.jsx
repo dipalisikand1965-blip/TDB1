@@ -813,7 +813,8 @@ const MiraAI = () => {
 
   if (!isOpen) {
     return (
-      <div className="fixed bottom-24 right-4 sm:bottom-8 sm:right-8 z-[9998]" data-testid="mira-orb-container">
+      // Hide on mobile (< 768px) when MobileNavBar is visible - use sm:block to show on desktop only
+      <div className="fixed bottom-24 right-4 sm:bottom-8 sm:right-8 z-[9998] hidden sm:block" data-testid="mira-orb-container">
         <MiraOrb 
           state={getOrbState()}
           onClick={() => setIsOpen(true)}
