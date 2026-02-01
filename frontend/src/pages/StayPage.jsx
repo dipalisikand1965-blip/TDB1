@@ -1373,6 +1373,14 @@ const StayPage = () => {
         />
       )}
       
+      {/* === SERVICE CATALOG WITH PRICING === */}
+      <ServiceCatalogSection 
+        pillar="stay"
+        title="Stay, Personalised"
+        subtitle="See your personalized price based on your city, pet size, and requirements"
+        maxServices={8}
+      />
+      
       {/* Mira Floating Chat Widget - Works on all screen sizes */}
       <MiraChatWidget pillar="stay" />
     </div>
