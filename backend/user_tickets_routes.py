@@ -142,7 +142,7 @@ async def get_user_bookings(
     """
     Get all quick bookings for a user by their email address.
     """
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not connected")
     
     # Build query
