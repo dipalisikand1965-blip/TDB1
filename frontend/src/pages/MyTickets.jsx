@@ -98,6 +98,30 @@ const MyTickets = () => {
   const { user, loading: authLoading } = useAuth();
   const userEmail = user?.email || '';
   
+  // Push notifications hook
+  const {
+    isPushSupported,
+    isSubscribed,
+    subscribe,
+    unsubscribe,
+    loading: pushLoading
+  } = usePushNotifications(user?.id);
+  
+  // Handle push notification toggle
+  const handlePushToggle = async () => {
+    if (isSubscribed) {
+      await unsubscribe();
+      toast.success('Notifications disabled');
+    } else {
+      const success = await subscribe({ ticket_updates: true });
+      if (success) {
+        toast.success('Notifications enabled! You\'ll be notified of ticket updates.');
+      } else {
+        toast.error('Failed to enable notifications. Please check browser permissions.');
+      }
+    }
+  };
+  
   // Fetch tickets
   const fetchTickets = async () => {
     if (!userEmail) {
