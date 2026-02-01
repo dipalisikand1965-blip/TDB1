@@ -656,15 +656,15 @@ const KitAssemblyManager = () => {
 
 // Kit Editor Dialog Component
 const KitEditorDialog = ({ open, kit, categories, products, onSave, onClose, onTestVoice }) => {
-  const [formData, setFormData] = useState(kit || {});
+  const [formData, setFormData] = useState({});
   const [productSearch, setProductSearch] = useState('');
 
-  // Update form data when kit changes (controlled sync)
-  const kitRef = React.useRef(kit);
-  if (kit !== kitRef.current) {
-    kitRef.current = kit;
-    if (kit) setFormData(kit);
-  }
+  // Reset form when kit changes
+  useEffect(() => {
+    if (open && kit) {
+      setFormData(kit);
+    }
+  }, [open, kit]);
 
   if (!open || !kit) return null;
 
