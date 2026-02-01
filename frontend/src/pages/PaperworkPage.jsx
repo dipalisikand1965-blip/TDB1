@@ -422,8 +422,8 @@ const PaperworkPage = () => {
                   </p>
                 </Card>
 
-                {/* Document Folders Grid */}
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+                {/* Document Folders Grid - 2x3 on mobile */}
+                <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 mb-8">
                   {Object.entries(CATEGORY_CONFIG).map(([catId, config]) => {
                     const Icon = config.icon;
                     const catDocs = documents[catId]?.documents || [];
@@ -432,25 +432,25 @@ const PaperworkPage = () => {
                     return (
                       <Card 
                         key={catId}
-                        className={`p-4 cursor-pointer transition-all hover:shadow-lg ${
+                        className={`p-2 sm:p-4 cursor-pointer transition-all hover:shadow-lg ${
                           isActive ? `ring-2 ring-offset-2 ${config.borderColor} ring-blue-500` : ''
                         }`}
                         onClick={() => setActiveCategory(isActive ? null : catId)}
                         data-testid={`folder-${catId}`}
                       >
-                        <div className="flex items-start gap-4">
-                          <div className={`p-3 rounded-xl bg-gradient-to-br ${config.color}`}>
+                        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-2 sm:gap-4">
+                          <div className={`p-2 sm:p-3 rounded-xl bg-gradient-to-br ${config.color}`}>
                             {isActive ? (
-                              <FolderOpen className="w-6 h-6 text-white" />
+                              <FolderOpen className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                             ) : (
-                              <Folder className="w-6 h-6 text-white" />
+                              <Folder className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                             )}
                           </div>
-                          <div className="flex-1">
-                            <h3 className="font-semibold text-gray-900">{config.name}</h3>
-                            <p className="text-sm text-gray-500">{catDocs.length} documents</p>
+                          <div className="flex-1 text-center sm:text-left">
+                            <h3 className="font-semibold text-gray-900 text-xs sm:text-base">{config.name}</h3>
+                            <p className="text-[10px] sm:text-sm text-gray-500">{catDocs.length} docs</p>
                           </div>
-                          <ChevronRight className={`w-5 h-5 text-gray-400 transition-transform ${isActive ? 'rotate-90' : ''}`} />
+                          <ChevronRight className={`hidden sm:block w-5 h-5 text-gray-400 transition-transform ${isActive ? 'rotate-90' : ''}`} />
                         </div>
                         
                         {/* Expanded Document List */}
