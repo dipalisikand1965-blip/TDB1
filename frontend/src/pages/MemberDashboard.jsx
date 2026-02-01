@@ -1454,7 +1454,7 @@ const MemberDashboard = () => {
               
               <Card 
                 className="p-4 cursor-pointer hover:shadow-lg transition-all border-2 border-transparent hover:border-amber-200 bg-gradient-to-br from-amber-50 to-white"
-                onClick={() => navigate('/products')}
+                onClick={() => navigate('/shop')}
               >
                 <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center mb-3">
                   <ShoppingBag className="w-5 h-5 text-amber-600" />
