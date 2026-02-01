@@ -179,11 +179,16 @@ const MiraAI = () => {
   const { user, token } = useAuth();
   
   // Hide MiraAI on admin/agent pages AND pillar pages (where MiraChatWidget is embedded)
+  // But on mobile (< 768px), we need MiraAI available since the MobileNavBar FAB opens it
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
   const hiddenPaths = ['/admin', '/agent', '/login', '/mira'];
   const pillarPaths = ['/care', '/celebrate', '/advisory', '/dine', '/stay', '/travel', '/emergency', '/enjoy', '/fit', '/learn', '/farewell', '/adopt', '/paperwork', '/shop', '/all', '/product', '/services', '/cakes', '/treats'];
   
-  const shouldHide = hiddenPaths.some(path => location.pathname.startsWith(path)) ||
-                     pillarPaths.some(path => location.pathname === path || location.pathname.startsWith(path + '/'));
+  // On mobile, only hide on admin/login paths - allow Mira on pillar pages via MobileNavBar FAB
+  const shouldHide = isMobile 
+    ? hiddenPaths.some(path => location.pathname.startsWith(path))
+    : hiddenPaths.some(path => location.pathname.startsWith(path)) ||
+      pillarPaths.some(path => location.pathname === path || location.pathname.startsWith(path + '/'));
   
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
