@@ -881,6 +881,14 @@ const TravelPage = () => {
         </div>
       </div>
 
+      {/* === SERVICE CATALOG WITH PRICING === */}
+      <ServiceCatalogSection 
+        pillar="travel"
+        title="Travel, Personalised"
+        subtitle="See your personalized price based on your city, pet size, and requirements"
+        maxServices={8}
+      />
+
       {/* === TRAVEL PRODUCTS === */}
       <div id="travel-products" className="py-10 sm:py-16 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4">
