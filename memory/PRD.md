@@ -2,6 +2,48 @@
 
 ## Latest Update: February 1, 2026 - Session 16
 
+### ✅ P1 CONNECT REMINDERS TO OCCASION BOXES (Feb 1, 2026)
+
+**Feature**: Birthday/Gotcha Day reminder emails and WhatsApp now include a direct link to build a celebration box.
+
+**Implementation**:
+- Added `box_builder_link` to WhatsApp message template
+- Added "Build {pet_name}'s Box" CTA button in email template  
+- Link format: `https://thedoggycompany.in/celebrate?build_box={occasion_type}`
+- CelebratePage handles `?build_box=birthday` URL param to auto-open OccasionBoxBuilder
+
+**Files Modified**:
+- `/app/backend/birthday_engine.py` - Added box_builder_link to templates
+- `/app/frontend/src/pages/CelebratePage.jsx` - Added URL param handler
+
+---
+
+### ✅ MOBILE AUDIT - TOUCH TARGETS IMPROVED (Feb 1, 2026)
+
+**Issue**: "Jammed keys" - small touch targets causing missed taps on mobile
+
+**Fixes Applied**:
+- Mobile menu button: `min-w-[44px] min-h-[44px]` + `touch-manipulation`
+- Cart button: `min-w-[44px] min-h-[44px]` + `touch-manipulation`
+- SoulExplainerVideo close: `48px` min + `z-[60]` for proper layering
+
+**Files Modified**:
+- `/app/frontend/src/components/Navbar.jsx`
+- `/app/frontend/src/components/SoulExplainerVideo.jsx`
+
+---
+
+### ✅ PILLAR SERVICES VERIFICATION (Feb 1, 2026)
+
+**Verified**: All 13 pillar pages have ServiceCatalogSection:
+- Adopt, Advisory, Care, Celebrate, Dine, Emergency, Enjoy
+- Farewell, Fit, Learn, Paperwork, Stay, Travel
+
+**Services in Database**: 58 total
+- Fit: 17 | Celebrate: 9 | Dine: 7 | Care: 5 | Others: various
+
+---
+
 ### ✅ CODE SPLITTING IMPLEMENTED (Feb 1, 2026)
 
 **Optimization**: Bundle split into lazy-loaded chunks
