@@ -3848,6 +3848,22 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
         if kit_assembly_state and kit_assembly_state.get("stage") == "assembling":
             should_search_products = True
         
+        # Also search products if we have an admin-managed kit for this type (skip gathering phase for admin kits)
+        kit_type_for_admin = product_context.get("kit_type") or (kit_assembly_state.get("kit_type") if kit_assembly_state else None)
+        if kit_type_for_admin and not should_search_products:
+            # Check if admin template exists - if so, skip gathering and go straight to products
+            check_admin_template = await get_admin_kit_template(
+                db, 
+                kit_type=kit_type_for_admin,
+                pillar=product_context.get("target_pillar") or pillar,
+                pet_type=pets[0].get("species", "dog") if pets else "dog"
+            )
+            if check_admin_template and check_admin_template.get("enriched_products"):
+                should_search_products = True
+                logger.info(f"[ADMIN KIT] Skipping gathering phase - using admin template for {kit_type_for_admin}")
+        
+        logger.info(f"[KIT SEARCH] should_search_products={should_search_products}, is_product_query={is_product_query}, is_kit_request={product_context['is_kit_request']}, kit_type={kit_type_for_admin}")
+        
         if should_search_products:
             # Determine what to search for
             search_items = product_context["specific_items"] or product_context["kit_items"] or []
