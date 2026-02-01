@@ -1,6 +1,30 @@
 # Pet Life Operating System - Product Requirements Document
 
-## Latest Update: February 1, 2026 - Session 8
+## Latest Update: February 1, 2026 - Session 8 (Continued)
+
+### ✅ TRAINING KIT BUG FIX & MIRA VOICE NARRATION - COMPLETED (Feb 1, 2026)
+
+**Training Kit Bug Fix (P0)**:
+- Fixed "Build Training Kit" not working on Learn page
+- Root cause: Kit detection was checking conversation history BEFORE current message
+- Fix: Current message now has priority over history for kit type detection
+- Also added "training kit" explicitly to training_kit keywords
+- File: `/app/backend/mira_routes.py` lines 3207-3224
+
+**Mira Voice Narration for Cinematic Kit (P1)**:
+- Added TTS (Text-to-Speech) to CinematicKitAssembly component
+- Features:
+  - Introduction narration when kit opens
+  - Product-specific narration as each item is revealed
+  - Summary narration when entering final view
+  - Voice toggle button (Volume2/VolumeX icons)
+  - Premium voice selection (Samantha, Victoria, Karen for iOS)
+  - Pulse animation when speaking
+- Product narration templates for different categories:
+  - Carriers, Bowls/Bottles, Treats, Leashes, Toys, Grooming, Training items
+- File: `/app/frontend/src/components/CinematicKitAssembly.jsx`
+
+---
 
 ### ✅ COMPREHENSIVE FEATURE UPDATE - COMPLETED (Feb 1, 2026)
 
