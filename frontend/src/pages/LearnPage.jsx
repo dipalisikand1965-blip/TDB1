@@ -521,7 +521,7 @@ const LearnPage = () => {
             </div>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
             {(featuredPrograms.length > 0 ? featuredPrograms : programs).map((program) => (
               <Card key={program.id} className="overflow-hidden hover:shadow-xl transition-all" data-testid={`program-${program.id}`}>
                 <div className="aspect-video bg-gradient-to-br from-blue-100 to-indigo-100 relative">
