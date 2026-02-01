@@ -81,7 +81,7 @@ const OverviewTab = ({
       
       {/* MIRA'S DAILY TIP */}
       <div className="mb-6">
-        <MiraDailyTipInline petName={primaryPet?.name || 'your pup'} />
+        <MiraDailyTipInline petName={currentPet?.name || 'your pup'} />
       </div>
       
       {/* MY CELEBRATIONS */}
@@ -181,7 +181,7 @@ const OverviewTab = ({
                 TDC Insight
                 <span className="text-xs px-2 py-0.5 bg-purple-100 text-purple-600 rounded-full">1 min</span>
               </h4>
-              <p className="text-sm text-gray-500">Learn how Pet Soul™ works for {primaryPet?.name || 'your pet'}</p>
+              <p className="text-sm text-gray-500">Learn how Pet Soul™ works for {currentPet?.name || 'your pet'}</p>
             </div>
           </div>
           <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-purple-600 transition-colors" />
@@ -194,9 +194,9 @@ const OverviewTab = ({
           <React.Suspense fallback={<div className="h-40 bg-gray-100 animate-pulse rounded-xl" />}>
             <MiraPicksCard 
               userId={user.id}
-              petId={pets[0]?.id}
+              petId={currentPet?.id}
               title="Mira's Picks"
-              subtitle={pets[0] ? `Personalized for ${pets[0].name}` : "Discover products for your pet"}
+              subtitle={currentPet ? `Personalized for ${currentPet.name}` : "Discover products for your pet"}
               maxItems={4}
               showInsights={true}
             />
@@ -210,7 +210,7 @@ const OverviewTab = ({
           <React.Suspense fallback={<div className="h-40 bg-gray-100 animate-pulse rounded-xl" />}>
             <SmartRecommendationsCard 
               userId={user.id}
-              petId={pets[0]?.id}
+              petId={currentPet?.id}
               limit={4}
               showTitle={true}
             />
