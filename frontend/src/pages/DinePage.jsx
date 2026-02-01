@@ -275,7 +275,7 @@ const DinePage = () => {
             </Link>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6">
             {freshMealsCategories.map((cat) => {
               const Icon = cat.icon;
               return (
