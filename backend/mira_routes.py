@@ -3424,7 +3424,7 @@ What would you like to explore? 🐾"""
             # Product category mappings
             PRODUCT_CATEGORIES = {
                 "travel_kit": {
-                    "keywords": ["travel kit", "road trip", "ooty", "goa", "travel bag", "go bag", "trip"],
+                    "keywords": ["travel kit", "road trip", "ooty", "goa", "travel bag", "go bag", "trip", "plan trip", "pet passport", "journey", "vacation", "flight", "train travel", "car travel"],
                     "items": ["bowl", "water bottle", "leash", "towel", "mat", "wipes", "treats", "carrier", "harness"],
                     "pillar": "travel"
                 },
