@@ -32,47 +32,58 @@ const OccasionBoxBuilder = ({
   // Fetch template and products
   const fetchTemplateData = useCallback(async () => {
     if (!occasionType) {
-      console.log('No occasion type provided');
+      console.log('OccasionBoxBuilder: No occasion type provided');
+      setLoading(false);
       return;
     }
     
     try {
       setLoading(true);
-      console.log('Fetching template for occasion:', occasionType);
+      console.log('OccasionBoxBuilder: Fetching template for occasion:', occasionType);
       
       // First try to get by occasion type
-      let response = await fetch(`${API_URL}/api/occasion-boxes/by-occasion/${occasionType}`);
-      console.log('By-occasion response:', response.status);
+      const byOccasionUrl = `${API_URL}/api/occasion-boxes/by-occasion/${occasionType}`;
+      console.log('OccasionBoxBuilder: Calling URL:', byOccasionUrl);
+      
+      let response = await fetch(byOccasionUrl);
+      console.log('OccasionBoxBuilder: By-occasion response status:', response.status);
       
       if (!response.ok) {
         // Fallback to slug
-        const slug = `${occasionType}-box`.replace('_', '-');
-        console.log('Trying fallback slug:', slug);
-        response = await fetch(`${API_URL}/api/occasion-boxes/${slug}`);
+        const slug = `${occasionType.replace('_', '-')}-box`;
+        console.log('OccasionBoxBuilder: Trying fallback slug:', slug);
+        const slugUrl = `${API_URL}/api/occasion-boxes/${slug}`;
+        response = await fetch(slugUrl);
+        console.log('OccasionBoxBuilder: Slug response status:', response.status);
       }
       
       if (!response.ok) {
+        const errorText = await response.text();
+        console.error('OccasionBoxBuilder: API Error:', errorText);
         throw new Error('Template not found');
       }
       
       const templateData = await response.json();
-      console.log('Template loaded:', templateData.name);
+      console.log('OccasionBoxBuilder: Template loaded:', templateData.name);
       setTemplate(templateData);
       
       // Now fetch products for this template
-      const productsResponse = await fetch(
-        `${API_URL}/api/occasion-boxes/${templateData.slug}/products`
-      );
+      const productsUrl = `${API_URL}/api/occasion-boxes/${templateData.slug}/products`;
+      console.log('OccasionBoxBuilder: Fetching products from:', productsUrl);
+      const productsResponse = await fetch(productsUrl);
       
       if (productsResponse.ok) {
         const productsData = await productsResponse.json();
         setProducts(productsData.products || {});
-        console.log('Products loaded:', Object.keys(productsData.products || {}).length, 'categories');
+        console.log('OccasionBoxBuilder: Products loaded:', Object.keys(productsData.products || {}).length, 'categories');
+      } else {
+        console.error('OccasionBoxBuilder: Products fetch failed:', productsResponse.status);
       }
       
     } catch (error) {
-      console.error('Failed to load template:', error);
+      console.error('OccasionBoxBuilder: Failed to load template:', error);
       toast.error('Failed to load occasion box. Please try again.');
+      setTemplate(null);
     } finally {
       setLoading(false);
     }
