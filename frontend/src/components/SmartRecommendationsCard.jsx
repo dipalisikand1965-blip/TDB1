@@ -186,6 +186,7 @@ const SmartRecommendationsCard = ({
             variant="ghost" 
             size="sm" 
             className="w-full text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+            onClick={() => window.location.href = '/shop'}
           >
             View All Recommendations
             <ChevronRight className="w-4 h-4 ml-1" />
