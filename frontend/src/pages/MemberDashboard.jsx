@@ -507,17 +507,54 @@ const MemberDashboard = () => {
     }
   }, [token, user, API_URL]);
 
-  // Fetch My Requests (Mira Tickets)
+  // Fetch My Requests (Mira Tickets) and Bookings
   useEffect(() => {
     const fetchMyRequests = async () => {
       if (!token || !user) return;
       
       setRequestsLoading(true);
       try {
-        const response = await axios.get(`${API_URL}/api/mira/my-requests`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        setMyRequests(response.data.requests || []);
+        // Fetch both Mira requests and user bookings
+        const [requestsRes, bookingsRes] = await Promise.all([
+          axios.get(`${API_URL}/api/mira/my-requests`, {
+            headers: { Authorization: `Bearer ${token}` }
+          }).catch(() => ({ data: { requests: [] } })),
+          axios.get(`${API_URL}/api/user/bookings?email=${encodeURIComponent(user.email)}`, {
+            headers: { Authorization: `Bearer ${token}` }
+          }).catch(() => ({ data: { bookings: [] } }))
+        ]);
+        
+        // Merge requests and bookings into unified list
+        const requests = requestsRes.data.requests || [];
+        const bookings = (bookingsRes.data.bookings || []).map(b => ({
+          id: b.ticket_id || b.id,
+          description: `${b.service_type?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Service'} booking${b.date ? ` for ${b.date}` : ''}${b.time ? ` at ${b.time}` : ''}`,
+          status: b.status,
+          status_display: {
+            label: b.status === 'pending' ? 'Pending Confirmation' : 
+                   b.status === 'confirmed' ? 'Confirmed' :
+                   b.status === 'completed' ? 'Completed' : 
+                   b.status === 'cancelled' ? 'Cancelled' : b.status,
+            color: b.status === 'pending' ? 'yellow' : 
+                   b.status === 'confirmed' ? 'green' : 
+                   b.status === 'completed' ? 'blue' : 
+                   b.status === 'cancelled' ? 'red' : 'gray',
+            icon: b.status === 'pending' ? '⏳' : 
+                  b.status === 'confirmed' ? '✅' : 
+                  b.status === 'completed' ? '🎉' : 
+                  b.status === 'cancelled' ? '❌' : '📋'
+          },
+          pet_name: b.pet_name,
+          pillar: 'Booking',
+          created_at: b.created_at,
+          type: 'booking'
+        }));
+        
+        // Combine and sort by date (newest first)
+        const allRequests = [...requests, ...bookings]
+          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        
+        setMyRequests(allRequests);
       } catch (error) {
         console.error('Failed to fetch requests:', error);
       } finally {
