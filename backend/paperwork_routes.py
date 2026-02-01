@@ -147,6 +147,77 @@ INSURANCE_SERVICES = {
 }
 
 
+# ==================== FILE UPLOAD ENDPOINT ====================
+
+# Ensure upload directory exists
+UPLOAD_DIR = "/app/uploads/documents"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+@router.post("/upload-file")
+async def upload_file(
+    file: UploadFile = File(...)
+):
+    """Upload a file and return its URL"""
+    try:
+        # Validate file
+        if not file.filename:
+            raise HTTPException(status_code=400, detail="No file provided")
+        
+        # Generate unique filename
+        file_ext = file.filename.split('.')[-1].lower() if '.' in file.filename else 'bin'
+        unique_filename = f"{uuid.uuid4().hex}_{file.filename}"
+        file_path = os.path.join(UPLOAD_DIR, unique_filename)
+        
+        # Save file
+        contents = await file.read()
+        with open(file_path, 'wb') as f:
+            f.write(contents)
+        
+        # Return URL (relative path that can be served)
+        file_url = f"/api/paperwork/files/{unique_filename}"
+        
+        logger.info(f"File uploaded: {unique_filename}, size: {len(contents)} bytes")
+        
+        return {
+            "success": True,
+            "file_url": file_url,
+            "filename": file.filename,
+            "size": len(contents),
+            "content_type": file.content_type
+        }
+    except Exception as e:
+        logger.error(f"File upload error: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to upload file: {str(e)}")
+
+
+@router.get("/files/{filename}")
+async def get_file(filename: str):
+    """Serve uploaded file"""
+    file_path = os.path.join(UPLOAD_DIR, filename)
+    
+    if not os.path.exists(file_path):
+        raise HTTPException(status_code=404, detail="File not found")
+    
+    # Determine content type
+    ext = filename.split('.')[-1].lower() if '.' in filename else ''
+    content_types = {
+        'pdf': 'application/pdf',
+        'jpg': 'image/jpeg',
+        'jpeg': 'image/jpeg',
+        'png': 'image/png',
+        'gif': 'image/gif',
+        'doc': 'application/msword',
+        'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    }
+    content_type = content_types.get(ext, 'application/octet-stream')
+    
+    def iterfile():
+        with open(file_path, 'rb') as f:
+            yield from f
+    
+    return StreamingResponse(iterfile(), media_type=content_type)
+
+
 # ==================== DOCUMENT MANAGEMENT ====================
 
 @router.post("/documents/upload")
@@ -161,9 +232,10 @@ async def upload_document(
     reminder_enabled: bool = Form(False),
     reminder_date: Optional[str] = Form(None),
     reminder_channel: str = Form("email"),
-    file_url: str = Form(...)  # Pre-uploaded file URL
+    file_url: str = Form(None),  # Pre-uploaded file URL (optional)
+    file: UploadFile = File(None)  # Direct file upload (optional)
 ):
-    """Upload a document to the pet's paperwork vault"""
+    """Upload a document to the pet's paperwork vault - supports both URL and direct file upload"""
     db = get_db()
     
     doc_id = f"DOC-{uuid.uuid4().hex[:8].upper()}"
