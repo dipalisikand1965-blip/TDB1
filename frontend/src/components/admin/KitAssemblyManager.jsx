@@ -381,14 +381,23 @@ const KitAssemblyManager = () => {
 
         {/* Kit Templates Tab */}
         <TabsContent value="kits">
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex flex-wrap justify-between items-center gap-2 mb-4">
             <Input 
               placeholder="Search kits..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="max-w-xs"
             />
-            <Button onClick={() => {
+            <div className="flex gap-2">
+              <Button onClick={handleSeedDefaults} variant="outline" size="sm">
+                <Sparkles className="w-4 h-4 mr-2" />
+                Seed Defaults
+              </Button>
+              <Button onClick={handleExportCSV} variant="outline" size="sm">
+                <FileText className="w-4 h-4 mr-2" />
+                Export CSV
+              </Button>
+              <Button onClick={() => {
               setEditingKit({
                 name: '',
                 slug: '',
