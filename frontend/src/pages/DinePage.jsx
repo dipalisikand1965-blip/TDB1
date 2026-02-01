@@ -275,21 +275,21 @@ const DinePage = () => {
             </Link>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6">
             {freshMealsCategories.map((cat) => {
               const Icon = cat.icon;
               return (
                 <Link key={cat.id} to={cat.path}>
-                  <Card className="p-6 hover:shadow-lg transition-all hover:-translate-y-1 cursor-pointer group">
-                    <div className="flex items-center gap-4">
-                      <div className="p-3 bg-orange-100 rounded-xl group-hover:bg-orange-200 transition-colors">
-                        <Icon className="w-6 h-6 text-orange-600" />
+                  <Card className="p-4 sm:p-6 hover:shadow-lg transition-all hover:-translate-y-1 cursor-pointer group">
+                    <div className="flex items-center gap-3 sm:gap-4">
+                      <div className="p-2.5 sm:p-3 bg-orange-100 rounded-xl group-hover:bg-orange-200 transition-colors">
+                        <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-orange-600" />
                       </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-900">{cat.name}</h3>
-                        <p className="text-sm text-gray-500">{cat.description}</p>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-gray-900 text-sm sm:text-base">{cat.name}</h3>
+                        <p className="text-xs sm:text-sm text-gray-500 truncate">{cat.description}</p>
                       </div>
-                      <ChevronRight className="w-5 h-5 text-gray-400 ml-auto group-hover:text-orange-500 transition-colors" />
+                      <ChevronRight className="w-5 h-5 text-gray-400 ml-auto group-hover:text-orange-500 transition-colors flex-shrink-0" />
                     </div>
                   </Card>
                 </Link>
