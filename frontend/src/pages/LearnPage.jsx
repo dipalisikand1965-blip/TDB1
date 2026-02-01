@@ -595,54 +595,66 @@ const LearnPage = () => {
       </div>
 
       {/* Featured Trainers */}
-      <div className="py-16 bg-white">
+      <div className="py-8 sm:py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900">Meet Our Expert Trainers</h2>
-            <p className="text-gray-600 mt-2">Certified professionals with years of experience</p>
+          <div className="text-center mb-6 sm:mb-12">
+            <h2 className="text-xl sm:text-3xl font-bold text-gray-900">Meet Our Expert Trainers</h2>
+            <p className="text-sm sm:text-base text-gray-600 mt-1 sm:mt-2">Certified professionals</p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6">
             {trainers.map((trainer) => (
-              <Card key={trainer.id} className="p-6 text-center hover:shadow-lg transition-all" data-testid={`trainer-${trainer.id}`}>
-                <div className="w-24 h-24 rounded-full mx-auto mb-4 overflow-hidden bg-gray-100">
-                  {trainer.image ? (
-                    <img src={trainer.image} alt={trainer.name} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <Users className="w-12 h-12 text-gray-300" />
+              <Card 
+                key={trainer.id} 
+                className="p-3 sm:p-6 text-center hover:shadow-lg transition-all cursor-pointer" 
+                data-testid={`trainer-${trainer.id}`}
+                onClick={() => { setSelectedTrainer(trainer); setShowTrainerModal(true); }}
+              >
+                <div className="flex sm:flex-col items-center gap-3 sm:gap-0">
+                  <div className="w-16 h-16 sm:w-24 sm:h-24 rounded-full sm:mx-auto sm:mb-4 overflow-hidden bg-gray-100 flex-shrink-0">
+                    {trainer.image ? (
+                      <img src={trainer.image} alt={trainer.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Users className="w-8 h-8 sm:w-12 sm:h-12 text-gray-300" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1 text-left sm:text-center">
+                    <h3 className="font-bold text-sm sm:text-lg text-gray-900 line-clamp-1">{trainer.name}</h3>
+                    <p className="text-xs sm:text-sm text-blue-600 mb-1 sm:mb-2">{trainer.title}</p>
+                    
+                    <div className="flex items-center sm:justify-center gap-1 text-xs sm:text-sm">
+                      <Star className="w-3 h-3 sm:w-4 sm:h-4 text-amber-500 fill-amber-500" />
+                      <span className="font-medium">{trainer.rating}</span>
+                      <span className="text-gray-400 hidden sm:inline">({trainer.reviews_count})</span>
                     </div>
-                  )}
-                </div>
-                <h3 className="font-bold text-lg text-gray-900">{trainer.name}</h3>
-                <p className="text-sm text-blue-600 mb-2">{trainer.title}</p>
-                
-                <div className="flex items-center justify-center gap-1 mb-3">
-                  <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
-                  <span className="font-medium">{trainer.rating}</span>
-                  <span className="text-gray-400">({trainer.reviews_count} reviews)</span>
+                  </div>
                 </div>
 
-                <div className="flex items-center justify-center gap-2 text-sm text-gray-500 mb-4">
+                <div className="hidden sm:flex items-center justify-center gap-2 text-sm text-gray-500 mt-3 mb-4">
                   <MapPin className="w-4 h-4" /> {trainer.city}
                   <span>•</span>
                   <span>{trainer.experience_years}+ years</span>
                 </div>
 
-                {trainer.specializations && (
-                  <div className="flex flex-wrap justify-center gap-1 mb-4">
-                    {trainer.specializations.slice(0, 3).map((spec, i) => (
-                      <Badge key={i} variant="outline" className="text-xs">
-                        {spec.replace(/_/g, ' ')}
-                      </Badge>
-                    ))}
-                  </div>
-                )}
+                <div className="hidden sm:block">
+                  {trainer.specializations && (
+                    <div className="flex flex-wrap justify-center gap-1 mb-4">
+                      {trainer.specializations.slice(0, 3).map((spec, i) => (
+                        <Badge key={i} variant="outline" className="text-xs">
+                          {spec.replace(/_/g, ' ')}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                </div>
 
                 <Button 
                   variant="outline" 
-                  className="w-full"
-                  onClick={() => {
+                  className="w-full mt-2 sm:mt-0 text-xs sm:text-sm h-8 sm:h-10"
+                  onClick={(e) => {
+                    e.stopPropagation();
                     setSelectedTrainer(trainer);
                     setShowTrainerModal(true);
                   }}
