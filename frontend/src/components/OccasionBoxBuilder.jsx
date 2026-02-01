@@ -260,159 +260,146 @@ const OccasionBoxBuilder = ({
 
         {/* Content */}
         <div className="p-6 overflow-y-auto max-h-[50vh]">
-          <AnimatePresence mode="wait">
-            {showSummary ? (
-              /* Summary View */
-              <motion.div
-                key="summary"
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -50 }}
-                className="space-y-4"
-              >
-                <div className="flex items-center gap-2 mb-4">
-                  <PartyPopper className="w-6 h-6 text-purple-600" />
-                  <h3 className="text-xl font-bold">Your Box Summary</h3>
-                </div>
+          {showSummary ? (
+            /* Summary View */
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 mb-4">
+                <PartyPopper className="w-6 h-6 text-purple-600" />
+                <h3 className="text-xl font-bold">Your Box Summary</h3>
+              </div>
+              
+              {categories.map((cat) => {
+                const items = selectedItems[cat.id] || [];
+                if (items.length === 0) return null;
                 
-                {categories.map((cat) => {
-                  const items = selectedItems[cat.id] || [];
-                  if (items.length === 0) return null;
-                  
-                  return (
-                    <div key={cat.id} className="bg-gray-50 rounded-lg p-4">
-                      <h4 className="font-semibold flex items-center gap-2 mb-2">
-                        <span>{cat.icon}</span> {cat.name}
-                      </h4>
-                      <div className="space-y-2">
-                        {items.map((item) => (
-                          <div key={item.id} className="flex items-center justify-between">
-                            <span className="text-sm">{item.title || item.name}</span>
-                            <span className="font-medium">₹{item.price?.toLocaleString()}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  );
-                })}
-
-                {/* Pricing Summary */}
-                <Card className="p-4 mt-4">
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-gray-600">
-                      <span>Subtotal ({totalItems} items)</span>
-                      <span>₹{subtotal.toLocaleString()}</span>
-                    </div>
-                    {discount > 0 && (
-                      <div className="flex justify-between text-green-600">
-                        <span>Bundle Discount ({discount}%)</span>
-                        <span>-₹{discountAmount.toLocaleString()}</span>
-                      </div>
-                    )}
-                    <div className="border-t pt-2 flex justify-between font-bold text-lg">
-                      <span>Total</span>
-                      <span style={{ color: template.theme_color }}>
-                        ₹{total.toLocaleString()}
-                      </span>
+                return (
+                  <div key={cat.id} className="bg-gray-50 rounded-lg p-4">
+                    <h4 className="font-semibold flex items-center gap-2 mb-2">
+                      <span>{cat.icon}</span> {cat.name}
+                    </h4>
+                    <div className="space-y-2">
+                      {items.map((item) => (
+                        <div key={item.id} className="flex items-center justify-between">
+                          <span className="text-sm">{item.title || item.name}</span>
+                          <span className="font-medium">₹{item.price?.toLocaleString()}</span>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                </Card>
-              </motion.div>
-            ) : (
-              /* Category Step View */
-              <motion.div
-                key={currentStep}
-                initial={{ opacity: 0, x: 50 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -50 }}
-              >
-                {currentCategory && (
-                  <>
-                    <div className="flex items-center justify-between mb-4">
-                      <div>
-                        <h3 className="text-xl font-bold flex items-center gap-2">
-                          <span className="text-2xl">{currentCategory.icon}</span>
-                          {currentCategory.name}
-                          {currentCategory.required && (
-                            <Badge variant="secondary" className="ml-2">Required</Badge>
-                          )}
-                        </h3>
-                        <p className="text-gray-500 text-sm mt-1">
-                          {currentCategory.description}
-                          <span className="ml-2 text-purple-600">
-                            (Select {currentCategory.min_items}-{currentCategory.max_items} items)
-                          </span>
-                        </p>
-                      </div>
-                      <Badge 
-                        variant="outline" 
-                        className="text-lg px-3 py-1"
-                        style={{ borderColor: template.theme_color, color: template.theme_color }}
-                      >
-                        {getCategoryItemCount(currentCategory.id)} selected
-                      </Badge>
-                    </div>
+                );
+              })}
 
-                    {/* Products Grid */}
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      {(products[currentCategory.id] || []).map((product) => {
-                        const isSelected = isItemSelected(currentCategory.id, product.id);
-                        
-                        return (
-                          <Card
-                            key={product.id}
-                            className={`cursor-pointer transition-all overflow-hidden ${
-                              isSelected 
-                                ? 'ring-2 ring-offset-2' 
-                                : 'hover:shadow-md'
-                            }`}
-                            style={isSelected ? { ringColor: template.theme_color } : {}}
-                            onClick={() => toggleItem(currentCategory.id, product)}
-                          >
-                            <div className="relative">
-                              <img
-                                src={product.image_url || product.images?.[0] || 'https://via.placeholder.com/200'}
-                                alt={product.title || product.name}
-                                className="w-full h-32 object-cover"
-                              />
-                              {isSelected && (
-                                <div 
-                                  className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center text-white"
-                                  style={{ backgroundColor: template.theme_color }}
-                                >
-                                  <Check className="w-4 h-4" />
-                                </div>
-                              )}
-                              {product.is_featured && (
-                                <Badge className="absolute top-2 left-2 bg-yellow-500">
-                                  <Sparkles className="w-3 h-3 mr-1" />
-                                  Featured
-                                </Badge>
-                              )}
-                            </div>
-                            <div className="p-3">
-                              <h4 className="font-medium text-sm line-clamp-2">
-                                {product.title || product.name}
-                              </h4>
-                              <p className="font-bold mt-1" style={{ color: template.theme_color }}>
-                                ₹{product.price?.toLocaleString()}
-                              </p>
-                            </div>
-                          </Card>
-                        );
-                      })}
-                      
-                      {(products[currentCategory.id] || []).length === 0 && (
-                        <div className="col-span-full text-center py-8 text-gray-500">
-                          No products available in this category yet.
-                        </div>
-                      )}
+              {/* Pricing Summary */}
+              <Card className="p-4 mt-4">
+                <div className="space-y-2">
+                  <div className="flex justify-between text-gray-600">
+                    <span>Subtotal ({totalItems} items)</span>
+                    <span>₹{subtotal.toLocaleString()}</span>
+                  </div>
+                  {discount > 0 && (
+                    <div className="flex justify-between text-green-600">
+                      <span>Bundle Discount ({discount}%)</span>
+                      <span>-₹{discountAmount.toLocaleString()}</span>
                     </div>
-                  </>
-                )}
-              </motion.div>
-            )}
-          </AnimatePresence>
+                  )}
+                  <div className="border-t pt-2 flex justify-between font-bold text-lg">
+                    <span>Total</span>
+                    <span style={{ color: template.theme_color }}>
+                      ₹{total.toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+              </Card>
+            </div>
+          ) : (
+            /* Category Step View */
+            <div>
+              {currentCategory && (
+                <>
+                  <div className="flex items-center justify-between mb-4">
+                    <div>
+                      <h3 className="text-xl font-bold flex items-center gap-2">
+                        <span className="text-2xl">{currentCategory.icon}</span>
+                        {currentCategory.name}
+                        {currentCategory.required && (
+                          <Badge variant="secondary" className="ml-2">Required</Badge>
+                        )}
+                      </h3>
+                      <p className="text-gray-500 text-sm mt-1">
+                        {currentCategory.description}
+                        <span className="ml-2 text-purple-600">
+                          (Select {currentCategory.min_items}-{currentCategory.max_items} items)
+                        </span>
+                      </p>
+                    </div>
+                    <Badge 
+                      variant="outline" 
+                      className="text-lg px-3 py-1"
+                      style={{ borderColor: template.theme_color, color: template.theme_color }}
+                    >
+                      {getCategoryItemCount(currentCategory.id)} selected
+                    </Badge>
+                  </div>
+
+                  {/* Products Grid */}
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {(products[currentCategory.id] || []).map((product) => {
+                      const isSelected = isItemSelected(currentCategory.id, product.id);
+                      
+                      return (
+                        <Card
+                          key={product.id}
+                          className={`cursor-pointer transition-all overflow-hidden ${
+                            isSelected 
+                              ? 'ring-2 ring-offset-2' 
+                              : 'hover:shadow-md'
+                          }`}
+                          style={isSelected ? { ringColor: template.theme_color } : {}}
+                          onClick={() => toggleItem(currentCategory.id, product)}
+                        >
+                          <div className="relative">
+                            <img
+                              src={product.image_url || product.images?.[0] || 'https://via.placeholder.com/200'}
+                              alt={product.title || product.name}
+                              className="w-full h-32 object-cover"
+                            />
+                            {isSelected && (
+                              <div 
+                                className="absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center text-white"
+                                style={{ backgroundColor: template.theme_color }}
+                              >
+                                <Check className="w-4 h-4" />
+                              </div>
+                            )}
+                            {product.is_featured && (
+                              <Badge className="absolute top-2 left-2 bg-yellow-500">
+                                <Sparkles className="w-3 h-3 mr-1" />
+                                Featured
+                              </Badge>
+                            )}
+                          </div>
+                          <div className="p-3">
+                            <h4 className="font-medium text-sm line-clamp-2">
+                              {product.title || product.name}
+                            </h4>
+                            <p className="font-bold mt-1" style={{ color: template.theme_color }}>
+                              ₹{product.price?.toLocaleString()}
+                            </p>
+                          </div>
+                        </Card>
+                      );
+                    })}
+                    
+                    {(products[currentCategory.id] || []).length === 0 && (
+                      <div className="col-span-full text-center py-8 text-gray-500">
+                        No products available in this category yet.
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Footer Navigation */}
