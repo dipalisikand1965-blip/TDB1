@@ -367,7 +367,9 @@ const MemberDashboard = () => {
           await axios.post(`${API_URL}/api/engagement/streak/${user.id}/action?action_type=pet_update`, {}, {
             headers: { Authorization: `Bearer ${token}` }
           });
-        } catch (e) {}
+        } catch (e) {
+          // Silent fail for streak tracking
+        }
       }
       
       toast({ title: 'Refreshed! ✨', description: 'Your data is up to date' });
@@ -632,6 +634,7 @@ const MemberDashboard = () => {
     if (showPawPointsBreakdown) {
       fetchPawPointsHistory();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [showPawPointsBreakdown]);
 
   // Handle setting change
