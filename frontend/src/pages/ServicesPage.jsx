@@ -300,8 +300,6 @@ const ServicesPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      <Navbar />
-      
       {/* Hero Section */}
       <div className="bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 md:py-14">
