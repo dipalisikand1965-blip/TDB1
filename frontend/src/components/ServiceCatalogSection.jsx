@@ -328,42 +328,42 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
         </div>
       </div>
 
-      {/* Price Calculator Modal */}
+      {/* Price Calculator Modal - Mobile Optimized */}
       <Dialog open={showPriceModal} onOpenChange={setShowPriceModal}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto p-4 sm:p-6">
+          <DialogHeader className="mb-4">
+            <DialogTitle className="flex items-center gap-2 text-lg">
               <DollarSign className="w-5 h-5 text-rose-500" />
               Get Your Price
             </DialogTitle>
           </DialogHeader>
           
           {selectedService && (
-            <div className="space-y-5">
-              {/* Service Info */}
-              <div className="bg-gradient-to-r from-rose-50 to-pink-50 p-4 rounded-xl">
-                <h3 className="font-bold text-gray-900">{selectedService.name}</h3>
-                <p className="text-sm text-gray-600 mt-1">{selectedService.description}</p>
+            <div className="space-y-4">
+              {/* Service Info - Compact on mobile */}
+              <div className="bg-gradient-to-r from-rose-50 to-pink-50 p-3 sm:p-4 rounded-xl">
+                <h3 className="font-bold text-gray-900 text-sm sm:text-base">{selectedService.name}</h3>
+                <p className="text-xs sm:text-sm text-gray-600 mt-1 line-clamp-2">{selectedService.description}</p>
                 {selectedService.includes && selectedService.includes.length > 0 && (
-                  <div className="mt-3 flex flex-wrap gap-1">
-                    {selectedService.includes.slice(0, 4).map((item, idx) => (
-                      <Badge key={idx} variant="outline" className="text-xs bg-white">
-                        <Check className="w-2 h-2 mr-1" /> {item}
+                  <div className="mt-2 flex flex-wrap gap-1">
+                    {selectedService.includes.slice(0, 3).map((item, idx) => (
+                      <Badge key={idx} variant="outline" className="text-[10px] sm:text-xs bg-white px-1.5 py-0.5">
+                        <Check className="w-2 h-2 mr-0.5" /> {item}
                       </Badge>
                     ))}
                   </div>
                 )}
               </div>
               
-              {/* City Selection */}
+              {/* City Selection - Compact */}
               <div>
-                <Label className="text-sm font-medium mb-2 block">Your City</Label>
-                <div className="grid grid-cols-3 gap-2">
+                <Label className="text-xs sm:text-sm font-medium mb-1.5 block">Your City</Label>
+                <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
                   {CITIES.map(city => (
                     <button
                       key={city.id}
                       onClick={() => setPriceConfig(p => ({ ...p, city: city.id }))}
-                      className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+                      className={`px-2 py-1.5 sm:px-3 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all ${
                         priceConfig.city === city.id
                           ? 'bg-rose-500 text-white shadow-md'
                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -375,22 +375,22 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
                 </div>
               </div>
               
-              {/* Pet Size */}
+              {/* Pet Size - More compact grid */}
               <div>
-                <Label className="text-sm font-medium mb-2 block">Pet Size</Label>
-                <div className="grid grid-cols-5 gap-2">
+                <Label className="text-xs sm:text-sm font-medium mb-1.5 block">Pet Size</Label>
+                <div className="grid grid-cols-5 gap-1 sm:gap-2">
                   {PET_SIZES.map(size => (
                     <button
                       key={size.id}
                       onClick={() => setPriceConfig(p => ({ ...p, petSize: size.id }))}
-                      className={`px-2 py-2 rounded-lg text-center transition-all ${
+                      className={`px-1 py-1.5 sm:px-2 sm:py-2 rounded-lg text-center transition-all ${
                         priceConfig.petSize === size.id
                           ? 'bg-rose-500 text-white shadow-md'
                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                       }`}
                     >
-                      <div className="text-lg">{size.icon}</div>
-                      <div className="text-xs font-medium">{size.label}</div>
+                      <div className="text-base sm:text-lg">{size.icon}</div>
+                      <div className="text-[10px] sm:text-xs font-medium">{size.label}</div>
                     </button>
                   ))}
                 </div>
@@ -398,13 +398,13 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
               
               {/* Pet Count */}
               <div>
-                <Label className="text-sm font-medium mb-2 block">Number of Pets</Label>
-                <div className="flex gap-2">
+                <Label className="text-xs sm:text-sm font-medium mb-1.5 block">Number of Pets</Label>
+                <div className="flex gap-1.5 sm:gap-2">
                   {[1, 2, 3].map(count => (
                     <button
                       key={count}
                       onClick={() => setPriceConfig(p => ({ ...p, petCount: count }))}
-                      className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                      className={`flex-1 px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all ${
                         priceConfig.petCount === count
                           ? 'bg-rose-500 text-white shadow-md'
                           : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -416,38 +416,38 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
                 </div>
               </div>
               
-              {/* Add-ons */}
+              {/* Add-ons - Compact */}
               {selectedService.add_ons && selectedService.add_ons.length > 0 && (
                 <div>
-                  <Label className="text-sm font-medium mb-2 block">Add-ons (Optional)</Label>
-                  <div className="space-y-2">
+                  <Label className="text-xs sm:text-sm font-medium mb-1.5 block">Add-ons (Optional)</Label>
+                  <div className="space-y-1.5">
                     {selectedService.add_ons.map(addon => (
                       <button
                         key={addon.id}
                         onClick={() => toggleAddOn(addon.id)}
-                        className={`w-full flex items-center justify-between px-4 py-3 rounded-lg border-2 transition-all ${
+                        className={`w-full flex items-center justify-between px-3 py-2 sm:px-4 sm:py-3 rounded-lg border-2 transition-all ${
                           priceConfig.selectedAddOns.includes(addon.id)
                             ? 'border-rose-500 bg-rose-50'
                             : 'border-gray-200 hover:border-gray-300'
                         }`}
                       >
                         <div className="flex items-center gap-2">
-                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                          <div className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full border-2 flex items-center justify-center ${
                             priceConfig.selectedAddOns.includes(addon.id) ? 'border-rose-500 bg-rose-500' : 'border-gray-300'
                           }`}>
-                            {priceConfig.selectedAddOns.includes(addon.id) && <Check className="w-3 h-3 text-white" />}
+                            {priceConfig.selectedAddOns.includes(addon.id) && <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-white" />}
                           </div>
-                          <span className="font-medium">{addon.name}</span>
+                          <span className="font-medium text-xs sm:text-sm">{addon.name}</span>
                         </div>
-                        <span className="text-rose-600 font-bold">+₹{addon.price}</span>
+                        <span className="text-rose-600 font-bold text-xs sm:text-sm">+₹{addon.price}</span>
                       </button>
                     ))}
                   </div>
                 </div>
               )}
               
-              {/* Calculated Price */}
-              <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-white p-5 rounded-xl">
+              {/* Calculated Price - Compact */}
+              <div className="bg-gradient-to-r from-gray-900 to-gray-800 text-white p-3 sm:p-5 rounded-xl">
                 {calculating ? (
                   <div className="flex items-center justify-center py-2">
                     <Loader2 className="w-5 h-5 animate-spin mr-2" />
