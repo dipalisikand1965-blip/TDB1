@@ -1345,10 +1345,15 @@ const MiraChatWidget = ({
           kitName={cinematicKitData.name}
           items={cinematicKitData.items}
           petInfo={{
-            name: miraContext?.pets?.[0]?.name,
-            breed: miraContext?.pets?.[0]?.breed,
-            size: miraContext?.pets?.[0]?.size,
-            age: miraContext?.pets?.[0]?.age
+            name: selectedPet?.name || miraContext?.pets?.[0]?.name,
+            breed: selectedPet?.breed || selectedPet?.identity?.breed || miraContext?.pets?.[0]?.breed,
+            size: selectedPet?.size || selectedPet?.identity?.size || miraContext?.pets?.[0]?.size,
+            age: selectedPet?.age || selectedPet?.identity?.age || miraContext?.pets?.[0]?.age,
+            // Preferences from Pet Soul for enhanced personalization
+            favorites: petSoulInsights?.preferences?.favorite_treats || petSoulInsights?.preferences?.favorite_flavors || [],
+            allergies: petSoulInsights?.health?.allergies || selectedPet?.allergies || [],
+            activityLevel: petSoulInsights?.preferences?.activity_level || selectedPet?.activity_level,
+            personality: petSoulInsights?.soul?.persona || selectedPet?.personality
           }}
           onComplete={(items) => {
             toast.success(`Added ${items.length} items to cart!`, {
