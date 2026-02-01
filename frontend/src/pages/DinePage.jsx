@@ -728,7 +728,8 @@ const RestaurantCard = ({ restaurant, getPetMenuBadge, getPetPolicyText, feature
             className="bg-orange-500 hover:bg-orange-600 text-white"
             onClick={(e) => { e.stopPropagation(); onSelect(restaurant); }}
           >
-            Reserve
+            <span className="hidden sm:inline">Reserve</span>
+            <span className="sm:hidden">Book</span>
           </Button>
         </div>
       </div>
