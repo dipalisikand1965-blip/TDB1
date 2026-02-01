@@ -10,15 +10,16 @@ import { Helmet } from 'react-helmet-async';
 // Base domain - always use non-www version (canonical)
 const SITE_URL = 'https://thedoggycompany.in';
 const SITE_NAME = 'The Doggy Company';
+const BRAND_TAGLINE = 'Your Pet\'s Life, Thoughtfully Orchestrated.';
 const DEFAULT_IMAGE = 'https://thedoggycompany.in/logo-new.png';
 
 // SEO data for each pillar/page
 const SEO_DATA = {
   // Homepage
   home: {
-    title: "The Doggy Company | India's #1 Pet Life Operating System",
-    description: "India's first Pet Life Operating System. Premium dog cakes, pet-friendly dining, stays, travel & 14 life pillars. Same-day delivery in Mumbai, Bangalore & Delhi. 45,000+ happy pet parents!",
-    keywords: "pet life operating system, dog cakes, pet services india, dog birthday, pet platform, the doggy company",
+    title: "The Doggy Company | Pet Concierge® | Your Pet's Life, Thoughtfully Orchestrated",
+    description: "India's first Pet Concierge® service. Premium dog cakes, pet-friendly dining, stays, travel & 14 life pillars. Same-day delivery in Mumbai, Bangalore & Delhi. 45,000+ happy pet parents!",
+    keywords: "pet concierge, dog cakes, pet services india, dog birthday, pet platform, the doggy company, pet life",
     image: DEFAULT_IMAGE,
   },
   
@@ -27,7 +28,7 @@ const SEO_DATA = {
     title: "Celebrate | Dog Birthday Cakes & Party Planning | The Doggy Company",
     description: "Make your pet's birthday unforgettable! Custom dog cakes, pupcakes, party decorations & celebration packages. Same-day delivery in Mumbai, Bangalore & Delhi. Order now!",
     keywords: "dog birthday cake, dog party, pet celebration, custom dog cake, pupcakes, dog birthday party, pet bakery india",
-    image: "https://thedoggybakery.com/cdn/shop/files/TDB_cakes_6_6c84dc0e-24b7-49f0-a5f9-0027610924db.png",
+    image: DEFAULT_IMAGE,
   },
   
   dine: {
