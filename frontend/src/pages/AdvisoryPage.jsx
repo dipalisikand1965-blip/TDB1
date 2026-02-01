@@ -755,6 +755,14 @@ const AdvisoryPage = () => {
         </DialogContent>
       </Dialog>
       
+      {/* === SERVICE CATALOG WITH PRICING === */}
+      <ServiceCatalogSection 
+        pillar="advisory"
+        title="Advisory, Personalised"
+        subtitle="Expert consultation services with transparent pricing"
+        maxServices={8}
+      />
+      
       {/* Mira Floating Chat Widget */}
       <MiraChatWidget pillar="advisory" />
       
