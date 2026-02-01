@@ -1,6 +1,56 @@
 # Pet Life Operating System - Product Requirements Document
 
-## Latest Update: February 1, 2026 - Session 13
+## Latest Update: February 1, 2026 - Session 14
+
+### ✅ OCCASION BOX SYSTEM BUILT (Feb 1, 2026)
+
+**New Feature: Occasion Box Builder**
+
+A smart, guided experience for celebration shopping that lets pet parents build curated boxes for special occasions.
+
+**Backend (`/app/backend/occasion_box_routes.py`):**
+- Admin CRUD APIs for occasion box templates
+- Public APIs for fetching templates and products
+- Default templates seeded: Birthday Box, Gotcha Day Box, Festival Box
+- Product filtering by category with MongoDB queries
+- Bundle discount support
+
+**Admin Panel (`OccasionBoxManager.jsx`):**
+- Create/edit/delete occasion box templates
+- Define categories (Cake, Accessories, Treats, Toys)
+- Set product filters and featured products
+- Configure bundle discounts
+- Located at: Admin → Marketing → Occasion Boxes
+
+**Member Experience (`OccasionBoxBuilder.jsx`):**
+- Step-by-step guided box building
+- Category-by-category product selection
+- Running total with bundle discount preview
+- "Add All to Cart" functionality
+- Triggered from MyCelebrations widget
+
+**MyCelebrations Widget Updates:**
+- Now shows recent celebrations (past 7 days) with "Celebrate now!" badge
+- "Build Birthday Box" and "Build Gotcha Box" buttons
+- Opens OccasionBoxBuilder modal when clicked
+- Connected to pet occasion data from onboarding
+
+**Default Templates Created:**
+1. **Birthday Box** (🎂): Cake, Accessories, Treats, Toys - 10% bundle discount
+2. **Gotcha Day Box** (💝): Treats, Toys, Photo Session - 5% bundle discount
+3. **Festival Box** (🎉): Festival Treats, Festival Accessories - 10% bundle discount
+
+**API Endpoints:**
+- `GET /api/occasion-boxes` - List active templates
+- `GET /api/occasion-boxes/{slug}` - Get template by slug
+- `GET /api/occasion-boxes/{slug}/products` - Get products for each category
+- `GET /api/occasion-boxes/by-occasion/{type}` - Get template by occasion type
+- `POST /api/admin/occasion-boxes` - Create template (admin)
+- `PUT /api/admin/occasion-boxes/{id}` - Update template (admin)
+- `DELETE /api/admin/occasion-boxes/{id}` - Delete template (admin)
+- `POST /api/admin/occasion-boxes/seed-defaults` - Seed default templates (admin)
+
+---
 
 ### ✅ KIT SWITCHING BUG FIX (Feb 1, 2026)
 
