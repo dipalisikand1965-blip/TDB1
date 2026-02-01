@@ -553,8 +553,8 @@ const Navbar = () => {
               </div>
             </Link>
 
-            {/* Search Bar with Voice + Suggestions */}
-            <div className="flex-1 max-w-xl relative" ref={searchRef}>
+            {/* Search Bar - Hidden on mobile, shown on desktop */}
+            <div className="hidden sm:block flex-1 max-w-xl relative" ref={searchRef}>
               <form onSubmit={handleSearch}>
                 <div className="flex">
                   <input
