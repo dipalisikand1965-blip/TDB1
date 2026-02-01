@@ -69,6 +69,10 @@ const MiraChatWidget = ({
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   
+  // Cinematic Kit Assembly state
+  const [showCinematicKit, setShowCinematicKit] = useState(false);
+  const [cinematicKitData, setCinematicKitData] = useState({ name: '', items: [] });
+  
   // Chat state - Initialize from sessionStorage to persist across pillar switches
   const [messages, setMessages] = useState(() => getStoredMessages());
   const [inputValue, setInputValue] = useState('');
