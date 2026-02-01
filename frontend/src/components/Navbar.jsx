@@ -1047,7 +1047,9 @@ const Navbar = () => {
                 
                 <button
                   onClick={() => { logout(); setIsMenuOpen(false); navigate('/'); }}
+                  onTouchEnd={(e) => { e.preventDefault(); logout(); setIsMenuOpen(false); navigate('/'); }}
                   className="w-full flex items-center justify-center gap-2 p-3 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors"
+                  style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
                   data-testid="mobile-logout-btn"
                 >
                   <LogOut className="w-4 h-4" />
