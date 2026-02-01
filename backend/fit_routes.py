@@ -139,8 +139,8 @@ async def create_fitness_request(request_data: dict):
         "pillar": "fit",
         "category": "fitness",
         "subcategory": fitness_request["fit_type"],
-        "subject": f"Fitness Request: {fit_type} for {pet_name}",
-        "description": f"New fitness request from {user_name} for {pet_name}.\nGoals: {', '.join(fitness_request['fitness_goals'])}\nActivity Level: {fitness_request['current_activity_level']}",
+        "subject": f"Fitness Request: {fit_type} for {pet_display_name}",
+        "description": f"New fitness request from {user_name} for {pet_display_name}.\nGoals: {', '.join(fitness_request['fitness_goals'])}\nActivity Level: {fitness_request['current_activity_level']}",
         "status": "new",
         "priority": 3,
         "urgency": "medium",
@@ -150,7 +150,7 @@ async def create_fitness_request(request_data: dict):
             "phone": fitness_request["user_phone"]
         },
         "pet": {
-            "name": pet_name,
+            "name": pet_display_name,
             "id": fitness_request["pet_id"],
             "breed": fitness_request["pet_breed"]
         },
