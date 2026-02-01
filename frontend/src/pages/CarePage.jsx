@@ -21,6 +21,7 @@ import BreedAutocomplete from '../components/BreedAutocomplete';
 import SEOHead from '../components/SEOHead';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import ServiceBookingModal from '../components/ServiceBookingModal';
+import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import PersonalizedPicks from '../components/PersonalizedPicks';
 // NEW: FitPage-style engagement components
 import { FitnessJourneyCounter, RotatingSocialProof } from '../components/SocialProofBadges';
