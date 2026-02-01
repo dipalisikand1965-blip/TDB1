@@ -5031,6 +5031,55 @@ const DoggyServiceDesk = ({ authHeaders }) => {
         </div>
       )}
       
+      {/* ==================== DELETE CONFIRMATION MODAL ==================== */}
+      {showDeleteConfirm && ticketToDelete && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowDeleteConfirm(false)}>
+          <Card className="w-[500px] bg-white shadow-2xl" onClick={e => e.stopPropagation()}>
+            <div className="p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
+                  <Trash2 className="w-6 h-6 text-red-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-xl text-gray-900">Delete Ticket?</h3>
+                  <p className="text-sm text-gray-500">This action cannot be undone</p>
+                </div>
+              </div>
+              
+              <div className="p-4 bg-gray-50 rounded-lg border mb-4">
+                <p className="font-mono text-xs text-gray-500 mb-1">{ticketToDelete.ticket_id}</p>
+                <p className="font-medium text-gray-900">{ticketToDelete.subject || ticketToDelete.description?.slice(0, 60)}</p>
+                <div className="flex items-center gap-2 mt-2 text-sm text-gray-500">
+                  <User className="w-4 h-4" />
+                  <span>{ticketToDelete.pet_parent_name || ticketToDelete.pet_parent_email || 'Unknown'}</span>
+                </div>
+              </div>
+              
+              <div className="p-3 bg-red-50 rounded-lg border border-red-200 mb-6">
+                <p className="text-sm text-red-800">
+                  ⚠️ All messages, attachments, and history associated with this ticket will be permanently deleted.
+                </p>
+              </div>
+              
+              <div className="flex justify-end gap-3">
+                <Button variant="outline" onClick={() => setShowDeleteConfirm(false)}>Cancel</Button>
+                <Button
+                  onClick={deleteTicket}
+                  className="bg-red-500 hover:bg-red-600 text-white"
+                  disabled={deleteLoading}
+                >
+                  {deleteLoading ? (
+                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Deleting...</>
+                  ) : (
+                    <><Trash2 className="w-4 h-4 mr-2" /> Delete Ticket</>
+                  )}
+                </Button>
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
+      
       {/* ==================== AGENT PERFORMANCE MODAL ==================== */}
       {showPerformanceModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowPerformanceModal(false)}>
