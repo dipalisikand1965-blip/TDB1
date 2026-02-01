@@ -510,13 +510,14 @@ async def seed_care_services(authorization: str = Header(...)):
     try:
         import jwt
         import os
+        SECRET_KEY = os.environ.get("JWT_SECRET", "tdb_super_secret_key_2025_woof")
         token = authorization.replace("Bearer ", "")
-        payload = jwt.decode(token, os.environ.get("JWT_SECRET", "your-secret-key"), algorithms=["HS256"])
+        payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
         # For admin tokens, check username or role
         if not payload.get("username") and not payload.get("role") == "admin":
             raise HTTPException(status_code=403, detail="Admin access required")
-    except jwt.exceptions.InvalidTokenError:
-        raise HTTPException(status_code=401, detail="Invalid token")
+    except jwt.exceptions.InvalidTokenError as e:
+        raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
     
     care_services = [
         {
