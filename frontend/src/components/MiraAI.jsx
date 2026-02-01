@@ -178,9 +178,9 @@ const MiraAI = () => {
   const location = useLocation();
   const { user, token } = useAuth();
   
-  // Hide MiraAI on admin/agent pages AND pillar pages (where MiraContextPanel is embedded)
+  // Hide MiraAI on admin/agent pages AND pillar pages (where MiraChatWidget is embedded)
   const hiddenPaths = ['/admin', '/agent', '/login', '/mira'];
-  const pillarPaths = ['/care', '/celebrate', '/advisory', '/dine', '/stay', '/travel', '/emergency', '/enjoy', '/fit', '/learn', '/farewell', '/adopt', '/paperwork', '/shop', '/all'];
+  const pillarPaths = ['/care', '/celebrate', '/advisory', '/dine', '/stay', '/travel', '/emergency', '/enjoy', '/fit', '/learn', '/farewell', '/adopt', '/paperwork', '/shop', '/all', '/product', '/services', '/cakes', '/treats'];
   
   const shouldHide = hiddenPaths.some(path => location.pathname.startsWith(path)) ||
                      pillarPaths.some(path => location.pathname === path || location.pathname.startsWith(path + '/'));
