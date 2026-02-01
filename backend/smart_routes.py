@@ -12,6 +12,9 @@ from typing import Optional, List
 from datetime import datetime, timezone, timedelta
 from motor.motor_asyncio import AsyncIOMotorDatabase
 import random
+import logging
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/smart", tags=["Smart Recommendations"])
 
