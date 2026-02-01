@@ -4106,13 +4106,32 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                         occasion = gathered_info.get("occasion", "")
                         kit_type = kit_assembly_state.get("kit_type", "custom").replace("_", " ")
                         
-                        response += f"\n\n🎒✨ **Your {kit_type} is ready!** Based on what you shared"
-                        if occasion:
-                            response += f" about {occasion}"
-                        response += f", here are {len(products)} perfect items for {pet_name}."
+                        # Use admin-configured narration if available
+                        if product_context.get("admin_kit_name"):
+                            admin_kit_name = product_context.get("admin_kit_name")
+                            admin_intro = product_context.get("admin_kit_intro", "")
+                            
+                            # Personalize the admin intro with pet name
+                            if admin_intro:
+                                response += f"\n\n🎒✨ **{admin_kit_name}**\n\n{admin_intro}"
+                                if pet_name and pet_name != "your furry friend":
+                                    response = response.replace("your fur baby", pet_name).replace("your pet", pet_name)
+                            else:
+                                response += f"\n\n🎒✨ **{admin_kit_name}** - {len(products)} items curated just for {pet_name}!"
+                        else:
+                            response += f"\n\n🎒✨ **Your {kit_type} is ready!** Based on what you shared"
+                            if occasion:
+                                response += f" about {occasion}"
+                            response += f", here are {len(products)} perfect items for {pet_name}."
+                        
                         response += "\n\nYou can add individual items or grab the whole kit at once!"
                     else:
-                        response += f"\n\n🎒 I've assembled a kit for you! Here are {len(products)} items you can add to your cart."
+                        # Use admin intro if available even without kit assembly state
+                        if product_context.get("admin_kit_name"):
+                            admin_kit_name = product_context.get("admin_kit_name")
+                            response += f"\n\n🎒 **{admin_kit_name}** - Here are {len(products)} items I've selected!"
+                        else:
+                            response += f"\n\n🎒 I've assembled a kit for you! Here are {len(products)} items you can add to your cart."
                 else:
                     response += f"\n\n✨ I found some options for you! Check out these {len(products)} products below."
         
