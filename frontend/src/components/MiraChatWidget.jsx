@@ -511,16 +511,22 @@ const MiraChatWidget = ({
     console.log('[Mira Voice] Available voices:', voices.map(v => `${v.name} (${v.lang})`));
     
     // STRICT list of CONFIRMED FEMALE voice names only
+    // iOS Safari voices are named differently - prioritize them
     const confirmedFemaleVoices = [
-      // British English Female - TOP PRIORITY
-      'Kate', 'Serena', 'Martha', 'Fiona', 'Moira',
+      // iOS/Safari British English Female - TOP PRIORITY for iPhone
+      'Stephanie', 'Karen', 'Samantha',  // Common iOS voices
+      'Kate', 'Serena', 'Martha',        // iOS British voices
+      'Fiona', 'Moira',                  // iOS Celtic voices
+      // iOS Enhanced voices (downloaded)
+      'Samantha (Enhanced)', 'Karen (Enhanced)',
+      // Google British voices (Android/Chrome)
       'Google UK English Female',
       'Microsoft Hazel', 'Microsoft Susan', 'Hazel', 'Susan',
-      'Amy', 'Emma', // Amazon Polly British
+      'Amy', 'Emma',
       // American English Female - FALLBACK
-      'Samantha', 'Victoria', 'Karen', 'Tessa', 'Allison',
+      'Victoria', 'Tessa', 'Allison',
       'Google US English Female', 'Microsoft Zira',
-      'Ava', 'Nicky', 'Siri Female',
+      'Ava', 'Nicky',
       // Generic female identifiers
       'Female', 'female'
     ];
