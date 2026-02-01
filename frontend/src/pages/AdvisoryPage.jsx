@@ -455,38 +455,33 @@ const AdvisoryPage = () => {
           ) : filteredAdvisors.length > 0 ? (
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
               {filteredAdvisors.map((advisor) => (
-                <Card key={advisor.id} className="p-4 hover:shadow-lg transition-all">
-                  <div className="flex items-start gap-4">
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-violet-100 to-purple-100 flex items-center justify-center flex-shrink-0">
-                      <Users className="w-8 h-8 text-violet-600" />
+                <Card key={advisor.id} className="p-2.5 sm:p-4 hover:shadow-lg transition-all cursor-pointer">
+                  <div className="flex flex-col sm:flex-row items-center sm:items-start gap-2 sm:gap-4">
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-violet-100 to-purple-100 flex items-center justify-center flex-shrink-0">
+                      <Users className="w-6 h-6 sm:w-8 sm:h-8 text-violet-600" />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-gray-900 line-clamp-1">{advisor.name}</h3>
-                      <p className="text-sm text-gray-500 line-clamp-2">{advisor.description}</p>
-                      <div className="flex flex-wrap gap-1 mt-2">
-                        {advisor.specialties?.map((spec) => (
+                    <div className="flex-1 min-w-0 text-center sm:text-left">
+                      <h3 className="font-semibold text-gray-900 text-xs sm:text-base line-clamp-1">{advisor.name}</h3>
+                      <p className="text-[10px] sm:text-sm text-gray-500 line-clamp-2 hidden sm:block">{advisor.description}</p>
+                      <div className="hidden sm:flex flex-wrap gap-1 mt-2">
+                        {advisor.specialties?.slice(0, 2).map((spec) => (
                           <Badge key={spec} variant="outline" className="text-xs capitalize">
                             {spec.replace('_', ' ')}
                           </Badge>
                         ))}
                       </div>
-                      <div className="flex items-center gap-2 mt-2 text-sm text-gray-500">
-                        <MapPin className="w-3 h-3" />
-                        {advisor.cities?.join(', ')}
-                      </div>
                     </div>
                   </div>
-                  <div className="flex items-center justify-between mt-4 pt-4 border-t">
+                  <div className="flex items-center justify-between mt-2 sm:mt-4 pt-2 sm:pt-4 border-t">
                     <div>
-                      <span className="text-lg font-bold text-violet-600">₹{advisor.consultation_fee || 1500}</span>
-                      <span className="text-sm text-gray-400"> /session</span>
+                      <span className="text-sm sm:text-lg font-bold text-violet-600">₹{advisor.consultation_fee || 1500}</span>
                     </div>
                     <Button 
                       size="sm"
-                      className="bg-violet-600 hover:bg-violet-700"
+                      className="bg-violet-600 hover:bg-violet-700 text-[10px] sm:text-sm px-2 sm:px-3 h-6 sm:h-8"
                       onClick={() => handleConsultationRequest(advisor.specialties?.[0])}
                     >
-                      Book Now
+                      Book
                     </Button>
                   </div>
                 </Card>
