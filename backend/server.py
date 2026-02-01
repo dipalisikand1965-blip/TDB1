@@ -83,6 +83,12 @@ from collection_routes import (
     set_collection_db,
     set_collection_admin_verify
 )
+from occasion_box_routes import (
+    admin_router as occasion_box_admin_router,
+    public_router as occasion_box_public_router,
+    set_occasion_box_db,
+    set_occasion_box_admin_verify
+)
 from partner_routes import (
     router as partner_router,
     admin_router as partner_admin_router,
