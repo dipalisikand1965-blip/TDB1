@@ -237,6 +237,27 @@ const MiraChatWidget = ({
     fetchMiraContext();
   }, [pillar, trackPillarVisit, token]);
   
+  // Set pillar-specific quick actions immediately (no auth required)
+  useEffect(() => {
+    const pillarActions = {
+      stay: ['Book Stay', 'Find Hotels', 'Pet-Friendly Resorts'],
+      care: ['Build Care Kit', 'Book Grooming', 'Vet Consult', 'Wellness Check'],
+      fit: ['Build Fitness Kit', 'Start Workout', 'Track Activity'],
+      travel: ['Build Travel Kit', 'Plan Trip', 'Pet Passport'],
+      celebrate: ['Build Birthday Kit', 'Order Cake', 'Party Planning'],
+      dine: ['Meal Plan', 'Order Food', 'Special Diet'],
+      enjoy: ['Find Playdate', 'Dog Park', 'Social Events'],
+      learn: ['Build Training Kit', 'Start Training', 'Book Class'],
+      paperwork: ['Get Insurance', 'Registration', 'Health Records'],
+      advisory: ['Expert Consult', 'Nutrition Plan', 'Behavior Help'],
+      emergency: ['24/7 Vet', 'First Aid', 'Emergency Contacts'],
+      farewell: ['Memorial', 'Support', 'Rainbow Bridge'],
+      adopt: ['Browse Pets', 'Apply', 'Foster'],
+      shop: ['Best Sellers', 'Deals', 'New Arrivals']
+    };
+    setQuickActions(pillarActions[pillar] || ['Help', 'Browse', 'Book']);
+  }, [pillar]);
+  
   // Fetch user's pets
   useEffect(() => {
     if (!user || !token) return;
