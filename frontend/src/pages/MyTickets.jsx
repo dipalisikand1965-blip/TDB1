@@ -6,9 +6,11 @@ import { Textarea } from '../components/ui/textarea';
 import { 
   Ticket, Clock, CheckCircle, AlertCircle, MessageCircle, 
   ChevronRight, ArrowLeft, Send, Timer, RefreshCw, PawPrint,
-  Inbox, Package, Brain, Heart
+  Inbox, Package, Brain, Heart, Bell, BellOff
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { usePushNotifications } from '../hooks/usePushNotifications';
+import { toast } from 'sonner';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
