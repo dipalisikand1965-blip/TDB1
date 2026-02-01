@@ -133,6 +133,9 @@ import Register from "./pages/Register";
 import ShopPage from "./pages/ShopPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
 import SearchResults from "./pages/SearchResults";
+
+// Occasion Box Builder - Standalone page
+const OccasionBoxPage = lazy(() => import("./pages/OccasionBoxPage"));
 import Checkout from "./pages/Checkout";
 import ProtectedRoute from "./components/ProtectedRoute";
 
