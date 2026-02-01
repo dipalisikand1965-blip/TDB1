@@ -509,17 +509,17 @@ const AdvisoryPage = () => {
             {/* Bundles */}
             {bundles.length > 0 && (
               <div className="mb-8">
-                <h3 className="text-lg font-semibold text-gray-700 mb-4">🎁 Consultation Bundles</h3>
+                <h3 className="text-sm sm:text-lg font-semibold text-gray-700 mb-3 sm:mb-4">🎁 Consultation Bundles</h3>
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                   {bundles.map((bundle) => (
-                    <Card key={bundle.id} className="p-4 border-2 border-violet-200 bg-violet-50/50" data-testid={`bundle-${bundle.id}`}>
-                      <div className="flex items-start justify-between mb-2">
-                        <h4 className="font-semibold text-gray-900">{bundle.name}</h4>
+                    <Card key={bundle.id} className="p-2.5 sm:p-4 border-2 border-violet-200 bg-violet-50/50" data-testid={`bundle-${bundle.id}`}>
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-1 sm:mb-2">
+                        <h4 className="font-semibold text-gray-900 text-xs sm:text-base line-clamp-1">{bundle.name}</h4>
                         {bundle.is_recommended && (
-                          <Badge className="bg-violet-500">Recommended</Badge>
+                          <Badge className="bg-violet-500 text-[10px] sm:text-xs mt-1 sm:mt-0 w-fit">Top Pick</Badge>
                         )}
                       </div>
-                      <p className="text-sm text-gray-600 mb-3">{bundle.description}</p>
+                      <p className="text-[10px] sm:text-sm text-gray-600 mb-2 sm:mb-3 line-clamp-2 hidden sm:block">{bundle.description}</p>
                       {bundle.includes_consultation && (
                         <Badge variant="outline" className="text-violet-600 mb-2">
                           <Video className="w-3 h-3 mr-1" /> Includes Consultation
