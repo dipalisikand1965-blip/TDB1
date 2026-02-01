@@ -439,7 +439,7 @@ const CarePage = () => {
   };
 
   const scrollToProducts = () => {
-    document.getElementById('care-kits')?.scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('care-products')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
