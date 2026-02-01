@@ -461,7 +461,7 @@ const FarewellPage = () => {
             </p>
           </div>
           
-          <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
             {MEMORIAL_PRODUCTS.map((product) => (
               <Card 
                 key={product.id}
