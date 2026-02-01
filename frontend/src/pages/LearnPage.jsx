@@ -523,7 +523,12 @@ const LearnPage = () => {
 
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
             {(featuredPrograms.length > 0 ? featuredPrograms : programs).map((program) => (
-              <Card key={program.id} className="overflow-hidden hover:shadow-xl transition-all" data-testid={`program-${program.id}`}>
+              <Card 
+                key={program.id} 
+                className="overflow-hidden hover:shadow-xl transition-all cursor-pointer" 
+                data-testid={`program-${program.id}`}
+                onClick={() => { setSelectedProgram(program); setShowEnrollModal(true); }}
+              >
                 <div className="aspect-[4/3] sm:aspect-video bg-gradient-to-br from-blue-100 to-indigo-100 relative">
                   {program.image ? (
                     <img src={program.image} alt={program.name} className="w-full h-full object-cover" />
