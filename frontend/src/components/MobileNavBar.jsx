@@ -34,6 +34,35 @@ const MobileNavBar = () => {
     return location.pathname === basePath || location.pathname.startsWith(basePath);
   };
   
+  // Detect current pillar from URL path
+  const detectPillar = () => {
+    const path = location.pathname;
+    const pillarMap = {
+      '/care': 'care',
+      '/celebrate': 'celebrate',
+      '/stay': 'stay',
+      '/travel': 'travel',
+      '/dine': 'dine',
+      '/fit': 'fit',
+      '/enjoy': 'enjoy',
+      '/learn': 'learn',
+      '/paperwork': 'paperwork',
+      '/advisory': 'advisory',
+      '/emergency': 'emergency',
+      '/farewell': 'farewell',
+      '/adopt': 'adopt',
+      '/shop': 'shop',
+      '/services': 'services',
+    };
+    
+    for (const [pathPrefix, pillar] of Object.entries(pillarMap)) {
+      if (path === pathPrefix || path.startsWith(pathPrefix + '/')) {
+        return pillar;
+      }
+    }
+    return 'general';
+  };
+  
   const handleNavClick = (e, item) => {
     e.preventDefault();
     e.stopPropagation();
@@ -44,8 +73,11 @@ const MobileNavBar = () => {
     }
     
     if (item.isMira) {
-      // Open Mira AI chat
-      window.dispatchEvent(new CustomEvent('openMiraAI'));
+      // Open Mira AI chat with current pillar context
+      const currentPillar = detectPillar();
+      window.dispatchEvent(new CustomEvent('openMiraAI', { 
+        detail: { pillar: currentPillar, source: 'mobile_nav' }
+      }));
       return;
     }
     
