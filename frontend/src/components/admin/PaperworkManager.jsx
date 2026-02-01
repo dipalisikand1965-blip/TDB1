@@ -216,6 +216,40 @@ const PaperworkManager = () => {
     }
   };
 
+  // Document Vault State
+  const [vaultDocuments, setVaultDocuments] = useState([]);
+  const [vaultLoading, setVaultLoading] = useState(false);
+  const [vaultStats, setVaultStats] = useState({});
+  const [vaultSearch, setVaultSearch] = useState('');
+  const [vaultCategory, setVaultCategory] = useState('all');
+  
+  const fetchVaultDocuments = async () => {
+    setVaultLoading(true);
+    try {
+      const params = new URLSearchParams();
+      if (vaultSearch) params.append('search', vaultSearch);
+      if (vaultCategory && vaultCategory !== 'all') params.append('category', vaultCategory);
+      params.append('limit', '100');
+      
+      const res = await fetch(`${API_URL}/api/paperwork/admin/documents?${params.toString()}`);
+      if (res.ok) {
+        const data = await res.json();
+        setVaultDocuments(data.documents || []);
+        setVaultStats(data.stats || {});
+      }
+    } catch (error) {
+      console.error('Error fetching vault documents:', error);
+    } finally {
+      setVaultLoading(false);
+    }
+  };
+  
+  useEffect(() => {
+    if (activeTab === 'vault') {
+      fetchVaultDocuments();
+    }
+  }, [activeTab, vaultSearch, vaultCategory]);
+
   const seedData = async () => {
     try {
       const res = await fetch(`${API_URL}/api/paperwork/admin/seed`, { method: 'POST' });
