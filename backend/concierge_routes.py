@@ -1586,12 +1586,27 @@ async def resolve_item(ticket_id: str, request: ResolveRequest):
         except Exception as e:
             logger.warning(f"Failed to send NPS survey: {e}")
     
+    # Send push notification for resolution
+    push_result = None
+    if member_email:
+        try:
+            push_result = await notify_ticket_update(
+                ticket_id=ticket_id,
+                user_email=member_email,
+                update_type="resolution",
+                details={"agent_name": request.agent_name}
+            )
+            logger.info(f"Push notification sent for ticket resolution {ticket_id}: {push_result}")
+        except Exception as e:
+            logger.warning(f"Failed to send push notification: {e}")
+    
     return {
         "success": True,
         "message": "Resolved and member notified",
         "notification_sent": notification_sent,
         "send_via": request.send_via,
-        "nps_survey_sent": nps_sent
+        "nps_survey_sent": nps_sent,
+        "push_notification": push_result
     }
 
 
