@@ -3463,8 +3463,8 @@ const MemberDashboard = () => {
         </DialogContent>
       </Dialog>
       
-      {/* Mobile Bottom Navigation - REMOVED per user request to fix footer overlap */}
-      {/* <MobileNavBar /> */}
+      {/* Mobile Bottom Navigation - Fixed at bottom */}
+      <MobileNavBar />
       
       {/* Voice Quick Actions Modal - Phase 2 Feature */}
       <VoiceQuickActions 
