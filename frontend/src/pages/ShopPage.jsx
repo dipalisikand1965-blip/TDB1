@@ -487,10 +487,6 @@ const ShopPage = () => {
               <Tag className="w-4 h-4" />
               14 Pillars
             </span>
-            <span className="flex items-center gap-1">
-              <Truck className="w-4 h-4" />
-              Free Delivery 500+
-            </span>
           </div>
         </div>
       </section>

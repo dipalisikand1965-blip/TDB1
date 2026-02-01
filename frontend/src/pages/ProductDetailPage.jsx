@@ -446,11 +446,7 @@ const ProductDetailPage = () => {
             </div>
             
             {/* Trust Badges */}
-            <div className="grid grid-cols-3 gap-4 pt-6 border-t">
-              <div className="text-center">
-                <Truck className="w-6 h-6 mx-auto text-green-600 mb-1" />
-                <p className="text-xs text-gray-600">Free Delivery<br/>Over ₹500</p>
-              </div>
+            <div className="grid grid-cols-2 gap-4 pt-6 border-t">
               <div className="text-center">
                 <Shield className="w-6 h-6 mx-auto text-blue-600 mb-1" />
                 <p className="text-xs text-gray-600">100%<br/>Authentic</p>
