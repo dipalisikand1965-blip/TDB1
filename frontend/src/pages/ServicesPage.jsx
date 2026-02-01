@@ -400,14 +400,14 @@ const ServicesPage = () => {
                 </div>
               </div>
             </Card>
-            <Card className="p-4 bg-gradient-to-br from-amber-50 to-white border-amber-100">
+            <Card className="p-4 bg-gradient-to-br from-emerald-50 to-white border-emerald-100">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-amber-100 flex items-center justify-center">
-                  <Heart className="w-5 h-5 text-amber-600" />
+                <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center">
+                  <Heart className="w-5 h-5 text-emerald-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-amber-600">{stats.free}</p>
-                  <p className="text-xs text-gray-500">Free Services</p>
+                  <p className="text-2xl font-bold text-emerald-600">{stats.free}</p>
+                  <p className="text-xs text-gray-500">Complimentary</p>
                 </div>
               </div>
             </Card>
