@@ -97,7 +97,7 @@ const CinematicKitAssembly = ({
   onComplete,
   onClose,
   addToCart,
-  petName = "your furry friend"
+  petInfo = {} // { name, breed, size, age }
 }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [selectedItems, setSelectedItems] = useState([]);
@@ -105,6 +105,8 @@ const CinematicKitAssembly = ({
   const [showSummary, setShowSummary] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  
+  const petName = petInfo.name || "your furry friend";
   
   // Speech synthesis ref
   const synthRef = useRef(null);
