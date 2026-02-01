@@ -153,7 +153,7 @@ async def get_recent_ratings(limit: int = 10):
 @router.get("/top-rated")
 async def get_top_rated_products(limit: int = 10, min_ratings: int = 3):
     """Get top-rated products by PawMeter score"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
     
     pipeline = [
