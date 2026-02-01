@@ -890,7 +890,7 @@ const Navbar = () => {
                 data-testid="navbar-mobile-menu-btn"
                 aria-label={isMenuOpen ? "Close menu" : "Open menu"}
               >
-                {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                {isMenuOpen ? <X className="w-6 h-6 pointer-events-none" /> : <Menu className="w-6 h-6 pointer-events-none" />}
               </button>
             </div>
           </div>
