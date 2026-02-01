@@ -238,6 +238,34 @@ async def upload_document(
     """Upload a document to the pet's paperwork vault - supports both URL and direct file upload"""
     db = get_db()
     
+    # Handle direct file upload
+    actual_file_url = file_url
+    file_type = "unknown"
+    
+    if file and file.filename:
+        # Direct file upload
+        try:
+            file_ext = file.filename.split('.')[-1].lower() if '.' in file.filename else 'bin'
+            unique_filename = f"{uuid.uuid4().hex}_{file.filename}"
+            file_path = os.path.join(UPLOAD_DIR, unique_filename)
+            
+            contents = await file.read()
+            with open(file_path, 'wb') as f:
+                f.write(contents)
+            
+            actual_file_url = f"/api/paperwork/files/{unique_filename}"
+            file_type = file_ext
+            logger.info(f"Document file uploaded: {unique_filename}, size: {len(contents)} bytes")
+        except Exception as e:
+            logger.error(f"File upload error: {e}")
+            raise HTTPException(status_code=500, detail=f"Failed to upload file: {str(e)}")
+    elif file_url:
+        # URL provided
+        actual_file_url = file_url
+        file_type = file_url.split('.')[-1].lower() if '.' in file_url else "unknown"
+    else:
+        raise HTTPException(status_code=400, detail="Either file or file_url must be provided")
+    
     doc_id = f"DOC-{uuid.uuid4().hex[:8].upper()}"
     
     document = {
@@ -246,8 +274,8 @@ async def upload_document(
         "category": category,
         "subcategory": subcategory,
         "document_name": document_name,
-        "file_url": file_url,
-        "file_type": file_url.split('.')[-1].lower() if '.' in file_url else "unknown",
+        "file_url": actual_file_url,
+        "file_type": file_type,
         "document_date": document_date,
         "expiry_date": expiry_date,
         "notes": notes,
