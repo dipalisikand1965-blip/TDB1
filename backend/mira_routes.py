@@ -3809,7 +3809,6 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                 product_context["kit_type"] = kit_assembly_state.get("kit_type")
                 product_context["gathered_info"] = gathered
             else:
-            else:
                 # Ask follow-up or confirm
                 kit_type = kit_assembly_state.get("kit_type", "custom")
                 pet_name = pets[0].get("name") if pets else "your furry friend"
