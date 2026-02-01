@@ -1,8 +1,9 @@
 """
-Admin Routes for The Doggy Bakery
+Admin Routes for The Doggy Company
 - Draft Orders
 - Fulfilment Management
 - Reports & Analytics
+- Secure admin authentication with rate limiting
 """
 
 import os
@@ -10,7 +11,9 @@ import uuid
 import logging
 from datetime import datetime, timezone, timedelta
 from typing import Optional, List
-from fastapi import APIRouter, HTTPException, Depends, Query
+from collections import defaultdict
+import threading
+from fastapi import APIRouter, HTTPException, Depends, Query, Request
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pydantic import BaseModel, Field
 from motor.motor_asyncio import AsyncIOMotorDatabase
