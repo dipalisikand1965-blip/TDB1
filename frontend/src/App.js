@@ -42,6 +42,17 @@ function ConditionalFloatingButton() {
   return <FloatingContactButton />;
 }
 
+// ConditionalMobileNav - Show mobile nav bar only on appropriate pages
+function ConditionalMobileNav() {
+  const { pathname } = useLocation();
+  // Don't show on admin, login, or register pages
+  const hiddenPaths = ['/admin', '/login', '/register', '/forgot-password'];
+  if (hiddenPaths.some(path => pathname.startsWith(path))) {
+    return null;
+  }
+  return <MobileNavBar />;
+}
+
 // Redirect component for deprecated pet-soul-journey route
 function PetSoulJourneyRedirect() {
   const { petId } = useParams();
