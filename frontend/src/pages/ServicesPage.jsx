@@ -400,36 +400,36 @@ const ServicesPage = () => {
                 </div>
               </div>
             </Card>
-            <Card className="p-4 bg-gradient-to-br from-emerald-50 to-white border-emerald-100">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-emerald-100 flex items-center justify-center">
-                  <Heart className="w-5 h-5 text-emerald-600" />
+            <Card className="p-3 bg-gradient-to-br from-emerald-50 to-white border-emerald-100">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center">
+                  <Heart className="w-4 h-4 text-emerald-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-emerald-600">{stats.free}</p>
-                  <p className="text-xs text-gray-500">Complimentary</p>
+                  <p className="text-xl font-bold text-emerald-600">{stats.free}</p>
+                  <p className="text-[10px] text-gray-500">Complimentary</p>
                 </div>
               </div>
             </Card>
-            <Card className="p-4 bg-gradient-to-br from-blue-50 to-white border-blue-100 hidden md:block">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
-                  <Star className="w-5 h-5 text-blue-600" />
+            <Card className="p-3 bg-gradient-to-br from-blue-50 to-white border-blue-100 hidden sm:block">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
+                  <Star className="w-4 h-4 text-blue-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-blue-600">{stats.consultation_required}</p>
-                  <p className="text-xs text-gray-500">Consultation</p>
+                  <p className="text-xl font-bold text-blue-600">{stats.consultation_required}</p>
+                  <p className="text-[10px] text-gray-500">Consult</p>
                 </div>
               </div>
             </Card>
-            <Card className="p-4 bg-gradient-to-br from-red-50 to-white border-red-100 hidden md:block">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-red-100 flex items-center justify-center">
-                  <TrendingUp className="w-5 h-5 text-red-600" />
+            <Card className="p-3 bg-gradient-to-br from-red-50 to-white border-red-100 hidden md:block">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center">
+                  <TrendingUp className="w-4 h-4 text-red-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-red-600">{stats.emergency_24x7}</p>
-                  <p className="text-xs text-gray-500">24x7 Emergency</p>
+                  <p className="text-xl font-bold text-red-600">{stats.emergency_24x7}</p>
+                  <p className="text-[10px] text-gray-500">24x7</p>
                 </div>
               </div>
             </Card>
