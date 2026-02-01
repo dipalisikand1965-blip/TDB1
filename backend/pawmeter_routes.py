@@ -137,7 +137,7 @@ async def get_product_score(product_id: str):
 @router.get("/recent")
 async def get_recent_ratings(limit: int = 10):
     """Get most recent PawMeter ratings across all products"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
     
     cursor = db.paw_ratings.find(
