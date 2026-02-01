@@ -611,6 +611,41 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Cross-Sell Modal - Show related products after booking */}
+      <Dialog open={showCrossSell} onOpenChange={setShowCrossSell}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-rose-500" />
+              Complete Your {pillar?.charAt(0).toUpperCase() + pillar?.slice(1)} Routine
+            </DialogTitle>
+          </DialogHeader>
+          
+          {bookedService && (
+            <CrossSellSection
+              serviceId={bookedService.id}
+              serviceName={bookedService.name}
+              pillar={pillar}
+              maxProducts={4}
+              onAddToCart={(product) => {
+                // Could integrate with cart context here
+                console.log('Add to cart:', product);
+              }}
+            />
+          )}
+          
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => { setShowCrossSell(false); setBookedService(null); }}
+              className="w-full"
+            >
+              Maybe Later
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
