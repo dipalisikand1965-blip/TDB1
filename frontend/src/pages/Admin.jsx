@@ -119,7 +119,8 @@ import {
   Database,
   TrendingUp,
   GraduationCap,
-  Flame
+  Flame,
+  Briefcase
 } from 'lucide-react';
 import AdminEngagement from '../components/AdminEngagement';
 
