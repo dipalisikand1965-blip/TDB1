@@ -165,6 +165,7 @@ import NPSFeedbackPage from "./pages/NPSFeedbackPage";
 import UnifiedPetPage from "./pages/UnifiedPetPage";
 import FarewellPage from "./pages/FarewellPage";
 import ShopPage from "./pages/ShopPage";
+import ServicesPage from "./pages/ServicesPage";
 import AdoptPage from "./pages/AdoptPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
 import MealPlanPage from "./pages/MealPlanPage";
