@@ -78,8 +78,8 @@ const CelebratePage = () => {
   };
   
   const handleBuildBox = (occasion) => {
-    setBoxOccasion(occasion);
-    setShowBoxBuilder(true);
+    // Navigate to the dedicated occasion box page
+    navigate(`/occasion-box/${occasion}`);
   };
   
   const handleAddToCart = (items) => {
