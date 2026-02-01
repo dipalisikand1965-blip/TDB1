@@ -928,6 +928,14 @@ const EnjoyPage = () => {
         <span className="font-medium text-sm hidden sm:inline">Ask Concierge</span>
       </a>
       
+      {/* === SERVICE CATALOG WITH PRICING === */}
+      <ServiceCatalogSection 
+        pillar="enjoy"
+        title="Enjoy, Personalised"
+        subtitle="See your personalized price based on your city, pet size, and requirements"
+        maxServices={8}
+      />
+      
       {/* Mira Floating Chat Widget */}
       <MiraChatWidget pillar="enjoy" />
       
