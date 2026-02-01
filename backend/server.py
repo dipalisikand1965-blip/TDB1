@@ -1675,12 +1675,12 @@ from pawmeter_routes import router as pawmeter_router, set_pawmeter_db
 @app.get("/health")
 def health_check():
     """Simple health check for Kubernetes liveness/readiness probes"""
-    return {"status": "healthy", "service": "doggy-bakery-api"}
+    return {"status": "healthy", "service": "pet-concierge-api"}
 
 @app.get("/api/health")
 def api_health_check():
     """Simple health check under /api prefix"""
-    return {"status": "healthy", "service": "doggy-bakery-api"}
+    return {"status": "healthy", "service": "pet-concierge-api"}
 
 @app.get("/health/db")
 async def db_health_check():
