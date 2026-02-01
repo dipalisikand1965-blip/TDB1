@@ -347,7 +347,7 @@ const MiraChatWidget = ({
       
       welcomeMsg += ' 🐾';
       
-      // First time message - speak the introduction with female voice
+      // First time message - speak the FULL introduction with female voice
       const isFirstTime = !sessionStorage.getItem('mira_introduced');
       if (isFirstTime && synthRef.current && voiceEnabled) {
         sessionStorage.setItem('mira_introduced', 'true');
@@ -356,9 +356,25 @@ const MiraChatWidget = ({
           const synth = synthRef.current;
           if (!synth) return;
           synth.cancel();
-          const utterance = new SpeechSynthesisUtterance('Hi, I am Meera, your pet concierge.');
+          
+          // Build full greeting with phonetic "concierge" pronunciation
+          // "concierge" should sound like "kon-see-airzh" (French pronunciation)
+          const petName = selectedPet?.name || '';
+          const petBreed = selectedPet?.breed || '';
+          const pillarName = config.name || 'our services';
+          
+          let fullGreeting = `Hi, I am Meera, your pet kon-see-airzh.`;
+          if (petName && petBreed) {
+            fullGreeting = `Hi, I am Meera, your pet kon-see-airzh! Good ${getTimeOfDay()}! I see you're browsing ${pillarName} for ${petName}, your lovely ${petBreed}. How can I help today?`;
+          } else if (petName) {
+            fullGreeting = `Hi, I am Meera, your pet kon-see-airzh! Good ${getTimeOfDay()}! I see you're here for ${petName}. How can I help today?`;
+          } else {
+            fullGreeting = `Hi, I am Meera, your pet kon-see-airzh! Good ${getTimeOfDay()}! How can I help you today?`;
+          }
+          
+          const utterance = new SpeechSynthesisUtterance(fullGreeting);
           utterance.pitch = 1.1;
-          utterance.rate = 1.0;
+          utterance.rate = 0.95; // Slightly slower for clarity
           // Get female voice
           const voices = synth.getVoices();
           const femaleVoice = voices.find(v => 
