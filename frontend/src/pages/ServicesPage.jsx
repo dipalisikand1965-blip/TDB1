@@ -518,20 +518,20 @@ const ServicesPage = () => {
                         <Badge className="bg-red-100 text-red-700 text-[10px] sm:text-xs px-1.5 py-0.5">24x7</Badge>
                       )}
                       {service.requires_consultation && (
-                        <Badge className="bg-amber-100 text-amber-700 text-xs">Consult</Badge>
+                        <Badge className="bg-amber-100 text-amber-700 text-[10px] sm:text-xs px-1.5 py-0.5">Consult</Badge>
                       )}
                       {service.is_bookable && !service.is_free && (
-                        <Badge className="bg-blue-100 text-blue-700 text-xs">Bookable</Badge>
+                        <Badge className="bg-blue-100 text-blue-700 text-[10px] sm:text-xs px-1.5 py-0.5">Bookable</Badge>
                       )}
                     </div>
                     
                     {/* Title */}
-                    <h3 className="font-bold text-gray-900 mb-1 group-hover:text-violet-600 transition-colors line-clamp-2">
+                    <h3 className="font-bold text-gray-900 text-sm sm:text-base mb-0.5 sm:mb-1 group-hover:text-violet-600 transition-colors line-clamp-2">
                       {service.name}
                     </h3>
                     
-                    {/* Description */}
-                    <p className="text-sm text-gray-500 mb-3 line-clamp-2">
+                    {/* Description - Hidden on mobile */}
+                    <p className="hidden sm:block text-sm text-gray-500 mb-3 line-clamp-2">
                       {service.description || 'Professional service tailored for your pet'}
                     </p>
                     
@@ -539,30 +539,30 @@ const ServicesPage = () => {
                     <div className="flex items-center justify-between">
                       <div>
                         {service.is_free ? (
-                          <span className="text-lg font-bold text-green-600">Free</span>
+                          <span className="text-sm sm:text-lg font-bold text-emerald-600">Complimentary</span>
                         ) : service.base_price ? (
-                          <span className="text-lg font-bold text-gray-900">
+                          <span className="text-sm sm:text-lg font-bold text-gray-900">
                             ₹{service.base_price.toLocaleString()}
-                            <span className="text-xs text-gray-400 font-normal">+</span>
+                            <span className="text-[10px] sm:text-xs text-gray-400 font-normal">+</span>
                           </span>
                         ) : (
-                          <span className="text-sm text-gray-500">Quote on request</span>
+                          <span className="text-xs sm:text-sm text-gray-500">Quote</span>
                         )}
                       </div>
                       {service.duration_minutes && (
-                        <div className="flex items-center text-sm text-gray-500">
-                          <Clock className="w-3 h-3 mr-1" />
-                          {service.duration_minutes} min
+                        <div className="flex items-center text-[10px] sm:text-sm text-gray-500">
+                          <Clock className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-0.5 sm:mr-1" />
+                          {service.duration_minutes}m
                         </div>
                       )}
                     </div>
                     
                     {/* CTA */}
-                    <div className="mt-3 pt-3 border-t flex items-center justify-between">
-                      <span className="text-xs text-gray-400">
-                        {service.is_bookable ? 'Click to see your price' : 'Learn more'}
+                    <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t flex items-center justify-between">
+                      <span className="text-[10px] sm:text-xs text-gray-400">
+                        {service.is_bookable ? 'Tap for price' : 'Learn more'}
                       </span>
-                      <ChevronRight className="w-4 h-4 text-violet-500 group-hover:translate-x-1 transition-transform" />
+                      <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 text-violet-500 group-hover:translate-x-1 transition-transform" />
                     </div>
                   </div>
                 </Card>
