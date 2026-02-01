@@ -1585,13 +1585,13 @@ const ReservationModal = ({ restaurant, onClose, getPetMenuBadge, currentUser, a
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4">
           <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
             <span className="text-sm font-medium">Pet Menu Status</span>
             {getPetMenuBadge(restaurant.petMenuAvailable)}
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <div>
               <label className="text-sm font-medium text-gray-700">Your Name</label>
               <Input 
