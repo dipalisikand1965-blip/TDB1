@@ -166,8 +166,8 @@ const PaperworkPage = () => {
       toast({ title: "Select a Pet", description: "Please select a pet first", variant: "destructive" });
       return;
     }
-    if (!uploadForm.document_name || !uploadForm.file_url) {
-      toast({ title: "Required Fields", description: "Please fill in document name and file URL", variant: "destructive" });
+    if (!uploadForm.document_name || (!uploadForm.file_url && !uploadForm.file)) {
+      toast({ title: "Required Fields", description: "Please fill in document name and upload a file or provide URL", variant: "destructive" });
       return;
     }
     
@@ -184,7 +184,13 @@ const PaperworkPage = () => {
       formData.append('reminder_enabled', uploadForm.reminder_enabled);
       formData.append('reminder_date', uploadForm.reminder_date);
       formData.append('reminder_channel', uploadForm.reminder_channel);
-      formData.append('file_url', uploadForm.file_url);
+      
+      // Add file or URL
+      if (uploadForm.file) {
+        formData.append('file', uploadForm.file);
+      } else if (uploadForm.file_url) {
+        formData.append('file_url', uploadForm.file_url);
+      }
       
       const response = await fetch(`${API_URL}/api/paperwork/documents/upload`, {
         method: 'POST',
