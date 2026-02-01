@@ -321,13 +321,36 @@ const CinematicKitAssembly = ({
       animate={{ opacity: 1 }}
       className="fixed inset-0 z-50 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900"
     >
-      {/* Close Button */}
-      <button
-        onClick={onClose}
-        className="absolute top-4 right-4 z-10 w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-white hover:bg-white/20"
-      >
-        <X className="w-6 h-6" />
-      </button>
+      {/* Top Controls */}
+      <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
+        {/* Voice Toggle */}
+        <button
+          onClick={toggleVoice}
+          className={`w-10 h-10 rounded-full flex items-center justify-center transition-colors ${
+            voiceEnabled 
+              ? 'bg-purple-500 text-white' 
+              : 'bg-white/10 text-white/60'
+          } hover:bg-purple-600`}
+          title={voiceEnabled ? "Mute Mira" : "Enable Mira's voice"}
+        >
+          {voiceEnabled ? (
+            <Volume2 className={`w-5 h-5 ${isSpeaking ? 'animate-pulse' : ''}`} />
+          ) : (
+            <VolumeX className="w-5 h-5" />
+          )}
+        </button>
+        
+        {/* Close Button */}
+        <button
+          onClick={() => {
+            if (synthRef.current) synthRef.current.cancel();
+            onClose();
+          }}
+          className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-white hover:bg-white/20"
+        >
+          <X className="w-6 h-6" />
+        </button>
+      </div>
       
       {/* Progress Bar */}
       <div className="absolute top-0 left-0 right-0 h-1 bg-white/10">
