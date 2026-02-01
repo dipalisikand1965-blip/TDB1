@@ -660,23 +660,23 @@ const LearnPage = () => {
               <p className="text-gray-600 mt-2">Everything you need to train at home</p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-6">
               {bundles.map((bundle) => (
-                <Card key={bundle.id} className="p-4 sm:p-6 flex flex-col sm:flex-row gap-4 sm:gap-6" data-testid={`bundle-${bundle.id}`}>
-                  <div className="w-full sm:w-32 h-32 rounded-lg bg-gradient-to-br from-blue-100 to-indigo-100 flex-shrink-0 overflow-hidden">
+                <Card key={bundle.id} className="p-3 sm:p-6 flex flex-col sm:flex-row gap-3 sm:gap-6" data-testid={`bundle-${bundle.id}`}>
+                  <div className="w-full sm:w-32 h-24 sm:h-32 rounded-lg bg-gradient-to-br from-blue-100 to-indigo-100 flex-shrink-0 overflow-hidden">
                     {bundle.image ? (
                       <img src={bundle.image} alt={bundle.name} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <GraduationCap className="w-12 h-12 text-blue-300" />
+                        <GraduationCap className="w-8 h-8 sm:w-12 sm:h-12 text-blue-300" />
                       </div>
                     )}
                   </div>
                   <div className="flex-1">
-                    <h3 className="font-bold text-lg text-gray-900 mb-1">{bundle.name}</h3>
-                    <p className="text-sm text-gray-600 mb-3">{bundle.description}</p>
+                    <h3 className="font-bold text-sm sm:text-lg text-gray-900 mb-1">{bundle.name}</h3>
+                    <p className="text-xs sm:text-sm text-gray-600 mb-2 sm:mb-3 line-clamp-2">{bundle.description}</p>
                     
-                    <div className="flex flex-wrap gap-1 mb-3">
+                    <div className="flex flex-wrap gap-1 mb-2 sm:mb-3 hidden sm:flex">
                       {bundle.items?.map((item, i) => (
                         <Badge key={i} variant="secondary" className="text-xs">{item}</Badge>
                       ))}
@@ -684,15 +684,12 @@ const LearnPage = () => {
 
                     <div className="flex items-center justify-between">
                       <div>
-                        <span className="text-xl font-bold text-blue-600">₹{bundle.price?.toLocaleString()}</span>
+                        <span className="text-base sm:text-xl font-bold text-blue-600">₹{bundle.price?.toLocaleString()}</span>
                         {bundle.original_price && (
-                          <span className="text-sm text-gray-400 line-through ml-2">₹{bundle.original_price?.toLocaleString()}</span>
-                        )}
-                        {bundle.savings && (
-                          <Badge className="ml-2 bg-green-100 text-green-700">Save ₹{bundle.savings}</Badge>
+                          <span className="text-xs sm:text-sm text-gray-400 line-through ml-1 sm:ml-2">₹{bundle.original_price?.toLocaleString()}</span>
                         )}
                       </div>
-                      <Button onClick={() => handleAddBundleToCart(bundle)}>Add to Cart</Button>
+                      <Button onClick={() => handleAddBundleToCart(bundle)} size="sm" className="text-xs sm:text-sm px-2 sm:px-4">Add</Button>
                     </div>
                   </div>
                 </Card>
