@@ -3848,11 +3848,15 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
         if kit_assembly_state and kit_assembly_state.get("stage") == "assembling":
             should_search_products = True
         
+        logger.info(f"[KIT FLOW] should_search={should_search_products}, is_kit_request={product_context.get('is_kit_request')}, kit_assembly_stage={kit_assembly_state.get('stage') if kit_assembly_state else None}")
+        
         if should_search_products:
             # Determine what to search for
             search_items = product_context["specific_items"] or product_context["kit_items"] or []
             search_pillar = product_context["target_pillar"] or pillar
             kit_type = product_context.get("kit_type") or (kit_assembly_state.get("kit_type") if kit_assembly_state else None)
+            
+            logger.info(f"[KIT FLOW] kit_type={kit_type}, search_pillar={search_pillar}, search_items={search_items[:3] if search_items else []}")
             
             # =======================================================================
             # PRIORITY 1: Check for admin-managed kit template
@@ -3862,6 +3866,7 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
             admin_kit_products = []
             
             if kit_type or search_pillar:
+                logger.info(f"[ADMIN KIT] Looking up template for kit_type={kit_type}, pillar={search_pillar}")
                 admin_kit_template = await get_admin_kit_template(
                     db, 
                     kit_type=kit_type or f"{search_pillar}_kit",
