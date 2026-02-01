@@ -18,6 +18,7 @@ import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
 import MiraChatWidget from '../components/MiraChatWidget';
+import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import SEOHead from '../components/SEOHead';
 import {
   Heart, Rainbow, Flower2, Star, Calendar, Phone, Mail, MapPin,
