@@ -204,6 +204,13 @@ const MyCelebrations = ({ pets = [], onNavigate, onAddToCart }) => {
   const [selectedOccasion, setSelectedOccasion] = useState(null);
   const [selectedPetName, setSelectedPetName] = useState('');
   
+  // Helper for ordinal suffix - declared before useEffect
+  const getOrdinalSuffix = (n) => {
+    const s = ['th', 'st', 'nd', 'rd'];
+    const v = n % 100;
+    return s[(v - 20) % 10] || s[v] || s[0];
+  };
+  
   useEffect(() => {
     const today = new Date();
     const allCelebrations = [];
