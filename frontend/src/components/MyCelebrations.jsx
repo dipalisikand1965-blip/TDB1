@@ -102,14 +102,15 @@ const Confetti = () => {
 };
 
 // Single celebration card
-const CelebrationCard = ({ celebration, onAction }) => {
+const CelebrationCard = ({ celebration, onAction, onBuildBox }) => {
   const type = CELEBRATION_TYPES[celebration.type] || CELEBRATION_TYPES.birthday;
   const isToday = celebration.daysUntil === 0;
   const isOverdue = celebration.daysUntil < 0;
+  const isRecent = celebration.daysUntil < 0 && celebration.daysUntil >= -7;
   
   return (
     <div 
-      className={`relative p-4 rounded-xl border-2 ${type.bgColor} ${type.borderColor} transition-all hover:shadow-md ${isToday ? 'ring-2 ring-offset-2 ring-yellow-400' : ''}`}
+      className={`relative p-4 rounded-xl border-2 ${type.bgColor} ${type.borderColor} transition-all hover:shadow-md ${isToday ? 'ring-2 ring-offset-2 ring-yellow-400' : ''} ${isRecent ? 'ring-2 ring-offset-2 ring-purple-400' : ''}`}
     >
       {isToday && <Confetti />}
       
@@ -127,13 +128,18 @@ const CelebrationCard = ({ celebration, onAction }) => {
                     🎉 TODAY!
                   </Badge>
                 )}
+                {isRecent && (
+                  <Badge className="bg-purple-500 text-white">
+                    Celebrate now!
+                  </Badge>
+                )}
               </div>
               <p className="text-sm text-gray-600">{celebration.label}</p>
             </div>
           </div>
           
           {/* Countdown */}
-          <div className={`text-right ${isOverdue ? 'text-red-600' : ''}`}>
+          <div className={`text-right ${isOverdue ? 'text-purple-600' : ''}`}>
             <div className="flex items-center gap-1">
               <Clock className="w-4 h-4" />
               <span className="text-2xl font-bold">
@@ -141,7 +147,7 @@ const CelebrationCard = ({ celebration, onAction }) => {
               </span>
             </div>
             <p className="text-xs text-gray-500">
-              {isToday ? 'Celebrate!' : isOverdue ? 'days ago' : 'days left'}
+              {isToday ? 'Celebrate!' : isRecent ? 'days ago' : isOverdue ? 'days ago' : 'days left'}
             </p>
           </div>
         </div>
@@ -153,15 +159,38 @@ const CelebrationCard = ({ celebration, onAction }) => {
           </p>
         )}
         
-        {/* Action Button */}
-        <Button 
-          size="sm"
-          onClick={() => onAction(type.actionPath)}
-          className={`w-full bg-gradient-to-r ${type.color} text-white hover:opacity-90 shadow-md`}
-        >
-          {type.actionText}
-          <ChevronRight className="w-4 h-4 ml-1" />
-        </Button>
+        {/* Action Buttons */}
+        <div className="flex gap-2">
+          {type.hasBox && onBuildBox ? (
+            <>
+              <Button 
+                size="sm"
+                onClick={() => onBuildBox(type.occasionType, celebration.petName)}
+                className={`flex-1 bg-gradient-to-r ${type.color} text-white hover:opacity-90 shadow-md`}
+              >
+                <Gift className="w-4 h-4 mr-1" />
+                {type.actionText}
+              </Button>
+              <Button 
+                size="sm"
+                variant="outline"
+                onClick={() => onAction(type.actionPath)}
+                className="border-2"
+              >
+                <ShoppingBag className="w-4 h-4" />
+              </Button>
+            </>
+          ) : (
+            <Button 
+              size="sm"
+              onClick={() => onAction(type.actionPath)}
+              className={`w-full bg-gradient-to-r ${type.color} text-white hover:opacity-90 shadow-md`}
+            >
+              {type.actionText}
+              <ChevronRight className="w-4 h-4 ml-1" />
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );
