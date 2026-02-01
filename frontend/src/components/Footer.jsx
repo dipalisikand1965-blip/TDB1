@@ -384,6 +384,15 @@ const Footer = () => {
               <Link to="/partner" className="hover:text-pink-400 transition-colors">Partner With Us</Link>
             </div>
             
+            {/* AI Disclaimer */}
+            <div className="text-center text-xs text-gray-500 mb-4 px-4">
+              <p className="flex items-center justify-center gap-1.5 flex-wrap">
+                <Sparkles className="w-3 h-3 text-purple-400" />
+                <span>Mira is powered by AI and can make mistakes. Check important info.</span>
+                <Link to="/ai-disclaimer" className="text-purple-400 hover:text-purple-300 underline">Learn more</Link>
+              </p>
+            </div>
+            
             <div className="text-center text-xs text-gray-500 space-y-2">
               <p className="text-gray-400">© 2026 The Doggy Company®. All rights reserved.</p>
               <p className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
