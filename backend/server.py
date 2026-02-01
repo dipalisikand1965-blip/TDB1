@@ -1211,10 +1211,13 @@ async def lifespan(app: FastAPI):
     set_shopify_db(db)
     logger.info("Shopify sync module initialized")
     
+    # Import on_order_placed for ticket creation (must be before set_orders_deps)
+    from ticket_auto_creation import on_order_placed as order_placed_handler
+    
     # Initialize orders routes database connection
     set_orders_db(db)
-    set_orders_deps(get_current_user, create_admin_notification, notify_order_status_change, on_order_placed)
-    logger.info("Orders routes initialized")
+    set_orders_deps(get_current_user, create_admin_notification, notify_order_status_change, order_placed_handler)
+    logger.info("Orders routes initialized with ticket auto-creation")
     
     # Initialize Concierge® Order Queue
     set_order_queue_db(db)
