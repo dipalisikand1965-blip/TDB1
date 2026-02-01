@@ -548,26 +548,26 @@ const PaperworkPage = () => {
           {/* Bundles */}
           {bundles.length > 0 && (
             <div className="mb-12">
-              <h3 className="text-xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
-                <Star className="w-5 h-5 text-blue-600" /> Featured Bundles
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-800 mb-4 sm:mb-6 flex items-center gap-2">
+                <Star className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" /> Featured Bundles
               </h3>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
                 {bundles.map((bundle) => (
                   <Card 
                     key={bundle.id} 
-                    className={`p-5 border-2 hover:shadow-xl transition-all ${
+                    className={`p-3 sm:p-5 border-2 hover:shadow-xl transition-all ${
                       bundle.is_premium ? 'border-blue-400 bg-gradient-to-b from-blue-50 to-white' : 'border-gray-200'
                     }`}
                     data-testid={`bundle-${bundle.id}`}
                   >
                     {bundle.is_premium && (
-                      <Badge className="bg-blue-600 mb-3">Premium</Badge>
+                      <Badge className="bg-blue-600 mb-2 sm:mb-3 text-[10px] sm:text-xs">Premium</Badge>
                     )}
                     {bundle.is_recommended && !bundle.is_premium && (
-                      <Badge className="bg-green-600 mb-3">Recommended</Badge>
+                      <Badge className="bg-green-600 mb-2 sm:mb-3 text-[10px] sm:text-xs">Recommended</Badge>
                     )}
                     {bundle.for_new_pet_parents && (
-                      <Badge variant="outline" className="text-purple-600 border-purple-300 mb-3">For New Pet Parents</Badge>
+                      <Badge variant="outline" className="text-purple-600 border-purple-300 mb-2 sm:mb-3 text-[10px] sm:text-xs">New Parents</Badge>
                     )}
                     <h4 className="text-lg font-semibold text-gray-900 mb-2">{bundle.name}</h4>
                     <p className="text-sm text-gray-600 mb-4">{bundle.description}</p>
