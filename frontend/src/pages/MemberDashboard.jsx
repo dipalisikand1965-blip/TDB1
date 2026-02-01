@@ -736,8 +736,9 @@ const MemberDashboard = () => {
 
   if (!user) return null;
 
-  // Get primary pet
+  // Get primary pet (fallback) and current selected pet
   const primaryPet = pets[0];
+  const currentPet = pets.find(p => p.id === selectedPetId) || primaryPet;
   
   // Get saved addresses from orders
   const savedAddresses = orders
