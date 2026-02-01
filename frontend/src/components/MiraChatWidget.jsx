@@ -473,7 +473,6 @@ const MiraChatWidget = ({
     cleanText = cleanText.replace(/\bMira\b/gi, 'Meera');
     
     // Fix "concierge" pronunciation - "kon-see-airzh" (French style)
-    // This is the correct pronunciation: /ˌkɒnsiˈeəʒ/
     cleanText = cleanText
       .replace(/pet concierge®?/gi, 'pet kon-see-airzh')
       .replace(/your concierge®?/gi, 'your kon-see-airzh')
@@ -483,40 +482,69 @@ const MiraChatWidget = ({
       .replace(/\bconcierge®?\b/gi, 'con-see-airzh');
     
     const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.rate = 0.95;  // Slightly slower for clarity
-    utterance.pitch = 1.1;  // Slightly higher for feminine voice
+    utterance.rate = 0.92;  // Slightly slower for mobile clarity
+    utterance.pitch = 1.05;  // Slightly higher for feminine voice
     utterance.volume = 0.9;
     
-    // Get a FEMALE voice for Mira - she's a woman!
+    // Get a FEMALE voice for Mira - Prioritized list for best quality
     const voices = synthRef.current.getVoices();
-    const femaleVoice = voices.find(v => 
-      // Priority 1: Specific female voices (Indian English preferred)
-      v.name.toLowerCase().includes('veena') ||
-      v.name.toLowerCase().includes('aditi') ||
-      v.name.toLowerCase().includes('raveena') ||
-      v.name.toLowerCase().includes('samantha') ||
-      v.name.toLowerCase().includes('victoria') ||
-      v.name.toLowerCase().includes('karen') ||
-      v.name.toLowerCase().includes('moira') ||
-      v.name.toLowerCase().includes('tessa') ||
-      v.name.toLowerCase().includes('fiona') ||
-      v.name.includes('Female') ||
-      v.name.includes('female')
-    ) || voices.find(v =>
-      // Priority 2: Google Female or Microsoft Female
-      v.name.includes('Google UK English Female') ||
-      v.name.includes('Google US English Female') ||
-      v.name.includes('Microsoft Zira') ||
-      v.name.includes('Microsoft Heera') ||
-      (v.name.includes('Google') && v.name.includes('Female'))
-    ) || voices.find(v =>
-      // Priority 3: Any English female voice
-      v.lang.startsWith('en') && (v.name.toLowerCase().includes('female') || !v.name.toLowerCase().includes('male'))
-    ) || voices.find(v =>
-      // Priority 4: Any English voice (fallback)
-      v.lang.startsWith('en')
-    );
-    if (femaleVoice) utterance.voice = femaleVoice;
+    
+    // Premium voices to use (best quality female voices)
+    const premiumVoiceNames = [
+      // iOS/macOS high quality
+      'Samantha',
+      'Victoria', 
+      'Karen',
+      'Moira',
+      'Tessa',
+      'Fiona',
+      // Indian English
+      'Veena',
+      'Aditi',
+      'Raveena',
+      // Google high quality
+      'Google UK English Female',
+      'Google US English Female',
+      // Microsoft high quality
+      'Microsoft Zira',
+      'Microsoft Heera',
+      'Microsoft Aria',
+      // Android
+      'en-US-Wavenet-F',
+      'en-IN-Wavenet-A',
+      'en-GB-Wavenet-A'
+    ];
+    
+    // Find best available voice
+    let selectedVoice = null;
+    
+    // Try premium voices first
+    for (const voiceName of premiumVoiceNames) {
+      selectedVoice = voices.find(v => 
+        v.name.includes(voiceName) || v.name.toLowerCase() === voiceName.toLowerCase()
+      );
+      if (selectedVoice) break;
+    }
+    
+    // Fallback: any female English voice
+    if (!selectedVoice) {
+      selectedVoice = voices.find(v => 
+        v.lang.startsWith('en') && 
+        (v.name.toLowerCase().includes('female') || 
+         v.name.toLowerCase().includes('woman') ||
+         !v.name.toLowerCase().includes('male'))
+      );
+    }
+    
+    // Last fallback: any English voice
+    if (!selectedVoice) {
+      selectedVoice = voices.find(v => v.lang.startsWith('en'));
+    }
+    
+    if (selectedVoice) {
+      utterance.voice = selectedVoice;
+      console.log('[Mira Voice] Using:', selectedVoice.name);
+    }
     
     utterance.onstart = () => setIsSpeaking(true);
     utterance.onend = () => setIsSpeaking(false);
