@@ -862,14 +862,19 @@ const MiraChatWidget = ({
   };
   
   // Floating Button (when closed) - Uses the beautiful MiraOrb!
-  // Hidden on mobile when MobileNavBar is present (which has its own Mira FAB)
+  // Now shown on mobile since MobileNavBar has been removed
   if (!isOpen) {
     return (
-      <div className={`fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[9999] flex flex-col items-end gap-3 hidden sm:flex ${className}`}>
-        {/* Main Mira Orb Button - Desktop only, mobile uses MobileNavBar FAB */}
+      <div 
+        className={`fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[9999] flex flex-col items-end gap-3 ${className}`}
+        style={{ touchAction: 'manipulation' }}
+      >
+        {/* Main Mira Orb Button - Visible on all devices */}
         <div
           onClick={() => setIsOpen(true)}
+          onTouchEnd={(e) => { e.preventDefault(); setIsOpen(true); }}
           className="cursor-pointer"
+          style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
           data-testid="mira-widget-button"
         >
           <MiraOrb 
