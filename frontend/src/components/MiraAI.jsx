@@ -233,30 +233,51 @@ const MiraAI = () => {
     utterance.pitch = 1.1;
     utterance.volume = 0.9;
     
-    // Get a female voice for Mira - she's a woman!
+    // Get a premium female voice for Mira - she's sophisticated!
     const voices = synthRef.current.getVoices();
+    
+    // Debug: Log available voices on mobile
+    console.log('Available voices:', voices.map(v => `${v.name} (${v.lang})`));
+    
     const femaleVoice = voices.find(v => 
-      // Priority 1: Specific female voices
+      // Priority 1: Premium Indian English female voices
+      v.name.includes('Google हिन्दी') ||
+      v.name.includes('Lekha') ||
+      v.name.includes('Veena') ||
+      v.name.toLowerCase().includes('hindi') ||
+      (v.lang === 'en-IN' && (v.name.includes('Female') || v.name.includes('female')))
+    ) || voices.find(v =>
+      // Priority 2: Specific high-quality female voices (Apple/Google)
       v.name.toLowerCase().includes('samantha') ||
-      v.name.toLowerCase().includes('victoria') ||
       v.name.toLowerCase().includes('karen') ||
       v.name.toLowerCase().includes('moira') ||
       v.name.toLowerCase().includes('tessa') ||
-      v.name.toLowerCase().includes('fiona') ||
-      v.name.toLowerCase().includes('veena') ||
-      v.name.includes('Female') ||
-      v.name.includes('female')
-    ) || voices.find(v =>
-      // Priority 2: Google UK Female or any female-sounding
       v.name.includes('Google UK English Female') ||
-      v.name.includes('Google US English Female') ||
-      v.name.includes('Microsoft Zira') ||
-      v.name.includes('Microsoft Heera')
+      v.name.includes('Google US English') && !v.name.includes('Male')
     ) || voices.find(v =>
-      // Priority 3: Any English voice (fallback)
-      v.lang.startsWith('en')
+      // Priority 3: Microsoft voices
+      v.name.includes('Microsoft Zira') ||
+      v.name.includes('Microsoft Heera') ||
+      v.name.includes('Microsoft Aria')
+    ) || voices.find(v =>
+      // Priority 4: Any voice with "Female" in name
+      v.name.includes('Female') || v.name.includes('female')
+    ) || voices.find(v =>
+      // Priority 5: Indian English fallback
+      v.lang === 'en-IN'
+    ) || voices.find(v =>
+      // Priority 6: Any English voice (last resort)
+      v.lang.startsWith('en') && !v.name.toLowerCase().includes('male')
     );
-    if (femaleVoice) utterance.voice = femaleVoice;
+    
+    if (femaleVoice) {
+      utterance.voice = femaleVoice;
+      console.log('Selected voice:', femaleVoice.name);
+    }
+    
+    // Set speech parameters for a more pleasant voice
+    utterance.rate = 0.95;  // Slightly slower for clarity
+    utterance.pitch = 1.1;  // Slightly higher for feminine tone
     
     utterance.onstart = () => setIsSpeaking(true);
     utterance.onend = () => setIsSpeaking(false);
