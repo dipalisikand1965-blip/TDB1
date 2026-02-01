@@ -345,7 +345,7 @@ PILLARS = {
     "fit": {
         "name": "Fit",
         "icon": "🏃",
-        "keywords": ["fitness", "weight", "exercise", "training", "behaviour", "diet", "nutrition", "obesity"],
+        "keywords": ["fitness", "weight", "exercise", "training", "behaviour", "diet", "nutrition", "obesity", "meal plan", "food plan", "feeding schedule", "what to feed", "home cooked", "homemade food", "kibble", "wet food", "raw diet"],
         "urgency_default": "low"
     },
     "learn": {
