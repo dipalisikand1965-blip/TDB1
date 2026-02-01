@@ -183,6 +183,9 @@ from whatsapp_routes import router as whatsapp_router
 # TTS Routes (ElevenLabs)
 from tts_routes import tts_router
 
+# User Tickets Routes
+from user_tickets_routes import router as user_tickets_router, set_db as set_user_tickets_db
+
 # APScheduler for background jobs
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
