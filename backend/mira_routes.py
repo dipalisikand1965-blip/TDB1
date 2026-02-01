@@ -3181,8 +3181,8 @@ What would you like to explore? 🐾"""
                     "pillar": "celebrate"
                 },
                 "training_kit": {
-                    "keywords": ["training", "learn", "obedience"],
-                    "items": ["treats", "clicker", "leash", "harness"],
+                    "keywords": ["training kit", "training", "learn kit", "learning kit", "obedience", "obedience kit"],
+                    "items": ["treats", "clicker", "leash", "harness", "training treats"],
                     "services": ["basic training session", "puppy training", "behavior consultation"],
                     "pillar": "learn"
                 },
