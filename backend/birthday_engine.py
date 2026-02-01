@@ -394,6 +394,10 @@ async def send_birthday_promotion(
     # Prepare message
     celebration_info = CELEBRATION_TYPES.get(celebration_type, CELEBRATION_TYPES["custom"])
     
+    # Build occasion box link
+    occasion_type_param = "birthday" if celebration_type == "birthday" else "gotcha_day" if celebration_type == "gotcha_day" else "festival"
+    box_builder_link = f"https://thedoggycompany.in/celebrate?build_box={occasion_type_param}"
+    
     base_message = custom_message if custom_message else f"""
 🎉 {celebration_info['emoji']} Special Celebration Alert!
 
@@ -405,6 +409,9 @@ We want to make it extra special! Here's an exclusive {discount_percent}% off to
 
 🎁 Use code: {discount_code}
 📅 Valid until: {expiry_date.strftime('%B %d, %Y')}
+
+✨ Build a personalized {celebration_info['label']} Box for {pet_name}:
+{box_builder_link}
 
 Shop now and make {pet_name}'s day unforgettable! 🐾
 
