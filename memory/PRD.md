@@ -1,6 +1,23 @@
 # Pet Life Operating System - Product Requirements Document
 
-## Latest Update: February 1, 2026 - Session 12
+## Latest Update: February 1, 2026 - Session 13
+
+### ✅ KIT SWITCHING BUG FIX (Feb 1, 2026)
+
+**Issue**: When user asked for "Fitness Kit" after previously asking for "Travel Kit", the response still showed "Travel Kit" because the old kit_assembly_session was still in the database.
+
+**Fix**: Added kit type change detection in `mira_routes.py`:
+- When user explicitly requests a kit with a different type than the current session
+- The old kit_assembly_session is deleted
+- A new session is created with the correct kit type
+- File: `/app/backend/mira_routes.py` (lines ~3375-3385)
+
+**Test Results**:
+- ✅ Travel kit → Fitness kit switch works correctly
+- ✅ Kit type is now correctly displayed in response
+- ✅ Kit assembly stage correctly tracks the new kit type
+
+---
 
 ### ✅ P2 FIXES COMPLETED (Feb 1, 2026)
 
