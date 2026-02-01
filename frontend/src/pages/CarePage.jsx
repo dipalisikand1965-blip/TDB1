@@ -765,6 +765,14 @@ const CarePage = () => {
         </div>
       </div>
 
+      {/* === SERVICE CATALOG WITH DYNAMIC PRICING === */}
+      <ServiceCatalogSection 
+        pillar="care"
+        title="Care Services with Transparent Pricing"
+        subtitle="See your personalized price based on your city, pet size, and requirements"
+        maxServices={12}
+      />
+
       {/* === HOW IT WORKS === */}
       <div className="py-16 bg-gradient-to-b from-white to-slate-50">
         <div className="max-w-6xl mx-auto px-4">
