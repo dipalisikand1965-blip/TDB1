@@ -197,6 +197,10 @@ const OccasionBoxBuilder = ({
     );
   }
 
+  if (!isOpen) {
+    return null;
+  }
+
   if (!template) {
     return (
       <Dialog open={isOpen} onOpenChange={onClose}>
