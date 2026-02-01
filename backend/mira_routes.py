@@ -3175,6 +3175,12 @@ What would you like to explore? 🐾"""
                     "services": ["full grooming", "bath & brush", "nail trim", "ear cleaning"],
                     "pillar": "care"
                 },
+                "wellness_kit": {
+                    "keywords": ["wellness kit", "wellness", "care kit"],
+                    "items": ["supplements", "dental care", "eye wipes", "ear cleaner", "paw balm"],
+                    "services": ["wellness checkup", "dental cleaning"],
+                    "pillar": "care"
+                },
                 "birthday_kit": {
                     "keywords": ["birthday", "celebration", "party", "cake"],
                     "items": ["cake", "treats", "party supplies", "bandana", "hat"],
@@ -3197,6 +3203,42 @@ What would you like to explore? 🐾"""
                     "items": ["leash", "harness", "ball", "frisbee", "agility equipment", "water bottle", "treats"],
                     "services": ["fitness assessment", "agility training", "swimming session"],
                     "pillar": "fit"
+                },
+                "food_kit": {
+                    "keywords": ["food kit", "dine kit", "meal kit", "feeding kit"],
+                    "items": ["food bowl", "treats", "food storage", "feeding mat", "slow feeder"],
+                    "services": ["nutrition consultation", "meal planning"],
+                    "pillar": "dine"
+                },
+                "activity_kit": {
+                    "keywords": ["activity kit", "enjoy kit", "fun kit", "play kit"],
+                    "items": ["toys", "ball", "frisbee", "tug rope", "puzzle toys"],
+                    "services": ["dog park visit", "playdate coordination"],
+                    "pillar": "enjoy"
+                },
+                "boarding_kit": {
+                    "keywords": ["boarding kit", "stay kit", "overnight kit", "hotel kit"],
+                    "items": ["bed", "blanket", "toys", "treats", "food"],
+                    "services": ["boarding", "pet sitting", "overnight care"],
+                    "pillar": "stay"
+                },
+                "new_pet_kit": {
+                    "keywords": ["new pet kit", "adopt kit", "adoption kit", "starter kit", "puppy kit"],
+                    "items": ["food bowl", "water bowl", "bed", "collar", "leash", "treats", "toys"],
+                    "services": ["new pet consultation", "adoption support"],
+                    "pillar": "adopt"
+                },
+                "emergency_kit": {
+                    "keywords": ["emergency kit", "first aid kit", "emergency supplies"],
+                    "items": ["first aid supplies", "emergency contact card", "muzzle", "bandages"],
+                    "services": ["emergency vet", "24x7 helpline"],
+                    "pillar": "emergency"
+                },
+                "memorial_kit": {
+                    "keywords": ["memorial kit", "farewell kit", "remembrance kit"],
+                    "items": ["memorial frame", "paw print kit", "keepsake box"],
+                    "services": ["memorial service", "grief counseling"],
+                    "pillar": "farewell"
                 }
             }
             
