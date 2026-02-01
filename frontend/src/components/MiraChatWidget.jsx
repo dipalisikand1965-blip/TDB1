@@ -287,16 +287,17 @@ const MiraChatWidget = ({
           setPetSoulInsights(soulData);
         }
         
-        // Set pillar-specific quick actions
+        // Set pillar-specific quick actions - with Build Kit as first option for relevant pillars
+        const kitPillars = ['travel', 'care', 'fit', 'celebrate', 'learn', 'dine'];
         const pillarActions = {
           stay: ['Book Stay', 'Find Hotels', 'Pet-Friendly Resorts'],
-          care: ['Book Grooming', 'Vet Consult', 'Wellness Check'],
-          fit: ['Start Workout', 'Track Activity', 'Fitness Plan'],
-          travel: ['Plan Trip', 'Travel Kit', 'Pet Passport'],
-          celebrate: ['Order Cake', 'Party Planning', 'Custom Treats'],
-          dine: ['Order Food', 'Special Diet', 'Meal Plan'],
+          care: ['Build Care Kit', 'Book Grooming', 'Vet Consult', 'Wellness Check'],
+          fit: ['Build Fitness Kit', 'Start Workout', 'Track Activity'],
+          travel: ['Build Travel Kit', 'Plan Trip', 'Pet Passport'],
+          celebrate: ['Build Birthday Kit', 'Order Cake', 'Party Planning'],
+          dine: ['Meal Plan', 'Order Food', 'Special Diet'],
           enjoy: ['Find Playdate', 'Dog Park', 'Social Events'],
-          learn: ['Start Training', 'Book Class', 'Behavior Tips'],
+          learn: ['Build Training Kit', 'Start Training', 'Book Class'],
           paperwork: ['Get Insurance', 'Registration', 'Health Records'],
           advisory: ['Expert Consult', 'Nutrition Plan', 'Behavior Help'],
           emergency: ['24/7 Vet', 'First Aid', 'Emergency Contacts'],
