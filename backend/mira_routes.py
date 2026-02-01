@@ -315,7 +315,7 @@ PILLARS = {
     "dine": {
         "name": "Dine",
         "icon": "🍽️",
-        "keywords": ["restaurant", "dining", "eat", "food", "cafe", "brunch", "lunch", "dinner", "reservation"],
+        "keywords": ["restaurant", "dining out", "cafe", "brunch", "lunch", "dinner", "reservation", "pet-friendly restaurant", "dine out"],
         "urgency_default": "medium"
     },
     "stay": {
