@@ -432,6 +432,104 @@ async def delete_document(pet_id: str, doc_id: str):
     return {"message": "Document deleted"}
 
 
+# ==================== ADMIN DOCUMENT VAULT ====================
+
+@router.get("/admin/documents")
+async def get_all_documents(
+    skip: int = 0,
+    limit: int = 50,
+    category: str = None,
+    status: str = "active",
+    search: str = None
+):
+    """Admin endpoint to view all uploaded documents across all pets"""
+    db = get_db()
+    
+    # Build query
+    query = {}
+    if status and status != "all":
+        query["status"] = status
+    if category:
+        query["category"] = category
+    if search:
+        query["$or"] = [
+            {"document_name": {"$regex": search, "$options": "i"}},
+            {"pet_id": {"$regex": search, "$options": "i"}},
+            {"notes": {"$regex": search, "$options": "i"}}
+        ]
+    
+    # Get documents
+    documents = await db.paperwork_documents.find(
+        query, 
+        {"_id": 0}
+    ).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+    
+    # Get total count
+    total = await db.paperwork_documents.count_documents(query)
+    
+    # Get stats
+    stats = {
+        "total": await db.paperwork_documents.count_documents({"status": "active"}),
+        "by_category": {}
+    }
+    
+    # Count by category
+    for cat in ["identity", "medical", "travel", "insurance", "care", "legal"]:
+        stats["by_category"][cat] = await db.paperwork_documents.count_documents({
+            "status": "active",
+            "category": cat
+        })
+    
+    # Enrich with pet info
+    enriched_docs = []
+    for doc in documents:
+        pet = await db.pets.find_one({"id": doc.get("pet_id")}, {"_id": 0, "name": 1, "breed": 1, "user_id": 1})
+        enriched_doc = {**doc}
+        if pet:
+            enriched_doc["pet_name"] = pet.get("name", "Unknown")
+            enriched_doc["pet_breed"] = pet.get("breed", "Unknown")
+            # Get owner info
+            user = await db.users.find_one({"id": pet.get("user_id")}, {"_id": 0, "name": 1, "email": 1})
+            if user:
+                enriched_doc["owner_name"] = user.get("name", "Unknown")
+                enriched_doc["owner_email"] = user.get("email", "")
+        enriched_docs.append(enriched_doc)
+    
+    return {
+        "documents": enriched_docs,
+        "total": total,
+        "skip": skip,
+        "limit": limit,
+        "stats": stats
+    }
+
+
+@router.get("/admin/documents/{doc_id}")
+async def get_document_details(doc_id: str):
+    """Admin endpoint to get full document details"""
+    db = get_db()
+    
+    document = await db.paperwork_documents.find_one({"id": doc_id}, {"_id": 0})
+    if not document:
+        raise HTTPException(status_code=404, detail="Document not found")
+    
+    # Get pet info
+    pet = await db.pets.find_one({"id": document.get("pet_id")}, {"_id": 0, "name": 1, "breed": 1, "user_id": 1, "birth_date": 1})
+    if pet:
+        document["pet_name"] = pet.get("name", "Unknown")
+        document["pet_breed"] = pet.get("breed", "Unknown")
+        document["pet_dob"] = pet.get("birth_date", "")
+        
+        # Get owner info
+        user = await db.users.find_one({"id": pet.get("user_id")}, {"_id": 0, "name": 1, "email": 1, "phone": 1})
+        if user:
+            document["owner_name"] = user.get("name", "Unknown")
+            document["owner_email"] = user.get("email", "")
+            document["owner_phone"] = user.get("phone", "")
+    
+    return document
+
+
 # ==================== REMINDERS ====================
 
 @router.post("/reminders")
