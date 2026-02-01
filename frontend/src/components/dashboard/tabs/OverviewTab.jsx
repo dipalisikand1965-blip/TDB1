@@ -119,17 +119,18 @@ const OverviewTab = ({
                 variant="ghost" 
                 size="sm" 
                 className="text-purple-600 hover:text-purple-700"
-                onClick={() => document.querySelector('[value="requests"]')?.click()}
+                onClick={() => onTabChange?.('requests')}
               >
                 View All <ChevronRight className="w-4 h-4 ml-1" />
               </Button>
             </div>
             <div className="space-y-2">
-              {myRequests.slice(0, 2).map((req) => (
+              {myRequests.slice(0, 3).map((req) => (
                 <div 
                   key={req.id} 
-                  className="flex items-center justify-between bg-white rounded-lg p-3 border cursor-pointer hover:bg-purple-50 transition-colors"
-                  onClick={() => document.querySelector('[value="requests"]')?.click()}
+                  className="flex items-center justify-between bg-white rounded-lg p-3 border cursor-pointer hover:bg-purple-50 hover:border-purple-300 transition-all active:scale-[0.99]"
+                  onClick={() => onTabChange?.('requests')}
+                  data-testid={`request-${req.id}`}
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
