@@ -426,9 +426,6 @@ const MyCelebrations = ({ pets = [], onNavigate, onAddToCart }) => {
         onAddToCart={onAddToCart}
       />
     </Card>
-        </div>
-      </div>
-    </Card>
   );
 };
 
