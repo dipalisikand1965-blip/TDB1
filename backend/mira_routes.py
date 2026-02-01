@@ -3204,13 +3204,24 @@ What would you like to explore? 🐾"""
             detected_items = []
             target_pillar = None
             
-            # Check for kit type
+            # PRIORITY: Check CURRENT message first for explicit kit type
+            # This ensures "training kit" overrides "travel" from history
+            current_message = message.lower()
             for kit_type, config in PRODUCT_CATEGORIES.items():
-                if any(kw in all_text for kw in config["keywords"]):
+                if any(kw in current_message for kw in config["keywords"]):
                     detected_kit = kit_type
                     detected_items = config["items"]
                     target_pillar = config["pillar"]
                     break
+            
+            # Only check history if no kit detected in current message
+            if not detected_kit:
+                for kit_type, config in PRODUCT_CATEGORIES.items():
+                    if any(kw in all_text for kw in config["keywords"]):
+                        detected_kit = kit_type
+                        detected_items = config["items"]
+                        target_pillar = config["pillar"]
+                        break
             
             # Also check for specific items mentioned
             specific_items = []
