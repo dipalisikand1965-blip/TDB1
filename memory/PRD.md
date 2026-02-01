@@ -1455,7 +1455,7 @@ All 14 pillar admin managers are already implemented and integrated:
 - **Admin**: `aditya` / `lola4304`
 
 ## Deployment
-- **Preview URL**: https://pet-ai-toolkit.preview.emergentagent.com
+- **Preview URL**: https://voice-ui-repair.preview.emergentagent.com
 - **Production**: thedoggycompany.in (deploying tomorrow)
 
 ---
