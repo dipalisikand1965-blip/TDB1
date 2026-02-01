@@ -502,28 +502,34 @@ const KitAssemblyManager = () => {
 
         {/* Mira Picks Tab */}
         <TabsContent value="picks">
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex flex-wrap justify-between items-center gap-2 mb-4">
             <Input 
               placeholder="Search picks..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="max-w-xs"
             />
-            <Button onClick={() => {
-              setEditingPick({
-                product_id: '',
-                reason: '',
-                voice_script: '',
-                display_tagline: '',
-                priority: 0,
-                is_active: true,
-                target_categories: []
-              });
-              setShowPickEditor(true);
-            }}>
-              <Plus className="w-4 h-4 mr-2" />
-              New Mira Pick
-            </Button>
+            <div className="flex gap-2">
+              <Button onClick={handleExportPicksCSV} variant="outline" size="sm">
+                <FileText className="w-4 h-4 mr-2" />
+                Export CSV
+              </Button>
+              <Button onClick={() => {
+                setEditingPick({
+                  product_id: '',
+                  reason: '',
+                  voice_script: '',
+                  display_tagline: '',
+                  priority: 0,
+                  is_active: true,
+                  target_categories: []
+                });
+                setShowPickEditor(true);
+              }}>
+                <Plus className="w-4 h-4 mr-2" />
+                New Mira Pick
+              </Button>
+            </div>
           </div>
 
           <div className="space-y-3">
