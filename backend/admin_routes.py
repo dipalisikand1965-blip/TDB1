@@ -29,10 +29,96 @@ security = HTTPBasic()
 ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "woof2025")
 
-def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
+# Rate limiting for admin login (brute force protection)
+from collections import defaultdict
+from datetime import datetime, timedelta
+import threading
+
+class AdminRateLimiter:
+    def __init__(self, max_attempts=5, lockout_minutes=15):
+        self.max_attempts = max_attempts
+        self.lockout_minutes = lockout_minutes
+        self.failed_attempts = defaultdict(list)  # IP -> list of timestamps
+        self.locked_ips = {}  # IP -> lockout end time
+        self._lock = threading.Lock()
+    
+    def is_locked(self, ip: str) -> bool:
+        with self._lock:
+            if ip in self.locked_ips:
+                if datetime.now() < self.locked_ips[ip]:
+                    return True
+                else:
+                    del self.locked_ips[ip]
+            return False
+    
+    def record_failure(self, ip: str):
+        with self._lock:
+            now = datetime.now()
+            # Clean old attempts (older than lockout period)
+            self.failed_attempts[ip] = [
+                t for t in self.failed_attempts[ip] 
+                if now - t < timedelta(minutes=self.lockout_minutes)
+            ]
+            self.failed_attempts[ip].append(now)
+            
+            # Lock if too many attempts
+            if len(self.failed_attempts[ip]) >= self.max_attempts:
+                self.locked_ips[ip] = now + timedelta(minutes=self.lockout_minutes)
+                self.failed_attempts[ip] = []
+                return True
+            return False
+    
+    def record_success(self, ip: str):
+        with self._lock:
+            self.failed_attempts[ip] = []
+            if ip in self.locked_ips:
+                del self.locked_ips[ip]
+    
+    def get_remaining_attempts(self, ip: str) -> int:
+        with self._lock:
+            return self.max_attempts - len(self.failed_attempts.get(ip, []))
+
+admin_rate_limiter = AdminRateLimiter(max_attempts=5, lockout_minutes=15)
+
+def verify_admin(credentials: HTTPBasicCredentials = Depends(security), request: Request = None):
+    # Get client IP
+    client_ip = "unknown"
+    if request:
+        client_ip = request.client.host if request.client else "unknown"
+        # Check for forwarded IP
+        forwarded = request.headers.get("X-Forwarded-For")
+        if forwarded:
+            client_ip = forwarded.split(",")[0].strip()
+    
+    # Check if IP is locked
+    if admin_rate_limiter.is_locked(client_ip):
+        raise HTTPException(
+            status_code=429, 
+            detail="Too many failed attempts. Please try again in 15 minutes."
+        )
+    
+    # Verify credentials
     if credentials.username != ADMIN_USERNAME or credentials.password != ADMIN_PASSWORD:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+        # Record failed attempt
+        is_now_locked = admin_rate_limiter.record_failure(client_ip)
+        remaining = admin_rate_limiter.get_remaining_attempts(client_ip)
+        
+        if is_now_locked:
+            raise HTTPException(
+                status_code=429, 
+                detail="Account locked due to too many failed attempts. Try again in 15 minutes."
+            )
+        raise HTTPException(
+            status_code=401, 
+            detail=f"Invalid credentials. {remaining} attempts remaining."
+        )
+    
+    # Success - clear any failed attempts
+    admin_rate_limiter.record_success(client_ip)
     return credentials.username
+
+# Import Request for IP tracking
+from fastapi import Request
 
 # Create router
 fulfilment_router = APIRouter(prefix="/api/admin", tags=["Admin Fulfilment"])
