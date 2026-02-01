@@ -183,6 +183,7 @@ const CinematicKitAssembly = ({
   }, []);
   
   // Text-to-Speech function - MIRA IS A WOMAN (moved before its usage)
+  // Fixed Chrome bug where speech cuts off after ~15s
   const speakText = useCallback((text) => {
     if (!synthRef.current || !voiceEnabled) return;
     
@@ -215,10 +216,41 @@ const CinematicKitAssembly = ({
     
     utterance.onstart = () => setIsSpeaking(true);
     utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = () => setIsSpeaking(false);
+    utterance.onerror = (e) => {
+      console.error('Speech synthesis error:', e);
+      setIsSpeaking(false);
+    };
     
+    // Chrome workaround: pause/resume to prevent cutoff after ~15s
+    // This keeps the speech synthesis active
+    let resumeInterval = null;
+    utterance.onstart = () => {
+      setIsSpeaking(true);
+      // Every 10 seconds, pause and resume to prevent Chrome from cutting off
+      resumeInterval = setInterval(() => {
+        if (synthRef.current && synthRef.current.speaking && !synthRef.current.paused) {
+          synthRef.current.pause();
+          synthRef.current.resume();
+        }
+      }, 10000);
+    };
+    
+    utterance.onend = () => {
+      setIsSpeaking(false);
+      if (resumeInterval) clearInterval(resumeInterval);
+    };
+    
+    utterance.onerror = (e) => {
+      console.error('Speech synthesis error:', e);
+      setIsSpeaking(false);
+      if (resumeInterval) clearInterval(resumeInterval);
+    };
+    
+    // Small delay to ensure voices are loaded
     setTimeout(() => {
-      synthRef.current.speak(utterance);
+      if (synthRef.current) {
+        synthRef.current.speak(utterance);
+      }
     }, 100);
   }, [voiceEnabled]);
   
