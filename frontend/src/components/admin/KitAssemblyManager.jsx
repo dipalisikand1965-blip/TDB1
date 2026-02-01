@@ -398,22 +398,23 @@ const KitAssemblyManager = () => {
                 Export CSV
               </Button>
               <Button onClick={() => {
-              setEditingKit({
-                name: '',
-                slug: '',
-                description: '',
-                category: 'travel',
-                items: [],
-                intro_narration: "Hi! I'm Mira, your pet concierge. Let me show you this amazing kit!",
-                outro_narration: "And that's your complete kit! All items hand-picked with love.",
-                is_active: true,
-                priority: 0
-              });
-              setShowKitEditor(true);
-            }}>
-              <Plus className="w-4 h-4 mr-2" />
-              New Kit Template
-            </Button>
+                setEditingKit({
+                  name: '',
+                  slug: '',
+                  description: '',
+                  category: 'travel',
+                  items: [],
+                  intro_narration: "Hi! I'm Mira, your pet concierge. Let me show you this amazing kit!",
+                  outro_narration: "And that's your complete kit! All items hand-picked with love.",
+                  is_active: true,
+                  priority: 0
+                });
+                setShowKitEditor(true);
+              }}>
+                <Plus className="w-4 h-4 mr-2" />
+                New Kit Template
+              </Button>
+            </div>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
