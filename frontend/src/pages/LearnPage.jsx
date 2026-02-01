@@ -606,30 +606,36 @@ const LearnPage = () => {
             {trainers.map((trainer) => (
               <Card 
                 key={trainer.id} 
-                className="p-3 sm:p-6 text-center hover:shadow-lg transition-all cursor-pointer" 
+                className="p-3 sm:p-6 hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-blue-200" 
                 data-testid={`trainer-${trainer.id}`}
                 onClick={() => { setSelectedTrainer(trainer); setShowTrainerModal(true); }}
               >
+                {/* Mobile: Horizontal compact layout */}
                 <div className="flex sm:flex-col items-center gap-3 sm:gap-0">
-                  <div className="w-16 h-16 sm:w-24 sm:h-24 rounded-full sm:mx-auto sm:mb-4 overflow-hidden bg-gray-100 flex-shrink-0">
+                  <div className="w-14 h-14 sm:w-24 sm:h-24 rounded-full sm:mx-auto sm:mb-4 overflow-hidden bg-gradient-to-br from-blue-100 to-indigo-100 flex-shrink-0 ring-2 ring-blue-200">
                     {trainer.image ? (
                       <img src={trainer.image} alt={trainer.name} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
-                        <Users className="w-8 h-8 sm:w-12 sm:h-12 text-gray-300" />
+                        <Users className="w-6 h-6 sm:w-12 sm:h-12 text-blue-400" />
                       </div>
                     )}
                   </div>
-                  <div className="flex-1 text-left sm:text-center">
-                    <h3 className="font-bold text-sm sm:text-lg text-gray-900 line-clamp-1">{trainer.name}</h3>
-                    <p className="text-xs sm:text-sm text-blue-600 mb-1 sm:mb-2">{trainer.title}</p>
+                  <div className="flex-1 text-left sm:text-center min-w-0">
+                    <h3 className="font-bold text-base sm:text-lg text-gray-900 truncate">{trainer.name}</h3>
+                    <p className="text-sm sm:text-sm text-blue-600 mb-1 truncate">{trainer.title}</p>
                     
-                    <div className="flex items-center sm:justify-center gap-1 text-xs sm:text-sm">
-                      <Star className="w-3 h-3 sm:w-4 sm:h-4 text-amber-500 fill-amber-500" />
-                      <span className="font-medium">{trainer.rating}</span>
-                      <span className="text-gray-400 hidden sm:inline">({trainer.reviews_count})</span>
+                    <div className="flex items-center sm:justify-center gap-2 text-sm">
+                      <div className="flex items-center gap-1">
+                        <Star className="w-4 h-4 text-amber-500 fill-amber-500" />
+                        <span className="font-semibold">{trainer.rating}</span>
+                      </div>
+                      <span className="text-gray-300">•</span>
+                      <span className="text-gray-500">{trainer.experience_years}+ yrs</span>
                     </div>
                   </div>
+                  {/* Mobile: Quick action indicator */}
+                  <ChevronRight className="w-5 h-5 text-gray-400 sm:hidden flex-shrink-0" />
                 </div>
 
                 <div className="hidden sm:flex items-center justify-center gap-2 text-sm text-gray-500 mt-3 mb-4">
@@ -652,7 +658,7 @@ const LearnPage = () => {
 
                 <Button 
                   variant="outline" 
-                  className="w-full mt-2 sm:mt-0 text-xs sm:text-sm h-8 sm:h-10"
+                  className="w-full mt-2 sm:mt-0 text-sm h-9 sm:h-10 hidden sm:flex items-center justify-center"
                   onClick={(e) => {
                     e.stopPropagation();
                     setSelectedTrainer(trainer);
