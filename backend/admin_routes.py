@@ -120,9 +120,6 @@ def verify_admin(credentials: HTTPBasicCredentials = Depends(security), request:
     admin_rate_limiter.record_success(client_ip)
     return credentials.username
 
-# Import Request for IP tracking
-from fastapi import Request
-
 # Create router
 fulfilment_router = APIRouter(prefix="/api/admin", tags=["Admin Fulfilment"])
 
