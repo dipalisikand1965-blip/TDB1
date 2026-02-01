@@ -927,15 +927,15 @@ const KitEditorDialog = ({ open, kit, categories, products, onSave, onClose, onT
 
 // Pick Editor Dialog Component
 const PickEditorDialog = ({ open, pick, products, onSave, onClose, onTestVoice }) => {
-  const [formData, setFormData] = useState(pick || {});
+  const [formData, setFormData] = useState({});
   const [productSearch, setProductSearch] = useState('');
 
-  // Update form data when pick changes (controlled sync)
-  const pickRef = React.useRef(pick);
-  if (pick !== pickRef.current) {
-    pickRef.current = pick;
-    if (pick) setFormData(pick);
-  }
+  // Reset form when pick changes
+  useEffect(() => {
+    if (open && pick) {
+      setFormData(pick);
+    }
+  }, [open, pick]);
 
   if (!open || !pick) return null;
 
