@@ -1016,20 +1016,27 @@ const MiraChatWidget = ({
             
             {/* Quick Actions */}
             <div className="px-3 py-2 border-b shrink-0">
-              <div className="flex gap-1.5 overflow-x-auto">
+              <div className="flex gap-2 overflow-x-auto">
                 {quickActions.slice(0, 3).map((action, idx) => {
                   const isKitAction = action.toLowerCase().includes('build');
                   return (
                     <button
                       key={idx}
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
                         setInputValue(action);
-                        if (isKitAction) setTimeout(() => sendMessage(), 100);
+                        if (isKitAction) {
+                          setTimeout(() => sendMessage(), 100);
+                        } else {
+                          // Auto-send for non-kit actions too
+                          setTimeout(() => sendMessage(), 100);
+                        }
                       }}
-                      className={`px-3 py-1.5 rounded-full text-[10px] font-semibold whitespace-nowrap ${
+                      className={`px-4 py-2.5 rounded-full text-xs font-semibold whitespace-nowrap min-h-[44px] touch-manipulation ${
                         isKitAction 
-                          ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white' 
-                          : 'bg-gray-100 text-gray-700'
+                          ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white active:from-purple-700 active:to-pink-700' 
+                          : 'bg-gray-100 text-gray-700 active:bg-gray-200'
                       }`}
                       data-testid={`quick-action-${idx}`}
                     >
