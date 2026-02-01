@@ -1668,6 +1668,9 @@ from ticket_auto_creation import set_auto_ticket_db, create_event_ticket, on_ord
 # Import Report Builder
 from report_builder_routes import report_builder_router, set_report_builder_db, set_verify_admin
 
+# Import PawMeter Rating System
+from pawmeter_routes import router as pawmeter_router, set_pawmeter_db
+
 # Health check endpoint (required for Kubernetes deployment)
 @app.get("/health")
 def health_check():
