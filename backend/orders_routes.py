@@ -290,11 +290,13 @@ async def create_order(order: dict):
         logger.error(f"Pet Soul auto-learn failed: {e}")
     
     # Auto-create ticket for Command Center
+    ticket_id = None
     try:
         if on_order_placed:
             ticket_result = await on_order_placed(order)
             if ticket_result.get("success"):
-                logger.info(f"Auto-created ticket {ticket_result.get('ticket_id')} for order {order.get('orderId')}")
+                ticket_id = ticket_result.get('ticket_id')
+                logger.info(f"Auto-created ticket {ticket_id} for order {order.get('orderId')}")
     except Exception as e:
         logger.error(f"Auto-ticket creation failed for order: {e}")
     
@@ -302,7 +304,7 @@ async def create_order(order: dict):
         "message": "Order created",
         "orderId": order.get("orderId"),
         "id": order["id"],
-        "ticket_id": order.get("orderId") if has_cake_items else None
+        "ticket_id": ticket_id
     }
 
 
