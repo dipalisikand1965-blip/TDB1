@@ -122,10 +122,25 @@ async def get_user_tickets(
             # Flatten pet_info if present
             if ticket.get("pet_info") and not ticket.get("pet_name"):
                 ticket["pet_name"] = ticket["pet_info"].get("name")
+            # Normalize created_at to string for JSON serialization
+            if ticket.get("created_at") and not isinstance(ticket["created_at"], str):
+                ticket["created_at"] = ticket["created_at"].isoformat()
+            if ticket.get("updated_at") and not isinstance(ticket["updated_at"], str):
+                ticket["updated_at"] = ticket["updated_at"].isoformat()
+            if ticket.get("assigned_at") and not isinstance(ticket["assigned_at"], str):
+                ticket["assigned_at"] = ticket["assigned_at"].isoformat()
+            if ticket.get("resolved_at") and not isinstance(ticket["resolved_at"], str):
+                ticket["resolved_at"] = ticket["resolved_at"].isoformat()
             unique_tickets.append(ticket)
     
-    # Sort by created_at descending
-    unique_tickets.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+    # Sort by created_at descending (handle both datetime and string)
+    def get_sort_key(x):
+        val = x.get("created_at", "")
+        if isinstance(val, datetime):
+            return val.isoformat()
+        return str(val)
+    
+    unique_tickets.sort(key=get_sort_key, reverse=True)
     
     return {
         "tickets": unique_tickets,
