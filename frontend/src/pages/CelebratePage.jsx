@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom';
 import { 
   PartyPopper, Cake, Gift, Crown, Sparkles, Camera, Users, 
   Calendar, MapPin, ChevronRight, Star, Heart, Music,
-  Palette, ShoppingBag
+  Palette, ShoppingBag, Package
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
@@ -21,6 +21,8 @@ import ProductCard from '../components/ProductCard';
 import SEOHead from '../components/SEOHead';
 import MiraChatWidget from '../components/MiraChatWidget';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
+import OccasionBoxBuilder from '../components/OccasionBoxBuilder';
+import { useCart } from '../context/CartContext';
 
 // Product categories for Celebrate pillar
 const celebrateCategories = [
