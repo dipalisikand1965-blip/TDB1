@@ -935,9 +935,9 @@ const MiraChatWidget = ({
           <>
             {/* Pet Selector + Suggestions Row - Compact */}
             {pets.length > 0 && (
-              <div className="px-3 py-1.5 border-b bg-gray-50 shrink-0">
+              <div className="px-3 py-2 border-b bg-gray-50 shrink-0">
                 <div className="flex items-center gap-2 overflow-x-auto">
-                  <span className="text-[10px] text-gray-500 shrink-0">For:</span>
+                  <span className="text-xs text-gray-500 shrink-0">For:</span>
                   {pets.map(pet => (
                     <button
                       key={pet.id}
@@ -945,15 +945,15 @@ const MiraChatWidget = ({
                         setSelectedPet(pet);
                         trackClick('pet_switch', pet.id, { pillar, from_pet: selectedPet?.id });
                       }}
-                      className={`px-2 py-1 rounded-full text-[10px] flex items-center gap-1 transition-all shrink-0 ${
+                      className={`px-3 py-1.5 rounded-full text-xs flex items-center gap-1.5 transition-all shrink-0 ${
                         selectedPet?.id === pet.id 
                           ? `bg-gradient-to-r ${config.color} text-white` 
                           : 'bg-gray-100 text-gray-600'
                       }`}
                       data-testid={`pet-select-${pet.id}`}
                     >
-                      <PawPrint className="w-2.5 h-2.5" />
-                      <span className="font-medium">{pet.name}</span>
+                      <PawPrint className="w-3 h-3" />
+                      <span className="font-semibold">{pet.name}</span>
                     </button>
                   ))}
                 </div>
