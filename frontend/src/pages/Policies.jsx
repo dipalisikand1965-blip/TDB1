@@ -401,7 +401,7 @@ const Policies = () => {
 
               <h3 className="text-lg font-semibold mt-6 mb-3">Feedback</h3>
               <p className="text-gray-700 mb-4">
-                We're continuously improving Mira. If you encounter any issues or have suggestions, 
+                We&apos;re continuously improving Mira. If you encounter any issues or have suggestions, 
                 please reach out to us:
               </p>
               <div className="flex flex-col gap-2">
