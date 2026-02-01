@@ -11844,6 +11844,7 @@ app.include_router(escalation_router)  # Escalation rules
 app.include_router(pillar_router)
 app.include_router(pillar_public_router)
 app.include_router(pillar_resolver_router)  # Pillar resolver API
+app.include_router(service_catalog_router)  # Service catalog and pricing
 app.include_router(enhanced_collection_router)
 app.include_router(collection_public_router)
 app.include_router(partner_router)
