@@ -266,7 +266,7 @@ async def get_all_ratings(limit: int = 50, skip: int = 0, status: str = None):
 @router.put("/admin/{rating_id}/status")
 async def update_rating_status(rating_id: str, status: str):
     """Admin: Update rating status (approved/pending/rejected)"""
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
     
     if status not in ["approved", "pending", "rejected"]:
