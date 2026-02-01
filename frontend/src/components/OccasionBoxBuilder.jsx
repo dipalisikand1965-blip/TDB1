@@ -227,7 +227,7 @@ const OccasionBoxBuilder = ({
           <DialogHeader>
             <DialogTitle className="text-white text-2xl flex items-center gap-3">
               <span className="text-3xl">{template.icon}</span>
-              {petName}'s {template.name}
+              {petName}&apos;s {template.name}
             </DialogTitle>
           </DialogHeader>
           <p className="text-white/80 mt-2">{template.description}</p>
