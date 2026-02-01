@@ -393,7 +393,7 @@ function MainLayout() {
         {/* Partner Onboarding */}
         <Route path="/partner" element={<PartnerOnboarding />} />
         <Route path="/become-a-partner" element={<PartnerOnboarding />} />
-      </Routes>
+        </Routes>
       </Suspense>
       <Footer />
       <CartSidebar />
