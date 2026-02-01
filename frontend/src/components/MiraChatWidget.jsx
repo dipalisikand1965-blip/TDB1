@@ -1134,19 +1134,29 @@ const MiraChatWidget = ({
               <div ref={chatEndRef} />
             </div>
             
-            {/* Quick Prompts (shown when no messages except welcome) */}
+            {/* Quick Action Tabs (shown when no messages except welcome) */}
             {messages.length <= 1 && (
-              <div className="px-4 pb-2 shrink-0">
+              <div className="px-4 pb-3 shrink-0">
+                <p className="text-xs text-gray-500 mb-2 font-medium">Quick Actions</p>
                 <div className="flex flex-wrap gap-2">
-                  {quickPrompts.map((prompt, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => { setInputValue(prompt); inputRef.current?.focus(); }}
-                      className="px-3 py-1.5 bg-purple-50 text-purple-700 text-xs rounded-full hover:bg-purple-100 transition-colors"
-                    >
-                      {prompt}
-                    </button>
-                  ))}
+                  {quickPrompts.map((prompt, idx) => {
+                    // Style "Build Kit" prompts differently
+                    const isKitPrompt = prompt.toLowerCase().includes('build');
+                    return (
+                      <button
+                        key={idx}
+                        onClick={() => { setInputValue(prompt); inputRef.current?.focus(); }}
+                        className={`px-3 py-2 text-xs rounded-full transition-colors font-medium ${
+                          isKitPrompt 
+                            ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-sm hover:from-purple-700 hover:to-pink-700' 
+                            : 'bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200'
+                        }`}
+                        data-testid={`quick-action-${idx}`}
+                      >
+                        {isKitPrompt ? '🎒 ' : ''}{prompt}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}
