@@ -186,6 +186,9 @@ from tts_routes import tts_router
 # User Tickets Routes
 from user_tickets_routes import router as user_tickets_router, set_db as set_user_tickets_db
 
+# Export Routes (Product/Service tags download)
+from export_routes import router as export_router, set_db as set_export_db
+
 # APScheduler for background jobs
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
