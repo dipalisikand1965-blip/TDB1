@@ -1403,14 +1403,15 @@ const MemberDashboard = () => {
                   { id: 'emergency', name: 'Emergency', icon: '🚨', path: '/emergency', color: 'from-red-500 to-rose-500' },
                   { id: 'farewell', name: 'Farewell', icon: '🌈', path: '/farewell', color: 'from-rose-400 to-pink-400' },
                   { id: 'adopt', name: 'Adopt', icon: '🐾', path: '/adopt', color: 'from-purple-400 to-violet-400' },
-                  { id: 'insure', name: 'Insure', icon: '🛡️', path: '/insure', color: 'from-blue-500 to-cyan-500' },
-                  { id: 'community', name: 'Community', icon: '🤝', path: '/community', color: 'from-indigo-400 to-purple-400' },
+                  { id: 'insure', name: 'Insure', icon: '🛡️', path: '/advisory', color: 'from-blue-500 to-cyan-500' },
+                  { id: 'community', name: 'Community', icon: '🤝', path: '/services', color: 'from-indigo-400 to-purple-400' },
                   { id: 'shop', name: 'Shop', icon: '🛒', path: '/shop', color: 'from-orange-400 to-amber-400' }
                 ].map((pillar) => (
                   <button
                     key={pillar.id}
-                    onClick={() => setPillarPopup({ open: true, pillar })}
-                    className="group p-2 md:p-3 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 hover:bg-white/20 hover:border-white/40 transition-all text-center"
+                    onClick={() => navigate(pillar.path)}
+                    className="group p-2 md:p-3 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 hover:bg-white/20 hover:border-white/40 transition-all text-center active:scale-95"
+                    data-testid={`pillar-${pillar.id}`}
                   >
                     <div className={`w-9 h-9 md:w-11 md:h-11 mx-auto rounded-lg bg-gradient-to-br ${pillar.color} flex items-center justify-center text-lg md:text-xl mb-1.5 group-hover:scale-110 transition-transform shadow-lg`}>
                       {pillar.icon}
