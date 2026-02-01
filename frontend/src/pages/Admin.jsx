@@ -1695,6 +1695,7 @@ const Admin = () => {
               { id: 'orders', label: 'Orders', icon: Package },
               { id: 'fulfilment', label: 'Fulfilment', icon: Truck },
               { id: 'product-box', label: 'Product Box', icon: Package },
+              { id: 'service-box', label: 'Service Box', icon: Briefcase },
               { id: 'collections', label: 'Collections', icon: Layers },
               { id: 'pricing', label: 'Pricing', icon: Tag },
               { id: 'autoship', label: 'Autoship', icon: RefreshCw },
