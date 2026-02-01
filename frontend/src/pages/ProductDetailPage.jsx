@@ -14,9 +14,10 @@ import { useCart } from '../context/CartContext';
 import { API_URL } from '../utils/api';
 import { 
   ArrowLeft, ShoppingCart, Heart, Truck, Shield, Star,
-  Plus, Minus, Check, Package, Clock, RefreshCw
+  Plus, Minus, Check, Package, Clock, RefreshCw, PawPrint
 } from 'lucide-react';
 import MiraChatWidget from '../components/MiraChatWidget';
+import { PawMeterInteractive, PawMeterDisplay } from '../components/PawMeter';
 
 const ProductDetailPage = () => {
   const { productId } = useParams();
