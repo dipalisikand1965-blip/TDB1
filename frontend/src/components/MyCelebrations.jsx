@@ -315,6 +315,8 @@ const MyCelebrations = ({ pets = [], onNavigate, onAddToCart }) => {
     });
     
     setCelebrations(allCelebrations);
+    console.log('MyCelebrations: Found', allCelebrations.length, 'celebrations from', pets.length, 'pets');
+    allCelebrations.forEach(c => console.log(`  - ${c.petName}: ${c.type} in ${c.daysUntil} days`));
   }, [pets]);
   
   const handleBuildBox = (occasionType, petName) => {
