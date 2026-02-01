@@ -181,6 +181,19 @@ const PILLARS = [
       { name: 'Accessories', path: '/shop?category=accessories' },
     ]
   },
+  {
+    id: 'services',
+    name: 'Services',
+    icon: '✨',
+    path: '/services',
+    dropdown: [
+      { name: 'All Services', path: '/services', highlight: true },
+      { name: 'Care & Grooming', path: '/services?pillar=care' },
+      { name: 'Training', path: '/services?pillar=learn' },
+      { name: 'Travel & Stay', path: '/services?pillar=travel' },
+      { name: 'Fitness', path: '/services?pillar=fit' },
+    ]
+  },
 ];
 
 const Navbar = () => {
