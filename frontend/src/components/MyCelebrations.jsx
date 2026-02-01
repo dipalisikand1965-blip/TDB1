@@ -197,18 +197,18 @@ const CelebrationCard = ({ celebration, onAction, onBuildBox }) => {
 };
 
 // Main component
+// Helper for ordinal suffix - moved outside component to prevent infinite loop
+const getOrdinalSuffix = (n) => {
+  const s = ['th', 'st', 'nd', 'rd'];
+  const v = n % 100;
+  return s[(v - 20) % 10] || s[v] || s[0];
+};
+
 const MyCelebrations = ({ pets = [], onNavigate, onAddToCart }) => {
   const [celebrations, setCelebrations] = useState([]);
   const [showAll, setShowAll] = useState(false);
   const [showBoxBuilder, setShowBoxBuilder] = useState(false);
   const [boxBuilderData, setBoxBuilderData] = useState({ occasionType: null, petName: '' });
-  
-  // Helper for ordinal suffix - declared before useEffect
-  const getOrdinalSuffix = (n) => {
-    const s = ['th', 'st', 'nd', 'rd'];
-    const v = n % 100;
-    return s[(v - 20) % 10] || s[v] || s[0];
-  };
   
   useEffect(() => {
     const today = new Date();
