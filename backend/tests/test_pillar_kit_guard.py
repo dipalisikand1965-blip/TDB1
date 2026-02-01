@@ -128,16 +128,20 @@ class TestServiceCatalog:
         assert response.status_code == 200
         data = response.json()
         
-        # Should return a list of services
-        assert isinstance(data, list), f"Expected list, got: {type(data)}"
-        assert len(data) > 0, "Expected at least one care service"
+        # API returns dict with 'services' key
+        assert isinstance(data, dict), f"Expected dict, got: {type(data)}"
+        assert "services" in data, "Response should contain 'services' key"
+        services = data.get("services", [])
+        
+        assert isinstance(services, list), f"Expected services to be list, got: {type(services)}"
+        assert len(services) > 0, "Expected at least one care service"
         
         # All services should be from care pillar
-        for service in data:
+        for service in services:
             assert service.get("pillar") == "care", f"Expected pillar='care', got: {service.get('pillar')}"
         
-        print(f"✓ Service catalog returned {len(data)} care services")
-        print(f"  - Sample services: {[s.get('name') for s in data[:3]]}")
+        print(f"✓ Service catalog returned {len(services)} care services")
+        print(f"  - Sample services: {[s.get('name') for s in services[:3]]}")
     
     def test_get_services_by_pillar_travel(self):
         """GET /api/service-catalog/services?pillar=travel should return travel services"""
@@ -145,13 +149,14 @@ class TestServiceCatalog:
         assert response.status_code == 200
         data = response.json()
         
-        assert isinstance(data, list), f"Expected list, got: {type(data)}"
-        assert len(data) > 0, "Expected at least one travel service"
+        services = data.get("services", [])
+        assert isinstance(services, list), f"Expected services to be list, got: {type(services)}"
+        assert len(services) > 0, "Expected at least one travel service"
         
-        for service in data:
+        for service in services:
             assert service.get("pillar") == "travel", f"Expected pillar='travel', got: {service.get('pillar')}"
         
-        print(f"✓ Service catalog returned {len(data)} travel services")
+        print(f"✓ Service catalog returned {len(services)} travel services")
     
     def test_get_services_by_pillar_fit(self):
         """GET /api/service-catalog/services?pillar=fit should return fit services"""
@@ -159,13 +164,14 @@ class TestServiceCatalog:
         assert response.status_code == 200
         data = response.json()
         
-        assert isinstance(data, list), f"Expected list, got: {type(data)}"
-        assert len(data) > 0, "Expected at least one fit service"
+        services = data.get("services", [])
+        assert isinstance(services, list), f"Expected services to be list, got: {type(services)}"
+        assert len(services) > 0, "Expected at least one fit service"
         
-        for service in data:
+        for service in services:
             assert service.get("pillar") == "fit", f"Expected pillar='fit', got: {service.get('pillar')}"
         
-        print(f"✓ Service catalog returned {len(data)} fit services")
+        print(f"✓ Service catalog returned {len(services)} fit services")
     
     def test_get_all_services(self):
         """GET /api/service-catalog/services should return all services"""
@@ -173,11 +179,12 @@ class TestServiceCatalog:
         assert response.status_code == 200
         data = response.json()
         
-        assert isinstance(data, list), f"Expected list, got: {type(data)}"
+        services = data.get("services", [])
+        assert isinstance(services, list), f"Expected services to be list, got: {type(services)}"
         # Based on seed_master_services.py, there should be 87 services
-        assert len(data) >= 50, f"Expected at least 50 services (87 seeded), got: {len(data)}"
+        assert len(services) >= 50, f"Expected at least 50 services (87 seeded), got: {len(services)}"
         
-        print(f"✓ Service catalog returned {len(data)} total services")
+        print(f"✓ Service catalog returned {len(services)} total services")
 
 
 class TestServicePriceCalculator:
@@ -188,7 +195,8 @@ class TestServicePriceCalculator:
         """Get a care service ID for testing"""
         response = requests.get(f"{BASE_URL}/api/service-catalog/services", params={"pillar": "care"})
         if response.status_code == 200:
-            services = response.json()
+            data = response.json()
+            services = data.get("services", [])
             if services:
                 return services[0].get("id")
         return "SVC-CARE-GROOM-BASIC"  # Fallback to known service ID
