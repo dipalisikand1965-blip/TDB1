@@ -2096,7 +2096,7 @@ All 14 pillar admin managers are already implemented and integrated:
 - **Admin**: `aditya` / `lola4304`
 
 ## Deployment
-- **Preview URL**: https://petconcierge-2.preview.emergentagent.com
+- **Preview URL**: https://petrack-center.preview.emergentagent.com
 - **Production**: thedoggycompany.in (deploying tomorrow)
 
 ---
