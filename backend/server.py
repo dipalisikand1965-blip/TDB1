@@ -12051,6 +12051,12 @@ set_voice_actions_db(db)
 app.include_router(pawmeter_router)  # PawMeter at /api/pawmeter/*
 set_pawmeter_db(db)
 
+# Kit Assembly & Mira Picks Admin
+from kit_admin_routes import router as kit_admin_router, set_database as set_kit_admin_db
+app.include_router(kit_admin_router)  # Kit Admin at /api/admin/kits/*
+set_kit_admin_db(db)
+logger.info("Kit Assembly & Mira Picks Admin routes initialized")
+
 @app.on_event("startup")
 async def startup_load_admin_credentials():
     """Load admin credentials from database on startup"""
