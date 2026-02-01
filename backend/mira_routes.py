@@ -3748,90 +3748,67 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
         
         # STEP 2: If we have kit assembly state, process user's response
         if kit_assembly_state and kit_assembly_state.get("stage") == "gathering_info":
-            kit_type_check = kit_assembly_state.get("kit_type")
+            # Parse user's response to extract info
+            gathered = kit_assembly_state.get("gathered_info", {})
+            message_lower = user_message.lower()
             
-            # =======================================================================
-            # ADMIN KIT SHORTCUT: If admin template exists, skip gathering and show products
-            # =======================================================================
-            admin_template_exists = await get_admin_kit_template(
-                db, 
-                kit_type=kit_type_check,
-                pillar=product_context.get("target_pillar") or pillar,
-                pet_type=pets[0].get("species", "dog") if pets else "dog"
+            # Extract occasion/destination mentions
+            if any(place in message_lower for place in ["goa", "ooty", "manali", "weekend", "trip", "flight", "road"]):
+                gathered["occasion"] = user_message
+            
+            # Extract budget mentions
+            if any(word in message_lower for word in ["budget", "affordable", "premium", "expensive", "cheap", "no limit"]):
+                if "no limit" in message_lower or "premium" in message_lower:
+                    gathered["budget"] = "premium"
+                elif "affordable" in message_lower or "budget" in message_lower or "cheap" in message_lower:
+                    gathered["budget"] = "budget"
+                else:
+                    gathered["budget"] = "moderate"
+            
+            # Extract specific requirements
+            requirements = []
+            if any(word in message_lower for word in ["anxiety", "nervous", "scared", "first time"]):
+                requirements.append("anxiety management")
+            if any(word in message_lower for word in ["car sick", "motion", "nausea"]):
+                requirements.append("motion sickness")
+            if any(word in message_lower for word in ["allergy", "sensitive", "grain free", "hypoallergenic"]):
+                requirements.append("allergy-friendly")
+            if requirements:
+                gathered["special_requirements"] = requirements
+            
+            # Update state
+            questions_asked = kit_assembly_state.get("questions_asked", 0) + 1
+            
+            await db.kit_assembly_sessions.update_one(
+                {"session_id": session_id},
+                {"$set": {
+                    "gathered_info": gathered,
+                    "questions_asked": questions_asked,
+                    "last_user_input": user_message,
+                    "updated_at": datetime.now(timezone.utc)
+                }}
             )
             
-            if admin_template_exists and admin_template_exists.get("enriched_products"):
-                # Skip gathering - go straight to assembly with admin template
-                logger.info(f"[ADMIN KIT] Shortcutting gathering phase - admin template '{admin_template_exists.get('name')}' found")
+            # Check if user is ready to proceed
+            # ONLY proceed if user explicitly confirms OR after 2+ exchanges
+            ready_keywords = ["yes", "ready", "go ahead", "show me", "build", "create", "assemble", "proceed", "let's do it", "sounds good", "perfect", "sure", "ok", "okay"]
+            user_explicitly_ready = any(kw in message_lower for kw in ready_keywords)
+            had_enough_exchanges = questions_asked >= 3  # Require at least 2 full exchanges before auto-proceeding
+            
+            user_ready = user_explicitly_ready or had_enough_exchanges
+            
+            if user_ready:
+                # Move to assembly stage
                 await db.kit_assembly_sessions.update_one(
                     {"session_id": session_id},
-                    {"$set": {"stage": "assembling", "using_admin_template": True}}
+                    {"$set": {"stage": "assembling"}}
                 )
+                
+                # Continue to product search below
                 product_context["is_kit_request"] = True
-                product_context["kit_type"] = kit_type_check
-                # Continue to product search below with admin template
+                product_context["kit_type"] = kit_assembly_state.get("kit_type")
+                product_context["gathered_info"] = gathered
             else:
-                # Original gathering flow for custom kits
-                # Parse user's response to extract info
-                gathered = kit_assembly_state.get("gathered_info", {})
-                message_lower = user_message.lower()
-                
-                # Extract occasion/destination mentions
-                if any(place in message_lower for place in ["goa", "ooty", "manali", "weekend", "trip", "flight", "road"]):
-                    gathered["occasion"] = user_message
-                
-                # Extract budget mentions
-                if any(word in message_lower for word in ["budget", "affordable", "premium", "expensive", "cheap", "no limit"]):
-                    if "no limit" in message_lower or "premium" in message_lower:
-                        gathered["budget"] = "premium"
-                    elif "affordable" in message_lower or "budget" in message_lower or "cheap" in message_lower:
-                        gathered["budget"] = "budget"
-                    else:
-                        gathered["budget"] = "moderate"
-                
-                # Extract specific requirements
-                requirements = []
-                if any(word in message_lower for word in ["anxiety", "nervous", "scared", "first time"]):
-                    requirements.append("anxiety management")
-                if any(word in message_lower for word in ["car sick", "motion", "nausea"]):
-                    requirements.append("motion sickness")
-                if any(word in message_lower for word in ["allergy", "sensitive", "grain free", "hypoallergenic"]):
-                    requirements.append("allergy-friendly")
-                if requirements:
-                    gathered["special_requirements"] = requirements
-                
-                # Update state
-                questions_asked = kit_assembly_state.get("questions_asked", 0) + 1
-                
-                await db.kit_assembly_sessions.update_one(
-                    {"session_id": session_id},
-                    {"$set": {
-                        "gathered_info": gathered,
-                        "questions_asked": questions_asked,
-                        "last_user_input": user_message,
-                        "updated_at": datetime.now(timezone.utc)
-                    }}
-                )
-                
-                # Check if user is ready to proceed
-                # ONLY proceed if user explicitly confirms OR after 2+ exchanges
-                ready_keywords = ["yes", "ready", "go ahead", "show me", "build", "create", "assemble", "proceed", "let's do it", "sounds good", "perfect", "sure", "ok", "okay"]
-                user_explicitly_ready = any(kw in message_lower for kw in ready_keywords)
-                had_enough_exchanges = questions_asked >= 3  # Require at least 2 full exchanges before auto-proceeding
-                
-                user_ready = user_explicitly_ready or had_enough_exchanges
-                
-                if user_ready:
-                    # Move to assembly stage
-                    await db.kit_assembly_sessions.update_one(
-                        {"session_id": session_id},
-                        {"$set": {"stage": "assembling"}}
-                    )
-                    
-                    # Continue to product search below
-                    product_context["is_kit_request"] = True
-                    product_context["kit_type"] = kit_assembly_state.get("kit_type")
-                    product_context["gathered_info"] = gathered
             else:
                 # Ask follow-up or confirm
                 kit_type = kit_assembly_state.get("kit_type", "custom")
