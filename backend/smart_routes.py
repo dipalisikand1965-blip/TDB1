@@ -386,20 +386,41 @@ async def get_smart_recommendations(
                 p['reason'] = f"Safe for pets with {', '.join(flat_allergies[:3])}"
             recommendations['allergy_safe'] = allergy_products
     
-    # 5. Create Mira's Picks - curated top recommendations
+    # 5. Create Mira's Picks - Use admin-curated picks first, then fall back to algorithm
     mira_picks = []
     
-    # Priority 1: Birthday gifts if upcoming
-    if recommendations['birthday_gifts']:
-        mira_picks.extend(recommendations['birthday_gifts'][:2])
+    # PRIORITY 0: Check for admin-curated Mira picks
+    admin_picks = await db.mira_picks.find({"is_active": True}).sort("priority", -1).limit(6).to_list(6)
+    if admin_picks:
+        admin_product_ids = [p.get("product_id") for p in admin_picks]
+        admin_products = await db.products.find({"id": {"$in": admin_product_ids}}).to_list(10)
+        admin_product_map = {p["id"]: p for p in admin_products}
+        
+        for pick in admin_picks:
+            product = admin_product_map.get(pick.get("product_id"))
+            if product:
+                product.pop("_id", None)
+                product["reason"] = pick.get("reason", "Mira's top pick!")
+                product["mira_tagline"] = pick.get("display_tagline")
+                product["mira_voice_script"] = pick.get("voice_script")
+                product["is_admin_curated"] = True
+                mira_picks.append(product)
+        
+        logger.info(f"[MIRA PICKS] Using {len(mira_picks)} admin-curated picks")
     
-    # Priority 2: Allergy-safe if pet has allergies
-    if recommendations['allergy_safe']:
-        mira_picks.extend(recommendations['allergy_safe'][:2])
-    
-    # Priority 3: Breed-specific
-    if recommendations['breed_picks']:
-        mira_picks.extend(recommendations['breed_picks'][:3])
+    # FALLBACK: If no admin picks, use algorithmic selection
+    if not mira_picks:
+        # Priority 1: Birthday gifts if upcoming
+        if recommendations['birthday_gifts']:
+            mira_picks.extend(recommendations['birthday_gifts'][:2])
+        
+        # Priority 2: Allergy-safe if pet has allergies
+        if recommendations['allergy_safe']:
+            mira_picks.extend(recommendations['allergy_safe'][:2])
+        
+        # Priority 3: Breed-specific
+        if recommendations['breed_picks']:
+            mira_picks.extend(recommendations['breed_picks'][:3])
     
     # Fill remaining with featured products
     if len(mira_picks) < 6:
