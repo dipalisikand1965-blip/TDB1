@@ -809,11 +809,18 @@ _GST applicable on final invoice_
         body: JSON.stringify(orderPayload)
       });
       
+      if (!orderResponse.ok) {
+        console.error('Order API failed:', orderResponse.status, orderResponse.statusText);
+        toast.error('Order submission failed - please try again');
+      }
+      
       const orderResult = await orderResponse.json();
       
       // Log if service desk ticket was created
       if (orderResult.ticket_id) {
-        console.log(`Service Desk Ticket created: ${orderResult.ticket_id} (same as Order ID)`);
+        console.log(`[UNIFIED FLOW] Service Desk Ticket created: ${orderResult.ticket_id}`);
+      } else {
+        console.warn('[UNIFIED FLOW] No ticket created for order - this should not happen!');
       }
 
       // Record discount code usage if applied
@@ -830,8 +837,8 @@ _GST applicable on final invoice_
         });
       }
     } catch (error) {
-      console.error('Failed to save order:', error);
-      // Continue anyway - WhatsApp will have the order
+      console.error('[UNIFIED FLOW] Failed to save order:', error);
+      toast.error('Failed to save order. Please contact support.');
     }
     
     // Generate WhatsApp URL with discount info
