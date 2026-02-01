@@ -837,6 +837,22 @@ const MiraChatWidget = ({
     }, 500);
   };
   
+  // Listen for mobile FAB clicks to open pillar-specific Mira
+  // This allows MiraChatWidget on pillar pages to respond to the mobile nav FAB
+  useEffect(() => {
+    const handleOpenMira = (event) => {
+      // Only respond if we're on a pillar page matching our pillar prop
+      // or if the event specifies our pillar
+      if (event.detail?.pillar === pillar || event.detail?.source === 'mobile_nav') {
+        console.log('[MiraChatWidget] Opening for pillar:', pillar);
+        setIsOpen(true);
+      }
+    };
+    
+    window.addEventListener('openMiraAI', handleOpenMira);
+    return () => window.removeEventListener('openMiraAI', handleOpenMira);
+  }, [pillar]);
+  
   // Get orb state based on current activity
   const getOrbState = () => {
     if (isListening) return 'listening';
