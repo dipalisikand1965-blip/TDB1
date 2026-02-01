@@ -1096,12 +1096,6 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', onClose }) => {
               </div>
             )}
 
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-4 text-xs">
-              <p className="text-yellow-800">
-                <strong>Shipping:</strong> ₹150 flat for orders below ₹3000. FREE delivery above ₹3000!
-              </p>
-            </div>
-
             <div className="flex items-center justify-between pt-3 border-t">
               <div>
                 <p className="text-xs text-gray-500">Total Price</p>
