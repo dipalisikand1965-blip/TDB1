@@ -125,6 +125,14 @@ const MiraChatWidget = ({
   
   const config = pillarConfig[pillar] || pillarConfig.general;
   
+  // Helper to get time of day greeting
+  const getTimeOfDay = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return 'morning';
+    if (hour < 17) return 'afternoon';
+    return 'evening';
+  };
+  
   // State for voices
   const [voicesLoaded, setVoicesLoaded] = useState(false);
   
