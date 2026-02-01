@@ -3852,8 +3852,42 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
             # Determine what to search for
             search_items = product_context["specific_items"] or product_context["kit_items"] or []
             search_pillar = product_context["target_pillar"] or pillar
+            kit_type = product_context.get("kit_type") or (kit_assembly_state.get("kit_type") if kit_assembly_state else None)
             
-            if search_items:
+            # =======================================================================
+            # PRIORITY 1: Check for admin-managed kit template
+            # This ensures Mira uses exactly what admins configured
+            # =======================================================================
+            admin_kit_template = None
+            admin_kit_products = []
+            
+            if kit_type or search_pillar:
+                admin_kit_template = await get_admin_kit_template(
+                    db, 
+                    kit_type=kit_type or f"{search_pillar}_kit",
+                    pillar=search_pillar,
+                    pet_type=pets[0].get("species", "dog") if pets else "dog"
+                )
+                
+                if admin_kit_template and admin_kit_template.get("enriched_products"):
+                    admin_kit_products = admin_kit_template["enriched_products"]
+                    logger.info(f"[ADMIN KIT] Using admin template '{admin_kit_template.get('name')}' with {len(admin_kit_products)} products")
+            
+            # If we have admin-managed products, use those
+            if admin_kit_products:
+                products = admin_kit_products
+                
+                # Use admin-configured intro narration for response
+                if admin_kit_template.get("intro_narration"):
+                    # Store for later use in response generation
+                    product_context["admin_kit_intro"] = admin_kit_template.get("intro_narration")
+                    product_context["admin_kit_outro"] = admin_kit_template.get("outro_narration")
+                    product_context["admin_kit_name"] = admin_kit_template.get("name")
+            
+            # =======================================================================
+            # FALLBACK: Dynamic product search (when no admin template exists)
+            # =======================================================================
+            elif search_items:
                 # =======================================================================
                 # NEW: Get pillar exclusion rules to filter out irrelevant items
                 # This prevents cakes/food from appearing in travel kits, etc.
