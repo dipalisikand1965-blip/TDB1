@@ -933,7 +933,7 @@ const PickEditorDialog = ({ open, pick, products, onSave, onClose, onTestVoice }
   // Reset form when pick changes
   useEffect(() => {
     if (open && pick) {
-      setFormData(pick);
+      setFormData(pick); // eslint-disable-line react-hooks/set-state-in-effect
     }
   }, [open, pick]);
 
