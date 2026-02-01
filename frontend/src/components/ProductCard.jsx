@@ -296,21 +296,19 @@ const ProductCard = ({ product, pillar = 'celebrate' }) => {
         </div>
 
         <div className="p-2 sm:p-4 space-y-1 sm:space-y-2">
-          {product.rating && (
-            <div className="hidden sm:flex items-center gap-2">
-              <div className="flex items-center">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`w-3 h-3 ${
-                      i < Math.floor(product.rating || 0)
-                        ? 'fill-yellow-400 text-yellow-400'
-                        : 'text-gray-300'
-                    }`}
-                  />
-                ))}
-              </div>
-              <span className="text-xs text-gray-500">({product.reviews || 0})</span>
+          {/* PawMeter Score Display */}
+          {(product.paw_score || product.rating) && (
+            <div className="hidden sm:flex items-center gap-1">
+              <PawPrint className="w-4 h-4 fill-amber-500 text-amber-500" />
+              <span className="text-sm font-semibold text-gray-700">
+                {(product.paw_score || product.rating * 2).toFixed(1)}
+              </span>
+              <span className="text-xs text-gray-400">/10</span>
+              {(product.paw_ratings_count || product.reviews) > 0 && (
+                <span className="text-xs text-gray-400">
+                  ({product.paw_ratings_count || product.reviews})
+                </span>
+              )}
             </div>
           )}
 
