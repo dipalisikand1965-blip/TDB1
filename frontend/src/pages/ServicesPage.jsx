@@ -348,13 +348,13 @@ const ServicesPage = () => {
 
       {/* Pillar Filter Pills */}
       <div className="sticky top-0 z-40 bg-white/95 backdrop-blur-sm border-b shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-3">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3">
           <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide">
             {ALL_PILLARS.map(pillar => (
               <button
                 key={pillar.id}
                 onClick={() => handlePillarChange(pillar.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all ${
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-full whitespace-nowrap transition-all text-sm ${
                   selectedPillar === pillar.id
                     ? 'bg-gradient-to-r from-violet-600 to-purple-600 text-white shadow-md'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -362,9 +362,9 @@ const ServicesPage = () => {
                 data-testid={`pillar-filter-${pillar.id}`}
               >
                 <span>{pillar.icon}</span>
-                <span className="font-medium text-sm">{pillar.name}</span>
+                <span className="font-medium">{pillar.name}</span>
                 {pillar.id !== 'all' && stats?.by_pillar?.[pillar.id] && (
-                  <Badge variant="secondary" className="ml-1 text-xs bg-white/20">
+                  <Badge variant="secondary" className="ml-1 text-[10px] bg-white/20">
                     {stats.by_pillar[pillar.id]}
                   </Badge>
                 )}
@@ -376,27 +376,27 @@ const ServicesPage = () => {
 
       {/* Quick Stats */}
       {stats && (
-        <div className="max-w-7xl mx-auto px-4 py-6">
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-            <Card className="p-4 bg-gradient-to-br from-violet-50 to-white border-violet-100">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-violet-100 flex items-center justify-center">
-                  <Sparkles className="w-5 h-5 text-violet-600" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 sm:gap-3">
+            <Card className="p-3 bg-gradient-to-br from-violet-50 to-white border-violet-100">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-violet-100 flex items-center justify-center">
+                  <Sparkles className="w-4 h-4 text-violet-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-violet-600">{stats.total}</p>
-                  <p className="text-xs text-gray-500">Total Services</p>
+                  <p className="text-xl font-bold text-violet-600">{stats.total}</p>
+                  <p className="text-[10px] text-gray-500">Total</p>
                 </div>
               </div>
             </Card>
-            <Card className="p-4 bg-gradient-to-br from-green-50 to-white border-green-100">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
-                  <Zap className="w-5 h-5 text-green-600" />
+            <Card className="p-3 bg-gradient-to-br from-green-50 to-white border-green-100">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center">
+                  <Zap className="w-4 h-4 text-green-600" />
                 </div>
                 <div>
-                  <p className="text-2xl font-bold text-green-600">{stats.bookable}</p>
-                  <p className="text-xs text-gray-500">Bookable</p>
+                  <p className="text-xl font-bold text-green-600">{stats.bookable}</p>
+                  <p className="text-[10px] text-gray-500">Bookable</p>
                 </div>
               </div>
             </Card>
