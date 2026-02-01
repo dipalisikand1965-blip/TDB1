@@ -594,7 +594,7 @@ const LearnPage = () => {
             <p className="text-gray-600 mt-2">Certified professionals with years of experience</p>
           </div>
 
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6">
             {trainers.map((trainer) => (
               <Card key={trainer.id} className="p-6 text-center hover:shadow-lg transition-all" data-testid={`trainer-${trainer.id}`}>
                 <div className="w-24 h-24 rounded-full mx-auto mb-4 overflow-hidden bg-gray-100">
