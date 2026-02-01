@@ -11883,6 +11883,8 @@ app.include_router(service_box_router)  # Service Box Admin
 app.include_router(cross_sell_router)  # Cross-pollination recommendations
 app.include_router(enhanced_collection_router)
 app.include_router(collection_public_router)
+app.include_router(occasion_box_admin_router)
+app.include_router(occasion_box_public_router)
 app.include_router(partner_router)
 app.include_router(partner_admin_router)
 app.include_router(restaurant_discovery_router)
