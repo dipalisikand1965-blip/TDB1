@@ -453,7 +453,7 @@ const AdvisoryPage = () => {
               <Loader2 className="w-8 h-8 animate-spin text-violet-600" />
             </div>
           ) : filteredAdvisors.length > 0 ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
               {filteredAdvisors.map((advisor) => (
                 <Card key={advisor.id} className="p-4 hover:shadow-lg transition-all">
                   <div className="flex items-start gap-4">
