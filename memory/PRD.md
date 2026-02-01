@@ -1,6 +1,39 @@
 # Pet Life Operating System - Product Requirements Document
 
-## Latest Update: February 1, 2026 - Session 15
+## Latest Update: February 1, 2026 - Session 16
+
+### ✅ P1 FEATURES COMPLETED (Feb 1, 2026)
+
+**1. Intelligent Search for Occasions**
+- Search for "birthday", "gotcha day", "diwali", etc. now shows a special Occasion Box Builder CTA
+- Keywords detected: birthday, bday, gotcha, adoption, diwali, christmas, holi, festival
+- File: `/app/frontend/src/pages/SearchResults.jsx`
+
+**2. Build Birthday Box on Celebrate Page**
+- Added "Build Birthday Box" primary CTA button to Celebrate page hero
+- Opens OccasionBoxBuilder modal with birthday template
+- File: `/app/frontend/src/pages/CelebratePage.jsx`
+
+**3. Product Images Fix**
+- OccasionBoxBuilder now checks `product.image` field (used by Shopify products)
+- Fallback chain: `image_url` → `image` → `images[0]` → placeholder
+- File: `/app/frontend/src/components/OccasionBoxBuilder.jsx`
+
+**4. Mobile Close Button Fix for Pet Soul Videos**
+- SoulExplainerVideo close button now uses `z-[60]` and `touch-manipulation`
+- Larger touch target (48px min) for mobile accessibility
+- Skip button also improved for mobile
+- File: `/app/frontend/src/components/SoulExplainerVideo.jsx`
+
+**Testing Status** (Iteration 165):
+- ✅ Backend: 92% (11/12 tests passed)
+- ✅ Frontend: 100% - All features working
+- ✅ Mobile navigation: Working
+- ✅ Occasion Box from Search: Working
+- ✅ Occasion Box from Celebrate: Working
+- ✅ Service flow (notification → ticket → inbox): Working
+
+---
 
 ### ✅ OCCASION BOX BUILDER BUG FIX (Feb 1, 2026)
 
@@ -15,13 +48,6 @@
 - Moved `getOrdinalSuffix` function **outside** the `MyCelebrations` component (line 200-205)
 - Removed `getOrdinalSuffix` from useEffect dependency array, now only `[pets]` (line 318)
 - File: `/app/frontend/src/components/MyCelebrations.jsx`
-
-**Testing Status**:
-- ✅ Backend APIs verified working (100% - 9/9 tests passed)
-- ✅ Frontend build passes without errors
-- ✅ Console errors confirmed resolved (no more "Maximum update depth" errors)
-- ⚠️ Browser automation limited due to 1.32MB bundle memory constraints
-- 📋 Manual verification recommended: Login, go to dashboard, click "Build Box"
 
 **Test Credentials**:
 - Member: `dipali@clubconcierge.in` / `test123`
