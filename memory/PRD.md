@@ -2,6 +2,59 @@
 
 ## Latest Update: February 1, 2026 - Session 5
 
+### 🏗️ SERVICE BOOKING FLOW - IN PROGRESS (Feb 1, 2026)
+
+**Major Architecture Addition**: Unified Service Booking Flow for Care Pillar
+
+**Components Built**:
+1. **Service Catalog API** (`/app/backend/service_catalog_routes.py`):
+   - Service definitions with base pricing
+   - City modifiers (Mumbai +15%, Delhi +10%, Bangalore base)
+   - Multi-pet discounts (2 pets = 1.8x, 3 pets = 2.5x)
+   - Pet size pricing (toy, small, medium, large, giant)
+   - Configurable payment timing (upfront, deposit, at_service)
+   - Service cart and checkout
+
+2. **Care Services Seeded** (3 services):
+   - Basic Grooming: ₹800 (60 min) + add-ons
+   - Full Spa Grooming: ₹1500 (120 min) with 30% deposit
+   - Vet Consultation: ₹600 (30 min) upfront payment
+
+3. **Ticket Recall & Update** (`/api/mira/ticket/{id}`, `/api/mira/ticket/update`):
+   - Customers can recall tickets by ID from Mira or dashboard
+   - Support for reschedule, cancel, add_note, change_service
+   - Updates flow to service desk for agent visibility
+
+4. **Real-time Conversation Sync**:
+   - Quick Book now links to Mira session ticket
+   - Conversation history stored with booking
+   - Appointment changes tracked in ticket messages
+
+**API Endpoints Created**:
+- `GET /api/service-catalog/services` - List services by pillar
+- `POST /api/service-catalog/calculate-price` - Dynamic price with modifiers
+- `POST /api/service-catalog/cart/add` - Add to service cart
+- `GET /api/service-catalog/cart` - Get service cart
+- `POST /api/service-catalog/checkout` - Checkout service cart
+- `GET /api/mira/ticket/{ticket_id}` - Recall ticket details
+- `POST /api/mira/ticket/update` - Update existing ticket
+- `GET /api/mira/my-tickets` - Get user's tickets
+
+**Status**: Backend complete, Frontend integration pending
+
+---
+
+### ✅ TTS PRONUNCIATION FIX - COMPLETED (Feb 1, 2026)
+
+**Issue**: Mira TTS says "pet consios" instead of "concierge"
+
+**Fix**: Updated `/app/frontend/src/components/MiraChatWidget.jsx`:
+- Changed phonetic spelling from "con-see-airzh" to "kon-see-airzh" 
+- Full greeting now spoken (not truncated)
+- Added time-of-day greeting ("Good morning/afternoon/evening")
+
+---
+
 ### ✅ MOBILE UX FIXES - COMPLETED (Feb 1, 2026)
 
 **Issues Fixed**:
