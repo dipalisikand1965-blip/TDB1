@@ -190,7 +190,7 @@ async def get_ticket_detail(ticket_id: str, email: str = Query(...)):
     Get detailed information about a specific ticket.
     Verifies the user owns the ticket.
     """
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not connected")
     
     # Find ticket with ownership verification
