@@ -386,17 +386,32 @@ const MiraChatWidget = ({
           }
           
           const utterance = new SpeechSynthesisUtterance(fullGreeting);
-          utterance.pitch = 1.1;
-          utterance.rate = 0.95; // Slightly slower for clarity
-          // Get female voice
+          utterance.pitch = 1.15;  // Higher pitch for feminine voice
+          utterance.rate = 0.92;   // British-style measured pace
+          
+          // STRICT FEMALE voice selection for intro
           const voices = synth.getVoices();
+          const knownMaleVoices = ['Daniel', 'George', 'James', 'David', 'Mark', 'Alex', 'Fred', 'Google US English', 'Microsoft David'];
           const femaleVoice = voices.find(v => 
-            v.name.toLowerCase().includes('samantha') ||
-            v.name.toLowerCase().includes('victoria') ||
-            v.name.toLowerCase().includes('karen') ||
-            v.name.includes('Female')
-          ) || voices.find(v => v.lang.startsWith('en'));
-          if (femaleVoice) utterance.voice = femaleVoice;
+            // British females first
+            v.name === 'Kate' || v.name === 'Serena' || v.name === 'Martha' ||
+            v.name.includes('Google UK English Female') || 
+            v.name.includes('Microsoft Hazel')
+          ) || voices.find(v =>
+            // American females
+            v.name === 'Samantha' || v.name === 'Victoria' || v.name === 'Karen' ||
+            v.name.includes('Google US English Female') ||
+            v.name.includes('Microsoft Zira')
+          ) || voices.find(v => 
+            v.name.toLowerCase().includes('female')
+          ) || voices.find(v => 
+            v.lang.startsWith('en') && 
+            !knownMaleVoices.some(male => v.name.toLowerCase().includes(male.toLowerCase()))
+          );
+          if (femaleVoice) {
+            utterance.voice = femaleVoice;
+            console.log('[Mira Intro] Using voice:', femaleVoice.name);
+          }
           synth.speak(utterance);
         }, 500);
       }
