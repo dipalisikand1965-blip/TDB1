@@ -333,7 +333,9 @@ function MainLayout() {
         <Route path="/refund-policy" element={<Policies />} />
         <Route path="/privacy-policy" element={<Policies />} />
         <Route path="/terms-of-service" element={<Policies />} />
+        <Route path="/terms" element={<Policies />} />
         <Route path="/shipping-policy" element={<Policies />} />
+        <Route path="/ai-disclaimer" element={<Policies />} />
         
         {/* Content Pages */}
         <Route path="/faqs" element={<FAQs />} />
