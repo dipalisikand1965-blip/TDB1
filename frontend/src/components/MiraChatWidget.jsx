@@ -458,7 +458,7 @@ const MiraChatWidget = ({
     }
   };
   
-  // Text-to-Speech function - MIRA IS A WOMAN with "Meera" pronunciation
+  // Text-to-Speech function - MIRA IS A BRITISH WOMAN
   const speakText = useCallback((text) => {
     if (!synthRef.current || !voiceEnabled) return;
     
@@ -477,110 +477,110 @@ const MiraChatWidget = ({
     // Fix "Mira" pronunciation to "Meera" (phonetic spelling)
     cleanText = cleanText.replace(/\bMira\b/gi, 'Meera');
     
-    // Fix "concierge" pronunciation - "kon-see-airzh" (French style)
+    // Fix "concierge" pronunciation - British style "kon-see-airzh"
     cleanText = cleanText
       .replace(/pet concierge®?/gi, 'pet kon-see-airzh')
       .replace(/your concierge®?/gi, 'your kon-see-airzh')
       .replace(/our concierge®?/gi, 'our kon-see-airzh')
-      .replace(/the concierge®?/gi, 'the con-see-airzh')
-      .replace(/concierge®? team/gi, 'con-see-airzh team')
-      .replace(/\bconcierge®?\b/gi, 'con-see-airzh');
+      .replace(/the concierge®?/gi, 'the kon-see-airzh')
+      .replace(/concierge®? team/gi, 'kon-see-airzh team')
+      .replace(/\bconcierge®?\b/gi, 'kon-see-airzh');
     
     const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.rate = 0.92;  // Slightly slower for mobile clarity
-    utterance.pitch = 1.1;  // Slightly higher for feminine voice
+    utterance.rate = 0.92;  // Slightly slower for clarity
+    utterance.pitch = 1.05;  // Slightly higher for feminine voice
     utterance.volume = 1.0;
     
-    // Get a FEMALE voice for Mira - Prioritized list for best quality
+    // Get a BRITISH ENGLISH FEMALE voice for Mira - Prioritized list
     const voices = synthRef.current.getVoices();
     
-    // Log available voices for debugging (useful on mobile)
+    // Log available voices for debugging
     if (voices.length > 0) {
-      console.log('[Mira Voice] Available voices:', voices.length, voices.map(v => `${v.name} (${v.lang})`).slice(0, 5));
+      console.log('[Mira Voice] Available voices:', voices.length);
     }
     
-    // Premium voices to use (best quality female voices) - ordered by preference
-    const premiumVoiceNames = [
-      // iOS/Safari high quality (most mobile users on iPhone)
-      'Samantha',        // US English - very natural
-      'Karen',           // Australian English
-      'Moira',           // Irish English
-      'Tessa',           // South African
-      'Victoria',        // US English
-      'Fiona',           // Scottish
-      // Indian English (for India users)
-      'Veena',
-      'Lekha',           // Hindi-influenced
-      'Rishi',           // Alternative
-      // Android/Chrome high quality
+    // BRITISH ENGLISH FEMALE voices - STRICT priority order
+    const britishFemaleVoices = [
+      // iOS/Safari British voices (best quality)
+      'Kate',              // British English - excellent
+      'Serena',            // British English  
+      'Martha',            // British English
+      'Fiona',             // Scottish English
+      'Moira',             // Irish English
+      // Google British voices
       'Google UK English Female',
-      'Google US English Female', 
-      'Google हिन्दी',     // Hindi
-      'English India',
+      'en-GB-Wavenet-A',   // Google Cloud British female
+      'en-GB-Wavenet-C',   // Google Cloud British female
+      'en-GB-Neural2-A',   // Google Neural British
+      'en-GB-Neural2-C',   // Google Neural British
       'English United Kingdom Female',
-      'English United States Female',
-      // Microsoft (Windows mobile, Edge)
-      'Microsoft Zira',
-      'Microsoft Heera',
-      'Microsoft Aria',
-      'Zira',
-      'Heera',
-      // Samsung voices
-      'Samsung',
-      // Generic enhanced
-      'Enhanced',
-      'Premium',
-      'Natural',
-      // Wavenet (Google Cloud - rare on mobile but excellent)
-      'en-US-Wavenet-F',
-      'en-IN-Wavenet-A',
-      'en-GB-Wavenet-A'
+      // Microsoft British voices
+      'Microsoft Hazel',   // UK English female
+      'Microsoft Susan',   // UK English female
+      'Hazel',
+      'Susan',
+      // Amazon Polly
+      'Amy',               // British English
+      'Emma',              // British English
+      // Generic British
+      'UK English Female',
+      'British Female',
     ];
     
-    // Find best available voice
+    // Find best British female voice
     let selectedVoice = null;
     
-    // Try premium voices first (exact match)
-    for (const voiceName of premiumVoiceNames) {
+    // First try: Exact match for British female voices
+    for (const voiceName of britishFemaleVoices) {
       selectedVoice = voices.find(v => 
         v.name === voiceName || 
-        v.name.includes(voiceName) || 
+        v.name.includes(voiceName) ||
         v.name.toLowerCase().includes(voiceName.toLowerCase())
       );
       if (selectedVoice) {
-        console.log('[Mira Voice] Found premium voice:', selectedVoice.name);
+        console.log('[Mira Voice] Found British voice:', selectedVoice.name);
         break;
       }
     }
     
-    // Fallback 1: Any English voice with "female" in name or without "male"
+    // Second try: Any en-GB voice (British English)
+    if (!selectedVoice) {
+      selectedVoice = voices.find(v => 
+        v.lang === 'en-GB' && 
+        !v.name.toLowerCase().includes('male') &&
+        !v.name.toLowerCase().includes('daniel') &&
+        !v.name.toLowerCase().includes('george')
+      );
+      if (selectedVoice) console.log('[Mira Voice] Using en-GB voice:', selectedVoice.name);
+    }
+    
+    // Third try: Any voice with "UK" or "British" in name
+    if (!selectedVoice) {
+      selectedVoice = voices.find(v => 
+        (v.name.toLowerCase().includes('uk') || v.name.toLowerCase().includes('british')) &&
+        !v.name.toLowerCase().includes('male')
+      );
+      if (selectedVoice) console.log('[Mira Voice] Using UK voice:', selectedVoice.name);
+    }
+    
+    // Fourth try: Any English female voice (last resort)
     if (!selectedVoice) {
       selectedVoice = voices.find(v => 
         v.lang.startsWith('en') && 
         (v.name.toLowerCase().includes('female') || 
-         v.name.toLowerCase().includes('woman') ||
-         // Prefer voices that don't explicitly say "male"
-         (!v.name.toLowerCase().includes('male') && !v.name.toLowerCase().includes('david') && !v.name.toLowerCase().includes('alex')))
+         !v.name.toLowerCase().includes('male'))
       );
       if (selectedVoice) console.log('[Mira Voice] Using English female fallback:', selectedVoice.name);
     }
     
-    // Fallback 2: Any English voice (last resort)
-    if (!selectedVoice) {
-      selectedVoice = voices.find(v => v.lang.startsWith('en'));
-      if (selectedVoice) console.log('[Mira Voice] Using any English fallback:', selectedVoice.name);
-    }
-    
-    // Fallback 3: First available voice (absolute last resort)
-    if (!selectedVoice && voices.length > 0) {
-      selectedVoice = voices[0];
-      console.log('[Mira Voice] Using first available voice:', selectedVoice.name);
-    }
-    
     if (selectedVoice) {
       utterance.voice = selectedVoice;
+      // Adjust rate for British accent - slightly more measured
+      if (selectedVoice.lang === 'en-GB') {
+        utterance.rate = 0.90;  // British English sounds better slightly slower
+      }
     } else {
-      console.log('[Mira Voice] No voices available, using browser default');
+      console.log('[Mira Voice] No suitable voice found, using browser default');
     }
     
     utterance.onstart = () => setIsSpeaking(true);
