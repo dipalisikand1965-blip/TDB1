@@ -276,42 +276,17 @@ const MiraPage = () => {
     fetchContext();
   }, [user, token]);
 
-  // Handle URL parameters (context and preset message from goal buttons)
-  useEffect(() => {
-    const context = searchParams.get('context');
-    const presetMessage = searchParams.get('preset');
+  // Unified send message function - handles both manual input and preset messages
+  const sendMessage = async (e, presetMessage = null) => {
+    e?.preventDefault();
     
-    if (context) {
-      // Extract pillar from context (e.g., "fit_weight_loss" -> "fit")
-      const pillarFromContext = context.split('_')[0];
-      if (pillarFromContext) {
-        setPillar(pillarFromContext);
-      }
-    }
-    
-    // If there's a preset message, auto-send it (only once)
-    if (presetMessage) {
-      const decodedMessage = decodeURIComponent(presetMessage);
-      
-      // Clear the URL params FIRST to prevent re-triggering
-      setSearchParams({});
-      
-      // Auto-send after a brief delay (to let the welcome message show first)
-      setTimeout(() => {
-        handlePresetMessage(decodedMessage);
-      }, 1500);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Only run once on mount
-
-  // Handle preset message from URL params
-  const handlePresetMessage = async (message) => {
-    if (!message.trim() || isLoading) return;
+    const messageContent = presetMessage || input.trim();
+    if (!messageContent || isLoading) return;
 
     const userMessage = {
       id: Date.now().toString(),
       role: 'user',
-      content: message.trim(),
+      content: messageContent,
       timestamp: new Date().toISOString()
     };
 
@@ -331,11 +306,12 @@ const MiraPage = () => {
           ...(token && { 'Authorization': `Bearer ${token}` })
         },
         body: JSON.stringify({
-          message: userMessage.content,
+          message: messageContent,
           session_id: sessionId,
-          pet_id: selectedPet?.id,
-          pillar: pillar,
-          history: history.slice(-6),
+          source: 'full_page',
+          current_pillar: pillar,
+          selected_pet_id: selectedPet?.id || null,
+          history: history.slice(-10),
           user_context: {
             name: user?.name,
             email: user?.email,
@@ -364,73 +340,9 @@ const MiraPage = () => {
           content: data.response,
           pillar: data.pillar,
           actions: data.actions,
-          timestamp: new Date().toISOString()
-        }]);
-      } else {
-        throw new Error('Failed to get response');
-      }
-    } catch (error) {
-      console.error('Mira chat error:', error);
-      setMessages(prev => [...prev, {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: "I apologize, but I'm having trouble responding right now. Please try again or contact our team directly.",
-        timestamp: new Date().toISOString()
-      }]);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Send message to Mira
-  const sendMessage = async (e) => {
-    e?.preventDefault();
-    if (!input.trim() || isLoading) return;
-
-    const userMessage = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: input.trim(),
-      timestamp: new Date().toISOString()
-    };
-
-    setMessages(prev => [...prev, userMessage]);
-    setInput('');
-    setIsLoading(true);
-
-    try {
-      const history = messages
-        .filter(m => m.id !== 'welcome')
-        .map(m => ({ role: m.role, content: m.content }));
-
-      const response = await fetch(`${API_URL}/api/mira/chat`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { 'Authorization': `Bearer ${token}` })
-        },
-        body: JSON.stringify({
-          message: userMessage.content,
-          session_id: sessionId,
-          source: 'full_page',
-          current_pillar: pillar,
-          selected_pet_id: selectedPet?.id || null,
-          history: history
-        })
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setMessages(prev => [...prev, {
-          id: (Date.now() + 1).toString(),
-          role: 'assistant',
-          content: data.response,
           timestamp: new Date().toISOString(),
           researchMode: data.research_mode
         }]);
-        
-        if (data.ticket_id) setTicketId(data.ticket_id);
-        if (data.pillar) setPillar(data.pillar);
       } else {
         setMessages(prev => [...prev, {
           id: (Date.now() + 1).toString(),
@@ -451,6 +363,34 @@ const MiraPage = () => {
       setIsLoading(false);
     }
   };
+
+  // Handle URL parameters (context and preset message from goal buttons)
+  useEffect(() => {
+    const context = searchParams.get('context');
+    const presetMessage = searchParams.get('preset');
+    
+    if (context) {
+      // Extract pillar from context (e.g., "fit_weight_loss" -> "fit")
+      const pillarFromContext = context.split('_')[0];
+      if (pillarFromContext) {
+        setPillar(pillarFromContext);
+      }
+    }
+    
+    // If there's a preset message, auto-send it (only once)
+    if (presetMessage) {
+      const decodedMessage = decodeURIComponent(presetMessage);
+      
+      // Clear the URL params FIRST to prevent re-triggering
+      setSearchParams({});
+      
+      // Auto-send after a brief delay (to let the welcome message show first)
+      setTimeout(() => {
+        sendMessage(null, decodedMessage);
+      }, 1500);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Only run once on mount
 
   // Quick action handler
   const handleQuickAction = (actionId) => {
