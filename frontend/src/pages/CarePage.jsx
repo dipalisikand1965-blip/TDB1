@@ -769,7 +769,7 @@ const CarePage = () => {
       {/* === SERVICE CATALOG WITH DYNAMIC PRICING === */}
       <ServiceCatalogSection 
         pillar="care"
-        title="Care Services with Transparent Pricing"
+        title="Care, Personalised"
         subtitle="See your personalized price based on your city, pet size, and requirements"
         maxServices={12}
       />
