@@ -3087,7 +3087,7 @@ CRITICAL CONCIERGE DOCTRINE:
         
         if should_force_handoff:
             # Force handoff instead of more questions
-            logger.info(f"[MIRA HANDOFF] Detected loop in {current_pillar}, forcing handoff")
+            logger.info(f"[MIRA HANDOFF] Detected loop in {pillar}, forcing handoff")
             
             handoff_messages = {
                 "stay": "I've captured all your stay preferences. Our concierge team is now searching for pet-friendly accommodations and will share the best options with you here within 2 hours. You'll receive a notification when options are ready!",
