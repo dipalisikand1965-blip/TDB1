@@ -724,7 +724,7 @@ const LearnPage = () => {
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900">Why Learn with The Doggy Company?</h2>
           </div>
-          <div className="grid md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
             {[
               { icon: Award, title: 'Certified Trainers', desc: 'All trainers are certified professionals' },
               { icon: Heart, title: 'Positive Methods', desc: 'Force-free, reward-based training only' },
