@@ -31,15 +31,23 @@ const OccasionBoxBuilder = ({
 
   // Fetch template and products
   const fetchTemplateData = useCallback(async () => {
+    if (!occasionType) {
+      console.log('No occasion type provided');
+      return;
+    }
+    
     try {
       setLoading(true);
+      console.log('Fetching template for occasion:', occasionType);
       
       // First try to get by occasion type
       let response = await fetch(`${API_URL}/api/occasion-boxes/by-occasion/${occasionType}`);
+      console.log('By-occasion response:', response.status);
       
       if (!response.ok) {
         // Fallback to slug
         const slug = `${occasionType}-box`.replace('_', '-');
+        console.log('Trying fallback slug:', slug);
         response = await fetch(`${API_URL}/api/occasion-boxes/${slug}`);
       }
       
@@ -48,6 +56,7 @@ const OccasionBoxBuilder = ({
       }
       
       const templateData = await response.json();
+      console.log('Template loaded:', templateData.name);
       setTemplate(templateData);
       
       // Now fetch products for this template
@@ -58,6 +67,7 @@ const OccasionBoxBuilder = ({
       if (productsResponse.ok) {
         const productsData = await productsResponse.json();
         setProducts(productsData.products || {});
+        console.log('Products loaded:', Object.keys(productsData.products || {}).length, 'categories');
       }
       
     } catch (error) {
