@@ -64,6 +64,11 @@ from pillar_resolver_routes import (
     router as pillar_resolver_router,
     set_resolver_db
 )
+from service_catalog_routes import (
+    router as service_catalog_router,
+    set_service_catalog_db,
+    set_service_catalog_admin
+)
 from collection_routes import (
     router as enhanced_collection_router,
     public_router as collection_public_router,
