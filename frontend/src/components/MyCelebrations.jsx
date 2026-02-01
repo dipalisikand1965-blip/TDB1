@@ -315,7 +315,7 @@ const MyCelebrations = ({ pets = [], onNavigate, onAddToCart }) => {
     });
     
     setCelebrations(allCelebrations);
-  }, [pets, getOrdinalSuffix]);
+  }, [pets]);
   
   const handleBuildBox = (occasionType, petName) => {
     console.log('MyCelebrations: Building box for:', occasionType, petName);
