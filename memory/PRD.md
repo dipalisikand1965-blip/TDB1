@@ -1,6 +1,42 @@
 # Pet Life Operating System - Product Requirements Document
 
-## Latest Update: January 31, 2026 - Session 4
+## Latest Update: February 1, 2026 - Session 5
+
+### ✅ MOBILE UX FIXES - COMPLETED (Feb 1, 2026)
+
+**Issues Fixed**:
+1. **Care/Travel products not loading on mobile** - Products were buried 9000+ pixels down. Added `id` attributes for scroll-to functionality and limited to 10 products to reduce page length.
+2. **Pawmeter Score cramped on mobile** - Updated to responsive flex layout (`flex-col sm:flex-row`)
+3. **Hardcoded shipping text removed** - Removed "₹150 flat / FREE above ₹3000" from ProductCard.jsx
+4. **Mira Kit Assembly tabs** - Added pillar-specific "Build Kit" buttons as first quick action on travel/care/fit/celebrate/learn pages. Styled differently with 🎒 emoji and gradient.
+
+**Files Modified**:
+- `/app/frontend/src/pages/CarePage.jsx` - Added `id="care-products"`, `slice(0,10)`, responsive grid, scroll button
+- `/app/frontend/src/pages/TravelPage.jsx` - Added `id="travel-products"`, responsive grid
+- `/app/frontend/src/components/PawmoterScore.jsx` - Changed to `flex-col sm:flex-row` layout
+- `/app/frontend/src/components/ProductCard.jsx` - Removed shipping text block
+- `/app/frontend/src/components/MiraChatWidget.jsx` - Added pillar-specific Quick Actions with Build Kit tabs
+
+**Testing Results (Iteration 155)**:
+- 100% pass rate (7/7 features)
+- Mobile products: PASS
+- Mira Build Kit tabs: PASS on travel/care/fit
+
+---
+
+### ✅ PILLAR-SPECIFIC KIT GUARD - IN PROGRESS (Feb 1, 2026)
+
+**Issue**: Mira was triggering travel kit on Fit page when user asked "Fitness Plan"
+
+**Fix Implemented**:
+1. Added `KIT GUARD` logic to `/app/backend/mira_routes.py`
+2. Kit assembly only triggers when user explicitly says "kit", "build", "assemble"
+3. Detected kit must match current pillar (e.g., travel_kit only on travel page)
+4. Added `fitness_kit` for fit pillar
+
+**Status**: Partial - basic kit now triggers correctly, cross-pillar guard needs testing
+
+---
 
 ### ✅ MIRA CHAT UX FIXES - COMPLETED (Jan 31, 2026)
 
