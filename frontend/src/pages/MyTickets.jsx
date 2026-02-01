@@ -406,10 +406,35 @@ const MyTickets = () => {
               </h1>
               <p className="text-gray-500 mt-1">Track your requests and conversations</p>
             </div>
-            <Button onClick={fetchTickets} variant="outline" size="sm">
-              <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-              Refresh
-            </Button>
+            <div className="flex items-center gap-2">
+              {/* Push Notification Toggle */}
+              {isPushSupported && (
+                <Button 
+                  onClick={handlePushToggle} 
+                  variant="outline" 
+                  size="sm"
+                  disabled={pushLoading}
+                  className="gap-2"
+                  data-testid="push-toggle-btn"
+                >
+                  {isSubscribed ? (
+                    <>
+                      <Bell className="w-4 h-4 text-purple-600" />
+                      <span className="hidden sm:inline">Notifs On</span>
+                    </>
+                  ) : (
+                    <>
+                      <BellOff className="w-4 h-4" />
+                      <span className="hidden sm:inline">Enable Notifs</span>
+                    </>
+                  )}
+                </Button>
+              )}
+              <Button onClick={fetchTickets} variant="outline" size="sm">
+                <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                Refresh
+              </Button>
+            </div>
           </div>
           
           {/* Stats */}
