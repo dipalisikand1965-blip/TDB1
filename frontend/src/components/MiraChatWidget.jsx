@@ -1338,6 +1338,22 @@ const MiraChatWidget = ({
           </>
         )}
       </div>
+      
+      {/* Cinematic Kit Assembly Modal */}
+      {showCinematicKit && (
+        <CinematicKitAssembly
+          kitName={cinematicKitData.name}
+          items={cinematicKitData.items}
+          onComplete={(items) => {
+            toast.success(`Added ${items.length} items to cart!`, {
+              description: 'Your kit is ready to checkout'
+            });
+            setShowCinematicKit(false);
+          }}
+          onClose={() => setShowCinematicKit(false)}
+          addToCart={addToCart}
+        />
+      )}
     </div>
   );
 };
