@@ -108,6 +108,7 @@ import {
   Calendar,
   Truck,
   BarChart3,
+  Gift,
   Inbox,
   Settings,
   PartyPopper,
