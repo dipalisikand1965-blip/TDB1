@@ -545,7 +545,7 @@ const Home = () => {
           </h2>
           
           <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
-            Join our founding members and be part of building the world&apos;s first Pet Life Operating System. 
+            Join our founding members and be part of building India&apos;s first Pet Concierge® experience. 
             Not a discount — an invitation.
           </p>
 
