@@ -246,45 +246,46 @@ const MiraAI = () => {
       .replace(/\bconcierge®?\b/gi, 'kon-see-airzh');
     
     const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.rate = 0.95;  // Slightly slower for clarity
-    utterance.pitch = 1.1;  // Slightly higher for feminine tone
+    utterance.rate = 0.90;  // Measured pace for British English
+    utterance.pitch = 1.05;  // Slightly higher for feminine tone
     utterance.volume = 0.95;
     
-    // Get a premium female voice for Mira - she's sophisticated!
+    // Get a BRITISH ENGLISH female voice for Mira - she's sophisticated!
     const voices = synthRef.current.getVoices();
     
-    // Debug: Log available voices on mobile
-    console.log('Available voices:', voices.map(v => `${v.name} (${v.lang})`));
+    // Debug: Log available voices
+    console.log('[Mira] Available voices:', voices.length);
     
+    // BRITISH ENGLISH FEMALE voices - STRICT priority order
     const femaleVoice = voices.find(v => 
-      // Priority 1: Premium Indian English female voices
-      v.name.includes('Google हिन्दी') ||
-      v.name.includes('Lekha') ||
-      v.name.includes('Veena') ||
-      v.name.toLowerCase().includes('hindi') ||
-      (v.lang === 'en-IN' && (v.name.includes('Female') || v.name.includes('female')))
+      // Priority 1: British English female voices (Apple)
+      v.name === 'Kate' ||
+      v.name === 'Serena' ||
+      v.name === 'Martha' ||
+      v.name.toLowerCase().includes('kate') ||
+      (v.lang === 'en-GB' && !v.name.toLowerCase().includes('male') && !v.name.toLowerCase().includes('daniel'))
     ) || voices.find(v =>
-      // Priority 2: Specific high-quality female voices (Apple/Google)
-      v.name.toLowerCase().includes('samantha') ||
-      v.name.toLowerCase().includes('karen') ||
-      v.name.toLowerCase().includes('moira') ||
-      v.name.toLowerCase().includes('tessa') ||
+      // Priority 2: Google UK English Female
       v.name.includes('Google UK English Female') ||
-      v.name.includes('Google US English') && !v.name.includes('Male')
+      v.name.includes('en-GB-Wavenet') ||
+      v.name.includes('en-GB-Neural')
     ) || voices.find(v =>
-      // Priority 3: Microsoft voices
-      v.name.includes('Microsoft Zira') ||
-      v.name.includes('Microsoft Heera') ||
-      v.name.includes('Microsoft Aria')
+      // Priority 3: Microsoft UK voices
+      v.name.includes('Microsoft Hazel') ||
+      v.name.includes('Microsoft Susan') ||
+      v.name.toLowerCase().includes('hazel') ||
+      v.name.toLowerCase().includes('susan')
     ) || voices.find(v =>
-      // Priority 4: Any voice with "Female" in name
-      v.name.includes('Female') || v.name.includes('female')
+      // Priority 4: Irish/Scottish (Celtic accents)
+      v.name.toLowerCase().includes('moira') ||
+      v.name.toLowerCase().includes('fiona')
     ) || voices.find(v =>
-      // Priority 5: Indian English fallback
-      v.lang === 'en-IN'
+      // Priority 5: Any en-GB voice
+      v.lang === 'en-GB'
     ) || voices.find(v =>
-      // Priority 6: Any English voice (last resort)
-      v.lang.startsWith('en') && !v.name.toLowerCase().includes('male')
+      // Priority 6: Any English female (last resort)
+      v.lang.startsWith('en') && 
+      (v.name.includes('Female') || !v.name.toLowerCase().includes('male'))
     );
     
     if (femaleVoice) {
