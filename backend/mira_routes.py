@@ -41,6 +41,118 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/mira", tags=["mira"])
 security_bearer = HTTPBearer(auto_error=False)
 
+# ============================================
+# ADMIN-MANAGED KIT TEMPLATES INTEGRATION
+# ============================================
+
+async def get_admin_kit_template(db, kit_type: str, pillar: str = None, pet_type: str = "dog"):
+    """
+    Fetch admin-managed kit template from kit_templates collection.
+    This allows admins to control exactly what products and narrations Mira uses.
+    
+    Args:
+        db: Database connection
+        kit_type: Type of kit (e.g., "travel", "birthday", "grooming")
+        pillar: Life pillar context
+        pet_type: Target pet type (default "dog")
+    
+    Returns:
+        Kit template with products and narrations, or None if not found
+    """
+    if db is None:
+        return None
+    
+    # Map kit_type to category/pillar
+    kit_category_map = {
+        "travel_kit": "travel",
+        "birthday_kit": "celebrate", 
+        "grooming_kit": "care",
+        "cinema_kit": "enjoy",
+        "wellness_kit": "care",
+        "training_kit": "learn",
+        "puppy_kit": "advisory",
+        "adoption_kit": "adopt",
+        "emergency_kit": "emergency",
+        "custom": pillar or "celebrate"
+    }
+    
+    target_category = kit_category_map.get(kit_type, pillar or kit_type.replace("_kit", ""))
+    
+    # Try to find a matching template
+    query = {
+        "is_active": True,
+        "$or": [
+            {"category": target_category},
+            {"pillar": target_category},
+            {"slug": {"$regex": target_category, "$options": "i"}}
+        ]
+    }
+    
+    template = await db.kit_templates.find_one(query, {"_id": 0})
+    
+    if not template:
+        # Fallback: try broader search
+        template = await db.kit_templates.find_one(
+            {"is_active": True, "slug": {"$regex": kit_type.replace("_kit", ""), "$options": "i"}},
+            {"_id": 0}
+        )
+    
+    if template:
+        # Fetch actual products for the template items
+        product_ids = [item.get("product_id") for item in template.get("items", []) if item.get("product_id")]
+        if product_ids:
+            products = await db.products.find({"id": {"$in": product_ids}}).to_list(20)
+            product_map = {p["id"]: p for p in products}
+            
+            # Enrich items with product data and custom narrations
+            enriched_items = []
+            for item in template.get("items", []):
+                product = product_map.get(item.get("product_id"))
+                if product:
+                    product.pop("_id", None)
+                    product["custom_narration"] = item.get("custom_narration")
+                    product["kit_category"] = template.get("category")
+                    product["in_stock"] = True
+                    enriched_items.append(product)
+            
+            template["enriched_products"] = enriched_items
+        
+        logger.info(f"[ADMIN KIT] Found template '{template.get('name')}' for kit_type={kit_type}, pillar={target_category}")
+    
+    return template
+
+
+async def get_admin_mira_picks(db, limit: int = 6, pet_id: str = None):
+    """
+    Fetch admin-curated Mira Picks for recommendations.
+    These are the products admins want Mira to highlight.
+    """
+    if db is None:
+        return []
+    
+    picks = await db.mira_picks.find({"is_active": True}).sort("priority", -1).limit(limit).to_list(limit)
+    
+    if not picks:
+        return []
+    
+    # Fetch product details
+    product_ids = [p.get("product_id") for p in picks]
+    products = await db.products.find({"id": {"$in": product_ids}}).to_list(limit)
+    product_map = {p["id"]: p for p in products}
+    
+    enriched_picks = []
+    for pick in picks:
+        product = product_map.get(pick.get("product_id"))
+        if product:
+            product.pop("_id", None)
+            product["mira_tagline"] = pick.get("display_tagline")
+            product["mira_voice_script"] = pick.get("voice_script")
+            product["mira_reason"] = pick.get("reason")
+            enriched_picks.append(product)
+    
+    return enriched_picks
+
+
 # Research mode keywords - queries containing these trigger web search
 RESEARCH_KEYWORDS = [
     "permit", "permission", "allowed", "rules", "regulations", "requirements",
