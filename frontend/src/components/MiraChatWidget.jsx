@@ -1026,13 +1026,8 @@ const MiraChatWidget = ({
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        setInputValue(action);
-                        if (isKitAction) {
-                          setTimeout(() => sendMessage(), 100);
-                        } else {
-                          // Auto-send for non-kit actions too
-                          setTimeout(() => sendMessage(), 100);
-                        }
+                        // Send the message directly without relying on state
+                        sendMessage(action);
                       }}
                       className={`px-4 py-2.5 rounded-full text-xs font-semibold whitespace-nowrap min-h-[44px] touch-manipulation ${
                         isKitAction 
