@@ -3049,19 +3049,43 @@ CRITICAL CONCIERGE DOCTRINE:
             "do you prefer",
             "what kind of",
             "which would you",
-            "are you looking for"
+            "are you looking for",
+            "which area",
+            "what date",
+            "when are you",
+            "where are you"
         ]
         is_response_looping = any(indicator in response.lower() for indicator in loop_indicators)
         
+        # Check if response contains a question (more generic detection)
+        response_has_question = "?" in response
+        
         # Count questions in conversation history to detect loop
         question_count = sum(1 for msg in (request.history or []) if msg.get("role") == "assistant" and "?" in msg.get("content", ""))
-        is_stuck_in_loop = question_count >= 3 and is_response_looping
+        is_stuck_in_loop = question_count >= 3 and response_has_question
+        
+        # Check if user has already provided key details - AFFIRMATIVE CONFIRMATIONS
+        affirmative_confirmations = ["yes", "yes please", "yeah", "yep", "ok", "okay", "go ahead", "proceed", "do it", "confirmed", "that works", "sounds good"]
+        user_is_confirming = any(user_message.lower().strip().startswith(kw) or user_message.lower().strip() == kw for kw in affirmative_confirmations)
         
         # Check if user has already provided key details
         user_confirmed_keywords = ["yes", "ok", "confirmed", "that's correct", "correct", "show me", "go ahead", "please", "now", "when"]
         user_wants_action = any(kw in user_message.lower() for kw in user_confirmed_keywords)
         
-        if (is_asking_to_show or is_stuck_in_loop or (is_listing_pillar and user_wants_action)) and is_response_looping:
+        # CRITICAL: Force handoff if user is confirming after enough conversation
+        # Conditions for forced handoff:
+        # 1. User is explicitly confirming (yes, go ahead, etc.)
+        # 2. We're in a listing pillar (stay, dine, travel, enjoy)
+        # 3. There's been at least 2 assistant questions in history
+        # 4. AND either the response is looping OR the response has a question
+        should_force_handoff = (
+            (is_asking_to_show and is_response_looping) or
+            (is_stuck_in_loop) or
+            (is_listing_pillar and user_is_confirming and question_count >= 2 and response_has_question) or
+            (is_listing_pillar and user_wants_action and is_response_looping)
+        )
+        
+        if should_force_handoff:
             # Force handoff instead of more questions
             logger.info(f"[MIRA HANDOFF] Detected loop in {current_pillar}, forcing handoff")
             
