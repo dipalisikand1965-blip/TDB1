@@ -1080,7 +1080,9 @@ const Navbar = () => {
             {/* Ask Mira Button - Mobile */}
             <button
               onClick={() => { openMiraAI(); setIsMenuOpen(false); }}
+              onTouchEnd={(e) => { e.preventDefault(); openMiraAI(); setIsMenuOpen(false); }}
               className="w-full flex items-center justify-center gap-2 p-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg font-medium"
+              style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
             >
               <Sparkles className="w-4 h-4" />
               Ask Mira
