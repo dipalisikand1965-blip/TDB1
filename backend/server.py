@@ -11921,6 +11921,10 @@ set_mira_db(db)  # Initialize Mira with database
 set_intelligence_db(db)  # Initialize Intelligence with database
 set_memory_routes_db(db)  # Initialize Memory with database
 
+# User Tickets (user-facing ticket view)
+app.include_router(user_tickets_router)  # User tickets at /api/user/*
+set_user_tickets_db(db)  # Initialize User Tickets with database
+
 # Concierge Command Center
 app.include_router(concierge_command_router)  # Command Center at /api/concierge/*
 app.include_router(health_vault_router)  # Health Vault at /api/health-vault/*
