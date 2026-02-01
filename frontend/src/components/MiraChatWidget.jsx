@@ -907,48 +907,23 @@ const MiraChatWidget = ({
             <div>
               <p className="font-semibold text-sm sm:text-base">Mira</p>
               <p className="text-[10px] sm:text-xs opacity-80">
-                {isListening ? '🎤 Listening...' : isSpeaking ? '🔊 Speaking...' : 'Your Pet Concierge®'}
+                {isListening ? '🎤 Listening...' : isSpeaking ? '🔊 Speaking...' : 'Pet Concierge®'}
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-1 sm:gap-2">
-            {/* Pulse Voice Button */}
-            {speechSupported && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  toggleListening();
-                }}
-                className={`px-2 py-1 rounded-full text-[10px] sm:text-xs font-medium flex items-center gap-1 transition-all ${
-                  isListening 
-                    ? 'bg-cyan-400 text-gray-900 animate-pulse' 
-                    : 'bg-white/20 hover:bg-white/30 text-white'
-                }`}
-                data-testid="mira-header-pulse"
-              >
-                <Zap className="w-3 h-3" />
-                <span className="hidden sm:inline">Pulse</span>
-              </button>
-            )}
+          <div className="flex items-center gap-2 sm:gap-2">
             {/* Voice toggle */}
             <button
               onClick={(e) => { e.stopPropagation(); setVoiceEnabled(!voiceEnabled); }}
-              className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-colors ${voiceEnabled ? 'bg-white/20' : 'bg-white/10'}`}
+              className={`w-9 h-9 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-colors ${voiceEnabled ? 'bg-white/20' : 'bg-white/10'}`}
               title={voiceEnabled ? "Voice ON" : "Voice OFF"}
             >
-              {voiceEnabled ? <Volume2 className="w-3 h-3 sm:w-4 sm:h-4" /> : <VolumeX className="w-3 h-3 sm:w-4 sm:h-4" />}
-            </button>
-            {/* Minimize */}
-            <button
-              onClick={(e) => { e.stopPropagation(); setIsMinimized(!isMinimized); }}
-              className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center bg-white/20 hover:bg-white/30 transition-colors"
-            >
-              <ChevronDown className={`w-3 h-3 sm:w-4 sm:h-4 transition-transform ${isMinimized ? 'rotate-180' : ''}`} />
+              {voiceEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
             </button>
             {/* Close */}
             <button
               onClick={(e) => { e.stopPropagation(); setIsOpen(false); }}
-              className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center bg-white/20 hover:bg-white/30 transition-colors"
+              className="w-9 h-9 sm:w-8 sm:h-8 rounded-full flex items-center justify-center bg-white/20 hover:bg-white/30 transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
