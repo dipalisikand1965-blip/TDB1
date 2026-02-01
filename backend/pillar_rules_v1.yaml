@@ -137,7 +137,9 @@ fit:
       benefits: weight_management
     boost:
       interaction_type: play
-    exclude: {}
+    exclude:
+      category_primary: [cakes, food]
+      purchase_pattern: celebration
   services:
     must:
       service_type: [fitness, training, walking]
