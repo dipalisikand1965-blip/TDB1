@@ -823,6 +823,14 @@ const FitPage = () => {
         </div>
       </section>
       
+      {/* ==================== SERVICE CATALOG WITH PRICING ==================== */}
+      <ServiceCatalogSection 
+        pillar="fit"
+        title="Fit, Personalised"
+        subtitle="See your personalized price based on your city, pet size, and requirements"
+        maxServices={8}
+      />
+      
       {/* ==================== PRODUCTS SECTION ==================== */}
       <section id="products" className="py-12 md:py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4">
