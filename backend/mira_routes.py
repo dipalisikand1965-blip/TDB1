@@ -5051,6 +5051,7 @@ class QuickBookRequest(BaseModel):
     serviceType: str
     session_id: Optional[str] = None
     pet_id: Optional[str] = None
+    pillar: Optional[str] = None  # Optional pillar for categorization
 
 @router.post("/quick-book")
 async def quick_book(
