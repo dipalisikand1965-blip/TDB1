@@ -105,21 +105,21 @@ const Home = () => {
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-white/90 text-sm font-medium mb-8 border border-white/20">
             <Brain className="w-4 h-4 text-yellow-400" />
-            <span>Pet Life Operating System</span>
+            <span>Pet Concierge®</span>
           </div>
 
           {/* Main Headline */}
           <h1 className="text-4xl sm:text-5xl md:text-7xl font-black text-white leading-tight mb-6">
-            A System That
+            Your Pet&apos;s Life,
             <span className="block mt-2 bg-gradient-to-r from-pink-400 via-purple-400 to-yellow-400 bg-clip-text text-transparent">
-              Learns, Remembers & Cares
+              Thoughtfully Orchestrated
             </span>
           </h1>
 
           {/* Subtext */}
           <p className="text-lg sm:text-xl text-white/70 max-w-2xl mx-auto mb-10 leading-relaxed">
             From birthdays to vet visits, travel to daily routines — your pet&apos;s entire life, 
-            held in one intelligent system that grows smarter with every interaction.
+            managed by a dedicated concierge® who learns, remembers, and cares.
           </p>
 
           {/* Single Clear CTA */}
