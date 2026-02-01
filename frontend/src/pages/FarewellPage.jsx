@@ -566,6 +566,14 @@ const FarewellPage = () => {
         </div>
       </section>
 
+      {/* === SERVICE CATALOG WITH PRICING === */}
+      <ServiceCatalogSection 
+        pillar="farewell"
+        title="Farewell, Personalised"
+        subtitle="Compassionate services with transparent pricing"
+        maxServices={8}
+      />
+
       {/* Mira Floating Chat Widget */}
       <MiraChatWidget pillar="farewell" />
 
