@@ -127,22 +127,23 @@ const PawmoterScore = ({ user, onScoreSubmitted }) => {
   return (
     <>
       {/* Survey CTA */}
-      <Card className="p-4 bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 border border-indigo-200" data-testid="pawmoter-score">
-        <div className="flex items-center justify-between">
+      <Card className="p-3 sm:p-4 bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 border border-indigo-200" data-testid="pawmoter-score">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center">
-              <TrendingUp className="w-5 h-5 text-white" />
+            <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center flex-shrink-0">
+              <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
             <div>
-              <h4 className="font-semibold text-gray-900 flex items-center gap-2">
-                Pawmoter Score <Badge className="bg-blue-100 text-blue-700">{REWARD_POINTS} pts</Badge>
+              <h4 className="font-semibold text-sm sm:text-base text-gray-900 flex items-center gap-2 flex-wrap">
+                Pawmoter Score <Badge className="bg-blue-100 text-blue-700 text-xs">{REWARD_POINTS} pts</Badge>
               </h4>
-              <p className="text-sm text-gray-500">Share your experience with us</p>
+              <p className="text-xs sm:text-sm text-gray-500">Share your experience with us</p>
             </div>
           </div>
           <Button 
             onClick={() => setShowSurvey(true)}
-            className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700"
+            className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-sm"
+            size="sm"
           >
             <Star className="w-4 h-4 mr-2" /> Rate Us
           </Button>
