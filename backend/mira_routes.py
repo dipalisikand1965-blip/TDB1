@@ -3151,6 +3151,27 @@ CRITICAL CONCIERGE DOCTRINE:
         listing_pillars = ["stay", "dine", "travel", "enjoy"]
         is_listing_pillar = pillar in listing_pillars
         
+        # =======================================================================
+        # NUTRITION/MEAL PLAN OVERRIDE: Don't create tickets for nutrition advice
+        # User asking about meal plans, diet, food for pets should get AI advice, not restaurant tickets
+        # =======================================================================
+        nutrition_keywords = ["meal plan", "food plan", "feeding schedule", "diet", "nutrition", "what to feed", 
+                             "home cooked", "homemade food", "kibble", "wet food", "raw diet", "puppy food", 
+                             "senior food", "adult food", "weight loss diet", "healthy food for"]
+        is_nutrition_query = any(kw in user_message.lower() for kw in nutrition_keywords)
+        
+        # Also check conversation history for nutrition context
+        if request.history:
+            history_text = " ".join([m.get("content", "") for m in request.history[-5:]])
+            if any(kw in history_text.lower() for kw in nutrition_keywords):
+                is_nutrition_query = True
+        
+        # If it's a nutrition query in "dine" pillar, switch to "fit" pillar and don't do restaurant handoff
+        if is_nutrition_query and pillar == "dine":
+            logger.info(f"[MIRA] Nutrition query detected in 'dine' pillar - switching to 'fit' pillar for advisory response")
+            pillar = "fit"
+            is_listing_pillar = False  # Don't trigger restaurant handoff
+        
         # Detect if we're in a booking/search loop
         loop_indicators = [
             "to narrow this down",
