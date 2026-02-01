@@ -34,19 +34,49 @@ const OverviewTab = ({
   primaryPet,
   setShowSoulExplainer,
   setShowPawPointsBreakdown,
-  addToCart
+  addToCart,
+  onTabChange,
+  selectedPetId,
+  onPetChange
 }) => {
   const navigate = useNavigate();
+  
+  // Get current pet (either selected or first)
+  const currentPet = pets.find(p => p.id === selectedPetId) || pets[0];
 
   return (
     <div className="animate-in fade-in-50 duration-300">
+      {/* PET SELECTOR - Show if multiple pets */}
+      {pets.length > 1 && (
+        <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-200">
+          <p className="text-xs text-purple-600 font-medium mb-2">VIEWING DASHBOARD FOR</p>
+          <div className="flex gap-2 overflow-x-auto pb-2">
+            {pets.map((pet) => (
+              <button
+                key={pet.id}
+                onClick={() => onPetChange?.(pet.id)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all ${
+                  currentPet?.id === pet.id 
+                    ? 'bg-purple-600 text-white shadow-md' 
+                    : 'bg-white border border-gray-200 text-gray-700 hover:border-purple-300'
+                }`}
+              >
+                <span className="text-lg">{pet.species === 'cat' ? '🐱' : '🐕'}</span>
+                <span className="font-medium">{pet.name}</span>
+                {pet.overall_score >= 80 && <span className="text-xs">⭐</span>}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* MIRA'S PERSONALIZED GUIDANCE */}
       <MiraTip 
         context={getMiraGuidanceContext(user, pets, orders)}
-        petName={pets[0]?.name}
-        petId={pets[0]?.id}
+        petName={currentPet?.name}
+        petId={currentPet?.id}
         parentName={user?.name?.split(' ')[0]}
-        score={Math.min(100, pets[0]?.overall_score || 0)}
+        score={Math.min(100, currentPet?.overall_score || 0)}
       />
       
       {/* MIRA'S DAILY TIP */}
