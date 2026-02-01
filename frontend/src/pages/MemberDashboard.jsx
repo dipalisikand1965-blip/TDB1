@@ -75,6 +75,7 @@ const ReviewsTab = lazy(() => import('../components/dashboard/tabs/ReviewsTab'))
 const AddressesTab = lazy(() => import('../components/dashboard/tabs/AddressesTab'));
 const RewardsTab = lazy(() => import('../components/dashboard/tabs/RewardsTab'));
 const MiraTab = lazy(() => import('../components/dashboard/tabs/MiraTab'));
+const DocumentsTab = lazy(() => import('../components/dashboard/tabs/DocumentsTab'));
 
 // ============================================
 // 🏛️ PILLAR POPUP COMPONENT
