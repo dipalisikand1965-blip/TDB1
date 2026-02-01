@@ -118,6 +118,7 @@ import {
   Brain,
   Bell,
   Headphones,
+  AlertCircle,
   ExternalLink,
   Crown,
   Database,
