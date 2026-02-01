@@ -360,48 +360,41 @@ const MiraChatWidget = ({
       
       welcomeMsg += ' 🐾';
       
-      // First time message - speak the FULL introduction with female voice
-      const isFirstTime = !sessionStorage.getItem('mira_introduced');
-      if (isFirstTime && synthRef.current && voiceEnabled) {
-        sessionStorage.setItem('mira_introduced', 'true');
+      // Speak welcome greeting when widget opens (if voice is enabled)
+      if (synthRef.current && voiceEnabled) {
         setTimeout(() => {
-          // Use speakText function logic directly to avoid dependency issues
           const synth = synthRef.current;
           if (!synth) return;
           synth.cancel();
           
-          // Build full greeting with phonetic "concierge" pronunciation
-          // Using "con-see-erzh" for better TTS pronunciation
+          // Build greeting with phonetic "concierge" pronunciation
           const petName = selectedPet?.name || '';
           const petBreed = selectedPet?.breed || '';
           const pillarName = config.name || 'our services';
           
           let fullGreeting = `Hi, I am Meera, your pet con-see-erzh.`;
           if (petName && petBreed) {
-            fullGreeting = `Hi, I am Meera, your pet con-see-erzh! Good ${getTimeOfDay()}! I see you're browsing ${pillarName} for ${petName}, your lovely ${petBreed}. How can I help today?`;
+            fullGreeting = `Hi! Good ${getTimeOfDay()}! I see you're browsing ${pillarName} for ${petName}. How can I help?`;
           } else if (petName) {
-            fullGreeting = `Hi, I am Meera, your pet con-see-erzh! Good ${getTimeOfDay()}! I see you're here for ${petName}. How can I help today?`;
+            fullGreeting = `Hi! Good ${getTimeOfDay()}! How can I help with ${petName} today?`;
           } else {
-            fullGreeting = `Hi, I am Meera, your pet con-see-erzh! Good ${getTimeOfDay()}! How can I help you today?`;
+            fullGreeting = `Hi! Good ${getTimeOfDay()}! How can I help you today?`;
           }
           
           const utterance = new SpeechSynthesisUtterance(fullGreeting);
-          utterance.pitch = 1.15;  // Higher pitch for feminine voice
-          utterance.rate = 0.92;   // British-style measured pace
+          utterance.pitch = 1.15;
+          utterance.rate = 0.92;
           
-          // STRICT FEMALE voice selection for intro
+          // STRICT FEMALE voice selection
           const voices = synth.getVoices();
           const knownMaleVoices = ['Daniel', 'George', 'James', 'David', 'Mark', 'Alex', 'Fred', 'Google US English', 'Microsoft David'];
           const femaleVoice = voices.find(v => 
-            // British females first
             v.name === 'Kate' || v.name === 'Serena' || v.name === 'Martha' ||
-            v.name.includes('Google UK English Female') || 
-            v.name.includes('Microsoft Hazel')
+            v.name.includes('Google UK English Female') || v.name.includes('Microsoft Hazel') ||
+            v.name.includes('Microsoft Susan')
           ) || voices.find(v =>
-            // American females
             v.name === 'Samantha' || v.name === 'Victoria' || v.name === 'Karen' ||
-            v.name.includes('Google US English Female') ||
-            v.name.includes('Microsoft Zira')
+            v.name.includes('Google US English Female') || v.name.includes('Microsoft Zira')
           ) || voices.find(v => 
             v.name.toLowerCase().includes('female')
           ) || voices.find(v => 
@@ -410,10 +403,10 @@ const MiraChatWidget = ({
           );
           if (femaleVoice) {
             utterance.voice = femaleVoice;
-            console.log('[Mira Intro] Using voice:', femaleVoice.name);
+            console.log('[Mira Widget] Speaking with voice:', femaleVoice.name);
           }
           synth.speak(utterance);
-        }, 500);
+        }, 600);
       }
       
       setMessages([{
