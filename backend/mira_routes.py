@@ -3054,7 +3054,7 @@ CRITICAL CONCIERGE DOCTRINE:
         is_response_looping = any(indicator in response.lower() for indicator in loop_indicators)
         
         # Count questions in conversation history to detect loop
-        question_count = sum(1 for msg in (history or []) if msg.get("role") == "assistant" and "?" in msg.get("content", ""))
+        question_count = sum(1 for msg in (request.history or []) if msg.get("role") == "assistant" and "?" in msg.get("content", ""))
         is_stuck_in_loop = question_count >= 3 and is_response_looping
         
         # Check if user has already provided key details
