@@ -883,19 +883,10 @@ const Navbar = () => {
                 <span className="hidden sm:inline text-xs font-semibold">Cart</span>
               </button>
 
-              {/* Mobile Menu Button - Larger touch target for accessibility */}
+              {/* Mobile Menu Button */}
               <button
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                onTouchEnd={(e) => {
-                  e.preventDefault();
-                  setIsMenuOpen(!isMenuOpen);
-                }}
-                className="lg:hidden p-2.5 min-w-[44px] min-h-[44px] hover:bg-white/10 rounded-lg flex items-center justify-center"
-                style={{ 
-                  touchAction: 'manipulation',
-                  WebkitTapHighlightColor: 'transparent',
-                  cursor: 'pointer'
-                }}
+                className="lg:hidden p-3 min-w-[48px] min-h-[48px] hover:bg-white/10 rounded-lg flex items-center justify-center active:bg-white/20"
                 data-testid="navbar-mobile-menu-btn"
                 aria-label={isMenuOpen ? "Close menu" : "Open menu"}
               >
