@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, lazy, Suspense } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -23,17 +23,24 @@ import { toast } from '../hooks/use-toast';
 import { API_URL } from '../utils/api';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import PetAvatar, { PetAvatarMini } from '../components/PetAvatar';
-import PawPointsRewards from '../components/PawPointsRewards';
-import MiraConversationHistory from '../components/MiraConversationHistory';
-import SoulExplainerVideo, { SoulExplainerButton } from '../components/SoulExplainerVideo';
-import MiraPicksCard from '../components/MiraPicksCard';
-import BreedHealthCard from '../components/BreedHealthCard';
+
+// Lazy load heavy components to improve initial render
+const PawPointsRewards = lazy(() => import('../components/PawPointsRewards'));
+const MiraConversationHistory = lazy(() => import('../components/MiraConversationHistory'));
+const SoulExplainerVideo = lazy(() => import('../components/SoulExplainerVideo').then(m => ({ default: m.default })));
+const SoulExplainerButton = lazy(() => import('../components/SoulExplainerVideo').then(m => ({ default: m.SoulExplainerButton })));
+const MiraPicksCard = lazy(() => import('../components/MiraPicksCard'));
+const BreedHealthCard = lazy(() => import('../components/BreedHealthCard'));
+
+// Push notifications hook
 import usePushNotifications from '../hooks/usePushNotifications';
-// New membership & engagement components
-import MembershipCardTiers from '../components/MembershipCardTiers';
-import SocialShareReward from '../components/SocialShareReward';
-import BreedTipsEngine from '../components/BreedTipsEngine';
-import PawmoterScore from '../components/PawmoterScore';
+
+// New membership & engagement components - lazy loaded
+const MembershipCardTiers = lazy(() => import('../components/MembershipCardTiers'));
+const SocialShareReward = lazy(() => import('../components/SocialShareReward'));
+const BreedTipsEngine = lazy(() => import('../components/BreedTipsEngine'));
+const PawmoterScore = lazy(() => import('../components/PawmoterScore'));
+
 // Extracted dashboard components
 import { 
   QuickScoreBoost, 
@@ -42,22 +49,35 @@ import {
   TIER_COLORS, 
   triggerCelebration 
 } from '../components/dashboard';
+
 // Mira Guidance System
 import { MiraTip, getMiraGuidanceContext, ScoreBoostEncouragement } from '../components/MiraGuidance';
+
 // Celebrations Widget
 import MyCelebrations from '../components/MyCelebrations';
+
 // First Visit Tour
 import FirstVisitTour, { useTour } from '../components/FirstVisitTour';
+
 // Daily Tips
 import MiraDailyTip, { MiraDailyTipInline } from '../components/MiraDailyTip';
-// Pulse removed - Mira Orb is now the primary voice/AI interaction
-// Push Notification Banner
-import PushNotificationBanner from '../components/PushNotificationBanner';
+
+// Push Notification Banner - lazy loaded
+const PushNotificationBanner = lazy(() => import('../components/PushNotificationBanner'));
+
 // Mobile Navigation Bar
 import MobileNavBar from '../components/MobileNavBar';
-// Phase 1 Engagement Features
-import SwipeablePetCards from '../components/SwipeablePetCards';
-import PetParentStreak from '../components/PetParentStreak';
+
+// Phase 1 Engagement Features - lazy loaded
+const SwipeablePetCards = lazy(() => import('../components/SwipeablePetCards'));
+const PetParentStreak = lazy(() => import('../components/PetParentStreak'));
+
+// Loading fallback for lazy components
+const TabLoader = () => (
+  <div className="flex items-center justify-center py-12">
+    <Loader2 className="w-8 h-8 animate-spin text-purple-500" />
+  </div>
+);
 import PullToRefreshIndicator from '../components/PullToRefreshIndicator';
 import usePullToRefresh from '../hooks/usePullToRefresh';
 // Phase 2 Features - Smart Recommendations & Voice Actions
