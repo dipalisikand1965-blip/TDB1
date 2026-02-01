@@ -308,28 +308,28 @@ const ServicesPage = () => {
       
       {/* Hero Section */}
       <div className="bg-gradient-to-br from-violet-600 via-purple-600 to-indigo-700 text-white">
-        <div className="max-w-7xl mx-auto px-4 py-12 md:py-16">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 md:py-14">
           <div className="text-center">
             <Badge className="bg-white/20 text-white border-white/30 mb-4">
               <Sparkles className="w-3 h-3 mr-1" />
               {stats?.total || 89} Services Across 14 Pillars
             </Badge>
-            <h1 className="text-3xl md:text-5xl font-bold mb-4">
+            <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-3">
               Services, Personalised
             </h1>
-            <p className="text-lg text-white/80 max-w-2xl mx-auto mb-8">
+            <p className="text-base sm:text-lg text-white/80 max-w-2xl mx-auto mb-6">
               Find the perfect service for your pet. Dynamic pricing based on your city, pet size, and requirements.
             </p>
             
             {/* Search Bar */}
-            <div className="max-w-2xl mx-auto">
+            <div className="max-w-xl mx-auto">
               <div className="relative">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <Input
                   value={searchTerm}
                   onChange={(e) => handleSearch(e.target.value)}
                   placeholder="Search services... try 'grooming' or 'training'"
-                  className="pl-12 pr-4 py-6 text-lg rounded-full bg-white text-gray-900 border-0 shadow-xl"
+                  className="pl-12 pr-4 py-5 text-base rounded-full bg-white text-gray-900 border-0 shadow-xl"
                   data-testid="services-search"
                 />
                 {searchTerm && (
