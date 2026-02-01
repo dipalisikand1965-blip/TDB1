@@ -930,9 +930,12 @@ const PickEditorDialog = ({ open, pick, products, onSave, onClose, onTestVoice }
   const [formData, setFormData] = useState(pick || {});
   const [productSearch, setProductSearch] = useState('');
 
-  useEffect(() => {
+  // Update form data when pick changes (controlled sync)
+  const pickRef = React.useRef(pick);
+  if (pick !== pickRef.current) {
+    pickRef.current = pick;
     if (pick) setFormData(pick);
-  }, [pick]);
+  }
 
   if (!open || !pick) return null;
 
