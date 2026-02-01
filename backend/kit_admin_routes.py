@@ -402,3 +402,320 @@ async def get_kit_categories():
             {"id": "adventure", "name": "Adventure Kits", "icon": "🏕️", "description": "Outdoor adventure gear"}
         ]
     }
+
+# ============================================
+# SEED DEFAULT KITS
+# ============================================
+
+@router.post("/seed-defaults")
+async def seed_default_kits():
+    """Seed default kit templates with sample products"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not connected")
+    
+    # Get some products to use in kits
+    travel_products = await db.products.find({
+        "$or": [
+            {"tags": {"$in": ["travel", "carrier", "leash", "harness", "bowl", "bottle"]}},
+            {"category": {"$regex": "travel|carrier|accessories", "$options": "i"}},
+            {"title": {"$regex": "travel|carrier|leash|harness|bowl|bottle", "$options": "i"}}
+        ]
+    }).limit(10).to_list(10)
+    
+    treat_products = await db.products.find({
+        "$or": [
+            {"tags": {"$in": ["treat", "snack", "biscuit"]}},
+            {"category": {"$regex": "treat|snack", "$options": "i"}},
+            {"title": {"$regex": "treat|biscuit|cookie|snack", "$options": "i"}}
+        ]
+    }).limit(10).to_list(10)
+    
+    toy_products = await db.products.find({
+        "$or": [
+            {"tags": {"$in": ["toy", "ball", "chew"]}},
+            {"category": {"$regex": "toy", "$options": "i"}},
+            {"title": {"$regex": "toy|ball|chew|plush", "$options": "i"}}
+        ]
+    }).limit(10).to_list(10)
+    
+    grooming_products = await db.products.find({
+        "$or": [
+            {"tags": {"$in": ["grooming", "shampoo", "brush", "nail"]}},
+            {"category": {"$regex": "grooming|bath", "$options": "i"}},
+            {"title": {"$regex": "shampoo|brush|comb|nail", "$options": "i"}}
+        ]
+    }).limit(10).to_list(10)
+    
+    cake_products = await db.products.find({
+        "$or": [
+            {"tags": {"$in": ["cake", "birthday"]}},
+            {"category": {"$regex": "cake|birthday", "$options": "i"}},
+            {"title": {"$regex": "cake|birthday", "$options": "i"}}
+        ]
+    }).limit(5).to_list(5)
+    
+    # Default kit templates
+    default_kits = [
+        {
+            "name": "Travel Essentials Kit",
+            "slug": "travel-essentials",
+            "description": "Everything your furry friend needs for a safe and comfortable journey. Perfect for road trips, flights, or any adventure!",
+            "category": "travel",
+            "intro_narration": "Hi! I'm Mira, your pet concierge. Planning a trip with your fur baby? Let me show you the Travel Essentials Kit I've curated! These items will keep your pet safe and comfortable on any adventure.",
+            "outro_narration": "And that's your complete Travel Essentials Kit! Everything hand-picked to make your journey pawfect. Safe travels!",
+            "is_active": True,
+            "priority": 100,
+            "target_pet_type": "dog",
+            "items": [
+                {"product_id": p.get("id"), "position": i+1, "custom_narration": f"First up, the {p.get('title', 'item')}! A must-have for travel comfort."}
+                for i, p in enumerate(travel_products[:5])
+            ]
+        },
+        {
+            "name": "Cinema Night Kit",
+            "slug": "cinema-night",
+            "description": "Cozy movie night essentials for you and your pet. Snacks, comfort items, and entertainment!",
+            "category": "cinema",
+            "intro_narration": "Movie night with your best friend? I love it! Let me show you the Cinema Night Kit - everything you need for the pawfect cozy evening together.",
+            "outro_narration": "That's your Cinema Night Kit complete! Now grab the popcorn, dim the lights, and enjoy quality time with your furry movie buddy!",
+            "is_active": True,
+            "priority": 90,
+            "target_pet_type": "dog",
+            "items": [
+                {"product_id": p.get("id"), "position": i+1, "custom_narration": f"For movie snacking, the {p.get('title', 'treat')}! Healthy and delicious."}
+                for i, p in enumerate(treat_products[:3])
+            ] + [
+                {"product_id": p.get("id"), "position": i+4, "custom_narration": f"And for entertainment during slow scenes, the {p.get('title', 'toy')}!"}
+                for i, p in enumerate(toy_products[:2])
+            ]
+        },
+        {
+            "name": "Birthday Celebration Kit",
+            "slug": "birthday-celebration",
+            "description": "Make your pet's special day unforgettable! Cakes, treats, party accessories and gifts.",
+            "category": "birthday",
+            "intro_narration": "Happy Birthday to your fur baby! Let me show you our Birthday Celebration Kit - everything to make this day extra special!",
+            "outro_narration": "That's your pawty kit ready! Time to celebrate your best friend's special day. May it be filled with treats, belly rubs, and lots of love!",
+            "is_active": True,
+            "priority": 95,
+            "target_pet_type": "dog",
+            "items": [
+                {"product_id": p.get("id"), "position": i+1, "custom_narration": f"The star of the show - a delicious {p.get('title', 'cake')}! Made with pet-safe ingredients."}
+                for i, p in enumerate(cake_products[:2])
+            ] + [
+                {"product_id": p.get("id"), "position": i+3, "custom_narration": f"Birthday treats! The {p.get('title', 'treat')} - because every birthday needs extra yummies!"}
+                for i, p in enumerate(treat_products[:2])
+            ]
+        },
+        {
+            "name": "Grooming Spa Kit",
+            "slug": "grooming-spa",
+            "description": "Pamper your pet with professional-grade grooming essentials. Bath time made easy and enjoyable!",
+            "category": "grooming",
+            "intro_narration": "Spa day for your fur baby! Let me show you our Grooming Spa Kit - professional-grade products to keep your pet looking and smelling amazing!",
+            "outro_narration": "Your Grooming Spa Kit is complete! Your pet is going to look absolutely gorgeous. Enjoy the pamper session!",
+            "is_active": True,
+            "priority": 80,
+            "target_pet_type": "dog",
+            "items": [
+                {"product_id": p.get("id"), "position": i+1, "custom_narration": f"Essential for a fresh coat - the {p.get('title', 'grooming product')}!"}
+                for i, p in enumerate(grooming_products[:5])
+            ]
+        },
+        {
+            "name": "Puppy Starter Kit",
+            "slug": "puppy-starter",
+            "description": "Welcome your new family member with all the essentials! Perfect for first-time pet parents.",
+            "category": "puppy",
+            "intro_narration": "Congratulations on your new puppy! Let me help you get started with the Puppy Starter Kit - everything a new fur parent needs!",
+            "outro_narration": "That's everything for your new bundle of joy! Welcome to the amazing journey of pet parenthood. Your puppy is lucky to have you!",
+            "is_active": True,
+            "priority": 85,
+            "target_pet_type": "dog",
+            "target_size": "small",
+            "items": [
+                {"product_id": p.get("id"), "position": i+1, "custom_narration": f"A puppy essential - the {p.get('title', 'item')}! Perfect for your little one."}
+                for i, p in enumerate((treat_products[:2] + toy_products[:2] + grooming_products[:1]))
+            ]
+        }
+    ]
+    
+    # Insert or update kits
+    created = 0
+    updated = 0
+    for kit in default_kits:
+        # Only include items with valid product_ids
+        kit["items"] = [item for item in kit["items"] if item.get("product_id")]
+        
+        existing = await db.kit_templates.find_one({"slug": kit["slug"]})
+        if existing:
+            kit["updated_at"] = datetime.now(timezone.utc).isoformat()
+            await db.kit_templates.update_one(
+                {"slug": kit["slug"]},
+                {"$set": kit}
+            )
+            updated += 1
+        else:
+            kit["created_at"] = datetime.now(timezone.utc).isoformat()
+            kit["updated_at"] = kit["created_at"]
+            await db.kit_templates.insert_one(kit)
+            created += 1
+    
+    return {
+        "message": "Default kits seeded successfully",
+        "created": created,
+        "updated": updated,
+        "total_kits": len(default_kits)
+    }
+
+# ============================================
+# MIRA AI INTEGRATION - Get kits for Mira to recommend
+# ============================================
+
+@router.get("/mira/recommendations")
+async def get_kits_for_mira(
+    pet_type: Optional[str] = None,
+    pet_size: Optional[str] = None,
+    category: Optional[str] = None,
+    limit: int = 5
+):
+    """
+    Get active kit recommendations for Mira AI to suggest.
+    This endpoint is used by Mira to know what kits are available to recommend.
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not connected")
+    
+    query = {"is_active": True}
+    if pet_type:
+        query["$or"] = [
+            {"target_pet_type": pet_type},
+            {"target_pet_type": "all"},
+            {"target_pet_type": None}
+        ]
+    if pet_size:
+        query["$or"] = query.get("$or", []) + [
+            {"target_size": pet_size},
+            {"target_size": None}
+        ]
+    if category:
+        query["category"] = category
+    
+    kits = await db.kit_templates.find(query).sort("priority", -1).limit(limit).to_list(limit)
+    
+    recommendations = []
+    for kit in kits:
+        kit_data = {
+            "id": str(kit.pop("_id")),
+            "name": kit.get("name"),
+            "slug": kit.get("slug"),
+            "category": kit.get("category"),
+            "description": kit.get("description"),
+            "intro_narration": kit.get("intro_narration"),
+            "items_count": len(kit.get("items", [])),
+            "priority": kit.get("priority", 0)
+        }
+        recommendations.append(kit_data)
+    
+    return {"kits": recommendations, "total": len(recommendations)}
+
+@router.get("/mira/picks")
+async def get_active_mira_picks(limit: int = 10):
+    """
+    Get active Mira picks for the AI to recommend.
+    These are the admin-curated products that Mira should highlight.
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not connected")
+    
+    picks = await db.mira_picks.find({"is_active": True}).sort("priority", -1).limit(limit).to_list(limit)
+    
+    # Fetch product details
+    product_ids = [p.get("product_id") for p in picks]
+    if product_ids:
+        products = await db.products.find({"id": {"$in": product_ids}}).to_list(100)
+        product_map = {p["id"]: p for p in products}
+        
+        for pick in picks:
+            pick["id"] = str(pick.pop("_id"))
+            product = product_map.get(pick.get("product_id"))
+            if product:
+                product.pop("_id", None)
+                pick["product"] = {
+                    "id": product.get("id"),
+                    "title": product.get("title") or product.get("name"),
+                    "price": product.get("price"),
+                    "image": product.get("images", [None])[0] if product.get("images") else product.get("image")
+                }
+    
+    return {"picks": picks, "total": len(picks)}
+
+# ============================================
+# CSV EXPORT/IMPORT
+# ============================================
+
+@router.get("/export/csv")
+async def export_kits_csv():
+    """Export all kit templates as CSV"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not connected")
+    
+    templates = await db.kit_templates.find({}).to_list(100)
+    
+    # Create CSV content
+    headers = ["id", "name", "slug", "category", "description", "intro_narration", "outro_narration", "is_active", "priority", "target_pet_type", "target_size", "items_count", "created_at", "updated_at"]
+    
+    rows = [",".join(headers)]
+    for t in templates:
+        row = [
+            str(t.get("_id", "")),
+            f'"{t.get("name", "")}"',
+            t.get("slug", ""),
+            t.get("category", ""),
+            f'"{t.get("description", "").replace(chr(34), chr(39))}"',
+            f'"{t.get("intro_narration", "").replace(chr(34), chr(39))}"',
+            f'"{t.get("outro_narration", "").replace(chr(34), chr(39))}"',
+            str(t.get("is_active", True)),
+            str(t.get("priority", 0)),
+            t.get("target_pet_type", ""),
+            t.get("target_size", ""),
+            str(len(t.get("items", []))),
+            t.get("created_at", ""),
+            t.get("updated_at", "")
+        ]
+        rows.append(",".join(row))
+    
+    return {"csv": "\n".join(rows), "count": len(templates)}
+
+@router.get("/mira-picks/export/csv")
+async def export_mira_picks_csv():
+    """Export all Mira picks as CSV"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not connected")
+    
+    picks = await db.mira_picks.find({}).to_list(100)
+    
+    # Fetch product details
+    product_ids = [p.get("product_id") for p in picks]
+    products = await db.products.find({"id": {"$in": product_ids}}).to_list(100) if product_ids else []
+    product_map = {p["id"]: p for p in products}
+    
+    headers = ["id", "product_id", "product_name", "display_tagline", "reason", "voice_script", "priority", "is_active", "created_at"]
+    
+    rows = [",".join(headers)]
+    for p in picks:
+        product = product_map.get(p.get("product_id"), {})
+        row = [
+            str(p.get("_id", "")),
+            p.get("product_id", ""),
+            f'"{product.get("title", product.get("name", ""))}"',
+            f'"{p.get("display_tagline", "").replace(chr(34), chr(39))}"',
+            f'"{p.get("reason", "").replace(chr(34), chr(39))}"',
+            f'"{p.get("voice_script", "").replace(chr(34), chr(39))}"',
+            str(p.get("priority", 0)),
+            str(p.get("is_active", True)),
+            p.get("created_at", "")
+        ]
+        rows.append(",".join(row))
+    
+    return {"csv": "\n".join(rows), "count": len(picks)}
