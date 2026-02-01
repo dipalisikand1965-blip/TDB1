@@ -3037,7 +3037,7 @@ CRITICAL CONCIERGE DOCTRINE:
         
         # Detect if current pillar is one that needs listings (stay, dine, travel)
         listing_pillars = ["stay", "dine", "travel", "enjoy"]
-        is_listing_pillar = current_pillar in listing_pillars
+        is_listing_pillar = pillar in listing_pillars
         
         # Detect if we're in a booking/search loop
         loop_indicators = [
