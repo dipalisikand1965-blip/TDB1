@@ -1656,49 +1656,151 @@ const Admin = () => {
             <ChevronDown className={`w-5 h-5 transition-transform ${mobileMenuOpen ? 'rotate-180' : ''}`} />
           </button>
           
+          {/* Mobile Menu Overlay */}
           {mobileMenuOpen && (
-            <div className="mt-2 bg-white rounded-xl border shadow-lg p-2 max-h-[60vh] overflow-y-auto">
-              {/* Quick Access */}
-              <p className="px-3 py-1 text-xs font-bold text-gray-500 uppercase">Quick Access</p>
-              {[
-                { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-                { id: 'servicedesk', label: 'Service Desk', icon: Ticket },
-                { id: 'orders', label: 'Orders', icon: Package },
-                { id: 'member-directory', label: 'Pet Parents', icon: Users },
-              ].map(tab => (
-                <button
-                  key={tab.id}
-                  onClick={() => { setActiveTab(tab.id); setMobileMenuOpen(false); }}
-                  className={`w-full flex items-center gap-2 p-3 rounded-lg text-left ${activeTab === tab.id ? 'bg-purple-100 text-purple-700' : 'hover:bg-gray-50'}`}
-                >
-                  <tab.icon className="w-4 h-4" />
-                  {tab.label}
-                </button>
-              ))}
-              
-              <div className="border-t my-2"></div>
-              <p className="px-3 py-1 text-xs font-bold text-gray-500 uppercase">All Sections</p>
-              {[
-                { id: 'inbox', label: 'Unified Inbox' },
-                { id: 'pillar-queues', label: 'Pillar Queues' },
-                { id: 'pets', label: 'Pet Profiles' },
-                { id: 'membership', label: 'Membership' },
-                { id: 'loyalty', label: 'Loyalty' },
-                { id: 'fulfilment', label: 'Fulfilment' },
-                { id: 'product-box', label: 'Product Box' },
-                { id: 'service-box', label: 'Service Box' },
-                { id: 'analytics', label: 'Analytics' },
-                { id: 'communications', label: 'Communications' },
-              ].map(tab => (
-                <button
-                  key={tab.id}
-                  onClick={() => { setActiveTab(tab.id); setMobileMenuOpen(false); }}
-                  className={`w-full flex items-center gap-2 p-2 pl-6 rounded-lg text-left text-sm ${activeTab === tab.id ? 'bg-purple-100 text-purple-700' : 'hover:bg-gray-50'}`}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
+            <>
+              {/* Backdrop */}
+              <div 
+                className="fixed inset-0 bg-black/30 z-40"
+                onClick={() => setMobileMenuOpen(false)}
+              />
+              {/* Menu Panel */}
+              <div className="fixed top-0 left-0 right-0 bottom-0 z-50 bg-white overflow-y-auto">
+                {/* Header */}
+                <div className="sticky top-0 bg-white border-b p-4 flex items-center justify-between">
+                  <span className="font-bold text-lg">Admin Menu</span>
+                  <button
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="p-2 hover:bg-gray-100 rounded-lg"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                
+                <div className="p-4 space-y-4">
+                  {/* Command Center */}
+                  <div>
+                    <p className="px-2 py-1 text-xs font-bold text-purple-700 uppercase mb-2 flex items-center gap-1">
+                      🎯 Command Center
+                    </p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+                        { id: 'servicedesk', label: 'Service Desk', icon: Ticket },
+                        { id: 'inbox', label: 'Unified Inbox', icon: Inbox },
+                        { id: 'pillar-queues', label: 'Pillar Queues', icon: Package },
+                      ].map(tab => (
+                        <button
+                          key={tab.id}
+                          onClick={() => { setActiveTab(tab.id); setMobileMenuOpen(false); }}
+                          className={`flex items-center gap-2 p-3 rounded-lg text-left ${activeTab === tab.id ? 'bg-purple-100 text-purple-700 border-2 border-purple-300' : 'bg-gray-50 hover:bg-gray-100'}`}
+                        >
+                          <tab.icon className="w-4 h-4" />
+                          <span className="text-sm font-medium">{tab.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Members & Pets */}
+                  <div>
+                    <p className="px-2 py-1 text-xs font-bold text-blue-700 uppercase mb-2 flex items-center gap-1">
+                      👥 Members & Pets
+                    </p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        { id: 'member-directory', label: 'Pet Parents', icon: Users },
+                        { id: 'pets', label: 'Pet Profiles', icon: PawPrint },
+                        { id: 'membership', label: 'Membership', icon: Crown },
+                        { id: 'loyalty', label: 'Loyalty', icon: Star },
+                        { id: 'engagement', label: 'Engagement', icon: Flame },
+                        { id: 'celebrations', label: 'Celebrations', icon: Calendar },
+                      ].map(tab => (
+                        <button
+                          key={tab.id}
+                          onClick={() => { setActiveTab(tab.id); setMobileMenuOpen(false); }}
+                          className={`flex items-center gap-2 p-3 rounded-lg text-left ${activeTab === tab.id ? 'bg-blue-100 text-blue-700 border-2 border-blue-300' : 'bg-gray-50 hover:bg-gray-100'}`}
+                        >
+                          <tab.icon className="w-4 h-4" />
+                          <span className="text-sm font-medium">{tab.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Operations */}
+                  <div>
+                    <p className="px-2 py-1 text-xs font-bold text-green-700 uppercase mb-2 flex items-center gap-1">
+                      📦 Operations
+                    </p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        { id: 'orders', label: 'Orders', icon: Package },
+                        { id: 'fulfilment', label: 'Fulfilment', icon: Package },
+                        { id: 'autoship', label: 'Autoship', icon: RefreshCw },
+                      ].map(tab => (
+                        <button
+                          key={tab.id}
+                          onClick={() => { setActiveTab(tab.id); setMobileMenuOpen(false); }}
+                          className={`flex items-center gap-2 p-3 rounded-lg text-left ${activeTab === tab.id ? 'bg-green-100 text-green-700 border-2 border-green-300' : 'bg-gray-50 hover:bg-gray-100'}`}
+                        >
+                          <tab.icon className="w-4 h-4" />
+                          <span className="text-sm font-medium">{tab.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Catalog */}
+                  <div>
+                    <p className="px-2 py-1 text-xs font-bold text-amber-700 uppercase mb-2 flex items-center gap-1">
+                      🏪 Catalog
+                    </p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        { id: 'product-box', label: 'Product Box', icon: Package },
+                        { id: 'service-box', label: 'Service Box', icon: Store },
+                        { id: 'pricing', label: 'Pricing', icon: DollarSign },
+                        { id: 'experiences', label: 'Experiences', icon: Calendar },
+                      ].map(tab => (
+                        <button
+                          key={tab.id}
+                          onClick={() => { setActiveTab(tab.id); setMobileMenuOpen(false); }}
+                          className={`flex items-center gap-2 p-3 rounded-lg text-left ${activeTab === tab.id ? 'bg-amber-100 text-amber-700 border-2 border-amber-300' : 'bg-gray-50 hover:bg-gray-100'}`}
+                        >
+                          <tab.icon className="w-4 h-4" />
+                          <span className="text-sm font-medium">{tab.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Analytics & Tools */}
+                  <div>
+                    <p className="px-2 py-1 text-xs font-bold text-pink-700 uppercase mb-2 flex items-center gap-1">
+                      📊 Analytics & Tools
+                    </p>
+                    <div className="grid grid-cols-2 gap-2">
+                      {[
+                        { id: 'analytics', label: 'Analytics', icon: Eye },
+                        { id: 'reports', label: 'Reports', icon: FileText },
+                        { id: 'communications', label: 'Comms', icon: Send },
+                        { id: 'mira-memory', label: 'Mira Memory', icon: MessageCircle },
+                      ].map(tab => (
+                        <button
+                          key={tab.id}
+                          onClick={() => { setActiveTab(tab.id); setMobileMenuOpen(false); }}
+                          className={`flex items-center gap-2 p-3 rounded-lg text-left ${activeTab === tab.id ? 'bg-pink-100 text-pink-700 border-2 border-pink-300' : 'bg-gray-50 hover:bg-gray-100'}`}
+                        >
+                          <tab.icon className="w-4 h-4" />
+                          <span className="text-sm font-medium">{tab.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
           )}
         </div>
         
