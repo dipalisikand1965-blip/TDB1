@@ -1984,12 +1984,47 @@ const MemberDashboard = () => {
                 <Button 
                   variant="outline" 
                   size="sm"
-                  onClick={() => {
+                  onClick={async () => {
                     setRequestsLoading(true);
-                    axios.get(`${API_URL}/api/mira/my-requests`, {
-                      headers: { Authorization: `Bearer ${token}` }
-                    }).then(res => setMyRequests(res.data.requests || []))
-                      .finally(() => setRequestsLoading(false));
+                    try {
+                      const [requestsRes, bookingsRes] = await Promise.all([
+                        axios.get(`${API_URL}/api/mira/my-requests`, {
+                          headers: { Authorization: `Bearer ${token}` }
+                        }).catch(() => ({ data: { requests: [] } })),
+                        axios.get(`${API_URL}/api/user/bookings?email=${encodeURIComponent(user.email)}`, {
+                          headers: { Authorization: `Bearer ${token}` }
+                        }).catch(() => ({ data: { bookings: [] } }))
+                      ]);
+                      
+                      const requests = requestsRes.data.requests || [];
+                      const bookings = (bookingsRes.data.bookings || []).map(b => ({
+                        id: b.ticket_id || b.id,
+                        description: `${b.service_type?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Service'} booking${b.date ? ` for ${b.date}` : ''}${b.time ? ` at ${b.time}` : ''}`,
+                        status: b.status,
+                        status_display: {
+                          label: b.status === 'pending' ? 'Pending Confirmation' : 
+                                 b.status === 'confirmed' ? 'Confirmed' :
+                                 b.status === 'completed' ? 'Completed' : 
+                                 b.status === 'cancelled' ? 'Cancelled' : b.status,
+                          color: b.status === 'pending' ? 'yellow' : 
+                                 b.status === 'confirmed' ? 'green' : 
+                                 b.status === 'completed' ? 'blue' : 
+                                 b.status === 'cancelled' ? 'red' : 'gray',
+                          icon: b.status === 'pending' ? '⏳' : 
+                                b.status === 'confirmed' ? '✅' : 
+                                b.status === 'completed' ? '🎉' : 
+                                b.status === 'cancelled' ? '❌' : '📋'
+                        },
+                        pet_name: b.pet_name,
+                        pillar: 'Booking',
+                        created_at: b.created_at,
+                        type: 'booking'
+                      }));
+                      
+                      setMyRequests([...requests, ...bookings].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)));
+                    } finally {
+                      setRequestsLoading(false);
+                    }
                   }}
                   disabled={requestsLoading}
                 >
