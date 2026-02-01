@@ -1924,6 +1924,7 @@ const Admin = () => {
             {[
               { id: 'chats', label: 'Mira Chats', icon: MessageCircle },
               { id: 'mira-memory', label: 'Memory', icon: Brain },
+              { id: 'kit-assembly', label: 'Kit Assembly', icon: Package },
               { id: 'communications', label: 'Communications', icon: Mail },
               { id: 'reminders', label: 'Reminders', icon: Bell },
             ].map((tab) => (
