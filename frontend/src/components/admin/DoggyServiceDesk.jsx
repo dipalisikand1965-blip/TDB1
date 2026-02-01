@@ -200,6 +200,11 @@ const DoggyServiceDesk = ({ authHeaders }) => {
   const [selectedTicketIds, setSelectedTicketIds] = useState([]);
   const [showBulkActions, setShowBulkActions] = useState(false);
   
+  // Lock/Delete State
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [ticketToDelete, setTicketToDelete] = useState(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  
   // Notification Sound
   const [soundEnabled, setSoundEnabled] = useState(true);
   const notificationSoundRef = React.useRef(null);
