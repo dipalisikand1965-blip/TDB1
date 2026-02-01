@@ -677,17 +677,17 @@ const RestaurantCard = ({ restaurant, getPetMenuBadge, getPetPolicyText, feature
         </Badge>
       </div>
     </div>
-    <div className="p-3">
-      <h3 className="font-bold text-sm text-gray-900 mb-1 line-clamp-1">{restaurant.name}</h3>
-      <p className="text-xs text-gray-500 flex items-center gap-1 mb-2">
+    <div className="p-3 sm:p-4">
+      <h3 className="font-bold text-sm sm:text-base text-gray-900 mb-1 line-clamp-1">{restaurant.name}</h3>
+      <p className="text-xs sm:text-sm text-gray-500 flex items-center gap-1 mb-2">
         <MapPin className="w-3 h-3" />
         <span className="line-clamp-1">{restaurant.area}</span>
       </p>
       <div className="flex items-center justify-between">
-        <span className="text-xs text-gray-500 flex items-center gap-1">
+        <span className="text-xs sm:text-sm text-gray-500 flex items-center gap-1">
           <Dog className="w-3 h-3" /> Pet Friendly
         </span>
-        <Button size="sm" className="bg-orange-500 hover:bg-orange-600 text-white text-xs h-7 px-3">
+        <Button size="sm" className="bg-orange-500 hover:bg-orange-600 text-white text-xs sm:text-sm h-7 sm:h-8 px-3">
           Reserve
         </Button>
       </div>
