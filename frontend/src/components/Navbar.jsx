@@ -870,8 +870,9 @@ const Navbar = () => {
               {/* Cart */}
               <button
                 onClick={() => setIsCartOpen(true)}
-                className="relative flex items-center gap-1 hover:bg-white/10 rounded p-1.5"
+                className="relative flex items-center gap-1 hover:bg-white/10 rounded-lg p-2 min-w-[44px] min-h-[44px] touch-manipulation"
                 data-testid="navbar-cart-btn"
+                aria-label="Shopping cart"
               >
                 <ShoppingCart className="w-6 h-6" />
                 {getCartCount() > 0 && (
