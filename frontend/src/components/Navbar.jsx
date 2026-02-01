@@ -1115,7 +1115,8 @@ const Navbar = () => {
             {/* Quick Links - Mobile */}
             <Link
               to="/membership"
-              onClick={() => setIsMenuOpen(false)}
+              onClick={(e) => { e.stopPropagation(); setIsMenuOpen(false); }}
+              style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
               className="flex items-center gap-2 p-3 text-purple-600 font-medium"
             >
               <PawPrint className="w-4 h-4" />
