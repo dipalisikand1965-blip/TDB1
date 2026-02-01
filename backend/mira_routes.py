@@ -5169,6 +5169,21 @@ async def quick_book(
     
     logger.info(f"Quick book created: {booking_id} | Ticket: {ticket_id} | Service: {request.serviceType}")
     
+    # Send push notification to user about new booking ticket
+    push_result = None
+    user_email = user.get("email") if user else None
+    if user_email:
+        try:
+            push_result = await notify_ticket_update(
+                ticket_id=ticket_id,
+                user_email=user_email,
+                update_type="booking_confirmed",
+                details={"date": request.date, "time": request.time, "service": request.serviceType}
+            )
+            logger.info(f"Push notification sent for new booking {ticket_id}: {push_result}")
+        except Exception as e:
+            logger.warning(f"Failed to send push notification for booking: {e}")
+    
     return {
         "success": True,
         "booking_id": booking_id,
