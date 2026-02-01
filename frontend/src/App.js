@@ -108,79 +108,89 @@ function AppBadgeManager() {
   return null; // This is a side-effect only component
 }
 
-// Components
+// Components (always loaded - core UI)
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import CartSidebar from "./components/CartSidebar";
 import MiraAI from "./components/MiraAI";
 
-// Pages
+// Critical Pages (loaded immediately - main user journey)
 import Home from "./pages/Home";
-import ProductListing from "./pages/ProductListing";
-import CustomCakeDesigner from "./pages/CustomCakeDesigner";
-import MiraConcierge from "./pages/MiraConcierge";
-import Checkout from "./pages/Checkout";
-import UnifiedCheckout from "./components/UnifiedCheckout";
-// About and Membership use the doctrine-aligned *Page versions
-import AboutPage from "./pages/AboutPage";
-import MembershipPage from "./pages/MembershipPage";
-import MembershipOnboarding from "./pages/MembershipOnboarding";
-import Admin from "./pages/Admin";
-import Policies from "./pages/Policies";
-import FAQs from "./pages/FAQs";
-import Insights from "./pages/Insights";
-import Streaties from "./pages/Streaties";
-import Franchise from "./pages/Franchise";
-import Contact from "./pages/Contact";
-import PetProfile from "./pages/PetProfile";
-import MyPets from "./pages/MyPets";
-import PetSoulPage from "./pages/PetSoulPage";
-// PetSoulJourneyPage removed - deprecated, all routes redirect to UnifiedPetPage
-import PetSoulDemo from "./pages/PetSoulDemo";
-import PetVault from "./pages/PetVault";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import MemberDashboard from "./pages/MemberDashboard";
-import MiraEmbed from "./pages/MiraEmbed";
-import MiraLandingEmbed from "./pages/MiraLandingEmbed";
-import MiraPage from "./pages/MiraPage";
-import MiraConciergeEmbed from "./pages/MiraConciergeEmbed";
-import AuthCallback from "./pages/AuthCallback";
-import Autoship from "./pages/Autoship";
-import SearchResults from "./pages/SearchResults";
-import PillarPage from "./pages/PillarPage";
-import DinePage from "./pages/DinePage";
-import CollectionPage from "./pages/CollectionPage";
-import PartnerOnboarding from "./pages/PartnerOnboarding";
-import StayPage from "./pages/StayPage";
-import TravelPage from "./pages/TravelPage";
-import CarePage from "./pages/CarePage";
-import EnjoyPage from "./pages/EnjoyPage";
-import FitPage from "./pages/FitPage";
-import LearnPage from "./pages/LearnPage";
-import AdvisoryPage from "./pages/AdvisoryPage";
-import PaperworkPage from "./pages/PaperworkPage";
-import EmergencyPage from "./pages/EmergencyPage";
-import CelebratePage from "./pages/CelebratePage";
-import ForgotPassword from "./pages/ForgotPassword";
-import ResetPassword from "./pages/ResetPassword";
-import MemberForgotPassword from "./pages/MemberForgotPassword";
-import MemberResetPassword from "./pages/MemberResetPassword";
-import VoiceOrder from "./pages/VoiceOrder";
-import AgentPortal from "./pages/AgentPortal";
-import ServiceDeskPage from "./pages/ServiceDeskPage";
-import MyTickets from "./pages/MyTickets";
-import AdminDocs from "./pages/AdminDocs";
-import NPSFeedbackPage from "./pages/NPSFeedbackPage";
-import UnifiedPetPage from "./pages/UnifiedPetPage";
-import FarewellPage from "./pages/FarewellPage";
 import ShopPage from "./pages/ShopPage";
-import ServicesPage from "./pages/ServicesPage";
-import AdoptPage from "./pages/AdoptPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
-import MealPlanPage from "./pages/MealPlanPage";
+import SearchResults from "./pages/SearchResults";
+import Checkout from "./pages/Checkout";
 import ProtectedRoute from "./components/ProtectedRoute";
-import ConciergeRequestsDashboard from "./components/admin/ConciergeRequestsDashboard";
+
+// =====================================================
+// LAZY LOADED PAGES (code-split for smaller initial bundle)
+// =====================================================
+
+// Admin Pages (only loaded when admin accesses)
+const Admin = lazy(() => import("./pages/Admin"));
+const AdminDocs = lazy(() => import("./pages/AdminDocs"));
+const AgentPortal = lazy(() => import("./pages/AgentPortal"));
+const ServiceDeskPage = lazy(() => import("./pages/ServiceDeskPage"));
+const ConciergeRequestsDashboard = lazy(() => import("./components/admin/ConciergeRequestsDashboard"));
+
+// Member Dashboard (only loaded when member logs in)
+const MemberDashboard = lazy(() => import("./pages/MemberDashboard"));
+const MyPets = lazy(() => import("./pages/MyPets"));
+const MyTickets = lazy(() => import("./pages/MyTickets"));
+const PetVault = lazy(() => import("./pages/PetVault"));
+const Autoship = lazy(() => import("./pages/Autoship"));
+
+// Pillar Pages (lazy load - user navigates to these)
+const DinePage = lazy(() => import("./pages/DinePage"));
+const StayPage = lazy(() => import("./pages/StayPage"));
+const TravelPage = lazy(() => import("./pages/TravelPage"));
+const CarePage = lazy(() => import("./pages/CarePage"));
+const EnjoyPage = lazy(() => import("./pages/EnjoyPage"));
+const FitPage = lazy(() => import("./pages/FitPage"));
+const LearnPage = lazy(() => import("./pages/LearnPage"));
+const AdvisoryPage = lazy(() => import("./pages/AdvisoryPage"));
+const PaperworkPage = lazy(() => import("./pages/PaperworkPage"));
+const EmergencyPage = lazy(() => import("./pages/EmergencyPage"));
+const CelebratePage = lazy(() => import("./pages/CelebratePage"));
+const FarewellPage = lazy(() => import("./pages/FarewellPage"));
+const AdoptPage = lazy(() => import("./pages/AdoptPage"));
+const PillarPage = lazy(() => import("./pages/PillarPage"));
+
+// Other Pages (lazy load)
+const ProductListing = lazy(() => import("./pages/ProductListing"));
+const CustomCakeDesigner = lazy(() => import("./pages/CustomCakeDesigner"));
+const MiraConcierge = lazy(() => import("./pages/MiraConcierge"));
+const UnifiedCheckout = lazy(() => import("./components/UnifiedCheckout"));
+const AboutPage = lazy(() => import("./pages/AboutPage"));
+const MembershipPage = lazy(() => import("./pages/MembershipPage"));
+const MembershipOnboarding = lazy(() => import("./pages/MembershipOnboarding"));
+const Policies = lazy(() => import("./pages/Policies"));
+const FAQs = lazy(() => import("./pages/FAQs"));
+const Insights = lazy(() => import("./pages/Insights"));
+const Streaties = lazy(() => import("./pages/Streaties"));
+const Franchise = lazy(() => import("./pages/Franchise"));
+const Contact = lazy(() => import("./pages/Contact"));
+const PetProfile = lazy(() => import("./pages/PetProfile"));
+const PetSoulPage = lazy(() => import("./pages/PetSoulPage"));
+const PetSoulDemo = lazy(() => import("./pages/PetSoulDemo"));
+const MiraEmbed = lazy(() => import("./pages/MiraEmbed"));
+const MiraLandingEmbed = lazy(() => import("./pages/MiraLandingEmbed"));
+const MiraPage = lazy(() => import("./pages/MiraPage"));
+const MiraConciergeEmbed = lazy(() => import("./pages/MiraConciergeEmbed"));
+const AuthCallback = lazy(() => import("./pages/AuthCallback"));
+const CollectionPage = lazy(() => import("./pages/CollectionPage"));
+const PartnerOnboarding = lazy(() => import("./pages/PartnerOnboarding"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
+const MemberForgotPassword = lazy(() => import("./pages/MemberForgotPassword"));
+const MemberResetPassword = lazy(() => import("./pages/MemberResetPassword"));
+const VoiceOrder = lazy(() => import("./pages/VoiceOrder"));
+const NPSFeedbackPage = lazy(() => import("./pages/NPSFeedbackPage"));
+const UnifiedPetPage = lazy(() => import("./pages/UnifiedPetPage"));
+const ServicesPage = lazy(() => import("./pages/ServicesPage"));
+const MealPlanPage = lazy(() => import("./pages/MealPlanPage"));
 
 function App() {
   return (
