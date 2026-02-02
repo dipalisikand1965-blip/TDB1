@@ -858,10 +858,13 @@ const MiraChatWidget = ({
       }
     } catch (error) {
       console.error('Mira chat error:', error);
+      const errorMessage = error.name === 'AbortError' 
+        ? "Taking a bit longer than usual. Please check your connection and try again."
+        : "I'm having a brief pause. Please try again.";
       setMessages(prev => [...prev, {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: "I'm having a brief pause. Please try again."
+        content: errorMessage
       }]);
     } finally {
       setIsSending(false);
