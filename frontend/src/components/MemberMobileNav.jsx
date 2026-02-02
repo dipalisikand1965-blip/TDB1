@@ -34,10 +34,19 @@ const MemberMobileNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
+  // Hide on admin, login, register pages - these have their own navigation
+  const hiddenPaths = ['/admin', '/login', '/register', '/forgot-password', '/agent'];
+  const shouldHide = hiddenPaths.some(path => location.pathname.startsWith(path));
+  
   // Close sidebar on route change
   useEffect(() => {
     setIsOpen(false);
   }, [location.pathname]);
+  
+  // Don't render on hidden paths
+  if (shouldHide) {
+    return null;
+  }
   
   // Prevent body scroll when sidebar is open
   useEffect(() => {
