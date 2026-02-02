@@ -53,7 +53,7 @@ const PILLAR_GOALS = {
       { id: 'training', label: 'Training', icon: Award, gradient: 'from-amber-400 to-orange-500', bg: 'bg-gradient-to-br from-amber-50 to-orange-50' },
       { id: 'walking', label: 'Dog walking', icon: Dog, gradient: 'from-emerald-400 to-teal-500', bg: 'bg-gradient-to-br from-emerald-50 to-teal-50' },
       { id: 'daycare', label: 'Pet daycare', icon: Home, gradient: 'from-purple-400 to-violet-500', bg: 'bg-gradient-to-br from-purple-50 to-violet-50' },
-      { id: 'spa', label: 'Pet spa', icon: Sparkles, gradient: 'from-cyan-400 to-blue-500', bg: 'bg-gradient-to-br from-cyan-50 to-blue-50' },
+      { id: 'anything_else', label: 'Anything else', icon: MessageCircle, gradient: 'from-amber-500 to-orange-600', bg: 'bg-gradient-to-br from-amber-50 to-orange-50' },
     ]
   },
   dine: {
