@@ -564,8 +564,17 @@ const MiraChatWidget = ({
   }, [voiceEnabled]);
   
   // Text-to-Speech function - MIRA IS A BRITISH WOMAN
-  const speakText = useCallback((text) => {
-    if (!synthRef.current || !voiceEnabled) return;
+  const speakText = useCallback(async (text) => {
+    if (!voiceEnabled) return;
+    
+    // Try ElevenLabs first for premium voice
+    if (useElevenLabs) {
+      const success = await speakWithElevenLabs(text);
+      if (success) return;
+    }
+    
+    // Fallback to Web Speech API
+    if (!synthRef.current) return;
     
     // Cancel any ongoing speech
     synthRef.current.cancel();
