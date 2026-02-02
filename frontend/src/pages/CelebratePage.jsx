@@ -44,6 +44,7 @@ const CelebratePage = () => {
   const [boxOccasion, setBoxOccasion] = useState('birthday');
   const [showConciergeModal, setShowConciergeModal] = useState(false);
   const [conciergeSubmitting, setConciergeSubmitting] = useState(false);
+  const [userPets, setUserPets] = useState([]);
   const { addToCart } = useCart();
   const { user, token } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -54,6 +55,7 @@ const CelebratePage = () => {
     name: '',
     phone: '',
     email: '',
+    petId: '',
     petName: '',
     occasion: 'birthday',
     celebrationDate: '',
@@ -61,6 +63,34 @@ const CelebratePage = () => {
     budget: '',
     specialRequests: ''
   });
+
+  // Fetch user's pets
+  useEffect(() => {
+    const fetchPets = async () => {
+      if (!token) return;
+      try {
+        const res = await fetch(`${API_URL}/api/pets/my-pets`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          const pets = data.pets || [];
+          setUserPets(pets);
+          // Auto-select first pet if only one, or leave for user to choose
+          if (pets.length === 1) {
+            setConciergeForm(prev => ({
+              ...prev,
+              petId: pets[0].id,
+              petName: pets[0].name
+            }));
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch pets:', error);
+      }
+    };
+    fetchPets();
+  }, [token]);
 
   // Pre-fill form with user data
   useEffect(() => {
