@@ -203,16 +203,16 @@ const MemberMobileNav = () => {
         </div>
 
         {/* Navigation Sections */}
-        <div className="p-3 space-y-3 pb-24">
+        <div className="p-4 space-y-4 pb-24">
           {navSections.map((section) => (
             <div 
               key={section.title} 
-              className={`${getBgColorClass(section.color)} rounded-xl p-3`}
+              className={`${getBgColorClass(section.color)} rounded-xl p-4`}
             >
-              <p className={`text-xs font-bold ${getTitleColorClass(section.color)} uppercase mb-2 tracking-wide`}>
+              <p className={`text-xs font-bold ${getTitleColorClass(section.color)} uppercase mb-3 tracking-wide`}>
                 {section.title}
               </p>
-              <div className="space-y-1">
+              <div className="space-y-2">
                 {section.items.map((item) => {
                   const isActive = location.pathname === item.path;
                   const Icon = item.icon;
@@ -220,13 +220,13 @@ const MemberMobileNav = () => {
                     <button
                       key={item.path}
                       onClick={() => handleNavigate(item.path)}
-                      className={`w-full flex items-center gap-3 p-2.5 rounded-lg text-left transition-all touch-manipulation ${
+                      className={`w-full flex items-center gap-4 p-4 min-h-[52px] rounded-xl text-left transition-all touch-manipulation active:scale-95 ${
                         getColorClasses(section.color, isActive)
                       }`}
                       data-testid={`mobile-nav-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
                     >
-                      <Icon className="w-4 h-4 flex-shrink-0" />
-                      <span className="text-sm font-medium">{item.label}</span>
+                      <Icon className="w-5 h-5 flex-shrink-0" />
+                      <span className="text-base font-medium">{item.label}</span>
                     </button>
                   );
                 })}
