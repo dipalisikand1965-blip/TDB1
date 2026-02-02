@@ -17,7 +17,36 @@ Build a complete service booking experience and admin management interface for t
 
 ## What's Been Implemented
 
-### Session: February 2, 2026 - Bug Fixes Batch (LATEST)
+### Session: February 2, 2026 - Universal Click-to-Detail & PersonalizedPicks (LATEST)
+
+**Issues Fixed:**
+1. ✅ **Bundle Cards Open Detail Modal** - CarePage bundles now open full detail modal on click
+   - Shows gradient header, description, includes list, price, discount, Paw Points
+   - "View Details" and "Add to Cart" buttons in card and modal
+2. ✅ **Quick Book Service Tiles Open Forms** - Service tiles open ServiceBookingModal (not Mira)
+   - Grooming, Vet, Training, Walking tiles all open proper booking forms
+   - Forms have service selection, date/time, pet info, notes
+3. ✅ **"Anything Else" Ask Concierge Tile** - New generic request tile on CarePage
+   - Opens Ask Concierge form with auto-populated user info
+   - Submits to unified service flow (creates ticket, notifications)
+4. ✅ **PersonalizedPicks on ALL Pillar Pages** - Added to 6 pages:
+   - DinePage, CelebratePage, StayPage, LearnPage, FitPage, ShopPage
+   - Shows pet-specific product recommendations based on pillar
+   - Only displays for logged-in users with registered pets
+
+**Files Modified:**
+- `/app/frontend/src/pages/CarePage.jsx` - Bundle modal, Anything Else tile
+- `/app/frontend/src/pages/DinePage.jsx` - Added PersonalizedPicks
+- `/app/frontend/src/pages/CelebratePage.jsx` - Added PersonalizedPicks
+- `/app/frontend/src/pages/StayPage.jsx` - Added PersonalizedPicks
+- `/app/frontend/src/pages/LearnPage.jsx` - Added PersonalizedPicks
+- `/app/frontend/src/pages/FitPage.jsx` - Added PersonalizedPicks
+- `/app/frontend/src/pages/ShopPage.jsx` - Added PersonalizedPicks
+
+**Testing: 100% Pass Rate (Frontend all features verified)**
+- Test report: `/app/test_reports/iteration_183.json`
+
+### Session: February 2, 2026 - Bug Fixes Batch
 
 **Issues Fixed:**
 1. ✅ **Dialog/Modal Z-Index Fix** - Changed z-index from z-50/z-60 to z-[9998]/z-[9999] in dialog.jsx
