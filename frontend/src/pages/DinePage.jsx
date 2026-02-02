@@ -175,6 +175,16 @@ const DinePage = () => {
             className="w-full h-full object-cover"
           />
         </div>
+        
+        {/* Mobile Back Button */}
+        <button 
+          onClick={() => navigate(-1)}
+          className="sm:hidden absolute top-4 left-4 z-10 p-2 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-colors"
+          aria-label="Go back"
+        >
+          <ChevronLeft className="w-6 h-6 text-white" />
+        </button>
+        
         <div className="relative max-w-6xl mx-auto">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl">
