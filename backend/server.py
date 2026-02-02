@@ -6432,8 +6432,8 @@ async def get_product_recommendations(
 
 
 @api_router.get("/products/recommendations/for-pet/{pet_id}")
-async def get_pet_recommendations(pet_id: str, limit: int = 20):
-    """Get personalized product recommendations based on pet profile"""
+async def get_pet_recommendations(pet_id: str, limit: int = 20, pillar: str = None):
+    """Get personalized product recommendations based on pet profile and optional pillar filter"""
     # Fetch pet profile
     pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
     if not pet:
@@ -6442,6 +6442,8 @@ async def get_pet_recommendations(pet_id: str, limit: int = 20):
     # Extract pet attributes for filtering
     weight = pet.get("weight")
     birth_date = pet.get("birth_date")
+    breed = pet.get("breed", "").lower()
+    personality = pet.get("personality", [])
     preferences = pet.get("preferences", {})
     allergies = preferences.get("allergies", [])
     if isinstance(allergies, str):
@@ -6476,13 +6478,16 @@ async def get_pet_recommendations(pet_id: str, limit: int = 20):
             pass
     
     # Build recommendation query - more inclusive
-    # Start by getting products that are in stock (or not explicitly out of stock)
     query = {
         "$or": [
             {"in_stock": True},
             {"in_stock": {"$exists": False}}
         ]
     }
+    
+    # Pillar filter - prioritize products from this pillar
+    if pillar:
+        query["pillar"] = pillar
     
     # Exclude products with allergies in their tags if allergies exist
     if allergies and len(allergies) > 0 and allergies[0].lower() not in ['no', 'none', '']:
@@ -6493,9 +6498,16 @@ async def get_pet_recommendations(pet_id: str, limit: int = 20):
     # Fetch products - get more variety
     products = await db.products.find(query, {"_id": 0}).limit(limit * 3).to_list(limit * 3)
     
-    # Also get celebrate products (cakes, treats)
-    celebrate_products = await db.celebrate_products.find({}, {"_id": 0}).limit(10).to_list(10)
-    products.extend(celebrate_products)
+    # If pillar filtered and not enough results, fetch without pillar
+    if pillar and len(products) < limit:
+        query.pop("pillar", None)
+        additional = await db.products.find(query, {"_id": 0}).limit(limit * 2).to_list(limit * 2)
+        products.extend([p for p in additional if p not in products])
+    
+    # Also get celebrate products (cakes, treats) if pillar is celebrate or dine
+    if not pillar or pillar in ["celebrate", "dine"]:
+        celebrate_products = await db.celebrate_products.find({}, {"_id": 0}).limit(10).to_list(10)
+        products.extend(celebrate_products)
     
     # Score products based on relevance to pet
     scored_products = []
