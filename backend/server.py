@@ -5744,6 +5744,170 @@ async def get_service_detail(service_id: str):
     return service
 
 
+# ==================== SERVICE REQUESTS (CONCIERGE / ASK FORMS) ====================
+class ServiceRequestPayload(BaseModel):
+    type: str  # celebration_concierge, travel_request, etc.
+    pillar: str
+    source: Optional[str] = "web_form"
+    customer: Dict[str, Any]
+    details: Dict[str, Any]
+    priority: Optional[str] = "normal"
+    intent: Optional[str] = None
+
+@api_router.post("/service-requests")
+async def create_service_request(payload: ServiceRequestPayload):
+    """
+    Generic service request endpoint - for Ask Concierge forms, help requests, etc.
+    Routes to unified flow: Notification → Service Desk → Unified Inbox
+    """
+    # Generate IDs
+    request_id = f"REQ-{datetime.now().strftime('%Y%m%d')}-{uuid.uuid4().hex[:4].upper()}"
+    ticket_id = f"TKT-{uuid.uuid4().hex[:8].upper()}"
+    notification_id = f"NOTIF-{uuid.uuid4().hex[:8].upper()}"
+    inbox_id = f"INBOX-{uuid.uuid4().hex[:8].upper()}"
+    now = get_utc_timestamp()
+    
+    customer_name = payload.customer.get("name", "Customer")
+    customer_email = payload.customer.get("email")
+    customer_phone = payload.customer.get("phone")
+    
+    # Build description from details
+    details_text = "\n".join([f"- {k.replace('_', ' ').title()}: {v}" for k, v in payload.details.items() if v])
+    
+    description = f"""Service Request: {payload.type.replace('_', ' ').title()}
+Pillar: {payload.pillar.title()}
+Source: {payload.source}
+Intent: {payload.intent or 'General inquiry'}
+
+Customer Details:
+- Name: {customer_name}
+- Phone: {customer_phone or 'Not provided'}
+- Email: {customer_email or 'Not provided'}
+
+Request Details:
+{details_text}
+"""
+    
+    # Determine priority and urgency
+    priority = payload.priority or "normal"
+    urgency = "high" if priority == "high" else ("medium" if priority == "normal" else "low")
+    
+    # ==================== STEP 1: NOTIFICATION ====================
+    await db.admin_notifications.insert_one({
+        "id": notification_id,
+        "type": payload.type,
+        "pillar": payload.pillar,
+        "title": f"New {payload.type.replace('_', ' ').title()} Request",
+        "message": f"{customer_name} submitted a {payload.pillar} request",
+        "read": False,
+        "status": "unread",
+        "urgency": urgency,
+        "request_id": request_id,
+        "ticket_id": ticket_id,
+        "inbox_id": inbox_id,
+        "customer": {"name": customer_name, "email": customer_email, "phone": customer_phone},
+        "details": payload.details,
+        "link": f"/admin?tab=servicedesk&ticket={ticket_id}",
+        "created_at": now,
+        "read_at": None
+    })
+    logger.info(f"[SERVICE REQUEST] Notification created: {notification_id}")
+    
+    # ==================== STEP 2: SERVICE DESK TICKET ====================
+    ticket = {
+        "id": ticket_id,
+        "ticket_id": ticket_id,
+        "request_id": request_id,
+        "notification_id": notification_id,
+        "inbox_id": inbox_id,
+        "type": payload.type,
+        "category": payload.pillar,
+        "subject": f"{payload.type.replace('_', ' ').title()} - {customer_name}",
+        "description": description,
+        "status": "open",
+        "priority": priority,
+        "channel": payload.source or "web",
+        "pillar": payload.pillar,
+        "customer_name": customer_name,
+        "customer_email": customer_email,
+        "customer_phone": customer_phone,
+        "details": payload.details,
+        "intent": payload.intent,
+        "created_at": now,
+        "updated_at": now,
+        "assigned_to": None,
+        "notes": [],
+        "activity_log": [
+            {"action": "created", "timestamp": now, "details": f"Request submitted via {payload.source}"}
+        ]
+    }
+    await db.service_desk_tickets.insert_one(ticket)
+    logger.info(f"[SERVICE REQUEST] Ticket created: {ticket_id}")
+    
+    # ==================== STEP 3: UNIFIED INBOX ====================
+    await db.unified_inbox.insert_one({
+        "id": inbox_id,
+        "thread_id": inbox_id,
+        "ticket_id": ticket_id,
+        "request_id": request_id,
+        "notification_id": notification_id,
+        "pillar": payload.pillar,
+        "type": "service_request",
+        "channel": payload.source or "web",
+        "customer_name": customer_name,
+        "customer_email": customer_email,
+        "customer_phone": customer_phone,
+        "subject": f"{payload.type.replace('_', ' ').title()} Request",
+        "preview": description[:200] + "..." if len(description) > 200 else description,
+        "status": "open",
+        "priority": priority,
+        "created_at": now,
+        "updated_at": now,
+        "messages": [
+            {
+                "id": f"msg-{uuid.uuid4().hex[:8]}",
+                "from": "customer",
+                "sender_name": customer_name,
+                "content": description,
+                "timestamp": now
+            }
+        ],
+        "metadata": {
+            "source": payload.source,
+            "intent": payload.intent,
+            "pillar": payload.pillar,
+            "details": payload.details
+        }
+    })
+    logger.info(f"[SERVICE REQUEST] Inbox entry created: {inbox_id}")
+    
+    # Store in service_requests collection for tracking
+    await db.service_requests.insert_one({
+        "id": request_id,
+        "request_id": request_id,
+        "ticket_id": ticket_id,
+        "notification_id": notification_id,
+        "inbox_id": inbox_id,
+        "type": payload.type,
+        "pillar": payload.pillar,
+        "source": payload.source,
+        "customer": payload.customer,
+        "details": payload.details,
+        "priority": priority,
+        "intent": payload.intent,
+        "status": "pending",
+        "created_at": now,
+        "updated_at": now
+    })
+    
+    return {
+        "success": True,
+        "request_id": request_id,
+        "ticket_id": ticket_id,
+        "message": f"Your request has been submitted. Our team will contact you shortly."
+    }
+
+
 @api_router.post("/services/book")
 async def book_service(
     service_id: str = Body(...),
