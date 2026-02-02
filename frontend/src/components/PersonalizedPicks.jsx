@@ -147,6 +147,43 @@ const PersonalizedPicks = ({
   
   const config = PILLAR_CONFIG[pillar] || PILLAR_CONFIG.shop;
 
+  // Listen for global pet selection changes (from Navbar)
+  useEffect(() => {
+    const handleGlobalPetChange = (event) => {
+      const { petId, pet } = event.detail || {};
+      if (pet) {
+        // Full pet object passed in event
+        setSelectedPet(pet);
+        const messages = config.messages(pet?.name || 'your pet');
+        setMessage(messages[Math.floor(Math.random() * messages.length)]);
+      } else if (petId && userPets.length > 0) {
+        // Only petId passed, find the pet
+        const foundPet = userPets.find(p => (p.id || p._id) === petId);
+        if (foundPet) {
+          setSelectedPet(foundPet);
+          const messages = config.messages(foundPet?.name || 'your pet');
+          setMessage(messages[Math.floor(Math.random() * messages.length)]);
+        }
+      }
+    };
+    
+    window.addEventListener('petSelectionChanged', handleGlobalPetChange);
+    return () => window.removeEventListener('petSelectionChanged', handleGlobalPetChange);
+  }, [config, userPets]);
+
+  // Check localStorage for previously selected pet on mount
+  useEffect(() => {
+    const savedPetId = localStorage.getItem('selectedPetId');
+    if (savedPetId && userPets.length > 0) {
+      const savedPet = userPets.find(p => (p.id || p._id) === savedPetId);
+      if (savedPet) {
+        setSelectedPet(savedPet);
+        const messages = config.messages(savedPet?.name || 'your pet');
+        setMessage(messages[Math.floor(Math.random() * messages.length)]);
+      }
+    }
+  }, [userPets, config]);
+
   // Fetch user's pets
   useEffect(() => {
     const fetchPets = async () => {
