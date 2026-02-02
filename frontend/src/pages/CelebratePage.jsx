@@ -312,6 +312,11 @@ const CelebratePage = () => {
         </div>
       </div>
 
+      {/* Personalized Picks for User's Pet */}
+      <div className="max-w-6xl mx-auto px-4 pt-6">
+        <PersonalizedPicks pillar="celebrate" maxProducts={6} />
+      </div>
+
       {/* Elevated Concierge® Experiences */}
       <div className="max-w-6xl mx-auto px-4 py-10 sm:py-16">
         <div className="text-center mb-8 sm:mb-10">
