@@ -532,14 +532,14 @@ const DinePage = () => {
                     <p className="text-sm text-gray-500 line-clamp-2 mt-1">{bundle.description}</p>
                     <div className="flex items-center justify-between mt-3">
                       <div>
-                        <span className="text-lg font-bold text-green-600">₹{bundle.bundle_price}</span>
+                        <span className="text-base sm:text-lg font-bold text-green-600">₹{bundle.bundle_price}</span>
                         {bundle.original_price > bundle.bundle_price && (
                           <span className="text-xs text-gray-400 line-through ml-1">₹{bundle.original_price}</span>
                         )}
                       </div>
                       <Button 
                         size="sm" 
-                        className="bg-orange-500 hover:bg-orange-600 text-xs"
+                        className="bg-orange-500 hover:bg-orange-600 text-xs px-2 sm:px-3 h-8 whitespace-nowrap"
                         onClick={(e) => {
                           e.stopPropagation();
                           addToCart({
@@ -554,7 +554,7 @@ const DinePage = () => {
                         }}
                         data-testid={`add-dine-bundle-${bundle.id}`}
                       >
-                        <ShoppingBag className="w-3 h-3 mr-1" /> Add
+                        <ShoppingBag className="w-3 h-3 sm:mr-1" /> <span className="hidden sm:inline">Add</span>
                       </Button>
                     </div>
                   </div>
