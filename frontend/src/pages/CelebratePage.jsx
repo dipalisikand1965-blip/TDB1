@@ -10,11 +10,12 @@ import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { 
   PartyPopper, Cake, Gift, Crown, Sparkles, Camera, Users, 
   Calendar, MapPin, ChevronRight, Star, Heart, Music,
-  Palette, ShoppingBag, Package
+  Palette, ShoppingBag, Package, X, Phone, Mail, Dog, Send
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
+import { Input } from '../components/ui/input';
 import { API_URL } from '../utils/api';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import ProductCard from '../components/ProductCard';
@@ -23,6 +24,8 @@ import MiraChatWidget from '../components/MiraChatWidget';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import OccasionBoxBuilder from '../components/OccasionBoxBuilder';
 import { useCart } from '../context/CartContext';
+import { useAuth } from '../context/AuthContext';
+import { toast } from 'sonner';
 
 // Product categories for Celebrate pillar
 const celebrateCategories = [
