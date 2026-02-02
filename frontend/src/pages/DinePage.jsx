@@ -167,16 +167,8 @@ const DinePage = () => {
       {/* SEO Meta Tags */}
       <SEOHead page="dine" path="/dine" />
       
-      {/* Hero Section */}
-      <div className="relative bg-gradient-to-r from-orange-500 to-red-500 text-white py-16 px-4 overflow-hidden">
-        <div className="absolute inset-0 opacity-30">
-          <img 
-            src="https://customer-assets.emergentagent.com/job_petlifecentral/artifacts/afm7enef_image.png"
-            alt="Pet Dining"
-            className="w-full h-full object-cover"
-          />
-        </div>
-        
+      {/* Hero Section - Matching Learn Page Style */}
+      <div className="relative h-[400px] sm:h-[500px] overflow-hidden">
         {/* Mobile Back Button */}
         <button 
           onClick={() => navigate(-1)}
@@ -186,19 +178,44 @@ const DinePage = () => {
           <ChevronLeft className="w-6 h-6 text-white" />
         </button>
         
-        <div className="relative max-w-6xl mx-auto">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-3 bg-white/20 backdrop-blur-sm rounded-xl">
-              <UtensilsCrossed className="w-8 h-8" />
-            </div>
-            <div>
-              <h1 className="text-4xl md:text-5xl font-bold">Dine</h1>
-              <p className="text-orange-100">Fresh Meals & Pet-Friendly Dining</p>
+        {/* Background Image */}
+        <div 
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url(https://customer-assets.emergentagent.com/job_petlifecentral/artifacts/afm7enef_image.png)` }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-orange-900/90 via-orange-800/80 to-red-800/70" />
+        </div>
+        
+        <div className="relative max-w-6xl mx-auto px-4 h-full flex items-center">
+          <div className="max-w-2xl">
+            <Badge className="mb-4 bg-orange-500/20 text-orange-200 border-orange-400/30">
+              <UtensilsCrossed className="w-4 h-4 mr-1" /> Fresh Meals & Pet-Friendly Dining
+            </Badge>
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+              Nourish Your Pet with
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-300 to-yellow-300"> Love & Care</span>
+            </h1>
+            <p className="text-lg text-gray-200 mb-6">
+              Discover nutritious fresh meals for your pet and find the best pet-friendly restaurants near you!
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Button 
+                size="lg" 
+                className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
+                onClick={() => document.getElementById('meals')?.scrollIntoView({ behavior: 'smooth' })}
+              >
+                <Utensils className="w-5 h-5 mr-2" /> Shop Fresh Meals
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="border-white/30 text-white hover:bg-white/10"
+                onClick={() => navigate('/dine/restaurants')}
+              >
+                <MapPin className="w-5 h-5 mr-2" /> Find Restaurants
+              </Button>
             </div>
           </div>
-          <p className="text-lg md:text-xl max-w-2xl opacity-90">
-            Discover nutritious fresh meals for your pet and find the best pet-friendly restaurants near you!
-          </p>
         </div>
       </div>
 
