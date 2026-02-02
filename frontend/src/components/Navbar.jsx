@@ -542,6 +542,18 @@ const Navbar = () => {
           });
         });
         
+        // Add Page Matches (navigation, pillars, app sections)
+        (data.pages || []).forEach(p => {
+          suggestions.push({
+            type: p.type || 'page',
+            text: p.name,
+            name: p.name,
+            description: p.description,
+            url: p.url,
+            icon: p.icon
+          });
+        });
+        
         setSearchSuggestions(suggestions.slice(0, 10));
         setShowSearchSuggestions(suggestions.length > 0);
       } catch (error) {
