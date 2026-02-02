@@ -1416,6 +1416,216 @@ const CarePage = () => {
         }}
       />
       
+      {/* === BUNDLE DETAIL MODAL === */}
+      <Dialog open={showBundleModal} onOpenChange={setShowBundleModal}>
+        <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Package className="w-5 h-5 text-pink-500" />
+              Bundle Details
+            </DialogTitle>
+          </DialogHeader>
+          
+          {selectedBundle && (
+            <div className="space-y-4">
+              {/* Bundle Header with gradient */}
+              <div className={`h-32 bg-gradient-to-br ${
+                CARE_TYPES[selectedBundle.care_type]?.color || 'from-pink-500 to-rose-500'
+              } rounded-xl p-4 flex items-end relative overflow-hidden`}>
+                <div className="absolute -right-6 -bottom-6 opacity-20">
+                  {React.createElement(CARE_TYPES[selectedBundle.care_type]?.icon || Scissors, {
+                    className: "w-24 h-24 text-white"
+                  })}
+                </div>
+                <div>
+                  <Badge className="bg-white/20 text-white backdrop-blur-sm mb-2">
+                    {CARE_TYPES[selectedBundle.care_type]?.name || 'Care Bundle'}
+                  </Badge>
+                  <h3 className="text-xl font-bold text-white">{selectedBundle.name}</h3>
+                </div>
+              </div>
+              
+              {/* Description */}
+              <p className="text-gray-600">{selectedBundle.description}</p>
+              
+              {/* What's Included */}
+              {selectedBundle.includes && selectedBundle.includes.length > 0 && (
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-2">What&apos;s Included:</h4>
+                  <ul className="space-y-2">
+                    {selectedBundle.includes.map((item, idx) => (
+                      <li key={idx} className="flex items-center gap-2 text-sm text-gray-600">
+                        <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              
+              {/* Price Section */}
+              <div className="bg-gray-50 rounded-xl p-4">
+                <div className="flex items-baseline gap-3 mb-2">
+                  <span className="text-3xl font-bold text-gray-900">
+                    ₹{selectedBundle.price?.toLocaleString()}
+                  </span>
+                  {selectedBundle.original_price && (
+                    <>
+                      <span className="text-lg text-gray-400 line-through">
+                        ₹{selectedBundle.original_price?.toLocaleString()}
+                      </span>
+                      <Badge className="bg-red-100 text-red-700">
+                        {Math.round((1 - selectedBundle.price / selectedBundle.original_price) * 100)}% OFF
+                      </Badge>
+                    </>
+                  )}
+                </div>
+                {selectedBundle.paw_reward_points > 0 && (
+                  <div className="flex items-center gap-1 text-sm text-purple-600">
+                    <PawPrint className="w-4 h-4" />
+                    Earn {selectedBundle.paw_reward_points} Paw Points
+                  </div>
+                )}
+              </div>
+              
+              {/* Action Buttons */}
+              <div className="flex gap-3">
+                <Button 
+                  variant="outline"
+                  className="flex-1"
+                  onClick={() => setShowBundleModal(false)}
+                >
+                  Close
+                </Button>
+                <Button 
+                  className="flex-1 bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700"
+                  onClick={() => {
+                    handleAddToCart(selectedBundle);
+                    setShowBundleModal(false);
+                  }}
+                >
+                  <ShoppingCart className="w-4 h-4 mr-2" />
+                  Add to Cart
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+      
+      {/* === ANYTHING ELSE FORM MODAL === */}
+      <Dialog open={showAnythingElseModal} onOpenChange={setShowAnythingElseModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <MessageCircle className="w-5 h-5 text-pink-500" />
+              Ask Our Concierge
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            <p className="text-gray-600 text-sm">
+              Can&apos;t find what you&apos;re looking for? Tell us what you need and our concierge team will help!
+            </p>
+            
+            <div className="space-y-3">
+              <div>
+                <Label>Your Name</Label>
+                <Input
+                  value={anythingElseData.name}
+                  onChange={(e) => setAnythingElseData({...anythingElseData, name: e.target.value})}
+                  placeholder="Enter your name"
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label>Email</Label>
+                  <Input
+                    type="email"
+                    value={anythingElseData.email}
+                    onChange={(e) => setAnythingElseData({...anythingElseData, email: e.target.value})}
+                    placeholder="your@email.com"
+                  />
+                </div>
+                <div>
+                  <Label>Phone</Label>
+                  <Input
+                    type="tel"
+                    value={anythingElseData.phone}
+                    onChange={(e) => setAnythingElseData({...anythingElseData, phone: e.target.value})}
+                    placeholder="+91 98xxx xxxxx"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <Label>Pet Name (Optional)</Label>
+                <Input
+                  value={anythingElseData.pet_name}
+                  onChange={(e) => setAnythingElseData({...anythingElseData, pet_name: e.target.value})}
+                  placeholder="Your pet's name"
+                />
+              </div>
+              
+              <div>
+                <Label>What do you need help with?</Label>
+                <Textarea
+                  value={anythingElseData.request}
+                  onChange={(e) => setAnythingElseData({...anythingElseData, request: e.target.value})}
+                  placeholder="Describe your request in detail..."
+                  rows={4}
+                />
+              </div>
+            </div>
+            
+            <div className="flex gap-3">
+              <Button 
+                variant="outline" 
+                className="flex-1"
+                onClick={() => setShowAnythingElseModal(false)}
+              >
+                Cancel
+              </Button>
+              <Button 
+                className="flex-1 bg-gradient-to-r from-pink-600 to-rose-600"
+                onClick={async () => {
+                  try {
+                    setSubmitting(true);
+                    const result = await createCareRequest({
+                      care_type: 'custom_request',
+                      description: anythingElseData.request,
+                      contact_name: anythingElseData.name,
+                      contact_email: anythingElseData.email,
+                      contact_phone: anythingElseData.phone,
+                      pet_name: anythingElseData.pet_name,
+                      source: 'anything_else_form'
+                    }, token);
+                    
+                    if (result.success) {
+                      showUnifiedFlowSuccess(toast, result.data);
+                      setShowAnythingElseModal(false);
+                      setAnythingElseData({ name: user?.name || '', email: user?.email || '', phone: user?.phone || '', pet_name: '', request: '' });
+                    }
+                  } catch (error) {
+                    showUnifiedFlowError(toast, error);
+                  } finally {
+                    setSubmitting(false);
+                  }
+                }}
+                disabled={submitting || !anythingElseData.request}
+              >
+                {submitting ? (
+                  <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Submitting...</>
+                ) : (
+                  <><Send className="w-4 h-4 mr-2" /> Ask Concierge</>
+                )}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+      
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="care" position="bottom-left" />
     </div>
