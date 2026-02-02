@@ -752,27 +752,36 @@ const MiraChatWidget = ({
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
       
+      // Prepare request body safely
+      const requestBody = {
+        message: userMessage.content,
+        session_id: sessionId,
+        source: 'chat_widget',
+        current_pillar: pillar,
+        selected_pet_id: selectedPet?.id || null,
+        history: (messages || [])
+          .filter(m => m && m.id !== 'welcome' && !m.isPillarSwitch)
+          .slice(-10) // Only send last 10 messages to avoid payload issues
+          .map(m => ({
+            role: m.role || 'user',
+            content: String(m.content || '')
+          }))
+      };
+      
+      console.log('[Mira] Sending chat request...', { pillar, hasPet: !!selectedPet?.id });
+      
       const response = await fetch(`${getApiUrl()}/api/mira/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           ...(token && { 'Authorization': `Bearer ${token}` })
         },
-        body: JSON.stringify({
-          message: userMessage.content,
-          session_id: sessionId,
-          source: 'chat_widget',
-          current_pillar: pillar,
-          selected_pet_id: selectedPet?.id || null,
-          history: messages.filter(m => m.id !== 'welcome').map(m => ({
-            role: m.role,
-            content: m.content
-          }))
-        }),
+        body: JSON.stringify(requestBody),
         signal: controller.signal
       });
       
       clearTimeout(timeoutId);
+      console.log('[Mira] Response status:', response.status);
       
       if (response.ok) {
         const data = await response.json();
