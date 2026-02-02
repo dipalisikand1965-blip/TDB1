@@ -1069,6 +1069,8 @@ const Navbar = () => {
                               setShowPetDropdown(false);
                               // Store in localStorage for persistence
                               localStorage.setItem('selectedPetId', pet.id);
+                              // Dispatch custom event for same-window listeners (like Mira)
+                              window.dispatchEvent(new CustomEvent('petSelectionChanged', { detail: { petId: pet.id } }));
                             }}
                             className={`w-full flex items-center justify-between px-4 py-2.5 hover:bg-purple-50 transition-colors ${
                               primaryPet?.id === pet.id ? 'bg-purple-50 border-l-2 border-purple-500' : ''
