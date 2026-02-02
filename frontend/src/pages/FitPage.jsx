@@ -572,6 +572,15 @@ const FitPage = () => {
       
       {/* ==================== HERO SECTION ==================== */}
       <div className="relative overflow-hidden bg-gradient-to-br from-teal-900 via-emerald-800 to-green-900 text-white">
+        {/* Mobile Back Button */}
+        <button 
+          onClick={() => navigate(-1)}
+          className="sm:hidden absolute top-4 left-4 z-10 p-2 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-colors"
+          aria-label="Go back"
+        >
+          <ChevronLeft className="w-6 h-6 text-white" />
+        </button>
+        
         <div className="absolute inset-0">
           <img 
             src={HERO_IMAGES[heroIndex]} 

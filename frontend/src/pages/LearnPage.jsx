@@ -399,6 +399,15 @@ const LearnPage = () => {
 
       {/* Hero Section */}
       <div className="relative h-[500px] overflow-hidden">
+        {/* Mobile Back Button */}
+        <button 
+          onClick={() => navigate(-1)}
+          className="sm:hidden absolute top-4 left-4 z-10 p-2 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-colors"
+          aria-label="Go back"
+        >
+          <ChevronLeft className="w-6 h-6 text-white" />
+        </button>
+        
         <div 
           className="absolute inset-0 bg-cover bg-center transition-all duration-1000"
           style={{ backgroundImage: `url(${HERO_IMAGES[heroIndex]})` }}
