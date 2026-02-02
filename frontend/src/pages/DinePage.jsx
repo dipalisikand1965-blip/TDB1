@@ -204,6 +204,11 @@ const DinePage = () => {
 
       {/* Dining Concierge Picker - Rover-style service request widget */}
       <DiningConciergePicker />
+      
+      {/* Personalized Picks for User's Pet */}
+      <div className="max-w-6xl mx-auto px-4 pt-8">
+        <PersonalizedPicks pillar="dine" maxProducts={6} />
+      </div>
 
       {/* Elevated Concierge® Experiences */}
       <div className="max-w-6xl mx-auto px-4 py-12">
