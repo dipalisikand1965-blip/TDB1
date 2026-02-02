@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   UtensilsCrossed, MapPin, Search, Filter, Star, Clock, 
-  Dog, Cat, ChevronRight, ChevronDown, Phone, Globe, Instagram,
+  Dog, Cat, ChevronRight, ChevronDown, ChevronLeft, Phone, Globe, Instagram,
   Utensils, Coffee, Pizza, Leaf, Heart, Check, X, AlertCircle,
   Sparkles, ShoppingBag, Truck, Users, Calendar, MessageCircle, Send,
   Bell, Gift, Cake, User, Mail, Package, Percent, PartyPopper,
