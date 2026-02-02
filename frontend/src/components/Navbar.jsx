@@ -199,6 +199,7 @@ const PILLARS = [
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchExpanded, setSearchExpanded] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [petSoulScore, setPetSoulScore] = useState(0);
   const [primaryPet, setPrimaryPet] = useState(null);
