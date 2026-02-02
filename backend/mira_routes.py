@@ -5604,6 +5604,51 @@ async def quick_book(
     except Exception as e:
         logger.error(f"Failed to create admin notification: {e}")
     
+    # 6. CREATE MEMBER NOTIFICATION (so user sees it in their dashboard)
+    if user:
+        try:
+            member_notif_id = f"MNOTIF-{uuid.uuid4().hex[:8].upper()}"
+            await db.member_notifications.insert_one({
+                "id": member_notif_id,
+                "user_id": user.get("id") or str(user.get("_id")),
+                "user_email": user.get("email"),
+                "type": "booking_confirmation",
+                "title": f"Booking Request Submitted",
+                "message": f"Your {request.serviceType.replace('_', ' ').title()} request for {request.date} at {request.time} has been received. We'll confirm shortly!",
+                "ticket_id": ticket_id,
+                "booking_id": booking_id,
+                "pillar": pillar,
+                "service_type": request.serviceType,
+                "link": f"/dashboard?tab=requests",
+                "read": False,
+                "created_at": now.isoformat(),
+                "timestamp": now.isoformat()
+            })
+            logger.info(f"Created member notification: {member_notif_id} for user {user.get('email')}")
+        except Exception as e:
+            logger.error(f"Failed to create member notification: {e}")
+    
+    # 7. UPDATE PILLAR BOX (track pillar-specific requests)
+    try:
+        await db.pillar_requests.insert_one({
+            "id": f"PR-{uuid.uuid4().hex[:8].upper()}",
+            "ticket_id": ticket_id,
+            "booking_id": booking_id,
+            "pillar": pillar,
+            "service_type": request.serviceType,
+            "user_id": user.get("id") or str(user.get("_id")) if user else None,
+            "user_email": user.get("email") if user else None,
+            "pet_id": request.pet_id,
+            "status": "pending",
+            "request_date": request.date,
+            "request_time": request.time,
+            "notes": request.notes,
+            "created_at": now.isoformat()
+        })
+        logger.info(f"Created pillar request for {pillar}")
+    except Exception as e:
+        logger.error(f"Failed to create pillar request: {e}")
+    
     logger.info(f"Quick book created: {booking_id} | Ticket: {ticket_id} | Service: {request.serviceType}")
     
     # Send push notification to user about new booking ticket
