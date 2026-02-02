@@ -259,20 +259,89 @@ const Navbar = () => {
   const processVoiceCommand = async (command) => {
     const lowerCommand = command.toLowerCase();
     
-    // Service intent mapping
+    // Service intent mapping - comprehensive coverage
     const serviceIntents = {
-      grooming: { pillar: 'care', path: '/care?type=grooming', keywords: ['groomer', 'grooming', 'haircut', 'bath', 'spa'] },
-      vet: { pillar: 'care', path: '/care?type=vet', keywords: ['vet', 'veterinary', 'doctor', 'checkup', 'vaccination'] },
-      training: { pillar: 'learn', path: '/learn', keywords: ['trainer', 'training', 'obedience', 'behavior', 'puppy class'] },
-      walking: { pillar: 'care', path: '/care?type=walking', keywords: ['walker', 'walking', 'walk my dog'] },
-      sitting: { pillar: 'care', path: '/care?type=sitting', keywords: ['sitter', 'pet sitting', 'babysitter'] },
-      boarding: { pillar: 'stay', path: '/stay?type=boarding', keywords: ['boarding', 'kennel', 'leave my pet'] },
-      hotel: { pillar: 'stay', path: '/stay', keywords: ['hotel', 'pet hotel', 'staycation'] },
-      travel: { pillar: 'travel', path: '/travel', keywords: ['travel', 'flight', 'taxi', 'cab', 'transport'] },
-      cake: { pillar: 'celebrate', path: '/celebrate/cakes', keywords: ['cake', 'birthday cake', 'birthday'] },
-      food: { pillar: 'dine', path: '/dine', keywords: ['food', 'meal', 'restaurant', 'eat', 'feed'] },
-      event: { pillar: 'enjoy', path: '/enjoy', keywords: ['event', 'meetup', 'playdate', 'social'] },
-      fitness: { pillar: 'fit', path: '/fit', keywords: ['fitness', 'exercise', 'weight', 'active'] },
+      // Care Services
+      grooming: { pillar: 'care', path: '/care?type=grooming', keywords: ['groomer', 'grooming', 'haircut', 'bath', 'spa', 'nail trim'] },
+      vet: { pillar: 'care', path: '/care?type=vet', keywords: ['vet', 'veterinary', 'doctor', 'checkup', 'vaccination', 'sick', 'health'] },
+      walking: { pillar: 'care', path: '/care?type=walking', keywords: ['walker', 'walking', 'walk my dog', 'daily walk'] },
+      sitting: { pillar: 'care', path: '/care?type=sitting', keywords: ['sitter', 'pet sitting', 'babysitter', 'day care'] },
+      
+      // Stay Services
+      boarding: { pillar: 'stay', path: '/stay?type=boarding', keywords: ['boarding', 'kennel', 'leave my pet', 'overnight'] },
+      hotel: { pillar: 'stay', path: '/stay', keywords: ['hotel', 'pet hotel', 'staycation', 'vacation stay'] },
+      
+      // Training
+      training: { pillar: 'learn', path: '/learn', keywords: ['trainer', 'training', 'obedience', 'behavior', 'puppy class', 'learn', 'teach'] },
+      
+      // Travel
+      travel: { pillar: 'travel', path: '/travel', keywords: ['travel', 'flight', 'taxi', 'cab', 'transport', 'trip', 'vacation', 'passport', 'relocate'] },
+      
+      // Celebrate
+      cake: { pillar: 'celebrate', path: '/celebrate/cakes', keywords: ['cake', 'birthday cake', 'pupcake', 'treat'] },
+      birthday: { pillar: 'celebrate', path: '/celebrate', keywords: ['birthday', 'party', 'celebration', 'celebrate', 'anniversary'] },
+      
+      // Dine
+      food: { pillar: 'dine', path: '/dine', keywords: ['food', 'meal', 'restaurant', 'eat', 'feed', 'fresh meals', 'diet', 'nutrition'] },
+      
+      // Enjoy
+      event: { pillar: 'enjoy', path: '/enjoy', keywords: ['event', 'meetup', 'playdate', 'social', 'fun', 'play', 'enjoy'] },
+      
+      // Fit
+      fitness: { pillar: 'fit', path: '/fit', keywords: ['fitness', 'exercise', 'weight', 'active', 'swim', 'gym', 'fit'] },
+      
+      // Farewell
+      farewell: { pillar: 'farewell', path: '/farewell', keywords: ['farewell', 'memorial', 'cremation', 'end of life', 'rainbow bridge', 'loss'] },
+      
+      // Paperwork
+      paperwork: { pillar: 'paperwork', path: '/paperwork', keywords: ['paperwork', 'document', 'license', 'registration', 'certificate', 'records'] },
+      
+      // Advisory
+      advisory: { pillar: 'advisory', path: '/advisory', keywords: ['advice', 'advisory', 'consult', 'question', 'help', 'guidance'] },
+      
+      // Emergency
+      emergency: { pillar: 'emergency', path: '/emergency', keywords: ['emergency', 'urgent', '24/7', 'ambulance', 'poison', 'accident'] },
+      
+      // Insure
+      insurance: { pillar: 'insure', path: '/insure', keywords: ['insurance', 'insure', 'policy', 'claim', 'coverage'] },
+      
+      // Adopt
+      adopt: { pillar: 'adopt', path: '/adopt', keywords: ['adopt', 'adoption', 'rescue', 'shelter', 'new pet', 'puppy'] },
+      
+      // ===== APP NAVIGATION INTENTS =====
+      
+      // Notifications / Bell
+      notifications: { pillar: null, path: '/dashboard?tab=notifications', keywords: ['notification', 'notifications', 'bell', 'alerts', 'updates', 'remind'] },
+      
+      // Service Desk
+      serviceDesk: { pillar: null, path: '/admin/service-desk', keywords: ['service desk', 'ticket', 'tickets', 'support', 'request', 'issue', 'complaint'] },
+      
+      // Unified Inbox
+      inbox: { pillar: null, path: '/admin?tab=inbox', keywords: ['inbox', 'messages', 'unified inbox', 'communication', 'chat history'] },
+      
+      // Pet Parent / My Pets
+      petParent: { pillar: null, path: '/my-pets', keywords: ['my pet', 'my pets', 'pet parent', 'pet profile', 'pet soul', 'meister', 'mojo', 'lola'] },
+      
+      // Dashboard
+      dashboard: { pillar: null, path: '/dashboard', keywords: ['dashboard', 'my dashboard', 'home', 'account', 'profile'] },
+      
+      // Orders
+      orders: { pillar: null, path: '/dashboard?tab=orders', keywords: ['order', 'orders', 'my orders', 'purchase', 'bought', 'tracking'] },
+      
+      // Cart
+      cart: { pillar: null, path: '/cart', keywords: ['cart', 'basket', 'checkout', 'buy', 'purchase'] },
+      
+      // Shop
+      shop: { pillar: null, path: '/shop', keywords: ['shop', 'store', 'product', 'products', 'buy', 'browse'] },
+      
+      // Celebrations
+      celebrations: { pillar: null, path: '/dashboard?tab=celebrations', keywords: ['celebration', 'celebrations', 'upcoming', 'gotcha', 'anniversary'] },
+      
+      // Admin
+      admin: { pillar: null, path: '/admin', keywords: ['admin', 'administration', 'manage', 'backend', 'control panel'] },
+      
+      // Mira AI
+      mira: { pillar: null, path: '/mira', keywords: ['mira', 'ai', 'assistant', 'help me', 'concierge', 'talk to'] },
     };
     
     // Find matching intent
@@ -285,23 +354,25 @@ const Navbar = () => {
           setIsListening(false);
           setVoiceTranscript('');
           
-          // Also send to Mira for context
-          try {
-            await fetch(`${API_URL}/api/mira/chat`, {
-              method: 'POST',
-              headers: { 
-                'Content-Type': 'application/json',
-                ...(token && { 'Authorization': `Bearer ${token}` })
-              },
-              body: JSON.stringify({
-                message: command,
-                session_id: `voice-wizard-${Date.now()}`,
-                source: 'voice_wizard',
-                pillar: config.pillar
-              })
-            });
-          } catch (err) {
-            console.error('Failed to log voice command:', err);
+          // Also send to Mira for context (only for pillar-based intents)
+          if (config.pillar) {
+            try {
+              await fetch(`${API_URL}/api/mira/chat`, {
+                method: 'POST',
+                headers: { 
+                  'Content-Type': 'application/json',
+                  ...(token && { 'Authorization': `Bearer ${token}` })
+                },
+                body: JSON.stringify({
+                  message: command,
+                  session_id: `voice-wizard-${Date.now()}`,
+                  source: 'voice_wizard',
+                  pillar: config.pillar
+                })
+              });
+            } catch (err) {
+              console.error('Failed to log voice command:', err);
+            }
           }
           return;
         }
