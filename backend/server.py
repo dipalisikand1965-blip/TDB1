@@ -8250,62 +8250,6 @@ async def fix_confusing_product_names(
     }
 
 
-            "size_tags": ["all_sizes"],
-            "occasion_tags": ["travel", "car_ride", "flight", "vet_visit"],
-            "cross_sell_products": ["calming-chews", "thunder-shirt"],
-            "frequently_bought_together": ["travel-bed", "familiar-blanket"],
-            "suitable_for_breeds": ["All breeds"],
-            "not_suitable_for": [],
-            "gst_rate": 12,
-            "created_at": get_utc_timestamp()
-        },
-        # Travel Documentation
-        {
-            "id": f"travel-{uuid.uuid4().hex[:8]}",
-            "name": "Pet Passport Holder & Document Organizer",
-            "description": "Premium holder for vaccination records, health certificates, ID tags. RFID-protected pocket for microchip info.",
-            "price": 899,
-            "original_price": 1199,
-            "category": "travel-docs",
-            "pillar": "travel",
-            "image": "https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=400",
-            "available": True,
-            "is_pan_india_shippable": True,
-            "tags": ["passport", "documents", "organizer", "ID"],
-            "intelligent_tags": ["document_holder", "passport", "vaccination_records", "travel_essential", "organization"],
-            "breed_tags": ["all_breeds"],
-            "health_tags": [],
-            "lifestage_tags": ["all_ages"],
-            "size_tags": ["all_sizes"],
-            "occasion_tags": ["travel", "flight", "interstate", "international"],
-            "cross_sell_products": ["id-tag", "microchip-registry"],
-            "frequently_bought_together": ["travel-bag"],
-            "suitable_for_breeds": ["All breeds"],
-            "not_suitable_for": [],
-            "gst_rate": 18,
-            "created_at": get_utc_timestamp()
-        }
-    ]
-    
-    # Insert products
-    inserted = 0
-    updated = 0
-    for product in travel_products:
-        existing = await db.products.find_one({"name": product["name"]})
-        if existing:
-            await db.products.update_one({"name": product["name"]}, {"$set": product})
-            updated += 1
-        else:
-            await db.products.insert_one(product)
-            inserted += 1
-    
-    return {
-        "success": True,
-        "message": f"Seeded {inserted} new travel products, updated {updated} existing",
-        "products_added": [p["name"] for p in travel_products]
-    }
-
-
 
 
 @api_router.post("/admin/products/enhance-all-tags")
