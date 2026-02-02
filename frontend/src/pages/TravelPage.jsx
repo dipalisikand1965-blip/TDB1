@@ -243,15 +243,15 @@ const TravelPage = () => {
   const fetchTravelProducts = async () => {
     try {
       const [productsRes, bundlesRes] = await Promise.all([
-        // Use new pillar resolver API for rule-based product filtering
-        fetch(`${API_URL}/api/pillar-resolver/products/travel?limit=50`),
+        // Use direct pillar query - more reliable
+        fetch(`${API_URL}/api/products?pillar=travel&limit=50`),
         fetch(`${API_URL}/api/travel/bundles`)
       ]);
       
       if (productsRes.ok) {
         const data = await productsRes.json();
         setTravelProducts(data.products || []);
-        console.log(`[TravelPage] Loaded ${data.count} products via pillar resolver (total: ${data.total})`);
+        console.log(`[TravelPage] Loaded ${data.products?.length || 0} products (total: ${data.total})`);
       }
       if (bundlesRes.ok) {
         const data = await bundlesRes.json();
