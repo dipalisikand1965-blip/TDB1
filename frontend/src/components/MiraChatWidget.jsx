@@ -728,7 +728,6 @@ const MiraChatWidget = ({
   }, [voiceEnabled, useElevenLabs, speakWithElevenLabs]);
   
   const sendMessage = async (directMessage = null) => {
-    console.log('[Mira] sendMessage called');
     const messageToSend = directMessage || inputValue.trim();
     if (!messageToSend || isSending) return;
     
