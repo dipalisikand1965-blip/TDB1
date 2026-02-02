@@ -201,7 +201,7 @@ const MemberMobileNav = () => {
                       className={`w-full flex items-center gap-3 p-2.5 rounded-lg text-left transition-all touch-manipulation ${
                         getColorClasses(section.color, isActive)
                       }`}
-                      data-testid={`nav-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
+                      data-testid={`mobile-nav-${item.label.toLowerCase().replace(/\s+/g, '-')}`}
                     >
                       <Icon className="w-4 h-4 flex-shrink-0" />
                       <span className="text-sm font-medium">{item.label}</span>
