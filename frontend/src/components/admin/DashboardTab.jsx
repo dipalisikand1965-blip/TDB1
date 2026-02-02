@@ -167,6 +167,76 @@ const DashboardTab = ({
         )}
       </Card>
 
+      {/* Quick Tools */}
+      <Card className="p-6">
+        <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <Sparkles className="w-5 h-5 text-amber-500" />
+          Quick Tools
+        </h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {/* Enhance All Product Tags */}
+          <Button
+            onClick={handleEnhanceTags}
+            disabled={enhancingTags}
+            className="h-auto py-4 flex flex-col items-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+            data-testid="enhance-tags-btn"
+          >
+            {enhancingTags ? (
+              <Loader2 className="w-6 h-6 animate-spin" />
+            ) : (
+              <Tags className="w-6 h-6" />
+            )}
+            <span className="text-sm font-medium">
+              {enhancingTags ? 'Enhancing...' : 'Enhance All Tags'}
+            </span>
+            <span className="text-xs opacity-80">Pillar, Breed, Size</span>
+          </Button>
+
+          {/* Seed All Products */}
+          <Button
+            onClick={handleSeedProducts}
+            disabled={seedingProducts}
+            variant="outline"
+            className="h-auto py-4 flex flex-col items-center gap-2 border-2 hover:bg-gray-50"
+            data-testid="seed-products-btn"
+          >
+            {seedingProducts ? (
+              <Loader2 className="w-6 h-6 animate-spin" />
+            ) : (
+              <Database className="w-6 h-6 text-blue-600" />
+            )}
+            <span className="text-sm font-medium">
+              {seedingProducts ? 'Seeding...' : 'Seed All Products'}
+            </span>
+            <span className="text-xs text-gray-500">All Pillars</span>
+          </Button>
+
+          {/* Download Products CSV */}
+          <a
+            href={`${API_URL}/api/admin/export/unified-products-csv`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="h-auto py-4 flex flex-col items-center gap-2 border-2 border-gray-200 rounded-md hover:bg-gray-50 transition-colors"
+          >
+            <Download className="w-6 h-6 text-green-600" />
+            <span className="text-sm font-medium">Products CSV</span>
+            <span className="text-xs text-gray-500">2000+ items</span>
+          </a>
+
+          {/* Download Services CSV */}
+          <a
+            href={`${API_URL}/api/admin/export/services-csv`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="h-auto py-4 flex flex-col items-center gap-2 border-2 border-gray-200 rounded-md hover:bg-gray-50 transition-colors"
+          >
+            <Download className="w-6 h-6 text-orange-600" />
+            <span className="text-sm font-medium">Services CSV</span>
+            <span className="text-xs text-gray-500">All bundles</span>
+          </a>
+        </div>
+      </Card>
+
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <Card className="p-6" data-testid="stat-total-chats">
