@@ -272,8 +272,17 @@ const MiraAI = () => {
   }, [voiceEnabled]);
 
   // Text-to-Speech function
-  const speakText = useCallback((text) => {
-    if (!voiceEnabled || !synthRef.current) return;
+  const speakText = useCallback(async (text) => {
+    if (!voiceEnabled) return;
+    
+    // Try ElevenLabs first for premium voice
+    if (useElevenLabs) {
+      const success = await speakWithElevenLabs(text);
+      if (success) return;
+    }
+    
+    // Fallback to Web Speech API
+    if (!synthRef.current) return;
     
     // Cancel any ongoing speech
     synthRef.current.cancel();
