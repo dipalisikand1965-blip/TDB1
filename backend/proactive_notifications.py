@@ -147,19 +147,21 @@ async def check_vaccination_reminders() -> List[Dict]:
 
 
 async def check_birthday_reminders() -> List[Dict]:
-    """Check for upcoming pet birthdays"""
+    """Check for upcoming pet birthdays and gotcha days"""
     if db is None:
         return []
     
     notifications = []
     today = datetime.now(timezone.utc)
     
-    # Find pets with birthdays
+    # Find pets with birthdays or gotcha days
     pets = await db.pets.find({
         "$or": [
             {"birthday": {"$exists": True}},
             {"identity.birthday": {"$exists": True}},
-            {"date_of_birth": {"$exists": True}}
+            {"date_of_birth": {"$exists": True}},
+            {"birth_date": {"$exists": True}},
+            {"gotcha_date": {"$exists": True}}
         ]
     }, {"_id": 0}).to_list(1000)
     
@@ -168,7 +170,8 @@ async def check_birthday_reminders() -> List[Dict]:
         if not owner_email:
             continue
         
-        birthday = pet.get("birthday") or pet.get("identity", {}).get("birthday") or pet.get("date_of_birth")
+        # Check birthday
+        birthday = pet.get("birthday") or pet.get("identity", {}).get("birthday") or pet.get("date_of_birth") or pet.get("birth_date")
         if birthday:
             try:
                 if isinstance(birthday, str):
@@ -182,7 +185,8 @@ async def check_birthday_reminders() -> List[Dict]:
                     this_year_bday = this_year_bday.replace(year=today.year + 1)
                 
                 days_until = (this_year_bday - today).days
-                if 0 < days_until <= 7:
+                # Send reminder 7 days before AND 1 day before
+                if days_until in [7, 1] or (0 < days_until <= 7):
                     notifications.append({
                         "type": "birthday_reminder",
                         "user_email": owner_email,
@@ -191,10 +195,41 @@ async def check_birthday_reminders() -> List[Dict]:
                             "days": days_until,
                             "birthday": this_year_bday.isoformat()
                         },
-                        "priority": "medium" if days_until <= 3 else "low"
+                        "priority": "high" if days_until <= 1 else ("medium" if days_until <= 3 else "low")
                     })
             except Exception as e:
                 logger.warning(f"Error parsing birthday: {e}")
+        
+        # Check gotcha day
+        gotcha_date = pet.get("gotcha_date")
+        if gotcha_date and gotcha_date.strip():
+            try:
+                if isinstance(gotcha_date, str):
+                    gotcha = datetime.fromisoformat(gotcha_date.replace('Z', '+00:00'))
+                else:
+                    gotcha = gotcha_date
+                
+                # Calculate this year's gotcha day
+                this_year_gotcha = gotcha.replace(year=today.year)
+                if this_year_gotcha < today:
+                    this_year_gotcha = this_year_gotcha.replace(year=today.year + 1)
+                
+                days_until = (this_year_gotcha - today).days
+                # Send reminder 7 days before AND 1 day before
+                if days_until in [7, 1] or (0 < days_until <= 7):
+                    notifications.append({
+                        "type": "gotcha_day_reminder",
+                        "user_email": owner_email,
+                        "data": {
+                            "pet_name": pet.get("name", "Your pet"),
+                            "days": days_until,
+                            "gotcha_date": this_year_gotcha.isoformat(),
+                            "years_together": today.year - gotcha.year
+                        },
+                        "priority": "high" if days_until <= 1 else ("medium" if days_until <= 3 else "low")
+                    })
+            except Exception as e:
+                logger.warning(f"Error parsing gotcha date: {e}")
     
     return notifications
 
