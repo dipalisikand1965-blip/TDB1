@@ -376,7 +376,13 @@ const PersonalizedPicks = ({
                   <div className="relative bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
                     <div className="aspect-square bg-gray-100">
                       <img 
-                        src={product.image || product.images?.[0] || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop'} 
+                        src={
+                          (product.image && product.image.startsWith('http')) 
+                            ? product.image 
+                            : (product.images?.[0] && product.images[0].startsWith('http'))
+                              ? product.images[0]
+                              : 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop'
+                        } 
                         alt={product.title || product.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                         onError={(e) => {
