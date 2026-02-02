@@ -745,6 +745,10 @@ const MiraChatWidget = ({
     }
     
     try {
+      // Add timeout for mobile connections
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+      
       const response = await fetch(`${getApiUrl()}/api/mira/chat`, {
         method: 'POST',
         headers: {
@@ -761,8 +765,11 @@ const MiraChatWidget = ({
             role: m.role,
             content: m.content
           }))
-        })
+        }),
+        signal: controller.signal
       });
+      
+      clearTimeout(timeoutId);
       
       if (response.ok) {
         const data = await response.json();
