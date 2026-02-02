@@ -22,7 +22,7 @@ import SEOHead from '../components/SEOHead';
 import {
   Utensils, Leaf, Heart, Star, ChevronRight, Sparkles,
   Clock, Truck, Shield, CheckCircle, Package, ChevronLeft,
-  Calendar, Award, ShoppingBag, Phone, MessageCircle, Send
+  Calendar, Award, ShoppingBag, Phone, MessageCircle, Send, X
 } from 'lucide-react';
 
 // Meal Categories
