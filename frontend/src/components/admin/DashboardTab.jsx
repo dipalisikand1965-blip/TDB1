@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card } from '../ui/card';
 import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
 import {
   MessageCircle,
   Cake,
@@ -14,8 +15,13 @@ import {
   TrendingUp,
   Users,
   RefreshCw,
-  Loader2
+  Loader2,
+  Sparkles,
+  Download,
+  Tags,
+  Database
 } from 'lucide-react';
+import { toast } from '../../hooks/use-toast';
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
