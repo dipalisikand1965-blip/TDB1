@@ -30,6 +30,10 @@ Build a complete service booking experience and admin management interface for t
 3. ✅ **Service Request User Name** - Verified backend correctly shows user name "Dipali" (not "Guest")
 4. ✅ **View Details Button** - Product cards have working "View Details" button that opens modal
 5. ✅ **PawMeter Implementation** - Component exists and renders when paw_score/rating data present
+6. ✅ **Partner With Us Link** - Dine page "Partner With Us" button now links to `/partner`
+7. ✅ **Mira Quick Book Form Timing** - Form now ONLY appears when user explicitly says "lock in the date", "book now", etc.
+   - Previously showed immediately when any service keyword was detected
+   - Now Mira asks questions first before showing booking form
 
 **Testing: 100% Pass Rate (Backend 9/9, Frontend all features verified)**
 
