@@ -317,6 +317,14 @@ const ProductCard = ({ product, pillar = 'celebrate' }) => {
           <p className="text-sm sm:text-base font-bold text-gray-900">
             From ₹{minPrice.toLocaleString('en-IN')}
           </p>
+          
+          {/* View Button */}
+          <button 
+            onClick={(e) => { e.stopPropagation(); setShowModal(true); }}
+            className="w-full mt-2 py-2 text-xs font-semibold bg-purple-100 hover:bg-purple-200 text-purple-700 rounded-lg transition-colors"
+          >
+            View Details
+          </button>
         </div>
       </div>
 
