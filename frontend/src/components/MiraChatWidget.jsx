@@ -738,6 +738,9 @@ const MiraChatWidget = ({
       content: messageToSend
     };
     
+    // Get current messages BEFORE state update for history
+    const currentMessages = [...messages];
+    
     setMessages(prev => [...prev, userMessage]);
     setInputValue('');
     setIsSending(true);
@@ -752,6 +755,22 @@ const MiraChatWidget = ({
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
       
+      // Build history from currentMessages (before adding new user message)
+      // Then add the current user message to history
+      const historyMessages = currentMessages
+        .filter(m => m && m.id !== 'welcome' && !m.isPillarSwitch)
+        .slice(-9) // Leave room for current message
+        .map(m => ({
+          role: m.role || 'user',
+          content: String(m.content || '')
+        }));
+      
+      // Add current user message to history
+      historyMessages.push({
+        role: 'user',
+        content: messageToSend
+      });
+      
       // Prepare request body safely
       const requestBody = {
         message: userMessage.content,
@@ -759,16 +778,14 @@ const MiraChatWidget = ({
         source: 'chat_widget',
         current_pillar: pillar,
         selected_pet_id: selectedPet?.id || null,
-        history: (messages || [])
-          .filter(m => m && m.id !== 'welcome' && !m.isPillarSwitch)
-          .slice(-10) // Only send last 10 messages to avoid payload issues
-          .map(m => ({
-            role: m.role || 'user',
-            content: String(m.content || '')
-          }))
+        history: historyMessages.slice(-10) // Ensure max 10 messages
       };
       
-      console.log('[Mira] Sending chat request...', { pillar, hasPet: !!selectedPet?.id });
+      console.log('[Mira] Sending chat request...', { 
+        pillar, 
+        hasPet: !!selectedPet?.id,
+        historyLength: historyMessages.length 
+      });
       
       const response = await fetch(`${getApiUrl()}/api/mira/chat`, {
         method: 'POST',
