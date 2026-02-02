@@ -1230,16 +1230,16 @@ const MiraChatWidget = ({
                                   <p className="text-xs text-gray-400 line-through">₹{product.original_price}</p>
                                 )}
                               </div>
-                              <div className="flex flex-col gap-1">
+                              <div className="flex flex-col gap-1.5">
                                 <button
                                   onClick={() => handleProductClick(product)}
-                                  className="px-2 py-1 bg-purple-100 text-purple-700 rounded text-[10px] font-medium hover:bg-purple-200"
+                                  className="px-3 py-2 min-h-[36px] bg-purple-100 text-purple-700 rounded text-xs font-medium hover:bg-purple-200 touch-manipulation active:scale-95"
                                 >
                                   View
                                 </button>
                                 <button
                                   onClick={() => { addToCart(product); toast.success('Added!'); }}
-                                  className="px-2 py-1 bg-purple-600 text-white rounded text-[10px] font-medium hover:bg-purple-700"
+                                  className="px-3 py-2 min-h-[36px] bg-purple-600 text-white rounded text-xs font-medium hover:bg-purple-700 touch-manipulation active:scale-95"
                                 >
                                   Add
                                 </button>
