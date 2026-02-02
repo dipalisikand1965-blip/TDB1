@@ -49,6 +49,7 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
   // Price calculator state
   const [priceConfig, setPriceConfig] = useState({
     city: 'mumbai',
+    customCity: '',
     petSize: 'medium',
     petCount: 1,
     selectedAddOns: []
