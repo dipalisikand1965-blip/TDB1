@@ -19,11 +19,12 @@ import ProductCard from '../components/ProductCard';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import SEOHead from '../components/SEOHead';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
+import { useNavigate } from 'react-router-dom';
 import {
   GraduationCap, BookOpen, Brain, Star, Award, Trophy,
   CheckCircle, ChevronRight, Sparkles, Loader2, Send,
   ArrowRight, Play, ChevronDown, Target, Users, Calendar,
-  MapPin, Clock, PawPrint, Heart, Shield, Zap
+  MapPin, Clock, PawPrint, Heart, Shield, Zap, ChevronLeft
 } from 'lucide-react';
 
 // Elevated Concierge® Learn Experiences
