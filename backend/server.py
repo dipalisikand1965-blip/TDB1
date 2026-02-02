@@ -7502,6 +7502,470 @@ async def full_product_update(
     return {"success": True, "updated_fields": list(sanitized.keys())}
 
 
+
+@api_router.post("/admin/products/seed-meal-products")
+async def seed_meal_products(
+    credentials: HTTPBasicCredentials = Depends(security)
+):
+    """Seed realistic meal products (veg and non-veg) with intelligent tags"""
+    verify_admin(credentials)
+    
+    # Comprehensive meal products with intelligent tagging
+    meal_products = [
+        # Non-Veg Fresh Meals
+        {
+            "id": f"meal-{uuid.uuid4().hex[:8]}",
+            "name": "Chicken & Brown Rice Bowl",
+            "description": "Fresh cooked chicken breast with brown rice, carrots, and peas. High-protein meal perfect for active dogs. Human-grade ingredients, no preservatives.",
+            "price": 349,
+            "original_price": 399,
+            "category": "fresh-meals",
+            "pillar": "dine",
+            "image": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400",
+            "available": True,
+            "is_pan_india_shippable": False,
+            "fresh_delivery_cities": ["bangalore", "mumbai", "delhi ncr", "chennai", "hyderabad"],
+            "tags": ["fresh", "chicken", "protein", "adult", "active"],
+            "intelligent_tags": ["high_protein", "fresh_cooked", "active_dogs", "adult", "all_breeds", "non_veg", "grain_inclusive", "muscle_building", "daily_meal"],
+            "breed_tags": ["all_breeds", "labrador", "golden_retriever", "german_shepherd", "indie"],
+            "health_tags": ["muscle_building", "energy", "coat_health", "digestive_friendly"],
+            "lifestage_tags": ["adult", "young_adult"],
+            "diet_tags": ["non_veg", "chicken", "grain_inclusive", "high_protein"],
+            "size_tags": ["small_breed", "medium_breed", "large_breed"],
+            "occasion_tags": ["daily_meal", "post_workout", "active_lifestyle"],
+            "allergy_warnings": ["Contains chicken"],
+            "cross_sell_products": ["treat-chicken-jerky", "supplement-omega"],
+            "frequently_bought_together": ["probiotic-powder", "dental-chew"],
+            "suitable_for_breeds": ["All breeds"],
+            "not_suitable_for": ["Chicken allergic dogs"],
+            "portion_guide": {"small": "100g", "medium": "200g", "large": "350g"},
+            "storage_tags": ["Refrigerate", "Use within 3 days"],
+            "gst_rate": 5,
+            "created_at": get_utc_timestamp()
+        },
+        {
+            "id": f"meal-{uuid.uuid4().hex[:8]}",
+            "name": "Lamb & Sweet Potato Feast",
+            "description": "Tender lamb with sweet potato and spinach. Hypoallergenic protein source, perfect for dogs with chicken sensitivities. Grain-free formula.",
+            "price": 449,
+            "original_price": 499,
+            "category": "fresh-meals",
+            "pillar": "dine",
+            "image": "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400",
+            "available": True,
+            "is_pan_india_shippable": False,
+            "fresh_delivery_cities": ["bangalore", "mumbai", "delhi ncr"],
+            "tags": ["fresh", "lamb", "hypoallergenic", "grain-free"],
+            "intelligent_tags": ["hypoallergenic", "grain_free", "novel_protein", "sensitive_stomach", "all_breeds", "non_veg", "premium", "daily_meal"],
+            "breed_tags": ["all_breeds", "shih_tzu", "pug", "beagle", "cocker_spaniel"],
+            "health_tags": ["sensitive_stomach", "skin_coat", "joint_support", "allergy_friendly"],
+            "lifestage_tags": ["adult", "senior"],
+            "diet_tags": ["non_veg", "lamb", "grain_free", "hypoallergenic"],
+            "size_tags": ["small_breed", "medium_breed"],
+            "occasion_tags": ["daily_meal", "sensitive_diet"],
+            "allergy_warnings": ["Contains lamb"],
+            "cross_sell_products": ["probiotic-supplement", "omega-oil"],
+            "frequently_bought_together": ["lamb-treats", "calming-chews"],
+            "suitable_for_breeds": ["All breeds, especially those with food sensitivities"],
+            "not_suitable_for": ["Lamb allergic dogs"],
+            "portion_guide": {"small": "100g", "medium": "200g", "large": "350g"},
+            "storage_tags": ["Refrigerate", "Use within 3 days"],
+            "gst_rate": 5,
+            "created_at": get_utc_timestamp()
+        },
+        {
+            "id": f"meal-{uuid.uuid4().hex[:8]}",
+            "name": "Fish & Quinoa Power Bowl",
+            "description": "Wild-caught fish with quinoa, broccoli, and flaxseed. Rich in Omega-3 for shiny coat. Perfect for senior dogs or those needing joint support.",
+            "price": 499,
+            "original_price": 549,
+            "category": "fresh-meals",
+            "pillar": "dine",
+            "image": "https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=400",
+            "available": True,
+            "is_pan_india_shippable": False,
+            "fresh_delivery_cities": ["bangalore", "mumbai", "delhi ncr", "chennai"],
+            "tags": ["fresh", "fish", "omega-3", "senior", "joint"],
+            "intelligent_tags": ["omega_rich", "senior_friendly", "joint_support", "brain_health", "coat_health", "non_veg", "premium", "anti_inflammatory"],
+            "breed_tags": ["all_breeds", "golden_retriever", "labrador", "german_shepherd"],
+            "health_tags": ["joint_support", "brain_health", "coat_health", "anti_inflammatory", "heart_health"],
+            "lifestage_tags": ["senior", "adult"],
+            "diet_tags": ["non_veg", "fish", "omega_3", "superfood"],
+            "size_tags": ["medium_breed", "large_breed"],
+            "occasion_tags": ["daily_meal", "senior_care", "joint_recovery"],
+            "allergy_warnings": ["Contains fish"],
+            "cross_sell_products": ["joint-supplement", "omega-oil", "senior-treats"],
+            "frequently_bought_together": ["glucosamine-chews", "calming-supplement"],
+            "suitable_for_breeds": ["Senior dogs of all breeds"],
+            "not_suitable_for": ["Fish allergic dogs"],
+            "portion_guide": {"small": "100g", "medium": "200g", "large": "350g"},
+            "storage_tags": ["Refrigerate", "Use within 3 days"],
+            "gst_rate": 5,
+            "created_at": get_utc_timestamp()
+        },
+        # Vegetarian Meals
+        {
+            "id": f"meal-{uuid.uuid4().hex[:8]}",
+            "name": "Veggie Delight Bowl (Veg)",
+            "description": "Paneer, lentils, carrots, peas, and brown rice. Complete vegetarian meal with all essential amino acids. Perfect for dogs on a veg diet.",
+            "price": 299,
+            "original_price": 349,
+            "category": "fresh-meals",
+            "pillar": "dine",
+            "image": "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=400",
+            "available": True,
+            "is_pan_india_shippable": False,
+            "fresh_delivery_cities": ["bangalore", "mumbai", "delhi ncr", "chennai", "hyderabad", "pune"],
+            "tags": ["fresh", "vegetarian", "paneer", "lentils", "protein"],
+            "intelligent_tags": ["vegetarian", "plant_protein", "complete_meal", "all_breeds", "veg", "dairy", "grain_inclusive", "ethical"],
+            "breed_tags": ["all_breeds", "indie", "pomeranian", "shih_tzu"],
+            "health_tags": ["digestive_friendly", "energy", "coat_health"],
+            "lifestage_tags": ["adult", "young_adult"],
+            "diet_tags": ["vegetarian", "veg", "paneer", "lentils", "dairy"],
+            "size_tags": ["small_breed", "medium_breed", "large_breed"],
+            "occasion_tags": ["daily_meal", "veg_diet", "ethical_feeding"],
+            "allergy_warnings": ["Contains dairy (paneer)"],
+            "cross_sell_products": ["veg-treats", "b12-supplement"],
+            "frequently_bought_together": ["probiotic-powder", "veg-biscuits"],
+            "suitable_for_breeds": ["All breeds on vegetarian diet"],
+            "not_suitable_for": ["Dairy allergic dogs"],
+            "portion_guide": {"small": "120g", "medium": "220g", "large": "380g"},
+            "storage_tags": ["Refrigerate", "Use within 3 days"],
+            "gst_rate": 5,
+            "created_at": get_utc_timestamp()
+        },
+        {
+            "id": f"meal-{uuid.uuid4().hex[:8]}",
+            "name": "Pumpkin & Oats Comfort Bowl (Veg)",
+            "description": "Pumpkin, oats, cottage cheese, and mixed vegetables. Gentle on the stomach, perfect for dogs with digestive sensitivities or recovering from illness.",
+            "price": 279,
+            "original_price": 329,
+            "category": "fresh-meals",
+            "pillar": "dine",
+            "image": "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=400",
+            "available": True,
+            "is_pan_india_shippable": False,
+            "fresh_delivery_cities": ["bangalore", "mumbai", "delhi ncr", "chennai"],
+            "tags": ["fresh", "vegetarian", "pumpkin", "gentle", "digestive"],
+            "intelligent_tags": ["vegetarian", "digestive_support", "gentle_formula", "recovery_meal", "sensitive_stomach", "veg", "bland_diet", "probiotic_friendly"],
+            "breed_tags": ["all_breeds", "small_breeds"],
+            "health_tags": ["digestive_support", "gentle", "recovery", "sensitive_stomach", "fiber_rich"],
+            "lifestage_tags": ["all_ages", "puppy", "senior"],
+            "diet_tags": ["vegetarian", "veg", "pumpkin", "oats", "bland"],
+            "size_tags": ["small_breed", "medium_breed", "large_breed"],
+            "occasion_tags": ["recovery", "upset_stomach", "bland_diet", "daily_meal"],
+            "allergy_warnings": ["Contains dairy (cottage cheese), oats"],
+            "cross_sell_products": ["probiotic-powder", "digestive-enzyme"],
+            "frequently_bought_together": ["calming-treats", "fiber-supplement"],
+            "suitable_for_breeds": ["All breeds, especially dogs with sensitive stomachs"],
+            "not_suitable_for": ["Dairy or oat allergic dogs"],
+            "portion_guide": {"small": "100g", "medium": "200g", "large": "350g"},
+            "storage_tags": ["Refrigerate", "Use within 3 days"],
+            "gst_rate": 5,
+            "created_at": get_utc_timestamp()
+        },
+        # Meal Toppers
+        {
+            "id": f"topper-{uuid.uuid4().hex[:8]}",
+            "name": "Bone Broth Topper",
+            "description": "Slow-cooked chicken bone broth. Pour over kibble to add flavor and nutrition. Rich in collagen for joint health.",
+            "price": 199,
+            "original_price": 249,
+            "category": "meal-toppers",
+            "pillar": "dine",
+            "image": "https://images.unsplash.com/photo-1547592166-23ac45744acd?w=400",
+            "available": True,
+            "is_pan_india_shippable": True,
+            "tags": ["topper", "broth", "chicken", "joint", "kibble-enhancer"],
+            "intelligent_tags": ["meal_topper", "hydration", "joint_support", "collagen", "flavor_boost", "non_veg", "picky_eater", "senior_friendly"],
+            "breed_tags": ["all_breeds"],
+            "health_tags": ["joint_support", "hydration", "gut_health", "collagen"],
+            "lifestage_tags": ["all_ages"],
+            "diet_tags": ["non_veg", "chicken", "liquid", "additive"],
+            "size_tags": ["all_sizes"],
+            "occasion_tags": ["daily_use", "kibble_enhancement", "hydration", "picky_eater"],
+            "allergy_warnings": ["Contains chicken"],
+            "cross_sell_products": ["kibble", "freeze-dried-topper"],
+            "frequently_bought_together": ["joint-supplement", "dental-chew"],
+            "suitable_for_breeds": ["All breeds"],
+            "not_suitable_for": ["Chicken allergic dogs"],
+            "gst_rate": 12,
+            "created_at": get_utc_timestamp()
+        },
+        {
+            "id": f"topper-{uuid.uuid4().hex[:8]}",
+            "name": "Freeze-Dried Liver Sprinkles",
+            "description": "100% chicken liver, freeze-dried and crumbled. Sprinkle over any meal for irresistible flavor. Training treat alternative.",
+            "price": 349,
+            "original_price": 399,
+            "category": "meal-toppers",
+            "pillar": "dine",
+            "image": "https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=400",
+            "available": True,
+            "is_pan_india_shippable": True,
+            "tags": ["topper", "liver", "freeze-dried", "training", "sprinkle"],
+            "intelligent_tags": ["meal_topper", "training_treat", "high_value", "freeze_dried", "single_ingredient", "non_veg", "protein_boost"],
+            "breed_tags": ["all_breeds"],
+            "health_tags": ["iron_rich", "vitamin_a", "protein"],
+            "lifestage_tags": ["all_ages"],
+            "diet_tags": ["non_veg", "chicken", "single_ingredient", "freeze_dried"],
+            "size_tags": ["all_sizes"],
+            "occasion_tags": ["daily_use", "training", "picky_eater", "kibble_enhancement"],
+            "allergy_warnings": ["Contains chicken liver"],
+            "cross_sell_products": ["training-pouch", "clicker"],
+            "frequently_bought_together": ["training-treats", "treat-pouch"],
+            "suitable_for_breeds": ["All breeds"],
+            "not_suitable_for": ["Chicken allergic dogs"],
+            "gst_rate": 12,
+            "created_at": get_utc_timestamp()
+        },
+        # Puppy Meals
+        {
+            "id": f"meal-{uuid.uuid4().hex[:8]}",
+            "name": "Puppy Growth Formula",
+            "description": "Chicken, rice, eggs, and vegetables specially formulated for growing puppies. DHA for brain development, calcium for strong bones.",
+            "price": 379,
+            "original_price": 429,
+            "category": "fresh-meals",
+            "pillar": "dine",
+            "image": "https://images.unsplash.com/photo-1568640347023-a616a30bc3bd?w=400",
+            "available": True,
+            "is_pan_india_shippable": False,
+            "fresh_delivery_cities": ["bangalore", "mumbai", "delhi ncr"],
+            "tags": ["fresh", "puppy", "growth", "DHA", "calcium"],
+            "intelligent_tags": ["puppy_formula", "growth_support", "brain_development", "bone_health", "non_veg", "balanced", "vet_recommended"],
+            "breed_tags": ["all_breeds", "labrador_puppy", "golden_puppy", "indie_puppy"],
+            "health_tags": ["brain_development", "bone_health", "immune_support", "growth"],
+            "lifestage_tags": ["puppy", "young"],
+            "diet_tags": ["non_veg", "chicken", "eggs", "balanced"],
+            "size_tags": ["small_breed", "medium_breed", "large_breed"],
+            "occasion_tags": ["daily_meal", "puppy_growth", "weaning"],
+            "allergy_warnings": ["Contains chicken, eggs"],
+            "cross_sell_products": ["puppy-treats", "teething-toy", "puppy-supplement"],
+            "frequently_bought_together": ["puppy-training-treats", "chew-toy"],
+            "suitable_for_breeds": ["All puppy breeds (2-12 months)"],
+            "not_suitable_for": ["Adult dogs, chicken/egg allergic puppies"],
+            "portion_guide": {"small_puppy": "80g", "medium_puppy": "150g", "large_puppy": "250g"},
+            "storage_tags": ["Refrigerate", "Use within 3 days"],
+            "gst_rate": 5,
+            "created_at": get_utc_timestamp()
+        },
+        # Senior Meals
+        {
+            "id": f"meal-{uuid.uuid4().hex[:8]}",
+            "name": "Senior Vitality Bowl",
+            "description": "Turkey, quinoa, blueberries, and turmeric. Low-fat, high-antioxidant formula for senior dogs. Supports cognitive function and joint health.",
+            "price": 429,
+            "original_price": 479,
+            "category": "fresh-meals",
+            "pillar": "dine",
+            "image": "https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?w=400",
+            "available": True,
+            "is_pan_india_shippable": False,
+            "fresh_delivery_cities": ["bangalore", "mumbai", "delhi ncr", "chennai"],
+            "tags": ["fresh", "senior", "turkey", "antioxidant", "joint"],
+            "intelligent_tags": ["senior_formula", "joint_support", "cognitive_support", "antioxidant", "low_fat", "non_veg", "anti_aging", "gentle"],
+            "breed_tags": ["all_breeds"],
+            "health_tags": ["joint_support", "cognitive_health", "heart_health", "weight_management", "anti_inflammatory"],
+            "lifestage_tags": ["senior", "geriatric"],
+            "diet_tags": ["non_veg", "turkey", "low_fat", "superfood"],
+            "size_tags": ["small_breed", "medium_breed", "large_breed"],
+            "occasion_tags": ["daily_meal", "senior_care", "weight_management"],
+            "allergy_warnings": ["Contains turkey"],
+            "cross_sell_products": ["joint-supplement", "cognitive-supplement", "calming-bed"],
+            "frequently_bought_together": ["glucosamine-chews", "omega-oil"],
+            "suitable_for_breeds": ["Senior dogs of all breeds (7+ years)"],
+            "not_suitable_for": ["Young dogs, turkey allergic dogs"],
+            "portion_guide": {"small": "100g", "medium": "180g", "large": "300g"},
+            "storage_tags": ["Refrigerate", "Use within 3 days"],
+            "gst_rate": 5,
+            "created_at": get_utc_timestamp()
+        },
+        # Weight Management
+        {
+            "id": f"meal-{uuid.uuid4().hex[:8]}",
+            "name": "Lean & Fit Formula",
+            "description": "Low-calorie chicken and vegetables. High fiber, low fat. Perfect for overweight dogs or those prone to weight gain. Vet-approved weight loss formula.",
+            "price": 349,
+            "original_price": 399,
+            "category": "fresh-meals",
+            "pillar": "dine",
+            "image": "https://images.unsplash.com/photo-1498837167922-ddd27525d352?w=400",
+            "available": True,
+            "is_pan_india_shippable": False,
+            "fresh_delivery_cities": ["bangalore", "mumbai", "delhi ncr"],
+            "tags": ["fresh", "weight-loss", "low-calorie", "diet", "fitness"],
+            "intelligent_tags": ["weight_management", "low_calorie", "high_fiber", "low_fat", "non_veg", "diet_food", "obesity_control"],
+            "breed_tags": ["all_breeds", "labrador", "beagle", "pug", "dachshund"],
+            "health_tags": ["weight_management", "diabetes_friendly", "heart_health", "fiber_rich"],
+            "lifestage_tags": ["adult", "senior"],
+            "diet_tags": ["non_veg", "chicken", "low_calorie", "high_fiber"],
+            "size_tags": ["small_breed", "medium_breed", "large_breed"],
+            "occasion_tags": ["weight_loss", "daily_meal", "diet_plan"],
+            "allergy_warnings": ["Contains chicken"],
+            "cross_sell_products": ["low-cal-treats", "activity-tracker"],
+            "frequently_bought_together": ["weight-loss-treats", "puzzle-feeder"],
+            "suitable_for_breeds": ["Overweight dogs of all breeds"],
+            "not_suitable_for": ["Underweight dogs, chicken allergic dogs"],
+            "portion_guide": {"small": "80g", "medium": "150g", "large": "250g"},
+            "storage_tags": ["Refrigerate", "Use within 3 days"],
+            "gst_rate": 5,
+            "created_at": get_utc_timestamp()
+        }
+    ]
+    
+    # Insert products
+    inserted = 0
+    updated = 0
+    for product in meal_products:
+        existing = await db.products.find_one({"name": product["name"]})
+        if existing:
+            await db.products.update_one({"name": product["name"]}, {"$set": product})
+            updated += 1
+        else:
+            await db.products.insert_one(product)
+            inserted += 1
+    
+    return {
+        "success": True,
+        "message": f"Seeded {inserted} new meal products, updated {updated} existing",
+        "products_added": [p["name"] for p in meal_products]
+    }
+
+
+@api_router.post("/admin/products/enhance-all-tags")
+async def enhance_all_product_tags(
+    credentials: HTTPBasicCredentials = Depends(security)
+):
+    """
+    Bulk enhance intelligent tags for ALL products based on their existing data.
+    This adds cross-pollination tags for: birthday, allergies, size, add-ons, occasions, etc.
+    """
+    verify_admin(credentials)
+    
+    # Fetch all products
+    products = await db.products.find({}, {"_id": 0}).to_list(None)
+    
+    enhanced_count = 0
+    
+    for product in products:
+        product_id = product.get("id") or product.get("shopify_id")
+        if not product_id:
+            continue
+            
+        name_lower = (product.get("name") or "").lower()
+        desc_lower = (product.get("description") or "").lower()
+        category = (product.get("category") or "").lower()
+        existing_tags = product.get("intelligent_tags") or []
+        existing_tags = list(set(existing_tags))  # Remove duplicates
+        
+        new_tags = set(existing_tags)
+        
+        # Size-based tags
+        if any(x in name_lower or x in desc_lower for x in ["small", "mini", "toy breed"]):
+            new_tags.add("small_breed")
+        if any(x in name_lower or x in desc_lower for x in ["medium", "mid-size"]):
+            new_tags.add("medium_breed")
+        if any(x in name_lower or x in desc_lower for x in ["large", "giant", "big"]):
+            new_tags.add("large_breed")
+        if "all" in name_lower or "all size" in desc_lower or "all breed" in desc_lower:
+            new_tags.update(["small_breed", "medium_breed", "large_breed", "all_sizes"])
+            
+        # Occasion-based tags
+        if any(x in name_lower or x in desc_lower for x in ["birthday", "bday", "barkday"]):
+            new_tags.update(["birthday", "celebration", "party", "gift"])
+        if any(x in name_lower or x in desc_lower for x in ["valentine", "love", "heart"]):
+            new_tags.update(["valentines", "love", "romantic", "gift"])
+        if any(x in name_lower or x in desc_lower for x in ["christmas", "xmas", "holiday"]):
+            new_tags.update(["christmas", "holiday", "festive", "gift"])
+        if any(x in name_lower or x in desc_lower for x in ["gotcha", "adoption", "anniversary"]):
+            new_tags.update(["gotcha_day", "adoption_anniversary", "celebration"])
+        if any(x in name_lower or x in desc_lower for x in ["gift", "hamper", "box"]):
+            new_tags.update(["gift", "giftable", "hamper"])
+            
+        # Diet/Allergy tags
+        if any(x in name_lower or x in desc_lower for x in ["grain free", "grain-free"]):
+            new_tags.update(["grain_free", "allergy_friendly"])
+        if any(x in name_lower or x in desc_lower for x in ["chicken"]):
+            new_tags.add("chicken")
+        if any(x in name_lower or x in desc_lower for x in ["lamb"]):
+            new_tags.update(["lamb", "novel_protein"])
+        if any(x in name_lower or x in desc_lower for x in ["fish", "salmon"]):
+            new_tags.update(["fish", "omega_3"])
+        if any(x in name_lower or x in desc_lower for x in ["veg", "vegetarian", "paneer"]):
+            new_tags.update(["vegetarian", "veg"])
+        if any(x in name_lower or x in desc_lower for x in ["peanut butter", "peanut"]):
+            new_tags.add("peanut_butter")
+            
+        # Life stage tags
+        if any(x in name_lower or x in desc_lower for x in ["puppy", "pup"]):
+            new_tags.add("puppy")
+        if any(x in name_lower or x in desc_lower for x in ["senior", "older", "aging"]):
+            new_tags.add("senior")
+        if "adult" in name_lower or "adult" in desc_lower:
+            new_tags.add("adult")
+            
+        # Product type tags
+        if any(x in name_lower for x in ["cake", "pupcake"]):
+            new_tags.update(["cake", "celebration", "sweet", "add_toy", "add_accessory"])
+        if any(x in name_lower for x in ["treat", "biscuit", "cookie"]):
+            new_tags.update(["treat", "snack", "training", "reward"])
+        if any(x in name_lower for x in ["toy"]):
+            new_tags.update(["toy", "play", "interactive"])
+        if any(x in name_lower for x in ["bandana", "bow", "collar"]):
+            new_tags.update(["accessory", "fashion", "photo_ready"])
+            
+        # Health tags
+        if any(x in name_lower or x in desc_lower for x in ["joint", "hip", "mobility"]):
+            new_tags.update(["joint_support", "mobility", "senior_friendly"])
+        if any(x in name_lower or x in desc_lower for x in ["dental", "teeth"]):
+            new_tags.update(["dental_health", "teeth_cleaning"])
+        if any(x in name_lower or x in desc_lower for x in ["skin", "coat", "fur"]):
+            new_tags.update(["skin_coat", "shiny_fur"])
+        if any(x in name_lower or x in desc_lower for x in ["digest", "probiotic", "gut"]):
+            new_tags.update(["digestive_health", "probiotic"])
+            
+        # Cross-sell affinity tags (products that pair well)
+        if "cake" in category or "cake" in name_lower:
+            new_tags.update(["pairs_with_toy", "pairs_with_bandana", "pairs_with_candle"])
+        if "treat" in category or "treat" in name_lower:
+            new_tags.update(["pairs_with_pouch", "pairs_with_clicker"])
+        if "toy" in category:
+            new_tags.update(["pairs_with_treat", "pairs_with_mat"])
+            
+        # Stock/Availability tags
+        if product.get("is_pan_india_shippable"):
+            new_tags.update(["ships_anywhere", "pan_india"])
+        if product.get("available", True):
+            new_tags.add("in_stock")
+            
+        # Price tier tags
+        price = product.get("price", 0)
+        if price < 300:
+            new_tags.add("budget_friendly")
+        elif price < 700:
+            new_tags.add("mid_range")
+        else:
+            new_tags.add("premium")
+        
+        # Update if new tags were added
+        new_tags_list = list(new_tags)
+        if len(new_tags_list) > len(existing_tags):
+            await db.products.update_one(
+                {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
+                {"$set": {"intelligent_tags": new_tags_list, "tags_enhanced_at": get_utc_timestamp()}}
+            )
+            enhanced_count += 1
+    
+    return {
+        "success": True,
+        "message": f"Enhanced tags for {enhanced_count} products",
+        "total_products": len(products),
+        "enhanced_count": enhanced_count
+    }
+
+
+
 # ==================== SEARCH API ====================
 
 async def mongodb_fallback_search_legacy(
