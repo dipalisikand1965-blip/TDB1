@@ -28,6 +28,7 @@ import SEOHead from '../components/SEOHead';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import PillarServicesGrid from '../components/PillarServicesGrid';
 import MiraPicksCarousel from '../components/MiraPicksCarousel';
+import PersonalizedPicks from '../components/PersonalizedPicks';
 // New engagement components
 import { FitnessJourneyCounter, RotatingSocialProof } from '../components/SocialProofBadges';
 import TransformationStories from '../components/TransformationStories';
