@@ -405,7 +405,7 @@ const FitPage = () => {
       const [servicesRes, productsRes, bundlesRes] = await Promise.all([
         fetch(`${API_URL}/api/services?pillar=fit`),
         // Use new pillar resolver API for rule-based product filtering
-        fetch(`${API_URL}/api/products?pillar=fit?limit=20`),
+        fetch(`${API_URL}/api/products?pillar=fit&limit=20`),
         fetch(`${API_URL}/api/fit/bundles`)
       ]);
       

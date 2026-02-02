@@ -85,7 +85,7 @@ const MealsPage = () => {
     try {
       // Fetch meal-related products
       const [productsRes, bundlesRes, servicesRes] = await Promise.all([
-        fetch(`${API_URL}/api/products?pillar=dine?limit=24`),
+        fetch(`${API_URL}/api/products?pillar=dine&limit=24`),
         fetch(`${API_URL}/api/dine/bundles`),
         fetch(`${API_URL}/api/services?pillar=care&category=feed`)
       ]);
