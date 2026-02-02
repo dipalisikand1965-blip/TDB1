@@ -168,9 +168,9 @@ const DinePage = () => {
       
       {/* Hero Section */}
       <div className="relative bg-gradient-to-r from-orange-500 to-red-500 text-white py-16 px-4 overflow-hidden">
-        <div className="absolute inset-0 opacity-20">
+        <div className="absolute inset-0 opacity-30">
           <img 
-            src="https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=1200"
+            src="https://customer-assets.emergentagent.com/job_petlifecentral/artifacts/afm7enef_image.png"
             alt="Pet Dining"
             className="w-full h-full object-cover"
           />
