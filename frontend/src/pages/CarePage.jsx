@@ -208,6 +208,20 @@ const CarePage = () => {
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [bookingServiceType, setBookingServiceType] = useState('grooming');
   
+  // Bundle Detail Modal
+  const [selectedBundle, setSelectedBundle] = useState(null);
+  const [showBundleModal, setShowBundleModal] = useState(false);
+  
+  // Generic "Anything Else" Form Modal
+  const [showAnythingElseModal, setShowAnythingElseModal] = useState(false);
+  const [anythingElseData, setAnythingElseData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    pet_name: '',
+    request: ''
+  });
+  
   // Form Data
   const [formData, setFormData] = useState({
     description: '',
