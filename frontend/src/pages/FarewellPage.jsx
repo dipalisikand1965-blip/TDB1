@@ -20,9 +20,10 @@ import { toast } from '../hooks/use-toast';
 import MiraChatWidget from '../components/MiraChatWidget';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import SEOHead from '../components/SEOHead';
+import { useNavigate } from 'react-router-dom';
 import {
   Heart, Rainbow, Flower2, Star, Calendar, Phone, Mail, MapPin,
-  Clock, ChevronRight, Sparkles, Home, CheckCircle, Users,
+  Clock, ChevronRight, ChevronLeft, Sparkles, Home, CheckCircle, Users,
   MessageCircle, ArrowRight, Book, Camera, Music, Loader2, X, ShoppingCart
 } from 'lucide-react';
 
