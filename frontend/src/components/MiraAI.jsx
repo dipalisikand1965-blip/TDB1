@@ -210,8 +210,10 @@ const MiraAI = () => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [speechSupported, setSpeechSupported] = useState(false);
+  const [useElevenLabs, setUseElevenLabs] = useState(true); // Prefer ElevenLabs TTS
   const recognitionRef = useRef(null);
   const synthRef = useRef(typeof window !== 'undefined' ? window.speechSynthesis : null);
+  const audioRef = useRef(null); // For ElevenLabs audio playback
   
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
