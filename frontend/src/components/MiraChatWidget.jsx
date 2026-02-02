@@ -803,12 +803,14 @@ const MiraChatWidget = ({
             return; // Don't continue to regular message handling
           }
           
-          // Navigation actions (only if no form)
+          // Navigation actions - DISABLED auto-navigation during conversation
+          // This was causing crashes by navigating away mid-conversation
+          // Navigation should only happen via explicit user action (clicking products/links)
           if (action.navigate_to && !action.show_quick_book_form) {
-            toast.info(`Taking you to ${action.navigate_to.replace('/', '').replace('-', ' ')}...`);
-            setTimeout(() => {
-              navigate(action.navigate_to);
-            }, 1500);
+            // Instead of navigating, show a helpful link in the response
+            console.log(`[Mira] Suggested navigation to ${action.navigate_to} (not auto-navigating)`);
+            // Don't auto-navigate - let the conversation continue naturally
+            // The user can click on products or use the sidebar to navigate
           }
           
           // Scroll to section actions
