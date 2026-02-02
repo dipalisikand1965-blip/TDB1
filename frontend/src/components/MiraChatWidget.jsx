@@ -1426,7 +1426,7 @@ const MiraChatWidget = ({
                 {speechSupported && (
                   <button
                     onClick={toggleListening}
-                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-all shrink-0 ${
+                    className={`w-12 h-12 min-w-[48px] min-h-[48px] rounded-full flex items-center justify-center transition-all shrink-0 touch-manipulation active:scale-95 ${
                       isListening 
                         ? 'bg-cyan-500 text-white animate-pulse' 
                         : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
