@@ -80,11 +80,11 @@ class TestMemberLogin:
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
         
         data = response.json()
-        assert "token" in data, "Response should contain token"
+        assert "access_token" in data, "Response should contain access_token"
         assert "user" in data, "Response should contain user"
         
         print(f"SUCCESS: Member login successful for {MEMBER_EMAIL}")
-        return data["token"]
+        return data["access_token"]
 
 
 class TestMiraQuickBook:
