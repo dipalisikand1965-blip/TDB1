@@ -715,7 +715,7 @@ const MiraChatWidget = ({
     setTimeout(() => {
       synthRef.current.speak(utterance);
     }, 50);
-  }, [voiceEnabled]);
+  }, [voiceEnabled, useElevenLabs, speakWithElevenLabs]);
   
   const sendMessage = async (directMessage = null) => {
     const messageToSend = directMessage || inputValue.trim();
