@@ -218,6 +218,59 @@ const MiraAI = () => {
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
   
+  // ElevenLabs TTS - Premium voice for Mira
+  const speakWithElevenLabs = useCallback(async (text) => {
+    if (!voiceEnabled) return false;
+    
+    try {
+      setIsSpeaking(true);
+      console.log('[Mira Voice] Attempting ElevenLabs TTS...');
+      
+      // Clean text for speech
+      let cleanText = text
+        .replace(/[🎉🐕✨🦴💜🎂🏥☀️🌤️🌙🌟🐾🎒📅📋😊💝🎁🎤]/g, '')
+        .replace(/\*\*/g, '')
+        .replace(/[*#_~`]/g, '')
+        .replace(/\[.*?\]/g, '')
+        .replace(/\n/g, ' ')
+        .substring(0, 500);
+      
+      const response = await fetch(`${getApiUrl()}/api/tts/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: cleanText })
+      });
+      
+      if (!response.ok) {
+        throw new Error('ElevenLabs TTS failed');
+      }
+      
+      const data = await response.json();
+      console.log('[Mira Voice] ✓ ElevenLabs audio received, playing...');
+      
+      // Play audio
+      const audio = new Audio(`data:audio/mpeg;base64,${data.audio_base64}`);
+      audioRef.current = audio;
+      
+      audio.onended = () => {
+        console.log('[Mira Voice] ✓ ElevenLabs audio playback complete');
+        setIsSpeaking(false);
+      };
+      audio.onerror = (e) => {
+        console.log('[Mira Voice] Audio playback error:', e);
+        setIsSpeaking(false);
+      };
+      
+      await audio.play();
+      return true;
+    } catch (error) {
+      console.log('[Mira Voice] ElevenLabs unavailable, using Web Speech:', error.message);
+      setUseElevenLabs(false);
+      setIsSpeaking(false);
+      return false;
+    }
+  }, [voiceEnabled]);
+
   // Text-to-Speech function
   const speakText = useCallback((text) => {
     if (!voiceEnabled || !synthRef.current) return;
