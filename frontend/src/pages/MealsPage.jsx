@@ -16,6 +16,7 @@ import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
 import ProductCard from '../components/ProductCard';
+import PersonalizedPicks from '../components/PersonalizedPicks';
 import MiraChatWidget from '../components/MiraChatWidget';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import SEOHead from '../components/SEOHead';
