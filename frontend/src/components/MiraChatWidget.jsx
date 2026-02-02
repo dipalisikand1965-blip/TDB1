@@ -845,6 +845,7 @@ const MiraChatWidget = ({
           handoff: data.handoff
         }]);
         
+        console.log('[Mira] voiceEnabled:', voiceEnabled, 'about to call speakText');
         if (voiceEnabled) {
           speakText(data.response);
         }
