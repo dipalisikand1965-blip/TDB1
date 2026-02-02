@@ -3,7 +3,7 @@
  * Unified floating contact stack - consolidated communication hub
  * 
  * Stack includes:
- * - WhatsApp Chat
+ * - Ask Mira (AI Concierge)
  * - Call Now
  * - Request Callback
  * 
@@ -13,11 +13,8 @@
 
 import React, { useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Phone, MessageCircle, X, Headphones, PhoneIncoming } from 'lucide-react';
+import { Phone, X, Headphones, PhoneIncoming, Sparkles } from 'lucide-react';
 import CallbackRequestModal from './CallbackRequestModal';
-
-const WHATSAPP_NUMBER = '919663185747';
-const WHATSAPP_URL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hi! I'd like to know more about The Doggy Company 🐕")}`;
 
 const FloatingContactButton = () => {
   const location = useLocation();
@@ -34,16 +31,20 @@ const FloatingContactButton = () => {
     setIsOpen(false);
     setShowCallbackModal(true);
   };
+  
+  const handleAskMira = () => {
+    setIsOpen(false);
+    window.dispatchEvent(new CustomEvent('openMiraAI'));
+  };
 
-  // Contact options - removed Mira (now handled by MiraOrb on right side)
+  // Contact options - WhatsApp replaced with Ask Mira
   const contactOptions = [
     {
-      label: 'WhatsApp',
-      sublabel: 'Chat with us',
-      icon: MessageCircle,
-      color: 'bg-green-500 hover:bg-green-600',
-      href: WHATSAPP_URL,
-      external: true,
+      label: 'Ask Mira',
+      sublabel: 'AI Concierge',
+      icon: Sparkles,
+      color: 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600',
+      onClick: handleAskMira,
     },
     {
       label: 'Call Now',
