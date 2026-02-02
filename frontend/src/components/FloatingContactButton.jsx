@@ -17,6 +17,11 @@ import { Phone, X, Headphones, PhoneIncoming, Sparkles } from 'lucide-react';
 import CallbackRequestModal from './CallbackRequestModal';
 
 const FloatingContactButton = () => {
+  // DISABLED: Contact options moved to mobile sidebar and Mira
+  // WhatsApp and other contact options are now in the paw-print sidebar menu
+  return null;
+  
+  /* Original code preserved for reference
   const location = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [showCallbackModal, setShowCallbackModal] = useState(false);
