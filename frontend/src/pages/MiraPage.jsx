@@ -408,9 +408,15 @@ const MiraPage = () => {
           content: data.response,
           pillar: data.pillar,
           actions: data.actions,
+          products: data.products,
           timestamp: new Date().toISOString(),
           researchMode: data.research_mode
         }]);
+        
+        // Speak the response with Elise voice
+        if (voiceEnabled && data.response) {
+          speakText(data.response);
+        }
       } else {
         setMessages(prev => [...prev, {
           id: (Date.now() + 1).toString(),
