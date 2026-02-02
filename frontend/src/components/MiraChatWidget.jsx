@@ -524,6 +524,7 @@ const MiraChatWidget = ({
     
     try {
       setIsSpeaking(true);
+      console.log('[Mira Voice] Attempting ElevenLabs TTS...');
       
       // Clean text for speech
       let cleanText = text
@@ -545,18 +546,25 @@ const MiraChatWidget = ({
       }
       
       const data = await response.json();
+      console.log('[Mira Voice] ✓ ElevenLabs audio received, playing...');
       
       // Play audio
       const audio = new Audio(`data:audio/mpeg;base64,${data.audio_base64}`);
       audioRef.current = audio;
       
-      audio.onended = () => setIsSpeaking(false);
-      audio.onerror = () => setIsSpeaking(false);
+      audio.onended = () => {
+        console.log('[Mira Voice] ✓ ElevenLabs audio playback complete');
+        setIsSpeaking(false);
+      };
+      audio.onerror = (e) => {
+        console.log('[Mira Voice] Audio playback error:', e);
+        setIsSpeaking(false);
+      };
       
       await audio.play();
       return true;
     } catch (error) {
-      console.log('[Mira Voice] ElevenLabs unavailable, using Web Speech');
+      console.log('[Mira Voice] ElevenLabs unavailable, using Web Speech:', error.message);
       setUseElevenLabs(false);
       setIsSpeaking(false);
       return false;
