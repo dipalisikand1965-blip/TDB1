@@ -1445,7 +1445,7 @@ const MiraChatWidget = ({
                   onChange={(e) => setInputValue(e.target.value)}
                   onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
                   placeholder={isListening ? "Listening..." : "Type your message..."}
-                  className={`flex-1 px-4 py-2.5 border rounded-full text-sm focus:outline-none focus:ring-2 transition-all ${
+                  className={`flex-1 px-4 py-3 min-h-[48px] border rounded-full text-base focus:outline-none focus:ring-2 transition-all ${
                     isListening 
                       ? 'border-cyan-400 ring-2 ring-cyan-400/30' 
                       : 'border-gray-200 focus:ring-purple-500 focus:border-purple-500'
@@ -1457,7 +1457,7 @@ const MiraChatWidget = ({
                 <button
                   onClick={sendMessage}
                   disabled={!inputValue.trim() || isSending}
-                  className={`w-10 h-10 rounded-full flex items-center justify-center transition-all shrink-0 ${
+                  className={`w-12 h-12 min-w-[48px] min-h-[48px] rounded-full flex items-center justify-center transition-all shrink-0 touch-manipulation active:scale-95 ${
                     inputValue.trim() && !isSending
                       ? 'bg-purple-600 text-white hover:bg-purple-700'
                       : 'bg-gray-100 text-gray-400'
