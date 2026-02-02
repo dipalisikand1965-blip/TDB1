@@ -32,7 +32,7 @@ import {
   ClipboardList, MapPin, Calendar, Clock, CheckCircle, MessageCircle,
   ChevronRight, Sparkles, Package, Star, Loader2, Info, Send,
   ArrowRight, Users, Play, ChevronDown, Gift, Zap, Shield, Phone,
-  Home, Building2, AlertCircle, Trophy
+  Home, Building2, AlertCircle, Trophy, ShoppingCart
 } from 'lucide-react';
 
 // Elevated Concierge® Care Experiences
