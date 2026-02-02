@@ -912,22 +912,6 @@ const EnjoyPage = () => {
           </div>
         </DialogContent>
       </Dialog>
-
-      {/* Floating WhatsApp "Ask Concierge" Button */}
-      <a
-        href={`https://wa.me/919663185747?text=${encodeURIComponent(
-          selectedPets.length > 0 
-            ? `Hi! I'm looking for fun activities and events for my pet${selectedPets.length > 1 ? 's' : ''} ${selectedPets.map(p => p.name).join(', ')}. Can you help?`
-            : `Hi! I'm interested in pet-friendly events and activities. Can you help me find something?`
-        )}`}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="fixed bottom-20 left-4 z-40 bg-green-500 hover:bg-green-600 text-white px-4 py-3 rounded-full shadow-lg flex items-center gap-2 transition-all hover:scale-105"
-        data-testid="whatsapp-ask-concierge-btn"
-      >
-        <MessageCircle className="w-5 h-5" />
-        <span className="font-medium text-sm hidden sm:inline">Ask Concierge</span>
-      </a>
       
       {/* === SERVICE CATALOG WITH PRICING === */}
       <ServiceCatalogSection 
