@@ -69,7 +69,7 @@ const MiraContextPanel = ({
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [speechSupported, setSpeechSupported] = useState(false);
   const recognitionRef = useRef(null);
-  const synthRef = useRef(typeof window !== 'undefined' ? window.speechSynthesis : null);
+  const audioRef = useRef(null); // For ElevenLabs audio playback
   const inputRef = useRef(null);
   
   // Initialize speech recognition
