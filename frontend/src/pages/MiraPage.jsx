@@ -793,6 +793,45 @@ const MiraPage = () => {
                     </Button>
                   )}
                   
+                  {/* Product Grid - Display products from Mira's response */}
+                  {message.role === 'assistant' && message.products && message.products.length > 0 && (
+                    <div className="mt-4 pt-3 border-t border-gray-100">
+                      <p className="text-xs font-medium text-gray-500 mb-2">🛍️ Recommended Products</p>
+                      <div className="grid grid-cols-2 gap-2">
+                        {message.products.slice(0, 4).map((product, idx) => (
+                          <div 
+                            key={product.id || idx}
+                            className="bg-gray-50 rounded-lg p-2 cursor-pointer hover:bg-gray-100 transition-colors"
+                            onClick={() => {
+                              const productUrl = `/product/${product.shopify_handle || product.id}`;
+                              navigate(productUrl);
+                            }}
+                          >
+                            {product.image && (
+                              <img 
+                                src={product.image} 
+                                alt={product.name}
+                                className="w-full h-16 object-cover rounded mb-1"
+                              />
+                            )}
+                            <p className="text-xs font-medium text-gray-800 line-clamp-2">{product.name}</p>
+                            <p className="text-xs text-purple-600 font-semibold">₹{product.price}</p>
+                          </div>
+                        ))}
+                      </div>
+                      {message.products.length > 4 && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="w-full mt-2 text-xs text-purple-600"
+                          onClick={() => navigate('/shop')}
+                        >
+                          View all {message.products.length} products →
+                        </Button>
+                      )}
+                    </div>
+                  )}
+                  
                   <p className={`text-xs mt-2 ${message.role === 'user' ? 'text-white/70' : 'text-gray-400'}`}>
                     {new Date(message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </p>
