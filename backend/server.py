@@ -11312,8 +11312,14 @@ async def get_member_requests(
         p["source"] = "pillar_request"
         all_requests.append(p)
     
-    # Sort by created_at descending
-    all_requests.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+    # Sort by created_at descending (handle both string and datetime)
+    def get_sort_key(x):
+        created = x.get("created_at", "")
+        if isinstance(created, str):
+            return created
+        return created.isoformat() if created else ""
+    
+    all_requests.sort(key=get_sort_key, reverse=True)
     
     return {
         "requests": all_requests[:limit],
