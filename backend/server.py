@@ -6619,6 +6619,201 @@ async def get_pet_recommendations(pet_id: str, limit: int = 20, pillar: str = No
     }
 
 
+# ==================== BUYING BEHAVIOR TRACKING ====================
+
+@api_router.get("/buying-behavior/pet/{pet_id}")
+async def get_pet_purchase_history(pet_id: str, limit: int = 50):
+    """Get purchase history for a specific pet"""
+    # Get orders that include this pet
+    orders = await db.orders.find(
+        {"$or": [
+            {"pet_id": pet_id},
+            {"pets": pet_id},
+            {"items.pet_id": pet_id}
+        ]},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    # Extract purchased products
+    purchased_products = []
+    product_frequency = {}
+    
+    for order in orders:
+        items = order.get("items") or order.get("line_items") or []
+        for item in items:
+            product_id = item.get("product_id") or item.get("id")
+            if product_id:
+                product_frequency[product_id] = product_frequency.get(product_id, 0) + 1
+                purchased_products.append({
+                    "product_id": product_id,
+                    "name": item.get("name") or item.get("title"),
+                    "quantity": item.get("quantity", 1),
+                    "price": item.get("price"),
+                    "ordered_at": order.get("created_at")
+                })
+    
+    # Get most purchased products
+    most_purchased = sorted(product_frequency.items(), key=lambda x: -x[1])[:10]
+    
+    return {
+        "pet_id": pet_id,
+        "total_orders": len(orders),
+        "purchased_products": purchased_products[:limit],
+        "most_purchased": [{"product_id": p[0], "count": p[1]} for p in most_purchased],
+        "product_frequency": product_frequency
+    }
+
+
+@api_router.get("/buying-behavior/frequently-bought-together/{product_id}")
+async def get_frequently_bought_together(product_id: str, limit: int = 5):
+    """Get products frequently bought together with this product"""
+    # Find orders that contain this product
+    orders = await db.orders.find(
+        {"$or": [
+            {"items.product_id": product_id},
+            {"items.id": product_id},
+            {"line_items.product_id": product_id}
+        ]},
+        {"_id": 0, "items": 1, "line_items": 1}
+    ).limit(100).to_list(100)
+    
+    # Count co-purchased products
+    co_purchase_count = {}
+    
+    for order in orders:
+        items = order.get("items") or order.get("line_items") or []
+        product_ids_in_order = []
+        
+        for item in items:
+            item_id = item.get("product_id") or item.get("id")
+            if item_id and item_id != product_id:
+                product_ids_in_order.append(item_id)
+        
+        # Count each co-purchased product
+        for other_id in product_ids_in_order:
+            co_purchase_count[other_id] = co_purchase_count.get(other_id, 0) + 1
+    
+    # Get top co-purchased products
+    top_co_purchased = sorted(co_purchase_count.items(), key=lambda x: -x[1])[:limit]
+    
+    # Fetch product details
+    result_products = []
+    for prod_id, count in top_co_purchased:
+        product = await db.products.find_one(
+            {"$or": [{"id": prod_id}, {"shopify_id": prod_id}]},
+            {"_id": 0}
+        )
+        if product:
+            product["co_purchase_count"] = count
+            result_products.append(product)
+    
+    return {
+        "product_id": product_id,
+        "frequently_bought_together": result_products,
+        "total_orders_analyzed": len(orders)
+    }
+
+
+@api_router.get("/buying-behavior/repeat-purchase-suggestions/{pet_id}")
+async def get_repeat_purchase_suggestions(pet_id: str, limit: int = 6):
+    """Get repeat purchase suggestions for consumable products the pet has bought before"""
+    from datetime import datetime, timezone, timedelta
+    
+    # Get pet's order history
+    orders = await db.orders.find(
+        {"$or": [
+            {"pet_id": pet_id},
+            {"pets": pet_id},
+            {"items.pet_id": pet_id}
+        ]},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(50).to_list(50)
+    
+    # Track consumable products
+    consumable_categories = ["treats", "food", "snacks", "meals", "toppers", "supplements", "grooming-supplies"]
+    product_last_purchased = {}
+    product_details_cache = {}
+    
+    for order in orders:
+        order_date = order.get("created_at")
+        items = order.get("items") or order.get("line_items") or []
+        
+        for item in items:
+            product_id = item.get("product_id") or item.get("id")
+            if not product_id:
+                continue
+            
+            # Get product details if not cached
+            if product_id not in product_details_cache:
+                product = await db.products.find_one(
+                    {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
+                    {"_id": 0}
+                )
+                if product:
+                    product_details_cache[product_id] = product
+            
+            product = product_details_cache.get(product_id)
+            if not product:
+                continue
+            
+            # Check if it's a consumable
+            category = (product.get("category") or "").lower()
+            tags = [t.lower() for t in (product.get("tags") or [])]
+            
+            is_consumable = (
+                category in consumable_categories or
+                any(cat in tags for cat in consumable_categories) or
+                any(word in category for word in ["food", "treat", "snack", "meal"])
+            )
+            
+            if is_consumable:
+                if product_id not in product_last_purchased:
+                    product_last_purchased[product_id] = {
+                        "product": product,
+                        "last_ordered": order_date,
+                        "times_ordered": 0
+                    }
+                product_last_purchased[product_id]["times_ordered"] += 1
+    
+    # Sort by times ordered (most frequently purchased first)
+    suggestions = sorted(
+        product_last_purchased.values(),
+        key=lambda x: -x["times_ordered"]
+    )[:limit]
+    
+    # Calculate days since last purchase for each
+    now = datetime.now(timezone.utc)
+    result = []
+    for item in suggestions:
+        product = item["product"]
+        last_ordered = item["last_ordered"]
+        days_since = None
+        
+        if last_ordered:
+            try:
+                if isinstance(last_ordered, str):
+                    from dateutil import parser
+                    last_ordered = parser.parse(last_ordered)
+                if last_ordered.tzinfo is None:
+                    last_ordered = last_ordered.replace(tzinfo=timezone.utc)
+                days_since = (now - last_ordered).days
+            except:
+                pass
+        
+        result.append({
+            **product,
+            "times_ordered": item["times_ordered"],
+            "days_since_last_purchase": days_since,
+            "reorder_suggested": days_since is not None and days_since > 14
+        })
+    
+    return {
+        "pet_id": pet_id,
+        "repeat_suggestions": result,
+        "total_consumables_tracked": len(product_last_purchased)
+    }
+
+
 @api_router.get("/products/{product_id}")
 async def get_product_detail(product_id: str):
     """Get single product by ID or handle for detail page"""
