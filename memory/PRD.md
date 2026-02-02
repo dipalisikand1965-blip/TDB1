@@ -180,17 +180,18 @@ Build a complete service booking experience and admin management interface for t
 - [x] Fix Mira Chat duplicate messages bug (COMPLETED Feb 1)
 - [x] Fix Mobile Footer missing AI disclaimer (COMPLETED Feb 1)
 - [x] **COMPREHENSIVE MOBILE UI OVERHAUL** (COMPLETED Feb 1)
-  - Restaurant modal layout fixed
-  - Trainer cards redesigned for mobile
-  - Training bundles clickable with visual feedback
-  - Global typography enhanced for readability
-  - Full mobile audit passed (9 pages tested, 100% success)
+- [x] **Mobile Back Buttons** - Added to all pillar pages (COMPLETED Feb 2)
+- [x] **Ask Concierge Form Pre-fill** - User data auto-populates (COMPLETED Feb 2)
+- [x] **Service Request User Name** - Shows logged-in user name (COMPLETED Feb 2)
 - [ ] Implement Membership Business Model (Freemium vs Members-Only)
-- [ ] Verify all recent features are mobile-friendly
+- [ ] Mira AI personalization for multi-pet households
+- [ ] Product tagging overhaul with CSV import/export
 
 ### P1 (Medium Priority)
 - [ ] "Pet Parent Magnet" features (First box free, Pet Parent Score)
 - [ ] Rewards Program finalization
+- [ ] Sticky booking form fix on desktop (post-booking state)
+- [ ] Pet selector navbar header update when switching
 
 ### P2 (Lower Priority)
 - [ ] Razorpay Payment Integration (awaiting keys)
