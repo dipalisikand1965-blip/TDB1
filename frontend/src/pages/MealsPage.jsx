@@ -369,9 +369,11 @@ const MealsPage = () => {
             <Button 
               size="lg" 
               className="w-full sm:w-auto bg-white text-orange-600 hover:bg-orange-50 gap-2 h-12 sm:h-11 font-semibold shadow-lg"
+              onClick={() => setShowInquiryModal(true)}
+              data-testid="meal-inquiry-btn"
             >
-              <Sparkles className="w-5 h-5" />
-              Get Started
+              <MessageCircle className="w-5 h-5" />
+              Get Nutrition Advice
             </Button>
             <Link to="/dine" className="w-full sm:w-auto">
               <Button size="lg" variant="outline" className="w-full sm:w-auto border-white text-white hover:bg-white/20 gap-2 h-12 sm:h-11">
@@ -381,6 +383,97 @@ const MealsPage = () => {
           </div>
         </div>
       </div>
+
+      {/* Meal Inquiry Modal - Unified Service Flow */}
+      <Dialog open={showInquiryModal} onOpenChange={setShowInquiryModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Utensils className="w-5 h-5 text-orange-500" />
+              Get Personalized Meal Advice
+            </DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleMealInquiry} className="space-y-4">
+            <div>
+              <label className="text-sm font-medium text-gray-700">Your Name</label>
+              <Input
+                value={inquiryForm.name}
+                onChange={(e) => setInquiryForm(prev => ({ ...prev, name: e.target.value }))}
+                placeholder="Your name"
+                required
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700">Phone Number</label>
+              <Input
+                value={inquiryForm.phone}
+                onChange={(e) => setInquiryForm(prev => ({ ...prev, phone: e.target.value }))}
+                placeholder="+91 98765 43210"
+                required
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700">Email</label>
+              <Input
+                type="email"
+                value={inquiryForm.email}
+                onChange={(e) => setInquiryForm(prev => ({ ...prev, email: e.target.value }))}
+                placeholder="your@email.com"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700">Pet&apos;s Name</label>
+              <Input
+                value={inquiryForm.petName}
+                onChange={(e) => setInquiryForm(prev => ({ ...prev, petName: e.target.value }))}
+                placeholder="Your pet's name"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700">Diet Preference</label>
+              <select
+                value={inquiryForm.dietType}
+                onChange={(e) => setInquiryForm(prev => ({ ...prev, dietType: e.target.value }))}
+                className="w-full p-2 border rounded-md text-sm"
+              >
+                <option value="fresh">Fresh Cooked Meals</option>
+                <option value="raw">Raw Food Diet</option>
+                <option value="vegetarian">Vegetarian Meals</option>
+                <option value="subscription">Meal Subscription Plan</option>
+                <option value="weight_management">Weight Management</option>
+                <option value="senior">Senior Pet Diet</option>
+                <option value="puppy">Puppy Nutrition</option>
+              </select>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700">Tell us more</label>
+              <Textarea
+                value={inquiryForm.notes}
+                onChange={(e) => setInquiryForm(prev => ({ ...prev, notes: e.target.value }))}
+                placeholder="Any allergies, health conditions, or specific requirements..."
+                rows={3}
+              />
+            </div>
+            <Button 
+              type="submit" 
+              className="w-full bg-orange-500 hover:bg-orange-600 gap-2"
+              disabled={submitting}
+            >
+              {submitting ? (
+                <>Processing...</>
+              ) : (
+                <>
+                  <Send className="w-4 h-4" />
+                  Submit Inquiry
+                </>
+              )}
+            </Button>
+            <p className="text-xs text-gray-500 text-center">
+              Our nutrition expert will contact you within 24 hours
+            </p>
+          </form>
+        </DialogContent>
+      </Dialog>
 
       {/* Mira Chat Widget */}
       <MiraChatWidget pillar="dine" />
