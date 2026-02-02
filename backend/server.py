@@ -9,7 +9,7 @@ import asyncio
 import secrets
 from pathlib import Path
 from pydantic import BaseModel, Field, ConfigDict, EmailStr
-from typing import List, Optional, Any, Union
+from typing import List, Optional, Any, Union, Dict
 import uuid
 from datetime import datetime, timezone, timedelta
 from timestamp_utils import get_utc_timestamp  # Consistent timestamp formatting
