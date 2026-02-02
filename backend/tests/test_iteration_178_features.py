@@ -98,7 +98,7 @@ class TestMiraQuickBook:
             json={"email": MEMBER_EMAIL, "password": MEMBER_PASSWORD}
         )
         if response.status_code == 200:
-            return response.json().get("token")
+            return response.json().get("access_token")
         pytest.skip("Authentication failed")
     
     def test_quick_book_shows_on_explicit_booking_intent(self, auth_token):
@@ -187,7 +187,7 @@ class TestPetAPI:
             json={"email": MEMBER_EMAIL, "password": MEMBER_PASSWORD}
         )
         if response.status_code == 200:
-            return response.json().get("token")
+            return response.json().get("access_token")
         pytest.skip("Authentication failed")
     
     def test_my_pets_endpoint(self, auth_token):
