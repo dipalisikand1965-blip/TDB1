@@ -239,7 +239,14 @@ const MealsPage = () => {
             return (
               <button 
                 key={cat.id} 
-                onClick={() => setSelectedCategory(cat.id === selectedCategory ? 'all' : cat.id)}
+                onClick={() => {
+                  // Meal Plans category navigates to dedicated page
+                  if (cat.id === 'subscription') {
+                    navigate('/meal-plan');
+                  } else {
+                    setSelectedCategory(cat.id === selectedCategory ? 'all' : cat.id);
+                  }
+                }}
                 className={`p-3 sm:p-4 text-center bg-white rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer ${
                   selectedCategory === cat.id ? 'ring-2 ring-orange-500' : ''
                 }`}
