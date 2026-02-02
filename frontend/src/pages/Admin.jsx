@@ -173,6 +173,9 @@ const Admin = () => {
   const [showLoginPassword, setShowLoginPassword] = useState(false);
   const [seedingAll, setSeedingAll] = useState(false);
   const [seedingProduction, setSeedingProduction] = useState(false);
+  
+  // Collapsible sidebar state for mobile
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
 
   // Seed All function - uses UPSERT so existing data is preserved
   const seedAllPillars = async () => {
