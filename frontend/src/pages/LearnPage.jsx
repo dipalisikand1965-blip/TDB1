@@ -127,6 +127,7 @@ const HERO_IMAGES = [
 const LearnPage = () => {
   const { user, token } = useAuth();
   const { addToCart } = useCart();
+  const navigate = useNavigate();
   
   const [programs, setPrograms] = useState([]);
   const [featuredPrograms, setFeaturedPrograms] = useState([]);
