@@ -42,9 +42,99 @@ const CelebratePage = () => {
   const [loading, setLoading] = useState(true);
   const [showBoxBuilder, setShowBoxBuilder] = useState(false);
   const [boxOccasion, setBoxOccasion] = useState('birthday');
+  const [showConciergeModal, setShowConciergeModal] = useState(false);
+  const [conciergeSubmitting, setConciergeSubmitting] = useState(false);
   const { addToCart } = useCart();
+  const { user, token } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+  
+  // Concierge request form state
+  const [conciergeForm, setConciergeForm] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    petName: '',
+    occasion: 'birthday',
+    celebrationDate: '',
+    guestCount: '',
+    budget: '',
+    specialRequests: ''
+  });
+
+  // Pre-fill form with user data
+  useEffect(() => {
+    if (user) {
+      setConciergeForm(prev => ({
+        ...prev,
+        name: user.name || '',
+        phone: user.phone || user.whatsapp || '',
+        email: user.email || ''
+      }));
+    }
+  }, [user]);
+
+  // Submit concierge request to unified flow
+  const handleConciergeSubmit = async (e) => {
+    e.preventDefault();
+    setConciergeSubmitting(true);
+    
+    try {
+      const response = await fetch(`${API_URL}/api/service-requests`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        },
+        body: JSON.stringify({
+          type: 'celebration_concierge',
+          pillar: 'celebrate',
+          source: 'ask_concierge_button',
+          customer: {
+            name: conciergeForm.name,
+            phone: conciergeForm.phone,
+            email: conciergeForm.email
+          },
+          details: {
+            pet_name: conciergeForm.petName,
+            occasion: conciergeForm.occasion,
+            celebration_date: conciergeForm.celebrationDate,
+            guest_count: conciergeForm.guestCount,
+            budget: conciergeForm.budget,
+            special_requests: conciergeForm.specialRequests
+          },
+          priority: 'high',
+          intent: 'celebration_planning'
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        toast.success('Request submitted!', {
+          description: `Your celebration request #${data.request_id || data.ticket_id} has been received. Our team will contact you within 2 hours.`
+        });
+        setShowConciergeModal(false);
+        // Reset form
+        setConciergeForm(prev => ({
+          ...prev,
+          petName: '',
+          occasion: 'birthday',
+          celebrationDate: '',
+          guestCount: '',
+          budget: '',
+          specialRequests: ''
+        }));
+      } else {
+        toast.error('Failed to submit request', { description: data.detail || 'Please try again' });
+      }
+    } catch (error) {
+      console.error('Concierge request error:', error);
+      toast.error('Network error', { description: 'Please check your connection and try again' });
+    } finally {
+      setConciergeSubmitting(false);
+    }
+  };
 
   // Check for build_box URL param from reminder emails/links
   useEffect(() => {
