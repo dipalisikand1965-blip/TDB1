@@ -1670,7 +1670,171 @@ const Admin = () => {
       </nav>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
-        {/* Mobile Tab Selector */}
+        {/* Mobile Collapsible Sidebar with Paw Print Toggle */}
+        <div className="md:hidden">
+          {/* Paw Print Toggle - Always visible on left */}
+          <button
+            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+            className={`fixed left-0 top-1/2 -translate-y-1/2 z-50 p-2 rounded-r-xl shadow-lg transition-all duration-300 ${
+              sidebarCollapsed 
+                ? 'bg-gradient-to-r from-purple-600 to-pink-600' 
+                : 'bg-gray-800'
+            }`}
+            data-testid="admin-sidebar-toggle"
+            aria-label="Toggle admin menu"
+          >
+            <PawPrint className={`w-6 h-6 text-white transition-transform duration-300 ${sidebarCollapsed ? '' : 'rotate-45'}`} />
+          </button>
+          
+          {/* Collapsible Sidebar */}
+          <div 
+            className={`fixed left-0 top-0 bottom-0 z-40 bg-white shadow-2xl transition-all duration-300 ease-in-out overflow-y-auto ${
+              sidebarCollapsed ? '-translate-x-full w-0' : 'translate-x-0 w-72'
+            }`}
+          >
+            {/* Sidebar Header */}
+            <div className="sticky top-0 bg-gradient-to-r from-purple-600 to-pink-600 p-4 flex items-center justify-between">
+              <span className="font-bold text-white flex items-center gap-2">
+                <PawPrint className="w-5 h-5" />
+                Quick Nav
+              </span>
+              <button
+                onClick={() => setSidebarCollapsed(true)}
+                className="p-1 hover:bg-white/20 rounded-lg text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="p-3 space-y-3">
+              {/* Quick Access - Most Used */}
+              <div className="bg-purple-50 rounded-xl p-3">
+                <p className="text-xs font-bold text-purple-700 uppercase mb-2">🎯 Quick Access</p>
+                <div className="space-y-1">
+                  {[
+                    { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
+                    { id: 'servicedesk', label: 'Service Desk', icon: Ticket },
+                    { id: 'orders', label: 'Orders', icon: Package },
+                    { id: 'inbox', label: 'Inbox', icon: Inbox },
+                  ].map(tab => (
+                    <button
+                      key={tab.id}
+                      onClick={() => { setActiveTab(tab.id); setSidebarCollapsed(true); }}
+                      className={`w-full flex items-center gap-3 p-2.5 rounded-lg text-left transition-all ${
+                        activeTab === tab.id 
+                          ? 'bg-purple-600 text-white' 
+                          : 'hover:bg-purple-100'
+                      }`}
+                    >
+                      <tab.icon className="w-4 h-4" />
+                      <span className="text-sm font-medium">{tab.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+              
+              {/* All Pillars */}
+              <div className="bg-gray-50 rounded-xl p-3">
+                <p className="text-xs font-bold text-gray-600 uppercase mb-2">🏛️ Pillars</p>
+                <div className="grid grid-cols-2 gap-1">
+                  {[
+                    { id: 'celebrate', label: 'Celebrate', icon: PartyPopper },
+                    { id: 'dine', label: 'Dine', icon: UtensilsCrossed },
+                    { id: 'shop-manager', label: 'Shop', icon: ShoppingBag },
+                    { id: 'care', label: 'Care', icon: Heart },
+                    { id: 'stay', label: 'Stay', icon: Home },
+                    { id: 'travel', label: 'Travel', icon: Plane },
+                    { id: 'fit', label: 'Fit', icon: Activity },
+                    { id: 'learn', label: 'Learn', icon: BookOpen },
+                  ].map(tab => (
+                    <button
+                      key={tab.id}
+                      onClick={() => { setActiveTab(tab.id); setSidebarCollapsed(true); }}
+                      className={`flex items-center gap-2 p-2 rounded-lg text-left transition-all ${
+                        activeTab === tab.id 
+                          ? 'bg-gray-800 text-white' 
+                          : 'hover:bg-gray-200'
+                      }`}
+                    >
+                      <tab.icon className="w-3.5 h-3.5" />
+                      <span className="text-xs font-medium">{tab.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Members & Config */}
+              <div className="bg-blue-50 rounded-xl p-3">
+                <p className="text-xs font-bold text-blue-700 uppercase mb-2">👥 Members</p>
+                <div className="space-y-1">
+                  {[
+                    { id: 'member-directory', label: 'Pet Parents', icon: Users },
+                    { id: 'pets', label: 'Pets', icon: PawPrint },
+                    { id: 'membership', label: 'Membership', icon: Crown },
+                  ].map(tab => (
+                    <button
+                      key={tab.id}
+                      onClick={() => { setActiveTab(tab.id); setSidebarCollapsed(true); }}
+                      className={`w-full flex items-center gap-3 p-2 rounded-lg text-left transition-all ${
+                        activeTab === tab.id 
+                          ? 'bg-blue-600 text-white' 
+                          : 'hover:bg-blue-100'
+                      }`}
+                    >
+                      <tab.icon className="w-4 h-4" />
+                      <span className="text-sm font-medium">{tab.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Reports & Analytics */}
+              <div className="bg-green-50 rounded-xl p-3">
+                <p className="text-xs font-bold text-green-700 uppercase mb-2">📊 Reports</p>
+                <div className="space-y-1">
+                  {[
+                    { id: 'reports', label: 'Reports', icon: FileText },
+                    { id: 'analytics', label: 'Analytics', icon: TrendingUp },
+                    { id: 'mis', label: 'MIS', icon: BarChart3 },
+                  ].map(tab => (
+                    <button
+                      key={tab.id}
+                      onClick={() => { setActiveTab(tab.id); setSidebarCollapsed(true); }}
+                      className={`w-full flex items-center gap-3 p-2 rounded-lg text-left transition-all ${
+                        activeTab === tab.id 
+                          ? 'bg-green-600 text-white' 
+                          : 'hover:bg-green-100'
+                      }`}
+                    >
+                      <tab.icon className="w-4 h-4" />
+                      <span className="text-sm font-medium">{tab.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Universal Seed Button */}
+              <button
+                onClick={() => { seedAllPillars(); setSidebarCollapsed(true); }}
+                disabled={seedingAll}
+                className="w-full p-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:from-purple-700 hover:to-pink-700 disabled:opacity-50"
+              >
+                {seedingAll ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                {seedingAll ? 'Seeding...' : 'Universal Seed + Tags'}
+              </button>
+            </div>
+          </div>
+          
+          {/* Backdrop when sidebar is open */}
+          {!sidebarCollapsed && (
+            <div 
+              className="fixed inset-0 bg-black/30 z-30"
+              onClick={() => setSidebarCollapsed(true)}
+            />
+          )}
+        </div>
+        
+        {/* Desktop Tab Selector - Keep existing dropdown for full menu */}
         <div className="md:hidden mb-4">
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
