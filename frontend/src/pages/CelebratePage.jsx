@@ -10,7 +10,7 @@ import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { 
   PartyPopper, Cake, Gift, Crown, Sparkles, Camera, Users, 
   Calendar, MapPin, ChevronRight, Star, Heart, Music,
-  Palette, ShoppingBag, Package, X, Phone, Mail, Dog, Send
+  Palette, ShoppingBag, Package, X, Phone, Mail, Dog, Send, ChevronLeft
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
