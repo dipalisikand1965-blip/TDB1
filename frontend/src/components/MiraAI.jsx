@@ -420,7 +420,7 @@ const MiraAI = () => {
     utterance.onerror = () => setIsSpeaking(false);
     
     synthRef.current.speak(utterance);
-  }, [voiceEnabled]);
+  }, [voiceEnabled, useElevenLabs, speakWithElevenLabs]);
   
   // Get time-aware greeting
   const getTimeGreeting = () => {
