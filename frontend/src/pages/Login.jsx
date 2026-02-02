@@ -4,11 +4,12 @@ import { useAuth } from '../context/AuthContext';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { useToast } from '../hooks/use-toast';
-import { Lock, Mail, PawPrint, Heart, Shield, Sparkles, ArrowRight } from 'lucide-react';
+import { Lock, Mail, PawPrint, Heart, Shield, Sparkles, ArrowRight, Eye, EyeOff } from 'lucide-react';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { login, initiateGoogleLogin } = useAuth();
   const navigate = useNavigate();
