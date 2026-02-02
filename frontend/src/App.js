@@ -179,6 +179,7 @@ const CelebratePage = lazy(() => import("./pages/CelebratePage"));
 const FarewellPage = lazy(() => import("./pages/FarewellPage"));
 const AdoptPage = lazy(() => import("./pages/AdoptPage"));
 const PillarPage = lazy(() => import("./pages/PillarPage"));
+const MealsPage = lazy(() => import("./pages/MealsPage"));
 
 // Other Pages (lazy load)
 const ProductListing = lazy(() => import("./pages/ProductListing"));
