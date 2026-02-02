@@ -43,14 +43,9 @@ const MemberMobileNav = () => {
     setIsOpen(false);
   }, [location.pathname]);
   
-  // Don't render on hidden paths
-  if (shouldHide) {
-    return null;
-  }
-  
   // Prevent body scroll when sidebar is open
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && !shouldHide) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
@@ -58,7 +53,12 @@ const MemberMobileNav = () => {
     return () => {
       document.body.style.overflow = '';
     };
-  }, [isOpen]);
+  }, [isOpen, shouldHide]);
+  
+  // Don't render on hidden paths - must be after all hooks
+  if (shouldHide) {
+    return null;
+  }
 
   const handleNavigate = (path) => {
     navigate(path);
