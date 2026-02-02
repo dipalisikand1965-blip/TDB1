@@ -105,6 +105,7 @@ import {
   Building,
   Sparkles,
   Utensils,
+  UtensilsCrossed,
   Layers,
   Calendar,
   Truck,
@@ -125,7 +126,11 @@ import {
   TrendingUp,
   GraduationCap,
   Flame,
-  Briefcase
+  Briefcase,
+  Home,
+  Plane,
+  Activity,
+  BookOpen
 } from 'lucide-react';
 import AdminEngagement from '../components/AdminEngagement';
 
