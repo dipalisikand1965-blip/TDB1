@@ -8112,6 +8112,90 @@ async def seed_travel_products(
             "breed_tags": ["all_breeds"],
             "health_tags": ["anxiety", "calming", "stress_relief"],
             "lifestage_tags": ["all_ages"],
+
+
+@api_router.post("/admin/products/fix-product-names")
+async def fix_confusing_product_names(
+    credentials: HTTPBasicCredentials = Depends(security)
+):
+    """
+    Fix product names that could be confused with unrelated concepts.
+    E.g., 'Poke Cake' -> 'Poke Style Dog Cake' to avoid Pokemon confusion
+    """
+    verify_admin(credentials)
+    
+    # Name fixes - old name -> new name with clear description
+    name_fixes = {
+        "Poke Cake": {
+            "new_name": "Poke Style Celebration Cake for Dogs",
+            "new_description": "A delicious dog-safe cake inspired by Hawaiian poke bowl aesthetics. Made with pet-safe ingredients, decorated with edible fish-shaped treats. Perfect for birthdays!",
+            "add_tags": ["cake", "birthday", "celebration", "hawaiian_style", "dog_safe", "NOT_pokemon"]
+        },
+        "Pokeball Cake": {
+            "new_name": "Red & White Celebration Cake",
+            "new_description": "Eye-catching red and white layered cake made with dog-safe ingredients. Perfect for birthdays and special occasions!",
+            "add_tags": ["cake", "birthday", "celebration", "colorful", "dog_safe"]
+        },
+        "Unicorn Cake": {
+            "new_name": "Magical Unicorn Birthday Cake for Dogs",
+            "new_description": "Whimsical unicorn-themed cake made with pet-safe frosting and natural colors. Complete with edible horn decoration!",
+            "add_tags": ["cake", "birthday", "celebration", "unicorn", "magical", "dog_safe", "colorful"]
+        },
+        "Bone Cake": {
+            "new_name": "Bone-Shaped Birthday Cake for Dogs",
+            "new_description": "Classic bone-shaped cake made with wholesome, dog-safe ingredients. A timeless choice for your pup's special day!",
+            "add_tags": ["cake", "birthday", "celebration", "classic", "bone_shape", "dog_safe"]
+        },
+        "Paw Cake": {
+            "new_name": "Paw Print Birthday Cake for Dogs",
+            "new_description": "Adorable paw print decorated cake using pet-safe frosting. Each cake features cute paw prints your dog will love!",
+            "add_tags": ["cake", "birthday", "celebration", "paw_print", "cute", "dog_safe"]
+        }
+    }
+    
+    fixed_count = 0
+    fixed_names = []
+    
+    for old_name, fix_data in name_fixes.items():
+        result = await db.products.update_many(
+            {"name": {"$regex": f"^{old_name}$", "$options": "i"}},
+            {
+                "$set": {
+                    "name": fix_data["new_name"],
+                    "description": fix_data["new_description"]
+                },
+                "$addToSet": {"intelligent_tags": {"$each": fix_data["add_tags"]}}
+            }
+        )
+        if result.modified_count > 0:
+            fixed_count += result.modified_count
+            fixed_names.append(f"{old_name} -> {fix_data['new_name']}")
+    
+    # Also search for any products with potentially confusing names and add clarifying tags
+    clarify_patterns = [
+        {"pattern": "poke", "add_tags": ["NOT_pokemon", "dog_food", "pet_cake"]},
+        {"pattern": "ball", "add_tags": ["dog_toy_or_treat", "pet_product"]},
+        {"pattern": "monster", "add_tags": ["dog_themed", "pet_product"]},
+        {"pattern": "dragon", "add_tags": ["dog_themed", "pet_product"]},
+    ]
+    
+    for pattern_data in clarify_patterns:
+        await db.products.update_many(
+            {
+                "name": {"$regex": pattern_data["pattern"], "$options": "i"},
+                "pillar": {"$in": ["celebrate", "dine", "care"]}
+            },
+            {"$addToSet": {"intelligent_tags": {"$each": pattern_data["add_tags"]}}}
+        )
+    
+    return {
+        "success": True,
+        "message": f"Fixed {fixed_count} product names",
+        "fixes_applied": fixed_names,
+        "note": "Also added clarifying tags to products with potentially confusing names"
+    }
+
+
             "size_tags": ["all_sizes"],
             "occasion_tags": ["travel", "car_ride", "flight", "vet_visit"],
             "cross_sell_products": ["calming-chews", "thunder-shirt"],
