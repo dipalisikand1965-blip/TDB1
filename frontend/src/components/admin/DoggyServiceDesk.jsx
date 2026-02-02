@@ -3272,11 +3272,51 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                           <option key={a.id || a.name} value={a.id || a.name}>{a.name}</option>
                         ))}
                       </select>
+                      
+                      {/* More Actions Dropdown (like Zoho) */}
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button variant="outline" size="sm" className="text-xs h-7 px-2 gap-1">
+                            <MoreVertical className="w-3.5 h-3.5" />
+                            More
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-40">
+                          <DropdownMenuItem 
+                            onClick={() => handleBulkStatusChange('resolved')}
+                            className="text-xs cursor-pointer"
+                          >
+                            <CheckCircle className="w-3.5 h-3.5 mr-2 text-green-600" />
+                            Close
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            onClick={() => setShowMergeModal(true)}
+                            className="text-xs cursor-pointer"
+                            disabled={selectedTicketIds.length < 2}
+                          >
+                            <MessageSquare className="w-3.5 h-3.5 mr-2 text-purple-600" />
+                            Merge Tickets
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem 
+                            onClick={() => {
+                              if (window.confirm(`Delete ${selectedTicketIds.length} ticket(s)? This cannot be undone.`)) {
+                                handleBulkDelete();
+                              }
+                            }}
+                            className="text-xs cursor-pointer text-red-600"
+                          >
+                            <Trash2 className="w-3.5 h-3.5 mr-2" />
+                            Delete
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                      
                       <Button
                         variant="ghost"
                         size="sm"
                         onClick={() => setSelectedTicketIds([])}
-                        className="text-gray-500 hover:text-gray-700"
+                        className="text-gray-500 hover:text-gray-700 h-7 w-7 p-0"
                       >
                         <X className="w-4 h-4" />
                       </Button>
