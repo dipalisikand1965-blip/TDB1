@@ -7483,7 +7483,9 @@ async def full_product_update(
         "gst_rate", "shipping_weight", "packaging_type", "packaging_cost",
         "available", "is_pan_india_shippable", "status",
         "bundle_type", "bundle_includes", "options", "variants",
-        "search_keywords", "seo_title", "seo_description"
+        "search_keywords", "seo_title", "seo_description",
+        "cross_sell_products", "upsell_products", "frequently_bought_together",
+        "allergy_warnings", "suitable_for_breeds", "not_suitable_for"
     ]
     
     sanitized = {k: v for k, v in updates.items() if k in allowed_fields}
