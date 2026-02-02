@@ -62,14 +62,12 @@ Build a complete service booking experience and admin management interface for t
    - Input fields use `font-size: 16px` to prevent iOS zoom
    - Removes 300ms click delay
 
-3. ✅ **Rachel Voice for Mira**
-   - Changed from Lily to Rachel (warm, natural)
-   - ® ™ © symbols removed from speech
+3. ✅ **Rachel Voice for Mira** (Now updated to Elise - see above)
 
 **Files Modified:**
 - `/app/frontend/src/pages/Admin.jsx` - Collapsible sidebar
 - `/app/frontend/src/index.css` - Touch optimization CSS
-- `/app/backend/tts_routes.py` - Rachel voice, symbol cleanup
+- `/app/backend/tts_routes.py` - Voice settings
 
 **Testing: 100% Pass Rate**
 - Test report: `/app/test_reports/iteration_189.json`
