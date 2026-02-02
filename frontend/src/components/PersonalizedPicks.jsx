@@ -221,12 +221,26 @@ const PersonalizedPicks = ({
       
       setLoading(true);
       try {
+        // Fetch personalized recommendations
         const res = await fetch(
           `${API_URL}/api/products/recommendations/for-pet/${selectedPet.id || selectedPet._id}?limit=${maxProducts}&pillar=${pillar}`
         );
         if (res.ok) {
           const data = await res.json();
           setRecommendations(data.recommendations || []);
+        }
+        
+        // Also fetch repeat purchase suggestions (buying behavior)
+        try {
+          const repeatRes = await fetch(
+            `${API_URL}/api/buying-behavior/repeat-purchase-suggestions/${selectedPet.id || selectedPet._id}?limit=4`
+          );
+          if (repeatRes.ok) {
+            const repeatData = await repeatRes.json();
+            setRepeatSuggestions(repeatData.repeat_suggestions || []);
+          }
+        } catch (repeatErr) {
+          console.debug('Failed to fetch repeat suggestions:', repeatErr);
         }
       } catch (err) {
         console.debug('Failed to fetch recommendations:', err);
