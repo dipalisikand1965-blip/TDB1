@@ -573,10 +573,12 @@ const MiraChatWidget = ({
   
   // Text-to-Speech function - MIRA IS A BRITISH WOMAN
   const speakText = useCallback(async (text) => {
+    console.log('[Mira Voice] speakText called, voiceEnabled:', voiceEnabled, 'useElevenLabs:', useElevenLabs);
     if (!voiceEnabled) return;
     
     // Try ElevenLabs first for premium voice
     if (useElevenLabs) {
+      console.log('[Mira Voice] Trying ElevenLabs...');
       const success = await speakWithElevenLabs(text);
       if (success) return;
     }
