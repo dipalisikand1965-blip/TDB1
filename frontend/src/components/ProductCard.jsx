@@ -212,8 +212,20 @@ const ProductCard = ({ product, pillar = 'celebrate' }) => {
   const { user, token } = useAuth();
   
   // Fallback placeholder image
-  const PLACEHOLDER_IMAGE = 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/TDB_cakes_28.png?v=1738050579';
-  const productImage = product.image && product.image.trim() !== '' ? product.image : PLACEHOLDER_IMAGE;
+  const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop';
+  
+  // Only use product image if it's a valid http URL
+  const getValidImage = () => {
+    if (product.image && product.image.startsWith('http')) {
+      return product.image;
+    }
+    if (product.images?.[0] && product.images[0].startsWith('http')) {
+      return product.images[0];
+    }
+    return PLACEHOLDER_IMAGE;
+  };
+  
+  const productImage = getValidImage();
   
   const getMinPrice = () => {
     if (product.minPrice) return product.minPrice;
