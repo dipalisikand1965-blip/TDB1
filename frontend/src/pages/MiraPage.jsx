@@ -31,7 +31,7 @@ import {
   HelpCircle, FileText, AlertTriangle, Crown, Calendar,
   MapPin, Zap, ArrowRight, User, ChevronRight, Mic, MicOff, 
   RotateCcw, History, Search, ArrowLeft, X, ShoppingCart,
-  CheckCircle, ExternalLink, List
+  CheckCircle, ExternalLink, List, Volume2, VolumeX
 } from 'lucide-react';
 
 // Pillar Quick Actions
