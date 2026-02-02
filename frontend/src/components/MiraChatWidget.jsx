@@ -874,15 +874,27 @@ const MiraChatWidget = ({
         throw new Error(`API returned ${response.status}`);
       }
     } catch (error) {
-      console.error('[Mira] Chat error:', error?.name, error?.message);
+      console.error('[Mira] Chat error:', error?.name, error?.message, error);
       let errorMessage = "I'm having a brief pause. Please try again.";
       
-      if (error.name === 'AbortError') {
+      // Log full error details for debugging
+      if (error.name === 'TypeError' && error.message?.includes('Failed to fetch')) {
+        console.error('[Mira] Network error - possible CORS or connectivity issue');
+        errorMessage = "Connection issue. Please check your internet and try again.";
+      } else if (error.name === 'AbortError') {
+        console.error('[Mira] Request timed out after 30 seconds');
         errorMessage = "Taking a bit longer than usual. Please check your connection and try again.";
       } else if (error.message?.includes('520') || error.message?.includes('502') || error.message?.includes('503')) {
+        console.error('[Mira] Server error:', error.message);
         errorMessage = "Our servers are experiencing high traffic. Please try again in a moment.";
       } else if (error.message?.includes('Failed to fetch') || error.message?.includes('NetworkError')) {
+        console.error('[Mira] Network error:', error.message);
         errorMessage = "Connection issue detected. Please check your internet and try again.";
+      } else if (error.message?.includes('API returned')) {
+        console.error('[Mira] API error:', error.message);
+        errorMessage = "Something went wrong. Please try again.";
+      } else {
+        console.error('[Mira] Unknown error type:', error.name, error.message);
       }
       
       setMessages(prev => [...prev, {
