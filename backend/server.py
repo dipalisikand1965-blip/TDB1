@@ -7726,6 +7726,62 @@ async def universal_search(
     
     results["suggestions"] = suggestions
     
+    # ==================== STEP 4: Add Page/Navigation Matches ====================
+    # Match internal pages and navigation routes based on query
+    page_matches = []
+    navigation_keywords = {
+        # App Navigation
+        "notification": {"name": "Notifications", "url": "/dashboard?tab=notifications", "icon": "bell", "description": "View your alerts and updates"},
+        "bell": {"name": "Notifications", "url": "/dashboard?tab=notifications", "icon": "bell", "description": "View your alerts and updates"},
+        "alert": {"name": "Notifications", "url": "/dashboard?tab=notifications", "icon": "bell", "description": "View your alerts and updates"},
+        "service desk": {"name": "Service Desk", "url": "/admin/service-desk", "icon": "ticket", "description": "Manage support tickets and requests"},
+        "ticket": {"name": "Service Desk", "url": "/admin/service-desk", "icon": "ticket", "description": "Manage support tickets and requests"},
+        "inbox": {"name": "Unified Inbox", "url": "/admin?tab=inbox", "icon": "inbox", "description": "All messages and communications"},
+        "message": {"name": "Unified Inbox", "url": "/admin?tab=inbox", "icon": "inbox", "description": "All messages and communications"},
+        "my pet": {"name": "My Pets", "url": "/my-pets", "icon": "paw", "description": "Manage your pet profiles"},
+        "pet parent": {"name": "My Pets", "url": "/my-pets", "icon": "paw", "description": "Your pet parent dashboard"},
+        "pet soul": {"name": "Pet Soul", "url": "/my-pets", "icon": "heart", "description": "Your pet's soul journey"},
+        "dashboard": {"name": "Dashboard", "url": "/dashboard", "icon": "home", "description": "Your personal dashboard"},
+        "my order": {"name": "My Orders", "url": "/dashboard?tab=orders", "icon": "shopping", "description": "View and track your orders"},
+        "order": {"name": "My Orders", "url": "/dashboard?tab=orders", "icon": "shopping", "description": "View and track your orders"},
+        "cart": {"name": "Shopping Cart", "url": "/cart", "icon": "cart", "description": "Review items in your cart"},
+        "checkout": {"name": "Checkout", "url": "/cart", "icon": "cart", "description": "Complete your purchase"},
+        "celebration": {"name": "My Celebrations", "url": "/dashboard?tab=celebrations", "icon": "calendar", "description": "Upcoming pet celebrations"},
+        "birthday": {"name": "My Celebrations", "url": "/dashboard?tab=celebrations", "icon": "cake", "description": "Pet birthdays and special days"},
+        "admin": {"name": "Admin Panel", "url": "/admin", "icon": "settings", "description": "Administration dashboard"},
+        
+        # Pillars
+        "celebrate": {"name": "Celebrate", "url": "/celebrate", "icon": "cake", "description": "Birthday cakes, parties & celebrations", "type": "pillar"},
+        "dine": {"name": "Dine", "url": "/dine", "icon": "utensils", "description": "Pet-friendly restaurants & fresh meals", "type": "pillar"},
+        "stay": {"name": "Stay", "url": "/stay", "icon": "home", "description": "Pet hotels, resorts & boarding", "type": "pillar"},
+        "travel": {"name": "Travel", "url": "/travel", "icon": "plane", "description": "Pet travel & relocation services", "type": "pillar"},
+        "care": {"name": "Care", "url": "/care", "icon": "heart", "description": "Grooming, vet & wellness", "type": "pillar"},
+        "enjoy": {"name": "Enjoy", "url": "/enjoy", "icon": "star", "description": "Events, playdates & social", "type": "pillar"},
+        "fit": {"name": "Fit", "url": "/fit", "icon": "activity", "description": "Fitness & wellness programs", "type": "pillar"},
+        "learn": {"name": "Learn", "url": "/learn", "icon": "book", "description": "Training & education", "type": "pillar"},
+        "farewell": {"name": "Farewell", "url": "/farewell", "icon": "heart", "description": "End of life care & memorials", "type": "pillar"},
+        "paperwork": {"name": "Paperwork", "url": "/paperwork", "icon": "file", "description": "Pet documents & registrations", "type": "pillar"},
+        "advisory": {"name": "Advisory", "url": "/advisory", "icon": "lightbulb", "description": "Expert advice & consultations", "type": "pillar"},
+        "emergency": {"name": "Emergency", "url": "/emergency", "icon": "alert", "description": "24/7 emergency services", "type": "pillar"},
+        "insure": {"name": "Insure", "url": "/insure", "icon": "shield", "description": "Pet insurance plans", "type": "pillar"},
+        "adopt": {"name": "Adopt", "url": "/adopt", "icon": "heart", "description": "Pet adoption & rescue", "type": "pillar"},
+        "shop": {"name": "Shop", "url": "/shop", "icon": "shopping", "description": "Browse all products", "type": "pillar"},
+        
+        # Services
+        "grooming": {"name": "Grooming", "url": "/care?type=grooming", "icon": "scissors", "description": "Professional pet grooming"},
+        "vet": {"name": "Veterinary", "url": "/care?type=vet", "icon": "stethoscope", "description": "Vet consultations & care"},
+        "training": {"name": "Training", "url": "/learn", "icon": "award", "description": "Professional pet training"},
+        "boarding": {"name": "Boarding", "url": "/stay?type=boarding", "icon": "home", "description": "Pet boarding facilities"},
+        "hotel": {"name": "Pet Hotels", "url": "/stay", "icon": "home", "description": "Luxury pet stays"},
+    }
+    
+    for keyword, page_info in navigation_keywords.items():
+        if keyword in query_lower:
+            if page_info not in page_matches:  # Avoid duplicates
+                page_matches.append(page_info)
+    
+    results["pages"] = page_matches[:5]  # Limit to top 5 page matches
+    
     return results
 
 
