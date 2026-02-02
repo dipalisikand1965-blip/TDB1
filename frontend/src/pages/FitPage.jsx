@@ -35,7 +35,7 @@ import ConversationalEntry from '../components/ConversationalEntry';
 import QuickWinTip from '../components/QuickWinTip';
 import {
   Dumbbell, Heart, TrendingUp, Scale, Activity, Trophy,
-  CheckCircle, ChevronRight, Sparkles, Star, Loader2, Send,
+  CheckCircle, ChevronRight, ChevronLeft, Sparkles, Star, Loader2, Send,
   ArrowRight, Play, ChevronDown, Target, Zap, PawPrint,
   Calendar, Award, ShoppingBag, Clock, X, Phone, Package,
   MessageCircle, Bookmark, Share2, ShoppingCart

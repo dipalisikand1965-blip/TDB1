@@ -26,7 +26,7 @@ import PersonalizedPicks from '../components/PersonalizedPicks';
 import {
   Car, Train, Plane, Truck, MapPin, Calendar, Clock, PawPrint,
   Shield, Heart, CheckCircle, AlertTriangle, MessageCircle, Phone,
-  ChevronRight, Sparkles, Package, Star, Loader2, Info, Send,
+  ChevronRight, ChevronLeft, Sparkles, Package, Star, Loader2, Info, Send,
   ArrowRight, Users, Play, X, ChevronDown, Gift, Zap
 } from 'lucide-react';
 
