@@ -360,7 +360,7 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
               {/* City Selection - Compact */}
               <div>
                 <Label className="text-xs sm:text-sm font-medium mb-1.5 block">Your City</Label>
-                <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
+                <div className="grid grid-cols-4 gap-1.5 sm:gap-2">
                   {CITIES.map(city => (
                     <button
                       key={city.id}
@@ -375,6 +375,16 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
                     </button>
                   ))}
                 </div>
+                {/* Custom city input when "Other" is selected */}
+                {priceConfig.city === 'other' && (
+                  <input
+                    type="text"
+                    placeholder="Enter your city name..."
+                    value={priceConfig.customCity}
+                    onChange={(e) => setPriceConfig(p => ({ ...p, customCity: e.target.value }))}
+                    className="mt-2 w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-rose-500 focus:border-transparent"
+                  />
+                )}
               </div>
               
               {/* Pet Size - More compact grid */}
