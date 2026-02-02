@@ -946,11 +946,11 @@ const Navbar = () => {
                 Ask Mira
               </button>
 
-              {/* Cart */}
+              {/* Cart - Desktop */}
               <button
                 onClick={() => setIsCartOpen(true)}
-                className="relative flex items-center gap-1 hover:bg-white/10 rounded-lg p-2 min-w-[44px] min-h-[44px] touch-manipulation"
-                data-testid="navbar-cart-btn"
+                className="relative flex items-center gap-1 hover:bg-white/10 rounded-lg p-2"
+                data-testid="navbar-cart-btn-desktop"
                 aria-label="Shopping cart"
               >
                 <ShoppingCart className="w-6 h-6" />
@@ -959,17 +959,7 @@ const Navbar = () => {
                     {getCartCount()}
                   </span>
                 )}
-                <span className="hidden sm:inline text-xs font-semibold">Cart</span>
-              </button>
-
-              {/* Mobile Menu Button */}
-              <button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="lg:hidden p-3 min-w-[48px] min-h-[48px] hover:bg-white/10 rounded-lg flex items-center justify-center active:bg-white/20"
-                data-testid="navbar-mobile-menu-btn"
-                aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-              >
-                {isMenuOpen ? <X className="w-6 h-6 pointer-events-none" /> : <Menu className="w-6 h-6 pointer-events-none" />}
+                <span className="text-xs font-semibold">Cart</span>
               </button>
             </div>
           </div>
