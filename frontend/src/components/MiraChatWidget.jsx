@@ -784,7 +784,19 @@ const MiraChatWidget = ({
       console.log('[Mira] Response status:', response.status);
       
       if (response.ok) {
-        const data = await response.json();
+        let data;
+        try {
+          data = await response.json();
+        } catch (parseError) {
+          console.error('[Mira] Failed to parse response JSON:', parseError);
+          throw new Error('Invalid response format');
+        }
+        
+        if (!data || !data.response) {
+          console.error('[Mira] Response missing expected fields:', data);
+          throw new Error('Invalid response data');
+        }
+        
         let displayContent = data.response;
         
         // Handle concierge_action for navigation
