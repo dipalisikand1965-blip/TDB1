@@ -1167,15 +1167,16 @@ const MiraChatWidget = ({
                           li: ({ children }) => <li className="mb-0.5">{children}</li>,
                         }}
                       >
-                        {msg.content}
+                        {msg.content || ''}
                       </ReactMarkdown>
                     </div>
                     
                     {/* Product Cards (if Mira recommends products) */}
-                    {msg.products && msg.products.length > 0 && (
+                    {msg.products && Array.isArray(msg.products) && msg.products.length > 0 && (
                       <div className="mt-3 space-y-2">
                         <p className="text-xs font-bold text-purple-700 uppercase">✨ Recommended for you:</p>
-                        {msg.products.slice(0, 4).map(product => {
+                        {msg.products.slice(0, 4).map((product, pIdx) => {
+                          if (!product || !product.id) return null;
                           // Use fallback image if product image is a local path or missing
                           const imageUrl = product.image && product.image.startsWith('http') 
                             ? product.image 
@@ -1183,13 +1184,13 @@ const MiraChatWidget = ({
                           
                           return (
                             <div 
-                              key={product.id}
+                              key={product.id || pIdx}
                               className="bg-white rounded-lg p-2.5 flex items-center gap-3 border border-purple-100 cursor-pointer active:bg-purple-50"
                               onClick={() => handleProductClick(product)}
                             >
                               <img 
                                 src={imageUrl} 
-                                alt={product.name} 
+                                alt={product.name || 'Product'} 
                                 className="w-16 h-16 rounded object-cover flex-shrink-0"
                                 onError={(e) => {
                                   e.target.onerror = null;
@@ -1197,8 +1198,8 @@ const MiraChatWidget = ({
                                 }}
                               />
                               <div className="flex-1 min-w-0">
-                                <p className="text-sm font-bold text-gray-800 line-clamp-2">{product.name}</p>
-                                <p className="text-sm text-purple-600 font-bold">₹{product.price}</p>
+                                <p className="text-sm font-bold text-gray-800 line-clamp-2">{product.name || 'Product'}</p>
+                                <p className="text-sm text-purple-600 font-bold">₹{product.price || 0}</p>
                                 {product.original_price && product.original_price > product.price && (
                                   <p className="text-xs text-gray-400 line-through">₹{product.original_price}</p>
                                 )}
