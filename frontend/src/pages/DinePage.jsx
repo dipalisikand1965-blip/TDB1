@@ -48,6 +48,7 @@ const freshMealsCategories = [
 const DinePage = () => {
   const { addToCart } = useCart();
   const { user: authUser, token } = useAuth();
+  const navigate = useNavigate();
   const [restaurants, setRestaurants] = useState([]);
   const [filteredRestaurants, setFilteredRestaurants] = useState([]);
   const [bundles, setBundles] = useState([]);
