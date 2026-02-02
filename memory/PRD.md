@@ -34,6 +34,13 @@ Build a complete service booking experience and admin management interface for t
 7. ✅ **Mira Quick Book Form Timing** - Form now ONLY appears when user explicitly says "lock in the date", "book now", etc.
    - Previously showed immediately when any service keyword was detected
    - Now Mira asks questions first before showing booking form
+8. ✅ **Fresh Treats Link** - Dine page "Fresh Treats" card now links to `/celebrate/treats`
+9. ✅ **Fresh Meals Page** - Created new `/dine/meals` page with products from dine pillar
+   - Added route in App.js
+   - Added to Dine dropdown in Navbar
+10. ✅ **CSV Export Fix** - Changed endpoint from `/admin/products/export-csv` to `/admin/export/products-csv` to avoid route conflict
+11. ✅ **Mira AI Multi-Pet Sync** - MiraChatWidget now syncs with navbar pet selection via custom event `petSelectionChanged`
+12. ✅ **Pet Selector Event Dispatch** - Navbar now dispatches event when pet is switched
 
 **Testing: 100% Pass Rate (Backend 9/9, Frontend all features verified)**
 
