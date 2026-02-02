@@ -40,9 +40,9 @@ const getUser = () => {
 
 // Fresh Meals Categories
 const freshMealsCategories = [
-  { id: 'treats', name: 'Fresh Treats', icon: Utensils, description: 'Vet-approved fresh treats', path: '/search?q=treats' },
-  { id: 'meals', name: 'Fresh Meals', icon: Coffee, description: 'Nutritious meals & food', path: '/search?q=meals' },
-  { id: 'birthday', name: 'Birthday Cakes', icon: Sparkles, description: 'Celebrate with your pet', path: '/search?q=cake' },
+  { id: 'treats', name: 'Fresh Treats', icon: Utensils, description: 'Vet-approved fresh treats', path: '/celebrate/treats' },
+  { id: 'meals', name: 'Fresh Meals', icon: Coffee, description: 'Nutritious meals & food', path: '/dine/meals' },
+  { id: 'birthday', name: 'Birthday Cakes', icon: Sparkles, description: 'Celebrate with your pet', path: '/celebrate/cakes' },
 ];
 
 const DinePage = () => {
