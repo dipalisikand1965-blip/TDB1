@@ -868,13 +868,23 @@ const MiraChatWidget = ({
           speakText(data.response);
         }
       } else {
-        throw new Error('Failed to get response');
+        // Log the actual error response for debugging
+        const errorText = await response.text().catch(() => 'Unable to read error');
+        console.error('[Mira] API Error:', response.status, errorText);
+        throw new Error(`API returned ${response.status}`);
       }
     } catch (error) {
-      console.error('Mira chat error:', error);
-      const errorMessage = error.name === 'AbortError' 
-        ? "Taking a bit longer than usual. Please check your connection and try again."
-        : "I'm having a brief pause. Please try again.";
+      console.error('[Mira] Chat error:', error?.name, error?.message);
+      let errorMessage = "I'm having a brief pause. Please try again.";
+      
+      if (error.name === 'AbortError') {
+        errorMessage = "Taking a bit longer than usual. Please check your connection and try again.";
+      } else if (error.message?.includes('520') || error.message?.includes('502') || error.message?.includes('503')) {
+        errorMessage = "Our servers are experiencing high traffic. Please try again in a moment.";
+      } else if (error.message?.includes('Failed to fetch') || error.message?.includes('NetworkError')) {
+        errorMessage = "Connection issue detected. Please check your internet and try again.";
+      }
+      
       setMessages(prev => [...prev, {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
