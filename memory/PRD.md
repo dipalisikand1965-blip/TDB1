@@ -17,7 +17,28 @@ Build a complete service booking experience and admin management interface for t
 
 ## What's Been Implemented
 
-### Session: February 2, 2026 - Bundle Modal & Cross-Sell UI Fixes (LATEST)
+### Session: February 2, 2026 - Unified Service Flow Implementation (LATEST)
+
+**Critical Fix: Service Request → Member Notification Flow**
+
+The unified service flow now creates ALL required records:
+1. ✅ **Service Desk Ticket** (TKT-XXXXXXXX)
+2. ✅ **Admin Notification** (NOTIF-XXXXXXXX)  
+3. ✅ **Member Notification** (MNOTIF-XXXXXXXX) - **NEW!**
+4. ✅ **Pillar Request** (PR-XXXXXXXX) - **NEW!**
+5. ✅ **Tickets Collection** entry
+6. ✅ **Channel Intakes** entry
+
+**New API Endpoints:**
+- `GET /api/member/notifications` - Get member's notifications with unread count
+- `PUT /api/member/notifications/{id}/read` - Mark notification as read
+- `GET /api/member/requests` - Get all member's requests across pillars
+
+**Documentation:** See `/app/memory/UNIFIED_SERVICE_FLOW.md` for complete flow diagram
+
+**Testing:** Verified grooming request flow - all 6 collections updated ✅
+
+### Session: February 2, 2026 - Bundle Modal & Cross-Sell UI Fixes
 
 **Bugs Fixed:**
 1. ✅ **Bundle Modal with X Button** - Added proper dialog with X close button, image display, description, price, and Add to Cart
