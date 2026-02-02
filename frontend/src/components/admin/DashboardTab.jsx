@@ -33,6 +33,8 @@ const DashboardTab = ({
 }) => {
   const [todayMetrics, setTodayMetrics] = useState(null);
   const [loadingMetrics, setLoadingMetrics] = useState(false);
+  const [enhancingTags, setEnhancingTags] = useState(false);
+  const [seedingProducts, setSeedingProducts] = useState(false);
 
   // Fetch today's key metrics from Report Builder
   const fetchTodayMetrics = async () => {
@@ -47,6 +49,62 @@ const DashboardTab = ({
       console.error('Failed to fetch today metrics:', error);
     } finally {
       setLoadingMetrics(false);
+    }
+  };
+
+  // Enhance all product tags
+  const handleEnhanceTags = async () => {
+    setEnhancingTags(true);
+    try {
+      const response = await fetch(`${API_URL}/api/admin/products/run-intelligence?update_db=true`, {
+        method: 'POST',
+        ...authHeaders
+      });
+      if (response.ok) {
+        const data = await response.json();
+        toast({
+          title: "✅ Tags Enhanced!",
+          description: `Processed ${data.results?.products_processed || 0} products with ${data.results?.tags_added || 0} tags added`,
+        });
+      } else {
+        throw new Error('Failed to enhance tags');
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setEnhancingTags(false);
+    }
+  };
+
+  // Seed all products
+  const handleSeedProducts = async () => {
+    setSeedingProducts(true);
+    try {
+      const response = await fetch(`${API_URL}/api/admin/seed-all`, {
+        method: 'POST',
+        ...authHeaders
+      });
+      if (response.ok) {
+        const data = await response.json();
+        toast({
+          title: "✅ Products Seeded!",
+          description: data.message || "All pillar products seeded successfully",
+        });
+      } else {
+        throw new Error('Failed to seed products');
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive"
+      });
+    } finally {
+      setSeedingProducts(false);
     }
   };
 
