@@ -416,8 +416,12 @@ const Navbar = () => {
           const pets = data.pets || [];
           setAllPets(pets);
           if (pets.length > 0) {
-            setPrimaryPet(pets[0]);
-            setPetSoulScore(Math.round(pets[0].overall_score || 0));
+            // Check if there's a previously selected pet
+            const savedPetId = localStorage.getItem('selectedPetId');
+            const savedPet = savedPetId ? pets.find(p => p.id === savedPetId) : null;
+            const selectedPet = savedPet || pets[0];
+            setPrimaryPet(selectedPet);
+            setPetSoulScore(Math.round(selectedPet.overall_score || 0));
           }
         }
       } catch (error) {
