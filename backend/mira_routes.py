@@ -3552,7 +3552,8 @@ What would you like to explore? 🐾"""
         # NOT on service booking requests like "book grooming"
         product_keywords = ["treat", "cake", "food", "toy", "product", "buy", "show me products", 
                            "recommend products", "suggest products", "kit", "items from shop", 
-                           "specific products", "what products", "shopping"]
+                           "specific products", "what products", "shopping", "meal", "fresh meal",
+                           "fresh meals", "snack", "chew", "bowl", "collar", "leash", "bed", "hamper"]
         service_only_keywords = ["book", "appointment", "schedule", "reserve", "booking"]
         
         # ==================== EXPLICIT KIT DETECTION ====================
