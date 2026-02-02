@@ -179,7 +179,7 @@ const Admin = () => {
     setSeedingAll(true);
     try {
       // UNIVERSAL SEED - Seeds ALL 14 pillars with products, services, pricing, shipping
-      toast({ title: '🚀 Universal Seed Started', description: 'Seeding all 14 pillars... This may take 30-60 seconds.' });
+      toast({ title: '🚀 Universal Seed Started', description: 'Seeding all 14 pillars + enhancing tags... This may take 30-60 seconds.' });
       
       console.log('[Universal Seed] Starting seed to:', `${API_URL}/api/admin/universal-seed`);
       
@@ -195,13 +195,34 @@ const Admin = () => {
       if (response.ok) {
         const data = await response.json();
         console.log('[Universal Seed] Success:', data);
-        const results = data.results || {};
-        const engagement = results.engagement || {};
-        toast({
-          title: '✅ Universal Seed Complete!',
-          description: `Products: ${results.products?.created || 0} new, ${results.products?.updated || 0} updated | Stories: ${engagement.stories || 0} | Tips: ${engagement.tips || 0}`,
-          duration: 8000
-        });
+        
+        // Now run Product Intelligence to enhance all tags
+        toast({ title: '🏷️ Enhancing Product Tags...', description: 'Adding pillar, breed, size, occasion tags...' });
+        
+        try {
+          const tagResponse = await fetch(`${API_URL}/api/admin/products/run-intelligence?update_db=true`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' }
+          });
+          
+          if (tagResponse.ok) {
+            const tagData = await tagResponse.json();
+            console.log('[Universal Seed] Tag enhancement:', tagData);
+            
+            toast({
+              title: '✅ Universal Seed + Tags Complete!',
+              description: `Products seeded & ${tagData.results?.tags_added || 0} tags enhanced across ${tagData.results?.products_processed || 0} products`,
+              duration: 8000
+            });
+          }
+        } catch (tagError) {
+          console.log('[Universal Seed] Tag enhancement skipped:', tagError);
+          toast({
+            title: '✅ Universal Seed Complete!',
+            description: `Products seeded. Tag enhancement will run on next restart.`,
+            duration: 8000
+          });
+        }
       } else {
         const errorText = await response.text();
         console.error('[Universal Seed] Failed:', response.status, errorText);
