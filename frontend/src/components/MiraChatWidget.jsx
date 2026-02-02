@@ -1091,7 +1091,7 @@ const MiraChatWidget = ({
                         setSelectedPet(pet);
                         trackClick('pet_switch', pet.id, { pillar, from_pet: selectedPet?.id });
                       }}
-                      className={`px-3 py-1.5 rounded-full text-xs flex items-center gap-1.5 transition-all shrink-0 ${
+                      className={`px-3 py-2.5 min-h-[40px] rounded-full text-xs flex items-center gap-1.5 transition-all shrink-0 touch-manipulation active:scale-95 ${
                         selectedPet?.id === pet.id 
                           ? `bg-gradient-to-r ${config.color} text-white` 
                           : 'bg-gray-100 text-gray-600'
