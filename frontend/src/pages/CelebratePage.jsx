@@ -509,7 +509,12 @@ const CelebratePage = () => {
             Let our Celebrate Concierge® create an unforgettable experience for your furry friend.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 px-4 sm:px-0">
-            <Button size="lg" className="w-full sm:w-auto bg-white text-pink-600 hover:bg-pink-50 gap-2 h-12 sm:h-11 font-semibold shadow-lg active:scale-95 transition-transform">
+            <Button 
+              size="lg" 
+              className="w-full sm:w-auto bg-white text-pink-600 hover:bg-pink-50 gap-2 h-12 sm:h-11 font-semibold shadow-lg active:scale-95 transition-transform"
+              onClick={() => setShowConciergeModal(true)}
+              data-testid="ask-concierge-btn"
+            >
               <Sparkles className="w-5 h-5" />
               Ask Concierge®
             </Button>
