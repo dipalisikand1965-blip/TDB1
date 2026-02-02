@@ -547,6 +547,181 @@ const CelebratePage = () => {
         petName="your pet"
         onAddToCart={handleAddToCart}
       />
+      
+      {/* Ask Concierge Modal - Celebration Request Form */}
+      {showConciergeModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowConciergeModal(false)}>
+          <Card className="w-full max-w-lg bg-white rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            {/* Header */}
+            <div className="bg-gradient-to-r from-pink-500 to-purple-500 text-white p-5 rounded-t-2xl">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                    <Sparkles className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold">Ask Concierge®</h2>
+                    <p className="text-pink-100 text-sm">Plan the pawfect celebration</p>
+                  </div>
+                </div>
+                <button onClick={() => setShowConciergeModal(false)} className="p-2 hover:bg-white/20 rounded-full">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+            
+            {/* Form */}
+            <form onSubmit={handleConciergeSubmit} className="p-5 space-y-4">
+              {/* Contact Info */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">Your Name *</label>
+                  <Input
+                    value={conciergeForm.name}
+                    onChange={(e) => setConciergeForm({...conciergeForm, name: e.target.value})}
+                    placeholder="Your name"
+                    required
+                    className="h-11"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">WhatsApp *</label>
+                  <Input
+                    type="tel"
+                    value={conciergeForm.phone}
+                    onChange={(e) => setConciergeForm({...conciergeForm, phone: e.target.value})}
+                    placeholder="+91 98765 43210"
+                    required
+                    className="h-11"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-1 block">Email *</label>
+                <Input
+                  type="email"
+                  value={conciergeForm.email}
+                  onChange={(e) => setConciergeForm({...conciergeForm, email: e.target.value})}
+                  placeholder="your@email.com"
+                  required
+                  className="h-11"
+                />
+              </div>
+              
+              {/* Pet & Occasion */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">Pet's Name *</label>
+                  <Input
+                    value={conciergeForm.petName}
+                    onChange={(e) => setConciergeForm({...conciergeForm, petName: e.target.value})}
+                    placeholder="Your pet's name"
+                    required
+                    className="h-11"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">Occasion *</label>
+                  <select
+                    value={conciergeForm.occasion}
+                    onChange={(e) => setConciergeForm({...conciergeForm, occasion: e.target.value})}
+                    className="w-full h-11 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+                    required
+                  >
+                    <option value="birthday">🎂 Birthday Party</option>
+                    <option value="gotcha_day">🏠 Gotcha Day / Adoption Anniversary</option>
+                    <option value="first_birthday">🎉 First Birthday (Big One!)</option>
+                    <option value="pawty">🐾 Pawty with Friends</option>
+                    <option value="photoshoot">📸 Celebration Photoshoot</option>
+                    <option value="surprise">🎁 Surprise Celebration</option>
+                    <option value="other">✨ Other Special Occasion</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">Celebration Date</label>
+                  <Input
+                    type="date"
+                    value={conciergeForm.celebrationDate}
+                    onChange={(e) => setConciergeForm({...conciergeForm, celebrationDate: e.target.value})}
+                    min={new Date().toISOString().split('T')[0]}
+                    className="h-11"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">Expected Guests</label>
+                  <select
+                    value={conciergeForm.guestCount}
+                    onChange={(e) => setConciergeForm({...conciergeForm, guestCount: e.target.value})}
+                    className="w-full h-11 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+                  >
+                    <option value="">Select...</option>
+                    <option value="intimate">Just us & pet</option>
+                    <option value="small">2-5 guests</option>
+                    <option value="medium">6-10 guests</option>
+                    <option value="large">10+ guests</option>
+                    <option value="pet_party">Pet playdate (multiple pets)</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-1 block">Budget Range</label>
+                <select
+                  value={conciergeForm.budget}
+                  onChange={(e) => setConciergeForm({...conciergeForm, budget: e.target.value})}
+                  className="w-full h-11 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+                >
+                  <option value="">Select budget...</option>
+                  <option value="under_2000">Under ₹2,000</option>
+                  <option value="2000_5000">₹2,000 - ₹5,000</option>
+                  <option value="5000_10000">₹5,000 - ₹10,000</option>
+                  <option value="10000_25000">₹10,000 - ₹25,000</option>
+                  <option value="above_25000">₹25,000+</option>
+                  <option value="flexible">Flexible - Surprise me!</option>
+                </select>
+              </div>
+              
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-1 block">Special Requests / Ideas</label>
+                <textarea
+                  value={conciergeForm.specialRequests}
+                  onChange={(e) => setConciergeForm({...conciergeForm, specialRequests: e.target.value})}
+                  placeholder="Tell us about your dream celebration - themes, dietary requirements, venue preferences, any special requests..."
+                  rows={3}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500 text-sm"
+                />
+              </div>
+              
+              {/* Submit */}
+              <Button 
+                type="submit" 
+                disabled={conciergeSubmitting}
+                className="w-full h-12 bg-gradient-to-r from-pink-500 to-purple-500 hover:from-pink-600 hover:to-purple-600 text-white font-semibold text-base"
+              >
+                {conciergeSubmitting ? (
+                  <span className="flex items-center gap-2">
+                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                    Submitting...
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-2">
+                    <Send className="w-5 h-5" />
+                    Submit Celebration Request
+                  </span>
+                )}
+              </Button>
+              
+              <p className="text-xs text-center text-gray-500">
+                Our Celebrate Concierge® team will contact you within 2 hours to plan your pawfect celebration! 🎉
+              </p>
+            </form>
+          </Card>
+        </div>
+      )}
     </div>
   );
 };
