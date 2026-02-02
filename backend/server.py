@@ -8724,6 +8724,38 @@ async def universal_search(
                 "unified_flow_processed": True
             })
             
+            # STEP 4: Create MEMBER NOTIFICATION (so user sees search was tracked)
+            if member_email:
+                member_notif_id = f"MNOTIF-{uuid.uuid4().hex[:8].upper()}"
+                await db.member_notifications.insert_one({
+                    "id": member_notif_id,
+                    "user_email": member_email,
+                    "type": "search_tracked",
+                    "title": f"Search: {q[:30]}..." if len(q) > 30 else f"Search: {q}",
+                    "message": f"We noticed you searched for '{q}'. Need help finding what you're looking for?",
+                    "ticket_id": ticket_id,
+                    "signal_id": signal_id,
+                    "pillar": current_pillar or "search",
+                    "detected_intent": detected_intent,
+                    "link": f"/search?q={q}",
+                    "read": False,
+                    "created_at": now_iso
+                })
+            
+            # STEP 5: Create PILLAR REQUEST for tracking
+            await db.pillar_requests.insert_one({
+                "id": f"PR-{uuid.uuid4().hex[:8].upper()}",
+                "ticket_id": ticket_id,
+                "signal_id": signal_id,
+                "pillar": current_pillar or "search",
+                "type": "search_signal",
+                "intent": detected_intent,
+                "user_email": member_email,
+                "query": q,
+                "status": "signal",
+                "created_at": now_iso
+            })
+            
             signal_result = {
                 "signal_id": signal_id,
                 "ticket_id": ticket_id,
