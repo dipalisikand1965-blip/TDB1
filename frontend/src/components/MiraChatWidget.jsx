@@ -296,20 +296,25 @@ const MiraChatWidget = ({
     };
     
     fetchPets();
-    
-    // Listen for storage changes (when user switches pet in navbar)
-    const handleStorageChange = (e) => {
-      if (e.key === 'selectedPetId' && pets.length > 0) {
-        const newPet = pets.find(p => p.id === e.newValue);
+  }, [user, token]);
+  
+  // Listen for pet selection changes from navbar
+  useEffect(() => {
+    const handlePetChange = (e) => {
+      const newPetId = e.detail?.petId;
+      if (newPetId && pets.length > 0) {
+        const newPet = pets.find(p => p.id === newPetId);
         if (newPet) {
           setSelectedPet(newPet);
+          // Clear messages to show new personalized greeting
+          setMessages([]);
         }
       }
     };
     
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, [user, token, pets.length]);
+    window.addEventListener('petSelectionChanged', handlePetChange);
+    return () => window.removeEventListener('petSelectionChanged', handlePetChange);
+  }, [pets]);
   
   // Fetch pet-specific recommendations and soul insights when pet changes
   useEffect(() => {
