@@ -4372,7 +4372,20 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                     enhanced_concierge_action["service_pillar"] = SERVICE_TO_PILLAR.get(service_type, pillar)
                     break
             
-            if detected_service:
+            # Only show Quick Book form when user EXPLICITLY wants to book
+            # NOT when just mentioning a service keyword
+            BOOKING_INTENT_PHRASES = [
+                "lock in the date", "lock in date", "book now", "book this", "book it",
+                "confirm booking", "confirm the booking", "make a booking", "make booking",
+                "schedule it", "schedule this", "finalize booking", "finalize the booking",
+                "ready to book", "let's book", "lets book", "want to book", "i want to book",
+                "proceed with booking", "proceed to book", "go ahead and book",
+                "yes book", "yes, book", "book please", "please book"
+            ]
+            
+            user_wants_to_book = any(phrase in message_lower for phrase in BOOKING_INTENT_PHRASES)
+            
+            if detected_service and user_wants_to_book:
                 enhanced_concierge_action["show_quick_book_form"] = True
                 enhanced_concierge_action["form_type"] = "service_booking"
                 enhanced_concierge_action["service_type"] = detected_service
