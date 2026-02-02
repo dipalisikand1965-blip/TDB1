@@ -765,7 +765,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', onClose }) => {
         </button>
 
         <div className="grid md:grid-cols-2">
-          <div className="relative aspect-square bg-gray-100 md:sticky md:top-0">
+          <div className="relative aspect-square bg-gray-100">
             <img
               src={product.image && product.image.trim() !== '' ? product.image : 'https://cdn.shopify.com/s/files/1/0417/2844/2522/files/TDB_cakes_28.png?v=1738050579'}
               alt={product.name}
