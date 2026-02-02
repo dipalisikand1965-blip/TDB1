@@ -24,9 +24,8 @@ tts_router = APIRouter(prefix="/tts", tags=["tts"])
 # ElevenLabs configuration
 ELEVENLABS_API_KEY = os.environ.get("ELEVENLABS_API_KEY")
 
-# Voice IDs - using Lily (British, Velvety Actress, Confident) for Mira
-# Lily is perfect for a sophisticated British pet concierge
-MIRA_VOICE_ID = os.environ.get("MIRA_VOICE_ID", "pFZP5JQG7iQjIQuC4Bku")  # Lily - British, velvety, confident
+# Voice IDs - using Rachel (Warm, Natural) for Mira
+MIRA_VOICE_ID = os.environ.get("MIRA_VOICE_ID", "21m00Tcm4TlvDq8ikWAM")  # Rachel - warm, natural female voice
 
 # Emoji to word mapping for natural speech
 EMOJI_REPLACEMENTS = {
