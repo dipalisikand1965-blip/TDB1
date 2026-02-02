@@ -271,7 +271,7 @@ const MiraChatWidget = ({
     setQuickActions(pillarActions[pillar] || ['Help', 'Browse', 'Book']);
   }, [pillar]);
   
-  // Fetch user's pets
+  // Fetch user's pets and sync with navbar selection
   useEffect(() => {
     if (!user || !token) return;
     
@@ -284,7 +284,10 @@ const MiraChatWidget = ({
           const data = await response.json();
           setPets(data.pets || []);
           if (data.pets?.length > 0) {
-            setSelectedPet(data.pets[0]);
+            // Sync with navbar's selected pet from localStorage
+            const savedPetId = localStorage.getItem('selectedPetId');
+            const savedPet = savedPetId ? data.pets.find(p => p.id === savedPetId) : null;
+            setSelectedPet(savedPet || data.pets[0]);
           }
         }
       } catch (error) {
@@ -293,7 +296,20 @@ const MiraChatWidget = ({
     };
     
     fetchPets();
-  }, [user, token]);
+    
+    // Listen for storage changes (when user switches pet in navbar)
+    const handleStorageChange = (e) => {
+      if (e.key === 'selectedPetId' && pets.length > 0) {
+        const newPet = pets.find(p => p.id === e.newValue);
+        if (newPet) {
+          setSelectedPet(newPet);
+        }
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [user, token, pets.length]);
   
   // Fetch pet-specific recommendations and soul insights when pet changes
   useEffect(() => {
