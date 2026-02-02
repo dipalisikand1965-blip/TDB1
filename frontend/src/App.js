@@ -391,6 +391,7 @@ function MainLayout() {
         
         {/* Service Pillars - Open for browsing */}
         <Route path="/dine" element={<DinePage />} />
+        <Route path="/dine/meals" element={<MealsPage />} />
         <Route path="/stay" element={<StayPage />} />
         <Route path="/travel" element={<TravelPage />} />
         <Route path="/care" element={<CarePage />} />
