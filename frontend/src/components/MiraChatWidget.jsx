@@ -1351,7 +1351,8 @@ const MiraChatWidget = ({
                     )}
                   </div>
                 </div>
-              ))}
+              );
+              })}
               
               {isSending && (
                 <div className="flex justify-start">
