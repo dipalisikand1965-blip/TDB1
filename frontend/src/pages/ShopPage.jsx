@@ -268,7 +268,7 @@ const ShopPage = () => {
   // Fetch products
   useEffect(() => {
     fetchProducts();
-  }, [selectedCategory, selectedParentCategory, selectedPillar, sortBy]);
+  }, [selectedCategory, selectedParentCategory, selectedPillar, sortBy, searchQuery]);
 
   // Fetch user's pets for recommendations
   useEffect(() => {
