@@ -84,8 +84,76 @@ const MiraPage = () => {
   const [speechSupported, setSpeechSupported] = useState(false);
   const recognitionRef = useRef(null);
   
+  // Voice output state (TTS)
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const audioRef = useRef(null);
+  
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+
+  // ElevenLabs TTS function
+  const speakText = async (text) => {
+    if (!voiceEnabled || !text) return;
+    
+    try {
+      // Clean text for speech
+      const cleanText = text
+        .replace(/[🎉🐕✨🦴💜🎂🏥☀️🌤️🌙🌟🐾🎒📅📋🔥⭐💪🎯]/g, '')
+        .replace(/[*_#]/g, '')
+        .replace(/\[.*?\]/g, '')
+        .replace(/®|™|©/g, '')
+        .trim();
+      
+      if (!cleanText) return;
+      
+      setIsSpeaking(true);
+      
+      const response = await fetch(`${API_URL}/api/tts/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: cleanText })
+      });
+      
+      if (!response.ok) {
+        throw new Error('TTS failed');
+      }
+      
+      const data = await response.json();
+      
+      // Stop any existing audio
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+      
+      // Play audio
+      const audio = new Audio(`data:audio/mpeg;base64,${data.audio_base64}`);
+      audioRef.current = audio;
+      
+      audio.onended = () => {
+        setIsSpeaking(false);
+      };
+      
+      audio.onerror = () => {
+        setIsSpeaking(false);
+      };
+      
+      await audio.play();
+    } catch (error) {
+      console.error('TTS error:', error);
+      setIsSpeaking(false);
+    }
+  };
+
+  // Stop speaking
+  const stopSpeaking = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+    setIsSpeaking(false);
+  };
 
   // Check for speech recognition support
   useEffect(() => {
