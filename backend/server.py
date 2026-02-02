@@ -11164,6 +11164,132 @@ async def get_member_unread_count(current_user: dict = Depends(get_current_user)
         return {"unread_count": 0, "error": str(e)}
 
 
+
+# ==================== MEMBER NOTIFICATIONS API ====================
+
+@api_router.get("/member/notifications")
+async def get_member_notifications(
+    current_user: dict = Depends(get_current_user),
+    limit: int = Query(20, le=100),
+    offset: int = 0,
+    unread_only: bool = False
+):
+    """Get notifications for the logged-in member"""
+    user_email = current_user.get("email", "")
+    user_id = current_user.get("id", "")
+    
+    query = {
+        "$or": [
+            {"user_email": user_email},
+            {"user_id": user_id}
+        ]
+    }
+    
+    if unread_only:
+        query["read"] = False
+    
+    # Get from member_notifications collection
+    notifications = await db.member_notifications.find(
+        query,
+        {"_id": 0}
+    ).sort("created_at", -1).skip(offset).limit(limit).to_list(limit)
+    
+    total = await db.member_notifications.count_documents(query)
+    unread = await db.member_notifications.count_documents({**query, "read": False})
+    
+    return {
+        "notifications": notifications,
+        "total": total,
+        "unread_count": unread
+    }
+
+
+@api_router.put("/member/notifications/{notification_id}/read")
+async def mark_member_notification_read(
+    notification_id: str,
+    current_user: dict = Depends(get_current_user)
+):
+    """Mark a member notification as read"""
+    user_email = current_user.get("email", "")
+    
+    result = await db.member_notifications.update_one(
+        {"id": notification_id, "user_email": user_email},
+        {"$set": {"read": True, "read_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Notification not found")
+    
+    return {"success": True, "message": "Notification marked as read"}
+
+
+@api_router.get("/member/requests")
+async def get_member_requests(
+    current_user: dict = Depends(get_current_user),
+    pillar: Optional[str] = None,
+    status: Optional[str] = None,
+    limit: int = Query(20, le=100)
+):
+    """Get all service requests/bookings for the logged-in member"""
+    user_email = current_user.get("email", "")
+    user_id = current_user.get("id", "")
+    
+    # Query from multiple collections
+    query = {
+        "$or": [
+            {"user_email": user_email},
+            {"member.email": user_email}
+        ]
+    }
+    
+    if pillar:
+        query["pillar"] = pillar
+    if status:
+        query["status"] = status
+    
+    # Get from tickets collection
+    tickets = await db.tickets.find(
+        query,
+        {"_id": 0}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    # Get from quick_bookings collection
+    bookings = await db.quick_bookings.find(
+        {"$or": [{"user_email": user_email}, {"member.email": user_email}]},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    # Get from pillar_requests collection
+    pillar_requests = await db.pillar_requests.find(
+        {"user_email": user_email},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    # Combine and sort by created_at
+    all_requests = []
+    for t in tickets:
+        t["source"] = "ticket"
+        all_requests.append(t)
+    for b in bookings:
+        b["source"] = "booking"
+        all_requests.append(b)
+    for p in pillar_requests:
+        p["source"] = "pillar_request"
+        all_requests.append(p)
+    
+    # Sort by created_at descending
+    all_requests.sort(key=lambda x: x.get("created_at", ""), reverse=True)
+    
+    return {
+        "requests": all_requests[:limit],
+        "total": len(all_requests),
+        "tickets_count": len(tickets),
+        "bookings_count": len(bookings),
+        "pillar_requests_count": len(pillar_requests)
+    }
+
+
+
 # ==================== SEED ALL PILLARS ====================
 
 @api_router.post("/admin/seed-all")
