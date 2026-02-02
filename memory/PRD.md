@@ -17,7 +17,32 @@ Build a complete service booking experience and admin management interface for t
 
 ## What's Been Implemented
 
-### Session: February 2, 2026 - Unified Service Flow Implementation (LATEST)
+### Session: February 2, 2026 - Bug Fixes Batch (LATEST)
+
+**Issues Fixed:**
+1. ✅ **Dialog/Modal Z-Index Fix** - Changed z-index from z-50/z-60 to z-[9998]/z-[9999] in dialog.jsx
+   - Modals now appear properly above the navbar header
+   - Cross-sell modal no longer "sticks" to header
+2. ✅ **PawMeter Rating UI** - Enhanced ProductCard.jsx to show rating UI on all devices
+   - Shows "Rate" button next to existing PawMeter score
+   - Shows "Be first to rate" button for products without ratings
+   - Works on both mobile and desktop
+3. ✅ **Pet Selector Event Dispatch** - Enhanced Navbar.jsx pet selection
+   - Event now includes full pet details: petId, petName, petBreed, and complete pet object
+   - Stores petName and petBreed in localStorage for persistence
+   - MiraChatWidget and other components can now access full pet context
+4. ✅ **Null Safety for Pet Data** - Added null checks in Navbar pet loading
+   - Prevents crashes when pet data has missing fields (Luna crash fix)
+
+**Files Modified:**
+- `/app/frontend/src/components/ui/dialog.jsx` - z-index 9998/9999
+- `/app/frontend/src/components/ProductCard.jsx` - PawMeter Rate buttons
+- `/app/frontend/src/components/Navbar.jsx` - Pet event dispatch with full details
+
+**Testing: 100% Pass Rate (9/9 backend tests, all frontend UI verified)**
+- Test report: `/app/test_reports/iteration_182.json`
+
+### Session: February 2, 2026 - Unified Service Flow Implementation
 
 **Critical Fix: Complete Unified Flow - ALL Entry Points**
 
@@ -301,7 +326,7 @@ Every user action now follows the unified flow:
 - [ ] "Pet Parent Magnet" features (First box free, Pet Parent Score)
 - [ ] Rewards Program finalization
 - [ ] Sticky booking form fix on desktop (post-booking state)
-- [ ] Pet selector navbar header update when switching
+- [x] Pet selector navbar header update when switching (FIXED Feb 2, 2026)
 
 ### P2 (Lower Priority)
 - [ ] Razorpay Payment Integration (awaiting keys)
