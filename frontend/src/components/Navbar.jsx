@@ -548,10 +548,20 @@ const Navbar = () => {
               </div>
             </Link>
 
-            {/* Search Bar - Full width on mobile */}
-            <div className="flex-1 relative" ref={searchRef}>
-              <form onSubmit={handleSearch}>
-                <div className="flex">
+            {/* Search Bar - Expandable on mobile, always visible on desktop */}
+            <div className={`relative transition-all duration-300 ${searchExpanded ? 'flex-1' : 'sm:flex-1'}`} ref={searchRef}>
+              {/* Mobile: Collapsed search icon */}
+              <button
+                onClick={() => setSearchExpanded(true)}
+                className={`sm:hidden p-2 rounded-lg bg-white/10 hover:bg-white/20 ${searchExpanded ? 'hidden' : 'block'}`}
+                aria-label="Open search"
+              >
+                <Search className="w-5 h-5 text-white" />
+              </button>
+              
+              {/* Expanded search form */}
+              <form onSubmit={handleSearch} className={`${searchExpanded ? 'flex' : 'hidden sm:flex'}`}>
+                <div className="flex flex-1">
                   <input
                     type="text"
                     value={searchQuery}
@@ -560,9 +570,18 @@ const Navbar = () => {
                       setShowSearchSuggestions(true);
                     }}
                     onFocus={() => setShowSearchSuggestions(true)}
+                    onBlur={() => {
+                      // Collapse on mobile if empty
+                      setTimeout(() => {
+                        if (!searchQuery && window.innerWidth < 640) {
+                          setSearchExpanded(false);
+                        }
+                      }, 200);
+                    }}
                     placeholder={primaryPet ? `Search for ${primaryPet.name}...` : "Search..."}
                     className="w-full px-3 py-2 text-sm text-gray-900 bg-white rounded-l-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                     data-testid="navbar-search-input"
+                    autoFocus={searchExpanded}
                   />
                   {/* Voice Wizard Button */}
                   <button 
@@ -581,6 +600,16 @@ const Navbar = () => {
                   >
                     <Search className="w-4 h-4 text-white" />
                   </button>
+                  {/* Close button on mobile */}
+                  {searchExpanded && (
+                    <button
+                      type="button"
+                      onClick={() => { setSearchExpanded(false); setSearchQuery(''); }}
+                      className="sm:hidden ml-2 p-2 rounded-lg bg-white/10 hover:bg-white/20"
+                    >
+                      <X className="w-4 h-4 text-white" />
+                    </button>
+                  )}
                 </div>
               </form>
               
