@@ -297,8 +297,8 @@ const ProductCard = ({ product, pillar = 'celebrate' }) => {
 
         <div className="p-2 sm:p-4 space-y-1 sm:space-y-2">
           {/* PawMeter Score Display - shown on all screens */}
-          {(product.paw_score || product.rating) && (
-            <div className="flex items-center gap-1">
+          {(product.paw_score || product.rating) ? (
+            <div className="flex items-center gap-1 flex-wrap">
               <PawPrint className="w-3 h-3 sm:w-4 sm:h-4 fill-amber-500 text-amber-500" />
               <span className="text-xs sm:text-sm font-semibold text-gray-700">
                 {(product.paw_score || product.rating * 2).toFixed(1)}
@@ -309,7 +309,21 @@ const ProductCard = ({ product, pillar = 'celebrate' }) => {
                   ({product.paw_ratings_count || product.reviews})
                 </span>
               )}
+              <button 
+                onClick={(e) => { e.stopPropagation(); setShowModal(true); }}
+                className="text-[10px] text-amber-600 hover:text-amber-700 underline ml-1"
+              >
+                Rate
+              </button>
             </div>
+          ) : (
+            <button 
+              onClick={(e) => { e.stopPropagation(); setShowModal(true); }}
+              className="flex items-center gap-1 text-[10px] text-amber-600 hover:text-amber-700"
+            >
+              <PawPrint className="w-3 h-3 text-amber-400" />
+              <span className="underline">Be first to rate</span>
+            </button>
           )}
 
           <h3 className="font-semibold text-gray-900 line-clamp-2 text-xs sm:text-sm">{product.name}</h3>
