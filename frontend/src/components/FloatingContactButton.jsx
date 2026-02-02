@@ -64,8 +64,8 @@ const FloatingContactButton = () => {
 
   return (
     <>
-      {/* Positioned on LEFT side to not conflict with Mira Orb */}
-      <div className="fixed bottom-4 left-4 z-[9990] flex flex-col items-start gap-2" data-testid="floating-contact">
+      {/* Hidden on mobile (md:flex) - mobile users use the paw-print sidebar instead */}
+      <div className="hidden md:flex fixed bottom-4 left-4 z-[9990] flex-col items-start gap-2" data-testid="floating-contact">
         {/* Expanded Options */}
         {isOpen && (
           <div className="flex flex-col gap-2 mb-2 animate-in slide-in-from-bottom-4 fade-in duration-200">
