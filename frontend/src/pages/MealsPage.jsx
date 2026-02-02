@@ -222,7 +222,7 @@ const MealsPage = () => {
               size="lg" 
               variant="outline"
               className="w-full sm:w-auto border-white text-white hover:bg-white/20 gap-2 h-12 sm:h-11 text-base"
-              onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={() => navigate('/meal-plan')}
             >
               <Calendar className="w-5 h-5" />
               Meal Plans
