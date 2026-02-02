@@ -326,14 +326,28 @@ const MealsPage = () => {
             
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
               {bundles.slice(0, 6).map((bundle) => (
-                <Card key={bundle.id} className="p-4 sm:p-6 hover:shadow-lg transition-shadow">
-                  <div className="aspect-video bg-gradient-to-br from-orange-400 to-amber-500 rounded-lg mb-4 flex items-center justify-center">
-                    <Package className="w-12 h-12 text-white" />
+                <Card 
+                  key={bundle.id} 
+                  className="p-4 sm:p-6 hover:shadow-lg transition-shadow cursor-pointer group"
+                  onClick={() => setSelectedBundle(bundle)}
+                >
+                  <div className="aspect-video rounded-lg mb-4 overflow-hidden relative">
+                    {bundle.image ? (
+                      <img 
+                        src={bundle.image} 
+                        alt={bundle.name} 
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-orange-400 to-amber-500 flex items-center justify-center">
+                        <Package className="w-12 h-12 text-white" />
+                      </div>
+                    )}
                   </div>
                   <h3 className="font-semibold text-gray-900 text-base sm:text-lg mb-2">{bundle.name}</h3>
                   <p className="text-sm text-gray-600 mb-3 line-clamp-2">{bundle.description}</p>
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-orange-600">₹{bundle.price?.toLocaleString('en-IN')}</span>
+                    <span className="font-bold text-orange-600">₹{bundle.price?.toLocaleString('en-IN') || bundle.bundle_price?.toLocaleString('en-IN')}</span>
                     <Button size="sm" className="bg-orange-500 hover:bg-orange-600">
                       View Bundle
                     </Button>
@@ -344,6 +358,89 @@ const MealsPage = () => {
           </div>
         </div>
       )}
+
+      {/* Bundle Detail Modal */}
+      <Dialog open={!!selectedBundle} onOpenChange={(open) => !open && setSelectedBundle(null)}>
+        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Package className="w-5 h-5 text-orange-500" />
+              {selectedBundle?.name}
+            </DialogTitle>
+            <button 
+              onClick={() => setSelectedBundle(null)}
+              className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100"
+            >
+              <X className="h-4 w-4" />
+              <span className="sr-only">Close</span>
+            </button>
+          </DialogHeader>
+          
+          {selectedBundle && (
+            <div className="space-y-4">
+              {selectedBundle.image && (
+                <div className="aspect-video rounded-lg overflow-hidden">
+                  <img 
+                    src={selectedBundle.image} 
+                    alt={selectedBundle.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              )}
+              
+              <p className="text-gray-600">{selectedBundle.description}</p>
+              
+              {selectedBundle.includes && selectedBundle.includes.length > 0 && (
+                <div>
+                  <h4 className="font-semibold mb-2">Bundle Includes:</h4>
+                  <ul className="space-y-1">
+                    {selectedBundle.includes.map((item, i) => (
+                      <li key={i} className="flex items-center gap-2 text-sm text-gray-600">
+                        <CheckCircle className="w-4 h-4 text-green-500" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              
+              <div className="flex items-center justify-between pt-4 border-t">
+                <div>
+                  <span className="text-2xl font-bold text-orange-600">
+                    ₹{selectedBundle.price?.toLocaleString('en-IN') || selectedBundle.bundle_price?.toLocaleString('en-IN')}
+                  </span>
+                  {selectedBundle.original_price && (
+                    <span className="text-sm text-gray-400 line-through ml-2">
+                      ₹{selectedBundle.original_price.toLocaleString('en-IN')}
+                    </span>
+                  )}
+                </div>
+                <Button 
+                  className="bg-orange-500 hover:bg-orange-600 gap-2"
+                  onClick={() => {
+                    addToCart({
+                      id: selectedBundle.id,
+                      name: selectedBundle.name,
+                      price: selectedBundle.price || selectedBundle.bundle_price,
+                      image: selectedBundle.image,
+                      category: 'bundle',
+                      pillar: 'dine'
+                    }, 'Bundle', 'dine', 1);
+                    toast({
+                      title: "Added to Cart! 🛒",
+                      description: `${selectedBundle.name} has been added to your cart.`
+                    });
+                    setSelectedBundle(null);
+                  }}
+                >
+                  <ShoppingBag className="w-4 h-4" />
+                  Add to Cart
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
 
       {/* Service Catalog */}
       <div id="services">
