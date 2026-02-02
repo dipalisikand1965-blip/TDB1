@@ -491,22 +491,35 @@ const MembershipOnboarding = () => {
                           className={`pl-10 ${parentErrors.city ? 'border-red-500' : ''}`}
                           data-testid="parent-city-input"
                         />
-                        {showCitySuggestions && filteredCities.length > 0 && (
+                        {showCitySuggestions && (
                           <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-48 overflow-y-auto">
-                            {filteredCities.map((city) => (
+                            {filteredCities.length > 0 ? (
+                              filteredCities.map((city) => (
+                                <button
+                                  key={city}
+                                  type="button"
+                                  className="w-full px-4 py-2 text-left text-sm hover:bg-purple-50 focus:bg-purple-50"
+                                  onMouseDown={() => {
+                                    setParentData({...parentData, city});
+                                    setCitySearch(city);
+                                    setShowCitySuggestions(false);
+                                  }}
+                                >
+                                  {city}
+                                </button>
+                              ))
+                            ) : citySearch.trim().length > 0 ? (
                               <button
-                                key={city}
                                 type="button"
-                                className="w-full px-4 py-2 text-left text-sm hover:bg-purple-50 focus:bg-purple-50"
+                                className="w-full px-4 py-2 text-left text-sm hover:bg-purple-50 focus:bg-purple-50 text-purple-600"
                                 onMouseDown={() => {
-                                  setParentData({...parentData, city});
-                                  setCitySearch(city);
+                                  setParentData({...parentData, city: citySearch.trim()});
                                   setShowCitySuggestions(false);
                                 }}
                               >
-                                {city}
+                                Use "{citySearch.trim()}" as your city
                               </button>
-                            ))}
+                            ) : null}
                           </div>
                         )}
                       </div>
