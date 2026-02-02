@@ -8,7 +8,7 @@ import requests
 import os
 from datetime import datetime, timedelta
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://petcare-system-13.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://petlifecentral.preview.emergentagent.com')
 AUTH_HEADER = "Basic YWRpdHlhOmxvbGE0MzA0"  # aditya:lola4304
 
 # Test pet ID - Mojo
