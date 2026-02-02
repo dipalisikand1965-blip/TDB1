@@ -242,6 +242,15 @@ const CelebratePage = () => {
         <div className="absolute top-12 sm:top-20 right-4 sm:right-20 text-2xl sm:text-3xl animate-pulse opacity-50">🎉</div>
         <div className="absolute bottom-6 sm:bottom-10 left-1/4 text-xl sm:text-2xl animate-bounce opacity-50" style={{animationDelay: '0.5s'}}>🎂</div>
         
+        {/* Mobile Back Button */}
+        <button 
+          onClick={() => navigate(-1)}
+          className="sm:hidden absolute top-4 left-4 z-10 p-2 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-colors"
+          aria-label="Go back"
+        >
+          <ChevronLeft className="w-6 h-6 text-white" />
+        </button>
+        
         <div className="relative max-w-6xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-white/20 backdrop-blur-sm rounded-full mb-4 sm:mb-6 animate-fade-in-up">
             <PartyPopper className="w-4 sm:w-5 h-4 sm:h-5" />
