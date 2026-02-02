@@ -1215,6 +1215,27 @@ const DoggyServiceDesk = ({ authHeaders }) => {
       console.error('Bulk assign error:', err);
     }
   };
+  
+  // Bulk delete
+  const handleBulkDelete = async () => {
+    if (selectedTicketIds.length === 0) return;
+    
+    try {
+      // Delete each ticket
+      for (const ticketId of selectedTicketIds) {
+        await fetch(`${getApiUrl()}/api/tickets/${ticketId}`, {
+          method: 'DELETE',
+          headers: authHeaders
+        });
+      }
+      
+      setSelectedTicketIds([]);
+      setSelectedTicket(null);
+      await fetchAllTickets();
+    } catch (err) {
+      console.error('Bulk delete error:', err);
+    }
+  };
 
   // ==================== TEMPLATE MANAGEMENT ====================
   
