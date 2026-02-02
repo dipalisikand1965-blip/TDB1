@@ -288,6 +288,7 @@ function MainLayout() {
       <ScrollToTop />
       <AppBadgeManager />
       <Navbar />
+      <MemberMobileNav />
       <Suspense fallback={<PageLoader />}>
         <Routes>
           <Route path="/" element={<Home />} />
