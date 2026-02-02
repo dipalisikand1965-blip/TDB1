@@ -103,58 +103,60 @@ const MiraContextPanel = ({
     }
   }, []);
   
-  // Text-to-Speech function
-  const speakText = useCallback((text) => {
-    if (!voiceEnabled || !synthRef.current) return;
+  // Text-to-Speech function - ElevenLabs (Elise voice)
+  const speakText = useCallback(async (text) => {
+    if (!voiceEnabled || !text) return;
     
-    // Cancel any ongoing speech
-    synthRef.current.cancel();
+    // Stop any currently playing audio
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
     
-    // Clean text for speech
-    let cleanText = text
-      .replace(/[🎉🐕✨🦴💜🎂🏥☀️🌤️🌙🌟🐾]/g, '')
-      .replace(/\*\*/g, '')
-      .replace(/\n/g, ' ')
-      .substring(0, 500);
-    
-    // Fix "Mira" pronunciation to "Meera" (phonetic spelling)
-    cleanText = cleanText.replace(/\bMira\b/gi, 'Meera');
-    
-    const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.rate = 1.0;
-    utterance.pitch = 1.1;
-    utterance.volume = 0.9;
-    
-    // Get a female voice for Mira - she's a woman!
-    const voices = synthRef.current.getVoices();
-    const femaleVoice = voices.find(v => 
-      // Priority 1: Specific female voices
-      v.name.toLowerCase().includes('samantha') ||
-      v.name.toLowerCase().includes('victoria') ||
-      v.name.toLowerCase().includes('karen') ||
-      v.name.toLowerCase().includes('moira') ||
-      v.name.toLowerCase().includes('tessa') ||
-      v.name.toLowerCase().includes('fiona') ||
-      v.name.toLowerCase().includes('veena') ||
-      v.name.includes('Female') ||
-      v.name.includes('female')
-    ) || voices.find(v =>
-      // Priority 2: Google UK Female or any female-sounding
-      v.name.includes('Google UK English Female') ||
-      v.name.includes('Google US English Female') ||
-      v.name.includes('Microsoft Zira') ||
-      v.name.includes('Microsoft Heera')
-    ) || voices.find(v =>
-      // Priority 3: Any English voice (fallback)
-      v.lang.startsWith('en')
-    );
-    if (femaleVoice) utterance.voice = femaleVoice;
-    
-    utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = () => setIsSpeaking(false);
-    
-    synthRef.current.speak(utterance);
+    try {
+      setIsSpeaking(true);
+      console.log('[MiraContextPanel] Attempting ElevenLabs TTS with Elise voice...');
+      
+      // Clean text for speech
+      let cleanText = text
+        .replace(/[🎉🐕✨🦴💜🎂🏥☀️🌤️🌙🌟🐾🎒📅📋😊💝🎁]/g, '')
+        .replace(/\*\*/g, '')
+        .replace(/[*#_~`]/g, '')
+        .replace(/\[.*?\]/g, '')
+        .replace(/\n/g, ' ')
+        .substring(0, 500);
+      
+      const response = await fetch(`${getApiUrl()}/api/tts/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: cleanText })
+      });
+      
+      if (!response.ok) {
+        throw new Error('ElevenLabs TTS failed');
+      }
+      
+      const data = await response.json();
+      console.log('[MiraContextPanel] ✓ ElevenLabs audio received (Elise), playing...');
+      
+      // Play audio
+      const audio = new Audio(`data:audio/mpeg;base64,${data.audio_base64}`);
+      audioRef.current = audio;
+      
+      audio.onended = () => {
+        console.log('[MiraContextPanel] ✓ Elise audio playback complete');
+        setIsSpeaking(false);
+      };
+      audio.onerror = (e) => {
+        console.log('[MiraContextPanel] Audio playback error:', e);
+        setIsSpeaking(false);
+      };
+      
+      await audio.play();
+    } catch (error) {
+      console.error('[MiraContextPanel] ElevenLabs TTS error:', error.message);
+      setIsSpeaking(false);
+    }
   }, [voiceEnabled]);
   
   // Toggle voice listening
