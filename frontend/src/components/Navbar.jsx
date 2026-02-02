@@ -418,10 +418,13 @@ const Navbar = () => {
           if (pets.length > 0) {
             // Check if there's a previously selected pet
             const savedPetId = localStorage.getItem('selectedPetId');
-            const savedPet = savedPetId ? pets.find(p => p.id === savedPetId) : null;
+            const savedPet = savedPetId ? pets.find(p => p?.id === savedPetId) : null;
             const selectedPet = savedPet || pets[0];
-            setPrimaryPet(selectedPet);
-            setPetSoulScore(Math.round(selectedPet.overall_score || 0));
+            // Null safety: ensure pet exists before accessing properties
+            if (selectedPet) {
+              setPrimaryPet(selectedPet);
+              setPetSoulScore(Math.round(selectedPet?.overall_score || 0));
+            }
           }
         }
       } catch (error) {
