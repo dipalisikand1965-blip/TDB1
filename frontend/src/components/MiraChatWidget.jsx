@@ -872,17 +872,21 @@ const MiraChatWidget = ({
   };
   
   const handleProductClick = (product) => {
+    if (!product) return;
+    
     if (onProductClick) {
       onProductClick(product);
     } else {
       // Navigate to product page instead of adding to cart
       const productUrl = product.url || product.shopify_handle 
-        ? `/product/${product.shopify_handle || product.url}`
-        : `/product/${product.id}`;
+        ? `/product/${product.shopify_handle || product.url || product.id}`
+        : `/product/${product.id || 'unknown'}`;
       navigate(productUrl);
     }
     // Track the click for personalization
-    trackClick('product_recommendation', product.id, { pillar, source: 'mira_chat' });
+    if (product.id) {
+      trackClick('product_recommendation', product.id, { pillar, source: 'mira_chat' });
+    }
   };
   
   // Generate personalized quick prompts based on context
