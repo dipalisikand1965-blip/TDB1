@@ -5901,6 +5901,41 @@ Request Details:
         "updated_at": now
     })
     
+    # ==================== STEP 4: MEMBER NOTIFICATION ====================
+    # Create notification for the member so they can see it in their dashboard
+    if customer_email:
+        member_notif_id = f"MNOTIF-{uuid.uuid4().hex[:8].upper()}"
+        await db.member_notifications.insert_one({
+            "id": member_notif_id,
+            "user_email": customer_email,
+            "type": "service_request_received",
+            "title": f"Request Received: {payload.type.replace('_', ' ').title()}",
+            "message": f"Your {payload.type.replace('_', ' ')} request has been submitted. Our team will contact you shortly!",
+            "ticket_id": ticket_id,
+            "request_id": request_id,
+            "pillar": payload.pillar,
+            "link": "/dashboard?tab=requests",
+            "read": False,
+            "created_at": now,
+            "timestamp": now
+        })
+        logger.info(f"[SERVICE REQUEST] Member notification created: {member_notif_id}")
+    
+    # ==================== STEP 5: PILLAR REQUEST ====================
+    await db.pillar_requests.insert_one({
+        "id": f"PR-{uuid.uuid4().hex[:8].upper()}",
+        "ticket_id": ticket_id,
+        "request_id": request_id,
+        "pillar": payload.pillar,
+        "type": payload.type,
+        "user_email": customer_email,
+        "customer_name": customer_name,
+        "status": "pending",
+        "details": payload.details,
+        "created_at": now
+    })
+    logger.info(f"[SERVICE REQUEST] Pillar request created for {payload.pillar}")
+    
     return {
         "success": True,
         "request_id": request_id,
