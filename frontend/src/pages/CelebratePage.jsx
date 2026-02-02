@@ -551,7 +551,18 @@ const CelebratePage = () => {
             <Button 
               size="lg" 
               className="w-full sm:w-auto bg-white text-pink-600 hover:bg-pink-50 gap-2 h-12 sm:h-11 font-semibold shadow-lg active:scale-95 transition-transform"
-              onClick={() => setShowConciergeModal(true)}
+              onClick={() => {
+                // Ensure form is pre-filled with current user data when opening
+                if (user) {
+                  setConciergeForm(prev => ({
+                    ...prev,
+                    name: user.name || prev.name || '',
+                    phone: user.phone || user.whatsapp || prev.phone || '',
+                    email: user.email || prev.email || ''
+                  }));
+                }
+                setShowConciergeModal(true);
+              }}
               data-testid="ask-concierge-btn"
             >
               <Sparkles className="w-5 h-5" />
