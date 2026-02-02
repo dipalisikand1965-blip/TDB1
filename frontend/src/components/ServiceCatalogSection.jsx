@@ -11,7 +11,7 @@ import { Label } from './ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog';
 import { 
   Clock, MapPin, DollarSign, Check, ChevronRight, Loader2,
-  Calendar, Phone, Star, Sparkles, PawPrint, Info
+  Calendar, Phone, Star, Sparkles, PawPrint, Info, X
 } from 'lucide-react';
 import { API_URL } from '../utils/api';
 import { toast } from '../hooks/use-toast';
