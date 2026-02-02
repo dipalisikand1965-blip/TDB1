@@ -6513,9 +6513,13 @@ async def get_pet_recommendations(pet_id: str, limit: int = 20, pillar: str = No
     scored_products = []
     for p in products:
         score = 0
-        tags = [t.lower() for t in (p.get("tags") or [])]
+        tags = [t.lower() for t in (p.get("tags") or p.get("intelligent_tags") or [])]
         name_lower = (p.get("name") or p.get("title") or "").lower()
         category = (p.get("category") or "").lower()
+        
+        # Pillar match bonus
+        if pillar and p.get("pillar") == pillar:
+            score += 20
         
         # Category bonuses for treats/food
         if category in ["treats", "food", "snacks", "cakes"]:
@@ -6533,6 +6537,32 @@ async def get_pet_recommendations(pet_id: str, limit: int = 20, pillar: str = No
         # Age match bonus  
         if age_category in tags or "all-ages" in tags:
             score += 10
+        # Special bonus for age-appropriate products
+        if age_category == "puppy" and any(word in name_lower or word in tags for word in ["puppy", "starter", "young"]):
+            score += 12
+        if age_category == "senior" and any(word in name_lower or word in tags for word in ["senior", "joint", "mobility", "gentle"]):
+            score += 12
+        
+        # Breed-specific bonus
+        if breed:
+            breed_words = breed.lower().split()
+            for bw in breed_words:
+                if bw in tags or bw in name_lower:
+                    score += 15
+        
+        # Personality-based bonus
+        if personality:
+            for trait in personality:
+                trait_lower = trait.lower() if isinstance(trait, str) else ""
+                if "active" in trait_lower or "energetic" in trait_lower:
+                    if any(word in name_lower or word in tags for word in ["active", "energy", "play", "sport"]):
+                        score += 8
+                if "calm" in trait_lower or "lazy" in trait_lower:
+                    if any(word in name_lower or word in tags for word in ["calm", "relaxing", "gentle", "comfort"]):
+                        score += 8
+                if "anxious" in trait_lower or "nervous" in trait_lower:
+                    if any(word in name_lower or word in tags for word in ["calming", "anxiety", "relaxing", "soothing"]):
+                        score += 10
         
         # Allergy safety check
         is_safe = True
@@ -6555,6 +6585,10 @@ async def get_pet_recommendations(pet_id: str, limit: int = 20, pillar: str = No
         # Has image bonus (important for display)
         if p.get("image"):
             score += 3
+        
+        # Is recommended/bestseller bonus
+        if p.get("is_recommended") or p.get("isBestseller"):
+            score += 8
         
         scored_products.append((score, p))
     
