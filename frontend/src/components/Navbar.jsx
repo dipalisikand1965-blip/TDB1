@@ -1051,17 +1051,24 @@ const Navbar = () => {
                     <div className="absolute top-full right-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden z-50 min-w-[200px]">
                       {/* Header */}
                       <div className="px-4 py-2 bg-gradient-to-r from-purple-50 to-pink-50 border-b border-gray-100">
-                        <span className="font-bold text-gray-900 text-sm">My Pets</span>
+                        <span className="font-bold text-gray-900 text-sm">Switch Pet</span>
                       </div>
                       
                       {/* Pet List */}
                       <div className="py-1">
                         {allPets.map((pet) => (
-                          <Link
+                          <button
                             key={pet.id}
-                            to={`/pet/${pet.id}`}
-                            onClick={() => setShowPetDropdown(false)}
-                            className="flex items-center justify-between px-4 py-2.5 hover:bg-purple-50 transition-colors"
+                            onClick={() => {
+                              setPrimaryPet(pet);
+                              setPetSoulScore(Math.round(pet.overall_score || 0));
+                              setShowPetDropdown(false);
+                              // Store in localStorage for persistence
+                              localStorage.setItem('selectedPetId', pet.id);
+                            }}
+                            className={`w-full flex items-center justify-between px-4 py-2.5 hover:bg-purple-50 transition-colors ${
+                              primaryPet?.id === pet.id ? 'bg-purple-50 border-l-2 border-purple-500' : ''
+                            }`}
                           >
                             <div className="flex items-center gap-2">
                               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center text-white text-sm">
@@ -1071,7 +1078,7 @@ const Navbar = () => {
                                   <PawPrint className="w-4 h-4" />
                                 )}
                               </div>
-                              <div>
+                              <div className="text-left">
                                 <p className="font-medium text-gray-900 text-sm">{pet.name}</p>
                                 <p className="text-[10px] text-gray-500">{pet.breed || 'Pet'}</p>
                               </div>
@@ -1080,7 +1087,7 @@ const Navbar = () => {
                               <PawPrint className="w-3 h-3 text-purple-600" />
                               <span className="font-bold text-purple-600 text-xs">{Math.round(pet.overall_score || 0)}%</span>
                             </div>
-                          </Link>
+                          </button>
                         ))}
                       </div>
                       
@@ -1091,7 +1098,7 @@ const Navbar = () => {
                           onClick={() => setShowPetDropdown(false)}
                           className="text-xs font-semibold text-purple-600 hover:text-purple-700 flex items-center gap-1"
                         >
-                          View All Pets →
+                          Manage All Pets →
                         </Link>
                       </div>
                     </div>
