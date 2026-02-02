@@ -1,0 +1,88 @@
+{
+  "summary": "Tested ElevenLabs TTS integration for Mira's voice. Backend /api/tts/generate endpoint works correctly (12/12 tests passed). Fixed frontend bug where API_URL was undefined in MiraChatWidget.jsx. Added ElevenLabs TTS to MiraAI.jsx (homepage component) which was missing the integration. Both components now try ElevenLabs first, falling back to Web Speech API.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_tts_elevenlabs.py",
+    "/app/test_reports/pytest/pytest_tts_iteration_188.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "MiraChatWidget.jsx had undefined API_URL - fixed to use getApiUrl()",
+    "MiraAI.jsx (homepage) was missing ElevenLabs TTS integration - added speakWithElevenLabs function"
+  ],
+  "updated_files": [
+    "/app/frontend/src/components/MiraChatWidget.jsx - Fixed API_URL to getApiUrl(), added debug logs (cleaned up)",
+    "/app/frontend/src/components/MiraAI.jsx - Added ElevenLabs TTS integration (useElevenLabs state, audioRef, speakWithElevenLabs function)",
+    "/app/backend/tests/test_tts_elevenlabs.py - Created comprehensive TTS endpoint tests"
+  ],
+  "success_rate": {
+    "backend": "100% (12/12 tests passed)",
+    "frontend": "100%"
+  },
+  "test_credentials": {},
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "ElevenLabs TTS integration is complete. Both MiraAI.jsx (homepage) and MiraChatWidget.jsx (pillar pages) now use ElevenLabs TTS with Web Speech API fallback. The /api/tts/generate endpoint returns base64 audio, handles emoji conversion, and fixes 'Mira' pronunciation to 'Meera'. Voice toggle button in chat header controls TTS. Console logs show '[Mira Voice] Attempting ElevenLabs TTS...' and '[Mira Voice] ✓ ElevenLabs audio received, playing...' when working.",
+  "verified_features": {
+    "backend_tts_generate": {
+      "status": "PASS",
+      "details": "POST /api/tts/generate returns audio_base64, text_spoken, voice_id"
+    },
+    "backend_tts_config": {
+      "status": "PASS",
+      "details": "GET /api/tts/config returns provider=elevenlabs, configured=true"
+    },
+    "backend_tts_voices": {
+      "status": "PASS",
+      "details": "GET /api/tts/voices returns list of 21 available voices"
+    },
+    "mira_pronunciation_fix": {
+      "status": "PASS",
+      "details": "'Mira' is converted to 'Meera' in text_spoken"
+    },
+    "emoji_handling": {
+      "status": "PASS",
+      "details": "Emojis like 🐾 are converted to words like 'paw print'"
+    },
+    "frontend_miraai_elevenlabs": {
+      "status": "PASS",
+      "details": "MiraAI.jsx (homepage) now uses ElevenLabs TTS with fallback"
+    },
+    "frontend_mirachatwidget_elevenlabs": {
+      "status": "PASS",
+      "details": "MiraChatWidget.jsx (pillar pages) uses ElevenLabs TTS with fallback"
+    },
+    "voice_toggle": {
+      "status": "PASS",
+      "details": "Voice toggle button in chat header controls TTS on/off"
+    }
+  },
+  "backend_tests_summary": {
+    "total": 12,
+    "passed": 12,
+    "failed": 0,
+    "tests": [
+      "test_tts_config_returns_provider_info",
+      "test_tts_config_has_mira_features",
+      "test_voices_endpoint_returns_list",
+      "test_voices_list_contains_voices",
+      "test_generate_tts_returns_audio",
+      "test_generate_tts_mira_pronunciation_fix",
+      "test_generate_tts_emoji_handling",
+      "test_generate_tts_empty_text_fails",
+      "test_generate_tts_emoji_only_text_converts",
+      "test_generate_tts_with_custom_voice_settings",
+      "test_tts_typical_mira_greeting",
+      "test_tts_pet_care_message"
+    ]
+  }
+}
