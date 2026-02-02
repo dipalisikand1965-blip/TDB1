@@ -1873,6 +1873,136 @@ async def seed_initial_products():
     except Exception as e:
         logger.error(f"Error seeding products: {e}")
 
+
+async def auto_enhance_product_tags():
+    """
+    Auto-enhance product tags on startup.
+    This ensures all products have proper pillar, size, breed, and occasion tags.
+    Runs non-blocking in background.
+    """
+    try:
+        # Check if we need to run enhancement
+        products_count = await db.products.count_documents({})
+        unified_count = await db.unified_products.count_documents({})
+        
+        if products_count == 0 and unified_count == 0:
+            logger.info("No products found, skipping tag enhancement")
+            return
+        
+        # Check how many products are missing tags
+        missing_pillar = await db.unified_products.count_documents({
+            "$or": [{"pillar": None}, {"pillar": {"$exists": False}}]
+        })
+        missing_size = await db.unified_products.count_documents({
+            "$or": [{"size_tags": None}, {"size_tags": {"$exists": False}}, {"size_tags": []}]
+        })
+        
+        if missing_pillar == 0 and missing_size == 0:
+            logger.info(f"Product tags already enhanced ({unified_count} unified, {products_count} products)")
+            return
+        
+        logger.info(f"Enhancing tags for {missing_pillar} products missing pillar, {missing_size} missing size tags...")
+        
+        # Pillar mapping
+        PILLAR_MAPPING = {
+            'cakes': 'celebrate', 'cake': 'celebrate', 'birthday': 'celebrate', 'party': 'celebrate',
+            'hampers': 'celebrate', 'gift-cards': 'celebrate', 'gift': 'celebrate',
+            'fresh-meals': 'dine', 'meals': 'dine', 'food': 'dine', 'toppers': 'dine',
+            'treats': 'shop', 'frozen-treats': 'shop', 'desi-treats': 'shop', 'cat-treats': 'shop',
+            'nut-butters': 'shop', 'dognuts': 'shop', 'snacks': 'shop', 'accessories': 'shop',
+            'merchandise': 'shop', 'toys': 'shop', 'bowls': 'shop', 'beds': 'shop',
+            'care': 'care', 'grooming': 'care', 'groom': 'care', 'health': 'care', 'supplements': 'care',
+            'travel': 'travel', 'pet-friendly': 'travel', 'vacation': 'travel',
+            'stay': 'stay', 'boarding': 'stay', 'daycare': 'stay', 'hotel': 'stay',
+            'fit': 'fit', 'fitness': 'fit', 'exercise': 'fit', 'training': 'fit',
+            'learn': 'learn', 'courses': 'learn', 'classes': 'learn',
+            'enjoy': 'enjoy', 'events': 'enjoy', 'activities': 'enjoy',
+            'emergency': 'emergency', 'advisory': 'advisory', 'paperwork': 'paperwork',
+            'insure': 'insure', 'adopt': 'adopt', 'farewell': 'farewell', 'community': 'community',
+        }
+        
+        def extract_pillar(product):
+            name = (product.get('name') or '').lower()
+            category = (product.get('category') or '').lower()
+            existing = product.get('pillar')
+            valid_pillars = ['celebrate', 'dine', 'shop', 'care', 'travel', 'stay', 'fit', 'learn', 'enjoy', 'emergency', 'advisory', 'paperwork', 'insure', 'adopt', 'farewell', 'community']
+            if existing and existing in valid_pillars:
+                return existing
+            for key, pillar in PILLAR_MAPPING.items():
+                if key in category or key in name:
+                    return pillar
+            return 'shop'
+        
+        def extract_size_tags(product):
+            text = f"{product.get('name', '')} {product.get('description', '')}".lower()
+            tags = set(product.get('size_tags') or [])
+            if any(w in text for w in ['small', 'mini', 'tiny', 'toy breed']):
+                tags.add('small_breed')
+            if any(w in text for w in ['medium', 'regular']):
+                tags.add('medium_breed')
+            if any(w in text for w in ['large', 'big']):
+                tags.add('large_breed')
+            if any(w in text for w in ['giant', 'extra large']):
+                tags.add('giant_breed')
+            if not tags:
+                tags.add('all_sizes')
+            return list(tags)
+        
+        def extract_breed_tags(product):
+            text = f"{product.get('name', '')} {product.get('description', '')}".lower()
+            tags = set(product.get('breed_tags') or [])
+            breeds = {'labrador': ['labrador', 'lab'], 'golden_retriever': ['golden', 'retriever'],
+                      'german_shepherd': ['german shepherd', 'gsd'], 'poodle': ['poodle', 'doodle'],
+                      'bulldog': ['bulldog', 'frenchie'], 'beagle': ['beagle'], 'husky': ['husky'],
+                      'pug': ['pug'], 'indie': ['indie', 'indian', 'desi', 'street'],
+                      'shih_tzu': ['shih tzu'], 'chihuahua': ['chihuahua'], 'rottweiler': ['rottweiler']}
+            for breed, patterns in breeds.items():
+                if any(p in text for p in patterns):
+                    tags.add(breed)
+            if not tags:
+                tags.add('all_breeds')
+            return list(tags)
+        
+        # Process unified_products
+        updated = 0
+        async for product in db.unified_products.find({}):
+            updates = {}
+            pillar = extract_pillar(product)
+            if pillar != product.get('pillar'):
+                updates['pillar'] = pillar
+            size_tags = extract_size_tags(product)
+            if size_tags != product.get('size_tags'):
+                updates['size_tags'] = size_tags
+            breed_tags = extract_breed_tags(product)
+            if breed_tags != product.get('breed_tags'):
+                updates['breed_tags'] = breed_tags
+            if updates:
+                await db.unified_products.update_one({"_id": product["_id"]}, {"$set": updates})
+                updated += 1
+        
+        # Process products collection
+        products_updated = 0
+        async for product in db.products.find({}):
+            updates = {}
+            pillar = extract_pillar(product)
+            if pillar != product.get('pillar'):
+                updates['pillar'] = pillar
+            size_tags = extract_size_tags(product)
+            if size_tags != product.get('size_tags'):
+                updates['size_tags'] = size_tags
+            breed_tags = extract_breed_tags(product)
+            if breed_tags != product.get('breed_tags'):
+                updates['breed_tags'] = breed_tags
+            if updates:
+                await db.products.update_one({"_id": product["_id"]}, {"$set": updates})
+                products_updated += 1
+        
+        logger.info(f"✅ Auto-enhanced tags: {updated} unified_products, {products_updated} products")
+        
+    except Exception as e:
+        logger.error(f"Error in auto_enhance_product_tags: {e}")
+
+
 async def verify_admin_auth(
     credentials: HTTPBasicCredentials = Depends(security),
     bearer_creds: HTTPAuthorizationCredentials = Depends(security_bearer)
