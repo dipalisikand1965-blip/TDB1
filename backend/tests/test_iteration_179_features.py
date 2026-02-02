@@ -259,9 +259,10 @@ class TestMemberLogin:
         assert response.status_code == 200, f"Login failed: {response.status_code} - {response.text}"
         
         data = response.json()
-        assert "token" in data, "Expected token in response"
+        # API returns access_token, not token
+        assert "access_token" in data, "Expected access_token in response"
         
-        return data["token"]
+        return data["access_token"]
     
     def test_fetch_user_pets(self):
         """Test fetching user's pets for multi-pet selection"""
@@ -271,7 +272,7 @@ class TestMemberLogin:
             json={"email": MEMBER_EMAIL, "password": MEMBER_PASSWORD}
         )
         assert login_response.status_code == 200
-        token = login_response.json().get("token")
+        token = login_response.json().get("access_token")
         
         # Fetch pets
         pets_response = requests.get(
