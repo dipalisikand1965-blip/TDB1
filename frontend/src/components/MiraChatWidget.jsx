@@ -1145,7 +1145,9 @@ const MiraChatWidget = ({
             
             {/* Messages */}
             <div className="flex-1 overflow-y-auto p-4 space-y-3">
-              {messages.map((msg) => (
+              {(messages || []).map((msg) => {
+                if (!msg || !msg.id) return null;
+                return (
                 <div
                   key={msg.id}
                   className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
