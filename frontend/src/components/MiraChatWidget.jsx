@@ -534,7 +534,7 @@ const MiraChatWidget = ({
         .replace(/\n/g, ' ')
         .substring(0, 500);
       
-      const response = await fetch(`${API_URL}/api/tts/generate`, {
+      const response = await fetch(`${getApiUrl()}/api/tts/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text: cleanText })
