@@ -569,7 +569,18 @@ const CarePage = () => {
               pillar="care"
               petName={userPets[0]?.name}
               onGoalSelect={(goal, message) => {
-                navigate(`/mira?context=care_${goal.id}&preset=${encodeURIComponent(message)}`);
+                // Map goal to service type and open booking form instead of Mira
+                const goalToServiceMap = {
+                  'grooming': 'grooming',
+                  'vet_visit': 'vet',
+                  'training': 'training',
+                  'walking': 'walking',
+                  'daycare': 'daycare',
+                  'spa': 'grooming' // spa falls under grooming
+                };
+                const serviceType = goalToServiceMap[goal.id] || 'grooming';
+                setBookingServiceType(serviceType);
+                setShowBookingModal(true);
               }}
             />
             <QuickWinTip
