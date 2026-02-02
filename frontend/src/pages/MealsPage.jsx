@@ -262,6 +262,11 @@ const MealsPage = () => {
         </div>
       </div>
 
+      {/* Personalized Picks for User's Pet */}
+      <div className="max-w-6xl mx-auto px-4 py-6">
+        <PersonalizedPicks pillar="dine" maxProducts={6} />
+      </div>
+
       {/* Benefits Section */}
       <div className="max-w-6xl mx-auto px-4 py-10 sm:py-16">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
