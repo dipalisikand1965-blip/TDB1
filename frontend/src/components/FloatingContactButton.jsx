@@ -108,13 +108,13 @@ const FloatingContactButton = () => {
           </div>
         )}
 
-        {/* Main FAB Button - Clean, no tooltip */}
+        {/* Main FAB Button - Mira themed */}
         <button
           onClick={() => setIsOpen(!isOpen)}
           className={`w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition-all transform hover:scale-110 ${
             isOpen 
               ? 'bg-gray-700 hover:bg-gray-800' 
-              : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600'
+              : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600'
           }`}
           data-testid="floating-contact-btn"
           aria-label="Contact options"
