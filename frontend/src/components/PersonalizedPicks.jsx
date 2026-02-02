@@ -268,9 +268,33 @@ const PersonalizedPicks = ({
     return null;
   }
 
-  // Don't render if no recommendations and not loading
+  // Show a minimal version if no recommendations but has pets (encourage browsing)
   if (!loading && recommendations.length === 0) {
-    return null;
+    return (
+      <div className={`mb-8 bg-gradient-to-r ${config.gradient} rounded-2xl p-4 sm:p-6 border ${config.border} ${className}`}>
+        <div className="flex items-center gap-3">
+          {selectedPet?.photo ? (
+            <img 
+              src={getPetPhotoUrl(selectedPet.photo)} 
+              alt={selectedPet?.name}
+              className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-white shadow"
+            />
+          ) : (
+            <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full ${config.accentBg} flex items-center justify-center text-white text-xl`}>
+              {config.emoji}
+            </div>
+          )}
+          <div>
+            <h3 className={`font-bold text-base sm:text-lg ${config.accent}`}>
+              {config.emoji} Perfect picks for {selectedPet?.name || 'your pet'} coming soon!
+            </h3>
+            <p className={`text-xs sm:text-sm ${config.accent} opacity-70`}>
+              Based on {selectedPet?.breed || 'your pet'}'s profile • Browse our collection below
+            </p>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
