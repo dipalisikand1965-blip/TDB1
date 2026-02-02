@@ -22,6 +22,7 @@ import AdminQuickEdit from '../components/AdminQuickEdit';
 import ProductCard from '../components/ProductCard';
 import DiningConciergePicker from '../components/DiningConciergePicker';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
+import PersonalizedPicks from '../components/PersonalizedPicks';
 import SEOHead from '../components/SEOHead';
 
 // Get user from AuthContext or localStorage
