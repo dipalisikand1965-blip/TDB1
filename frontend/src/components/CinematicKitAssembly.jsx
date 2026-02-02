@@ -167,92 +167,83 @@ const CinematicKitAssembly = ({
   
   const petName = petInfo.name || "your furry friend";
   
-  // Speech synthesis ref
-  const synthRef = useRef(null);
+  // Audio ref for ElevenLabs
+  const audioRef = useRef(null);
   
-  // Initialize speech synthesis
+  // Get API URL
+  const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+  
+  // Cleanup audio on unmount
   useEffect(() => {
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      synthRef.current = window.speechSynthesis;
-    }
     return () => {
-      if (synthRef.current) {
-        synthRef.current.cancel();
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
       }
     };
   }, []);
   
-  // Text-to-Speech function - MIRA IS A WOMAN (moved before its usage)
-  // Fixed Chrome bug where speech cuts off after ~15s
-  const speakText = useCallback((text) => {
-    if (!synthRef.current || !voiceEnabled) return;
+  // Text-to-Speech function - ElevenLabs (Elise voice)
+  const speakText = useCallback(async (text) => {
+    if (!voiceEnabled || !text) return;
     
-    // Cancel any ongoing speech
-    synthRef.current.cancel();
-    
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.rate = 0.95;
-    utterance.pitch = 1.1;
-    utterance.volume = 1.0;
-    
-    // Get voices and select best female voice
-    const voices = synthRef.current.getVoices();
-    const preferredVoices = ['Samantha', 'Victoria', 'Karen', 'Google UK English Female', 'Google US English Female', 'Microsoft Zira'];
-    
-    let selectedVoice = null;
-    for (const voiceName of preferredVoices) {
-      selectedVoice = voices.find(v => v.name.includes(voiceName));
-      if (selectedVoice) break;
+    // Stop any currently playing audio
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
     }
     
-    // Fallback to any English female voice
-    if (!selectedVoice) {
-      selectedVoice = voices.find(v => v.lang.startsWith('en') && !v.name.toLowerCase().includes('male'));
-    }
-    
-    if (selectedVoice) {
-      utterance.voice = selectedVoice;
-    }
-    
-    utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = (e) => {
-      console.error('Speech synthesis error:', e);
-      setIsSpeaking(false);
-    };
-    
-    // Chrome workaround: pause/resume to prevent cutoff after ~15s
-    // This keeps the speech synthesis active
-    let resumeInterval = null;
-    utterance.onstart = () => {
+    try {
       setIsSpeaking(true);
-      // Every 10 seconds, pause and resume to prevent Chrome from cutting off
-      resumeInterval = setInterval(() => {
-        if (synthRef.current && synthRef.current.speaking && !synthRef.current.paused) {
-          synthRef.current.pause();
-          synthRef.current.resume();
-        }
-      }, 10000);
-    };
-    
-    utterance.onend = () => {
-      setIsSpeaking(false);
-      if (resumeInterval) clearInterval(resumeInterval);
-    };
-    
-    utterance.onerror = (e) => {
-      console.error('Speech synthesis error:', e);
-      setIsSpeaking(false);
-      if (resumeInterval) clearInterval(resumeInterval);
-    };
-    
-    // Small delay to ensure voices are loaded
-    setTimeout(() => {
-      if (synthRef.current) {
-        synthRef.current.speak(utterance);
+      console.log('[CinematicKit] Using ElevenLabs TTS (Elise voice)...');
+      
+      // Clean text for speech
+      const cleanText = text
+        .replace(/[🎉🐕✨🦴💜🎂🏥☀️🌤️🌙🌟🐾🎒📅📋😊💝🎁⭐🔥💪🎯]/g, '')
+        .replace(/[*_#]/g, '')
+        .replace(/\[.*?\]/g, '')
+        .replace(/®|™|©/g, '')
+        .trim()
+        .substring(0, 500);
+      
+      if (!cleanText) {
+        setIsSpeaking(false);
+        return;
       }
-    }, 100);
-  }, [voiceEnabled]);
+      
+      const response = await fetch(`${API_URL}/api/tts/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: cleanText })
+      });
+      
+      if (!response.ok) {
+        throw new Error('ElevenLabs TTS failed');
+      }
+      
+      const data = await response.json();
+      console.log('[CinematicKit] ✓ ElevenLabs audio received (Elise)');
+      
+      // Play audio
+      const audio = new Audio(`data:audio/mpeg;base64,${data.audio_base64}`);
+      audioRef.current = audio;
+      
+      audio.onended = () => {
+        console.log('[CinematicKit] ✓ Elise audio playback complete');
+        setIsSpeaking(false);
+      };
+      
+      audio.onerror = (e) => {
+        console.error('[CinematicKit] Audio playback error:', e);
+        setIsSpeaking(false);
+      };
+      
+      await audio.play();
+    } catch (error) {
+      console.error('[CinematicKit] ElevenLabs TTS error:', error.message);
+      setIsSpeaking(false);
+    }
+  }, [voiceEnabled, API_URL]);
   
   // Speak introduction on mount (after speakText is declared)
   useEffect(() => {
