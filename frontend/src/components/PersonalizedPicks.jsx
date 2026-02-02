@@ -142,6 +142,7 @@ const PersonalizedPicks = ({
   const [userPets, setUserPets] = useState([]);
   const [selectedPet, setSelectedPet] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
+  const [repeatSuggestions, setRepeatSuggestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('');
   
