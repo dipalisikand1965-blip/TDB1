@@ -172,6 +172,7 @@ const SERVICE_PACKAGES = [
 const FarewellPage = () => {
   const { user, token } = useAuth();
   const { addToCart } = useCart();
+  const navigate = useNavigate();
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [pets, setPets] = useState([]);
   const [loading, setLoading] = useState(false);
