@@ -69,6 +69,29 @@
   -webkit-tap-highlight-color: transparent;
 }
 
+/* Mobile Touch Optimization - Fix for "banging" keys issue */
+button, 
+a, 
+input, 
+textarea, 
+select,
+[role="button"] {
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+}
+
+/* Remove 300ms click delay on mobile */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="tel"],
+input[type="search"],
+textarea {
+  touch-action: manipulation;
+  font-size: 16px !important; /* Prevent iOS zoom on focus */
+}
+
 html {
   overflow-x: hidden;
   scroll-behavior: smooth;
