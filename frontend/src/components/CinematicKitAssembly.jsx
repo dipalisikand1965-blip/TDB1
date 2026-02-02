@@ -247,8 +247,8 @@ const CinematicKitAssembly = ({
   
   // Speak introduction on mount (after speakText is declared)
   useEffect(() => {
-    if (voiceEnabled && synthRef.current && items.length > 0) {
-      const intro = `Hi! I'm Meera, your pet concierge. Let me show you the ${kitName} I've curated just for ${petName}. ${items.length} amazing items await!`;
+    if (voiceEnabled && items.length > 0) {
+      const intro = `Hi! I'm Mira, your pet concierge. Let me show you the ${kitName} I've curated just for ${petName}. ${items.length} amazing items await!`;
       speakText(intro);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
