@@ -76,6 +76,11 @@ PRONUNCIATION_FIXES = {
     r'₹': ' rupees ',      # Currency
     r'\bSr\.': 'Senior',   # Abbreviations
     r'\bJr\.': 'Junior',
+    r'®': '',              # Remove registered trademark symbol
+    r'™': '',              # Remove trademark symbol
+    r'©': '',              # Remove copyright symbol
+    r'Concierge®': 'Concierge',  # Remove ® from brand names
+    r'Elevated Concierge®': 'Elevated Concierge',
 }
 
 
