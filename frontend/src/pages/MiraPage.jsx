@@ -865,6 +865,28 @@ const MiraPage = () => {
                   {isListening ? <MicOff className="w-4 h-4 sm:w-5 sm:h-5 text-white" /> : <Mic className="w-4 h-4 sm:w-5 sm:h-5" />}
                 </Button>
               )}
+              {/* Voice Output Toggle */}
+              <Button
+                type="button"
+                onClick={() => {
+                  if (isSpeaking) {
+                    stopSpeaking();
+                  } else {
+                    setVoiceEnabled(!voiceEnabled);
+                  }
+                }}
+                className={`rounded-full w-10 h-10 p-0 flex-shrink-0 flex items-center justify-center ${
+                  isSpeaking 
+                    ? 'bg-purple-500 hover:bg-purple-600 animate-pulse' 
+                    : voiceEnabled 
+                      ? 'bg-purple-100 hover:bg-purple-200 text-purple-600' 
+                      : 'bg-gray-200 hover:bg-gray-300 text-gray-400'
+                }`}
+                title={isSpeaking ? 'Stop speaking' : voiceEnabled ? 'Voice on' : 'Voice off'}
+                data-testid="mira-tts-toggle"
+              >
+                {voiceEnabled ? <Volume2 className="w-4 h-4 sm:w-5 sm:h-5" /> : <VolumeX className="w-4 h-4 sm:w-5 sm:h-5" />}
+              </Button>
               <Button
                 type="submit"
                 disabled={!input.trim() || isLoading}
