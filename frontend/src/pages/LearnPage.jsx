@@ -481,6 +481,11 @@ const LearnPage = () => {
         </div>
       </div>
 
+      {/* Personalized Picks for User's Pet */}
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <PersonalizedPicks pillar="learn" maxProducts={6} />
+      </div>
+
       {/* === ELEVATED CONCIERGE® LEARN EXPERIENCES === */}
       <div className="py-16 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
         <div className="max-w-7xl mx-auto px-4">
