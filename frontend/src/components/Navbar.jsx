@@ -531,19 +531,19 @@ const Navbar = () => {
         <div className="max-w-7xl mx-auto px-2 sm:px-4">
           <div className="flex items-center h-14 gap-2 sm:gap-4">
             
-            {/* Logo - Icon only on mobile */}
-            <Link to="/" className="flex items-center gap-2 flex-shrink-0" data-testid="navbar-logo">
+            {/* Logo - With company name on all screens */}
+            <Link to="/" className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0" data-testid="navbar-logo">
               <div className="h-8 w-8 sm:h-9 sm:w-9 bg-white rounded-lg p-1 flex items-center justify-center">
                 <img src="/logo-new.png" alt="The Doggy Company" className="h-6 w-6 sm:h-7 sm:w-7 object-contain" />
               </div>
-              {/* Desktop only: Show full name */}
-              <div className="hidden md:block">
-                <div className="text-sm font-bold leading-none">
+              {/* Company name - visible on all screens */}
+              <div>
+                <div className="text-[10px] sm:text-sm font-bold leading-none">
                   <span className="text-teal-400">the</span>
                   <span className="text-purple-400">doggy</span>
                   <span className="text-pink-400">company</span>
                 </div>
-                <div className="text-[10px] text-teal-400 tracking-wider">PET CONCIERGE®</div>
+                <div className="text-[8px] sm:text-[10px] text-teal-400 tracking-wider hidden sm:block">PET CONCIERGE®</div>
               </div>
             </Link>
 
