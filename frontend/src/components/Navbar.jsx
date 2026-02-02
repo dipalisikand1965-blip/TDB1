@@ -529,39 +529,114 @@ const Navbar = () => {
 
       {/* Main Header Row */}
       <div className="bg-slate-900 text-white">
-        <div className="max-w-7xl mx-auto px-2 sm:px-4">
-          <div className="flex items-center h-14 gap-2 sm:gap-4">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4">
+          {/* Mobile Layout: Hamburger | Logo (center) | Icons */}
+          <div className="flex sm:hidden items-center justify-between h-14">
+            {/* Left: Hamburger Menu */}
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="p-2 hover:bg-white/10 rounded-lg"
+              data-testid="navbar-mobile-menu-btn"
+              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+            >
+              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
             
-            {/* Logo - With company name on all screens */}
-            <Link to="/" className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0" data-testid="navbar-logo">
-              <div className="h-8 w-8 sm:h-9 sm:w-9 bg-white rounded-lg p-1 flex items-center justify-center">
-                <img src="/logo-new.png" alt="The Doggy Company" className="h-6 w-6 sm:h-7 sm:w-7 object-contain" />
+            {/* Center: Logo + Company Name */}
+            <Link to="/" className="flex items-center gap-1.5" data-testid="navbar-logo">
+              <div className="h-8 w-8 bg-white rounded-lg p-1 flex items-center justify-center">
+                <img src="/logo-new.png" alt="The Doggy Company" className="h-6 w-6 object-contain" />
               </div>
-              {/* Company name - visible on all screens */}
               <div>
-                <div className="text-[10px] sm:text-sm font-bold leading-none">
+                <div className="text-xs font-bold leading-none">
                   <span className="text-teal-400">the</span>
                   <span className="text-purple-400">doggy</span>
                   <span className="text-pink-400">company</span>
                 </div>
-                <div className="text-[8px] sm:text-[10px] text-teal-400 tracking-wider hidden sm:block">PET CONCIERGE®</div>
+              </div>
+            </Link>
+            
+            {/* Right: User + Cart */}
+            <div className="flex items-center gap-1">
+              {user ? (
+                <button
+                  onClick={() => setShowPetDropdown(!showPetDropdown)}
+                  className="p-2 hover:bg-white/10 rounded-lg"
+                >
+                  <User className="w-5 h-5" />
+                </button>
+              ) : (
+                <Link to="/login" className="p-2 hover:bg-white/10 rounded-lg">
+                  <User className="w-5 h-5" />
+                </Link>
+              )}
+              <button
+                onClick={() => setIsCartOpen(true)}
+                className="relative p-2 hover:bg-white/10 rounded-lg"
+                data-testid="navbar-cart-btn"
+              >
+                <ShoppingCart className="w-5 h-5" />
+                {getCartCount() > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 bg-pink-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                    {getCartCount()}
+                  </span>
+                )}
+              </button>
+            </div>
+          </div>
+          
+          {/* Mobile: Search Bar Row (below main header) */}
+          <div className="sm:hidden pb-3">
+            <form onSubmit={handleSearch} className="flex">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setShowSearchSuggestions(true);
+                }}
+                onFocus={() => setShowSearchSuggestions(true)}
+                placeholder={primaryPet ? `Search for ${primaryPet.name}...` : "Search products, services..."}
+                className="flex-1 px-4 py-2.5 text-sm text-gray-900 bg-white rounded-l-full focus:outline-none"
+                data-testid="navbar-search-input-mobile"
+              />
+              <button 
+                type="button"
+                onClick={toggleVoiceWizard}
+                className={`px-3 ${isListening ? 'bg-red-500' : 'bg-purple-500'}`}
+              >
+                <Mic className="w-4 h-4 text-white" />
+              </button>
+              <button 
+                type="submit"
+                className="px-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-r-full"
+              >
+                <Search className="w-4 h-4 text-white" />
+              </button>
+            </form>
+          </div>
+          
+          {/* Desktop Layout: Logo | Search | Icons */}
+          <div className="hidden sm:flex items-center h-14 gap-4">
+            {/* Logo */}
+            <Link to="/" className="flex items-center gap-2 flex-shrink-0" data-testid="navbar-logo-desktop">
+              <div className="h-9 w-9 bg-white rounded-lg p-1 flex items-center justify-center">
+                <img src="/logo-new.png" alt="The Doggy Company" className="h-7 w-7 object-contain" />
+              </div>
+              <div>
+                <div className="text-sm font-bold leading-none">
+                  <span className="text-teal-400">the</span>
+                  <span className="text-purple-400">doggy</span>
+                  <span className="text-pink-400">company</span>
+                </div>
+                <div className="text-[10px] text-teal-400 tracking-wider">PET CONCIERGE®</div>
               </div>
             </Link>
 
-            {/* Search Bar - Expandable on mobile, always visible on desktop */}
-            <div className={`relative transition-all duration-300 ${searchExpanded ? 'flex-1' : 'sm:flex-1'}`} ref={searchRef}>
-              {/* Mobile: Collapsed search icon */}
-              <button
-                onClick={() => setSearchExpanded(true)}
-                className={`sm:hidden p-2 rounded-lg bg-white/10 hover:bg-white/20 ${searchExpanded ? 'hidden' : 'block'}`}
-                aria-label="Open search"
-              >
-                <Search className="w-5 h-5 text-white" />
-              </button>
-              
-              {/* Expanded search form */}
-              <form onSubmit={handleSearch} className={`${searchExpanded ? 'flex' : 'hidden sm:flex'}`}>
-                <div className="flex flex-1">
+            {/* Search Bar - Desktop */}
+            <div className="flex-1 max-w-xl relative" ref={searchRef}>
+              <form onSubmit={handleSearch}>
+                <div className="flex">
                   <input
                     type="text"
                     value={searchQuery}
@@ -570,46 +645,26 @@ const Navbar = () => {
                       setShowSearchSuggestions(true);
                     }}
                     onFocus={() => setShowSearchSuggestions(true)}
-                    onBlur={() => {
-                      // Collapse on mobile if empty
-                      setTimeout(() => {
-                        if (!searchQuery && window.innerWidth < 640) {
-                          setSearchExpanded(false);
-                        }
-                      }, 200);
-                    }}
-                    placeholder={primaryPet ? `Search for ${primaryPet.name}...` : "Search..."}
-                    className="w-full px-3 py-2 text-sm text-gray-900 bg-white rounded-l-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    placeholder={primaryPet ? `Search for ${primaryPet.name}...` : "Search everything..."}
+                    className="w-full px-4 py-2 text-sm text-gray-900 bg-white rounded-l-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                     data-testid="navbar-search-input"
-                    autoFocus={searchExpanded}
                   />
-                  {/* Voice Wizard Button */}
                   <button 
                     type="button"
                     onClick={toggleVoiceWizard}
-                    className={`px-2.5 transition-all ${isListening ? 'bg-red-500 animate-pulse' : 'bg-purple-400 hover:bg-purple-500'}`}
+                    className={`px-3 transition-all ${isListening ? 'bg-red-500 animate-pulse' : 'bg-purple-400 hover:bg-purple-500'}`}
                     title="Voice Service Wizard"
                     data-testid="voice-wizard-btn"
                   >
-                    {isListening ? <MicOff className="w-4 h-4 text-white" /> : <Mic className="w-4 h-4 text-white" />}
+                    {isListening ? <MicOff className="w-5 h-5 text-white" /> : <Mic className="w-5 h-5 text-white" />}
                   </button>
                   <button 
                     type="submit"
-                    className="px-2.5 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-r-md transition-colors"
+                    className="px-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-r-md transition-colors"
                     data-testid="navbar-search-btn"
                   >
-                    <Search className="w-4 h-4 text-white" />
+                    <Search className="w-5 h-5 text-white" />
                   </button>
-                  {/* Close button on mobile */}
-                  {searchExpanded && (
-                    <button
-                      type="button"
-                      onClick={() => { setSearchExpanded(false); setSearchQuery(''); }}
-                      className="sm:hidden ml-2 p-2 rounded-lg bg-white/10 hover:bg-white/20"
-                    >
-                      <X className="w-4 h-4 text-white" />
-                    </button>
-                  )}
                 </div>
               </form>
               
