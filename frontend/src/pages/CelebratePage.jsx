@@ -678,8 +678,6 @@ const CelebratePage = () => {
                       className="h-11"
                     />
                   )}
-                    className="h-11"
-                  />
                 </div>
                 <div>
                   <label className="text-sm font-medium text-gray-700 mb-1 block">Occasion *</label>
