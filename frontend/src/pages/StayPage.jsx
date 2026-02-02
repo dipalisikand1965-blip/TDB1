@@ -559,6 +559,7 @@ const StayPage = () => {
       {/* ==================== PET JOURNEY RECOMMENDATIONS ==================== */}
       <section className="py-6 bg-white border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-4">
+          <PersonalizedPicks pillar="stay" maxProducts={6} />
           <PetJourneyRecommendations 
             currentPillar="stay"
           />
