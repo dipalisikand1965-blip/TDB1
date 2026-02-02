@@ -16,6 +16,7 @@ import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
 import MiraChatWidget from '../components/MiraChatWidget';
 import SEOHead from '../components/SEOHead';
+import PersonalizedPicks from '../components/PersonalizedPicks';
 import {
   ShoppingBag, Search, Filter, Grid, List, Heart, Star, 
   ChevronRight, ChevronDown, Sparkles, Tag, Truck, Shield, Gift, ArrowRight,
