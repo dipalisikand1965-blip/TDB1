@@ -7307,15 +7307,46 @@ async def import_products_csv(
 async def export_products_csv(
     credentials: HTTPBasicCredentials = Depends(security)
 ):
-    """Export all products as CSV-compatible JSON"""
+    """Export all products as CSV file"""
     verify_admin(credentials)
     
     products = await db.products.find({}, {"_id": 0}).to_list(10000)
     
-    return {
-        "products": products,
-        "total": len(products)
-    }
+    # Create CSV content
+    output = io.StringIO()
+    if products:
+        # Get all unique keys across all products
+        all_keys = set()
+        for p in products:
+            all_keys.update(p.keys())
+        
+        # Priority columns first
+        priority_cols = ['id', 'name', 'description', 'price', 'pillar', 'category', 'tags', 'image']
+        fieldnames = [c for c in priority_cols if c in all_keys]
+        fieldnames.extend([k for k in sorted(all_keys) if k not in fieldnames])
+        
+        writer = csv.DictWriter(output, fieldnames=fieldnames)
+        writer.writeheader()
+        
+        for product in products:
+            row = {}
+            for key in fieldnames:
+                value = product.get(key, '')
+                # Convert lists/dicts to JSON string
+                if isinstance(value, (list, dict)):
+                    row[key] = json.dumps(value)
+                else:
+                    row[key] = value
+            writer.writerow(row)
+    
+    # Return as CSV file
+    from fastapi.responses import StreamingResponse
+    output.seek(0)
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=products_export.csv"}
+    )
 
 
 # ==================== PRODUCT INTELLIGENCE ENGINE ====================
