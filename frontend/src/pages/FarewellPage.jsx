@@ -316,6 +316,15 @@ const FarewellPage = () => {
 
       {/* Hero Section - Soft and Compassionate */}
       <section className="relative py-20 px-4 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white overflow-hidden">
+        {/* Mobile Back Button */}
+        <button 
+          onClick={() => navigate(-1)}
+          className="sm:hidden absolute top-4 left-4 z-10 p-2 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-colors"
+          aria-label="Go back"
+        >
+          <ChevronLeft className="w-6 h-6 text-white" />
+        </button>
+        
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 left-10 w-32 h-32 bg-white rounded-full blur-3xl"></div>
           <div className="absolute bottom-10 right-10 w-48 h-48 bg-pink-300 rounded-full blur-3xl"></div>
