@@ -664,6 +664,11 @@ const FitPage = () => {
         </div>
       </div>
 
+      {/* Personalized Picks for User's Pet */}
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <PersonalizedPicks pillar="fit" maxProducts={6} />
+      </div>
+
       {/* ==================== CONVERSATIONAL ENTRY + QUICK WIN ==================== */}
       <div className="py-10 bg-gradient-to-b from-gray-50/50 to-white">
         <div className="max-w-6xl mx-auto px-4">
