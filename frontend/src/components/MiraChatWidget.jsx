@@ -308,8 +308,13 @@ const MiraChatWidget = ({
         const newPet = pets.find(p => p.id === newPetId);
         if (newPet) {
           setSelectedPet(newPet);
-          // Clear messages to show new personalized greeting
-          setMessages([]);
+          // NOTE: Don't clear messages - users expect conversation to persist
+          // Just add a note that pet has changed
+          setMessages(prev => [...prev, {
+            id: `pet-change-${Date.now()}`,
+            role: 'assistant',
+            content: `I'm now helping with ${newPet.name}! 🐾`
+          }]);
         }
       }
     };
