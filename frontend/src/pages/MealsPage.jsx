@@ -8,6 +8,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
+import { Input } from '../components/ui/input';
+import { Textarea } from '../components/ui/textarea';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -19,7 +22,7 @@ import SEOHead from '../components/SEOHead';
 import {
   Utensils, Leaf, Heart, Star, ChevronRight, Sparkles,
   Clock, Truck, Shield, CheckCircle, Package, ChevronLeft,
-  Calendar, Award, ShoppingBag
+  Calendar, Award, ShoppingBag, Phone, MessageCircle, Send
 } from 'lucide-react';
 
 // Meal Categories
