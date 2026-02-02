@@ -351,11 +351,9 @@ const MiraChatWidget = ({
     
     fetchPetIntelligence();
     
-    // Reset messages when pet changes to show new personalized greeting
-    if (isOpen) {
-      setMessages([]);
-    }
-  }, [selectedPet?.id, pillar, token, isOpen]);
+    // NOTE: Removed message clearing - messages should persist across sessions
+    // Users expect their conversation to remain when switching pillars or pets
+  }, [selectedPet?.id, pillar, token]);
   
   // Lock body scroll when widget is open on mobile
   useEffect(() => {
