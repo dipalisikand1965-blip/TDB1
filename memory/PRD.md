@@ -17,7 +17,42 @@ Build a complete service booking experience and admin management interface for t
 
 ## What's Been Implemented
 
-### Session: February 2, 2026 - Universal PersonalizedPicks & Smart Recommendations (LATEST)
+### Session: February 2, 2026 - Buying Behavior & UX Fixes (LATEST)
+
+**Features Implemented:**
+1. ✅ **Buying Behavior Tracking** - 3 new backend endpoints:
+   - `GET /api/buying-behavior/pet/{pet_id}` - Purchase history per pet
+   - `GET /api/buying-behavior/frequently-bought-together/{product_id}` - Co-purchased products
+   - `GET /api/buying-behavior/repeat-purchase-suggestions/{pet_id}` - Repeat purchase suggestions for consumables
+   - PersonalizedPicks now fetches repeat suggestions alongside recommendations
+
+2. ✅ **Care Page Goals Open Forms (Not Mira)**
+   - ConversationalEntry goals now open ServiceBookingModal directly
+   - Grooming, Vet, Training, Walking, Daycare all open booking forms
+   - "Anything Else" goal opens Ask Concierge modal
+
+3. ✅ **City Dropdown Allows Custom Input**
+   - MembershipOnboarding: Shows "Use X as your city" when no match found
+   - ServiceCatalogSection: Added "Other" option with custom city input field
+   - Users from any city can now register and book services
+
+4. ✅ **"Anything Else" Option Added to Care Goals**
+   - Opens generic Ask Concierge form
+   - Auto-populates user info
+   - Submits to unified service flow
+
+**Files Modified:**
+- `/app/backend/server.py` - 3 buying behavior endpoints
+- `/app/frontend/src/components/PersonalizedPicks.jsx` - Fetches repeat suggestions
+- `/app/frontend/src/pages/CarePage.jsx` - onGoalSelect opens modals not Mira
+- `/app/frontend/src/components/ConversationalEntry.jsx` - Added 'anything_else' to care goals
+- `/app/frontend/src/pages/MembershipOnboarding.jsx` - Custom city option
+- `/app/frontend/src/components/ServiceCatalogSection.jsx` - "Other" city option
+
+**Testing: 100% Pass Rate (13/13 pytest tests, all features verified)**
+- Test report: `/app/test_reports/iteration_185.json`
+
+### Session: February 2, 2026 - Universal PersonalizedPicks & Smart Recommendations
 
 **Features Implemented:**
 1. ✅ **PersonalizedPicks on ALL 10 Pillar Pages** (Mobile + Desktop)
