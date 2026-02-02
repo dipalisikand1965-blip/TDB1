@@ -6599,16 +6599,22 @@ async def get_pet_recommendations(pet_id: str, limit: int = 20, pillar: str = No
     return {
         "pet": {
             "name": pet.get("name"),
+            "breed": breed,
             "size_category": size_category,
             "age_category": age_category,
+            "personality": personality,
             "allergies": allergies
         },
         "recommendations": recommendations,
         "total": len(recommendations),
+        "pillar": pillar,
         "filters_applied": {
             "size": size_category,
             "age": age_category,
-            "excluded_allergens": allergies
+            "breed": breed,
+            "personality": personality,
+            "excluded_allergens": allergies,
+            "pillar": pillar
         }
     }
 
