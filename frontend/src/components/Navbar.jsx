@@ -37,7 +37,7 @@ const PILLARS = [
     dropdown: [
       { name: 'Dine By Concierge®', path: '/dine', highlight: true },
       { name: 'Pet Restaurants', path: '/dine' },
-      { name: 'Fresh Meals', path: '/dine?type=meals' },
+      { name: 'Fresh Meals', path: '/dine/meals' },
       { name: 'Meal Plans', path: '/meal-plan' },
     ]
   },
