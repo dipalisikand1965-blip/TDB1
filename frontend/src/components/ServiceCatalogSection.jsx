@@ -611,12 +611,19 @@ const ServiceCatalogSection = ({ pillar = 'care', title, subtitle, maxServices =
 
       {/* Cross-Sell Modal - Show related products after booking */}
       <Dialog open={showCrossSell} onOpenChange={setShowCrossSell}>
-        <DialogContent className="max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
+        <DialogContent className="max-w-md max-h-[80vh] overflow-y-auto">
+          <DialogHeader className="relative">
+            <DialogTitle className="flex items-center gap-2 pr-8">
               <Sparkles className="w-5 h-5 text-rose-500" />
               Complete Your {pillar?.charAt(0).toUpperCase() + pillar?.slice(1)} Routine
             </DialogTitle>
+            <button 
+              onClick={() => { setShowCrossSell(false); setBookedService(null); }}
+              className="absolute right-0 top-0 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none"
+              aria-label="Close"
+            >
+              <X className="h-5 w-5" />
+            </button>
           </DialogHeader>
           
           {bookedService && (
