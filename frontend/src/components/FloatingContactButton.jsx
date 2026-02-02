@@ -139,6 +139,7 @@ const FloatingContactButton = () => {
       />
     </>
   );
+  */ // End of preserved code
 };
 
 export default FloatingContactButton;
