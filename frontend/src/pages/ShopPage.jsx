@@ -492,6 +492,11 @@ const ShopPage = () => {
         </div>
       </section>
 
+      {/* Personalized Picks for User's Pet */}
+      <div className="max-w-7xl mx-auto px-4 py-6 bg-white border-b">
+        <PersonalizedPicks pillar="shop" maxProducts={6} />
+      </div>
+
       {/* Category Navigation with Subcategories */}
       <section className="bg-white border-b sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-4 py-4">
