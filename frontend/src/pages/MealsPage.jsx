@@ -50,10 +50,33 @@ const MealsPage = () => {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [showInquiryModal, setShowInquiryModal] = useState(false);
+  const [inquiryForm, setInquiryForm] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    petName: '',
+    dietType: 'fresh',
+    notes: ''
+  });
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     fetchData();
   }, []);
+
+  // Pre-fill form with user data
+  useEffect(() => {
+    if (user) {
+      setInquiryForm(prev => ({
+        ...prev,
+        name: user.name || '',
+        phone: user.phone || user.whatsapp || '',
+        email: user.email || '',
+        petName: user.pets?.[0]?.name || ''
+      }));
+    }
+  }, [user]);
 
   const fetchData = async () => {
     setLoading(true);
@@ -83,6 +106,61 @@ const MealsPage = () => {
       console.error('Error fetching meals data:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Submit meal inquiry to unified service flow
+  const handleMealInquiry = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    
+    try {
+      const response = await fetch(`${API_URL}/api/service-requests`, {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          ...(token && { 'Authorization': `Bearer ${token}` })
+        },
+        body: JSON.stringify({
+          type: 'meal_consultation',
+          pillar: 'dine',
+          source: 'fresh_meals_page',
+          customer: {
+            name: inquiryForm.name,
+            phone: inquiryForm.phone,
+            email: inquiryForm.email
+          },
+          details: {
+            pet_name: inquiryForm.petName,
+            diet_type: inquiryForm.dietType,
+            notes: inquiryForm.notes,
+            request_type: 'fresh_meal_inquiry'
+          },
+          priority: 'medium',
+          intent: 'meal_subscription'
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        toast({
+          title: "Inquiry Submitted! 🍽️",
+          description: `Ticket ${data.ticket_id} created. Our nutrition expert will contact you within 24 hours.`
+        });
+        setShowInquiryModal(false);
+        setInquiryForm(prev => ({ ...prev, notes: '', dietType: 'fresh' }));
+      } else {
+        throw new Error('Failed to submit inquiry');
+      }
+    } catch (error) {
+      console.error('Error submitting meal inquiry:', error);
+      toast({
+        title: "Error",
+        description: "Failed to submit inquiry. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setSubmitting(false);
     }
   };
 
