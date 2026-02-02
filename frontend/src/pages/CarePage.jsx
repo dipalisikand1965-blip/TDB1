@@ -297,6 +297,13 @@ const CarePage = () => {
         contact_email: user.email || prev.contact_email,
         contact_phone: user.phone || prev.contact_phone
       }));
+      // Also populate anything else form
+      setAnythingElseData(prev => ({
+        ...prev,
+        name: user.name || '',
+        email: user.email || '',
+        phone: user.phone || ''
+      }));
     }
   }, [user]);
 
