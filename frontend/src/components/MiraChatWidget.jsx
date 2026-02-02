@@ -1061,17 +1061,17 @@ const MiraChatWidget = ({
             {/* Voice toggle */}
             <button
               onClick={(e) => { e.stopPropagation(); setVoiceEnabled(!voiceEnabled); }}
-              className={`w-9 h-9 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-colors ${voiceEnabled ? 'bg-white/20' : 'bg-white/10'}`}
+              className={`w-11 h-11 sm:w-9 sm:h-9 min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 rounded-full flex items-center justify-center transition-colors touch-manipulation active:scale-95 ${voiceEnabled ? 'bg-white/20' : 'bg-white/10'}`}
               title={voiceEnabled ? "Voice ON" : "Voice OFF"}
             >
-              {voiceEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+              {voiceEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
             </button>
             {/* Close */}
             <button
               onClick={(e) => { e.stopPropagation(); setIsOpen(false); }}
-              className="w-9 h-9 sm:w-8 sm:h-8 rounded-full flex items-center justify-center bg-white/20 hover:bg-white/30 transition-colors"
+              className="w-11 h-11 sm:w-9 sm:h-9 min-w-[44px] min-h-[44px] sm:min-w-0 sm:min-h-0 rounded-full flex items-center justify-center bg-white/20 hover:bg-white/30 transition-colors touch-manipulation active:scale-95"
             >
-              <X className="w-4 h-4" />
+              <X className="w-5 h-5" />
             </button>
           </div>
         </div>
