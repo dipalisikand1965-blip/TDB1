@@ -7303,7 +7303,7 @@ async def import_products_csv(
     }
 
 
-@api_router.get("/admin/products/export-csv")
+@api_router.get("/admin/export/products-csv")
 async def export_products_csv(
     credentials: HTTPBasicCredentials = Depends(security)
 ):
