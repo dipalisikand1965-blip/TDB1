@@ -99,7 +99,7 @@ const DinePage = () => {
         }
         
         // Fetch dine products using pillar resolver
-        const productsRes = await fetch(`${API_URL}/api/pillar-resolver/products/dine?limit=30`);
+        const productsRes = await fetch(`${API_URL}/api/products?pillar=dine?limit=30`);
         if (productsRes.ok) {
           const productsData = await productsRes.json();
           setProducts(productsData.products || []);

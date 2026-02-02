@@ -338,7 +338,7 @@ const CarePage = () => {
     try {
       const [productsRes, bundlesRes] = await Promise.all([
         // Use new pillar resolver API for rule-based product filtering
-        fetch(`${API_URL}/api/pillar-resolver/products/care?limit=50`),
+        fetch(`${API_URL}/api/products?pillar=care?limit=50`),
         fetch(`${API_URL}/api/care/bundles`)
       ]);
       

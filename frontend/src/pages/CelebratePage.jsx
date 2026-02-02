@@ -189,7 +189,7 @@ const CelebratePage = () => {
   const fetchFeaturedProducts = async () => {
     try {
       // Use new pillar resolver API for rule-based product filtering
-      const response = await fetch(`${API_URL}/api/pillar-resolver/products/celebrate?limit=12`);
+      const response = await fetch(`${API_URL}/api/products?pillar=celebrate?limit=12`);
       if (response.ok) {
         const data = await response.json();
         setFeaturedProducts(data.products || data || []);

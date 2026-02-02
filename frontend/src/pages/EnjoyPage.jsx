@@ -179,7 +179,7 @@ const EnjoyPage = () => {
         fetch(`${API_URL}/api/enjoy/experiences?is_featured=true`),
         fetch(`${API_URL}/api/enjoy/calendar`),
         // Use new pillar resolver API for rule-based product filtering
-        fetch(`${API_URL}/api/pillar-resolver/products/enjoy?limit=50`),
+        fetch(`${API_URL}/api/products?pillar=enjoy?limit=50`),
         fetch(`${API_URL}/api/enjoy/bundles`)
       ]);
       

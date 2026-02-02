@@ -181,7 +181,7 @@ const LearnPage = () => {
         fetch(`${API_URL}/api/learn/programs?is_featured=true`),
         fetch(`${API_URL}/api/learn/trainers?is_featured=true`),
         // Use new pillar resolver API for rule-based product filtering
-        fetch(`${API_URL}/api/pillar-resolver/products/learn?limit=20`),
+        fetch(`${API_URL}/api/products?pillar=learn?limit=20`),
         fetch(`${API_URL}/api/learn/bundles`)
       ]);
 
