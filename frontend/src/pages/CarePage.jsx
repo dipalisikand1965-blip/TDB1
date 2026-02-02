@@ -754,7 +754,7 @@ const CarePage = () => {
             <p className="text-gray-600 mt-2">Select a service and book in under 2 minutes</p>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             {[
               { type: 'grooming', icon: Scissors, name: 'Grooming', color: 'from-pink-500 to-rose-600', desc: 'Bath, trim & spa' },
               { type: 'vet', icon: Stethoscope, name: 'Vet Visit', color: 'from-blue-500 to-indigo-600', desc: 'Checkups & vaccines' },
@@ -769,20 +769,36 @@ const CarePage = () => {
                     setBookingServiceType(service.type);
                     setShowBookingModal(true);
                   }}
-                  className="group p-6 bg-white rounded-2xl border-2 border-gray-100 hover:border-rose-200 hover:shadow-xl transition-all duration-300 text-left"
+                  className="group p-4 sm:p-6 bg-white rounded-2xl border-2 border-gray-100 hover:border-rose-200 hover:shadow-xl transition-all duration-300 text-left"
                   data-testid={`quick-book-${service.type}`}
                 >
-                  <div className={`w-14 h-14 mb-4 rounded-xl bg-gradient-to-br ${service.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
-                    <Icon className="w-7 h-7 text-white" />
+                  <div className={`w-12 h-12 sm:w-14 sm:h-14 mb-3 sm:mb-4 rounded-xl bg-gradient-to-br ${service.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
+                    <Icon className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
                   </div>
-                  <h3 className="font-bold text-gray-900 mb-1">{service.name}</h3>
-                  <p className="text-sm text-gray-500">{service.desc}</p>
-                  <div className="mt-3 flex items-center text-rose-600 text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                    Book Now <ChevronRight className="w-4 h-4 ml-1" />
+                  <h3 className="font-bold text-gray-900 mb-1 text-sm sm:text-base">{service.name}</h3>
+                  <p className="text-xs sm:text-sm text-gray-500">{service.desc}</p>
+                  <div className="mt-2 sm:mt-3 flex items-center text-rose-600 text-xs sm:text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                    Book Now <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 ml-1" />
                   </div>
                 </button>
               );
             })}
+            
+            {/* Anything Else - Ask Concierge */}
+            <button
+              onClick={() => setShowAnythingElseModal(true)}
+              className="group p-4 sm:p-6 bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl border-2 border-amber-200 hover:border-amber-400 hover:shadow-xl transition-all duration-300 text-left"
+              data-testid="quick-book-anything-else"
+            >
+              <div className="w-12 h-12 sm:w-14 sm:h-14 mb-3 sm:mb-4 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                <MessageCircle className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+              </div>
+              <h3 className="font-bold text-gray-900 mb-1 text-sm sm:text-base">Anything Else</h3>
+              <p className="text-xs sm:text-sm text-gray-500">Custom request</p>
+              <div className="mt-2 sm:mt-3 flex items-center text-amber-600 text-xs sm:text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
+                Ask Concierge <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 ml-1" />
+              </div>
+            </button>
           </div>
         </div>
       </div>
