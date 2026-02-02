@@ -87,13 +87,19 @@ const MemberMobileNav = () => {
       title: 'Life Pillars',
       color: 'teal',
       items: [
+        { path: '/celebrate', label: 'Celebrate', icon: PartyPopper },
         { path: '/dine', label: 'Dine', icon: UtensilsCrossed },
         { path: '/care', label: 'Care', icon: Heart },
         { path: '/stay', label: 'Stay', icon: Hotel },
         { path: '/travel', label: 'Travel', icon: Plane },
-        { path: '/celebrate', label: 'Celebrate', icon: PartyPopper },
         { path: '/fit', label: 'Fit', icon: Dumbbell },
         { path: '/learn', label: 'Learn', icon: GraduationCap },
+        { path: '/enjoy', label: 'Enjoy', icon: Music },
+        { path: '/advisory', label: 'Advisory', icon: Stethoscope },
+        { path: '/paperwork', label: 'Paperwork', icon: FileCheck },
+        { path: '/emergency', label: 'Emergency', icon: AlertTriangle },
+        { path: '/adopt', label: 'Adopt', icon: Dog },
+        { path: '/farewell', label: 'Farewell', icon: Flower2 },
       ]
     },
     {
