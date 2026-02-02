@@ -280,7 +280,12 @@ const ShopPage = () => {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      let url = `${API_URL}/api/products?limit=200`;
+      let url = `${API_URL}/api/products?limit=500`;
+      
+      // If there's a search query, pass it to backend for efficient filtering
+      if (searchQuery) {
+        url += `&search=${encodeURIComponent(searchQuery)}`;
+      }
       
       // Use parent_category if selected (shows all subcategories)
       if (selectedParentCategory && selectedParentCategory !== 'all') {
