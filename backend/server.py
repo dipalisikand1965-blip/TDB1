@@ -1181,6 +1181,10 @@ async def lifespan(app: FastAPI):
     logger.info("Checking products...")
     await seed_initial_products()
     
+    # Run Product Intelligence Engine to ensure all tags are set
+    logger.info("Running Product Intelligence Engine for tag enhancement...")
+    await auto_enhance_product_tags()
+    
     # Initialize role database connection
     set_role_db(db)
     logger.info("Role management initialized")
