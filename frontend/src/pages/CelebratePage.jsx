@@ -19,6 +19,7 @@ import { Input } from '../components/ui/input';
 import { API_URL } from '../utils/api';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import ProductCard from '../components/ProductCard';
+import PersonalizedPicks from '../components/PersonalizedPicks';
 import SEOHead from '../components/SEOHead';
 import MiraChatWidget from '../components/MiraChatWidget';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
