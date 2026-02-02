@@ -528,22 +528,16 @@ const Navbar = () => {
 
       {/* Main Header Row */}
       <div className="bg-slate-900 text-white">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center h-14 gap-4">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4">
+          <div className="flex items-center h-14 gap-2 sm:gap-4">
             
-            {/* Logo */}
+            {/* Logo - Icon only on mobile */}
             <Link to="/" className="flex items-center gap-2 flex-shrink-0" data-testid="navbar-logo">
-              <div className="h-9 w-9 bg-white rounded-lg p-1 flex items-center justify-center">
-                <img src="/logo-new.png" alt="The Doggy Company" className="h-7 w-7 object-contain" />
+              <div className="h-8 w-8 sm:h-9 sm:w-9 bg-white rounded-lg p-1 flex items-center justify-center">
+                <img src="/logo-new.png" alt="The Doggy Company" className="h-6 w-6 sm:h-7 sm:w-7 object-contain" />
               </div>
-              {/* Mobile: Show abbreviated name */}
-              <div className="block sm:hidden">
-                <div className="text-sm font-bold leading-none">
-                  <span className="text-teal-400">TDC</span>
-                </div>
-              </div>
-              {/* Desktop: Show full name */}
-              <div className="hidden sm:block">
+              {/* Desktop only: Show full name */}
+              <div className="hidden md:block">
                 <div className="text-sm font-bold leading-none">
                   <span className="text-teal-400">the</span>
                   <span className="text-purple-400">doggy</span>
@@ -553,8 +547,8 @@ const Navbar = () => {
               </div>
             </Link>
 
-            {/* Search Bar - Visible on ALL screen sizes */}
-            <div className="flex-1 max-w-xl relative" ref={searchRef}>
+            {/* Search Bar - Full width on mobile */}
+            <div className="flex-1 relative" ref={searchRef}>
               <form onSubmit={handleSearch}>
                 <div className="flex">
                   <input
@@ -566,25 +560,25 @@ const Navbar = () => {
                     }}
                     onFocus={() => setShowSearchSuggestions(true)}
                     placeholder={primaryPet ? `Search for ${primaryPet.name}...` : "Search..."}
-                    className="w-full px-3 sm:px-4 py-2 text-sm text-gray-900 bg-white rounded-l-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-3 py-2 text-sm text-gray-900 bg-white rounded-l-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                     data-testid="navbar-search-input"
                   />
-                  {/* Voice Wizard Button - Visible on ALL screens */}
+                  {/* Voice Wizard Button */}
                   <button 
                     type="button"
                     onClick={toggleVoiceWizard}
-                    className={`px-2 sm:px-3 transition-all ${isListening ? 'bg-red-500 animate-pulse' : 'bg-purple-400 hover:bg-purple-500'}`}
-                    title="Voice Service Wizard - Say what you need!"
+                    className={`px-2.5 transition-all ${isListening ? 'bg-red-500 animate-pulse' : 'bg-purple-400 hover:bg-purple-500'}`}
+                    title="Voice Service Wizard"
                     data-testid="voice-wizard-btn"
                   >
-                    {isListening ? <MicOff className="w-4 h-4 sm:w-5 sm:h-5 text-white" /> : <Mic className="w-4 h-4 sm:w-5 sm:h-5 text-white" />}
+                    {isListening ? <MicOff className="w-4 h-4 text-white" /> : <Mic className="w-4 h-4 text-white" />}
                   </button>
                   <button 
                     type="submit"
-                    className="px-2 sm:px-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-r-md transition-colors"
+                    className="px-2.5 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-r-md transition-colors"
                     data-testid="navbar-search-btn"
                   >
-                    <Search className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                    <Search className="w-4 h-4 text-white" />
                   </button>
                 </div>
               </form>
