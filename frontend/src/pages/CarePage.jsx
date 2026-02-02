@@ -909,7 +909,11 @@ const CarePage = () => {
                 return (
                   <Card 
                     key={bundle.id} 
-                    className="group overflow-hidden hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-pink-200"
+                    className="group overflow-hidden hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-pink-200 cursor-pointer"
+                    onClick={() => {
+                      setSelectedBundle(bundle);
+                      setShowBundleModal(true);
+                    }}
                     data-testid={`bundle-${bundle.id}`}
                   >
                     {/* Bundle Header */}
@@ -953,12 +957,28 @@ const CarePage = () => {
                         </div>
                       )}
                       
-                      <Button 
-                        className="w-full bg-gray-900 hover:bg-gray-800"
-                        onClick={() => handleAddToCart(bundle)}
-                      >
-                        Add to Cart
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button 
+                          variant="outline"
+                          className="flex-1"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setSelectedBundle(bundle);
+                            setShowBundleModal(true);
+                          }}
+                        >
+                          View Details
+                        </Button>
+                        <Button 
+                          className="flex-1 bg-gray-900 hover:bg-gray-800"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleAddToCart(bundle);
+                          }}
+                        >
+                          Add to Cart
+                        </Button>
+                      </div>
                     </div>
                   </Card>
                 );
