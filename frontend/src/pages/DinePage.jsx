@@ -618,7 +618,7 @@ const DinePage = () => {
         <Card className="mt-12 p-8 bg-gradient-to-r from-orange-500 to-red-500 text-white text-center">
           <h3 className="text-2xl font-bold mb-2">Own a Pet-Friendly Restaurant?</h3>
           <p className="opacity-90 mb-6">List your restaurant on The Doggy Company and reach thousands of pet parents!</p>
-          <Link to="/contact">
+          <Link to="/partner">
             <Button className="bg-white text-orange-600 hover:bg-gray-100">
               Partner With Us
             </Button>
