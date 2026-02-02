@@ -518,6 +518,51 @@ const MiraChatWidget = ({
     }
   };
   
+  // ElevenLabs TTS - Premium voice for Mira
+  const speakWithElevenLabs = useCallback(async (text) => {
+    if (!voiceEnabled) return false;
+    
+    try {
+      setIsSpeaking(true);
+      
+      // Clean text for speech
+      let cleanText = text
+        .replace(/[🎉🐕✨🦴💜🎂🏥☀️🌤️🌙🌟🐾🎒📅📋😊💝🎁]/g, '')
+        .replace(/\*\*/g, '')
+        .replace(/[*#_~`]/g, '')
+        .replace(/\[.*?\]/g, '')
+        .replace(/\n/g, ' ')
+        .substring(0, 500);
+      
+      const response = await fetch(`${API_URL}/api/tts/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: cleanText })
+      });
+      
+      if (!response.ok) {
+        throw new Error('ElevenLabs TTS failed');
+      }
+      
+      const data = await response.json();
+      
+      // Play audio
+      const audio = new Audio(`data:audio/mpeg;base64,${data.audio_base64}`);
+      audioRef.current = audio;
+      
+      audio.onended = () => setIsSpeaking(false);
+      audio.onerror = () => setIsSpeaking(false);
+      
+      await audio.play();
+      return true;
+    } catch (error) {
+      console.log('[Mira Voice] ElevenLabs unavailable, using Web Speech');
+      setUseElevenLabs(false);
+      setIsSpeaking(false);
+      return false;
+    }
+  }, [voiceEnabled]);
+  
   // Text-to-Speech function - MIRA IS A BRITISH WOMAN
   const speakText = useCallback((text) => {
     if (!synthRef.current || !voiceEnabled) return;
