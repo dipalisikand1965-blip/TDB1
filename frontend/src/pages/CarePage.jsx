@@ -569,6 +569,11 @@ const CarePage = () => {
               pillar="care"
               petName={userPets[0]?.name}
               onGoalSelect={(goal, message) => {
+                // Handle "Anything Else" separately - open concierge form
+                if (goal.id === 'anything_else') {
+                  setShowAnythingElseModal(true);
+                  return;
+                }
                 // Map goal to service type and open booking form instead of Mira
                 const goalToServiceMap = {
                   'grooming': 'grooming',
