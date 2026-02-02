@@ -643,11 +643,41 @@ const CelebratePage = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="text-sm font-medium text-gray-700 mb-1 block">Pet's Name *</label>
-                  <Input
-                    value={conciergeForm.petName}
-                    onChange={(e) => setConciergeForm({...conciergeForm, petName: e.target.value})}
-                    placeholder="Your pet's name"
-                    required
+                  {userPets.length > 1 ? (
+                    <select
+                      value={conciergeForm.petId}
+                      onChange={(e) => {
+                        const pet = userPets.find(p => p.id === e.target.value);
+                        setConciergeForm({
+                          ...conciergeForm, 
+                          petId: e.target.value,
+                          petName: pet?.name || ''
+                        });
+                      }}
+                      className="w-full h-11 px-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-pink-500"
+                      required
+                    >
+                      <option value="">Select your pet...</option>
+                      {userPets.map(pet => (
+                        <option key={pet.id} value={pet.id}>
+                          {pet.name} ({pet.breed || 'Pet'})
+                        </option>
+                      ))}
+                    </select>
+                  ) : userPets.length === 1 ? (
+                    <div className="h-11 px-3 flex items-center bg-purple-50 border border-purple-200 rounded-md text-gray-900">
+                      <Dog className="w-4 h-4 mr-2 text-purple-500" />
+                      {userPets[0].name}
+                    </div>
+                  ) : (
+                    <Input
+                      value={conciergeForm.petName}
+                      onChange={(e) => setConciergeForm({...conciergeForm, petName: e.target.value})}
+                      placeholder="Your pet's name"
+                      required
+                      className="h-11"
+                    />
+                  )}
                     className="h-11"
                   />
                 </div>
