@@ -1318,22 +1318,45 @@ const Navbar = () => {
 
             <div className="border-t border-gray-200 my-3"></div>
 
-            {/* All Pillars - Mobile Grid */}
-            <div className="grid grid-cols-2 gap-2">
+            {/* All Pillars - Mobile with Expandable Dropdowns */}
+            <div className="space-y-2">
               {PILLARS.map((pillar) => (
-                <Link
-                  key={pillar.id}
-                  to={pillar.path}
-                  onClick={() => setIsMenuOpen(false)}
-                  className={`flex items-center gap-2 p-3 rounded-lg border active:bg-gray-100 ${
-                    isActive(pillar.path) 
-                      ? 'bg-purple-50 border-purple-200 text-purple-700' 
-                      : 'border-gray-100 hover:bg-gray-50'
-                  }`}
-                >
-                  <span className="text-lg">{pillar.icon}</span>
-                  <span className="font-medium text-sm">{pillar.name}</span>
-                </Link>
+                <div key={pillar.id} className="rounded-lg border border-gray-100 overflow-hidden">
+                  <Link
+                    to={pillar.path}
+                    onClick={() => setIsMenuOpen(false)}
+                    className={`flex items-center justify-between p-3 ${
+                      isActive(pillar.path) 
+                        ? 'bg-purple-50 text-purple-700' 
+                        : 'hover:bg-gray-50'
+                    }`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg">{pillar.icon}</span>
+                      <span className="font-medium text-sm">{pillar.name}</span>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-gray-400" />
+                  </Link>
+                  {/* Mobile Sub-Items */}
+                  {pillar.dropdown && pillar.dropdown.length > 0 && (
+                    <div className="border-t border-gray-100 bg-gray-50/50 px-3 py-2 space-y-1">
+                      {pillar.dropdown.slice(0, 4).map((item) => (
+                        <Link
+                          key={item.path + item.name}
+                          to={item.path}
+                          onClick={() => setIsMenuOpen(false)}
+                          className={`block py-1.5 px-2 text-xs rounded ${
+                            item.highlight 
+                              ? 'text-purple-600 font-medium' 
+                              : 'text-gray-600 hover:text-purple-600'
+                          }`}
+                        >
+                          {item.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
 
