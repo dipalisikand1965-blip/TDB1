@@ -341,12 +341,15 @@ const ShopPage = () => {
       const query = searchQuery.toLowerCase();
       result = result.filter(p => 
         p.title?.toLowerCase().includes(query) ||
+        p.name?.toLowerCase().includes(query) ||
         p.description?.toLowerCase().includes(query) ||
         p.tags?.some(t => t.toLowerCase().includes(query)) ||
         p.product_type?.toLowerCase().includes(query) ||
         p.vendor?.toLowerCase().includes(query) ||
+        p.brand?.toLowerCase().includes(query) ||
         p.pillar?.toLowerCase().includes(query) ||
-        p.category?.toLowerCase().includes(query)
+        p.category?.toLowerCase().includes(query) ||
+        p.subcategory?.toLowerCase().includes(query)
       );
     }
     
