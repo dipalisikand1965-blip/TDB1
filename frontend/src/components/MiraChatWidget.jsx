@@ -1117,7 +1117,8 @@ const MiraChatWidget = ({
             {/* Quick Actions */}
             <div className="px-3 py-2 border-b shrink-0">
               <div className="flex gap-2 overflow-x-auto">
-                {quickActions.slice(0, 3).map((action, idx) => {
+                {(quickActions || []).slice(0, 3).map((action, idx) => {
+                  if (!action || typeof action !== 'string') return null;
                   const isKitAction = action.toLowerCase().includes('build');
                   return (
                     <button
