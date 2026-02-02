@@ -7632,6 +7632,113 @@ async def export_products_csv(
     )
 
 
+@api_router.get("/admin/export/unified-products-csv")
+async def export_unified_products_csv(
+    credentials: HTTPBasicCredentials = Depends(security)
+):
+    """Export all unified_products as CSV file (includes all pillar products)"""
+    verify_admin(credentials)
+    
+    products = await db.unified_products.find({}, {"_id": 0}).to_list(10000)
+    
+    # Create CSV content
+    output = io.StringIO()
+    if products:
+        # Get all unique keys across all products
+        all_keys = set()
+        for p in products:
+            all_keys.update(p.keys())
+        
+        # Priority columns first
+        priority_cols = ['id', 'name', 'description', 'price', 'pillar', 'category', 'tags', 'intelligent_tags', 'occasion_tags', 'breed_tags', 'size_tags', 'image']
+        fieldnames = [c for c in priority_cols if c in all_keys]
+        fieldnames.extend([k for k in sorted(all_keys) if k not in fieldnames])
+        
+        writer = csv.DictWriter(output, fieldnames=fieldnames)
+        writer.writeheader()
+        
+        for product in products:
+            row = {}
+            for key in fieldnames:
+                value = product.get(key, '')
+                # Convert lists/dicts to JSON string
+                if isinstance(value, (list, dict)):
+                    row[key] = json.dumps(value)
+                else:
+                    row[key] = value
+            writer.writerow(row)
+    
+    # Return as CSV file
+    from fastapi.responses import StreamingResponse
+    output.seek(0)
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=unified_products_export.csv"}
+    )
+
+
+@api_router.get("/admin/export/services-csv")
+async def export_services_csv(
+    credentials: HTTPBasicCredentials = Depends(security)
+):
+    """Export all services as CSV file"""
+    verify_admin(credentials)
+    
+    # Collect services from various collections
+    all_services = []
+    
+    # Care services
+    care_services = await db.care_services.find({}, {"_id": 0}).to_list(1000)
+    for s in care_services:
+        s['source_collection'] = 'care_services'
+    all_services.extend(care_services)
+    
+    # Bundles
+    bundles = await db.bundles.find({}, {"_id": 0}).to_list(1000)
+    for b in bundles:
+        b['source_collection'] = 'bundles'
+    all_services.extend(bundles)
+    
+    # Fit bundles
+    fit_bundles = await db.fit_bundles.find({}, {"_id": 0}).to_list(1000)
+    for f in fit_bundles:
+        f['source_collection'] = 'fit_bundles'
+    all_services.extend(fit_bundles)
+    
+    # Create CSV content
+    output = io.StringIO()
+    if all_services:
+        all_keys = set()
+        for s in all_services:
+            all_keys.update(s.keys())
+        
+        priority_cols = ['id', 'name', 'description', 'price', 'pillar', 'category', 'source_collection']
+        fieldnames = [c for c in priority_cols if c in all_keys]
+        fieldnames.extend([k for k in sorted(all_keys) if k not in fieldnames])
+        
+        writer = csv.DictWriter(output, fieldnames=fieldnames)
+        writer.writeheader()
+        
+        for service in all_services:
+            row = {}
+            for key in fieldnames:
+                value = service.get(key, '')
+                if isinstance(value, (list, dict)):
+                    row[key] = json.dumps(value)
+                else:
+                    row[key] = value
+            writer.writerow(row)
+    
+    from fastapi.responses import StreamingResponse
+    output.seek(0)
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": "attachment; filename=services_export.csv"}
+    )
+
+
 # ==================== PRODUCT INTELLIGENCE ENGINE ====================
 
 @api_router.post("/admin/products/run-intelligence")
