@@ -4,6 +4,13 @@ import { Button } from '../ui/button';
 import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
 import { Textarea } from '../ui/textarea';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from '../ui/dropdown-menu';
 import { API_URL, getApiUrl } from '../../utils/api';
 import { useServiceDeskSocket, TicketNotificationToast } from '../../hooks/useServiceDeskSocket';
 import RichTextEditor from './RichTextEditor';
