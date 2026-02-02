@@ -26,7 +26,14 @@ import {
   User,
   Phone,
   HelpCircle,
-  FileText
+  FileText,
+  Stethoscope,
+  FileCheck,
+  AlertTriangle,
+  Music,
+  HeartHandshake,
+  Flower2,
+  Dog
 } from 'lucide-react';
 
 const MemberMobileNav = () => {
