@@ -17,7 +17,23 @@ Build a complete service booking experience and admin management interface for t
 
 ## What's Been Implemented
 
-### Session: February 1-2, 2026 - Comprehensive Mobile UI Overhaul (LATEST)
+### Session: February 2, 2026 - P0/P1 Bug Fixes (LATEST)
+
+**Bugs Fixed:**
+1. ✅ **Mobile Back Buttons** - Added to Learn, Fit, Travel, Farewell pillar pages (Celebrate already had one)
+   - Uses ChevronLeft icon with `navigate(-1)` for natural back navigation
+   - Button appears only on mobile (sm:hidden), positioned top-left
+2. ✅ **Ask Concierge Form Pre-fill** - Form now ensures user data is fresh when modal opens
+   - Pre-fills name, phone, email from user context
+   - Auto-populates pet name if user has one pet
+   - Shows dropdown for multi-pet selection
+3. ✅ **Service Request User Name** - Verified backend correctly shows user name "Dipali" (not "Guest")
+4. ✅ **View Details Button** - Product cards have working "View Details" button that opens modal
+5. ✅ **PawMeter Implementation** - Component exists and renders when paw_score/rating data present
+
+**Testing: 100% Pass Rate (Backend 9/9, Frontend all features verified)**
+
+### Session: February 1-2, 2026 - Comprehensive Mobile UI Overhaul
 
 **Critical Fixes Completed:**
 1. ✅ **Restaurant Modal Layout Fixed** - Removed ServiceCatalogSection from inside modal. Now shows ONLY reservation form (desktop & mobile)
