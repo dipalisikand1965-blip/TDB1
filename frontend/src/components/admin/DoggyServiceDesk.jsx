@@ -590,6 +590,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
         open: allTicketsList.filter(t => ['new', 'open', 'pending'].includes(t.status)).length,
         in_progress: allTicketsList.filter(t => t.status === 'in_progress').length,
         on_hold: allTicketsList.filter(t => ['on_hold', 'waiting_on_member'].includes(t.status)).length,
+        blocked: allTicketsList.filter(t => t.status === 'blocked').length,
         resolved: allTicketsList.filter(t => ['resolved', 'closed', 'confirmed', 'completed'].includes(t.status)).length,
         overdue: allTicketsList.filter(t => t.is_overdue).length,
         unassigned: allTicketsList.filter(t => !t.assigned_to).length,
