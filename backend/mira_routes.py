@@ -3046,7 +3046,7 @@ I understand this is urgent. Let me help you immediately.
         if not api_key:
             logger.error("EMERGENT_LLM_KEY not configured")
             return {
-                "response": "I'm having a moment of pause. Please try again shortly.",
+                "response": "Let me reconnect - what would you like help with?",
                 "session_id": session_id,
                 "ticket_id": ticket_id,
                 "error": "llm_config"
