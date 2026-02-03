@@ -336,6 +336,77 @@ const ConversationalEntry = ({
           <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </motion.button>
       </div>
+      
+      {/* Success Modal - Concierge® Confirmation */}
+      <AnimatePresence>
+        {showSuccessModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setShowSuccessModal(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl text-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Concierge Bell with Paw */}
+              <div className="relative w-24 h-24 mx-auto mb-6">
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full animate-pulse opacity-20" />
+                <div className="absolute inset-2 bg-gradient-to-br from-purple-600 to-pink-600 rounded-full flex items-center justify-center">
+                  <Bell className="w-10 h-10 text-white" />
+                </div>
+                <div className="absolute -bottom-1 -right-1 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center border-2 border-purple-200">
+                  <span className="text-2xl">🐾</span>
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-center gap-2 mb-3">
+                <CheckCircle className="w-6 h-6 text-green-500" />
+                <h3 className="text-xl font-bold text-gray-900">Request Received!</h3>
+              </div>
+              
+              <p className="text-gray-600 mb-2">
+                Your <span className="font-semibold text-purple-600">{submittedGoal?.label}</span> request has been submitted.
+              </p>
+              
+              <div className="bg-purple-50 rounded-2xl p-4 mb-6">
+                <p className="text-purple-800 font-medium">
+                  🔔 Our Concierge® team will get back to you within <span className="font-bold">24 hours</span>
+                </p>
+                {ticketId && (
+                  <p className="text-purple-600 text-sm mt-2">
+                    Reference: <span className="font-mono">{ticketId}</span>
+                  </p>
+                )}
+              </div>
+              
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  className="flex-1 rounded-xl"
+                  onClick={() => setShowSuccessModal(false)}
+                >
+                  Continue Browsing
+                </Button>
+                <Button
+                  className="flex-1 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                  onClick={() => {
+                    setShowSuccessModal(false);
+                    navigate('/dashboard?tab=requests');
+                  }}
+                >
+                  View My Requests
+                </Button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 };
