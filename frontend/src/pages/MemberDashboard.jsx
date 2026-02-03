@@ -877,7 +877,7 @@ const MemberDashboard = () => {
                   return (
                     <div 
                       key={pet.id}
-                      className={`bg-white/10 backdrop-blur-sm rounded-2xl p-4 text-center cursor-pointer transition-all hover:scale-105 ${
+                      className={`relative bg-white/10 backdrop-blur-sm rounded-2xl p-4 text-center cursor-pointer transition-all hover:scale-105 ${
                         isSelected 
                           ? 'ring-2 ring-white bg-white/20 scale-105' 
                           : needsAttention 
