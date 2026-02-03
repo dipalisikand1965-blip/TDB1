@@ -234,6 +234,19 @@ const DashboardTab = ({
             <span className="text-sm font-medium">Services CSV</span>
             <span className="text-xs text-gray-500">All bundles</span>
           </a>
+
+          {/* Download Source Code - Admin Only */}
+          <a
+            href={`${API_URL}/api/admin/download-source`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="h-auto py-4 flex flex-col items-center gap-2 border-2 border-gray-200 rounded-md hover:bg-gray-50 transition-colors bg-gradient-to-r from-gray-50 to-slate-50"
+            data-testid="download-source-btn"
+          >
+            <Download className="w-6 h-6 text-slate-600" />
+            <span className="text-sm font-medium">Download Source</span>
+            <span className="text-xs text-gray-500">Full Codebase ZIP</span>
+          </a>
         </div>
       </Card>
 
