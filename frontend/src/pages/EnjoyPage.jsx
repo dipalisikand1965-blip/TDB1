@@ -605,7 +605,7 @@ const EnjoyPage = () => {
                   <div className="absolute -bottom-1 -right-1 bg-green-500 text-white text-[8px] sm:text-xs px-1 rounded">After</div>
                 </div>
               </div>
-              <p className="text-xs sm:text-sm text-gray-700 mb-2 sm:mb-3 line-clamp-3">"The pet café recommendations are spot on. Luna has her own favourite corner now!"</p>
+              <p className="text-xs sm:text-sm text-gray-700 mb-2 sm:mb-3 line-clamp-3">&quot;The pet café recommendations are spot on. Luna has her own favourite corner now!&quot;</p>
               <div className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs text-pink-600">
                 <Coffee className="w-3 h-3" />
                 <span>First Café Visit → Regular!</span>
