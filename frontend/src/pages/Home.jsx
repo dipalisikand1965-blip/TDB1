@@ -88,12 +88,12 @@ const Home = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white overflow-x-hidden" data-testid="home-page">
+    <div className="min-h-screen bg-white overflow-x-hidden pb-20 md:pb-0" data-testid="home-page">
       {/* SEO Meta Tags */}
       <SEOHead page="home" path="/" />
       
       {/* ========== HERO SECTION ========== */}
-      <section className="relative min-h-[90vh] flex items-center overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      <section className="relative min-h-[85vh] sm:min-h-[90vh] flex items-center overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
         {/* Background Elements - contained */}
         <div className="absolute inset-0 opacity-30 overflow-hidden">
           <div className="absolute top-20 -left-20 w-64 sm:w-96 h-64 sm:h-96 bg-purple-500 rounded-full blur-3xl animate-pulse"></div>
