@@ -185,7 +185,8 @@ export const AuthProvider = ({ children }) => {
       loading,
       loginWithGoogle,
       initiateGoogleLogin,
-      refreshUser
+      refreshUser,
+      isAuthenticated: !!token && !!user
     }}>
       {children}
     </AuthContext.Provider>
