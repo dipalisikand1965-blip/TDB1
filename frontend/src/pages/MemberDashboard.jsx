@@ -755,7 +755,7 @@ const MemberDashboard = () => {
     );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-pink-50">
+    <div className="min-h-screen bg-[#FAFAF9]">
       {/* Pull to Refresh Indicator */}
       <PullToRefreshIndicator isPulling={isPulling} pullProgress={pullProgress} isRefreshing={isRefreshing} />
       
