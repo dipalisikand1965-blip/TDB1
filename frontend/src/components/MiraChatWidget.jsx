@@ -1504,11 +1504,16 @@ const MiraChatWidget = ({
               })}
               
               {isSending && (
-                <div className="flex justify-start">
+                <div className="flex justify-start animate-fadeIn">
                   <div className="bg-gray-100 rounded-2xl rounded-bl-sm px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <Loader2 className="w-4 h-4 animate-spin text-purple-600" />
-                      <span className="text-sm text-gray-500">Mira is typing...</span>
+                    <div className="flex items-center gap-3">
+                      {/* Animated typing dots */}
+                      <div className="flex items-center gap-1">
+                        <span className="w-2 h-2 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                        <span className="w-2 h-2 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                        <span className="w-2 h-2 bg-purple-500 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                      </div>
+                      <span className="text-sm text-gray-500 italic">Mira is thinking...</span>
                     </div>
                   </div>
                 </div>
