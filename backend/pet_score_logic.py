@@ -400,6 +400,42 @@ def calculate_pet_soul_score(answers: Dict[str, Any]) -> Dict[str, Any]:
             "completion_by_category": {category: percentage}
         }
     """
+    # Alias mapping: old question IDs -> new question IDs
+    QUESTION_ALIASES = {
+        'general_nature': 'temperament',
+        'describe_3_words': 'temperament',
+        'stranger_reaction': 'social_with_people',
+        'handling_comfort': 'touch_sensitivity',
+        'loud_sounds': 'noise_sensitivity',
+        'play_style': 'exercise_preferences',
+        'favorite_activity': 'exercise_preferences',
+        'fetch_interest': 'toy_preferences',
+        'preferred_treats': 'favorite_treats',
+        'water_comfort': 'swimming_ability',
+        'leash_behavior': 'leash_manners',
+        'dob': 'life_stage',
+        'birth_date': 'life_stage',
+        'age': 'life_stage',
+    }
+    
+    # Normalize answers by applying aliases
+    normalized_answers = {}
+    for key, value in answers.items():
+        # Skip if empty
+        if not value or value in ['', [], None, 'Unknown']:
+            continue
+        
+        # Use alias if exists, otherwise use original key
+        normalized_key = QUESTION_ALIASES.get(key, key)
+        
+        # If key already has a value, don't overwrite with alias
+        if normalized_key not in normalized_answers:
+            normalized_answers[normalized_key] = value
+        
+        # Also keep original key if it's in the scoring rules
+        if key in PET_SCORE_RULES:
+            normalized_answers[key] = value
+    
     total_earned = 0
     total_possible = 0
     category_earned = {cat: 0 for cat in SCORE_CATEGORIES}
@@ -418,8 +454,8 @@ def calculate_pet_soul_score(answers: Dict[str, Any]) -> Dict[str, Any]:
         total_possible += weight
         category_possible[category] = category_possible.get(category, 0) + weight
         
-        # Check if answered (non-empty, non-null)
-        answer = answers.get(question_id)
+        # Check if answered (using normalized answers)
+        answer = normalized_answers.get(question_id)
         is_answered = answer is not None and answer != "" and answer != []
         
         if is_answered:
