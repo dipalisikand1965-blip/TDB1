@@ -435,6 +435,7 @@ async def save_soul_enrichment(pet_id: str, enrichments: List[Dict], session_id:
     Save enrichments to Pet Soul.
     Handles both single values and list appends.
     Saves to doggy_soul_answers for consistency.
+    Also recalculates the overall_score after saving.
     """
     db = get_db()
     
@@ -484,6 +485,25 @@ async def save_soul_enrichment(pet_id: str, enrichments: List[Dict], session_id:
             )
         
         logger.info(f"Soul enriched: {pet_id} | {field} = {value}")
+    
+    # Recalculate overall_score after saving answers
+    try:
+        from pet_score_logic import calculate_pet_soul_score
+        pet = await db.pets.find_one({"id": pet_id}, {"_id": 0, "doggy_soul_answers": 1})
+        if pet:
+            answers = pet.get("doggy_soul_answers", {})
+            score_data = calculate_pet_soul_score(answers)
+            await db.pets.update_one(
+                {"id": pet_id},
+                {"$set": {
+                    "overall_score": score_data["total_score"],
+                    "score_tier": score_data["tier"]["key"] if score_data.get("tier") else "newcomer",
+                    "score_updated_at": datetime.now(timezone.utc).isoformat()
+                }}
+            )
+            logger.info(f"Soul score recalculated for {pet_id}: {score_data['total_score']}%")
+    except Exception as e:
+        logger.error(f"Error recalculating soul score: {e}")
     
     return True
 
