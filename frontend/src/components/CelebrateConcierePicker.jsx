@@ -88,7 +88,7 @@ const CelebrateConcierePicker = ({ category = 'cakes', onClose }) => {
     fetchPets();
   }, [token]);
   
-  // Handle celebration planning submission
+  // Handle celebration planning submission - Opens the Party Planning Wizard
   const handlePlanCelebration = async () => {
     // Require login
     if (!token) {
@@ -101,67 +101,8 @@ const CelebrateConcierePicker = ({ category = 'cakes', onClose }) => {
       return;
     }
     
-    // If multiple pets and none selected, show selector
-    if (userPets.length > 1 && !selectedPet) {
-      setShowPetSelector(true);
-      return;
-    }
-    
-    setIsSubmitting(true);
-    
-    try {
-      const celebrationType = CELEBRATION_TYPES.find(t => t.id === selectedType);
-      
-      // Create a Service Desk ticket (format expected by backend TicketCreate model)
-      const ticketData = {
-        member: {
-          name: user?.name || 'Member',
-          email: user?.email || '',
-          phone: user?.phone || '',
-          city: city || ''
-        },
-        category: 'celebrate',
-        sub_category: selectedType,
-        urgency: 'medium',
-        description: `${celebrationType.emoji} ${celebrationType.name} - ${selectedPet?.name || 'New Pet'}\n\nCelebration planning started from ${category} page.\n\nType: ${celebrationType.name}\nLocation: ${city || 'Not specified'}\nDate: ${selectedDate ? format(selectedDate, 'PPP') : 'Flexible'}\nPet: ${selectedPet?.name || 'Not specified'}`,
-        source: 'web',
-        attachments: []
-      };
-      
-      const response = await fetch(`${API_URL}/api/tickets`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify(ticketData)
-      });
-      
-      if (response.ok) {
-        const ticket = await response.json();
-        setCreatedTicketId(ticket.id || ticket.ticket_id);
-        setTicketCreated(true);
-        
-        toast({
-          title: '🎉 Celebration planning started!',
-          description: `We've created a ticket for ${selectedPet?.name || 'your'}'s ${celebrationType.name.toLowerCase()}. Our concierge will reach out soon!`
-        });
-        
-        // Navigate to Service Desk view (or keep browsing)
-        // For now, show success state
-      } else {
-        throw new Error('Failed to create ticket');
-      }
-    } catch (error) {
-      console.error('Error creating celebration ticket:', error);
-      toast({
-        title: 'Something went wrong',
-        description: 'Please try again or contact us directly.',
-        variant: 'destructive'
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+    // Open the Party Planning Wizard modal
+    setShowPartyWizard(true);
   };
   
   // If ticket was created, show success state
