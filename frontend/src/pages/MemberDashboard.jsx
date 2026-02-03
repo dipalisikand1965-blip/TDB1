@@ -724,13 +724,58 @@ const MemberDashboard = () => {
     }
   }, [token]);
 
-  // Loading state
+  // Loading state - Premium Skeleton Loader
   if (authLoading || loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
-        <div className="text-center">
-          <Loader2 className="w-10 h-10 animate-spin text-purple-600 mx-auto mb-4" />
-          <p className="text-gray-600">Loading your dashboard...</p>
+      <div className="min-h-screen bg-[#FAFAF9]">
+        {/* Skeleton Header */}
+        <div className="bg-gradient-to-r from-purple-600 to-pink-600 p-6 animate-pulse">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-16 h-16 rounded-2xl bg-white/20"></div>
+              <div className="space-y-2">
+                <div className="h-6 w-32 bg-white/20 rounded"></div>
+                <div className="h-4 w-48 bg-white/20 rounded"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Skeleton Content */}
+        <div className="max-w-6xl mx-auto p-4 space-y-4">
+          {/* Soul Score Grid Skeleton */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[1, 2, 3, 4].map(i => (
+              <div key={i} className="bg-white rounded-2xl p-4 animate-pulse">
+                <div className="w-20 h-20 mx-auto rounded-full bg-gray-200 mb-3"></div>
+                <div className="h-4 w-16 mx-auto bg-gray-200 rounded"></div>
+              </div>
+            ))}
+          </div>
+          
+          {/* Cards Skeleton */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {[1, 2].map(i => (
+              <div key={i} className="bg-white rounded-2xl p-6 animate-pulse">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-gray-200 rounded-xl"></div>
+                  <div className="h-5 w-32 bg-gray-200 rounded"></div>
+                </div>
+                <div className="space-y-3">
+                  <div className="h-4 w-full bg-gray-100 rounded"></div>
+                  <div className="h-4 w-3/4 bg-gray-100 rounded"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          {/* Text Loading */}
+          <div className="flex items-center justify-center py-8">
+            <div className="text-center">
+              <Loader2 className="w-8 h-8 animate-spin text-purple-600 mx-auto mb-3" />
+              <p className="text-gray-500 text-sm">Loading your dashboard...</p>
+            </div>
+          </div>
         </div>
       </div>
     );
