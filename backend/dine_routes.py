@@ -2820,3 +2820,107 @@ async def seed_dine_products(username: str = Depends(verify_admin)):
         await db.products.insert_one(product)
     
     return {"message": "Dine products seeded successfully", "seeded": len(sample_products)}
+
+
+# ============================================
+# SEED ALL DINE DATA ENDPOINT
+# ============================================
+
+@dine_router.post("/admin/dine/seed-all")
+async def seed_all_dine_data(username: str = Depends(verify_admin)):
+    """Seed all dine pillar data: restaurants, bundles, and products"""
+    results = {
+        "restaurants": 0,
+        "bundles": 0,
+        "products": 0,
+        "errors": []
+    }
+    
+    # Seed bundles using the existing function
+    try:
+        bundles_result = await seed_dine_bundles(username)
+        results["bundles"] = bundles_result.get("seeded", 0)
+    except Exception as e:
+        results["errors"].append(f"Bundles: {str(e)}")
+    
+    # Seed products using the existing function
+    try:
+        products_result = await seed_dine_products(username)
+        results["products"] = products_result.get("seeded", 0)
+    except Exception as e:
+        results["errors"].append(f"Products: {str(e)}")
+    
+    # Seed sample restaurants if none exist
+    try:
+        existing_restaurants = await db.restaurants.count_documents({})
+        if existing_restaurants == 0:
+            sample_restaurants = [
+                {
+                    "id": f"rest-{secrets.token_hex(4)}",
+                    "name": "Third Wave Coffee - HSR",
+                    "area": "HSR Layout",
+                    "city": "Bangalore",
+                    "address": "HSR Layout, Sector 1",
+                    "petMenuAvailable": "yes",
+                    "petPolicy": "outdoor",
+                    "cuisine": ["Cafe", "Continental"],
+                    "rating": 4.5,
+                    "priceRange": "₹₹",
+                    "image": "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=800",
+                    "timings": "8 AM - 11 PM",
+                    "featured": True,
+                    "verified": True,
+                    "tags": ["pet-friendly", "cafe", "brunch"],
+                    "created_at": get_utc_timestamp(),
+                    "updated_at": get_utc_timestamp()
+                },
+                {
+                    "id": f"rest-{secrets.token_hex(4)}",
+                    "name": "Byg Brewski - ITPL",
+                    "area": "Whitefield",
+                    "city": "Bangalore",
+                    "address": "ITPL Road, Whitefield",
+                    "petMenuAvailable": "yes",
+                    "petPolicy": "outdoor",
+                    "cuisine": ["Multi-Cuisine", "Brewery"],
+                    "rating": 4.3,
+                    "priceRange": "₹₹₹",
+                    "image": "https://images.unsplash.com/photo-1514933651103-005eec06c04b?w=800",
+                    "timings": "12 PM - 12 AM",
+                    "featured": True,
+                    "verified": True,
+                    "tags": ["pet-friendly", "brewery", "outdoor"],
+                    "created_at": get_utc_timestamp(),
+                    "updated_at": get_utc_timestamp()
+                },
+                {
+                    "id": f"rest-{secrets.token_hex(4)}",
+                    "name": "Blue Tokai - Indiranagar",
+                    "area": "Indiranagar",
+                    "city": "Bangalore",
+                    "address": "100 Feet Road, Indiranagar",
+                    "petMenuAvailable": "no",
+                    "petPolicy": "outdoor",
+                    "cuisine": ["Cafe", "Coffee"],
+                    "rating": 4.6,
+                    "priceRange": "₹₹",
+                    "image": "https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800",
+                    "timings": "7 AM - 10 PM",
+                    "featured": False,
+                    "verified": True,
+                    "tags": ["pet-friendly", "coffee", "work-friendly"],
+                    "created_at": get_utc_timestamp(),
+                    "updated_at": get_utc_timestamp()
+                }
+            ]
+            await db.restaurants.insert_many(sample_restaurants)
+            results["restaurants"] = len(sample_restaurants)
+    except Exception as e:
+        results["errors"].append(f"Restaurants: {str(e)}")
+    
+    return {
+        "success": True,
+        "message": f"Seeded Dine data: {results['restaurants']} restaurants, {results['bundles']} bundles, {results['products']} products",
+        "results": results
+    }
+
