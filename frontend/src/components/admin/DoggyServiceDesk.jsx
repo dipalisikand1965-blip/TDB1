@@ -1567,7 +1567,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
       if (res.ok) {
         // Update local state
         setSelectedTicket(prev => prev ? { ...prev, is_locked: !currentlyLocked } : null);
-        setTickets(prev => prev.map(t => 
+        setAllTickets(prev => prev.map(t => 
           t.ticket_id === ticketId ? { ...t, is_locked: !currentlyLocked } : t
         ));
       }
