@@ -7,7 +7,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://doggyjourney.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://pup-portal-2.preview.emergentagent.com')
 
 # Admin credentials for protected endpoints
 ADMIN_USERNAME = "aditya"
