@@ -432,7 +432,7 @@ function MainLayout() {
       {/* Pulse removed - voice capabilities now inside MiraAI */}
       <ConditionalFloatingButton />
       {/* Mobile Bottom Navigation - Only shows on mobile */}
-      <MobileNavBarWrapper />
+      <ConditionalMobileNav />
       <Toaster />
     </div>
   );
