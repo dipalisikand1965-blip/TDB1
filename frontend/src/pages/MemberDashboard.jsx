@@ -964,6 +964,7 @@ const MemberDashboard = () => {
           pets={pets}
           orders={orders}
           user={user}
+          selectedPetId={selectedPetId}
           onNavigateToPet={(petId) => navigate(`/pet/${petId}?tab=personality`)}
           onOpenExplainer={() => {}}
         />
