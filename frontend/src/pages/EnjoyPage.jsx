@@ -24,6 +24,8 @@ import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import MiraPicksCarousel from '../components/MiraPicksCarousel';
 import PersonalizedPicks from '../components/PersonalizedPicks';
 import { FitnessJourneyCounter, RotatingSocialProof } from '../components/SocialProofBadges';
+import ConversationalEntry from '../components/ConversationalEntry';
+import QuickWinTip from '../components/QuickWinTip';
 import {
   PartyPopper, Calendar, MapPin, Users, Clock, PawPrint,
   CheckCircle, ChevronRight, Sparkles, Star, Loader2, Send,
