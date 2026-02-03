@@ -212,7 +212,7 @@ async def update_quote(quote_id: str, request: UpdateQuoteModel, username: str =
 
 
 @router.post("/{quote_id}/send")
-async def send_quote(quote_id: str, request: SendQuoteModel = None, username: str = Depends(lambda: verify_admin)):
+async def send_quote(quote_id: str, request: SendQuoteModel = None, username: str = Depends(get_admin_username)):
     """Send quote to member with payment link"""
     if db is None:
         raise HTTPException(status_code=500, detail="Database not initialized")
