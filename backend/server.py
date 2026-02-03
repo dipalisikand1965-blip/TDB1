@@ -5879,7 +5879,8 @@ async def get_services(
     if category:
         query["category"] = category
     
-    services = await db.services.find(query, {"_id": 0}).limit(limit).to_list(limit)
+    # Sort by created_at descending to show newest items first
+    services = await db.services.find(query, {"_id": 0}).sort("created_at", -1).limit(limit).to_list(limit)
     
     return {"services": services, "total": len(services)}
 
