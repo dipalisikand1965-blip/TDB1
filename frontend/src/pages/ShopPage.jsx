@@ -217,12 +217,15 @@ const ProductCard = ({ product, onAddToCart, viewMode = 'grid' }) => {
             )}
           </div>
           
-          {product.rating && (
+          {/* Pawmeter Score or Rating */}
+          {product.pawmeter?.overall ? (
+            <PawmeterBadge score={product.pawmeter.overall} size="xs" />
+          ) : product.rating ? (
             <div className="flex items-center gap-1 text-amber-500">
               <Star className="w-4 h-4 fill-current" />
               <span className="text-sm font-medium">{product.rating}</span>
             </div>
-          )}
+          ) : null}
         </div>
       </div>
     </Card>
