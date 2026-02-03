@@ -397,7 +397,7 @@ const TravelPage = () => {
             alt="Pet Travel" 
             className="w-full h-full object-cover opacity-30 transition-opacity duration-1000"
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-violet-900/90 via-purple-800/80 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-violet-900 via-purple-800/95 to-purple-700/90" />
         </div>
         
         {/* Content */}
