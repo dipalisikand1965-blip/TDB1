@@ -11979,12 +11979,50 @@ async def get_member_requests(
     
     all_requests.sort(key=get_sort_key, reverse=True)
     
+    # Also get party_requests
+    party_requests = await db.party_requests.find(
+        {"user_email": user_email},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    for p in party_requests:
+        p["source"] = "party_request"
+        p["pillar"] = "celebrate"
+        all_requests.append(p)
+    
+    # Also get custom_cake_requests
+    cake_requests = await db.custom_cake_requests.find(
+        {"email": user_email},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    for c in cake_requests:
+        c["source"] = "custom_cake"
+        c["pillar"] = "celebrate"
+        all_requests.append(c)
+    
+    # Also get quotes
+    quotes = await db.quotes.find(
+        {"member.email": user_email},
+        {"_id": 0}
+    ).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    for q in quotes:
+        q["source"] = "quote"
+        all_requests.append(q)
+    
+    # Re-sort after adding all collections
+    all_requests.sort(key=get_sort_key, reverse=True)
+    
     return {
         "requests": all_requests[:limit],
         "total": len(all_requests),
         "tickets_count": len(tickets),
         "bookings_count": len(bookings),
-        "pillar_requests_count": len(pillar_requests)
+        "pillar_requests_count": len(pillar_requests),
+        "party_requests_count": len(party_requests),
+        "cake_requests_count": len(cake_requests),
+        "quotes_count": len(quotes)
     }
 
 
