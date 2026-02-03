@@ -29,7 +29,25 @@ User Intent → Service Desk Ticket → Admin Notification → Member Notificati
 
 ## What's Been Implemented
 
-### Session: February 3, 2026 - SOURCE CODE DOWNLOAD & ADMIN FEATURES (LATEST)
+### Session: February 3, 2026 - MIRA CHAT BUG FIX (LATEST)
+
+**Critical Bug Fix: Mira Chat Crashing After First Message**
+
+**Root Cause**: The send button's `onClick={sendMessage}` was passing the click event object as the message content, causing:
+1. User messages to display as `[object Object]`
+2. JSON serialization errors ("Converting circular structure to JSON")
+3. React Markdown crashes when trying to render event objects
+
+**Fixes Applied**:
+1. Changed `onClick={sendMessage}` to `onClick={() => sendMessage()}` to prevent event propagation
+2. Added `SafeMarkdownRenderer` error boundary component to gracefully handle markdown rendering errors
+3. Added defensive serialization with try-catch around `JSON.stringify`
+4. Added content type checking to ensure messages are always strings
+
+**Files Modified**:
+- `/app/frontend/src/components/MiraChatWidget.jsx` - Bug fixes for message handling
+
+### Session: February 3, 2026 - SOURCE CODE DOWNLOAD & ADMIN FEATURES
 
 **Admin Source Code Download Feature:**
 
