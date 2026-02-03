@@ -265,24 +265,55 @@ const ShopPage = () => {
     fetchHierarchy();
   }, []);
 
-  // Fetch products - use useCallback to ensure fresh searchQuery
-  const fetchProducts = React.useCallback(async () => {
-    setLoading(true);
-    console.log('[ShopPage] Fetching products with searchQuery:', searchQuery);
-    try {
-      let url = `${API_URL}/api/products?limit=500`;
-      
-      // If there's a search query, pass it to backend for efficient filtering
-      if (searchQuery) {
-        url += `&search=${encodeURIComponent(searchQuery)}`;
+  // Fetch products when search/filter changes
+  useEffect(() => {
+    const fetchProductsData = async () => {
+      setLoading(true);
+      try {
+        let url = `${API_URL}/api/products?limit=500`;
+        
+        // If there's a search query, pass it to backend for efficient filtering
+        if (searchQuery && searchQuery.trim()) {
+          url += `&search=${encodeURIComponent(searchQuery.trim())}`;
+        }
+        
+        // Use parent_category if selected (shows all subcategories)
+        if (selectedParentCategory && selectedParentCategory !== 'all') {
+          url += `&parent_category=${selectedParentCategory}`;
+        } else if (selectedCategory && selectedCategory !== 'all') {
+          url += `&category=${selectedCategory}`;
+        }
+        
+        // Add pillar filter
+        if (selectedPillar && selectedPillar !== 'all') {
+          url += `&pillar=${selectedPillar}`;
+        }
+        
+        const res = await fetch(url);
+        if (res.ok) {
+          const data = await res.json();
+          let productList = data.products || data || [];
+          
+          // Sort products
+          if (sortBy === 'price-low') {
+            productList.sort((a, b) => (a.price || 0) - (b.price || 0));
+          } else if (sortBy === 'price-high') {
+            productList.sort((a, b) => (b.price || 0) - (a.price || 0));
+          } else if (sortBy === 'newest') {
+            productList.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+          }
+          
+          setProducts(productList);
+        }
+      } catch (err) {
+        console.error('Failed to fetch products:', err);
+      } finally {
+        setLoading(false);
       }
-      
-      // Use parent_category if selected (shows all subcategories)
-      if (selectedParentCategory && selectedParentCategory !== 'all') {
-        url += `&parent_category=${selectedParentCategory}`;
-      } else if (selectedCategory && selectedCategory !== 'all') {
-        // Use specific category (subcategory level)
-        url += `&category=${selectedCategory}`;
+    };
+    
+    fetchProductsData();
+  }, [searchQuery, selectedCategory, selectedParentCategory, selectedPillar, sortBy]);
       }
       
       // Add pillar filter
