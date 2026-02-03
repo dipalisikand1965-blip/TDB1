@@ -41,6 +41,7 @@ const DEFAULT_SHOP_CATEGORIES = [
 const QUICK_FILTERS = [
   { id: 'best-sellers', label: '🏆 Best Sellers', filter: { tag: 'best-seller' } },
   { id: 'new-arrivals', label: '✨ New Arrivals', filter: { tag: 'new' } },
+  { id: 'high-pawmeter', label: '🐾 Top Rated (4+)', filter: { minPawmeter: 4 } },
   { id: 'on-sale', label: '🔥 On Sale', filter: { onSale: true } },
   { id: 'grain-free', label: '🌾 Grain Free', filter: { tag: 'grain-free' } },
   { id: 'organic', label: '🌿 Organic', filter: { tag: 'organic' } },
