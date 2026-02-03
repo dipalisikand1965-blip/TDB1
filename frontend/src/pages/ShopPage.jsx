@@ -341,6 +341,13 @@ const ShopPage = () => {
   const filteredProducts = useMemo(() => {
     let result = products;
     
+    console.log('[ShopPage] Filtering products:', {
+      totalProducts: products.length,
+      searchQuery,
+      priceRange,
+      activeFilters
+    });
+    
     // Search filter - intelligent search across multiple fields
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
@@ -348,7 +355,7 @@ const ShopPage = () => {
         p.title?.toLowerCase().includes(query) ||
         p.name?.toLowerCase().includes(query) ||
         p.description?.toLowerCase().includes(query) ||
-        p.tags?.some(t => t.toLowerCase().includes(query)) ||
+        p.tags?.some(t => t?.toLowerCase().includes(query)) ||
         p.product_type?.toLowerCase().includes(query) ||
         p.vendor?.toLowerCase().includes(query) ||
         p.brand?.toLowerCase().includes(query) ||
@@ -356,12 +363,14 @@ const ShopPage = () => {
         p.category?.toLowerCase().includes(query) ||
         p.subcategory?.toLowerCase().includes(query)
       );
+      console.log('[ShopPage] After search filter:', result.length);
     }
     
     // Price filter
     result = result.filter(p => 
       (p.price || 0) >= priceRange[0] && (p.price || 0) <= priceRange[1]
     );
+    console.log('[ShopPage] After price filter:', result.length);
     
     // Quick filters - multiple can be active at once
     if (activeFilters.includes('best-sellers')) {
