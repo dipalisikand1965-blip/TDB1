@@ -323,7 +323,7 @@ async def accept_quote(quote_id: str, token: str):
 async def mark_quote_paid(
     quote_id: str,
     payment_id: Optional[str] = None,
-    username: str = Depends(lambda: verify_admin)
+    username: str = Depends(get_admin_username)
 ):
     """Admin marks quote as paid (after verifying payment)"""
     if db is None:
