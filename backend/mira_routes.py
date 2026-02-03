@@ -4426,12 +4426,12 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
         
         # ==================== FAIL LOUDLY, NEVER SILENTLY ====================
         # Even on error, Mira MUST respond with something actionable
-        error_response = f"""I apologize - I encountered a brief hiccup. Let me help you another way.
+        error_response = f"""Let me try that again - I hit a small snag.
 
 You can:
-1. Try asking your question again
+1. Rephrase your question
 2. Tell me more about what you're looking for
-3. Or I can connect you with our live concierge team right away
+3. Or I can connect you with our live concierge team
 
 What would you prefer? 🐾"""
         
