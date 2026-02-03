@@ -186,7 +186,7 @@ const DinePage = () => {
           <div className="absolute inset-0 bg-gradient-to-r from-orange-900 via-orange-800/95 to-red-800/90" />
         </div>
         
-        <div className="relative max-w-6xl mx-auto px-4 h-full flex items-center">
+        <div className="relative max-w-6xl mx-auto px-4 h-full flex items-center z-10">
           <div className="max-w-2xl animate-fade-in-up">
             <Badge className="mb-4 bg-orange-500/30 text-orange-100 border-orange-400/40 backdrop-blur-sm">
               <UtensilsCrossed className="w-4 h-4 mr-1" /> Fresh Meals & Pet-Friendly Dining
@@ -195,8 +195,8 @@ const DinePage = () => {
               Nourish Your Pet with
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-300 to-yellow-300"> Love & Care</span>
             </h1>
-            <p className="text-lg text-white/90 mb-6 drop-shadow-md">
-              Discover nutritious fresh meals for your pet and find the best pet-friendly restaurants near you!
+            <p className="text-lg text-white mb-6 drop-shadow-md">
+              Discover nutritious fresh meals and pet-friendly restaurants near you!
             </p>
             <div className="flex flex-wrap gap-3">
               <Button 
