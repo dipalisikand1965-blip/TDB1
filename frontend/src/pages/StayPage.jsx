@@ -671,7 +671,7 @@ const StayPage = () => {
 
       {/* Properties Grid - FIRST after tabs (User requested: properties on top) */}
       {activeTab === 'stays' && (
-      <div className="max-w-6xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
+      <section id="stays-grid" className="max-w-6xl mx-auto px-2 sm:px-4 py-4 sm:py-8 scroll-mt-20">
         <div className="flex items-center justify-between mb-3 sm:mb-6 px-1">
           <h2 className="text-base sm:text-xl md:text-2xl font-bold text-gray-800">
             {loading ? 'Loading...' : `${properties.length} Stays`}
