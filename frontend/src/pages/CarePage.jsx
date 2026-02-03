@@ -938,21 +938,22 @@ const CarePage = () => {
             </p>
           </div>
           
-          {/* 2x2 grid on mobile */}
+          {/* 2x2 grid on mobile with staggered animations */}
           <div className="grid grid-cols-2 md:grid-cols-2 gap-3 sm:gap-6">
             {CARE_EXPERIENCES.map((exp, idx) => (
-              <ConciergeExperienceCard
-                key={idx}
-                pillar="care"
-                title={exp.title}
-                description={exp.description}
-                icon={exp.icon}
-                gradient={exp.gradient}
-                badge={exp.badge}
-                badgeColor={exp.badgeColor}
-                highlights={exp.highlights}
-                image={exp.image}
-              />
+              <div key={idx} className={`animate-fade-in-up stagger-${Math.min(idx + 1, 6)}`}>
+                <ConciergeExperienceCard
+                  pillar="care"
+                  title={exp.title}
+                  description={exp.description}
+                  icon={exp.icon}
+                  gradient={exp.gradient}
+                  badge={exp.badge}
+                  badgeColor={exp.badgeColor}
+                  highlights={exp.highlights}
+                  image={exp.image}
+                />
+              </div>
             ))}
           </div>
           
