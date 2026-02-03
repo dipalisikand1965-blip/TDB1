@@ -13351,6 +13351,47 @@ async def verify_payment(request: VerifyPaymentRequest):
             "created_at": get_utc_timestamp()
         })
         
+        # Send admin notification for successful payment
+        await create_admin_notification(
+            notification_type="payment",
+            title="💰 Payment Received - Pet Pass Activated",
+            message=f"{request.user_email} completed payment. Pet Pass is now active until {expires_at.strftime('%d %b %Y')}!",
+            category="payments",
+            related_id=request.razorpay_payment_id,
+            link_to="/admin?tab=members",
+            priority="normal",
+            metadata={
+                "email": request.user_email,
+                "amount": order.get("amount"),
+                "plan": order.get("plan_name"),
+                "expires": expires_at.isoformat()
+            }
+        )
+        
+        # Update related Service Desk ticket (if exists)
+        existing_ticket = await db.service_desk_tickets.find_one(
+            {"member_email": request.user_email, "type": "new_member", "status": {"$in": ["new", "open", "pending"]}}
+        )
+        if existing_ticket:
+            await db.service_desk_tickets.update_one(
+                {"id": existing_ticket["id"]},
+                {
+                    "$set": {
+                        "status": "in_progress",
+                        "updated_at": get_utc_timestamp()
+                    },
+                    "$push": {
+                        "timeline": {
+                            "action": "payment_received",
+                            "timestamp": get_utc_timestamp(),
+                            "actor": "system",
+                            "details": f"Payment received. Pet Pass activated until {expires_at.strftime('%d %b %Y')}."
+                        }
+                    }
+                }
+            )
+            logger.info(f"Updated onboarding ticket {existing_ticket['id']} - payment received")
+        
         return {
             "success": True,
             "message": "Payment verified and Pet Pass activated!",
