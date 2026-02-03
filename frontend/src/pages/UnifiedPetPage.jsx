@@ -503,6 +503,23 @@ const UnifiedPetPage = () => {
     fetchPet();
   }, [petId, token]);
 
+  // Fetch gallery photos when pet is loaded
+  useEffect(() => {
+    const fetchGallery = async () => {
+      if (!petId) return;
+      try {
+        const response = await fetch(`${API_URL}/api/pets/${petId}/gallery`);
+        if (response.ok) {
+          const data = await response.json();
+          setGalleryPhotos(data.photos || []);
+        }
+      } catch (err) {
+        console.warn('Could not fetch gallery:', err);
+      }
+    };
+    fetchGallery();
+  }, [petId]);
+
   // Fetch health data when health tab is active
   useEffect(() => {
     const fetchHealthData = async () => {
