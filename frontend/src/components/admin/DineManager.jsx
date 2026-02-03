@@ -51,6 +51,9 @@ const DineManager = ({ credentials }) => {
   const [isAddingBundle, setIsAddingBundle] = useState(false);
   const [importingBundles, setImportingBundles] = useState(false);
   
+  // Seed All state
+  const [seedingAll, setSeedingAll] = useState(false);
+  
   // Products state
   const [products, setProducts] = useState([]);
   const [productStats, setProductStats] = useState({});
