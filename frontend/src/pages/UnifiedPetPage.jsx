@@ -834,9 +834,9 @@ const UnifiedPetPage = () => {
       </div>
 
       {/* Pet Profile Header - Premium Mobile-First Design */}
-      <div className="bg-gradient-to-br from-purple-600 via-indigo-600 to-purple-700 py-5 md:py-10 relative overflow-hidden">
+      <div className="bg-gradient-to-br from-purple-600 via-indigo-600 to-purple-700 py-5 md:py-10 relative">
         {/* Animated Decorative Background Elements */}
-        <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-0 left-1/4 w-40 md:w-64 h-40 md:h-64 bg-white/5 rounded-full blur-3xl animate-pulse"></div>
           <div className="absolute bottom-0 right-1/4 w-48 md:w-80 h-48 md:h-80 bg-pink-400/10 rounded-full blur-3xl animate-float"></div>
         </div>
