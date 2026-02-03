@@ -849,6 +849,12 @@ const DoggyServiceDesk = ({ authHeaders }) => {
     setIsEditingTicket(false);
     setPetSoulPrompts(null);
     setTicketReminders([]);
+    
+    // Switch to detail view on mobile
+    if (isMobile) {
+      setMobileView('detail');
+    }
+    
     await fetchContext(ticket);
     
     // Fetch reminders for this ticket
