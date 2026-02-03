@@ -213,7 +213,6 @@ const DoggyServiceDesk = ({ authHeaders }) => {
   const [viewMode, setViewMode] = useState('list');
   const [selectedView, setSelectedView] = useState('all');
   const [selectedPillar, setSelectedPillar] = useState('all');
-  const [selectedPriority, setSelectedPriority] = useState('all');
   
   // Data
   const [allTickets, setAllTickets] = useState([]);
