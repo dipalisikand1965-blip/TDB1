@@ -5646,6 +5646,142 @@ const DoggyServiceDesk = ({ authHeaders }) => {
           }}
         />
       )}
+      
+      {/* ==================== MOBILE FILTERS SHEET ==================== */}
+      {showMobileFilters && (
+        <div className="fixed inset-0 bg-black/50 z-50" onClick={() => setShowMobileFilters(false)}>
+          <div 
+            className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl max-h-[80vh] overflow-y-auto animate-slide-up pb-20"
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Handle bar */}
+            <div className="flex justify-center py-3">
+              <div className="w-12 h-1 bg-gray-300 rounded-full" />
+            </div>
+            
+            {/* Header */}
+            <div className="px-4 pb-3 border-b flex items-center justify-between">
+              <h3 className="font-bold text-lg">Filters</h3>
+              <button onClick={() => setShowMobileFilters(false)} className="p-2">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            {/* Quick Stats */}
+            <div className="p-4 border-b">
+              <div className="grid grid-cols-4 gap-2">
+                <div className="p-2 text-center bg-blue-50 rounded-lg">
+                  <div className="text-lg font-bold text-blue-600">{stats.open}</div>
+                  <div className="text-[10px] text-blue-500">Open</div>
+                </div>
+                <div className="p-2 text-center bg-amber-50 rounded-lg">
+                  <div className="text-lg font-bold text-amber-600">{stats.in_progress}</div>
+                  <div className="text-[10px] text-amber-500">Progress</div>
+                </div>
+                <div className="p-2 text-center bg-red-50 rounded-lg">
+                  <div className="text-lg font-bold text-red-600">{stats.blocked}</div>
+                  <div className="text-[10px] text-red-500">Blocked</div>
+                </div>
+                <div className="p-2 text-center bg-green-50 rounded-lg">
+                  <div className="text-lg font-bold text-green-600">{stats.resolved}</div>
+                  <div className="text-[10px] text-green-500">Resolved</div>
+                </div>
+              </div>
+            </div>
+            
+            {/* Status Filter */}
+            <div className="p-4 border-b">
+              <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Status</div>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { id: 'all', label: 'All', count: stats.total },
+                  { id: 'open', label: 'Open', count: stats.open },
+                  { id: 'in_progress', label: 'In Progress', count: stats.in_progress },
+                  { id: 'blocked', label: 'Blocked', count: stats.blocked },
+                  { id: 'on_hold', label: 'On Hold', count: stats.on_hold },
+                  { id: 'resolved', label: 'Resolved', count: stats.resolved }
+                ].map(item => (
+                  <button
+                    key={item.id}
+                    onClick={() => { setSelectedView(item.id); setShowMobileFilters(false); }}
+                    className={`px-3 py-2 rounded-full text-sm flex items-center gap-2 ${
+                      selectedView === item.id 
+                        ? 'bg-emerald-500 text-white' 
+                        : 'bg-gray-100 text-gray-700'
+                    }`}
+                  >
+                    <span>{item.label}</span>
+                    <span className={selectedView === item.id ? 'text-emerald-200' : 'text-gray-400'}>
+                      {item.count}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            {/* Pillar Filter */}
+            <div className="p-4 border-b">
+              <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Pillar</div>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => { setSelectedPillar('all'); setShowMobileFilters(false); }}
+                  className={`px-3 py-2 rounded-full text-sm ${
+                    selectedPillar === 'all' 
+                      ? 'bg-emerald-500 text-white' 
+                      : 'bg-gray-100 text-gray-700'
+                  }`}
+                >
+                  All Pillars
+                </button>
+                {Object.entries(PILLARS).filter(([k]) => stats.by_pillar[k] > 0).map(([key, pillar]) => (
+                  <button
+                    key={key}
+                    onClick={() => { setSelectedPillar(key); setShowMobileFilters(false); }}
+                    className={`px-3 py-2 rounded-full text-sm flex items-center gap-1 ${
+                      selectedPillar === key 
+                        ? 'bg-emerald-500 text-white' 
+                        : 'bg-gray-100 text-gray-700'
+                    }`}
+                  >
+                    <span>{pillar.emoji}</span>
+                    <span>{pillar.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            {/* Priority Filter */}
+            <div className="p-4">
+              <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Priority</div>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  onClick={() => { setSelectedPriority('all'); setShowMobileFilters(false); }}
+                  className={`px-3 py-2 rounded-full text-sm ${
+                    selectedPriority === 'all' 
+                      ? 'bg-emerald-500 text-white' 
+                      : 'bg-gray-100 text-gray-700'
+                  }`}
+                >
+                  All Priorities
+                </button>
+                {['urgent', 'high', 'medium', 'low'].map(priority => (
+                  <button
+                    key={priority}
+                    onClick={() => { setSelectedPriority(priority); setShowMobileFilters(false); }}
+                    className={`px-3 py-2 rounded-full text-sm capitalize ${
+                      selectedPriority === priority 
+                        ? 'bg-emerald-500 text-white' 
+                        : 'bg-gray-100 text-gray-700'
+                    }`}
+                  >
+                    {priority}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
