@@ -1812,15 +1812,19 @@ const UnifiedPetPage = () => {
                     </div>
                   ))}
                   
-                  {/* Empty slots if fewer than 6 gallery photos */}
+                  {/* Empty slots if fewer than 6 gallery photos - More engaging design */}
                   {Array.from({ length: Math.max(0, 6 - galleryPhotos.filter(p => !p.is_main).length) }).map((_, i) => (
                     <div 
                       key={`empty-${i}`}
-                      className="aspect-square rounded-xl md:rounded-2xl bg-gray-50 border-2 border-dashed border-gray-200 flex flex-col items-center justify-center cursor-pointer hover:bg-purple-50 hover:border-purple-300 transition-all group"
+                      className="aspect-square rounded-xl md:rounded-2xl bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-dashed border-purple-200 flex flex-col items-center justify-center cursor-pointer hover:bg-gradient-to-br hover:from-purple-100 hover:to-pink-100 hover:border-purple-400 hover:scale-105 transition-all duration-300 group"
                       onClick={() => document.getElementById('gallery-upload')?.click()}
                     >
-                      <Camera className="w-5 h-5 md:w-6 md:h-6 text-gray-300 group-hover:text-purple-400 transition-colors" />
-                      <span className="text-[10px] md:text-xs text-gray-400 group-hover:text-purple-500 mt-1 transition-colors">Add</span>
+                      <div className="w-10 h-10 rounded-full bg-white/80 flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
+                        <Camera className="w-5 h-5 text-purple-400 group-hover:text-purple-600 transition-colors" />
+                      </div>
+                      <span className="text-[10px] md:text-xs text-purple-400 group-hover:text-purple-600 mt-2 font-medium transition-colors">
+                        {i === 0 ? 'Add Memory' : 'Add Photo'}
+                      </span>
                     </div>
                   ))}
                 </div>
