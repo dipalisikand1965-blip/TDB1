@@ -812,6 +812,17 @@ const CelebratePage = () => {
           </Card>
         </div>
       )}
+      
+      {/* Party Planning Wizard Modal */}
+      {showPartyWizard && (
+        <PartyPlanningWizard 
+          onClose={() => setShowPartyWizard(false)}
+          onComplete={(data) => {
+            toast.success('Party plan submitted! Our concierge will be in touch.');
+            setShowPartyWizard(false);
+          }}
+        />
+      )}
     </div>
   );
 };
