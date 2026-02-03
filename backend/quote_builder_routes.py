@@ -407,7 +407,7 @@ async def get_quotes_for_party_request(party_request_id: str):
 async def get_all_quotes(
     status: Optional[str] = None,
     limit: int = 50,
-    username: str = Depends(get_admin_username)
+    username: str = Depends(verify_quote_admin)
 ):
     """Get all quotes (admin)"""
     if db is None:
