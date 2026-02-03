@@ -861,12 +861,22 @@ const MemberDashboard = () => {
             <Card className="mb-8 overflow-hidden bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 text-white border-none shadow-xl shadow-purple-500/20 rounded-2xl md:rounded-3xl">
               <div className="p-4 md:p-6 lg:p-8">
                 {/* Section Header */}
-                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-6">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4 mb-6">
                   <div className="flex items-center gap-2">
                     <Brain className="w-6 h-6 md:w-7 md:h-7 text-yellow-300" />
                     <h2 className="text-xl md:text-2xl lg:text-3xl font-bold tracking-tight" style={{fontFamily: 'Manrope, sans-serif'}}>Your Pets&apos; Soul Journey</h2>
                   </div>
-                  <span className="text-white/70 text-sm md:text-base">The more we know, the better Mira serves you!</span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-white/70 text-sm md:text-base hidden sm:inline">The more we know, the better Mira serves you!</span>
+                    <button
+                      onClick={() => setShowSoulExplainer(true)}
+                      className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 backdrop-blur-sm px-3 py-1.5 rounded-full text-sm font-medium transition-all hover:scale-105 active:scale-95"
+                      data-testid="what-is-pet-soul-btn"
+                    >
+                      <HelpCircle className="w-4 h-4" />
+                      What is Pet Soul?
+                    </button>
+                  </div>
                 </div>
                 
                 {/* All Pets Grid - Responsive for all devices */}
