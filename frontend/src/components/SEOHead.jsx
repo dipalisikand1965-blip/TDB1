@@ -131,9 +131,9 @@ const SEO_DATA = {
   },
   
   mira: {
-    title: "Mira AI | Your Personal Pet Concierge | The Doggy Company",
+    title: "Mira AI | Your Personal Pet Concierge® | The Doggy Company",
     description: "Meet Mira - your AI-powered pet concierge®! Get instant help with bookings, recommendations & pet advice. Chat now for personalized assistance!",
-    keywords: "pet AI, mira concierge, pet assistant, AI pet help, pet chatbot, virtual pet concierge®",
+    keywords: "pet AI, mira concierge®, pet assistant, AI pet help, pet chatbot, virtual pet concierge®",
     image: DEFAULT_IMAGE,
   },
   
