@@ -809,90 +809,90 @@ const MemberDashboard = () => {
       />
       
       <div className="max-w-6xl mx-auto p-4 md:p-6 pb-24 md:pb-6">
-        {/* 🌟 PROMINENT SOUL SCORE SECTION */}
+        {/* 🌟 ALL PETS SOUL SCORE SECTION */}
         {pets.length > 0 && (
           <Card className="mb-6 overflow-hidden bg-gradient-to-br from-purple-600 via-indigo-600 to-purple-700 text-white border-none shadow-xl">
             <div className="p-6">
-              <div className="flex flex-col md:flex-row items-center gap-6">
-                {/* Pet Selector & Soul Score Arc */}
-                <div className="flex flex-col items-center">
-                  {/* Multi-Pet Selector */}
-                  {pets.length > 1 && (
-                    <div className="flex gap-2 mb-4">
-                      {pets.map((pet) => (
-                        <button
-                          key={pet.id}
-                          onClick={() => setSelectedPetId(pet.id)}
-                          className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
-                            selectedPetId === pet.id || (!selectedPetId && pet.id === pets[0]?.id)
-                              ? 'bg-white text-purple-700 shadow-lg scale-105'
-                              : 'bg-white/20 text-white/90 hover:bg-white/30'
-                          }`}
-                        >
-                          {pet.name}
-                        </button>
-                      ))}
-                    </div>
-                  )}
+              {/* Section Header */}
+              <div className="flex items-center gap-2 mb-6">
+                <Brain className="w-6 h-6 text-yellow-300" />
+                <h2 className="text-2xl font-bold">Your Pets&apos; Soul Journey</h2>
+                <span className="text-white/70 text-sm ml-2">The more we know, the better Mira serves you!</span>
+              </div>
+              
+              {/* All Pets Grid - Each with their own Soul Meter */}
+              <div className={`grid gap-4 ${pets.length === 1 ? 'grid-cols-1 max-w-md mx-auto' : pets.length === 2 ? 'grid-cols-2' : pets.length <= 4 ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-6'}`}>
+                {pets.map((pet) => {
+                  const score = Math.round(pet.overall_score || 0);
+                  const questionsAnswered = Object.keys(pet.doggy_soul_answers || {}).length;
+                  const needsAttention = score < 50;
                   
-                  {/* Animated Soul Score Arc */}
-                  <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4">
-                    <SoulScoreArc 
-                      score={currentPet?.overall_score || 0}
-                      petId={currentPet?.id}
-                      petName={currentPet?.name}
-                      size="lg"
-                      showLabel={false}
-                      showCTA={false}
-                      animated={true}
-                    />
-                  </div>
-                </div>
-                
-                {/* Soul Journey Info */}
-                <div className="flex-1 text-center md:text-left">
-                  <div className="flex items-center gap-2 justify-center md:justify-start mb-2">
-                    <Brain className="w-6 h-6 text-yellow-300" />
-                    <h2 className="text-2xl font-bold">{currentPet?.name}&apos;s Soul Journey</h2>
-                  </div>
-                  <p className="text-white/80 mb-4 max-w-md">
-                    {currentPet?.overall_score >= 80 
-                      ? `Amazing! We know ${currentPet?.name} really well. Keep interacting to maintain this bond!`
-                      : currentPet?.overall_score >= 50
-                        ? `Great progress! Answer more questions to help Mira give better recommendations.`
-                        : `Help us understand ${currentPet?.name} better. The more we know, the better we can serve you!`
-                    }
+                  return (
+                    <div 
+                      key={pet.id}
+                      className={`bg-white/10 backdrop-blur-sm rounded-2xl p-4 text-center cursor-pointer hover:bg-white/20 transition-all hover:scale-105 ${needsAttention ? 'ring-2 ring-yellow-400/50 animate-pulse' : ''}`}
+                      onClick={() => navigate(`/pet/${pet.id}?tab=personality`)}
+                    >
+                      {/* Pet Soul Score Arc */}
+                      <SoulScoreArc 
+                        score={score}
+                        petId={pet.id}
+                        petName={pet.name}
+                        size="md"
+                        showLabel={false}
+                        showCTA={false}
+                        animated={true}
+                      />
+                      
+                      {/* Pet Name */}
+                      <p className="font-bold text-white mt-2">{pet.name}</p>
+                      <p className="text-xs text-white/60">{pet.breed || 'Pet'}</p>
+                      
+                      {/* Questions Count */}
+                      <p className="text-xs text-white/70 mt-1">
+                        {questionsAnswered} questions answered
+                      </p>
+                      
+                      {/* CTA based on score */}
+                      <div className="mt-2">
+                        {score >= 80 ? (
+                          <span className="inline-flex items-center gap-1 text-xs text-emerald-300 font-medium">
+                            <CheckCircle2 className="w-3 h-3" /> Soul Master! 🏆
+                          </span>
+                        ) : score >= 50 ? (
+                          <span className="inline-flex items-center gap-1 text-xs text-yellow-300 font-medium">
+                            <Sparkles className="w-3 h-3" /> Keep going! ⭐
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-xs text-pink-300 font-medium animate-bounce">
+                            <ArrowRight className="w-3 h-3" /> Answer questions →
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              
+              {/* Overall Stats */}
+              <div className="mt-6 pt-4 border-t border-white/20 flex flex-wrap justify-center gap-6">
+                <div className="text-center">
+                  <p className="text-3xl font-bold text-yellow-300">
+                    {Math.round(pets.reduce((sum, p) => sum + (p.overall_score || 0), 0) / pets.length)}%
                   </p>
-                  
-                  {/* Progress Stats */}
-                  <div className="flex gap-4 justify-center md:justify-start mb-4">
-                    <div className="text-center">
-                      <p className="text-2xl font-bold text-yellow-300">{Math.round(currentPet?.overall_score || 0)}%</p>
-                      <p className="text-xs text-white/70">Soul Score</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-2xl font-bold text-emerald-300">
-                        {Object.keys(currentPet?.doggy_soul_answers || {}).length}
-                      </p>
-                      <p className="text-xs text-white/70">Questions</p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-2xl font-bold text-pink-300">
-                        {currentPet?.overall_score >= 80 ? '🏆' : currentPet?.overall_score >= 50 ? '⭐' : '🌱'}
-                      </p>
-                      <p className="text-xs text-white/70">Status</p>
-                    </div>
-                  </div>
-                  
-                  {/* CTA Button */}
-                  <Button 
-                    onClick={() => navigate(`/pet/${currentPet?.id}?tab=personality`)}
-                    className="bg-white text-purple-700 hover:bg-white/90 font-semibold shadow-lg"
-                  >
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    {currentPet?.overall_score < 30 ? 'Start Soul Journey' : 'Continue Soul Journey'}
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </Button>
+                  <p className="text-xs text-white/70">Average Soul Score</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-3xl font-bold text-emerald-300">
+                    {pets.reduce((sum, p) => sum + Object.keys(p.doggy_soul_answers || {}).length, 0)}
+                  </p>
+                  <p className="text-xs text-white/70">Total Questions</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-3xl font-bold text-pink-300">
+                    {pets.filter(p => (p.overall_score || 0) >= 80).length}/{pets.length}
+                  </p>
+                  <p className="text-xs text-white/70">Soul Masters</p>
                 </div>
               </div>
             </div>
