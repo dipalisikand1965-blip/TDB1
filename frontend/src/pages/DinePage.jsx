@@ -300,7 +300,7 @@ const DinePage = () => {
 
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Fresh Meals Section */}
-        <section className="mb-16">
+        <section id="meals" className="mb-16 scroll-mt-20">
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
