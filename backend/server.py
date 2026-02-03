@@ -1267,6 +1267,10 @@ async def lifespan(app: FastAPI):
     set_review_deps(get_current_user, get_current_user_optional, verify_admin, create_admin_notification)
     logger.info("Review routes initialized")
     
+    # Initialize pricing sync service
+    set_pricing_sync_db(db)
+    logger.info("✓ Pricing sync service initialized")
+    
     # Initialize search service in background (non-blocking)
     # This prevents slow Meilisearch connection from blocking app startup
     async def init_search_background():
