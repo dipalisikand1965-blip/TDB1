@@ -160,6 +160,18 @@ from unified_flow_middleware import init_unified_flow_middleware
 from product_intelligence import ProductIntelligenceEngine, add_stock_images_to_products
 from ai_description_enhancer import AIDescriptionEnhancer
 
+# Pricing Sync Service
+from pricing_sync_service import (
+    set_pricing_sync_db,
+    sync_product_to_service,
+    sync_service_to_product,
+    sync_all_products_to_services,
+    sync_all_services_to_products,
+    update_product_price,
+    update_service_price,
+    batch_update_pawmeters
+)
+
 # Stay pillar routes
 from stay_routes import (
     stay_router,
