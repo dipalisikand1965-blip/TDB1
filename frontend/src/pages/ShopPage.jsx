@@ -265,20 +265,10 @@ const ShopPage = () => {
     fetchHierarchy();
   }, []);
 
-  // Fetch products
-  useEffect(() => {
-    fetchProducts();
-  }, [selectedCategory, selectedParentCategory, selectedPillar, sortBy, searchQuery]);
-
-  // Fetch user's pets for recommendations
-  useEffect(() => {
-    if (token) {
-      fetchPets();
-    }
-  }, [token]);
-
-  const fetchProducts = async () => {
+  // Fetch products - use useCallback to ensure fresh searchQuery
+  const fetchProducts = React.useCallback(async () => {
     setLoading(true);
+    console.log('[ShopPage] Fetching products with searchQuery:', searchQuery);
     try {
       let url = `${API_URL}/api/products?limit=500`;
       
@@ -300,10 +290,12 @@ const ShopPage = () => {
         url += `&pillar=${selectedPillar}`;
       }
       
+      console.log('[ShopPage] Fetching URL:', url);
       const res = await fetch(url);
       if (res.ok) {
         const data = await res.json();
         let productList = data.products || data || [];
+        console.log('[ShopPage] Received products:', productList.length);
         
         // Sort products
         if (sortBy === 'price-low') {
@@ -318,6 +310,15 @@ const ShopPage = () => {
       }
     } catch (err) {
       console.error('Failed to fetch products:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, [searchQuery, selectedCategory, selectedParentCategory, selectedPillar, sortBy]);
+
+  // Fetch products when dependencies change
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
     } finally {
       setLoading(false);
     }
