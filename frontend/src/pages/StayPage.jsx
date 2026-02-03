@@ -731,7 +731,7 @@ const StayPage = () => {
             <p className="text-sm text-gray-500">Try adjusting your filters</p>
           </div>
         )}
-      </div>
+      </section>
       )}
 
       {/* Boarding Section */}
