@@ -872,13 +872,27 @@ const MemberDashboard = () => {
                   const score = Math.round(pet.overall_score || 0);
                   const questionsAnswered = Object.keys(pet.doggy_soul_answers || {}).length;
                   const needsAttention = score < 50;
+                  const isSelected = selectedPetId === pet.id || (!selectedPetId && pet.id === pets[0]?.id);
                   
                   return (
                     <div 
                       key={pet.id}
-                      className={`bg-white/10 backdrop-blur-sm rounded-2xl p-4 text-center cursor-pointer hover:bg-white/20 transition-all hover:scale-105 ${needsAttention ? 'ring-2 ring-yellow-400/50 animate-pulse' : ''}`}
-                      onClick={() => navigate(`/pet/${pet.id}?tab=personality`)}
+                      className={`bg-white/10 backdrop-blur-sm rounded-2xl p-4 text-center cursor-pointer transition-all hover:scale-105 ${
+                        isSelected 
+                          ? 'ring-2 ring-white bg-white/20 scale-105' 
+                          : needsAttention 
+                            ? 'ring-2 ring-yellow-400/50 hover:bg-white/20' 
+                            : 'hover:bg-white/20'
+                      }`}
+                      onClick={() => setSelectedPetId(pet.id)}
                     >
+                      {/* Selected indicator */}
+                      {isSelected && (
+                        <div className="absolute -top-1 -right-1 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-lg">
+                          <CheckCircle2 className="w-4 h-4 text-purple-600" />
+                        </div>
+                      )}
+                      
                       {/* Pet Soul Score Arc */}
                       <SoulScoreArc 
                         score={score}
@@ -891,27 +905,27 @@ const MemberDashboard = () => {
                       />
                       
                       {/* Pet Name */}
-                      <p className="font-bold text-white mt-2">{pet.name}</p>
+                      <p className={`font-bold mt-2 ${isSelected ? 'text-yellow-300' : 'text-white'}`}>{pet.name}</p>
                       <p className="text-xs text-white/60">{pet.breed || 'Pet'}</p>
                       
                       {/* Questions Count */}
                       <p className="text-xs text-white/70 mt-1">
-                        {questionsAnswered} questions answered
+                        {questionsAnswered} questions
                       </p>
                       
-                      {/* CTA based on score */}
+                      {/* Status indicator */}
                       <div className="mt-2">
                         {score >= 80 ? (
                           <span className="inline-flex items-center gap-1 text-xs text-emerald-300 font-medium">
-                            <CheckCircle2 className="w-3 h-3" /> Soul Master! 🏆
+                            🏆 Soul Master!
                           </span>
                         ) : score >= 50 ? (
                           <span className="inline-flex items-center gap-1 text-xs text-yellow-300 font-medium">
-                            <Sparkles className="w-3 h-3" /> Keep going! ⭐
+                            ⭐ Growing
                           </span>
                         ) : (
-                          <span className="inline-flex items-center gap-1 text-xs text-pink-300 font-medium animate-bounce">
-                            <ArrowRight className="w-3 h-3" /> Answer questions →
+                          <span className="inline-flex items-center gap-1 text-xs text-pink-300 font-medium">
+                            🌱 New
                           </span>
                         )}
                       </div>
