@@ -255,7 +255,7 @@ const PartyPlanningWizard = ({ onClose, onComplete }) => {
       case 1: // Pet Selection
         return (
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">Who's the star of the party?</h3>
+            <h3 className="text-lg font-semibold text-gray-900">Who&apos;s the star of the party?</h3>
             
             {pets.length > 0 ? (
               <div className="grid grid-cols-2 gap-3">
@@ -357,7 +357,7 @@ const PartyPlanningWizard = ({ onClose, onComplete }) => {
       case 3: // Date & Time
         return (
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">When's the pawty?</h3>
+            <h3 className="text-lg font-semibold text-gray-900">When&apos;s the pawty?</h3>
             <div className="space-y-3">
               <div>
                 <label className="text-sm text-gray-600 mb-1 block">Date</label>
@@ -466,7 +466,7 @@ const PartyPlanningWizard = ({ onClose, onComplete }) => {
       case 5: // Budget
         return (
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">What's your budget?</h3>
+            <h3 className="text-lg font-semibold text-gray-900">What&apos;s your budget?</h3>
             <div className="space-y-3">
               {BUDGET_RANGES.map(budget => (
                 <Card 
@@ -509,14 +509,14 @@ const PartyPlanningWizard = ({ onClose, onComplete }) => {
         
         return (
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">Perfect! Here's your party plan</h3>
+            <h3 className="text-lg font-semibold text-gray-900">Perfect! Here&apos;s your party plan</h3>
             
             {/* Summary */}
             <Card className="p-4 bg-gradient-to-br from-pink-50 to-purple-50">
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Celebrating</span>
-                  <span className="font-medium">{formData.petName}'s {selectedOccasion?.name}</span>
+                  <span className="font-medium">{formData.petName}&apos;s {selectedOccasion?.name}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Date</span>
