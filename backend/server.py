@@ -10598,6 +10598,173 @@ async def upload_pet_photo(pet_id: str, photo: UploadFile = File(...)):
     return {"photo_url": photo_url, "message": "Photo uploaded successfully"}
 
 
+@api_router.post("/pets/{pet_id}/gallery")
+async def upload_gallery_photo(pet_id: str, photo: UploadFile = File(...)):
+    """Upload a photo to pet's gallery (multiple photos support)"""
+    import base64
+    
+    # Validate pet exists
+    pet = await db.pets.find_one({"id": pet_id})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    # Validate file type
+    if not photo.content_type or not photo.content_type.startswith('image/'):
+        raise HTTPException(status_code=400, detail="File must be an image")
+    
+    # Read file content
+    content = await photo.read()
+    
+    # Validate file size (max 2MB)
+    if len(content) > 2 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="Image must be less than 2MB")
+    
+    # Generate unique photo ID
+    photo_id = f"photo-{secrets.token_hex(6)}"
+    
+    # Convert to base64
+    photo_base64 = base64.b64encode(content).decode('utf-8')
+    content_type = photo.content_type or 'image/jpeg'
+    
+    # Create gallery photo entry
+    gallery_photo = {
+        "id": photo_id,
+        "base64": photo_base64,
+        "content_type": content_type,
+        "uploaded_at": get_utc_timestamp(),
+        "url": f"/api/pets/{pet_id}/gallery/{photo_id}"
+    }
+    
+    # Add to pet's gallery array
+    await db.pets.update_one(
+        {"id": pet_id},
+        {
+            "$push": {"gallery": gallery_photo},
+            "$set": {"updated_at": get_utc_timestamp()}
+        }
+    )
+    
+    # If this is the first photo and no main photo exists, set it as main
+    if not pet.get("photo_url"):
+        await db.pets.update_one(
+            {"id": pet_id},
+            {"$set": {
+                "photo_url": f"/api/pet-photo/{pet_id}",
+                "photo_base64": photo_base64,
+                "photo_content_type": content_type
+            }}
+        )
+    
+    logger.info(f"Gallery photo {photo_id} uploaded for pet {pet_id}")
+    return {
+        "photo_id": photo_id,
+        "url": gallery_photo["url"],
+        "message": "Photo added to gallery"
+    }
+
+
+@api_router.get("/pets/{pet_id}/gallery")
+async def get_pet_gallery(pet_id: str):
+    """Get all photos from pet's gallery"""
+    pet = await db.pets.find_one({"id": pet_id}, {"gallery": 1, "photo_url": 1, "name": 1})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    gallery = pet.get("gallery", [])
+    
+    # Include main photo if exists
+    photos = []
+    if pet.get("photo_url"):
+        photos.append({
+            "id": "main",
+            "url": pet["photo_url"],
+            "is_main": True,
+            "uploaded_at": None
+        })
+    
+    # Add gallery photos (without base64 data for listing)
+    for photo in gallery:
+        photos.append({
+            "id": photo.get("id"),
+            "url": photo.get("url"),
+            "is_main": False,
+            "uploaded_at": photo.get("uploaded_at")
+        })
+    
+    return {
+        "pet_id": pet_id,
+        "pet_name": pet.get("name"),
+        "total_photos": len(photos),
+        "photos": photos
+    }
+
+
+@api_router.get("/pets/{pet_id}/gallery/{photo_id}")
+async def serve_gallery_photo(pet_id: str, photo_id: str):
+    """Serve a specific gallery photo"""
+    from fastapi.responses import Response
+    import base64
+    
+    pet = await db.pets.find_one(
+        {"id": pet_id, "gallery.id": photo_id},
+        {"gallery.$": 1}
+    )
+    
+    if not pet or not pet.get("gallery"):
+        raise HTTPException(status_code=404, detail="Photo not found")
+    
+    photo = pet["gallery"][0]
+    content = base64.b64decode(photo["base64"])
+    content_type = photo.get("content_type", "image/jpeg")
+    
+    return Response(content=content, media_type=content_type)
+
+
+@api_router.delete("/pets/{pet_id}/gallery/{photo_id}")
+async def delete_gallery_photo(pet_id: str, photo_id: str):
+    """Delete a photo from pet's gallery"""
+    result = await db.pets.update_one(
+        {"id": pet_id},
+        {"$pull": {"gallery": {"id": photo_id}}}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Photo not found")
+    
+    logger.info(f"Gallery photo {photo_id} deleted from pet {pet_id}")
+    return {"message": "Photo deleted from gallery"}
+
+
+@api_router.post("/pets/{pet_id}/gallery/{photo_id}/set-main")
+async def set_main_photo(pet_id: str, photo_id: str):
+    """Set a gallery photo as the main profile photo"""
+    import base64
+    
+    pet = await db.pets.find_one(
+        {"id": pet_id, "gallery.id": photo_id},
+        {"gallery.$": 1}
+    )
+    
+    if not pet or not pet.get("gallery"):
+        raise HTTPException(status_code=404, detail="Photo not found")
+    
+    photo = pet["gallery"][0]
+    
+    # Update main photo
+    await db.pets.update_one(
+        {"id": pet_id},
+        {"$set": {
+            "photo_url": f"/api/pet-photo/{pet_id}",
+            "photo_base64": photo["base64"],
+            "photo_content_type": photo.get("content_type", "image/jpeg"),
+            "updated_at": get_utc_timestamp()
+        }}
+    )
+    
+    logger.info(f"Gallery photo {photo_id} set as main for pet {pet_id}")
+    return {"message": "Photo set as main profile photo"}
+
+
 @api_router.get("/pet-photo/{pet_id}/{filename:path}")
 async def serve_pet_photo_legacy(pet_id: str, filename: str = ""):
     """Legacy route - redirects to new route"""
