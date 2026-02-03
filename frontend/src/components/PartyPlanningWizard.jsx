@@ -258,65 +258,85 @@ const PartyPlanningWizard = ({ onClose, onComplete }) => {
         return (
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-gray-900">Who&apos;s the star of the party?</h3>
+            <p className="text-sm text-gray-500">Select your furry family member</p>
             
             {pets.length > 0 ? (
-              <div className="grid grid-cols-2 gap-3">
-                {pets.map(pet => (
-                  <Card 
-                    key={pet.id}
-                    className={`p-4 cursor-pointer transition-all ${
-                      formData.petId === pet.id 
-                        ? 'ring-2 ring-pink-500 bg-pink-50' 
-                        : 'hover:bg-gray-50'
-                    }`}
-                    onClick={() => setFormData(prev => ({
-                      ...prev,
-                      petId: pet.id,
-                      petName: pet.name,
-                      petType: pet.species || 'dog'
-                    }))}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-pink-400 to-purple-400 flex items-center justify-center">
-                        {pet.species === 'cat' ? (
-                          <Cat className="w-6 h-6 text-white" />
-                        ) : (
-                          <Dog className="w-6 h-6 text-white" />
+              <div className="space-y-3">
+                {/* Multi-pet family - show all dogs */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {pets.filter(p => p.species !== 'cat').map(pet => (
+                    <Card 
+                      key={pet.id}
+                      className={`p-4 cursor-pointer transition-all ${
+                        formData.petId === pet.id 
+                          ? 'ring-2 ring-amber-500 bg-amber-50' 
+                          : 'hover:bg-gray-50 border-gray-200'
+                      }`}
+                      onClick={() => setFormData(prev => ({
+                        ...prev,
+                        petId: pet.id,
+                        petName: pet.name,
+                        petType: 'dog',
+                        petBreed: pet.breed,
+                        petAge: pet.age
+                      }))}
+                      data-testid={`pet-select-${pet.id}`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-14 h-14 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center shadow-md">
+                          {pet.image ? (
+                            <img src={pet.image} alt={pet.name} className="w-full h-full rounded-full object-cover" />
+                          ) : (
+                            <Dog className="w-7 h-7 text-white" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold text-gray-900 truncate">{pet.name}</p>
+                          <p className="text-xs text-gray-500">{pet.breed || 'Good Boy/Girl'}</p>
+                          {pet.age && <p className="text-xs text-amber-600">{pet.age} years old</p>}
+                        </div>
+                        {formData.petId === pet.id && (
+                          <div className="w-6 h-6 rounded-full bg-amber-500 flex items-center justify-center">
+                            <Check className="w-4 h-4 text-white" />
+                          </div>
                         )}
                       </div>
-                      <div>
-                        <p className="font-medium">{pet.name}</p>
-                        <p className="text-xs text-gray-500">{pet.breed || pet.species}</p>
-                      </div>
-                      {formData.petId === pet.id && (
-                        <Check className="w-5 h-5 text-pink-500 ml-auto" />
-                      )}
-                    </div>
-                  </Card>
-                ))}
+                    </Card>
+                  ))}
+                </div>
+                
+                {/* Add new pet option */}
+                <Button 
+                  variant="outline" 
+                  className="w-full border-dashed"
+                  onClick={() => setPets([])}
+                >
+                  <Dog className="w-4 h-4 mr-2" />
+                  Add a different pup
+                </Button>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-4">
+                <p className="text-sm text-amber-600 bg-amber-50 p-3 rounded-lg">
+                  🐕 Don&apos;t worry! Tell us about your pup and we&apos;ll make their day special!
+                </p>
                 <Input
-                  placeholder="Pet's Name"
+                  placeholder="Your Dog's Name"
                   value={formData.petName}
                   onChange={(e) => setFormData(prev => ({ ...prev, petName: e.target.value }))}
+                  className="h-12"
+                  data-testid="pet-name-input"
                 />
-                <div className="flex gap-3">
-                  <Button
-                    variant={formData.petType === 'dog' ? 'default' : 'outline'}
-                    onClick={() => setFormData(prev => ({ ...prev, petType: 'dog' }))}
-                    className="flex-1"
-                  >
-                    <Dog className="w-4 h-4 mr-2" /> Dog
-                  </Button>
-                  <Button
-                    variant={formData.petType === 'cat' ? 'default' : 'outline'}
-                    onClick={() => setFormData(prev => ({ ...prev, petType: 'cat' }))}
-                    className="flex-1"
-                  >
-                    <Cat className="w-4 h-4 mr-2" /> Cat
-                  </Button>
+                <Input
+                  placeholder="Breed (optional)"
+                  value={formData.petBreed || ''}
+                  onChange={(e) => setFormData(prev => ({ ...prev, petBreed: e.target.value }))}
+                  className="h-12"
+                />
+                {/* Dogs only - The Doggy Company */}
+                <div className="flex items-center gap-2 p-3 bg-gradient-to-r from-amber-100 to-orange-100 rounded-lg">
+                  <Dog className="w-5 h-5 text-amber-600" />
+                  <span className="text-sm text-amber-800 font-medium">The Doggy Company - Making every pup&apos;s day special!</span>
                 </div>
               </div>
             )}
