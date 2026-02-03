@@ -757,13 +757,31 @@ const MiraChatWidget = ({
       
       // Build history from currentMessages (before adding new user message)
       // Then add the current user message to history
+      // CRITICAL: Ensure all content is serializable (no circular refs)
       const historyMessages = currentMessages
         .filter(m => m && m.id !== 'welcome' && !m.isPillarSwitch)
         .slice(-9) // Leave room for current message
-        .map(m => ({
-          role: m.role || 'user',
-          content: String(m.content || '')
-        }));
+        .map(m => {
+          // Safely extract content - handle if it's not a string
+          let content = '';
+          try {
+            if (typeof m.content === 'string') {
+              content = m.content;
+            } else if (m.content && typeof m.content === 'object') {
+              // If content is an object, try to extract text
+              content = m.content.toString ? m.content.toString() : JSON.stringify(m.content);
+            } else {
+              content = String(m.content || '');
+            }
+          } catch (e) {
+            console.warn('[Mira] Failed to serialize message content:', e);
+            content = '[message content unavailable]';
+          }
+          return {
+            role: m.role || 'user',
+            content: content.substring(0, 2000) // Limit content length
+          };
+        });
       
       // Add current user message to history
       historyMessages.push({
