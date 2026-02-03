@@ -439,18 +439,18 @@ const CelebratePage = () => {
           
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
             {[
-              { step: 1, icon: '💬', title: 'Share Your Vision', desc: 'Tell us about your celebration dreams' },
-              { step: 2, icon: '✨', title: 'Custom Planning', desc: 'We craft a personalized celebration plan' },
-              { step: 3, icon: '🎯', title: 'Perfect Execution', desc: 'Every detail handled with care' },
-              { step: 4, icon: '🎉', title: 'Celebrate!', desc: 'Enjoy a stress-free, magical day' }
+              { step: 1, icon: '💬', title: 'Share Vision', desc: 'Tell us your dreams' },
+              { step: 2, icon: '✨', title: 'We Plan', desc: 'Custom celebration' },
+              { step: 3, icon: '🎯', title: 'We Execute', desc: 'Every detail handled' },
+              { step: 4, icon: '🎉', title: 'Celebrate!', desc: 'Stress-free magic' }
             ].map((item) => (
-              <Card key={item.step} className="p-4 sm:p-6 text-center bg-white">
+              <Card key={item.step} className="p-3 sm:p-6 text-center bg-white">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-4 bg-pink-100 rounded-full flex items-center justify-center text-xl sm:text-2xl">
                   {item.icon}
                 </div>
-                <div className="text-pink-500 font-bold text-xs sm:text-sm mb-1 sm:mb-2">Step {item.step}</div>
-                <h3 className="font-semibold text-gray-900 text-xs sm:text-base mb-0.5 sm:mb-1 leading-tight">{item.title}</h3>
-                <p className="text-xs sm:text-sm text-gray-600 leading-tight hidden sm:block">{item.desc}</p>
+                <div className="text-pink-500 font-bold text-[10px] sm:text-sm mb-1">Step {item.step}</div>
+                <h3 className="font-semibold text-gray-900 text-xs sm:text-base mb-0.5 leading-tight">{item.title}</h3>
+                <p className="text-[10px] sm:text-sm text-gray-600 leading-tight">{item.desc}</p>
               </Card>
             ))}
           </div>
