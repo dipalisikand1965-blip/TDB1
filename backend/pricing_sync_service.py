@@ -27,7 +27,7 @@ async def sync_product_to_service(product: dict) -> dict:
     When a product is created/updated, create/update corresponding service entry.
     This ensures pricing stays in sync.
     """
-    if not db:
+    if db is None:
         return {"success": False, "error": "Database not initialized"}
     
     try:
@@ -82,7 +82,7 @@ async def sync_service_to_product(service: dict) -> dict:
     When a service is created/updated, create/update corresponding product entry.
     This ensures pricing stays in sync.
     """
-    if not db:
+    if db is None:
         return {"success": False, "error": "Database not initialized"}
     
     try:
@@ -135,7 +135,7 @@ async def sync_service_to_product(service: dict) -> dict:
 
 async def sync_all_products_to_services() -> dict:
     """Batch sync all products to services"""
-    if not db:
+    if db is None:
         return {"success": False, "error": "Database not initialized"}
     
     synced = 0
@@ -166,7 +166,7 @@ async def sync_all_products_to_services() -> dict:
 
 async def sync_all_services_to_products() -> dict:
     """Batch sync all services to products"""
-    if not db:
+    if db is None:
         return {"success": False, "error": "Database not initialized"}
     
     synced = 0
@@ -188,7 +188,7 @@ async def sync_all_services_to_products() -> dict:
 
 async def update_product_price(product_id: str, new_price: float) -> dict:
     """Update product price and sync to service"""
-    if not db:
+    if db is None:
         return {"success": False, "error": "Database not initialized"}
     
     timestamp = get_utc_timestamp()
@@ -216,7 +216,7 @@ async def update_product_price(product_id: str, new_price: float) -> dict:
 
 async def update_service_price(service_id: str, new_price: float) -> dict:
     """Update service price and sync to product"""
-    if not db:
+    if db is None:
         return {"success": False, "error": "Database not initialized"}
     
     timestamp = get_utc_timestamp()
@@ -289,7 +289,7 @@ async def calculate_pawmeter_score(item: dict) -> dict:
 
 async def update_item_pawmeter(item_id: str, item_type: str = "product") -> dict:
     """Update Pawmeter score for an item"""
-    if not db:
+    if db is None:
         return {"success": False, "error": "Database not initialized"}
     
     # Get item
@@ -313,7 +313,7 @@ async def update_item_pawmeter(item_id: str, item_type: str = "product") -> dict
 
 async def batch_update_pawmeters() -> dict:
     """Update Pawmeter scores for all products and services"""
-    if not db:
+    if db is None:
         return {"success": False, "error": "Database not initialized"}
     
     updated = {"products": 0, "services": 0}
