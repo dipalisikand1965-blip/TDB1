@@ -319,10 +319,13 @@ const ShopPage = () => {
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
-    } finally {
-      setLoading(false);
+
+  // Fetch user's pets for recommendations
+  useEffect(() => {
+    if (token) {
+      fetchPets();
     }
-  };
+  }, [token]);
 
   const fetchPets = async () => {
     try {
