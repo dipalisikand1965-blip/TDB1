@@ -633,6 +633,8 @@ const DoggyServiceDesk = ({ authHeaders }) => {
       filtered = filtered.filter(t => t.status === 'in_progress');
     } else if (selectedView === 'on_hold') {
       filtered = filtered.filter(t => ['on_hold', 'waiting_on_member'].includes(t.status));
+    } else if (selectedView === 'blocked') {
+      filtered = filtered.filter(t => t.status === 'blocked');
     } else if (selectedView === 'resolved') {
       filtered = filtered.filter(t => ['resolved', 'closed', 'confirmed', 'completed'].includes(t.status));
     } else if (selectedView === 'unassigned') {
