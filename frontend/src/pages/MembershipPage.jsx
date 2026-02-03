@@ -6,7 +6,7 @@ import { Input } from '../components/ui/input';
 import { Card } from '../components/ui/card';
 import MembershipPayment from '../components/MembershipPayment';
 import PetSoulJourney from '../components/PetSoulJourney';
-import MobileNavDock from '../components/MobileNavDock';
+import MobileNavBar from '../components/MobileNavBar';
 import { 
   PawPrint, Check, Star, Heart, Gift, Calendar, 
   Shield, Sparkles, ChevronRight, Eye, EyeOff, ArrowRight,
