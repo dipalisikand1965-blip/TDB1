@@ -223,7 +223,7 @@ const CelebratePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white">
+    <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white pb-20 md:pb-0">
       {/* SEO Meta Tags */}
       <SEOHead 
         title="Celebrate - Pet Birthday Cakes & Parties | The Doggy Company"
