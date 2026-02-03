@@ -9789,11 +9789,75 @@ async def membership_onboard(data: MembershipOnboardModel):
             }
         )
         
+        # Create Service Desk ticket for new member onboarding
+        ticket_id = f"TKT-{datetime.now().strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}"
+        pet_names = ", ".join([p.name for p in data.pets])
+        ticket_doc = {
+            "id": ticket_id,
+            "ticket_number": ticket_id,
+            "type": "new_member",
+            "category": "onboarding",
+            "pillar": "membership",
+            "subject": f"🎉 New Member Onboarding: {data.parent.name}",
+            "description": f"""New pet parent has joined The Doggy Company!
+
+**Pet Parent Details:**
+- Name: {data.parent.name}
+- Email: {data.parent.email}
+- Phone: {data.parent.phone}
+- City: {data.parent.city}
+- Pincode: {data.parent.pincode}
+
+**Pets:**
+{chr(10).join([f"- {p.name} ({p.breed}, {p.gender})" for p in data.pets])}
+
+**Membership:**
+- Plan: {data.plan_type.title()}
+- Amount: ₹{total}
+- Status: Awaiting Payment
+
+**Next Steps:**
+1. Welcome call/message to pet parent
+2. Verify pet details
+3. Send welcome kit info
+4. Follow up on payment if pending""",
+            "status": "new",
+            "priority": "high",
+            "member_id": user_id,
+            "member_name": data.parent.name,
+            "member_email": data.parent.email,
+            "member_phone": data.parent.phone,
+            "pet_ids": pet_ids,
+            "pet_names": pet_names,
+            "source": "onboarding",
+            "metadata": {
+                "plan_type": data.plan_type,
+                "order_id": order_id,
+                "amount": total,
+                "city": data.parent.city,
+                "pet_count": len(data.pets),
+                "pets": [{"name": p.name, "breed": p.breed, "gender": p.gender} for p in data.pets]
+            },
+            "created_at": get_utc_timestamp(),
+            "updated_at": get_utc_timestamp(),
+            "assigned_to": None,
+            "notes": [],
+            "timeline": [{
+                "action": "created",
+                "timestamp": get_utc_timestamp(),
+                "actor": "system",
+                "details": "Ticket auto-created from membership onboarding"
+            }]
+        }
+        await db.service_desk_tickets.insert_one(ticket_doc)
+        logger.info(f"[ONBOARDING] Service desk ticket created: {ticket_id} for {data.parent.email}")
+        
         return {
             "success": True,
             "user_id": user_id,
             "order_id": order_id,
             "pet_ids": pet_ids,
+            "ticket_id": ticket_id,
             "amount": total,
             "message": "Account created. Please complete payment."
         }
