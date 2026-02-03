@@ -799,6 +799,23 @@ const MiraChatWidget = ({
         history: historyMessages.slice(-10) // Ensure max 10 messages
       };
       
+      // Safely serialize the request body - prevent circular reference errors
+      let requestBodyStr;
+      try {
+        requestBodyStr = JSON.stringify(requestBody);
+      } catch (serializeError) {
+        console.error('[Mira] Serialization error, sending without history:', serializeError);
+        // Fallback: send without history to avoid crash
+        requestBodyStr = JSON.stringify({
+          message: userMessage.content,
+          session_id: sessionId,
+          source: 'chat_widget',
+          current_pillar: pillar,
+          selected_pet_id: selectedPet?.id || null,
+          history: [] // Empty history as fallback
+        });
+      }
+      
       console.log('[Mira] Sending chat request...', { 
         pillar, 
         hasPet: !!selectedPet?.id,
@@ -816,7 +833,7 @@ const MiraChatWidget = ({
               'Content-Type': 'application/json',
               ...(token && { 'Authorization': `Bearer ${token}` })
             },
-            body: JSON.stringify(requestBody),
+            body: requestBodyStr,
             signal: controller.signal
           });
           
