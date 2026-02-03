@@ -699,7 +699,7 @@ const PartyPlanningWizard = ({ onClose, onComplete }) => {
             <Button 
               onClick={nextStep} 
               disabled={!canProceed()}
-              className="flex-1 bg-gradient-to-r from-pink-500 to-purple-500"
+              className="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
             >
               Next <ChevronRight className="w-4 h-4 ml-1" />
             </Button>
@@ -707,9 +707,10 @@ const PartyPlanningWizard = ({ onClose, onComplete }) => {
             <Button 
               onClick={handleSubmit}
               disabled={loading}
-              className="flex-1 bg-gradient-to-r from-pink-500 to-purple-500"
+              className="flex-1 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
+              data-testid="submit-party-request-btn"
             >
-              {loading ? 'Submitting...' : '🎉 Plan My Party!'}
+              {loading ? 'Submitting Request...' : '🎉 Submit Party Request'}
             </Button>
           )}
         </div>
