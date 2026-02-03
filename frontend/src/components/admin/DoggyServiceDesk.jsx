@@ -3753,6 +3753,20 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                           Merge {selectedTicketIds.length} Tickets
                         </button>
                       )}
+                      
+                      {/* Quote Builder Button - for Celebrate/Party tickets */}
+                      {(selectedTicket.category === 'celebrate' || selectedTicket.category === 'party_planning' || 
+                        selectedTicket.source === 'party_wizard' || selectedTicket.party_request_id ||
+                        selectedTicket.ticket_id?.startsWith('CEL-')) && (
+                        <button
+                          onClick={() => openQuoteBuilder(selectedTicket)}
+                          className="flex items-center gap-1 px-3 py-1.5 text-xs bg-gradient-to-r from-amber-500 to-orange-500 text-white rounded-full hover:from-amber-600 hover:to-orange-600"
+                          title="Create quote for this party request"
+                        >
+                          <CreditCard className="w-3.5 h-3.5" />
+                          Create Quote
+                        </button>
+                      )}
                     </div>
                   </div>
                   
