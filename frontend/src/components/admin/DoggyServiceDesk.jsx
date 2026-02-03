@@ -1532,12 +1532,14 @@ const DoggyServiceDesk = ({ authHeaders }) => {
     }
     
     try {
-      const response = await fetch(`${getApiUrl()}/api/tickets/merge`, {
+      const response = await fetch(`${getApiUrl()}/api/concierge/tickets/merge`, {
         method: 'POST',
         headers: { ...authHeaders, 'Content-Type': 'application/json' },
         body: JSON.stringify({
           primary_ticket_id: selectedTicket.ticket_id,
-          merge_ticket_ids: ticketsToMerge
+          secondary_ticket_ids: ticketsToMerge,
+          agent_name: 'admin',
+          merge_reason: 'Merged by admin from Service Desk'
         })
       });
       
