@@ -76,7 +76,6 @@ All user actions (service requests, onboarding, etc.) must adhere to a unified f
 - [x] ~~iOS voice issue for guest users~~ ✅ FIXED
 
 ### P1 - High Priority (Upcoming)
-- [ ] UI/UX overhaul for Enjoy pillar page
 - [ ] UI/UX overhaul for Learn pillar page
 - [ ] UI/UX overhaul for Fit pillar page
 
