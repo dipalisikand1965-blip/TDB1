@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/quotes", tags=["quotes"])
 
 db = None
-verify_admin = None
+_verify_admin_func = None
 RAZORPAY_KEY_ID = None
 
 def set_quote_db(database):
@@ -32,12 +32,18 @@ def set_quote_db(database):
     db = database
 
 def set_quote_deps(admin_verify_func, razorpay_key=None):
-    global verify_admin, RAZORPAY_KEY_ID
-    verify_admin = admin_verify_func
+    global _verify_admin_func, RAZORPAY_KEY_ID
+    _verify_admin_func = admin_verify_func
     RAZORPAY_KEY_ID = razorpay_key
 
 def get_utc_timestamp():
     return datetime.now(timezone.utc).isoformat()
+
+def get_admin_username():
+    """Dependency to get admin username from the verify_admin function"""
+    if _verify_admin_func is None:
+        raise HTTPException(status_code=500, detail="Admin verification not configured")
+    return _verify_admin_func
 
 
 # ==================== MODELS ====================
