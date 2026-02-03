@@ -429,3 +429,45 @@ async def get_all_quotes(
     }
     
     return {"quotes": quotes, "stats": stats}
+
+
+@router.get("/member")
+async def get_member_quotes(email: str):
+    """Get all quotes for a member (by email)"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    if not email:
+        raise HTTPException(status_code=400, detail="Email is required")
+    
+    # Find quotes sent to this member
+    quotes = await db.quotes.find(
+        {"member.email": email.lower()},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(50)
+    
+    # Add party details and check expiry for each quote
+    enriched_quotes = []
+    now = datetime.now(timezone.utc)
+    
+    for quote in quotes:
+        # Check if expired
+        if quote.get("expires_at"):
+            expires_at = datetime.fromisoformat(quote["expires_at"].replace('Z', '+00:00'))
+            if expires_at < now and quote.get("status") in ["sent", "viewed"]:
+                quote["status"] = "expired"
+        
+        # Get party details if available
+        if quote.get("party_request_id"):
+            party = await db.party_requests.find_one(
+                {"id": quote["party_request_id"]},
+                {"_id": 0, "pet_name": 1, "occasion": 1, "party_date": 1, "guest_count": 1}
+            )
+            quote["party_details"] = party
+        
+        # Add access token for member actions
+        quote["access_token"] = quote.get("payment", {}).get("token", "")
+        
+        enriched_quotes.append(quote)
+    
+    return {"quotes": enriched_quotes}
