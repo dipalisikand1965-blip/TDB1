@@ -431,7 +431,8 @@ function MainLayout() {
       <MiraAI />
       {/* Pulse removed - voice capabilities now inside MiraAI */}
       <ConditionalFloatingButton />
-      {/* MobileNavBar removed - using hamburger menu and floating Mira orb instead */}
+      {/* Mobile Bottom Navigation - Only shows on mobile */}
+      <MobileNavBarWrapper />
       <Toaster />
     </div>
   );
