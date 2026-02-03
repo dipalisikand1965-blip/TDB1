@@ -306,6 +306,7 @@ const UnifiedPetPage = () => {
   const [expandedPillar, setExpandedPillar] = useState(null);
   const [editingQuestion, setEditingQuestion] = useState(null);
   const [editValue, setEditValue] = useState('');
+  const [showSoulExplainer, setShowSoulExplainer] = useState(false);
   
   // Quick answer options for common questions
   const QUICK_OPTIONS = {
