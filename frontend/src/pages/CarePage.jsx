@@ -891,12 +891,12 @@ const CarePage = () => {
             ].map((item, idx) => {
               const Icon = item.icon;
               return (
-                <div key={item.step} className="relative">
+                <div key={item.step} className={`relative animate-fade-in-up stagger-${idx + 1}`}>
                   {idx < 3 && (
                     <div className="hidden md:block absolute top-10 left-[60%] w-[80%] h-0.5 bg-gradient-to-r from-gray-200 to-transparent" />
                   )}
-                  <div className="text-center">
-                    <div className={`w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br ${item.color} flex items-center justify-center shadow-lg`}>
+                  <div className="text-center group">
+                    <div className={`w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br ${item.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
                       <Icon className="w-8 h-8 text-white" />
                     </div>
                     <div className="text-sm font-bold text-gray-400 mb-1">STEP {item.step}</div>
@@ -912,7 +912,7 @@ const CarePage = () => {
             <Button 
               onClick={handleStartCare}
               size="lg"
-              className="bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 rounded-full px-8"
+              className="bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 rounded-full px-8 hover:scale-105 transition-transform"
               data-testid="start-care-btn"
             >
               Start Care Request
