@@ -986,6 +986,12 @@ const MemberDashboard = () => {
             </Suspense>
           </TabsContent>
 
+          <TabsContent value="quotes">
+            <Suspense fallback={<TabLoader />}>
+              <QuotesTab user={user} token={token} />
+            </Suspense>
+          </TabsContent>
+
           <TabsContent value="documents">
             <Suspense fallback={<TabLoader />}>
               <DocumentsTab 
