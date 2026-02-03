@@ -1659,16 +1659,23 @@ const UnifiedPetPage = () => {
               </div>
             </Card>
             
-            {/* PHOTO GALLERY Section */}
-            <Card className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-bold text-gray-900 flex items-center gap-2">
-                  <Camera className="w-5 h-5 text-purple-600" />
-                  Photo Gallery
-                </h3>
-                <Button size="sm" variant="outline" onClick={() => document.getElementById('gallery-upload')?.click()}>
-                  <Upload className="w-4 h-4 mr-2" /> Add Photos
-                </Button>
+            {/* PHOTO GALLERY Section - Premium Design */}
+            <Card className="overflow-hidden border-none shadow-xl bg-white rounded-2xl md:rounded-3xl">
+              <div className="p-4 md:p-6 bg-gradient-to-r from-purple-600 to-pink-600">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-bold text-white flex items-center gap-2 text-lg md:text-xl">
+                    <Camera className="w-5 h-5 md:w-6 md:h-6" />
+                    {safePet.name}&apos;s Photo Gallery
+                  </h3>
+                  <Button 
+                    size="sm" 
+                    onClick={() => document.getElementById('gallery-upload')?.click()}
+                    className="bg-white text-purple-600 hover:bg-white/90 rounded-full shadow-lg"
+                  >
+                    <Upload className="w-4 h-4 mr-2" /> Add Photos
+                  </Button>
+                </div>
+                <p className="text-white/80 text-sm mt-1">Capture precious moments with {safePet.name}</p>
                 <input 
                   type="file" 
                   id="gallery-upload" 
@@ -1723,25 +1730,38 @@ const UnifiedPetPage = () => {
                   }}
                 />
               </div>
-              <div className="grid grid-cols-4 md:grid-cols-6 gap-2">
-                {/* Main Pet Photo */}
-                <div className="col-span-2 row-span-2 aspect-square rounded-xl overflow-hidden bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center">
-                  {safePet.photo_url ? (
-                    <img src={safePet.photo_url} alt={safePet.name} className="w-full h-full object-cover" />
-                  ) : (
-                    <PawPrint className="w-16 h-16 text-purple-300" />
-                  )}
-                </div>
-                {/* Placeholder slots for more photos */}
-                {[1, 2, 3, 4, 5, 6].map((i) => (
-                  <div 
-                    key={i}
-                    className="aspect-square rounded-xl bg-gray-100 border-2 border-dashed border-gray-200 flex items-center justify-center cursor-pointer hover:bg-gray-50 hover:border-purple-300 transition-all"
+              <div className="p-4 md:p-6">
+                <div className="grid grid-cols-3 md:grid-cols-4 gap-2 md:gap-3">
+                  {/* Main Pet Photo - Larger */}
+                  <div className="col-span-2 row-span-2 aspect-square rounded-xl md:rounded-2xl overflow-hidden bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center shadow-lg relative group cursor-pointer"
                     onClick={() => document.getElementById('gallery-upload')?.click()}
                   >
-                    <Camera className="w-6 h-6 text-gray-300" />
+                    {safePet.photo_url ? (
+                      <>
+                        <img src={safePet.photo_url} alt={safePet.name} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
+                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+                          <Camera className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </div>
+                      </>
+                    ) : (
+                      <div className="flex flex-col items-center text-purple-400">
+                        <PawPrint className="w-12 h-12 md:w-16 md:h-16 mb-2" />
+                        <span className="text-sm font-medium">Add Main Photo</span>
+                      </div>
+                    )}
                   </div>
-                ))}
+                  {/* Additional Photo Slots */}
+                  {[1, 2, 3, 4, 5, 6].map((i) => (
+                    <div 
+                      key={i}
+                      className="aspect-square rounded-xl md:rounded-2xl bg-gray-50 border-2 border-dashed border-gray-200 flex flex-col items-center justify-center cursor-pointer hover:bg-purple-50 hover:border-purple-300 transition-all group"
+                      onClick={() => document.getElementById('gallery-upload')?.click()}
+                    >
+                      <Camera className="w-5 h-5 md:w-6 md:h-6 text-gray-300 group-hover:text-purple-400 transition-colors" />
+                      <span className="text-[10px] md:text-xs text-gray-400 group-hover:text-purple-500 mt-1 transition-colors">Add</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </Card>
             
