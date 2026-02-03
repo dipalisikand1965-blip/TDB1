@@ -13903,6 +13903,7 @@ app.include_router(collection_public_router)
 app.include_router(occasion_box_admin_router)
 app.include_router(occasion_box_public_router)
 app.include_router(partner_router)
+app.include_router(quote_router)  # Quote Builder for party requests
 app.include_router(partner_admin_router)
 app.include_router(restaurant_discovery_router)
 app.include_router(pricing_router)
