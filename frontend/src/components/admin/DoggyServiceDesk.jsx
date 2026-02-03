@@ -3323,8 +3323,8 @@ const DoggyServiceDesk = ({ authHeaders }) => {
           
           {activeNav === 'tickets' && (
             <>
-              {/* ==================== FILTERS PANEL ==================== */}
-              <div className="w-52 bg-white border-r p-3 flex-shrink-0 overflow-y-auto">
+              {/* ==================== FILTERS PANEL (Hidden on mobile) ==================== */}
+              <div className="hidden md:block w-52 bg-white border-r p-3 flex-shrink-0 overflow-y-auto">
                 {/* Quick Stats */}
                 <div className="grid grid-cols-2 gap-2 mb-4">
                   <Card className="p-2 text-center bg-blue-50 border-blue-100">
