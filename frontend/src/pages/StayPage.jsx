@@ -418,7 +418,7 @@ const StayPage = () => {
               <img src={img} alt="" className="w-full h-full object-cover" />
             </div>
           ))}
-          <div className="absolute inset-0 bg-gradient-to-r from-emerald-900/90 via-emerald-800/80 to-teal-900/70" />
+          <div className="absolute inset-0 bg-gradient-to-r from-emerald-900 via-emerald-800/95 to-teal-900/90" />
         </div>
         
         <div className="relative max-w-7xl mx-auto px-4 py-20 md:py-28">
