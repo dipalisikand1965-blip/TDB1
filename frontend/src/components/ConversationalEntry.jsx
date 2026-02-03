@@ -173,13 +173,10 @@ const ConversationalEntry = ({
       
       if (response.ok) {
         const result = await response.json();
-        // Show success toast
-        toast({
-          title: "Request Submitted! 🐾",
-          description: `We'll get back to you about ${goal.label} within 24 hours.`
-        });
-        // Navigate to dashboard to see the request
-        navigate('/dashboard?tab=requests');
+        // Show success modal instead of navigating away
+        setSubmittedGoal(goal);
+        setTicketId(result.ticket_id || result.request_id);
+        setShowSuccessModal(true);
       } else {
         throw new Error('Failed to submit request');
       }
