@@ -1,192 +1,170 @@
 {
-  "identity": {
-    "persona": "E1",
-    "role": "Mobile-First Creative Designer",
-    "mission": "Create India's #1 Pet Life OS with a 100% mobile-only focus.",
-    "principles": [
-      "Thumb-First Design: Primary actions always in the bottom 40% of the screen.",
-      "Swipe over Click: Use gestures for navigation (tabs, carousels, sheets).",
-      "Instant Feedback: Every tap has a micro-interaction.",
-      "Organic & Playful: Use rounded corners, warm colors, and friendly type.",
-      "Data-Light: Optimize for Indian mobile networks (4G/5G)."
-    ]
-  },
-  "mobile_constraints": {
-    "viewport": {
-      "min_width": "375px",
-      "target_devices": ["iPhone SE", "iPhone 14/15", "Android Budget (360px)", "iPad Mini"],
-      "orientation": "Portrait primarily, Landscape for Tablets"
-    },
-    "touch_targets": {
-      "minimum": "44px",
-      "spacing": "8px between interactive elements"
-    },
-    "safe_areas": {
-      "top": "env(safe-area-inset-top)",
-      "bottom": "env(safe-area-inset-bottom) + 16px"
-    },
-    "gestures": {
-      "swipe_back": "Native iOS feel",
-      "pull_to_refresh": "Essential for feeds",
-      "horizontal_scroll": "For service pillars and products"
-    }
-  },
   "design_system": {
-    "theme": "Archetype 6 (Vibrant Play) + Archetype 1 (Organic)",
-    "colors": {
-      "primary": {
-        "name": "Trust Teal",
-        "hex": "#0F766E",
-        "tailwind": "teal-700",
-        "usage": "Primary Buttons, Active States, Trust Indicators"
-      },
-      "secondary": {
-        "name": "Playful Amber",
-        "hex": "#F59E0B",
-        "tailwind": "amber-500",
-        "usage": "Highlights, Discount Tags, 'Fun' Features"
-      },
-      "accent": {
-        "name": "Love Pink",
-        "hex": "#DB2777",
-        "tailwind": "pink-600",
-        "usage": "Mira AI, Hearts, Favorites, Urgent Notifications"
-      },
-      "background": {
-        "page": "#FAFAF9",
-        "surface": "#FFFFFF",
-        "subtle": "#F5F5F4"
-      },
-      "text": {
-        "primary": "#1C1917",
-        "secondary": "#57534E",
-        "muted": "#A8A29E"
-      },
-      "status": {
-        "success": "#10B981",
-        "error": "#EF4444",
-        "warning": "#F59E0B"
-      }
+    "identity": {
+      "name": "Pet Life OS",
+      "tone": "Playful, Trustworthy, Premium, Organized",
+      "archetype": "Vibrant Play + Organic & Earthy",
+      "core_values": ["Fusion over Imitation", "Emotion First", "Content is King"]
     },
     "typography": {
-      "headings": {
-        "font_family": "Manrope, sans-serif",
-        "weights": ["600", "700", "800"],
-        "usage": "Page Titles, Section Headers, Card Titles"
-      },
-      "body": {
-        "font_family": "Inter, sans-serif",
-        "weights": ["400", "500"],
-        "usage": "Paragraphs, Labels, Inputs"
+      "font_family": {
+        "heading": "Manrope, sans-serif",
+        "body": "Inter, sans-serif",
+        "special": "Syne, sans-serif"
       },
       "scale": {
-        "h1": "text-3xl font-extrabold tracking-tight",
-        "h2": "text-2xl font-bold tracking-tight",
-        "h3": "text-xl font-bold",
+        "h1": "text-4xl md:text-5xl font-bold tracking-tight",
+        "h2": "text-3xl md:text-4xl font-bold tracking-tight",
+        "h3": "text-2xl md:text-3xl font-semibold",
         "body_lg": "text-lg leading-relaxed",
-        "body_base": "text-base leading-normal",
-        "caption": "text-sm text-muted-foreground"
+        "body_base": "text-base leading-relaxed text-muted-foreground",
+        "caption": "text-sm font-medium tracking-wide uppercase text-muted-foreground"
+      }
+    },
+    "colors": {
+      "palette": {
+        "primary": {
+          "DEFAULT": "#8B5CF6",
+          "foreground": "#FFFFFF",
+          "gradient_start": "#8B5CF6",
+          "gradient_end": "#EC4899"
+        },
+        "secondary": {
+          "DEFAULT": "#0D9488",
+          "foreground": "#FFFFFF"
+        },
+        "accent": {
+          "DEFAULT": "#F59E0B",
+          "foreground": "#FFFFFF"
+        },
+        "background": {
+          "DEFAULT": "#FAFAF9",
+          "paper": "#FFFFFF"
+        },
+        "text": {
+          "primary": "#1C1917",
+          "secondary": "#57534E",
+          "muted": "#A8A29E"
+        }
+      },
+      "gradients": {
+        "soul_score": "linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)",
+        "gamification": "linear-gradient(135deg, #FDE68A 0%, #FDBA74 50%, #FDA4AF 100%)",
+        "glass": "rgba(255, 255, 255, 0.7)"
       }
     },
     "spacing": {
-      "container_padding": "px-4 md:px-6",
-      "section_gap": "gap-8",
-      "card_padding": "p-4 or p-5",
-      "touch_padding": "p-3"
+      "container_padding": "p-4 md:p-8 lg:p-12",
+      "section_gap": "gap-8 md:gap-12",
+      "card_padding": "p-6 md:p-8"
     },
-    "radius": {
-      "card": "rounded-2xl",
-      "button": "rounded-full",
-      "input": "rounded-xl"
+    "visual_enhancers": {
+      "radius": "rounded-2xl md:rounded-3xl",
+      "shadows": {
+        "card": "0 4px 20px -2px rgba(0, 0, 0, 0.05)",
+        "float": "0 20px 40px -4px rgba(0, 0, 0, 0.1)",
+        "glow": "0 0 40px rgba(139, 92, 246, 0.15)"
+      },
+      "glassmorphism": "backdrop-blur-xl bg-white/70 border border-white/20 shadow-sm"
+    }
+  },
+  "layout_strategy": {
+    "type": "Bento Grid",
+    "mobile": {
+      "columns": "grid-cols-1",
+      "navigation": "Fixed Bottom Bar (Glassmorphic)",
+      "padding": "px-4 pb-24 pt-4"
     },
-    "shadows": {
-      "card": "shadow-[0_2px_8px_rgba(0,0,0,0.04)]",
-      "floating": "shadow-[0_8px_30px_rgba(0,0,0,0.12)]",
-      "glow": "shadow-[0_0_20px_rgba(15,118,110,0.15)]"
+    "desktop": {
+      "columns": "grid-cols-12",
+      "navigation": "Sidebar (Left, Fixed, w-64)",
+      "padding": "p-8 pl-72"
+    },
+    "grid_areas": {
+      "hero": "col-span-full md:col-span-8 row-span-2",
+      "stats": "col-span-1 md:col-span-4 row-span-1",
+      "list": "col-span-full md:col-span-4 row-span-2"
     }
   },
   "components": {
-    "navigation": {
-      "type": "Fixed Bottom Bar",
-      "items": ["Home", "Shop", "Mira AI (Center FAB)", "Services", "Profile"],
-      "style": "Glassmorphism (backdrop-blur-lg), height 64px + safe-area",
-      "interaction": "Active state fills icon, subtle bounce on tap"
-    },
-    "mira_ai_widget": {
-      "type": "Floating Action Button (FAB) or Center Tab",
-      "position": "Center of Bottom Nav or Floating Bottom-Right",
-      "style": "Gradient (Pink to Purple), Pulse animation",
-      "behavior": "Opens Full-Screen Chat Interface (not a small window)"
-    },
-    "cards": {
-      "service_pillar": {
-        "style": "Vertical Rectangle, Image Top, Text Bottom, Rounded-2xl",
-        "layout": "Horizontal Scroll (Carousel) on Mobile"
+    "SoulScoreRing": {
+      "description": "Animated circular progress bar with pet portrait in center. Uses SVG stroke-dasharray for animation.",
+      "props": {
+        "score": "number (0-100)",
+        "petImage": "string (url)",
+        "size": "number (px)"
       },
-      "product": {
-        "style": "Minimalist, Large Image, Quick Add Button",
-        "layout": "Grid-cols-2 gap-3"
-      }
+      "animation": "Rotate on load, pulse on hover"
     },
-    "modals": {
-      "rule": "NO CENTER MODALS ON MOBILE",
-      "replacement": "Bottom Sheet (Drawer)",
-      "library": "Vaul (Shadcn Drawer)"
+    "GamificationBanner": {
+      "description": "Hero card showing current level/journey. Gradient background with 3D assets.",
+      "style": "bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white rounded-3xl overflow-hidden relative"
     },
-    "inputs": {
-      "style": "Height 48px (min), Font-size 16px (prevent zoom)",
-      "validation": "Inline real-time validation"
+    "QuickBoostCard": {
+      "description": "Interactive card asking daily questions to boost score.",
+      "style": "bg-white border border-orange-100 shadow-sm hover:shadow-md transition-all"
+    },
+    "PetSelector": {
+      "description": "Horizontal scroll list of pet avatars. Active state has ring.",
+      "mobile_behavior": "Horizontal scroll with snap",
+      "desktop_behavior": "Grid or Vertical List in Sidebar"
     }
   },
   "assets": {
     "images": {
-      "hero_dog": {
-        "url": "https://images.unsplash.com/photo-1609348490161-a879e4327ae9?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwxfHxoYXBweSUyMGRvZyUyMHBvcnRyYWl0fGVufDB8fHx8MTc3MDExMDU0Nnww&ixlib=rb-4.1.0&q=85",
-        "alt": "Happy Golden Retriever Hero",
-        "category": "hero"
-      },
-      "grooming_service": {
-        "url": "https://images.pexels.com/photos/6816837/pexels-photo-6816837.jpeg",
-        "alt": "Professional Dog Grooming",
-        "category": "service"
-      },
-      "party_service": {
-        "url": "https://images.unsplash.com/photo-1644931900689-f56386afd2cd?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxODd8MHwxfHNlYXJjaHwxfHxkb2clMjBiaXJ0aGRheSUyMHBhcnR5fGVufDB8fHx8MTc3MDExMDU0OXww&ixlib=rb-4.1.0&q=85",
-        "alt": "Dog Birthday Party",
-        "category": "service"
-      },
-      "vet_service": {
-        "url": "https://images.unsplash.com/photo-1648799834307-97650bbf7298?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwyfHxoYXBweSUyMGRvZyUyMHBvcnRyYWl0fGVufDB8fHx8MTc3MDExMDU0Nnww&ixlib=rb-4.1.0&q=85",
-        "alt": "Veterinary Care",
-        "category": "service"
-      },
-      "shop_toys": {
-        "url": "https://images.unsplash.com/photo-1756073721812-0611ba3a2431?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwzfHxoYXBweSUyMGRvZyUyMHBvcnRyYWl0fGVufDB8fHx8MTc3MDExMDU0Nnww&ixlib=rb-4.1.0&q=85",
-        "alt": "Dog Toys",
-        "category": "shop"
-      }
+      "pets": [
+        {
+          "name": "Golden Retriever",
+          "url": "https://images.unsplash.com/photo-1609348490161-a879e4327ae9?crop=entropy&cs=srgb&fm=jpg&q=85",
+          "category": "Pet Portrait"
+        },
+        {
+          "name": "French Bulldog",
+          "url": "https://images.unsplash.com/photo-1618901977251-d57dd765d2e1?crop=entropy&cs=srgb&fm=jpg&q=85",
+          "category": "Pet Portrait"
+        },
+        {
+          "name": "Cavalier Spaniel",
+          "url": "https://images.unsplash.com/photo-1613210609371-455e3aa5fb8c?crop=entropy&cs=srgb&fm=jpg&q=85",
+          "category": "Pet Portrait"
+        }
+      ],
+      "gamification": [
+        {
+          "name": "Trophy Icon",
+          "url": "https://images.pexels.com/photos/8342007/pexels-photo-8342007.jpeg",
+          "category": "Reward"
+        },
+        {
+          "name": "Gift Box",
+          "url": "https://images.unsplash.com/photo-1700045530510-6e03007a8f48?crop=entropy&cs=srgb&fm=jpg&q=85",
+          "category": "Reward"
+        }
+      ]
     },
     "icons": {
-      "library": "Lucide React",
-      "style": "Stroke width 2px, Rounded caps"
+      "library": "lucide-react",
+      "preferred": ["Heart", "Trophy", "Activity", "Calendar", "Settings", "Home", "ShoppingBag", "FileText"]
     }
   },
   "instructions_to_main_agent": [
-    "1. MOBILE FIRST: Do not design for desktop. Assume the user is on a 375px-430px screen.",
-    "2. NAVIGATION: Implement the 'Fixed Bottom Bar' immediately. It is the anchor of the app.",
-    "3. MIRA AI: Make the AI assistant prominent. It's a key differentiator.",
-    "4. SCROLLING: Use 'Lenis' for smooth scrolling if possible, but ensure native touch feel is preserved.",
-    "5. IMAGES: Use the provided Unsplash/Pexels URLs. Do not use placeholders.",
-    "6. SHADCN: Use 'Drawer' for all sub-views. Use 'Carousel' for service pillars.",
-    "7. TESTING: Add 'data-testid' to all interactive elements."
+    "1. Refine the 'Member Dashboard' page to use a responsive Bento Grid layout.",
+    "2. Implement the 'Soul Score' as a central hero element with the circular progress animation.",
+    "3. Ensure the Mobile Bottom Nav is preserved but styled with the new 'Glassmorphism' rules.",
+    "4. Create a 'Sidebar' component for Desktop view that replaces the Bottom Nav.",
+    "5. Use the provided image URLs for the pet avatars and gamification elements.",
+    "6. Apply the 'Manrope' font to all headings and 'Inter' to body text.",
+    "7. Use 'framer-motion' for entrance animations (staggered fade-ins for grid items).",
+    "8. Ensure all interactive elements have 'data-testid' attributes.",
+    "9. DO NOT use generic linear gradients for backgrounds; use the specified 'Warm Stone' (#FAFAF9) for the page background.",
+    "10. Make the 'Quick Score Boost' interactive (e.g., click to answer/expand)."
   ],
-  "universal_guidelines": {
-    "avoid": ["Generic gradients", "Center-aligned text blocks", "Small clickable areas"],
-    "embrace": ["Asymmetry", "Texture (noise/grain)", "Oversized typography for headings"],
-    "css_rules": [
-      "No 'text-align: center' on container",
-      "No 'transition: all'",
-      "Use 'backdrop-filter' for glass effects"
-    ]
-  }
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
+    "Avoid 'AI slop' aesthetics (generic centered layouts, default blue/gray).",
+    "Use 2-3x more spacing than typical (p-6, p-8, gap-8).",
+    "Every interaction needs micro-animations (hover lift, scale down on click).",
+    "Use 'sonner' for toasts.",
+    "Never use transparent backgrounds for overlays without blur.",
+    "Respect 'prefers-reduced-motion'."
+  ]
 }
