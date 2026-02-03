@@ -314,42 +314,6 @@ const ShopPage = () => {
     
     fetchProductsData();
   }, [searchQuery, selectedCategory, selectedParentCategory, selectedPillar, sortBy]);
-      }
-      
-      // Add pillar filter
-      if (selectedPillar && selectedPillar !== 'all') {
-        url += `&pillar=${selectedPillar}`;
-      }
-      
-      console.log('[ShopPage] Fetching URL:', url);
-      const res = await fetch(url);
-      if (res.ok) {
-        const data = await res.json();
-        let productList = data.products || data || [];
-        console.log('[ShopPage] Received products:', productList.length);
-        
-        // Sort products
-        if (sortBy === 'price-low') {
-          productList.sort((a, b) => (a.price || 0) - (b.price || 0));
-        } else if (sortBy === 'price-high') {
-          productList.sort((a, b) => (b.price || 0) - (a.price || 0));
-        } else if (sortBy === 'newest') {
-          productList.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
-        }
-        
-        setProducts(productList);
-      }
-    } catch (err) {
-      console.error('Failed to fetch products:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, [searchQuery, selectedCategory, selectedParentCategory, selectedPillar, sortBy]);
-
-  // Fetch products when dependencies change
-  useEffect(() => {
-    fetchProducts();
-  }, [fetchProducts]);
 
   // Fetch user's pets for recommendations
   useEffect(() => {
