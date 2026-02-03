@@ -854,6 +854,25 @@ const MemberDashboard = () => {
           </Button>
         </div>
 
+        {/* 🎮 GAMIFICATION BANNER - Shows Soul Score Progress */}
+        <GamificationBanner 
+          pets={pets}
+          orders={orders}
+          user={user}
+          onNavigateToPet={(petId) => navigate(`/pet/${petId}?tab=personality`)}
+          onOpenExplainer={() => {}}
+        />
+        
+        {/* ⚡ QUICK SCORE BOOST - Show when score is low */}
+        {Array.isArray(pets) && pets.length > 0 && pets[0]?.overall_score < 75 && (
+          <QuickScoreBoost 
+            pet={pets[0]} 
+            onAnswerQuestion={() => {
+              window.location.reload();
+            }}
+          />
+        )}
+
         {/* Main Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           {/* Desktop Tab Navigation */}
