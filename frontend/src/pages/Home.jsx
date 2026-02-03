@@ -174,22 +174,22 @@ const Home = () => {
       </section>
 
       {/* ========== OUTCOME STATEMENTS (Not Feature Tiles) ========== */}
-      <section className="py-24 bg-white">
+      <section className="py-16 sm:py-24 bg-white">
         <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+          <div className="text-center mb-10 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
               What Changes When You&apos;re With Us
             </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
               Not features. Outcomes. Here&apos;s what life actually looks like.
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {OUTCOME_STATEMENTS.map((item, idx) => (
-              <Card key={idx} className="p-6 hover:shadow-xl transition-all border-2 border-transparent hover:border-purple-200 group">
-                <span className="text-3xl mb-4 block">{item.icon}</span>
-                <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-purple-700 transition-colors">
+              <Card key={idx} className="p-5 sm:p-6 hover:shadow-xl transition-all border-2 border-transparent hover:border-purple-200 active:scale-[0.98] group">
+                <span className="text-2xl sm:text-3xl mb-3 sm:mb-4 block">{item.icon}</span>
+                <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-2 group-hover:text-purple-700 transition-colors">
                   {item.statement}
                 </h3>
                 <p className="text-sm text-gray-500 leading-relaxed">{item.subtext}</p>
