@@ -671,6 +671,15 @@ const DineManager = ({ credentials }) => {
           </h2>
           <p className="text-gray-500">Restaurants, Reservations & Buddy Meetups</p>
         </div>
+        <Button 
+          onClick={seedAllDine}
+          disabled={seedingAll}
+          className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white"
+          data-testid="seed-all-dine-btn"
+        >
+          <Sparkles className="w-4 h-4 mr-2" />
+          {seedingAll ? 'Seeding...' : 'Seed All Dine Data'}
+        </Button>
       </div>
       
       {/* Tab Navigation */}
