@@ -1580,7 +1580,7 @@ const MiraChatWidget = ({
                 
                 {/* Send Button */}
                 <button
-                  onClick={sendMessage}
+                  onClick={() => sendMessage()}
                   disabled={!inputValue.trim() || isSending}
                   className={`w-12 h-12 min-w-[48px] min-h-[48px] rounded-full flex items-center justify-center transition-all shrink-0 touch-manipulation active:scale-95 ${
                     inputValue.trim() && !isSending
