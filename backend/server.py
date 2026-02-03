@@ -13713,7 +13713,9 @@ async def initialize_database():
 class PartyRequestModel(BaseModel):
     petId: Optional[str] = None
     petName: str
-    petType: str = "dog"
+    petType: str = "dog"  # Always dog - The Doggy Company
+    petBreed: Optional[str] = None
+    petAge: Optional[str] = None
     occasion: str
     date: str
     time: str
