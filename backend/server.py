@@ -14139,6 +14139,58 @@ async def sync_stay_to_products_endpoint():
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# ==================== PRICING SYNC SERVICE ENDPOINTS ====================
+
+@app.post("/api/admin/pricing/sync-products-to-services")
+async def sync_products_to_services_endpoint(username: str = Depends(verify_admin)):
+    """Sync all products to services collection for unified pricing"""
+    result = await sync_all_products_to_services()
+    return result
+
+@app.post("/api/admin/pricing/sync-services-to-products")
+async def sync_services_to_products_endpoint(username: str = Depends(verify_admin)):
+    """Sync all services to products collection for unified pricing"""
+    result = await sync_all_services_to_products()
+    return result
+
+@app.post("/api/admin/pricing/full-sync")
+async def full_pricing_sync_endpoint(username: str = Depends(verify_admin)):
+    """Full bidirectional sync of products and services"""
+    products_result = await sync_all_products_to_services()
+    services_result = await sync_all_services_to_products()
+    return {
+        "success": True,
+        "products_to_services": products_result,
+        "services_to_products": services_result
+    }
+
+@app.post("/api/admin/pricing/update-product/{product_id}")
+async def update_product_price_endpoint(
+    product_id: str,
+    price: float,
+    username: str = Depends(verify_admin)
+):
+    """Update product price and sync to services"""
+    result = await update_product_price(product_id, price)
+    return result
+
+@app.post("/api/admin/pricing/update-service/{service_id}")
+async def update_service_price_endpoint(
+    service_id: str,
+    price: float,
+    username: str = Depends(verify_admin)
+):
+    """Update service price and sync to products"""
+    result = await update_service_price(service_id, price)
+    return result
+
+@app.post("/api/admin/pawmeter/batch-update")
+async def batch_update_pawmeters_endpoint(username: str = Depends(verify_admin)):
+    """Update Pawmeter scores for all products and services"""
+    result = await batch_update_pawmeters()
+    return result
+
+
 # ==================== ADMIN PASSWORD MANAGEMENT ====================
 
 @app.post("/api/admin/change-password")
