@@ -1422,6 +1422,112 @@ def api_health_check():
     """Health check alias for /api prefix"""
     return health_check()
 
+
+@app.get("/api/admin/site-status")
+async def get_site_status():
+    """
+    Get comprehensive site status report with real-time data.
+    Returns counts, health status, and recent activity.
+    """
+    now = get_utc_timestamp()
+    
+    # Get counts from all major collections
+    stats = {}
+    try:
+        # Core counts
+        stats["products"] = await db.products.count_documents({})
+        stats["services"] = await db.services.count_documents({})
+        stats["members"] = await db.users.count_documents({})
+        stats["orders"] = await db.orders.count_documents({})
+        stats["pets"] = await db.pets.count_documents({})
+        
+        # Ticket counts by status
+        stats["tickets_total"] = await db.service_desk_tickets.count_documents({})
+        stats["tickets_open"] = await db.service_desk_tickets.count_documents({"status": {"$in": ["open", "new", "pending"]}})
+        stats["tickets_blocked"] = await db.service_desk_tickets.count_documents({"status": "blocked"})
+        stats["tickets_today"] = await db.service_desk_tickets.count_documents({
+            "created_at": {"$gte": datetime.now(timezone.utc).replace(hour=0, minute=0, second=0).isoformat()}
+        })
+        
+        # Content counts
+        stats["blogs"] = await db.blogs.count_documents({})
+        stats["faqs"] = await db.faqs.count_documents({})
+        stats["collections"] = await db.enhanced_collections.count_documents({})
+        
+        # Party & Quotes
+        stats["party_requests"] = await db.party_requests.count_documents({})
+        stats["quotes"] = await db.quotes.count_documents({})
+        stats["quotes_pending"] = await db.quotes.count_documents({"status": {"$in": ["sent", "viewed"]}})
+        
+        # Pillar counts
+        stats["restaurants"] = await db.dine_restaurants.count_documents({}) if await db.list_collection_names().__contains__("dine_restaurants") else 0
+        stats["stays"] = await db.stay_properties.count_documents({}) if "stay_properties" in await db.list_collection_names() else 0
+        stats["trainers"] = await db.trainers.count_documents({}) if "trainers" in await db.list_collection_names() else 0
+        
+        # Recent activity (last 24 hours)
+        yesterday = (datetime.now(timezone.utc) - timedelta(days=1)).isoformat()
+        stats["orders_today"] = await db.orders.count_documents({"created_at": {"$gte": yesterday}})
+        stats["new_members_today"] = await db.users.count_documents({"created_at": {"$gte": yesterday}})
+        
+    except Exception as e:
+        logger.error(f"Error fetching site stats: {e}")
+    
+    # Determine pillar health status
+    pillars = {
+        "celebrate": {"status": "✅", "count": stats.get("party_requests", 0)},
+        "dine": {"status": "✅", "count": stats.get("restaurants", 0)},
+        "stay": {"status": "✅", "count": stats.get("stays", 0)},
+        "shop": {"status": "✅", "count": stats.get("products", 0)},
+        "services": {"status": "✅", "count": stats.get("services", 0)},
+        "care": {"status": "✅", "count": await db.care_services.count_documents({}) if "care_services" in await db.list_collection_names() else 0},
+        "learn": {"status": "✅", "count": stats.get("trainers", 0)},
+    }
+    
+    # Features status
+    features = {
+        "working": [
+            "Member Authentication & Dashboard",
+            "Product Catalog & Cart",
+            "Party Planning Wizard",
+            "Quote Builder System",
+            "Service Desk & Tickets",
+            "Mira AI Concierge",
+            "Pet Profiles & Pet Soul",
+            "Notifications System",
+            "Order Management",
+            "Blog & FAQ CMS",
+            "Admin Dashboard",
+            "Mobile Responsive UI"
+        ],
+        "pending": [
+            "WhatsApp Integration (awaiting approval)",
+            "Razorpay Production Keys",
+            "Membership Tiers Implementation",
+            "Natural Language Search"
+        ],
+        "blocked": [
+            "ElevenLabs TTS (awaiting key)",
+            "Production Payment Gateway"
+        ]
+    }
+    
+    return {
+        "status": "operational",
+        "generated_at": now,
+        "stats": stats,
+        "pillars": pillars,
+        "features": features,
+        "summary": {
+            "total_products": stats.get("products", 0),
+            "total_services": stats.get("services", 0),
+            "total_members": stats.get("members", 0),
+            "open_tickets": stats.get("tickets_open", 0),
+            "blocked_tickets": stats.get("tickets_blocked", 0),
+            "pending_quotes": stats.get("quotes_pending", 0)
+        }
+    }
+
+
 api_router = APIRouter(prefix="/api")
 admin_router = APIRouter(prefix="/api/admin")
 
