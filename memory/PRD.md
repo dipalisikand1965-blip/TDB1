@@ -29,7 +29,34 @@ User Intent → Service Desk Ticket → Admin Notification → Member Notificati
 
 ## What's Been Implemented
 
-### Session: February 3, 2026 - P1 FEATURES: PAWMETER, QUOTES TAB, FILTERS (LATEST)
+### Session: February 3, 2026 - BUG FIXES (LATEST)
+
+**Bug Fixes Completed:**
+
+1. ✅ **Site Status Report Dynamic** (`/app/frontend/src/components/admin/SiteStatusReport.jsx`)
+   - Real-time data fetching from `/api/admin/site-status`
+   - Refresh button with auto-refresh every 5 minutes
+   - Download Report (.doc) - generates Word-compatible HTML file
+   - Shows: Products, Members, Tickets (Open/Blocked/Today), Quotes
+   - Feature status: Working (12), Pending (4), Blocked (2)
+   - Last updated timestamp
+
+2. ✅ **Ticket Merge Fixed** (`/app/frontend/src/components/admin/DoggyServiceDesk.jsx`)
+   - Fixed endpoint URL: `/api/tickets/merge` → `/api/concierge/tickets/merge`
+   - Fixed payload keys: `merge_ticket_ids` → `secondary_ticket_ids`
+   - Added required `agent_name` parameter
+
+3. ✅ **Blocked Tickets Filter** (`/app/frontend/src/components/admin/DoggyServiceDesk.jsx`)
+   - Added "Blocked" view tab in Service Desk sidebar
+   - Shows count of blocked tickets
+   - Clicking filters to show only blocked tickets
+   - Added `Ban` icon for blocked status
+
+**Testing: 100% Pass Rate**
+- Test report: `/app/test_reports/iteration_199.json`
+- 13/13 backend tests passed
+
+### Session: February 3, 2026 - P1 FEATURES
 
 **P1 Features Implemented:**
 
