@@ -1089,7 +1089,7 @@ const UnifiedPetPage = () => {
                         </Button>
                         
                         {showPetSwitcher && (
-                          <div className="absolute top-full mt-2 left-0 bg-white rounded-xl shadow-2xl border z-50 py-2 min-w-[200px] max-h-[300px] overflow-y-auto">
+                          <div className="absolute top-full mt-2 left-0 bg-white rounded-xl shadow-2xl border z-[100] py-2 min-w-[200px] max-h-[300px] overflow-y-auto">
                             <div className="px-3 py-2 border-b text-xs text-gray-500 font-semibold">
                               Your Pets ({allPets.length})
                             </div>
