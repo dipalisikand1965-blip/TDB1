@@ -1695,13 +1695,19 @@ const UnifiedPetPage = () => {
                       try {
                         // Upload first file as main photo (for now - gallery support can be expanded later)
                         const file = files[0];
-                        if (file.size > 5 * 1024 * 1024) {
-                          toast({ title: 'File too large', description: 'Please upload an image under 5MB', variant: 'destructive' });
+                        
+                        // Backend limit is 2MB for base64 storage
+                        if (file.size > 2 * 1024 * 1024) {
+                          toast({ title: 'File too large', description: 'Please upload an image under 2MB', variant: 'destructive' });
+                          setUploadingPhoto(false);
+                          e.target.value = '';
                           return;
                         }
                         
                         const formData = new FormData();
                         formData.append('photo', file);
+                        
+                        console.log('Uploading photo to:', `${API_URL}/api/pets/${petId}/photo`);
                         
                         const response = await fetch(`${API_URL}/api/pets/${petId}/photo`, {
                           method: 'POST',
@@ -1709,19 +1715,23 @@ const UnifiedPetPage = () => {
                           body: formData
                         });
                         
+                        console.log('Upload response status:', response.status);
+                        
                         if (response.ok) {
                           const data = await response.json();
+                          console.log('Upload success:', data);
                           setPet(prev => ({ ...prev, photo_url: data.photo_url }));
-                          toast({ title: 'Photo uploaded!', description: `${safePet.name}'s gallery has been updated` });
+                          toast({ title: 'Photo uploaded!', description: `${safePet.name}'s photo has been updated` });
                           // Refresh page to show new photo
-                          window.location.reload();
+                          setTimeout(() => window.location.reload(), 500);
                         } else {
-                          const err = await response.json();
+                          const err = await response.json().catch(() => ({ detail: 'Upload failed' }));
+                          console.error('Upload error:', err);
                           toast({ title: 'Upload failed', description: err.detail || 'Could not upload photo', variant: 'destructive' });
                         }
                       } catch (err) {
                         console.error('Gallery upload error:', err);
-                        toast({ title: 'Error', description: 'Failed to upload photo', variant: 'destructive' });
+                        toast({ title: 'Error', description: 'Failed to upload photo. Please try again.', variant: 'destructive' });
                       } finally {
                         setUploadingPhoto(false);
                         e.target.value = ''; // Reset input
