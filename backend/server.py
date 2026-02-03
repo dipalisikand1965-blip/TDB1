@@ -6273,6 +6273,26 @@ async def book_service(
     
     await db.tickets.insert_one(ticket)
     
+    # Send admin notification
+    await create_admin_notification(
+        notification_type="service_booking",
+        title=f"🎫 New Service Booking: {service.get('name')}",
+        message=f"{contact_name} booked {service.get('name')} for {pet_info.get('name', 'their pet') if pet_info else 'their pet'}",
+        category=service.get("pillar", "services"),
+        related_id=ticket_id,
+        link_to=f"/admin?tab=servicedesk&ticket={ticket_id}",
+        priority="high",
+        metadata={
+            "service_name": service.get("name"),
+            "contact_name": contact_name,
+            "contact_phone": contact_phone,
+            "pet_name": pet_info.get("name") if pet_info else None,
+            "preferred_date": preferred_date,
+            "booking_id": booking_id
+        }
+    )
+    logger.info(f"[SERVICE BOOKING] Admin notification sent for ticket {ticket_id}")
+    
     return {
         "success": True,
         "booking_id": booking_id,
