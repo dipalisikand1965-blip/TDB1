@@ -2853,28 +2853,42 @@ const DoggyServiceDesk = ({ authHeaders }) => {
       )}
       
       {/* ==================== MAIN CONTENT ==================== */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className={`
+        flex-1 flex flex-col min-w-0
+        ${isMobile ? 'pb-16' : ''}
+        ${isMobile && mobileView === 'sidebar' ? 'hidden' : ''}
+      `}>
         
         {/* ==================== TOP HEADER ==================== */}
-        <header className="h-14 bg-white border-b flex items-center justify-between px-4 flex-shrink-0 shadow-sm">
-          <div className="flex items-center gap-4">
-            <button
-              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
-              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              {sidebarCollapsed ? <ChevronRight className="w-5 h-5 text-gray-500" /> : <X className="w-5 h-5 text-gray-400" />}
-            </button>
+        <header className="h-14 bg-white border-b flex items-center justify-between px-2 md:px-4 flex-shrink-0 shadow-sm">
+          <div className="flex items-center gap-2 md:gap-4 flex-1 min-w-0">
+            {/* Menu button for mobile */}
+            {isMobile ? (
+              <button
+                onClick={() => setMobileView('sidebar')}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0"
+              >
+                <Menu className="w-5 h-5 text-gray-500" />
+              </button>
+            ) : (
+              <button
+                onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                {sidebarCollapsed ? <ChevronRight className="w-5 h-5 text-gray-500" /> : <X className="w-5 h-5 text-gray-400" />}
+              </button>
+            )}
             
             {/* Global Search with Type Selector */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1 md:gap-2 flex-1 min-w-0">
               <select
                 value={searchType}
                 onChange={(e) => setSearchType(e.target.value)}
-                className="h-10 px-2 text-xs border rounded-lg bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                className="h-9 md:h-10 px-1 md:px-2 text-xs border rounded-lg bg-gray-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 flex-shrink-0"
               >
                 <option value="all">All</option>
                 <option value="pet">🐕 Pet</option>
-                <option value="pet_parent">👤 Pet Parent</option>
+                <option value="pet_parent">👤 Parent</option>
                 <option value="subject">📝 Subject</option>
                 <option value="pillar">🏷️ Pillar</option>
               </select>
