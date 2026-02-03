@@ -266,33 +266,62 @@ const Home = () => {
                 </Link>
               </div>
               <div className="text-center">
-                <div className="inline-block p-4 bg-white/10 backdrop-blur rounded-3xl">
-                  <div className="grid grid-cols-7 gap-2">
+                <div className="inline-block p-4 bg-white/10 backdrop-blur rounded-3xl w-full max-w-md">
+                  {/* Mobile: Horizontal scroll carousel */}
+                  <div className="md:hidden overflow-x-auto pb-2 -mx-2 px-2 scrollbar-hide">
+                    <div className="flex gap-3 w-max">
+                      {[
+                        { icon: '🎂', label: 'Celebrate', path: '/celebrate' },
+                        { icon: '🍽️', label: 'Dine', path: '/dine' },
+                        { icon: '🏨', label: 'Stay', path: '/stay' },
+                        { icon: '✈️', label: 'Travel', path: '/travel' },
+                        { icon: '💊', label: 'Care', path: '/care' },
+                        { icon: '🎾', label: 'Enjoy', path: '/enjoy' },
+                        { icon: '🏃', label: 'Fit', path: '/fit' },
+                        { icon: '🎓', label: 'Learn', path: '/learn' },
+                        { icon: '📄', label: 'Paperwork', path: '/paperwork' },
+                        { icon: '📋', label: 'Advisory', path: '/advisory' },
+                        { icon: '🚨', label: 'Emergency', path: '/emergency' },
+                        { icon: '🌈', label: 'Farewell', path: '/farewell' },
+                        { icon: '🐾', label: 'Adopt', path: '/adopt' },
+                        { icon: '🛒', label: 'Shop', path: '/shop' }
+                      ].map((pillar, idx) => (
+                        <Link key={idx} to={pillar.path} className="flex-shrink-0">
+                          <div className="w-16 h-20 bg-white/10 hover:bg-white/20 rounded-xl flex flex-col items-center justify-center transition-all active:scale-95 cursor-pointer">
+                            <span className="text-2xl mb-1">{pillar.icon}</span>
+                            <span className="text-[10px] text-purple-200 font-medium">{pillar.label}</span>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                  {/* Desktop: Grid layout */}
+                  <div className="hidden md:grid grid-cols-7 gap-2">
                     {[
-                      { icon: '🎂', label: 'Celebrate' },
-                      { icon: '🍽️', label: 'Dine' },
-                      { icon: '🏨', label: 'Stay' },
-                      { icon: '✈️', label: 'Travel' },
-                      { icon: '💊', label: 'Care' },
-                      { icon: '🎾', label: 'Enjoy' },
-                      { icon: '🏃', label: 'Fit' },
-                      { icon: '🎓', label: 'Learn' },
-                      { icon: '📄', label: 'Paperwork' },
-                      { icon: '📋', label: 'Advisory' },
-                      { icon: '🚨', label: 'Emergency' },
-                      { icon: '🌈', label: 'Farewell' },
-                      { icon: '🐾', label: 'Adopt' },
-                      { icon: '🛒', label: 'Shop' }
+                      { icon: '🎂', label: 'Celebrate', path: '/celebrate' },
+                      { icon: '🍽️', label: 'Dine', path: '/dine' },
+                      { icon: '🏨', label: 'Stay', path: '/stay' },
+                      { icon: '✈️', label: 'Travel', path: '/travel' },
+                      { icon: '💊', label: 'Care', path: '/care' },
+                      { icon: '🎾', label: 'Enjoy', path: '/enjoy' },
+                      { icon: '🏃', label: 'Fit', path: '/fit' },
+                      { icon: '🎓', label: 'Learn', path: '/learn' },
+                      { icon: '📄', label: 'Paperwork', path: '/paperwork' },
+                      { icon: '📋', label: 'Advisory', path: '/advisory' },
+                      { icon: '🚨', label: 'Emergency', path: '/emergency' },
+                      { icon: '🌈', label: 'Farewell', path: '/farewell' },
+                      { icon: '🐾', label: 'Adopt', path: '/adopt' },
+                      { icon: '🛒', label: 'Shop', path: '/shop' }
                     ].map((pillar, idx) => (
-                      <div key={idx} className="group relative">
+                      <Link key={idx} to={pillar.path} className="group relative">
                         <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center text-xl hover:scale-110 hover:bg-white/20 transition-all cursor-pointer">
                           {pillar.icon}
                         </div>
                         <span className="text-[10px] text-purple-300 mt-1 block truncate">{pillar.label}</span>
-                      </div>
+                      </Link>
                     ))}
                   </div>
-                  <p className="text-sm text-purple-300 mt-4">14 Life Pillars</p>
+                  <p className="text-sm text-purple-300 mt-4">14 Life Pillars • Swipe to explore →</p>
                 </div>
               </div>
             </div>
