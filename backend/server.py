@@ -6219,6 +6219,104 @@ Request Details:
     }
 
 
+class ConciergeGoalRequest(BaseModel):
+    """Request from ConversationalEntry goal selection"""
+    pillar: str
+    request_type: str
+    request_label: str
+    message: str
+    pet_name: Optional[str] = None
+    source: str = "conversational_entry"
+
+
+@api_router.post("/concierge/pillar-request")
+async def create_concierge_pillar_request(payload: ConciergeGoalRequest):
+    """
+    Create a pillar-specific request from ConversationalEntry component.
+    This is the UNIFIED FLOW endpoint for goal card clicks.
+    
+    Flow: User clicks goal → Service Desk Ticket → Admin Notification → Member Dashboard
+    """
+    request_id = f"GOAL-{datetime.now().strftime('%Y%m%d')}-{secrets.token_hex(3).upper()}"
+    ticket_id = f"TKT-{secrets.token_hex(4).upper()}"
+    now = get_utc_timestamp()
+    
+    # Map pillar to human-readable names
+    pillar_names = {
+        "stay": "Stay & Travel",
+        "fit": "Fitness & Health",
+        "care": "Care & Grooming",
+        "dine": "Pet-Friendly Dining",
+        "celebrate": "Celebrations",
+        "enjoy": "Activities & Fun",
+        "learn": "Training & Learning",
+        "travel": "Travel & Transport"
+    }
+    pillar_name = pillar_names.get(payload.pillar, payload.pillar.title())
+    
+    # Build description
+    description = f"""🐾 {pillar_name} Request: {payload.request_label}
+
+Pet: {payload.pet_name or 'Not specified'}
+Request Type: {payload.request_type}
+Source: {payload.source}
+
+Customer Message:
+{payload.message}
+"""
+    
+    # ==================== STEP 1: SERVICE DESK TICKET ====================
+    ticket = {
+        "id": ticket_id,
+        "ticket_id": ticket_id,
+        "request_id": request_id,
+        "type": "concierge_goal",
+        "category": payload.pillar,
+        "sub_category": payload.request_type,
+        "subject": f"{payload.request_label} - {payload.pet_name or 'Pet'}",
+        "description": description,
+        "status": "open",
+        "priority": "normal",
+        "channel": "web",
+        "pillar": payload.pillar,
+        "source": payload.source,
+        "pet_name": payload.pet_name,
+        "created_at": now,
+        "updated_at": now,
+        "assigned_to": None,
+        "activity_log": [
+            {"action": "created", "timestamp": now, "details": f"Goal selected: {payload.request_label}"}
+        ]
+    }
+    await db.service_desk_tickets.insert_one(ticket)
+    logger.info(f"[CONCIERGE GOAL] Ticket created: {ticket_id} for {payload.pillar}/{payload.request_type}")
+    
+    # ==================== STEP 2: ADMIN NOTIFICATION ====================
+    notification_id = f"NOTIF-{secrets.token_hex(4).upper()}"
+    await db.admin_notifications.insert_one({
+        "id": notification_id,
+        "type": "concierge_goal",
+        "pillar": payload.pillar,
+        "title": f"🎯 {pillar_name}: {payload.request_label}",
+        "message": f"{payload.pet_name or 'A customer'} needs help with {payload.request_label}",
+        "read": False,
+        "status": "unread",
+        "ticket_id": ticket_id,
+        "request_id": request_id,
+        "pet_name": payload.pet_name,
+        "link": f"/admin?tab=servicedesk&ticket={ticket_id}",
+        "created_at": now
+    })
+    logger.info(f"[CONCIERGE GOAL] Admin notification created: {notification_id}")
+    
+    return {
+        "success": True,
+        "request_id": request_id,
+        "ticket_id": ticket_id,
+        "message": f"Your {payload.request_label} request has been submitted. Our team will contact you within 24 hours!"
+    }
+
+
 @api_router.post("/services/book")
 async def book_service(
     service_id: str = Body(...),
