@@ -26,3 +26,18 @@ export const API_URL = (() => {
   }
   return process.env.REACT_APP_BACKEND_URL || '';
 })();
+
+// Get auth headers for admin API calls
+// Reads credentials from localStorage (set during admin login)
+export const getAuthHeaders = () => {
+  const adminAuth = localStorage.getItem('adminAuth');
+  if (adminAuth) {
+    return {
+      'Authorization': `Basic ${adminAuth}`,
+      'Content-Type': 'application/json'
+    };
+  }
+  return {
+    'Content-Type': 'application/json'
+  };
+};
