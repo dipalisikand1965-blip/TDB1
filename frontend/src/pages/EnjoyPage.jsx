@@ -624,7 +624,7 @@ const EnjoyPage = () => {
                   <div className="absolute -bottom-1 -right-1 bg-green-500 text-white text-[8px] sm:text-xs px-1 rounded">After</div>
                 </div>
               </div>
-              <p className="text-xs sm:text-sm text-gray-700 mb-2 sm:mb-3 line-clamp-3">"The photography workshop was amazing. Now I have gallery-worthy photos of Charlie!"</p>
+              <p className="text-xs sm:text-sm text-gray-700 mb-2 sm:mb-3 line-clamp-3">&quot;The photography workshop was amazing. Now I have gallery-worthy photos of Charlie!&quot;</p>
               <div className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs text-red-600">
                 <Camera className="w-3 h-3" />
                 <span>Blurry Snaps → Pro Shots</span>
