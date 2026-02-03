@@ -143,30 +143,71 @@ const ConversationalEntry = ({
       ? `I want to help ${petName} with ${goal.label.toLowerCase()}`
       : `I'm interested in ${goal.label.toLowerCase()} for my pet`;
     
-    // Record interaction via API (triggers Universal Signal Flow)
+    // Create a Service Desk ticket directly (UNIFIED FLOW)
+    // User Action → Service Desk Ticket → Admin Notification → Member Notification
     try {
       const token = localStorage.getItem('token');
-      await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/engagement/goal-interaction`, {
+      const API_URL = process.env.REACT_APP_BACKEND_URL;
+      
+      // Create the pillar request via unified flow
+      const response = await fetch(`${API_URL}/api/concierge/pillar-request`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           ...(token && { 'Authorization': `Bearer ${token}` })
         },
         body: JSON.stringify({
-          goal_id: goal.id,
-          goal_label: goal.label,
-          pillar: pillar, // Use the actual pillar
-          message: message
+          pillar: pillar,
+          request_type: goal.id,
+          request_label: goal.label,
+          message: message,
+          pet_name: petName || 'Pet',
+          source: 'conversational_entry'
         })
       });
+      
+      if (response.ok) {
+        const result = await response.json();
+        // Show success toast
+        if (window.toast) {
+          window.toast({
+            title: "Request Submitted! 🐾",
+            description: `We'll get back to you about ${goal.label} within 24 hours.`
+          });
+        }
+        // Navigate to dashboard to see the request
+        navigate('/dashboard?tab=requests');
+      } else {
+        throw new Error('Failed to submit request');
+      }
     } catch (err) {
-      console.debug('Goal interaction logging failed:', err);
-    }
-    
-    if (onGoalSelect) {
-      onGoalSelect(goal, message);
-    } else {
-      navigate(`/mira?context=${pillar}_${goal.id}&preset=${encodeURIComponent(message)}`);
+      console.error('Goal interaction failed:', err);
+      // Fallback: Still try to record the interaction
+      try {
+        const token = localStorage.getItem('token');
+        await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/engagement/goal-interaction`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token && { 'Authorization': `Bearer ${token}` })
+          },
+          body: JSON.stringify({
+            goal_id: goal.id,
+            goal_label: goal.label,
+            pillar: pillar,
+            message: message
+          })
+        });
+      } catch (e) {
+        console.debug('Goal interaction logging failed:', e);
+      }
+      
+      // On error, fall back to Mira chat
+      if (onGoalSelect) {
+        onGoalSelect(goal, message);
+      } else {
+        navigate(`/mira?context=${pillar}_${goal.id}&preset=${encodeURIComponent(message)}`);
+      }
     }
   };
 
