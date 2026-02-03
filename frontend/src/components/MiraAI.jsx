@@ -978,7 +978,7 @@ const MiraAI = () => {
   if (!isOpen) {
     return (
       <div 
-        className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-[9998]" 
+        className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-[9998] hidden md:block" 
         data-testid="mira-orb-container"
       >
         <MiraOrb 
