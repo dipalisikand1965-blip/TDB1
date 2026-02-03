@@ -421,7 +421,7 @@ const MiraPage = () => {
         setMessages(prev => [...prev, {
           id: (Date.now() + 1).toString(),
           role: 'assistant',
-          content: "I'm having a brief pause. Could you please repeat that?",
+          content: "Let me try that again. What would you like help with?",
           timestamp: new Date().toISOString()
         }]);
       }
