@@ -944,22 +944,6 @@ const MemberDashboard = () => {
             Sign Out
           </Button>
         </div>
-                  </Badge>
-                )}
-              </div>
-            </div>
-          </div>
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => { logout(); navigate('/'); }}
-            className="text-red-500 hover:text-red-700 hover:bg-red-50 border-red-200"
-            data-testid="signout-btn"
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            Sign Out
-          </Button>
-        </div>
 
         {/* 🎮 GAMIFICATION BANNER - Shows Soul Score Progress */}
         <GamificationBanner 
