@@ -2372,7 +2372,7 @@ const MemberDashboard = () => {
                                   <CheckCircle2 className="w-4 h-4" /> Notifications Active
                                 </p>
                                 <p className="text-xs text-green-600 mt-1">
-                                  You'll receive Soul Whispers™, order updates & concierge® replies
+                                  You&apos;ll receive Soul Whispers™, order updates & concierge® replies
                                 </p>
                               </div>
                               <Button
