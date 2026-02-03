@@ -622,14 +622,17 @@ const Navbar = () => {
         <div className="max-w-7xl mx-auto px-3 sm:px-4">
           {/* Mobile Layout: Hamburger | Logo (center) | Icons */}
           <div className="flex sm:hidden items-center justify-between h-14">
-            {/* Left: Hamburger Menu */}
+            {/* Left: Hamburger Menu - Opens Paw Sidebar on mobile */}
             <button
-              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              onClick={() => {
+                // On mobile, open the Paw Sidebar navigation
+                window.dispatchEvent(new CustomEvent('openPetSidebar'));
+              }}
               className="p-2 hover:bg-white/10 rounded-lg"
               data-testid="navbar-mobile-menu-btn"
-              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+              aria-label="Open navigation menu"
             >
-              {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              <Menu className="w-6 h-6" />
             </button>
             
             {/* Center: Logo + Company Name */}
