@@ -5478,6 +5478,26 @@ const DoggyServiceDesk = ({ authHeaders }) => {
           </Card>
         </div>
       )}
+      
+      {/* ==================== QUOTE BUILDER MODAL ==================== */}
+      {showQuoteBuilder && partyRequestData && (
+        <QuoteBuilder
+          partyRequest={partyRequestData}
+          ticketId={selectedTicket?.ticket_id}
+          onClose={() => {
+            setShowQuoteBuilder(false);
+            setPartyRequestData(null);
+          }}
+          onQuoteSent={(data) => {
+            toast({
+              title: '🎉 Quote Sent!',
+              description: `Payment link sent to ${partyRequestData.user_email}`
+            });
+            // Refresh tickets to update status
+            fetchAllTickets();
+          }}
+        />
+      )}
     </div>
   );
 };
