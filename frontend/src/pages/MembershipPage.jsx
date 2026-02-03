@@ -278,12 +278,12 @@ const MembershipPage = () => {
             {/* Badge */}
             <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
               <PawPrint className="w-5 h-5 text-yellow-400" />
-              <span className="text-sm font-medium">Pet Pass — Personal Concierge</span>
+              <span className="text-sm font-medium">Pet Pass — Personal Concierge®</span>
             </div>
             
             {/* Main Headline */}
             <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
-              A Personal Concierge
+              A Personal Concierge®
               <br />
               <span className="text-teal-300">
                 For Your Dog
@@ -291,7 +291,7 @@ const MembershipPage = () => {
             </h1>
             
             <p className="text-lg md:text-xl text-white/80 mb-8 max-w-2xl mx-auto">
-              Pet Pass creates a living concierge relationship — beginning with understanding your dog, sustained through memory, care, and continuity.
+              Pet Pass creates a living concierge® relationship — beginning with understanding your dog, sustained through memory, care, and continuity.
             </p>
             
             {/* CTA Buttons */}
