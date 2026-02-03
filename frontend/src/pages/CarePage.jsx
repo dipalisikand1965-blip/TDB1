@@ -818,7 +818,7 @@ const CarePage = () => {
               { type: 'vet', icon: Stethoscope, name: 'Vet Visit', color: 'from-blue-500 to-indigo-600', desc: 'Checkups & vaccines' },
               { type: 'training', icon: GraduationCap, name: 'Training', color: 'from-purple-500 to-violet-600', desc: 'Behavior & skills' },
               { type: 'walking', icon: PawPrint, name: 'Walking', color: 'from-green-500 to-emerald-600', desc: 'Daily walks' }
-            ].map((service) => {
+            ].map((service, idx) => {
               const Icon = service.icon;
               return (
                 <button
@@ -827,7 +827,7 @@ const CarePage = () => {
                     setBookingServiceType(service.type);
                     setShowBookingModal(true);
                   }}
-                  className="group p-4 sm:p-6 bg-white rounded-2xl border-2 border-gray-100 hover:border-rose-200 hover:shadow-xl transition-all duration-300 text-left"
+                  className={`animate-scale-in stagger-${idx + 1} group p-4 sm:p-6 bg-white rounded-2xl border-2 border-gray-100 hover:border-rose-200 hover:shadow-xl hover:scale-[1.02] transition-all duration-300 text-left`}
                   data-testid={`quick-book-${service.type}`}
                 >
                   <div className={`w-12 h-12 sm:w-14 sm:h-14 mb-3 sm:mb-4 rounded-xl bg-gradient-to-br ${service.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
@@ -845,7 +845,7 @@ const CarePage = () => {
             {/* Anything Else - Ask Concierge */}
             <button
               onClick={() => setShowAnythingElseModal(true)}
-              className="group p-4 sm:p-6 bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl border-2 border-amber-200 hover:border-amber-400 hover:shadow-xl transition-all duration-300 text-left"
+              className="animate-scale-in stagger-5 group p-4 sm:p-6 bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl border-2 border-amber-200 hover:border-amber-400 hover:shadow-xl hover:scale-[1.02] transition-all duration-300 text-left"
               data-testid="quick-book-anything-else"
             >
               <div className="w-12 h-12 sm:w-14 sm:h-14 mb-3 sm:mb-4 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
@@ -854,7 +854,7 @@ const CarePage = () => {
               <h3 className="font-bold text-gray-900 mb-1 text-sm sm:text-base">Anything Else</h3>
               <p className="text-xs sm:text-sm text-gray-500">Custom request</p>
               <div className="mt-2 sm:mt-3 flex items-center text-amber-600 text-xs sm:text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">
-                Ask Concierge <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 ml-1" />
+                Ask Concierge® <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 ml-1" />
               </div>
             </button>
           </div>
