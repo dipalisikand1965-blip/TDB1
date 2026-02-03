@@ -13729,14 +13729,22 @@ class PartyRequestModel(BaseModel):
 
 @api_router.post("/celebrate/party-request")
 async def create_party_request(request: PartyRequestModel):
-    """Create a party planning request from the wizard"""
-    request_id = f"PARTY-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{secrets.token_hex(3).upper()}"
+    """
+    Create a party planning request - THE DOGGY COMPANY (Dogs Only!)
     
+    Unified Flow:
+    User Intent → Service Desk Ticket → Admin Notification → Member Notification → Pillar Request
+    """
+    request_id = f"PARTY-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{secrets.token_hex(3).upper()}"
+    timestamp = get_utc_timestamp()
+    
+    # 1. Create Party Request (Pillar Request)
     party_request = {
         "id": request_id,
         "pet_name": request.petName,
         "pet_id": request.petId,
-        "pet_type": request.petType,
+        "pet_type": "dog",  # Always dog - The Doggy Company
+        "pet_breed": getattr(request, 'petBreed', None),
         "occasion": request.occasion,
         "date": request.date,
         "time": request.time,
@@ -13753,40 +13761,88 @@ async def create_party_request(request: PartyRequestModel):
         "user_name": request.user_name,
         "status": "pending",
         "pillar": "celebrate",
-        "created_at": get_utc_timestamp(),
-        "updated_at": get_utc_timestamp()
+        "source": "party_wizard",
+        "created_at": timestamp,
+        "updated_at": timestamp
     }
-    
     await db.party_requests.insert_one(party_request)
     
-    # Also create a service desk ticket for follow-up
+    # 2. Create Service Desk Ticket
     ticket_id = f"CEL-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{secrets.token_hex(3).upper()}"
+    
+    # Build description with all details
+    description_parts = [
+        f"🎉 Party Planning Request for {request.petName}",
+        f"📅 Date: {request.date} ({request.time})",
+        f"👥 Guests: {request.guestCount}",
+        f"📍 Venue: {request.venue}",
+        f"💰 Budget: {request.budget}"
+    ]
+    if request.includeGrooming:
+        description_parts.append("✂️ Add-on: Pre-party Grooming")
+    if request.includePhotography:
+        description_parts.append("📸 Add-on: Pet Photography")
+    if request.specialRequests:
+        description_parts.append(f"📝 Special Requests: {request.specialRequests}")
+    
     ticket = {
         "ticket_id": ticket_id,
         "pillar": "celebrate",
         "category": "party_planning",
         "status": "open",
-        "priority": "medium",
-        "title": f"Party Planning: {request.petName}'s {request.occasion}",
-        "description": f"Party request for {request.petName} ({request.petType}) - {request.occasion} on {request.date}",
+        "priority": "high" if request.budget in ["premium", "luxury"] else "medium",
+        "title": f"🎂 {request.petName}'s {request.occasion.replace('-', ' ').title()}",
+        "description": "\n".join(description_parts),
         "member": {
             "name": request.user_name,
-            "email": request.user_email
+            "email": request.user_email,
+            "pet_name": request.petName
         },
         "party_request_id": request_id,
         "source": "party_wizard",
-        "created_at": get_utc_timestamp(),
-        "updated_at": get_utc_timestamp()
+        "channel": "web",
+        "tags": ["party", request.occasion, request.budget],
+        "created_at": timestamp,
+        "updated_at": timestamp
     }
     await db.service_desk_tickets.insert_one(ticket)
     
-    logger.info(f"Party request {request_id} created with ticket {ticket_id}")
+    # 3. Create Admin Notification
+    admin_notification = {
+        "id": f"NOTIF-{secrets.token_hex(4).upper()}",
+        "type": "party_request",
+        "title": f"🎉 New Party Request: {request.petName}'s {request.occasion}",
+        "message": f"Party planning request from {request.user_name or 'Guest'} for {request.date}",
+        "priority": "high",
+        "ticket_id": ticket_id,
+        "request_id": request_id,
+        "read": False,
+        "created_at": timestamp
+    }
+    await db.admin_notifications.insert_one(admin_notification)
+    
+    # 4. Create Member Notification (if email provided)
+    if request.user_email:
+        member_notification = {
+            "id": f"MNOTIF-{secrets.token_hex(4).upper()}",
+            "user_email": request.user_email,
+            "type": "party_confirmation",
+            "title": f"🎂 {request.petName}'s Party is Being Planned!",
+            "message": f"We received your party request for {request.date}. Our Celebrate Concierge® will contact you within 2 hours!",
+            "ticket_id": ticket_id,
+            "request_id": request_id,
+            "read": False,
+            "created_at": timestamp
+        }
+        await db.member_notifications.insert_one(member_notification)
+    
+    logger.info(f"🎉 Party request {request_id} created | Ticket: {ticket_id} | Pet: {request.petName}")
     
     return {
         "success": True,
         "request_id": request_id,
         "ticket_id": ticket_id,
-        "message": "Party planning request created! Our Celebrate Concierge will contact you soon."
+        "message": f"🎉 Party planning request created for {request.petName}! Our Celebrate Concierge® will contact you within 2 hours."
     }
 
 @api_router.get("/celebrate/party-requests")
@@ -13794,7 +13850,7 @@ async def get_party_requests(
     status: Optional[str] = None,
     limit: int = 20
 ):
-    """Get party planning requests"""
+    """Get party planning requests - sorted newest first"""
     query = {}
     if status:
         query["status"] = status
