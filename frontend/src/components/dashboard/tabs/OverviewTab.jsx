@@ -49,7 +49,21 @@ const OverviewTab = ({
       {/* PET SELECTOR - Show if multiple pets */}
       {pets.length > 1 && (
         <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-200">
-          <p className="text-xs text-purple-600 font-medium mb-2">VIEWING DASHBOARD FOR</p>
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-xs text-purple-600 font-medium">VIEWING DASHBOARD FOR</p>
+            {currentPet && (
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => navigate(`/pet/${currentPet.id}`)}
+                className="text-purple-600 hover:text-purple-700 hover:bg-purple-100 text-xs h-7"
+                data-testid="go-to-pet-soul-btn"
+              >
+                <Sparkles className="w-3 h-3 mr-1" />
+                Go to {currentPet.name}'s Soul Journey →
+              </Button>
+            )}
+          </div>
           <div className="flex gap-2 overflow-x-auto pb-2">
             {pets.map((pet) => (
               <button
@@ -60,12 +74,38 @@ const OverviewTab = ({
                     ? 'bg-purple-600 text-white shadow-md' 
                     : 'bg-white border border-gray-200 text-gray-700 hover:border-purple-300'
                 }`}
+                data-testid={`pet-selector-${pet.name?.toLowerCase()}`}
               >
                 <span className="text-lg">{pet.species === 'cat' ? '🐱' : '🐕'}</span>
                 <span className="font-medium">{pet.name}</span>
                 {pet.overall_score >= 80 && <span className="text-xs">⭐</span>}
               </button>
             ))}
+          </div>
+        </div>
+      )}
+      
+      {/* SINGLE PET - Show pet soul journey link */}
+      {pets.length === 1 && currentPet && (
+        <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-200">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="text-2xl">{currentPet.species === 'cat' ? '🐱' : '🐕'}</span>
+              <div>
+                <p className="font-semibold text-gray-900">{currentPet.name}'s Dashboard</p>
+                <p className="text-xs text-gray-500">{currentPet.breed || 'Your beloved pet'}</p>
+              </div>
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => navigate(`/pet/${currentPet.id}`)}
+              className="text-purple-600 border-purple-300 hover:bg-purple-100"
+              data-testid="single-pet-soul-btn"
+            >
+              <Sparkles className="w-4 h-4 mr-1.5" />
+              Open Soul Journey
+            </Button>
           </div>
         </div>
       )}
