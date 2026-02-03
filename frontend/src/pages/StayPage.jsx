@@ -501,9 +501,6 @@ const StayPage = () => {
             <ConversationalEntry 
               pillar="stay"
               petName={userPets[0]?.name}
-              onGoalSelect={(goal, message) => {
-                navigate(`/mira?context=stay_${goal.id}&preset=${encodeURIComponent(message)}`);
-              }}
             />
             <QuickWinTip
               pillar="stay"
