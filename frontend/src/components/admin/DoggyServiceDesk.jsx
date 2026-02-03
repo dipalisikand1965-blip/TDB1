@@ -193,6 +193,21 @@ const DoggyServiceDesk = ({ authHeaders }) => {
   const [activeNav, setActiveNav] = useState('tickets');
   const [ticketsExpanded, setTicketsExpanded] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileView, setMobileView] = useState('list'); // 'sidebar', 'list', 'detail'
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Check for mobile screen
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+      if (window.innerWidth < 768) {
+        setSidebarCollapsed(true);
+      }
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
   
   // View state
   const [viewMode, setViewMode] = useState('list');
