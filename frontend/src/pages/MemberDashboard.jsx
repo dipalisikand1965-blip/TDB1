@@ -899,27 +899,27 @@ const MemberDashboard = () => {
           </Card>
         )}
 
-        {/* Header */}
+        {/* Header - Shows Pet Parent Name + All Pets */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg">
-              {currentPet ? (
-                <PetAvatar pet={currentPet} size="md" />
-              ) : (
-                <User className="w-7 h-7 text-white" />
-              )}
+              <User className="w-7 h-7 text-white" />
             </div>
             <div>
               <h1 className="text-xl md:text-2xl font-bold text-gray-900">
-                {currentPet ? `${currentPet.name}'s Dashboard` : `Welcome back, ${user.name?.split(' ')[0] || 'Pet Parent'}!`}
+                {user.name?.split(' ')[0] || 'Pet Parent'}&apos;s Dashboard
               </h1>
-              <div className="flex items-center gap-2 mt-1">
+              {/* Show all pets names */}
+              {pets.length > 0 && (
+                <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                  <PawPrint className="w-4 h-4 text-purple-500" />
+                  <span className="text-sm text-gray-600">
+                    {pets.map(p => p.name).join(', ')}
+                  </span>
+                </div>
+              )}
+              <div className="flex items-center gap-2 mt-1.5">
                 <Badge className="bg-purple-100 text-purple-700 text-xs">Pet Pass Active</Badge>
-                {currentPet && (
-                  <Badge variant="outline" className="text-xs bg-white">
-                    {currentPet.breed || currentPet.species || 'Pet'}
-                  </Badge>
-                )}
                 {user.loyalty_points > 0 && (
                   <Badge 
                     variant="outline" 
@@ -928,6 +928,22 @@ const MemberDashboard = () => {
                   >
                     <Gift className="w-3 h-3 mr-1" />
                     {user.loyalty_points} Paw Points
+                  </Badge>
+                )}
+              </div>
+            </div>
+          </div>
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => { logout(); navigate('/'); }}
+            className="text-red-500 hover:text-red-700 hover:bg-red-50 border-red-200"
+            data-testid="signout-btn"
+          >
+            <LogOut className="w-4 h-4 mr-2" />
+            Sign Out
+          </Button>
+        </div>
                   </Badge>
                 )}
               </div>
