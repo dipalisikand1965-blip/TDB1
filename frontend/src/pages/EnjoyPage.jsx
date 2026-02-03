@@ -586,7 +586,7 @@ const EnjoyPage = () => {
                   <div className="absolute -bottom-1 -right-1 bg-green-500 text-white text-[8px] sm:text-xs px-1 rounded">After</div>
                 </div>
               </div>
-              <p className="text-xs sm:text-sm text-gray-700 mb-2 sm:mb-3 line-clamp-3">"We found the perfect trail for Bruno — now our weekend hikes are the highlight of his week!"</p>
+              <p className="text-xs sm:text-sm text-gray-700 mb-2 sm:mb-3 line-clamp-3">&quot;We found the perfect trail for Bruno — now our weekend hikes are the highlight of his week!&quot;</p>
               <div className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs text-rose-600">
                 <Mountain className="w-3 h-3" />
                 <span>Couch Potato → Trail Blazer</span>
