@@ -7,9 +7,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, Sparkles, ChevronRight, Target, Scale, Zap, Heart, Baby, Award, ArrowRight, Plane, Home, Hotel, Utensils, Cake, Music, GraduationCap, Scissors, Stethoscope, MapPin, Calendar, Gift, Users, Dog, TreePine, Building, PartyPopper } from 'lucide-react';
+import { MessageCircle, Sparkles, ChevronRight, Target, Scale, Zap, Heart, Baby, Award, ArrowRight, Plane, Home, Hotel, Utensils, Cake, Music, GraduationCap, Scissors, Stethoscope, MapPin, Calendar, Gift, Users, Dog, TreePine, Building, PartyPopper, Bell, CheckCircle, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from '../hooks/use-toast';
+import { Button } from './ui/button';
 
 // PILLAR-SPECIFIC GOALS - Each pillar has its own relevant options
 const PILLAR_GOALS = {
