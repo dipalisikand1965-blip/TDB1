@@ -224,6 +224,9 @@ const DoggyServiceDesk = ({ authHeaders }) => {
   const [showQuoteBuilder, setShowQuoteBuilder] = useState(false);
   const [partyRequestData, setPartyRequestData] = useState(null);
   
+  // Mobile filter sheet
+  const [showMobileFilters, setShowMobileFilters] = useState(false);
+  
   // Bulk Selection
   const [selectedTicketIds, setSelectedTicketIds] = useState([]);
   const [showBulkActions, setShowBulkActions] = useState(false);
