@@ -1928,8 +1928,8 @@ const UnifiedPetPage = () => {
                 petId={petId} 
                 petName={safePet.name} 
                 onMilestoneAdd={() => {
-                  // Refresh pet data after milestone added
-                  fetchPet();
+                  // Refresh page after milestone added
+                  window.location.reload();
                 }} 
               />
             </Card>
