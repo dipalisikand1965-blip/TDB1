@@ -24,6 +24,8 @@ import SEOHead from '../components/SEOHead';
 import MiraChatWidget from '../components/MiraChatWidget';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import OccasionBoxBuilder from '../components/OccasionBoxBuilder';
+import PartyPlanningWizard from '../components/PartyPlanningWizard';
+import PawmeterDisplay, { PawmeterBadge } from '../components/PawmeterDisplay';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
@@ -43,6 +45,7 @@ const CelebratePage = () => {
   const [loading, setLoading] = useState(true);
   const [showBoxBuilder, setShowBoxBuilder] = useState(false);
   const [boxOccasion, setBoxOccasion] = useState('birthday');
+  const [showPartyWizard, setShowPartyWizard] = useState(false);
   const [showConciergeModal, setShowConciergeModal] = useState(false);
   const [conciergeSubmitting, setConciergeSubmitting] = useState(false);
   const [userPets, setUserPets] = useState([]);
