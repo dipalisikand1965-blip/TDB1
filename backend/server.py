@@ -14109,6 +14109,10 @@ set_user_tickets_db(db)  # Initialize User Tickets with database
 app.include_router(export_router)  # Export at /api/admin/export/*
 set_export_db(db)  # Initialize Export with database
 
+# Source Code Download Routes (Admin Only)
+app.include_router(source_download_router)  # Source download at /api/admin/download-source
+set_source_download_admin(verify_admin, {"username": ADMIN_USERNAME, "password": ADMIN_PASSWORD})
+
 # Concierge Command Center
 app.include_router(concierge_command_router)  # Command Center at /api/concierge/*
 app.include_router(health_vault_router)  # Health Vault at /api/health-vault/*
