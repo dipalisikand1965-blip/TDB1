@@ -218,21 +218,21 @@ const Home = () => {
             </p>
           </div>
 
-          {/* Visual Flow */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mb-16">
+          {/* Visual Flow - Better mobile layout */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mb-16 px-2">
             {[
-              { icon: <PawPrint className="w-8 h-8" />, title: 'Your Pet', desc: 'Start with who they are', color: 'from-pink-500 to-rose-500' },
-              { icon: <MessageCircle className="w-8 h-8" />, title: 'Interactions', desc: 'Orders, chats, bookings', color: 'from-purple-500 to-indigo-500' },
-              { icon: <Brain className="w-8 h-8" />, title: 'Memory', desc: 'We learn & remember', color: 'from-blue-500 to-cyan-500' },
-              { icon: <Heart className="w-8 h-8" />, title: 'Better Care', desc: 'Personalized everything', color: 'from-orange-500 to-amber-500' }
+              { icon: <PawPrint className="w-6 h-6 sm:w-8 sm:h-8" />, title: 'Your Pet', desc: 'Start with who they are', color: 'from-pink-500 to-rose-500' },
+              { icon: <MessageCircle className="w-6 h-6 sm:w-8 sm:h-8" />, title: 'Interactions', desc: 'Orders, chats, bookings', color: 'from-purple-500 to-indigo-500' },
+              { icon: <Brain className="w-6 h-6 sm:w-8 sm:h-8" />, title: 'Memory', desc: 'We learn & remember', color: 'from-blue-500 to-cyan-500' },
+              { icon: <Heart className="w-6 h-6 sm:w-8 sm:h-8" />, title: 'Better Care', desc: 'Personalized everything', color: 'from-orange-500 to-amber-500' }
             ].map((step, idx) => (
               <div key={idx} className="relative">
-                <Card className="p-6 text-center h-full hover:shadow-xl transition-shadow bg-white">
-                  <div className={`w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br ${step.color} flex items-center justify-center text-white`}>
+                <Card className="p-4 sm:p-6 text-center h-full hover:shadow-xl transition-shadow bg-white">
+                  <div className={`w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 rounded-xl sm:rounded-2xl bg-gradient-to-br ${step.color} flex items-center justify-center text-white`}>
                     {step.icon}
                   </div>
-                  <h3 className="font-bold text-lg text-gray-900 mb-2">{step.title}</h3>
-                  <p className="text-sm text-gray-500">{step.desc}</p>
+                  <h3 className="font-bold text-sm sm:text-lg text-gray-900 mb-1 sm:mb-2">{step.title}</h3>
+                  <p className="text-xs sm:text-sm text-gray-500 leading-tight">{step.desc}</p>
                 </Card>
                 {idx < 3 && (
                   <ArrowRight className="hidden md:block absolute top-1/2 -right-3 w-6 h-6 text-gray-300 transform -translate-y-1/2" />
@@ -242,11 +242,11 @@ const Home = () => {
           </div>
 
           {/* Soul Pillars Grid - What Pet Soul™ Tracks */}
-          <Card className="p-8 bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-900 text-white">
-            <div className="grid md:grid-cols-2 gap-8 items-center">
+          <Card className="p-4 sm:p-8 bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-900 text-white mx-2 sm:mx-0">
+            <div className="grid md:grid-cols-2 gap-6 sm:gap-8 items-center">
               <div>
-                <h3 className="text-2xl font-bold mb-4">What Gets Smarter Over Time</h3>
-                <ul className="space-y-3">
+                <h3 className="text-xl sm:text-2xl font-bold mb-4">What Gets Smarter Over Time</h3>
+                <ul className="space-y-2 sm:space-y-3">
                   {[
                     'Dietary preferences & allergies',
                     'Behavioral patterns & comfort zones',
