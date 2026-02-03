@@ -5851,6 +5851,8 @@ async def get_public_products(
                     "shopify_id": p.get("shopify_id"),
                     "sku": p.get("sku"),
                     "is_customizable": p.get("is_customizable", False),
+                    # Include Pawmeter scores for seamless experience
+                    "pawmeter": p.get("pawmeter"),
                 }
                 products.append(adapted)
     except Exception as e:
