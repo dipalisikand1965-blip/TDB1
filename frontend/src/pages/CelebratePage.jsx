@@ -433,20 +433,23 @@ const CelebratePage = () => {
               "Ceremony coordination"
             ]}
           />
+          </div>
           
-          <ConciergeExperienceCard
-            pillar="celebrate"
-            title="Milestone Moments®"
-            description="Professional documentation of your pet's special milestones - first birthday, senior celebration, etc."
-            icon="📸"
-            gradient="from-indigo-500 to-purple-500"
-            highlights={[
-              "Professional photography session",
-              "Custom milestone props",
-              "Digital album creation",
-              "Social media-ready photos"
-            ]}
-          />
+          <div className="animate-fade-in-up" style={{ animationDelay: '500ms' }}>
+            <ConciergeExperienceCard
+              pillar="celebrate"
+              title="Milestone Moments®"
+              description="Professional documentation of your pet's special milestones - first birthday, senior celebration, etc."
+              icon="📸"
+              gradient="from-indigo-500 to-purple-500"
+              highlights={[
+                "Professional photography session",
+                "Custom milestone props",
+                "Digital album creation",
+                "Social media-ready photos"
+              ]}
+            />
+          </div>
         </div>
       </div>
 
