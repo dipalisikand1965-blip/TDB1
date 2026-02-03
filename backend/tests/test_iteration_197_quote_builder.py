@@ -349,7 +349,7 @@ class TestQuoteBuilderAPI:
             {"items": [{"unit_price": 1000, "quantity": 1}], "discount": 0, "expected": 1000},
             {"items": [{"unit_price": 1000, "quantity": 1}], "discount": 10, "expected": 900},
             {"items": [{"unit_price": 1000, "quantity": 2}], "discount": 25, "expected": 1500},
-            {"items": [{"unit_price": 500, "quantity": 3}, {"unit_price": 200, "quantity": 5}], "discount": 15, "expected": 2125 * 0.85},
+            {"items": [{"unit_price": 500, "quantity": 3}, {"unit_price": 200, "quantity": 5}], "discount": 15, "expected": 2500 * 0.85},  # (500*3 + 200*5) * 0.85
         ]
         
         for i, tc in enumerate(test_cases):
