@@ -1365,6 +1365,14 @@ const UnifiedPetPage = () => {
                   <Badge className="mt-3 bg-white/20 text-white border-none">
                     {tier?.name || 'Soul Seeker'}
                   </Badge>
+                  <button
+                    onClick={() => setShowSoulExplainer(true)}
+                    className="mt-3 flex items-center gap-1 text-white/80 hover:text-white text-sm mx-auto transition-colors"
+                    data-testid="what-is-pet-soul-link"
+                  >
+                    <Info className="w-4 h-4" />
+                    What is Pet Soul™?
+                  </button>
                 </div>
               </Card>
               
