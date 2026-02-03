@@ -1517,20 +1517,40 @@ const DoggyServiceDesk = ({ authHeaders }) => {
     if (!selectedTicket || selectedTicketIds.length === 0) return;
     
     try {
-      await fetch(`${getApiUrl()}/api/tickets/merge`, {
+      const response = await fetch(`${getApiUrl()}/api/tickets/merge`, {
         method: 'POST',
         headers: { ...authHeaders, 'Content-Type': 'application/json' },
         body: JSON.stringify({
           primary_ticket_id: selectedTicket.ticket_id,
-          secondary_ticket_ids: selectedTicketIds.filter(id => id !== selectedTicket.ticket_id)
+          merge_ticket_ids: selectedTicketIds.filter(id => id !== selectedTicket.ticket_id)
         })
       });
+      
+      if (response.ok) {
+        const data = await response.json();
+        toast({
+          title: 'Tickets Merged',
+          description: data.message || `Successfully merged ${selectedTicketIds.length - 1} tickets`
+        });
+      } else {
+        const error = await response.json();
+        toast({
+          title: 'Merge Failed',
+          description: error.detail || 'Failed to merge tickets',
+          variant: 'destructive'
+        });
+      }
       
       setShowMergeModal(false);
       setSelectedTicketIds([]);
       await fetchAllTickets();
     } catch (err) {
       console.error('Merge error:', err);
+      toast({
+        title: 'Error',
+        description: 'Failed to merge tickets',
+        variant: 'destructive'
+      });
     }
   };
 
