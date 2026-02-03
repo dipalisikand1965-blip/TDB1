@@ -1515,7 +1515,16 @@ const DoggyServiceDesk = ({ authHeaders }) => {
   // ==================== TICKET MERGING ====================
   
   const mergeTickets = async () => {
-    if (!selectedTicket || selectedTicketIds.length === 0) return;
+    // Need at least 2 tickets selected (1 primary + 1 to merge)
+    const ticketsToMerge = selectedTicketIds.filter(id => id !== selectedTicket?.ticket_id);
+    if (!selectedTicket || ticketsToMerge.length === 0) {
+      toast({
+        title: 'Cannot Merge',
+        description: 'Please select at least 2 tickets to merge',
+        variant: 'destructive'
+      });
+      return;
+    }
     
     try {
       const response = await fetch(`${getApiUrl()}/api/tickets/merge`, {
@@ -1523,16 +1532,19 @@ const DoggyServiceDesk = ({ authHeaders }) => {
         headers: { ...authHeaders, 'Content-Type': 'application/json' },
         body: JSON.stringify({
           primary_ticket_id: selectedTicket.ticket_id,
-          merge_ticket_ids: selectedTicketIds.filter(id => id !== selectedTicket.ticket_id)
+          merge_ticket_ids: ticketsToMerge
         })
       });
       
       if (response.ok) {
         const data = await response.json();
         toast({
-          title: 'Tickets Merged',
-          description: data.message || `Successfully merged ${selectedTicketIds.length - 1} tickets`
+          title: 'Tickets Merged Successfully',
+          description: data.message || `Merged ${ticketsToMerge.length} tickets into ${selectedTicket.ticket_id}`
         });
+        setShowMergeModal(false);
+        setSelectedTicketIds([]);
+        await fetchAllTickets();
       } else {
         const error = await response.json();
         toast({
@@ -1541,15 +1553,11 @@ const DoggyServiceDesk = ({ authHeaders }) => {
           variant: 'destructive'
         });
       }
-      
-      setShowMergeModal(false);
-      setSelectedTicketIds([]);
-      await fetchAllTickets();
     } catch (err) {
       console.error('Merge error:', err);
       toast({
         title: 'Error',
-        description: 'Failed to merge tickets',
+        description: 'Network error - please try again',
         variant: 'destructive'
       });
     }
