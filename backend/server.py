@@ -2907,7 +2907,7 @@ CRITICAL INSTRUCTIONS:
 
     except Exception as e:
         logger.error(f"LLM failed: {e}")
-        return {"response": "I apologize, but I'm having a moment of pause. Could you please repeat that?", "session_id": session_id}
+        return {"response": "Let me try that again - what would you like help with?", "session_id": session_id}
 
 
 @api_router.post("/custom-cakes/request")
