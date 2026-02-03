@@ -5245,8 +5245,8 @@ const DoggyServiceDesk = ({ authHeaders }) => {
       
       {/* ==================== MERGE TICKETS MODAL ==================== */}
       {showMergeModal && selectedTicket && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowMergeModal(false)}>
-          <Card className="w-[500px] bg-white shadow-2xl" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowMergeModal(false)}>
+          <Card className="w-full max-w-[500px] bg-white shadow-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-semibold text-lg">Merge Tickets</h3>
