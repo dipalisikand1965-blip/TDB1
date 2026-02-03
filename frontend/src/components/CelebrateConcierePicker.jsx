@@ -322,6 +322,20 @@ const CelebrateConcierePicker = ({ category = 'cakes', onClose }) => {
           Don't need planning help? Just scroll down to shop! 🛒
         </p>
       </div>
+      
+      {/* Party Planning Wizard Modal */}
+      {showPartyWizard && (
+        <PartyPlanningWizard 
+          onClose={() => setShowPartyWizard(false)}
+          onComplete={(data) => {
+            toast({
+              title: '🎉 Party plan submitted!',
+              description: 'Our concierge will be in touch shortly.'
+            });
+            setShowPartyWizard(false);
+          }}
+        />
+      )}
     </div>
   );
 };
