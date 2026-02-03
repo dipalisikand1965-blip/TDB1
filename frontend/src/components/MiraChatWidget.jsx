@@ -787,15 +787,39 @@ const MiraChatWidget = ({
         historyLength: historyMessages.length 
       });
       
-      const response = await fetch(`${getApiUrl()}/api/mira/chat`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { 'Authorization': `Bearer ${token}` })
-        },
-        body: JSON.stringify(requestBody),
-        signal: controller.signal
-      });
+      // Retry logic - try up to 2 times on failure
+      let response;
+      let lastError;
+      for (let attempt = 1; attempt <= 2; attempt++) {
+        try {
+          response = await fetch(`${getApiUrl()}/api/mira/chat`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              ...(token && { 'Authorization': `Bearer ${token}` })
+            },
+            body: JSON.stringify(requestBody),
+            signal: controller.signal
+          });
+          
+          if (response.ok) break; // Success, exit retry loop
+          
+          // On 5xx errors, retry after a short delay
+          if (response.status >= 500 && attempt < 2) {
+            console.log(`[Mira] Server error ${response.status}, retrying (attempt ${attempt}/2)...`);
+            await new Promise(r => setTimeout(r, 1000)); // Wait 1 second before retry
+            continue;
+          }
+        } catch (fetchError) {
+          lastError = fetchError;
+          if (attempt < 2 && fetchError.name !== 'AbortError') {
+            console.log(`[Mira] Fetch error, retrying (attempt ${attempt}/2)...`, fetchError.message);
+            await new Promise(r => setTimeout(r, 1000));
+            continue;
+          }
+          throw fetchError;
+        }
+      }
       
       clearTimeout(timeoutId);
       console.log('[Mira] Response status:', response.status);
