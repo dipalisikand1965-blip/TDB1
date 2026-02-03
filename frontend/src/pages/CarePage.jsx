@@ -667,7 +667,7 @@ const CarePage = () => {
           
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Story 1: Grooming Transformation */}
-            <div className="bg-gradient-to-br from-pink-50 to-rose-50 rounded-2xl p-5 border border-pink-100 hover:shadow-lg transition-all">
+            <div className="animate-fade-in-up stagger-1 bg-gradient-to-br from-pink-50 to-rose-50 rounded-2xl p-5 border border-pink-100 hover:shadow-lg hover:scale-[1.02] transition-all duration-300">
               <div className="flex gap-3 mb-4">
                 <div className="text-center">
                   <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-white shadow-md mb-1">
@@ -693,7 +693,7 @@ const CarePage = () => {
             </div>
 
             {/* Story 2: Vet Care */}
-            <div className="bg-gradient-to-br from-rose-50 to-red-50 rounded-2xl p-5 border border-rose-100 hover:shadow-lg transition-all">
+            <div className="animate-fade-in-up stagger-2 bg-gradient-to-br from-rose-50 to-red-50 rounded-2xl p-5 border border-rose-100 hover:shadow-lg hover:scale-[1.02] transition-all duration-300">
               <div className="flex gap-3 mb-4">
                 <div className="text-center">
                   <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-white shadow-md mb-1">
@@ -719,7 +719,7 @@ const CarePage = () => {
             </div>
 
             {/* Story 3: Senior Care */}
-            <div className="bg-gradient-to-br from-teal-50 to-green-50 rounded-2xl p-5 border border-teal-100 hover:shadow-lg transition-all">
+            <div className="animate-fade-in-up stagger-3 bg-gradient-to-br from-teal-50 to-green-50 rounded-2xl p-5 border border-teal-100 hover:shadow-lg hover:scale-[1.02] transition-all duration-300">
               <div className="flex gap-3 mb-4">
                 <div className="text-center">
                   <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-white shadow-md mb-1">
@@ -745,7 +745,7 @@ const CarePage = () => {
             </div>
 
             {/* Story 4: Training Success */}
-            <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-2xl p-5 border border-purple-100 hover:shadow-lg transition-all">
+            <div className="animate-fade-in-up stagger-4 bg-gradient-to-br from-purple-50 to-indigo-50 rounded-2xl p-5 border border-purple-100 hover:shadow-lg hover:scale-[1.02] transition-all duration-300">
               <div className="flex gap-3 mb-4">
                 <div className="text-center">
                   <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-white shadow-md mb-1">
