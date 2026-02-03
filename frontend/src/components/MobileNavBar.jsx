@@ -82,7 +82,7 @@ const MobileNavBar = () => {
       label: 'My Pet', 
       // Members go to pet profile, non-members go to membership/onboarding
       path: isAuthenticated ? '/dashboard?tab=pets' : '/membership',
-      requiresAuth: false // We handle routing ourselves
+      isPillarAware: true // This icon changes color per pillar
     },
   ];
   
