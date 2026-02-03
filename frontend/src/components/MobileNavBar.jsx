@@ -112,6 +112,12 @@ const MobileNavBar = () => {
       return;
     }
     
+    if (item.opensSidebar) {
+      // Open the pet sidebar menu
+      window.dispatchEvent(new CustomEvent('openPetSidebar'));
+      return;
+    }
+    
     navigate(item.path);
   };
   
