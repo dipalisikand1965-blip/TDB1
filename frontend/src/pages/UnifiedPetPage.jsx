@@ -295,8 +295,10 @@ const UnifiedPetPage = () => {
   const [editForm, setEditForm] = useState({});
   const [saving, setSaving] = useState(false);
   
-  // Photo upload
+  // Photo upload and gallery
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [galleryPhotos, setGalleryPhotos] = useState([]);
+  const [selectedGalleryPhoto, setSelectedGalleryPhoto] = useState(null); // For lightbox
   const fileInputRef = React.useRef();
   
   // Inline questions
