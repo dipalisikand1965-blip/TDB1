@@ -809,6 +809,96 @@ const MemberDashboard = () => {
       />
       
       <div className="max-w-6xl mx-auto p-4 md:p-6 pb-24 md:pb-6">
+        {/* 🌟 PROMINENT SOUL SCORE SECTION */}
+        {pets.length > 0 && (
+          <Card className="mb-6 overflow-hidden bg-gradient-to-br from-purple-600 via-indigo-600 to-purple-700 text-white border-none shadow-xl">
+            <div className="p-6">
+              <div className="flex flex-col md:flex-row items-center gap-6">
+                {/* Pet Selector & Soul Score Arc */}
+                <div className="flex flex-col items-center">
+                  {/* Multi-Pet Selector */}
+                  {pets.length > 1 && (
+                    <div className="flex gap-2 mb-4">
+                      {pets.map((pet) => (
+                        <button
+                          key={pet.id}
+                          onClick={() => setSelectedPetId(pet.id)}
+                          className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all ${
+                            selectedPetId === pet.id || (!selectedPetId && pet.id === pets[0]?.id)
+                              ? 'bg-white text-purple-700 shadow-lg scale-105'
+                              : 'bg-white/20 text-white/90 hover:bg-white/30'
+                          }`}
+                        >
+                          {pet.name}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                  
+                  {/* Animated Soul Score Arc */}
+                  <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4">
+                    <SoulScoreArc 
+                      score={currentPet?.overall_score || 0}
+                      petId={currentPet?.id}
+                      petName={currentPet?.name}
+                      size="lg"
+                      showLabel={false}
+                      showCTA={false}
+                      animated={true}
+                    />
+                  </div>
+                </div>
+                
+                {/* Soul Journey Info */}
+                <div className="flex-1 text-center md:text-left">
+                  <div className="flex items-center gap-2 justify-center md:justify-start mb-2">
+                    <Brain className="w-6 h-6 text-yellow-300" />
+                    <h2 className="text-2xl font-bold">{currentPet?.name}&apos;s Soul Journey</h2>
+                  </div>
+                  <p className="text-white/80 mb-4 max-w-md">
+                    {currentPet?.overall_score >= 80 
+                      ? `Amazing! We know ${currentPet?.name} really well. Keep interacting to maintain this bond!`
+                      : currentPet?.overall_score >= 50
+                        ? `Great progress! Answer more questions to help Mira give better recommendations.`
+                        : `Help us understand ${currentPet?.name} better. The more we know, the better we can serve you!`
+                    }
+                  </p>
+                  
+                  {/* Progress Stats */}
+                  <div className="flex gap-4 justify-center md:justify-start mb-4">
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-yellow-300">{Math.round(currentPet?.overall_score || 0)}%</p>
+                      <p className="text-xs text-white/70">Soul Score</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-emerald-300">
+                        {Object.keys(currentPet?.doggy_soul_answers || {}).length}
+                      </p>
+                      <p className="text-xs text-white/70">Questions</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-pink-300">
+                        {currentPet?.overall_score >= 80 ? '🏆' : currentPet?.overall_score >= 50 ? '⭐' : '🌱'}
+                      </p>
+                      <p className="text-xs text-white/70">Status</p>
+                    </div>
+                  </div>
+                  
+                  {/* CTA Button */}
+                  <Button 
+                    onClick={() => navigate(`/pet/${currentPet?.id}?tab=personality`)}
+                    className="bg-white text-purple-700 hover:bg-white/90 font-semibold shadow-lg"
+                  >
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    {currentPet?.overall_score < 30 ? 'Start Soul Journey' : 'Continue Soul Journey'}
+                    <ArrowRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </Card>
+        )}
+
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
