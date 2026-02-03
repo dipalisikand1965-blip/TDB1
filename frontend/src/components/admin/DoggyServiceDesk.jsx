@@ -2051,6 +2051,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                   { id: 'open', label: 'Open', count: stats.open, icon: AlertCircle },
                   { id: 'in_progress', label: 'In Progress', count: stats.in_progress, icon: Loader2 },
                   { id: 'on_hold', label: 'On Hold', count: stats.on_hold, icon: Clock },
+                  { id: 'blocked', label: 'Blocked', count: stats.blocked, icon: Ban },
                   { id: 'resolved', label: 'Resolved', count: stats.resolved, icon: CheckCircle },
                   { id: 'unassigned', label: 'Unassigned', count: stats.unassigned, icon: User }
                 ].map(item => (
