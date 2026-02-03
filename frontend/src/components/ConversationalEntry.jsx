@@ -117,6 +117,9 @@ const ConversationalEntry = ({
   const [hoveredGoal, setHoveredGoal] = useState(null);
   const [isTyping, setIsTyping] = useState(true);
   const [displayText, setDisplayText] = useState('');
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [submittedGoal, setSubmittedGoal] = useState(null);
+  const [ticketId, setTicketId] = useState(null);
   
   // Get pillar-specific config
   const pillarConfig = PILLAR_GOALS[pillar] || PILLAR_GOALS.fit;
