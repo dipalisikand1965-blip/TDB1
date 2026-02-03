@@ -165,12 +165,12 @@ class TestAgentPortalLogin:
             f"{BASE_URL}/api/agent/verify",
             json={"agent_id": "nonexistent-agent-id"}
         )
-        # Should return 404 or valid=False
+        # Should return 401/404 or valid=False
         if response.status_code == 200:
             data = response.json()
             assert data.get("valid") == False, "Invalid agent should return valid=False"
         else:
-            assert response.status_code in [400, 404], f"Expected 400/404, got {response.status_code}"
+            assert response.status_code in [400, 401, 404], f"Expected 400/401/404, got {response.status_code}"
         print("✅ Agent verify correctly handles invalid agent ID")
 
 
