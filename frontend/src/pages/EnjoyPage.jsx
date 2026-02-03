@@ -650,21 +650,22 @@ const EnjoyPage = () => {
             </p>
           </div>
           
-          {/* 2x2 grid on mobile, 2 columns on desktop */}
+          {/* 2x2 grid on mobile, 2 columns on desktop with staggered animations */}
           <div className="grid grid-cols-2 md:grid-cols-2 gap-3 sm:gap-6">
             {ENJOY_EXPERIENCES.map((exp, idx) => (
-              <ConciergeExperienceCard
-                key={idx}
-                pillar="enjoy"
-                title={exp.title}
-                description={exp.description}
-                icon={exp.icon}
-                gradient={exp.gradient}
-                badge={exp.badge}
-                badgeColor={exp.badgeColor}
-                highlights={exp.highlights}
-                image={exp.image}
-              />
+              <div key={idx} className={`animate-fade-in-up stagger-${Math.min(idx + 1, 4)}`}>
+                <ConciergeExperienceCard
+                  pillar="enjoy"
+                  title={exp.title}
+                  description={exp.description}
+                  icon={exp.icon}
+                  gradient={exp.gradient}
+                  badge={exp.badge}
+                  badgeColor={exp.badgeColor}
+                  highlights={exp.highlights}
+                  image={exp.image}
+                />
+              </div>
             ))}
           </div>
           
