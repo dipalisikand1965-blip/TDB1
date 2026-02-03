@@ -1990,7 +1990,49 @@ const DoggyServiceDesk = ({ authHeaders }) => {
 
   // ==================== RENDER ====================
   return (
-    <div className="flex h-screen bg-gray-100" data-testid="doggy-service-desk">
+    <div className="flex h-screen bg-gray-100 overflow-hidden" data-testid="doggy-service-desk">
+      
+      {/* Mobile Bottom Navigation */}
+      {isMobile && (
+        <div className="fixed bottom-0 left-0 right-0 bg-slate-800 border-t border-slate-700 z-50 safe-area-pb">
+          <div className="flex items-center justify-around py-2">
+            <button
+              onClick={() => setMobileView('sidebar')}
+              className={`flex flex-col items-center p-2 rounded-lg ${mobileView === 'sidebar' ? 'text-emerald-400' : 'text-slate-400'}`}
+            >
+              <Menu className="w-5 h-5" />
+              <span className="text-[10px] mt-1">Menu</span>
+            </button>
+            <button
+              onClick={() => setMobileView('list')}
+              className={`flex flex-col items-center p-2 rounded-lg relative ${mobileView === 'list' ? 'text-emerald-400' : 'text-slate-400'}`}
+            >
+              <Inbox className="w-5 h-5" />
+              <span className="text-[10px] mt-1">Tickets</span>
+              {stats.open > 0 && (
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-[10px] rounded-full flex items-center justify-center">
+                  {stats.open > 99 ? '99+' : stats.open}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => selectedTicket && setMobileView('detail')}
+              className={`flex flex-col items-center p-2 rounded-lg ${mobileView === 'detail' ? 'text-emerald-400' : 'text-slate-400'} ${!selectedTicket ? 'opacity-50' : ''}`}
+              disabled={!selectedTicket}
+            >
+              <FileText className="w-5 h-5" />
+              <span className="text-[10px] mt-1">Detail</span>
+            </button>
+            <button
+              onClick={() => fetchAllTickets()}
+              className="flex flex-col items-center p-2 rounded-lg text-slate-400"
+            >
+              <RefreshCw className={`w-5 h-5 ${refreshing ? 'animate-spin' : ''}`} />
+              <span className="text-[10px] mt-1">Refresh</span>
+            </button>
+          </div>
+        </div>
+      )}
       
       {/* Real-time Notification Toast */}
       <TicketNotificationToast 
@@ -1999,7 +2041,14 @@ const DoggyServiceDesk = ({ authHeaders }) => {
       />
       
       {/* ==================== LEFT SIDEBAR ==================== */}
-      <div className={`bg-slate-800 text-white transition-all duration-300 flex flex-col ${sidebarCollapsed ? 'w-16' : 'w-60'}`}>
+      <div className={`
+        bg-slate-800 text-white transition-all duration-300 flex flex-col
+        ${isMobile 
+          ? `fixed inset-y-0 left-0 z-40 w-72 transform ${mobileView === 'sidebar' ? 'translate-x-0' : '-translate-x-full'}` 
+          : `${sidebarCollapsed ? 'w-16' : 'w-60'}`
+        }
+        ${isMobile ? 'pb-16' : ''}
+      `}>
         {/* Logo */}
         <div className="p-4 border-b border-slate-700">
           <div className="flex items-center gap-3">
