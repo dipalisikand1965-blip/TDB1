@@ -951,25 +951,25 @@ const MemberDashboard = () => {
                 })}
               </div>
               
-              {/* Overall Stats */}
-              <div className="mt-6 pt-4 border-t border-white/20 flex flex-wrap justify-center gap-6">
+              {/* Overall Stats - Responsive */}
+              <div className="mt-6 md:mt-8 pt-4 md:pt-6 border-t border-white/20 grid grid-cols-3 gap-4 md:gap-8 max-w-xl mx-auto">
                 <div className="text-center">
-                  <p className="text-3xl font-bold text-yellow-300">
+                  <p className="text-2xl md:text-3xl lg:text-4xl font-bold text-yellow-300">
                     {Math.round(pets.reduce((sum, p) => sum + (p.overall_score || 0), 0) / pets.length)}%
                   </p>
-                  <p className="text-xs text-white/70">Average Soul Score</p>
+                  <p className="text-[10px] md:text-xs text-white/70 mt-1">Avg Soul Score</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-3xl font-bold text-emerald-300">
+                  <p className="text-2xl md:text-3xl lg:text-4xl font-bold text-emerald-300">
                     {pets.reduce((sum, p) => sum + Object.keys(p.doggy_soul_answers || {}).length, 0)}
                   </p>
-                  <p className="text-xs text-white/70">Total Questions</p>
+                  <p className="text-[10px] md:text-xs text-white/70 mt-1">Total Questions</p>
                 </div>
                 <div className="text-center">
-                  <p className="text-3xl font-bold text-pink-300">
+                  <p className="text-2xl md:text-3xl lg:text-4xl font-bold text-pink-300">
                     {pets.filter(p => (p.overall_score || 0) >= 80).length}/{pets.length}
                   </p>
-                  <p className="text-xs text-white/70">Soul Masters</p>
+                  <p className="text-[10px] md:text-xs text-white/70 mt-1">Soul Masters</p>
                 </div>
               </div>
             </div>
@@ -977,23 +977,27 @@ const MemberDashboard = () => {
         )}
 
         {/* 3️⃣ SELECTED PET'S GAMIFICATION BANNER */}
-        <GamificationBanner 
-          pets={pets}
-          orders={orders}
-          user={user}
-          selectedPetId={selectedPetId}
-          onNavigateToPet={(petId) => navigate(`/pet/${petId}?tab=personality`)}
-          onOpenExplainer={() => {}}
-        />
+        <div className="mb-8">
+          <GamificationBanner 
+            pets={pets}
+            orders={orders}
+            user={user}
+            selectedPetId={selectedPetId}
+            onNavigateToPet={(petId) => navigate(`/pet/${petId}?tab=personality`)}
+            onOpenExplainer={() => {}}
+          />
+        </div>
         
         {/* ⚡ QUICK SCORE BOOST - Show when selected pet's score is low */}
         {currentPet && currentPet.overall_score < 75 && (
-          <QuickScoreBoost 
-            pet={currentPet} 
-            onAnswerQuestion={() => {
-              window.location.reload();
-            }}
-          />
+          <div className="mb-8">
+            <QuickScoreBoost 
+              pet={currentPet} 
+              onAnswerQuestion={() => {
+                window.location.reload();
+              }}
+            />
+          </div>
         )}
 
         {/* Main Tabs */}
