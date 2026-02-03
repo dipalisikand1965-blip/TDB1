@@ -546,86 +546,86 @@ const EnjoyPage = () => {
       </div>
 
       {/* ==================== TRANSFORMATION STORIES ==================== */}
-      <div className="py-12 bg-white">
+      <div className="py-10 sm:py-12 bg-white">
         <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center mb-8">
-            <Badge className="bg-red-100 text-red-700 mb-3">Success Stories</Badge>
-            <h2 className="text-2xl font-bold text-gray-900">Happy Tails from Our Community</h2>
-            <p className="text-gray-600">Real transformations from pet parents like you</p>
+          <div className="text-center mb-6 sm:mb-8">
+            <Badge className="bg-red-100 text-red-700 mb-2 sm:mb-3">Success Stories</Badge>
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Happy Tails from Our Community</h2>
+            <p className="text-gray-600 text-sm sm:text-base">Real transformations from pet parents like you</p>
           </div>
           
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6">
             {/* Story 1 */}
-            <div className="bg-gradient-to-br from-red-50 to-rose-50 rounded-2xl p-5 border border-red-100 hover:shadow-lg transition-all">
-              <div className="flex gap-3 mb-4">
+            <div className="animate-fade-in-up stagger-1 bg-gradient-to-br from-red-50 to-rose-50 rounded-xl sm:rounded-2xl p-3 sm:p-5 border border-red-100 hover:shadow-lg hover:scale-[1.02] transition-all duration-300">
+              <div className="flex gap-2 sm:gap-3 mb-3 sm:mb-4">
                 <div className="relative">
-                  <img src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=100&h=100&fit=crop" alt="Before" className="w-12 h-12 rounded-full object-cover border-2 border-white shadow" />
-                  <div className="absolute -bottom-1 -right-1 bg-red-500 text-white text-xs px-1 rounded">Before</div>
+                  <img src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=100&h=100&fit=crop" alt="Before" className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-white shadow" />
+                  <div className="absolute -bottom-1 -right-1 bg-red-500 text-white text-[8px] sm:text-xs px-1 rounded">Before</div>
                 </div>
                 <div className="relative">
-                  <img src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=100&h=100&fit=crop" alt="After" className="w-12 h-12 rounded-full object-cover border-2 border-green-400 shadow" />
-                  <div className="absolute -bottom-1 -right-1 bg-green-500 text-white text-xs px-1 rounded">After</div>
+                  <img src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=100&h=100&fit=crop" alt="After" className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-green-400 shadow" />
+                  <div className="absolute -bottom-1 -right-1 bg-green-500 text-white text-[8px] sm:text-xs px-1 rounded">After</div>
                 </div>
               </div>
-              <p className="text-sm text-gray-700 mb-3">"Max was terrified of other dogs. After 3 playdates organized by TDC, he now has 4 best friends!"</p>
-              <div className="flex items-center gap-2 text-xs text-red-600">
+              <p className="text-xs sm:text-sm text-gray-700 mb-2 sm:mb-3 line-clamp-3">"Max was terrified of other dogs. After 3 playdates organized by TDC, he now has 4 best friends!"</p>
+              <div className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs text-red-600">
                 <Users className="w-3 h-3" />
                 <span>Shy → Social Butterfly</span>
               </div>
             </div>
 
             {/* Story 2 */}
-            <div className="bg-gradient-to-br from-rose-50 to-pink-50 rounded-2xl p-5 border border-rose-100 hover:shadow-lg transition-all">
-              <div className="flex gap-3 mb-4">
+            <div className="animate-fade-in-up stagger-2 bg-gradient-to-br from-rose-50 to-pink-50 rounded-xl sm:rounded-2xl p-3 sm:p-5 border border-rose-100 hover:shadow-lg hover:scale-[1.02] transition-all duration-300">
+              <div className="flex gap-2 sm:gap-3 mb-3 sm:mb-4">
                 <div className="relative">
-                  <img src="https://images.unsplash.com/photo-1601758174114-e711c0cbaa69?w=100&h=100&fit=crop" alt="Before" className="w-12 h-12 rounded-full object-cover border-2 border-white shadow" />
-                  <div className="absolute -bottom-1 -right-1 bg-rose-500 text-white text-xs px-1 rounded">Before</div>
+                  <img src="https://images.unsplash.com/photo-1601758174114-e711c0cbaa69?w=100&h=100&fit=crop" alt="Before" className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-white shadow" />
+                  <div className="absolute -bottom-1 -right-1 bg-rose-500 text-white text-[8px] sm:text-xs px-1 rounded">Before</div>
                 </div>
                 <div className="relative">
-                  <img src="https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=100&h=100&fit=crop" alt="After" className="w-12 h-12 rounded-full object-cover border-2 border-green-400 shadow" />
-                  <div className="absolute -bottom-1 -right-1 bg-green-500 text-white text-xs px-1 rounded">After</div>
+                  <img src="https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=100&h=100&fit=crop" alt="After" className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-green-400 shadow" />
+                  <div className="absolute -bottom-1 -right-1 bg-green-500 text-white text-[8px] sm:text-xs px-1 rounded">After</div>
                 </div>
               </div>
-              <p className="text-sm text-gray-700 mb-3">"We found the perfect trail for Bruno — now our weekend hikes are the highlight of his week!"</p>
-              <div className="flex items-center gap-2 text-xs text-rose-600">
+              <p className="text-xs sm:text-sm text-gray-700 mb-2 sm:mb-3 line-clamp-3">"We found the perfect trail for Bruno — now our weekend hikes are the highlight of his week!"</p>
+              <div className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs text-rose-600">
                 <Mountain className="w-3 h-3" />
                 <span>Couch Potato → Trail Blazer</span>
               </div>
             </div>
 
             {/* Story 3 */}
-            <div className="bg-gradient-to-br from-pink-50 to-red-50 rounded-2xl p-5 border border-pink-100 hover:shadow-lg transition-all">
-              <div className="flex gap-3 mb-4">
+            <div className="animate-fade-in-up stagger-3 bg-gradient-to-br from-pink-50 to-red-50 rounded-xl sm:rounded-2xl p-3 sm:p-5 border border-pink-100 hover:shadow-lg hover:scale-[1.02] transition-all duration-300">
+              <div className="flex gap-2 sm:gap-3 mb-3 sm:mb-4">
                 <div className="relative">
-                  <img src="https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=100&h=100&fit=crop" alt="Before" className="w-12 h-12 rounded-full object-cover border-2 border-white shadow" />
-                  <div className="absolute -bottom-1 -right-1 bg-pink-500 text-white text-xs px-1 rounded">Before</div>
+                  <img src="https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=100&h=100&fit=crop" alt="Before" className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-white shadow" />
+                  <div className="absolute -bottom-1 -right-1 bg-pink-500 text-white text-[8px] sm:text-xs px-1 rounded">Before</div>
                 </div>
                 <div className="relative">
-                  <img src="https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?w=100&h=100&fit=crop" alt="After" className="w-12 h-12 rounded-full object-cover border-2 border-green-400 shadow" />
-                  <div className="absolute -bottom-1 -right-1 bg-green-500 text-white text-xs px-1 rounded">After</div>
+                  <img src="https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?w=100&h=100&fit=crop" alt="After" className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-green-400 shadow" />
+                  <div className="absolute -bottom-1 -right-1 bg-green-500 text-white text-[8px] sm:text-xs px-1 rounded">After</div>
                 </div>
               </div>
-              <p className="text-sm text-gray-700 mb-3">"The pet café recommendations are spot on. Luna has her own favourite corner now!"</p>
-              <div className="flex items-center gap-2 text-xs text-pink-600">
+              <p className="text-xs sm:text-sm text-gray-700 mb-2 sm:mb-3 line-clamp-3">"The pet café recommendations are spot on. Luna has her own favourite corner now!"</p>
+              <div className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs text-pink-600">
                 <Coffee className="w-3 h-3" />
                 <span>First Café Visit → Regular!</span>
               </div>
             </div>
 
             {/* Story 4 */}
-            <div className="bg-gradient-to-br from-red-50 to-rose-50 rounded-2xl p-5 border border-red-100 hover:shadow-lg transition-all">
-              <div className="flex gap-3 mb-4">
+            <div className="animate-fade-in-up stagger-4 bg-gradient-to-br from-red-50 to-rose-50 rounded-xl sm:rounded-2xl p-3 sm:p-5 border border-red-100 hover:shadow-lg hover:scale-[1.02] transition-all duration-300">
+              <div className="flex gap-2 sm:gap-3 mb-3 sm:mb-4">
                 <div className="relative">
-                  <img src="https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?w=100&h=100&fit=crop" alt="Before" className="w-12 h-12 rounded-full object-cover border-2 border-white shadow" />
-                  <div className="absolute -bottom-1 -right-1 bg-red-500 text-white text-xs px-1 rounded">Before</div>
+                  <img src="https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?w=100&h=100&fit=crop" alt="Before" className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-white shadow" />
+                  <div className="absolute -bottom-1 -right-1 bg-red-500 text-white text-[8px] sm:text-xs px-1 rounded">Before</div>
                 </div>
                 <div className="relative">
-                  <img src="https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=100&h=100&fit=crop" alt="After" className="w-12 h-12 rounded-full object-cover border-2 border-green-400 shadow" />
-                  <div className="absolute -bottom-1 -right-1 bg-green-500 text-white text-xs px-1 rounded">After</div>
+                  <img src="https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=100&h=100&fit=crop" alt="After" className="w-10 h-10 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-green-400 shadow" />
+                  <div className="absolute -bottom-1 -right-1 bg-green-500 text-white text-[8px] sm:text-xs px-1 rounded">After</div>
                 </div>
               </div>
-              <p className="text-sm text-gray-700 mb-3">"The photography workshop was amazing. Now I have gallery-worthy photos of Charlie!"</p>
-              <div className="flex items-center gap-2 text-xs text-red-600">
+              <p className="text-xs sm:text-sm text-gray-700 mb-2 sm:mb-3 line-clamp-3">"The photography workshop was amazing. Now I have gallery-worthy photos of Charlie!"</p>
+              <div className="flex items-center gap-1 sm:gap-2 text-[10px] sm:text-xs text-red-600">
                 <Camera className="w-3 h-3" />
                 <span>Blurry Snaps → Pro Shots</span>
               </div>
