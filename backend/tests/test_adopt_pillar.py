@@ -10,7 +10,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://stable-os.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://dogparty-products.preview.emergentagent.com').rstrip('/')
 
 class TestAdoptAPIs:
     """Test Adopt Pillar API endpoints"""
