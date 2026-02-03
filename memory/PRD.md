@@ -779,7 +779,7 @@ Every user action now follows the unified flow:
 
 ## Prioritized Backlog
 
-### P0 (High Priority)
+### P0 (High Priority) - COMPLETED ✅
 - [x] Fix Member Dashboard bugs (COMPLETED)
 - [x] Kit Assembly Admin Controls (COMPLETED)
 - [x] Mira Picks Admin Dashboard (COMPLETED)
@@ -790,31 +790,37 @@ Every user action now follows the unified flow:
 - [x] **Mobile Back Buttons** - Added to all pillar pages (COMPLETED Feb 2)
 - [x] **Ask Concierge Form Pre-fill** - User data auto-populates (COMPLETED Feb 2)
 - [x] **Service Request User Name** - Shows logged-in user name (COMPLETED Feb 2)
-- [ ] Implement Membership Business Model (Freemium vs Members-Only)
-- [ ] Mira AI personalization for multi-pet households
-- [ ] Product tagging overhaul with CSV import/export
+- [x] **Admin Quote Builder** - Create quotes for party requests, send payment links (COMPLETED Feb 3)
 
 ### P1 (Medium Priority)
+- [ ] **Pawmeter UI Integration** - Display scores on product/service cards
+- [ ] **Member Quote View** - UI for members to view, approve, and pay quotes
+- [ ] **Better Cross-Pillar Filters** - Advanced filtering on shop/services pages
+- [ ] Implement Membership Business Model (Freemium vs Members-Only)
+- [ ] Mira AI personalization for multi-pet households
 - [ ] "Pet Parent Magnet" features (First box free, Pet Parent Score)
 - [ ] Rewards Program finalization
 - [ ] Sticky booking form fix on desktop (post-booking state)
 - [x] Pet selector navbar header update when switching (FIXED Feb 2, 2026)
 
 ### P2 (Lower Priority)
-- [ ] Razorpay Payment Integration (awaiting keys)
+- [ ] **Natural Language Search** - Enhance site search with intent understanding
+- [ ] **UI/UX Unification** - Consistent styling across pillar pages
+- [ ] **Web Scraper for Products** - Crawl Supertails/Amazon for catalog expansion
+- [ ] Razorpay Payment Integration (test keys working, awaiting production keys)
 - [ ] WhatsApp Business Integration (awaiting approval)
 - [ ] Partner Portal development
 - [ ] Saved Kits UI in Member Dashboard
 
 ### Refactoring Tasks
-- [ ] DoggyServiceDesk.jsx (5000+ lines) needs component extraction
+- [ ] DoggyServiceDesk.jsx (5500+ lines) needs component extraction
 
 ## Known Issues
 - Dashboard page is memory-intensive and may crash Playwright screenshot tools (known issue, not blocking for users)
 - Meilisearch unavailable (non-blocking for core functionality)
 
 ## 3rd Party Integrations
-- **OpenAI GPT-4o**: Mira AI chat backend
+- **OpenAI GPT-4o**: Mira AI chat backend (via Emergent LLM Key)
 - **Resend**: Transactional emails (functional)
-- **Razorpay**: Pending (awaiting keys)
+- **Razorpay**: Test keys working, production keys pending
 - **WhatsApp**: Pending (awaiting Meta approval)
