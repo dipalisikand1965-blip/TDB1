@@ -231,6 +231,25 @@ async def get_care_types():
     return {"care_types": CARE_TYPES}
 
 
+@router.get("/services")
+async def get_care_services(
+    category: str = None,
+    status: str = "active",
+    limit: int = 50
+):
+    """Get care services from the catalog"""
+    db = get_db()
+    
+    query = {}
+    if status:
+        query["status"] = status
+    if category:
+        query["category"] = category
+    
+    services = await db.care_services.find(query, {"_id": 0}).limit(limit).to_list(limit)
+    return {"services": services, "total": len(services)}
+
+
 @router.post("/request")
 async def create_care_request(request: CareRequestCreate):
     """
