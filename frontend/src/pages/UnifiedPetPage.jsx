@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { useParams, useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Card } from '../components/ui/card';
@@ -11,7 +11,7 @@ import {
   Crown, Camera, Heart, Sparkles, Stethoscope, Syringe, Pill, 
   AlertCircle, Loader2, Check, MessageCircle, Upload, Brain, 
   CreditCard, HelpCircle, ChevronDown, ChevronUp, Home, Settings,
-  Share2, Copy, Printer, Download, FileText, Trophy
+  Share2, Copy, Printer, Download, FileText, Trophy, Info
 } from 'lucide-react';
 import { API_URL } from '../utils/api';
 import { toast } from '../hooks/use-toast';
@@ -26,6 +26,9 @@ import BreedHealthCard from '../components/BreedHealthCard';
 import BreedAutocomplete from '../components/BreedAutocomplete';
 import PetMilestoneTimeline from '../components/PetMilestoneTimeline';
 import ShareablePetCard from '../components/ShareablePetCard';
+
+// Lazy load Soul Explainer
+const SoulExplainerVideo = lazy(() => import('../components/SoulExplainerVideo'));
 
 // 14 Life Pillars - Core services of The Doggy Company
 const LIFE_PILLARS = [
