@@ -30,7 +30,7 @@ import {
   MessageCircle, History, Brain, Target, AlertTriangle, Cake,
   Dog, Cat, Scissors, Car, Home, Siren, Mic, MicOff, StopCircle,
   LayoutList, Columns3, Keyboard, Timer, Copy, ArrowRight,
-  Play, Pause, Volume2, File, Upload, Trash, Eye, Download, Wifi, WifiOff
+  Play, Pause, Volume2, File, Upload, Trash, Eye, Download, Wifi, WifiOff, Ban
 } from 'lucide-react';
 
 // ==================== PILLAR CONFIGURATION ====================
