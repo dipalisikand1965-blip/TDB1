@@ -5,6 +5,7 @@ import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
 import { Textarea } from '../ui/textarea';
 import { toast } from '../../hooks/use-toast';
+import QuoteBuilder from './QuoteBuilder';
 import {
   DropdownMenu,
   DropdownMenuContent,
