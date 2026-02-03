@@ -11,7 +11,7 @@
  * All core Mira logic (voice, ticket creation, recommendations) is preserved.
  */
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, Component } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { Button } from './ui/button';
@@ -28,6 +28,39 @@ import {
   ArrowLeft, ShoppingCart, Plus, Heart, ShoppingBag, Play
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+
+// Error boundary for safe markdown rendering
+class SafeMarkdownRenderer extends Component {
+  state = { hasError: false };
+  
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+  
+  componentDidCatch(error, info) {
+    console.warn('[Mira] Markdown rendering error:', error);
+  }
+  
+  render() {
+    if (this.state.hasError) {
+      // Fallback: render as plain text
+      return <span>{this.props.children}</span>;
+    }
+    return (
+      <ReactMarkdown
+        components={{
+          p: ({ children }) => <span className="block mb-1 last:mb-0">{children}</span>,
+          strong: ({ children }) => <strong className="font-bold">{children}</strong>,
+          ul: ({ children }) => <ul className="list-disc pl-4 my-1">{children}</ul>,
+          ol: ({ children }) => <ol className="list-decimal pl-4 my-1">{children}</ol>,
+          li: ({ children }) => <li className="mb-0.5">{children}</li>,
+        }}
+      >
+        {this.props.children}
+      </ReactMarkdown>
+    );
+  }
+}
 
 // Generate session ID for Mira conversations - PERSISTS across pillar switches
 const generateSessionId = () => {
