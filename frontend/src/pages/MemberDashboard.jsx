@@ -879,6 +879,9 @@ const MemberDashboard = () => {
             <TabsTrigger value="orders" className="rounded-lg flex-shrink-0">
               <Package className="w-4 h-4 mr-1" /> Orders
             </TabsTrigger>
+            <TabsTrigger value="quotes" className="rounded-lg flex-shrink-0">
+              <FileText className="w-4 h-4 mr-1" /> Quotes
+            </TabsTrigger>
             <TabsTrigger value="documents" className="rounded-lg flex-shrink-0">
               <Shield className="w-4 h-4 mr-1" /> Documents
             </TabsTrigger>
