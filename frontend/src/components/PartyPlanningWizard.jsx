@@ -119,11 +119,13 @@ const PartyPlanningWizard = ({ onClose, onComplete }) => {
   const [pets, setPets] = useState([]);
   const [recommendations, setRecommendations] = useState([]);
   
-  // Form state
+  // Form state - Dogs only (The Doggy Company)
   const [formData, setFormData] = useState({
     petId: '',
     petName: '',
-    petType: 'dog',
+    petType: 'dog', // Always dog - The Doggy Company
+    petBreed: '',
+    petAge: '',
     occasion: '',
     date: '',
     time: '',
@@ -136,7 +138,7 @@ const PartyPlanningWizard = ({ onClose, onComplete }) => {
     includeVenue: false
   });
   
-  // Fetch user's pets
+  // Fetch user's pets (dogs only)
   useEffect(() => {
     const fetchPets = async () => {
       if (!token) return;
