@@ -183,7 +183,8 @@ const DinePage = () => {
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(https://customer-assets.emergentagent.com/job_petlifecentral/artifacts/afm7enef_image.png)` }}
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-orange-900 via-orange-800/95 to-red-800/90" />
+          {/* Solid gradient overlay - no transparency to prevent ghost text */}
+          <div className="absolute inset-0 bg-gradient-to-r from-orange-800 via-orange-700 to-red-700" />
         </div>
         
         <div className="relative max-w-6xl mx-auto px-4 h-full flex items-center z-10">
