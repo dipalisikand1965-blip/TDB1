@@ -273,7 +273,7 @@ const QuotesTab = ({ user, token }) => {
               {selectedQuote.party_details && (
                 <div className="bg-purple-50 p-4 rounded-lg">
                   <h4 className="font-semibold text-purple-900 mb-2">
-                    🎉 {selectedQuote.party_details.pet_name}'s {selectedQuote.party_details.occasion}
+                    🎉 {selectedQuote.party_details.pet_name}&apos;s {selectedQuote.party_details.occasion}
                   </h4>
                   {selectedQuote.party_details.party_date && (
                     <p className="text-sm text-purple-700">
