@@ -1293,7 +1293,7 @@ const MiraChatWidget = ({
                           li: ({ children }) => <li className="mb-0.5">{children}</li>,
                         }}
                       >
-                        {msg.content || ''}
+                        {typeof msg.content === 'string' ? msg.content : String(msg.content || '')}
                       </ReactMarkdown>
                     </div>
                     
