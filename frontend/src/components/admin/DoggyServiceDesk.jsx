@@ -1628,6 +1628,49 @@ const DoggyServiceDesk = ({ authHeaders }) => {
     }
   };
 
+  // ==================== QUOTE BUILDER FOR PARTY REQUESTS ====================
+  
+  const openQuoteBuilder = async (ticket) => {
+    // Fetch the party request data if this is a party planning ticket
+    if (ticket.party_request_id || ticket.source === 'party_wizard' || ticket.category === 'party_planning') {
+      try {
+        const requestId = ticket.party_request_id || ticket.ticket_id.replace('CEL-', 'PARTY-');
+        const res = await fetch(`${getApiUrl()}/api/celebrate/party-requests?limit=50`, {
+          headers: authHeaders
+        });
+        if (res.ok) {
+          const data = await res.json();
+          // Find matching request
+          const partyRequest = data.requests?.find(r => 
+            r.id === ticket.party_request_id || 
+            r.id === requestId
+          ) || {
+            // Fallback: create from ticket data
+            id: ticket.party_request_id || requestId,
+            pet_name: ticket.member?.pet_name || ticket.title?.split("'s")[0] || 'Pet',
+            occasion: ticket.category || 'birthday',
+            date: ticket.created_at?.split('T')[0],
+            time: 'Afternoon',
+            guest_count: '5-10',
+            venue: 'home',
+            budget: 'standard',
+            user_email: ticket.member?.email,
+            user_name: ticket.member?.name,
+            add_ons: {
+              grooming: ticket.description?.includes('Grooming'),
+              photography: ticket.description?.includes('Photography')
+            }
+          };
+          setPartyRequestData(partyRequest);
+          setShowQuoteBuilder(true);
+        }
+      } catch (err) {
+        console.error('Error fetching party request:', err);
+        toast({ title: 'Error', description: 'Could not load party request data', variant: 'destructive' });
+      }
+    }
+  };
+
   // ==================== AGENT PERFORMANCE ====================
   
   const fetchAgentPerformance = async () => {
