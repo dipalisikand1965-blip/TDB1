@@ -255,11 +255,14 @@ class TestBlockedTicketsFilter:
 class TestQuoteBuilderStillWorks:
     """Test Quote Builder still works after merge fix - Bug Fix #6"""
     
-    def test_quotes_list_endpoint(self):
-        """Test that quotes list endpoint works"""
-        response = requests.get(f"{BASE_URL}/api/quotes/", headers=get_admin_auth())
+    def test_quotes_admin_list_endpoint(self):
+        """Test that quotes admin list endpoint works"""
+        response = requests.get(f"{BASE_URL}/api/quotes/admin/all", headers=get_admin_auth())
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
-        print("✅ Quotes list endpoint works")
+        
+        data = response.json()
+        assert "quotes" in data, "Response should have 'quotes' key"
+        print(f"✅ Quotes admin list endpoint works: {len(data.get('quotes', []))} quotes found")
     
     def test_quotes_member_endpoint(self):
         """Test that member quotes endpoint works (fixed in iteration 198)"""
@@ -276,14 +279,15 @@ class TestQuoteBuilderStillWorks:
         """Test that quote creation endpoint works"""
         quote_data = {
             "party_request_id": f"TEST-PARTY-{uuid.uuid4().hex[:8]}",
-            "customer_name": "Test Customer",
-            "customer_email": "test@example.com",
-            "pet_name": "Test Pet",
-            "occasion": "birthday",
+            "ticket_id": f"CEL-TEST-{uuid.uuid4().hex[:8].upper()}",
+            "member_email": "test@example.com",
+            "member_name": "Test Customer",
             "items": [
                 {
+                    "item_id": f"test-item-{uuid.uuid4().hex[:8]}",
+                    "item_type": "product",
                     "name": "Test Cake",
-                    "price": 1500,
+                    "unit_price": 1500,
                     "quantity": 1
                 }
             ],
@@ -293,7 +297,7 @@ class TestQuoteBuilderStillWorks:
         }
         
         response = requests.post(
-            f"{BASE_URL}/api/quotes/",
+            f"{BASE_URL}/api/quotes/create",
             json=quote_data,
             headers={**get_admin_auth(), "Content-Type": "application/json"}
         )
