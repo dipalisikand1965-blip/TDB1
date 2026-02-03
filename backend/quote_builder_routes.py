@@ -186,7 +186,7 @@ async def get_quote(quote_id: str):
 
 
 @router.put("/{quote_id}")
-async def update_quote(quote_id: str, request: UpdateQuoteModel, username: str = Depends(get_admin_username)):
+async def update_quote(quote_id: str, request: UpdateQuoteModel, username: str = Depends(verify_quote_admin)):
     """Update a quote (admin only)"""
     if db is None:
         raise HTTPException(status_code=500, detail="Database not initialized")
