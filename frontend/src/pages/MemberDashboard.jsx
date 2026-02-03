@@ -766,7 +766,7 @@ const MemberDashboard = () => {
                 ].map((pillar) => (
                   <button
                     key={pillar.id}
-                    onClick={() => setPillarPopup({ open: true, pillar })}
+                    onClick={() => navigate(pillar.path)}
                     className="group p-2 md:p-3 bg-white/10 backdrop-blur-sm rounded-xl border border-white/20 hover:bg-white/20 hover:border-white/40 transition-all text-center"
                   >
                     <div className={`w-9 h-9 md:w-11 md:h-11 mx-auto rounded-lg bg-gradient-to-br ${pillar.color} flex items-center justify-center text-lg md:text-xl mb-1.5 group-hover:scale-110 transition-transform shadow-lg`}>
