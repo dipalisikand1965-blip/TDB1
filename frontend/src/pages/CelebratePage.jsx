@@ -349,75 +349,84 @@ const CelebratePage = () => {
           </p>
         </div>
 
-        {/* Elevated Concierge Experiences - 2x2 on mobile */}
+        {/* Elevated Concierge Experiences - 2x2 on mobile with staggered animations */}
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
-          <ConciergeExperienceCard
-            pillar="celebrate"
-            title="Ultimate Birthday Bash®"
-            description="A complete birthday celebration package with custom cake, decorations, venue, photography & entertainment."
-            icon="🎉"
-            gradient="from-pink-500 to-rose-500"
-            badge="Signature"
-            badgeColor="bg-pink-500"
-            highlights={[
-              "Custom themed decorations",
-              "Professional pet photography",
-              "Gourmet cake & treats for all guests",
-              "Activity planning & coordination"
-            ]}
-          />
+          <div className="animate-fade-in-up" style={{ animationDelay: '0ms' }}>
+            <ConciergeExperienceCard
+              pillar="celebrate"
+              title="Ultimate Birthday Bash®"
+              description="A complete birthday celebration package with custom cake, decorations, venue, photography & entertainment."
+              icon="🎉"
+              gradient="from-pink-500 to-rose-500"
+              badge="Signature"
+              badgeColor="bg-pink-500"
+              highlights={[
+                "Custom themed decorations",
+                "Professional pet photography",
+                "Gourmet cake & treats for all guests",
+                "Activity planning & coordination"
+              ]}
+            />
+          </div>
           
-          <ConciergeExperienceCard
-            pillar="celebrate"
-            title="Gotcha Day Special®"
-            description="Celebrate the anniversary of when your furry friend joined your family with a meaningful experience."
-            icon="💜"
-            gradient="from-purple-500 to-violet-500"
-            highlights={[
-              "Memory book creation",
-              "Professional photoshoot",
-              "Custom celebration cake",
-              "Special treats package"
-            ]}
-          />
+          <div className="animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+            <ConciergeExperienceCard
+              pillar="celebrate"
+              title="Gotcha Day Special®"
+              description="Celebrate the anniversary of when your furry friend joined your family with a meaningful experience."
+              icon="💜"
+              gradient="from-purple-500 to-violet-500"
+              highlights={[
+                "Memory book creation",
+                "Professional photoshoot",
+                "Custom celebration cake",
+                "Special treats package"
+              ]}
+            />
+          </div>
           
-          <ConciergeExperienceCard
-            pillar="celebrate"
-            title="Pawty Planning Pro®"
-            description="Full-service party planning for pet birthdays, adoption anniversaries, or any celebration."
-            icon="🎈"
-            gradient="from-amber-500 to-orange-500"
-            badge="Popular"
-            badgeColor="bg-amber-500"
-            highlights={[
-              "Guest list management",
-              "Venue sourcing & booking",
-              "Catering for pets & humans",
-              "Entertainment coordination"
-            ]}
-          />
+          <div className="animate-fade-in-up" style={{ animationDelay: '200ms' }}>
+            <ConciergeExperienceCard
+              pillar="celebrate"
+              title="Pawty Planning Pro®"
+              description="Full-service party planning for pet birthdays, adoption anniversaries, or any celebration."
+              icon="🎈"
+              gradient="from-amber-500 to-orange-500"
+              badge="Popular"
+              badgeColor="bg-amber-500"
+              highlights={[
+                "Guest list management",
+                "Venue sourcing & booking",
+                "Catering for pets & humans",
+                "Entertainment coordination"
+              ]}
+            />
+          </div>
           
-          <ConciergeExperienceCard
-            pillar="celebrate"
-            title="Puppy Shower®"
-            description="Welcome a new furry family member with a beautifully organized puppy shower celebration."
-            icon="🐾"
-            gradient="from-cyan-500 to-teal-500"
-            highlights={[
-              "Baby shower style setup",
-              "Gift registry coordination",
-              "New parent essentials guide",
-              "Photography included"
-            ]}
-          />
+          <div className="animate-fade-in-up" style={{ animationDelay: '300ms' }}>
+            <ConciergeExperienceCard
+              pillar="celebrate"
+              title="Puppy Shower®"
+              description="Welcome a new furry family member with a beautifully organized puppy shower celebration."
+              icon="🐾"
+              gradient="from-cyan-500 to-teal-500"
+              highlights={[
+                "Baby shower style setup",
+                "Gift registry coordination",
+                "New parent essentials guide",
+                "Photography included"
+              ]}
+            />
+          </div>
           
-          <ConciergeExperienceCard
-            pillar="celebrate"
-            title="Pet Wedding Ceremony®"
-            description="A magical ceremony for your pet's special union - complete with outfits, venue & photography."
-            icon="💒"
-            gradient="from-rose-400 to-pink-500"
-            highlights={[
+          <div className="animate-fade-in-up" style={{ animationDelay: '400ms' }}>
+            <ConciergeExperienceCard
+              pillar="celebrate"
+              title="Pet Wedding Ceremony®"
+              description="A magical ceremony for your pet's special union - complete with outfits, venue & photography."
+              icon="💒"
+              gradient="from-rose-400 to-pink-500"
+              highlights={[
               "Custom pet outfits",
               "Venue decoration",
               "Pet-safe cake & treats",
