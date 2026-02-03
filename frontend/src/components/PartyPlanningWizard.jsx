@@ -527,81 +527,103 @@ const PartyPlanningWizard = ({ onClose, onComplete }) => {
           </div>
         );
         
-      case 6: // Review & Recommendations
+      case 6: // Review & Submit Request
         const selectedOccasion = OCCASIONS.find(o => o.id === formData.occasion);
         const selectedBudget = BUDGET_RANGES.find(b => b.id === formData.budget);
         
         return (
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900">Perfect! Here&apos;s your party plan</h3>
+            <h3 className="text-lg font-semibold text-gray-900">Review Your Party Request</h3>
             
-            {/* Summary */}
-            <Card className="p-4 bg-gradient-to-br from-pink-50 to-purple-50">
+            {/* Summary Card */}
+            <Card className="p-4 bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200">
+              <div className="flex items-center gap-2 mb-3">
+                <Dog className="w-5 h-5 text-amber-600" />
+                <span className="font-semibold text-amber-800">{formData.petName}&apos;s {selectedOccasion?.name}</span>
+              </div>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Celebrating</span>
-                  <span className="font-medium">{formData.petName}&apos;s {selectedOccasion?.name}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Date</span>
+                  <span className="text-gray-600">📅 Date & Time</span>
                   <span className="font-medium">{formData.date} ({formData.time})</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Guests</span>
+                  <span className="text-gray-600">👥 Guests</span>
                   <span className="font-medium">{formData.guestCount}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Budget</span>
+                  <span className="text-gray-600">📍 Venue</span>
+                  <span className="font-medium capitalize">{formData.venue}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-600">💰 Budget</span>
                   <span className="font-medium">{selectedBudget?.range}</span>
                 </div>
-                {formData.includeGrooming && (
-                  <div className="flex justify-between text-purple-600">
-                    <span>+ Pre-party Grooming</span>
-                    <Scissors className="w-4 h-4" />
+                
+                {/* Add-ons */}
+                {(formData.includeGrooming || formData.includePhotography) && (
+                  <div className="pt-2 mt-2 border-t border-amber-200">
+                    <p className="text-xs text-gray-500 mb-1">Add-on Services:</p>
+                    {formData.includeGrooming && (
+                      <div className="flex items-center gap-2 text-purple-600">
+                        <Scissors className="w-4 h-4" />
+                        <span className="text-sm">Pre-party Grooming</span>
+                      </div>
+                    )}
+                    {formData.includePhotography && (
+                      <div className="flex items-center gap-2 text-blue-600">
+                        <Camera className="w-4 h-4" />
+                        <span className="text-sm">Pet Photography</span>
+                      </div>
+                    )}
                   </div>
                 )}
-                {formData.includePhotography && (
-                  <div className="flex justify-between text-blue-600">
-                    <span>+ Pet Photography</span>
-                    <Camera className="w-4 h-4" />
+                
+                {formData.specialRequests && (
+                  <div className="pt-2 mt-2 border-t border-amber-200">
+                    <p className="text-xs text-gray-500">Special Requests:</p>
+                    <p className="text-sm italic">{formData.specialRequests}</p>
                   </div>
                 )}
               </div>
             </Card>
             
-            {/* Recommendations */}
-            <div>
-              <h4 className="font-medium text-gray-900 mb-3">Recommended for you</h4>
-              {loading ? (
-                <div className="flex justify-center py-8">
-                  <div className="animate-spin w-8 h-8 border-4 border-pink-500 border-t-transparent rounded-full" />
+            {/* What happens next */}
+            <Card className="p-4 bg-gradient-to-br from-pink-50 to-purple-50 border-pink-200">
+              <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-pink-500" />
+                What happens next?
+              </h4>
+              <div className="space-y-3 text-sm">
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 rounded-full bg-pink-500 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">1</div>
+                  <div>
+                    <p className="font-medium text-gray-900">Request Received</p>
+                    <p className="text-gray-500">Your party request goes to our Celebrate Concierge® team</p>
+                  </div>
                 </div>
-              ) : (
-                <div className="grid grid-cols-2 gap-3 max-h-64 overflow-y-auto">
-                  {recommendations.map(product => (
-                    <Card key={product.id} className="p-3 hover:shadow-md transition-shadow">
-                      <img 
-                        src={product.image || product.images?.[0] || 'https://via.placeholder.com/100'}
-                        alt={product.name}
-                        className="w-full h-20 object-cover rounded-md mb-2"
-                      />
-                      <p className="font-medium text-xs line-clamp-2">{product.name}</p>
-                      <div className="flex items-center justify-between mt-1">
-                        <span className="text-pink-600 font-bold text-sm">₹{product.price}</span>
-                        <PawmeterDisplay pawmeter={product.pawmeter} size="sm" />
-                      </div>
-                      <Button 
-                        size="sm" 
-                        className="w-full mt-2 h-8 text-xs"
-                        onClick={() => addRecommendationToCart(product)}
-                      >
-                        Add to Cart
-                      </Button>
-                    </Card>
-                  ))}
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 rounded-full bg-pink-500 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">2</div>
+                  <div>
+                    <p className="font-medium text-gray-900">Custom Party Plan</p>
+                    <p className="text-gray-500">We&apos;ll curate the perfect cake, treats, decorations & services</p>
+                  </div>
                 </div>
-              )}
-            </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-6 h-6 rounded-full bg-pink-500 text-white flex items-center justify-center text-xs font-bold flex-shrink-0">3</div>
+                  <div>
+                    <p className="font-medium text-gray-900">Quote & Confirmation</p>
+                    <p className="text-gray-500">Review our proposal and pay when you&apos;re happy!</p>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="mt-4 p-3 bg-white rounded-lg border border-pink-200">
+                <p className="text-sm text-center text-gray-600">
+                  <Bell className="w-4 h-4 inline mr-1 text-pink-500" />
+                  Our Celebrate Concierge® will contact you within <strong>2 hours</strong> with a full party plan and quote!
+                </p>
+              </div>
+            </Card>
           </div>
         );
         
