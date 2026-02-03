@@ -1701,12 +1701,20 @@ const UnifiedPetPage = () => {
                   <Button 
                     size="sm" 
                     onClick={() => document.getElementById('gallery-upload')?.click()}
+                    disabled={uploadingPhoto}
                     className="bg-white text-purple-600 hover:bg-white/90 rounded-full shadow-lg"
                   >
-                    <Upload className="w-4 h-4 mr-2" /> Add Photos
+                    {uploadingPhoto ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <Upload className="w-4 h-4 mr-2" />
+                    )}
+                    Add Photos
                   </Button>
                 </div>
-                <p className="text-white/80 text-sm mt-1">Capture precious moments with {safePet.name}</p>
+                <p className="text-white/80 text-sm mt-1">
+                  {galleryPhotos.length > 0 ? `${galleryPhotos.length} photo${galleryPhotos.length > 1 ? 's' : ''}` : 'Capture precious moments'} with {safePet.name}
+                </p>
                 <input 
                   type="file" 
                   id="gallery-upload" 
@@ -1724,48 +1732,42 @@ const UnifiedPetPage = () => {
                       
                       setUploadingPhoto(true);
                       try {
-                        // Upload first file as main photo (for now - gallery support can be expanded later)
-                        const file = files[0];
-                        
-                        // Backend limit is 2MB for base64 storage
-                        if (file.size > 2 * 1024 * 1024) {
-                          toast({ title: 'File too large', description: 'Please upload an image under 2MB', variant: 'destructive' });
-                          setUploadingPhoto(false);
-                          e.target.value = '';
-                          return;
+                        // Upload each file to gallery
+                        for (const file of files) {
+                          if (file.size > 2 * 1024 * 1024) {
+                            toast({ title: 'File too large', description: `${file.name} is over 2MB`, variant: 'destructive' });
+                            continue;
+                          }
+                          
+                          const formData = new FormData();
+                          formData.append('photo', file);
+                          
+                          const response = await fetch(`${API_URL}/api/pets/${petId}/gallery`, {
+                            method: 'POST',
+                            headers: { 'Authorization': `Bearer ${token}` },
+                            body: formData
+                          });
+                          
+                          if (response.ok) {
+                            const data = await response.json();
+                            setGalleryPhotos(prev => [...prev, { id: data.photo_id, url: data.url, is_main: false }]);
+                          }
                         }
                         
-                        const formData = new FormData();
-                        formData.append('photo', file);
+                        toast({ title: 'Photos uploaded!', description: `Added to ${safePet.name}'s gallery` });
                         
-                        console.log('Uploading photo to:', `${API_URL}/api/pets/${petId}/photo`);
-                        
-                        const response = await fetch(`${API_URL}/api/pets/${petId}/photo`, {
-                          method: 'POST',
-                          headers: { 'Authorization': `Bearer ${token}` },
-                          body: formData
-                        });
-                        
-                        console.log('Upload response status:', response.status);
-                        
-                        if (response.ok) {
-                          const data = await response.json();
-                          console.log('Upload success:', data);
-                          setPet(prev => ({ ...prev, photo_url: data.photo_url }));
-                          toast({ title: 'Photo uploaded!', description: `${safePet.name}'s photo has been updated` });
-                          // Refresh page to show new photo
-                          setTimeout(() => window.location.reload(), 500);
-                        } else {
-                          const err = await response.json().catch(() => ({ detail: 'Upload failed' }));
-                          console.error('Upload error:', err);
-                          toast({ title: 'Upload failed', description: err.detail || 'Could not upload photo', variant: 'destructive' });
+                        // Refresh gallery
+                        const galleryRes = await fetch(`${API_URL}/api/pets/${petId}/gallery`);
+                        if (galleryRes.ok) {
+                          const galleryData = await galleryRes.json();
+                          setGalleryPhotos(galleryData.photos || []);
                         }
                       } catch (err) {
                         console.error('Gallery upload error:', err);
-                        toast({ title: 'Error', description: 'Failed to upload photo. Please try again.', variant: 'destructive' });
+                        toast({ title: 'Error', description: 'Failed to upload photos', variant: 'destructive' });
                       } finally {
                         setUploadingPhoto(false);
-                        e.target.value = ''; // Reset input
+                        e.target.value = '';
                       }
                     }
                   }}
@@ -1773,16 +1775,18 @@ const UnifiedPetPage = () => {
               </div>
               <div className="p-4 md:p-6">
                 <div className="grid grid-cols-3 md:grid-cols-4 gap-2 md:gap-3">
-                  {/* Main Pet Photo - Larger */}
-                  <div className="col-span-2 row-span-2 aspect-square rounded-xl md:rounded-2xl overflow-hidden bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center shadow-lg relative group cursor-pointer"
-                    onClick={() => document.getElementById('gallery-upload')?.click()}
+                  {/* Main Pet Photo - Larger with click to view */}
+                  <div 
+                    className="col-span-2 row-span-2 aspect-square rounded-xl md:rounded-2xl overflow-hidden bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center shadow-lg relative group cursor-pointer"
+                    onClick={() => safePet.photo_url ? setSelectedGalleryPhoto({ url: safePet.photo_url, is_main: true }) : document.getElementById('gallery-upload')?.click()}
                   >
                     {safePet.photo_url ? (
                       <>
                         <img src={safePet.photo_url} alt={safePet.name} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
-                          <Camera className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                          <Sparkles className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                         </div>
+                        <Badge className="absolute top-2 left-2 bg-purple-600 text-white text-xs">Main Photo</Badge>
                       </>
                     ) : (
                       <div className="flex flex-col items-center text-purple-400">
@@ -1791,10 +1795,27 @@ const UnifiedPetPage = () => {
                       </div>
                     )}
                   </div>
-                  {/* Additional Photo Slots */}
-                  {[1, 2, 3, 4, 5, 6].map((i) => (
+                  
+                  {/* Gallery Photos */}
+                  {galleryPhotos.filter(p => !p.is_main).slice(0, 6).map((photo, i) => (
                     <div 
-                      key={i}
+                      key={photo.id || i}
+                      className="aspect-square rounded-xl md:rounded-2xl overflow-hidden bg-gray-100 shadow cursor-pointer relative group"
+                      onClick={() => setSelectedGalleryPhoto(photo)}
+                    >
+                      <img 
+                        src={`${API_URL}${photo.url}`} 
+                        alt={`${safePet.name} photo ${i + 1}`}
+                        className="w-full h-full object-cover transition-transform group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
+                    </div>
+                  ))}
+                  
+                  {/* Empty slots if fewer than 6 gallery photos */}
+                  {Array.from({ length: Math.max(0, 6 - galleryPhotos.filter(p => !p.is_main).length) }).map((_, i) => (
+                    <div 
+                      key={`empty-${i}`}
                       className="aspect-square rounded-xl md:rounded-2xl bg-gray-50 border-2 border-dashed border-gray-200 flex flex-col items-center justify-center cursor-pointer hover:bg-purple-50 hover:border-purple-300 transition-all group"
                       onClick={() => document.getElementById('gallery-upload')?.click()}
                     >
@@ -1803,8 +1824,86 @@ const UnifiedPetPage = () => {
                     </div>
                   ))}
                 </div>
+                
+                {/* Social Share Button */}
+                <div className="mt-4 flex justify-center">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowShareModal(true)}
+                    className="rounded-full border-purple-200 text-purple-600 hover:bg-purple-50"
+                  >
+                    <Share2 className="w-4 h-4 mr-2" />
+                    Share {safePet.name}&apos;s Profile
+                  </Button>
+                </div>
               </div>
             </Card>
+            
+            {/* Photo Lightbox Modal */}
+            {selectedGalleryPhoto && (
+              <div 
+                className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+                onClick={() => setSelectedGalleryPhoto(null)}
+              >
+                <button 
+                  className="absolute top-4 right-4 text-white/80 hover:text-white p-2"
+                  onClick={() => setSelectedGalleryPhoto(null)}
+                >
+                  <X className="w-8 h-8" />
+                </button>
+                <img 
+                  src={selectedGalleryPhoto.is_main ? selectedGalleryPhoto.url : `${API_URL}${selectedGalleryPhoto.url}`}
+                  alt={safePet.name}
+                  className="max-w-full max-h-[85vh] rounded-lg shadow-2xl"
+                  onClick={(e) => e.stopPropagation()}
+                />
+                {!selectedGalleryPhoto.is_main && (
+                  <div className="absolute bottom-4 flex gap-3">
+                    <Button
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        const token = localStorage.getItem('token');
+                        try {
+                          await fetch(`${API_URL}/api/pets/${petId}/gallery/${selectedGalleryPhoto.id}/set-main`, {
+                            method: 'POST',
+                            headers: { 'Authorization': `Bearer ${token}` }
+                          });
+                          toast({ title: 'Main photo updated!' });
+                          setPet(prev => ({ ...prev, photo_url: `/api/pet-photo/${petId}` }));
+                          setSelectedGalleryPhoto(null);
+                          window.location.reload();
+                        } catch (err) {
+                          toast({ title: 'Error', description: 'Failed to set main photo', variant: 'destructive' });
+                        }
+                      }}
+                      className="bg-purple-600 hover:bg-purple-700"
+                    >
+                      <Check className="w-4 h-4 mr-2" /> Set as Main Photo
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        const token = localStorage.getItem('token');
+                        try {
+                          await fetch(`${API_URL}/api/pets/${petId}/gallery/${selectedGalleryPhoto.id}`, {
+                            method: 'DELETE',
+                            headers: { 'Authorization': `Bearer ${token}` }
+                          });
+                          setGalleryPhotos(prev => prev.filter(p => p.id !== selectedGalleryPhoto.id));
+                          toast({ title: 'Photo deleted' });
+                          setSelectedGalleryPhoto(null);
+                        } catch (err) {
+                          toast({ title: 'Error', description: 'Failed to delete photo', variant: 'destructive' });
+                        }
+                      }}
+                    >
+                      <Trash2 className="w-4 h-4 mr-2" /> Delete
+                    </Button>
+                  </div>
+                )}
+              </div>
+            )}
             
             {/* MILESTONE TRACKER */}
             <Card className="p-6">
