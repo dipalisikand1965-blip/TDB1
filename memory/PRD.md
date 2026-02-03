@@ -55,8 +55,8 @@ All user actions (service requests, onboarding, etc.) must adhere to a unified f
 | Stay | 9/10 | ✅ Polished |
 | Travel | 9/10 | ✅ Polished |
 | Care | 9/10 | ✅ Polished |
-| Enjoy | TBD | Next in queue |
-| Learn | TBD | Backlog |
+| Enjoy | 9/10 | ✅ Polished |
+| Learn | TBD | Next in queue |
 | Fit | TBD | Backlog |
 
 ## Prioritized Backlog
