@@ -4865,7 +4865,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                     );
                   })}
                 </div>
-              )}}
+              )}
             </div>
           )}
           
