@@ -904,7 +904,7 @@ const MiraChatWidget = ({
       }
     } catch (error) {
       console.error('[Mira] Chat error:', error?.name, error?.message, error);
-      let errorMessage = "I'm having a brief pause. Please try again.";
+      let errorMessage = "Let me try that again. What would you like help with?";
       
       // Log full error details for debugging
       if (error.name === 'TypeError' && error.message?.includes('Failed to fetch')) {
