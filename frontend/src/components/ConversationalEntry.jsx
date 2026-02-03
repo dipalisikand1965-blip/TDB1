@@ -170,12 +170,10 @@ const ConversationalEntry = ({
       if (response.ok) {
         const result = await response.json();
         // Show success toast
-        if (window.toast) {
-          window.toast({
-            title: "Request Submitted! 🐾",
-            description: `We'll get back to you about ${goal.label} within 24 hours.`
-          });
-        }
+        toast({
+          title: "Request Submitted! 🐾",
+          description: `We'll get back to you about ${goal.label} within 24 hours.`
+        });
         // Navigate to dashboard to see the request
         navigate('/dashboard?tab=requests');
       } else {
