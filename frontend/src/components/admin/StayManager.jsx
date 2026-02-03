@@ -54,6 +54,7 @@ const StayManager = ({ getAuthHeader }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
+  const [seedingAll, setSeedingAll] = useState(false);
   
   // Modals
   const [showPropertyModal, setShowPropertyModal] = useState(false);
