@@ -319,7 +319,7 @@ const CelebrateConcierePicker = ({ category = 'cakes', onClose }) => {
         
         {/* Helper Text */}
         <p className="text-center text-xs sm:text-sm text-gray-500 mt-3 sm:mt-4">
-          Don't need planning help? Just scroll down to shop! 🛒
+          Don&apos;t need planning help? Just scroll down to shop! 🛒
         </p>
       </div>
       
