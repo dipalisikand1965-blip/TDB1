@@ -1278,6 +1278,11 @@ async def lifespan(app: FastAPI):
     set_pricing_sync_db(db)
     logger.info("✓ Pricing sync service initialized")
     
+    # Initialize quote builder
+    set_quote_db(db)
+    set_quote_deps(verify_admin, os.environ.get("RAZORPAY_KEY_ID"))
+    logger.info("✓ Quote builder initialized")
+    
     # Initialize search service in background (non-blocking)
     # This prevents slow Meilisearch connection from blocking app startup
     async def init_search_background():
