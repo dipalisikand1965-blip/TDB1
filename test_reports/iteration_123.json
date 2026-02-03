@@ -31,7 +31,7 @@
   "test_credentials": {
     "test_pet_id": "pet-99a708f1722a",
     "pet_name": "Mojo",
-    "API_URL": "https://petbutler.preview.emergentagent.com"
+    "API_URL": "https://furry-companion-7.preview.emergentagent.com"
   },
   "seed_data_creation": "None - used existing pet data",
   "retest_needed": false,
