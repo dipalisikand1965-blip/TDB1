@@ -146,29 +146,29 @@ const Home = () => {
             </Button>
           </div>
 
-          {/* Proof Indicators (Not Claims) */}
-          <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
-            <div className="text-center p-4 bg-white/5 backdrop-blur rounded-xl border border-white/10">
-              <p className="text-2xl font-bold text-white">1M+</p>
-              <p className="text-xs text-white/60">Customers Served</p>
+          {/* Proof Indicators (Not Claims) - 2x2 on mobile, 4 cols on desktop */}
+          <div className="mt-12 sm:mt-16 grid grid-cols-2 gap-3 sm:gap-4 max-w-3xl mx-auto px-2">
+            <div className="text-center p-4 sm:p-5 bg-white/5 backdrop-blur rounded-2xl border border-white/10 hover:bg-white/10 transition-all">
+              <p className="text-2xl sm:text-3xl font-bold text-white">1M+</p>
+              <p className="text-xs sm:text-sm text-white/60 mt-1">Customers Served</p>
             </div>
-            <div className="text-center p-4 bg-white/5 backdrop-blur rounded-xl border border-white/10">
-              <p className="text-2xl font-bold text-white">45,000+</p>
-              <p className="text-xs text-white/60">Pets Fed</p>
+            <div className="text-center p-4 sm:p-5 bg-white/5 backdrop-blur rounded-2xl border border-white/10 hover:bg-white/10 transition-all">
+              <p className="text-2xl sm:text-3xl font-bold text-white">45,000+</p>
+              <p className="text-xs sm:text-sm text-white/60 mt-1">Pets Fed</p>
             </div>
-            <div className="text-center p-4 bg-white/5 backdrop-blur rounded-xl border border-white/10">
-              <p className="text-2xl font-bold text-white">Since 1990s</p>
-              <p className="text-xs text-white/60">Concierge Heritage</p>
+            <div className="text-center p-4 sm:p-5 bg-white/5 backdrop-blur rounded-2xl border border-white/10 hover:bg-white/10 transition-all">
+              <p className="text-2xl sm:text-3xl font-bold text-white">Since 1990s</p>
+              <p className="text-xs sm:text-sm text-white/60 mt-1">Concierge Heritage</p>
             </div>
-            <div className="text-center p-4 bg-white/5 backdrop-blur rounded-xl border border-white/10">
-              <p className="text-2xl font-bold text-white">30+ Years</p>
-              <p className="text-xs text-white/60">Service Excellence</p>
+            <div className="text-center p-4 sm:p-5 bg-white/5 backdrop-blur rounded-2xl border border-white/10 hover:bg-white/10 transition-all">
+              <p className="text-2xl sm:text-3xl font-bold text-white">30+ Years</p>
+              <p className="text-xs sm:text-sm text-white/60 mt-1">Service Excellence</p>
             </div>
           </div>
         </div>
 
-        {/* Scroll indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+        {/* Scroll indicator - Hidden on mobile to save space */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce hidden sm:block">
           <ChevronRight className="w-6 h-6 text-white/50 rotate-90" />
         </div>
       </section>
