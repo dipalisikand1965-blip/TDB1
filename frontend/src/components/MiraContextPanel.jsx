@@ -470,7 +470,7 @@ const MiraContextPanel = ({
       }
     } catch (error) {
       console.error('Mira chat error:', error);
-      const errorMsg = "I'm having a brief pause. Please try again.";
+      const errorMsg = "Let me try that again. What can I help you with?";
       setChatMessages(prev => [...prev, {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
