@@ -211,7 +211,7 @@ const DinePage = () => {
                 size="lg" 
                 variant="outline" 
                 className="border-white/40 text-white hover:bg-white/20 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all hover:scale-105"
-                onClick={() => navigate('/dine/restaurants')}
+                onClick={() => document.getElementById('restaurants')?.scrollIntoView({ behavior: 'smooth' })}
               >
                 <MapPin className="w-5 h-5 mr-2" /> Find Restaurants
               </Button>
