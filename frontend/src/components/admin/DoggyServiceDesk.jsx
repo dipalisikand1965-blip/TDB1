@@ -2127,7 +2127,10 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                 ].map(item => (
                   <button
                     key={item.id}
-                    onClick={() => setSelectedView(item.id)}
+                    onClick={() => { 
+                      setSelectedView(item.id); 
+                      if (isMobile) setMobileView('list');
+                    }}
                     className={`w-full flex items-center justify-between px-3 py-1.5 rounded-md text-xs transition-colors ${
                       selectedView === item.id ? 'bg-white/10 text-white' : 'text-slate-400 hover:text-white'
                     }`}
