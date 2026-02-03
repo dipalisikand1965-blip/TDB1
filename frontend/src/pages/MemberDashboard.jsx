@@ -891,50 +891,53 @@ const MemberDashboard = () => {
                   return (
                     <div 
                       key={pet.id}
-                      className={`relative bg-white/10 backdrop-blur-sm rounded-2xl p-4 text-center cursor-pointer transition-all hover:scale-105 ${
+                      className={`relative bg-white/10 backdrop-blur-sm rounded-xl md:rounded-2xl p-3 md:p-4 text-center cursor-pointer transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] ${
                         isSelected 
-                          ? 'ring-2 ring-white bg-white/20 scale-105' 
+                          ? 'ring-2 ring-white bg-white/25 scale-[1.02] shadow-lg shadow-white/10' 
                           : needsAttention 
                             ? 'ring-2 ring-yellow-400/50 hover:bg-white/20' 
                             : 'hover:bg-white/20'
                       }`}
                       onClick={() => setSelectedPetId(pet.id)}
+                      data-testid={`pet-card-${pet.name?.toLowerCase()}`}
                     >
                       {/* Selected indicator */}
                       {isSelected && (
-                        <div className="absolute -top-1 -right-1 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow-lg">
-                          <CheckCircle2 className="w-4 h-4 text-purple-600" />
+                        <div className="absolute -top-1.5 -right-1.5 w-6 h-6 md:w-7 md:h-7 bg-white rounded-full flex items-center justify-center shadow-lg z-10">
+                          <CheckCircle2 className="w-4 h-4 md:w-5 md:h-5 text-purple-600" />
                         </div>
                       )}
                       
-                      {/* Pet Soul Score Arc */}
-                      <SoulScoreArc 
-                        score={score}
-                        petId={pet.id}
-                        petName={pet.name}
-                        size="md"
-                        showLabel={false}
-                        showCTA={false}
-                        animated={true}
-                      />
+                      {/* Pet Soul Score Arc - Responsive size */}
+                      <div className="flex justify-center">
+                        <SoulScoreArc 
+                          score={score}
+                          petId={pet.id}
+                          petName={pet.name}
+                          size={pets.length > 4 ? "sm" : "md"}
+                          showLabel={false}
+                          showCTA={false}
+                          animated={true}
+                        />
+                      </div>
                       
                       {/* Pet Name */}
-                      <p className={`font-bold mt-2 ${isSelected ? 'text-yellow-300' : 'text-white'}`}>{pet.name}</p>
-                      <p className="text-xs text-white/60">{pet.breed || 'Pet'}</p>
+                      <p className={`font-bold mt-2 text-sm md:text-base ${isSelected ? 'text-yellow-300' : 'text-white'}`}>{pet.name}</p>
+                      <p className="text-[10px] md:text-xs text-white/60 truncate">{pet.breed || 'Pet'}</p>
                       
                       {/* Questions Count */}
-                      <p className="text-xs text-white/70 mt-1">
+                      <p className="text-[10px] md:text-xs text-white/70 mt-1">
                         {questionsAnswered} questions
                       </p>
                       
                       {/* Status indicator */}
-                      <div className="mt-2">
+                      <div className="mt-1.5 md:mt-2">
                         {score >= 80 ? (
-                          <span className="inline-flex items-center gap-1 text-xs text-emerald-300 font-medium">
+                          <span className="inline-flex items-center gap-1 text-[10px] md:text-xs text-emerald-300 font-medium">
                             🏆 Soul Master!
                           </span>
                         ) : score >= 50 ? (
-                          <span className="inline-flex items-center gap-1 text-xs text-yellow-300 font-medium">
+                          <span className="inline-flex items-center gap-1 text-[10px] md:text-xs text-yellow-300 font-medium">
                             ⭐ Growing
                           </span>
                         ) : (
