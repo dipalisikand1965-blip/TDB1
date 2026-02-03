@@ -5829,7 +5829,8 @@ async def get_public_products(
         unified_query = {"visibility.status": {"$in": ["active", None]}}
     
     try:
-        unified_products = await db.unified_products.find(unified_query, {"_id": 0}).to_list(500)
+        # Sort by created_at descending to show newest items first
+        unified_products = await db.unified_products.find(unified_query, {"_id": 0}).sort("created_at", -1).to_list(500)
         for p in unified_products:
             pid = p.get("id") or p.get("shopify_id")
             if pid and pid not in seen_ids:
