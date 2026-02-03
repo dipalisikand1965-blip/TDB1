@@ -1110,11 +1110,18 @@ const MiraAI = () => {
           </div>
         </div>
         <div className="flex items-center gap-1">
-          {/* Voice Toggle Button */}
+          {/* Voice Toggle Button - Also primes iOS audio on enable */}
           <button
             className={`h-9 w-9 rounded-full flex items-center justify-center transition-colors ${voiceEnabled ? 'bg-cyan-500/80 text-white' : 'bg-white/10 text-white/50'}`}
             onClick={() => {
-              setVoiceEnabled(!voiceEnabled);
+              const newVoiceEnabled = !voiceEnabled;
+              setVoiceEnabled(newVoiceEnabled);
+              
+              // Prime audio context when enabling voice (especially important for iOS)
+              if (newVoiceEnabled) {
+                primeAudioForIOS();
+              }
+              
               if (isSpeaking && synthRef.current) synthRef.current.cancel();
             }}
             title={voiceEnabled ? "Voice responses ON" : "Voice responses OFF"}
