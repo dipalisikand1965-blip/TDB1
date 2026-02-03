@@ -755,9 +755,25 @@ const MiraAI = () => {
   }, [isOpen]);
 
   // Auto-speak welcome message when it's first generated and Mira is open
+  // IMPORTANT: On iOS, we only auto-speak if audio context has been primed by user interaction
   const [welcomeSpoken, setWelcomeSpoken] = useState(false);
   useEffect(() => {
+    // Only auto-speak if:
+    // 1. Mira is open
+    // 2. Welcome message is generated
+    // 3. Voice is enabled
+    // 4. Welcome hasn't been spoken yet
+    // 5. On iOS/Safari, audio context must be primed first (user clicked voice toggle)
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || 
+                  (navigator.userAgent.includes('Safari') && !navigator.userAgent.includes('Chrome'));
+    
     if (isOpen && welcomeGenerated && voiceEnabled && !welcomeSpoken && messages.length > 0) {
+      // On iOS, only auto-speak if audio context is primed
+      if (isIOS && !audioContextPrimed) {
+        console.log('[Mira Voice] iOS detected - skipping auto-speak until user enables voice');
+        return;
+      }
+      
       const welcomeMsg = messages.find(m => m.id === 'welcome');
       if (welcomeMsg && welcomeMsg.content) {
         // Extract first paragraph for speaking (don't read the whole thing)
@@ -766,7 +782,7 @@ const MiraAI = () => {
         setWelcomeSpoken(true);
       }
     }
-  }, [isOpen, welcomeGenerated, voiceEnabled, welcomeSpoken, messages, speakText]);
+  }, [isOpen, welcomeGenerated, voiceEnabled, welcomeSpoken, messages, speakText, audioContextPrimed]);
 
   // Scroll to bottom when messages change
   const scrollToBottom = useCallback(() => {
