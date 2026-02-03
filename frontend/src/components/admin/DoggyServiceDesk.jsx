@@ -5756,9 +5756,9 @@ const DoggyServiceDesk = ({ authHeaders }) => {
               <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Priority</div>
               <div className="flex flex-wrap gap-2">
                 <button
-                  onClick={() => { setSelectedPriority('all'); setShowMobileFilters(false); }}
+                  onClick={() => { setPriorityFilter('all'); setShowMobileFilters(false); }}
                   className={`px-3 py-2 rounded-full text-sm ${
-                    selectedPriority === 'all' 
+                    priorityFilter === 'all' 
                       ? 'bg-emerald-500 text-white' 
                       : 'bg-gray-100 text-gray-700'
                   }`}
@@ -5768,9 +5768,9 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                 {['urgent', 'high', 'medium', 'low'].map(priority => (
                   <button
                     key={priority}
-                    onClick={() => { setSelectedPriority(priority); setShowMobileFilters(false); }}
+                    onClick={() => { setPriorityFilter(priority); setShowMobileFilters(false); }}
                     className={`px-3 py-2 rounded-full text-sm capitalize ${
-                      selectedPriority === priority 
+                      priorityFilter === priority 
                         ? 'bg-emerald-500 text-white' 
                         : 'bg-gray-100 text-gray-700'
                     }`}
