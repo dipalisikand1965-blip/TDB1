@@ -98,9 +98,6 @@ const MemberDashboard = () => {
   });
   const [settingsLoading, setSettingsLoading] = useState(false);
   const [settingsSaved, setSettingsSaved] = useState(false);
-  
-  // Pillar Popup State - Shows usage history for each pillar
-  const [pillarPopup, setPillarPopup] = useState({ open: false, pillar: null });
 
   // Redirect to login if not authenticated (after auth check completes)
   useEffect(() => {
