@@ -651,8 +651,8 @@ const PartyPlanningWizard = ({ onClose, onComplete }) => {
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
       <Card className="w-full max-w-md max-h-[90vh] overflow-hidden flex flex-col bg-white">
-        {/* Header */}
-        <div className="p-4 border-b bg-gradient-to-r from-pink-500 to-purple-500 text-white">
+        {/* Header - The Doggy Company branded */}
+        <div className="p-4 border-b bg-gradient-to-r from-amber-500 to-orange-500 text-white">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <PartyPopper className="w-6 h-6" />
@@ -673,7 +673,7 @@ const PartyPlanningWizard = ({ onClose, onComplete }) => {
               return (
                 <div key={s.id} className="flex flex-col items-center">
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors ${
-                    isActive ? 'bg-white text-pink-500' :
+                    isActive ? 'bg-white text-amber-500' :
                     isComplete ? 'bg-white/80 text-green-500' :
                     'bg-white/20 text-white/60'
                   }`}>
