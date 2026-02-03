@@ -3000,8 +3000,8 @@ const DoggyServiceDesk = ({ authHeaders }) => {
         
         {/* ==================== NEW TICKET MODAL ==================== */}
         {showNewTicketModal && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowNewTicketModal(false)}>
-            <Card className="w-[600px] max-h-[90vh] overflow-y-auto bg-white shadow-2xl" onClick={e => e.stopPropagation()}>
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowNewTicketModal(false)}>
+            <Card className="w-full max-w-[600px] max-h-[90vh] overflow-y-auto bg-white shadow-2xl" onClick={e => e.stopPropagation()}>
               <div className="p-6">
                 <div className="flex items-center justify-between mb-6">
                   <h2 className="text-xl font-bold text-gray-900">Create New Ticket</h2>
