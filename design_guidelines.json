@@ -1,152 +1,192 @@
 {
-  "brand_identity": {
-    "name": "The Doggy Company",
-    "tagline": "India's #1 Pet Life Operating System",
-    "archetype": "The Royal Companion",
-    "vibe": "Organized Joy, Premium Playfulness, Trustworthy Warmth",
-    "target_audience": "Urban Indian Dog Parents (25-45), Tech-savvy, Emotional Spenders"
+  "identity": {
+    "persona": "E1",
+    "role": "Mobile-First Creative Designer",
+    "mission": "Create India's #1 Pet Life OS with a 100% mobile-only focus.",
+    "principles": [
+      "Thumb-First Design: Primary actions always in the bottom 40% of the screen.",
+      "Swipe over Click: Use gestures for navigation (tabs, carousels, sheets).",
+      "Instant Feedback: Every tap has a micro-interaction.",
+      "Organic & Playful: Use rounded corners, warm colors, and friendly type.",
+      "Data-Light: Optimize for Indian mobile networks (4G/5G)."
+    ]
   },
-  "typography": {
-    "headings": {
-      "font_family": "Syne, sans-serif",
-      "weights": ["700", "800"],
-      "usage": "Hero titles, Section headers, Impact statements",
-      "letter_spacing": "tracking-tight",
-      "line_height": "leading-none"
+  "mobile_constraints": {
+    "viewport": {
+      "min_width": "375px",
+      "target_devices": ["iPhone SE", "iPhone 14/15", "Android Budget (360px)", "iPad Mini"],
+      "orientation": "Portrait primarily, Landscape for Tablets"
     },
-    "body": {
-      "font_family": "Manrope, sans-serif",
-      "weights": ["400", "500", "600"],
-      "usage": "Paragraphs, UI labels, Form inputs",
-      "line_height": "leading-relaxed"
+    "touch_targets": {
+      "minimum": "44px",
+      "spacing": "8px between interactive elements"
     },
-    "accent": {
-      "font_family": "Fraunces, serif",
-      "weights": ["400", "600"],
-      "usage": "Soul Journey, Quotes, 'Premium' tags",
-      "style": "italic"
+    "safe_areas": {
+      "top": "env(safe-area-inset-top)",
+      "bottom": "env(safe-area-inset-bottom) + 16px"
+    },
+    "gestures": {
+      "swipe_back": "Native iOS feel",
+      "pull_to_refresh": "Essential for feeds",
+      "horizontal_scroll": "For service pillars and products"
     }
   },
-  "colors": {
-    "primary": {
-      "name": "Royal Iris",
-      "hex": "#5B21B6",
-      "tailwind": "violet-800",
-      "usage": "Primary Buttons, Active States, Brand Anchors"
+  "design_system": {
+    "theme": "Archetype 6 (Vibrant Play) + Archetype 1 (Organic)",
+    "colors": {
+      "primary": {
+        "name": "Trust Teal",
+        "hex": "#0F766E",
+        "tailwind": "teal-700",
+        "usage": "Primary Buttons, Active States, Trust Indicators"
+      },
+      "secondary": {
+        "name": "Playful Amber",
+        "hex": "#F59E0B",
+        "tailwind": "amber-500",
+        "usage": "Highlights, Discount Tags, 'Fun' Features"
+      },
+      "accent": {
+        "name": "Love Pink",
+        "hex": "#DB2777",
+        "tailwind": "pink-600",
+        "usage": "Mira AI, Hearts, Favorites, Urgent Notifications"
+      },
+      "background": {
+        "page": "#FAFAF9",
+        "surface": "#FFFFFF",
+        "subtle": "#F5F5F4"
+      },
+      "text": {
+        "primary": "#1C1917",
+        "secondary": "#57534E",
+        "muted": "#A8A29E"
+      },
+      "status": {
+        "success": "#10B981",
+        "error": "#EF4444",
+        "warning": "#F59E0B"
+      }
     },
-    "secondary": {
-      "name": "Electric Berry",
-      "hex": "#DB2777",
-      "tailwind": "pink-600",
-      "usage": "CTAs, Highlights, 'Love' interactions"
+    "typography": {
+      "headings": {
+        "font_family": "Manrope, sans-serif",
+        "weights": ["600", "700", "800"],
+        "usage": "Page Titles, Section Headers, Card Titles"
+      },
+      "body": {
+        "font_family": "Inter, sans-serif",
+        "weights": ["400", "500"],
+        "usage": "Paragraphs, Labels, Inputs"
+      },
+      "scale": {
+        "h1": "text-3xl font-extrabold tracking-tight",
+        "h2": "text-2xl font-bold tracking-tight",
+        "h3": "text-xl font-bold",
+        "body_lg": "text-lg leading-relaxed",
+        "body_base": "text-base leading-normal",
+        "caption": "text-sm text-muted-foreground"
+      }
     },
-    "accent": {
-      "name": "Trust Teal",
-      "hex": "#0F766E",
-      "tailwind": "teal-700",
-      "usage": "Health, Safety, Verified badges"
+    "spacing": {
+      "container_padding": "px-4 md:px-6",
+      "section_gap": "gap-8",
+      "card_padding": "p-4 or p-5",
+      "touch_padding": "p-3"
     },
-    "background": {
-      "page": "#FAFAF9",
-      "surface": "#FFFFFF",
-      "subtle": "#F5F5F4"
+    "radius": {
+      "card": "rounded-2xl",
+      "button": "rounded-full",
+      "input": "rounded-xl"
     },
-    "text": {
-      "primary": "#1C1917",
-      "secondary": "#57534E",
-      "muted": "#A8A29E"
-    },
-    "gradients": {
-      "brand": "bg-gradient-to-r from-violet-600 via-pink-500 to-orange-400",
-      "glass": "bg-white/70 backdrop-blur-xl border-white/20",
-      "soul": "bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500"
-    }
-  },
-  "layout_strategies": {
-    "marketing": {
-      "grid_type": "Tetris Grid",
-      "description": "Asymmetrical bento grid. Mix of 2x2 (Hero), 1x1 (Feature), 1x2 (Tall) blocks.",
-      "spacing": "gap-6 md:gap-8",
-      "container": "max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
-    },
-    "dashboard": {
-      "grid_type": "High Density Bento",
-      "description": "Compact, information-dense. 4-column grid on desktop.",
-      "spacing": "gap-4",
-      "card_style": "Flat white, 1px border-stone-200, no shadow until hover"
-    },
-    "mobile_nav": {
-      "style": "Floating Island",
-      "position": "Fixed Bottom",
-      "glass": "true",
-      "icons": "Phosphor Icons (Duotone)"
+    "shadows": {
+      "card": "shadow-[0_2px_8px_rgba(0,0,0,0.04)]",
+      "floating": "shadow-[0_8px_30px_rgba(0,0,0,0.12)]",
+      "glow": "shadow-[0_0_20px_rgba(15,118,110,0.15)]"
     }
   },
   "components": {
-    "buttons": {
-      "primary": "rounded-full bg-violet-800 text-white hover:bg-violet-900 shadow-lg hover:shadow-violet-500/30 transition-all hover:-translate-y-0.5",
-      "secondary": "rounded-full bg-white border-2 border-stone-200 text-stone-800 hover:border-violet-200 hover:bg-violet-50 transition-all",
-      "ghost": "rounded-full text-stone-600 hover:text-violet-700 hover:bg-violet-50/50"
+    "navigation": {
+      "type": "Fixed Bottom Bar",
+      "items": ["Home", "Shop", "Mira AI (Center FAB)", "Services", "Profile"],
+      "style": "Glassmorphism (backdrop-blur-lg), height 64px + safe-area",
+      "interaction": "Active state fills icon, subtle bounce on tap"
+    },
+    "mira_ai_widget": {
+      "type": "Floating Action Button (FAB) or Center Tab",
+      "position": "Center of Bottom Nav or Floating Bottom-Right",
+      "style": "Gradient (Pink to Purple), Pulse animation",
+      "behavior": "Opens Full-Screen Chat Interface (not a small window)"
     },
     "cards": {
-      "feature": "rounded-3xl bg-white border border-stone-100 shadow-xl shadow-stone-200/40 overflow-hidden group hover:shadow-2xl transition-all duration-500",
-      "product": "rounded-2xl bg-white border border-stone-100 overflow-hidden hover:border-pink-200 transition-colors",
-      "glass": "rounded-3xl bg-white/60 backdrop-blur-xl border border-white/40 shadow-lg"
+      "service_pillar": {
+        "style": "Vertical Rectangle, Image Top, Text Bottom, Rounded-2xl",
+        "layout": "Horizontal Scroll (Carousel) on Mobile"
+      },
+      "product": {
+        "style": "Minimalist, Large Image, Quick Add Button",
+        "layout": "Grid-cols-2 gap-3"
+      }
+    },
+    "modals": {
+      "rule": "NO CENTER MODALS ON MOBILE",
+      "replacement": "Bottom Sheet (Drawer)",
+      "library": "Vaul (Shadcn Drawer)"
     },
     "inputs": {
-      "style": "rounded-xl border-stone-200 bg-stone-50 focus:bg-white focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all"
+      "style": "Height 48px (min), Font-size 16px (prevent zoom)",
+      "validation": "Inline real-time validation"
     }
   },
-  "visual_enhancers": {
-    "textures": "Use subtle noise overlay (opacity 0.03) on solid backgrounds to reduce digital flatness.",
-    "shadows": "Colored shadows! Use shadow-violet-500/10 instead of pure black shadows.",
-    "borders": "1px solid borders are boring. Use double borders or gradient borders for key elements.",
-    "animations": {
-      "hover": "scale-105 rotate-1",
-      "load": "staggered fade-in-up",
-      "scroll": "parallax for hero images"
+  "assets": {
+    "images": {
+      "hero_dog": {
+        "url": "https://images.unsplash.com/photo-1609348490161-a879e4327ae9?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwxfHxoYXBweSUyMGRvZyUyMHBvcnRyYWl0fGVufDB8fHx8MTc3MDExMDU0Nnww&ixlib=rb-4.1.0&q=85",
+        "alt": "Happy Golden Retriever Hero",
+        "category": "hero"
+      },
+      "grooming_service": {
+        "url": "https://images.pexels.com/photos/6816837/pexels-photo-6816837.jpeg",
+        "alt": "Professional Dog Grooming",
+        "category": "service"
+      },
+      "party_service": {
+        "url": "https://images.unsplash.com/photo-1644931900689-f56386afd2cd?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxODd8MHwxfHNlYXJjaHwxfHxkb2clMjBiaXJ0aGRheSUyMHBhcnR5fGVufDB8fHx8MTc3MDExMDU0OXww&ixlib=rb-4.1.0&q=85",
+        "alt": "Dog Birthday Party",
+        "category": "service"
+      },
+      "vet_service": {
+        "url": "https://images.unsplash.com/photo-1648799834307-97650bbf7298?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwyfHxoYXBweSUyMGRvZyUyMHBvcnRyYWl0fGVufDB8fHx8MTc3MDExMDU0Nnww&ixlib=rb-4.1.0&q=85",
+        "alt": "Veterinary Care",
+        "category": "service"
+      },
+      "shop_toys": {
+        "url": "https://images.unsplash.com/photo-1756073721812-0611ba3a2431?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2Mzl8MHwxfHNlYXJjaHwzfHxoYXBweSUyMGRvZyUyMHBvcnRyYWl0fGVufDB8fHx8MTc3MDExMDU0Nnww&ixlib=rb-4.1.0&q=85",
+        "alt": "Dog Toys",
+        "category": "shop"
+      }
+    },
+    "icons": {
+      "library": "Lucide React",
+      "style": "Stroke width 2px, Rounded caps"
     }
   },
-  "image_assets": {
-    "hero": {
-      "url": "https://images.unsplash.com/photo-1761959883667-26cb43103ef0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Nzd8MHwxfHNlYXJjaHwxfHxoYXBweSUyMGRvZyUyMHJ1bm5pbmclMjBpbiUyMHBhcmslMjBzdW5ueSUyMGRheXxlbnwwfHx8fDE3NzAxMDk3MTV8MA&ixlib=rb-4.1.0&q=85",
-      "alt": "Happy Corgi running in sunny park",
-      "usage": "Main Landing Hero"
-    },
-    "celebrate": {
-      "url": "https://images.unsplash.com/photo-1624976066674-ed900e3f699e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAxODF8MHwxfHNlYXJjaHwxfHxkb2clMjBiaXJ0aGRheSUyMHBhcnR5JTIwY2FrZSUyMGNlbGVicmF0aW9ufGVufDB8fHx8MTc3MDEwOTcxN3ww&ixlib=rb-4.1.0&q=85",
-      "alt": "Dog birthday party",
-      "usage": "Celebrate Pillar Card"
-    },
-    "dine": {
-      "url": "https://images.unsplash.com/photo-1695023267130-c5bcdfd151d5?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzR8MHwxfHNlYXJjaHwyfHxkb2clMjBlYXRpbmclMjBnb3VybWV0JTIwZm9vZCUyMGJvd2x8ZW58MHx8fHwxNzcwMTA5NzIyfDA&ixlib=rb-4.1.0&q=85",
-      "alt": "Dog eating gourmet food",
-      "usage": "Dine Pillar Card"
-    },
-    "care": {
-      "url": "https://images.unsplash.com/photo-1644675443401-ea4c14bad0e6?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NTYxODd8MHwxfHNlYXJjaHwxfHx2ZXRlcmluYXJpYW4lMjBleGFtaW5pbmclMjBkb2clMjBjbGluaWN8ZW58MHx8fHwxNzcwMTA5NzI2fDA&ixlib=rb-4.1.0&q=85",
-      "alt": "Vet examining dog",
-      "usage": "Care/Health Pillar Card"
-    },
-    "groom": {
-      "url": "https://images.unsplash.com/photo-1611173622933-91942d394b04?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2MzR8MHwxfHNlYXJjaHwzfHxkb2clMjBncm9vbWluZyUyMHNhbG9uJTIwc3BhfGVufDB8fHx8MTc3MDEwOTcyOHww&ixlib=rb-4.1.0&q=85",
-      "alt": "Pomeranian in spa",
-      "usage": "Grooming/Spa Pillar Card"
-    }
-  },
+  "instructions_to_main_agent": [
+    "1. MOBILE FIRST: Do not design for desktop. Assume the user is on a 375px-430px screen.",
+    "2. NAVIGATION: Implement the 'Fixed Bottom Bar' immediately. It is the anchor of the app.",
+    "3. MIRA AI: Make the AI assistant prominent. It's a key differentiator.",
+    "4. SCROLLING: Use 'Lenis' for smooth scrolling if possible, but ensure native touch feel is preserved.",
+    "5. IMAGES: Use the provided Unsplash/Pexels URLs. Do not use placeholders.",
+    "6. SHADCN: Use 'Drawer' for all sub-views. Use 'Carousel' for service pillars.",
+    "7. TESTING: Add 'data-testid' to all interactive elements."
+  ],
   "universal_guidelines": {
-    "do_not": [
-      "Use generic 'SaaS Blue' or 'Bootstrap Gray'.",
-      "Center text on mobile unless it's a headline.",
-      "Use pure black (#000000) for text.",
-      "Make buttons full width on desktop."
-    ],
-    "must_do": [
-      "Use 'data-testid' on all interactive elements.",
-      "Ensure 44px+ touch targets for mobile.",
-      "Use 'sonner' for toasts.",
-      "Use 'lucide-react' or 'phosphor-icons' for iconography."
+    "avoid": ["Generic gradients", "Center-aligned text blocks", "Small clickable areas"],
+    "embrace": ["Asymmetry", "Texture (noise/grain)", "Oversized typography for headings"],
+    "css_rules": [
+      "No 'text-align: center' on container",
+      "No 'transition: all'",
+      "Use 'backdrop-filter' for glass effects"
     ]
-  },
-  "instructions_to_main_agent": "You are building the 'Pet Life OS'. It must feel like a premium, joyful operating system for dog owners. Use the 'Tetris Grid' for the homepage to showcase the 14 pillars. Use the 'High Density Bento' for the Member Dashboard. The 'Mira AI' widget must be a floating, glowing orb (use CSS animations) that is always accessible. Prioritize mobile responsiveness above all else."
+  }
 }
