@@ -2046,6 +2046,14 @@ const DoggyServiceDesk = ({ authHeaders }) => {
         onDismiss={() => setRealtimeNotification(null)} 
       />
       
+      {/* Mobile sidebar backdrop */}
+      {isMobile && mobileView === 'sidebar' && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-30"
+          onClick={() => setMobileView('list')}
+        />
+      )}
+      
       {/* ==================== LEFT SIDEBAR ==================== */}
       <div className={`
         bg-slate-800 text-white transition-all duration-300 flex flex-col
@@ -2057,15 +2065,26 @@ const DoggyServiceDesk = ({ authHeaders }) => {
       `}>
         {/* Logo */}
         <div className="p-4 border-b border-slate-700">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-xl flex items-center justify-center shadow-lg">
-              <PawPrint className="w-5 h-5 text-white" />
-            </div>
-            {!sidebarCollapsed && (
-              <div>
-                <div className="font-bold text-sm">The Doggy Company</div>
-                <div className="text-[10px] text-emerald-400 uppercase tracking-wider">Command Center</div>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-xl flex items-center justify-center shadow-lg">
+                <PawPrint className="w-5 h-5 text-white" />
               </div>
+              {(!sidebarCollapsed || isMobile) && (
+                <div>
+                  <div className="font-bold text-sm">The Doggy Company</div>
+                  <div className="text-[10px] text-emerald-400 uppercase tracking-wider">Command Center</div>
+                </div>
+              )}
+            </div>
+            {/* Close button for mobile sidebar */}
+            {isMobile && (
+              <button
+                onClick={() => setMobileView('list')}
+                className="p-2 hover:bg-slate-700 rounded-lg"
+              >
+                <X className="w-5 h-5" />
+              </button>
             )}
           </div>
         </div>
