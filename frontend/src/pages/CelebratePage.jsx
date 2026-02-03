@@ -52,6 +52,7 @@ const CelebratePage = () => {
   const [showConciergeModal, setShowConciergeModal] = useState(false);
   const [conciergeSubmitting, setConciergeSubmitting] = useState(false);
   const [userPets, setUserPets] = useState([]);
+  const [showSoulExplainer, setShowSoulExplainer] = useState(false);
   const { addToCart } = useCart();
   const { user, token } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
