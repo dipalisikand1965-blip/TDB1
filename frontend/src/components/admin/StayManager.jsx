@@ -479,10 +479,42 @@ const StayManager = ({ getAuthHeader }) => {
             <p className="text-sm text-gray-500">Manage pet-friendly stays & boarding</p>
           </div>
         </div>
-        <Button onClick={fetchAllData} variant="outline" disabled={loading}>
-          <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-          Refresh
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            onClick={async () => {
+              setSeedingAll(true);
+              try {
+                const response = await fetch(`${API_URL}/api/admin/stay/seed-all`, {
+                  method: 'POST',
+                  headers: getAuthHeader()
+                });
+                if (response.ok) {
+                  const data = await response.json();
+                  toast({ title: '✅ Stay Data Seeded!', description: data.message });
+                  fetchAllData();
+                } else {
+                  const error = await response.json();
+                  toast({ title: 'Error', description: error.detail || 'Failed to seed stay data', variant: 'destructive' });
+                }
+              } catch (error) {
+                console.error('Error seeding stay data:', error);
+                toast({ title: 'Error', description: 'Failed to seed stay data', variant: 'destructive' });
+              } finally {
+                setSeedingAll(false);
+              }
+            }}
+            disabled={seedingAll}
+            className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white"
+            data-testid="seed-all-stay-btn"
+          >
+            <Sparkles className="w-4 h-4 mr-2" />
+            {seedingAll ? 'Seeding...' : 'Seed All Stay Data'}
+          </Button>
+          <Button onClick={fetchAllData} variant="outline" disabled={loading}>
+            <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+            Refresh
+          </Button>
+        </div>
       </div>
 
       {/* Stats */}
