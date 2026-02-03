@@ -678,20 +678,20 @@ const EnjoyPage = () => {
       </div>
 
       {/* === UPCOMING EVENTS === */}
-      <div id="experiences" className="py-16 bg-white">
+      <div id="experiences" className="py-12 sm:py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 gap-4">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 sm:mb-8 gap-4">
             <div>
               <Badge className="bg-red-100 text-red-700 mb-2">Upcoming</Badge>
-              <h2 className="text-3xl font-bold text-gray-900">Events & Experiences</h2>
-              <p className="text-gray-600 mt-1">Find the perfect adventure for you and your pet</p>
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Events & Experiences</h2>
+              <p className="text-gray-600 mt-1 text-sm sm:text-base">Find the perfect adventure for you and your pet</p>
             </div>
             
-            {/* Filters */}
-            <div className="flex flex-wrap gap-2">
+            {/* Filters - Scrollable on mobile */}
+            <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:overflow-visible scrollbar-hide">
               <button
                 onClick={() => setSelectedType(null)}
-                className={`px-4 py-2 rounded-full transition-all text-sm ${
+                className={`px-3 sm:px-4 py-2 rounded-full transition-all text-xs sm:text-sm whitespace-nowrap flex-shrink-0 ${
                   !selectedType ? 'bg-red-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
@@ -703,7 +703,7 @@ const EnjoyPage = () => {
                   <button
                     key={key}
                     onClick={() => setSelectedType(selectedType === key ? null : key)}
-                    className={`flex items-center gap-1 px-3 py-2 rounded-full transition-all text-sm ${
+                    className={`flex items-center gap-1 px-3 py-2 rounded-full transition-all text-xs sm:text-sm whitespace-nowrap flex-shrink-0 ${
                       selectedType === key ? `bg-gradient-to-r ${type.color} text-white` : `${type.bgColor} ${type.textColor} hover:scale-105`
                     }`}
                     data-testid={`filter-${key}`}
@@ -721,65 +721,66 @@ const EnjoyPage = () => {
               <Loader2 className="w-8 h-8 text-red-500 animate-spin" />
             </div>
           ) : filteredExperiences.length > 0 ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredExperiences.slice(0, 6).map((exp) => {
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+              {filteredExperiences.slice(0, 6).map((exp, idx) => {
                 const typeConfig = EXPERIENCE_TYPES[exp.experience_type] || EXPERIENCE_TYPES.event;
                 const Icon = typeConfig.icon;
                 return (
                   <Card 
                     key={exp.id} 
-                    className="group overflow-hidden hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-red-200"
+                    className={`animate-fade-in-up stagger-${Math.min(idx + 1, 6)} group overflow-hidden hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-red-200`}
                     data-testid={`experience-${exp.id}`}
                   >
                     {/* Image */}
-                    <div className="relative h-48 overflow-hidden">
+                    <div className="relative h-40 sm:h-48 overflow-hidden">
                       <img 
                         src={exp.image || exp.photos?.[0] || `https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80`}
                         alt={exp.name}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       />
-                      <div className={`absolute top-3 left-3 px-3 py-1 rounded-full bg-gradient-to-r ${typeConfig.color} text-white text-xs font-medium flex items-center gap-1`}>
-                        <Icon className="w-3 h-3" />
-                        {typeConfig.name}
+                      <div className={`absolute top-2 sm:top-3 left-2 sm:left-3 px-2 sm:px-3 py-1 rounded-full bg-gradient-to-r ${typeConfig.color} text-white text-[10px] sm:text-xs font-medium flex items-center gap-1`}>
+                        <Icon className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+                        <span className="hidden sm:inline">{typeConfig.name}</span>
+                        <span className="sm:hidden">{typeConfig.name.split(' ')[0]}</span>
                       </div>
                       {exp.is_featured && (
-                        <div className="absolute top-3 right-3 px-2 py-1 bg-amber-500 text-white text-xs font-medium rounded-full">
+                        <div className="absolute top-2 sm:top-3 right-2 sm:right-3 px-2 py-1 bg-amber-500 text-white text-[10px] sm:text-xs font-medium rounded-full">
                           ⭐ Featured
                         </div>
                       )}
                     </div>
                     
                     {/* Content */}
-                    <div className="p-5">
-                      <h3 className="font-bold text-lg text-gray-900 mb-2 line-clamp-1">{exp.name}</h3>
-                      <p className="text-gray-600 text-sm mb-4 line-clamp-2">{exp.description}</p>
+                    <div className="p-4 sm:p-5">
+                      <h3 className="font-bold text-base sm:text-lg text-gray-900 mb-1 sm:mb-2 line-clamp-1">{exp.name}</h3>
+                      <p className="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-2">{exp.description}</p>
                       
-                      <div className="space-y-2 mb-4">
+                      <div className="space-y-1.5 sm:space-y-2 mb-3 sm:mb-4">
                         {exp.event_date && (
-                          <div className="flex items-center gap-2 text-sm text-gray-500">
-                            <Calendar className="w-4 h-4 text-red-500" />
+                          <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500">
+                            <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-500" />
                             {new Date(exp.event_date).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}
                             {exp.start_time && ` • ${exp.start_time}`}
                           </div>
                         )}
                         {exp.city && (
-                          <div className="flex items-center gap-2 text-sm text-gray-500">
-                            <MapPin className="w-4 h-4 text-rose-500" />
-                            {exp.venue_name ? `${exp.venue_name}, ${exp.city}` : exp.city}
+                          <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500">
+                            <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-rose-500" />
+                            <span className="truncate">{exp.venue_name ? `${exp.venue_name}, ${exp.city}` : exp.city}</span>
                           </div>
                         )}
                       </div>
                       
                       <div className="flex items-center justify-between">
-                        <div className="text-lg font-bold text-red-600">
+                        <div className="text-base sm:text-lg font-bold text-red-600">
                           {exp.is_free ? 'Free' : `₹${exp.price || 0}`}
                         </div>
                         <Button 
                           onClick={() => handleRsvp(exp)}
-                          className="bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white"
+                          className="bg-gradient-to-r from-red-500 to-rose-500 hover:from-red-600 hover:to-rose-600 text-white text-xs sm:text-sm px-3 sm:px-4"
                           data-testid={`rsvp-${exp.id}`}
                         >
-                          <Ticket className="w-4 h-4 mr-1" />
+                          <Ticket className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1" />
                           RSVP
                         </Button>
                       </div>
@@ -789,19 +790,19 @@ const EnjoyPage = () => {
               })}
             </div>
           ) : (
-            <Card className="p-12 text-center">
-              <PartyPopper className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No events found</h3>
-              <p className="text-gray-500 mb-4">Try adjusting your filters or check back soon!</p>
-              <Button onClick={() => { setSelectedType(null); setSelectedCity(''); }} variant="outline">
+            <Card className="p-8 sm:p-12 text-center">
+              <PartyPopper className="w-10 h-10 sm:w-12 sm:h-12 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">No events found</h3>
+              <p className="text-gray-500 text-sm mb-4">Try adjusting your filters or check back soon!</p>
+              <Button onClick={() => { setSelectedType(null); setSelectedCity(''); }} variant="outline" size="sm">
                 Clear Filters
               </Button>
             </Card>
           )}
           
           {filteredExperiences.length > 6 && (
-            <div className="text-center mt-8">
-              <Button variant="outline" size="lg" onClick={scrollToExperiences}>
+            <div className="text-center mt-6 sm:mt-8">
+              <Button variant="outline" size="lg" onClick={scrollToExperiences} className="text-sm sm:text-base">
                 View All {filteredExperiences.length} Experiences
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
