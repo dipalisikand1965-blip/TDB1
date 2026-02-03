@@ -1843,26 +1843,28 @@ const UnifiedPetPage = () => {
               </div>
             </Card>
             
-            {/* Photo Lightbox Modal */}
+            {/* Photo Lightbox Modal - Smooth transitions */}
             {selectedGalleryPhoto && (
               <div 
-                className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4"
+                className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4 animate-fade-in backdrop-blur-sm"
                 onClick={() => setSelectedGalleryPhoto(null)}
               >
                 <button 
-                  className="absolute top-4 right-4 text-white/80 hover:text-white p-2"
+                  className="absolute top-4 right-4 text-white/80 hover:text-white p-3 rounded-full bg-white/10 hover:bg-white/20 transition-all"
                   onClick={() => setSelectedGalleryPhoto(null)}
                 >
-                  <X className="w-8 h-8" />
+                  <X className="w-6 h-6" />
                 </button>
-                <img 
-                  src={selectedGalleryPhoto.is_main ? selectedGalleryPhoto.url : `${API_URL}${selectedGalleryPhoto.url}`}
-                  alt={safePet.name}
-                  className="max-w-full max-h-[85vh] rounded-lg shadow-2xl"
-                  onClick={(e) => e.stopPropagation()}
-                />
+                <div className="animate-scale-in">
+                  <img 
+                    src={selectedGalleryPhoto.is_main ? selectedGalleryPhoto.url : `${API_URL}${selectedGalleryPhoto.url}`}
+                    alt={safePet.name}
+                    className="max-w-full max-h-[85vh] rounded-2xl shadow-2xl ring-4 ring-white/10"
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                </div>
                 {!selectedGalleryPhoto.is_main && (
-                  <div className="absolute bottom-4 flex gap-3">
+                  <div className="absolute bottom-6 flex gap-3 animate-fade-in-up" style={{ animationDelay: '200ms' }}>
                     <Button
                       onClick={async (e) => {
                         e.stopPropagation();
@@ -1880,12 +1882,13 @@ const UnifiedPetPage = () => {
                           toast({ title: 'Error', description: 'Failed to set main photo', variant: 'destructive' });
                         }
                       }}
-                      className="bg-purple-600 hover:bg-purple-700"
+                      className="bg-purple-600 hover:bg-purple-700 shadow-lg"
                     >
                       <Check className="w-4 h-4 mr-2" /> Set as Main Photo
                     </Button>
                     <Button
                       variant="destructive"
+                      className="shadow-lg"
                       onClick={async (e) => {
                         e.stopPropagation();
                         const token = localStorage.getItem('token');
