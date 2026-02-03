@@ -39,12 +39,6 @@ def set_quote_deps(admin_verify_func, razorpay_key=None):
 def get_utc_timestamp():
     return datetime.now(timezone.utc).isoformat()
 
-def get_admin_username():
-    """Dependency to get admin username from the verify_admin function"""
-    if _verify_admin_func is None:
-        raise HTTPException(status_code=500, detail="Admin verification not configured")
-    return _verify_admin_func
-
 
 # ==================== MODELS ====================
 
