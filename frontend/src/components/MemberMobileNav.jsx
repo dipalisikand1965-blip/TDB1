@@ -163,10 +163,12 @@ const MemberMobileNav = () => {
 
   return (
     <>
-      {/* Paw Print Toggle Button - Fixed on left side, only visible on mobile */}
+      {/* Floating Paw Toggle Button - Hidden on pages with bottom nav, shown elsewhere */}
+      {/* This button is now replaced by the "My Pet" button in MobileNavBar */}
+      {/* Keeping it only for tablet/intermediate sizes where bottom nav might not show */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`md:hidden fixed left-0 top-1/2 -translate-y-1/2 z-[9998] p-2.5 rounded-r-xl shadow-lg transition-all duration-300 ${
+        className={`hidden fixed left-0 top-1/2 -translate-y-1/2 z-[9998] p-2.5 rounded-r-xl shadow-lg transition-all duration-300 ${
           isOpen 
             ? 'bg-gray-800' 
             : 'bg-gradient-to-r from-teal-600 to-teal-700'
