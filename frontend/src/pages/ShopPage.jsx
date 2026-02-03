@@ -23,6 +23,7 @@ import {
   SlidersHorizontal, X, Check, Clock, Flame, Award, Package,
   PawPrint, Cake, UtensilsCrossed, Scissors, Dog, Bone
 } from 'lucide-react';
+import { PawmeterBadge, PawmeterStars } from '../components/PawmeterDisplay';
 
 // Shop Categories
 // Default categories (will be replaced by API data)
