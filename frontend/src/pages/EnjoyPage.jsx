@@ -813,19 +813,21 @@ const EnjoyPage = () => {
 
       {/* === PRODUCTS SECTION === */}
       {products.length > 0 && (
-        <div id="products" className="py-16 bg-gray-50">
+        <div id="products" className="py-12 sm:py-16 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4">
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center justify-between mb-6 sm:mb-8">
               <div>
                 <Badge className="bg-rose-100 text-rose-700 mb-2">Shop</Badge>
-                <h2 className="text-3xl font-bold text-gray-900">Adventure Essentials</h2>
-                <p className="text-gray-600 mt-1">Everything you need for the perfect outing</p>
+                <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Adventure Essentials</h2>
+                <p className="text-gray-600 mt-1 text-sm sm:text-base">Everything you need for the perfect outing</p>
               </div>
             </div>
             
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {products.slice(0, 8).map((product) => (
-                <ProductCard key={product.id} product={product} pillar="enjoy" />
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+              {products.slice(0, 8).map((product, idx) => (
+                <div key={product.id} className={`animate-scale-in stagger-${Math.min(idx + 1, 8)}`}>
+                  <ProductCard product={product} pillar="enjoy" />
+                </div>
               ))}
             </div>
           </div>
