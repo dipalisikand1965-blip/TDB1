@@ -2904,34 +2904,35 @@ const DoggyServiceDesk = ({ authHeaders }) => {
             </div>
           </div>
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
             {/* New Ticket Button with Dropdown */}
             <div className="relative">
               <Button 
                 onClick={() => setShowNewTicketModal(true)}
-                className="bg-emerald-500 hover:bg-emerald-600 gap-2 shadow-sm"
+                className="bg-emerald-500 hover:bg-emerald-600 gap-1 md:gap-2 shadow-sm text-xs md:text-sm px-2 md:px-4"
                 data-testid="new-ticket-btn"
               >
-                <Plus className="w-4 h-4" /> New Ticket
+                <Plus className="w-4 h-4" /> 
+                <span className="hidden sm:inline">New Ticket</span>
               </Button>
             </div>
-            <Button onClick={handleRefresh} variant="outline" size="icon" className="shadow-sm" disabled={refreshing}>
+            <Button onClick={handleRefresh} variant="outline" size="icon" className="shadow-sm w-8 h-8 md:w-9 md:h-9" disabled={refreshing}>
               <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
             </Button>
             <Button 
               onClick={handleExportCSV} 
               variant="outline" 
               size="sm" 
-              className="shadow-sm gap-2"
+              className="shadow-sm gap-1 md:gap-2 hidden sm:flex"
               disabled={!tickets || tickets.length === 0}
               title={`Export ${tickets?.length || 0} tickets to CSV`}
               data-testid="export-csv-btn"
             >
               <Download className="w-4 h-4" />
-              Export
+              <span className="hidden md:inline">Export</span>
             </Button>
             {/* Notification Bell */}
-            <div className="relative">
+            <div className="relative hidden sm:block">
               <button 
                 onClick={() => {
                   if (notificationPermission !== 'granted') {
