@@ -475,67 +475,27 @@ const EnjoyPage = () => {
         </div>
       </div>
 
-      {/* ==================== CONVERSATIONAL ENTRY ==================== */}
+      {/* ==================== CONVERSATIONAL ENTRY + QUICK WIN ==================== */}
       <div className="py-8 sm:py-12 bg-gradient-to-b from-slate-50 to-white">
-        <div className="max-w-4xl mx-auto px-4">
-          <div className="bg-white rounded-2xl sm:rounded-3xl shadow-xl border border-red-100 overflow-hidden">
-            {/* Header */}
-            <div className="bg-gradient-to-r from-red-600 to-rose-600 px-4 sm:px-6 py-3 sm:py-4">
-              <div className="flex items-center gap-2 sm:gap-3">
-                <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 rounded-full flex items-center justify-center">
-                  <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                </div>
-                <div>
-                  <h3 className="text-white font-bold text-sm sm:text-base">What adventure are you looking for?</h3>
-                  <p className="text-white/70 text-xs sm:text-sm">Mira will help you find the perfect experience</p>
-                </div>
-              </div>
-            </div>
-            
-            {/* Goal Buttons */}
-            <div className="p-4 sm:p-6">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3">
-                {[
-                  { icon: '🎉', label: 'Events', type: 'event', color: 'bg-red-50 hover:bg-red-100 text-red-700 border-red-200' },
-                  { icon: '🏕️', label: 'Trails', type: 'trail', color: 'bg-rose-50 hover:bg-rose-100 text-rose-700 border-rose-200' },
-                  { icon: '🐕', label: 'Playdates', type: 'meetup', color: 'bg-pink-50 hover:bg-pink-100 text-pink-700 border-pink-200' },
-                  { icon: '☕', label: 'Pet Cafés', type: 'cafe', color: 'bg-red-50 hover:bg-red-100 text-red-700 border-red-200' },
-                  { icon: '📚', label: 'Workshops', type: 'workshop', color: 'bg-rose-50 hover:bg-rose-100 text-rose-700 border-rose-200' },
-                  { icon: '🧘', label: 'Wellness', type: 'wellness', color: 'bg-pink-50 hover:bg-pink-100 text-pink-700 border-pink-200' },
-                  { icon: '📷', label: 'Photoshoots', type: 'event', color: 'bg-red-50 hover:bg-red-100 text-red-700 border-red-200' },
-                  { icon: '💬', label: 'Other', type: 'other', color: 'bg-gray-50 hover:bg-gray-100 text-gray-700 border-gray-200' }
-                ].map((goal, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => {
-                      if (goal.type === 'other') {
-                        navigate('/mira?context=enjoy');
-                      } else {
-                        navigate(`/mira?context=enjoy_${goal.type}&preset=${encodeURIComponent(`I'm looking for ${goal.label.toLowerCase()} for my pet`)}`);
-                      }
-                    }}
-                    className={`animate-scale-in stagger-${idx + 1} flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-4 py-2.5 sm:py-3 rounded-xl border-2 transition-all hover:scale-[1.02] ${goal.color}`}
-                    data-testid={`goal-${goal.type}`}
-                  >
-                    <span className="text-base sm:text-xl">{goal.icon}</span>
-                    <span className="font-medium text-xs sm:text-sm">{goal.label}</span>
-                  </button>
-                ))}
-              </div>
-              
-              {/* Quick Win */}
-              <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-gradient-to-r from-red-50 to-rose-50 rounded-xl border border-red-200">
-                <div className="flex items-start gap-2 sm:gap-3">
-                  <div className="w-7 h-7 sm:w-8 sm:h-8 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-red-600" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-red-800 text-xs sm:text-sm">Quick Tip</p>
-                    <p className="text-red-700 text-xs sm:text-sm">Start with calm, low-stimulation events if your pet is new to social gatherings. Build confidence gradually!</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-4 sm:gap-6 items-stretch">
+            <ConversationalEntry 
+              pillar="enjoy"
+              petName={userPets[0]?.name}
+            />
+            <QuickWinTip
+              pillar="enjoy"
+              petName={userPets[0]?.name}
+              petBreed={userPets[0]?.breed}
+              petAge={userPets[0]?.age}
+              onActionClick={(tip) => {
+                if (tip?.actionType === 'navigate' && tip?.actionUrl) {
+                  navigate(tip.actionUrl);
+                } else {
+                  toast({ title: tip?.action || 'Coming soon!', description: 'This feature will be available soon.' });
+                }
+              }}
+            />
           </div>
         </div>
       </div>
