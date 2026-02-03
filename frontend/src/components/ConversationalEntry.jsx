@@ -263,7 +263,7 @@ const ConversationalEntry = ({
                 )}
               </p>
               <p className="text-sm text-gray-500 mt-1">
-                Tap a goal to start chatting with Mira
+                Tap a goal to request concierge assistance
               </p>
             </div>
           </div>
