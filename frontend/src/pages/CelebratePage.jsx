@@ -112,6 +112,13 @@ const CelebratePage = () => {
     }
   }, [user]);
 
+  // Listen for openSoulExplainer event from footer
+  useEffect(() => {
+    const handleOpenExplainer = () => setShowSoulExplainer(true);
+    window.addEventListener('openSoulExplainer', handleOpenExplainer);
+    return () => window.removeEventListener('openSoulExplainer', handleOpenExplainer);
+  }, []);
+
   // Submit concierge request to unified flow
   const handleConciergeSubmit = async (e) => {
     e.preventDefault();
