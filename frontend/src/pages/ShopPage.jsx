@@ -115,6 +115,13 @@ const ProductCard = ({ product, onAddToCart, viewMode = 'grid' }) => {
                 ))}
               </div>
             )}
+            
+            {/* Pawmeter Score for list view */}
+            {product.pawmeter?.overall && (
+              <div className="mt-2">
+                <PawmeterStars score={product.pawmeter.overall} size="sm" />
+              </div>
+            )}
           </div>
           
           <div className="flex items-center justify-between mt-4">
