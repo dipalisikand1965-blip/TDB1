@@ -58,6 +58,7 @@ const CelebrateConcierePicker = ({ category = 'cakes', onClose }) => {
   const [showPetSelector, setShowPetSelector] = useState(false);
   const [ticketCreated, setTicketCreated] = useState(false);
   const [createdTicketId, setCreatedTicketId] = useState(null);
+  const [showPartyWizard, setShowPartyWizard] = useState(false);
   
   // Fetch user's pets
   useEffect(() => {
