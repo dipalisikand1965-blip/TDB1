@@ -3676,30 +3676,45 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                 <>
                   {/* Backdrop overlay */}
                   <div 
-                    className="fixed inset-0 bg-black/30 z-40 transition-opacity duration-300"
-                    onClick={() => setSelectedTicket(null)}
+                    className={`fixed inset-0 bg-black/30 z-40 transition-opacity duration-300 ${isMobile && mobileView !== 'detail' ? 'hidden' : ''}`}
+                    onClick={() => { setSelectedTicket(null); if(isMobile) setMobileView('list'); }}
                   />
                   
-                  {/* Slide-out Drawer */}
-                  <div className="fixed right-0 top-0 h-full w-3/4 max-w-[1200px] min-w-[600px] bg-white shadow-2xl z-50 flex flex-col transform transition-transform duration-300 ease-out animate-slide-in-right">
+                  {/* Slide-out Drawer - Full screen on mobile */}
+                  <div className={`
+                    fixed right-0 top-0 h-full bg-white shadow-2xl z-50 flex flex-col transform transition-transform duration-300 ease-out animate-slide-in-right
+                    ${isMobile 
+                      ? `w-full ${mobileView === 'detail' ? 'translate-x-0' : 'translate-x-full'} pb-16` 
+                      : 'w-3/4 max-w-[1200px] min-w-[600px]'
+                    }
+                  `}>
                   {/* Detail Header */}
-                  <div className="px-6 py-4 border-b flex items-center justify-between flex-shrink-0 bg-gradient-to-r from-emerald-50 to-teal-50">
+                  <div className="px-3 md:px-6 py-3 md:py-4 border-b flex items-center justify-between flex-shrink-0 bg-gradient-to-r from-emerald-50 to-teal-50">
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-3 mb-2">
-                        {PILLARS[selectedTicket.category] && (
-                          <span className="text-2xl">{PILLARS[selectedTicket.category].emoji}</span>
+                      <div className="flex items-center gap-2 md:gap-3 mb-2">
+                        {/* Back button for mobile */}
+                        {isMobile && (
+                          <button 
+                            onClick={() => { setSelectedTicket(null); setMobileView('list'); }}
+                            className="p-2 -ml-2 hover:bg-white/50 rounded"
+                          >
+                            <ChevronRight className="w-5 h-5 text-gray-500 rotate-180" />
+                          </button>
                         )}
-                        <span className="font-mono text-sm text-gray-500 bg-white px-2 py-1 rounded">{selectedTicket.ticket_id}</span>
+                        {PILLARS[selectedTicket.category] && (
+                          <span className="text-xl md:text-2xl">{PILLARS[selectedTicket.category].emoji}</span>
+                        )}
+                        <span className="font-mono text-xs md:text-sm text-gray-500 bg-white px-2 py-1 rounded truncate max-w-[120px] md:max-w-none">{selectedTicket.ticket_id}</span>
                         <button 
                           onClick={startEditingTicket}
-                          className="p-1.5 hover:bg-white/50 rounded"
+                          className="p-1.5 hover:bg-white/50 rounded flex-shrink-0"
                           title="Edit Ticket"
                         >
                           <Edit className="w-4 h-4 text-gray-400 hover:text-emerald-600" />
                         </button>
                         {/* Agent Collision Warning */}
                         {activeAgents[selectedTicket.ticket_id]?.filter(a => a !== adminUser).length > 0 && (
-                          <div className="flex items-center gap-1 px-2 py-1 bg-amber-100 text-amber-700 rounded-full text-xs">
+                          <div className="hidden md:flex items-center gap-1 px-2 py-1 bg-amber-100 text-amber-700 rounded-full text-xs">
                             <AlertTriangle className="w-3 h-3" />
                             <span>Also viewing: {activeAgents[selectedTicket.ticket_id].filter(a => a !== adminUser).join(', ')}</span>
                           </div>
@@ -3711,7 +3726,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                           <Input
                             value={editedSubject}
                             onChange={(e) => setEditedSubject(e.target.value)}
-                            className="flex-1 text-lg font-semibold"
+                            className="flex-1 text-base md:text-lg font-semibold"
                             onKeyDown={(e) => {
                               if (e.key === 'Enter') saveSubject();
                               if (e.key === 'Escape') setEditingSubject(false);
