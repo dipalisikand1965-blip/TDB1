@@ -41,14 +41,19 @@ const MemberMobileNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // Hide on admin, login, register pages - these have their own navigation
-  // Also hide on homepage and public pillar pages since we have bottom nav
-  const hiddenPaths = ['/admin', '/login', '/register', '/forgot-password', '/agent', '/'];
-  const publicPillarPaths = ['/celebrate', '/dine', '/stay', '/travel', '/care', '/enjoy', '/fit', '/learn', '/paperwork', '/advisory', '/emergency', '/farewell', '/adopt', '/shop', '/services', '/membership'];
+  // Hide only on admin, login, register pages - these have their own navigation
+  const hiddenPaths = ['/admin', '/login', '/register', '/forgot-password', '/agent'];
+  const shouldHide = hiddenPaths.some(path => location.pathname.startsWith(path));
   
-  const shouldHide = hiddenPaths.some(path => location.pathname === path) || 
-                     publicPillarPaths.some(path => location.pathname.startsWith(path)) ||
-                     location.pathname === '/';
+  // Listen for global event to open sidebar (from MobileNavBar "My Pet" button)
+  useEffect(() => {
+    const handleOpenSidebar = () => {
+      setIsOpen(true);
+    };
+    
+    window.addEventListener('openPetSidebar', handleOpenSidebar);
+    return () => window.removeEventListener('openPetSidebar', handleOpenSidebar);
+  }, []);
   
   // Close sidebar on route change
   useEffect(() => {
