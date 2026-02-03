@@ -172,6 +172,13 @@ from pricing_sync_service import (
     batch_update_pawmeters
 )
 
+# Quote Builder routes
+from quote_builder_routes import (
+    router as quote_router,
+    set_quote_db,
+    set_quote_deps
+)
+
 # Stay pillar routes
 from stay_routes import (
     stay_router,
