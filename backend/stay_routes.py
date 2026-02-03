@@ -2560,3 +2560,134 @@ async def get_my_bookings(email: str, limit: int = 20):
         "past": past,
         "total": len(bookings)
     }
+
+
+# ============================================
+# SEED ALL STAY DATA ENDPOINT
+# ============================================
+
+@stay_admin_router.post("/seed-all")
+async def seed_all_stay_data(username: str = Depends(verify_admin)):
+    """Seed all stay pillar data: properties, bundles, and products"""
+    results = {
+        "properties": 0,
+        "bundles": 0,
+        "products": 0,
+        "errors": []
+    }
+    
+    # Seed bundles using the existing function
+    try:
+        bundles_result = await seed_stay_bundles(username)
+        results["bundles"] = bundles_result.get("bundles_seeded", 0)
+    except Exception as e:
+        results["errors"].append(f"Bundles: {str(e)}")
+    
+    # Seed products using the existing function  
+    try:
+        products_result = await seed_stay_products(username)
+        results["products"] = products_result.get("products_seeded", 0)
+    except Exception as e:
+        results["errors"].append(f"Products: {str(e)}")
+    
+    # Seed sample stay properties if none exist
+    try:
+        existing_properties = await db.stay_properties.count_documents({})
+        if existing_properties == 0:
+            sample_properties = [
+                {
+                    "id": f"stay-{secrets.token_hex(4)}",
+                    "name": "Pawsome Pet Resort - Lonavala",
+                    "type": "resort",
+                    "city": "Lonavala",
+                    "state": "Maharashtra",
+                    "description": "Premium pet boarding with luxury suites, play areas, and 24/7 care",
+                    "image": "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=800",
+                    "price_per_night": 1999,
+                    "amenities": ["AC Rooms", "Swimming Pool", "Grooming", "Vet on Call", "CCTV Monitoring"],
+                    "pet_policy": {
+                        "max_pets": 2,
+                        "allowed_species": ["dog", "cat"],
+                        "vaccination_required": True
+                    },
+                    "paw_rating": {
+                        "comfort": 4.5,
+                        "safety": 5.0,
+                        "freedom": 4.0,
+                        "care": 4.8,
+                        "joy": 4.5,
+                        "overall": 4.6
+                    },
+                    "featured": True,
+                    "verified": True,
+                    "created_at": get_utc_timestamp(),
+                    "updated_at": get_utc_timestamp()
+                },
+                {
+                    "id": f"stay-{secrets.token_hex(4)}",
+                    "name": "The Dog House - Gurgaon",
+                    "type": "boarding",
+                    "city": "Gurgaon",
+                    "state": "Haryana",
+                    "description": "Home-style boarding with personal attention and regular updates",
+                    "image": "https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=800",
+                    "price_per_night": 1499,
+                    "amenities": ["AC Rooms", "Play Area", "Grooming", "Photo Updates", "Pickup/Drop"],
+                    "pet_policy": {
+                        "max_pets": 3,
+                        "allowed_species": ["dog"],
+                        "vaccination_required": True
+                    },
+                    "paw_rating": {
+                        "comfort": 4.2,
+                        "safety": 4.5,
+                        "freedom": 4.3,
+                        "care": 4.8,
+                        "joy": 4.5,
+                        "overall": 4.5
+                    },
+                    "featured": True,
+                    "verified": True,
+                    "created_at": get_utc_timestamp(),
+                    "updated_at": get_utc_timestamp()
+                },
+                {
+                    "id": f"stay-{secrets.token_hex(4)}",
+                    "name": "Countryside Paws - Coorg",
+                    "type": "farmstay",
+                    "city": "Coorg",
+                    "state": "Karnataka",
+                    "description": "Nature retreat with open fields and forest trails for pets to explore",
+                    "image": "https://images.unsplash.com/photo-1520637102912-2df6bb2aec6d?w=800",
+                    "price_per_night": 2499,
+                    "amenities": ["Open Fields", "Forest Trails", "Organic Food", "Swimming Pond", "Bonfire"],
+                    "pet_policy": {
+                        "max_pets": 4,
+                        "allowed_species": ["dog"],
+                        "vaccination_required": True
+                    },
+                    "paw_rating": {
+                        "comfort": 4.0,
+                        "safety": 4.3,
+                        "freedom": 5.0,
+                        "care": 4.5,
+                        "joy": 5.0,
+                        "overall": 4.6
+                    },
+                    "featured": False,
+                    "verified": True,
+                    "created_at": get_utc_timestamp(),
+                    "updated_at": get_utc_timestamp()
+                }
+            ]
+            await db.stay_properties.insert_many(sample_properties)
+            results["properties"] = len(sample_properties)
+    except Exception as e:
+        results["errors"].append(f"Properties: {str(e)}")
+    
+    return {
+        "success": True,
+        "message": f"Seeded Stay data: {results['properties']} properties, {results['bundles']} bundles, {results['products']} products",
+        "results": results
+    }
+
