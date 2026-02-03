@@ -5,12 +5,12 @@
  * Features Elevated Concierge® Experiences for curated celebrations.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { 
   PartyPopper, Cake, Gift, Crown, Sparkles, Camera, Users, 
   Calendar, MapPin, ChevronRight, Star, Heart, Music,
-  Palette, ShoppingBag, Package, X, Phone, Mail, Dog, Send, ChevronLeft
+  Palette, ShoppingBag, Package, X, Phone, Mail, Dog, Send, ChevronLeft, Loader2
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
@@ -29,6 +29,9 @@ import PawmeterDisplay, { PawmeterBadge } from '../components/PawmeterDisplay';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
+
+// Lazy load Soul Explainer for footer link
+const SoulExplainerVideo = lazy(() => import('../components/SoulExplainerVideo'));
 
 // Product categories for Celebrate pillar
 const celebrateCategories = [
