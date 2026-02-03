@@ -258,7 +258,7 @@ async def calculate_pawmeter_score(item: dict) -> dict:
     
     # Get existing ratings
     ratings = []
-    if db:
+    if db is not None:
         cursor = db.paw_ratings.find({"item_id": item_id})
         ratings = await cursor.to_list(100)
     
