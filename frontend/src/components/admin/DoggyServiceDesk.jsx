@@ -1599,7 +1599,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
           setSelectedTicket(null);
         }
         // Remove from local state
-        setTickets(prev => prev.filter(t => t.ticket_id !== ticketToDelete.ticket_id));
+        setAllTickets(prev => prev.filter(t => t.ticket_id !== ticketToDelete.ticket_id));
         setShowDeleteConfirm(false);
         setTicketToDelete(null);
       } else {
