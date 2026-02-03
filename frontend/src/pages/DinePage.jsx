@@ -183,25 +183,25 @@ const DinePage = () => {
           className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url(https://customer-assets.emergentagent.com/job_petlifecentral/artifacts/afm7enef_image.png)` }}
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-orange-900/90 via-orange-800/80 to-red-800/70" />
+          <div className="absolute inset-0 bg-gradient-to-r from-orange-900/95 via-orange-800/90 to-red-800/85" />
         </div>
         
         <div className="relative max-w-6xl mx-auto px-4 h-full flex items-center">
-          <div className="max-w-2xl">
-            <Badge className="mb-4 bg-orange-500/20 text-orange-200 border-orange-400/30">
+          <div className="max-w-2xl animate-fade-in-up">
+            <Badge className="mb-4 bg-orange-500/30 text-orange-100 border-orange-400/40 backdrop-blur-sm">
               <UtensilsCrossed className="w-4 h-4 mr-1" /> Fresh Meals & Pet-Friendly Dining
             </Badge>
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 drop-shadow-lg">
               Nourish Your Pet with
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-300 to-yellow-300"> Love & Care</span>
             </h1>
-            <p className="text-lg text-gray-200 mb-6">
+            <p className="text-lg text-white/90 mb-6 drop-shadow-md">
               Discover nutritious fresh meals for your pet and find the best pet-friendly restaurants near you!
             </p>
             <div className="flex flex-wrap gap-3">
               <Button 
                 size="lg" 
-                className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600"
+                className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 shadow-lg hover:shadow-xl transition-all hover:scale-105"
                 onClick={() => document.getElementById('meals')?.scrollIntoView({ behavior: 'smooth' })}
               >
                 <Utensils className="w-5 h-5 mr-2" /> Shop Fresh Meals
@@ -209,7 +209,7 @@ const DinePage = () => {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="border-white/30 text-white hover:bg-white/10"
+                className="border-white/40 text-white hover:bg-white/20 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all hover:scale-105"
                 onClick={() => navigate('/dine/restaurants')}
               >
                 <MapPin className="w-5 h-5 mr-2" /> Find Restaurants
