@@ -3179,7 +3179,25 @@ CRITICAL CONCIERGE DOCTRINE:
         chat.with_model("openai", "gpt-5.1")  # Using GPT-5.1 as requested
         # Note: GPT-5.x models only support temperature=1
         
-        response = await chat.send_message(UserMessage(text=full_prompt))
+        # Retry logic for LLM call - try up to 2 times on transient failures
+        response = None
+        last_llm_error = None
+        for attempt in range(1, 3):
+            try:
+                response = await chat.send_message(UserMessage(text=full_prompt))
+                if response:
+                    break  # Success
+            except Exception as llm_error:
+                last_llm_error = llm_error
+                logger.warning(f"[Mira] LLM attempt {attempt}/2 failed: {llm_error}")
+                if attempt < 2:
+                    import asyncio
+                    await asyncio.sleep(0.5)  # Brief delay before retry
+                    continue
+                raise llm_error
+        
+        if not response:
+            raise Exception(f"LLM returned empty response after retries: {last_llm_error}")
         
         # ==================== RESPONSE HANDOFF CHECK ====================
         # If user is asking for listings/options and we don't have them, add handoff
