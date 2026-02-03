@@ -2,6 +2,7 @@
  * CelebrateConcierePicker.jsx
  * Rover-style celebration planner widget
  * Intercepts celebration planners before they browse products
+ * Now opens the full PartyPlanningWizard for a richer experience
  */
 
 import React, { useState, useEffect } from 'react';
@@ -19,6 +20,7 @@ import { toast } from '../hooks/use-toast';
 import { API_URL } from '../utils/api';
 import { format } from 'date-fns';
 import { getPetPhotoUrl } from '../utils/petAvatar';
+import PartyPlanningWizard from './PartyPlanningWizard';
 import {
   Cake, Gift, Camera, PartyPopper, Calendar as CalendarIcon, MapPin,
   Sparkles, ChevronRight, PawPrint, Heart, Star, Check, Loader2,
