@@ -122,12 +122,12 @@ const Home = () => {
             managed by a dedicated concierge® who learns, remembers, and cares.
           </p>
 
-          {/* Single Clear CTA */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/membership">
+          {/* Single Clear CTA - Stack on mobile, row on desktop */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center px-4">
+            <Link to="/membership" className="w-full sm:w-auto">
               <Button 
                 size="lg" 
-                className="bg-gradient-to-r from-pink-500 to-orange-500 hover:from-pink-600 hover:to-orange-600 text-white px-10 py-7 text-lg rounded-full shadow-2xl shadow-pink-500/30 transition-all hover:scale-105"
+                className="w-full sm:w-auto bg-gradient-to-r from-pink-500 to-orange-500 hover:from-pink-600 hover:to-orange-600 text-white px-8 sm:px-10 py-6 sm:py-7 text-base sm:text-lg rounded-full shadow-2xl shadow-pink-500/30 transition-all hover:scale-105 active:scale-95"
                 data-testid="hero-start-soul-btn"
               >
                 <PawPrint className="w-5 h-5 mr-2" />
@@ -138,7 +138,7 @@ const Home = () => {
               size="lg" 
               variant="ghost"
               onClick={handleOpenMira}
-              className="text-white/80 hover:text-white hover:bg-white/10 px-8 py-7 text-lg rounded-full"
+              className="w-full sm:w-auto text-white/80 hover:text-white hover:bg-white/10 px-8 sm:px-10 py-6 sm:py-7 text-base sm:text-lg rounded-full border border-white/20"
               data-testid="hero-talk-mira-btn"
             >
               <Sparkles className="w-5 h-5 mr-2" />
