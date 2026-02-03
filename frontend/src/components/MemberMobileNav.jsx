@@ -42,8 +42,13 @@ const MemberMobileNav = () => {
   const location = useLocation();
   
   // Hide on admin, login, register pages - these have their own navigation
-  const hiddenPaths = ['/admin', '/login', '/register', '/forgot-password', '/agent'];
-  const shouldHide = hiddenPaths.some(path => location.pathname.startsWith(path));
+  // Also hide on homepage and public pillar pages since we have bottom nav
+  const hiddenPaths = ['/admin', '/login', '/register', '/forgot-password', '/agent', '/'];
+  const publicPillarPaths = ['/celebrate', '/dine', '/stay', '/travel', '/care', '/enjoy', '/fit', '/learn', '/paperwork', '/advisory', '/emergency', '/farewell', '/adopt', '/shop', '/services', '/membership'];
+  
+  const shouldHide = hiddenPaths.some(path => location.pathname === path) || 
+                     publicPillarPaths.some(path => location.pathname.startsWith(path)) ||
+                     location.pathname === '/';
   
   // Close sidebar on route change
   useEffect(() => {
