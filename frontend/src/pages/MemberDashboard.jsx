@@ -13,12 +13,13 @@ import {
   RefreshCw, Calendar, Pause, Play, X, MessageSquare, Edit2, Trash2, Loader2,
   UtensilsCrossed, Users, Clock, Stethoscope, Sparkles, Home, Plane, Cake, Gift, Crown, Heart,
   ChevronRight, Trophy, Zap, Target, Flame, Award, Medal, CheckCircle2, ArrowRight, TrendingUp, Wallet,
-  BellRing, Smartphone, HelpCircle, Plus, Minus, History, FileText
+  BellRing, Smartphone, HelpCircle, Plus, Minus, History, FileText, Brain
 } from 'lucide-react';
 import axios from 'axios';
 import { toast } from '../hooks/use-toast';
 import { API_URL } from '../utils/api';
 import PetAvatar from '../components/PetAvatar';
+import SoulScoreArc from '../components/SoulScoreArc';
 
 // Lazy load heavy components to improve initial render
 const PawPointsRewards = lazy(() => import('../components/PawPointsRewards'));
