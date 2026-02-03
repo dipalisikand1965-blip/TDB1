@@ -154,17 +154,31 @@ const MobileNavBar = () => {
                 e.preventDefault();
                 handleNavClick(e, item);
               }}
-              className={`mobile-nav-item ${isActive(item.path) ? 'active' : ''}`}
+              className={`mobile-nav-item ${isActive(item.path) ? 'active' : ''} ${item.isPillarAware && currentPillar !== 'general' ? 'pillar-colored' : ''}`}
               style={{ 
                 animationDelay: `${index * 50}ms`,
                 touchAction: 'manipulation',
                 WebkitTapHighlightColor: 'transparent',
+                ...(item.isPillarAware && currentPillar !== 'general' ? {
+                  '--pillar-color': miraConfig.color.includes('pink') ? '#EC4899' : 
+                                   miraConfig.color.includes('orange') ? '#F97316' :
+                                   miraConfig.color.includes('blue') ? '#3B82F6' :
+                                   miraConfig.color.includes('green') ? '#10B981' :
+                                   miraConfig.color.includes('red') ? '#EF4444' :
+                                   miraConfig.color.includes('purple') ? '#8B5CF6' :
+                                   miraConfig.color.includes('yellow') ? '#F59E0B' :
+                                   miraConfig.color.includes('teal') ? '#14B8A6' :
+                                   miraConfig.color.includes('cyan') ? '#06B6D4' :
+                                   '#9333EA'
+                } : {})
               }}
               data-testid={`mobile-nav-${item.id}`}
               aria-label={item.label}
             >
-              <item.icon className="nav-icon" />
-              <span className="nav-label">{item.label}</span>
+              <item.icon className={`nav-icon ${item.isPillarAware && currentPillar !== 'general' ? 'text-current' : ''}`} 
+                style={item.isPillarAware && currentPillar !== 'general' ? { color: 'var(--pillar-color)' } : {}}
+              />
+              <span className="nav-label" style={item.isPillarAware && currentPillar !== 'general' ? { color: 'var(--pillar-color)' } : {}}>{item.label}</span>
             </button>
           );
         })}
