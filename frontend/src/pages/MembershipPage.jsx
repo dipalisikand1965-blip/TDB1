@@ -986,8 +986,8 @@ const MembershipPage = () => {
         </div>
       )}
       
-      {/* Mobile Navigation Dock */}
-      <MobileNavDock />
+      {/* Mobile Navigation Bar */}
+      <MobileNavBar />
     </div>
   );
 };
