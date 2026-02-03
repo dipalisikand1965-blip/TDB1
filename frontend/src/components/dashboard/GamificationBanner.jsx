@@ -13,9 +13,12 @@ import {
 import { getPetPhotoUrl } from '../../utils/petAvatar';
 import { ACHIEVEMENTS, TIER_COLORS, RARITY_COLORS } from './AchievementSystem';
 
-const GamificationBanner = ({ pets, orders, user, onNavigateToPet, onOpenExplainer }) => {
+const GamificationBanner = ({ pets, orders, user, onNavigateToPet, onOpenExplainer, selectedPetId }) => {
   const safePets = Array.isArray(pets) ? pets : [];
-  const primaryPet = safePets[0] || {};
+  // Use selected pet if provided, otherwise use first pet
+  const primaryPet = selectedPetId 
+    ? safePets.find(p => p.id === selectedPetId) || safePets[0] || {}
+    : safePets[0] || {};
   const soulScore = Math.min(100, primaryPet?.overall_score || 0);
   const questionsAnswered = Object.keys(primaryPet?.doggy_soul_answers || {}).length;
   const totalQuestions = 59;
