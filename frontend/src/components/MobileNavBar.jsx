@@ -80,8 +80,8 @@ const MobileNavBar = () => {
       id: 'mypet', 
       icon: PawPrint, 
       label: 'My Pet', 
-      // Members go to pet profile, non-members go to membership/onboarding
-      path: isAuthenticated ? '/dashboard?tab=pets' : '/membership',
+      // Opens the pet sidebar menu instead of navigating
+      opensSidebar: true,
       isPillarAware: true // This icon changes color per pillar
     },
   ];
