@@ -218,7 +218,53 @@ const MiraAI = () => {
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
   
-  // ElevenLabs TTS - Premium voice for Mira
+  // iOS Audio Context - Needed to prime audio on iOS Safari
+  const [audioContextPrimed, setAudioContextPrimed] = useState(false);
+  const iosAudioRef = useRef(null);
+  
+  // Prime audio context on iOS - call this on user interaction (voice toggle)
+  const primeAudioForIOS = useCallback(() => {
+    if (audioContextPrimed) return;
+    
+    try {
+      // Create a silent audio element and play it to unlock iOS audio
+      const silentAudio = new Audio();
+      // Short silent MP3 (base64 encoded)
+      silentAudio.src = 'data:audio/mp3;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAABhgC7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7u7v/////////////////////////////////' + 
+        '//////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAAYYoRwmHAAAAAAD/+1DEAAAGAAGn9AAAIgAANP8AAAARERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERERER';
+      silentAudio.volume = 0.01;
+      silentAudio.muted = false;
+      
+      const playPromise = silentAudio.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            console.log('[Mira Voice] ✓ iOS Audio context primed successfully');
+            setAudioContextPrimed(true);
+            silentAudio.pause();
+          })
+          .catch((e) => {
+            console.log('[Mira Voice] iOS Audio priming failed:', e.message);
+          });
+      }
+      
+      // Also try Web Audio API approach
+      if (typeof AudioContext !== 'undefined' || typeof window.webkitAudioContext !== 'undefined') {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        const audioCtx = new AudioCtx();
+        const oscillator = audioCtx.createOscillator();
+        oscillator.frequency.value = 0; // Silent
+        oscillator.connect(audioCtx.destination);
+        oscillator.start();
+        oscillator.stop(audioCtx.currentTime + 0.001);
+        console.log('[Mira Voice] ✓ Web Audio API context primed');
+      }
+    } catch (error) {
+      console.log('[Mira Voice] Audio priming error:', error);
+    }
+  }, [audioContextPrimed]);
+  
+  // ElevenLabs TTS - Premium voice for Mira (with iOS fix)
   const speakWithElevenLabs = useCallback(async (text) => {
     if (!voiceEnabled) return false;
     
@@ -248,21 +294,71 @@ const MiraAI = () => {
       const data = await response.json();
       console.log('[Mira Voice] ✓ ElevenLabs audio received, playing...');
       
-      // Play audio
-      const audio = new Audio(`data:audio/mpeg;base64,${data.audio_base64}`);
-      audioRef.current = audio;
+      // Create audio element with iOS-compatible approach
+      const audio = new Audio();
       
+      // Set properties BEFORE setting src (important for iOS)
+      audio.preload = 'auto';
+      audio.volume = 1.0;
+      
+      // Set up event handlers BEFORE loading
       audio.onended = () => {
         console.log('[Mira Voice] ✓ ElevenLabs audio playback complete');
         setIsSpeaking(false);
       };
+      
       audio.onerror = (e) => {
-        console.log('[Mira Voice] Audio playback error:', e);
+        console.log('[Mira Voice] Audio element error:', e);
         setIsSpeaking(false);
       };
       
-      await audio.play();
-      return true;
+      // For iOS: oncanplaythrough is more reliable than just waiting for load
+      return new Promise((resolve) => {
+        audio.oncanplaythrough = () => {
+          console.log('[Mira Voice] Audio ready to play, attempting playback...');
+          const playPromise = audio.play();
+          
+          if (playPromise !== undefined) {
+            playPromise
+              .then(() => {
+                console.log('[Mira Voice] ✓ Audio playback started successfully');
+                resolve(true);
+              })
+              .catch((playError) => {
+                console.log('[Mira Voice] ❌ Playback blocked:', playError.message);
+                // On iOS, if playback fails, show a toast to inform user
+                if (playError.name === 'NotAllowedError') {
+                  console.log('[Mira Voice] iOS audio blocked - needs user interaction');
+                  // Fallback: Try Web Speech API
+                  setIsSpeaking(false);
+                  setUseElevenLabs(false);
+                  resolve(false);
+                } else {
+                  setIsSpeaking(false);
+                  resolve(false);
+                }
+              });
+          } else {
+            // Old browser without promise
+            resolve(true);
+          }
+        };
+        
+        // Timeout fallback - if audio doesn't load in 10s, fail gracefully
+        setTimeout(() => {
+          if (!audio.readyState) {
+            console.log('[Mira Voice] Audio load timeout');
+            setIsSpeaking(false);
+            resolve(false);
+          }
+        }, 10000);
+        
+        // Now set the source and load
+        audio.src = `data:audio/mpeg;base64,${data.audio_base64}`;
+        audio.load();
+        audioRef.current = audio;
+      });
+      
     } catch (error) {
       console.log('[Mira Voice] ElevenLabs unavailable, using Web Speech:', error.message);
       setUseElevenLabs(false);
