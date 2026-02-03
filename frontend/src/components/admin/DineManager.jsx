@@ -312,11 +312,46 @@ const DineManager = ({ credentials }) => {
       });
       if (response.ok) {
         const result = await response.json();
-        alert(result.message);
+        toast({ title: 'Bundles Seeded', description: result.message });
         fetchBundles();
       }
     } catch (error) {
       console.error('Error seeding bundles:', error);
+      toast({ title: 'Error', description: 'Failed to seed bundles', variant: 'destructive' });
+    }
+  };
+
+  // Seed ALL dine data (restaurants, bundles, products)
+  const seedAllDine = async () => {
+    setSeedingAll(true);
+    try {
+      const response = await fetch(`${API_URL}/api/admin/dine/seed-all`, {
+        method: 'POST',
+        headers: { 'Authorization': getAuthHeader() }
+      });
+      if (response.ok) {
+        const result = await response.json();
+        toast({ 
+          title: '✅ Dine Data Seeded!', 
+          description: result.message 
+        });
+        // Refresh all data
+        fetchRestaurants();
+        fetchBundles();
+        fetchProducts();
+      } else {
+        const error = await response.json();
+        toast({ 
+          title: 'Error', 
+          description: error.detail || 'Failed to seed dine data', 
+          variant: 'destructive' 
+        });
+      }
+    } catch (error) {
+      console.error('Error seeding all dine data:', error);
+      toast({ title: 'Error', description: 'Failed to seed dine data', variant: 'destructive' });
+    } finally {
+      setSeedingAll(false);
     }
   };
 
