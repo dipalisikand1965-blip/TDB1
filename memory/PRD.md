@@ -39,7 +39,8 @@ All user actions (service requests, onboarding, etc.) must adhere to a unified f
 ## Prioritized Backlog
 
 ### P0 - Critical
-- [ ] Fix quick action cards in `ConversationalEntry.jsx` (should trigger service requests, not Mira AI)
+- [x] ~~Fix quick action cards in `ConversationalEntry.jsx` (should trigger service requests, not Mira AI)~~ ✅ FIXED
+- [x] ~~Party Planning Wizard not appearing on Celebrate page~~ ✅ FIXED
 
 ### P1 - High Priority
 - [ ] UI/UX overhaul for Celebrate page
