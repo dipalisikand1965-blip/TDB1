@@ -5302,8 +5302,8 @@ const DoggyServiceDesk = ({ authHeaders }) => {
       
       {/* ==================== DELETE CONFIRMATION MODAL ==================== */}
       {showDeleteConfirm && ticketToDelete && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowDeleteConfirm(false)}>
-          <Card className="w-[500px] bg-white shadow-2xl" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowDeleteConfirm(false)}>
+          <Card className="w-full max-w-[500px] bg-white shadow-2xl" onClick={e => e.stopPropagation()}>
             <div className="p-6">
               <div className="flex items-center gap-3 mb-4">
                 <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
