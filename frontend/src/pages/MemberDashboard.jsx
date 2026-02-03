@@ -808,66 +808,80 @@ const MemberDashboard = () => {
         totalPoints={user?.loyalty_points}
       />
       
-      <div className="max-w-6xl mx-auto p-4 md:p-6 pb-24 md:pb-6">
-        {/* 1️⃣ HEADER - Pet Parent Name + All Pets Listed */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center shadow-lg">
-              <User className="w-7 h-7 text-white" />
-            </div>
-            <div>
-              <h1 className="text-xl md:text-2xl font-bold text-gray-900">
-                {user.name?.split(' ')[0] || 'Pet Parent'}&apos;s Dashboard
-              </h1>
-              {/* Show all pets names */}
-              {pets.length > 0 && (
-                <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-                  <PawPrint className="w-4 h-4 text-purple-500" />
-                  <span className="text-sm text-gray-600">
-                    {pets.map(p => p.name).join(', ')}
-                  </span>
-                </div>
-              )}
-              <div className="flex items-center gap-2 mt-1.5">
-                <Badge className="bg-purple-100 text-purple-700 text-xs">Pet Pass Active</Badge>
-                {user.loyalty_points > 0 && (
-                  <Badge 
-                    variant="outline" 
-                    className="text-xs cursor-pointer hover:bg-purple-50"
-                    onClick={() => setShowPawPointsBreakdown(true)}
-                  >
-                    <Gift className="w-3 h-3 mr-1" />
-                    {user.loyalty_points} Paw Points
-                  </Badge>
+      <div className="min-h-screen bg-[#FAFAF9]">
+        <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 pb-28 md:pb-8 pt-4 md:pt-8">
+          {/* 1️⃣ HEADER - Pet Parent Name + All Pets Listed */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl md:rounded-3xl flex items-center justify-center shadow-lg shadow-purple-500/20 transition-transform hover:scale-105">
+                <User className="w-8 h-8 md:w-10 md:h-10 text-white" />
+              </div>
+              <div>
+                <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 tracking-tight" style={{fontFamily: 'Manrope, sans-serif'}}>
+                  {user.name?.split(' ')[0] || 'Pet Parent'}&apos;s Dashboard
+                </h1>
+                {/* Show all pets names */}
+                {pets.length > 0 && (
+                  <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                    <PawPrint className="w-4 h-4 text-purple-500" />
+                    <span className="text-sm md:text-base text-gray-600">
+                      {pets.map(p => p.name).join(' • ')}
+                    </span>
+                  </div>
                 )}
+                <div className="flex items-center gap-2 mt-2">
+                  <Badge className="bg-purple-100 text-purple-700 text-xs md:text-sm font-medium px-3 py-1 rounded-full">Pet Pass Active</Badge>
+                  {user.loyalty_points > 0 && (
+                    <Badge 
+                      variant="outline" 
+                      className="text-xs md:text-sm cursor-pointer hover:bg-purple-50 transition-colors px-3 py-1 rounded-full"
+                      onClick={() => setShowPawPointsBreakdown(true)}
+                      data-testid="paw-points-badge"
+                    >
+                      <Gift className="w-3.5 h-3.5 mr-1.5" />
+                      {user.loyalty_points} Paw Points
+                    </Badge>
+                  )}
+                </div>
               </div>
             </div>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => { logout(); navigate('/'); }}
+              className="text-red-500 hover:text-red-700 hover:bg-red-50 border-red-200 rounded-xl self-start sm:self-center transition-all hover:scale-105"
+              data-testid="signout-btn"
+            >
+              <LogOut className="w-4 h-4 mr-2" />
+              Sign Out
+            </Button>
           </div>
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => { logout(); navigate('/'); }}
-            className="text-red-500 hover:text-red-700 hover:bg-red-50 border-red-200"
-            data-testid="signout-btn"
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            Sign Out
-          </Button>
-        </div>
 
-        {/* 2️⃣ ALL PETS SOUL SCORE GRID - Select a pet to see details */}
-        {pets.length > 0 && (
-          <Card className="mb-6 overflow-hidden bg-gradient-to-br from-purple-600 via-indigo-600 to-purple-700 text-white border-none shadow-xl">
-            <div className="p-6">
-              {/* Section Header */}
-              <div className="flex items-center gap-2 mb-6">
-                <Brain className="w-6 h-6 text-yellow-300" />
-                <h2 className="text-2xl font-bold">Your Pets&apos; Soul Journey</h2>
-                <span className="text-white/70 text-sm ml-2">The more we know, the better Mira serves you!</span>
-              </div>
-              
-              {/* All Pets Grid - Each with their own Soul Meter */}
-              <div className={`grid gap-4 ${pets.length === 1 ? 'grid-cols-1 max-w-md mx-auto' : pets.length === 2 ? 'grid-cols-2' : pets.length <= 4 ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-6'}`}>
+          {/* 2️⃣ ALL PETS SOUL SCORE GRID - Select a pet to see details */}
+          {pets.length > 0 && (
+            <Card className="mb-8 overflow-hidden bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 text-white border-none shadow-xl shadow-purple-500/20 rounded-2xl md:rounded-3xl">
+              <div className="p-4 md:p-6 lg:p-8">
+                {/* Section Header */}
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-6">
+                  <div className="flex items-center gap-2">
+                    <Brain className="w-6 h-6 md:w-7 md:h-7 text-yellow-300" />
+                    <h2 className="text-xl md:text-2xl lg:text-3xl font-bold tracking-tight" style={{fontFamily: 'Manrope, sans-serif'}}>Your Pets&apos; Soul Journey</h2>
+                  </div>
+                  <span className="text-white/70 text-sm md:text-base">The more we know, the better Mira serves you!</span>
+                </div>
+                
+                {/* All Pets Grid - Responsive for all devices */}
+                <div className={`grid gap-3 md:gap-4 lg:gap-6 ${
+                  pets.length === 1 
+                    ? 'grid-cols-1 max-w-sm mx-auto' 
+                    : pets.length === 2 
+                      ? 'grid-cols-2 max-w-2xl mx-auto' 
+                      : pets.length <= 3 
+                        ? 'grid-cols-2 sm:grid-cols-3' 
+                        : pets.length <= 4 
+                          ? 'grid-cols-2 md:grid-cols-4' 
+                          : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-6'
+                }`}>
                 {pets.map((pet) => {
                   const score = Math.round(pet.overall_score || 0);
                   const questionsAnswered = Object.keys(pet.doggy_soul_answers || {}).length;
