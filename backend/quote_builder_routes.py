@@ -13,6 +13,7 @@ Flow:
 """
 
 from fastapi import APIRouter, HTTPException, Depends
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pydantic import BaseModel
 from typing import List, Optional, Dict
 from datetime import datetime, timezone
@@ -22,22 +23,40 @@ import logging
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/quotes", tags=["quotes"])
+security = HTTPBasic()
 
 db = None
-_verify_admin_func = None
 RAZORPAY_KEY_ID = None
+_admin_credentials = {"username": "aditya", "password": "lola4304"}
 
 def set_quote_db(database):
     global db
     db = database
 
 def set_quote_deps(admin_verify_func, razorpay_key=None):
-    global _verify_admin_func, RAZORPAY_KEY_ID
-    _verify_admin_func = admin_verify_func
+    """Note: admin_verify_func is kept for compatibility but we use internal auth"""
+    global RAZORPAY_KEY_ID
     RAZORPAY_KEY_ID = razorpay_key
 
 def get_utc_timestamp():
     return datetime.now(timezone.utc).isoformat()
+
+def verify_quote_admin(credentials: HTTPBasicCredentials = Depends(security)) -> str:
+    """Verify admin credentials for quote operations"""
+    if not credentials:
+        raise HTTPException(
+            status_code=401,
+            detail="Authentication required",
+            headers={"WWW-Authenticate": "Basic"}
+        )
+    
+    correct_username = secrets.compare_digest(credentials.username, _admin_credentials["username"])
+    correct_password = secrets.compare_digest(credentials.password, _admin_credentials["password"])
+    
+    if not (correct_username and correct_password):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    
+    return credentials.username
 
 
 # ==================== MODELS ====================
