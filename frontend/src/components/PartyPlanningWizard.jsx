@@ -212,7 +212,7 @@ const PartyPlanningWizard = ({ onClose, onComplete }) => {
   const handleSubmit = async () => {
     setLoading(true);
     try {
-      // Create party planning request
+      // Create party planning request - goes to Service Desk + Notifications
       const res = await fetch(`${API_URL}/api/celebrate/party-request`, {
         method: 'POST',
         headers: {
@@ -222,13 +222,17 @@ const PartyPlanningWizard = ({ onClose, onComplete }) => {
         body: JSON.stringify({
           ...formData,
           user_email: user?.email,
-          user_name: user?.name
+          user_name: user?.name || 'Guest'
         })
       });
       
       if (res.ok) {
         const data = await res.json();
-        toast.success('Party planning request submitted! Our concierge will contact you shortly.');
+        // Show success with ticket ID
+        toast.success(
+          `🎉 Party request submitted! Reference: ${data.ticket_id}. Our Celebrate Concierge® will contact you within 2 hours with a full party plan and quote!`,
+          { duration: 8000 }
+        );
         onComplete?.(data);
         onClose?.();
       } else {
