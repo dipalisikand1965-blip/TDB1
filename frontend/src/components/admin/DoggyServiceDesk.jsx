@@ -205,6 +205,10 @@ const DoggyServiceDesk = ({ authHeaders }) => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   
+  // Quote Builder for party requests
+  const [showQuoteBuilder, setShowQuoteBuilder] = useState(false);
+  const [partyRequestData, setPartyRequestData] = useState(null);
+  
   // Bulk Selection
   const [selectedTicketIds, setSelectedTicketIds] = useState([]);
   const [showBulkActions, setShowBulkActions] = useState(false);
