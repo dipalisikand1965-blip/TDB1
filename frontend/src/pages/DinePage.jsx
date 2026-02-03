@@ -390,7 +390,7 @@ const DinePage = () => {
         </section>
 
         {/* Pet-Friendly Restaurants Section */}
-        <section>
+        <section id="restaurants" className="scroll-mt-20">
           <div className="mb-6">
             <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
               <Coffee className="w-6 h-6 text-orange-500" />
