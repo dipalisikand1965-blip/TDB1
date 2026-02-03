@@ -1713,8 +1713,8 @@ const UnifiedPetPage = () => {
                           const data = await response.json();
                           setPet(prev => ({ ...prev, photo_url: data.photo_url }));
                           toast({ title: 'Photo uploaded!', description: `${safePet.name}'s gallery has been updated` });
-                          // Refresh pet data
-                          fetchPet();
+                          // Refresh page to show new photo
+                          window.location.reload();
                         } else {
                           const err = await response.json();
                           toast({ title: 'Upload failed', description: err.detail || 'Could not upload photo', variant: 'destructive' });
