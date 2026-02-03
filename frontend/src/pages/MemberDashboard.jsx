@@ -808,8 +808,7 @@ const MemberDashboard = () => {
         totalPoints={user?.loyalty_points}
       />
       
-      <div className="min-h-screen bg-[#FAFAF9]">
-        <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 pb-28 md:pb-8 pt-4 md:pt-8">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 pb-28 md:pb-8 pt-4 md:pt-8">
           {/* 1️⃣ HEADER - Pet Parent Name + All Pets Listed */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
             <div className="flex items-center gap-4">
