@@ -404,6 +404,11 @@ const ShopPage = () => {
       );
     }
     
+    // High Pawmeter filter - only show products with 4+ rating
+    if (activeFilters.includes('high-pawmeter')) {
+      result = result.filter(p => (p.pawmeter?.overall || 0) >= 4.0);
+    }
+    
     return result;
   }, [products, searchQuery, priceRange, activeFilters]);
 
