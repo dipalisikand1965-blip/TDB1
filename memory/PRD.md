@@ -1,7 +1,14 @@
 # Pet Life Operating System - Product Requirements Document
 
 ## Project Overview
-A comprehensive Pet Life Operating System for The Doggy Company - India's #1 Pet Platform featuring premium dog cakes, pet-friendly dining, stays & services with same-day delivery.
+A comprehensive Pet Life Operating System for **THE DOGGY COMPANY** - India's #1 Pet Platform.
+- **DOGS ONLY** (No cats - The Cat Company coming later!)
+- **NO MEDICINES** (Non-medical services only)
+- Premium dog cakes, pet-friendly dining, stays & services with same-day delivery.
+
+## Core Philosophy
+**"NO IS NEVER AN ANSWER"** - If something is legal, ethical, non-medical, and possible, we will find a way.
+We are a one-stop concierge for pet parents. If an item isn't listed, we'll source it.
 
 ## Original Problem Statement
 Build a complete service booking experience and admin management interface for the Pet Life Operating System. The platform serves pet parents with:
@@ -10,25 +17,59 @@ Build a complete service booking experience and admin management interface for t
 - Member Dashboard with comprehensive pet management
 - Admin Panel with Service Desk, Paperwork Manager, Kit Assembly, and more
 
+## Unified Flow
+```
+User Intent → Service Desk Ticket → Admin Notification → Member Notification → Pillar Request → Tickets → Channel Intakes
+```
+
 ## User Personas
-1. **Pet Parents (Members)**: Users managing pets, ordering products, booking services
+1. **Pet Parents (Members)**: Users managing DOGS, ordering products, booking services
 2. **Admin Staff**: Managing orders, service requests, documents, tickets, kits
 3. **Mira AI**: AI-powered concierge for recommendations and assistance
 
 ## What's Been Implemented
 
-### Session: February 3, 2026 - Party Planning Wizard & Seamless Journey (LATEST)
+### Session: February 3, 2026 - DOGS ONLY & Unified Flow (LATEST)
 
-**NEW Features Implemented:**
+**Critical Updates:**
 
-1. ✅ **Party Planning Wizard** - 6-step guided party planning experience
-   - Step 1: Pet Selection (name, type: dog/cat)
+1. ✅ **DOGS ONLY - No Cats**
+   - Removed all cat options from Party Planning Wizard
+   - Pets filtered with `p.species !== 'cat'`
+   - Backend forces `pet_type: 'dog'`
+   - "The Doggy Company - Making every pup's day special!" branding
+
+2. ✅ **Multi-Pet Family Support**
+   - Auto-populates dogs from user profile
+   - Users can select which pup to celebrate
+   - Add new pup option for guests
+
+3. ✅ **Unified Flow Implementation**
+   - Party request creates 4 documents:
+     1. `party_requests` - Pillar request
+     2. `service_desk_tickets` - CEL-YYYYMMDD-XXX
+     3. `admin_notifications` - For admin dashboard
+     4. `member_notifications` - For member dashboard
+
+4. ✅ **Mobile & Desktop Responsive**
+   - Works on 390x844 (mobile) and 1920x800 (desktop)
+   - No horizontal overflow on mobile
+   - Wizard modal adapts to viewport
+
+**Testing: 100% Pass Rate**
+- Test report: `/app/test_reports/iteration_196.json`
+
+### Earlier: Party Planning Wizard & Seamless Journey
+
+**Features Implemented:**
+
+1. ✅ **Party Planning Wizard** - 6-step guided experience
+   - Step 1: Pet Selection (dogs only, auto-populate from profile)
    - Step 2: Occasion (Birthday, Gotcha Day, Graduation, New Year, Pawliday, Custom)
    - Step 3: Date & Time selection
    - Step 4: Party Details (guests, venue, add-ons: grooming, photography)
    - Step 5: Budget (Budget Friendly, Standard, Premium, Luxury)
    - Step 6: Review & Recommendations with Pawmeter scores
-   - Creates party request + service desk ticket automatically
    - File: `/app/frontend/src/components/PartyPlanningWizard.jsx`
 
 2. ✅ **Pawmeter Display Component** - Reusable rating display
