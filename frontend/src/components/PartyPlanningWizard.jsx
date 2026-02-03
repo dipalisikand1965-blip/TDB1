@@ -1,16 +1,18 @@
 /**
  * PartyPlanningWizard.jsx
  * 
- * Step-by-step party planning wizard for seamless celebration experience.
- * Guides pet parents through: Pet Selection → Occasion → Date → Guests → Budget → Recommendations
+ * Step-by-step party planning wizard for THE DOGGY COMPANY.
+ * Dogs Only - Multi-pet family support with auto-populate from profile.
+ * 
+ * Flow: User Intent → Service Desk Ticket → Admin Notification → Member Notification
  * Cross-pillar suggestions: Cakes, Decorations, Venue, Grooming, Photography
  */
 
 import React, { useState, useEffect } from 'react';
 import { 
   PartyPopper, Cake, Gift, Calendar, Users, MapPin, 
-  Sparkles, ChevronRight, ChevronLeft, Check, Dog, Cat,
-  Camera, Scissors, Music, Star, Heart, Package, X
+  Sparkles, ChevronRight, ChevronLeft, Check, Dog,
+  Camera, Scissors, Music, Star, Heart, Package, X, Bell
 } from 'lucide-react';
 import { Button } from './ui/button';
 import { Card } from './ui/card';
