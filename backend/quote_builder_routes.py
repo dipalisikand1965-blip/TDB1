@@ -81,7 +81,7 @@ class SendQuoteModel(BaseModel):
 # ==================== ENDPOINTS ====================
 
 @router.post("/create")
-async def create_quote(request: CreateQuoteModel, username: str = Depends(lambda: verify_admin)):
+async def create_quote(request: CreateQuoteModel, username: str = Depends(get_admin_username)):
     """Create a new quote for a party request"""
     if db is None:
         raise HTTPException(status_code=500, detail="Database not initialized")
