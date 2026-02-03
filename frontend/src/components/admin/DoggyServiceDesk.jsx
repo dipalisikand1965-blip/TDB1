@@ -2936,6 +2936,19 @@ const DoggyServiceDesk = ({ authHeaders }) => {
           </div>
           
           <div className="flex items-center gap-1 md:gap-2 flex-shrink-0">
+            {/* Mobile Filter Button */}
+            {isMobile && (
+              <Button 
+                onClick={() => setShowMobileFilters(true)}
+                variant="outline" 
+                size="icon"
+                className="shadow-sm w-8 h-8"
+                data-testid="mobile-filter-btn"
+              >
+                <Filter className="w-4 h-4" />
+              </Button>
+            )}
+            
             {/* New Ticket Button with Dropdown */}
             <div className="relative">
               <Button 
@@ -2947,7 +2960,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                 <span className="hidden sm:inline">New Ticket</span>
               </Button>
             </div>
-            <Button onClick={handleRefresh} variant="outline" size="icon" className="shadow-sm w-8 h-8 md:w-9 md:h-9" disabled={refreshing}>
+            <Button onClick={handleRefresh} variant="outline" size="icon" className="shadow-sm w-8 h-8 md:w-9 md:h-9 hidden md:flex" disabled={refreshing}>
               <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
             </Button>
             <Button 
