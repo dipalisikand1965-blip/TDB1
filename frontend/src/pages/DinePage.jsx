@@ -243,51 +243,57 @@ const DinePage = () => {
         </div>
 
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
-          <ConciergeExperienceCard
-            pillar="dine"
-            title="Private Chef Experience®"
-            description="A personal chef prepares a gourmet meal for you and your pet in your home or a private venue."
-            icon="👨‍🍳"
-            gradient="from-orange-500 to-red-500"
-            badge="Signature"
-            badgeColor="bg-orange-500"
-            highlights={[
-              "Menu customized for pet dietary needs",
-              "Human & pet courses paired together",
-              "Available for celebrations & events",
-              "Hypoallergenic options available"
-            ]}
-          />
+          <div className="animate-fade-in-up" style={{ animationDelay: '0ms' }}>
+            <ConciergeExperienceCard
+              pillar="dine"
+              title="Private Chef Experience®"
+              description="A personal chef prepares a gourmet meal for you and your pet in your home or a private venue."
+              icon="👨‍🍳"
+              gradient="from-orange-500 to-red-500"
+              badge="Signature"
+              badgeColor="bg-orange-500"
+              highlights={[
+                "Menu customized for pet dietary needs",
+                "Human & pet courses paired together",
+                "Available for celebrations & events",
+                "Hypoallergenic options available"
+              ]}
+            />
+          </div>
           
-          <ConciergeExperienceCard
-            pillar="dine"
-            title="Restaurant VIP Access®"
-            description="Get priority reservations and special pet-friendly arrangements at exclusive restaurants."
-            icon="🍽️"
-            gradient="from-amber-500 to-orange-500"
-            highlights={[
-              "Reserved pet-friendly tables",
-              "Custom pet menu arrangements",
-              "Celebration setups available",
-              "Multi-city restaurant network"
-            ]}
-          />
+          <div className="animate-fade-in-up" style={{ animationDelay: '100ms' }}>
+            <ConciergeExperienceCard
+              pillar="dine"
+              title="Restaurant VIP Access®"
+              description="Get priority reservations and special pet-friendly arrangements at exclusive restaurants."
+              icon="🍽️"
+              gradient="from-amber-500 to-orange-500"
+              highlights={[
+                "Reserved pet-friendly tables",
+                "Custom pet menu arrangements",
+                "Celebration setups available",
+                "Multi-city restaurant network"
+              ]}
+            />
+          </div>
           
-          <ConciergeExperienceCard
-            pillar="dine"
-            title="Birthday Dining Package®"
-            description="Complete birthday celebration with cake, decorations, and pet-friendly venue coordination."
-            icon="🎂"
-            gradient="from-pink-500 to-rose-500"
-            badge="Popular"
-            badgeColor="bg-pink-500"
-            highlights={[
-              "Custom cake from our bakery",
-              "Pet-safe decorations",
-              "Photographer arrangement",
-              "Guest coordination"
-            ]}
-          />
+          <div className="animate-fade-in-up" style={{ animationDelay: '200ms' }}>
+            <ConciergeExperienceCard
+              pillar="dine"
+              title="Birthday Dining Package®"
+              description="Complete birthday celebration with cake, decorations, and pet-friendly venue coordination."
+              icon="🎂"
+              gradient="from-pink-500 to-rose-500"
+              badge="Popular"
+              badgeColor="bg-pink-500"
+              highlights={[
+                "Custom cake from our bakery",
+                "Pet-safe decorations",
+                "Photographer arrangement",
+                "Guest coordination"
+              ]}
+            />
+          </div>
         </div>
       </div>
 
