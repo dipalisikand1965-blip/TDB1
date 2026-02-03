@@ -467,31 +467,37 @@ const CelebratePage = () => {
         </div>
         
         {/* Smart Filter Pills - Horizontal scroll on mobile */}
-        <div className="flex gap-2 overflow-x-auto pb-3 scrollbar-hide">
-          {[
-            { emoji: '🐕', label: 'By Breed', filter: 'breed-cakes', desc: 'Labrador, Pug, GSD...' },
-            { emoji: '🎁', label: 'Gift Ready', filter: 'gift-hampers', desc: 'Beautifully packaged' },
-            { emoji: '🥜', label: 'Allergy Safe', filter: 'allergy-free', desc: 'No wheat, no nuts' },
-            { emoji: '💰', label: 'Under ₹500', filter: 'budget', desc: 'Sweet savings' },
-            { emoji: '⚡', label: 'Same Day', filter: 'same-day', desc: 'Order now, get today' },
-            { emoji: '🏆', label: 'Bestsellers', filter: 'bestsellers', desc: 'Fan favorites' },
-            { emoji: '🐱', label: 'Cat Cakes', filter: 'cat-treats', desc: 'Feline friends' },
-            { emoji: '✨', label: 'Premium', filter: 'premium', desc: 'Luxury treats' },
-          ].map((item) => (
-            <Link 
-              key={item.filter}
-              to={`/celebrate/${item.filter}`}
-              className="flex-shrink-0"
-            >
-              <div className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-white border-2 border-pink-200 rounded-full hover:border-pink-400 hover:bg-pink-50 transition-all active:scale-95 cursor-pointer shadow-sm">
-                <span className="text-lg sm:text-xl">{item.emoji}</span>
-                <div className="text-left">
-                  <span className="font-semibold text-xs sm:text-sm text-gray-800 block leading-tight">{item.label}</span>
-                  <span className="text-[10px] sm:text-xs text-gray-500 hidden sm:block">{item.desc}</span>
+        <div className="relative">
+          <div className="flex gap-2 overflow-x-auto pb-3 scrollbar-hide -mx-3 px-3">
+            {[
+              { emoji: '🐕', label: 'By Breed', filter: 'breed-cakes', desc: 'Labrador, Pug, GSD...' },
+              { emoji: '🎁', label: 'Gift Ready', filter: 'gift-hampers', desc: 'Beautifully packaged' },
+              { emoji: '🥜', label: 'Allergy Safe', filter: 'allergy-free', desc: 'No wheat, no nuts' },
+              { emoji: '💰', label: 'Under ₹500', filter: 'budget', desc: 'Sweet savings' },
+              { emoji: '⚡', label: 'Same Day', filter: 'same-day', desc: 'Order now, get today' },
+              { emoji: '🏆', label: 'Bestsellers', filter: 'bestsellers', desc: 'Fan favorites' },
+              { emoji: '🐱', label: 'Cat Cakes', filter: 'cat-treats', desc: 'Feline friends' },
+              { emoji: '✨', label: 'Premium', filter: 'premium', desc: 'Luxury treats' },
+            ].map((item) => (
+              <Link 
+                key={item.filter}
+                to={`/celebrate/${item.filter}`}
+                className="flex-shrink-0"
+              >
+                <div className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-white border-2 border-pink-200 rounded-full hover:border-pink-400 hover:bg-pink-50 transition-all active:scale-95 cursor-pointer shadow-sm">
+                  <span className="text-lg sm:text-xl">{item.emoji}</span>
+                  <div className="text-left">
+                    <span className="font-semibold text-xs sm:text-sm text-gray-800 block leading-tight">{item.label}</span>
+                    <span className="text-[10px] sm:text-xs text-gray-500 hidden sm:block">{item.desc}</span>
+                  </div>
                 </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            ))}
+          </div>
+          {/* Scroll indicator for mobile */}
+          <div className="sm:hidden flex justify-center mt-1">
+            <span className="text-[10px] text-gray-400">← Swipe for more →</span>
+          </div>
         </div>
         
         {/* Quick Stats */}
