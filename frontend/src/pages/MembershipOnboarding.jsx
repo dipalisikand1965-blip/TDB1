@@ -1011,18 +1011,18 @@ const MembershipOnboarding = () => {
                 ))}
 
                 {/* Add Another Dog - Always visible, more prominent */}
-                <div className="mt-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-200">
+                <div className="mt-6 p-4 bg-gradient-to-r from-pink-500/10 to-purple-500/10 rounded-xl border border-pink-500/30">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
-                        <Dog className="w-5 h-5 text-purple-600" />
+                      <div className="w-10 h-10 bg-pink-500/20 rounded-full flex items-center justify-center">
+                        <Dog className="w-5 h-5 text-pink-400" />
                       </div>
                       <div>
-                        <p className="font-medium text-purple-900">Have more dogs?</p>
-                        <p className="text-sm text-purple-600">
+                        <p className="font-medium text-white">Have more dogs?</p>
+                        <p className="text-sm text-pink-300">
                           {petsData.length === 1 
-                            ? 'Add them now to get family pricing!' 
-                            : `${petsData.length} dogs added • ₹${pricing.additionalPetPrice}/dog extra`}
+                            ? 'Add them now — same price for the whole pack!' 
+                            : `${petsData.length} dogs added — all included!`}
                         </p>
                       </div>
                     </div>
@@ -1030,7 +1030,7 @@ const MembershipOnboarding = () => {
                       type="button"
                       onClick={addPet}
                       variant="outline"
-                      className="border-purple-300 text-purple-600 hover:bg-purple-100"
+                      className="border-pink-500/50 text-pink-400 hover:bg-pink-500/20 hover:border-pink-500"
                       data-testid="add-another-dog-btn"
                     >
                       <Plus className="w-4 h-4 mr-1" />
@@ -1043,14 +1043,14 @@ const MembershipOnboarding = () => {
                   <Button 
                     variant="outline"
                     onClick={handleBack}
-                    className="flex-1"
+                    className="flex-1 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white"
                   >
                     <ChevronLeft className="w-4 h-4 mr-2" />
                     Back
                   </Button>
                   <Button 
                     onClick={handleNext}
-                    className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                    className="flex-1 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-400 hover:to-purple-500 text-white font-semibold shadow-lg shadow-pink-500/30"
                     data-testid="pet-next-btn"
                   >
                     Select Celebrations
@@ -1065,31 +1065,35 @@ const MembershipOnboarding = () => {
           {step === 3 && (
             <div className="animate-in fade-in slide-in-from-right-4 duration-300">
               <div className="text-center mb-8">
-                <div className="w-20 h-20 bg-gradient-to-br from-pink-400 to-orange-400 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl shadow-pink-200/50">
-                  <Gift className="w-10 h-10 text-white" />
+                {/* Soul Orb for Celebrations */}
+                <div className="relative w-20 h-20 mx-auto mb-4">
+                  <div className="absolute inset-0 bg-gradient-to-br from-pink-400 via-fuchsia-500 to-purple-600 rounded-full animate-pulse opacity-50 blur-xl"></div>
+                  <div className="relative w-20 h-20 bg-gradient-to-br from-pink-400 via-fuchsia-500 to-purple-600 rounded-full flex items-center justify-center shadow-2xl shadow-pink-500/40">
+                    <Gift className="w-10 h-10 text-white" />
+                  </div>
                 </div>
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
                   What would you like to celebrate?
                 </h1>
-                <p className="text-gray-500">
+                <p className="text-slate-400">
                   Select the occasions you want us to remember for each pet
                 </p>
               </div>
 
-              <Card className="p-6 md:p-8 max-w-2xl mx-auto bg-white/80 backdrop-blur-sm shadow-xl border-0">
+              <Card className="p-6 md:p-8 max-w-2xl mx-auto bg-slate-900/60 backdrop-blur-md border border-white/10 shadow-2xl">
                 {petsData.map((pet, petIdx) => (
-                  <div key={petIdx} className={petIdx > 0 ? 'mt-8 pt-8 border-t border-gray-200' : ''}>
+                  <div key={petIdx} className={petIdx > 0 ? 'mt-8 pt-8 border-t border-slate-700' : ''}>
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-12 h-12 bg-gradient-to-br from-orange-100 to-pink-100 rounded-full flex items-center justify-center">
+                      <div className="w-12 h-12 bg-gradient-to-br from-pink-500/20 to-purple-500/20 rounded-full flex items-center justify-center border border-pink-500/30">
                         {pet.photo_preview ? (
                           <img src={pet.photo_preview} alt={pet.name} className="w-full h-full rounded-full object-cover" />
                         ) : (
-                          <PawPrint className="w-6 h-6 text-orange-500" />
+                          <PawPrint className="w-6 h-6 text-pink-400" />
                         )}
                       </div>
                       <div>
-                        <h3 className="font-semibold text-gray-900">{pet.name || `Dog ${petIdx + 1}`}</h3>
-                        <p className="text-sm text-gray-500">Select celebrations to track</p>
+                        <h3 className="font-semibold text-white">{pet.name || `Dog ${petIdx + 1}`}</h3>
+                        <p className="text-sm text-slate-400">Select celebrations to track</p>
                       </div>
                     </div>
 
