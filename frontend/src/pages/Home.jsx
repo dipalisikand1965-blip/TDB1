@@ -575,14 +575,31 @@ const Home = () => {
                 <X className="w-6 h-6 text-white" />
               </button>
               
-              {/* Placeholder for video - In production, embed actual video */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mb-6">
-                  <Play className="w-10 h-10 text-white fill-white ml-1" />
+              {/* Actual Video */}
+              <video 
+                className="w-full h-full object-cover"
+                autoPlay
+                loop
+                muted={videoMuted}
+                playsInline
+              >
+                <source src="/videos/pet-soul-hero.mp4" type="video/mp4" />
+              </video>
+              
+              {/* Video Controls Overlay */}
+              <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-xl font-bold text-white mb-1">Every Pet Has a Soul</h3>
+                    <p className="text-white/60 text-sm">This is how we nurture it.</p>
+                  </div>
+                  <button
+                    onClick={() => setVideoMuted(!videoMuted)}
+                    className="p-3 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+                  >
+                    {videoMuted ? <VolumeX className="w-5 h-5 text-white" /> : <Volume2 className="w-5 h-5 text-white" />}
+                  </button>
                 </div>
-                <h3 className="text-2xl font-bold mb-2">The Pet Soul Story</h3>
-                <p className="text-white/60">Coming Soon</p>
-                <p className="text-sm text-white/40 mt-4">Every pet has a soul. This is how we nurture it.</p>
               </div>
             </motion.div>
           </motion.div>
