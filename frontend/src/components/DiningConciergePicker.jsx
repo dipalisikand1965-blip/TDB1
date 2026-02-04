@@ -556,6 +556,17 @@ Submitted via Dining Concierge® on the Dine pillar page.`;
               ))}
             </SelectContent>
           </Select>
+          {/* Custom city input when "Other" is selected */}
+          {city === 'other' && (
+            <input
+              type="text"
+              value={customCity}
+              onChange={(e) => setCustomCity(e.target.value)}
+              placeholder="Enter your city name"
+              className="w-full mt-2 px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+              autoFocus
+            />
+          )}
         </div>
         
         {/* Date & Time */}
