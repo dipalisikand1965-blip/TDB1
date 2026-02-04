@@ -345,23 +345,229 @@ const SettingsTab = ({
           <Button 
             variant="outline" 
             className="w-full justify-start bg-slate-800/50 border-white/10 text-white hover:bg-slate-700/50 hover:border-purple-500/30"
+            onClick={() => setShowChangePassword(true)}
           >
             <Lock className="w-4 h-4 mr-2 text-purple-400" /> Change Password
           </Button>
           <Button 
             variant="outline" 
-            className="w-full justify-start bg-slate-800/50 border-white/10 text-white hover:bg-slate-700/50 hover:border-purple-500/30"
+            className="w-full justify-between bg-slate-800/50 border-white/10 text-white hover:bg-slate-700/50 hover:border-purple-500/30"
+            onClick={() => setShowTwoFactor(true)}
           >
-            <Shield className="w-4 h-4 mr-2 text-purple-400" /> Two-Factor Authentication
+            <span className="flex items-center">
+              <Shield className="w-4 h-4 mr-2 text-purple-400" /> Two-Factor Authentication
+            </span>
+            <Badge className={twoFactorEnabled ? 'bg-emerald-500/20 text-emerald-400' : 'bg-slate-700 text-slate-400'}>
+              {twoFactorEnabled ? 'On' : 'Off'}
+            </Badge>
           </Button>
           <Button 
             variant="outline" 
             className="w-full justify-start bg-slate-800/50 border-white/10 text-white hover:bg-slate-700/50 hover:border-purple-500/30"
+            onClick={() => setShowPrivacy(true)}
           >
             <Settings className="w-4 h-4 mr-2 text-purple-400" /> Privacy Settings
           </Button>
         </div>
       </Card>
+
+      {/* Change Password Modal */}
+      <Dialog open={showChangePassword} onOpenChange={setShowChangePassword}>
+        <DialogContent className="bg-slate-900 border border-white/10 text-white">
+          <DialogHeader>
+            <DialogTitle className="text-white flex items-center gap-2">
+              <Lock className="w-5 h-5 text-purple-400" />
+              Change Password
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <div>
+              <label className="text-sm text-slate-400 mb-1.5 block">Current Password</label>
+              <div className="relative">
+                <Input 
+                  type={showPasswords.current ? 'text' : 'password'}
+                  value={passwordForm.currentPassword}
+                  onChange={(e) => setPasswordForm({...passwordForm, currentPassword: e.target.value})}
+                  placeholder="Enter current password"
+                  className="bg-slate-800/50 border-white/10 text-white pr-10"
+                />
+                <button 
+                  type="button"
+                  onClick={() => setShowPasswords({...showPasswords, current: !showPasswords.current})}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                >
+                  {showPasswords.current ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+            <div>
+              <label className="text-sm text-slate-400 mb-1.5 block">New Password</label>
+              <div className="relative">
+                <Input 
+                  type={showPasswords.new ? 'text' : 'password'}
+                  value={passwordForm.newPassword}
+                  onChange={(e) => setPasswordForm({...passwordForm, newPassword: e.target.value})}
+                  placeholder="Enter new password (min 8 characters)"
+                  className="bg-slate-800/50 border-white/10 text-white pr-10"
+                />
+                <button 
+                  type="button"
+                  onClick={() => setShowPasswords({...showPasswords, new: !showPasswords.new})}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                >
+                  {showPasswords.new ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+            <div>
+              <label className="text-sm text-slate-400 mb-1.5 block">Confirm New Password</label>
+              <div className="relative">
+                <Input 
+                  type={showPasswords.confirm ? 'text' : 'password'}
+                  value={passwordForm.confirmPassword}
+                  onChange={(e) => setPasswordForm({...passwordForm, confirmPassword: e.target.value})}
+                  placeholder="Confirm new password"
+                  className="bg-slate-800/50 border-white/10 text-white pr-10"
+                />
+                <button 
+                  type="button"
+                  onClick={() => setShowPasswords({...showPasswords, confirm: !showPasswords.confirm})}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                >
+                  {showPasswords.confirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+            <div className="flex justify-end gap-3 pt-4">
+              <Button variant="outline" onClick={() => setShowChangePassword(false)} className="border-white/10 text-white hover:bg-slate-800">
+                Cancel
+              </Button>
+              <Button 
+                onClick={handlePasswordChange} 
+                disabled={passwordLoading}
+                className="bg-gradient-to-r from-purple-600 to-pink-600 text-white"
+              >
+                {passwordLoading ? 'Saving...' : 'Change Password'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Two-Factor Authentication Modal */}
+      <Dialog open={showTwoFactor} onOpenChange={setShowTwoFactor}>
+        <DialogContent className="bg-slate-900 border border-white/10 text-white">
+          <DialogHeader>
+            <DialogTitle className="text-white flex items-center gap-2">
+              <Shield className="w-5 h-5 text-purple-400" />
+              Two-Factor Authentication
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <div className={`p-4 rounded-xl border ${twoFactorEnabled ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-slate-800/50 border-white/10'}`}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${twoFactorEnabled ? 'bg-emerald-500/20' : 'bg-slate-700'}`}>
+                    <Smartphone className={`w-5 h-5 ${twoFactorEnabled ? 'text-emerald-400' : 'text-slate-400'}`} />
+                  </div>
+                  <div>
+                    <p className="font-medium text-white">SMS Verification</p>
+                    <p className="text-sm text-slate-400">Receive codes via text message</p>
+                  </div>
+                </div>
+                <Switch 
+                  checked={twoFactorEnabled}
+                  onCheckedChange={handleTwoFactorToggle}
+                />
+              </div>
+            </div>
+            
+            {twoFactorEnabled && (
+              <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg flex items-center gap-2">
+                <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0" />
+                <p className="text-sm text-emerald-300">2FA is active. You&apos;ll receive a code when signing in from new devices.</p>
+              </div>
+            )}
+            
+            {!twoFactorEnabled && (
+              <div className="p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg flex items-center gap-2">
+                <AlertTriangle className="w-5 h-5 text-amber-400 flex-shrink-0" />
+                <p className="text-sm text-amber-300">Enable 2FA to add an extra layer of security to your account.</p>
+              </div>
+            )}
+            
+            <div className="flex justify-end pt-4">
+              <Button variant="outline" onClick={() => setShowTwoFactor(false)} className="border-white/10 text-white hover:bg-slate-800">
+                Close
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Privacy Settings Modal */}
+      <Dialog open={showPrivacy} onOpenChange={setShowPrivacy}>
+        <DialogContent className="bg-slate-900 border border-white/10 text-white">
+          <DialogHeader>
+            <DialogTitle className="text-white flex items-center gap-2">
+              <Settings className="w-5 h-5 text-purple-400" />
+              Privacy Settings
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <div className="p-4 bg-slate-800/50 border border-white/10 rounded-xl">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-white">Share Activity</p>
+                  <p className="text-sm text-slate-400">Allow us to use your activity for personalized recommendations</p>
+                </div>
+                <Switch 
+                  checked={privacySettings.shareActivity}
+                  onCheckedChange={(checked) => setPrivacySettings({...privacySettings, shareActivity: checked})}
+                />
+              </div>
+            </div>
+            
+            <div className="p-4 bg-slate-800/50 border border-white/10 rounded-xl">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-white">Marketing Communications</p>
+                  <p className="text-sm text-slate-400">Receive emails about offers and new features</p>
+                </div>
+                <Switch 
+                  checked={privacySettings.allowMarketing}
+                  onCheckedChange={(checked) => setPrivacySettings({...privacySettings, allowMarketing: checked})}
+                />
+              </div>
+            </div>
+            
+            <div className="p-4 bg-slate-800/50 border border-white/10 rounded-xl">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-white">Public Profile</p>
+                  <p className="text-sm text-slate-400">Show your pet&apos;s profile to other members</p>
+                </div>
+                <Switch 
+                  checked={privacySettings.showProfile}
+                  onCheckedChange={(checked) => setPrivacySettings({...privacySettings, showProfile: checked})}
+                />
+              </div>
+            </div>
+            
+            <div className="flex justify-end gap-3 pt-4">
+              <Button variant="outline" onClick={() => setShowPrivacy(false)} className="border-white/10 text-white hover:bg-slate-800">
+                Cancel
+              </Button>
+              <Button 
+                onClick={handlePrivacySave}
+                className="bg-gradient-to-r from-purple-600 to-pink-600 text-white"
+              >
+                <Check className="w-4 h-4 mr-1.5" /> Save Settings
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
