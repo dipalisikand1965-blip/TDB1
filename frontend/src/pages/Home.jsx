@@ -1509,16 +1509,6 @@ const Home = () => {
             ))}
           </div>
 
-          {/* Multiple pets note */}
-          <motion.p
-            className="text-center text-white/50 text-sm mt-8"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-          >
-            🐾 Multiple pets? Each pet gets their own Pet Pass at ₹2,499/year or ₹249/trial (+ GST)
-          </motion.p>
-
           {/* Trust badges */}
           <motion.div 
             className="flex flex-wrap justify-center gap-8 mt-12 pt-12 border-t border-white/10"
