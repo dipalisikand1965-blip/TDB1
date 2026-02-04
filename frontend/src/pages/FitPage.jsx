@@ -960,19 +960,21 @@ const FitPage = () => {
           {/* Products Grid with Load More */}
           {products.length > 0 ? (
             <>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
-                {products.slice(0, productsToShow).map((product) => (
-                  <ProductCard key={product.id} product={product} pillar="fit" />
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+                {products.slice(0, productsToShow).map((product, idx) => (
+                  <div key={product.id} className={`animate-scale-in stagger-${Math.min((idx % 5) + 1, 5)}`}>
+                    <ProductCard product={product} pillar="fit" />
+                  </div>
                 ))}
               </div>
               
               {/* Load More Button */}
               {products.length > productsToShow && (
-                <div className="text-center mt-8">
+                <div className="text-center mt-6 sm:mt-8">
                   <Button 
                     variant="outline" 
                     onClick={() => setProductsToShow(prev => prev + 10)}
-                    className="px-8 py-3 rounded-full border-2 border-teal-300 text-teal-600 hover:bg-teal-50"
+                    className="px-6 sm:px-8 py-2.5 sm:py-3 rounded-full border-2 border-teal-300 text-teal-600 hover:bg-teal-50 text-sm sm:text-base"
                   >
                     Load More Products
                     <ChevronDown className="w-4 h-4 ml-2" />
@@ -984,10 +986,10 @@ const FitPage = () => {
               )}
             </>
           ) : (
-            <Card className="p-12 text-center border-gray-100">
-              <ShoppingBag className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Products Coming Soon</h3>
-              <Button onClick={() => navigate('/shop')} variant="outline" className="rounded-full">
+            <Card className="p-8 sm:p-12 text-center border-gray-100">
+              <ShoppingBag className="w-12 h-12 sm:w-16 sm:h-16 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">Products Coming Soon</h3>
+              <Button onClick={() => navigate('/shop')} variant="outline" className="rounded-full text-sm">
                 Browse All Products
               </Button>
             </Card>
@@ -996,28 +998,28 @@ const FitPage = () => {
       </section>
       
       {/* ==================== CTA SECTION ==================== */}
-      <section className="py-16 bg-gradient-to-br from-teal-600 to-emerald-700">
+      <section className="py-12 sm:py-16 bg-gradient-to-br from-teal-600 to-emerald-700">
         <div className="max-w-4xl mx-auto px-4 text-center text-white">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">
             Ready to Transform Your Pet&apos;s Fitness?
           </h2>
-          <p className="text-lg text-white/80 mb-8 max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg text-white/80 mb-6 sm:mb-8 max-w-2xl mx-auto">
             Start with a free consultation. Our Concierge® team will help you find the perfect programme.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
             <Button 
               size="lg"
               onClick={() => handleQuickBook(services[0] || { id: 'consultation', name: 'Free Consultation', price: 0 })}
-              className="bg-white text-teal-700 hover:bg-gray-100 font-semibold px-10 py-6 text-lg rounded-full shadow-2xl transition-all hover:scale-105"
+              className="bg-white text-teal-700 hover:bg-gray-100 font-semibold px-6 sm:px-10 py-5 sm:py-6 text-base sm:text-lg rounded-full shadow-2xl transition-all hover:scale-105"
             >
-              <Phone className="w-5 h-5 mr-2" />
+              <Phone className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
               Book Free Consultation
             </Button>
             <Button 
               size="lg"
               variant="outline"
               onClick={() => navigate('/mira?context=fit')}
-              className="border-2 border-white/50 text-white hover:bg-white/10 font-semibold px-10 py-6 text-lg rounded-full"
+              className="border-2 border-white/50 text-white hover:bg-white/10 font-semibold px-6 sm:px-10 py-5 sm:py-6 text-base sm:text-lg rounded-full"
             >
               <MessageCircle className="w-5 h-5 mr-2" />
               Ask Mira
