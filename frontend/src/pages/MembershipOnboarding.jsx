@@ -327,18 +327,17 @@ const MembershipOnboarding = () => {
     }
   };
 
-  // Calculate pricing - Updated for Pet Pass (Trial vs Annual)
+  // Calculate pricing - All dogs included at same price!
   const getPricing = () => {
-    // Trial = 1 month (₹499), Annual = 12 months (₹4,999)
+    // Trial = 1 month (₹499 + GST), Founder = 12 months (₹4,999 + GST)
+    // ALL DOGS INCLUDED - no additional pet pricing
     const isTrialPlan = planType === 'trial' || planType === 'monthly';
     const basePrice = isTrialPlan ? 499 : 4999;
-    const additionalPetPrice = isTrialPlan ? 249 : 2499;
-    const additionalPets = Math.max(0, petsData.length - 1);
-    const subtotal = basePrice + (additionalPets * additionalPetPrice);
+    const subtotal = basePrice; // Same price regardless of number of dogs
     const gst = Math.round(subtotal * 0.18);
     const total = subtotal + gst;
     
-    return { basePrice, additionalPetPrice, additionalPets, subtotal, gst, total, isTrialPlan };
+    return { basePrice, subtotal, gst, total, isTrialPlan, petCount: petsData.length };
   };
 
   const pricing = getPricing();
