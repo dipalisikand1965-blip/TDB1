@@ -14508,6 +14508,9 @@ set_memory_routes_db(db)  # Initialize Memory with database
 app.include_router(user_tickets_router)  # User tickets at /api/user/*
 set_user_tickets_db(db)  # Initialize User Tickets with database
 
+# Membership Payment Routes
+app.include_router(membership_router)  # Membership payment create/verify at /api/membership/*
+
 # Export Routes (Product/Service tags download)
 app.include_router(export_router)  # Export at /api/admin/export/*
 set_export_db(db)  # Initialize Export with database
