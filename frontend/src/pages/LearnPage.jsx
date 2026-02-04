@@ -1086,7 +1086,7 @@ const LearnPage = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="home">At My Home</SelectItem>
-                  <SelectItem value="trainer_facility">Trainer's Facility</SelectItem>
+                  <SelectItem value="trainer_facility">Trainer&apos;s Facility</SelectItem>
                   <SelectItem value="outdoor">Outdoor (Park/Public Space)</SelectItem>
                   <SelectItem value="flexible">Flexible</SelectItem>
                 </SelectContent>
