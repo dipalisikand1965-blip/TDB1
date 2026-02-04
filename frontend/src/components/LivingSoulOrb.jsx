@@ -198,13 +198,18 @@ const LivingSoulOrb = ({
       const prevMilestone = getCurrentMilestone(previousScore);
       const newMilestone = getCurrentMilestone(score);
       
-      if (newMilestone.threshold > prevMilestone.threshold) {
-        // Milestone reached! Celebrate!
-        triggerCelebration(newMilestone, score - previousScore);
-      } else if (score - previousScore >= 5) {
-        // General growth celebration
-        triggerGrowthCelebration(score - previousScore);
-      }
+      // Use setTimeout to avoid setState in effect body
+      const timer = setTimeout(() => {
+        if (newMilestone.threshold > prevMilestone.threshold) {
+          // Milestone reached! Celebrate!
+          triggerCelebration(newMilestone, score - previousScore);
+        } else if (score - previousScore >= 5) {
+          // General growth celebration
+          triggerGrowthCelebration(score - previousScore);
+        }
+      }, 100);
+      
+      return () => clearTimeout(timer);
     }
     prevScoreRef.current = score;
   }, [score, previousScore, showCelebration, triggerCelebration, triggerGrowthCelebration]);
