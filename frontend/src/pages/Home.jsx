@@ -422,21 +422,21 @@ const Home = () => {
             </motion.h2>
           </div>
 
-          {/* Masonry-style Gallery */}
+          {/* Masonry-style Gallery - CMS Driven */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-            {BOND_GALLERY.map((item, idx) => (
+            {bondGallery.map((item, idx) => (
               <motion.div
-                key={idx}
+                key={item.id || idx}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.08 }}
                 className={`relative group rounded-2xl overflow-hidden ${
-                  item.tall ? 'row-span-2' : ''
-                } ${item.wide ? 'col-span-2' : ''}`}
+                  item.is_tall ? 'row-span-2' : ''
+                } ${item.is_wide ? 'col-span-2' : ''}`}
               >
                 <img 
-                  src={item.image} 
+                  src={item.image_url} 
                   alt={item.caption}
                   className="w-full h-full object-cover aspect-square group-hover:scale-110 transition-transform duration-500"
                 />
