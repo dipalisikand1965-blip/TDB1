@@ -534,15 +534,6 @@ const Home = () => {
           )}
         </div>
       </section>
-                      {item.caption}
-                    </p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
 
       {/* ========== MEET MIRA - The Guide ========== */}
       <section className="relative py-24 sm:py-32 bg-slate-950 overflow-hidden">
