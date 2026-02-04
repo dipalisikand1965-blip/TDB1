@@ -206,8 +206,15 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
   const videoRef = useRef(null);
   const audioRef = useRef(null);
   const timerRef = useRef(null);
+  const readyRef = useRef({ video: false, audio: false });
   
   const clip = BRAND_STORY_CLIPS[currentClip];
+  
+  // Reset ready state when clip changes
+  useEffect(() => {
+    setIsReady(false);
+    readyRef.current = { video: false, audio: false };
+  }, [currentClip]);
   
   // Preload and sync video + audio together
   useEffect(() => {
@@ -216,9 +223,6 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
     const video = videoRef.current;
     const audio = audioRef.current;
     if (!video || !audio) return;
-    
-    // Reset ready state
-    setIsReady(false);
     
     // Clear any existing timer
     if (timerRef.current) {
@@ -229,11 +233,8 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
     video.src = clip.src;
     audio.src = clip.audioSrc;
     
-    let videoReady = false;
-    let audioReady = false;
-    
     const tryPlayBoth = async () => {
-      if (!videoReady || !audioReady) return;
+      if (!readyRef.current.video || !readyRef.current.audio) return;
       
       setIsReady(true);
       
@@ -275,13 +276,13 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
     
     // Video ready handler
     video.oncanplaythrough = () => {
-      videoReady = true;
+      readyRef.current.video = true;
       tryPlayBoth();
     };
     
     // Audio ready handler  
     audio.oncanplaythrough = () => {
-      audioReady = true;
+      readyRef.current.audio = true;
       tryPlayBoth();
     };
     
