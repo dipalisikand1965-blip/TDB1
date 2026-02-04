@@ -1549,6 +1549,25 @@ const MembershipOnboarding = () => {
                       )}
                     </Button>
                   </div>
+                  
+                  {/* Skip Payment for Demo Mode */}
+                  <div className="text-center mt-4">
+                    <button
+                      type="button"
+                      onClick={() => navigate('/my-pets')}
+                      className="text-sm text-slate-400 hover:text-pink-400 underline"
+                      data-testid="skip-payment-btn"
+                    >
+                      Skip Payment (Demo Mode)
+                    </button>
+                  </div>
+                  
+                  {/* Error Display */}
+                  {error && (
+                    <div className="mt-4 p-4 bg-red-500/20 border border-red-500/50 rounded-lg">
+                      <p className="text-red-300 text-sm">{error}</p>
+                    </div>
+                  )}
                 </Card>
               </div>
             </div>
