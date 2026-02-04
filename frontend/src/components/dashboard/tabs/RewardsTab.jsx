@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Card } from '../../ui/card';
 import { Button } from '../../ui/button';
 import { Badge } from '../../ui/badge';
-import { Gift, Star, Zap, Trophy, Award, Target } from 'lucide-react';
+import { Gift, Star, Zap, Trophy, Award, Target, Sparkles } from 'lucide-react';
 
 const RewardsTab = ({ 
   user, 
@@ -41,25 +41,25 @@ const RewardsTab = ({
     : 100;
 
   return (
-    <div className="space-y-6 animate-in fade-in-50 duration-300">
+    <div className="space-y-4 sm:space-y-6 animate-in fade-in-50 duration-300" data-testid="rewards-tab">
       {/* Paw Points Overview Card */}
-      <Card className={`p-6 bg-gradient-to-br ${currentTier.color} text-white shadow-xl relative overflow-hidden`}>
+      <Card className={`p-4 sm:p-6 bg-gradient-to-br ${currentTier.color} text-white shadow-xl relative overflow-hidden rounded-2xl`}>
         <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -mr-16 -mt-16 blur-2xl" />
         <div className="relative z-10">
-          <div className="flex justify-between items-start mb-4">
+          <div className="flex flex-col sm:flex-row justify-between items-start gap-4 mb-4">
             <div>
               <p className="text-sm opacity-90 mb-1">Paw Points Balance</p>
-              <h2 className="text-4xl font-bold">{totalPawPoints.toLocaleString()}</h2>
+              <h2 className="text-3xl sm:text-4xl font-bold">{totalPawPoints.toLocaleString()}</h2>
             </div>
-            <div className="text-center">
-              <span className="text-4xl">{currentTier.icon}</span>
-              <Badge className="mt-2 bg-white/20 text-white border-none">{currentTier.name}</Badge>
+            <div className="flex sm:flex-col items-center gap-2 sm:text-center">
+              <span className="text-3xl sm:text-4xl">{currentTier.icon}</span>
+              <Badge className="bg-white/20 text-white border-none">{currentTier.name}</Badge>
             </div>
           </div>
           
           {currentTier.next && (
             <div className="mt-4">
-              <div className="flex justify-between text-sm mb-1">
+              <div className="flex justify-between text-xs sm:text-sm mb-1">
                 <span>Progress to {currentTier.next}</span>
                 <span>{currentTier.nextPoints - totalPawPoints} points to go</span>
               </div>
@@ -72,7 +72,7 @@ const RewardsTab = ({
             </div>
           )}
           
-          <div className="mt-4 flex gap-3">
+          <div className="mt-4 flex flex-wrap gap-2 sm:gap-3">
             <Button 
               variant="outline" 
               size="sm"
@@ -92,37 +92,29 @@ const RewardsTab = ({
         </div>
       </Card>
       
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card className="p-4 text-center">
-          <Gift className="w-6 h-6 mx-auto text-purple-500 mb-2" />
-          <p className="text-2xl font-bold text-gray-900">{totalPawPoints}</p>
-          <p className="text-xs text-gray-500">Total Points</p>
-        </Card>
-        <Card className="p-4 text-center">
-          <Star className="w-6 h-6 mx-auto text-amber-500 mb-2" />
-          <p className="text-2xl font-bold text-gray-900">{orders.length}</p>
-          <p className="text-xs text-gray-500">Orders Placed</p>
-        </Card>
-        <Card className="p-4 text-center">
-          <Zap className="w-6 h-6 mx-auto text-pink-500 mb-2" />
-          <p className="text-2xl font-bold text-gray-900">₹{totalSpent.toLocaleString()}</p>
-          <p className="text-xs text-gray-500">Total Spent</p>
-        </Card>
-        <Card className="p-4 text-center">
-          <Trophy className="w-6 h-6 mx-auto text-green-500 mb-2" />
-          <p className="text-2xl font-bold text-gray-900">{completedAchievements}</p>
-          <p className="text-xs text-gray-500">Achievements</p>
-        </Card>
+      {/* Stats Grid - 2x2 on mobile, 4 on desktop */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        {[
+          { icon: Gift, color: 'text-purple-400', value: totalPawPoints, label: 'Total Points' },
+          { icon: Star, color: 'text-amber-400', value: orders.length, label: 'Orders Placed' },
+          { icon: Zap, color: 'text-pink-400', value: `₹${totalSpent.toLocaleString()}`, label: 'Total Spent' },
+          { icon: Trophy, color: 'text-emerald-400', value: completedAchievements, label: 'Achievements' },
+        ].map((stat, idx) => (
+          <Card key={idx} className="p-3 sm:p-4 text-center bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-xl">
+            <stat.icon className={`w-5 h-5 sm:w-6 sm:h-6 mx-auto ${stat.color} mb-2`} />
+            <p className="text-xl sm:text-2xl font-bold text-white">{stat.value}</p>
+            <p className="text-[10px] sm:text-xs text-slate-400">{stat.label}</p>
+          </Card>
+        ))}
       </div>
       
       {/* Ways to Earn */}
-      <Card className="p-6">
-        <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-          <Target className="w-5 h-5 text-purple-600" />
+      <Card className="p-4 sm:p-6 bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl">
+        <h3 className="font-bold text-white mb-4 flex items-center gap-2 text-base sm:text-lg">
+          <Target className="w-5 h-5 text-purple-400" />
           Ways to Earn Paw Points
         </h3>
-        <div className="grid sm:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3">
           {[
             { action: 'Make a purchase', points: '1 point per ₹10', icon: '🛒' },
             { action: 'Complete Pet Soul™', points: '100 points', icon: '✨' },
@@ -131,11 +123,11 @@ const RewardsTab = ({
             { action: 'Birthday bonus', points: '2x points', icon: '🎂' },
             { action: 'Share on social', points: '50 points', icon: '📱' }
           ].map((way, idx) => (
-            <div key={idx} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-              <span className="text-2xl">{way.icon}</span>
-              <div>
-                <p className="font-medium text-gray-900">{way.action}</p>
-                <p className="text-sm text-purple-600">{way.points}</p>
+            <div key={idx} className="flex items-center gap-3 p-3 bg-slate-800/50 rounded-xl">
+              <span className="text-xl sm:text-2xl flex-shrink-0">{way.icon}</span>
+              <div className="min-w-0">
+                <p className="font-medium text-white text-sm truncate">{way.action}</p>
+                <p className="text-xs text-purple-400">{way.points}</p>
               </div>
             </div>
           ))}
@@ -143,38 +135,43 @@ const RewardsTab = ({
       </Card>
       
       {/* Tier Benefits */}
-      <Card className="p-6">
-        <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-          <Award className="w-5 h-5 text-purple-600" />
+      <Card className="p-4 sm:p-6 bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl">
+        <h3 className="font-bold text-white mb-4 flex items-center gap-2 text-base sm:text-lg">
+          <Award className="w-5 h-5 text-purple-400" />
           Tier Benefits
         </h3>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {[
             { tier: 'Curious Pup', points: '0-249', benefits: ['5% off orders', 'Birthday treat'], color: 'from-green-500 to-teal-500', icon: '🐕' },
             { tier: 'Good Boi', points: '250-749', benefits: ['10% off orders', 'Free shipping', 'Early access'], color: 'from-amber-500 to-orange-500', icon: '🎖️' },
             { tier: 'Pawfect', points: '750-1499', benefits: ['15% off orders', 'Priority support', 'Exclusive items'], color: 'from-pink-500 to-rose-500', icon: '⭐' },
-            { tier: 'Legend Pup', points: '1500+', benefits: ['20% off orders', 'VIP events', 'Personal concierge'], color: 'from-purple-500 to-pink-500', icon: '👑' }
+            { tier: 'Legend Pup', points: '1500+', benefits: ['20% off orders', 'VIP events', 'Personal concierge®'], color: 'from-purple-500 to-pink-500', icon: '👑' }
           ].map((tierInfo) => (
             <div 
               key={tierInfo.tier} 
-              className={`p-4 rounded-xl border-2 ${currentTier.name === tierInfo.tier ? 'border-purple-400 bg-purple-50' : 'border-gray-200 bg-white'}`}
+              className={`p-3 sm:p-4 rounded-xl border ${currentTier.name === tierInfo.tier 
+                ? 'border-purple-500/50 bg-purple-500/10' 
+                : 'border-white/10 bg-slate-800/30'}`}
             >
               <div className="flex items-center gap-2 mb-2">
-                <span className="text-2xl">{tierInfo.icon}</span>
-                <div>
-                  <p className="font-semibold text-gray-900">{tierInfo.tier}</p>
-                  <p className="text-xs text-gray-500">{tierInfo.points} pts</p>
+                <span className="text-xl sm:text-2xl">{tierInfo.icon}</span>
+                <div className="min-w-0">
+                  <p className="font-semibold text-white text-sm truncate">{tierInfo.tier}</p>
+                  <p className="text-xs text-slate-400">{tierInfo.points} pts</p>
                 </div>
               </div>
               <ul className="space-y-1">
                 {tierInfo.benefits.map((b, i) => (
-                  <li key={i} className="text-xs text-gray-600 flex items-center gap-1">
-                    <span className="w-1 h-1 bg-purple-400 rounded-full" /> {b}
+                  <li key={i} className="text-xs text-slate-300 flex items-center gap-1.5">
+                    <span className="w-1 h-1 bg-purple-400 rounded-full flex-shrink-0" /> 
+                    <span className="truncate">{b}</span>
                   </li>
                 ))}
               </ul>
               {currentTier.name === tierInfo.tier && (
-                <Badge className="mt-2 bg-purple-100 text-purple-700 text-xs">Current Tier</Badge>
+                <Badge className="mt-2 bg-purple-500/20 text-purple-300 border border-purple-500/30 text-xs">
+                  <Sparkles className="w-3 h-3 mr-1" /> Current
+                </Badge>
               )}
             </div>
           ))}
@@ -183,26 +180,28 @@ const RewardsTab = ({
       
       {/* Achievements */}
       {achievements && achievements.length > 0 && (
-        <Card className="p-6">
-          <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <Trophy className="w-5 h-5 text-amber-500" />
+        <Card className="p-4 sm:p-6 bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl">
+          <h3 className="font-bold text-white mb-4 flex items-center gap-2 text-base sm:text-lg">
+            <Trophy className="w-5 h-5 text-amber-400" />
             Achievements
           </h3>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {achievements.slice(0, 6).map((achievement) => (
               <div 
                 key={achievement.id || achievement.name}
-                className={`p-4 rounded-lg border ${achievement.unlocked_at ? 'bg-gradient-to-br from-amber-50 to-orange-50 border-amber-200' : 'bg-gray-50 border-gray-200 opacity-60'}`}
+                className={`p-3 sm:p-4 rounded-xl border ${achievement.unlocked_at 
+                  ? 'bg-gradient-to-br from-amber-500/10 to-orange-500/10 border-amber-500/30' 
+                  : 'bg-slate-800/30 border-white/5 opacity-60'}`}
               >
                 <div className="flex items-start gap-3">
-                  <span className="text-2xl">{achievement.icon || '🏆'}</span>
-                  <div>
-                    <p className="font-medium text-gray-900">{achievement.name}</p>
-                    <p className="text-xs text-gray-500">{achievement.description}</p>
+                  <span className="text-xl sm:text-2xl flex-shrink-0">{achievement.icon || '🏆'}</span>
+                  <div className="min-w-0">
+                    <p className="font-medium text-white text-sm truncate">{achievement.name}</p>
+                    <p className="text-xs text-slate-400 line-clamp-2">{achievement.description}</p>
                     {achievement.unlocked_at ? (
-                      <Badge className="mt-2 bg-green-100 text-green-700 text-xs">Unlocked!</Badge>
+                      <Badge className="mt-2 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-xs">Unlocked!</Badge>
                     ) : (
-                      <Badge variant="outline" className="mt-2 text-xs text-gray-500">Locked</Badge>
+                      <Badge variant="outline" className="mt-2 text-xs text-slate-500 border-slate-600">Locked</Badge>
                     )}
                   </div>
                 </div>
