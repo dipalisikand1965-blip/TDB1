@@ -1347,14 +1347,14 @@ const MembershipOnboarding = () => {
                   <div className="mt-6 space-y-4">
                     {/* Soul Whisper Info */}
                     {parentData.notifications.soulWhispers && (
-                      <div className="p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl border border-green-200">
+                      <div className="p-4 bg-gradient-to-r from-emerald-900/30 to-teal-900/30 rounded-xl border border-emerald-500/30">
                         <div className="flex items-start gap-3">
-                          <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                          <div className="w-10 h-10 bg-emerald-500/20 rounded-full flex items-center justify-center flex-shrink-0">
                             <span className="text-lg">💬</span>
                           </div>
                           <div>
-                            <p className="font-semibold text-green-800">Soul Whisper™ Enabled</p>
-                            <p className="text-sm text-green-600">
+                            <p className="font-semibold text-emerald-300">Soul Whisper™ Enabled</p>
+                            <p className="text-sm text-emerald-200/80">
                               We'll send you weekly WhatsApp messages with gentle questions to understand your pet better.
                             </p>
                           </div>
@@ -1363,14 +1363,14 @@ const MembershipOnboarding = () => {
                     )}
 
                     {/* Push Notifications Reminder */}
-                    <div className="p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
+                    <div className="p-4 bg-gradient-to-r from-blue-900/30 to-indigo-900/30 rounded-xl border border-blue-500/30">
                       <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <div className="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center flex-shrink-0">
                           <span className="text-lg">🔔</span>
                         </div>
                         <div>
-                          <p className="font-semibold text-blue-800">Enable Notifications</p>
-                          <p className="text-sm text-blue-600">
+                          <p className="font-semibold text-blue-300">Enable Notifications</p>
+                          <p className="text-sm text-blue-200/80">
                             After signup, enable push notifications to get order updates, pet care reminders, and exclusive offers.
                           </p>
                         </div>
@@ -1378,14 +1378,14 @@ const MembershipOnboarding = () => {
                     </div>
 
                     {/* PWA Install Prompt */}
-                    <div className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-200">
+                    <div className="p-4 bg-gradient-to-r from-purple-900/30 to-pink-900/30 rounded-xl border border-purple-500/30">
                       <div className="flex items-start gap-3">
-                        <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <div className="w-10 h-10 bg-purple-500/20 rounded-full flex items-center justify-center flex-shrink-0">
                           <span className="text-lg">📱</span>
                         </div>
                         <div>
-                          <p className="font-semibold text-purple-800">Add to Home Screen</p>
-                          <p className="text-sm text-purple-600">
+                          <p className="font-semibold text-purple-300">Add to Home Screen</p>
+                          <p className="text-sm text-purple-200/80">
                             Install The Doggy Company app on your phone for instant access. Look for "Add to Home Screen" in your browser menu after signup.
                           </p>
                         </div>
@@ -1397,7 +1397,7 @@ const MembershipOnboarding = () => {
                     <Button 
                       variant="outline"
                       onClick={handleBack}
-                      className="flex-1"
+                      className="flex-1 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white"
                       disabled={loading}
                     >
                       <ChevronLeft className="w-4 h-4 mr-2" />
@@ -1406,7 +1406,7 @@ const MembershipOnboarding = () => {
                     <Button 
                       onClick={handleSubmit}
                       disabled={loading}
-                      className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+                      className="flex-1 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-400 hover:to-purple-500 text-white font-semibold shadow-lg shadow-pink-500/30"
                       data-testid="complete-payment-btn"
                     >
                       {loading ? (
