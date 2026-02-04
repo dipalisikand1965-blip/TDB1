@@ -79,7 +79,7 @@ const AddressesTab = ({ savedAddresses = [], onAddressUpdate, onAddressDelete, o
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
-          {savedAddresses.map((addr, idx) => (
+          {addresses.map((addr, idx) => (
             <div 
               key={addr.id || idx} 
               className="bg-slate-800/50 border border-white/5 p-4 rounded-xl hover:border-purple-500/30 transition-all group"
