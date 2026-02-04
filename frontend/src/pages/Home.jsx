@@ -714,6 +714,12 @@ const REAL_STORIES = [
     petName: "Luna",
     petImage: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=200&h=200&fit=crop",
   },
+  {
+    quote: "Mira knew exactly which treats work best for Coco's training. It's like having a pet expert who actually knows MY dog.",
+    humanName: "Sneha Patel",
+    petName: "Coco",
+    petImage: "https://images.unsplash.com/photo-1618762869266-1e23a6b73a1d?w=200&h=200&fit=crop",
+  },
 ];
 
 export default Home;
