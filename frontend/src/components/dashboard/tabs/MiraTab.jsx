@@ -205,6 +205,132 @@ const MiraTab = ({ user, pets }) => {
           </p>
         </Card>
       )}
+      
+      {/* 🧠 WHAT MIRA REMEMBERS - Relationship Memory */}
+      <Card className="p-4 sm:p-6 bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl" data-testid="mira-memory-section">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-bold text-white flex items-center gap-2 text-base sm:text-lg">
+            <Brain className="w-5 h-5 text-purple-400" />
+            What Mira Remembers
+          </h3>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={fetchMemories}
+            className="text-slate-400 hover:text-white"
+            disabled={memoriesLoading}
+          >
+            <RefreshCw className={`w-4 h-4 ${memoriesLoading ? 'animate-spin' : ''}`} />
+          </Button>
+        </div>
+        
+        {memoriesLoading && !memories && (
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="w-6 h-6 animate-spin text-purple-400" />
+          </div>
+        )}
+        
+        {memoriesError && (
+          <p className="text-sm text-slate-400 text-center py-4">{memoriesError}</p>
+        )}
+        
+        {memories && (
+          <>
+            {memories.total_memories === 0 ? (
+              <div className="text-center py-6">
+                <Brain className="w-12 h-12 mx-auto text-slate-600 mb-3" />
+                <p className="text-slate-400 text-sm mb-2">No memories yet</p>
+                <p className="text-slate-500 text-xs">
+                  As you chat with Mira, she&apos;ll remember important details about you and {primaryPet?.name || 'your pet'}.
+                </p>
+                <Button 
+                  className="mt-4 bg-gradient-to-r from-purple-500 to-pink-500"
+                  onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI'))}
+                >
+                  <MessageCircle className="w-4 h-4 mr-2" />
+                  Start Chatting
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <p className="text-xs text-slate-400 mb-3">
+                  Mira stores these memories to personalize your experience. They&apos;re surfaced only when relevant.
+                </p>
+                
+                {/* Memory Type Summary */}
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 mb-4">
+                  {Object.entries(MEMORY_TYPE_CONFIG).map(([type, config]) => {
+                    const typeData = memories.by_type?.[type];
+                    const count = typeData?.count || 0;
+                    const IconComponent = config.icon;
+                    
+                    return (
+                      <button
+                        key={type}
+                        onClick={() => setExpandedType(expandedType === type ? null : type)}
+                        className={`p-3 rounded-xl border transition-all ${
+                          expandedType === type 
+                            ? `${config.bgColor} ${config.borderColor} scale-[1.02]` 
+                            : 'bg-slate-800/50 border-white/5 hover:bg-slate-800'
+                        }`}
+                      >
+                        <IconComponent className={`w-5 h-5 ${config.textColor} mb-1`} />
+                        <p className={`text-xs font-medium ${expandedType === type ? config.textColor : 'text-slate-300'}`}>
+                          {config.label.split(' ')[0]}
+                        </p>
+                        <p className={`text-lg font-bold ${expandedType === type ? 'text-white' : 'text-slate-400'}`}>
+                          {count}
+                        </p>
+                      </button>
+                    );
+                  })}
+                </div>
+                
+                {/* Expanded Memory List */}
+                {expandedType && memories.by_type?.[expandedType]?.memories?.length > 0 && (
+                  <div className={`p-4 rounded-xl ${MEMORY_TYPE_CONFIG[expandedType].bgColor} ${MEMORY_TYPE_CONFIG[expandedType].borderColor} border animate-in slide-in-from-top-2 duration-200`}>
+                    <h4 className={`font-semibold ${MEMORY_TYPE_CONFIG[expandedType].textColor} mb-3 flex items-center gap-2`}>
+                      {React.createElement(MEMORY_TYPE_CONFIG[expandedType].icon, { className: 'w-4 h-4' })}
+                      {MEMORY_TYPE_CONFIG[expandedType].label}
+                    </h4>
+                    <div className="space-y-2 max-h-60 overflow-y-auto">
+                      {memories.by_type[expandedType].memories.map((memory, idx) => (
+                        <div 
+                          key={memory.memory_id || idx}
+                          className="flex items-start justify-between gap-2 p-2 bg-black/20 rounded-lg group"
+                        >
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm text-white">{memory.content}</p>
+                            {memory.pet_name && (
+                              <p className="text-xs text-slate-400 mt-1">About: {memory.pet_name}</p>
+                            )}
+                            <p className="text-[10px] text-slate-500 mt-1">
+                              {memory.created_at ? new Date(memory.created_at).toLocaleDateString() : 'Recent'}
+                              {memory.source && ` • ${memory.source.replace('-', ' ')}`}
+                            </p>
+                          </div>
+                          <button
+                            onClick={() => deleteMemory(memory.memory_id)}
+                            className="opacity-0 group-hover:opacity-100 p-1.5 hover:bg-red-500/20 rounded-lg transition-all"
+                            title="Remove this memory"
+                          >
+                            <Trash2 className="w-3.5 h-3.5 text-red-400" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Total memories count */}
+                <p className="text-center text-xs text-slate-500 pt-2">
+                  {memories.total_memories} total memories stored
+                </p>
+              </div>
+            )}
+          </>
+        )}
+      </Card>
     </div>
   );
 };
