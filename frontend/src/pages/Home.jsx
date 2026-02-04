@@ -1082,12 +1082,12 @@ const Home = () => {
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
           >
-            <a href="https://thedoggycompany.in/membership" target="_blank" rel="noopener noreferrer">
+            <Link to="/join">
               <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 px-8 py-6 rounded-full text-lg">
                 Begin Your Journey
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
-            </a>
+            </Link>
           </motion.div>
         </div>
       </section>
