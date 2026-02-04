@@ -1199,7 +1199,7 @@ const MembershipOnboarding = () => {
                   </Button>
                   <Button 
                     onClick={handleNext}
-                    className="flex-1 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600"
+                    className="flex-1 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-400 hover:to-purple-500 text-white font-semibold shadow-lg shadow-pink-500/30"
                     data-testid="celebrations-next-btn"
                   >
                     Review & Pay
@@ -1214,49 +1214,53 @@ const MembershipOnboarding = () => {
           {step === 4 && (
             <div className="animate-in fade-in slide-in-from-right-4 duration-300">
               <div className="text-center mb-8">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Crown className="w-8 h-8 text-green-600" />
+                {/* Soul Orb for Review */}
+                <div className="relative w-20 h-20 mx-auto mb-4">
+                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-400 via-teal-500 to-cyan-600 rounded-full animate-pulse opacity-50 blur-xl"></div>
+                  <div className="relative w-20 h-20 bg-gradient-to-br from-emerald-400 via-teal-500 to-cyan-600 rounded-full flex items-center justify-center shadow-2xl shadow-emerald-500/40">
+                    <Crown className="w-10 h-10 text-white" />
+                  </div>
                 </div>
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
                   Review & Complete
                 </h1>
-                <p className="text-gray-500">
+                <p className="text-slate-400">
                   Almost there! Review your details and complete payment
                 </p>
               </div>
 
               <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
                 {/* Summary Card */}
-                <Card className="p-6">
-                  <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <User className="w-5 h-5 text-purple-600" />
+                <Card className="p-6 bg-slate-900/60 backdrop-blur-md border border-white/10">
+                  <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
+                    <User className="w-5 h-5 text-pink-400" />
                     Pet Parent
                   </h3>
                   <div className="space-y-2 text-sm">
-                    <p><span className="text-gray-500">Name:</span> {parentData.name}</p>
-                    <p><span className="text-gray-500">Email:</span> {parentData.email}</p>
-                    <p><span className="text-gray-500">WhatsApp:</span> {parentData.whatsapp}</p>
-                    <p><span className="text-gray-500">City:</span> {parentData.city} - {parentData.pincode}</p>
+                    <p className="text-slate-300"><span className="text-slate-500">Name:</span> {parentData.name}</p>
+                    <p className="text-slate-300"><span className="text-slate-500">Email:</span> {parentData.email}</p>
+                    <p className="text-slate-300"><span className="text-slate-500">WhatsApp:</span> {parentData.whatsapp}</p>
+                    <p className="text-slate-300"><span className="text-slate-500">City:</span> {parentData.city} - {parentData.pincode}</p>
                   </div>
 
-                  <hr className="my-4" />
+                  <hr className="my-4 border-slate-700" />
 
-                  <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <PawPrint className="w-5 h-5 text-pink-600" />
+                  <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
+                    <PawPrint className="w-5 h-5 text-pink-400" />
                     Your Dog{petsData.length > 1 ? 's' : ''}
                   </h3>
                   <div className="space-y-3">
                     {petsData.map((pet, idx) => (
-                      <div key={idx} className="p-3 bg-gray-50 rounded-lg">
-                        <p className="font-medium">{pet.name}</p>
-                        <p className="text-sm text-gray-500">{pet.breed} • {pet.gender || 'Gender not specified'}</p>
+                      <div key={idx} className="p-3 bg-slate-800/50 rounded-lg border border-slate-700">
+                        <p className="font-medium text-white">{pet.name}</p>
+                        <p className="text-sm text-slate-400">{pet.breed} • {pet.gender || 'Gender not specified'}</p>
                         {/* Show selected celebrations */}
                         {(pet.celebrations || []).length > 0 && (
                           <div className="flex flex-wrap gap-1 mt-2">
                             {(pet.celebrations || []).map(celebId => {
                               const celeb = CELEBRATION_TYPES.find(c => c.id === celebId);
                               return celeb ? (
-                                <span key={celebId} className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">
+                                <span key={celebId} className="text-xs bg-pink-500/20 text-pink-300 px-2 py-0.5 rounded-full border border-pink-500/30">
                                   {celeb.emoji} {celeb.name}
                                 </span>
                               ) : null;
@@ -1270,63 +1274,63 @@ const MembershipOnboarding = () => {
                   <Button 
                     variant="ghost" 
                     onClick={() => setStep(1)}
-                    className="mt-4 text-purple-600"
+                    className="mt-4 text-pink-400 hover:text-pink-300 hover:bg-pink-500/10"
                   >
                     Edit Details
                   </Button>
                 </Card>
 
                 {/* Pricing Card */}
-                <Card className="p-6 bg-gradient-to-br from-purple-50 to-pink-50">
-                  <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                    <CreditCard className="w-5 h-5 text-purple-600" />
+                <Card className="p-6 bg-gradient-to-br from-purple-900/40 to-pink-900/40 backdrop-blur-md border border-purple-500/30">
+                  <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
+                    <CreditCard className="w-5 h-5 text-purple-400" />
                     Pet Pass Summary
                   </h3>
                   
                   <div className="space-y-3 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-gray-600">
-                        Pet Pass — {pricing.isTrialPlan ? 'Trial (1 month)' : 'Foundation (12 months)'} (1 pet)
+                      <span className="text-slate-300">
+                        Pet Pass — {pricing.isTrialPlan ? 'Trial (1 month)' : 'Founder (12 months)'}
                       </span>
-                      <span>₹{pricing.basePrice}</span>
+                      <span className="text-white">₹{pricing.basePrice}</span>
                     </div>
                     
-                    {pricing.additionalPets > 0 && (
+                    {petsData.length > 1 && (
                       <div className="flex justify-between">
-                        <span className="text-gray-600">
-                          Additional Pet Pass ({pricing.additionalPets} × ₹{pricing.additionalPetPrice})
+                        <span className="text-emerald-400">
+                          + {petsData.length - 1} more dog{petsData.length > 2 ? 's' : ''} (FREE!)
                         </span>
-                        <span>₹{pricing.additionalPets * pricing.additionalPetPrice}</span>
+                        <span className="text-emerald-400">₹0</span>
                       </div>
                     )}
                     
-                    <hr />
+                    <hr className="border-slate-600" />
                     
                     <div className="flex justify-between">
-                      <span className="text-gray-600">Subtotal</span>
-                      <span>₹{pricing.subtotal}</span>
+                      <span className="text-slate-400">Subtotal</span>
+                      <span className="text-white">₹{pricing.subtotal}</span>
                     </div>
                     
                     <div className="flex justify-between">
-                      <span className="text-gray-600">GST (18%)</span>
-                      <span>₹{pricing.gst}</span>
+                      <span className="text-slate-400">GST (18%)</span>
+                      <span className="text-white">₹{pricing.gst}</span>
                     </div>
                     
-                    <hr />
+                    <hr className="border-slate-600" />
                     
                     <div className="flex justify-between text-lg font-bold">
-                      <span>Total</span>
-                      <span className="text-purple-600">₹{pricing.total}</span>
+                      <span className="text-white">Total</span>
+                      <span className="text-pink-400">₹{pricing.total}</span>
                     </div>
                   </div>
 
                   {/* What's Included */}
-                  <div className="mt-6 p-4 bg-white/60 rounded-lg">
-                    <p className="text-xs font-medium text-gray-500 mb-2">YOUR PET PASS INCLUDES</p>
+                  <div className="mt-6 p-4 bg-slate-800/50 rounded-lg border border-slate-700">
+                    <p className="text-xs font-medium text-slate-400 mb-2">YOUR PET PASS INCLUDES</p>
                     <div className="space-y-2 text-sm">
-                      {['Unique Pet Pass number per pet', 'All 14 pillars unlocked', 'Pet Soul™ profile', 'Mira AI concierge', 'Health Vault', 'Priority support'].map((item, i) => (
-                        <div key={i} className="flex items-center gap-2 text-gray-700">
-                          <Check className="w-4 h-4 text-green-500" />
+                      {['Unique Pet Pass number per pet', 'All 14 pillars unlocked', 'Pet Soul™ profile', 'Mira AI Concierge®', 'Health Vault', 'Priority support'].map((item, i) => (
+                        <div key={i} className="flex items-center gap-2 text-slate-300">
+                          <Check className="w-4 h-4 text-emerald-400" />
                           {item}
                         </div>
                       ))}
@@ -1334,7 +1338,7 @@ const MembershipOnboarding = () => {
                   </div>
 
                   {error && (
-                    <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
+                    <div className="mt-4 p-3 bg-red-500/20 border border-red-500/50 rounded-lg text-red-300 text-sm">
                       {error}
                     </div>
                   )}
