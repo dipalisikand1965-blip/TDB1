@@ -954,7 +954,9 @@ const MemberDashboard = () => {
                       className={`relative bg-black/20 backdrop-blur-md rounded-xl md:rounded-2xl p-3 md:p-4 text-center cursor-pointer transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] border ${
                         isSelected 
                           ? 'border-white/30 bg-black/40 scale-[1.02] shadow-lg shadow-white/10' 
-                          : 'border-white/10 hover:border-white/20'
+                          : needsAttention 
+                            ? 'border-yellow-400/50 hover:border-yellow-400/70 hover:bg-black/30' 
+                            : 'border-white/10 hover:border-white/20 hover:bg-black/30'
                       }`}
                       onClick={() => setSelectedPetId(pet.id)}
                       data-testid={`pet-card-${pet.name?.toLowerCase()}`}
