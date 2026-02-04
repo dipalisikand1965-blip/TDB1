@@ -791,58 +791,6 @@ const SOUL_DIMENSIONS = [
   },
 ];
 
-// Bond Gallery - YOUR authentic pet-human connection photos
-const BOND_GALLERY = [
-  {
-    image: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/0iy6sezo_shutterstock_504980047%20%282%29.jpg',
-    caption: 'Unconditional love',
-    tall: false,
-    wide: false,
-  },
-  {
-    image: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/7oe8caws_shutterstock_1293337687%20%282%29.jpg',
-    caption: 'Pure joy',
-    tall: false,
-    wide: false,
-  },
-  {
-    image: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/phjxi6rd_dog-1194087_1920%20%281%29.jpg',
-    caption: 'Those soulful eyes',
-    tall: true,
-    wide: false,
-  },
-  {
-    image: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/mjwttjs6_shutterstock_297030209%20%281%29.jpg',
-    caption: 'Adorable personality',
-    tall: false,
-    wide: false,
-  },
-  {
-    image: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/3cqhqxwf_shutterstock_171983261%20%281%29.jpg',
-    caption: 'The bond we cherish',
-    tall: false,
-    wide: false,
-  },
-  {
-    image: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/n600xuze_shutterstock_134149577%20%281%29.jpg',
-    caption: 'Puppy love',
-    tall: false,
-    wide: false,
-  },
-  {
-    image: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/dbyt7aqs_shutterstock_139089332%20%281%29.jpg',
-    caption: 'Best friends',
-    tall: false,
-    wide: true,
-  },
-  {
-    image: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/jlabx5e0_dog-813103%20%281%29.jpg',
-    caption: 'Every pet has a soul',
-    tall: false,
-    wide: false,
-  },
-];
-
 // Real Stories - Trust through real families
 const REAL_STORIES = [
   {
