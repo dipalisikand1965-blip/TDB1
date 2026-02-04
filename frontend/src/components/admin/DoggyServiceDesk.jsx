@@ -5365,46 +5365,56 @@ const DoggyServiceDesk = ({ authHeaders }) => {
         </div>
       </div>
       
-      {/* ==================== MERGE TICKETS MODAL ==================== */}
+      {/* ==================== MERGE TICKETS MODAL (Multi-select from list) ==================== */}
       {showMergeModal && selectedTicketIds.length >= 2 && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowMergeModal(false)}>
-          <Card className="w-full max-w-[500px] bg-white shadow-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+          <Card className="w-full max-w-[600px] bg-white shadow-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-lg">Merge Tickets</h3>
-                <button onClick={() => setShowMergeModal(false)} className="p-2 hover:bg-gray-100 rounded">
+                <div>
+                  <h3 className="font-semibold text-lg">Merge {selectedTicketIds.length} Tickets</h3>
+                  <p className="text-sm text-gray-500">Combine conversations into one master ticket</p>
+                </div>
+                <button onClick={() => { setShowMergeModal(false); setMergeReason(''); setMasterTicketId(null); }} className="p-2 hover:bg-gray-100 rounded">
                   <X className="w-5 h-5" />
                 </button>
               </div>
               
               <div className="space-y-4">
-                {/* Primary ticket = FIRST selected */}
-                {(() => {
-                  const primaryId = selectedTicketIds[0];
-                  const primaryTicket = allTickets.find(t => t.ticket_id === primaryId);
-                  return primaryTicket ? (
-                    <div className="p-4 bg-emerald-50 rounded-lg border border-emerald-200">
-                      <div className="flex items-center gap-2 mb-2">
-                        <CheckCircle className="w-5 h-5 text-emerald-600" />
-                        <span className="font-medium text-emerald-800">Primary Ticket (Keep) — First Selected</span>
-                      </div>
-                      <p className="text-sm text-emerald-700 font-mono">{primaryTicket.ticket_id}</p>
-                      <p className="text-sm text-emerald-600 truncate">{primaryTicket.subject || primaryTicket.description?.slice(0, 50)}</p>
-                    </div>
-                  ) : null;
-                })()}
-                
+                {/* Select Master Ticket */}
                 <div>
-                  <p className="text-sm text-gray-600 mb-2">The following {selectedTicketIds.length - 1} ticket(s) will be merged into the primary:</p>
-                  <div className="space-y-2 max-h-40 overflow-y-auto">
-                    {selectedTicketIds.slice(1).map(id => {
+                  <label className="text-sm font-medium text-gray-700 mb-2 block">
+                    Select Master Ticket <span className="text-red-500">*</span>
+                  </label>
+                  <p className="text-xs text-gray-500 mb-3">The master ticket will retain its ID, SLA, status, and ownership. All other tickets will merge into it.</p>
+                  <div className="space-y-2 max-h-48 overflow-y-auto border rounded-lg p-2">
+                    {selectedTicketIds.map(id => {
                       const ticket = allTickets.find(t => t.ticket_id === id);
+                      const isSelected = masterTicketId === id || (!masterTicketId && selectedTicketIds[0] === id);
                       return ticket ? (
-                        <div key={id} className="p-3 bg-gray-50 rounded-lg border text-sm flex items-center gap-2">
-                          <ArrowRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                          <div className="flex-1 min-w-0">
-                            <span className="font-mono text-xs text-gray-500">{id}</span>
-                            <p className="text-gray-700 truncate">{ticket.subject || ticket.description?.slice(0, 40)}</p>
+                        <div 
+                          key={id} 
+                          onClick={() => setMasterTicketId(id)}
+                          className={`p-3 rounded-lg cursor-pointer border-2 transition-all ${
+                            isSelected 
+                              ? 'bg-emerald-50 border-emerald-500' 
+                              : 'bg-gray-50 border-transparent hover:border-gray-300'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                              isSelected ? 'border-emerald-500 bg-emerald-500' : 'border-gray-300'
+                            }`}>
+                              {isSelected && <CheckCircle className="w-3 h-3 text-white" />}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <span className="font-mono text-xs text-gray-500">{id}</span>
+                                {isSelected && <Badge className="bg-emerald-500 text-white text-[10px]">MASTER</Badge>}
+                              </div>
+                              <p className="text-sm text-gray-700 truncate">{ticket.subject || ticket.description?.slice(0, 50)}</p>
+                              <p className="text-xs text-gray-400">Status: {ticket.status} • {ticket.member?.name || 'Unknown'}</p>
+                            </div>
                           </div>
                         </div>
                       ) : null;
@@ -5412,21 +5422,152 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                   </div>
                 </div>
                 
-                <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
-                  <p className="text-sm text-amber-800">
-                    ⚠️ This action will combine all messages and attachments. Secondary tickets will be closed and marked as merged.
+                {/* Tickets being merged */}
+                <div>
+                  <p className="text-sm font-medium text-gray-700 mb-2">
+                    Tickets to be merged ({selectedTicketIds.filter(id => id !== (masterTicketId || selectedTicketIds[0])).length})
                   </p>
+                  <div className="space-y-1 max-h-32 overflow-y-auto">
+                    {selectedTicketIds.filter(id => id !== (masterTicketId || selectedTicketIds[0])).map(id => {
+                      const ticket = allTickets.find(t => t.ticket_id === id);
+                      return ticket ? (
+                        <div key={id} className="p-2 bg-gray-50 rounded-lg text-sm flex items-center gap-2">
+                          <ArrowRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                          <span className="font-mono text-xs text-gray-500">{id}</span>
+                          <span className="text-gray-400">→</span>
+                          <span className="text-gray-600 truncate">{ticket.subject || ticket.description?.slice(0, 30)}</span>
+                        </div>
+                      ) : null;
+                    })}
+                  </div>
+                </div>
+                
+                {/* Merge Reason */}
+                <div>
+                  <label className="text-sm font-medium text-gray-700 mb-2 block">Merge Reason</label>
+                  <Textarea
+                    value={mergeReason}
+                    onChange={(e) => setMergeReason(e.target.value)}
+                    placeholder="e.g., Duplicate tickets from same customer about the same issue..."
+                    className="resize-none"
+                    rows={2}
+                  />
+                </div>
+                
+                {/* Warning */}
+                <div className="p-4 bg-amber-50 rounded-lg border border-amber-200">
+                  <div className="flex items-start gap-3">
+                    <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-medium text-amber-800">⚠️ Irreversible Action</p>
+                      <ul className="text-sm text-amber-700 mt-1 space-y-1">
+                        <li>• All conversations, notes & attachments will merge into the master ticket</li>
+                        <li>• Merged tickets will be marked as &quot;Merged / Closed&quot;</li>
+                        <li>• Opening merged tickets will redirect to the master ticket</li>
+                        <li>• Full audit trail will be preserved</li>
+                      </ul>
+                    </div>
+                  </div>
                 </div>
               </div>
               
               <div className="flex justify-end gap-3 mt-6 pt-4 border-t">
-                <Button variant="outline" onClick={() => setShowMergeModal(false)}>Cancel</Button>
+                <Button variant="outline" onClick={() => { setShowMergeModal(false); setMergeReason(''); setMasterTicketId(null); }}>Cancel</Button>
                 <Button
                   onClick={mergeTickets}
                   className="bg-emerald-500 hover:bg-emerald-600"
                 >
+                  <CheckCircle className="w-4 h-4 mr-2" />
                   Merge {selectedTicketIds.length} Tickets
                 </Button>
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
+      
+      {/* ==================== MERGE INTO MODAL (From ticket detail view) ==================== */}
+      {showMergeIntoModal && mergeTargetTicket && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => { setShowMergeIntoModal(false); setMergeTargetTicket(null); }}>
+          <Card className="w-full max-w-[550px] bg-white shadow-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="font-semibold text-lg">Merge Ticket Into Another</h3>
+                  <p className="text-sm text-gray-500">Current: {mergeTargetTicket.ticket_id}</p>
+                </div>
+                <button onClick={() => { setShowMergeIntoModal(false); setMergeTargetTicket(null); setMergeReason(''); }} className="p-2 hover:bg-gray-100 rounded">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              
+              {/* Current ticket summary */}
+              <div className="p-3 bg-blue-50 rounded-lg border border-blue-200 mb-4">
+                <p className="text-xs text-blue-600 font-medium uppercase">This ticket will be merged into:</p>
+                <p className="text-sm text-blue-800 font-mono">{mergeTargetTicket.ticket_id}</p>
+                <p className="text-sm text-blue-700 truncate">{mergeTargetTicket.subject || mergeTargetTicket.description?.slice(0, 60)}</p>
+              </div>
+              
+              {/* Search/Select target ticket */}
+              <div className="mb-4">
+                <label className="text-sm font-medium text-gray-700 mb-2 block">Select Target Ticket (Master)</label>
+                <Input
+                  value={searchMergeTarget}
+                  onChange={(e) => setSearchMergeTarget(e.target.value)}
+                  placeholder="Search by ticket ID or subject..."
+                  className="mb-2"
+                />
+                <div className="space-y-2 max-h-48 overflow-y-auto border rounded-lg p-2">
+                  {mergeableTickets
+                    .filter(t => t.ticket_id !== mergeTargetTicket.ticket_id)
+                    .filter(t => 
+                      !searchMergeTarget || 
+                      t.ticket_id.toLowerCase().includes(searchMergeTarget.toLowerCase()) ||
+                      (t.subject || '').toLowerCase().includes(searchMergeTarget.toLowerCase())
+                    )
+                    .map(ticket => (
+                      <div 
+                        key={ticket.ticket_id}
+                        onClick={() => mergeCurrentInto(ticket.ticket_id)}
+                        className="p-3 bg-gray-50 hover:bg-emerald-50 rounded-lg cursor-pointer border border-transparent hover:border-emerald-300 transition-all"
+                      >
+                        <div className="flex items-center gap-2">
+                          <ArrowRight className="w-4 h-4 text-emerald-500" />
+                          <div className="flex-1 min-w-0">
+                            <span className="font-mono text-xs text-gray-500">{ticket.ticket_id}</span>
+                            <p className="text-sm text-gray-700 truncate">{ticket.subject || ticket.description?.slice(0, 50)}</p>
+                            <p className="text-xs text-gray-400">Status: {ticket.status}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  }
+                  {mergeableTickets.filter(t => t.ticket_id !== mergeTargetTicket.ticket_id).length === 0 && (
+                    <p className="text-sm text-gray-500 text-center py-4">No other open tickets found for this member</p>
+                  )}
+                </div>
+              </div>
+              
+              {/* Merge Reason */}
+              <div className="mb-4">
+                <label className="text-sm font-medium text-gray-700 mb-2 block">Merge Reason (Optional)</label>
+                <Textarea
+                  value={mergeReason}
+                  onChange={(e) => setMergeReason(e.target.value)}
+                  placeholder="Reason for merging..."
+                  className="resize-none"
+                  rows={2}
+                />
+              </div>
+              
+              <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
+                <p className="text-xs text-amber-800">
+                  ⚠️ This action is irreversible. The current ticket will be closed and marked as merged.
+                </p>
+              </div>
+              
+              <div className="flex justify-end gap-3 mt-4 pt-4 border-t">
+                <Button variant="outline" onClick={() => { setShowMergeIntoModal(false); setMergeTargetTicket(null); setMergeReason(''); }}>Cancel</Button>
               </div>
             </div>
           </Card>
