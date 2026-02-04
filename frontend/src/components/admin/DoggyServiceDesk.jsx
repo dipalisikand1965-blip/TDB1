@@ -1547,9 +1547,8 @@ const DoggyServiceDesk = ({ authHeaders }) => {
   // ==================== TICKET MERGING ====================
   
   const mergeTickets = async () => {
-    // Need at least 2 tickets selected (1 primary + 1 to merge)
-    const ticketsToMerge = selectedTicketIds.filter(id => id !== selectedTicket?.ticket_id);
-    if (!selectedTicket || ticketsToMerge.length === 0) {
+    // Need at least 2 tickets selected
+    if (selectedTicketIds.length < 2) {
       toast({
         title: 'Cannot Merge',
         description: 'Please select at least 2 tickets to merge',
@@ -1558,12 +1557,16 @@ const DoggyServiceDesk = ({ authHeaders }) => {
       return;
     }
     
+    // First selected ticket becomes the primary (master)
+    const primaryTicketId = selectedTicketIds[0];
+    const ticketsToMerge = selectedTicketIds.slice(1); // All others flow into primary
+    
     try {
       const response = await fetch(`${getApiUrl()}/api/concierge/tickets/merge`, {
         method: 'POST',
         headers: { ...authHeaders, 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          primary_ticket_id: selectedTicket.ticket_id,
+          primary_ticket_id: primaryTicketId,
           secondary_ticket_ids: ticketsToMerge,
           agent_name: 'admin',
           merge_reason: 'Merged by admin from Service Desk'
@@ -1574,7 +1577,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
         const data = await response.json();
         toast({
           title: 'Tickets Merged Successfully',
-          description: data.message || `Merged ${ticketsToMerge.length} tickets into ${selectedTicket.ticket_id}`
+          description: data.message || `Merged ${ticketsToMerge.length} ticket(s) into ${primaryTicketId}`
         });
         setShowMergeModal(false);
         setSelectedTicketIds([]);
