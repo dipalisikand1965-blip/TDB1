@@ -345,8 +345,11 @@ async def verify_payment_alt(request: PaymentVerifyRequestAlt):
     db = get_db()
     logger = get_logger()
     
-    # Get membership record by order_id
-    membership = await db.memberships.find_one({"id": request.order_id})
+    # Get membership record by order_id - check both collections
+    membership = await db.membership_orders.find_one({"id": request.order_id})
+    if not membership:
+        # Fallback to memberships collection for backward compatibility
+        membership = await db.memberships.find_one({"id": request.order_id})
     if not membership:
         raise HTTPException(status_code=404, detail="Order not found")
     
@@ -377,8 +380,8 @@ async def verify_payment_alt(request: PaymentVerifyRequestAlt):
     started_at = datetime.now(timezone.utc)
     expires_at = started_at + timedelta(days=(duration_months * 30) + bonus_days)
     
-    # Update membership status
-    await db.memberships.update_one(
+    # Update membership order status
+    await db.membership_orders.update_one(
         {"id": request.order_id},
         {"$set": {
             "status": "active",
