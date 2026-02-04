@@ -2196,6 +2196,7 @@ const Admin = () => {
               { id: 'faqs', label: 'FAQs', icon: HelpCircle },
               { id: 'about', label: 'About', icon: Sparkles },
               { id: 'pages', label: 'CMS', icon: FileText },
+              { id: 'landing-page', label: 'Landing Page', icon: ImageIcon },
             ].map((tab) => (
               <Button
                 key={tab.id}
