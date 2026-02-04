@@ -206,15 +206,9 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
   const videoRef = useRef(null);
   const audioRef = useRef(null);
   const timerRef = useRef(null);
-  const readyRef = useRef({ video: false, audio: false });
+  const lastClipRef = useRef(-1);
   
   const clip = BRAND_STORY_CLIPS[currentClip];
-  
-  // Reset ready state when clip changes
-  useEffect(() => {
-    setIsReady(false);
-    readyRef.current = { video: false, audio: false };
-  }, [currentClip]);
   
   // Preload and sync video + audio together
   useEffect(() => {
@@ -223,6 +217,12 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
     const video = videoRef.current;
     const audio = audioRef.current;
     if (!video || !audio) return;
+    
+    // Only reset if clip actually changed
+    const clipChanged = lastClipRef.current !== currentClip;
+    if (clipChanged) {
+      lastClipRef.current = currentClip;
+    }
     
     // Clear any existing timer
     if (timerRef.current) {
@@ -233,10 +233,16 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
     video.src = clip.src;
     audio.src = clip.audioSrc;
     
+    let videoReady = false;
+    let audioReady = false;
+    let hasStarted = false;
+    
     const tryPlayBoth = async () => {
-      if (!readyRef.current.video || !readyRef.current.audio) return;
+      if (!videoReady || !audioReady || hasStarted) return;
+      hasStarted = true;
       
-      setIsReady(true);
+      // Mark as ready after a tiny delay to allow render
+      requestAnimationFrame(() => setIsReady(true));
       
       try {
         // Reset both to start
@@ -254,37 +260,43 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
         
         // Get audio duration for precise timing
         const audioDuration = audio.duration * 1000; // Convert to ms
-        const clipDuration = audioDuration > 0 ? audioDuration + 500 : clip.duration; // Add 500ms buffer
+        const clipDuration = audioDuration > 0 ? audioDuration + 500 : clip.duration;
         
         // Advance to next clip when audio finishes
         timerRef.current = setTimeout(() => {
+          setIsReady(false); // Reset for next clip
           if (currentClip < BRAND_STORY_CLIPS.length - 1) {
             setCurrentClip(prev => prev + 1);
           } else {
             // Final clip done - show ending
             setIsEnding(true);
             setTimeout(() => {
-              onClose(); // Close modal after ending
+              onClose();
             }, 3000);
           }
         }, clipDuration);
         
       } catch (e) {
         console.log('Playback error:', e.message);
+        // Try to continue anyway
+        requestAnimationFrame(() => setIsReady(true));
       }
     };
     
     // Video ready handler
-    video.oncanplaythrough = () => {
-      readyRef.current.video = true;
+    const onVideoReady = () => {
+      videoReady = true;
       tryPlayBoth();
     };
     
     // Audio ready handler  
-    audio.oncanplaythrough = () => {
-      readyRef.current.audio = true;
+    const onAudioReady = () => {
+      audioReady = true;
       tryPlayBoth();
     };
+    
+    video.addEventListener('canplaythrough', onVideoReady);
+    audio.addEventListener('canplaythrough', onAudioReady);
     
     // Start loading
     video.load();
@@ -294,8 +306,8 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
       if (timerRef.current) {
         clearTimeout(timerRef.current);
       }
-      video.oncanplaythrough = null;
-      audio.oncanplaythrough = null;
+      video.removeEventListener('canplaythrough', onVideoReady);
+      audio.removeEventListener('canplaythrough', onAudioReady);
     };
   }, [currentClip, isEnding, videoMuted, clip, onClose]);
   
