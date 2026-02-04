@@ -633,14 +633,14 @@ const FitPage = () => {
           <div className="absolute inset-0 bg-gradient-to-r from-teal-900/90 via-emerald-800/80 to-transparent" />
         </div>
         
-        <div className="relative max-w-7xl mx-auto px-4 py-20 md:py-28">
+        <div className="relative max-w-7xl mx-auto px-4 py-16 sm:py-20 md:py-28">
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
-              <Dumbbell className="w-4 h-4 text-lime-400" />
-              <span className="text-sm font-medium">Pet Fitness & Wellness</span>
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-full mb-4 sm:mb-6">
+              <Dumbbell className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-lime-400" />
+              <span className="text-xs sm:text-sm font-medium">Pet Fitness & Wellness</span>
             </div>
             
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
+            <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4 sm:mb-6 leading-tight">
               Fit Paws,
               <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-300 to-emerald-200">
@@ -648,50 +648,50 @@ const FitPage = () => {
               </span>
             </h1>
             
-            <p className="text-lg md:text-xl text-white/80 mb-8 max-w-lg">
+            <p className="text-base sm:text-lg md:text-xl text-white/80 mb-6 sm:mb-8 max-w-lg">
               Expert fitness programmes, weight management, and activity tracking. Build a healthier, happier life together with your furry athlete.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
               <Button 
                 onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
                 size="lg"
-                className="bg-gradient-to-r from-lime-500 to-emerald-500 hover:from-lime-600 hover:to-emerald-600 text-emerald-950 font-semibold px-8 py-6 text-lg rounded-full shadow-2xl shadow-emerald-500/30 transition-all hover:scale-105"
+                className="bg-gradient-to-r from-lime-500 to-emerald-500 hover:from-lime-600 hover:to-emerald-600 text-emerald-950 font-semibold px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg rounded-full shadow-2xl shadow-emerald-500/30 transition-all hover:scale-105"
                 data-testid="get-fit-btn"
               >
-                <Play className="w-5 h-5 mr-2 fill-current" />
+                <Play className="w-4 h-4 sm:w-5 sm:h-5 mr-2 fill-current" />
                 Explore Services
               </Button>
               <Button 
                 onClick={() => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })}
                 variant="outline"
                 size="lg"
-                className="border-white/30 text-white hover:bg-white/10 px-8 py-6 text-lg rounded-full"
+                className="border-white/30 text-white hover:bg-white/10 px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg rounded-full"
               >
-                <Package className="w-5 h-5 mr-2" />
+                <Package className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                 Shop Fitness Gear
               </Button>
             </div>
             
-            <div className="flex flex-wrap gap-6 mt-12">
+            <div className="flex flex-wrap gap-4 sm:gap-6 mt-8 sm:mt-12">
               <div className="flex items-center gap-2 text-white/70">
-                <Trophy className="w-5 h-5 text-lime-400" />
-                <span className="text-sm">Certified Trainers</span>
+                <Trophy className="w-4 h-4 sm:w-5 sm:h-5 text-lime-400" />
+                <span className="text-xs sm:text-sm">Certified Trainers</span>
               </div>
               <div className="flex items-center gap-2 text-white/70">
-                <TrendingUp className="w-5 h-5 text-emerald-400" />
-                <span className="text-sm">Progress Tracking</span>
+                <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400" />
+                <span className="text-xs sm:text-sm">Progress Tracking</span>
               </div>
               <div className="flex items-center gap-2 text-white/70">
-                <PawPrint className="w-5 h-5 text-teal-400" />
-                <span className="text-sm">Earn Paw Points</span>
+                <PawPrint className="w-4 h-4 sm:w-5 sm:h-5 text-teal-400" />
+                <span className="text-xs sm:text-sm">Earn Paw Points</span>
               </div>
             </div>
           </div>
         </div>
         
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce">
-          <ChevronDown className="w-6 h-6 text-white/50" />
+        <div className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 animate-bounce">
+          <ChevronDown className="w-5 h-5 sm:w-6 sm:h-6 text-white/50" />
         </div>
       </div>
 
