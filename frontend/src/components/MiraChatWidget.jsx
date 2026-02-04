@@ -71,19 +71,19 @@ const generateSessionId = () => {
   return newId;
 };
 
-// Store and retrieve messages from sessionStorage - PERSISTS across pillar switches
-const getStoredMessages = () => {
+// Store and retrieve messages from sessionStorage - STORED PER PILLAR
+const getStoredMessages = (pillar) => {
   try {
-    const stored = sessionStorage.getItem('mira_messages');
+    const stored = sessionStorage.getItem(`mira_messages_${pillar}`);
     return stored ? JSON.parse(stored) : [];
   } catch (e) {
     return [];
   }
 };
 
-const storeMessages = (messages) => {
+const storeMessages = (messages, pillar) => {
   try {
-    sessionStorage.setItem('mira_messages', JSON.stringify(messages));
+    sessionStorage.setItem(`mira_messages_${pillar}`, JSON.stringify(messages));
   } catch (e) {
     console.debug('Failed to store messages:', e);
   }
