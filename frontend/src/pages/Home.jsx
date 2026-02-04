@@ -86,18 +86,31 @@ const Home = () => {
         ref={heroRef}
         className="relative min-h-screen flex items-center justify-center overflow-hidden"
       >
-        {/* Video Background - Subtle, emotional */}
+        {/* Rotating Photo Background - Emotional, Cinematic */}
         <div className="absolute inset-0 z-0">
-          <video
-            className="w-full h-full object-cover opacity-20"
-            autoPlay
-            loop
-            muted
-            playsInline
-          >
-            <source src="/videos/pet-soul-hero.mp4" type="video/mp4" />
-          </video>
-          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-purple-950/70 to-slate-950/90" />
+          <AnimatePresence mode="sync">
+            {HERO_IMAGES.map((img, idx) => (
+              idx === currentHeroImage && (
+                <motion.div
+                  key={img}
+                  initial={{ opacity: 0, scale: 1.1 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 1.5 }}
+                  className="absolute inset-0"
+                >
+                  <img 
+                    src={img} 
+                    alt="Beloved pet"
+                    className="w-full h-full object-cover"
+                  />
+                </motion.div>
+              )
+            ))}
+          </AnimatePresence>
+          {/* Cinematic overlay - creates the emotional depth */}
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/70 via-purple-950/60 to-slate-950/90" />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/50 via-transparent to-slate-950/50" />
         </div>
         
         {/* Animated Background - Deep, soulful */}
