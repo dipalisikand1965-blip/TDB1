@@ -1096,6 +1096,22 @@ const MiraAI = () => {
 
       setMessages(prev => [...prev, assistantMessage]);
       
+      // Occasionally (20% chance) add a personal insight after the response
+      // This makes Mira feel more "alive" and personal
+      if (Math.random() < 0.2 && userPets.length > 0) {
+        const insight = generatePetInsight();
+        if (insight) {
+          setTimeout(() => {
+            setMessages(prev => [...prev, {
+              id: `insight-${Date.now()}`,
+              role: 'assistant',
+              content: `\n\n💡 *${insight.icon} ${insight.text}*`,
+              isInsight: true
+            }]);
+          }, 1500);
+        }
+      }
+      
       // Speak the response if voice is enabled
       if (voiceEnabled && data.response) {
         speakText(data.response);
