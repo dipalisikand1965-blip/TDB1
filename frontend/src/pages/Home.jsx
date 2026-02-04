@@ -1,652 +1,648 @@
-import React, { useState, useEffect } from 'react';
-import { Link, Navigate } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { 
   Brain, Sparkles, Heart, ArrowRight, PawPrint, 
   Eye, MessageCircle, Shield, Star,
   TrendingUp, Quote, ChevronRight, Check,
-  Lock, Users, Award, ExternalLink, X
+  Lock, Users, Award, ExternalLink, X,
+  Play, ChevronDown, Volume2, VolumeX
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { getApiUrl } from '../utils/api';
 import SEOHead from '../components/SEOHead';
+import { motion, AnimatePresence } from 'framer-motion';
 
-// Outcome Statements (not feature tiles)
-const OUTCOME_STATEMENTS = [
-  { 
-    statement: 'We remember how your dog reacts at the groomer.',
-    subtext: 'Anxiety triggers, favorite handlers, special needs — all captured in their Soul.',
-    icon: '✂️'
-  },
-  { 
-    statement: 'We plan travel without making you repeat paperwork.',
-    subtext: 'Vaccination records, carrier preferences, anxiety levels — already known.',
-    icon: '✈️'
-  },
-  { 
-    statement: 'We celebrate milestones without reminders.',
-    subtext: 'Birthdays, gotcha days, vaccination due dates — we remember so you don\'t have to.',
-    icon: '🎂'
-  },
-  { 
-    statement: 'We suggest food they\'ll actually eat.',
-    subtext: 'Based on allergies, past purchases, and what similar dogs loved.',
-    icon: '🍖'
-  },
-  { 
-    statement: 'We know which vet they trust.',
-    subtext: 'Health history, preferred specialists, emergency contacts — all in one place.',
-    icon: '🏥'
-  },
-  { 
-    statement: 'We anticipate before you ask.',
-    subtext: 'The longer you stay, the less you explain. That\'s the promise.',
-    icon: '✨'
-  },
-];
+// The new emotional home page - designed to capture hearts in 3 seconds
 
 const Home = () => {
   const { user, token } = useAuth();
-  const [userPets, setUserPets] = useState([]);
-  const [loadingPets, setLoadingPets] = useState(true);
-  const [showMiraModal, setShowMiraModal] = useState(false);
+  const navigate = useNavigate();
+  const [showVideo, setShowVideo] = useState(false);
+  const [videoMuted, setVideoMuted] = useState(true);
+  const [currentTestimonial, setCurrentTestimonial] = useState(0);
+  const [soulPulse, setSoulPulse] = useState(false);
+  const heroRef = useRef(null);
 
+  // Pulse the soul orb
   useEffect(() => {
-    const fetchUserPets = async () => {
-      if (!user?.email) {
-        setLoadingPets(false);
-        return;
-      }
-      
-      try {
-        const response = await fetch(`${getApiUrl()}/api/pets?email=${user.email}`, {
-          headers: token ? { 'Authorization': `Bearer ${token}` } : {}
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          setUserPets(data.pets || []);
-        }
-      } catch (error) {
-        console.error('Error fetching pets:', error);
-      } finally {
-        setLoadingPets(false);
-      }
-    };
-    
-    fetchUserPets();
-  }, [user, token]);
+    const interval = setInterval(() => {
+      setSoulPulse(prev => !prev);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Rotate testimonials
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTestimonial(prev => (prev + 1) % REAL_STORIES.length);
+    }, 6000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleOpenMira = () => {
     window.dispatchEvent(new CustomEvent('openMiraAI'));
   };
 
-  // If logged in, ALWAYS redirect to member dashboard
+  // If logged in, redirect to member dashboard
   if (user) {
     return <Navigate to="/dashboard" replace />;
   }
 
   return (
-    <div className="min-h-screen bg-white overflow-x-hidden pb-20 md:pb-0" data-testid="home-page">
-      {/* SEO Meta Tags */}
+    <div className="min-h-screen bg-black overflow-x-hidden" data-testid="home-page">
       <SEOHead page="home" path="/" />
       
-      {/* ========== HERO SECTION ========== */}
-      <section className="relative min-h-[85vh] sm:min-h-[90vh] flex items-center overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-        {/* Background Elements - contained */}
-        <div className="absolute inset-0 opacity-30 overflow-hidden">
-          <div className="absolute top-20 -left-20 w-64 sm:w-96 h-64 sm:h-96 bg-purple-500 rounded-full blur-3xl animate-pulse"></div>
-          <div className="absolute bottom-20 -right-20 w-56 sm:w-80 h-56 sm:h-80 bg-pink-500 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 w-48 sm:w-72 h-48 sm:h-72 bg-yellow-500 rounded-full blur-3xl opacity-50"></div>
+      {/* ========== THE EMOTIONAL HOOK - First 3 Seconds ========== */}
+      <section 
+        ref={heroRef}
+        className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      >
+        {/* Animated Background - Deep, soulful */}
+        <div className="absolute inset-0">
+          {/* Base gradient */}
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-purple-950/50 to-slate-950" />
+          
+          {/* Floating soul particles */}
+          <div className="absolute inset-0 overflow-hidden">
+            {[...Array(20)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute w-2 h-2 rounded-full bg-purple-400/30"
+                style={{
+                  left: `${Math.random() * 100}%`,
+                  top: `${Math.random() * 100}%`,
+                }}
+                animate={{
+                  y: [0, -30, 0],
+                  opacity: [0.3, 0.8, 0.3],
+                  scale: [1, 1.5, 1],
+                }}
+                transition={{
+                  duration: 3 + Math.random() * 2,
+                  repeat: Infinity,
+                  delay: Math.random() * 2,
+                }}
+              />
+            ))}
+          </div>
+          
+          {/* Large glowing orbs */}
+          <motion.div 
+            className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl"
+            animate={{
+              scale: [1, 1.2, 1],
+              opacity: [0.3, 0.5, 0.3],
+            }}
+            transition={{ duration: 4, repeat: Infinity }}
+          />
+          <motion.div 
+            className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-600/20 rounded-full blur-3xl"
+            animate={{
+              scale: [1.2, 1, 1.2],
+              opacity: [0.3, 0.5, 0.3],
+            }}
+            transition={{ duration: 4, repeat: Infinity, delay: 1 }}
+          />
         </div>
 
-        <div className="relative max-w-6xl mx-auto px-4 py-20 text-center z-10">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-white/90 text-sm font-medium mb-8 border border-white/20">
-            <Brain className="w-4 h-4 text-yellow-400" />
-            <span>Pet Concierge®</span>
-          </div>
+        {/* Content */}
+        <div className="relative z-10 max-w-5xl mx-auto px-4 text-center">
+          {/* The Opening Line - THE HOOK */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
+          >
+            <p className="text-purple-300/80 text-lg sm:text-xl mb-4 tracking-wide">
+              Look into their eyes. You already know.
+            </p>
+          </motion.div>
+
+          {/* THE SOUL ORB - Central visual */}
+          <motion.div
+            className="relative w-40 h-40 sm:w-56 sm:h-56 mx-auto mb-8"
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 1.2, delay: 0.5 }}
+          >
+            {/* Outer glow rings */}
+            <motion.div
+              className="absolute inset-0 rounded-full"
+              style={{
+                background: 'radial-gradient(circle, rgba(168,85,247,0.4) 0%, transparent 70%)',
+              }}
+              animate={{
+                scale: [1, 1.3, 1],
+                opacity: [0.5, 0.8, 0.5],
+              }}
+              transition={{ duration: 3, repeat: Infinity }}
+            />
+            <motion.div
+              className="absolute inset-4 rounded-full"
+              style={{
+                background: 'radial-gradient(circle, rgba(236,72,153,0.3) 0%, transparent 70%)',
+              }}
+              animate={{
+                scale: [1.2, 1, 1.2],
+                opacity: [0.4, 0.7, 0.4],
+              }}
+              transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
+            />
+            
+            {/* Core orb */}
+            <motion.div
+              className="absolute inset-8 sm:inset-12 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-purple-600 shadow-2xl"
+              style={{
+                boxShadow: '0 0 60px rgba(168,85,247,0.6), 0 0 100px rgba(236,72,153,0.4), inset 0 0 30px rgba(255,255,255,0.2)',
+              }}
+              animate={{
+                scale: soulPulse ? 1.05 : 1,
+              }}
+              transition={{ duration: 1 }}
+            >
+              {/* Inner sparkle */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <Sparkles className="w-8 h-8 sm:w-12 sm:h-12 text-white/80" />
+              </div>
+            </motion.div>
+          </motion.div>
 
           {/* Main Headline */}
-          <h1 className="text-4xl sm:text-5xl md:text-7xl font-black text-white leading-tight mb-6">
-            Your Pet&apos;s Life,
-            <span className="block mt-2 bg-gradient-to-r from-pink-400 via-purple-400 to-yellow-400 bg-clip-text text-transparent">
-              Thoughtfully Orchestrated
-            </span>
-          </h1>
+          <motion.h1
+            className="text-4xl sm:text-5xl md:text-7xl font-black text-white leading-tight mb-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 1 }}
+          >
+            Every Pet Has a
+            <motion.span
+              className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400"
+              animate={{
+                backgroundPosition: ['0%', '100%', '0%'],
+              }}
+              transition={{ duration: 5, repeat: Infinity }}
+              style={{ backgroundSize: '200% auto' }}
+            >
+              Soul
+            </motion.span>
+          </motion.h1>
 
-          {/* Subtext */}
-          <p className="text-lg sm:text-xl text-white/70 max-w-2xl mx-auto mb-10 leading-relaxed">
-            From birthdays to vet visits, travel to daily routines — your pet&apos;s entire life, 
-            managed by a dedicated concierge® who learns, remembers, and cares.
-          </p>
+          {/* Emotional Subtext */}
+          <motion.p
+            className="text-lg sm:text-xl md:text-2xl text-white/60 max-w-2xl mx-auto mb-10 leading-relaxed"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 1.3 }}
+          >
+            We don&apos;t just manage pet services.<br className="hidden sm:block" />
+            <span className="text-white/90">We nurture the soul of your companion.</span>
+          </motion.p>
 
-          {/* Single Clear CTA - Stack on mobile, row on desktop */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center px-4">
-            <Link to="/membership" className="w-full sm:w-auto">
+          {/* CTA - Single, powerful */}
+          <motion.div
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 1.6 }}
+          >
+            <Link to="/membership">
               <Button 
                 size="lg" 
-                className="w-full sm:w-auto bg-gradient-to-r from-pink-500 to-orange-500 hover:from-pink-600 hover:to-orange-600 text-white px-8 sm:px-10 py-6 sm:py-7 text-base sm:text-lg rounded-full shadow-2xl shadow-pink-500/30 transition-all hover:scale-105 active:scale-95"
-                data-testid="hero-start-soul-btn"
+                className="group relative bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white px-10 py-7 text-lg rounded-full shadow-2xl shadow-purple-500/30 transition-all hover:scale-105 hover:shadow-purple-500/50"
+                data-testid="hero-discover-soul-btn"
               >
+                <motion.span
+                  className="absolute inset-0 rounded-full bg-white/20"
+                  animate={{ scale: [1, 1.05, 1], opacity: [0, 0.3, 0] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
                 <PawPrint className="w-5 h-5 mr-2" />
-                Start Your Pet&apos;s Soul
+                Discover Your Pet&apos;s Soul
+                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
-            <Button 
-              size="lg" 
-              variant="ghost"
-              onClick={handleOpenMira}
-              className="w-full sm:w-auto text-white/80 hover:text-white hover:bg-white/10 px-8 sm:px-10 py-6 sm:py-7 text-base sm:text-lg rounded-full border border-white/20"
-              data-testid="hero-talk-mira-btn"
+            
+            <button
+              onClick={() => setShowVideo(true)}
+              className="flex items-center gap-2 text-white/60 hover:text-white transition-colors px-6 py-3"
             >
-              <Sparkles className="w-5 h-5 mr-2" />
-              Talk to Mira
-            </Button>
-          </div>
+              <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
+                <Play className="w-4 h-4 text-white fill-white" />
+              </div>
+              <span>Watch the Story</span>
+            </button>
+          </motion.div>
 
-          {/* Proof Indicators (Not Claims) - 2x2 on mobile, 4 cols on desktop */}
-          <div className="mt-12 sm:mt-16 grid grid-cols-2 gap-3 sm:gap-4 max-w-3xl mx-auto px-2">
-            <div className="text-center p-4 sm:p-5 bg-white/5 backdrop-blur rounded-2xl border border-white/10 hover:bg-white/10 transition-all">
-              <p className="text-2xl sm:text-3xl font-bold text-white">1M+</p>
-              <p className="text-xs sm:text-sm text-white/60 mt-1">Customers Served</p>
-            </div>
-            <div className="text-center p-4 sm:p-5 bg-white/5 backdrop-blur rounded-2xl border border-white/10 hover:bg-white/10 transition-all">
-              <p className="text-2xl sm:text-3xl font-bold text-white">45,000+</p>
-              <p className="text-xs sm:text-sm text-white/60 mt-1">Pets Fed</p>
-            </div>
-            <div className="text-center p-4 sm:p-5 bg-white/5 backdrop-blur rounded-2xl border border-white/10 hover:bg-white/10 transition-all">
-              <p className="text-2xl sm:text-3xl font-bold text-white">Since 1990s</p>
-              <p className="text-xs sm:text-sm text-white/60 mt-1">Concierge Heritage</p>
-            </div>
-            <div className="text-center p-4 sm:p-5 bg-white/5 backdrop-blur rounded-2xl border border-white/10 hover:bg-white/10 transition-all">
-              <p className="text-2xl sm:text-3xl font-bold text-white">30+ Years</p>
-              <p className="text-xs sm:text-sm text-white/60 mt-1">Service Excellence</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Scroll indicator - Hidden on mobile to save space */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce hidden sm:block">
-          <ChevronRight className="w-6 h-6 text-white/50 rotate-90" />
+          {/* Scroll indicator */}
+          <motion.div
+            className="absolute bottom-8 left-1/2 -translate-x-1/2"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1, y: [0, 10, 0] }}
+            transition={{ duration: 2, repeat: Infinity, delay: 2 }}
+          >
+            <ChevronDown className="w-8 h-8 text-white/30" />
+          </motion.div>
         </div>
       </section>
 
-      {/* ========== OUTCOME STATEMENTS (Not Feature Tiles) ========== */}
-      <section className="py-16 sm:py-24 bg-white">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center mb-10 sm:mb-16">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
-              What Changes When You&apos;re With Us
-            </h2>
-            <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto">
-              Not features. Outcomes. Here&apos;s what life actually looks like.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {OUTCOME_STATEMENTS.map((item, idx) => (
-              <Card key={idx} className="p-5 sm:p-6 hover:shadow-xl transition-all border-2 border-transparent hover:border-purple-200 active:scale-[0.98] group">
-                <span className="text-2xl sm:text-3xl mb-3 sm:mb-4 block">{item.icon}</span>
-                <h3 className="text-base sm:text-lg font-bold text-gray-900 mb-2 group-hover:text-purple-700 transition-colors">
-                  {item.statement}
-                </h3>
-                <p className="text-sm text-gray-500 leading-relaxed">{item.subtext}</p>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ========== PET SOUL EXPLAINER ========== */}
-      <section className="py-24 bg-gradient-to-b from-purple-50 to-white">
+      {/* ========== THE SOUL UNDERSTANDING ========== */}
+      <section className="relative py-24 sm:py-32 bg-gradient-to-b from-slate-950 via-purple-950/30 to-slate-950">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-100 text-purple-700 rounded-full text-sm font-medium mb-6">
-              <Brain className="w-4 h-4" />
-              Pet Soul™ Technology
-            </div>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Every Interaction Builds
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
-                Your Pet&apos;s Living Profile
+            <motion.p
+              className="text-purple-400 text-sm uppercase tracking-widest mb-4"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+            >
+              What is Pet Soul™?
+            </motion.p>
+            <motion.h2
+              className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              A Living Memory of
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+                Everything They Are
               </span>
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              So you never have to explain them again.
-            </p>
+            </motion.h2>
+            <motion.p
+              className="text-lg text-white/60 max-w-2xl mx-auto"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+            >
+              Every quirk. Every fear. Every joy. We remember so you never have to explain.
+            </motion.p>
           </div>
 
-          {/* Visual Flow - Better mobile layout */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6 mb-16 px-2">
-            {[
-              { icon: <PawPrint className="w-6 h-6 sm:w-8 sm:h-8" />, title: 'Your Pet', desc: 'Start with who they are', color: 'from-pink-500 to-rose-500' },
-              { icon: <MessageCircle className="w-6 h-6 sm:w-8 sm:h-8" />, title: 'Interactions', desc: 'Orders, chats, bookings', color: 'from-purple-500 to-indigo-500' },
-              { icon: <Brain className="w-6 h-6 sm:w-8 sm:h-8" />, title: 'Memory', desc: 'We learn & remember', color: 'from-blue-500 to-cyan-500' },
-              { icon: <Heart className="w-6 h-6 sm:w-8 sm:h-8" />, title: 'Better Care', desc: 'Personalized everything', color: 'from-orange-500 to-amber-500' }
-            ].map((step, idx) => (
-              <div key={idx} className="relative">
-                <Card className="p-4 sm:p-6 text-center h-full hover:shadow-xl transition-shadow bg-white">
-                  <div className={`w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 rounded-xl sm:rounded-2xl bg-gradient-to-br ${step.color} flex items-center justify-center text-white`}>
-                    {step.icon}
-                  </div>
-                  <h3 className="font-bold text-sm sm:text-lg text-gray-900 mb-1 sm:mb-2">{step.title}</h3>
-                  <p className="text-xs sm:text-sm text-gray-500 leading-tight">{step.desc}</p>
+          {/* Soul Dimensions - Emotional Grid */}
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {SOUL_DIMENSIONS.map((dim, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
+              >
+                <Card className="relative overflow-hidden bg-white/5 backdrop-blur-sm border-white/10 p-6 hover:bg-white/10 transition-all group h-full">
+                  <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${dim.gradient} opacity-20 blur-2xl group-hover:opacity-30 transition-opacity`} />
+                  <span className="text-3xl mb-4 block">{dim.icon}</span>
+                  <h3 className="text-lg font-bold text-white mb-2">{dim.title}</h3>
+                  <p className="text-sm text-white/60 leading-relaxed">{dim.description}</p>
                 </Card>
-                {idx < 3 && (
-                  <ArrowRight className="hidden md:block absolute top-1/2 -right-3 w-6 h-6 text-gray-300 transform -translate-y-1/2" />
-                )}
-              </div>
+              </motion.div>
             ))}
           </div>
-
-          {/* Soul Pillars Grid - What Pet Soul™ Tracks */}
-          <Card className="p-4 sm:p-8 bg-gradient-to-br from-purple-900 via-indigo-900 to-purple-900 text-white mx-2 sm:mx-0">
-            <div className="grid md:grid-cols-2 gap-6 sm:gap-8 items-center">
-              <div>
-                <h3 className="text-xl sm:text-2xl font-bold mb-4">What Gets Smarter Over Time</h3>
-                <ul className="space-y-2 sm:space-y-3">
-                  {[
-                    'Dietary preferences & allergies',
-                    'Behavioral patterns & comfort zones',
-                    'Health history & vet preferences',
-                    'Travel readiness & anxiety triggers',
-                    'Favorite treats & activities',
-                    'Important dates & milestones'
-                  ].map((item, idx) => (
-                    <li key={idx} className="flex items-center gap-3">
-                      <Check className="w-5 h-5 text-green-400 flex-shrink-0" />
-                      <span className="text-white/90">{item}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Link to="/membership" className="inline-flex items-center gap-2 mt-6 text-purple-300 hover:text-white transition-colors">
-                  Learn more about Pet Soul™ <ChevronRight className="w-4 h-4" />
-                </Link>
-              </div>
-              <div className="text-center">
-                <div className="inline-block p-4 bg-white/10 backdrop-blur rounded-3xl w-full max-w-md">
-                  {/* Mobile: Horizontal scroll carousel */}
-                  <div className="md:hidden overflow-x-auto pb-2 -mx-2 px-2 scrollbar-hide">
-                    <div className="flex gap-3 w-max">
-                      {[
-                        { icon: '🎂', label: 'Celebrate', path: '/celebrate' },
-                        { icon: '🍽️', label: 'Dine', path: '/dine' },
-                        { icon: '🏨', label: 'Stay', path: '/stay' },
-                        { icon: '✈️', label: 'Travel', path: '/travel' },
-                        { icon: '💊', label: 'Care', path: '/care' },
-                        { icon: '🎾', label: 'Enjoy', path: '/enjoy' },
-                        { icon: '🏃', label: 'Fit', path: '/fit' },
-                        { icon: '🎓', label: 'Learn', path: '/learn' },
-                        { icon: '📄', label: 'Paperwork', path: '/paperwork' },
-                        { icon: '📋', label: 'Advisory', path: '/advisory' },
-                        { icon: '🚨', label: 'Emergency', path: '/emergency' },
-                        { icon: '🌈', label: 'Farewell', path: '/farewell' },
-                        { icon: '🐾', label: 'Adopt', path: '/adopt' },
-                        { icon: '🛒', label: 'Shop', path: '/shop' }
-                      ].map((pillar, idx) => (
-                        <Link key={idx} to={pillar.path} className="flex-shrink-0">
-                          <div className="w-16 h-20 bg-white/10 hover:bg-white/20 rounded-xl flex flex-col items-center justify-center transition-all active:scale-95 cursor-pointer">
-                            <span className="text-2xl mb-1">{pillar.icon}</span>
-                            <span className="text-[10px] text-purple-200 font-medium">{pillar.label}</span>
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                  {/* Desktop: Grid layout */}
-                  <div className="hidden md:grid grid-cols-7 gap-2">
-                    {[
-                      { icon: '🎂', label: 'Celebrate', path: '/celebrate' },
-                      { icon: '🍽️', label: 'Dine', path: '/dine' },
-                      { icon: '🏨', label: 'Stay', path: '/stay' },
-                      { icon: '✈️', label: 'Travel', path: '/travel' },
-                      { icon: '💊', label: 'Care', path: '/care' },
-                      { icon: '🎾', label: 'Enjoy', path: '/enjoy' },
-                      { icon: '🏃', label: 'Fit', path: '/fit' },
-                      { icon: '🎓', label: 'Learn', path: '/learn' },
-                      { icon: '📄', label: 'Paperwork', path: '/paperwork' },
-                      { icon: '📋', label: 'Advisory', path: '/advisory' },
-                      { icon: '🚨', label: 'Emergency', path: '/emergency' },
-                      { icon: '🌈', label: 'Farewell', path: '/farewell' },
-                      { icon: '🐾', label: 'Adopt', path: '/adopt' },
-                      { icon: '🛒', label: 'Shop', path: '/shop' }
-                    ].map((pillar, idx) => (
-                      <Link key={idx} to={pillar.path} className="group relative">
-                        <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center text-xl hover:scale-110 hover:bg-white/20 transition-all cursor-pointer">
-                          {pillar.icon}
-                        </div>
-                        <span className="text-[10px] text-purple-300 mt-1 block truncate">{pillar.label}</span>
-                      </Link>
-                    ))}
-                  </div>
-                  <p className="text-sm text-purple-300 mt-4">14 Life Pillars • Swipe to explore →</p>
-                </div>
-              </div>
-            </div>
-          </Card>
         </div>
       </section>
 
-      {/* ========== MEET MIRA SECTION ========== */}
-      <section className="py-24 bg-white">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            <div>
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700 rounded-full text-sm font-medium mb-6">
+      {/* ========== MEET MIRA - The Guide ========== */}
+      <section className="relative py-24 sm:py-32 bg-slate-950 overflow-hidden">
+        {/* Background glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-3xl" />
+        
+        <div className="relative max-w-6xl mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            {/* Mira Visual */}
+            <motion.div
+              className="relative order-2 lg:order-1"
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <div className="relative w-64 h-64 sm:w-80 sm:h-80 mx-auto">
+                {/* Mira&apos;s orb */}
+                <motion.div
+                  className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-purple-600"
+                  style={{
+                    boxShadow: '0 0 80px rgba(168,85,247,0.5), 0 0 120px rgba(236,72,153,0.3)',
+                  }}
+                  animate={{
+                    scale: [1, 1.03, 1],
+                  }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                >
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <Sparkles className="w-16 h-16 text-white/80" />
+                  </div>
+                </motion.div>
+                
+                {/* Floating text bubbles */}
+                <motion.div
+                  className="absolute -top-4 -right-4 bg-white rounded-2xl px-4 py-2 shadow-xl"
+                  animate={{ y: [0, -5, 0] }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                >
+                  <p className="text-sm text-gray-800">&quot;I remember Max loves belly rubs&quot;</p>
+                </motion.div>
+                <motion.div
+                  className="absolute -bottom-4 -left-4 bg-white rounded-2xl px-4 py-2 shadow-xl"
+                  animate={{ y: [0, 5, 0] }}
+                  transition={{ duration: 3, repeat: Infinity, delay: 1 }}
+                >
+                  <p className="text-sm text-gray-800">&quot;His vet appointment is tomorrow&quot;</p>
+                </motion.div>
+              </div>
+            </motion.div>
+
+            {/* Mira Description */}
+            <motion.div
+              className="order-1 lg:order-2"
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/20 text-purple-300 rounded-full text-sm font-medium mb-6">
                 <Sparkles className="w-4 h-4" />
-                Meet Mira®
+                Meet Mira
               </div>
               
-              <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">
+              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
                 Not a Chatbot.
-                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
-                  Your Pet&apos;s Intelligence Layer.
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+                  Your Pet&apos;s Guardian Angel.
                 </span>
               </h2>
 
-              <div className="space-y-6 text-gray-600">
-                <p className="text-lg leading-relaxed">
-                  Mira isn&apos;t here to answer generic questions. She <strong className="text-gray-900">knows your pet</strong> — 
-                  their allergies, their fears, their favorite treats, their vet history.
-                </p>
-                
-                <div className="space-y-4">
-                  <div className="flex items-start gap-4 p-4 bg-purple-50 rounded-xl">
-                    <Eye className="w-6 h-6 text-purple-600 flex-shrink-0 mt-1" />
+              <p className="text-lg text-white/70 mb-8 leading-relaxed">
+                Mira knows your pet like you do. Every allergy, every fear, every favorite spot behind the ears. 
+                She doesn&apos;t just answer questions — she anticipates needs before you ask.
+              </p>
+
+              <div className="space-y-4 mb-8">
+                {[
+                  { icon: Eye, title: 'She Remembers Everything', desc: 'Every interaction builds deeper understanding' },
+                  { icon: Heart, title: 'She Truly Cares', desc: 'Not scripted responses — genuine guidance' },
+                  { icon: Brain, title: 'She Gets Smarter', desc: 'The longer you stay, the more she knows' },
+                ].map((item, idx) => (
+                  <div key={idx} className="flex items-start gap-4 p-4 bg-white/5 rounded-xl border border-white/10">
+                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <item.icon className="w-5 h-5 text-white" />
+                    </div>
                     <div>
-                      <h4 className="font-semibold text-gray-900">Memory Layer</h4>
-                      <p className="text-sm">She remembers every interaction. Never asks the same question twice.</p>
+                      <h4 className="font-semibold text-white">{item.title}</h4>
+                      <p className="text-sm text-white/60">{item.desc}</p>
                     </div>
                   </div>
-                  
-                  <div className="flex items-start gap-4 p-4 bg-pink-50 rounded-xl">
-                    <Brain className="w-6 h-6 text-pink-600 flex-shrink-0 mt-1" />
-                    <div>
-                      <h4 className="font-semibold text-gray-900">Judgement Layer</h4>
-                      <p className="text-sm">She doesn&apos;t fabricate. Every answer is grounded in your pet&apos;s actual data.</p>
-                    </div>
-                  </div>
-                  
-                  <div className="flex items-start gap-4 p-4 bg-orange-50 rounded-xl">
-                    <TrendingUp className="w-6 h-6 text-orange-600 flex-shrink-0 mt-1" />
-                    <div>
-                      <h4 className="font-semibold text-gray-900">Relationship Layer</h4>
-                      <p className="text-sm">She grows with your pet. The longer you stay, the smarter she becomes.</p>
-                    </div>
-                  </div>
-                </div>
+                ))}
               </div>
 
               <Button 
                 onClick={handleOpenMira}
-                className="mt-8 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 px-8 py-6 text-lg"
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 px-8 py-6 text-lg rounded-full"
                 data-testid="mira-section-cta"
               >
                 <Sparkles className="w-5 h-5 mr-2" />
                 Talk to Mira Now
               </Button>
-            </div>
-
-            <div className="relative">
-              <div className="bg-gradient-to-br from-purple-100 to-pink-100 rounded-3xl p-8">
-                <Card className="p-6 bg-white shadow-xl">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                      <Sparkles className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                      <p className="font-semibold">Mira®</p>
-                      <p className="text-xs text-gray-500">Your Concierge</p>
-                    </div>
-                  </div>
-                  <div className="space-y-3">
-                    <div className="p-3 bg-gray-100 rounded-xl rounded-tl-none">
-                      <p className="text-sm text-gray-700">
-                        &quot;I see Bruno has a chicken allergy. I&apos;ve already filtered those products out. 
-                        Would you like me to suggest some grain-free treats he&apos;d love?&quot;
-                      </p>
-                    </div>
-                    <div className="p-3 bg-purple-100 rounded-xl rounded-tr-none ml-8">
-                      <p className="text-sm text-purple-800">Yes please!</p>
-                    </div>
-                    <div className="p-3 bg-gray-100 rounded-xl rounded-tl-none">
-                      <p className="text-sm text-gray-700">
-                        &quot;Based on his love for peanut butter and his medium size, here are 3 treats 
-                        that other Golden Retriever parents loved...&quot;
-                      </p>
-                    </div>
-                  </div>
-                </Card>
-                <p className="text-center text-sm text-purple-600 mt-4 font-medium">
-                  Real context. Real memory. Real care.
-                </p>
-              </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
-      {/* ========== PRIVACY & DATA SAFETY ========== */}
-      <section className="py-24 bg-gradient-to-b from-slate-900 to-slate-800">
+      {/* ========== REAL STORIES - Trust Builder ========== */}
+      <section className="relative py-24 sm:py-32 bg-gradient-to-b from-slate-950 to-purple-950/30">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-500/20 text-green-400 rounded-full text-sm font-medium mb-6">
-              <Shield className="w-4 h-4" />
-              Your Data, Your Control
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-              Pet Soul Data is Sacred
-            </h2>
-            <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-              We built this system to care for your pet — not to exploit their data.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-6">
-            <Card className="p-6 bg-white/5 border-white/10 text-white">
-              <Lock className="w-10 h-10 text-green-400 mb-4" />
-              <h3 className="font-bold text-lg mb-2">Your Data Stays Yours</h3>
-              <p className="text-sm text-gray-400">
-                We never sell, share, or monetize your pet&apos;s data. Period. It&apos;s used only to serve you better.
-              </p>
-            </Card>
-            
-            <Card className="p-6 bg-white/5 border-white/10 text-white">
-              <Shield className="w-10 h-10 text-blue-400 mb-4" />
-              <h3 className="font-bold text-lg mb-2">Bank-Grade Security</h3>
-              <p className="text-sm text-gray-400">
-                End-to-end encryption, secure cloud storage, and regular security audits protect every byte.
-              </p>
-            </Card>
-            
-            <Card className="p-6 bg-white/5 border-white/10 text-white">
-              <Eye className="w-10 h-10 text-purple-400 mb-4" />
-              <h3 className="font-bold text-lg mb-2">Full Transparency</h3>
-              <p className="text-sm text-gray-400">
-                See exactly what we know about your pet. Export or delete anytime. No questions asked.
-              </p>
-            </Card>
-          </div>
-
-          <div className="mt-12 text-center">
-            <p className="text-gray-500 text-sm max-w-2xl mx-auto">
-              Your pet&apos;s health records, preferences, and history are stored securely and used solely to provide better care. 
-              We follow GDPR-compliant data practices and give you complete control.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* ========== CONCIERGE LINEAGE ========== */}
-      <section className="py-24 bg-white">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              Built on 30 Years of Service Excellence
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              The Doggy Company® didn&apos;t emerge from a startup playbook. 
-              It comes from decades of understanding what real service means.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-8">
-            {/* Les Concierges */}
-            <Card className="p-6 text-center hover:shadow-xl transition-all border-2 border-transparent hover:border-purple-200">
-              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-2xl flex items-center justify-center">
-                <Award className="w-8 h-8 text-purple-600" />
-              </div>
-              <h3 className="font-bold text-lg text-gray-900 mb-2">Les Concierges®</h3>
-              <p className="text-sm text-gray-500 mb-4">Since 1998 — The foundation of our service philosophy</p>
-              <a 
-                href="https://lesconcierges.co.in" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-purple-600 text-sm font-medium hover:underline"
-              >
-                Visit <ExternalLink className="w-3 h-3" />
-              </a>
-            </Card>
-
-            {/* Club Concierge */}
-            <Card className="p-6 text-center hover:shadow-xl transition-all border-2 border-transparent hover:border-pink-200">
-              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-pink-100 to-rose-100 rounded-2xl flex items-center justify-center">
-                <Star className="w-8 h-8 text-pink-600" />
-              </div>
-              <h3 className="font-bold text-lg text-gray-900 mb-2">Club Concierge®</h3>
-              <p className="text-sm text-gray-500 mb-4">Premium membership services with a personal touch</p>
-              <a 
-                href="https://clubconcierge.in" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-pink-600 text-sm font-medium hover:underline"
-              >
-                Visit <ExternalLink className="w-3 h-3" />
-              </a>
-            </Card>
-
-            {/* The Doggy Bakery */}
-            <Card className="p-6 text-center hover:shadow-xl transition-all border-2 border-transparent hover:border-orange-200">
-              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-orange-100 to-amber-100 rounded-2xl flex items-center justify-center">
-                <Heart className="w-8 h-8 text-orange-600" />
-              </div>
-              <h3 className="font-bold text-lg text-gray-900 mb-2">The Doggy Bakery®</h3>
-              <p className="text-sm text-gray-500 mb-4">45,000+ pets fed with love — Where it began</p>
-              <a 
-                href="https://thedoggybakery.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1 text-orange-600 text-sm font-medium hover:underline"
-              >
-                Visit <ExternalLink className="w-3 h-3" />
-              </a>
-            </Card>
-          </div>
-        </div>
-      </section>
-
-      {/* ========== DOCTRINE QUOTE ========== */}
-      <section className="py-20 bg-gradient-to-r from-purple-600 to-pink-600">
-        <div className="max-w-4xl mx-auto px-4 text-center text-white">
-          <Quote className="w-10 h-10 mx-auto text-white/50 mb-6" />
-          <blockquote className="text-2xl sm:text-3xl font-medium leading-relaxed mb-6">
-            &quot;The longer a pet lives with us,
-            <span className="block text-yellow-300">the less their parent has to explain.&quot;</span>
-          </blockquote>
-          <p className="text-white/70">
-            This is our North Star. Every feature is measured against this simple truth.
-          </p>
-        </div>
-      </section>
-
-      {/* ========== FOUNDING MEMBERS CTA ========== */}
-      <section className="py-24 bg-white">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-100 text-purple-700 rounded-full text-sm font-medium mb-6">
-            <Star className="w-4 h-4" />
-            Founding Members
-          </div>
-          
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-6">
-            Help Us Build the Future of Pet Care
-          </h2>
-          
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
-            Join our founding members and be part of building India&apos;s first Pet Concierge® experience. 
-            Not a discount — an invitation.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
-            <Link to="/membership">
-              <Button 
-                size="lg" 
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 px-10 py-7 text-lg"
-              >
-                <PawPrint className="w-5 h-5 mr-2" />
-                Start Your Pet&apos;s Soul
-              </Button>
-            </Link>
-            <Link to="/membership">
-              <Button 
-                size="lg" 
-                variant="outline"
-                className="border-purple-300 text-purple-600 hover:bg-purple-50 px-10 py-7 text-lg"
-              >
-                View Pet Life Pass
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* ========== MIRA DEDICATION MODAL ========== */}
-      {showMiraModal && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <Card className="max-w-md w-full p-8 relative animate-in fade-in zoom-in duration-200">
-            <button 
-              onClick={() => setShowMiraModal(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+            <motion.p
+              className="text-purple-400 text-sm uppercase tracking-widest mb-4"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
             >
-              <X className="w-5 h-5" />
-            </button>
-            
-            <div className="text-center">
-              <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-pink-100 to-purple-100 rounded-full flex items-center justify-center">
-                <Heart className="w-10 h-10 text-purple-500" />
-              </div>
-              
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Mira</h3>
-              <p className="text-purple-600 font-medium mb-6">The Soul Behind Everything We Build</p>
-              
-              <div className="text-gray-600 text-sm leading-relaxed space-y-4">
-                <p>
-                  At the heart of The Doggy Company® is <strong>Mira — Dipali&apos;s mother</strong>.
+              Real Stories, Real Souls
+            </motion.p>
+            <motion.h2
+              className="text-3xl sm:text-4xl font-bold text-white mb-6"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              Families Who Trusted Us With
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+                Their Most Precious Members
+              </span>
+            </motion.h2>
+          </div>
+
+          {/* Testimonial Carousel */}
+          <div className="relative max-w-4xl mx-auto">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentTestimonial}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.5 }}
+                className="text-center"
+              >
+                <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-6 rounded-full overflow-hidden border-4 border-purple-500/50">
+                  <img 
+                    src={REAL_STORIES[currentTestimonial].petImage} 
+                    alt={REAL_STORIES[currentTestimonial].petName}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <Quote className="w-8 h-8 text-purple-500/50 mx-auto mb-4" />
+                <p className="text-xl sm:text-2xl text-white/90 mb-6 leading-relaxed italic">
+                  &quot;{REAL_STORIES[currentTestimonial].quote}&quot;
                 </p>
-                <p>
-                  She believed in noticing without being asked, in remembering what mattered, 
-                  and in showing up quietly but completely.
-                </p>
-                <p className="italic text-purple-700">
-                  &quot;For her, care was never a transaction. It was responsibility carried with grace.&quot;
-                </p>
-                <p>
-                  She remains the quiet standard behind everything we build.
-                </p>
-              </div>
-              
-              <Link to="/about">
-                <Button className="mt-6 bg-purple-600 hover:bg-purple-700">
-                  Read Our Full Story
-                </Button>
-              </Link>
+                <div>
+                  <p className="text-white font-semibold">{REAL_STORIES[currentTestimonial].humanName}</p>
+                  <p className="text-white/60 text-sm">Pet parent of {REAL_STORIES[currentTestimonial].petName}</p>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+
+            {/* Dots */}
+            <div className="flex justify-center gap-2 mt-8">
+              {REAL_STORIES.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setCurrentTestimonial(idx)}
+                  className={`w-2 h-2 rounded-full transition-all ${
+                    idx === currentTestimonial ? 'bg-purple-500 w-6' : 'bg-white/30'
+                  }`}
+                />
+              ))}
             </div>
-          </Card>
+          </div>
         </div>
-      )}
+      </section>
+
+      {/* ========== THE PROMISE ========== */}
+      <section className="relative py-24 sm:py-32 bg-slate-950">
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-8">
+              Our Promise to You
+            </h2>
+            <p className="text-xl sm:text-2xl text-white/70 mb-12 leading-relaxed max-w-3xl mx-auto">
+              The longer you stay with us, the less you&apos;ll have to explain. 
+              We&apos;ll know your pet&apos;s soul — and treat them as family.
+            </p>
+
+            <div className="grid sm:grid-cols-3 gap-6 mb-12">
+              {[
+                { icon: Shield, title: '30-Day Guarantee', desc: 'Full refund if we don\'t earn your trust' },
+                { icon: Lock, title: 'Your Data, Your Control', desc: 'We never sell or share pet data' },
+                { icon: Heart, title: 'Lifetime Memory', desc: 'Your pet\'s soul lives forever with us' },
+              ].map((item, idx) => (
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.1 }}
+                  className="p-6 bg-white/5 rounded-2xl border border-white/10"
+                >
+                  <item.icon className="w-8 h-8 text-purple-400 mx-auto mb-4" />
+                  <h3 className="text-white font-semibold mb-2">{item.title}</h3>
+                  <p className="text-sm text-white/60">{item.desc}</p>
+                </motion.div>
+              ))}
+            </div>
+
+            <Link to="/membership">
+              <Button 
+                size="lg" 
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white px-12 py-7 text-lg rounded-full shadow-2xl shadow-purple-500/30 transition-all hover:scale-105"
+              >
+                Begin Your Pet&apos;s Soul Journey
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* ========== FOOTER CTA ========== */}
+      <section className="relative py-16 bg-gradient-to-t from-purple-950/50 to-slate-950 border-t border-white/10">
+        <div className="max-w-6xl mx-auto px-4 text-center">
+          <p className="text-white/60 mb-4">Questions? Mira is always here.</p>
+          <Button 
+            variant="ghost" 
+            onClick={handleOpenMira}
+            className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/10"
+          >
+            <MessageCircle className="w-5 h-5 mr-2" />
+            Chat with Mira
+          </Button>
+        </div>
+      </section>
+
+      {/* Video Modal */}
+      <AnimatePresence>
+        {showVideo && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/95 flex items-center justify-center p-4"
+            onClick={() => setShowVideo(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative max-w-4xl w-full aspect-video bg-slate-900 rounded-2xl overflow-hidden"
+              onClick={e => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setShowVideo(false)}
+                className="absolute top-4 right-4 z-10 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+              >
+                <X className="w-6 h-6 text-white" />
+              </button>
+              
+              {/* Placeholder for video - In production, embed actual video */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
+                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mb-6">
+                  <Play className="w-10 h-10 text-white fill-white ml-1" />
+                </div>
+                <h3 className="text-2xl font-bold mb-2">The Pet Soul Story</h3>
+                <p className="text-white/60">Coming Soon</p>
+                <p className="text-sm text-white/40 mt-4">Every pet has a soul. This is how we nurture it.</p>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
+
+// Soul Dimensions - What we track
+const SOUL_DIMENSIONS = [
+  {
+    icon: '❤️',
+    title: 'Emotional Patterns',
+    description: 'Anxiety triggers, comfort zones, and what makes their tail wag.',
+    gradient: 'from-pink-500 to-rose-500',
+  },
+  {
+    icon: '🍖',
+    title: 'Dietary Soul',
+    description: 'Allergies, favorites, what they pretend not to like but secretly love.',
+    gradient: 'from-orange-500 to-amber-500',
+  },
+  {
+    icon: '🏥',
+    title: 'Health History',
+    description: 'Vaccinations, conditions, preferred vets, and emergency contacts.',
+    gradient: 'from-blue-500 to-cyan-500',
+  },
+  {
+    icon: '✈️',
+    title: 'Travel Readiness',
+    description: 'Carrier comfort, motion sickness, and documentation always ready.',
+    gradient: 'from-indigo-500 to-purple-500',
+  },
+  {
+    icon: '🎓',
+    title: 'Learning Style',
+    description: 'Training progress, commands mastered, and behavioral growth.',
+    gradient: 'from-green-500 to-emerald-500',
+  },
+  {
+    icon: '🎂',
+    title: 'Life Milestones',
+    description: 'Birthdays, gotcha days, achievements — we celebrate them all.',
+    gradient: 'from-purple-500 to-pink-500',
+  },
+];
+
+// Real Stories - Trust through real families
+const REAL_STORIES = [
+  {
+    quote: "They remembered Bruno's fear of thunderstorms before I even mentioned it. For the first time, I felt like someone truly understood my dog.",
+    humanName: "Priya Sharma",
+    petName: "Bruno",
+    petImage: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop",
+  },
+  {
+    quote: "When Max got sick at 2am, Mira already had his full health history ready for the emergency vet. That's when I knew this was different.",
+    humanName: "Rahul Mehta",
+    petName: "Max",
+    petImage: "https://images.unsplash.com/photo-1552053831-71594a27632d?w=200&h=200&fit=crop",
+  },
+  {
+    quote: "They sent Luna a birthday cake without me even asking. It's the small things that show they actually care about our pets as family.",
+    humanName: "Anita Kapoor",
+    petName: "Luna",
+    petImage: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=200&h=200&fit=crop",
+  },
+];
 
 export default Home;
