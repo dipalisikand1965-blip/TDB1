@@ -113,35 +113,16 @@ const LivingSoulOrb = ({
     requestAnimationFrame(animate);
   }, [score, isFirstReveal]);
 
-  // Detect score growth and trigger celebration
-  useEffect(() => {
-    if (previousScore !== null && score > previousScore && showCelebration) {
-      // Check if we crossed a milestone
-      const prevMilestone = getCurrentMilestone(previousScore);
-      const newMilestone = getCurrentMilestone(score);
-      
-      if (newMilestone.threshold > prevMilestone.threshold) {
-        // Milestone reached! Celebrate!
-        triggerCelebration(newMilestone, score - previousScore);
-      } else if (score - previousScore >= 5) {
-        // General growth celebration
-        triggerGrowthCelebration(score - previousScore);
-      }
-    }
-    prevScoreRef.current = score;
-  }, [score, previousScore, showCelebration]);
-
-  // First reveal celebration
-  useEffect(() => {
-    if (isFirstReveal && hasAnimatedIn) {
-      setTimeout(() => {
-        triggerFirstRevealCelebration();
-      }, 500);
-    }
-  }, [isFirstReveal, hasAnimatedIn]);
+  // Trigger general growth celebration
+  const triggerGrowthCelebration = useCallback((growth) => {
+    toast.success(`✨ ${petName}'s soul grew!`, {
+      description: `+${growth}% closer to understanding their heart`,
+      duration: 3000,
+    });
+  }, [petName]);
 
   // Trigger milestone celebration
-  const triggerCelebration = (milestone, growth) => {
+  const triggerCelebration = useCallback((milestone, growth) => {
     setCelebrating(true);
     setCelebrationData({
       type: 'milestone',
@@ -178,18 +159,10 @@ const LivingSoulOrb = ({
       setCelebrating(false);
       setCelebrationData(null);
     }, 4000);
-  };
-
-  // Trigger general growth celebration
-  const triggerGrowthCelebration = (growth) => {
-    toast.success(`✨ ${petName}'s soul grew!`, {
-      description: `+${growth}% closer to understanding their heart`,
-      duration: 3000,
-    });
-  };
+  }, [petName, onMilestoneReached]);
 
   // First reveal - special magical moment
-  const triggerFirstRevealCelebration = () => {
+  const triggerFirstRevealCelebration = useCallback(() => {
     setCelebrating(true);
     setCelebrationData({
       type: 'firstReveal',
@@ -216,7 +189,34 @@ const LivingSoulOrb = ({
       setCelebrating(false);
       setCelebrationData(null);
     }, 5000);
-  };
+  }, [score]);
+
+  // Detect score growth and trigger celebration
+  useEffect(() => {
+    if (previousScore !== null && score > previousScore && showCelebration) {
+      // Check if we crossed a milestone
+      const prevMilestone = getCurrentMilestone(previousScore);
+      const newMilestone = getCurrentMilestone(score);
+      
+      if (newMilestone.threshold > prevMilestone.threshold) {
+        // Milestone reached! Celebrate!
+        triggerCelebration(newMilestone, score - previousScore);
+      } else if (score - previousScore >= 5) {
+        // General growth celebration
+        triggerGrowthCelebration(score - previousScore);
+      }
+    }
+    prevScoreRef.current = score;
+  }, [score, previousScore, showCelebration, triggerCelebration, triggerGrowthCelebration]);
+
+  // First reveal celebration
+  useEffect(() => {
+    if (isFirstReveal && hasAnimatedIn) {
+      setTimeout(() => {
+        triggerFirstRevealCelebration();
+      }, 500);
+    }
+  }, [isFirstReveal, hasAnimatedIn, triggerFirstRevealCelebration]);
 
   // Generate orbiting particles (representing answered questions)
   const particles = Array.from({ length: config.particleCount }, (_, i) => ({
