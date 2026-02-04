@@ -68,8 +68,22 @@ const Home = () => {
         ref={heroRef}
         className="relative min-h-screen flex items-center justify-center overflow-hidden"
       >
+        {/* Video Background - Subtle, emotional */}
+        <div className="absolute inset-0 z-0">
+          <video
+            className="w-full h-full object-cover opacity-20"
+            autoPlay
+            loop
+            muted
+            playsInline
+          >
+            <source src="/videos/pet-soul-hero.mp4" type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-purple-950/70 to-slate-950/90" />
+        </div>
+        
         {/* Animated Background - Deep, soulful */}
-        <div className="absolute inset-0">
+        <div className="absolute inset-0 z-[1]">
           {/* Base gradient */}
           <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-purple-950/50 to-slate-950" />
           
