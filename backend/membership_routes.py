@@ -347,8 +347,10 @@ async def verify_payment_alt(request: PaymentVerifyRequestAlt):
     db = get_db()
     logger = get_logger()
     
-    # Get membership record by order_id - check both collections
-    membership = await db.membership_orders.find_one({"id": request.order_id})
+    # Get membership record by order_id - check both collections and field names
+    membership = await db.membership_orders.find_one({"order_id": request.order_id})
+    if not membership:
+        membership = await db.membership_orders.find_one({"id": request.order_id})
     if not membership:
         # Fallback to memberships collection for backward compatibility
         membership = await db.memberships.find_one({"id": request.order_id})
@@ -375,7 +377,7 @@ async def verify_payment_alt(request: PaymentVerifyRequestAlt):
                 raise HTTPException(status_code=400, detail="Payment verification failed")
     
     # Calculate expiry based on plan
-    plan_id = membership.get("plan_id", "yearly")
+    plan_id = membership.get("plan_id", membership.get("plan_type", "yearly"))
     plan = MEMBERSHIP_PLANS.get(plan_id)
     duration_months = plan["duration_months"] if plan else 12
     bonus_days = 7  # 7 bonus days
@@ -384,7 +386,7 @@ async def verify_payment_alt(request: PaymentVerifyRequestAlt):
     
     # Update membership order status
     await db.membership_orders.update_one(
-        {"id": request.order_id},
+        {"order_id": request.order_id},
         {"$set": {
             "status": "active",
             "started_at": started_at.isoformat(),
