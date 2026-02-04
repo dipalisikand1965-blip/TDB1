@@ -776,11 +776,9 @@ const CarePage = () => {
       {/* === CARE TYPES STRIP === */}
       <div className="bg-white border-b shadow-sm sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between gap-4 overflow-x-auto scrollbar-hide">
-            <div className="flex items-center gap-3 flex-shrink-0">
-              <span className="text-sm text-gray-500 hidden sm:inline">Care Services:</span>
-            </div>
-            <div className="flex gap-2">
+          <div className="flex items-center gap-4">
+            <span className="text-sm text-gray-500 hidden sm:inline flex-shrink-0">Care Services:</span>
+            <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
               {Object.values(CARE_TYPES).map((type) => {
                 const Icon = type.icon;
                 return (
@@ -790,10 +788,10 @@ const CarePage = () => {
                       setSelectedType(type.id);
                       handleStartCare();
                     }}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all ${type.bgColor} ${type.textColor} hover:scale-105 whitespace-nowrap`}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all ${type.bgColor} ${type.textColor} hover:scale-105 whitespace-nowrap flex-shrink-0`}
                     data-testid={`care-type-${type.id}`}
                   >
-                    <Icon className="w-4 h-4" />
+                    <Icon className="w-4 h-4 flex-shrink-0" />
                     <span className="text-sm font-medium">{type.name}</span>
                   </button>
                 );
