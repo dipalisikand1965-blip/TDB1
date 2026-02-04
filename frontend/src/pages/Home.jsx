@@ -75,13 +75,13 @@ const Home = () => {
           
           {/* Floating soul particles */}
           <div className="absolute inset-0 overflow-hidden">
-            {[...Array(20)].map((_, i) => (
+            {PARTICLES.map((particle) => (
               <motion.div
-                key={i}
+                key={particle.id}
                 className="absolute w-2 h-2 rounded-full bg-purple-400/30"
                 style={{
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
+                  left: `${particle.left}%`,
+                  top: `${particle.top}%`,
                 }}
                 animate={{
                   y: [0, -30, 0],
@@ -89,9 +89,9 @@ const Home = () => {
                   scale: [1, 1.5, 1],
                 }}
                 transition={{
-                  duration: 3 + Math.random() * 2,
+                  duration: particle.duration,
                   repeat: Infinity,
-                  delay: Math.random() * 2,
+                  delay: particle.delay,
                 }}
               />
             ))}
