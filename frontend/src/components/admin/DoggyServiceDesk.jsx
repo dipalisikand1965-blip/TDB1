@@ -112,7 +112,9 @@ const STATUS_CONFIG = {
   resolved: { label: 'Resolved', color: 'bg-emerald-500', textColor: 'text-emerald-700', bgLight: 'bg-emerald-100' },
   closed: { label: 'Closed', color: 'bg-gray-400', textColor: 'text-gray-600', bgLight: 'bg-gray-100' },
   pending: { label: 'Pending', color: 'bg-yellow-500', textColor: 'text-yellow-700', bgLight: 'bg-yellow-100' },
-  confirmed: { label: 'Confirmed', color: 'bg-green-500', textColor: 'text-green-700', bgLight: 'bg-green-100' }
+  confirmed: { label: 'Confirmed', color: 'bg-green-500', textColor: 'text-green-700', bgLight: 'bg-green-100' },
+  merged: { label: 'Merged', color: 'bg-purple-500', textColor: 'text-purple-700', bgLight: 'bg-purple-100' },
+  blocked: { label: 'Blocked', color: 'bg-red-600', textColor: 'text-red-700', bgLight: 'bg-red-100' }
 };
 
 const PRIORITY_CONFIG = {
