@@ -83,6 +83,11 @@ const CITIES = [
   { value: 'hyderabad', label: 'Hyderabad' },
   { value: 'chennai', label: 'Chennai' },
   { value: 'pune', label: 'Pune' },
+  { value: 'kolkata', label: 'Kolkata' },
+  { value: 'ahmedabad', label: 'Ahmedabad' },
+  { value: 'jaipur', label: 'Jaipur' },
+  { value: 'goa', label: 'Goa' },
+  { value: 'other', label: '✏️ Other City (type below)' },
 ];
 
 // Guest count options
