@@ -1569,8 +1569,8 @@ const Home = () => {
                     )}
                     {!tier.savings && <div className="mb-6" />}
                     
-                    {/* CTA Button - External Link */}
-                    <a href={tier.ctaLink || "https://thedoggycompany.in/membership"} target="_blank" rel="noopener noreferrer">
+                    {/* CTA Button - Internal Link */}
+                    <Link to={tier.ctaLink || "/join"}>
                       <Button 
                         className={`w-full mb-6 py-6 rounded-xl font-semibold ${
                           tier.highlighted 
@@ -1582,7 +1582,7 @@ const Home = () => {
                         {tier.cta}
                         <ArrowRight className="w-4 h-4 ml-2" />
                       </Button>
-                    </a>
+                    </Link>
                     
                     {/* Features */}
                     <div className="space-y-3">
