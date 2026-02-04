@@ -1246,33 +1246,50 @@ const Home = () => {
                 transition={{ delay: idx * 0.1 }}
                 className="group relative"
               >
-                {/* Video thumbnail card */}
-                <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-slate-900/50 backdrop-blur-sm hover:border-purple-500/50 transition-all duration-300">
-                  {/* Thumbnail */}
+                {/* Video card */}
+                <div 
+                  className="relative overflow-hidden rounded-2xl border border-white/10 bg-slate-900/50 backdrop-blur-sm hover:border-purple-500/50 transition-all duration-300 cursor-pointer"
+                  onClick={() => setPlayingTestimonial(playingTestimonial === testimonial.id ? null : testimonial.id)}
+                >
+                  {/* Video/Thumbnail */}
                   <div className="relative aspect-video overflow-hidden">
-                    <img 
-                      src={testimonial.thumbnail} 
-                      alt={testimonial.name}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent" />
-                    
-                    {/* Play button overlay */}
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <motion.div
-                        className="relative"
-                        whileHover={{ scale: 1.1 }}
+                    {playingTestimonial === testimonial.id && testimonial.hasVideo ? (
+                      <video
+                        autoPlay
+                        loop
+                        muted={false}
+                        playsInline
+                        className="w-full h-full object-cover"
                       >
-                        <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full blur-md opacity-50" />
-                        <div className="relative w-16 h-16 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center shadow-xl">
-                          <PlayCircle className="w-8 h-8 text-white" />
+                        <source src={testimonial.videoSrc} type="video/mp4" />
+                      </video>
+                    ) : (
+                      <>
+                        <img 
+                          src={testimonial.thumbnail} 
+                          alt={testimonial.name}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent" />
+                        
+                        {/* Play button overlay */}
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <motion.div
+                            className="relative"
+                            whileHover={{ scale: 1.1 }}
+                          >
+                            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full blur-md opacity-50" />
+                            <div className="relative w-16 h-16 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center shadow-xl">
+                              <Play className="w-8 h-8 text-white fill-white ml-1" />
+                            </div>
+                          </motion.div>
                         </div>
-                      </motion.div>
-                    </div>
+                      </>
+                    )}
                     
                     {/* Duration badge */}
                     <div className="absolute bottom-3 right-3 px-2 py-1 bg-black/70 rounded text-xs text-white font-medium">
-                      {testimonial.duration}
+                      {playingTestimonial === testimonial.id ? 'Playing' : testimonial.duration}
                     </div>
                   </div>
                   
