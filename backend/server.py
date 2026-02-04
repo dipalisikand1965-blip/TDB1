@@ -1217,6 +1217,9 @@ async def lifespan(app: FastAPI):
     # Initialize content database connection
     set_content_db(db)
     
+    # Initialize landing page CMS database connection
+    set_landing_page_db(db)
+    
     # Initialize loyalty database connection
     set_loyalty_db(db)
     
