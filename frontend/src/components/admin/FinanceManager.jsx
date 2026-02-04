@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   CreditCard, IndianRupee, Receipt, RefreshCw, Download, Search,
@@ -6,7 +6,7 @@ import {
   ChevronDown, ChevronUp, Calendar, User, Package, Sparkles,
   Gift, Tag, TrendingUp, TrendingDown, FileText, MessageSquare,
   Check, X, MoreVertical, ArrowUpRight, ArrowDownLeft, Wallet,
-  Building2, Smartphone, Banknote, PiggyBank, Star
+  Building2, Smartphone, Banknote, PiggyBank, Star, Upload
 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Input } from '../ui/input';
@@ -18,6 +18,13 @@ const getApiUrl = () => {
     return 'http://localhost:8001';
   }
   return '';
+};
+
+// Get admin auth header
+const getAuthHeader = () => {
+  const adminUsername = localStorage.getItem('adminUsername') || 'aditya';
+  const adminPassword = localStorage.getItem('adminPassword') || 'lola4304';
+  return `Basic ${btoa(`${adminUsername}:${adminPassword}`)}`;
 };
 
 // Payment status colors and icons
