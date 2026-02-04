@@ -138,7 +138,7 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
           )}
         </AnimatePresence>
         
-        {/* Video - Full screen */}
+        {/* Video - Full screen, optimized for iOS/Android */}
         {!isEnding && (
           <video 
             ref={videoRef}
@@ -146,6 +146,15 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
             autoPlay
             muted={videoMuted}
             playsInline
+            webkit-playsinline="true"
+            x5-playsinline="true"
+            x5-video-player-type="h5"
+            x5-video-player-fullscreen="true"
+            style={{
+              objectFit: 'cover',
+              WebkitTransform: 'translateZ(0)',
+              transform: 'translateZ(0)'
+            }}
           >
             <source src={clip.src} type="video/mp4" />
           </video>
