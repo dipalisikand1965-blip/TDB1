@@ -60,7 +60,7 @@ const PaymentSuccess = () => {
     { icon: MessageCircle, title: 'Mira AI Concierge®', desc: 'Your 24/7 pet care companion' },
     { icon: Shield, title: 'Health Vault', desc: 'All records in one secure place' },
     { icon: Calendar, title: 'Celebration Reminders', desc: 'Never miss an important date' },
-    { icon: Gift, title: 'Paw Rewards', desc: isFounder ? 'Earn 2x points on everything' : 'Earn points on every service' },
+    { icon: Gift, title: 'Paw Rewards', desc: isFoundation ? 'Earn 2x points on everything' : 'Earn points on every service' },
     { icon: Star, title: 'Priority Support', desc: 'Skip the queue, get help fast' },
   ];
 
