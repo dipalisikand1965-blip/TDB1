@@ -42,18 +42,24 @@ const BRAND_STORY_CLIPS = [
   }
 ];
 
-// Brand Story Modal Component
+// Brand Story Modal Component - Mobile Optimized
 const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
   const [currentClip, setCurrentClip] = useState(0);
+  const [isEnding, setIsEnding] = useState(false);
   const videoRef = useRef(null);
   
-  // Auto-advance to next clip
+  // Auto-advance to next clip with smooth ending
   useEffect(() => {
     const timer = setTimeout(() => {
       if (currentClip < BRAND_STORY_CLIPS.length - 1) {
         setCurrentClip(prev => prev + 1);
       } else {
-        setCurrentClip(0); // Loop back to start
+        // Show ending screen before looping
+        setIsEnding(true);
+        setTimeout(() => {
+          setIsEnding(false);
+          setCurrentClip(0);
+        }, 2500);
       }
     }, BRAND_STORY_CLIPS[currentClip].duration);
     
@@ -62,11 +68,11 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
   
   // Play video when clip changes
   useEffect(() => {
-    if (videoRef.current) {
+    if (videoRef.current && !isEnding) {
       videoRef.current.load();
       videoRef.current.play().catch(() => {});
     }
-  }, [currentClip]);
+  }, [currentClip, isEnding]);
   
   const clip = BRAND_STORY_CLIPS[currentClip];
   
@@ -75,97 +81,154 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 bg-black flex items-center justify-center"
+      className="fixed inset-0 z-[100] bg-black"
       onClick={onClose}
     >
       <motion.div
-        initial={{ scale: 0.95, opacity: 0 }}
+        initial={{ scale: 0.98, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.95, opacity: 0 }}
-        className="relative w-full h-full max-w-7xl max-h-[90vh] mx-auto"
+        exit={{ scale: 0.98, opacity: 0 }}
+        className="relative w-full h-full"
         onClick={e => e.stopPropagation()}
       >
-        {/* Video */}
-        <video 
-          ref={videoRef}
-          className="w-full h-full object-cover"
-          autoPlay
-          muted={videoMuted}
-          playsInline
-          loop
-        >
-          <source src={clip.src} type="video/mp4" />
-        </video>
+        {/* Ending Screen */}
+        <AnimatePresence>
+          {isEnding && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 z-30 bg-slate-950 flex flex-col items-center justify-center"
+            >
+              {/* Soul Orb */}
+              <motion.div
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                className="relative mb-8"
+              >
+                <div className="absolute inset-0 w-24 h-24 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full blur-xl opacity-60" />
+                <div className="relative w-24 h-24 bg-gradient-to-br from-purple-500 via-pink-500 to-purple-600 rounded-full flex items-center justify-center">
+                  <Sparkles className="w-10 h-10 text-white" />
+                </div>
+              </motion.div>
+              <motion.h2
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4 }}
+                className="text-3xl sm:text-4xl font-bold text-white text-center mb-3"
+              >
+                Every Pet Has a Soul
+              </motion.h2>
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 }}
+                className="text-white/60 text-lg"
+              >
+                The Doggy Company
+              </motion.p>
+            </motion.div>
+          )}
+        </AnimatePresence>
         
-        {/* Cinematic Overlays */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/50 pointer-events-none" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-black/30 pointer-events-none" />
+        {/* Video - Full screen */}
+        {!isEnding && (
+          <video 
+            ref={videoRef}
+            className="absolute inset-0 w-full h-full object-cover"
+            autoPlay
+            muted={videoMuted}
+            playsInline
+          >
+            <source src={clip.src} type="video/mp4" />
+          </video>
+        )}
         
-        {/* Close Button */}
+        {/* Cinematic Overlays - Lighter gradient to show video */}
+        {!isEnding && (
+          <>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent pointer-events-none h-32" />
+          </>
+        )}
+        
+        {/* Close Button - Safe area */}
         <button
           onClick={onClose}
-          className="absolute top-6 right-6 z-20 p-3 bg-white/10 rounded-full hover:bg-white/20 transition-colors backdrop-blur-sm"
+          className="absolute top-4 sm:top-6 right-4 sm:right-6 z-40 p-2 sm:p-3 bg-black/40 rounded-full hover:bg-black/60 transition-colors backdrop-blur-sm"
         >
-          <X className="w-6 h-6 text-white" />
+          <X className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
         </button>
         
-        {/* Story Text Overlay */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentClip}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.5 }}
-              className="text-center px-8"
-            >
-              <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4 drop-shadow-2xl">
-                {clip.title}
-              </h2>
-              <p className="text-xl sm:text-2xl text-white/90 drop-shadow-lg">
-                {clip.subtitle}
-              </p>
-            </motion.div>
-          </AnimatePresence>
-        </div>
+        {/* Brand Logo - Top */}
+        {!isEnding && (
+          <div className="absolute top-4 sm:top-6 left-4 sm:left-6 z-30">
+            <p className="text-purple-400 text-xs sm:text-sm uppercase tracking-widest">The Doggy Company</p>
+          </div>
+        )}
         
-        {/* Progress Dots */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3">
-          {BRAND_STORY_CLIPS.map((_, idx) => (
-            <button
-              key={idx}
-              onClick={() => setCurrentClip(idx)}
-              className={`w-3 h-3 rounded-full transition-all duration-300 ${
-                idx === currentClip 
-                  ? 'bg-white w-8' 
-                  : 'bg-white/40 hover:bg-white/60'
-              }`}
-            />
-          ))}
-        </div>
+        {/* Story Text - BOTTOM positioned to not cover faces */}
+        {!isEnding && (
+          <div className="absolute bottom-24 sm:bottom-28 left-0 right-0 z-20 pointer-events-none">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentClip}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.6 }}
+                className="text-center px-6 sm:px-8"
+              >
+                <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-2 sm:mb-4 drop-shadow-2xl leading-tight">
+                  {clip.title}
+                </h2>
+                <p className="text-base sm:text-xl md:text-2xl text-white/90 drop-shadow-lg">
+                  {clip.subtitle}
+                </p>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        )}
         
-        {/* Controls */}
-        <div className="absolute bottom-8 right-8 flex gap-3">
-          <button
-            onClick={() => setCurrentClip(prev => (prev + 1) % BRAND_STORY_CLIPS.length)}
-            className="p-3 bg-white/10 rounded-full hover:bg-white/20 transition-colors backdrop-blur-sm"
-            title="Next clip"
-          >
-            <SkipForward className="w-5 h-5 text-white" />
-          </button>
-          <button
-            onClick={() => setVideoMuted(!videoMuted)}
-            className="p-3 bg-white/10 rounded-full hover:bg-white/20 transition-colors backdrop-blur-sm"
-          >
-            {videoMuted ? <VolumeX className="w-5 h-5 text-white" /> : <Volume2 className="w-5 h-5 text-white" />}
-          </button>
-        </div>
-        
-        {/* Brand Logo */}
-        <div className="absolute top-6 left-6">
-          <p className="text-purple-400 text-sm uppercase tracking-widest">The Doggy Company</p>
-        </div>
+        {/* Progress Bar & Controls - Bottom */}
+        {!isEnding && (
+          <div className="absolute bottom-6 sm:bottom-8 left-4 right-4 sm:left-6 sm:right-6 z-30">
+            <div className="flex items-center justify-between">
+              {/* Progress Dots */}
+              <div className="flex gap-2 sm:gap-3">
+                {BRAND_STORY_CLIPS.map((_, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setCurrentClip(idx)}
+                    className={`h-1.5 sm:h-2 rounded-full transition-all duration-300 ${
+                      idx === currentClip 
+                        ? 'bg-white w-6 sm:w-8' 
+                        : 'bg-white/40 hover:bg-white/60 w-1.5 sm:w-2'
+                    }`}
+                  />
+                ))}
+              </div>
+              
+              {/* Controls */}
+              <div className="flex gap-2 sm:gap-3">
+                <button
+                  onClick={() => setCurrentClip(prev => (prev + 1) % BRAND_STORY_CLIPS.length)}
+                  className="p-2 sm:p-3 bg-black/40 rounded-full hover:bg-black/60 transition-colors backdrop-blur-sm"
+                  title="Next clip"
+                >
+                  <SkipForward className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                </button>
+                <button
+                  onClick={() => setVideoMuted(!videoMuted)}
+                  className="p-2 sm:p-3 bg-black/40 rounded-full hover:bg-black/60 transition-colors backdrop-blur-sm"
+                >
+                  {videoMuted ? <VolumeX className="w-4 h-4 sm:w-5 sm:h-5 text-white" /> : <Volume2 className="w-4 h-4 sm:w-5 sm:h-5 text-white" />}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </motion.div>
     </motion.div>
   );
