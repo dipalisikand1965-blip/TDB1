@@ -124,12 +124,12 @@ const MembershipTab = ({ user }) => {
               <Crown className="w-8 h-8 text-white" />
             </div>
             <div>
-              <Badge className={`mb-2 ${plan.status === 'active' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' : 'bg-amber-500/20 text-amber-400 border-amber-500/30'}`}>
-                {plan.status === 'active' ? '✓ Active' : '⚠️ ' + plan.status}
+              <Badge className={`mb-2 ${isActive ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' : 'bg-amber-500/20 text-amber-400 border-amber-500/30'}`}>
+                {isActive ? '✓ Active' : isExpired ? '✗ Expired' : '○ Free Tier'}
               </Badge>
               <h2 className="text-xl sm:text-2xl font-bold text-white">{plan.plan_name}</h2>
               <p className="text-sm text-slate-400 mt-1">
-                {plan.billing_cycle === 'yearly' ? 'Annual Membership' : 'Monthly Membership'}
+                {plan.billing_cycle === 'yearly' ? 'Annual Membership' : plan.billing_cycle === 'monthly' ? 'Monthly Membership' : 'No active subscription'}
               </p>
             </div>
           </div>
@@ -154,19 +154,19 @@ const MembershipTab = ({ user }) => {
               <Calendar className="w-4 h-4 text-emerald-400" />
               <span className="text-xs text-slate-400 uppercase font-medium">Valid From</span>
             </div>
-            <p className="text-lg font-semibold text-white">{formatDate(plan.valid_from)}</p>
+            <p className="text-lg font-semibold text-white">{formatDate(validFrom.toISOString())}</p>
           </div>
           <div className="p-4 bg-slate-800/50 rounded-xl border border-white/5">
             <div className="flex items-center gap-2 mb-2">
               <Clock className="w-4 h-4 text-pink-400" />
               <span className="text-xs text-slate-400 uppercase font-medium">Valid Until</span>
             </div>
-            <p className="text-lg font-semibold text-white">{formatDate(plan.valid_until)}</p>
+            <p className="text-lg font-semibold text-white">{formatDate(validUntil.toISOString())}</p>
           </div>
         </div>
         
         {/* Days Remaining Progress */}
-        {daysRemaining !== null && daysRemaining > 0 && (
+        {daysRemaining !== null && daysRemaining > 0 && membershipTier !== 'free' && (
           <div className="mt-4 p-4 bg-slate-800/30 rounded-xl">
             <div className="flex justify-between items-center mb-2">
               <span className="text-sm text-slate-400">Membership Duration</span>
@@ -187,9 +187,9 @@ const MembershipTab = ({ user }) => {
         
         {/* Actions */}
         <div className="mt-6 flex flex-col sm:flex-row gap-3">
-          {isExpired ? (
+          {isExpired || membershipTier === 'free' ? (
             <Button className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white">
-              <RefreshCw className="w-4 h-4 mr-2" /> Renew Membership
+              <RefreshCw className="w-4 h-4 mr-2" /> {membershipTier === 'free' ? 'Upgrade Now' : 'Renew Membership'}
             </Button>
           ) : isExpiringSoon ? (
             <Button className="flex-1 bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-500 hover:to-orange-500 text-white">
@@ -200,9 +200,11 @@ const MembershipTab = ({ user }) => {
               <ArrowRight className="w-4 h-4 mr-2" /> View Plan Details
             </Button>
           )}
-          <Button variant="outline" className="flex-1 bg-slate-800/50 border-white/10 text-white hover:bg-slate-700/50 hover:border-purple-500/30">
-            <Star className="w-4 h-4 mr-2 text-purple-400" /> Upgrade Plan
-          </Button>
+          {membershipTier !== 'platinum' && (
+            <Button variant="outline" className="flex-1 bg-slate-800/50 border-white/10 text-white hover:bg-slate-700/50 hover:border-purple-500/30">
+              <Star className="w-4 h-4 mr-2 text-purple-400" /> Upgrade Plan
+            </Button>
+          )}
         </div>
       </Card>
       
