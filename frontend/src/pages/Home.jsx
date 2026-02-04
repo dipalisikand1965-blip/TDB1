@@ -125,10 +125,10 @@ const Home = () => {
         ref={heroRef}
         className="relative min-h-screen flex items-center justify-center overflow-hidden"
       >
-        {/* Rotating Photo Background - Emotional, Cinematic */}
+        {/* Rotating Photo Background - Emotional, Cinematic - CMS Driven */}
         <div className="absolute inset-0 z-0">
           <AnimatePresence mode="sync">
-            {HERO_IMAGES.map((img, idx) => (
+            {heroImages.map((img, idx) => (
               idx === currentHeroImage && (
                 <motion.div
                   key={img}
