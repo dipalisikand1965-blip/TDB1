@@ -507,22 +507,22 @@ const MEMBERSHIP_TIERS = [
   },
 ];
 
-// The 14 Life Pillars - Core services
+// The 14 Life Pillars - Emotional Journey (We celebrate through ALL of life)
 const LIFE_PILLARS = [
-  { name: "Celebrate", icon: "🎂", desc: "Birthday cakes, treats & parties" },
-  { name: "Dine", icon: "🍽️", desc: "Pet-friendly restaurants" },
-  { name: "Stay", icon: "🏨", desc: "Pet-friendly hotels & stays" },
-  { name: "Travel", icon: "✈️", desc: "Pet travel assistance" },
-  { name: "Care", icon: "🛁", desc: "Grooming, walking, sitting" },
-  { name: "Learn", icon: "🎓", desc: "Training & behavior" },
-  { name: "Fit", icon: "🏃", desc: "Exercise & wellness" },
-  { name: "Enjoy", icon: "🎾", desc: "Activities & adventures" },
-  { name: "Shop", icon: "🛒", desc: "Curated pet products" },
-  { name: "Advisory", icon: "💡", desc: "Expert guidance" },
-  { name: "Paperwork", icon: "📋", desc: "Documentation & records" },
-  { name: "Emergency", icon: "🚨", desc: "24/7 emergency help" },
-  { name: "Farewell", icon: "🌈", desc: "End-of-life support" },
-  { name: "Adopt", icon: "🐕", desc: "Find your companion" },
+  { name: "Celebrate", icon: "🎂", desc: "Every moment deserves joy", emotion: "The spark of pure happiness" },
+  { name: "Dine", icon: "🍽️", desc: "Breaking bread together", emotion: "Shared meals, deeper bonds" },
+  { name: "Stay", icon: "🏨", desc: "Home away from home", emotion: "Comfort in new places" },
+  { name: "Travel", icon: "✈️", desc: "Adventures await", emotion: "Exploring the world together" },
+  { name: "Care", icon: "🛁", desc: "Tender loving care", emotion: "The language of touch" },
+  { name: "Learn", icon: "🎓", desc: "Growing together", emotion: "Every lesson strengthens the bond" },
+  { name: "Fit", icon: "🏃", desc: "Thriving in motion", emotion: "Joy in every stride" },
+  { name: "Enjoy", icon: "🎾", desc: "Play is sacred", emotion: "Unfiltered happiness" },
+  { name: "Shop", icon: "🛒", desc: "Thoughtful choices", emotion: "Love expressed through care" },
+  { name: "Advisory", icon: "💡", desc: "Wisdom when needed", emotion: "Guidance with heart" },
+  { name: "Paperwork", icon: "📋", desc: "Life documented", emotion: "Their story, preserved" },
+  { name: "Emergency", icon: "🚨", desc: "Always protected", emotion: "Peace in uncertainty" },
+  { name: "Farewell", icon: "🌈", desc: "Celebrating a life lived", emotion: "Love never ends" },
+  { name: "Adopt", icon: "🐕", desc: "A new beginning", emotion: "Two souls finding each other" },
 ];
 
 // Fallback images in case API fails
