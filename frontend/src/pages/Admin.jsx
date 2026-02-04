@@ -2011,11 +2011,12 @@ const Admin = () => {
         <div className="mb-8 hidden md:block">
           {/* Command Center - Most Used Daily */}
           <div className="flex gap-2 flex-wrap items-center mb-4">
-            <span className="text-xs text-gray-500 px-2 py-1 font-bold uppercase bg-purple-100 rounded">🎯 Command Center</span>
+            <span className="text-xs text-gray-500 px-2 py-1 font-bold uppercase bg-purple-100 rounded">Command Center</span>
             {[
               { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
               { id: 'servicedesk', label: 'Service Desk', icon: Ticket },
               { id: 'inbox', label: 'Unified Inbox', icon: Inbox },
+              { id: 'finance', label: 'Finance', icon: IndianRupee },
               { id: 'pillar-queues', label: 'Pillar Queues', icon: Package },
             ].map((tab) => (
               <Button
