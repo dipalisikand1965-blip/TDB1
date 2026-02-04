@@ -410,6 +410,7 @@ const PARTICLES = Array.from({ length: 20 }, (_, i) => ({
 
 // Video Testimonials Data - Real Indian families with video stories
 // Dogs in thumbnail MATCH dogs in video (golden retriever, beagle, labrador)
+// Indian accent voiceovers synced to 8-second videos
 const VIDEO_TESTIMONIALS = [
   {
     id: 1,
@@ -418,7 +419,7 @@ const VIDEO_TESTIMONIALS = [
     // Golden retriever face close-up - matches video
     thumbnail: "https://images.unsplash.com/photo-1743997182218-30d0e9c3b0f1?w=400&h=300&fit=crop",
     videoSrc: "/videos/testimonials/sharma_testimonial.mp4",
-    quote: "They remembered Bruno's fear of thunderstorms... even before I mentioned it. Now whenever there's rain, they send me calming tips.",
+    quote: "They remembered Bruno's fear of thunderstorms... before I even told them.",
     duration: "0:08",
     hasVideo: true,
   },
@@ -429,7 +430,7 @@ const VIDEO_TESTIMONIALS = [
     // Beagle thumbnail - matches video
     thumbnail: "https://images.unsplash.com/photo-1657162801081-acfdd45242ce?w=400&h=300&fit=crop",
     videoSrc: "/videos/testimonials/rahul_testimonial.mp4",
-    quote: "Max's favorite walking route, his grooming schedule, even his favorite treats... Mira remembers everything.",
+    quote: "Max's favorite treats, his walking route... Mira remembers everything.",
     duration: "0:08",
     hasVideo: true,
   },
@@ -440,7 +441,7 @@ const VIDEO_TESTIMONIALS = [
     // Labrador thumbnail - matches video
     thumbnail: "https://images.unsplash.com/photo-1610112747663-45172b603dde?w=400&h=300&fit=crop",
     videoSrc: "/videos/testimonials/kapoor_testimonial.mp4",
-    quote: "They sent Luna a birthday cake... without me even asking! And they remembered her exact birth date.",
+    quote: "Luna's birthday cake arrived... without me even asking! They truly care.",
     duration: "0:08",
     hasVideo: true,
   },
