@@ -114,16 +114,13 @@ const Home = () => {
         </div>
         
         {/* Animated Background - Deep, soulful */}
-        <div className="absolute inset-0 z-[1]">
-          {/* Base gradient */}
-          <div className="absolute inset-0 bg-gradient-to-b from-slate-950 via-purple-950/50 to-slate-950" />
-          
+        <div className="absolute inset-0 z-[1] pointer-events-none">
           {/* Floating soul particles */}
           <div className="absolute inset-0 overflow-hidden">
             {PARTICLES.map((particle) => (
               <motion.div
                 key={particle.id}
-                className="absolute w-2 h-2 rounded-full bg-purple-400/30"
+                className="absolute w-2 h-2 rounded-full bg-purple-400/40"
                 style={{
                   left: `${particle.left}%`,
                   top: `${particle.top}%`,
