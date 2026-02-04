@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
@@ -7,12 +7,169 @@ import {
   Eye, MessageCircle, Shield, Star,
   TrendingUp, Quote, ChevronRight, Check,
   Lock, Users, Award, ExternalLink, X,
-  Play, ChevronDown, Volume2, VolumeX
+  Play, ChevronDown, Volume2, VolumeX, SkipForward
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { getApiUrl } from '../utils/api';
 import SEOHead from '../components/SEOHead';
 import { motion, AnimatePresence } from 'framer-motion';
+
+// Brand Story Video Clips with narrative text
+const BRAND_STORY_CLIPS = [
+  {
+    src: '/videos/brand_story/01_soulful_eyes.mp4',
+    title: 'Look into their eyes...',
+    subtitle: 'You already know.',
+    duration: 4000
+  },
+  {
+    src: '/videos/brand_story/02_the_bond.mp4',
+    title: "They're not just pets.",
+    subtitle: "They're family.",
+    duration: 4000
+  },
+  {
+    src: '/videos/brand_story/04_pure_joy.mp4',
+    title: 'Every tail wag, every happy moment...',
+    subtitle: 'We help you cherish them all.',
+    duration: 4000
+  },
+  {
+    src: '/videos/brand_story/05_family_moment.mp4',
+    title: 'The Doggy Company',
+    subtitle: 'Every Pet Has a Soul™',
+    duration: 4000
+  }
+];
+
+// Brand Story Modal Component
+const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
+  const [currentClip, setCurrentClip] = useState(0);
+  const videoRef = useRef(null);
+  
+  // Auto-advance to next clip
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (currentClip < BRAND_STORY_CLIPS.length - 1) {
+        setCurrentClip(prev => prev + 1);
+      } else {
+        setCurrentClip(0); // Loop back to start
+      }
+    }, BRAND_STORY_CLIPS[currentClip].duration);
+    
+    return () => clearTimeout(timer);
+  }, [currentClip]);
+  
+  // Play video when clip changes
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.load();
+      videoRef.current.play().catch(() => {});
+    }
+  }, [currentClip]);
+  
+  const clip = BRAND_STORY_CLIPS[currentClip];
+  
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-50 bg-black flex items-center justify-center"
+      onClick={onClose}
+    >
+      <motion.div
+        initial={{ scale: 0.95, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.95, opacity: 0 }}
+        className="relative w-full h-full max-w-7xl max-h-[90vh] mx-auto"
+        onClick={e => e.stopPropagation()}
+      >
+        {/* Video */}
+        <video 
+          ref={videoRef}
+          className="w-full h-full object-cover"
+          autoPlay
+          muted={videoMuted}
+          playsInline
+          loop
+        >
+          <source src={clip.src} type="video/mp4" />
+        </video>
+        
+        {/* Cinematic Overlays */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/50 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/30 via-transparent to-black/30 pointer-events-none" />
+        
+        {/* Close Button */}
+        <button
+          onClick={onClose}
+          className="absolute top-6 right-6 z-20 p-3 bg-white/10 rounded-full hover:bg-white/20 transition-colors backdrop-blur-sm"
+        >
+          <X className="w-6 h-6 text-white" />
+        </button>
+        
+        {/* Story Text Overlay */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentClip}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.5 }}
+              className="text-center px-8"
+            >
+              <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-4 drop-shadow-2xl">
+                {clip.title}
+              </h2>
+              <p className="text-xl sm:text-2xl text-white/90 drop-shadow-lg">
+                {clip.subtitle}
+              </p>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+        
+        {/* Progress Dots */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3">
+          {BRAND_STORY_CLIPS.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => setCurrentClip(idx)}
+              className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                idx === currentClip 
+                  ? 'bg-white w-8' 
+                  : 'bg-white/40 hover:bg-white/60'
+              }`}
+            />
+          ))}
+        </div>
+        
+        {/* Controls */}
+        <div className="absolute bottom-8 right-8 flex gap-3">
+          <button
+            onClick={() => setCurrentClip(prev => (prev + 1) % BRAND_STORY_CLIPS.length)}
+            className="p-3 bg-white/10 rounded-full hover:bg-white/20 transition-colors backdrop-blur-sm"
+            title="Next clip"
+          >
+            <SkipForward className="w-5 h-5 text-white" />
+          </button>
+          <button
+            onClick={() => setVideoMuted(!videoMuted)}
+            className="p-3 bg-white/10 rounded-full hover:bg-white/20 transition-colors backdrop-blur-sm"
+          >
+            {videoMuted ? <VolumeX className="w-5 h-5 text-white" /> : <Volume2 className="w-5 h-5 text-white" />}
+          </button>
+        </div>
+        
+        {/* Brand Logo */}
+        <div className="absolute top-6 left-6">
+          <p className="text-purple-400 text-sm uppercase tracking-widest">The Doggy Company</p>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+};
 
 // Pre-computed particle positions for floating effect
 const PARTICLES = Array.from({ length: 20 }, (_, i) => ({
