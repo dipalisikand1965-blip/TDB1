@@ -1023,29 +1023,15 @@ const Home = () => {
         
         <div className="relative max-w-6xl mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Mira Visual */}
+            {/* Mira Visual - Using Living Soul Orb */}
             <motion.div
               className="relative order-2 lg:order-1"
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <div className="relative w-64 h-64 sm:w-80 sm:h-80 mx-auto">
-                {/* Mira&apos;s orb */}
-                <motion.div
-                  className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-purple-600"
-                  style={{
-                    boxShadow: '0 0 80px rgba(168,85,247,0.5), 0 0 120px rgba(236,72,153,0.3)',
-                  }}
-                  animate={{
-                    scale: [1, 1.03, 1],
-                  }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                >
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <Sparkles className="w-16 h-16 text-white/80" />
-                  </div>
-                </motion.div>
+              <div className="relative mx-auto">
+                <LivingSoulOrb size="xl" className="mx-auto" />
                 
                 {/* Floating text bubbles */}
                 <motion.div
