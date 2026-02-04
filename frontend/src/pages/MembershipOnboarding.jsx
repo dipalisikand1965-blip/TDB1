@@ -357,6 +357,23 @@ const MembershipOnboarding = () => {
         }
       }
 
+      // Upload parent photo if selected
+      if (parentData.photo && data.user_id) {
+        try {
+          const parentPhotoFormData = new FormData();
+          parentPhotoFormData.append('photo', parentData.photo);
+          
+          await fetch(`${getApiUrl()}/api/users/${data.user_id}/photo`, {
+            method: 'POST',
+            body: parentPhotoFormData
+          });
+          console.log('Uploaded parent photo');
+        } catch (photoErr) {
+          console.error('Failed to upload parent photo:', photoErr);
+          // Don't fail the whole process for photo upload errors
+        }
+      }
+
       // Redirect to payment with order details
       if (data.payment_url) {
         window.location.href = data.payment_url;
