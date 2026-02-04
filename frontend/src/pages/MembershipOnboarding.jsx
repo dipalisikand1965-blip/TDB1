@@ -75,6 +75,10 @@ const MembershipOnboarding = () => {
     acceptPrivacy: false
   });
   
+  // Password visibility state
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  
   // Pets form state - array based on petCount
   const [petsData, setPetsData] = useState(
     Array.from({ length: petCount }, () => ({
