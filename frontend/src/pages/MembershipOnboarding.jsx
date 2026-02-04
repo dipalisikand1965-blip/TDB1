@@ -767,13 +767,17 @@ const MembershipOnboarding = () => {
           {step === 2 && (
             <div className="animate-in fade-in slide-in-from-right-4 duration-300">
               <div className="text-center mb-8">
-                <div className="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Dog className="w-8 h-8 text-pink-600" />
+                {/* Soul Orb for Pet */}
+                <div className="relative w-20 h-20 mx-auto mb-4">
+                  <div className="absolute inset-0 bg-gradient-to-br from-pink-400 via-fuchsia-500 to-purple-600 rounded-full animate-pulse opacity-50 blur-xl"></div>
+                  <div className="relative w-20 h-20 bg-gradient-to-br from-pink-400 via-fuchsia-500 to-purple-600 rounded-full flex items-center justify-center shadow-2xl shadow-pink-500/40">
+                    <Dog className="w-10 h-10 text-white" />
+                  </div>
                 </div>
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
                   Tell us about your dog{petsData.length > 1 ? 's' : ''}
                 </h1>
-                <p className="text-gray-500">
+                <p className="text-slate-400">
                   This helps us personalize everything for them
                 </p>
               </div>
@@ -786,8 +790,8 @@ const MembershipOnboarding = () => {
                     onClick={() => setActivePetTab(idx)}
                     className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-colors ${
                       activePetTab === idx
-                        ? 'bg-purple-600 text-white'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        ? 'bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-lg shadow-pink-500/30'
+                        : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'
                     }`}
                   >
                     <PawPrint className="w-4 h-4" />
@@ -808,7 +812,7 @@ const MembershipOnboarding = () => {
                 {/* Always show Add Dog button - supporting 1-15+ pets */}
                 <button
                   onClick={addPet}
-                  className="flex items-center gap-1 px-4 py-2 rounded-full border-2 border-dashed border-purple-300 text-purple-600 hover:bg-purple-50 whitespace-nowrap"
+                  className="flex items-center gap-1 px-4 py-2 rounded-full border-2 border-dashed border-pink-500/50 text-pink-400 hover:bg-pink-500/10 whitespace-nowrap"
                   data-testid="add-more-dogs-btn"
                 >
                   <Plus className="w-4 h-4" />
@@ -816,7 +820,7 @@ const MembershipOnboarding = () => {
                 </button>
               </div>
 
-              <Card className="p-6 md:p-8 max-w-xl mx-auto">
+              <Card className="p-6 md:p-8 max-w-xl mx-auto bg-slate-900/60 backdrop-blur-md border border-white/10 shadow-2xl">
                 {petsData.map((pet, idx) => (
                   <div key={idx} className={activePetTab === idx ? 'block' : 'hidden'}>
                     <div className="space-y-5">
@@ -835,7 +839,7 @@ const MembershipOnboarding = () => {
                             htmlFor={`pet-photo-${idx}`}
                             className="cursor-pointer block"
                           >
-                            <div className="w-28 h-28 rounded-full bg-gradient-to-br from-purple-50 to-pink-50 border-3 border-dashed border-purple-300 flex items-center justify-center overflow-hidden hover:border-purple-500 transition-colors group-hover:shadow-lg">
+                            <div className="w-28 h-28 rounded-full bg-slate-800 border-3 border-dashed border-pink-500/50 flex items-center justify-center overflow-hidden hover:border-pink-500 transition-colors group-hover:shadow-lg group-hover:shadow-pink-500/20">
                               {pet.photo_preview || pet.photo_url ? (
                                 <img 
                                   src={pet.photo_preview || getPetPhotoUrl(pet)} 
@@ -844,8 +848,8 @@ const MembershipOnboarding = () => {
                                 />
                               ) : (
                                 <div className="text-center">
-                                  <Camera className="w-8 h-8 text-purple-400 mx-auto" />
-                                  <span className="text-xs text-purple-500 mt-1 block">Add Photo</span>
+                                  <Camera className="w-8 h-8 text-pink-400 mx-auto" />
+                                  <span className="text-xs text-pink-400 mt-1 block">Add Photo</span>
                                 </div>
                               )}
                             </div>
