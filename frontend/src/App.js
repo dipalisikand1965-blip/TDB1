@@ -275,6 +275,10 @@ function AppRouter() {
         {/* Pet Soul Onboarding - Full 4-step flow with celebrations */}
         <Route path="/pet-soul-onboard" element={<MembershipOnboarding />} />
         <Route path="/join" element={<MembershipOnboarding />} />
+        
+        {/* Payment Success Page - NO navbar for celebration feel */}
+        <Route path="/payment/success" element={<PaymentSuccess />} />
+        <Route path="/welcome" element={<PaymentSuccess />} />
       
         {/* Main app routes - WITH navbar */}
         <Route path="/*" element={<MainLayout />} />
