@@ -387,7 +387,7 @@ class PaymentVerifyRequestAlt(BaseModel):
 
 @router.post("/payment/verify")
 async def verify_payment_alt(request: PaymentVerifyRequestAlt):
-    """Verify Razorpay payment (alternative endpoint for frontend)"""
+    """Verify Razorpay payment and activate membership - captures ALL payment details"""
     db = get_db()
     logger = get_logger()
     
@@ -407,6 +407,7 @@ async def verify_payment_alt(request: PaymentVerifyRequestAlt):
     # Verify signature (skip in test mode or with test keys)
     is_test_mode = membership.get("payment", {}).get("test_mode", False) or request.razorpay_order_id.startswith("order_test_")
     
+    razorpay_payment_details = None
     if not is_test_mode and razorpay_client:
         try:
             razorpay_client.utility.verify_payment_signature({
@@ -414,6 +415,11 @@ async def verify_payment_alt(request: PaymentVerifyRequestAlt):
                 "razorpay_payment_id": request.razorpay_payment_id,
                 "razorpay_signature": request.razorpay_signature
             })
+            # Fetch full payment details from Razorpay
+            try:
+                razorpay_payment_details = razorpay_client.payment.fetch(request.razorpay_payment_id)
+            except Exception as fetch_err:
+                logger.warning(f"Could not fetch Razorpay payment details: {fetch_err}")
         except Exception as e:
             logger.error(f"Payment verification failed: {e}")
             # In test mode keys, allow through
@@ -428,28 +434,96 @@ async def verify_payment_alt(request: PaymentVerifyRequestAlt):
     started_at = datetime.now(timezone.utc)
     expires_at = started_at + timedelta(days=(duration_months * 30) + bonus_days)
     
-    # Update membership order status
+    # Calculate GST breakdown (CGST 9% + SGST 9%)
+    amount_info = membership.get("amount", {})
+    total_amount = amount_info.get("total", 0)
+    gst_amount = amount_info.get("gst", 0)
+    cgst = gst_amount // 2
+    sgst = gst_amount - cgst
+    
+    # Comprehensive payment record - like Emergent does
+    payment_record = {
+        "razorpay_order_id": request.razorpay_order_id,
+        "razorpay_payment_id": request.razorpay_payment_id,
+        "razorpay_signature": request.razorpay_signature,
+        "verified_at": datetime.now(timezone.utc).isoformat(),
+        "payment_method": razorpay_payment_details.get("method") if razorpay_payment_details else "test_mode",
+        "bank": razorpay_payment_details.get("bank") if razorpay_payment_details else None,
+        "wallet": razorpay_payment_details.get("wallet") if razorpay_payment_details else None,
+        "vpa": razorpay_payment_details.get("vpa") if razorpay_payment_details else None,  # UPI ID
+        "card_last4": razorpay_payment_details.get("card", {}).get("last4") if razorpay_payment_details else None,
+        "card_network": razorpay_payment_details.get("card", {}).get("network") if razorpay_payment_details else None,
+        "amount_captured": razorpay_payment_details.get("amount") / 100 if razorpay_payment_details else total_amount,
+        "currency": "INR",
+        "status": "captured",
+        "test_mode": is_test_mode
+    }
+    
+    # Update membership order status with ALL payment details
     await db.membership_orders.update_one(
         {"order_id": request.order_id},
         {"$set": {
             "status": "active",
             "started_at": started_at.isoformat(),
             "expires_at": expires_at.isoformat(),
-            "payment.razorpay_payment_id": request.razorpay_payment_id,
-            "payment.razorpay_signature": request.razorpay_signature,
-            "payment.verified_at": datetime.now(timezone.utc).isoformat(),
+            "payment": payment_record,
+            "amount.cgst": cgst,
+            "amount.sgst": sgst,
             "updated_at": datetime.now(timezone.utc).isoformat()
         }}
     )
     
-    logger.info(f"Payment verified for order: {request.order_id}")
+    # Also update the USER account with membership details
+    user_id = membership.get("user_id")
+    user_email = membership.get("user_email")
+    
+    membership_data = {
+        "status": "active",
+        "plan": plan_id,
+        "plan_name": plan["name"] if plan else "Pet Pass",
+        "order_id": request.order_id,
+        "started_at": started_at.isoformat(),
+        "expires_at": expires_at.isoformat(),
+        "amount_paid": total_amount,
+        "payment_id": request.razorpay_payment_id,
+        "benefits": plan["benefits"] if plan else {}
+    }
+    
+    # Update user by either user_id or email
+    user_query = {"id": user_id} if user_id else {"email": user_email}
+    await db.users.update_one(
+        user_query,
+        {"$set": {
+            "membership": membership_data,
+            "membership_tier": "premium" if "yearly" in plan_id or "founder" in plan_id else "standard",
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    # Update pet records with membership info
+    pet_ids = membership.get("pet_ids", [])
+    if pet_ids:
+        await db.pets.update_many(
+            {"id": {"$in": pet_ids}},
+            {"$set": {
+                "membership_status": "active",
+                "membership_order_id": request.order_id,
+                "updated_at": datetime.now(timezone.utc).isoformat()
+            }}
+        )
+    
+    logger.info(f"Payment verified for order: {request.order_id}, user: {user_email}, amount: ₹{total_amount}")
     
     return {
         "success": True,
-        "message": "Payment verified successfully",
+        "message": "Payment verified and membership activated!",
         "order_id": request.order_id,
-        "expires_at": expires_at.isoformat()
+        "user_id": user_id,
+        "expires_at": expires_at.isoformat(),
+        "amount_paid": total_amount,
+        "payment_method": payment_record.get("payment_method")
     }
+
 
 
 @router.post("/verify-payment")
