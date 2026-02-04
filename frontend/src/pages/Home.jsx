@@ -1106,20 +1106,25 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ========== REAL STORIES - Trust Builder ========== */}
-      <section className="relative py-24 sm:py-32 bg-gradient-to-b from-slate-950 to-purple-950/30">
-        <div className="max-w-6xl mx-auto px-4">
+      {/* ========== VIDEO TESTIMONIALS - Real Families, Real Stories ========== */}
+      <section className="relative py-24 sm:py-32 bg-gradient-to-b from-slate-950 to-purple-950/30 overflow-hidden">
+        {/* Background elements */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-pink-600/10 rounded-full blur-3xl" />
+        
+        <div className="relative max-w-6xl mx-auto px-4">
           <div className="text-center mb-16">
-            <motion.p
-              className="text-purple-400 text-sm uppercase tracking-widest mb-4"
+            <motion.div
+              className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/20 text-purple-300 rounded-full text-sm font-medium mb-6"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
             >
-              Real Stories, Real Souls
-            </motion.p>
+              <Video className="w-4 h-4" />
+              Real Stories, Real Tears
+            </motion.div>
             <motion.h2
-              className="text-3xl sm:text-4xl font-bold text-white mb-6"
+              className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -1129,10 +1134,69 @@ const Home = () => {
                 Their Most Precious Members
               </span>
             </motion.h2>
+            <motion.p
+              className="text-lg text-white/60 max-w-2xl mx-auto"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+            >
+              Watch their stories. Feel their joy. Understand why they chose us.
+            </motion.p>
           </div>
 
-          {/* Testimonial Carousel */}
-          <div className="relative max-w-4xl mx-auto">
+          {/* Video Grid */}
+          <div className="grid md:grid-cols-3 gap-6 mb-12">
+            {VIDEO_TESTIMONIALS.map((testimonial, idx) => (
+              <motion.div
+                key={testimonial.id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
+                className="group relative"
+              >
+                {/* Video thumbnail card */}
+                <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-slate-900/50 backdrop-blur-sm hover:border-purple-500/50 transition-all duration-300">
+                  {/* Thumbnail */}
+                  <div className="relative aspect-video overflow-hidden">
+                    <img 
+                      src={testimonial.thumbnail} 
+                      alt={testimonial.name}
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent" />
+                    
+                    {/* Play button overlay */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <motion.div
+                        className="relative"
+                        whileHover={{ scale: 1.1 }}
+                      >
+                        <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full blur-md opacity-50" />
+                        <div className="relative w-16 h-16 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center shadow-xl">
+                          <PlayCircle className="w-8 h-8 text-white" />
+                        </div>
+                      </motion.div>
+                    </div>
+                    
+                    {/* Duration badge */}
+                    <div className="absolute bottom-3 right-3 px-2 py-1 bg-black/70 rounded text-xs text-white font-medium">
+                      {testimonial.duration}
+                    </div>
+                  </div>
+                  
+                  {/* Content */}
+                  <div className="p-5">
+                    <h3 className="text-white font-semibold mb-2">{testimonial.name}</h3>
+                    <p className="text-white/60 text-sm italic line-clamp-2">&quot;{testimonial.quote}&quot;</p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Text Testimonial Carousel (below video) */}
+          <div className="relative max-w-3xl mx-auto mt-16 pt-16 border-t border-white/10">
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentTestimonial}
@@ -1142,20 +1206,22 @@ const Home = () => {
                 transition={{ duration: 0.5 }}
                 className="text-center"
               >
-                <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-6 rounded-full overflow-hidden border-4 border-purple-500/50">
-                  <img 
-                    src={REAL_STORIES[currentTestimonial].petImage} 
-                    alt={REAL_STORIES[currentTestimonial].petName}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <Quote className="w-8 h-8 text-purple-500/50 mx-auto mb-4" />
+                <Quote className="w-10 h-10 text-purple-500/30 mx-auto mb-6" />
                 <p className="text-xl sm:text-2xl text-white/90 mb-6 leading-relaxed italic">
                   &quot;{REAL_STORIES[currentTestimonial].quote}&quot;
                 </p>
-                <div>
-                  <p className="text-white font-semibold">{REAL_STORIES[currentTestimonial].humanName}</p>
-                  <p className="text-white/60 text-sm">Pet parent of {REAL_STORIES[currentTestimonial].petName}</p>
+                <div className="flex items-center justify-center gap-4">
+                  <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-purple-500/50">
+                    <img 
+                      src={REAL_STORIES[currentTestimonial].petImage} 
+                      alt={REAL_STORIES[currentTestimonial].petName}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-white font-semibold">{REAL_STORIES[currentTestimonial].humanName}</p>
+                    <p className="text-white/60 text-sm">Pet parent of {REAL_STORIES[currentTestimonial].petName}</p>
+                  </div>
                 </div>
               </motion.div>
             </AnimatePresence>
@@ -1167,12 +1233,157 @@ const Home = () => {
                   key={idx}
                   onClick={() => setCurrentTestimonial(idx)}
                   className={`w-2 h-2 rounded-full transition-all ${
-                    idx === currentTestimonial ? 'bg-purple-500 w-6' : 'bg-white/30'
+                    idx === currentTestimonial ? 'bg-purple-500 w-6' : 'bg-white/30 hover:bg-white/50'
                   }`}
+                  data-testid={`testimonial-dot-${idx}`}
                 />
               ))}
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* ========== MEMBERSHIP TIERS - Clear Transformation Promise ========== */}
+      <section className="relative py-24 sm:py-32 bg-slate-950 overflow-hidden">
+        {/* Background decoration */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-purple-600/5 rounded-full blur-3xl" />
+        
+        <div className="relative max-w-6xl mx-auto px-4">
+          <div className="text-center mb-16">
+            <motion.div
+              className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-300 rounded-full text-sm font-medium mb-6"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+            >
+              <Crown className="w-4 h-4" />
+              Choose Your Journey
+            </motion.div>
+            <motion.h2
+              className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              Transform Your Pet&apos;s Life
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+                Starting Today
+              </span>
+            </motion.h2>
+            <motion.p
+              className="text-lg text-white/60 max-w-2xl mx-auto"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+            >
+              Every tier unlocks deeper understanding of your pet&apos;s soul. The longer you stay, the more magical it becomes.
+            </motion.p>
+          </div>
+
+          {/* Membership Cards */}
+          <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
+            {MEMBERSHIP_TIERS.map((tier, idx) => (
+              <motion.div
+                key={tier.name}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
+                className={`relative ${tier.highlighted ? 'md:-mt-4 md:mb-4' : ''}`}
+              >
+                {/* Highlighted badge */}
+                {tier.badge && (
+                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
+                    <div className="px-4 py-1.5 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full text-sm font-semibold text-white shadow-lg shadow-purple-500/30">
+                      {tier.badge}
+                    </div>
+                  </div>
+                )}
+                
+                <Card className={`relative overflow-hidden h-full ${
+                  tier.highlighted 
+                    ? 'bg-gradient-to-b from-purple-900/40 to-slate-900/90 border-purple-500/50 shadow-xl shadow-purple-500/20' 
+                    : 'bg-white/5 border-white/10'
+                } backdrop-blur-sm`}>
+                  {/* Glow effect for highlighted */}
+                  {tier.highlighted && (
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-1 bg-gradient-to-r from-purple-500 to-pink-500 blur-sm" />
+                  )}
+                  
+                  <div className="p-6 sm:p-8">
+                    {/* Tier name */}
+                    <h3 className="text-xl font-bold text-white mb-2">{tier.name}</h3>
+                    <p className="text-white/60 text-sm mb-6">{tier.description}</p>
+                    
+                    {/* Price */}
+                    <div className="mb-6">
+                      <span className="text-4xl font-black text-white">{tier.price}</span>
+                      {tier.period && <span className="text-white/60">{tier.period}</span>}
+                    </div>
+                    
+                    {/* CTA Button */}
+                    <Link to="/membership">
+                      <Button 
+                        className={`w-full mb-6 py-6 rounded-xl font-semibold ${
+                          tier.highlighted 
+                            ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white shadow-lg shadow-purple-500/30' 
+                            : 'bg-white/10 hover:bg-white/20 text-white border border-white/20'
+                        }`}
+                        data-testid={`membership-cta-${tier.name.toLowerCase().replace(' ', '-')}`}
+                      >
+                        {tier.cta}
+                        <ArrowRight className="w-4 h-4 ml-2" />
+                      </Button>
+                    </Link>
+                    
+                    {/* Features */}
+                    <div className="space-y-3">
+                      {tier.features.map((feature, fIdx) => (
+                        <div key={fIdx} className="flex items-start gap-3">
+                          <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${
+                            tier.highlighted ? 'bg-purple-500/30' : 'bg-white/10'
+                          }`}>
+                            <Check className="w-3 h-3 text-purple-400" />
+                          </div>
+                          <span className="text-sm text-white/80">{feature}</span>
+                        </div>
+                      ))}
+                      
+                      {/* Not included (for free tier) */}
+                      {tier.notIncluded?.map((feature, fIdx) => (
+                        <div key={`not-${fIdx}`} className="flex items-start gap-3 opacity-50">
+                          <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 bg-white/5">
+                            <X className="w-3 h-3 text-white/40" />
+                          </div>
+                          <span className="text-sm text-white/40 line-through">{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Trust badges */}
+          <motion.div 
+            className="flex flex-wrap justify-center gap-8 mt-16 pt-16 border-t border-white/10"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+          >
+            {[
+              { icon: Shield, text: '30-Day Money Back' },
+              { icon: Lock, text: 'Secure & Private' },
+              { icon: Zap, text: 'Cancel Anytime' },
+              { icon: Gift, text: 'Free Trial Available' },
+            ].map((badge, idx) => (
+              <div key={idx} className="flex items-center gap-2 text-white/50">
+                <badge.icon className="w-4 h-4" />
+                <span className="text-sm">{badge.text}</span>
+              </div>
+            ))}
+          </motion.div>
         </div>
       </section>
 
