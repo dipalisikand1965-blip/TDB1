@@ -580,9 +580,9 @@ const LearnPage = () => {
       </div>
 
       {/* === ELEVATED CONCIERGE® LEARN EXPERIENCES === */}
-      <div className="py-16 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      <div className="py-10 sm:py-16 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="text-center mb-8 sm:mb-12">
+          <div className="text-center mb-6 sm:mb-12">
             <div className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full mb-3 sm:mb-4">
               <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
               <span className="text-xs sm:text-sm font-medium">Elevated Experiences</span>
