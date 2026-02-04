@@ -328,6 +328,76 @@ async def create_payment(request: PaymentCreateRequest):
         }
 
 
+class PaymentVerifyRequestAlt(BaseModel):
+    razorpay_order_id: str
+    razorpay_payment_id: str
+    razorpay_signature: str
+    order_id: str
+    user_id: Optional[str] = None
+
+
+@router.post("/payment/verify")
+async def verify_payment_alt(request: PaymentVerifyRequestAlt):
+    """Verify Razorpay payment (alternative endpoint for frontend)"""
+    db = get_db()
+    logger = get_logger()
+    
+    # Get membership record by order_id
+    membership = await db.memberships.find_one({"id": request.order_id})
+    if not membership:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    if membership.get("status") == "active":
+        return {"success": True, "message": "Membership already active", "order_id": request.order_id}
+    
+    # Verify signature (skip in test mode or with test keys)
+    is_test_mode = membership.get("payment", {}).get("test_mode", False) or request.razorpay_order_id.startswith("order_test_")
+    
+    if not is_test_mode and razorpay_client:
+        try:
+            razorpay_client.utility.verify_payment_signature({
+                "razorpay_order_id": request.razorpay_order_id,
+                "razorpay_payment_id": request.razorpay_payment_id,
+                "razorpay_signature": request.razorpay_signature
+            })
+        except Exception as e:
+            logger.error(f"Payment verification failed: {e}")
+            # In test mode keys, allow through
+            if "rzp_test" not in RAZORPAY_KEY_ID:
+                raise HTTPException(status_code=400, detail="Payment verification failed")
+    
+    # Calculate expiry based on plan
+    plan_id = membership.get("plan_id", "yearly")
+    plan = MEMBERSHIP_PLANS.get(plan_id)
+    duration_months = plan["duration_months"] if plan else 12
+    bonus_days = 7  # 7 bonus days
+    started_at = datetime.now(timezone.utc)
+    expires_at = started_at + timedelta(days=(duration_months * 30) + bonus_days)
+    
+    # Update membership status
+    await db.memberships.update_one(
+        {"id": request.order_id},
+        {"$set": {
+            "status": "active",
+            "started_at": started_at.isoformat(),
+            "expires_at": expires_at.isoformat(),
+            "payment.razorpay_payment_id": request.razorpay_payment_id,
+            "payment.razorpay_signature": request.razorpay_signature,
+            "payment.verified_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat()
+        }}
+    )
+    
+    logger.info(f"Payment verified for order: {request.order_id}")
+    
+    return {
+        "success": True,
+        "message": "Payment verified successfully",
+        "order_id": request.order_id,
+        "expires_at": expires_at.isoformat()
+    }
+
+
 @router.post("/verify-payment")
 async def verify_payment(request: PaymentVerifyRequest):
     """Verify Razorpay payment and activate membership"""
