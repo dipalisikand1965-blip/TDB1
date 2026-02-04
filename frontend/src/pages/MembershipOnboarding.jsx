@@ -531,7 +531,7 @@ const MembershipOnboarding = () => {
                     </div>
                     
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                      <label className="block text-sm font-medium text-slate-300 mb-1.5">
                         Pincode *
                       </label>
                       <Input
@@ -539,17 +539,17 @@ const MembershipOnboarding = () => {
                         onChange={(e) => setParentData({...parentData, pincode: e.target.value.replace(/\D/g, '').slice(0, 6)})}
                         placeholder="400001"
                         maxLength={6}
-                        className={parentErrors.pincode ? 'border-red-500' : ''}
+                        className={`bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-pink-500 ${parentErrors.pincode ? 'border-red-500' : ''}`}
                         data-testid="parent-pincode-input"
                       />
-                      {parentErrors.pincode && <p className="text-red-500 text-xs mt-1">{parentErrors.pincode}</p>}
+                      {parentErrors.pincode && <p className="text-red-400 text-xs mt-1">{parentErrors.pincode}</p>}
                     </div>
                   </div>
 
                   {/* Password */}
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                      <label className="block text-sm font-medium text-slate-300 mb-1.5">
                         Create Password *
                       </label>
                       <Input
@@ -557,14 +557,14 @@ const MembershipOnboarding = () => {
                         value={parentData.password}
                         onChange={(e) => setParentData({...parentData, password: e.target.value})}
                         placeholder="••••••••"
-                        className={parentErrors.password ? 'border-red-500' : ''}
+                        className={`bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-pink-500 ${parentErrors.password ? 'border-red-500' : ''}`}
                         data-testid="parent-password-input"
                       />
-                      {parentErrors.password && <p className="text-red-500 text-xs mt-1">{parentErrors.password}</p>}
+                      {parentErrors.password && <p className="text-red-400 text-xs mt-1">{parentErrors.password}</p>}
                     </div>
                     
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                      <label className="block text-sm font-medium text-slate-300 mb-1.5">
                         Confirm Password *
                       </label>
                       <Input
@@ -572,53 +572,53 @@ const MembershipOnboarding = () => {
                         value={parentData.confirmPassword}
                         onChange={(e) => setParentData({...parentData, confirmPassword: e.target.value})}
                         placeholder="••••••••"
-                        className={parentErrors.confirmPassword ? 'border-red-500' : ''}
+                        className={`bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-pink-500 ${parentErrors.confirmPassword ? 'border-red-500' : ''}`}
                         data-testid="parent-confirm-password-input"
                       />
-                      {parentErrors.confirmPassword && <p className="text-red-500 text-xs mt-1">{parentErrors.confirmPassword}</p>}
+                      {parentErrors.confirmPassword && <p className="text-red-400 text-xs mt-1">{parentErrors.confirmPassword}</p>}
                     </div>
                   </div>
 
                   {/* Phone Numbers */}
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                      <label className="block text-sm font-medium text-slate-300 mb-1.5">
                         Phone Number *
                       </label>
                       <div className="relative">
-                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
                         <Input
                           type="tel"
                           value={parentData.phone}
                           onChange={(e) => setParentData({...parentData, phone: e.target.value})}
                           placeholder="+91 98765 43210"
-                          className={`pl-10 ${parentErrors.phone ? 'border-red-500' : ''}`}
+                          className={`pl-10 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-pink-500 ${parentErrors.phone ? 'border-red-500' : ''}`}
                           data-testid="parent-phone-input"
                         />
                       </div>
-                      {parentErrors.phone && <p className="text-red-500 text-xs mt-1">{parentErrors.phone}</p>}
+                      {parentErrors.phone && <p className="text-red-400 text-xs mt-1">{parentErrors.phone}</p>}
                     </div>
                     
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                      <label className="block text-sm font-medium text-slate-300 mb-1.5">
                         WhatsApp Number *
                       </label>
                       <div className="relative">
-                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                        <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
                         <Input
                           type="tel"
                           value={parentData.whatsapp}
                           onChange={(e) => setParentData({...parentData, whatsapp: e.target.value})}
                           placeholder="+91 98765 43210"
-                          className={`pl-10 ${parentErrors.whatsapp ? 'border-red-500' : ''}`}
+                          className={`pl-10 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-pink-500 ${parentErrors.whatsapp ? 'border-red-500' : ''}`}
                           data-testid="parent-whatsapp-input"
                         />
                       </div>
-                      {parentErrors.whatsapp && <p className="text-red-500 text-xs mt-1">{parentErrors.whatsapp}</p>}
+                      {parentErrors.whatsapp && <p className="text-red-400 text-xs mt-1">{parentErrors.whatsapp}</p>}
                       <button 
                         type="button"
                         onClick={() => setParentData({...parentData, whatsapp: parentData.phone})}
-                        className="text-xs text-purple-600 hover:text-purple-700 mt-1"
+                        className="text-xs text-pink-400 hover:text-pink-300 mt-1"
                       >
                         Same as phone number
                       </button>
@@ -627,7 +627,7 @@ const MembershipOnboarding = () => {
 
                   {/* Preferred Contact Method */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-slate-300 mb-2">
                       Preferred Contact Method *
                     </label>
                     <div className="flex gap-3">
