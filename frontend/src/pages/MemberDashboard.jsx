@@ -142,8 +142,8 @@ const PillarPopup = ({ pillar, onClose, onExplore, data }) => {
   const pillarData = getPillarStats();
   
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
-      <Card className="w-full max-w-md bg-white shadow-2xl rounded-2xl overflow-hidden" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={onClose}>
+      <Card className="w-full max-w-md bg-slate-900/90 backdrop-blur-xl shadow-2xl rounded-2xl overflow-hidden border border-white/10" onClick={(e) => e.stopPropagation()}>
         <div className={`p-6 bg-gradient-to-br ${pillar.color} text-white`}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
