@@ -657,7 +657,7 @@ const Home = () => {
       {/* ========== THE EMOTIONAL HOOK - First 3 Seconds ========== */}
       <section 
         ref={heroRef}
-        className="relative h-[55vh] sm:h-[60vh] md:h-[65vh] flex items-center justify-center overflow-hidden"
+        className="relative h-[75vh] sm:h-[70vh] md:h-[75vh] flex items-center justify-center overflow-hidden"
       >
         {/* AUTO-PLAYING VIDEO BACKGROUND - The emotional hook */}
         <div className="absolute inset-0 z-0">
@@ -667,7 +667,7 @@ const Home = () => {
             muted
             playsInline
             className="absolute inset-0 w-full h-full object-cover"
-            style={{ objectPosition: 'center top' }}
+            style={{ objectPosition: 'center 20%' }}
             poster={heroImages[0]}
           >
             <source src="/videos/brand_story/01_eyes_bright.mp4" type="video/mp4" />
