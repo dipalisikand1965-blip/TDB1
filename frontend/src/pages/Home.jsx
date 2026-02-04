@@ -412,6 +412,102 @@ const PARTICLES = Array.from({ length: 20 }, (_, i) => ({
   delay: (i % 5) * 0.4,
 }));
 
+// Video Testimonials Data - Real families with video stories
+const VIDEO_TESTIMONIALS = [
+  {
+    id: 1,
+    name: "The Sharma Family",
+    pet: "Bruno",
+    thumbnail: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=300&fit=crop",
+    quote: "They remembered Bruno's fear of thunderstorms before I even mentioned it.",
+    duration: "2:34",
+    hasVideo: false, // Will be true when real videos are added
+  },
+  {
+    id: 2,
+    name: "Rahul & Max",
+    pet: "Max",
+    thumbnail: "https://images.unsplash.com/photo-1552053831-71594a27632d?w=400&h=300&fit=crop",
+    quote: "When Max got sick at 2am, Mira already had his full health history ready.",
+    duration: "1:58",
+    hasVideo: false,
+  },
+  {
+    id: 3,
+    name: "The Kapoor Family",
+    pet: "Luna",
+    thumbnail: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=400&h=300&fit=crop",
+    quote: "They sent Luna a birthday cake without me even asking.",
+    duration: "3:12",
+    hasVideo: false,
+  },
+];
+
+// Membership Tiers - Clear transformation promise
+const MEMBERSHIP_TIERS = [
+  {
+    name: "Explorer",
+    price: "Free",
+    description: "Start your soul journey",
+    features: [
+      "Basic Pet Profile",
+      "Access to Mira AI (limited)",
+      "Community Access",
+      "Monthly Newsletter",
+    ],
+    notIncluded: [
+      "Full Soul Profile",
+      "Priority Support",
+      "Personalized Reminders",
+      "Emergency Assistance",
+    ],
+    cta: "Start Free",
+    highlighted: false,
+    gradient: "from-slate-600 to-slate-700",
+  },
+  {
+    name: "Soul Guardian",
+    price: "₹999",
+    period: "/month",
+    description: "For devoted pet parents",
+    features: [
+      "Complete Soul Profile",
+      "Unlimited Mira AI Access",
+      "24/7 Priority Support",
+      "Personalized Health Reminders",
+      "Emergency Vet Coordination",
+      "Birthday & Milestone Celebrations",
+      "Exclusive Member Discounts",
+      "Family Sharing (up to 3 pets)",
+    ],
+    notIncluded: [],
+    cta: "Become a Guardian",
+    highlighted: true,
+    gradient: "from-purple-600 to-pink-600",
+    badge: "Most Popular",
+  },
+  {
+    name: "Soul Family",
+    price: "₹1,999",
+    period: "/month",
+    description: "For multi-pet households",
+    features: [
+      "Everything in Soul Guardian",
+      "Unlimited Pets",
+      "Dedicated Family Concierge",
+      "Annual Health Assessment",
+      "Custom Meal Planning",
+      "Travel Coordination",
+      "Premium Partner Access",
+      "Legacy Memory Book",
+    ],
+    notIncluded: [],
+    cta: "Join the Family",
+    highlighted: false,
+    gradient: "from-indigo-600 to-purple-600",
+  },
+];
+
 // Fallback images in case API fails
 const FALLBACK_HERO_IMAGES = [
   'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/0iy6sezo_shutterstock_504980047%20%282%29.jpg',
