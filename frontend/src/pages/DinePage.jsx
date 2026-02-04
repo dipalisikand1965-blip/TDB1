@@ -65,6 +65,22 @@ const DinePage = () => {
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [restaurantsToShow, setRestaurantsToShow] = useState(8); // Load More state
+  const [heroIndex, setHeroIndex] = useState(0);
+
+  // Rotating hero images for visual appeal
+  const HERO_IMAGES = [
+    'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1200&q=80',
+    'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=1200&q=80',
+    'https://images.unsplash.com/photo-1552053831-71594a27632d?w=1200&q=80'
+  ];
+
+  // Rotate hero images
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setHeroIndex((prev) => (prev + 1) % HERO_IMAGES.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [HERO_IMAGES.length]);
 
   // Update currentUser when authUser changes
   useEffect(() => {
