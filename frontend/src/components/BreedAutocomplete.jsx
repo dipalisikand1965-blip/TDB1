@@ -107,10 +107,10 @@ const BreedAutocomplete = ({ value, onChange, placeholder, className, id, name, 
       {showSuggestions && suggestions.length > 0 && (
         <div
           ref={suggestionsRef}
-          className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg overflow-hidden"
+          className="absolute z-50 w-full mt-1 bg-slate-800 border border-slate-700 rounded-lg shadow-lg overflow-hidden"
         >
           <div className="py-1">
-            <div className="px-3 py-1.5 text-xs text-gray-500 bg-gray-50 border-b">
+            <div className="px-3 py-1.5 text-xs text-slate-400 bg-slate-900 border-b border-slate-700">
               Suggested breeds
             </div>
             {suggestions.map((breed, index) => (
@@ -118,8 +118,8 @@ const BreedAutocomplete = ({ value, onChange, placeholder, className, id, name, 
                 key={breed}
                 type="button"
                 onClick={() => handleSuggestionClick(breed)}
-                className={`w-full px-3 py-2 text-left text-sm hover:bg-purple-50 transition-colors flex items-center gap-2 ${
-                  index === highlightedIndex ? 'bg-purple-50 text-purple-700' : 'text-gray-700'
+                className={`w-full px-3 py-2 text-left text-sm hover:bg-pink-500/20 transition-colors flex items-center gap-2 ${
+                  index === highlightedIndex ? 'bg-pink-500/20 text-pink-300' : 'text-slate-200'
                 }`}
               >
                 <span className="text-base">🐕</span>
