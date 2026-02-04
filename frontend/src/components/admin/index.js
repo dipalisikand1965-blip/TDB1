@@ -9,3 +9,4 @@ export { default as ProductTagsManager } from './ProductTagsManager';
 export { default as MembershipManager } from './MembershipManager';
 export { default as AboutManager } from './AboutManager';
 export { default as MemberDirectory } from './MemberDirectory';
+export { default as FinanceManager } from './FinanceManager';
