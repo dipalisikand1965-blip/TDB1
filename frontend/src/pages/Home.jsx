@@ -226,19 +226,23 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
   // Play video and audio when clip changes
   useEffect(() => {
     if (!isEnding) {
-      // Play video
+      const clip = BRAND_STORY_CLIPS[currentClip];
+      
+      // Play video with crossfade
       if (videoRef.current) {
+        videoRef.current.src = clip.src;
         videoRef.current.load();
         
-        // Sync video and audio - start both together
         const playMedia = async () => {
           try {
             // Start video
             await videoRef.current?.play();
             
-            // Start audio immediately with video (if not muted)
+            // Load and play new audio (if not muted)
             if (audioRef.current && !videoMuted) {
-              audioRef.current.currentTime = 0; // Reset to start
+              audioRef.current.src = clip.audioSrc;
+              audioRef.current.load();
+              audioRef.current.currentTime = 0;
               await audioRef.current.play();
             }
           } catch (e) {
