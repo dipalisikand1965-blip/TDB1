@@ -14,28 +14,28 @@ import { getApiUrl } from '../utils/api';
 import SEOHead from '../components/SEOHead';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Brand Story Video Clips with narrative text
+// Brand Story Video Clips - BRIGHT versions with narrative text
 const BRAND_STORY_CLIPS = [
   {
-    src: '/videos/brand_story/01_soulful_eyes.mp4',
+    src: '/videos/brand_story/01_eyes_bright.mp4',
     title: 'Look into their eyes...',
     subtitle: 'You already know.',
     duration: 4000
   },
   {
-    src: '/videos/brand_story/02_the_bond.mp4',
+    src: '/videos/brand_story/02_bond_bright.mp4',
     title: "They're not just pets.",
     subtitle: "They're family.",
     duration: 4000
   },
   {
-    src: '/videos/brand_story/04_pure_joy.mp4',
+    src: '/videos/brand_story/03_joy_bright.mp4',
     title: 'Every tail wag, every happy moment...',
     subtitle: 'We help you cherish them all.',
     duration: 4000
   },
   {
-    src: '/videos/brand_story/05_family_moment.mp4',
+    src: '/videos/brand_story/04_family_bright.mp4',
     title: 'The Doggy Company',
     subtitle: 'Every Pet Has a Soul™',
     duration: 4000
