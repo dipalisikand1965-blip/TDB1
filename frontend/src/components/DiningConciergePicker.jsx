@@ -483,7 +483,7 @@ Submitted via Dining Concierge® on the Dine pillar page.`;
             </div>
             <Button
               onClick={handleSubmitRequest}
-              disabled={isSubmitting}
+              disabled={isSubmitting || !city || (city === 'other' && !customCity.trim())}
               className="bg-gradient-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 px-8"
               data-testid="submit-dining-request"
             >
