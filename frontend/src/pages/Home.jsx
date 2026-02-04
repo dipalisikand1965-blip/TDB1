@@ -892,44 +892,45 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ========== 14 LIFE PILLARS - Complete Pet Care Ecosystem ========== */}
+      {/* ========== 14 LIFE PILLARS - The Pet Operating System ========== */}
       <section className="relative py-20 sm:py-28 bg-gradient-to-b from-slate-950 to-purple-950/20 overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-slate-950 to-transparent" />
         
         <div className="relative max-w-6xl mx-auto px-4">
-          <div className="text-center mb-12">
+          <div className="text-center mb-16">
             <motion.div
               className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/20 text-purple-300 rounded-full text-sm font-medium mb-6"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
             >
-              <Sparkles className="w-4 h-4" />
-              14 Life Pillars Unlocked
+              <Heart className="w-4 h-4" />
+              The Pet Operating System
             </motion.div>
             <motion.h2
-              className="text-3xl sm:text-4xl font-bold text-white mb-4"
+              className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              Your Pet&apos;s Entire Life
+              We Don&apos;t Manage Services.
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-                Covered
+                We Celebrate Life.
               </span>
             </motion.h2>
             <motion.p
-              className="text-white/60 text-lg max-w-xl mx-auto"
+              className="text-white/70 text-lg max-w-2xl mx-auto leading-relaxed"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
             >
-              From celebrations to emergencies — everything your pet needs, in one place.
+              Through every moment — the joyful, the challenging, even the final — 
+              we see <span className="text-purple-300">celebration</span>. Because every day with them is a gift.
             </motion.p>
           </div>
 
-          {/* Pillars Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4">
+          {/* Emotional Pillars Grid - Two rows of 7 */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-3 sm:gap-4">
             {LIFE_PILLARS.map((pillar, idx) => (
               <motion.div
                 key={pillar.name}
@@ -939,25 +940,47 @@ const Home = () => {
                 transition={{ delay: idx * 0.05 }}
                 className="group"
               >
-                <div className="relative p-4 bg-white/5 rounded-2xl border border-white/10 hover:border-purple-500/50 hover:bg-white/10 transition-all duration-300 text-center h-full">
-                  <span className="text-3xl mb-2 block">{pillar.icon}</span>
-                  <h4 className="text-white font-semibold text-sm mb-1">{pillar.name}</h4>
-                  <p className="text-white/50 text-xs leading-snug hidden sm:block">{pillar.desc}</p>
+                <div className="relative p-4 sm:p-5 bg-white/5 rounded-2xl border border-white/10 hover:border-purple-500/50 hover:bg-purple-500/10 transition-all duration-500 text-center h-full group-hover:scale-105 group-hover:shadow-lg group-hover:shadow-purple-500/20">
+                  {/* Icon */}
+                  <span className="text-3xl sm:text-4xl mb-3 block transition-transform duration-300 group-hover:scale-110">{pillar.icon}</span>
+                  
+                  {/* Name */}
+                  <h4 className="text-white font-bold text-sm mb-1">{pillar.name}</h4>
+                  
+                  {/* Emotion (shows on hover) */}
+                  <p className="text-purple-300/80 text-xs leading-snug opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden sm:block">
+                    {pillar.emotion}
+                  </p>
+                  
+                  {/* Description (mobile) */}
+                  <p className="text-white/50 text-xs leading-snug sm:hidden">
+                    {pillar.desc}
+                  </p>
                 </div>
               </motion.div>
             ))}
           </div>
 
+          {/* Emotional tagline */}
+          <motion.p
+            className="text-center text-white/50 text-sm mt-10 italic"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+          >
+            &quot;Even in farewell, we celebrate. Because love never ends.&quot;
+          </motion.p>
+
           {/* CTA */}
           <motion.div 
-            className="text-center mt-10"
+            className="text-center mt-8"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
           >
             <a href="https://thedoggycompany.in/membership" target="_blank" rel="noopener noreferrer">
               <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 px-8 py-6 rounded-full text-lg">
-                Unlock All Pillars
+                Begin Your Journey
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </a>
