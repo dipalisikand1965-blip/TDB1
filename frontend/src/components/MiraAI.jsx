@@ -1414,6 +1414,12 @@ const MiraAI = () => {
                           Research Mode
                         </div>
                       )}
+                      {message.memoriesUsed && (
+                        <div className="text-xs text-emerald-600 font-medium mb-1 flex items-center gap-1" title="Mira used relationship memories for this response">
+                          <Brain className="w-3 h-3" />
+                          Remembering you
+                        </div>
+                      )}
                       <div className={`text-sm prose prose-sm max-w-none ${
                         message.role === 'user' ? 'prose-invert' : ''
                       }`}>
