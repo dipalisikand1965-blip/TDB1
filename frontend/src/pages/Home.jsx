@@ -1534,7 +1534,7 @@ const Home = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              A Personal Concierge
+              A Personal Concierge®
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
                 For Your Dog
               </span>
