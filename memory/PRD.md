@@ -3,6 +3,11 @@
 ## Original Problem Statement
 Build "The Doggy Company," a one-stop-shop concierge for dog parents with a focus on emotional connection and the "Pet Soul™" concept. Transform the site from a functional pet services marketplace into an emotionally resonant "Pet Life Operating System."
 
+## Core Philosophy
+- **We Celebrate Life** - Through every moment, joyful or challenging, we see celebration
+- **Mira interprets lives** - Memory and judgement layer, not a request fulfiller
+- **Brain vs Hand** - Mira is the brain, Concierge is the hand. One understands life, the other moves the world
+
 ## Core Requirements
 
 ### 1. Unified Flow Architecture
@@ -12,14 +17,38 @@ All user actions (service requests, onboarding, etc.) must adhere to a unified f
 ### 2. Pet Soul™ as the Core
 The "Pet Soul™" concept is the central, living heart of the experience - understanding and nurturing the soul of every pet.
 
-### 3. Mira AI - The Guardian
-Mira AI positioned as a "guardian angel" - personal, remembering details, not just a chatbot.
+### 3. Mira AI - The Interpreter
+Mira AI positioned as the "memory and judgement layer" - she doesn't fulfil requests, she interprets lives.
 
 ---
 
 ## What's Been Implemented
 
-### February 4, 2026 (Current Session) - 10/10 Landing Page Transformation
+### February 4, 2026 (Current Session) - Emotional Overhaul
+
+#### 14 Life Pillars - "We Celebrate Life"
+- ✅ **Emotional Journey** - Each pillar now has an "emotion" field
+- ✅ **New Headline**: "We Don't Manage Services. We Celebrate Life."
+- ✅ **Farewell Tagline**: "Even in farewell, we celebrate. Because love never ends."
+- ✅ **Hover Emotions**: "The spark of pure happiness", "Shared meals, deeper bonds", etc.
+
+#### Mira Positioning Overhaul
+- ✅ **New Headline**: "She Doesn't Fulfil Requests. She Interprets Lives."
+- ✅ **Philosophy Quote**: "Mira is the brain. Concierge is the hand. One understands life. The other moves the world."
+- ✅ **Memory Layer**: "Mira is the memory and judgement layer that turns infrastructure into relationship."
+- ✅ **New Feature Cards**: "She Sees Beyond Words", "She Builds Relationships", "She Remembers Everything"
+
+#### Membership Updates
+- ✅ **Explorer Tier**: Now "Free for 7 days" with "Start 7-Day Free Trial" CTA
+- ✅ **Removed**: Multiple pets pricing note
+- ✅ **External Links**: All CTAs link to thedoggycompany.in/membership
+
+#### Video Testimonial Thumbnails
+- ✅ **Priya & Bruno**: Golden retriever thumbnail (matches AI video)
+- ✅ **Rahul & Max**: Beagle thumbnail (matches AI video)
+- ✅ **The Kapoor Family**: Labrador thumbnail (matches AI video)
+
+### February 4, 2026 - 10/10 Landing Page Transformation
 
 #### Living Soul Orb Component
 - ✅ **Aurora-like Animations** - Rotating conic gradients creating a living aura
