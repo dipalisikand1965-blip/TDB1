@@ -215,7 +215,6 @@ const NPSFeedbackPage = lazy(() => import("./pages/NPSFeedbackPage"));
 const UnifiedPetPage = lazy(() => import("./pages/UnifiedPetPage"));
 const ServicesPage = lazy(() => import("./pages/ServicesPage"));
 const MealPlanPage = lazy(() => import("./pages/MealPlanPage"));
-const PetSoulOnboard = lazy(() => import("./pages/PetSoulOnboard"));
 
 function App() {
   return (
