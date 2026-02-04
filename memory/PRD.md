@@ -24,6 +24,24 @@ Mira AI positioned as the "memory and judgement layer" - she doesn't fulfil requ
 
 ## What's Been Implemented
 
+### February 4, 2026 (Session 4) - Bug Fixes & Mobile UX Improvements
+
+#### Bugs Fixed:
+- ✅ **Homepage Hero Video on Mobile** - Changed `objectPosition` from `center 5%` to `center 25%`, increased `min-h` from `55vh` to `70vh` on mobile to show dog's eyes properly
+- ✅ **Mobile Dashboard Tab Bar** - Changed from horizontal scroll to flex-wrap so tabs wrap into multiple rows on mobile (matching desktop behavior)
+- ✅ **Sign Out Button on Mobile** - Added `onTouchEnd` handler, `z-index: 100`, `touchAction: manipulation`, and `WebkitTapHighlightColor: transparent` for reliable mobile touch handling
+- ✅ **Pet Photo Upload** - Backend confirmed working via pytest (uploads stored as base64 in database, served via `/api/pet-photo/{pet_id}`)
+
+#### Files Modified:
+- `/app/frontend/src/pages/Home.jsx` - Hero video position and height adjustments (line 660-670)
+- `/app/frontend/src/pages/MemberDashboard.jsx` - Mobile tab bar flex-wrap (line 1222-1244), Sign out button touch handling (line 900-920)
+
+#### Test Report: `/app/test_reports/iteration_223.json`
+- Backend: 100% (7/7 tests passed)
+- Frontend: 100% (All bug fixes verified)
+
+---
+
 ### February 4, 2026 (Session 3) - Comprehensive Dashboard Audit & Fixes
 
 #### Issues Fixed:
