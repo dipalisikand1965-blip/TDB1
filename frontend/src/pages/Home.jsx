@@ -14,6 +14,15 @@ import { getApiUrl } from '../utils/api';
 import SEOHead from '../components/SEOHead';
 import { motion, AnimatePresence } from 'framer-motion';
 
+// Pre-computed particle positions for floating effect
+const PARTICLES = Array.from({ length: 20 }, (_, i) => ({
+  id: i,
+  left: (i * 5) % 100,
+  top: (i * 7 + 10) % 100,
+  duration: 3 + (i % 3),
+  delay: (i % 5) * 0.4,
+}));
+
 // The new emotional home page - designed to capture hearts in 3 seconds
 
 const Home = () => {
