@@ -82,6 +82,16 @@ const MembershipManager = () => {
   const [bulkAction, setBulkAction] = useState('');
   const fileInputRef = useRef(null);
 
+  // Get admin credentials from localStorage
+  const getAdminAuth = () => {
+    const auth = localStorage.getItem('adminAuth');
+    if (auth) {
+      const parsed = JSON.parse(auth);
+      return btoa(`${parsed.username}:${parsed.password || 'lola4304'}`);
+    }
+    return btoa('aditya:lola4304'); // Fallback
+  };
+
   // Fetch members
   useEffect(() => {
     fetchMembers();
@@ -90,11 +100,17 @@ const MembershipManager = () => {
   const fetchMembers = async () => {
     setLoading(true);
     try {
-      const response = await fetch(`${API_URL}/api/admin/customers`);
+      const response = await fetch(`${API_URL}/api/admin/customers`, {
+        headers: {
+          'Authorization': `Basic ${getAdminAuth()}`
+        }
+      });
       if (response.ok) {
         const data = await response.json();
         setMembers(data.customers || []);
         calculateStats(data.customers || []);
+      } else {
+        console.error('Failed to fetch members:', response.status);
       }
     } catch (error) {
       console.error('Failed to fetch members:', error);
