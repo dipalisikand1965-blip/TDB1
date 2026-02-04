@@ -1392,10 +1392,10 @@ const Home = () => {
                     {playingTestimonial === testimonial.id && testimonial.hasVideo ? (
                       <video
                         autoPlay
-                        loop
                         muted={false}
                         playsInline
                         className="w-full h-full object-cover"
+                        onEnded={() => setPlayingTestimonial(null)}
                       >
                         <source src={testimonial.videoSrc} type="video/mp4" />
                       </video>
