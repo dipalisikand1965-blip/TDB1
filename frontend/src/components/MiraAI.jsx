@@ -661,47 +661,98 @@ const MiraAI = () => {
   };
 
   // Generate personalized welcome message based on user and pets with time-awareness
+  // Mira is positioned as a warm, wise "guardian angel" for pets
   const generateWelcomeMessage = useCallback(() => {
     const hour = new Date().getHours();
-    let timeGreeting = '';
+    const day = new Date().getDay();
+    const isWeekend = day === 0 || day === 6;
     
-    if (hour >= 5 && hour < 12) {
+    // More poetic, warm time greetings
+    let timeGreeting = '';
+    let timeContext = '';
+    
+    if (hour >= 5 && hour < 9) {
+      timeGreeting = 'Good morning, sunshine';
+      timeContext = 'Early starts mean more time for morning walks and tail wags.';
+    } else if (hour >= 9 && hour < 12) {
       timeGreeting = 'Good morning';
-    } else if (hour >= 12 && hour < 17) {
+      timeContext = isWeekend ? 'Weekends are made for adventures together.' : '';
+    } else if (hour >= 12 && hour < 15) {
       timeGreeting = 'Good afternoon';
-    } else if (hour >= 17 && hour < 21) {
+      timeContext = 'The perfect time for a cozy nap together, don\'t you think?';
+    } else if (hour >= 15 && hour < 18) {
+      timeGreeting = 'Hello, lovely';
+      timeContext = 'The golden hours are upon us — magical light for magical moments.';
+    } else if (hour >= 18 && hour < 21) {
       timeGreeting = 'Good evening';
+      timeContext = 'Evening cuddles are the best kind of therapy.';
     } else {
-      timeGreeting = 'Hello';
+      timeGreeting = 'Hello, night owl';
+      timeContext = 'Even in the quiet hours, I\'m here for you both.';
     }
     
     if (user && userPets.length > 0) {
-      const petNames = userPets.map(p => p.name).join(', ');
+      const firstName = (user.name || 'friend').split(' ')[0];
       const firstPet = userPets[0];
+      const petName = firstPet.name;
       const breed = firstPet.identity?.breed || firstPet.breed || '';
+      const age = firstPet.identity?.age_years || firstPet.age || null;
       const allergies = firstPet.health?.allergies?.join(', ') || '';
+      const birthday = firstPet.identity?.birthday || firstPet.birthday || null;
       
-      let personalizedWelcome = `**${timeGreeting}, ${user.name || 'valued guest'}.**\n\nI am Mira, your dedicated Pet Concierge®. I see you are here with `;
+      // Check if pet's birthday is coming up (within 30 days)
+      let birthdayNote = '';
+      if (birthday) {
+        const bday = new Date(birthday);
+        const today = new Date();
+        const thisYearBday = new Date(today.getFullYear(), bday.getMonth(), bday.getDate());
+        const daysUntilBirthday = Math.ceil((thisYearBday - today) / (1000 * 60 * 60 * 24));
+        
+        if (daysUntilBirthday > 0 && daysUntilBirthday <= 30) {
+          birthdayNote = `\n\n🎂 *I see ${petName}'s birthday is coming up in ${daysUntilBirthday} days! Shall we start planning something special?*`;
+        } else if (daysUntilBirthday >= -1 && daysUntilBirthday <= 0) {
+          birthdayNote = `\n\n🎉 **Happy Birthday to ${petName}!** What a special day! I hope you're celebrating this precious soul.`;
+        }
+      }
+      
+      // Build a warm, personal welcome
+      let personalizedWelcome = `**${timeGreeting}, ${firstName}.** ✨\n\n`;
       
       if (userPets.length === 1) {
-        personalizedWelcome += `**${firstPet.name}**`;
-        if (breed) personalizedWelcome += `, your lovely ${breed}`;
-        personalizedWelcome += `.`;
+        personalizedWelcome += `I remember **${petName}** well — `;
+        if (breed) {
+          personalizedWelcome += `your beautiful ${breed}`;
+          if (age) personalizedWelcome += ` who's ${age} years young`;
+          personalizedWelcome += `. `;
+        } else {
+          personalizedWelcome += `every pet has a unique soul, and ${petName}'s shines bright. `;
+        }
       } else {
-        personalizedWelcome += `**${petNames}** — what a wonderful family.`;
+        const petNames = userPets.map(p => p.name).join(', ');
+        personalizedWelcome += `Your little pack — **${petNames}** — each one has a special place in my heart. `;
       }
       
-      personalizedWelcome += `\n\nI have your preferences and ${userPets.length === 1 ? `${firstPet.name}'s` : 'your pets\''} profiles ready`;
-      if (allergies) {
-        personalizedWelcome += ` — including dietary considerations`;
+      // Add contextual wisdom
+      if (timeContext) {
+        personalizedWelcome += `\n\n*${timeContext}*`;
       }
-      personalizedWelcome += `. Every recommendation I offer will be tailored to their specific needs.\n\n🎤 **Tap the mic to speak, or type below.**`;
+      
+      // Add health considerations warmly
+      if (allergies) {
+        personalizedWelcome += `\n\nI remember ${petName}'s sensitivities. Every recommendation I make keeps their wellbeing at heart.`;
+      }
+      
+      // Add birthday note if applicable
+      personalizedWelcome += birthdayNote;
+      
+      personalizedWelcome += `\n\n🎤 **Speak or type — I'm all ears (and paws).**`;
       
       return personalizedWelcome;
     } else if (user) {
-      return `**${timeGreeting}, ${user.name || 'valued guest'}.**\n\nI am Mira, your dedicated Pet Concierge® at The Doggy Company.\n\nI notice you haven't added your pet's profile yet. Creating a **Pet Soul™** profile allows me to personalise every recommendation — from birthday cakes to travel arrangements.\n\n🎤 **Tap the mic to speak, or type below.**`;
+      const firstName = (user.name || 'friend').split(' ')[0];
+      return `**${timeGreeting}, ${firstName}.** ✨\n\nI'm Mira — think of me as a wise friend who understands the language of paws and tail wags.\n\nI notice we haven't met your furry family member yet. Creating a **Pet Soul™** profile helps me understand their unique personality, preferences, and needs. It's like introducing me to a dear friend.\n\n*Every pet has a soul worth celebrating.*\n\n🎤 **Ready to introduce us?**`;
     } else {
-      return `**${timeGreeting}.** I am Mira, your dedicated Pet Concierge® at The Doggy Company.\n\nI am here to assist with anything your companion may need — from celebrating special moments to travel arrangements, dining, wellness, and beyond.\n\n[**Join Pet Pass**](/membership) to unlock personalised recommendations and exclusive benefits, or [**Sign In**](/login) if you're already a member.\n\n🎤 **Tap the mic to speak, or type below.**`;
+      return `**${timeGreeting}.** ✨\n\nI'm Mira — your pet's guardian angel at The Doggy Company.\n\nI'm not just here to help with tasks. I'm here to understand, to remember, to celebrate every precious moment you share with your companion. From birthday cakes to travel adventures, from quiet cuddles to big milestones.\n\n*Because every pet has a soul, and every soul deserves to be cherished.*\n\n[**Begin Your Journey**](/membership) | [**Sign In**](/login)\n\n🎤 **Ask me anything — I'm listening with my whole heart.**`;
     }
   }, [user, userPets]);
 
