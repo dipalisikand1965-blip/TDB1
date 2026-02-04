@@ -1,11 +1,79 @@
-import React from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Card } from '../../ui/card';
 import { Button } from '../../ui/button';
 import { Badge } from '../../ui/badge';
-import { Sparkles, MessageCircle, Zap, Heart, PawPrint } from 'lucide-react';
+import { Sparkles, MessageCircle, Zap, Heart, PawPrint, Brain, Calendar, ShoppingBag, Stethoscope, MessageSquare, ChevronRight, Loader2, Plus, Trash2, RefreshCw } from 'lucide-react';
+import { API_URL } from '../../../utils/api';
+import { useAuth } from '../../../context/AuthContext';
+import { toast } from '../../../hooks/use-toast';
+
+// Memory type icons and colors
+const MEMORY_TYPE_CONFIG = {
+  event: { icon: Calendar, color: 'purple', label: 'Events & Milestones', bgColor: 'bg-purple-500/10', borderColor: 'border-purple-500/20', textColor: 'text-purple-400' },
+  health: { icon: Stethoscope, color: 'emerald', label: 'Health & Medical', bgColor: 'bg-emerald-500/10', borderColor: 'border-emerald-500/20', textColor: 'text-emerald-400' },
+  shopping: { icon: ShoppingBag, color: 'amber', label: 'Shopping Preferences', bgColor: 'bg-amber-500/10', borderColor: 'border-amber-500/20', textColor: 'text-amber-400' },
+  general: { icon: MessageSquare, color: 'pink', label: 'General Context', bgColor: 'bg-pink-500/10', borderColor: 'border-pink-500/20', textColor: 'text-pink-400' }
+};
 
 const MiraTab = ({ user, pets }) => {
   const primaryPet = pets[0];
+  const { token } = useAuth();
+  
+  // Memory state
+  const [memories, setMemories] = useState(null);
+  const [memoriesLoading, setMemoriesLoading] = useState(false);
+  const [memoriesError, setMemoriesError] = useState(null);
+  const [expandedType, setExpandedType] = useState(null);
+  
+  // Fetch memories from backend
+  const fetchMemories = useCallback(async () => {
+    if (!token) return;
+    
+    setMemoriesLoading(true);
+    setMemoriesError(null);
+    
+    try {
+      const response = await fetch(`${API_URL}/api/mira/memory/me`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setMemories(data);
+      } else {
+        setMemoriesError('Unable to load memories');
+      }
+    } catch (err) {
+      console.error('Failed to fetch memories:', err);
+      setMemoriesError('Unable to load memories');
+    } finally {
+      setMemoriesLoading(false);
+    }
+  }, [token]);
+  
+  // Delete a memory
+  const deleteMemory = async (memoryId) => {
+    if (!token) return;
+    
+    try {
+      const response = await fetch(`${API_URL}/api/mira/memory/${memoryId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (response.ok) {
+        toast({ title: 'Memory removed', description: 'Mira will no longer recall this.' });
+        fetchMemories(); // Refresh
+      }
+    } catch (err) {
+      console.error('Failed to delete memory:', err);
+      toast({ title: 'Error', description: 'Could not remove memory', variant: 'destructive' });
+    }
+  };
+  
+  useEffect(() => {
+    fetchMemories();
+  }, [fetchMemories]);
   
   const miraCapabilities = [
     { icon: '🛒', title: 'Shopping Help', desc: 'Find products, compare prices, place orders' },
