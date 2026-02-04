@@ -909,7 +909,7 @@ const MemberDashboard = () => {
 
           {/* 2️⃣ ALL PETS SOUL SCORE GRID - Select a pet to see details */}
           {pets.length > 0 && (
-            <Card className="mb-8 overflow-hidden bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 text-white border-none shadow-xl shadow-purple-500/20 rounded-2xl md:rounded-3xl">
+            <Card className="mb-8 overflow-hidden bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 text-white border-none shadow-2xl shadow-purple-500/30 rounded-2xl md:rounded-3xl">
               <div className="p-4 md:p-6 lg:p-8">
                 {/* Section Header */}
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-4 mb-6">
@@ -921,7 +921,7 @@ const MemberDashboard = () => {
                     <span className="text-white/70 text-sm md:text-base hidden sm:inline">The more we know, the better Mira serves you!</span>
                     <button
                       onClick={() => setShowSoulExplainer(true)}
-                      className="flex items-center gap-1.5 bg-white/20 hover:bg-white/30 backdrop-blur-sm px-3 py-1.5 rounded-full text-sm font-medium transition-all hover:scale-105 active:scale-95"
+                      className="flex items-center gap-1.5 bg-black/20 hover:bg-black/30 backdrop-blur-sm px-3 py-1.5 rounded-full text-sm font-medium transition-all hover:scale-105 active:scale-95 border border-white/10"
                       data-testid="what-is-pet-soul-btn"
                     >
                       <HelpCircle className="w-4 h-4" />
@@ -951,12 +951,10 @@ const MemberDashboard = () => {
                   return (
                     <div 
                       key={pet.id}
-                      className={`relative bg-white/10 backdrop-blur-sm rounded-xl md:rounded-2xl p-3 md:p-4 text-center cursor-pointer transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] ${
+                      className={`relative bg-black/20 backdrop-blur-md rounded-xl md:rounded-2xl p-3 md:p-4 text-center cursor-pointer transition-all duration-300 hover:scale-[1.03] active:scale-[0.98] border ${
                         isSelected 
-                          ? 'ring-2 ring-white bg-white/25 scale-[1.02] shadow-lg shadow-white/10' 
-                          : needsAttention 
-                            ? 'ring-2 ring-yellow-400/50 hover:bg-white/20' 
-                            : 'hover:bg-white/20'
+                          ? 'border-white/30 bg-black/40 scale-[1.02] shadow-lg shadow-white/10' 
+                          : 'border-white/10 hover:border-white/20'
                       }`}
                       onClick={() => setSelectedPetId(pet.id)}
                       data-testid={`pet-card-${pet.name?.toLowerCase()}`}
