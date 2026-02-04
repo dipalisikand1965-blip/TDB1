@@ -77,9 +77,6 @@ const MembershipOnboarding = () => {
     acceptPrivacy: false
   });
   
-  // Photo upload state
-  const [uploadingPhoto, setUploadingPhoto] = useState(false);
-  
   // Password visibility state
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
