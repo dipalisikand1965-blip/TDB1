@@ -959,7 +959,7 @@ const MemberDashboard = () => {
                             ? 'border-yellow-400/50 hover:border-yellow-400/70 hover:bg-black/30' 
                             : 'border-white/10 hover:border-white/20 hover:bg-black/30'
                       }`}
-                      onClick={() => setSelectedPetId(pet.id)}
+                      onClick={() => navigate(`/pet/${pet.id}`)}
                       data-testid={`pet-card-${pet.name?.toLowerCase()}`}
                     >
                       {/* Selected indicator */}
