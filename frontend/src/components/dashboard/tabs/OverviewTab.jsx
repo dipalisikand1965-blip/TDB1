@@ -100,7 +100,7 @@ const OverviewTab = ({
               variant="outline" 
               size="sm"
               onClick={() => navigate(`/pet/${currentPet.id}`)}
-              className="text-purple-600 border-purple-300 hover:bg-purple-100"
+              className="text-purple-400 border-purple-500/30 hover:bg-purple-500/10 hover:text-purple-300"
               data-testid="single-pet-soul-btn"
             >
               <Sparkles className="w-4 h-4 mr-1.5" />
@@ -148,17 +148,17 @@ const OverviewTab = ({
       {/* MY ACTIVE REQUESTS */}
       {myRequests.length > 0 && (
         <div className="mb-6">
-          <Card className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200">
+          <Card className="p-4 bg-slate-900/60 backdrop-blur-xl border border-white/10">
             <div className="flex items-center justify-between mb-3">
-              <h4 className="font-semibold text-gray-900 flex items-center gap-2">
-                <MessageCircle className="w-4 h-4 text-purple-600" />
+              <h4 className="font-semibold text-white flex items-center gap-2">
+                <MessageCircle className="w-4 h-4 text-purple-400" />
                 Active Requests
-                <Badge variant="secondary" className="text-xs">{myRequests.length}</Badge>
+                <Badge variant="secondary" className="text-xs bg-purple-500/20 text-purple-300 border border-purple-500/30">{myRequests.length}</Badge>
               </h4>
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="text-purple-600 hover:text-purple-700"
+                className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/10"
                 onClick={() => onTabChange?.('requests')}
               >
                 View All <ChevronRight className="w-4 h-4 ml-1" />
@@ -168,13 +168,13 @@ const OverviewTab = ({
               {myRequests.slice(0, 3).map((req) => (
                 <div 
                   key={req.id} 
-                  className="flex items-center justify-between bg-white rounded-lg p-3 border cursor-pointer hover:bg-purple-50 hover:border-purple-300 transition-all active:scale-[0.99]"
+                  className="flex items-center justify-between bg-slate-800/50 rounded-lg p-3 border border-white/5 cursor-pointer hover:bg-slate-800 hover:border-purple-500/30 transition-all active:scale-[0.99]"
                   onClick={() => onTabChange?.('requests')}
                   data-testid={`request-${req.id}`}
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-xs font-mono text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">#{req.id?.slice(-8) || 'N/A'}</span>
+                      <span className="text-xs font-mono text-slate-500 bg-slate-700/50 px-1.5 py-0.5 rounded">#{req.id?.slice(-8) || 'N/A'}</span>
                       <Badge 
                         variant="outline" 
                         className={`text-xs ${
