@@ -98,26 +98,34 @@ const FinanceManager = () => {
     paw_points_used: 0
   });
 
+  // Import CSV state
+  const fileInputRef = useRef(null);
+  const [importing, setImporting] = useState(false);
+  const [error, setError] = useState(null);
+
   // Fetch payments
   const fetchPayments = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
-      // Get admin credentials from localStorage (set during login)
-      const adminUsername = localStorage.getItem('adminUsername') || 'aditya';
-      const adminPassword = localStorage.getItem('adminPassword') || 'lola4304';
-      const basicAuth = btoa(`${adminUsername}:${adminPassword}`);
-      
       const response = await fetch(`${getApiUrl()}/api/admin/finance/payments`, {
-        headers: { 'Authorization': `Basic ${basicAuth}` }
+        headers: { 'Authorization': getAuthHeader() }
       });
       
       if (response.ok) {
         const data = await response.json();
         setPayments(data.payments || []);
-        setStats(data.stats || stats);
+        if (data.stats) {
+          setStats(data.stats);
+        }
+      } else {
+        const errData = await response.json().catch(() => ({}));
+        setError(errData.detail || 'Failed to fetch payments');
+        console.error('Failed to fetch payments:', errData);
       }
-    } catch (error) {
-      console.error('Failed to fetch payments:', error);
+    } catch (err) {
+      setError('Network error - please check your connection');
+      console.error('Failed to fetch payments:', err);
     } finally {
       setLoading(false);
     }
