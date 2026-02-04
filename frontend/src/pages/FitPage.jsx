@@ -754,37 +754,37 @@ const FitPage = () => {
       </div>
 
       {/* ==================== CONCIERGE® FIT EXPERIENCES - COMPACT ==================== */}
-      <div className="py-10 bg-gradient-to-b from-white to-teal-50/30">
+      <div className="py-8 sm:py-10 bg-gradient-to-b from-white to-teal-50/30">
         <div className="max-w-7xl mx-auto px-4">
           {/* Elegant Header */}
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-4 sm:mb-6">
             <div>
-              <h2 className="text-xl md:text-2xl font-semibold text-gray-900">
+              <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900">
                 Fit <span className="text-teal-600">Concierge®</span> Experiences
               </h2>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-xs sm:text-sm text-gray-500 mt-1">
                 Personalized wellness journeys, not just programs
               </p>
             </div>
             <Button 
               variant="ghost" 
-              className="text-teal-600 hover:text-teal-700 text-sm hidden sm:flex"
+              className="text-teal-600 hover:text-teal-700 text-xs sm:text-sm hidden sm:flex"
               onClick={() => setShowBookingModal(true)}
             >
               Not sure? Tell us about your pet <ChevronRight className="w-4 h-4 ml-1" />
             </Button>
           </div>
           
-          {/* Compact Experience Cards - Use compact prop */}
+          {/* Compact Experience Cards - Use compact prop with staggered animations */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
             {FIT_EXPERIENCES.map((exp, idx) => (
-              <ConciergeExperienceCard
-                key={idx}
-                pillar="fit"
-                title={exp.title}
-                description={exp.description}
-                icon={exp.icon}
-                gradient={exp.gradient}
+              <div key={idx} className={`animate-fade-in-up stagger-${idx + 1}`}>
+                <ConciergeExperienceCard
+                  pillar="fit"
+                  title={exp.title}
+                  description={exp.description}
+                  icon={exp.icon}
+                  gradient={exp.gradient}
                 badge={exp.badge}
                 badgeColor={exp.badgeColor}
                 highlights={exp.highlights}
