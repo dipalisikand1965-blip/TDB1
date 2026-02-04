@@ -1475,7 +1475,7 @@ const MembershipOnboarding = () => {
                       type="button"
                       onClick={() => setPlanType('annual')}
                       className={`w-full p-4 rounded-xl border-2 text-left transition-all relative ${
-                        pricing.isFounder
+                        pricing.isFoundation
                           ? 'border-pink-500 bg-pink-500/20 shadow-lg shadow-pink-500/20'
                           : 'border-slate-600 bg-slate-800/50 hover:border-pink-500/50'
                       }`}
@@ -1486,7 +1486,7 @@ const MembershipOnboarding = () => {
                       </div>
                       <div className="flex items-center justify-between">
                         <div>
-                          <p className="font-semibold text-white">Pet Pass Founder</p>
+                          <p className="font-semibold text-white">Pet Pass Foundation</p>
                           <p className="text-sm text-slate-400">365 days + 7 bonus = <span className="text-emerald-400 font-semibold">372 days</span></p>
                         </div>
                         <div className="text-right">
