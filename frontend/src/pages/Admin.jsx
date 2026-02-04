@@ -1884,13 +1884,14 @@ const Admin = () => {
                   {/* Command Center */}
                   <div>
                     <p className="px-2 py-1 text-xs font-bold text-purple-700 uppercase mb-2 flex items-center gap-1">
-                      🎯 Command Center
+                      Command Center
                     </p>
                     <div className="grid grid-cols-2 gap-2">
                       {[
                         { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
                         { id: 'servicedesk', label: 'Service Desk', icon: Ticket },
                         { id: 'inbox', label: 'Unified Inbox', icon: Inbox },
+                        { id: 'finance', label: 'Finance', icon: IndianRupee },
                         { id: 'pillar-queues', label: 'Pillar Queues', icon: Package },
                       ].map(tab => (
                         <button
