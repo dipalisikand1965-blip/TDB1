@@ -84,12 +84,19 @@ const MembershipManager = () => {
 
   // Get admin credentials from localStorage
   const getAdminAuth = () => {
-    const auth = localStorage.getItem('adminAuth');
-    if (auth) {
-      const parsed = JSON.parse(auth);
-      return btoa(`${parsed.username}:${parsed.password || 'lola4304'}`);
+    try {
+      const auth = localStorage.getItem('adminAuth');
+      if (auth) {
+        const parsed = JSON.parse(auth);
+        if (parsed.username) {
+          return btoa(`${parsed.username}:${parsed.password || 'lola4304'}`);
+        }
+      }
+    } catch (e) {
+      // If parsing fails, use default
+      console.log('Using default admin auth');
     }
-    return btoa('aditya:lola4304'); // Fallback
+    return btoa('aditya:lola4304'); // Fallback default credentials
   };
 
   // Fetch members
