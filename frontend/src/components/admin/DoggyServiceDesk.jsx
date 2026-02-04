@@ -1549,8 +1549,82 @@ const DoggyServiceDesk = ({ authHeaders }) => {
     }
   };
 
-  // ==================== TICKET MERGING ====================
+  // ==================== TICKET MERGING (ZOHO DESK STYLE) ====================
   
+  // Fetch mergeable tickets for a member when opening merge-into modal
+  const fetchMergeableTickets = async (memberEmail) => {
+    if (!memberEmail) return;
+    try {
+      const res = await fetch(`${getApiUrl()}/api/concierge/tickets/mergeable/${encodeURIComponent(memberEmail)}`, {
+        headers: authHeaders
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setMergeableTickets(data.tickets || []);
+      }
+    } catch (err) {
+      console.error('Failed to fetch mergeable tickets:', err);
+    }
+  };
+  
+  // Open merge-into modal from within a ticket detail view
+  const openMergeIntoModal = (ticket) => {
+    setMergeTargetTicket(ticket);
+    setShowMergeIntoModal(true);
+    setSearchMergeTarget('');
+    // Fetch other open tickets for this member
+    const memberEmail = ticket.member?.email || ticket.contact_email;
+    if (memberEmail) {
+      fetchMergeableTickets(memberEmail);
+    }
+  };
+  
+  // Merge current ticket into another (from ticket detail view)
+  const mergeCurrentInto = async (targetTicketId) => {
+    if (!mergeTargetTicket || !targetTicketId) return;
+    
+    try {
+      const response = await fetch(`${getApiUrl()}/api/concierge/tickets/merge`, {
+        method: 'POST',
+        headers: { ...authHeaders, 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          primary_ticket_id: targetTicketId, // The ticket we're merging INTO
+          secondary_ticket_ids: [mergeTargetTicket.ticket_id], // Current ticket becomes secondary
+          agent_name: 'admin',
+          merge_reason: mergeReason || `Merged duplicate ticket from Service Desk`
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        toast({
+          title: '✅ Ticket Merged Successfully',
+          description: `Ticket ${mergeTargetTicket.ticket_id} merged into ${targetTicketId}. ${data.message}`
+        });
+        setShowMergeIntoModal(false);
+        setMergeTargetTicket(null);
+        setMergeReason('');
+        setSelectedTicket(null); // Close detail panel
+        await fetchAllTickets();
+      } else {
+        const error = await response.json();
+        toast({
+          title: 'Merge Failed',
+          description: error.detail || 'Failed to merge tickets',
+          variant: 'destructive'
+        });
+      }
+    } catch (err) {
+      console.error('Merge error:', err);
+      toast({
+        title: 'Error',
+        description: 'Network error - please try again',
+        variant: 'destructive'
+      });
+    }
+  };
+  
+  // Merge multiple selected tickets (from ticket list multi-select)
   const mergeTickets = async () => {
     // Need at least 2 tickets selected
     if (selectedTicketIds.length < 2) {
@@ -1562,9 +1636,9 @@ const DoggyServiceDesk = ({ authHeaders }) => {
       return;
     }
     
-    // First selected ticket becomes the primary (master)
-    const primaryTicketId = selectedTicketIds[0];
-    const ticketsToMerge = selectedTicketIds.slice(1); // All others flow into primary
+    // Use masterTicketId if set, otherwise first selected
+    const primaryTicketId = masterTicketId || selectedTicketIds[0];
+    const ticketsToMerge = selectedTicketIds.filter(id => id !== primaryTicketId);
     
     try {
       const response = await fetch(`${getApiUrl()}/api/concierge/tickets/merge`, {
@@ -1574,18 +1648,20 @@ const DoggyServiceDesk = ({ authHeaders }) => {
           primary_ticket_id: primaryTicketId,
           secondary_ticket_ids: ticketsToMerge,
           agent_name: 'admin',
-          merge_reason: 'Merged by admin from Service Desk'
+          merge_reason: mergeReason || 'Merged by admin from Service Desk'
         })
       });
       
       if (response.ok) {
         const data = await response.json();
         toast({
-          title: 'Tickets Merged Successfully',
-          description: data.message || `Merged ${ticketsToMerge.length} ticket(s) into ${primaryTicketId}`
+          title: '✅ Tickets Merged Successfully',
+          description: `${data.message}. System note logged.`
         });
         setShowMergeModal(false);
         setSelectedTicketIds([]);
+        setMergeReason('');
+        setMasterTicketId(null);
         await fetchAllTickets();
       } else {
         const error = await response.json();
