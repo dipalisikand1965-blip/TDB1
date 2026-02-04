@@ -172,28 +172,28 @@ const BRAND_STORY_CLIPS = [
     src: '/videos/brand_story/01_eyes_bright.mp4',
     audioSrc: '/videos/brand_story/audio/01_eyes_bright.mp3',
     title: 'Look into their eyes...',
-    subtitle: 'You already know.',
-    duration: 4000
+    subtitle: 'And you already know.',
+    duration: 4500
   },
   {
     src: '/videos/brand_story/02_bond_bright.mp4',
     audioSrc: '/videos/brand_story/audio/02_bond_bright.mp3',
-    title: "They're not just pets.",
-    subtitle: "They're family.",
-    duration: 4000
+    title: "They're not just pets...",
+    subtitle: "They're your heart walking outside your body.",
+    duration: 5500
   },
   {
     src: '/videos/brand_story/03_joy_bright.mp4',
     audioSrc: '/videos/brand_story/audio/03_joy_bright.mp3',
     title: 'Every tail wag, every happy moment...',
     subtitle: 'We help you cherish them all.',
-    duration: 5000  // Slightly longer for this voiceover
+    duration: 5000
   },
   {
     src: '/videos/brand_story/04_family_bright.mp4',
     audioSrc: '/videos/brand_story/audio/04_family_bright.mp3',
     title: 'The Doggy Company',
-    subtitle: 'Every Pet Has a Soul™',
+    subtitle: 'Because Every Pet Has a Soul™',
     duration: 4500
   }
 ];
