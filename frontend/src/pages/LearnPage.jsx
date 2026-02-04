@@ -886,7 +886,7 @@ const LearnPage = () => {
             Ready to Start Your Training Journey?
           </h2>
           <p className="text-blue-100 mb-8">
-            Our concierge will match you with the perfect trainer based on your pet's needs and your goals.
+            Our concierge will match you with the perfect trainer based on your pet&apos;s needs and your goals.
           </p>
           <Button 
             size="lg" 
@@ -911,7 +911,7 @@ const LearnPage = () => {
           <div className="space-y-6 py-4">
             {/* Pet Selection - Works for both logged in and guest users */}
             <div>
-              <Label className="text-sm font-medium mb-2 block">Your Pet's Details</Label>
+              <Label className="text-sm font-medium mb-2 block">Your Pet&apos;s Details</Label>
               {userPets.length > 0 ? (
                 <div className="grid grid-cols-2 gap-3 mt-2">
                   {userPets.map(pet => (
