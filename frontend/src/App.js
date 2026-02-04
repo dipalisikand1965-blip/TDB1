@@ -216,6 +216,7 @@ const UnifiedPetPage = lazy(() => import("./pages/UnifiedPetPage"));
 const ServicesPage = lazy(() => import("./pages/ServicesPage"));
 const MealPlanPage = lazy(() => import("./pages/MealPlanPage"));
 const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
+const MembershipPayment = lazy(() => import("./pages/MembershipPayment"));
 
 function App() {
   return (
