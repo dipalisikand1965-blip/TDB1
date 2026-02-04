@@ -26,7 +26,7 @@ The eyes convey unconditional love, trust, and a gentle soul.
 Cinematic shallow depth of field, film grain, intimate documentary style.
 Camera very slowly pushes in. Ethereal, emotional, heartwarming mood.
 """,
-        "duration": 5
+        "duration": 4
     },
     {
         "name": "02_the_bond",
@@ -37,7 +37,7 @@ The dog is a friendly labrador with soft cream fur.
 Gentle camera movement, shallow depth of field, warm color grading.
 Pure love and connection between human and pet. Emotional, tender, cinematic.
 """,
-        "duration": 5
+        "duration": 4
     },
     {
         "name": "03_soul_orb",
@@ -61,7 +61,7 @@ Shallow depth of field, dreamy bokeh in background.
 The dog looks directly at camera with the happiest expression.
 Cinematic, uplifting, celebrates the joy of pets.
 """,
-        "duration": 5
+        "duration": 4
     },
     {
         "name": "05_family_moment",
@@ -73,7 +73,7 @@ The dog is clearly the heart of the family.
 Natural, authentic, documentary style but beautifully lit.
 Captures the essence of "pets are family."
 """,
-        "duration": 5
+        "duration": 4
     },
     {
         "name": "06_final_connection",
@@ -85,7 +85,7 @@ Wide shot transitioning to medium shot.
 Epic, emotional finale. Beautiful natural lighting.
 Represents the journey together, loyalty, unconditional love.
 """,
-        "duration": 5
+        "duration": 4
     }
 ]
 
