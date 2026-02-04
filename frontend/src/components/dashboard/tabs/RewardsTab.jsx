@@ -112,7 +112,7 @@ const RewardsTab = ({
             <Button 
               size="sm"
               className="bg-white text-purple-600 hover:bg-white/90"
-              onClick={() => navigate('/rewards')}
+              onClick={() => setShowRedeemModal(true)}
             >
               <Gift className="w-4 h-4 mr-1" /> Redeem
             </Button>
