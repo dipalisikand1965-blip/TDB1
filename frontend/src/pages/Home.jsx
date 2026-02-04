@@ -290,24 +290,16 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
           )}
         </AnimatePresence>
         
-        {/* Video - Full screen, optimized for iOS/Android */}
+        {/* Video - Full screen, Sora generated content only */}
         {!isEnding && (
           <>
-            {/* Fallback background image for when video doesn't autoplay */}
-            <div 
-              className="absolute inset-0 bg-cover bg-center"
-              style={{
-                backgroundImage: `url(${clip.poster || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1920&q=80'})`,
-                filter: 'brightness(0.7)'
-              }}
-            />
             <video 
               ref={videoRef}
               className="absolute inset-0 w-full h-full"
               autoPlay
               muted={videoMuted}
               playsInline
-              poster={clip.poster || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1920&q=80'}
+              preload="auto"
               style={{
                 objectFit: 'cover',
                 objectPosition: 'center center',
