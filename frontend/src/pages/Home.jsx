@@ -91,11 +91,13 @@ const Home = () => {
 
   // Rotate hero background images
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentHeroImage(prev => (prev + 1) % HERO_IMAGES.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
+    if (heroImages.length > 0) {
+      const interval = setInterval(() => {
+        setCurrentHeroImage(prev => (prev + 1) % heroImages.length);
+      }, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [heroImages.length]);
 
   // Rotate testimonials
   useEffect(() => {
