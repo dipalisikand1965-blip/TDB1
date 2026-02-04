@@ -393,16 +393,18 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ========== THE BOND - Emotional Photo Gallery ========== */}
-      <section className="relative py-20 sm:py-28 bg-slate-950 overflow-hidden">
-        {/* Subtle background glow */}
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-pink-600/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl" />
+      {/* ========== THE BOND - Elegant Floating Portraits ========== */}
+      <section className="relative py-24 sm:py-32 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 overflow-hidden">
+        {/* Ambient background glow */}
+        <div className="absolute top-1/3 left-1/4 w-[500px] h-[500px] bg-purple-600/8 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/3 right-1/4 w-[400px] h-[400px] bg-pink-600/8 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-600/5 rounded-full blur-3xl" />
         
-        <div className="relative max-w-7xl mx-auto px-4">
-          <div className="text-center mb-12">
+        <div className="relative max-w-6xl mx-auto px-4">
+          {/* Section Header */}
+          <div className="text-center mb-16">
             <motion.p
-              className="text-pink-400 text-sm uppercase tracking-widest mb-4"
+              className="text-purple-400/80 text-sm uppercase tracking-[0.3em] mb-6"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
@@ -410,47 +412,99 @@ const Home = () => {
               The Unbreakable Bond
             </motion.p>
             <motion.h2
-              className="text-3xl sm:text-4xl font-bold text-white mb-4"
+              className="text-4xl sm:text-5xl md:text-6xl font-bold text-white mb-6 leading-tight"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
               More Than Pets.
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400">
+              <span className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-pink-300 to-purple-300">
                 They&apos;re Family.
               </span>
             </motion.h2>
+            <motion.p
+              className="text-white/50 text-lg max-w-xl mx-auto"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+            >
+              Every wet nose, every wagging tail, every quiet moment together — 
+              these are the moments we help you cherish forever.
+            </motion.p>
           </div>
 
-          {/* Masonry-style Gallery - CMS Driven */}
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-            {bondGallery.map((item, idx) => (
+          {/* Elegant Floating Gallery - 3 Featured Pets */}
+          <div className="relative flex flex-col lg:flex-row items-center justify-center gap-8 lg:gap-12">
+            {bondGallery.slice(0, 3).map((item, idx) => (
               <motion.div
                 key={item.id || idx}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                whileInView={{ opacity: 1, y: 0, scale: 1 }}
                 viewport={{ once: true }}
-                transition={{ delay: idx * 0.08 }}
-                className={`relative group rounded-2xl overflow-hidden ${
-                  item.is_tall ? 'row-span-2' : ''
-                } ${item.is_wide ? 'col-span-2' : ''}`}
+                transition={{ delay: idx * 0.15, duration: 0.6 }}
+                className={`relative group ${
+                  idx === 1 ? 'lg:-mt-12 z-10' : 'z-0'
+                }`}
               >
-                <img 
-                  src={item.image_url} 
-                  alt={item.caption}
-                  className="w-full h-full object-cover aspect-square group-hover:scale-110 transition-transform duration-500"
-                />
-                {/* Hover overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                  <div className="absolute bottom-0 left-0 right-0 p-4">
-                    <p className="text-white text-sm font-medium">{item.caption}</p>
+                {/* Glow behind image */}
+                <div className={`absolute inset-0 rounded-3xl blur-2xl transition-all duration-500 group-hover:blur-3xl ${
+                  idx === 0 ? 'bg-purple-500/20' : idx === 1 ? 'bg-pink-500/25' : 'bg-indigo-500/20'
+                } group-hover:scale-110`} />
+                
+                {/* Image container */}
+                <div className={`relative overflow-hidden rounded-3xl border border-white/10 shadow-2xl transition-all duration-500 group-hover:scale-105 group-hover:border-white/20 ${
+                  idx === 1 ? 'w-72 h-80 sm:w-80 sm:h-96' : 'w-60 h-72 sm:w-64 sm:h-80'
+                }`}>
+                  <img 
+                    src={item.image_url} 
+                    alt={item.caption}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+                  
+                  {/* Elegant gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent" />
+                  
+                  {/* Caption - always visible */}
+                  <div className="absolute bottom-0 left-0 right-0 p-6">
+                    <p className="text-white font-medium text-lg">{item.caption}</p>
+                    <div className="w-12 h-0.5 bg-gradient-to-r from-purple-400 to-pink-400 mt-2 group-hover:w-20 transition-all duration-500" />
                   </div>
                 </div>
-                {/* Permanent gentle overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-purple-950/30 to-transparent pointer-events-none" />
               </motion.div>
             ))}
           </div>
+
+          {/* Secondary row - smaller floating portraits */}
+          {bondGallery.length > 3 && (
+            <div className="flex flex-wrap justify-center gap-6 mt-12">
+              {bondGallery.slice(3, 7).map((item, idx) => (
+                <motion.div
+                  key={item.id || idx}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.3 + idx * 0.1 }}
+                  className="relative group"
+                >
+                  {/* Subtle glow */}
+                  <div className="absolute inset-0 rounded-2xl bg-purple-500/10 blur-xl group-hover:bg-purple-500/20 transition-all duration-500" />
+                  
+                  <div className="relative w-36 h-36 sm:w-44 sm:h-44 rounded-2xl overflow-hidden border border-white/5 shadow-xl group-hover:border-white/20 transition-all duration-300 group-hover:scale-105">
+                    <img 
+                      src={item.image_url} 
+                      alt={item.caption}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <p className="absolute bottom-2 left-2 right-2 text-white text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 truncate">
+                      {item.caption}
+                    </p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
