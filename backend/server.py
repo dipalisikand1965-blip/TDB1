@@ -9875,6 +9875,8 @@ async def membership_onboard(data: MembershipOnboardModel):
         additional_pets = max(0, len(data.pets) - 1)
         subtotal = base_price + (additional_pets * additional_pet_price)
         gst = int(subtotal * 0.18)
+        cgst = gst // 2  # CGST 9%
+        sgst = gst - cgst  # SGST 9%
         total = subtotal + gst
         
         # Create pending order for payment
@@ -9883,17 +9885,28 @@ async def membership_onboard(data: MembershipOnboardModel):
             "order_id": order_id,
             "user_id": user_id,
             "user_email": data.parent.email,
+            "user_name": data.parent.name,
+            "user_phone": data.parent.phone,
+            "user_whatsapp": data.parent.whatsapp,
+            "user_city": data.parent.city,
+            "user_pincode": data.parent.pincode,
             "type": "membership",
             "plan_type": data.plan_type,
+            "plan_name": "Pet Pass Trial (37 days)" if is_trial else "Pet Pass Founder (372 days)",
             "pet_count": len(data.pets),
             "pet_ids": pet_ids,
+            "pet_names": [p.name for p in data.pets],
             "amount": {
                 "base": base_price,
                 "additional_pets": additional_pets * additional_pet_price,
                 "subtotal": subtotal,
+                "cgst": cgst,
+                "sgst": sgst,
                 "gst": gst,
-                "total": total
+                "total": total,
+                "currency": "INR"
             },
+            "payment": {},  # Will be populated after Razorpay callback
             "status": "pending",
             "created_at": get_utc_timestamp()
         }
