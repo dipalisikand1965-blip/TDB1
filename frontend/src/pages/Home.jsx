@@ -205,23 +205,43 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
   const videoRef = useRef(null);
   const audioRef = useRef(null);
   
-  // Auto-advance to next clip with smooth ending
+  // Auto-advance when audio ends (for better sync) or use duration as fallback
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const audio = audioRef.current;
+    
+    const handleAudioEnd = () => {
+      // Audio finished, advance to next clip
       if (currentClip < BRAND_STORY_CLIPS.length - 1) {
         setCurrentClip(prev => prev + 1);
       } else {
-        // Show ending screen before looping
+        // Show ending screen before closing
         setIsEnding(true);
         setTimeout(() => {
           setIsEnding(false);
           setCurrentClip(0);
-        }, 2500);
+        }, 3000);
+      }
+    };
+    
+    // Listen for audio end if not muted
+    if (audio && !videoMuted) {
+      audio.addEventListener('ended', handleAudioEnd);
+    }
+    
+    // Fallback timer (if muted or audio fails)
+    const fallbackTimer = setTimeout(() => {
+      if (videoMuted) {
+        handleAudioEnd();
       }
     }, BRAND_STORY_CLIPS[currentClip].duration);
     
-    return () => clearTimeout(timer);
-  }, [currentClip]);
+    return () => {
+      if (audio) {
+        audio.removeEventListener('ended', handleAudioEnd);
+      }
+      clearTimeout(fallbackTimer);
+    };
+  }, [currentClip, videoMuted]);
   
   // Play video and audio when clip changes
   useEffect(() => {
