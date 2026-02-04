@@ -1718,12 +1718,13 @@ const Admin = () => {
             <div className="p-3 space-y-3">
               {/* Quick Access - Most Used */}
               <div className="bg-purple-50 rounded-xl p-3">
-                <p className="text-xs font-bold text-purple-700 uppercase mb-2">🎯 Quick Access</p>
+                <p className="text-xs font-bold text-purple-700 uppercase mb-2">Quick Access</p>
                 <div className="space-y-1">
                   {[
                     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
                     { id: 'servicedesk', label: 'Service Desk', icon: Ticket },
                     { id: 'orders', label: 'Orders', icon: Package },
+                    { id: 'finance', label: 'Finance', icon: IndianRupee },
                     { id: 'inbox', label: 'Inbox', icon: Inbox },
                   ].map(tab => (
                     <button
