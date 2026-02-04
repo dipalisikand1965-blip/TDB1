@@ -1107,17 +1107,17 @@ const MembershipOnboarding = () => {
                             onClick={() => toggleCelebration(petIdx, celebration.id)}
                             className={`p-4 rounded-xl border-2 text-left transition-all ${
                               isSelected
-                                ? 'border-orange-400 bg-gradient-to-br from-orange-50 to-pink-50 shadow-md'
-                                : 'border-gray-200 hover:border-orange-300 hover:bg-orange-50/50'
+                                ? 'border-pink-500 bg-pink-500/10 shadow-lg shadow-pink-500/20'
+                                : 'border-slate-700 bg-slate-800/50 hover:border-pink-500/50 hover:bg-slate-700/50'
                             }`}
                             data-testid={`celebration-${celebration.id}-pet-${petIdx}`}
                           >
                             <div className="text-2xl mb-2">{celebration.emoji}</div>
-                            <p className="font-medium text-sm text-gray-900">{celebration.name}</p>
-                            <p className="text-xs text-gray-500 mt-1 line-clamp-2">{celebration.description}</p>
+                            <p className="font-medium text-sm text-white">{celebration.name}</p>
+                            <p className="text-xs text-slate-400 mt-1 line-clamp-2">{celebration.description}</p>
                             {isSelected && (
                               <div className="mt-2">
-                                <Check className="w-5 h-5 text-orange-500" />
+                                <Check className="w-5 h-5 text-pink-400" />
                               </div>
                             )}
                           </button>
@@ -1126,7 +1126,7 @@ const MembershipOnboarding = () => {
                     </div>
 
                     {/* Quick select all important ones */}
-                    <div className="mt-4 flex gap-2">
+                    <div className="mt-4 flex gap-2 flex-wrap">
                       <Button
                         type="button"
                         variant="outline"
@@ -1137,7 +1137,7 @@ const MembershipOnboarding = () => {
                           newPets[petIdx].celebrations = importantOnes;
                           setPetsData(newPets);
                         }}
-                        className="text-orange-600 border-orange-300 hover:bg-orange-50"
+                        className="text-pink-400 border-pink-500/50 hover:bg-pink-500/20"
                       >
                         Select Essentials
                       </Button>
@@ -1150,7 +1150,7 @@ const MembershipOnboarding = () => {
                           newPets[petIdx].celebrations = CELEBRATION_TYPES.map(c => c.id);
                           setPetsData(newPets);
                         }}
-                        className="text-pink-600 border-pink-300 hover:bg-pink-50"
+                        className="text-purple-400 border-purple-500/50 hover:bg-purple-500/20"
                       >
                         Select All
                       </Button>
@@ -1164,7 +1164,7 @@ const MembershipOnboarding = () => {
                             newPets[petIdx].celebrations = [];
                             setPetsData(newPets);
                           }}
-                          className="text-gray-500"
+                          className="text-slate-400 hover:text-slate-200"
                         >
                           Clear
                         </Button>
@@ -1174,14 +1174,14 @@ const MembershipOnboarding = () => {
                 ))}
 
                 {/* Info Card */}
-                <div className="mt-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-200">
+                <div className="mt-6 p-4 bg-gradient-to-r from-purple-500/10 to-pink-500/10 rounded-xl border border-purple-500/30">
                   <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
-                      <Sparkles className="w-5 h-5 text-purple-600" />
+                    <div className="w-10 h-10 bg-purple-500/20 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Sparkles className="w-5 h-5 text-purple-400" />
                     </div>
                     <div>
-                      <p className="font-semibold text-purple-800">Why select celebrations?</p>
-                      <p className="text-sm text-purple-600">
+                      <p className="font-semibold text-white">Why select celebrations?</p>
+                      <p className="text-sm text-slate-300">
                         We&apos;ll send you timely reminders, special offers, and curated gift suggestions for each occasion. Never miss an important moment!
                       </p>
                     </div>
@@ -1192,7 +1192,7 @@ const MembershipOnboarding = () => {
                   <Button 
                     variant="outline"
                     onClick={handleBack}
-                    className="flex-1"
+                    className="flex-1 border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white"
                   >
                     <ChevronLeft className="w-4 h-4 mr-2" />
                     Back
