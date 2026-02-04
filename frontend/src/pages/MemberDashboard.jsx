@@ -1137,7 +1137,7 @@ const MemberDashboard = () => {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           {/* Desktop Tab Navigation - Two Rows for All Tabs */}
           <div className="hidden lg:block mb-8">
-            <TabsList className="backdrop-blur-xl bg-slate-900/80 border border-white/10 shadow-2xl p-2 rounded-2xl flex flex-wrap justify-center gap-1.5">
+            <TabsList className="backdrop-blur-xl bg-slate-900/80 border border-white/10 shadow-2xl p-2 rounded-2xl !inline-flex !h-auto flex-wrap justify-center gap-1.5">
               <TabsTrigger value="overview" className="rounded-xl px-4 py-2.5 text-sm font-medium text-slate-400 whitespace-nowrap transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-white/5 hover:text-white">
                 <Home className="w-4 h-4 mr-1.5 inline" /> Home
               </TabsTrigger>
