@@ -1292,43 +1292,22 @@ const MembershipOnboarding = () => {
                     <CreditCard className="w-5 h-5 text-purple-400" />
                     Choose Your Pet Pass
                   </h3>
+
+                  {/* 7 Bonus Days Offer Banner */}
+                  <div className="mb-6 p-3 bg-gradient-to-r from-amber-500/20 to-orange-500/20 rounded-xl border border-amber-500/30 text-center">
+                    <p className="text-amber-300 font-semibold">
+                      🎁 Get <span className="text-amber-400">7 Bonus Days FREE</span> with your Pet Pass!
+                    </p>
+                  </div>
                   
                   {/* Plan Selection */}
                   <div className="space-y-3 mb-6">
-                    {/* 7-Day Explorer - FREE */}
-                    <button
-                      type="button"
-                      onClick={() => setPlanType('explorer')}
-                      className={`w-full p-4 rounded-xl border-2 text-left transition-all ${
-                        planType === 'explorer'
-                          ? 'border-emerald-500 bg-emerald-500/20 shadow-lg shadow-emerald-500/20'
-                          : 'border-slate-600 bg-slate-800/50 hover:border-emerald-500/50'
-                      }`}
-                      data-testid="plan-explorer-btn"
-                    >
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-semibold text-white">7-Day Explorer</p>
-                          <p className="text-sm text-slate-400">Try everything free for 7 days</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-xl font-bold text-emerald-400">FREE</p>
-                          <p className="text-xs text-slate-400">No card needed</p>
-                        </div>
-                      </div>
-                      {planType === 'explorer' && (
-                        <div className="mt-2 flex items-center gap-1 text-emerald-400 text-sm">
-                          <Check className="w-4 h-4" /> Selected
-                        </div>
-                      )}
-                    </button>
-
                     {/* Monthly Trial Option */}
                     <button
                       type="button"
                       onClick={() => setPlanType('trial')}
                       className={`w-full p-4 rounded-xl border-2 text-left transition-all ${
-                        planType === 'trial'
+                        pricing.isTrialPlan
                           ? 'border-pink-500 bg-pink-500/20 shadow-lg shadow-pink-500/20'
                           : 'border-slate-600 bg-slate-800/50 hover:border-pink-500/50'
                       }`}
@@ -1337,14 +1316,14 @@ const MembershipOnboarding = () => {
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="font-semibold text-white">Pet Pass Trial</p>
-                          <p className="text-sm text-slate-400">1 month • Full access</p>
+                          <p className="text-sm text-slate-400">30 days + 7 bonus = <span className="text-emerald-400 font-semibold">37 days</span></p>
                         </div>
                         <div className="text-right">
                           <p className="text-xl font-bold text-white">₹499</p>
                           <p className="text-xs text-slate-400">+ ₹90 GST</p>
                         </div>
                       </div>
-                      {planType === 'trial' && (
+                      {pricing.isTrialPlan && (
                         <div className="mt-2 flex items-center gap-1 text-pink-400 text-sm">
                           <Check className="w-4 h-4" /> Selected
                         </div>
@@ -1356,7 +1335,7 @@ const MembershipOnboarding = () => {
                       type="button"
                       onClick={() => setPlanType('annual')}
                       className={`w-full p-4 rounded-xl border-2 text-left transition-all relative ${
-                        planType === 'annual'
+                        pricing.isFounder
                           ? 'border-pink-500 bg-pink-500/20 shadow-lg shadow-pink-500/20'
                           : 'border-slate-600 bg-slate-800/50 hover:border-pink-500/50'
                       }`}
@@ -1368,14 +1347,15 @@ const MembershipOnboarding = () => {
                       <div className="flex items-center justify-between">
                         <div>
                           <p className="font-semibold text-white">Pet Pass Founder</p>
-                          <p className="text-sm text-slate-400">12 months • Save ₹989/year</p>
+                          <p className="text-sm text-slate-400">365 days + 7 bonus = <span className="text-emerald-400 font-semibold">372 days</span></p>
                         </div>
                         <div className="text-right">
                           <p className="text-xl font-bold text-white">₹4,999</p>
                           <p className="text-xs text-slate-400">+ ₹900 GST</p>
                         </div>
                       </div>
-                      {planType === 'annual' && (
+                      <p className="text-emerald-400 text-xs mt-1 font-semibold">Save ₹989/year vs monthly</p>
+                      {pricing.isFounder && (
                         <div className="mt-2 flex items-center gap-1 text-pink-400 text-sm">
                           <Check className="w-4 h-4" /> Selected
                         </div>
