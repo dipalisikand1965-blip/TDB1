@@ -373,9 +373,14 @@ const DoggyServiceDesk = ({ authHeaders }) => {
   const [newTag, setNewTag] = useState('');
   const [allTags, setAllTags] = useState([]);
   
-  // Ticket Merging
+  // Ticket Merging - Enhanced Zoho Desk style
   const [showMergeModal, setShowMergeModal] = useState(false);
   const [mergeTargetTicket, setMergeTargetTicket] = useState(null);
+  const [mergeReason, setMergeReason] = useState('');
+  const [masterTicketId, setMasterTicketId] = useState(null);
+  const [showMergeIntoModal, setShowMergeIntoModal] = useState(false); // For merging FROM inside a ticket
+  const [searchMergeTarget, setSearchMergeTarget] = useState('');
+  const [mergeableTickets, setMergeableTickets] = useState([]);
   
   // Agent Performance
   const [showPerformanceModal, setShowPerformanceModal] = useState(false);
