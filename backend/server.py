@@ -221,6 +221,9 @@ from export_routes import router as export_router, set_db as set_export_db
 # Source Code Download Routes
 from source_download_routes import router as source_download_router, set_source_download_admin
 
+# Finance & Reconciliation Routes
+from finance_routes import create_finance_routes
+
 # APScheduler for background jobs
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from apscheduler.triggers.cron import CronTrigger
