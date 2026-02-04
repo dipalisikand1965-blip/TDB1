@@ -1422,9 +1422,14 @@ const MembershipOnboarding = () => {
                       <span className="text-white">₹{pricing.subtotal.toLocaleString()}</span>
                     </div>
                     
+                    {/* GST Breakdown - CGST + SGST */}
                     <div className="flex justify-between">
-                      <span className="text-slate-400">GST (18%)</span>
-                      <span className="text-white">₹{pricing.gst.toLocaleString()}</span>
+                      <span className="text-slate-400">CGST (9%)</span>
+                      <span className="text-white">₹{Math.round(pricing.gst / 2).toLocaleString()}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-slate-400">SGST (9%)</span>
+                      <span className="text-white">₹{Math.round(pricing.gst / 2).toLocaleString()}</span>
                     </div>
                     
                     <hr className="border-slate-600" />
