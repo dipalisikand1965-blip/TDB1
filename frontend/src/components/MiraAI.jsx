@@ -47,13 +47,26 @@ const WelcomeCard = ({ user, pets, onLinkClick }) => {
   const userName = user?.name?.split(' ')[0] || 'Friend';
   const breed = pets?.[0]?.identity?.breed || pets?.[0]?.breed || '';
   const petScore = pets?.[0]?.overall_score || pets?.[0]?.soul_score || 0;
+  const petAge = pets?.[0]?.identity?.age_years || pets?.[0]?.age || null;
   
-  // Quick action links
+  // More contextual, warmer quick actions
   const quickLinks = [
-    { label: '🎙️ Voice Order', href: '/voice-order', isExternal: true },
-    { label: 'Find Events', query: 'What pet-friendly events are happening?', icon: '🎉' },
-    { label: 'Trails & Hikes', query: 'Suggest dog-friendly trails and hikes nearby', icon: '🥾' },
+    { label: '🎙️ Voice Chat', href: '/voice-order', isExternal: true },
+    { label: `What does ${petName || 'my pet'} need?`, query: `What might ${petName || 'my pet'} enjoy today?`, icon: '✨' },
+    { label: 'Find Adventures', query: 'Suggest fun activities we can do together this week', icon: '🗺️' },
   ];
+  
+  // Generate a warm, personalized greeting
+  const getWarmGreeting = () => {
+    const hour = new Date().getHours();
+    if (petName) {
+      if (hour < 12) return `How is ${petName} feeling this morning?`;
+      if (hour < 17) return `Is ${petName} having a lovely day?`;
+      if (hour < 21) return `Evening cuddles with ${petName}?`;
+      return `Quiet night with ${petName}?`;
+    }
+    return 'How can I make today special?';
+  };
   
   return (
     <div className="rounded-xl overflow-hidden bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-100 shadow-sm">
@@ -74,13 +87,15 @@ const WelcomeCard = ({ user, pets, onLinkClick }) => {
               <PawPrint className="w-4 h-4 text-white/80" />
               <span className="text-white font-semibold text-sm">{petName}</span>
               {breed && <span className="text-white/70 text-xs">• {breed}</span>}
+              {petAge && <span className="text-white/50 text-xs">• {petAge}y</span>}
             </div>
           )}
         </div>
         
         {/* Image type badge */}
         {imageInfo.type === 'pet' && (
-          <div className="absolute top-2 right-2 bg-purple-600/80 text-white text-[10px] px-2 py-0.5 rounded-full">
+          <div className="absolute top-2 right-2 bg-purple-600/80 text-white text-[10px] px-2 py-0.5 rounded-full flex items-center gap-1">
+            <Heart className="w-3 h-3" />
             {petName}&apos;s Photo
           </div>
         )}
@@ -96,24 +111,22 @@ const WelcomeCard = ({ user, pets, onLinkClick }) => {
           </a>
         )}
         
-        {/* Soul Score badge */}
+        {/* Soul Score badge with sparkle */}
         {petScore > 0 && (
-          <div className="absolute top-2 left-2 bg-white/90 text-purple-700 text-[10px] px-2 py-0.5 rounded-full font-medium">
+          <div className="absolute top-2 left-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-[10px] px-2 py-0.5 rounded-full font-medium flex items-center gap-1">
+            <Sparkles className="w-3 h-3" />
             {Math.round(petScore)}% Soul
           </div>
         )}
       </div>
       
-      {/* Welcome Message */}
+      {/* Welcome Message - Warmer */}
       <div className="p-3">
         <p className="text-sm text-gray-700">
-          <span className="font-semibold text-purple-700">Welcome back, {userName}!</span>
-          {petName && (
-            <span className="text-gray-600"> How is <span className="font-medium">{petName}</span> doing today?</span>
-          )}
+          <span className="font-semibold text-purple-700">Welcome back, {userName}! ✨</span>
         </p>
-        <p className="text-xs text-gray-500 mt-1">
-          I&apos;m Mira, your dedicated Pet Concierge®. How may I assist you?
+        <p className="text-xs text-gray-600 mt-1 italic">
+          {getWarmGreeting()}
         </p>
         
         {/* Quick Action Links */}
@@ -123,7 +136,7 @@ const WelcomeCard = ({ user, pets, onLinkClick }) => {
               <a
                 key={idx}
                 href={link.href}
-                className="flex items-center gap-1 px-2.5 py-1.5 text-xs bg-gradient-to-r from-orange-500 to-red-500 hover:opacity-90 rounded-full text-white font-medium transition-colors cursor-pointer"
+                className="flex items-center gap-1 px-2.5 py-1.5 text-xs bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90 rounded-full text-white font-medium transition-colors cursor-pointer"
               >
                 <span>{link.label}</span>
               </a>
