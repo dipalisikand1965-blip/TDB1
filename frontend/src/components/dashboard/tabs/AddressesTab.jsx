@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../ui/dialo
 import { MapPin, Plus, Home, Building2, Edit2, Trash2, Check, X } from 'lucide-react';
 import { toast } from '../../../hooks/use-toast';
 
-const AddressesTab = ({ savedAddresses, onAddressUpdate, onAddressDelete, onAddressAdd }) => {
+const AddressesTab = ({ savedAddresses = [], onAddressUpdate, onAddressDelete, onAddressAdd }) => {
   const [editingAddress, setEditingAddress] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [newAddress, setNewAddress] = useState({
@@ -15,6 +15,9 @@ const AddressesTab = ({ savedAddresses, onAddressUpdate, onAddressDelete, onAddr
     pincode: '',
     type: 'home'
   });
+  
+  // Ensure savedAddresses is always an array
+  const addresses = Array.isArray(savedAddresses) ? savedAddresses : [];
 
   const handleEditSave = async () => {
     if (!editingAddress) return;
