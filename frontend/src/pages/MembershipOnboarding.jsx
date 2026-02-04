@@ -391,12 +391,8 @@ const MembershipOnboarding = () => {
               ))}
             </div>
             
-            <Badge className={`border-0 px-3 py-1 shadow-lg ${
-              planType === 'explorer' 
-                ? 'bg-gradient-to-r from-emerald-500 to-teal-600 shadow-emerald-500/20' 
-                : 'bg-gradient-to-r from-pink-500 to-purple-600 shadow-pink-500/20'
-            } text-white`}>
-              {planType === 'explorer' ? '🆓 7-Day Explorer' : planType === 'annual' ? '🌟 Pet Pass — Founder' : '✨ Pet Pass — Trial'}
+            <Badge className="bg-gradient-to-r from-pink-500 to-purple-600 shadow-pink-500/20 text-white border-0 px-3 py-1 shadow-lg">
+              {pricing.isFounder ? '🌟 Pet Pass — Founder' : '✨ Pet Pass — Trial'}
             </Badge>
           </div>
         </header>
