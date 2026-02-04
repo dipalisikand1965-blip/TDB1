@@ -39,17 +39,17 @@ const MembershipPayment = () => {
           setOrderData(data);
         } else {
           // If API fails, use fallback data from URL params
-          const plan = searchParams.get('plan') || 'founder';
-          const isFounder = plan === 'annual' || plan === 'founder';
+          const plan = searchParams.get('plan') || 'foundation';
+          const isFoundation = plan === 'annual' || plan === 'foundation';
           setOrderData({
             order_id: orderId,
             user_id: userId,
-            plan_type: isFounder ? 'founder' : 'trial',
-            plan_name: isFounder ? 'Pet Pass Founder' : 'Pet Pass Trial',
-            duration: isFounder ? '372 days' : '37 days',
-            base_price: isFounder ? 4999 : 499,
-            gst: isFounder ? 900 : 90,
-            total: isFounder ? 5899 : 589,
+            plan_type: isFoundation ? 'foundation' : 'trial',
+            plan_name: isFoundation ? 'Pet Pass Foundation' : 'Pet Pass Trial',
+            duration: isFoundation ? '372 days' : '37 days',
+            base_price: isFoundation ? 4999 : 499,
+            gst: isFoundation ? 900 : 90,
+            total: isFoundation ? 5899 : 589,
             bonus_days: 7,
             parent_name: searchParams.get('name') || 'Pet Parent',
             parent_email: searchParams.get('email') || '',
@@ -60,17 +60,17 @@ const MembershipPayment = () => {
       } catch (err) {
         console.error('Error fetching order:', err);
         // Use fallback data
-        const plan = searchParams.get('plan') || 'founder';
-        const isFounder = plan === 'annual' || plan === 'founder';
+        const plan = searchParams.get('plan') || 'foundation';
+        const isFoundation = plan === 'annual' || plan === 'foundation';
         setOrderData({
           order_id: orderId,
           user_id: userId,
-          plan_type: isFounder ? 'founder' : 'trial',
-          plan_name: isFounder ? 'Pet Pass Founder' : 'Pet Pass Trial',
-          duration: isFounder ? '372 days' : '37 days',
-          base_price: isFounder ? 4999 : 499,
-          gst: isFounder ? 900 : 90,
-          total: isFounder ? 5899 : 589,
+          plan_type: isFoundation ? 'foundation' : 'trial',
+          plan_name: isFoundation ? 'Pet Pass Foundation' : 'Pet Pass Trial',
+          duration: isFoundation ? '372 days' : '37 days',
+          base_price: isFoundation ? 4999 : 499,
+          gst: isFoundation ? 900 : 90,
+          total: isFoundation ? 5899 : 589,
           bonus_days: 7,
           parent_name: 'Pet Parent',
           pet_name: 'Your furry friend',
