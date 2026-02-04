@@ -95,7 +95,7 @@ const FinanceManager = () => {
     type: 'service',
     reference_id: '',
     amount: '',
-    payment_method: 'offline',
+    payment_method: 'razorpay',
     notes: '',
     discount_code: '',
     discount_amount: 0,
