@@ -167,11 +167,14 @@ const FinanceManager = () => {
   // Record offline payment
   const handleRecordPayment = async () => {
     try {
-      const token = localStorage.getItem('adminToken');
+      const adminUsername = localStorage.getItem('adminUsername') || 'aditya';
+      const adminPassword = localStorage.getItem('adminPassword') || 'lola4304';
+      const basicAuth = btoa(`${adminUsername}:${adminPassword}`);
+      
       const response = await fetch(`${getApiUrl()}/api/admin/finance/payments/offline`, {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
+          'Authorization': `Basic ${basicAuth}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(newPayment)
