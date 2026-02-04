@@ -131,7 +131,6 @@ const VoiceQuickActions = ({
         toast.error('Could not start voice input. Please try again.');
       }
     }
-    }
   };
 
   const processVoiceCommand = async (text) => {
