@@ -23,13 +23,15 @@ const PARTICLES = Array.from({ length: 20 }, (_, i) => ({
   delay: (i % 5) * 0.4,
 }));
 
-// Emotional hero background images - YOUR authentic photos
-const HERO_IMAGES = [
-  'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/0iy6sezo_shutterstock_504980047%20%282%29.jpg', // Man cuddling beagle - pure bond
-  'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/phjxi6rd_dog-1194087_1920%20%281%29.jpg', // Black retriever with soulful eyes
-  'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/3cqhqxwf_shutterstock_171983261%20%281%29.jpg', // Man cuddling weimaraner
-  'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/jlabx5e0_dog-813103%20%281%29.jpg', // Artistic hound close-up
-  'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/n600xuze_shutterstock_134149577%20%281%29.jpg', // Golden puppy with purple bandana
+// Fallback images in case API fails
+const FALLBACK_HERO_IMAGES = [
+  'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/0iy6sezo_shutterstock_504980047%20%282%29.jpg',
+  'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/phjxi6rd_dog-1194087_1920%20%281%29.jpg',
+];
+
+const FALLBACK_BOND_GALLERY = [
+  { image_url: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/0iy6sezo_shutterstock_504980047%20%282%29.jpg', caption: 'Unconditional love', is_tall: false, is_wide: false },
+  { image_url: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/7oe8caws_shutterstock_1293337687%20%282%29.jpg', caption: 'Pure joy', is_tall: false, is_wide: false },
 ];
 
 // The new emotional home page - designed to capture hearts in 3 seconds
@@ -43,6 +45,41 @@ const Home = () => {
   const [currentHeroImage, setCurrentHeroImage] = useState(0);
   const [soulPulse, setSoulPulse] = useState(false);
   const heroRef = useRef(null);
+  
+  // CMS-driven content
+  const [heroImages, setHeroImages] = useState(FALLBACK_HERO_IMAGES);
+  const [bondGallery, setBondGallery] = useState(FALLBACK_BOND_GALLERY);
+  const [pageContent, setPageContent] = useState({
+    headline: 'Every Pet Has a Soul',
+    subheadline: "We don't just manage pet services. We nurture the soul of your companion.",
+    cta_text: "Discover Your Pet's Soul"
+  });
+
+  // Fetch landing page content from CMS
+  useEffect(() => {
+    const fetchContent = async () => {
+      try {
+        const response = await fetch(`${getApiUrl()}/api/landing-page/content`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.hero_images?.length > 0) {
+            setHeroImages(data.hero_images.map(img => img.image_url));
+          }
+          if (data.bond_gallery?.length > 0) {
+            setBondGallery(data.bond_gallery);
+          }
+          setPageContent({
+            headline: data.headline || 'Every Pet Has a Soul',
+            subheadline: data.subheadline || "We don't just manage pet services. We nurture the soul of your companion.",
+            cta_text: data.cta_text || "Discover Your Pet's Soul"
+          });
+        }
+      } catch (error) {
+        console.debug('Using fallback landing page content');
+      }
+    };
+    fetchContent();
+  }, []);
 
   // Pulse the soul orb
   useEffect(() => {
