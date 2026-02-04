@@ -447,34 +447,15 @@ const VIDEO_TESTIMONIALS = [
   },
 ];
 
-// Real Membership Tiers from thedoggycompany.in/membership
+// Real Membership Tiers - Updated with 7 Bonus Days offer
 const MEMBERSHIP_TIERS = [
-  {
-    name: "Explorer",
-    price: "Free",
-    period: "for 7 days",
-    description: "Discover the Pet Soul™ experience",
-    features: [
-      "Basic Pet Profile",
-      "Limited Mira AI Access",
-      "Browse 14 Life Pillars",
-      "Community Access",
-    ],
-    notIncluded: [
-      "Full Pet Soul™ Profile",
-      "Unlimited Mira AI",
-      "Health Vault & Records",
-      "Priority Support",
-    ],
-    cta: "Start 7-Day Free Trial",
-    ctaLink: "/join?plan=explorer",
-    highlighted: false,
-  },
   {
     name: "Pet Pass Trial",
     price: "₹499",
     period: "/month",
-    description: "Introduction to the concierge experience",
+    description: "Full Concierge® experience for your furry family",
+    duration: "37 days",
+    bonusDays: 7,
     features: [
       "Full Pet Soul™ Profile",
       "Unlimited Mira AI Concierge®",
@@ -484,16 +465,18 @@ const MEMBERSHIP_TIERS = [
       "Paw Rewards Points",
     ],
     notIncluded: [],
-    cta: "Start Trial",
+    cta: "Start with Trial",
     ctaLink: "/join?plan=trial",
     highlighted: false,
     badge: "Try First",
   },
   {
-    name: "Pet Pass Foundation",
+    name: "Pet Pass Founder",
     price: "₹4,999",
     period: "/year",
-    description: "Full concierge relationship",
+    description: "Best value — full Concierge® relationship",
+    duration: "372 days",
+    bonusDays: 7,
     features: [
       "Full Pet Soul™ Profile",
       "Unlimited Mira AI Concierge®",
@@ -503,10 +486,11 @@ const MEMBERSHIP_TIERS = [
       "Double Paw Points (2x)",
       "Birthday Surprise Gift",
       "Early Access to New Features",
+      "Founder Badge on Profile",
     ],
     notIncluded: [],
-    cta: "Activate Pet Pass",
-    ctaLink: "/join?plan=foundation",
+    cta: "Become a Founder",
+    ctaLink: "/join?plan=annual",
     highlighted: true,
     badge: "Best Value",
     savings: "Save ₹989/year",
