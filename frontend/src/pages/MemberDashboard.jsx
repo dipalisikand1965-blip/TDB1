@@ -204,8 +204,8 @@ const PillarPopup = ({ pillar, onClose, onExplore, data }) => {
           )}
         </div>
         
-        <div className="p-4 border-t bg-gray-50 flex gap-3">
-          <Button variant="outline" className="flex-1" onClick={onClose}>
+        <div className="p-4 border-t border-white/10 bg-slate-900/50 flex gap-3">
+          <Button variant="outline" className="flex-1 border-white/10 text-slate-300 hover:bg-white/5 hover:text-white" onClick={onClose}>
             Close
           </Button>
           <Button 
