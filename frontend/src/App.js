@@ -277,6 +277,9 @@ function AppRouter() {
         <Route path="/pet-soul-onboard" element={<MembershipOnboarding />} />
         <Route path="/join" element={<MembershipOnboarding />} />
         
+        {/* Membership Payment Page - Cart/Checkout with Razorpay */}
+        <Route path="/membership/payment" element={<MembershipPayment />} />
+        
         {/* Payment Success Page - NO navbar for celebration feel */}
         <Route path="/payment/success" element={<PaymentSuccess />} />
         <Route path="/welcome" element={<PaymentSuccess />} />
