@@ -16228,6 +16228,120 @@ PILLAR_STOCK_IMAGES = {
     ]
 }
 
+# ============================================
+# 👥 ADMIN MEMBERSHIP/CUSTOMERS API
+# ============================================
+
+@api_router.get("/admin/customers")
+async def get_all_customers(username: str = Depends(verify_admin)):
+    """Get all customers/members with their membership info"""
+    try:
+        # Get all users
+        users = await db.users.find({}, {"_id": 0}).to_list(1000)
+        
+        # Enrich with membership order data
+        enriched_customers = []
+        for user in users:
+            user_email = user.get("email")
+            
+            # Get membership order if exists
+            membership_order = await db.membership_orders.find_one(
+                {"user_email": user_email},
+                {"_id": 0}
+            )
+            
+            # Get pet data
+            user_pets = await db.pets.find(
+                {"owner_email": user_email},
+                {"_id": 0, "name": 1, "breed": 1, "species": 1, "photo_url": 1, "overall_score": 1}
+            ).to_list(10)
+            
+            enriched_customers.append({
+                "id": user.get("id"),
+                "name": user.get("name"),
+                "email": user_email,
+                "phone": user.get("phone"),
+                "whatsapp": user.get("whatsapp"),
+                "city": user.get("city"),
+                "membership_tier": user.get("membership_tier", "free"),
+                "membership": user.get("membership", {}),
+                "membership_order": membership_order,
+                "loyalty_points": user.get("loyalty_points", 0),
+                "pets": user_pets,
+                "pet_count": len(user_pets),
+                "created_at": user.get("created_at"),
+                "last_login": user.get("last_login"),
+                "membership_expires": membership_order.get("expires_at") if membership_order else None,
+                "order_status": membership_order.get("status") if membership_order else "none"
+            })
+        
+        return {"customers": enriched_customers, "total": len(enriched_customers)}
+    except Exception as e:
+        logger.error(f"Error fetching customers: {e}")
+        return {"customers": [], "total": 0}
+
+
+@api_router.put("/admin/customers/{customer_id}")
+async def update_customer(customer_id: str, data: dict, username: str = Depends(verify_admin)):
+    """Update customer membership tier or details"""
+    try:
+        update_data = {"updated_at": get_utc_timestamp()}
+        
+        if "membership_tier" in data:
+            update_data["membership_tier"] = data["membership_tier"]
+        if "loyalty_points" in data:
+            update_data["loyalty_points"] = data["loyalty_points"]
+            
+        await db.users.update_one(
+            {"id": customer_id},
+            {"$set": update_data}
+        )
+        return {"success": True, "message": "Customer updated"}
+    except Exception as e:
+        logger.error(f"Error updating customer: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@api_router.post("/admin/members/{member_id}/points")
+async def adjust_member_points(member_id: str, data: dict, username: str = Depends(verify_admin)):
+    """Adjust member's paw points"""
+    try:
+        points = data.get("points", 0)
+        reason = data.get("reason", "Admin adjustment")
+        
+        # Get current points
+        user = await db.users.find_one({"id": member_id})
+        if not user:
+            raise HTTPException(status_code=404, detail="Member not found")
+        
+        current_points = user.get("loyalty_points", 0)
+        new_points = max(0, current_points + points)  # Don't go negative
+        
+        # Update points
+        await db.users.update_one(
+            {"id": member_id},
+            {"$set": {"loyalty_points": new_points, "updated_at": get_utc_timestamp()}}
+        )
+        
+        # Log the transaction
+        await db.paw_points_history.insert_one({
+            "user_id": member_id,
+            "type": "earn" if points > 0 else "redeem",
+            "points": abs(points),
+            "description": reason,
+            "admin_adjusted": True,
+            "adjusted_by": username,
+            "created_at": get_utc_timestamp()
+        })
+        
+        return {"success": True, "new_balance": new_points}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error adjusting points: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @api_router.post("/admin/products/add-images")
 async def bulk_add_product_images(username: str = Depends(verify_admin)):
     """Add stock images to products that don't have images"""
