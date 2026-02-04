@@ -799,7 +799,7 @@ const Home = () => {
 
           {/* CTA - Single, powerful */}
           <motion.div
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+            className="flex flex-col gap-4 justify-center items-center"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.6 }}
@@ -807,7 +807,7 @@ const Home = () => {
             <Link to="/join?plan=foundation">
               <Button 
                 size="lg" 
-                className="group relative bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white px-10 py-7 text-lg rounded-full shadow-2xl shadow-purple-500/30 transition-all hover:scale-105 hover:shadow-purple-500/50"
+                className="group relative bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white px-8 py-6 sm:px-10 sm:py-7 text-base sm:text-lg rounded-full shadow-2xl shadow-purple-500/30 transition-all hover:scale-105 hover:shadow-purple-500/50"
                 data-testid="hero-discover-soul-btn"
               >
                 <motion.span
@@ -824,7 +824,7 @@ const Home = () => {
             {/* Stunning Video Play Button */}
             <motion.button
               onClick={() => setShowVideo(true)}
-              className="group flex items-center gap-4 px-6 py-3"
+              className="group flex items-center gap-3 px-4 py-2"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
             >
@@ -840,13 +840,13 @@ const Home = () => {
                   transition={{ duration: 2, repeat: Infinity }}
                 />
                 {/* Play button circle */}
-                <div className="relative w-14 h-14 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center shadow-lg shadow-purple-500/30 group-hover:shadow-purple-500/50 transition-shadow">
-                  <Play className="w-6 h-6 text-white fill-white ml-1" />
+                <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center shadow-lg shadow-purple-500/30 group-hover:shadow-purple-500/50 transition-shadow">
+                  <Play className="w-5 h-5 sm:w-6 sm:h-6 text-white fill-white ml-0.5" />
                 </div>
               </div>
               <div className="text-left">
-                <span className="block text-white font-semibold group-hover:text-purple-200 transition-colors">Watch Our Story</span>
-                <span className="block text-white/50 text-sm">See the magic unfold</span>
+                <span className="block text-white font-semibold text-sm sm:text-base group-hover:text-purple-200 transition-colors">Watch Our Story</span>
+                <span className="block text-white/50 text-xs sm:text-sm">See the magic unfold</span>
               </div>
             </motion.button>
           </motion.div>
