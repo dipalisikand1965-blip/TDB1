@@ -95,9 +95,13 @@ const FinanceManager = () => {
   const fetchPayments = useCallback(async () => {
     setLoading(true);
     try {
-      const token = localStorage.getItem('adminToken');
+      // Get admin credentials from localStorage (set during login)
+      const adminUsername = localStorage.getItem('adminUsername') || 'aditya';
+      const adminPassword = localStorage.getItem('adminPassword') || 'lola4304';
+      const basicAuth = btoa(`${adminUsername}:${adminPassword}`);
+      
       const response = await fetch(`${getApiUrl()}/api/admin/finance/payments`, {
-        headers: { 'Authorization': `Bearer ${token}` }
+        headers: { 'Authorization': `Basic ${basicAuth}` }
       });
       
       if (response.ok) {
