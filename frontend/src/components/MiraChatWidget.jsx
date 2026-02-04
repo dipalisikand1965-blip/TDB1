@@ -106,14 +106,15 @@ const MiraChatWidget = ({
   const [showCinematicKit, setShowCinematicKit] = useState(false);
   const [cinematicKitData, setCinematicKitData] = useState({ name: '', items: [] });
   
-  // Chat state - Initialize from sessionStorage to persist across pillar switches
-  const [messages, setMessages] = useState(() => getStoredMessages());
+  // Chat state - Initialize empty, will load per-pillar messages in useEffect
+  const [messages, setMessages] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [sessionId] = useState(generateSessionId);
   const [selectedPet, setSelectedPet] = useState(null);
   const [pets, setPets] = useState([]);
   const [currentPillar, setCurrentPillar] = useState(pillar);
+  const [messagesLoaded, setMessagesLoaded] = useState(false);
   
   // Pet-specific recommendations & soul intelligence
   const [petRecommendations, setPetRecommendations] = useState([]);
