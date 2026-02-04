@@ -20,6 +20,7 @@ import { toast } from '../hooks/use-toast';
 import { API_URL } from '../utils/api';
 import PetAvatar from '../components/PetAvatar';
 import SoulScoreArc from '../components/SoulScoreArc';
+import LivingSoulOrb from '../components/LivingSoulOrb';
 
 // Lazy load heavy components to improve initial render
 const PawPointsRewards = lazy(() => import('../components/PawPointsRewards'));
