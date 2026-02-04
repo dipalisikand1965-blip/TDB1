@@ -516,15 +516,19 @@ const Home = () => {
                   transition={{ delay: 0.3 + idx * 0.1 }}
                   className="relative group"
                 >
-                  <div className="absolute inset-0 rounded-2xl bg-purple-500/10 blur-xl group-hover:bg-purple-500/20 transition-all duration-500" />
-                  <div className="relative w-44 h-44 rounded-2xl overflow-hidden border border-white/5 shadow-xl group-hover:border-white/20 transition-all duration-300 group-hover:scale-105">
+                  <div className="absolute inset-0 rounded-2xl bg-purple-500/15 blur-xl group-hover:bg-purple-500/25 transition-all duration-500" />
+                  <div className="relative w-44 h-44 rounded-2xl overflow-hidden border border-white/10 shadow-xl group-hover:border-white/20 transition-all duration-300 group-hover:scale-105 bg-slate-900">
+                    {/* Image with blend mode to darken white backgrounds */}
                     <img 
                       src={item.image_url} 
                       alt={item.caption}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover mix-blend-luminosity"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    <p className="absolute bottom-2 left-2 right-2 text-white text-xs font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-300 truncate">
+                    {/* Dark color overlay to blend white backgrounds */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-purple-900/40 via-slate-900/30 to-pink-900/40 mix-blend-multiply" />
+                    {/* Bottom gradient for caption */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent" />
+                    <p className="absolute bottom-2 left-2 right-2 text-white text-xs font-medium truncate">
                       {item.caption}
                     </p>
                   </div>
