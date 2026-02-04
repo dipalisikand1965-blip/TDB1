@@ -238,6 +238,79 @@ const RewardsTab = ({
           </div>
         </Card>
       )}
+
+      {/* Redeem Rewards Modal */}
+      <Dialog open={showRedeemModal} onOpenChange={setShowRedeemModal}>
+        <DialogContent className="bg-slate-900 border border-white/10 text-white max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-white flex items-center gap-2 text-xl">
+              <Gift className="w-6 h-6 text-purple-400" />
+              Redeem Paw Points
+            </DialogTitle>
+          </DialogHeader>
+          
+          {/* Points Balance */}
+          <div className="p-4 bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-xl border border-purple-500/30 mb-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-slate-400">Available Balance</p>
+                <p className="text-3xl font-bold text-white">{totalPawPoints.toLocaleString()} <span className="text-lg text-purple-400">pts</span></p>
+              </div>
+              <div className="text-4xl">{currentTier.icon}</div>
+            </div>
+          </div>
+          
+          {/* Rewards Grid */}
+          <div className="space-y-3">
+            <p className="text-sm text-slate-400">Choose a reward to redeem:</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {redeemableRewards.map((reward) => {
+                const canRedeem = totalPawPoints >= reward.points;
+                return (
+                  <div 
+                    key={reward.id}
+                    className={`p-4 rounded-xl border transition-all ${
+                      canRedeem 
+                        ? 'bg-slate-800/50 border-white/10 hover:border-purple-500/30 cursor-pointer' 
+                        : 'bg-slate-800/30 border-white/5 opacity-50'
+                    }`}
+                    onClick={() => canRedeem && handleRedeem(reward)}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${reward.color} flex items-center justify-center text-white flex-shrink-0`}>
+                        {reward.icon}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-white text-sm">{reward.name}</p>
+                        <p className="text-xs text-slate-400 line-clamp-2 mb-2">{reward.description}</p>
+                        <div className="flex items-center justify-between">
+                          <Badge className={`${canRedeem ? 'bg-purple-500/20 text-purple-400 border-purple-500/30' : 'bg-slate-700 text-slate-500 border-slate-600'}`}>
+                            {reward.points} pts
+                          </Badge>
+                          {canRedeem ? (
+                            <Button size="sm" className="h-7 px-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs">
+                              Redeem
+                            </Button>
+                          ) : (
+                            <span className="text-xs text-slate-500">Need {reward.points - totalPawPoints} more</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+          
+          {/* Close Button */}
+          <div className="flex justify-end mt-4 pt-4 border-t border-white/10">
+            <Button variant="outline" onClick={() => setShowRedeemModal(false)} className="border-white/10 text-white hover:bg-slate-800">
+              Close
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
