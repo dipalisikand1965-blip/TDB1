@@ -167,26 +167,26 @@ const PillarPopup = ({ pillar, onClose, onExplore, data }) => {
         <div className="grid grid-cols-3 gap-px bg-gray-100 border-b">
           {pillarData.stats.map((stat, idx) => (
             <div key={idx} className="bg-white p-4 text-center">
-              <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-              <p className="text-xs text-gray-500">{stat.label}</p>
+              <p className="text-2xl font-bold text-white">{stat.value}</p>
+              <p className="text-xs text-slate-400">{stat.label}</p>
             </div>
           ))}
         </div>
         
         <div className="p-4 max-h-60 overflow-y-auto">
-          <h3 className="text-sm font-semibold text-gray-600 mb-3">Recent Activity</h3>
+          <h3 className="text-sm font-semibold text-slate-400 mb-3">Recent Activity</h3>
           {pillarData.items.length > 0 ? (
             <div className="space-y-2">
               {pillarData.items.slice(0, 5).map((item, idx) => (
-                <div key={idx} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                <div key={idx} className="flex items-center gap-3 p-3 bg-slate-800/50 rounded-lg border border-white/5">
                   <div className={`w-10 h-10 rounded-lg bg-gradient-to-br ${pillar.color} flex items-center justify-center text-white text-lg`}>
                     {pillar.icon}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate">
+                    <p className="text-sm font-medium text-white truncate">
                       {item.items?.[0]?.name || item.restaurant_name || item.property_name || item.destination || 'Activity'}
                     </p>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-slate-500">
                       {item.created_at ? new Date(item.created_at).toLocaleDateString() : 
                        item.date || item.check_in || 'Recent'}
                     </p>
@@ -196,10 +196,10 @@ const PillarPopup = ({ pillar, onClose, onExplore, data }) => {
             </div>
           ) : (
             <div className="text-center py-8">
-              <div className="w-16 h-16 mx-auto bg-gray-100 rounded-full flex items-center justify-center text-3xl mb-3">
+              <div className="w-16 h-16 mx-auto bg-slate-800/50 rounded-full flex items-center justify-center text-3xl mb-3 border border-white/5">
                 {pillar.icon}
               </div>
-              <p className="text-sm text-gray-500">{pillarData.emptyText}</p>
+              <p className="text-sm text-slate-500">{pillarData.emptyText}</p>
             </div>
           )}
         </div>
