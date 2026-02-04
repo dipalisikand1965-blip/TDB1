@@ -10624,6 +10624,86 @@ async def upload_pet_photo(pet_id: str, photo: UploadFile = File(...)):
     return {"photo_url": photo_url, "message": "Photo uploaded successfully"}
 
 
+@api_router.post("/users/{user_id}/photo")
+async def upload_user_photo(user_id: str, photo: UploadFile = File(...)):
+    """Upload or update a user's profile photo - stores as base64 in database"""
+    import base64
+    
+    # Validate user exists
+    user = await db.users.find_one({"id": user_id})
+    if not user:
+        # Also check members collection
+        user = await db.members.find_one({"id": user_id})
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+    
+    # Validate file type
+    if not photo.content_type or not photo.content_type.startswith('image/'):
+        raise HTTPException(status_code=400, detail="File must be an image")
+    
+    # Read file content
+    content = await photo.read()
+    
+    # Validate file size (max 2MB for base64 storage)
+    if len(content) > 2 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="Image must be less than 2MB")
+    
+    # Get content type
+    content_type = photo.content_type or 'image/jpeg'
+    
+    # Convert to base64 for database storage
+    photo_base64 = base64.b64encode(content).decode('utf-8')
+    
+    # Generate URL using API route that will serve from database
+    photo_url = f"/api/user-photo/{user_id}"
+    
+    # Update user record in both collections
+    update_data = {
+        "photo_url": photo_url, 
+        "photo_base64": photo_base64,
+        "photo_content_type": content_type,
+        "updated_at": get_utc_timestamp()
+    }
+    
+    await db.users.update_one(
+        {"id": user_id},
+        {"$set": update_data}
+    )
+    
+    await db.members.update_one(
+        {"id": user_id},
+        {"$set": update_data}
+    )
+    
+    logger.info(f"User photo uploaded for {user_id}, size: {len(content)} bytes")
+    return {"photo_url": photo_url, "message": "Photo uploaded successfully"}
+
+
+@api_router.get("/user-photo/{user_id}")
+async def get_user_photo(user_id: str):
+    """Serve user photo from database storage"""
+    import base64
+    from fastapi.responses import Response
+    
+    # Check users collection first, then members
+    user = await db.users.find_one({"id": user_id}, {"photo_base64": 1, "photo_content_type": 1})
+    if not user or not user.get("photo_base64"):
+        user = await db.members.find_one({"id": user_id}, {"photo_base64": 1, "photo_content_type": 1})
+    
+    if not user or not user.get("photo_base64"):
+        raise HTTPException(status_code=404, detail="Photo not found")
+    
+    # Decode base64 to bytes
+    photo_bytes = base64.b64decode(user["photo_base64"])
+    content_type = user.get("photo_content_type", "image/jpeg")
+    
+    return Response(
+        content=photo_bytes,
+        media_type=content_type,
+        headers={"Cache-Control": "public, max-age=86400"}  # Cache for 1 day
+    )
+
+
 @api_router.post("/pets/{pet_id}/gallery")
 async def upload_gallery_photo(pet_id: str, photo: UploadFile = File(...)):
     """Upload a photo to pet's gallery (multiple photos support)"""
