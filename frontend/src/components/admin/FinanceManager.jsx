@@ -319,21 +319,23 @@ const FinanceManager = () => {
 
   // Export to CSV
   const exportToCSV = () => {
-    const headers = ['Payment ID', 'Date', 'Member', 'Email', 'Type', 'Amount', 'Discount', 'Paw Points', 'Net Amount', 'Method', 'Status', 'Reference', 'Reconciled'];
+    const headers = ['Payment ID', 'Date', 'Member', 'Email', 'Type', 'Amount', 'Discount', 'Paw Points', 'GST', 'Net Amount', 'Method', 'Status', 'Reference', 'Reconciled', 'Notes'];
     const rows = filteredPayments.map(p => [
       p.id,
-      new Date(p.created_at).toLocaleDateString(),
+      new Date(p.created_at).toLocaleDateString('en-IN'),
       p.member_name,
       p.member_email,
       p.type,
       p.subtotal || p.amount,
       p.discount_amount || 0,
       p.paw_points_value || 0,
+      p.gst_amount || 0,
       p.total || p.amount,
       p.payment_method,
       p.status,
       p.reference_id,
-      p.reconciled ? 'Yes' : 'No'
+      p.reconciled ? 'Yes' : 'No',
+      (p.notes || '').replace(/,/g, ';')
     ]);
     
     const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
@@ -343,6 +345,99 @@ const FinanceManager = () => {
     a.href = url;
     a.download = `payments_${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
+  };
+
+  // Export GST Report
+  const exportGSTReport = () => {
+    const completedPayments = payments.filter(p => p.status === 'completed' && p.gst_amount > 0);
+    const headers = ['Invoice No', 'Date', 'Customer Name', 'Customer Email', 'GSTIN', 'HSN/SAC', 'Taxable Value', 'CGST (9%)', 'SGST (9%)', 'Total GST', 'Invoice Value'];
+    const rows = completedPayments.map(p => {
+      const taxableValue = (p.subtotal || p.amount) - (p.discount_amount || 0);
+      const gstAmount = p.gst_amount || (taxableValue * 0.18);
+      const cgst = gstAmount / 2;
+      const sgst = gstAmount / 2;
+      return [
+        p.id,
+        new Date(p.created_at).toLocaleDateString('en-IN'),
+        p.member_name,
+        p.member_email,
+        '', // GSTIN - to be filled
+        p.type === 'service' ? '999799' : '0910', // SAC for pet services
+        taxableValue.toFixed(2),
+        cgst.toFixed(2),
+        sgst.toFixed(2),
+        gstAmount.toFixed(2),
+        (p.total || p.amount).toFixed(2)
+      ];
+    });
+    
+    const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `gst_report_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+  };
+
+  // Export Member Ledger
+  const exportMemberLedger = (memberEmail) => {
+    const memberPayments = payments.filter(p => p.member_email === memberEmail);
+    const headers = ['Date', 'Transaction ID', 'Type', 'Description', 'Debit', 'Credit', 'Balance', 'Status'];
+    let balance = 0;
+    const rows = memberPayments.map(p => {
+      const isRefund = p.type === 'refund' || p.status === 'refunded';
+      const amount = p.total || p.amount;
+      if (isRefund) {
+        balance -= Math.abs(amount);
+      } else if (p.status === 'completed') {
+        balance += amount;
+      }
+      return [
+        new Date(p.created_at).toLocaleDateString('en-IN'),
+        p.id,
+        p.type,
+        p.notes || p.reference_id || '-',
+        isRefund ? Math.abs(amount).toFixed(2) : '',
+        !isRefund && p.status === 'completed' ? amount.toFixed(2) : '',
+        balance.toFixed(2),
+        p.status
+      ];
+    });
+    
+    const csv = [headers, ...rows].map(r => r.join(',')).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `ledger_${memberEmail.split('@')[0]}_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+  };
+
+  // Calculate advanced stats
+  const advancedStats = {
+    gstCollected: payments.filter(p => p.status === 'completed').reduce((sum, p) => sum + (p.gst_amount || 0), 0),
+    avgTransactionValue: payments.length > 0 ? stats.total_collected / payments.filter(p => p.status === 'completed').length : 0,
+    pendingReconciliation: payments.filter(p => p.status === 'completed' && !p.reconciled).length,
+    thisMonthRevenue: payments.filter(p => {
+      const paymentDate = new Date(p.created_at);
+      const now = new Date();
+      return paymentDate.getMonth() === now.getMonth() && 
+             paymentDate.getFullYear() === now.getFullYear() && 
+             p.status === 'completed';
+    }).reduce((sum, p) => sum + (p.total || p.amount || 0), 0),
+    lastMonthRevenue: payments.filter(p => {
+      const paymentDate = new Date(p.created_at);
+      const now = new Date();
+      const lastMonth = now.getMonth() === 0 ? 11 : now.getMonth() - 1;
+      const lastMonthYear = now.getMonth() === 0 ? now.getFullYear() - 1 : now.getFullYear();
+      return paymentDate.getMonth() === lastMonth && 
+             paymentDate.getFullYear() === lastMonthYear && 
+             p.status === 'completed';
+    }).reduce((sum, p) => sum + (p.total || p.amount || 0), 0),
+    membershipRevenue: payments.filter(p => p.type === 'membership' && p.status === 'completed').reduce((sum, p) => sum + (p.total || p.amount || 0), 0),
+    serviceRevenue: payments.filter(p => p.type === 'service' && p.status === 'completed').reduce((sum, p) => sum + (p.total || p.amount || 0), 0),
+    productRevenue: payments.filter(p => p.type === 'product' && p.status === 'completed').reduce((sum, p) => sum + (p.total || p.amount || 0), 0),
   };
 
   const formatCurrency = (amount) => {
