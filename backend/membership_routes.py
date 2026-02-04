@@ -265,8 +265,11 @@ async def create_payment(request: PaymentCreateRequest):
     db = get_db()
     logger = get_logger()
     
-    # Find the existing membership order
-    membership = await db.memberships.find_one({"id": request.order_id})
+    # Find the existing membership order - check both collections for compatibility
+    membership = await db.membership_orders.find_one({"id": request.order_id})
+    if not membership:
+        # Fallback to memberships collection for backward compatibility
+        membership = await db.memberships.find_one({"id": request.order_id})
     if not membership:
         raise HTTPException(status_code=404, detail="Order not found")
     
@@ -287,8 +290,8 @@ async def create_payment(request: PaymentCreateRequest):
                 }
             })
             
-            # Update membership with razorpay order id
-            await db.memberships.update_one(
+            # Update membership order with razorpay order id
+            await db.membership_orders.update_one(
                 {"id": request.order_id},
                 {"$set": {
                     "payment.razorpay_order_id": razorpay_order["id"],
