@@ -623,20 +623,20 @@ const LearnPage = () => {
       </div>
 
       {/* Featured Programs */}
-      <div id="programs" className="py-16 bg-gray-50">
+      <div id="programs" className="py-10 sm:py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center justify-between mb-6 sm:mb-8">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900">Training Programs</h2>
-              <p className="text-gray-600 mt-1">Expert-designed courses for every skill level</p>
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Training Programs</h2>
+              <p className="text-gray-600 mt-1 text-sm sm:text-base">Expert-designed courses for every skill level</p>
             </div>
           </div>
 
           <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6">
-            {(featuredPrograms.length > 0 ? featuredPrograms : programs).map((program) => (
+            {(featuredPrograms.length > 0 ? featuredPrograms : programs).map((program, idx) => (
               <Card 
                 key={program.id} 
-                className="overflow-hidden hover:shadow-xl transition-all cursor-pointer" 
+                className={`animate-scale-in stagger-${Math.min((idx % 3) + 1, 3)} overflow-hidden hover:shadow-xl hover:scale-[1.02] transition-all cursor-pointer`} 
                 data-testid={`program-${program.id}`}
                 onClick={() => { setSelectedProgram(program); setShowEnrollModal(true); }}
               >
