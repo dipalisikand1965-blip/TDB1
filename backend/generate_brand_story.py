@@ -98,7 +98,7 @@ def generate_clip(clip_info):
         video_bytes = video_gen.text_to_video(
             prompt=clip_info['prompt'].strip(),
             model="sora-2",
-            size="1920x1080",  # Full HD
+            size="1792x1024",  # Cinematic widescreen (supported size)
             duration=clip_info['duration'],
             max_wait_time=600
         )
