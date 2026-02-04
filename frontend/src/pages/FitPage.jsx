@@ -822,18 +822,18 @@ const FitPage = () => {
       </section>
       
       {/* ==================== CONCIERGE® SERVICES SECTION ==================== */}
-      <section id="services" className="py-12 md:py-16 bg-gradient-to-b from-teal-50/30 to-white">
+      <section id="services" className="py-10 sm:py-12 md:py-16 bg-gradient-to-b from-teal-50/30 to-white">
         <div className="max-w-7xl mx-auto px-4">
           {/* Section Header */}
-          <div className="mb-8">
+          <div className="mb-6 sm:mb-8">
             <div className="flex items-center gap-2 mb-2">
-              <Sparkles className="w-5 h-5 text-teal-600" />
-              <span className="text-sm font-medium text-teal-600 uppercase tracking-wider">Concierge® Services</span>
+              <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-teal-600" />
+              <span className="text-xs sm:text-sm font-medium text-teal-600 uppercase tracking-wider">Concierge® Services</span>
             </div>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">
               Premium Fitness Services
             </h2>
-            <p className="text-gray-500 mt-2 max-w-xl">
+            <p className="text-gray-500 mt-2 max-w-xl text-sm sm:text-base">
               Tap any service for details. Our Concierge® team handles all coordination.
             </p>
           </div>
