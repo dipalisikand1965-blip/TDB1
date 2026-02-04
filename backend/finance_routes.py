@@ -164,7 +164,7 @@ def create_finance_routes(db, verify_admin):
             await db.admin_notifications.insert_one({
                 "id": f"NOTIF-{uuid.uuid4().hex[:8]}",
                 "type": "payment_received",
-                "title": f"💰 Offline Payment Recorded",
+                "title": "💰 Offline Payment Recorded",
                 "message": f"₹{total:,.0f} received from {member_name} for {payment.type}",
                 "category": "finance",
                 "priority": "normal",
@@ -275,7 +275,7 @@ def create_finance_routes(db, verify_admin):
             await db.admin_notifications.insert_one({
                 "id": f"NOTIF-{uuid.uuid4().hex[:8]}",
                 "type": "refund_processed",
-                "title": f"🔄 Refund Processed",
+                "title": "🔄 Refund Processed",
                 "message": f"₹{request.amount:,.0f} refunded to {payment.get('member_name')} - {request.reason}",
                 "category": "finance",
                 "priority": "high",
