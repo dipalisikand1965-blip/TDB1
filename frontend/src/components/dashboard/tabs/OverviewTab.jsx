@@ -48,15 +48,15 @@ const OverviewTab = ({
     <div className="animate-in fade-in-50 duration-300">
       {/* PET SELECTOR - Show if multiple pets */}
       {pets.length > 1 && (
-        <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-200">
+        <div className="mb-6 p-4 bg-slate-900/60 backdrop-blur-xl rounded-xl border border-white/10">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-xs text-purple-600 font-medium">VIEWING DASHBOARD FOR</p>
+            <p className="text-xs text-purple-400 font-medium">VIEWING DASHBOARD FOR</p>
             {currentPet && (
               <Button 
                 variant="ghost" 
                 size="sm"
                 onClick={() => navigate(`/pet/${currentPet.id}`)}
-                className="text-purple-600 hover:text-purple-700 hover:bg-purple-100 text-xs h-7"
+                className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 text-xs h-7"
                 data-testid="go-to-pet-soul-btn"
               >
                 <Sparkles className="w-3 h-3 mr-1" />
@@ -71,8 +71,8 @@ const OverviewTab = ({
                 onClick={() => onPetChange?.(pet.id)}
                 className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all ${
                   currentPet?.id === pet.id 
-                    ? 'bg-purple-600 text-white shadow-md' 
-                    : 'bg-white border border-gray-200 text-gray-700 hover:border-purple-300'
+                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/30' 
+                    : 'bg-slate-800/50 border border-white/10 text-slate-300 hover:border-purple-500/50'
                 }`}
                 data-testid={`pet-selector-${pet.name?.toLowerCase()}`}
               >
@@ -87,13 +87,13 @@ const OverviewTab = ({
       
       {/* SINGLE PET - Show pet soul journey link */}
       {pets.length === 1 && currentPet && (
-        <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-200">
+        <div className="mb-6 p-4 bg-slate-900/60 backdrop-blur-xl rounded-xl border border-white/10">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <span className="text-2xl">{currentPet.species === 'cat' ? '🐱' : '🐕'}</span>
               <div>
-                <p className="font-semibold text-gray-900">{currentPet.name}'s Dashboard</p>
-                <p className="text-xs text-gray-500">{currentPet.breed || 'Your beloved pet'}</p>
+                <p className="font-semibold text-white">{currentPet.name}'s Dashboard</p>
+                <p className="text-xs text-slate-400">{currentPet.breed || 'Your beloved pet'}</p>
               </div>
             </div>
             <Button 
