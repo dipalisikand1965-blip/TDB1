@@ -433,55 +433,55 @@ const MembershipOnboarding = () => {
 
                   {/* Email */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    <label className="block text-sm font-medium text-slate-300 mb-1.5">
                       Email Address *
                     </label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
                       <Input
                         type="email"
                         value={parentData.email}
                         onChange={(e) => setParentData({...parentData, email: e.target.value})}
                         placeholder="you@example.com"
-                        className={`pl-10 ${parentErrors.email ? 'border-red-500' : ''}`}
+                        className={`pl-10 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-pink-500 focus:ring-pink-500/20 ${parentErrors.email ? 'border-red-500' : ''}`}
                         data-testid="parent-email-input"
                       />
                     </div>
-                    {parentErrors.email && <p className="text-red-500 text-xs mt-1">{parentErrors.email}</p>}
+                    {parentErrors.email && <p className="text-red-400 text-xs mt-1">{parentErrors.email}</p>}
                   </div>
 
                   {/* Address */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    <label className="block text-sm font-medium text-slate-300 mb-1.5">
                       Address *
                     </label>
                     <div className="relative">
-                      <Home className="absolute left-3 top-3 w-5 h-5 text-gray-400" />
+                      <Home className="absolute left-3 top-3 w-5 h-5 text-slate-500" />
                       <textarea
                         value={parentData.address}
                         onChange={(e) => setParentData({...parentData, address: e.target.value})}
                         placeholder="House/Flat No., Street, Landmark..."
                         rows={2}
-                        className={`w-full pl-10 pr-3 py-2 border rounded-md focus:ring-2 focus:ring-purple-500 focus:border-transparent ${parentErrors.address ? 'border-red-500' : 'border-gray-300'}`}
+                        className={`w-full pl-10 pr-3 py-2 bg-slate-800/50 border border-slate-700 rounded-md text-white placeholder:text-slate-500 focus:ring-2 focus:ring-pink-500/20 focus:border-pink-500 ${parentErrors.address ? 'border-red-500' : ''}`}
                         data-testid="parent-address-input"
                         required
                       />
                     </div>
                     {parentErrors.address ? (
-                      <p className="text-xs text-red-500 mt-1">{parentErrors.address}</p>
+                      <p className="text-xs text-red-400 mt-1">{parentErrors.address}</p>
                     ) : (
-                      <p className="text-xs text-gray-500 mt-1">Required for deliveries and service visits</p>
+                      <p className="text-xs text-slate-500 mt-1">Required for deliveries and service visits</p>
                     )}
                   </div>
 
                   {/* City & Pincode */}
                   <div className="grid grid-cols-2 gap-4">
                     <div className="relative">
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                      <label className="block text-sm font-medium text-slate-300 mb-1.5">
                         City *
                       </label>
                       <div className="relative">
-                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
+                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 z-10" />
                         <Input
                           value={parentData.city}
                           onChange={(e) => {
@@ -492,17 +492,17 @@ const MembershipOnboarding = () => {
                           onFocus={() => setShowCitySuggestions(true)}
                           onBlur={() => setTimeout(() => setShowCitySuggestions(false), 200)}
                           placeholder="Select city"
-                          className={`pl-10 ${parentErrors.city ? 'border-red-500' : ''}`}
+                          className={`pl-10 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-pink-500 ${parentErrors.city ? 'border-red-500' : ''}`}
                           data-testid="parent-city-input"
                         />
                         {showCitySuggestions && (
-                          <div className="absolute z-20 w-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-48 overflow-y-auto">
+                          <div className="absolute z-20 w-full mt-1 bg-slate-800 border border-slate-700 rounded-md shadow-lg max-h-48 overflow-y-auto">
                             {filteredCities.length > 0 ? (
                               filteredCities.map((city) => (
                                 <button
                                   key={city}
                                   type="button"
-                                  className="w-full px-4 py-2 text-left text-sm hover:bg-purple-50 focus:bg-purple-50"
+                                  className="w-full px-4 py-2 text-left text-sm text-slate-200 hover:bg-pink-500/20 focus:bg-pink-500/20"
                                   onMouseDown={() => {
                                     setParentData({...parentData, city});
                                     setCitySearch(city);
@@ -515,7 +515,7 @@ const MembershipOnboarding = () => {
                             ) : citySearch.trim().length > 0 ? (
                               <button
                                 type="button"
-                                className="w-full px-4 py-2 text-left text-sm hover:bg-purple-50 focus:bg-purple-50 text-purple-600"
+                                className="w-full px-4 py-2 text-left text-sm text-pink-400 hover:bg-pink-500/20 focus:bg-pink-500/20"
                                 onMouseDown={() => {
                                   setParentData({...parentData, city: citySearch.trim()});
                                   setShowCitySuggestions(false);
@@ -527,7 +527,7 @@ const MembershipOnboarding = () => {
                           </div>
                         )}
                       </div>
-                      {parentErrors.city && <p className="text-red-500 text-xs mt-1">{parentErrors.city}</p>}
+                      {parentErrors.city && <p className="text-red-400 text-xs mt-1">{parentErrors.city}</p>}
                     </div>
                     
                     <div>
