@@ -24,7 +24,38 @@ Mira AI positioned as the "memory and judgement layer" - she doesn't fulfil requ
 
 ## What's Been Implemented
 
-### February 4, 2026 (Latest Session) - Payment Flow Fix & Step 2 UI Enhancements
+### February 4, 2026 (Current Session) - Dashboard Navigation & Mira Memory Enhancement
+
+#### Dashboard Navigation Fixes (P0)
+- ✅ **Pet Card Click Navigation** - Clicking pet cards on dashboard navigates to `/pet/{petId}` page
+- ✅ **Back to Home Button** - Mobile-only sticky header with back arrow and X button appears on all non-overview tabs
+- ✅ **Verified Navigation** - Pet cards have `onClick={() => navigate(\`/pet/${pet.id}\`)}`
+
+#### Mira AI Conversation Memory Enhancement (P1)
+- ✅ **Backend Memory System** - Already existed in `mira_memory.py`, `mira_memory_routes.py`
+- ✅ **memories_used Field** - Chat API now returns `memories_used: boolean` indicating if relationship memories were used
+- ✅ **"Remembering you" Indicator** - MiraAI chat shows `<Brain /> Remembering you` badge when memories are used in response
+- ✅ **MiraTab Memory Display** - New "What Mira Remembers" section with:
+  - Memory type cards (Events, Health, Shopping, General) with counts
+  - Expandable lists showing actual memory content
+  - Delete memory functionality per item
+  - Refresh button to reload memories
+- ✅ **Memory Extraction** - Mira automatically extracts and stores memories from conversations
+- ✅ **Contextual Surfacing** - Memories are surfaced only when relevant to current conversation
+
+#### Files Modified
+- `/app/frontend/src/pages/MemberDashboard.jsx` - Pet card onClick, Back to Home button
+- `/app/frontend/src/components/dashboard/tabs/MiraTab.jsx` - Complete memory display section
+- `/app/frontend/src/components/MiraAI.jsx` - Brain icon import, memoriesUsed handling, indicator display
+- `/app/backend/mira_routes.py` - Added memories_used field to chat response
+
+#### Testing Results
+- ✅ All 6 features passed testing (100% backend, 100% frontend)
+- Test report: `/app/test_reports/iteration_220.json`
+
+---
+
+### February 4, 2026 (Previous Session) - Payment Flow Fix & Step 2 UI Enhancements
 
 #### Payment Flow Fix (P0 - CRITICAL)
 - ✅ **Created /api/membership/payment/create** - New endpoint to initiate Razorpay orders
