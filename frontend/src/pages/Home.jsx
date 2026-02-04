@@ -7,12 +7,164 @@ import {
   Eye, MessageCircle, Shield, Star,
   TrendingUp, Quote, ChevronRight, Check,
   Lock, Users, Award, ExternalLink, X,
-  Play, ChevronDown, Volume2, VolumeX, SkipForward
+  Play, ChevronDown, Volume2, VolumeX, SkipForward,
+  Crown, Zap, Clock, Gift, Video, PlayCircle
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { getApiUrl } from '../utils/api';
 import SEOHead from '../components/SEOHead';
 import { motion, AnimatePresence } from 'framer-motion';
+
+// ============ LIVING SOUL ORB COMPONENT ============
+// This is the heart of the experience - a BREATHING, LIVING visualization
+const LivingSoulOrb = ({ size = 'lg', className = '', interactive = true }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  const [pulseIntensity, setPulseIntensity] = useState(1);
+  
+  // Simulate "breathing" with varying intensity
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setPulseIntensity(0.8 + Math.random() * 0.4);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const sizeClasses = {
+    sm: 'w-20 h-20',
+    md: 'w-32 h-32 sm:w-40 sm:h-40',
+    lg: 'w-40 h-40 sm:w-56 sm:h-56',
+    xl: 'w-56 h-56 sm:w-72 sm:h-72'
+  };
+
+  return (
+    <div 
+      className={`relative ${sizeClasses[size]} ${className}`}
+      onMouseEnter={() => interactive && setIsHovered(true)}
+      onMouseLeave={() => interactive && setIsHovered(false)}
+    >
+      {/* Aurora outer rings - the "aura" */}
+      <motion.div
+        className="absolute inset-[-20%] rounded-full"
+        style={{
+          background: 'conic-gradient(from 0deg, rgba(168,85,247,0.3), rgba(236,72,153,0.3), rgba(99,102,241,0.3), rgba(168,85,247,0.3))',
+          filter: 'blur(40px)',
+        }}
+        animate={{
+          rotate: 360,
+          scale: [1, 1.1 * pulseIntensity, 1],
+        }}
+        transition={{
+          rotate: { duration: 20, repeat: Infinity, ease: 'linear' },
+          scale: { duration: 3, repeat: Infinity, ease: 'easeInOut' }
+        }}
+      />
+      
+      {/* Secondary aurora ring */}
+      <motion.div
+        className="absolute inset-[-10%] rounded-full"
+        style={{
+          background: 'conic-gradient(from 180deg, rgba(236,72,153,0.4), rgba(168,85,247,0.4), rgba(59,130,246,0.4), rgba(236,72,153,0.4))',
+          filter: 'blur(30px)',
+        }}
+        animate={{
+          rotate: -360,
+          scale: [1.1, 1, 1.1],
+        }}
+        transition={{
+          rotate: { duration: 15, repeat: Infinity, ease: 'linear' },
+          scale: { duration: 2.5, repeat: Infinity, ease: 'easeInOut' }
+        }}
+      />
+
+      {/* Breathing glow pulse */}
+      <motion.div
+        className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-500/40 via-pink-500/30 to-indigo-500/40"
+        animate={{
+          scale: [1, 1.2 * pulseIntensity, 1],
+          opacity: [0.4, 0.7, 0.4],
+        }}
+        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+        style={{ filter: 'blur(20px)' }}
+      />
+
+      {/* Core orb with glass effect */}
+      <motion.div
+        className="absolute inset-[15%] rounded-full overflow-hidden"
+        style={{
+          background: 'linear-gradient(135deg, rgba(168,85,247,0.9) 0%, rgba(236,72,153,0.9) 50%, rgba(99,102,241,0.9) 100%)',
+          boxShadow: `
+            0 0 60px rgba(168,85,247,0.6),
+            0 0 100px rgba(236,72,153,0.4),
+            0 0 140px rgba(99,102,241,0.3),
+            inset 0 0 60px rgba(255,255,255,0.1)
+          `,
+        }}
+        animate={{
+          scale: isHovered ? 1.1 : [1, 1.03 * pulseIntensity, 1],
+        }}
+        transition={{ duration: isHovered ? 0.3 : 2, repeat: isHovered ? 0 : Infinity }}
+      >
+        {/* Inner light refraction */}
+        <motion.div
+          className="absolute inset-0"
+          style={{
+            background: 'radial-gradient(ellipse at 30% 30%, rgba(255,255,255,0.4) 0%, transparent 50%)',
+          }}
+          animate={{
+            opacity: [0.3, 0.6, 0.3],
+          }}
+          transition={{ duration: 2, repeat: Infinity }}
+        />
+        
+        {/* Sparkle icon */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <motion.div
+            animate={{
+              rotate: [0, 10, -10, 0],
+              scale: [1, 1.1, 1],
+            }}
+            transition={{ duration: 4, repeat: Infinity }}
+          >
+            <Sparkles className="w-1/3 h-1/3 text-white/90 drop-shadow-lg" />
+          </motion.div>
+        </div>
+      </motion.div>
+
+      {/* Orbiting particles */}
+      {[0, 1, 2, 3, 4].map((i) => (
+        <motion.div
+          key={i}
+          className="absolute w-2 h-2 rounded-full bg-white/80"
+          style={{
+            top: '50%',
+            left: '50%',
+            boxShadow: '0 0 10px rgba(255,255,255,0.8)',
+          }}
+          animate={{
+            x: [
+              Math.cos((i * 72 * Math.PI) / 180) * 60,
+              Math.cos(((i * 72 + 180) * Math.PI) / 180) * 60,
+              Math.cos((i * 72 * Math.PI) / 180) * 60,
+            ],
+            y: [
+              Math.sin((i * 72 * Math.PI) / 180) * 60,
+              Math.sin(((i * 72 + 180) * Math.PI) / 180) * 60,
+              Math.sin((i * 72 * Math.PI) / 180) * 60,
+            ],
+            opacity: [0.3, 0.8, 0.3],
+            scale: [0.5, 1, 0.5],
+          }}
+          transition={{
+            duration: 6 + i,
+            repeat: Infinity,
+            delay: i * 0.5,
+            ease: 'easeInOut',
+          }}
+        />
+      ))}
+    </div>
+  );
+};
 
 // Brand Story Video Clips - BRIGHT versions with narrative text
 const BRAND_STORY_CLIPS = [
