@@ -422,31 +422,36 @@ const MiraChatWidget = ({
     };
   }, [isOpen]);
 
+  // Generate pillar-specific welcome message
+  const generateWelcomeMessage = useCallback(() => {
+    const greeting = getTimeBasedGreeting();
+    const petName = selectedPet?.name;
+    const petBreed = selectedPet?.breed;
+    const pillarName = config.name;
+    
+    let welcomeMsg = `${greeting}!`;
+    
+    // Safely get pillar note - ensure it's a string
+    const pillarNote = typeof miraContext?.pillar_note === 'string' ? miraContext.pillar_note : null;
+    
+    if (pillarNote) {
+      welcomeMsg = pillarNote;
+    } else if (petName && petBreed) {
+      welcomeMsg += ` I see you're browsing ${pillarName} for ${petName}, your lovely ${petBreed}. How can I help today?`;
+    } else if (petName) {
+      welcomeMsg += ` How can I help you with ${petName}'s ${pillarName.toLowerCase()} needs today?`;
+    } else {
+      welcomeMsg += ` I'm here to help with all your ${pillarName.toLowerCase()} needs. What can I do for you?`;
+    }
+    
+    welcomeMsg += ' 🐾';
+    return welcomeMsg;
+  }, [selectedPet?.name, selectedPet?.breed, config.name, miraContext?.pillar_note]);
+
   // Add welcome message when widget opens
   useEffect(() => {
     if (isOpen && messages.length === 0) {
-      const greeting = getTimeBasedGreeting();
-      const petName = selectedPet?.name;
-      const petBreed = selectedPet?.breed;
-      const pillarName = config.name;
-      
-      // Personalized welcome based on context
-      let welcomeMsg = `${greeting}!`;
-      
-      // Safely get pillar note - ensure it's a string
-      const pillarNote = typeof miraContext?.pillar_note === 'string' ? miraContext.pillar_note : null;
-      
-      if (pillarNote) {
-        welcomeMsg = pillarNote;
-      } else if (petName && petBreed) {
-        welcomeMsg += ` I see you're browsing ${pillarName} for ${petName}, your lovely ${petBreed}. How can I help today?`;
-      } else if (petName) {
-        welcomeMsg += ` How can I help you with ${petName}'s ${pillarName.toLowerCase()} needs today?`;
-      } else {
-        welcomeMsg += ` I'm here to help with all your ${pillarName.toLowerCase()} needs. What can I do for you?`;
-      }
-      
-      welcomeMsg += ' 🐾';
+      const welcomeMsg = generateWelcomeMessage();
       
       // Speak welcome greeting when widget opens (if voice is enabled)
       if (synthRef.current && voiceEnabled) {
@@ -503,7 +508,7 @@ const MiraChatWidget = ({
         content: `Hi, I am Mira, your pet concierge®! ${welcomeMsg}`
       }]);
     }
-  }, [isOpen, selectedPet, miraContext, config.name, voiceEnabled]);
+  }, [isOpen, selectedPet, miraContext, config.name, voiceEnabled, generateWelcomeMessage]);
   
   // Store messages when they change - PERSIST across pillar switches
   useEffect(() => {
