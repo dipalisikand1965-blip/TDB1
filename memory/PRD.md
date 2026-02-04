@@ -190,9 +190,9 @@ https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/yl1otn
 ---
 
 ## Upcoming Tasks (P1)
-- Polish remaining pages: `Paperwork`, `Advisory`, `Emergency`, `Farewell`, `Adopt`, `Shop`
-- Generate higher quality video content (when needed)
-- Add background music to brand story video
+- **Brand Story Voiceover** - Generate audio from `/app/frontend/public/videos/BRAND_STORY_SCRIPT.md` using ElevenLabs, merge with video clips
+- **Polish remaining pages**: `Paperwork`, `Advisory`, `Emergency`, `Farewell`, `Adopt`, `Shop`
+- **Animate 14 Pillars Further** - More "magical" cross-pollination animation
 
 ## Future/Backlog (P2)
 - Pet Soul™ "living" visualization (make score feel alive)
@@ -200,6 +200,7 @@ https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/yl1otn
 - Real family video testimonials section
 - Membership value proposition redesign
 - Utility pages: `Autoship & Save`, `About Us`, `FAQs`, `TDC Insights`
+- Fix linting errors in `DinePage.jsx` and `LearnPage.jsx`
 
 ---
 
