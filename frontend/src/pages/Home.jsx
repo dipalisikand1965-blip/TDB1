@@ -793,7 +793,7 @@ const Home = () => {
                 Discover Your Pet&apos;s Soul
                 <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
-            </a>
+            </Link>
             
             {/* Stunning Video Play Button */}
             <motion.button
