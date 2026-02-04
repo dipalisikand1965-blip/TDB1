@@ -790,6 +790,7 @@ const FitPage = () => {
                 highlights={exp.highlights}
                 compact={true}
               />
+              </div>
             ))}
           </div>
         </div>
