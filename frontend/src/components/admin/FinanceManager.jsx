@@ -42,12 +42,15 @@ const METHOD_ICONS = {
   razorpay: Smartphone,
   upi: Smartphone,
   card: CreditCard,
+  credit_card: CreditCard,
+  debit_card: CreditCard,
   netbanking: Building2,
   wallet: Wallet,
   offline: Banknote,
   bank_transfer: Building2,
   cash: Banknote,
-  paw_points: Star
+  paw_points: Star,
+  others: FileText
 };
 
 // Payment type colors
