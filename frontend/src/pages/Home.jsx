@@ -264,19 +264,13 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-[100] bg-black"
-      style={{ 
-        paddingTop: 'env(safe-area-inset-top)',
-        paddingBottom: 'env(safe-area-inset-bottom)',
-        paddingLeft: 'env(safe-area-inset-left)',
-        paddingRight: 'env(safe-area-inset-right)'
-      }}
       onClick={onClose}
     >
       <motion.div
         initial={{ scale: 0.98, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.98, opacity: 0 }}
-        className="relative w-full h-full"
+        className="relative w-full h-full flex items-center justify-center"
         onClick={e => e.stopPropagation()}
       >
         {/* Ending Screen */}
