@@ -793,10 +793,10 @@ const MembershipOnboarding = () => {
                   </div>
                 </div>
                 <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
-                  Tell us about your dog{petsData.length > 1 ? 's' : ''}
+                  About Your Pet{petsData.length > 1 ? 's' : ''}
                 </h1>
                 <p className="text-slate-400">
-                  This helps us personalize everything for them
+                  Help us get to know your furry family member
                 </p>
               </div>
 
@@ -812,7 +812,11 @@ const MembershipOnboarding = () => {
                         : 'bg-slate-800 text-slate-300 hover:bg-slate-700 border border-slate-700'
                     }`}
                   >
-                    <PawPrint className="w-4 h-4" />
+                    {pet.photo_preview ? (
+                      <img src={pet.photo_preview} alt="" className="w-5 h-5 rounded-full object-cover" />
+                    ) : (
+                      <PawPrint className="w-4 h-4" />
+                    )}
                     {pet.name || `Dog ${idx + 1}`}
                     {petsData.length > 1 && (
                       <button
@@ -842,12 +846,65 @@ const MembershipOnboarding = () => {
                 {petsData.map((pet, idx) => (
                   <div key={idx} className={activePetTab === idx ? 'block' : 'hidden'}>
                     <div className="space-y-5">
-                      {/* Photo Upload */}
-                      <div className="flex justify-center mb-4">
-                        <div className="relative group">
-                          <input
-                            type="file"
-                            accept="image/*"
+                      {/* Photo Upload - More Prominent */}
+                      <div className="text-center mb-6">
+                        <label className="block text-sm font-medium text-slate-300 mb-3">
+                          Upload Photo *
+                        </label>
+                        <div className="flex justify-center">
+                          <div className="relative group">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handlePetPhotoSelect(idx, e)}
+                              className="hidden"
+                              id={`pet-photo-${idx}`}
+                              data-testid={`pet-${idx}-photo-input`}
+                            />
+                            <label
+                              htmlFor={`pet-photo-${idx}`}
+                              className="cursor-pointer block"
+                            >
+                              <div className={`w-32 h-32 rounded-full border-3 border-dashed flex items-center justify-center overflow-hidden transition-all group-hover:shadow-lg ${
+                                pet.photo_preview || pet.photo_url 
+                                  ? 'border-pink-500 bg-slate-800' 
+                                  : 'border-pink-500/50 bg-slate-800/50 hover:border-pink-500 group-hover:shadow-pink-500/20'
+                              }`}>
+                                {pet.photo_preview || pet.photo_url ? (
+                                  <img 
+                                    src={pet.photo_preview || getPetPhotoUrl(pet)} 
+                                    alt="Pet" 
+                                    className="w-full h-full object-cover"
+                                  />
+                                ) : (
+                                  <div className="text-center p-2">
+                                    <Camera className="w-10 h-10 text-pink-400 mx-auto mb-1" />
+                                    <span className="text-xs text-pink-400 font-medium">Tap to Upload</span>
+                                  </div>
+                                )}
+                              </div>
+                              <div className="absolute bottom-0 right-0 w-10 h-10 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full flex items-center justify-center text-white shadow-lg hover:opacity-90 transition-opacity">
+                                <Plus className="w-6 h-6" />
+                              </div>
+                            </label>
+                            {(pet.photo_preview || pet.photo_url) && (
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  updatePetData(idx, 'photo_preview', null);
+                                  updatePetData(idx, 'photo_url', '');
+                                  updatePetData(idx, 'photo_file', null);
+                                }}
+                                className="absolute -top-1 -right-1 w-7 h-7 bg-red-500 rounded-full flex items-center justify-center text-white shadow-md hover:bg-red-600"
+                              >
+                                <X className="w-4 h-4" />
+                              </button>
+                            )}
+                          </div>
+                        </div>
+                        <p className="text-xs text-slate-500 mt-2">A clear photo helps us personalize your experience</p>
+                      </div>
                             onChange={(e) => handlePetPhotoSelect(idx, e)}
                             className="hidden"
                             id={`pet-photo-${idx}`}
