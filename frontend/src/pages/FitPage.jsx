@@ -712,19 +712,16 @@ const FitPage = () => {
       </div>
 
       {/* ==================== CONVERSATIONAL ENTRY + QUICK WIN ==================== */}
-      <div className="py-10 bg-gradient-to-b from-gray-50/50 to-white">
+      <div className="py-8 sm:py-10 bg-gradient-to-b from-gray-50/50 to-white">
         <div className="max-w-6xl mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-6 items-stretch">
-            {/* Conversational Entry - Component has its own styling now */}
+          <div className="grid lg:grid-cols-2 gap-4 sm:gap-6 items-stretch">
+            {/* Conversational Entry - Creates service tickets, not Mira navigation */}
             <ConversationalEntry 
               pillar="fit"
               petName={userPets[0]?.name}
-              onGoalSelect={(goal, message) => {
-                navigate(`/mira?context=fit_${goal.id}&preset=${encodeURIComponent(message)}`);
-              }}
             />
             
-            {/* Quick Win Tip - Component has its own styling now */}
+            {/* Quick Win Tip */}
             <QuickWinTip
               pillar="fit"
               petName={userPets[0]?.name}
@@ -733,10 +730,8 @@ const FitPage = () => {
               onActionClick={(tip) => {
                 if (tip?.actionType === 'navigate' && tip?.actionUrl) {
                   navigate(tip.actionUrl);
-                } else if (tip?.actionType === 'checklist') {
-                  toast({ title: tip.action, description: 'Fitness checklist coming soon!' });
                 } else {
-                  toast({ title: tip.action, description: 'Coming soon!' });
+                  toast({ title: tip?.action || 'Coming soon!', description: 'This feature will be available soon.' });
                 }
               }}
             />
