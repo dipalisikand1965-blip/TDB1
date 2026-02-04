@@ -198,11 +198,12 @@ const BRAND_STORY_CLIPS = [
   }
 ];
 
-// Brand Story Modal Component - Mobile Optimized
+// Brand Story Modal Component - Mobile Optimized with Voiceover
 const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
   const [currentClip, setCurrentClip] = useState(0);
   const [isEnding, setIsEnding] = useState(false);
   const videoRef = useRef(null);
+  const audioRef = useRef(null);
   
   // Auto-advance to next clip with smooth ending
   useEffect(() => {
@@ -222,13 +223,38 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
     return () => clearTimeout(timer);
   }, [currentClip]);
   
-  // Play video when clip changes
+  // Play video and audio when clip changes
   useEffect(() => {
-    if (videoRef.current && !isEnding) {
-      videoRef.current.load();
-      videoRef.current.play().catch(() => {});
+    if (!isEnding) {
+      // Play video
+      if (videoRef.current) {
+        videoRef.current.load();
+        videoRef.current.play().catch(() => {});
+      }
+      
+      // Play voiceover audio (if not muted)
+      if (audioRef.current && !videoMuted) {
+        audioRef.current.load();
+        // Small delay to sync with video start
+        setTimeout(() => {
+          audioRef.current?.play().catch((e) => {
+            console.log('Audio playback blocked:', e.message);
+          });
+        }, 200);
+      }
     }
-  }, [currentClip, isEnding]);
+  }, [currentClip, isEnding, videoMuted]);
+  
+  // Handle mute toggle - stop/start audio
+  useEffect(() => {
+    if (audioRef.current) {
+      if (videoMuted) {
+        audioRef.current.pause();
+      } else if (!isEnding) {
+        audioRef.current.play().catch(() => {});
+      }
+    }
+  }, [videoMuted, isEnding]);
   
   const clip = BRAND_STORY_CLIPS[currentClip];
   
