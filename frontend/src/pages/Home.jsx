@@ -1508,8 +1508,25 @@ const Home = () => {
             </motion.p>
           </div>
 
-          {/* Membership Cards */}
-          <div className="grid md:grid-cols-3 gap-6 lg:gap-8">
+          {/* Limited Time Offer Banner */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="mb-10 p-4 bg-gradient-to-r from-amber-500/20 to-orange-500/20 rounded-2xl border border-amber-500/30 text-center"
+          >
+            <div className="flex items-center justify-center gap-3 flex-wrap">
+              <span className="text-2xl">🎁</span>
+              <p className="text-lg font-semibold text-amber-300">
+                Launch Offer: Get <span className="text-amber-400">7 Bonus Days FREE</span> with any Pet Pass!
+              </p>
+              <span className="text-2xl">🎁</span>
+            </div>
+            <p className="text-amber-200/70 text-sm mt-1">Limited time offer for new members</p>
+          </motion.div>
+
+          {/* Membership Cards - 2 columns */}
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {MEMBERSHIP_TIERS.map((tier, idx) => (
               <motion.div
                 key={tier.name}
@@ -1522,7 +1539,11 @@ const Home = () => {
                 {/* Highlighted badge */}
                 {tier.badge && (
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
-                    <div className="px-4 py-1.5 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full text-sm font-semibold text-white shadow-lg shadow-purple-500/30">
+                    <div className={`px-4 py-1.5 rounded-full text-sm font-semibold text-white shadow-lg ${
+                      tier.highlighted 
+                        ? 'bg-gradient-to-r from-purple-600 to-pink-600 shadow-purple-500/30'
+                        : 'bg-gradient-to-r from-blue-600 to-cyan-600 shadow-blue-500/30'
+                    }`}>
                       {tier.badge}
                     </div>
                   </div>
@@ -1541,17 +1562,32 @@ const Home = () => {
                   <div className="p-6 sm:p-8">
                     {/* Tier name */}
                     <h3 className="text-xl font-bold text-white mb-2">{tier.name}</h3>
-                    <p className="text-white/60 text-sm mb-6">{tier.description}</p>
+                    <p className="text-white/60 text-sm mb-4">{tier.description}</p>
                     
                     {/* Price */}
                     <div className="mb-2">
                       <span className="text-4xl font-black text-white">{tier.price}</span>
                       {tier.period && <span className="text-white/60">{tier.period}</span>}
                     </div>
+                    
+                    {/* Bonus Days Badge */}
+                    {tier.bonusDays && (
+                      <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-full border border-emerald-500/30 mb-4">
+                        <span className="text-emerald-400 text-sm font-semibold">+{tier.bonusDays} Bonus Days FREE!</span>
+                      </div>
+                    )}
+                    
                     {tier.savings && (
                       <p className="text-green-400 text-sm mb-4">{tier.savings}</p>
                     )}
-                    {!tier.savings && <div className="mb-6" />}
+                    {!tier.savings && !tier.bonusDays && <div className="mb-4" />}
+                    
+                    {/* Duration info */}
+                    {tier.duration && (
+                      <p className="text-white/50 text-xs mb-4">
+                        Total: {tier.duration} access
+                      </p>
+                    )}
                     
                     {/* CTA Button - Internal Link */}
                     <Link to={tier.ctaLink || "/join"}>
