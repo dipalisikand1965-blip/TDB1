@@ -1214,29 +1214,31 @@ const MemberDashboard = () => {
             </TabsList>
           </div>
           
-          {/* Mobile Tab Navigation - Dark Glassmorphic */}
-          <div className="md:hidden mb-6">
-            <TabsList className="backdrop-blur-xl bg-slate-900/80 border border-white/10 shadow-2xl p-1.5 rounded-2xl flex overflow-x-auto gap-1 scrollbar-hide">
-              <TabsTrigger value="overview" className="rounded-xl flex items-center gap-1.5 py-2.5 px-3 text-sm font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white transition-all active:scale-95">
-                <Home className="w-4 h-4" /> Home
-              </TabsTrigger>
-              <TabsTrigger value="requests" className="rounded-xl flex items-center gap-1.5 py-2.5 px-3 text-sm font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white transition-all active:scale-95">
-                <Calendar className="w-4 h-4" /> Requests
-                {myRequests.length > 0 && <span className="ml-1 text-[10px] bg-purple-500/30 px-1.5 py-0.5 rounded-full">({myRequests.length})</span>}
-              </TabsTrigger>
-              <TabsTrigger value="pets" className="rounded-xl flex items-center gap-1.5 py-2.5 px-3 text-sm font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white transition-all active:scale-95">
-                <PawPrint className="w-4 h-4" /> Pets
-              </TabsTrigger>
-              <TabsTrigger value="documents" className="rounded-xl flex items-center gap-1.5 py-2.5 px-3 text-sm font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white transition-all active:scale-95">
-                <Shield className="w-4 h-4" /> Docs
-              </TabsTrigger>
-              <TabsTrigger value="orders" className="rounded-xl flex items-center gap-1.5 py-2.5 px-3 text-sm font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white transition-all active:scale-95">
-                <Package className="w-4 h-4" /> Orders
-              </TabsTrigger>
-              <TabsTrigger value="settings" className="rounded-xl flex items-center gap-1.5 py-2.5 px-3 text-sm font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white transition-all active:scale-95">
-                <Settings className="w-4 h-4" /> More
-              </TabsTrigger>
-            </TabsList>
+          {/* Mobile Tab Navigation - Fixed Horizontal Scroll */}
+          <div className="md:hidden mb-6 -mx-4 px-4">
+            <div className="overflow-x-auto scrollbar-hide" style={{ WebkitOverflowScrolling: 'touch' }}>
+              <TabsList className="backdrop-blur-xl bg-slate-900/80 border border-white/10 shadow-2xl p-1.5 rounded-2xl inline-flex gap-1 min-w-max">
+                <TabsTrigger value="overview" className="rounded-xl flex items-center gap-1.5 py-2.5 px-3 text-sm font-medium text-slate-400 whitespace-nowrap flex-shrink-0 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white transition-all">
+                  <Home className="w-4 h-4" /> Home
+                </TabsTrigger>
+                <TabsTrigger value="requests" className="rounded-xl flex items-center gap-1.5 py-2.5 px-3 text-sm font-medium text-slate-400 whitespace-nowrap flex-shrink-0 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white transition-all">
+                  <Calendar className="w-4 h-4" /> Requests
+                  {myRequests.length > 0 && <span className="ml-1 text-[10px] bg-purple-500/30 px-1.5 py-0.5 rounded-full">({myRequests.length})</span>}
+                </TabsTrigger>
+                <TabsTrigger value="pets" className="rounded-xl flex items-center gap-1.5 py-2.5 px-3 text-sm font-medium text-slate-400 whitespace-nowrap flex-shrink-0 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white transition-all">
+                  <PawPrint className="w-4 h-4" /> Pets
+                </TabsTrigger>
+                <TabsTrigger value="documents" className="rounded-xl flex items-center gap-1.5 py-2.5 px-3 text-sm font-medium text-slate-400 whitespace-nowrap flex-shrink-0 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white transition-all">
+                  <Shield className="w-4 h-4" /> Docs
+                </TabsTrigger>
+                <TabsTrigger value="orders" className="rounded-xl flex items-center gap-1.5 py-2.5 px-3 text-sm font-medium text-slate-400 whitespace-nowrap flex-shrink-0 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white transition-all">
+                  <Package className="w-4 h-4" /> Orders
+                </TabsTrigger>
+                <TabsTrigger value="settings" className="rounded-xl flex items-center gap-1.5 py-2.5 px-3 text-sm font-medium text-slate-400 whitespace-nowrap flex-shrink-0 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white transition-all">
+                  <Settings className="w-4 h-4" /> More
+                </TabsTrigger>
+              </TabsList>
+            </div>
           </div>
 
           {/* Tab Contents - All Lazy Loaded */}
