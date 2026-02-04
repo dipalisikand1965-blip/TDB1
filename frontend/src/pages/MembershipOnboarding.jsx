@@ -408,7 +408,7 @@ const MembershipOnboarding = () => {
     const isFoundation = planType === 'annual' || planType === 'foundation';
     
     let basePrice = isTrialPlan ? 499 : 4999;
-    let planName = isTrialPlan ? 'Trial (37 days)' : 'Founder (372 days)';
+    let planName = isTrialPlan ? 'Trial (37 days)' : 'Foundation (372 days)';
     let validityDays = isTrialPlan ? 37 : 372; // Including 7 bonus days
     let bonusDays = 7;
     
@@ -416,7 +416,7 @@ const MembershipOnboarding = () => {
     const gst = Math.round(subtotal * 0.18);
     const total = subtotal + gst;
     
-    return { basePrice, subtotal, gst, total, isTrialPlan, isFounder, planName, validityDays, bonusDays, petCount: petsData.length };
+    return { basePrice, subtotal, gst, total, isTrialPlan, isFoundation, planName, validityDays, bonusDays, petCount: petsData.length };
   };
 
   const pricing = getPricing();
@@ -464,7 +464,7 @@ const MembershipOnboarding = () => {
             </div>
             
             <Badge className="bg-gradient-to-r from-pink-500 to-purple-600 shadow-pink-500/20 text-white border-0 px-3 py-1 shadow-lg">
-              {pricing.isFounder ? '🌟 Pet Pass — Founder' : '✨ Pet Pass — Trial'}
+              {pricing.isFoundation ? '🌟 Pet Pass — Foundation' : '✨ Pet Pass — Trial'}
             </Badge>
           </div>
         </header>
