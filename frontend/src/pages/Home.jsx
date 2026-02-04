@@ -369,21 +369,26 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
           )}
         </AnimatePresence>
         
-        {/* Video - Full screen, Sora generated content only */}
+        {/* Video - Full screen with crossfade */}
         {!isEnding && (
           <>
+            {/* Loading indicator */}
+            {!isReady && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black z-10">
+                <div className="w-12 h-12 border-4 border-white/20 border-t-white rounded-full animate-spin"></div>
+              </div>
+            )}
+            
             <motion.div
               key={currentClip}
               initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.5, ease: "easeInOut" }}
+              animate={{ opacity: isReady ? 1 : 0 }}
+              transition={{ duration: 0.8, ease: "easeInOut" }}
               className="absolute inset-0"
             >
               <video 
                 ref={videoRef}
                 className="absolute inset-0 w-full h-full object-contain sm:object-cover"
-                autoPlay
                 muted
                 playsInline
                 preload="auto"
