@@ -512,19 +512,38 @@ const MiraChatWidget = ({
     }
   }, [messages]);
   
-  // Track pillar changes - add a notification to chat when pillar switches
+  // Track pillar changes - update welcome message and add notification
   useEffect(() => {
-    if (pillar !== currentPillar && messages.length > 0) {
+    if (pillar !== currentPillar) {
       setCurrentPillar(pillar);
-      // Add pillar switch notification to chat
-      setMessages(prev => [...prev, {
-        id: `pillar-switch-${Date.now()}`,
-        role: 'assistant',
-        content: `📍 You're now in ${config.name}. How can I help you here?`,
-        isPillarSwitch: true
-      }]);
+      
+      // Generate new pillar-specific welcome message
+      const greeting = getTimeBasedGreeting();
+      const petName = selectedPet?.name;
+      const pillarName = config.name;
+      
+      let welcomeMsg = `${greeting}!`;
+      if (petName) {
+        welcomeMsg += ` How can I help you with ${petName}'s ${pillarName.toLowerCase()} needs today?`;
+      } else {
+        welcomeMsg += ` I'm here to help with all your ${pillarName.toLowerCase()} needs. What can I do for you?`;
+      }
+      welcomeMsg += ' 🐾';
+      
+      // Replace the old welcome message with a new pillar-specific one
+      setMessages(prev => {
+        // Filter out old welcome message and pillar switch messages
+        const filteredMessages = prev.filter(m => m.id !== 'welcome' && !m.isPillarSwitch);
+        
+        // Add new welcome message for this pillar
+        return [{
+          id: 'welcome',
+          role: 'assistant',
+          content: `Hi, I am Mira, your pet concierge®! ${welcomeMsg}`
+        }, ...filteredMessages];
+      });
     }
-  }, [pillar, currentPillar, config.name, messages.length]);
+  }, [pillar, currentPillar, config.name, selectedPet?.name]);
   
   // Scroll to bottom when new messages arrive
   useEffect(() => {
