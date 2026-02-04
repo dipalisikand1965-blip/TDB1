@@ -1260,7 +1260,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ========== MEMBERSHIP TIERS - Clear Transformation Promise ========== */}
+      {/* ========== MEMBERSHIP TIERS - Real Pet Pass Pricing ========== */}
       <section className="relative py-24 sm:py-32 bg-slate-950 overflow-hidden">
         {/* Background decoration */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-purple-600/5 rounded-full blur-3xl" />
@@ -1274,7 +1274,7 @@ const Home = () => {
               viewport={{ once: true }}
             >
               <Crown className="w-4 h-4" />
-              Choose Your Journey
+              Pet Pass — Personal Concierge®
             </motion.div>
             <motion.h2
               className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6"
@@ -1282,9 +1282,9 @@ const Home = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              Transform Your Pet&apos;s Life
+              A Personal Concierge
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-                Starting Today
+                For Your Dog
               </span>
             </motion.h2>
             <motion.p
@@ -1293,7 +1293,7 @@ const Home = () => {
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
             >
-              Every tier unlocks deeper understanding of your pet&apos;s soul. The longer you stay, the more magical it becomes.
+              Pet Pass creates a living concierge relationship — beginning with understanding your dog, sustained through memory, care, and continuity.
             </motion.p>
           </div>
 
@@ -1333,25 +1333,29 @@ const Home = () => {
                     <p className="text-white/60 text-sm mb-6">{tier.description}</p>
                     
                     {/* Price */}
-                    <div className="mb-6">
+                    <div className="mb-2">
                       <span className="text-4xl font-black text-white">{tier.price}</span>
                       {tier.period && <span className="text-white/60">{tier.period}</span>}
                     </div>
+                    {tier.savings && (
+                      <p className="text-green-400 text-sm mb-4">{tier.savings}</p>
+                    )}
+                    {!tier.savings && <div className="mb-6" />}
                     
-                    {/* CTA Button */}
-                    <Link to="/membership">
+                    {/* CTA Button - External Link */}
+                    <a href={tier.ctaLink || "https://thedoggycompany.in/membership"} target="_blank" rel="noopener noreferrer">
                       <Button 
                         className={`w-full mb-6 py-6 rounded-xl font-semibold ${
                           tier.highlighted 
                             ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white shadow-lg shadow-purple-500/30' 
                             : 'bg-white/10 hover:bg-white/20 text-white border border-white/20'
                         }`}
-                        data-testid={`membership-cta-${tier.name.toLowerCase().replace(' ', '-')}`}
+                        data-testid={`membership-cta-${tier.name.toLowerCase().replace(/\s+/g, '-')}`}
                       >
                         {tier.cta}
                         <ArrowRight className="w-4 h-4 ml-2" />
                       </Button>
-                    </Link>
+                    </a>
                     
                     {/* Features */}
                     <div className="space-y-3">
@@ -1382,18 +1386,28 @@ const Home = () => {
             ))}
           </div>
 
+          {/* Multiple pets note */}
+          <motion.p
+            className="text-center text-white/50 text-sm mt-8"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+          >
+            🐾 Multiple pets? Each pet gets their own Pet Pass at ₹2,499/year or ₹249/trial (+ GST)
+          </motion.p>
+
           {/* Trust badges */}
           <motion.div 
-            className="flex flex-wrap justify-center gap-8 mt-16 pt-16 border-t border-white/10"
+            className="flex flex-wrap justify-center gap-8 mt-12 pt-12 border-t border-white/10"
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
           >
             {[
-              { icon: Shield, text: '30-Day Money Back' },
-              { icon: Lock, text: 'Secure & Private' },
+              { icon: Shield, text: 'Secure Payments' },
+              { icon: Lock, text: 'Your Data Protected' },
               { icon: Zap, text: 'Cancel Anytime' },
-              { icon: Gift, text: 'Free Trial Available' },
+              { icon: Gift, text: 'Birthday Surprises' },
             ].map((badge, idx) => (
               <div key={idx} className="flex items-center gap-2 text-white/50">
                 <badge.icon className="w-4 h-4" />
