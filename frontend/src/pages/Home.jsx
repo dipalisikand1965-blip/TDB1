@@ -524,11 +524,6 @@ const LIFE_PILLARS = [
   { name: "Farewell", icon: "🌈", desc: "End-of-life support" },
   { name: "Adopt", icon: "🐕", desc: "Find your companion" },
 ];
-    cta: "Join the Family",
-    highlighted: false,
-    gradient: "from-indigo-600 to-purple-600",
-  },
-];
 
 // Fallback images in case API fails
 const FALLBACK_HERO_IMAGES = [
