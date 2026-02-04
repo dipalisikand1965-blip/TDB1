@@ -676,7 +676,7 @@ Submitted via Dining Concierge® on the Dine pillar page.`;
       {/* Submit Button */}
       <Button
         onClick={handleSubmitRequest}
-        disabled={isSubmitting || !city}
+        disabled={isSubmitting || !city || (city === 'other' && !customCity.trim())}
         className="w-full mt-6 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600"
       >
         {isSubmitting ? (
