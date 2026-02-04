@@ -1026,7 +1026,7 @@ const MiraAI = () => {
       
       // More specific error for timeout
       if (error.name === 'AbortError') {
-        errorContent = "I'm taking a bit longer to think about this one. Please try again — if this persists, our concierge team at woof@thedoggycompany.in is ready to help you!";
+        errorContent = "I'm taking a bit longer to think about this one. Please try again — if this persists, our Concierge® team at woof@thedoggycompany.in is ready to help you!";
       }
       
       const errorMessage = {
@@ -1184,7 +1184,7 @@ const MiraAI = () => {
           <div>
             <h3 className="font-bold tracking-wide">Mira</h3>
             <p className="text-xs text-white/80">
-              {isListening ? '🎤 Listening...' : isSpeaking ? '🔊 Speaking...' : 'Your Pet Concierge'}
+              {isListening ? '🎤 Listening...' : isSpeaking ? '🔊 Speaking...' : 'Your Pet Concierge®'}
             </p>
           </div>
         </div>
