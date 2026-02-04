@@ -2370,6 +2370,11 @@ const Admin = () => {
           />
         )}
 
+        {/* Finance & Reconciliation Tab */}
+        {activeTab === 'finance' && (
+          <FinanceManager />
+        )}
+
         {/* Pet Parent Directory Tab */}
         {activeTab === 'member-directory' && (
           <MemberDirectory />
