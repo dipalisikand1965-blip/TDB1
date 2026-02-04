@@ -26,7 +26,7 @@ TESTIMONIAL_PROMPTS = [
         Cinematic quality, shallow depth of field, emotional and heartwarming. 
         The dog occasionally looks up at her with soulful eyes.""",
         "filename": "sharma_testimonial.mp4",
-        "duration": 5
+        "duration": 4
     },
     {
         "id": "rahul_max",
@@ -38,7 +38,7 @@ TESTIMONIAL_PROMPTS = [
         Authentic Indian urban home setting with modern furniture.
         The bond between man and dog is evident, playful energy.""",
         "filename": "rahul_testimonial.mp4",
-        "duration": 5
+        "duration": 4
     },
     {
         "id": "kapoor_family",
@@ -49,7 +49,7 @@ TESTIMONIAL_PROMPTS = [
         Festive, heartwarming atmosphere with subtle Indian decor elements.
         Cinematic quality, capturing pure joy and family love for their pet.""",
         "filename": "kapoor_testimonial.mp4",
-        "duration": 5
+        "duration": 4
     }
 ]
 
