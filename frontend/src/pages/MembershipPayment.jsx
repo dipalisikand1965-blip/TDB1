@@ -316,9 +316,14 @@ const MembershipPayment = () => {
                   <span className="text-emerald-400">Bonus Days</span>
                   <span className="text-emerald-400">FREE</span>
                 </div>
+                {/* GST Breakdown - CGST + SGST */}
                 <div className="flex justify-between">
-                  <span className="text-slate-400">GST (18%)</span>
-                  <span className="text-white">₹{orderData?.gst?.toLocaleString()}</span>
+                  <span className="text-slate-400">CGST (9%)</span>
+                  <span className="text-white">₹{orderData?.gst ? Math.round(orderData.gst / 2).toLocaleString() : '0'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">SGST (9%)</span>
+                  <span className="text-white">₹{orderData?.gst ? Math.round(orderData.gst / 2).toLocaleString() : '0'}</span>
                 </div>
                 <hr className="border-slate-700 my-2" />
                 <div className="flex justify-between text-lg font-bold">
