@@ -86,7 +86,6 @@ All user actions (service requests, onboarding, etc.) must adhere to a unified f
 
 ### P1 - High Priority (Upcoming)
 - [ ] UI/UX overhaul for Learn pillar page
-- [ ] UI/UX overhaul for Fit pillar page
 
 ### P2 - Medium Priority (Future)
 - [ ] Mira Multi-Pet AI Personalization
