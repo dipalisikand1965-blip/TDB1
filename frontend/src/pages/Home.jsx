@@ -23,13 +23,13 @@ const PARTICLES = Array.from({ length: 20 }, (_, i) => ({
   delay: (i % 5) * 0.4,
 }));
 
-// Emotional hero background images - rotating gallery
+// Emotional hero background images - YOUR authentic photos
 const HERO_IMAGES = [
-  'https://images.unsplash.com/photo-1608908507303-ddfde7c7d79e?w=1920&h=1080&fit=crop', // Soulful westie eyes
-  'https://images.unsplash.com/photo-1597854578220-07c43e51aff8?w=1920&h=1080&fit=crop', // Emotional dog portrait
-  'https://images.unsplash.com/photo-1749823029909-d2be10be5620?w=1920&h=1080&fit=crop', // Woman hugging dachshund
-  'https://images.unsplash.com/photo-1752387632383-4ce85c32c9cc?w=1920&h=1080&fit=crop', // Man with beagle puppy
-  'https://images.unsplash.com/photo-1745236852058-1cd0e504dc27?w=1920&h=1080&fit=crop', // Sleeping golden puppy
+  'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/0iy6sezo_shutterstock_504980047%20%282%29.jpg', // Man cuddling beagle - pure bond
+  'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/phjxi6rd_dog-1194087_1920%20%281%29.jpg', // Black retriever with soulful eyes
+  'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/3cqhqxwf_shutterstock_171983261%20%281%29.jpg', // Man cuddling weimaraner
+  'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/jlabx5e0_dog-813103%20%281%29.jpg', // Artistic hound close-up
+  'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/n600xuze_shutterstock_134149577%20%281%29.jpg', // Golden puppy with purple bandana
 ];
 
 // The new emotional home page - designed to capture hearts in 3 seconds
