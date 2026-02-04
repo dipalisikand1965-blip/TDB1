@@ -2988,6 +2988,11 @@ const Admin = () => {
           <PageContentManager getAuthHeader={getAuthHeaders} />
         )}
 
+        {/* Landing Page CMS Tab */}
+        {activeTab === 'landing-page' && (
+          <LandingPageManager getAuthHeader={getAuthHeaders} />
+        )}
+
         {/* Dine Tab */}
         {activeTab === 'dine' && (
           <DineManager credentials={{ username, password }} />
