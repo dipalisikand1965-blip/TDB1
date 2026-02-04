@@ -460,12 +460,46 @@ const MembershipOnboarding = () => {
           {step === 1 && (
             <div className="animate-in fade-in slide-in-from-right-4 duration-300">
               <div className="text-center mb-8">
-                {/* Soul Orb - matching landing page */}
-                <div className="relative w-24 h-24 mx-auto mb-6">
-                  <div className="absolute inset-0 bg-gradient-to-br from-pink-400 via-fuchsia-500 to-purple-600 rounded-full animate-pulse opacity-50 blur-xl"></div>
-                  <div className="relative w-24 h-24 bg-gradient-to-br from-pink-400 via-fuchsia-500 to-purple-600 rounded-full flex items-center justify-center shadow-2xl shadow-pink-500/40">
-                    <User className="w-10 h-10 text-white" />
-                  </div>
+                {/* Pet Parent Photo Upload */}
+                <div className="relative w-28 h-28 mx-auto mb-6 group">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleParentPhotoUpload}
+                    className="hidden"
+                    id="parent-photo-upload"
+                    data-testid="parent-photo-input"
+                  />
+                  <label 
+                    htmlFor="parent-photo-upload"
+                    className="cursor-pointer block"
+                  >
+                    {/* Glow effect */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-pink-400 via-fuchsia-500 to-purple-600 rounded-full animate-pulse opacity-50 blur-xl"></div>
+                    
+                    {/* Photo container */}
+                    <div className="relative w-28 h-28 bg-gradient-to-br from-pink-400 via-fuchsia-500 to-purple-600 rounded-full flex items-center justify-center shadow-2xl shadow-pink-500/40 overflow-hidden transition-transform group-hover:scale-105">
+                      {parentData.photoPreview ? (
+                        <img 
+                          src={parentData.photoPreview} 
+                          alt="Pet Parent" 
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <User className="w-12 h-12 text-white" />
+                      )}
+                      
+                      {/* Camera overlay on hover */}
+                      <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Camera className="w-8 h-8 text-white" />
+                      </div>
+                    </div>
+                  </label>
+                  
+                  {/* Upload hint */}
+                  <p className="text-xs text-pink-400 mt-2 opacity-80">
+                    {parentData.photoPreview ? 'Tap to change photo' : 'Add your photo'}
+                  </p>
                 </div>
                 <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
                   Tell us about yourself
