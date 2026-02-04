@@ -1283,15 +1283,78 @@ const MembershipOnboarding = () => {
                 <Card className="p-6 bg-gradient-to-br from-purple-900/40 to-pink-900/40 backdrop-blur-md border border-purple-500/30">
                   <h3 className="font-semibold text-white mb-4 flex items-center gap-2">
                     <CreditCard className="w-5 h-5 text-purple-400" />
-                    Pet Pass Summary
+                    Choose Your Pet Pass
                   </h3>
                   
-                  <div className="space-y-3 text-sm">
+                  {/* Plan Selection */}
+                  <div className="space-y-3 mb-6">
+                    {/* Monthly Trial Option */}
+                    <button
+                      type="button"
+                      onClick={() => setPlanType('trial')}
+                      className={`w-full p-4 rounded-xl border-2 text-left transition-all ${
+                        pricing.isTrialPlan
+                          ? 'border-pink-500 bg-pink-500/20 shadow-lg shadow-pink-500/20'
+                          : 'border-slate-600 bg-slate-800/50 hover:border-pink-500/50'
+                      }`}
+                      data-testid="plan-trial-btn"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-semibold text-white">Pet Pass Trial</p>
+                          <p className="text-sm text-slate-400">1 month • Try first</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xl font-bold text-white">₹499</p>
+                          <p className="text-xs text-slate-400">+ ₹90 GST</p>
+                        </div>
+                      </div>
+                      {pricing.isTrialPlan && (
+                        <div className="mt-2 flex items-center gap-1 text-pink-400 text-sm">
+                          <Check className="w-4 h-4" /> Selected
+                        </div>
+                      )}
+                    </button>
+
+                    {/* Annual Founder Option */}
+                    <button
+                      type="button"
+                      onClick={() => setPlanType('annual')}
+                      className={`w-full p-4 rounded-xl border-2 text-left transition-all relative ${
+                        !pricing.isTrialPlan
+                          ? 'border-pink-500 bg-pink-500/20 shadow-lg shadow-pink-500/20'
+                          : 'border-slate-600 bg-slate-800/50 hover:border-pink-500/50'
+                      }`}
+                      data-testid="plan-founder-btn"
+                    >
+                      <div className="absolute -top-3 right-4 px-3 py-1 bg-gradient-to-r from-amber-500 to-orange-500 rounded-full text-xs font-bold text-white">
+                        Best Value
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-semibold text-white">Pet Pass Founder</p>
+                          <p className="text-sm text-slate-400">12 months • Save ₹989</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="text-xl font-bold text-white">₹4,999</p>
+                          <p className="text-xs text-slate-400">+ ₹900 GST</p>
+                        </div>
+                      </div>
+                      {!pricing.isTrialPlan && (
+                        <div className="mt-2 flex items-center gap-1 text-pink-400 text-sm">
+                          <Check className="w-4 h-4" /> Selected
+                        </div>
+                      )}
+                    </button>
+                  </div>
+
+                  {/* Pricing Breakdown */}
+                  <div className="space-y-3 text-sm p-4 bg-slate-800/50 rounded-xl">
                     <div className="flex justify-between">
                       <span className="text-slate-300">
                         Pet Pass — {pricing.isTrialPlan ? 'Trial (1 month)' : 'Founder (12 months)'}
                       </span>
-                      <span className="text-white">₹{pricing.basePrice}</span>
+                      <span className="text-white">₹{pricing.basePrice.toLocaleString()}</span>
                     </div>
                     
                     {petsData.length > 1 && (
@@ -1307,19 +1370,19 @@ const MembershipOnboarding = () => {
                     
                     <div className="flex justify-between">
                       <span className="text-slate-400">Subtotal</span>
-                      <span className="text-white">₹{pricing.subtotal}</span>
+                      <span className="text-white">₹{pricing.subtotal.toLocaleString()}</span>
                     </div>
                     
                     <div className="flex justify-between">
                       <span className="text-slate-400">GST (18%)</span>
-                      <span className="text-white">₹{pricing.gst}</span>
+                      <span className="text-white">₹{pricing.gst.toLocaleString()}</span>
                     </div>
                     
                     <hr className="border-slate-600" />
                     
                     <div className="flex justify-between text-lg font-bold">
                       <span className="text-white">Total</span>
-                      <span className="text-pink-400">₹{pricing.total}</span>
+                      <span className="text-pink-400">₹{pricing.total.toLocaleString()}</span>
                     </div>
                   </div>
 
