@@ -24,7 +24,50 @@ Mira AI positioned as the "memory and judgement layer" - she doesn't fulfil requ
 
 ## What's Been Implemented
 
-### February 4, 2026 (Current Session) - Dashboard Navigation & Mira Memory Enhancement
+### February 4, 2026 (Session 2) - UI Fixes & Ticket Merge Enhancement
+
+#### Hero Video Optimization (P0)
+- ✅ **Reduced Height** - Hero section now `h-[55vh]` on mobile, `h-[50vh]` on tablet, `h-[55vh]` on desktop
+- ✅ **Video Position** - `objectPosition: 'center 5%'` to show dog's eyes at top of frame
+- ✅ **CTA Visibility** - "Watch Our Story" button now visible on mobile
+
+#### Dashboard Tab Bar Fix (P1)
+- ✅ **Desktop** - Tabs now wrap to 2 rows showing ALL tabs (Home, Services, Paw Points, Mira AI, Bookings, Orders, Quotes, Documents, Autoship, Reviews, Pets, Addresses, Settings, Plan)
+- ✅ **Mobile** - Horizontal scroll with stable layout, no wobbling
+- ✅ **Back to Home + X Close** - Appear on all non-overview tabs on mobile
+
+#### Membership Plan Tab (P1) - NEW
+- ✅ **Created MembershipTab.jsx** with:
+  - Plan status (Active/Inactive)
+  - Valid From / Valid Until dates with progress bar
+  - Days remaining calculation
+  - Plan features list
+  - Billing history
+  - Member benefits (discounts, 2x points, 24/7 emergency)
+  - Renew/Upgrade buttons
+
+#### Zoho Desk-Style Ticket Merge (P0)
+- ✅ **Master Ticket Selection** - User chooses which ticket becomes the master
+- ✅ **Merge Reason Field** - Audit trail with reason for merge
+- ✅ **"Merge Into" from Ticket Detail** - Merge current ticket into another
+- ✅ **Confirmation Warning** - "Irreversible action" warning before merge
+- ✅ **Merged Status** - Added "merged" and "blocked" to STATUS_CONFIG
+- ✅ **System Note** - Logs "Ticket #XYZ merged into Ticket #ABC by [user] on [date/time]"
+
+#### Files Modified/Created
+- `/app/frontend/src/pages/Home.jsx` - Hero video height reduced to 55vh
+- `/app/frontend/src/pages/MemberDashboard.jsx` - Tab bar fix, Membership tab added
+- `/app/frontend/src/components/dashboard/tabs/MembershipTab.jsx` - NEW component
+- `/app/frontend/src/components/admin/DoggyServiceDesk.jsx` - Enhanced merge with master selection, merge reason, merge-into modal, merged/blocked status
+
+#### Testing Results
+- ✅ 87% backend tests passed (13/15)
+- ✅ 100% frontend UI verified
+- Test report: `/app/test_reports/iteration_221.json`
+
+---
+
+### February 4, 2026 (Session 1) - Dashboard Navigation & Mira Memory Enhancement
 
 #### Dashboard Navigation Fixes (P0)
 - ✅ **Pet Card Click Navigation** - Clicking pet cards on dashboard navigates to `/pet/{petId}` page
@@ -42,12 +85,6 @@ Mira AI positioned as the "memory and judgement layer" - she doesn't fulfil requ
   - Refresh button to reload memories
 - ✅ **Memory Extraction** - Mira automatically extracts and stores memories from conversations
 - ✅ **Contextual Surfacing** - Memories are surfaced only when relevant to current conversation
-
-#### Files Modified
-- `/app/frontend/src/pages/MemberDashboard.jsx` - Pet card onClick, Back to Home button
-- `/app/frontend/src/components/dashboard/tabs/MiraTab.jsx` - Complete memory display section
-- `/app/frontend/src/components/MiraAI.jsx` - Brain icon import, memoriesUsed handling, indicator display
-- `/app/backend/mira_routes.py` - Added memories_used field to chat response
 
 #### Testing Results
 - ✅ All 6 features passed testing (100% backend, 100% frontend)
