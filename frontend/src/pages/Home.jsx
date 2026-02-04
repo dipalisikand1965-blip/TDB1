@@ -798,7 +798,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Video Modal */}
+      {/* Video Modal - Brand Story */}
       <AnimatePresence>
         {showVideo && (
           <motion.div
@@ -812,17 +812,18 @@ const Home = () => {
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="relative max-w-4xl w-full aspect-video bg-slate-900 rounded-2xl overflow-hidden"
+              className="relative max-w-5xl w-full aspect-video bg-slate-950 rounded-2xl overflow-hidden shadow-2xl shadow-purple-500/20"
               onClick={e => e.stopPropagation()}
             >
+              {/* Close button */}
               <button
                 onClick={() => setShowVideo(false)}
-                className="absolute top-4 right-4 z-10 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
+                className="absolute top-4 right-4 z-20 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors backdrop-blur-sm"
               >
                 <X className="w-6 h-6 text-white" />
               </button>
               
-              {/* Actual Video */}
+              {/* Brand Story Video */}
               <video 
                 className="w-full h-full object-cover"
                 autoPlay
@@ -830,22 +831,53 @@ const Home = () => {
                 muted={videoMuted}
                 playsInline
               >
+                {/* Using the new soulful eyes clip */}
+                <source src="/videos/brand_story/01_soulful_eyes.mp4" type="video/mp4" />
+                {/* Fallback to original */}
                 <source src="/videos/pet-soul-hero.mp4" type="video/mp4" />
               </video>
               
-              {/* Video Controls Overlay */}
-              <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 to-transparent">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <h3 className="text-xl font-bold text-white mb-1">Every Pet Has a Soul</h3>
-                    <p className="text-white/60 text-sm">This is how we nurture it.</p>
+              {/* Cinematic Overlay - Top */}
+              <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-black/60 to-transparent pointer-events-none" />
+              
+              {/* Video Controls & Story Overlay */}
+              <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black via-black/80 to-transparent">
+                <div className="flex items-end justify-between">
+                  <div className="max-w-lg">
+                    <motion.p 
+                      className="text-purple-400 text-sm uppercase tracking-widest mb-2"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5 }}
+                    >
+                      Our Story
+                    </motion.p>
+                    <motion.h3 
+                      className="text-3xl font-bold text-white mb-2"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.7 }}
+                    >
+                      Every Pet Has a Soul
+                    </motion.h3>
+                    <motion.p 
+                      className="text-white/70 text-base"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.9 }}
+                    >
+                      Look into their eyes. You already know. They&apos;re not just pets — they&apos;re family. 
+                      And that&apos;s why we do what we do.
+                    </motion.p>
                   </div>
-                  <button
-                    onClick={() => setVideoMuted(!videoMuted)}
-                    className="p-3 bg-white/10 rounded-full hover:bg-white/20 transition-colors"
-                  >
-                    {videoMuted ? <VolumeX className="w-5 h-5 text-white" /> : <Volume2 className="w-5 h-5 text-white" />}
-                  </button>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => setVideoMuted(!videoMuted)}
+                      className="p-4 bg-white/10 rounded-full hover:bg-white/20 transition-colors backdrop-blur-sm"
+                    >
+                      {videoMuted ? <VolumeX className="w-6 h-6 text-white" /> : <Volume2 className="w-6 h-6 text-white" />}
+                    </button>
+                  </div>
                 </div>
               </div>
             </motion.div>
