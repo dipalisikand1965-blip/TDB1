@@ -206,7 +206,7 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
   const videoRef = useRef(null);
   const audioRef = useRef(null);
   const timerRef = useRef(null);
-  const lastClipRef = useRef(-1);
+  const playedClipsRef = useRef(new Set()); // Track which clips have played
   
   const clip = BRAND_STORY_CLIPS[currentClip];
   
@@ -214,15 +214,12 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
   useEffect(() => {
     if (isEnding) return;
     
+    // Prevent re-playing the same clip
+    if (playedClipsRef.current.has(currentClip)) return;
+    
     const video = videoRef.current;
     const audio = audioRef.current;
     if (!video || !audio) return;
-    
-    // Only reset if clip actually changed
-    const clipChanged = lastClipRef.current !== currentClip;
-    if (clipChanged) {
-      lastClipRef.current = currentClip;
-    }
     
     // Clear any existing timer
     if (timerRef.current) {
@@ -240,9 +237,9 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
     const tryPlayBoth = async () => {
       if (!videoReady || !audioReady || hasStarted) return;
       hasStarted = true;
+      playedClipsRef.current.add(currentClip); // Mark as played
       
-      // Mark as ready after a tiny delay to allow render
-      requestAnimationFrame(() => setIsReady(true));
+      setIsReady(true);
       
       try {
         // Reset both to start
@@ -259,37 +256,34 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
         }
         
         // Get audio duration for precise timing
-        const audioDuration = audio.duration * 1000; // Convert to ms
+        const audioDuration = audio.duration * 1000;
         const clipDuration = audioDuration > 0 ? audioDuration + 500 : clip.duration;
+        
+        console.log(`Playing clip ${currentClip + 1}/${BRAND_STORY_CLIPS.length}, duration: ${clipDuration}ms`);
         
         // Advance to next clip when audio finishes
         timerRef.current = setTimeout(() => {
-          setIsReady(false); // Reset for next clip
           if (currentClip < BRAND_STORY_CLIPS.length - 1) {
-            setCurrentClip(prev => prev + 1);
+            setIsReady(false);
+            setCurrentClip(currentClip + 1); // Use direct value, not prev
           } else {
-            // Final clip done - show ending
+            // FINAL CLIP - show ending then close
+            console.log('Final clip done, showing ending...');
             setIsEnding(true);
-            setTimeout(() => {
-              onClose();
-            }, 3000);
           }
         }, clipDuration);
         
       } catch (e) {
         console.log('Playback error:', e.message);
-        // Try to continue anyway
-        requestAnimationFrame(() => setIsReady(true));
+        setIsReady(true);
       }
     };
     
-    // Video ready handler
     const onVideoReady = () => {
       videoReady = true;
       tryPlayBoth();
     };
     
-    // Audio ready handler  
     const onAudioReady = () => {
       audioReady = true;
       tryPlayBoth();
@@ -298,7 +292,6 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
     video.addEventListener('canplaythrough', onVideoReady);
     audio.addEventListener('canplaythrough', onAudioReady);
     
-    // Start loading
     video.load();
     audio.load();
     
@@ -309,7 +302,17 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
       video.removeEventListener('canplaythrough', onVideoReady);
       audio.removeEventListener('canplaythrough', onAudioReady);
     };
-  }, [currentClip, isEnding, videoMuted, clip, onClose]);
+  }, [currentClip, isEnding, videoMuted, clip]);
+  
+  // Close modal after ending screen
+  useEffect(() => {
+    if (isEnding) {
+      const closeTimer = setTimeout(() => {
+        onClose();
+      }, 3000);
+      return () => clearTimeout(closeTimer);
+    }
+  }, [isEnding, onClose]);
   
   // Handle mute toggle
   useEffect(() => {
@@ -317,7 +320,6 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
       if (videoMuted) {
         audioRef.current.pause();
       } else if (isReady && !isEnding) {
-        // Sync audio to video position when unmuting
         if (videoRef.current) {
           audioRef.current.currentTime = videoRef.current.currentTime;
         }
