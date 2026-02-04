@@ -258,14 +258,16 @@ const CelebratePage = () => {
         path="/celebrate"
       />
       
-      {/* Hero Section - Enhanced for mobile */}
-      <div className="relative bg-gradient-to-r from-pink-500 via-rose-500 to-purple-500 text-white py-12 sm:py-20 px-4 overflow-hidden">
-        <div className="absolute inset-0 opacity-20">
+      {/* Hero Section - Enhanced with rotating dog images */}
+      <div className="relative bg-gradient-to-r from-pink-600 via-rose-600 to-purple-600 text-white py-12 sm:py-20 px-4 overflow-hidden">
+        {/* Rotating background images */}
+        <div className="absolute inset-0">
           <img 
-            src="https://images.unsplash.com/photo-1530041539828-114de669390e?w=1200"
+            src={HERO_IMAGES[heroIndex]}
             alt="Pet Celebration"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover opacity-30 transition-opacity duration-1000"
           />
+          <div className="absolute inset-0 bg-gradient-to-r from-pink-600/90 via-rose-600/80 to-purple-600/70" />
         </div>
         
         {/* Floating decorations - repositioned for mobile */}
