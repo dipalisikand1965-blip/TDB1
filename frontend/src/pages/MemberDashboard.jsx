@@ -1241,7 +1241,6 @@ const MemberDashboard = () => {
                   <Settings className="w-4 h-4" /> More
                 </TabsTrigger>
               </TabsList>
-            </div>
           </div>
 
           {/* Tab Contents - All Lazy Loaded */}
