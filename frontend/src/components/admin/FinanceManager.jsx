@@ -471,7 +471,7 @@ const FinanceManager = () => {
           <p className="text-slate-400 text-sm mt-1">Track payments, refunds, discounts & reconcile accounts</p>
         </div>
         
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           {/* Hidden file input for CSV import */}
           <input
             ref={fileInputRef}
@@ -496,14 +496,42 @@ const FinanceManager = () => {
             <Upload className={`w-4 h-4 mr-2 ${importing ? 'animate-spin' : ''}`} />
             {importing ? 'Importing...' : 'Import CSV'}
           </Button>
-          <Button
-            onClick={exportToCSV}
-            variant="outline"
-            className="border-slate-600 text-slate-300"
-          >
-            <Download className="w-4 h-4 mr-2" />
-            Export CSV
-          </Button>
+          
+          {/* Export Dropdown */}
+          <div className="relative group">
+            <Button
+              variant="outline"
+              className="border-slate-600 text-slate-300"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Export
+              <ChevronDown className="w-4 h-4 ml-1" />
+            </Button>
+            <div className="absolute right-0 mt-1 w-48 bg-slate-800 border border-slate-700 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+              <button
+                onClick={exportToCSV}
+                className="w-full px-4 py-2 text-left text-sm text-slate-300 hover:bg-slate-700 rounded-t-lg flex items-center gap-2"
+              >
+                <FileText className="w-4 h-4" /> All Payments (CSV)
+              </button>
+              <button
+                onClick={exportGSTReport}
+                className="w-full px-4 py-2 text-left text-sm text-slate-300 hover:bg-slate-700 flex items-center gap-2"
+              >
+                <Receipt className="w-4 h-4" /> GST Report
+              </button>
+              <button
+                onClick={() => {
+                  const email = prompt('Enter member email for ledger:');
+                  if (email) exportMemberLedger(email);
+                }}
+                className="w-full px-4 py-2 text-left text-sm text-slate-300 hover:bg-slate-700 rounded-b-lg flex items-center gap-2"
+              >
+                <User className="w-4 h-4" /> Member Ledger
+              </button>
+            </div>
+          </div>
+          
           <Button
             onClick={fetchPayments}
             variant="outline"
