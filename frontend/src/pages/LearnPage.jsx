@@ -20,6 +20,8 @@ import PersonalizedPicks from '../components/PersonalizedPicks';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import SEOHead from '../components/SEOHead';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
+import ConversationalEntry from '../components/ConversationalEntry';
+import QuickWinTip from '../components/QuickWinTip';
 import { useNavigate } from 'react-router-dom';
 import {
   GraduationCap, BookOpen, Brain, Star, Award, Trophy,
