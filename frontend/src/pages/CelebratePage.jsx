@@ -53,10 +53,26 @@ const CelebratePage = () => {
   const [conciergeSubmitting, setConciergeSubmitting] = useState(false);
   const [userPets, setUserPets] = useState([]);
   const [showSoulExplainer, setShowSoulExplainer] = useState(false);
+  const [heroIndex, setHeroIndex] = useState(0);
   const { addToCart } = useCart();
   const { user, token } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+
+  // Rotating hero images for visual appeal
+  const HERO_IMAGES = [
+    'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1200&q=80',
+    'https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=1200&q=80',
+    'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=1200&q=80'
+  ];
+
+  // Rotate hero images
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setHeroIndex((prev) => (prev + 1) % HERO_IMAGES.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [HERO_IMAGES.length]);
   
   // Concierge request form state
   const [conciergeForm, setConciergeForm] = useState({
