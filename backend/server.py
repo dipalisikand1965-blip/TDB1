@@ -197,6 +197,9 @@ from stay_social_routes import (
     seed_sample_socials
 )
 
+# Membership Routes (Payment Create/Verify)
+from membership_routes import router as membership_router
+
 # Communication System (Unified Reminder & Mailing)
 from communication_routes import setup_communication_routes
 
