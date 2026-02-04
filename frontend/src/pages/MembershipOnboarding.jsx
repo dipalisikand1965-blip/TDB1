@@ -1393,41 +1393,50 @@ const MembershipOnboarding = () => {
                   </div>
 
                   {/* Pricing Breakdown */}
-                  <div className="space-y-3 text-sm p-4 bg-slate-800/50 rounded-xl">
-                    <div className="flex justify-between">
-                      <span className="text-slate-300">
-                        Pet Pass — {pricing.isTrialPlan ? 'Trial (1 month)' : 'Founder (12 months)'}
-                      </span>
-                      <span className="text-white">₹{pricing.basePrice.toLocaleString()}</span>
-                    </div>
-                    
-                    {petsData.length > 1 && (
+                  {!pricing.isExplorer ? (
+                    <div className="space-y-3 text-sm p-4 bg-slate-800/50 rounded-xl">
                       <div className="flex justify-between">
-                        <span className="text-emerald-400">
-                          + {petsData.length - 1} more dog{petsData.length > 2 ? 's' : ''} (FREE!)
+                        <span className="text-slate-300">
+                          Pet Pass — {pricing.planName}
                         </span>
-                        <span className="text-emerald-400">₹0</span>
+                        <span className="text-white">₹{pricing.basePrice.toLocaleString()}</span>
                       </div>
-                    )}
-                    
-                    <hr className="border-slate-600" />
-                    
-                    <div className="flex justify-between">
-                      <span className="text-slate-400">Subtotal</span>
-                      <span className="text-white">₹{pricing.subtotal.toLocaleString()}</span>
+                      
+                      {petsData.length > 1 && (
+                        <div className="flex justify-between">
+                          <span className="text-emerald-400">
+                            + {petsData.length - 1} more dog{petsData.length > 2 ? 's' : ''} (FREE!)
+                          </span>
+                          <span className="text-emerald-400">₹0</span>
+                        </div>
+                      )}
+                      
+                      <hr className="border-slate-600" />
+                      
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">Subtotal</span>
+                        <span className="text-white">₹{pricing.subtotal.toLocaleString()}</span>
+                      </div>
+                      
+                      <div className="flex justify-between">
+                        <span className="text-slate-400">GST (18%)</span>
+                        <span className="text-white">₹{pricing.gst.toLocaleString()}</span>
+                      </div>
+                      
+                      <hr className="border-slate-600" />
+                      
+                      <div className="flex justify-between text-lg font-bold">
+                        <span className="text-white">Total</span>
+                        <span className="text-pink-400">₹{pricing.total.toLocaleString()}</span>
+                      </div>
                     </div>
-                    
-                    <div className="flex justify-between">
-                      <span className="text-slate-400">GST (18%)</span>
-                      <span className="text-white">₹{pricing.gst.toLocaleString()}</span>
+                  ) : (
+                    <div className="p-4 bg-emerald-500/10 rounded-xl border border-emerald-500/30 text-center">
+                      <p className="text-emerald-300 font-semibold text-lg">Free for 7 Days!</p>
+                      <p className="text-slate-400 text-sm mt-1">Explore all features. No payment required.</p>
+                      <p className="text-slate-500 text-xs mt-2">After 7 days, upgrade to continue access.</p>
                     </div>
-                    
-                    <hr className="border-slate-600" />
-                    
-                    <div className="flex justify-between text-lg font-bold">
-                      <span className="text-white">Total</span>
-                      <span className="text-pink-400">₹{pricing.total.toLocaleString()}</span>
-                    </div>
+                  )
                   </div>
 
                   {/* What's Included */}
