@@ -78,17 +78,17 @@ const MiraOrb = ({
   state = 'idle', // idle, listening, thinking, speaking, celebrating
   onClick,
   size = 'md', // sm, md, lg
-  showLabel = true,
+  showLabel = false, // Label hidden by default - the orb speaks for itself
   className = '',
 }) => {
   const [particles, setParticles] = useState([]);
   const orbRef = useRef(null);
   
-  // Size configurations
+  // Size configurations - Enhanced glow radius
   const sizes = {
-    sm: { orb: 48, glow: 64, particles: 4 },
-    md: { orb: 64, glow: 96, particles: 6 },
-    lg: { orb: 80, glow: 120, particles: 8 },
+    sm: { orb: 48, glow: 80, outerGlow: 100, particles: 4 },
+    md: { orb: 64, glow: 110, outerGlow: 140, particles: 6 },
+    lg: { orb: 80, glow: 140, outerGlow: 180, particles: 8 },
   };
   
   const config = sizes[size];
