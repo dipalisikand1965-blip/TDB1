@@ -232,10 +232,10 @@ const PawPointsBreakdownModal = ({ open, onClose, history, loading, totalPoints 
   
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-md max-h-[80vh] overflow-hidden flex flex-col">
+      <DialogContent className="max-w-md max-h-[80vh] overflow-hidden flex flex-col bg-slate-900/95 backdrop-blur-xl border border-white/10">
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <Gift className="w-5 h-5 text-purple-600" />
+          <DialogTitle className="flex items-center gap-2 text-white">
+            <Gift className="w-5 h-5 text-purple-400" />
             Paw Points History
           </DialogTitle>
         </DialogHeader>
@@ -248,31 +248,31 @@ const PawPointsBreakdownModal = ({ open, onClose, history, loading, totalPoints 
         <div className="flex-1 overflow-y-auto space-y-2">
           {loading ? (
             <div className="flex items-center justify-center py-8">
-              <Loader2 className="w-6 h-6 animate-spin text-purple-600" />
+              <Loader2 className="w-6 h-6 animate-spin text-purple-400" />
             </div>
           ) : history.length > 0 ? (
             history.map((tx, idx) => (
-              <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+              <div key={idx} className="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg border border-white/5">
                 <div className="flex items-center gap-3">
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                    tx.type === 'earn' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600'
+                    tx.type === 'earn' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'
                   }`}>
                     {tx.type === 'earn' ? <Plus className="w-4 h-4" /> : <Minus className="w-4 h-4" />}
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-900">{tx.description}</p>
-                    <p className="text-xs text-gray-500">{new Date(tx.created_at).toLocaleDateString()}</p>
+                    <p className="text-sm font-medium text-white">{tx.description}</p>
+                    <p className="text-xs text-slate-500">{new Date(tx.created_at).toLocaleDateString()}</p>
                   </div>
                 </div>
-                <span className={`font-semibold ${tx.type === 'earn' ? 'text-green-600' : 'text-red-600'}`}>
+                <span className={`font-semibold ${tx.type === 'earn' ? 'text-green-400' : 'text-red-400'}`}>
                   {tx.type === 'earn' ? '+' : '-'}{tx.points}
                 </span>
               </div>
             ))
           ) : (
             <div className="text-center py-8">
-              <History className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-              <p className="text-gray-500">No transactions yet</p>
+              <History className="w-12 h-12 text-slate-600 mx-auto mb-3" />
+              <p className="text-slate-500">No transactions yet</p>
             </div>
           )}
         </div>
