@@ -64,7 +64,7 @@ def generate_video(prompt, output_name):
             prompt=prompt,
             model="sora-2",
             size="1280x720",
-            duration=4,
+            duration=8,  # 8 seconds for longer voiceover
             max_wait_time=600
         )
         
