@@ -394,10 +394,10 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
           </div>
         )}
         
-        {/* Progress Bar & Controls - Bottom, with safe area */}
+        {/* Progress Bar & Controls - Bottom, above mobile nav */}
         {!isEnding && (
           <div 
-            className="absolute bottom-4 sm:bottom-8 left-4 right-4 sm:left-6 sm:right-6 z-30"
+            className="absolute bottom-24 sm:bottom-8 left-4 right-4 sm:left-6 sm:right-6 z-30"
             style={{ 
               paddingBottom: 'env(safe-area-inset-bottom, 0px)',
               marginLeft: 'env(safe-area-inset-left, 0px)',
