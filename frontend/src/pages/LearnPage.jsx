@@ -400,9 +400,51 @@ const LearnPage = () => {
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white" data-testid="learn-page">
       {/* Mira Floating Chat Widget */}
       <MiraChatWidget pillar="learn" />
+      
+      {/* Staggered Animation Styles */}
+      <style>{`
+        @keyframes fadeInUp {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        @keyframes scaleIn {
+          from {
+            opacity: 0;
+            transform: scale(0.95);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1);
+          }
+        }
+        
+        .animate-fade-in-up {
+          animation: fadeInUp 0.6s ease-out forwards;
+          opacity: 0;
+        }
+        
+        .animate-scale-in {
+          animation: scaleIn 0.5s ease-out forwards;
+          opacity: 0;
+        }
+        
+        .stagger-1 { animation-delay: 0.05s; }
+        .stagger-2 { animation-delay: 0.1s; }
+        .stagger-3 { animation-delay: 0.15s; }
+        .stagger-4 { animation-delay: 0.2s; }
+        .stagger-5 { animation-delay: 0.25s; }
+        .stagger-6 { animation-delay: 0.3s; }
+      `}</style>
 
-      {/* Hero Section */}
-      <div className="relative h-[500px] overflow-hidden">
+      {/* Hero Section - Enhanced with rotating images */}
+      <div className="relative h-[400px] sm:h-[500px] overflow-hidden">
         {/* Mobile Back Button */}
         <button 
           onClick={() => navigate(-1)}
@@ -412,29 +454,32 @@ const LearnPage = () => {
           <ChevronLeft className="w-6 h-6 text-white" />
         </button>
         
-        <div 
-          className="absolute inset-0 bg-cover bg-center transition-all duration-1000"
-          style={{ backgroundImage: `url(${HERO_IMAGES[heroIndex]})` }}
-        >
+        {/* Rotating Background Images */}
+        <div className="absolute inset-0">
+          <img 
+            src={HERO_IMAGES[heroIndex]}
+            alt="Pet Training"
+            className="w-full h-full object-cover opacity-30 transition-opacity duration-1000"
+          />
           <div className="absolute inset-0 bg-gradient-to-r from-blue-900/90 via-indigo-900/80 to-purple-900/70" />
         </div>
         
         <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">
           <div className="max-w-2xl">
-            <Badge className="mb-4 bg-blue-500/20 text-blue-200 border-blue-400/30">
-              <GraduationCap className="w-4 h-4 mr-1" /> Pet Training & Education
+            <Badge className="mb-3 sm:mb-4 bg-blue-500/20 text-blue-200 border-blue-400/30 animate-fade-in-up">
+              <GraduationCap className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1" /> Pet Training & Education
             </Badge>
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              Unlock Your Pet's
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-3 sm:mb-4 animate-fade-in-up stagger-1">
+              Unlock Your Pet&apos;s
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400"> Full Potential</span>
             </h1>
-            <p className="text-lg text-gray-300 mb-6">
+            <p className="text-base sm:text-lg text-gray-300 mb-4 sm:mb-6 animate-fade-in-up stagger-2">
               Expert-led training programs, personalized behavior modification, and skill-building courses for dogs of all ages.
             </p>
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-col sm:flex-row gap-3 animate-fade-in-up stagger-3">
               <Button 
                 size="lg" 
-                className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700"
+                className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 h-12 sm:h-11 text-base hover:scale-105 transition-transform"
                 onClick={() => setShowRequestModal(true)}
                 data-testid="request-training-btn"
               >
@@ -443,27 +488,72 @@ const LearnPage = () => {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="border-white/30 text-white hover:bg-white/10"
+                className="border-white/30 text-white hover:bg-white/10 h-12 sm:h-11 text-base"
                 onClick={() => document.getElementById('programs')?.scrollIntoView({ behavior: 'smooth' })}
               >
                 <BookOpen className="w-5 h-5 mr-2" /> Browse Programs
               </Button>
             </div>
+            
+            {/* Trust Indicators */}
+            <div className="flex flex-wrap gap-4 sm:gap-6 mt-6 sm:mt-8 animate-fade-in-up stagger-4">
+              <div className="flex items-center gap-2 text-white/70">
+                <Award className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400" />
+                <span className="text-xs sm:text-sm">Certified Trainers</span>
+              </div>
+              <div className="flex items-center gap-2 text-white/70">
+                <Target className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-400" />
+                <span className="text-xs sm:text-sm">Personalized Plans</span>
+              </div>
+              <div className="flex items-center gap-2 text-white/70">
+                <PawPrint className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400" />
+                <span className="text-xs sm:text-sm">All Breeds Welcome</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 animate-bounce">
+          <ChevronDown className="w-5 h-5 sm:w-6 sm:h-6 text-white/50" />
+        </div>
+      </div>
+
+      {/* ==================== CONVERSATIONAL ENTRY + QUICK WIN ==================== */}
+      <div className="py-8 sm:py-10 bg-gradient-to-b from-slate-50 to-white">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-4 sm:gap-6 items-stretch">
+            <ConversationalEntry 
+              pillar="learn"
+              petName={userPets[0]?.name}
+            />
+            <QuickWinTip
+              pillar="learn"
+              petName={userPets[0]?.name}
+              petBreed={userPets[0]?.breed}
+              petAge={userPets[0]?.age}
+              onActionClick={(tip) => {
+                if (tip?.actionType === 'navigate' && tip?.actionUrl) {
+                  navigate(tip.actionUrl);
+                } else {
+                  toast({ title: tip?.action || 'Coming soon!', description: 'This feature will be available soon.' });
+                }
+              }}
+            />
           </div>
         </div>
       </div>
 
       {/* Training Types Quick Access */}
-      <div className="py-12 bg-white border-b">
+      <div className="py-10 sm:py-12 bg-white border-b">
         <div className="max-w-7xl mx-auto px-4">
-          <h2 className="text-2xl font-bold text-center mb-8">What Would You Like to Learn?</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {Object.entries(LEARN_TYPES).map(([key, config]) => {
+          <h2 className="text-xl sm:text-2xl font-bold text-center mb-6 sm:mb-8">What Would You Like to Learn?</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+            {Object.entries(LEARN_TYPES).map(([key, config], idx) => {
               const Icon = config.icon;
               return (
                 <Card 
                   key={key}
-                  className={`p-4 cursor-pointer hover:shadow-lg transition-all text-center ${
+                  className={`animate-scale-in stagger-${Math.min(idx + 1, 6)} p-3 sm:p-4 cursor-pointer hover:shadow-lg hover:scale-[1.02] transition-all text-center ${
                     selectedType === key ? 'ring-2 ring-blue-500' : ''
                   }`}
                   onClick={() => {
@@ -473,10 +563,10 @@ const LearnPage = () => {
                   }}
                   data-testid={`learn-type-${key}`}
                 >
-                  <div className={`w-12 h-12 rounded-full mx-auto mb-3 flex items-center justify-center bg-gradient-to-br ${config.color}`}>
-                    <Icon className="w-6 h-6 text-white" />
+                  <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full mx-auto mb-2 sm:mb-3 flex items-center justify-center bg-gradient-to-br ${config.color}`}>
+                    <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                   </div>
-                  <h3 className="font-medium text-sm text-gray-900">{config.name}</h3>
+                  <h3 className="font-medium text-xs sm:text-sm text-gray-900">{config.name}</h3>
                 </Card>
               );
             })}
