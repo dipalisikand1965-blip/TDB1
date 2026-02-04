@@ -1181,6 +1181,9 @@ const MemberDashboard = () => {
               <TabsTrigger value="settings" className="rounded-xl px-4 py-2.5 text-sm font-medium text-slate-400 whitespace-nowrap transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-white/5 hover:text-white">
                 <Settings className="w-4 h-4 mr-1.5 inline" /> Settings
               </TabsTrigger>
+              <TabsTrigger value="membership" className="rounded-xl px-4 py-2.5 text-sm font-medium text-slate-400 whitespace-nowrap transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-lg hover:bg-white/5 hover:text-white">
+                <Crown className="w-4 h-4 mr-1.5 inline" /> Plan
+              </TabsTrigger>
             </TabsList>
           </div>
 
