@@ -314,15 +314,34 @@ const Home = () => {
               </Button>
             </Link>
             
-            <button
+            {/* Stunning Video Play Button */}
+            <motion.button
               onClick={() => setShowVideo(true)}
-              className="flex items-center gap-2 text-white/60 hover:text-white transition-colors px-6 py-3"
+              className="group flex items-center gap-4 px-6 py-3"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
             >
-              <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center">
-                <Play className="w-4 h-4 text-white fill-white" />
+              {/* Animated Play Button with Glow */}
+              <div className="relative">
+                {/* Pulsing glow ring */}
+                <motion.div
+                  className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 blur-md"
+                  animate={{
+                    scale: [1, 1.3, 1],
+                    opacity: [0.5, 0.8, 0.5],
+                  }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+                {/* Play button circle */}
+                <div className="relative w-14 h-14 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center shadow-lg shadow-purple-500/30 group-hover:shadow-purple-500/50 transition-shadow">
+                  <Play className="w-6 h-6 text-white fill-white ml-1" />
+                </div>
               </div>
-              <span>Watch the Story</span>
-            </button>
+              <div className="text-left">
+                <span className="block text-white font-semibold group-hover:text-purple-200 transition-colors">Watch Our Story</span>
+                <span className="block text-white/50 text-sm">See the magic unfold</span>
+              </div>
+            </motion.button>
           </motion.div>
 
           {/* Scroll indicator */}
