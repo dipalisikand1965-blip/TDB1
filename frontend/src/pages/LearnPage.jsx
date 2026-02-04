@@ -124,7 +124,8 @@ const BEHAVIOR_ISSUES = [
 
 const HERO_IMAGES = [
   'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1200&q=80',
-  'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=1200&q=80'
+  'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=1200&q=80',
+  'https://images.unsplash.com/photo-1552053831-71594a27632d?w=1200&q=80'
 ];
 
 const LearnPage = () => {
