@@ -11,7 +11,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/admin/finance", tags=["Finance"])
+router = APIRouter(prefix="/api/admin/finance", tags=["Finance"])
 
 # Import db and verify_admin from main server
 # These will be injected when the router is included
