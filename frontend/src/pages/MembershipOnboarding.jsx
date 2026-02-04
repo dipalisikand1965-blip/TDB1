@@ -8,7 +8,8 @@ import { Badge } from '../components/ui/badge';
 import { 
   User, Mail, Phone, MapPin, Home, PawPrint, Plus, X, Check,
   ChevronRight, ChevronLeft, Camera, Calendar, Scale, Heart,
-  Dog, Sparkles, Crown, ArrowRight, CreditCard, Loader2, Gift
+  Dog, Sparkles, Crown, ArrowRight, CreditCard, Loader2, Gift,
+  Eye, EyeOff
 } from 'lucide-react';
 import { getApiUrl, API_URL } from '../utils/api';
 import BreedAutocomplete from '../components/BreedAutocomplete';
