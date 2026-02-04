@@ -1298,7 +1298,7 @@ const Home = () => {
               </p>
               
               <p className="text-base text-white/50 mb-8 leading-relaxed italic border-l-2 border-purple-500/50 pl-4">
-                Mira is the brain. Concierge is the hand.<br />
+                Mira is the brain. Concierge® is the hand.<br />
                 One understands life. The other moves the world.
               </p>
 
