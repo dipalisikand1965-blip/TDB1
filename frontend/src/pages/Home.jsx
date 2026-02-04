@@ -426,8 +426,8 @@ const VIDEO_TESTIMONIALS = [
     id: 2,
     name: "Rahul & Max",
     pet: "Max",
-    // Beagle thumbnail to match the AI video
-    thumbnail: "https://images.unsplash.com/photo-1505628346881-b72b27e84530?w=400&h=300&fit=crop",
+    // Beagle thumbnail - happy beagle on sidewalk
+    thumbnail: "https://images.unsplash.com/photo-1657162801081-acfdd45242ce?w=400&h=300&fit=crop",
     videoSrc: "/videos/testimonials/rahul_testimonial.mp4",
     quote: "When Max got sick at 2am, Mira already had his full health history ready.",
     duration: "0:04",
@@ -437,8 +437,8 @@ const VIDEO_TESTIMONIALS = [
     id: 3,
     name: "The Kapoor Family",
     pet: "Luna",
-    // Labrador thumbnail to match the AI video
-    thumbnail: "https://images.unsplash.com/photo-1591769225440-811ad7d6eab3?w=400&h=300&fit=crop",
+    // Labrador thumbnail - chocolate lab portrait
+    thumbnail: "https://images.unsplash.com/photo-1610112747663-45172b603dde?w=400&h=300&fit=crop",
     videoSrc: "/videos/testimonials/kapoor_testimonial.mp4",
     quote: "They sent Luna a birthday cake without me even asking.",
     duration: "0:04",
