@@ -1097,7 +1097,6 @@ const MiraAI = () => {
           state={getOrbState()}
           onClick={() => setIsOpen(true)}
           size="md"
-          showLabel={true}
         />
       </div>
     );
