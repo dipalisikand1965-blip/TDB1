@@ -1546,7 +1546,7 @@ const Home = () => {
               ))}
             </div>
 
-            <Link to="/membership">
+            <a href="https://thedoggycompany.in/pet-soul-onboard" target="_blank" rel="noopener noreferrer">
               <Button 
                 size="lg" 
                 className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white px-12 py-7 text-lg rounded-full shadow-2xl shadow-purple-500/30 transition-all hover:scale-105"
@@ -1554,7 +1554,7 @@ const Home = () => {
                 Begin Your Pet&apos;s Soul Journey
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
-            </Link>
+            </a>
           </motion.div>
         </div>
       </section>
