@@ -1553,7 +1553,6 @@ const MembershipOnboarding = () => {
                       <span className="text-pink-400">₹{pricing.total.toLocaleString()}</span>
                     </div>
                   </div>
-                  }
 
                   {/* What's Included */}
                   <div className="mt-6 p-4 bg-slate-800/50 rounded-lg border border-slate-700">
