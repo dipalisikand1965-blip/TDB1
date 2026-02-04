@@ -134,7 +134,8 @@ import {
   Plane,
   Activity,
   BookOpen,
-  Check
+  Check,
+  IndianRupee
 } from 'lucide-react';
 import AdminEngagement from '../components/AdminEngagement';
 
