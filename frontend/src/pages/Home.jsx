@@ -1135,7 +1135,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ========== MEET MIRA - The Guide ========== */}
+      {/* ========== MEET MIRA - The Memory & Judgement Layer ========== */}
       <section className="relative py-24 sm:py-32 bg-slate-950 overflow-hidden">
         {/* Background glow */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-3xl" />
@@ -1152,25 +1152,25 @@ const Home = () => {
               <div className="relative mx-auto">
                 <LivingSoulOrb size="xl" className="mx-auto" />
                 
-                {/* Floating text bubbles */}
+                {/* Floating text bubbles - Interpretations, not transactions */}
                 <motion.div
                   className="absolute -top-4 -right-4 bg-white rounded-2xl px-4 py-2 shadow-xl"
                   animate={{ y: [0, -5, 0] }}
                   transition={{ duration: 3, repeat: Infinity }}
                 >
-                  <p className="text-sm text-gray-800">&quot;I remember Max loves belly rubs&quot;</p>
+                  <p className="text-sm text-gray-800">&quot;Bruno seems anxious today...&quot;</p>
                 </motion.div>
                 <motion.div
                   className="absolute -bottom-4 -left-4 bg-white rounded-2xl px-4 py-2 shadow-xl"
                   animate={{ y: [0, 5, 0] }}
                   transition={{ duration: 3, repeat: Infinity, delay: 1 }}
                 >
-                  <p className="text-sm text-gray-800">&quot;His vet appointment is tomorrow&quot;</p>
+                  <p className="text-sm text-gray-800">&quot;Perhaps extra cuddles tonight?&quot;</p>
                 </motion.div>
               </div>
             </motion.div>
 
-            {/* Mira Description */}
+            {/* Mira Description - New positioning */}
             <motion.div
               className="order-1 lg:order-2"
               initial={{ opacity: 0, x: 50 }}
@@ -1178,27 +1178,31 @@ const Home = () => {
               viewport={{ once: true }}
             >
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/20 text-purple-300 rounded-full text-sm font-medium mb-6">
-                <Sparkles className="w-4 h-4" />
+                <Brain className="w-4 h-4" />
                 Meet Mira
               </div>
               
               <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
-                Not a Chatbot.
+                She Doesn&apos;t Fulfil Requests.
                 <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-                  Your Pet&apos;s Guardian Angel.
+                  She Interprets Lives.
                 </span>
               </h2>
 
-              <p className="text-lg text-white/70 mb-8 leading-relaxed">
-                Mira knows your pet like you do. Every allergy, every fear, every favorite spot behind the ears. 
-                She doesn&apos;t just answer questions — she anticipates needs before you ask.
+              <p className="text-lg text-white/70 mb-4 leading-relaxed">
+                Mira is the memory and judgement layer that turns infrastructure into relationship.
+              </p>
+              
+              <p className="text-base text-white/50 mb-8 leading-relaxed italic border-l-2 border-purple-500/50 pl-4">
+                Mira is the brain. Concierge is the hand.<br />
+                One understands life. The other moves the world.
               </p>
 
               <div className="space-y-4 mb-8">
                 {[
-                  { icon: Eye, title: 'She Remembers Everything', desc: 'Every interaction builds deeper understanding' },
-                  { icon: Heart, title: 'She Truly Cares', desc: 'Not scripted responses — genuine guidance' },
-                  { icon: Brain, title: 'She Gets Smarter', desc: 'The longer you stay, the more she knows' },
+                  { icon: Eye, title: 'She Sees Beyond Words', desc: 'Patterns, emotions, unspoken needs' },
+                  { icon: Heart, title: 'She Builds Relationships', desc: 'Not transactions — connections that deepen' },
+                  { icon: Brain, title: 'She Remembers Everything', desc: 'Every moment becomes part of the story' },
                 ].map((item, idx) => (
                   <div key={idx} className="flex items-start gap-4 p-4 bg-white/5 rounded-xl border border-white/10">
                     <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center flex-shrink-0">
@@ -1218,7 +1222,7 @@ const Home = () => {
                 data-testid="mira-section-cta"
               >
                 <Sparkles className="w-5 h-5 mr-2" />
-                Talk to Mira Now
+                Experience Mira
               </Button>
             </motion.div>
           </div>
