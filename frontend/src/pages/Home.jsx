@@ -166,32 +166,28 @@ const LivingSoulOrb = ({ size = 'lg', className = '', interactive = true }) => {
   );
 };
 
-// Brand Story Video Clips - BRIGHT versions with narrative text
+// Brand Story Video Clips - Sora generated videos (NO stock images)
 const BRAND_STORY_CLIPS = [
   {
     src: '/videos/brand_story/01_eyes_bright.mp4',
-    poster: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1920&q=80',
     title: 'Look into their eyes...',
     subtitle: 'You already know.',
     duration: 4000
   },
   {
     src: '/videos/brand_story/02_bond_bright.mp4',
-    poster: 'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=1920&q=80',
     title: "They're not just pets.",
     subtitle: "They're family.",
     duration: 4000
   },
   {
     src: '/videos/brand_story/03_joy_bright.mp4',
-    poster: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=1920&q=80',
     title: 'Every tail wag, every happy moment...',
     subtitle: 'We help you cherish them all.',
     duration: 4000
   },
   {
     src: '/videos/brand_story/04_family_bright.mp4',
-    poster: 'https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=1920&q=80',
     title: 'The Doggy Company',
     subtitle: 'Every Pet Has a Soul™',
     duration: 4000
