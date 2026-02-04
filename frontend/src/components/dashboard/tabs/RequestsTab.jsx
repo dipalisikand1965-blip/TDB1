@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '../../ui/card';
 import { Button } from '../../ui/button';
 import { Badge } from '../../ui/badge';
-import { Calendar, RefreshCw, Loader2, MessageCircle, Sparkles, PawPrint, Clock } from 'lucide-react';
+import { Calendar, RefreshCw, Loader2, MessageCircle, Sparkles, PawPrint, Clock, ChevronDown, ChevronUp, MapPin, Phone, Mail, User } from 'lucide-react';
 
 const RequestsTab = ({ 
   myRequests, 
@@ -11,6 +11,14 @@ const RequestsTab = ({
   onRefresh 
 }) => {
   const navigate = useNavigate();
+  const [expandedRequests, setExpandedRequests] = useState({});
+
+  const toggleRequest = (requestId) => {
+    setExpandedRequests(prev => ({
+      ...prev,
+      [requestId]: !prev[requestId]
+    }));
+  };
 
   // Get status color classes for dark theme
   const getStatusColors = (color) => {
@@ -32,6 +40,9 @@ const RequestsTab = ({
           <h3 className="text-lg sm:text-xl font-bold flex items-center gap-2 text-white">
             <Calendar className="w-5 h-5 text-purple-400" />
             My Bookings & Requests
+            {myRequests.length > 0 && (
+              <Badge className="ml-2 bg-purple-500/20 text-purple-400 border-purple-500/30">{myRequests.length}</Badge>
+            )}
           </h3>
           <Button 
             variant="outline" 
@@ -50,48 +61,138 @@ const RequestsTab = ({
             <Loader2 className="w-8 h-8 animate-spin text-purple-400" />
           </div>
         ) : myRequests.length > 0 ? (
-          <div className="space-y-3 sm:space-y-4">
-            {myRequests.map((request) => (
-              <div 
-                key={request.id} 
-                className="bg-slate-800/50 border border-white/5 rounded-xl p-3 sm:p-4 hover:border-purple-500/30 transition-all"
-              >
-                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-wrap items-center gap-2 mb-2">
-                      <Badge 
-                        variant="outline" 
-                        className={`text-xs border ${getStatusColors(request.status_display?.color)}`}
-                      >
-                        {request.status_display?.icon} {request.status_display?.label || request.status}
-                      </Badge>
-                      <span className="text-xs text-slate-500 font-mono">#{request.id}</span>
-                    </div>
-                    <p className="text-sm text-slate-300 line-clamp-2">{request.description}</p>
-                    {(request.pet_name || request.pet_names?.length > 0) && (
-                      <div className="flex items-center gap-1.5 mt-2 text-xs text-slate-400">
-                        <PawPrint className="w-3 h-3 flex-shrink-0" />
-                        <span className="truncate">{request.pet_name || request.pet_names?.join(', ')}</span>
+          <div className="space-y-3">
+            {myRequests.map((request) => {
+              const isExpanded = expandedRequests[request.id];
+              
+              return (
+                <div 
+                  key={request.id} 
+                  className="bg-slate-800/50 border border-white/5 rounded-xl overflow-hidden hover:border-purple-500/30 transition-all"
+                >
+                  {/* Request Header - Clickable */}
+                  <button 
+                    onClick={() => toggleRequest(request.id)}
+                    className="w-full p-4 flex justify-between items-center gap-3 text-left hover:bg-slate-800/70 transition-colors"
+                  >
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <div className="w-10 h-10 bg-purple-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <Calendar className="w-5 h-5 text-purple-400" />
                       </div>
-                    )}
-                  </div>
-                  <div className="flex sm:flex-col items-center sm:items-end gap-2 sm:gap-1 text-sm sm:text-right">
-                    <Badge variant="outline" className="bg-purple-500/10 text-purple-300 border-purple-500/20 text-xs">
-                      {request.pillar}
-                    </Badge>
-                    <div className="flex items-center gap-1 text-xs text-slate-500">
-                      <Clock className="w-3 h-3" />
-                      {new Date(request.created_at).toLocaleDateString('en-IN', {
-                        day: 'numeric',
-                        month: 'short',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap items-center gap-2 mb-1">
+                          <Badge 
+                            variant="outline" 
+                            className={`text-xs border ${getStatusColors(request.status_display?.color)}`}
+                          >
+                            {request.status_display?.icon} {request.status_display?.label || request.status}
+                          </Badge>
+                          <Badge variant="outline" className="bg-purple-500/10 text-purple-300 border-purple-500/20 text-xs">
+                            {request.pillar}
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-white truncate">{request.description?.slice(0, 60) || 'Service Request'}...</p>
+                      </div>
                     </div>
-                  </div>
+                    
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <span className="text-xs text-slate-500 hidden sm:inline">#{request.id?.slice(0, 8)}</span>
+                      {isExpanded ? (
+                        <ChevronUp className="w-5 h-5 text-slate-400" />
+                      ) : (
+                        <ChevronDown className="w-5 h-5 text-slate-400" />
+                      )}
+                    </div>
+                  </button>
+                  
+                  {/* Expanded Details */}
+                  {isExpanded && (
+                    <div className="px-4 pb-4 border-t border-white/5 animate-in slide-in-from-top-2 duration-200">
+                      {/* Request Details */}
+                      <div className="py-4 space-y-4">
+                        {/* Full Description */}
+                        <div>
+                          <p className="text-xs text-slate-500 uppercase tracking-wide mb-2">Request Details</p>
+                          <p className="text-sm text-slate-300">{request.description}</p>
+                        </div>
+                        
+                        {/* Pet Info */}
+                        {(request.pet_name || request.pet_names?.length > 0) && (
+                          <div className="flex items-center gap-2">
+                            <PawPrint className="w-4 h-4 text-purple-400" />
+                            <span className="text-sm text-white">
+                              Pet: {request.pet_name || request.pet_names?.join(', ')}
+                            </span>
+                          </div>
+                        )}
+                        
+                        {/* Booking Details if available */}
+                        {request.booking_date && (
+                          <div className="flex items-center gap-2">
+                            <Calendar className="w-4 h-4 text-emerald-400" />
+                            <span className="text-sm text-white">
+                              Scheduled: {new Date(request.booking_date).toLocaleDateString('en-IN', {
+                                weekday: 'short',
+                                day: 'numeric',
+                                month: 'short',
+                                year: 'numeric'
+                              })}
+                            </span>
+                          </div>
+                        )}
+                        
+                        {/* Location if available */}
+                        {request.city && (
+                          <div className="flex items-center gap-2">
+                            <MapPin className="w-4 h-4 text-pink-400" />
+                            <span className="text-sm text-white">{request.city}</span>
+                          </div>
+                        )}
+                        
+                        {/* Created Date */}
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-4 h-4 text-slate-400" />
+                          <span className="text-sm text-slate-400">
+                            Created: {new Date(request.created_at).toLocaleDateString('en-IN', {
+                              day: 'numeric',
+                              month: 'short',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit'
+                            })}
+                          </span>
+                        </div>
+                        
+                        {/* Request ID */}
+                        <div className="text-xs text-slate-500 font-mono">
+                          Request ID: {request.id}
+                        </div>
+                      </div>
+                      
+                      {/* Actions */}
+                      <div className="flex gap-2 pt-3 border-t border-white/5">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          className="flex-1 bg-slate-700/50 border-white/10 text-white hover:bg-slate-600/50"
+                        >
+                          <MessageCircle className="w-4 h-4 mr-1.5" /> Message Concierge
+                        </Button>
+                        {request.status !== 'completed' && request.status !== 'cancelled' && (
+                          <Button 
+                            variant="outline" 
+                            size="sm"
+                            className="bg-red-500/10 border-red-500/30 text-red-400 hover:bg-red-500/20"
+                          >
+                            Cancel Request
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         ) : (
           <div className="text-center py-12">
