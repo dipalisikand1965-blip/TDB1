@@ -1,9 +1,10 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
 import { Card } from '../../ui/card';
 import { Button } from '../../ui/button';
 import { Badge } from '../../ui/badge';
-import { Gift, Star, Zap, Trophy, Award, Target, Sparkles } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../ui/dialog';
+import { Gift, Star, Zap, Trophy, Award, Target, Sparkles, ShoppingBag, Percent, Ticket, Coffee, X } from 'lucide-react';
+import { toast } from '../../../hooks/use-toast';
 
 const RewardsTab = ({ 
   user, 
@@ -12,7 +13,7 @@ const RewardsTab = ({
   achievements,
   setShowPawPointsBreakdown
 }) => {
-  const navigate = useNavigate();
+  const [showRedeemModal, setShowRedeemModal] = useState(false);
   
   // Calculate metrics
   const totalPawPoints = user?.loyalty_points || 0;
@@ -39,6 +40,33 @@ const RewardsTab = ({
   const progressToNext = currentTier.nextPoints 
     ? Math.min(100, ((totalPawPoints - (tierThresholds[Object.keys(tierThresholds).find(k => tierThresholds[k] === currentTier.nextPoints - (currentTier.nextPoints === tierThresholds.legend ? 750 : currentTier.nextPoints === tierThresholds.pawfect ? 500 : 250))] || 0)) / (currentTier.nextPoints - (tierThresholds[Object.keys(tierThresholds).find(k => tierThresholds[k] === currentTier.nextPoints - (currentTier.nextPoints === tierThresholds.legend ? 750 : currentTier.nextPoints === tierThresholds.pawfect ? 500 : 250))] || 0))) * 100)
     : 100;
+
+  // Redemption rewards
+  const redeemableRewards = [
+    { id: 1, name: '₹100 Off Next Order', points: 100, icon: <Percent className="w-6 h-6" />, color: 'from-emerald-500 to-teal-500', description: 'Get ₹100 discount on any order above ₹500' },
+    { id: 2, name: '₹250 Off Next Order', points: 225, icon: <Percent className="w-6 h-6" />, color: 'from-blue-500 to-indigo-500', description: 'Get ₹250 discount on any order above ₹1000' },
+    { id: 3, name: 'Free Grooming Session', points: 500, icon: <Sparkles className="w-6 h-6" />, color: 'from-purple-500 to-pink-500', description: 'One free basic grooming session for your pet' },
+    { id: 4, name: 'Premium Treat Box', points: 300, icon: <Gift className="w-6 h-6" />, color: 'from-amber-500 to-orange-500', description: 'Curated box of premium treats for your furry friend' },
+    { id: 5, name: 'Free Vet Consultation', points: 400, icon: <Coffee className="w-6 h-6" />, color: 'from-rose-500 to-pink-500', description: '30-minute online consultation with our partner vets' },
+    { id: 6, name: 'Birthday Party Add-on', points: 350, icon: <Ticket className="w-6 h-6" />, color: 'from-violet-500 to-purple-500', description: 'Extra treats and decorations for birthday celebration' },
+  ];
+
+  const handleRedeem = (reward) => {
+    if (totalPawPoints < reward.points) {
+      toast({ 
+        title: 'Not enough points', 
+        description: `You need ${reward.points - totalPawPoints} more points to redeem this reward.`,
+        variant: 'destructive'
+      });
+      return;
+    }
+    // In real app, this would call API to redeem
+    toast({ 
+      title: '🎉 Reward Redeemed!', 
+      description: `${reward.name} has been added to your account. Use it on your next order!`
+    });
+    setShowRedeemModal(false);
+  };
 
   return (
     <div className="space-y-4 sm:space-y-6 animate-in fade-in-50 duration-300" data-testid="rewards-tab">
