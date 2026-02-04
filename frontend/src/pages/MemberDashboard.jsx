@@ -859,32 +859,32 @@ const MemberDashboard = () => {
         totalPoints={user?.loyalty_points}
       />
       
-      <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 pb-28 md:pb-8 pt-4 md:pt-8">
+      <div className="max-w-7xl mx-auto px-4 md:px-8 lg:px-12 pb-28 md:pb-8 pt-4 md:pt-8 relative z-10">
           {/* 1️⃣ HEADER - Pet Parent Name + All Pets Listed */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl md:rounded-3xl flex items-center justify-center shadow-lg shadow-purple-500/20 transition-transform hover:scale-105">
+              <div className="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl md:rounded-3xl flex items-center justify-center shadow-lg shadow-purple-500/30 transition-transform hover:scale-105">
                 <User className="w-8 h-8 md:w-10 md:h-10 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 tracking-tight" style={{fontFamily: 'Manrope, sans-serif'}}>
+                <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white tracking-tight" style={{fontFamily: 'Manrope, sans-serif'}}>
                   {user.name?.split(' ')[0] || 'Pet Parent'}&apos;s Dashboard
                 </h1>
                 {/* Show all pets names */}
                 {pets.length > 0 && (
                   <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
-                    <PawPrint className="w-4 h-4 text-purple-500" />
-                    <span className="text-sm md:text-base text-gray-600">
+                    <PawPrint className="w-4 h-4 text-pink-400" />
+                    <span className="text-sm md:text-base text-slate-400">
                       {pets.map(p => p.name).join(' • ')}
                     </span>
                   </div>
                 )}
                 <div className="flex items-center gap-2 mt-2">
-                  <Badge className="bg-purple-100 text-purple-700 text-xs md:text-sm font-medium px-3 py-1 rounded-full">Pet Pass Active</Badge>
+                  <Badge className="bg-purple-500/20 text-purple-300 border border-purple-500/30 text-xs md:text-sm font-medium px-3 py-1 rounded-full">Pet Pass Active</Badge>
                   {user.loyalty_points > 0 && (
                     <Badge 
                       variant="outline" 
-                      className="text-xs md:text-sm cursor-pointer hover:bg-purple-50 transition-colors px-3 py-1 rounded-full"
+                      className="text-xs md:text-sm cursor-pointer bg-slate-800/50 border-white/10 text-slate-300 hover:bg-purple-500/20 hover:border-purple-500/30 transition-colors px-3 py-1 rounded-full"
                       onClick={() => setShowPawPointsBreakdown(true)}
                       data-testid="paw-points-badge"
                     >
@@ -899,7 +899,7 @@ const MemberDashboard = () => {
               variant="outline" 
               size="sm"
               onClick={() => { logout(); navigate('/'); }}
-              className="text-red-500 hover:text-red-700 hover:bg-red-50 border-red-200 rounded-xl self-start sm:self-center transition-all hover:scale-105"
+              className="text-red-400 hover:text-red-300 hover:bg-red-500/10 border-red-500/30 rounded-xl self-start sm:self-center transition-all hover:scale-105"
               data-testid="signout-btn"
             >
               <LogOut className="w-4 h-4 mr-2" />
