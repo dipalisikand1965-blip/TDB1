@@ -1440,8 +1440,7 @@ const MembershipOnboarding = () => {
                       <p className="text-slate-400 text-sm mt-1">Explore all features. No payment required.</p>
                       <p className="text-slate-500 text-xs mt-2">After 7 days, upgrade to continue access.</p>
                     </div>
-                  )
-                  </div>
+                  )}
 
                   {/* What's Included */}
                   <div className="mt-6 p-4 bg-slate-800/50 rounded-lg border border-slate-700">
