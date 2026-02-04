@@ -1218,10 +1218,9 @@ const MemberDashboard = () => {
             </TabsList>
           </div>
           
-          {/* Mobile Tab Navigation - Fixed Horizontal Scroll */}
-          <div className="md:hidden mb-6 -mx-4 px-4">
-            <div className="overflow-x-auto scrollbar-hide" style={{ WebkitOverflowScrolling: 'touch' }}>
-              <TabsList className="backdrop-blur-xl bg-slate-900/80 border border-white/10 shadow-2xl p-1.5 rounded-2xl inline-flex gap-1 min-w-max">
+          {/* Mobile Tab Navigation - Wrap into Rows */}
+          <div className="md:hidden mb-6">
+            <TabsList className="backdrop-blur-xl bg-slate-900/80 border border-white/10 shadow-2xl p-1.5 rounded-2xl flex flex-wrap gap-1 h-auto">
                 <TabsTrigger value="overview" className="rounded-xl flex items-center gap-1.5 py-2.5 px-3 text-sm font-medium text-slate-400 whitespace-nowrap flex-shrink-0 data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white transition-all">
                   <Home className="w-4 h-4" /> Home
                 </TabsTrigger>
