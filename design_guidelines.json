@@ -1,159 +1,84 @@
 {
-  "design_system": {
-    "identity": {
-      "name": "The Doggy Company - Premium Dark",
-      "tone": "Premium, Tech-forward, Emotional, Gamified",
-      "archetype": "Luxury & Electric (Archetype 5/7 Hybrid)"
+  "design_strategy": {
+    "core_philosophy": "Cinematic Immersion with Device Respect",
+    "context": "Brand Story Video Modal for Mobile/iPhone",
+    "primary_goal": "Fix 'too big' video cropping on mobile while maintaining cinematic feel",
+    "emotional_tone": "Premium, Immersive, Emotional, Polished"
+  },
+  "typography": {
+    "font_family": {
+      "headings": "Manrope, sans-serif",
+      "body": "Inter, sans-serif",
+      "special": "Syne, sans-serif"
     },
-    "colors": {
-      "background": {
-        "page": "bg-slate-950",
-        "card": "bg-slate-900/60",
-        "card_hover": "hover:bg-slate-800/60",
-        "overlay": "bg-black/50"
-      },
-      "text": {
-        "primary": "text-white",
-        "secondary": "text-slate-400",
-        "tertiary": "text-slate-500",
-        "accent": "text-purple-400"
-      },
-      "borders": {
-        "default": "border-white/10",
-        "active": "border-purple-500/50"
-      },
-      "gradients": {
-        "primary": "bg-gradient-to-r from-purple-600 to-pink-600",
-        "soul": "bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600",
-        "glass": "bg-gradient-to-b from-white/10 to-white/5"
-      }
-    },
-    "typography": {
-      "font_family": "Manrope, sans-serif",
-      "headings": "font-bold tracking-tight text-white",
-      "body": "text-slate-300 leading-relaxed"
-    },
-    "effects": {
-      "glassmorphism": {
-        "base": "backdrop-blur-xl bg-slate-900/60 border border-white/10 shadow-2xl",
-        "heavy": "backdrop-blur-2xl bg-slate-950/80 border border-white/5",
-        "light": "backdrop-blur-md bg-white/5 border border-white/10"
-      },
-      "shadows": {
-        "glow": "shadow-[0_0_20px_rgba(168,85,247,0.2)]",
-        "card": "shadow-xl shadow-black/20"
-      },
-      "animation": {
-        "hover": "transition-all duration-300 ease-out hover:scale-[1.02]",
-        "pulse_glow": "animate-pulse-slow"
-      }
-    },
-    "layout": {
-      "grid": "grid grid-cols-1 md:grid-cols-12 gap-6",
-      "spacing": {
-        "section": "py-8 md:py-12",
-        "container": "px-4 md:px-8 lg:px-12"
-      }
+    "scale": {
+      "mobile_heading": "text-2xl sm:text-3xl",
+      "mobile_body": "text-base sm:text-lg"
     }
   },
-  "components": {
-    "MemberDashboard": {
-      "path": "/app/frontend/src/pages/MemberDashboard.jsx",
-      "instructions": "Redesign the entire dashboard to match the premium dark theme. Replace all light mode classes with the defined dark mode system.",
-      "changes": [
-        {
-          "selector": "main_container",
-          "current": "bg-[#FAFAF9]",
-          "new": "bg-slate-950 min-h-screen text-slate-200"
-        },
-        {
-          "selector": "header_user_card",
-          "current": "bg-white shadow-lg",
-          "new": "bg-slate-900/50 backdrop-blur-xl border border-white/10 shadow-2xl shadow-purple-900/20"
-        },
-        {
-          "selector": "tabs_list",
-          "current": "bg-white/70 border-white/20",
-          "new": "bg-slate-900/80 border-white/5 text-slate-400"
-        },
-        {
-          "selector": "tab_trigger",
-          "current": "data-[state=active]:bg-gradient... text-gray-600",
-          "new": "data-[state=active]:bg-purple-600 data-[state=active]:text-white text-slate-400 hover:text-white hover:bg-white/5"
-        },
-        {
-          "selector": "soul_score_card",
-          "current": "bg-white/10 (on gradient)",
-          "new": "bg-black/20 backdrop-blur-md border border-white/10 hover:bg-black/30"
-        }
-      ]
+  "colors": {
+    "modal_bg": "#000000",
+    "text_primary": "#FFFFFF",
+    "text_secondary": "rgba(255, 255, 255, 0.7)",
+    "accent_primary": "#9333EA",
+    "accent_secondary": "#EC4899",
+    "overlay_gradient": "linear-gradient(to top, rgba(0,0,0,0.8), transparent)"
+  },
+  "layout_fixes": {
+    "modal_container": {
+      "description": "Full-screen fixed container",
+      "changes": "Remove padding-based safe-areas from the root container. The video background must bleed to the edges (behind the notch/home indicator).",
+      "classes": "fixed inset-0 z-[100] bg-black"
     },
-    "GamificationBanner": {
-      "path": "/app/frontend/src/components/dashboard/GamificationBanner.jsx",
-      "instructions": "Update the banner to fit the dark theme. Ensure the 'white' parts are now semi-transparent dark glass.",
-      "changes": [
-        {
-          "selector": "card_base",
-          "current": "bg-white",
-          "new": "bg-slate-900/60 backdrop-blur-xl border border-white/10"
-        },
-        {
-          "selector": "progress_track",
-          "current": "bg-white/20",
-          "new": "bg-slate-800/50"
-        },
-        {
-          "selector": "badge_card",
-          "current": "bg-gray-50",
-          "new": "bg-slate-800/50 border border-white/5"
-        }
-      ]
+    "video_element": {
+      "description": "The main video player",
+      "issue": "Currently uses object-fit: cover which zooms in heavily on landscape videos when viewed on portrait phones.",
+      "solution": "Use responsive object-fit. 'contain' for portrait mobile (to show full width) and 'cover' for desktop/landscape.",
+      "classes": "absolute inset-0 w-full h-full object-contain md:object-cover"
     },
-    "PetSoulScore": {
-      "path": "/app/frontend/src/components/PetSoulScore.jsx",
-      "instructions": "Update SVG rings for dark mode contrast.",
-      "changes": [
-        {
-          "selector": "background_circle",
-          "current": "stroke='#E5E7EB' fill='white'",
-          "new": "stroke='#334155' fill='transparent'"
-        },
-        {
-          "selector": "text",
-          "current": "text-gray-800",
-          "new": "text-white"
-        }
+    "safe_areas": {
+      "description": "Controls and text must respect device safe areas (notch, home bar)",
+      "implementation": "Apply padding-top/bottom: env(safe-area-inset-*) explicitly to the CONTROLS wrapper, not the video wrapper.",
+      "instruction": "Wrap close button and bottom controls in safe-area-aware containers."
+    }
+  },
+  "components": [
+    {
+      "name": "BrandStoryModal",
+      "path": "/app/frontend/src/pages/Home.jsx",
+      "type": "internal_component",
+      "instructions": [
+        "1. Remove inline style padding from the outer motion.div (lines 267-272). Let it fill the screen.",
+        "2. Update <video> className: Change 'object-cover' to 'object-contain md:object-cover' to prevent mobile zooming.",
+        "3. Update <video> inline styles: Remove 'objectFit: cover' from inline styles to let CSS classes handle it.",
+        "4. Update Close Button: Add 'top-4 sm:top-6 pt-[env(safe-area-inset-top)]' to ensure it clears the notch.",
+        "5. Update Bottom Controls: Add 'pb-[env(safe-area-inset-bottom)]' to the bottom control container.",
+        "6. Mobile Optimization: Ensure text overlays (title/subtitle) are positioned with 'bottom-24' or similar to clear the specific mobile controls layout."
       ]
+    }
+  ],
+  "motion": {
+    "entrance": {
+      "type": "spring",
+      "damping": 25,
+      "stiffness": 120,
+      "initial": { "opacity": 0, "scale": 0.95 },
+      "animate": { "opacity": 1, "scale": 1 }
+    },
+    "exit": {
+      "duration": 0.3,
+      "initial": { "opacity": 1 },
+      "animate": { "opacity": 0 }
     }
   },
   "assets": {
-    "images": [
-      {
-        "category": "pet_avatar_main",
-        "url": "https://images.unsplash.com/photo-1457144759132-40d119c2f120?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA3MDB8MHwxfHNlYXJjaHwzfHxoYXBweSUyMGRvZyUyMHBvcnRyYWl0JTIwc3R1ZGlvJTIwbGlnaHRpbmd8ZW58MHx8fHwxNzcwMjAxODg1fDA&ixlib=rb-4.1.0&q=85",
-        "description": "Golden Retriever studio portrait - Use for main pet avatar example"
-      },
-      {
-        "category": "pet_avatar_secondary",
-        "url": "https://images.unsplash.com/photo-1736196674354-b5e918a64644?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA3MDB8MHwxfHNlYXJjaHwyfHxoYXBweSUyMGRvZyUyMHBvcnRyYWl0JTIwc3R1ZGlvJTIwbGlnaHRpbmd8ZW58MHx8fHwxNzcwMjAxODg1fDA&ixlib=rb-4.1.0&q=85",
-        "description": "White dog on black background - Use for secondary pet"
-      },
-      {
-        "category": "user_avatar",
-        "url": "https://images.unsplash.com/photo-1766211698040-d473603745fc?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njl8MHwxfHNlYXJjaHwxfHxkb2clMjBvd25lciUyMGxpZmVzdHlsZSUyMHByZW1pdW18ZW58MHx8fHwxNzcwMjAxODg4fDA&ixlib=rb-4.1.0&q=85",
-        "description": "Premium lifestyle shot - Use for user profile if needed"
-      }
-    ],
-    "icons": "Use Lucide React icons (already installed). Prefer thin strokes (1.5px) for premium feel."
+    "icons": "Lucide React (already installed)",
+    "video_source": "Keep existing sources (Sora generated)"
   },
   "universal_guidelines": [
-    "Use 'slate-950' as the absolute background color for the page.",
-    "NEVER use pure black (#000000) for backgrounds; use slate-950 or slate-900.",
-    "All cards must use glassmorphism: 'bg-slate-900/60 backdrop-blur-xl border border-white/10'.",
-    "Text hierarchy: Headings = text-white, Body = text-slate-400, Muted = text-slate-600.",
-    "Interactive elements must have a hover state: 'hover:bg-white/5' or 'hover:border-purple-500/50'.",
-    "Use 'data-testid' for all interactive elements.",
-    "Maintain the 'Manrope' font family.",
-    "Ensure all gradients are subtle and do not overpower the content."
+    "Do not use gradients on the video element itself.",
+    "Ensure 'Close' button is at least 44x44px touch target on mobile.",
+    "Use data-testid attributes for all interactive elements.",
+    "Maintain the existing auto-advance logic."
   ]
 }
