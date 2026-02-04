@@ -60,7 +60,7 @@ const OverviewTab = ({
                 data-testid="go-to-pet-soul-btn"
               >
                 <Sparkles className="w-3 h-3 mr-1" />
-                Go to {currentPet.name}'s Soul Journey →
+                Go to {currentPet.name}&apos;s Soul Journey →
               </Button>
             )}
           </div>
@@ -92,7 +92,7 @@ const OverviewTab = ({
             <div className="flex items-center gap-3">
               <span className="text-2xl">{currentPet.species === 'cat' ? '🐱' : '🐕'}</span>
               <div>
-                <p className="font-semibold text-white">{currentPet.name}'s Dashboard</p>
+                <p className="font-semibold text-white">{currentPet.name}&apos;s Dashboard</p>
                 <p className="text-xs text-slate-400">{currentPet.breed || 'Your beloved pet'}</p>
               </div>
             </div>
