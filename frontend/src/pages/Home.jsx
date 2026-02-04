@@ -409,16 +409,16 @@ const PARTICLES = Array.from({ length: 20 }, (_, i) => ({
 }));
 
 // Video Testimonials Data - Real Indian families with video stories
-// Thumbnails match AI-generated video content (golden retriever, beagle, labrador)
+// Dogs in thumbnail MATCH dogs in video (golden retriever, beagle, labrador)
 const VIDEO_TESTIMONIALS = [
   {
     id: 1,
     name: "Priya & Bruno",
     pet: "Bruno",
-    // Golden retriever face close-up - won't crop badly on desktop
+    // Golden retriever face close-up - matches video
     thumbnail: "https://images.unsplash.com/photo-1743997182218-30d0e9c3b0f1?w=400&h=300&fit=crop",
     videoSrc: "/videos/testimonials/sharma_testimonial.mp4",
-    quote: "They remembered Bruno's fear of thunderstorms before I even mentioned it.",
+    quote: "They remembered Bruno's fear of thunderstorms... even before I mentioned it. Now whenever there's rain, they send me calming tips.",
     duration: "0:04",
     hasVideo: true,
   },
@@ -426,10 +426,10 @@ const VIDEO_TESTIMONIALS = [
     id: 2,
     name: "Rahul & Max",
     pet: "Max",
-    // Beagle thumbnail - happy beagle on sidewalk
+    // Beagle thumbnail - matches video
     thumbnail: "https://images.unsplash.com/photo-1657162801081-acfdd45242ce?w=400&h=300&fit=crop",
     videoSrc: "/videos/testimonials/rahul_testimonial.mp4",
-    quote: "When Max got sick at 2am, Mira already had his full health history ready.",
+    quote: "Max's favorite walking route, his grooming schedule, even his favorite treats... Mira remembers everything.",
     duration: "0:04",
     hasVideo: true,
   },
@@ -437,10 +437,10 @@ const VIDEO_TESTIMONIALS = [
     id: 3,
     name: "The Kapoor Family",
     pet: "Luna",
-    // Labrador thumbnail - chocolate lab portrait
+    // Labrador thumbnail - matches video
     thumbnail: "https://images.unsplash.com/photo-1610112747663-45172b603dde?w=400&h=300&fit=crop",
     videoSrc: "/videos/testimonials/kapoor_testimonial.mp4",
-    quote: "They sent Luna a birthday cake without me even asking.",
+    quote: "They sent Luna a birthday cake... without me even asking! And they remembered her exact birth date.",
     duration: "0:04",
     hasVideo: true,
   },
