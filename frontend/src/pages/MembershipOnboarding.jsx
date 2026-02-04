@@ -1521,7 +1521,11 @@ const MembershipOnboarding = () => {
                     <Button 
                       onClick={handleSubmit}
                       disabled={loading}
-                      className="flex-1 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-400 hover:to-purple-500 text-white font-semibold shadow-lg shadow-pink-500/30"
+                      className={`flex-1 font-semibold shadow-lg ${
+                        pricing.isExplorer 
+                          ? 'bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 shadow-emerald-500/30'
+                          : 'bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-400 hover:to-purple-500 shadow-pink-500/30'
+                      } text-white`}
                       data-testid="complete-payment-btn"
                     >
                       {loading ? (
@@ -1529,9 +1533,14 @@ const MembershipOnboarding = () => {
                           <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                           Processing...
                         </>
+                      ) : pricing.isExplorer ? (
+                        <>
+                          Start 7-Day Free Trial
+                          <ArrowRight className="w-5 h-5 ml-2" />
+                        </>
                       ) : (
                         <>
-                          Activate Pet Pass — ₹{pricing.total}
+                          Activate Pet Pass — ₹{pricing.total.toLocaleString()}
                           <ArrowRight className="w-5 h-5 ml-2" />
                         </>
                       )}
