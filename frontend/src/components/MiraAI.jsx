@@ -1084,6 +1084,7 @@ const MiraAI = () => {
         role: 'assistant',
         content: displayContent,
         researchMode: data.research_mode,
+        memoriesUsed: data.memories_used || false, // NEW: Indicates Mira used relationship memories
         products: data.products || null, // Product cards if backend returns them
         ticketId: data.ticket_id,
         serviceTicketId: data.service_desk_ticket_id,
