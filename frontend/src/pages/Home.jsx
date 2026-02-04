@@ -394,9 +394,16 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
           </div>
         )}
         
-        {/* Progress Bar & Controls - Bottom, higher on mobile */}
+        {/* Progress Bar & Controls - Bottom, with safe area */}
         {!isEnding && (
-          <div className="absolute bottom-20 sm:bottom-8 left-4 right-4 sm:left-6 sm:right-6 z-30">
+          <div 
+            className="absolute bottom-4 sm:bottom-8 left-4 right-4 sm:left-6 sm:right-6 z-30"
+            style={{ 
+              paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+              marginLeft: 'env(safe-area-inset-left, 0px)',
+              marginRight: 'env(safe-area-inset-right, 0px)'
+            }}
+          >
             <div className="flex items-center justify-between">
               {/* Progress Dots */}
               <div className="flex gap-2 sm:gap-3">
