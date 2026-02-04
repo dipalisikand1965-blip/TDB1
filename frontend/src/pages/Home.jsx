@@ -496,10 +496,10 @@ const MEMBERSHIP_TIERS = [
     description: "Full concierge relationship",
     features: [
       "Full Pet Soul™ Profile",
-      "Unlimited Mira AI Concierge",
+      "Unlimited Mira AI Concierge®",
       "All 14 Life Pillars Unlocked",
       "Health Vault & Records",
-      "Priority Concierge Support",
+      "Priority Concierge® Support",
       "Double Paw Points (2x)",
       "Birthday Surprise Gift",
       "Early Access to New Features",
