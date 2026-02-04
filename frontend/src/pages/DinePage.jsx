@@ -183,7 +183,7 @@ const DinePage = () => {
       {/* SEO Meta Tags */}
       <SEOHead page="dine" path="/dine" />
       
-      {/* Hero Section - Matching Learn Page Style */}
+      {/* Hero Section - Enhanced with rotating dog images */}
       <div className="relative h-[400px] sm:h-[500px] overflow-hidden">
         {/* Mobile Back Button */}
         <button 
@@ -194,13 +194,14 @@ const DinePage = () => {
           <ChevronLeft className="w-6 h-6 text-white" />
         </button>
         
-        {/* Background Image */}
-        <div 
-          className="absolute inset-0 bg-cover bg-center"
-          style={{ backgroundImage: `url(https://customer-assets.emergentagent.com/job_petlifecentral/artifacts/afm7enef_image.png)` }}
-        >
-          {/* Solid gradient overlay - no transparency to prevent ghost text */}
-          <div className="absolute inset-0 bg-gradient-to-r from-orange-800 via-orange-700 to-red-700" />
+        {/* Rotating Background Images */}
+        <div className="absolute inset-0">
+          <img 
+            src={HERO_IMAGES[heroIndex]}
+            alt="Pet Dining"
+            className="w-full h-full object-cover opacity-30 transition-opacity duration-1000"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-orange-800/90 via-orange-700/85 to-red-700/80" />
         </div>
         
         <div className="relative max-w-6xl mx-auto px-4 h-full flex items-center z-10">
