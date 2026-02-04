@@ -352,10 +352,14 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
           </>
         )}
         
-        {/* Close Button - Safe area */}
+        {/* Close Button - Safe area for notch */}
         <button
           onClick={onClose}
           className="absolute top-4 sm:top-6 right-4 sm:right-6 z-40 p-2 sm:p-3 bg-black/40 rounded-full hover:bg-black/60 transition-colors backdrop-blur-sm"
+          style={{ 
+            marginTop: 'env(safe-area-inset-top, 0px)',
+            marginRight: 'env(safe-area-inset-right, 0px)'
+          }}
         >
           <X className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
         </button>
