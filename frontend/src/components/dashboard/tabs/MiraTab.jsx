@@ -17,30 +17,30 @@ const MiraTab = ({ user, pets }) => {
   ];
 
   return (
-    <div className="space-y-6 animate-in fade-in-50 duration-300">
+    <div className="space-y-4 sm:space-y-6 animate-in fade-in-50 duration-300" data-testid="mira-tab">
       {/* Mira Introduction Card */}
-      <Card className="p-6 bg-gradient-to-br from-purple-500 via-pink-500 to-purple-600 text-white border-none shadow-xl relative overflow-hidden">
+      <Card className="p-4 sm:p-6 bg-gradient-to-br from-purple-600 via-pink-600 to-purple-700 text-white border-none shadow-xl relative overflow-hidden rounded-2xl">
         <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl" />
         <div className="relative z-10">
-          <div className="flex items-center gap-4 mb-4">
-            <div className="w-16 h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm">
-              <Sparkles className="w-8 h-8 text-white" />
+          <div className="flex items-center gap-3 sm:gap-4 mb-4">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm flex-shrink-0">
+              <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold">Meet Mira</h2>
-              <p className="text-white/80">Your AI Pet Concierge®</p>
+              <h2 className="text-xl sm:text-2xl font-bold">Meet Mira</h2>
+              <p className="text-white/80 text-sm sm:text-base">Your AI Pet Concierge®</p>
             </div>
           </div>
           
-          <p className="text-white/90 mb-4">
+          <p className="text-white/90 mb-4 text-sm sm:text-base">
             Hi{user?.name ? ` ${user.name.split(' ')[0]}` : ''}! I&apos;m Mira, your personal AI assistant for everything 
             {primaryPet?.name ? ` ${primaryPet.name}` : ' your pet'} needs. From booking services to finding the perfect treats, 
             I&apos;m here 24/7 to help.
           </p>
           
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-2 sm:gap-3">
             <Button 
-              className="bg-white text-purple-600 hover:bg-white/90 font-semibold"
+              className="bg-white text-purple-600 hover:bg-white/90 font-semibold text-sm"
               onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI'))}
             >
               <MessageCircle className="w-4 h-4 mr-2" />
@@ -48,7 +48,7 @@ const MiraTab = ({ user, pets }) => {
             </Button>
             <Button 
               variant="outline"
-              className="border-white/30 text-white hover:bg-white/20"
+              className="border-white/30 text-white hover:bg-white/20 text-sm"
             >
               <Zap className="w-4 h-4 mr-2" />
               Quick Commands
@@ -58,30 +58,30 @@ const MiraTab = ({ user, pets }) => {
       </Card>
       
       {/* What Mira Can Do */}
-      <Card className="p-6">
-        <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-          <Heart className="w-5 h-5 text-pink-500" />
+      <Card className="p-4 sm:p-6 bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl">
+        <h3 className="font-bold text-white mb-4 flex items-center gap-2 text-base sm:text-lg">
+          <Heart className="w-5 h-5 text-pink-400" />
           What Mira Can Do For You
         </h3>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
           {miraCapabilities.map((cap, idx) => (
             <div 
               key={idx}
-              className="p-4 bg-gradient-to-br from-gray-50 to-white rounded-xl border border-gray-100 hover:border-purple-200 hover:shadow-md transition-all cursor-pointer group"
+              className="p-3 sm:p-4 bg-slate-800/50 rounded-xl border border-white/5 hover:border-purple-500/30 transition-all cursor-pointer group"
               onClick={() => window.dispatchEvent(new CustomEvent('openMiraAI'))}
             >
-              <span className="text-3xl mb-3 block group-hover:scale-110 transition-transform">{cap.icon}</span>
-              <h4 className="font-semibold text-gray-900 mb-1">{cap.title}</h4>
-              <p className="text-sm text-gray-500">{cap.desc}</p>
+              <span className="text-2xl sm:text-3xl mb-2 sm:mb-3 block group-hover:scale-110 transition-transform">{cap.icon}</span>
+              <h4 className="font-semibold text-white text-sm sm:text-base mb-1">{cap.title}</h4>
+              <p className="text-xs sm:text-sm text-slate-400 line-clamp-2">{cap.desc}</p>
             </div>
           ))}
         </div>
       </Card>
       
       {/* Quick Actions */}
-      <Card className="p-6 bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200">
-        <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-          <Zap className="w-5 h-5 text-purple-600" />
+      <Card className="p-4 sm:p-6 bg-gradient-to-r from-purple-900/40 via-pink-900/40 to-purple-900/40 border border-purple-500/20 rounded-2xl">
+        <h3 className="font-bold text-white mb-4 flex items-center gap-2 text-base sm:text-lg">
+          <Zap className="w-5 h-5 text-purple-400" />
           Try These Quick Commands
         </h3>
         <div className="flex flex-wrap gap-2">
@@ -96,7 +96,7 @@ const MiraTab = ({ user, pets }) => {
             <Badge 
               key={idx}
               variant="outline"
-              className="px-4 py-2 cursor-pointer hover:bg-purple-100 hover:border-purple-300 transition-colors text-sm"
+              className="px-3 py-1.5 sm:px-4 sm:py-2 cursor-pointer bg-slate-800/50 border-purple-500/30 text-purple-300 hover:bg-purple-500/20 hover:border-purple-500/50 transition-colors text-xs sm:text-sm"
               onClick={() => {
                 window.dispatchEvent(new CustomEvent('openMiraAI', { detail: { message: cmd } }));
               }}
@@ -109,30 +109,30 @@ const MiraTab = ({ user, pets }) => {
       
       {/* Pet Context */}
       {primaryPet && (
-        <Card className="p-6">
-          <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-            <PawPrint className="w-5 h-5 text-purple-600" />
+        <Card className="p-4 sm:p-6 bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl">
+          <h3 className="font-bold text-white mb-4 flex items-center gap-2 text-base sm:text-lg">
+            <PawPrint className="w-5 h-5 text-purple-400" />
             Mira Knows About {primaryPet.name}
           </h3>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="p-3 bg-purple-50 rounded-lg">
-              <p className="text-xs text-purple-600 font-medium">Name</p>
-              <p className="font-semibold text-gray-900">{primaryPet.name}</p>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+            <div className="p-3 bg-purple-500/10 rounded-xl border border-purple-500/20">
+              <p className="text-[10px] sm:text-xs text-purple-400 font-medium uppercase tracking-wide">Name</p>
+              <p className="font-semibold text-white text-sm sm:text-base truncate">{primaryPet.name}</p>
             </div>
-            <div className="p-3 bg-pink-50 rounded-lg">
-              <p className="text-xs text-pink-600 font-medium">Breed</p>
-              <p className="font-semibold text-gray-900">{primaryPet.breed || 'Not set'}</p>
+            <div className="p-3 bg-pink-500/10 rounded-xl border border-pink-500/20">
+              <p className="text-[10px] sm:text-xs text-pink-400 font-medium uppercase tracking-wide">Breed</p>
+              <p className="font-semibold text-white text-sm sm:text-base truncate">{primaryPet.breed || 'Not set'}</p>
             </div>
-            <div className="p-3 bg-amber-50 rounded-lg">
-              <p className="text-xs text-amber-600 font-medium">Birthday</p>
-              <p className="font-semibold text-gray-900">{primaryPet.birth_date || 'Not set'}</p>
+            <div className="p-3 bg-amber-500/10 rounded-xl border border-amber-500/20">
+              <p className="text-[10px] sm:text-xs text-amber-400 font-medium uppercase tracking-wide">Birthday</p>
+              <p className="font-semibold text-white text-sm sm:text-base truncate">{primaryPet.birth_date || 'Not set'}</p>
             </div>
-            <div className="p-3 bg-green-50 rounded-lg">
-              <p className="text-xs text-green-600 font-medium">Soul Score</p>
-              <p className="font-semibold text-gray-900">{Math.min(100, Math.round(primaryPet.overall_score || 0))}%</p>
+            <div className="p-3 bg-emerald-500/10 rounded-xl border border-emerald-500/20">
+              <p className="text-[10px] sm:text-xs text-emerald-400 font-medium uppercase tracking-wide">Soul Score</p>
+              <p className="font-semibold text-white text-sm sm:text-base">{Math.min(100, Math.round(primaryPet.overall_score || 0))}%</p>
             </div>
           </div>
-          <p className="text-sm text-gray-500 mt-4">
+          <p className="text-xs sm:text-sm text-slate-400 mt-4">
             💡 The more you complete {primaryPet.name}&apos;s Pet Soul™, the more personalized Mira&apos;s recommendations become!
           </p>
         </Card>
