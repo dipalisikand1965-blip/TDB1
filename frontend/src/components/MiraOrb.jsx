@@ -247,13 +247,33 @@ const MiraOrb = ({
         )}
       </AnimatePresence>
       
-      {/* Outer glow */}
+      {/* Outer ethereal glow - the mystical aura */}
+      <motion.div
+        className="absolute rounded-full pointer-events-none"
+        style={{
+          width: config.outerGlow,
+          height: config.outerGlow,
+          background: `radial-gradient(circle, ${MIRA_COLORS.aura}25 0%, ${MIRA_COLORS.secondary}15 40%, transparent 70%)`,
+          filter: 'blur(12px)',
+        }}
+        animate={{
+          scale: [1, 1.15, 1],
+          opacity: [0.5, 0.8, 0.5],
+        }}
+        transition={{
+          duration: 4,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      />
+      
+      {/* Inner glow - soul light */}
       <motion.div
         className="absolute rounded-full pointer-events-none"
         style={{
           width: config.glow,
           height: config.glow,
-          background: `radial-gradient(circle, ${getStateColor()}40 0%, transparent 70%)`,
+          background: `radial-gradient(circle, ${getStateColor()}50 0%, ${MIRA_COLORS.primary}30 50%, transparent 70%)`,
           filter: 'blur(8px)',
         }}
         variants={glowVariants}
