@@ -229,18 +229,24 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
       // Play video
       if (videoRef.current) {
         videoRef.current.load();
-        videoRef.current.play().catch(() => {});
-      }
-      
-      // Play voiceover audio (if not muted)
-      if (audioRef.current && !videoMuted) {
-        audioRef.current.load();
-        // Small delay to sync with video start
-        setTimeout(() => {
-          audioRef.current?.play().catch((e) => {
-            console.log('Audio playback blocked:', e.message);
-          });
-        }, 200);
+        
+        // Sync video and audio - start both together
+        const playMedia = async () => {
+          try {
+            // Start video
+            await videoRef.current?.play();
+            
+            // Start audio immediately with video (if not muted)
+            if (audioRef.current && !videoMuted) {
+              audioRef.current.currentTime = 0; // Reset to start
+              await audioRef.current.play();
+            }
+          } catch (e) {
+            console.log('Media playback issue:', e.message);
+          }
+        };
+        
+        playMedia();
       }
     }
   }, [currentClip, isEnding, videoMuted]);
