@@ -351,13 +351,12 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
             </motion.div>
             
             {/* Voiceover Audio - Separate from video for better control */}
+            {/* Voiceover Audio - dynamically loaded */}
             <audio
               ref={audioRef}
               preload="auto"
               className="hidden"
-            >
-              <source src={clip.audioSrc} type="audio/mpeg" />
-            </audio>
+            />
           </>
         )}
         
