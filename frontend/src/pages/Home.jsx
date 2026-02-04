@@ -191,9 +191,9 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
           </div>
         )}
         
-        {/* Progress Bar & Controls - Bottom */}
+        {/* Progress Bar & Controls - Bottom, higher on mobile */}
         {!isEnding && (
-          <div className="absolute bottom-6 sm:bottom-8 left-4 right-4 sm:left-6 sm:right-6 z-30">
+          <div className="absolute bottom-20 sm:bottom-8 left-4 right-4 sm:left-6 sm:right-6 z-30">
             <div className="flex items-center justify-between">
               {/* Progress Dots */}
               <div className="flex gap-2 sm:gap-3">
