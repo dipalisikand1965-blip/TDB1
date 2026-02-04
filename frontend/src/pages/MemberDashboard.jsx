@@ -1149,16 +1149,16 @@ const MemberDashboard = () => {
                 <Calendar className="w-4 h-4" /> Requests
                 {myRequests.length > 0 && <span className="ml-1 text-[10px] bg-purple-500/30 px-1.5 py-0.5 rounded-full">({myRequests.length})</span>}
               </TabsTrigger>
-              <TabsTrigger value="pets" className="rounded-xl flex items-center gap-1.5 py-2.5 px-3 text-sm font-medium whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md transition-all active:scale-95">
+              <TabsTrigger value="pets" className="rounded-xl flex items-center gap-1.5 py-2.5 px-3 text-sm font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white transition-all active:scale-95">
                 <PawPrint className="w-4 h-4" /> Pets
               </TabsTrigger>
-              <TabsTrigger value="documents" className="rounded-xl flex items-center gap-1.5 py-2.5 px-3 text-sm font-medium whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md transition-all active:scale-95">
+              <TabsTrigger value="documents" className="rounded-xl flex items-center gap-1.5 py-2.5 px-3 text-sm font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white transition-all active:scale-95">
                 <Shield className="w-4 h-4" /> Docs
               </TabsTrigger>
-              <TabsTrigger value="orders" className="rounded-xl flex items-center gap-1.5 py-2.5 px-3 text-sm font-medium whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md transition-all active:scale-95">
+              <TabsTrigger value="orders" className="rounded-xl flex items-center gap-1.5 py-2.5 px-3 text-sm font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white transition-all active:scale-95">
                 <Package className="w-4 h-4" /> Orders
               </TabsTrigger>
-              <TabsTrigger value="settings" className="rounded-xl flex items-center gap-1.5 py-2.5 px-3 text-sm font-medium whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md transition-all active:scale-95">
+              <TabsTrigger value="settings" className="rounded-xl flex items-center gap-1.5 py-2.5 px-3 text-sm font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white transition-all active:scale-95">
                 <Settings className="w-4 h-4" /> More
               </TabsTrigger>
             </TabsList>
