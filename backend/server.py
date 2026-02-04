@@ -14843,6 +14843,11 @@ app.include_router(kit_admin_router)  # Kit Admin at /api/admin/kits/*
 set_kit_admin_db(db)
 logger.info("Kit Assembly & Mira Picks Admin routes initialized")
 
+# Finance & Reconciliation
+finance_router = create_finance_routes(db, verify_admin)
+app.include_router(finance_router)  # Finance at /api/admin/finance/*
+logger.info("Finance & Reconciliation routes initialized")
+
 @app.on_event("startup")
 async def startup_load_admin_credentials():
     """Load admin credentials from database on startup"""
