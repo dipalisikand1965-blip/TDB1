@@ -1037,6 +1037,78 @@ const MemberDashboard = () => {
           </Card>
         )}
 
+        {/* 🌟 SELECTED PET'S LIVING SOUL ORB - Hero Display */}
+        {currentPet && (
+          <Card className="mb-8 overflow-hidden bg-gradient-to-br from-slate-950 via-purple-950/50 to-slate-950 border border-white/10 shadow-2xl rounded-2xl md:rounded-3xl">
+            <div className="relative p-6 md:p-8 lg:p-10">
+              {/* Background ambient glow */}
+              <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl" />
+              <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl" />
+              
+              <div className="relative flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+                {/* Living Soul Orb */}
+                <div className="flex-shrink-0">
+                  <LivingSoulOrb
+                    score={Math.round(currentPet.overall_score || 0)}
+                    petName={currentPet.name}
+                    petId={currentPet.id}
+                    size="lg"
+                    showDetails={true}
+                    showCelebration={true}
+                    isFirstReveal={Object.keys(currentPet.doggy_soul_answers || {}).length <= 3}
+                  />
+                </div>
+                
+                {/* Soul Details & Actions */}
+                <div className="flex-1 text-center lg:text-left">
+                  <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">
+                    {currentPet.name}&apos;s Soul Journey
+                  </h3>
+                  <p className="text-white/60 text-sm md:text-base mb-6 max-w-md">
+                    {currentPet.overall_score >= 80 
+                      ? `You truly understand ${currentPet.name}. This bond is special.`
+                      : currentPet.overall_score >= 50
+                        ? `${currentPet.name}'s soul is growing! Keep answering questions to deepen your connection.`
+                        : `Begin your journey to understand ${currentPet.name}'s unique soul.`
+                    }
+                  </p>
+                  
+                  {/* Quick Stats */}
+                  <div className="flex justify-center lg:justify-start gap-6 mb-6">
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-purple-400">{Object.keys(currentPet.doggy_soul_answers || {}).length}</p>
+                      <p className="text-xs text-white/50">Questions</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-pink-400">{Math.round(currentPet.overall_score || 0)}%</p>
+                      <p className="text-xs text-white/50">Complete</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-2xl font-bold text-emerald-400">
+                        {currentPet.overall_score >= 80 ? '👑' : currentPet.overall_score >= 50 ? '🧭' : '🌱'}
+                      </p>
+                      <p className="text-xs text-white/50">Rank</p>
+                    </div>
+                  </div>
+                  
+                  {/* CTA Button */}
+                  {currentPet.overall_score < 100 && (
+                    <Button
+                      onClick={() => navigate(`/pet/${currentPet.id}?tab=personality`)}
+                      className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white px-6 py-3 rounded-full font-semibold shadow-lg shadow-purple-500/30"
+                      data-testid="grow-soul-btn"
+                    >
+                      <Sparkles className="w-4 h-4 mr-2" />
+                      Grow {currentPet.name}&apos;s Soul
+                      <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </Card>
+        )}
+
         {/* 3️⃣ SELECTED PET'S GAMIFICATION BANNER */}
         <div className="mb-8">
           <GamificationBanner 
