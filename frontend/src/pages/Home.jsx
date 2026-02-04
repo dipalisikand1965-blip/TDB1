@@ -546,6 +546,7 @@ const Home = () => {
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [currentHeroImage, setCurrentHeroImage] = useState(0);
   const [soulPulse, setSoulPulse] = useState(false);
+  const [playingTestimonial, setPlayingTestimonial] = useState(null);
   const heroRef = useRef(null);
   
   // CMS-driven content
