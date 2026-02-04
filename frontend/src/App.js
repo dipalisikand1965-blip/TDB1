@@ -272,8 +272,9 @@ function AppRouter() {
         {/* Membership Landing Page - NO navbar/footer for clean entry */}
         <Route path="/membership" element={<MembershipPage />} />
         
-        {/* Membership Onboarding Form - NO navbar/footer for focused flow */}
-        <Route path="/pet-soul-onboard" element={<MembershipOnboarding />} />
+        {/* Pet Soul Onboarding - Streamlined 4-step flow */}
+        <Route path="/pet-soul-onboard" element={<PetSoulOnboard />} />
+        <Route path="/join" element={<PetSoulOnboard />} />
       
         {/* Main app routes - WITH navbar */}
         <Route path="/*" element={<MainLayout />} />
