@@ -21,9 +21,9 @@ const PaymentSuccess = () => {
   const parentName = searchParams.get('name') || 'Pet Parent';
   const orderId = searchParams.get('order_id') || '';
   
-  const isFounder = planType === 'annual' || planType === 'founder' || planType === 'foundation';
+  const isFoundation = planType === 'annual' || planType === 'foundation';
   const planName = isFoundation ? 'Pet Pass Foundation' : 'Pet Pass Trial';
-  const duration = isFounder ? '372 days' : '37 days';
+  const duration = isFoundation ? '372 days' : '37 days';
 
   // Trigger confetti on mount
   useEffect(() => {
