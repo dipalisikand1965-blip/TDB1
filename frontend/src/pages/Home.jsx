@@ -778,7 +778,7 @@ const Home = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 1.6 }}
           >
-            <a href="https://thedoggycompany.in/pet-soul-onboard" target="_blank" rel="noopener noreferrer">
+            <Link to="/join?plan=foundation">
               <Button 
                 size="lg" 
                 className="group relative bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white px-10 py-7 text-lg rounded-full shadow-2xl shadow-purple-500/30 transition-all hover:scale-105 hover:shadow-purple-500/50"
@@ -1672,7 +1672,7 @@ const Home = () => {
               ))}
             </div>
 
-            <a href="https://thedoggycompany.in/pet-soul-onboard" target="_blank" rel="noopener noreferrer">
+            <Link to="/join?plan=foundation">
               <Button 
                 size="lg" 
                 className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white px-12 py-7 text-lg rounded-full shadow-2xl shadow-purple-500/30 transition-all hover:scale-105"
