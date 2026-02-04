@@ -15,7 +15,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Mira's soul colors
+// Mira's soul colors - Enhanced for magical presence
 const MIRA_COLORS = {
   primary: '#9333EA',      // Purple - wisdom
   secondary: '#EC4899',    // Pink - love
@@ -24,6 +24,7 @@ const MIRA_COLORS = {
   thinking: '#F59E0B',     // Amber - processing
   speaking: '#10B981',     // Emerald - guidance
   celebrating: '#F472B6',  // Pink - joy
+  aura: '#A855F7',         // Violet - mystical aura
 };
 
 // Particle component for ambient effects
