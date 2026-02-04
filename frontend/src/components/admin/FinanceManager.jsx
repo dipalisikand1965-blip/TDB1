@@ -203,12 +203,13 @@ const FinanceManager = () => {
           type: 'service',
           reference_id: '',
           amount: '',
-          payment_method: 'offline',
+          payment_method: 'razorpay',
           notes: '',
           discount_code: '',
           discount_amount: 0,
           paw_points_used: 0
         });
+        alert('Payment recorded successfully!');
       } else {
         const errData = await response.json().catch(() => ({}));
         alert(errData.detail || 'Failed to record payment');
