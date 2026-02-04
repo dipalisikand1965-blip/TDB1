@@ -155,14 +155,10 @@ const FinanceManager = () => {
   // Reconcile payment
   const handleReconcile = async (paymentId) => {
     try {
-      const adminUsername = localStorage.getItem('adminUsername') || 'aditya';
-      const adminPassword = localStorage.getItem('adminPassword') || 'lola4304';
-      const basicAuth = btoa(`${adminUsername}:${adminPassword}`);
-      
       const response = await fetch(`${getApiUrl()}/api/admin/finance/payments/${paymentId}/reconcile`, {
         method: 'POST',
         headers: {
-          'Authorization': `Basic ${basicAuth}`,
+          'Authorization': getAuthHeader(),
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ notes: reconcileNotes })
@@ -173,9 +169,13 @@ const FinanceManager = () => {
         setShowReconcileModal(false);
         setSelectedPayment(null);
         setReconcileNotes('');
+      } else {
+        const errData = await response.json().catch(() => ({}));
+        alert(errData.detail || 'Failed to reconcile payment');
       }
-    } catch (error) {
-      console.error('Failed to reconcile payment:', error);
+    } catch (err) {
+      console.error('Failed to reconcile payment:', err);
+      alert('Network error');
     }
   };
 
