@@ -13745,6 +13745,34 @@ async def verify_payment(request: VerifyPaymentRequest):
             "created_at": get_utc_timestamp()
         })
         
+        # Create payment record for Finance/Reconciliation
+        payment_record = {
+            "id": f"PAY-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{uuid.uuid4().hex[:6].upper()}",
+            "type": "membership",
+            "status": "completed",
+            "amount": order.get("amount", 0),
+            "subtotal": order.get("amount", 0),
+            "discount_code": order.get("discount_code"),
+            "discount_amount": order.get("discount_amount", 0),
+            "paw_points_used": order.get("paw_points_used", 0),
+            "paw_points_value": order.get("paw_points_value", 0),
+            "gst_amount": order.get("gst_amount", 0),
+            "total": order.get("amount", 0),
+            "payment_method": "razorpay",
+            "razorpay_order_id": request.razorpay_order_id,
+            "razorpay_payment_id": request.razorpay_payment_id,
+            "reference_type": "membership",
+            "reference_id": order.get("plan_id"),
+            "member_id": user.get("id") if user else None,
+            "member_email": request.user_email,
+            "member_name": order.get("user_name", user.get("name", "") if user else ""),
+            "reconciled": False,
+            "created_at": get_utc_timestamp(),
+            "updated_at": get_utc_timestamp()
+        }
+        await db.payments.insert_one(payment_record)
+        logger.info(f"Payment record created for reconciliation: {payment_record['id']}")
+        
         # Send admin notification for successful payment
         await create_admin_notification(
             notification_type="payment",
