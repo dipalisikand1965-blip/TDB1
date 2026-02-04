@@ -511,45 +511,34 @@ const MiraChatWidget = ({
     }
   }, [isOpen, selectedPet, miraContext, config.name, voiceEnabled, generateWelcomeMessage]);
   
-  // Store messages when they change - PERSIST across pillar switches
+  // Load messages for current pillar on mount and pillar change
   useEffect(() => {
-    if (messages.length > 0) {
-      storeMessages(messages);
-    }
-  }, [messages]);
-  
-  // Track pillar changes - update welcome message and add notification
-  useEffect(() => {
-    if (pillar !== currentPillar) {
-      setCurrentPillar(pillar);
+    const storedMessages = getStoredMessages(pillar);
+    if (storedMessages.length > 0) {
+      // Check if stored welcome message matches current pillar
+      const welcomeMsg = storedMessages.find(m => m.id === 'welcome');
+      const pillarName = config.name.toLowerCase();
       
-      // Generate new pillar-specific welcome message
-      const greeting = getTimeBasedGreeting();
-      const petName = selectedPet?.name;
-      const pillarName = config.name;
-      
-      let welcomeMsg = `${greeting}!`;
-      if (petName) {
-        welcomeMsg += ` How can I help you with ${petName}'s ${pillarName.toLowerCase()} needs today?`;
+      if (welcomeMsg && welcomeMsg.content.toLowerCase().includes(pillarName)) {
+        // Messages are for this pillar, use them
+        setMessages(storedMessages);
       } else {
-        welcomeMsg += ` I'm here to help with all your ${pillarName.toLowerCase()} needs. What can I do for you?`;
+        // Messages are from a different pillar, start fresh
+        setMessages([]);
       }
-      welcomeMsg += ' 🐾';
-      
-      // Replace the old welcome message with a new pillar-specific one
-      setMessages(prev => {
-        // Filter out old welcome message and pillar switch messages
-        const filteredMessages = prev.filter(m => m.id !== 'welcome' && !m.isPillarSwitch);
-        
-        // Add new welcome message for this pillar
-        return [{
-          id: 'welcome',
-          role: 'assistant',
-          content: `Hi, I am Mira, your pet concierge®! ${welcomeMsg}`
-        }, ...filteredMessages];
-      });
+    } else {
+      setMessages([]);
     }
-  }, [pillar, currentPillar, config.name, selectedPet?.name]);
+    setMessagesLoaded(true);
+    setCurrentPillar(pillar);
+  }, [pillar, config.name]);
+  
+  // Store messages when they change - PERSIST per pillar
+  useEffect(() => {
+    if (messages.length > 0 && messagesLoaded) {
+      storeMessages(messages, pillar);
+    }
+  }, [messages, pillar, messagesLoaded]);
   
   // Scroll to bottom when new messages arrive
   useEffect(() => {
