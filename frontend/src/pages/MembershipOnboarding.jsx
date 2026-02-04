@@ -853,7 +853,7 @@ const MembershipOnboarding = () => {
                                 </div>
                               )}
                             </div>
-                            <div className="absolute bottom-0 right-0 w-8 h-8 bg-purple-600 rounded-full flex items-center justify-center text-white shadow-lg hover:bg-purple-700 transition-colors">
+                            <div className="absolute bottom-0 right-0 w-8 h-8 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full flex items-center justify-center text-white shadow-lg hover:opacity-90 transition-opacity">
                               <Plus className="w-5 h-5" />
                             </div>
                           </label>
@@ -876,25 +876,25 @@ const MembershipOnboarding = () => {
 
                       {/* Pet Name */}
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                        <label className="block text-sm font-medium text-slate-300 mb-1.5">
                           Dog&apos;s Name *
                         </label>
                         <div className="relative">
-                          <PawPrint className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                          <PawPrint className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
                           <Input
                             value={pet.name}
                             onChange={(e) => updatePetData(idx, 'name', e.target.value)}
                             placeholder="What do you call them?"
-                            className={`pl-10 ${petErrors[idx]?.name ? 'border-red-500' : ''}`}
+                            className={`pl-10 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-pink-500 ${petErrors[idx]?.name ? 'border-red-500' : ''}`}
                             data-testid={`pet-${idx}-name-input`}
                           />
                         </div>
-                        {petErrors[idx]?.name && <p className="text-red-500 text-xs mt-1">{petErrors[idx].name}</p>}
+                        {petErrors[idx]?.name && <p className="text-red-400 text-xs mt-1">{petErrors[idx].name}</p>}
                       </div>
 
                       {/* Breed */}
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                        <label className="block text-sm font-medium text-slate-300 mb-1.5">
                           Breed *
                         </label>
                         <BreedAutocomplete
@@ -902,24 +902,24 @@ const MembershipOnboarding = () => {
                           onChange={(e) => updatePetData(idx, 'breed', e.target.value)}
                           placeholder="e.g., Golden Retriever, Indie Mix"
                           name={`breed-${idx}`}
-                          className={petErrors[idx]?.breed ? 'border-red-500' : ''}
+                          className={`bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 ${petErrors[idx]?.breed ? 'border-red-500' : ''}`}
                         />
-                        {petErrors[idx]?.breed && <p className="text-red-500 text-xs mt-1">{petErrors[idx].breed}</p>}
+                        {petErrors[idx]?.breed && <p className="text-red-400 text-xs mt-1">{petErrors[idx].breed}</p>}
                       </div>
 
                       {/* Gender */}
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Gender</label>
+                        <label className="block text-sm font-medium text-slate-300 mb-2">Gender</label>
                         <div className="flex gap-3">
                           {['male', 'female'].map((g) => (
                             <button
                               key={g}
                               type="button"
                               onClick={() => updatePetData(idx, 'gender', g)}
-                              className={`flex-1 p-3 rounded-xl border-2 capitalize transition-all ${
+                              className={`flex-1 p-3 rounded-xl border-2 capitalize transition-all font-medium ${
                                 pet.gender === g
-                                  ? 'border-purple-500 bg-purple-50'
-                                  : 'border-gray-200 hover:border-purple-300'
+                                  ? 'border-pink-500 bg-pink-500/20 text-white'
+                                  : 'border-slate-700 bg-slate-800/50 text-slate-300 hover:border-pink-500/50'
                               }`}
                             >
                               {g === 'male' ? '♂️' : '♀️'} {g}
@@ -931,33 +931,35 @@ const MembershipOnboarding = () => {
                       {/* Dates */}
                       <div className="grid grid-cols-2 gap-4">
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                          <label className="block text-sm font-medium text-slate-300 mb-1.5">
                             <Calendar className="w-4 h-4 inline mr-1" /> Birth Date
                           </label>
                           <Input
                             type="date"
                             value={pet.birth_date}
                             onChange={(e) => updatePetData(idx, 'birth_date', e.target.value)}
+                            className="bg-slate-800/50 border-slate-700 text-white focus:border-pink-500"
                             data-testid={`pet-${idx}-birth-date`}
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                          <label className="block text-sm font-medium text-slate-300 mb-1.5">
                             <Heart className="w-4 h-4 inline mr-1" /> Gotcha Day
                           </label>
                           <Input
                             type="date"
                             value={pet.gotcha_date}
                             onChange={(e) => updatePetData(idx, 'gotcha_date', e.target.value)}
+                            className="bg-slate-800/50 border-slate-700 text-white focus:border-pink-500"
                             data-testid={`pet-${idx}-gotcha-date`}
                           />
                         </div>
                       </div>
-                      {petErrors[idx]?.dates && <p className="text-red-500 text-xs">{petErrors[idx].dates}</p>}
+                      {petErrors[idx]?.dates && <p className="text-red-400 text-xs">{petErrors[idx].dates}</p>}
 
                       {/* Weight */}
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                        <label className="block text-sm font-medium text-slate-300 mb-1.5">
                           <Scale className="w-4 h-4 inline mr-1" /> Weight (Optional)
                         </label>
                         <div className="flex gap-2">
@@ -966,13 +968,13 @@ const MembershipOnboarding = () => {
                             value={pet.weight}
                             onChange={(e) => updatePetData(idx, 'weight', e.target.value)}
                             placeholder="Current weight"
-                            className="flex-1"
+                            className="flex-1 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-pink-500"
                             data-testid={`pet-${idx}-weight`}
                           />
                           <select
                             value={pet.weight_unit}
                             onChange={(e) => updatePetData(idx, 'weight_unit', e.target.value)}
-                            className="px-3 py-2 border rounded-md"
+                            className="px-3 py-2 bg-slate-800/50 border border-slate-700 rounded-md text-white focus:border-pink-500"
                           >
                             <option value="kg">kg</option>
                             <option value="lbs">lbs</option>
@@ -982,7 +984,7 @@ const MembershipOnboarding = () => {
 
                       {/* Neutered */}
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Neutered/Spayed?</label>
+                        <label className="block text-sm font-medium text-slate-300 mb-2">Neutered/Spayed?</label>
                         <div className="flex gap-3">
                           {[
                             { value: true, label: 'Yes' },
@@ -993,10 +995,10 @@ const MembershipOnboarding = () => {
                               key={String(opt.value)}
                               type="button"
                               onClick={() => updatePetData(idx, 'is_neutered', opt.value)}
-                              className={`flex-1 p-2 rounded-lg border-2 text-sm transition-all ${
+                              className={`flex-1 p-2 rounded-lg border-2 text-sm font-medium transition-all ${
                                 pet.is_neutered === opt.value
-                                  ? 'border-purple-500 bg-purple-50'
-                                  : 'border-gray-200 hover:border-purple-300'
+                                  ? 'border-pink-500 bg-pink-500/20 text-white'
+                                  : 'border-slate-700 bg-slate-800/50 text-slate-300 hover:border-pink-500/50'
                               }`}
                             >
                               {opt.label}
