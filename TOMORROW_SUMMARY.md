@@ -200,7 +200,7 @@ All features tested and verified (Test Report: `/app/test_reports/iteration_23.j
 | System | Username | Password |
 |--------|----------|----------|
 | Admin Panel | aditya | lola4304 |
-| Preview URL | https://petlifecentral-1.preview.emergentagent.com |
+| Preview URL | https://doggy-concierge-2.preview.emergentagent.com |
 
 ---
 
