@@ -42,7 +42,7 @@ const PLANS = {
   },
   founder: {
     id: 'founder',
-    name: 'Pet Pass Founder',
+    name: 'Pet Pass Foundation',
     price: '₹4,999',
     priceValue: 4999,
     gst: 900, // 18% GST

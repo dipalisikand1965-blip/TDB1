@@ -597,7 +597,7 @@ const MEMBERSHIP_TIERS = [
     badge: "Try First",
   },
   {
-    name: "Pet Pass Founder",
+    name: "Pet Pass Foundation",
     price: "₹4,999",
     period: "/year",
     description: "Best value — full Concierge® relationship",
