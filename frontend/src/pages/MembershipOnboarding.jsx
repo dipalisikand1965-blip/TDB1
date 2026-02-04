@@ -349,22 +349,22 @@ const MembershipOnboarding = () => {
         <title>Activate Pet Pass | The Doggy Company</title>
       </Helmet>
       
-      <div className="min-h-screen bg-gradient-to-br from-amber-50 via-orange-50 to-pink-100">
-        {/* Decorative elements */}
+      <div className="min-h-screen bg-gradient-to-b from-slate-950 via-purple-950/30 to-slate-950">
+        {/* Decorative elements - matching landing page */}
         <div className="fixed inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-yellow-300/20 rounded-full blur-3xl"></div>
-          <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-300/20 rounded-full blur-3xl"></div>
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-orange-200/10 rounded-full blur-3xl"></div>
+          <div className="absolute top-20 left-10 w-72 h-72 bg-purple-500/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl"></div>
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-fuchsia-500/5 rounded-full blur-3xl"></div>
         </div>
         
         {/* Header */}
-        <header className="bg-white/90 backdrop-blur-md border-b border-orange-100 sticky top-0 z-50 shadow-sm">
+        <header className="bg-slate-900/80 backdrop-blur-md border-b border-white/10 sticky top-0 z-50">
           <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-orange-400 to-pink-500 rounded-xl flex items-center justify-center">
+              <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-pink-500/20">
                 <PawPrint className="w-5 h-5 text-white" />
               </div>
-              <span className="font-bold text-lg bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">Join The Pack</span>
+              <span className="font-bold text-lg text-white">Join The Pack</span>
             </div>
             
             {/* Progress Steps */}
@@ -373,20 +373,20 @@ const MembershipOnboarding = () => {
                 <div key={s} className="flex items-center">
                   <div className={`w-9 h-9 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${
                     step >= s 
-                      ? 'bg-gradient-to-br from-orange-400 to-pink-500 text-white shadow-lg shadow-orange-200' 
-                      : 'bg-gray-100 text-gray-400'
+                      ? 'bg-gradient-to-br from-pink-500 to-purple-600 text-white shadow-lg shadow-pink-500/30' 
+                      : 'bg-slate-800 text-slate-500 border border-slate-700'
                   }`}>
                     {step > s ? <Check className="w-5 h-5" /> : s}
                   </div>
                   {s < 4 && (
-                    <div className={`w-8 h-1 rounded ${step > s ? 'bg-gradient-to-r from-orange-400 to-pink-400' : 'bg-gray-200'}`} />
+                    <div className={`w-8 h-1 rounded ${step > s ? 'bg-gradient-to-r from-pink-500 to-purple-500' : 'bg-slate-700'}`} />
                   )}
                 </div>
               ))}
             </div>
             
-            <Badge className="bg-gradient-to-r from-orange-500 to-pink-500 text-white border-0 px-3 py-1">
-              {planType === 'annual' ? '🌟 Pet Pass — Foundation' : '✨ Pet Pass — Trial'}
+            <Badge className="bg-gradient-to-r from-pink-500 to-purple-600 text-white border-0 px-3 py-1 shadow-lg shadow-pink-500/20">
+              {planType === 'annual' ? '🌟 Pet Pass — Founder' : '✨ Pet Pass — Trial'}
             </Badge>
           </div>
         </header>
@@ -396,35 +396,39 @@ const MembershipOnboarding = () => {
           {step === 1 && (
             <div className="animate-in fade-in slide-in-from-right-4 duration-300">
               <div className="text-center mb-8">
-                <div className="w-20 h-20 bg-gradient-to-br from-orange-400 to-pink-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-xl shadow-orange-200/50">
-                  <User className="w-10 h-10 text-white" />
+                {/* Soul Orb - matching landing page */}
+                <div className="relative w-24 h-24 mx-auto mb-6">
+                  <div className="absolute inset-0 bg-gradient-to-br from-pink-400 via-fuchsia-500 to-purple-600 rounded-full animate-pulse opacity-50 blur-xl"></div>
+                  <div className="relative w-24 h-24 bg-gradient-to-br from-pink-400 via-fuchsia-500 to-purple-600 rounded-full flex items-center justify-center shadow-2xl shadow-pink-500/40">
+                    <User className="w-10 h-10 text-white" />
+                  </div>
                 </div>
-                <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
                   Tell us about yourself
                 </h1>
-                <p className="text-gray-500">
+                <p className="text-slate-400">
                   We&apos;ll use this to create your Pet Parent account
                 </p>
               </div>
 
-              <Card className="p-6 md:p-8 max-w-xl mx-auto bg-white/80 backdrop-blur-sm shadow-xl border-0">
+              <Card className="p-6 md:p-8 max-w-xl mx-auto bg-slate-900/60 backdrop-blur-md border border-white/10 shadow-2xl">
                 <div className="space-y-5">
                   {/* Name */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                    <label className="block text-sm font-medium text-slate-300 mb-1.5">
                       Pet Parent Name *
                     </label>
                     <div className="relative">
-                      <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
                       <Input
                         value={parentData.name}
                         onChange={(e) => setParentData({...parentData, name: e.target.value})}
                         placeholder="Your name"
-                        className={`pl-10 ${parentErrors.name ? 'border-red-500' : ''}`}
+                        className={`pl-10 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-pink-500 focus:ring-pink-500/20 ${parentErrors.name ? 'border-red-500' : ''}`}
                         data-testid="parent-name-input"
                       />
                     </div>
-                    {parentErrors.name && <p className="text-red-500 text-xs mt-1">{parentErrors.name}</p>}
+                    {parentErrors.name && <p className="text-red-400 text-xs mt-1">{parentErrors.name}</p>}
                   </div>
 
                   {/* Email */}
