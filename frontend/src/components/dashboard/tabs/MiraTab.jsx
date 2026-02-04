@@ -56,7 +56,7 @@ const MiraTab = ({ user, pets }) => {
     if (!token) return;
     
     try {
-      const response = await fetch(`${API_URL}/api/mira/memory/${memoryId}`, {
+      const response = await fetch(`${API_URL}/api/mira/memory/me/${memoryId}`, {
         method: 'DELETE',
         headers: { 'Authorization': `Bearer ${token}` }
       });
