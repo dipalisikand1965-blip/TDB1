@@ -167,21 +167,29 @@ const DiningConciergePicker = ({ onClose, compactMode = true }) => {
     try {
       const serviceType = DINING_SERVICES.find(s => s.id === selectedService);
       
+      // Get actual city value (custom city if "other" selected)
+      const actualCity = city === 'other' ? customCity : city;
+      
+      // Get pet info (all pets or selected pet)
+      const petInfo = selectedPetOption === 'all' 
+        ? userPets.map(p => `${p.name}${p.breed ? ` (${p.breed})` : ''}`).join(', ')
+        : selectedPet?.name ? `${selectedPet.name}${selectedPet.breed ? ` (${selectedPet.breed})` : ''}` : 'Not specified';
+      
       // Build description
       const description = `${serviceType.emoji} ${serviceType.name}
 
 **Service Requested:** ${serviceType.name}
-**Location:** ${city || 'Not specified'}
+**Location:** ${actualCity || 'Not specified'}
 **Date:** ${selectedDate ? format(selectedDate, 'PPP') : 'Flexible'}
 **Time:** ${selectedTime || 'Flexible'}
 **Number of Guests:** ${guestCount || 'Not specified'}
-**Pet Attending:** ${selectedPet?.name || 'Not specified'} ${selectedPet?.breed ? `(${selectedPet.breed})` : ''}
+**Pet(s) Attending:** ${petInfo}
 
 **Special Requests/Notes:**
 ${specialRequests || 'None'}
 
 ---
-Submitted via Dining Concierge on the Dine pillar page.`;
+Submitted via Dining Concierge® on the Dine pillar page.`;
 
       // Create a Service Desk ticket
       const ticketData = {
@@ -189,7 +197,7 @@ Submitted via Dining Concierge on the Dine pillar page.`;
           name: user?.name || 'Member',
           email: user?.email || '',
           whatsapp: user?.phone || user?.whatsapp || '',
-          city: city || ''
+          city: actualCity || ''
         },
         category: 'dine',
         sub_category: selectedService,
@@ -197,11 +205,9 @@ Submitted via Dining Concierge on the Dine pillar page.`;
         description: description,
         source: 'web',
         attachments: [],
-        pet_info: selectedPet ? {
-          id: selectedPet.id,
-          name: selectedPet.name,
-          breed: selectedPet.breed
-        } : null
+        pet_info: selectedPetOption === 'all' 
+          ? { all_pets: true, pets: userPets.map(p => ({ id: p.id, name: p.name, breed: p.breed })) }
+          : selectedPet ? { id: selectedPet.id, name: selectedPet.name, breed: selectedPet.breed } : null
       };
       
       const response = await fetch(`${API_URL}/api/tickets/`, {
