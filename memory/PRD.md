@@ -253,6 +253,19 @@ https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/yl1otn
 - ✅ **Integrated into MemberDashboard** with hero display section
 - ✅ **Progress bar** showing distance to next milestone
 
+#### Mira AI Enhanced Personality (P0 - COMPLETE)
+- ✅ **Distinct voice/character**: Guardian angel positioning, poetic greetings
+- ✅ **Remembers pet details**: Breed, age, allergies, birthday displayed in welcome
+- ✅ **Surprise insights**: 20% chance after responses to share breed-specific or health insights
+- ✅ **Breed-specific wisdom**: Custom insights for 10+ popular breeds
+- ✅ **Age-appropriate advice**: Different guidance for puppies, adults, seniors
+- ✅ **Temperament-aware**: Recognizes anxious/playful pets and adjusts recommendations
+
+### Bug Fixes
+- ✅ **Service Desk Merge Fixed**: First selected ticket is now the primary (master)
+- ✅ **Merge Modal Updated**: Clearly shows which ticket is primary ("First Selected")
+- ✅ **Concierge® trademark**: Updated all instances to use ® symbol
+
 ---
 
 ## Upcoming Tasks (P1)
