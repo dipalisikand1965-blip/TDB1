@@ -553,7 +553,7 @@ const FinanceManager = () => {
         </div>
       )}
 
-      {/* Stats Cards */}
+      {/* Stats Cards - Row 1: Key Metrics */}
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -642,7 +642,93 @@ const FinanceManager = () => {
             <AlertTriangle className="w-4 h-4" />
             <span className="text-xs font-medium">To Reconcile</span>
           </div>
-          <p className="text-xl font-bold text-white">{stats.pending_reconciliation}</p>
+          <p className="text-xl font-bold text-white">{advancedStats.pendingReconciliation}</p>
+        </motion.div>
+      </div>
+
+      {/* Stats Cards - Row 2: GST & Monthly Comparison */}
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
+          className="bg-gradient-to-br from-orange-500/20 to-orange-600/10 rounded-xl p-4 border border-orange-500/20"
+        >
+          <div className="flex items-center gap-2 text-orange-400 mb-1">
+            <Receipt className="w-4 h-4" />
+            <span className="text-xs font-medium">GST Collected</span>
+          </div>
+          <p className="text-xl font-bold text-white">{formatCurrency(advancedStats.gstCollected)}</p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+          className="bg-gradient-to-br from-indigo-500/20 to-indigo-600/10 rounded-xl p-4 border border-indigo-500/20"
+        >
+          <div className="flex items-center gap-2 text-indigo-400 mb-1">
+            <TrendingUp className="w-4 h-4" />
+            <span className="text-xs font-medium">This Month</span>
+          </div>
+          <p className="text-xl font-bold text-white">{formatCurrency(advancedStats.thisMonthRevenue)}</p>
+          {advancedStats.lastMonthRevenue > 0 && (
+            <p className={`text-xs mt-1 ${advancedStats.thisMonthRevenue >= advancedStats.lastMonthRevenue ? 'text-emerald-400' : 'text-red-400'}`}>
+              {advancedStats.thisMonthRevenue >= advancedStats.lastMonthRevenue ? '↑' : '↓'} vs {formatCurrency(advancedStats.lastMonthRevenue)} last month
+            </p>
+          )}
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.9 }}
+          className="bg-gradient-to-br from-pink-500/20 to-rose-600/10 rounded-xl p-4 border border-pink-500/20"
+        >
+          <div className="flex items-center gap-2 text-pink-400 mb-1">
+            <Sparkles className="w-4 h-4" />
+            <span className="text-xs font-medium">Membership</span>
+          </div>
+          <p className="text-xl font-bold text-white">{formatCurrency(advancedStats.membershipRevenue)}</p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.0 }}
+          className="bg-gradient-to-br from-blue-500/20 to-sky-600/10 rounded-xl p-4 border border-blue-500/20"
+        >
+          <div className="flex items-center gap-2 text-blue-400 mb-1">
+            <Package className="w-4 h-4" />
+            <span className="text-xs font-medium">Services</span>
+          </div>
+          <p className="text-xl font-bold text-white">{formatCurrency(advancedStats.serviceRevenue)}</p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.1 }}
+          className="bg-gradient-to-br from-amber-500/20 to-yellow-600/10 rounded-xl p-4 border border-amber-500/20"
+        >
+          <div className="flex items-center gap-2 text-amber-400 mb-1">
+            <Gift className="w-4 h-4" />
+            <span className="text-xs font-medium">Products</span>
+          </div>
+          <p className="text-xl font-bold text-white">{formatCurrency(advancedStats.productRevenue)}</p>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.2 }}
+          className="bg-gradient-to-br from-teal-500/20 to-emerald-600/10 rounded-xl p-4 border border-teal-500/20"
+        >
+          <div className="flex items-center gap-2 text-teal-400 mb-1">
+            <TrendingUp className="w-4 h-4" />
+            <span className="text-xs font-medium">Avg Transaction</span>
+          </div>
+          <p className="text-xl font-bold text-white">{formatCurrency(advancedStats.avgTransactionValue)}</p>
         </motion.div>
       </div>
 
