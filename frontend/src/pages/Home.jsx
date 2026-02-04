@@ -357,6 +357,67 @@ const Home = () => {
         </div>
       </section>
 
+      {/* ========== THE BOND - Emotional Photo Gallery ========== */}
+      <section className="relative py-20 sm:py-28 bg-slate-950 overflow-hidden">
+        {/* Subtle background glow */}
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-pink-600/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl" />
+        
+        <div className="relative max-w-7xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <motion.p
+              className="text-pink-400 text-sm uppercase tracking-widest mb-4"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+            >
+              The Unbreakable Bond
+            </motion.p>
+            <motion.h2
+              className="text-3xl sm:text-4xl font-bold text-white mb-4"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              More Than Pets.
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-purple-400">
+                They&apos;re Family.
+              </span>
+            </motion.h2>
+          </div>
+
+          {/* Masonry-style Gallery */}
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+            {BOND_GALLERY.map((item, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.08 }}
+                className={`relative group rounded-2xl overflow-hidden ${
+                  item.tall ? 'row-span-2' : ''
+                } ${item.wide ? 'col-span-2' : ''}`}
+              >
+                <img 
+                  src={item.image} 
+                  alt={item.caption}
+                  className="w-full h-full object-cover aspect-square group-hover:scale-110 transition-transform duration-500"
+                />
+                {/* Hover overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
+                    <p className="text-white text-sm font-medium">{item.caption}</p>
+                  </div>
+                </div>
+                {/* Permanent gentle overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-purple-950/30 to-transparent pointer-events-none" />
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ========== MEET MIRA - The Guide ========== */}
       <section className="relative py-24 sm:py-32 bg-slate-950 overflow-hidden">
         {/* Background glow */}
