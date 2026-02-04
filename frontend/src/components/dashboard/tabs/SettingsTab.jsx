@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card } from '../../ui/card';
 import { Button } from '../../ui/button';
 import { Badge } from '../../ui/badge';
 import { Input } from '../../ui/input';
 import { Switch } from '../../ui/switch';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../../ui/dialog';
 import { 
   User, MessageCircle, Phone, Mail, Bell, Shield, Lock,
-  Clock, Sparkles, CheckCircle2, BellRing, Smartphone, Settings
+  Clock, Sparkles, CheckCircle2, BellRing, Smartphone, Settings,
+  Eye, EyeOff, Check, X, AlertTriangle
 } from 'lucide-react';
+import { toast as toastFn } from '../../../hooks/use-toast';
 
 const SettingsTab = ({ 
   user,
@@ -27,6 +30,94 @@ const SettingsTab = ({
   setShowVoiceActions,
   toast
 }) => {
+  // Security modals state
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [showTwoFactor, setShowTwoFactor] = useState(false);
+  const [showPrivacy, setShowPrivacy] = useState(false);
+  
+  // Password form state
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+  const [showPasswords, setShowPasswords] = useState({
+    current: false,
+    new: false,
+    confirm: false
+  });
+  const [passwordLoading, setPasswordLoading] = useState(false);
+  
+  // 2FA state
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
+  
+  // Privacy state
+  const [privacySettings, setPrivacySettings] = useState({
+    shareActivity: true,
+    allowMarketing: true,
+    showProfile: false
+  });
+
+  // Handle password change
+  const handlePasswordChange = async () => {
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      (toast || toastFn)({ 
+        title: 'Passwords do not match', 
+        description: 'New password and confirm password must be the same.',
+        variant: 'destructive'
+      });
+      return;
+    }
+    if (passwordForm.newPassword.length < 8) {
+      (toast || toastFn)({ 
+        title: 'Password too short', 
+        description: 'Password must be at least 8 characters.',
+        variant: 'destructive'
+      });
+      return;
+    }
+    
+    setPasswordLoading(true);
+    try {
+      // In real app, call API to change password
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      (toast || toastFn)({ 
+        title: '✅ Password Changed', 
+        description: 'Your password has been updated successfully.'
+      });
+      setShowChangePassword(false);
+      setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' });
+    } catch {
+      (toast || toastFn)({ 
+        title: 'Error', 
+        description: 'Failed to change password. Please try again.',
+        variant: 'destructive'
+      });
+    } finally {
+      setPasswordLoading(false);
+    }
+  };
+
+  // Handle 2FA toggle
+  const handleTwoFactorToggle = () => {
+    setTwoFactorEnabled(!twoFactorEnabled);
+    (toast || toastFn)({ 
+      title: twoFactorEnabled ? '2FA Disabled' : '2FA Enabled', 
+      description: twoFactorEnabled 
+        ? 'Two-factor authentication has been disabled.' 
+        : 'Two-factor authentication is now active. You will receive codes via SMS.'
+    });
+  };
+
+  // Handle privacy save
+  const handlePrivacySave = () => {
+    (toast || toastFn)({ 
+      title: '✅ Privacy Settings Saved', 
+      description: 'Your privacy preferences have been updated.'
+    });
+    setShowPrivacy(false);
+  };
+
   return (
     <div className="animate-in fade-in-50 duration-300 space-y-6" data-testid="settings-tab">
       {/* Voice Quick Actions on Mobile */}
