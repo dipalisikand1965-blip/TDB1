@@ -292,22 +292,32 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
         
         {/* Video - Full screen, optimized for iOS/Android */}
         {!isEnding && (
-          <video 
-            ref={videoRef}
-            className="absolute inset-0 w-full h-full"
-            autoPlay
-            muted={videoMuted}
-            playsInline
-            style={{
-              objectFit: 'contain',
-              objectPosition: 'center center',
-              backgroundColor: '#000',
-              WebkitTransform: 'translateZ(0)',
-              transform: 'translateZ(0)'
-            }}
-          >
-            <source src={clip.src} type="video/mp4" />
-          </video>
+          <>
+            {/* Fallback background image for when video doesn't autoplay */}
+            <div 
+              className="absolute inset-0 bg-cover bg-center"
+              style={{
+                backgroundImage: `url(${clip.poster || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1920&q=80'})`,
+                filter: 'brightness(0.7)'
+              }}
+            />
+            <video 
+              ref={videoRef}
+              className="absolute inset-0 w-full h-full"
+              autoPlay
+              muted={videoMuted}
+              playsInline
+              poster={clip.poster || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1920&q=80'}
+              style={{
+                objectFit: 'cover',
+                objectPosition: 'center center',
+                WebkitTransform: 'translateZ(0)',
+                transform: 'translateZ(0)'
+              }}
+            >
+              <source src={clip.src} type="video/mp4" />
+            </video>
+          </>
         )}
         
         {/* Cinematic Overlays - Lighter gradient to show video */}
