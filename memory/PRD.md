@@ -24,7 +24,32 @@ Mira AI positioned as the "memory and judgement layer" - she doesn't fulfil requ
 
 ## What's Been Implemented
 
-### February 4, 2026 (Latest Session) - Onboarding UI/UX Overhaul
+### February 4, 2026 (Latest Session) - Payment Flow Fix & Step 2 UI Enhancements
+
+#### Payment Flow Fix (P0 - CRITICAL)
+- ✅ **Created /api/membership/payment/create** - New endpoint to initiate Razorpay orders
+- ✅ **Created /api/membership/payment/verify** - New endpoint to verify payment with order_id
+- ✅ **Added /api/membership/order/{order_id}** - Endpoint to fetch order details for payment page
+- ✅ **Fixed getApiUrl function** - Now accepts optional path parameter
+- ✅ **Integrated membership_router** - Added to server.py for proper routing
+- ✅ **Fixed collection lookup** - Now checks membership_orders with fallback to memberships
+
+#### Step 2 UI Enhancements (P0)
+- ✅ **Title Changed**: Now shows "About Your Pet" instead of generic heading
+- ✅ **Upload Photo Label**: Added visible "Upload Photo *" label above photo upload area
+- ✅ **Auto-breed Autocomplete**: Verified working - shows suggestions when typing
+- ✅ **Dark Theme Dropdown**: Updated BreedAutocomplete to use dark slate-800 background with pink accents
+- ✅ **Removed Duplicate Code**: Fixed duplicate photo upload section (lines 908-950)
+
+#### Testing Verified
+- ✅ Full onboarding flow: Step 1 → Step 2 → Step 3 → Step 4 → Payment Page
+- ✅ No more "Failed to initiate payment" error
+- ✅ Order ID generated correctly (e.g., TDC-20260204-XXXXXX)
+- ✅ Razorpay modal appears (MOCKED with test keys)
+
+---
+
+### February 4, 2026 (Previous Session) - Onboarding UI/UX Overhaul
 
 #### MembershipOnboarding Dark Theme Transformation
 - ✅ **Dark Premium Background** - `bg-gradient-to-b from-slate-950 via-purple-950/30 to-slate-950`
