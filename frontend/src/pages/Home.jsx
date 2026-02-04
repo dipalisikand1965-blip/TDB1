@@ -409,12 +409,14 @@ const PARTICLES = Array.from({ length: 20 }, (_, i) => ({
 }));
 
 // Video Testimonials Data - Real Indian families with video stories
+// Thumbnails match AI-generated video content (golden retriever, beagle, labrador)
 const VIDEO_TESTIMONIALS = [
   {
     id: 1,
     name: "Priya & Bruno",
     pet: "Bruno",
-    thumbnail: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=300&fit=crop",
+    // Golden retriever thumbnail to match the AI video
+    thumbnail: "https://images.unsplash.com/photo-1633722715463-d30f4f325e24?w=400&h=300&fit=crop",
     videoSrc: "/videos/testimonials/sharma_testimonial.mp4",
     quote: "They remembered Bruno's fear of thunderstorms before I even mentioned it.",
     duration: "0:04",
@@ -424,7 +426,8 @@ const VIDEO_TESTIMONIALS = [
     id: 2,
     name: "Rahul & Max",
     pet: "Max",
-    thumbnail: "https://images.unsplash.com/photo-1552053831-71594a27632d?w=400&h=300&fit=crop",
+    // Beagle thumbnail to match the AI video
+    thumbnail: "https://images.unsplash.com/photo-1505628346881-b72b27e84530?w=400&h=300&fit=crop",
     videoSrc: "/videos/testimonials/rahul_testimonial.mp4",
     quote: "When Max got sick at 2am, Mira already had his full health history ready.",
     duration: "0:04",
@@ -434,7 +437,8 @@ const VIDEO_TESTIMONIALS = [
     id: 3,
     name: "The Kapoor Family",
     pet: "Luna",
-    thumbnail: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=400&h=300&fit=crop",
+    // Labrador thumbnail to match the AI video
+    thumbnail: "https://images.unsplash.com/photo-1591769225440-811ad7d6eab3?w=400&h=300&fit=crop",
     videoSrc: "/videos/testimonials/kapoor_testimonial.mp4",
     quote: "They sent Luna a birthday cake without me even asking.",
     duration: "0:04",
@@ -447,6 +451,7 @@ const MEMBERSHIP_TIERS = [
   {
     name: "Explorer",
     price: "Free",
+    period: "for 7 days",
     description: "Discover the Pet Soul™ experience",
     features: [
       "Basic Pet Profile",
@@ -460,7 +465,7 @@ const MEMBERSHIP_TIERS = [
       "Health Vault & Records",
       "Priority Support",
     ],
-    cta: "Start Free",
+    cta: "Start 7-Day Free Trial",
     ctaLink: "https://thedoggycompany.in/pet-soul-onboard",
     highlighted: false,
   },
