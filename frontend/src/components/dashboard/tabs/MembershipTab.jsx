@@ -7,11 +7,89 @@ import {
   ArrowRight, RefreshCw, Gift, Shield, Heart
 } from 'lucide-react';
 
-const MembershipTab = ({ user, membership }) => {
+const MembershipTab = ({ user }) => {
+  // Get membership data from user object
+  const membershipTier = user?.membership_tier || 'foundation';
+  const membershipExpires = user?.membership_expires;
+  const createdAt = user?.created_at;
+  
+  // Map tier names to plan details
+  const PLAN_DETAILS = {
+    free: {
+      plan_name: 'Free Tier',
+      price: 0,
+      billing_cycle: 'none',
+      features: [
+        'Basic Mira AI access',
+        'Browse services',
+        'Limited concierge support'
+      ]
+    },
+    foundation: {
+      plan_name: 'Pet Pass Foundation',
+      price: 4999,
+      billing_cycle: 'yearly',
+      features: [
+        'Unlimited Mira AI conversations',
+        'Priority Concierge® support',
+        '14 Life Pillar access',
+        'Pet Soul™ profile & analytics',
+        'Exclusive member discounts',
+        'Birthday party planning',
+        'Emergency support hotline'
+      ]
+    },
+    gold: {
+      plan_name: 'Pet Pass Gold',
+      price: 9999,
+      billing_cycle: 'yearly',
+      features: [
+        'Everything in Foundation',
+        '10% off all purchases',
+        'Dedicated account manager',
+        'Priority booking',
+        'Free monthly consultations',
+        'Exclusive Gold events'
+      ]
+    },
+    platinum: {
+      plan_name: 'Pet Pass Platinum',
+      price: 19999,
+      billing_cycle: 'yearly',
+      features: [
+        'Everything in Gold',
+        '15% off all purchases',
+        'Personal concierge',
+        '24/7 emergency line',
+        'VIP event access',
+        'Complimentary grooming (2x/month)',
+        'Free pet insurance consultation'
+      ]
+    },
+    standard: {
+      plan_name: 'Pet Pass Foundation',
+      price: 4999,
+      billing_cycle: 'yearly',
+      features: [
+        'Unlimited Mira AI conversations',
+        'Priority Concierge® support',
+        '14 Life Pillar access',
+        'Pet Soul™ profile & analytics',
+        'Exclusive member discounts',
+        'Birthday party planning',
+        'Emergency support hotline'
+      ]
+    }
+  };
+  
+  const plan = PLAN_DETAILS[membershipTier] || PLAN_DETAILS.foundation;
+  
+  // Calculate validity dates
+  const validFrom = createdAt ? new Date(createdAt) : new Date();
+  const validUntil = membershipExpires ? new Date(membershipExpires) : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
+  
   // Calculate days remaining
   const calculateDaysRemaining = () => {
-    if (!membership?.valid_until) return null;
-    const validUntil = new Date(membership.valid_until);
     const today = new Date();
     const diffTime = validUntil - today;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
@@ -19,28 +97,9 @@ const MembershipTab = ({ user, membership }) => {
   };
 
   const daysRemaining = calculateDaysRemaining();
-  const isExpiringSoon = daysRemaining !== null && daysRemaining <= 30;
+  const isExpiringSoon = daysRemaining !== null && daysRemaining <= 30 && daysRemaining > 0;
   const isExpired = daysRemaining !== null && daysRemaining <= 0;
-
-  // Default membership data if not provided
-  const plan = membership || {
-    plan_name: 'Pet Pass Foundation',
-    plan_type: 'foundation',
-    status: 'active',
-    valid_from: user?.created_at || new Date().toISOString(),
-    valid_until: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
-    billing_cycle: 'yearly',
-    price: 4999,
-    features: [
-      'Unlimited Mira AI conversations',
-      'Priority Concierge® support',
-      '14 Life Pillar access',
-      'Pet Soul™ profile & analytics',
-      'Exclusive member discounts',
-      'Birthday party planning',
-      'Emergency support hotline'
-    ]
-  };
+  const isActive = !isExpired && membershipTier !== 'free';
 
   const formatDate = (dateStr) => {
     if (!dateStr) return 'Not set';
