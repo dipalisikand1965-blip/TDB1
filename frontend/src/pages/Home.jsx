@@ -516,18 +516,19 @@ const Home = () => {
                   transition={{ delay: 0.3 + idx * 0.1 }}
                   className="relative group"
                 >
-                  <div className="absolute inset-0 rounded-2xl bg-purple-500/15 blur-xl group-hover:bg-purple-500/25 transition-all duration-500" />
-                  <div className="relative w-44 h-44 rounded-2xl overflow-hidden border border-white/10 shadow-xl group-hover:border-white/20 transition-all duration-300 group-hover:scale-105 bg-slate-900">
-                    {/* Image with blend mode to darken white backgrounds */}
+                  <div className="absolute inset-0 rounded-2xl bg-purple-500/20 blur-xl group-hover:bg-purple-500/30 transition-all duration-500" />
+                  <div className="relative w-44 h-44 rounded-2xl overflow-hidden border border-white/10 shadow-xl group-hover:border-white/20 transition-all duration-300 group-hover:scale-105 bg-slate-950">
+                    {/* Image */}
                     <img 
                       src={item.image_url} 
                       alt={item.caption}
-                      className="w-full h-full object-cover mix-blend-luminosity"
+                      className="w-full h-full object-cover"
                     />
-                    {/* Dark color overlay to blend white backgrounds */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-purple-900/40 via-slate-900/30 to-pink-900/40 mix-blend-multiply" />
-                    {/* Bottom gradient for caption */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent" />
+                    {/* Dark vignette overlay to blend white backgrounds elegantly */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-slate-950/60 via-transparent to-slate-950/60" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-slate-950/40" />
+                    {/* Subtle purple tint */}
+                    <div className="absolute inset-0 bg-purple-900/20 mix-blend-overlay" />
                     <p className="absolute bottom-2 left-2 right-2 text-white text-xs font-medium truncate">
                       {item.caption}
                     </p>
