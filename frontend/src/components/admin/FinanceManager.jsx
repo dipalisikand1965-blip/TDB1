@@ -182,14 +182,10 @@ const FinanceManager = () => {
   // Record offline payment
   const handleRecordPayment = async () => {
     try {
-      const adminUsername = localStorage.getItem('adminUsername') || 'aditya';
-      const adminPassword = localStorage.getItem('adminPassword') || 'lola4304';
-      const basicAuth = btoa(`${adminUsername}:${adminPassword}`);
-      
       const response = await fetch(`${getApiUrl()}/api/admin/finance/payments/offline`, {
         method: 'POST',
         headers: {
-          'Authorization': `Basic ${basicAuth}`,
+          'Authorization': getAuthHeader(),
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(newPayment)
@@ -209,9 +205,13 @@ const FinanceManager = () => {
           discount_amount: 0,
           paw_points_used: 0
         });
+      } else {
+        const errData = await response.json().catch(() => ({}));
+        alert(errData.detail || 'Failed to record payment');
       }
-    } catch (error) {
-      console.error('Failed to record payment:', error);
+    } catch (err) {
+      console.error('Failed to record payment:', err);
+      alert('Network error');
     }
   };
 
