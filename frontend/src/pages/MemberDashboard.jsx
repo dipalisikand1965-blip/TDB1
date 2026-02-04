@@ -1422,6 +1422,15 @@ const MemberDashboard = () => {
               />
             </Suspense>
           </TabsContent>
+
+          <TabsContent value="membership">
+            <Suspense fallback={<TabLoader />}>
+              <MembershipTab 
+                user={user}
+                membership={user?.membership}
+              />
+            </Suspense>
+          </TabsContent>
         </Tabs>
       </div>
     </div>
