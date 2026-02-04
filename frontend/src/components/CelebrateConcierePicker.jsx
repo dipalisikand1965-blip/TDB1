@@ -220,11 +220,23 @@ const CelebrateConcierePicker = ({ category = 'cakes', onClose }) => {
                 <Label className="text-xs sm:text-sm font-medium text-gray-700 mb-1.5 sm:mb-2 block">
                   <PawPrint className="w-3 h-3 sm:w-4 sm:h-4 inline mr-1" /> Which pet?
                 </Label>
-                <Select value={selectedPet?.id || ''} onValueChange={(id) => setSelectedPet(userPets.find(p => p.id === id))}>
+                <Select value={selectedPet?.id || 'all'} onValueChange={(id) => {
+                  if (id === 'all') {
+                    setSelectedPet(null);
+                  } else {
+                    setSelectedPet(userPets.find(p => p.id === id));
+                  }
+                }}>
                   <SelectTrigger className="h-10 sm:h-12 text-sm" data-testid="pet-selector">
                     <SelectValue placeholder="Select pet" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="all">
+                      <span className="flex items-center gap-2">
+                        <PawPrint className="w-3 h-3 sm:w-4 sm:h-4" />
+                        🐾 All My Pets ({userPets.length})
+                      </span>
+                    </SelectItem>
                     {userPets.map(pet => (
                       <SelectItem key={pet.id} value={pet.id}>
                         <span className="flex items-center gap-2">
