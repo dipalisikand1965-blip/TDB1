@@ -298,10 +298,6 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
             autoPlay
             muted={videoMuted}
             playsInline
-            webkit-playsinline="true"
-            x5-playsinline="true"
-            x5-video-player-type="h5"
-            x5-video-player-fullscreen="true"
             style={{
               objectFit: 'contain',
               objectPosition: 'center center',
