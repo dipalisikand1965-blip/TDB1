@@ -232,25 +232,35 @@ const MembershipTab = ({ user }) => {
           <Shield className="w-5 h-5 text-purple-400" /> Billing History
         </h3>
         <div className="space-y-3">
-          <div className="flex items-center justify-between p-4 bg-slate-800/30 rounded-xl">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center">
-                <CheckCircle className="w-5 h-5 text-emerald-400" />
+          {membershipTier !== 'free' && (
+            <div className="flex items-center justify-between p-4 bg-slate-800/30 rounded-xl">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-emerald-500/20 rounded-lg flex items-center justify-center">
+                  <CheckCircle className="w-5 h-5 text-emerald-400" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-white">{plan.plan_name} - Annual</p>
+                  <p className="text-xs text-slate-400">{formatDate(validFrom.toISOString())}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-sm font-medium text-white">Pet Pass Foundation - Annual</p>
-                <p className="text-xs text-slate-400">{formatDate(plan.valid_from)}</p>
+              <div className="text-right">
+                <p className="text-sm font-semibold text-white">₹{plan.price?.toLocaleString('en-IN') || '4,999'}</p>
+                <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-xs">Paid</Badge>
               </div>
             </div>
-            <div className="text-right">
-              <p className="text-sm font-semibold text-white">₹{plan.price?.toLocaleString('en-IN') || '4,999'}</p>
-              <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30 text-xs">Paid</Badge>
+          )}
+          {membershipTier === 'free' && (
+            <div className="text-center py-6">
+              <p className="text-slate-400 text-sm">No billing history yet</p>
+              <p className="text-slate-500 text-xs mt-1">Upgrade to a paid plan to see your billing history</p>
             </div>
-          </div>
+          )}
         </div>
-        <Button variant="outline" className="w-full mt-4 bg-slate-800/50 border-white/10 text-white hover:bg-slate-700/50">
-          View All Transactions
-        </Button>
+        {membershipTier !== 'free' && (
+          <Button variant="outline" className="w-full mt-4 bg-slate-800/50 border-white/10 text-white hover:bg-slate-700/50">
+            View All Transactions
+          </Button>
+        )}
       </Card>
       
       {/* Member Benefits */}
