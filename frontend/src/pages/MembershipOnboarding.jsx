@@ -640,10 +640,10 @@ const MembershipOnboarding = () => {
                           key={method.value}
                           type="button"
                           onClick={() => setParentData({...parentData, preferredContact: method.value})}
-                          className={`flex-1 p-3 rounded-xl border-2 text-sm transition-all ${
+                          className={`flex-1 p-3 rounded-xl border-2 text-sm font-medium transition-all ${
                             parentData.preferredContact === method.value
-                              ? 'border-purple-500 bg-purple-50'
-                              : 'border-gray-200 hover:border-purple-300'
+                              ? 'border-pink-500 bg-pink-500/20 text-white'
+                              : 'border-slate-700 bg-slate-800/50 text-slate-300 hover:border-pink-500/50'
                           }`}
                           data-testid={`contact-method-${method.value}`}
                         >
@@ -655,17 +655,17 @@ const MembershipOnboarding = () => {
 
                   {/* Notification Settings */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-3">
+                    <label className="block text-sm font-medium text-slate-300 mb-3">
                       Notification Preferences
                     </label>
-                    <div className="space-y-3 bg-gradient-to-br from-orange-50 to-pink-50 p-4 rounded-xl border border-orange-100">
+                    <div className="space-y-3 bg-slate-800/50 p-4 rounded-xl border border-slate-700">
                       {[
                         { key: 'orderUpdates', label: 'Order & Delivery Updates', desc: 'Status of your orders and deliveries', icon: '📦' },
                         { key: 'petReminders', label: 'Pet Care Reminders', desc: 'Vaccination, grooming & health reminders', icon: '💊' },
                         { key: 'promotions', label: 'Offers & Promotions', desc: 'Exclusive deals and member discounts', icon: '🎁' },
                         { key: 'newsletter', label: 'Monthly Newsletter', desc: 'Pet care tips and community updates', icon: '📰' }
                       ].map((notif) => (
-                        <label key={notif.key} className="flex items-start gap-3 cursor-pointer hover:bg-white/50 p-2 rounded-lg transition-colors">
+                        <label key={notif.key} className="flex items-start gap-3 cursor-pointer hover:bg-slate-700/50 p-2 rounded-lg transition-colors">
                           <input
                             type="checkbox"
                             checked={parentData.notifications[notif.key]}
@@ -673,12 +673,12 @@ const MembershipOnboarding = () => {
                               ...parentData, 
                               notifications: {...parentData.notifications, [notif.key]: e.target.checked}
                             })}
-                            className="mt-1 w-4 h-4 rounded border-gray-300 text-orange-500 focus:ring-orange-500"
+                            className="mt-1 w-4 h-4 rounded border-slate-600 bg-slate-700 text-pink-500 focus:ring-pink-500/20"
                             data-testid={`notification-${notif.key}`}
                           />
                           <div>
-                            <p className="text-sm font-medium text-gray-700">{notif.icon} {notif.label}</p>
-                            <p className="text-xs text-gray-500">{notif.desc}</p>
+                            <p className="text-sm font-medium text-slate-200">{notif.icon} {notif.label}</p>
+                            <p className="text-xs text-slate-400">{notif.desc}</p>
                           </div>
                         </label>
                       ))}
@@ -686,7 +686,7 @@ const MembershipOnboarding = () => {
                   </div>
 
                   {/* Soul Whispers - Weekly WhatsApp Drip */}
-                  <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-4 rounded-xl border border-green-200">
+                  <div className="bg-gradient-to-br from-emerald-900/30 to-teal-900/30 p-4 rounded-xl border border-emerald-500/30">
                     <label className="flex items-start gap-3 cursor-pointer">
                       <input
                         type="checkbox"
@@ -695,20 +695,20 @@ const MembershipOnboarding = () => {
                           ...parentData, 
                           notifications: {...parentData.notifications, soulWhispers: e.target.checked}
                         })}
-                        className="mt-1 w-5 h-5 rounded border-green-300 text-green-600 focus:ring-green-500"
+                        className="mt-1 w-5 h-5 rounded border-emerald-500/50 bg-slate-800 text-emerald-500 focus:ring-emerald-500/20"
                         data-testid="notification-soul-whispers"
                       />
                       <div className="flex-1">
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
                           <span className="text-lg">💬</span>
-                          <p className="font-semibold text-green-800">Soul Whispers</p>
-                          <Badge className="bg-green-100 text-green-700 text-xs">Recommended</Badge>
+                          <p className="font-semibold text-emerald-300">Soul Whispers</p>
+                          <Badge className="bg-emerald-500/20 text-emerald-300 text-xs border border-emerald-500/30">Recommended</Badge>
                         </div>
-                        <p className="text-sm text-green-700 mt-1">
+                        <p className="text-sm text-emerald-200/80 mt-1">
                           Weekly WhatsApp messages with one gentle question about your pet. 
                           Helps us understand your furry friend better over time.
                         </p>
-                        <p className="text-xs text-green-600 mt-2 italic">
+                        <p className="text-xs text-emerald-400/70 mt-2 italic">
                           "Quick questions, deep understanding. No spam, just love."
                         </p>
                       </div>
@@ -716,20 +716,20 @@ const MembershipOnboarding = () => {
                   </div>
 
                   {/* Terms & Conditions */}
-                  <div className="space-y-3 pt-4 border-t">
+                  <div className="space-y-3 pt-4 border-t border-slate-700">
                     <label className="flex items-start gap-3 cursor-pointer">
                       <input
                         type="checkbox"
                         checked={parentData.acceptTerms}
                         onChange={(e) => setParentData({...parentData, acceptTerms: e.target.checked})}
-                        className={`mt-1 w-4 h-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500 ${parentErrors.acceptTerms ? 'border-red-500' : ''}`}
+                        className={`mt-1 w-4 h-4 rounded border-slate-600 bg-slate-700 text-pink-500 focus:ring-pink-500/20 ${parentErrors.acceptTerms ? 'border-red-500' : ''}`}
                         data-testid="accept-terms"
                       />
                       <div>
-                        <p className="text-sm text-gray-700">
-                          I agree to the <a href="/terms" target="_blank" className="text-purple-600 hover:underline">Terms & Conditions</a> *
+                        <p className="text-sm text-slate-300">
+                          I agree to the <a href="/terms" target="_blank" className="text-pink-400 hover:underline">Terms & Conditions</a> *
                         </p>
-                        {parentErrors.acceptTerms && <p className="text-red-500 text-xs">{parentErrors.acceptTerms}</p>}
+                        {parentErrors.acceptTerms && <p className="text-red-400 text-xs">{parentErrors.acceptTerms}</p>}
                       </div>
                     </label>
                     
@@ -738,14 +738,14 @@ const MembershipOnboarding = () => {
                         type="checkbox"
                         checked={parentData.acceptPrivacy}
                         onChange={(e) => setParentData({...parentData, acceptPrivacy: e.target.checked})}
-                        className={`mt-1 w-4 h-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500 ${parentErrors.acceptPrivacy ? 'border-red-500' : ''}`}
+                        className={`mt-1 w-4 h-4 rounded border-slate-600 bg-slate-700 text-pink-500 focus:ring-pink-500/20 ${parentErrors.acceptPrivacy ? 'border-red-500' : ''}`}
                         data-testid="accept-privacy"
                       />
                       <div>
-                        <p className="text-sm text-gray-700">
-                          I agree to the <a href="/privacy" target="_blank" className="text-purple-600 hover:underline">Privacy Policy</a> *
+                        <p className="text-sm text-slate-300">
+                          I agree to the <a href="/privacy" target="_blank" className="text-pink-400 hover:underline">Privacy Policy</a> *
                         </p>
-                        {parentErrors.acceptPrivacy && <p className="text-red-500 text-xs">{parentErrors.acceptPrivacy}</p>}
+                        {parentErrors.acceptPrivacy && <p className="text-red-400 text-xs">{parentErrors.acceptPrivacy}</p>}
                       </div>
                     </label>
                   </div>
@@ -753,7 +753,7 @@ const MembershipOnboarding = () => {
 
                 <Button 
                   onClick={handleNext}
-                  className="w-full mt-6 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 h-12 shadow-lg shadow-orange-200/50 transition-all hover:scale-[1.02]"
+                  className="w-full mt-6 bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-400 hover:to-purple-500 h-12 shadow-lg shadow-pink-500/30 transition-all hover:scale-[1.02] text-white font-semibold"
                   data-testid="parent-next-btn"
                 >
                   Continue to Add Your Dog
