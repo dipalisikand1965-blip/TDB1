@@ -218,11 +218,13 @@ https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/yl1otn
 - **Brand Story Voiceover** - Generate audio from `/app/frontend/public/videos/BRAND_STORY_SCRIPT.md` using ElevenLabs, merge with video clips
 - **Polish remaining pages**: `Paperwork`, `Advisory`, `Emergency`, `Farewell`, `Adopt`, `Shop`
 - **Animate 14 Pillars Further** - More "magical" cross-pollination animation
+- **Real Razorpay Keys** - Replace test keys with production Razorpay credentials
 
 ## Future/Backlog (P2)
 - Pet Soul™ "living" visualization (make score feel alive)
 - Mira AI personality enhancement (remember pet details)
 - Real family video testimonials section
+- Fix pre-existing linting errors in DinePage.jsx and LearnPage.jsx
 - Membership value proposition redesign
 - Utility pages: `Autoship & Save`, `About Us`, `FAQs`, `TDC Insights`
 - Fix linting errors in `DinePage.jsx` and `LearnPage.jsx`
