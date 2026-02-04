@@ -721,7 +721,7 @@ const CelebratePage = () => {
               {/* Pet & Occasion */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="text-sm font-medium text-gray-700 mb-1 block">Pet's Name *</label>
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">Pet&apos;s Name *</label>
                   {userPets.length > 1 ? (
                     <select
                       value={conciergeForm.petId}
