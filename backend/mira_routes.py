@@ -1176,10 +1176,43 @@ def detect_concierge_action_needed(message: str, pillar: str = None, conversatio
     Detect if a message requires concierge action (booking, reservation, verification).
     Returns action details if needed, None otherwise.
     
-    CRITICAL: Also detects AFFIRMATIVE RESPONSES to previous Mira suggestions.
-    "yes please", "go ahead", "ok", etc. MUST trigger action.
+    CRITICAL: Distinguish between QUESTIONS (advisory - answer directly) and 
+    ACTION REQUESTS (concierge - create ticket).
+    
+    Questions like "how to control fleas" = ANSWER DIRECTLY
+    Actions like "book a vet appointment" = CREATE TICKET
     """
     message_lower = message.lower().strip()
+    
+    # ==================== QUESTION DETECTION (ANSWER DIRECTLY - NO TICKET) ====================
+    # If user is asking HOW, WHAT, WHY, etc. - this is a question, not an action request
+    # Mira should answer conversationally, NOT create a ticket
+    
+    question_patterns = [
+        "how to", "how do", "how can", "how should", "what is", "what are", "what's",
+        "why is", "why does", "why do", "when should", "where can", "which is",
+        "tell me about", "explain", "can you tell me", "what do you know",
+        "tips for", "advice on", "help with", "understand", "learn about",
+        "is it safe", "is it okay", "should i", "can i give", "do dogs",
+        "control", "prevent", "treat", "manage", "deal with", "handle",
+        "best way to", "ways to", "methods for"
+    ]
+    
+    # If message is clearly a question, don't create concierge action
+    is_question = any(pattern in message_lower for pattern in question_patterns)
+    
+    # Additional check: ends with "?" or has question structure
+    ends_with_question = message.strip().endswith("?")
+    
+    # If it's a question and NOT an explicit booking request, return no action needed
+    if (is_question or ends_with_question):
+        # But still allow explicit booking requests through
+        explicit_booking_patterns = [
+            "book", "schedule", "make an appointment", "reserve", "arrange",
+            "i want to book", "i need to schedule", "set up an appointment"
+        ]
+        if not any(pattern in message_lower for pattern in explicit_booking_patterns):
+            return {"action_needed": False, "is_question": True}
     
     # ==================== AFFIRMATIVE RESPONSE DETECTION (CRITICAL) ====================
     # If user says "yes", "yes please", "go ahead", etc., this is a CONFIRMATION
@@ -1237,7 +1270,7 @@ def detect_concierge_action_needed(message: str, pillar: str = None, conversatio
     
     # Also check pillar-based triggers
     if pillar in ["dine", "stay", "travel", "care", "enjoy"]:
-        # For these pillars, most requests need concierge action
+        # For these pillars, only ACTION requests need concierge - not general questions
         action_words = ["want", "need", "looking for", "find me", "book", "reserve", "arrange"]
         if any(word in message_lower for word in action_words):
             return {
