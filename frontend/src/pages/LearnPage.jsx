@@ -1139,7 +1139,7 @@ const LearnPage = () => {
 
               {/* Pet Selection - Works for both logged in and guest users */}
               <div>
-                <Label className="text-sm font-medium mb-2 block">Your Pet's Details</Label>
+                <Label className="text-sm font-medium mb-2 block">Your Pet&apos;s Details</Label>
                 {userPets.length > 0 ? (
                   <div className="grid grid-cols-2 gap-3 mt-2">
                     {userPets.map(pet => (
