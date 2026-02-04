@@ -402,10 +402,10 @@ const MembershipOnboarding = () => {
   // Calculate pricing - All dogs included at same price!
   const getPricing = () => {
     // Trial = 1 month (₹499 + GST) + 7 bonus days = 37 days
-    // Founder = 12 months (₹4,999 + GST) + 7 bonus days = 372 days
+    // Foundation = 12 months (₹4,999 + GST) + 7 bonus days = 372 days
     // ALL DOGS INCLUDED - no additional pet pricing
     const isTrialPlan = planType === 'trial' || planType === 'monthly';
-    const isFounder = planType === 'annual' || planType === 'foundation' || planType === 'founder';
+    const isFoundation = planType === 'annual' || planType === 'foundation';
     
     let basePrice = isTrialPlan ? 499 : 4999;
     let planName = isTrialPlan ? 'Trial (37 days)' : 'Founder (372 days)';

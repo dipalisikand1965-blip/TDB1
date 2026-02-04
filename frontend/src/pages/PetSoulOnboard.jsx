@@ -49,7 +49,7 @@ const PLANS = {
     period: '/year',
     validity_days: 365,
     description: 'Best value - full Concierge® relationship',
-    features: ['Everything in Trial', 'Double Paw Points', 'Birthday Surprise', 'Early Access', 'Founder Badge'],
+    features: ['Everything in Trial', 'Double Paw Points', 'Birthday Surprise', 'Early Access', 'Foundation Badge'],
     requiresPayment: true,
     badge: 'Best Value',
     savings: 'Save ₹989/year',
