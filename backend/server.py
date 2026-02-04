@@ -9895,7 +9895,7 @@ async def membership_onboard(data: MembershipOnboardModel):
             "user_pincode": data.parent.pincode,
             "type": "membership",
             "plan_type": data.plan_type,
-            "plan_name": "Pet Pass Trial (37 days)" if is_trial else "Pet Pass Founder (372 days)",
+            "plan_name": "Pet Pass Trial (37 days)" if is_trial else "Pet Pass Foundation (372 days)",
             "pet_count": len(data.pets),
             "pet_ids": pet_ids,
             "pet_names": [p.name for p in data.pets],
