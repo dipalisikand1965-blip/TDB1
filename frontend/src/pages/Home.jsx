@@ -477,10 +477,10 @@ const MEMBERSHIP_TIERS = [
     description: "Introduction to the concierge experience",
     features: [
       "Full Pet Soul™ Profile",
-      "Unlimited Mira AI Concierge",
+      "Unlimited Mira AI Concierge®",
       "All 14 Life Pillars Unlocked",
       "Health Vault & Records",
-      "Priority Concierge Support",
+      "Priority Concierge® Support",
       "Paw Rewards Points",
     ],
     notIncluded: [],
