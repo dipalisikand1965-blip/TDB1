@@ -22,7 +22,7 @@ const PaymentSuccess = () => {
   const orderId = searchParams.get('order_id') || '';
   
   const isFounder = planType === 'annual' || planType === 'founder' || planType === 'foundation';
-  const planName = isFounder ? 'Pet Pass Founder' : 'Pet Pass Trial';
+  const planName = isFoundation ? 'Pet Pass Foundation' : 'Pet Pass Trial';
   const duration = isFounder ? '372 days' : '37 days';
 
   // Trigger confetti on mount
