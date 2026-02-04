@@ -886,15 +886,15 @@ const FitPage = () => {
       />
       
       {/* ==================== PRODUCTS SECTION ==================== */}
-      <section id="products" className="py-12 md:py-16 bg-white">
+      <section id="products" className="py-10 sm:py-12 md:py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center justify-between mb-6 sm:mb-8">
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <ShoppingBag className="w-5 h-5 text-teal-600" />
-                <span className="text-sm font-medium text-teal-600 uppercase tracking-wider">Shop</span>
+                <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5 text-teal-600" />
+                <span className="text-xs sm:text-sm font-medium text-teal-600 uppercase tracking-wider">Shop</span>
               </div>
-              <h2 className="text-3xl font-bold text-gray-900">Fitness Gear & Bundles</h2>
+              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Fitness Gear & Bundles</h2>
             </div>
             <Button 
               variant="outline" 
@@ -907,34 +907,34 @@ const FitPage = () => {
           
           {/* Bundles */}
           {bundles.length > 0 && (
-            <div className="mb-10">
-              <h3 className="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
-                <Target className="w-5 h-5 text-teal-500" />
+            <div className="mb-8 sm:mb-10">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-3 sm:mb-4 flex items-center gap-2">
+                <Target className="w-4 h-4 sm:w-5 sm:h-5 text-teal-500" />
                 Value Bundles
               </h3>
-              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {bundles.map((bundle) => (
-                  <Card key={bundle.id} className="p-4 border-2 border-teal-200 bg-gradient-to-br from-teal-50 to-emerald-50 hover:shadow-lg transition-shadow">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+                {bundles.map((bundle, idx) => (
+                  <Card key={bundle.id} className={`animate-scale-in stagger-${Math.min(idx + 1, 3)} p-3 sm:p-4 border-2 border-teal-200 bg-gradient-to-br from-teal-50 to-emerald-50 hover:shadow-lg transition-shadow`}>
                     <div className="flex items-start justify-between mb-2">
-                      <h4 className="font-semibold text-gray-900">{bundle.name}</h4>
+                      <h4 className="font-semibold text-gray-900 text-sm sm:text-base">{bundle.name}</h4>
                       {bundle.is_recommended && (
-                        <Badge className="bg-teal-600 text-white">Recommended</Badge>
+                        <Badge className="bg-teal-600 text-white text-xs">Recommended</Badge>
                       )}
                     </div>
-                    <p className="text-sm text-gray-600 mb-3">{bundle.description}</p>
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="text-xl font-bold text-teal-600">₹{bundle.price?.toLocaleString()}</span>
+                    <p className="text-xs sm:text-sm text-gray-600 mb-3 line-clamp-2">{bundle.description}</p>
+                    <div className="flex items-center gap-2 mb-3 flex-wrap">
+                      <span className="text-lg sm:text-xl font-bold text-teal-600">₹{bundle.price?.toLocaleString()}</span>
                       {bundle.original_price && (
                         <>
-                          <span className="text-sm text-gray-400 line-through">₹{bundle.original_price?.toLocaleString()}</span>
-                          <Badge variant="outline" className="text-teal-600 border-teal-300">
+                          <span className="text-xs sm:text-sm text-gray-400 line-through">₹{bundle.original_price?.toLocaleString()}</span>
+                          <Badge variant="outline" className="text-teal-600 border-teal-300 text-xs">
                             Save ₹{(bundle.original_price - bundle.price)?.toLocaleString()}
                           </Badge>
                         </>
                       )}
                     </div>
                     <Button 
-                      className="w-full bg-teal-600 hover:bg-teal-700"
+                      className="w-full bg-teal-600 hover:bg-teal-700 text-sm"
                       onClick={() => {
                         addToCart({
                           id: bundle.id,
