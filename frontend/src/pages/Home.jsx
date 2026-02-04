@@ -896,6 +896,57 @@ const Home = () => {
       <section className="relative py-20 sm:py-28 bg-gradient-to-b from-slate-950 to-purple-950/20 overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-slate-950 to-transparent" />
         
+        {/* Animated connection lines in background */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {/* Flowing energy lines */}
+          {[...Array(6)].map((_, i) => (
+            <motion.div
+              key={`line-${i}`}
+              className="absolute h-[2px] bg-gradient-to-r from-transparent via-purple-500/40 to-transparent"
+              style={{
+                top: `${20 + i * 15}%`,
+                left: '-10%',
+                width: '120%',
+              }}
+              animate={{
+                x: ['-100%', '100%'],
+                opacity: [0, 0.6, 0],
+              }}
+              transition={{
+                duration: 8 + i * 2,
+                repeat: Infinity,
+                delay: i * 1.5,
+                ease: 'linear',
+              }}
+            />
+          ))}
+          
+          {/* Floating orbs connecting pillars */}
+          {[...Array(8)].map((_, i) => (
+            <motion.div
+              key={`orb-${i}`}
+              className="absolute w-3 h-3 rounded-full bg-gradient-to-r from-purple-400 to-pink-400"
+              style={{
+                left: `${10 + (i * 12)}%`,
+                top: '50%',
+                boxShadow: '0 0 20px rgba(168,85,247,0.6)',
+              }}
+              animate={{
+                y: [0, -100, 100, 0],
+                x: [0, 50, -50, 0],
+                opacity: [0.3, 0.8, 0.8, 0.3],
+                scale: [0.5, 1.2, 1.2, 0.5],
+              }}
+              transition={{
+                duration: 10 + i,
+                repeat: Infinity,
+                delay: i * 0.8,
+                ease: 'easeInOut',
+              }}
+            />
+          ))}
+        </div>
+        
         <div className="relative max-w-6xl mx-auto px-4">
           <div className="text-center mb-16">
             <motion.div
@@ -929,47 +980,99 @@ const Home = () => {
             </motion.p>
           </div>
 
-          {/* Emotional Pillars Grid - Two rows of 7 */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-3 sm:gap-4">
-            {LIFE_PILLARS.map((pillar, idx) => (
-              <motion.div
-                key={pillar.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.05 }}
-                className="group"
-              >
-                <div className="relative p-4 sm:p-5 bg-white/5 rounded-2xl border border-white/10 hover:border-purple-500/50 hover:bg-purple-500/10 transition-all duration-500 text-center h-full group-hover:scale-105 group-hover:shadow-lg group-hover:shadow-purple-500/20">
-                  {/* Icon */}
-                  <span className="text-3xl sm:text-4xl mb-3 block transition-transform duration-300 group-hover:scale-110">{pillar.icon}</span>
-                  
-                  {/* Name */}
-                  <h4 className="text-white font-bold text-sm mb-1">{pillar.name}</h4>
-                  
-                  {/* Emotion (shows on hover) */}
-                  <p className="text-purple-300/80 text-xs leading-snug opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden sm:block">
-                    {pillar.emotion}
-                  </p>
-                  
-                  {/* Description (mobile) */}
-                  <p className="text-white/50 text-xs leading-snug sm:hidden">
-                    {pillar.desc}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
+          {/* Animated Pillars with Connection Effect */}
+          <div className="relative">
+            {/* Central Soul Orb */}
+            <motion.div 
+              className="hidden lg:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-0"
+              initial={{ scale: 0, opacity: 0 }}
+              whileInView={{ scale: 1, opacity: 1 }}
+              viewport={{ once: true }}
+            >
+              <div className="w-24 h-24 rounded-full bg-gradient-to-r from-purple-600/30 to-pink-600/30 blur-2xl" />
+            </motion.div>
+            
+            {/* Pillars in circular/flowing layout on desktop, grid on mobile */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-3 sm:gap-4 relative z-10">
+              {LIFE_PILLARS.map((pillar, idx) => (
+                <motion.div
+                  key={pillar.name}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ 
+                    delay: idx * 0.08,
+                    type: 'spring',
+                    stiffness: 200,
+                  }}
+                  className="group"
+                >
+                  <motion.div 
+                    className="relative p-4 sm:p-5 bg-white/5 rounded-2xl border border-white/10 hover:border-purple-500/50 hover:bg-purple-500/10 transition-all duration-500 text-center h-full"
+                    whileHover={{ 
+                      scale: 1.08,
+                      boxShadow: '0 0 30px rgba(168,85,247,0.4)',
+                    }}
+                  >
+                    {/* Glow effect on hover */}
+                    <motion.div
+                      className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-500/0 via-purple-500/20 to-pink-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    />
+                    
+                    {/* Connection dot */}
+                    <motion.div
+                      className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-purple-400 opacity-0 group-hover:opacity-100"
+                      animate={{ scale: [1, 1.5, 1] }}
+                      transition={{ duration: 1, repeat: Infinity }}
+                    />
+                    
+                    {/* Icon with bounce */}
+                    <motion.span 
+                      className="text-3xl sm:text-4xl mb-3 block"
+                      whileHover={{ 
+                        y: [-5, 0],
+                        transition: { duration: 0.3 }
+                      }}
+                    >
+                      {pillar.icon}
+                    </motion.span>
+                    
+                    {/* Name */}
+                    <h4 className="text-white font-bold text-sm mb-1 relative z-10">{pillar.name}</h4>
+                    
+                    {/* Emotion (shows on hover) */}
+                    <motion.p 
+                      className="text-purple-300/90 text-xs leading-snug hidden sm:block relative z-10"
+                      initial={{ opacity: 0, y: 5 }}
+                      whileHover={{ opacity: 1, y: 0 }}
+                    >
+                      {pillar.emotion}
+                    </motion.p>
+                    
+                    {/* Description (mobile) */}
+                    <p className="text-white/50 text-xs leading-snug sm:hidden relative z-10">
+                      {pillar.desc}
+                    </p>
+                  </motion.div>
+                </motion.div>
+              ))}
+            </div>
           </div>
 
-          {/* Emotional tagline */}
-          <motion.p
-            className="text-center text-white/50 text-sm mt-10 italic"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
+          {/* Connection message */}
+          <motion.div
+            className="text-center mt-12"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            &quot;Even in farewell, we celebrate. Because love never ends.&quot;
-          </motion.p>
+            <p className="text-purple-300/70 text-sm mb-2">
+              ✨ All pillars are connected through Pet Soul™
+            </p>
+            <p className="text-white/50 text-sm italic">
+              &quot;Even in farewell, we celebrate. Because love never ends.&quot;
+            </p>
+          </motion.div>
 
           {/* CTA */}
           <motion.div 
