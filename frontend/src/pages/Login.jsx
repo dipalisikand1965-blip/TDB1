@@ -41,73 +41,84 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex" data-testid="login-page">
-      {/* Left Panel - Hero Image */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-teal-600 to-teal-800">
+    <div className="min-h-screen flex bg-slate-950" data-testid="login-page">
+      {/* Soul Orb Background Effects */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 -left-32 w-96 h-96 bg-gradient-to-tr from-pink-500 to-purple-600 rounded-full blur-[150px] opacity-20 animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gradient-to-tr from-purple-500 to-indigo-600 rounded-full blur-[120px] opacity-15" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-tr from-pink-600/20 to-purple-600/20 rounded-full blur-[200px] opacity-30" />
+      </div>
+
+      {/* Left Panel - Hero Image & Content */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
         {/* Background Image */}
         <img 
-          src="https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1200&q=80"
-          alt="Happy dog"
-          className="absolute inset-0 w-full h-full object-cover opacity-40"
+          src="https://images.unsplash.com/photo-1477936432016-8172ed08637e?w=1200&q=80"
+          alt="Soulful dog portrait"
+          className="absolute inset-0 w-full h-full object-cover"
         />
         
-        {/* Gradient Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-teal-900/90 via-teal-800/50 to-transparent" />
+        {/* Dark Overlay with Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-r from-slate-950 via-slate-950/80 to-slate-950/60" />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-slate-950/50" />
+        
+        {/* Soul Orb Effect on Image */}
+        <div className="absolute top-1/3 left-1/3 w-72 h-72 bg-gradient-to-tr from-pink-500 to-purple-600 rounded-full blur-[100px] opacity-30 mix-blend-soft-light" />
         
         {/* Content */}
-        <div className="relative z-10 flex flex-col justify-between p-12 text-white">
+        <div className="relative z-10 flex flex-col justify-between p-12 text-white h-full">
           {/* Logo */}
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+            <div className="w-12 h-12 bg-gradient-to-br from-pink-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-pink-500/30">
               <PawPrint className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h2 className="text-xl font-bold tracking-tight" style={{ fontFamily: 'Outfit, sans-serif' }}>thedoggycompany</h2>
-              <p className="text-xs text-white/70 tracking-wider">PET CONCIERGE®</p>
+              <h2 className="text-xl font-bold tracking-tight" style={{ fontFamily: 'Manrope, sans-serif' }}>thedoggycompany</h2>
+              <p className="text-xs text-pink-300/70 tracking-wider">PET CONCIERGE®</p>
             </div>
           </div>
           
           {/* Main Content */}
           <div className="max-w-md">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight" style={{ fontFamily: 'Outfit, sans-serif' }}>
-              Your Pet's Life,<br/>
-              <span className="text-teal-200">Perfectly Managed</span>
+            <h1 className="text-4xl md:text-5xl font-bold mb-6 leading-tight" style={{ fontFamily: 'Manrope, sans-serif' }}>
+              Welcome to<br/>
+              <span className="bg-gradient-to-r from-pink-400 to-purple-400 bg-clip-text text-transparent">Pet Soul™</span>
             </h1>
-            <p className="text-lg text-white/80 mb-8 leading-relaxed">
-              Join thousands of pet parents who trust us to keep their furry family members happy, healthy, and thriving.
+            <p className="text-lg text-slate-300 mb-8 leading-relaxed">
+              Your pet's digital guardian. Track health, celebrate moments, and nurture the bond that makes life beautiful.
             </p>
             
             {/* Features */}
             <div className="space-y-4">
               {[
-                { icon: Heart, text: "Personalized care recommendations" },
-                { icon: Shield, text: "24/7 emergency support" },
-                { icon: Sparkles, text: "Exclusive member rewards" }
+                { icon: Heart, text: "Personalized care recommendations", color: "text-pink-400" },
+                { icon: Shield, text: "24/7 emergency support", color: "text-purple-400" },
+                { icon: Sparkles, text: "Exclusive member rewards", color: "text-indigo-400" }
               ].map((feature, i) => (
-                <div key={i} className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-white/10 backdrop-blur-sm rounded-lg flex items-center justify-center">
-                    <feature.icon className="w-5 h-5 text-teal-200" />
+                <div key={i} className="flex items-center gap-3 group">
+                  <div className="w-10 h-10 bg-slate-800/50 backdrop-blur-sm rounded-lg flex items-center justify-center border border-slate-700/50 group-hover:border-pink-500/50 transition-colors">
+                    <feature.icon className={`w-5 h-5 ${feature.color}`} />
                   </div>
-                  <span className="text-white/90">{feature.text}</span>
+                  <span className="text-slate-300 group-hover:text-white transition-colors">{feature.text}</span>
                 </div>
               ))}
             </div>
           </div>
           
           {/* Testimonial Card */}
-          <div className="backdrop-blur-xl bg-white/10 rounded-2xl p-6 border border-white/20 max-w-md">
+          <div className="backdrop-blur-xl bg-slate-900/60 rounded-2xl p-6 border border-white/10 max-w-md shadow-2xl">
             <div className="flex items-start gap-4">
               <img 
                 src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop"
                 alt="Member"
-                className="w-12 h-12 rounded-full object-cover border-2 border-white/30"
+                className="w-12 h-12 rounded-full object-cover border-2 border-pink-500/30"
               />
               <div>
-                <p className="text-white/90 text-sm leading-relaxed mb-3">
-                  "The Doggy Company has transformed how I care for my pets. The personalized recommendations and quick support are amazing!"
+                <p className="text-slate-300 text-sm leading-relaxed mb-3">
+                  "Pet Soul has transformed how I care for my pets. The personalized recommendations and quick support are amazing!"
                 </p>
                 <p className="text-white font-semibold text-sm">Priya Sharma</p>
-                <p className="text-white/60 text-xs">Member since 2024</p>
+                <p className="text-slate-500 text-xs">Member since 2024</p>
               </div>
             </div>
           </div>
@@ -115,36 +126,36 @@ const Login = () => {
       </div>
 
       {/* Right Panel - Login Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 md:p-12 bg-gray-50">
-        <div className="w-full max-w-md">
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 md:p-12 relative">
+        <div className="w-full max-w-md relative z-10">
           {/* Mobile Logo */}
           <div className="lg:hidden flex items-center justify-center gap-3 mb-8">
-            <div className="w-12 h-12 bg-teal-100 rounded-xl flex items-center justify-center">
-              <PawPrint className="w-6 h-6 text-teal-600" />
+            <div className="w-12 h-12 bg-gradient-to-br from-pink-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg shadow-pink-500/30">
+              <PawPrint className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-gray-900" style={{ fontFamily: 'Outfit, sans-serif' }}>thedoggycompany</h2>
-              <p className="text-xs text-gray-500 tracking-wider">PET CONCIERGE®</p>
+              <h2 className="text-xl font-bold text-white" style={{ fontFamily: 'Manrope, sans-serif' }}>thedoggycompany</h2>
+              <p className="text-xs text-pink-300/70 tracking-wider">PET CONCIERGE®</p>
             </div>
           </div>
 
           {/* Welcome */}
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2" style={{ fontFamily: 'Outfit, sans-serif' }}>
+            <h1 className="text-3xl font-bold text-white mb-2" style={{ fontFamily: 'Manrope, sans-serif' }}>
               Welcome Back
             </h1>
-            <p className="text-gray-500">
+            <p className="text-slate-400">
               Sign in to access your pet dashboard
             </p>
           </div>
 
           {/* Login Card */}
-          <div className="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 p-8">
+          <div className="backdrop-blur-xl bg-slate-900/60 rounded-2xl shadow-2xl border border-white/10 p-8">
             {/* Google Login */}
             <Button
               type="button"
               variant="outline"
-              className="w-full h-12 border-gray-200 hover:bg-gray-50 hover:border-gray-300 flex items-center justify-center gap-3 rounded-xl mb-6 transition-all"
+              className="w-full h-12 bg-white hover:bg-slate-100 text-slate-900 font-medium flex items-center justify-center gap-3 rounded-full border-0 shadow-lg hover:shadow-xl transition-all hover:-translate-y-0.5"
               onClick={handleGoogleLogin}
               data-testid="google-login-btn"
             >
@@ -154,32 +165,32 @@ const Login = () => {
                 <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
                 <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
               </svg>
-              <span className="text-gray-700 font-medium">Continue with Google</span>
+              <span>Continue with Google</span>
             </Button>
 
             {/* Divider */}
-            <div className="relative mb-6">
+            <div className="relative my-6">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-100"></div>
+                <div className="w-full border-t border-slate-700/50"></div>
               </div>
               <div className="relative flex justify-center">
-                <span className="px-4 bg-white text-sm text-gray-400">or continue with email</span>
+                <span className="px-4 bg-slate-900/60 text-sm text-slate-500">or continue with email</span>
               </div>
             </div>
 
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-slate-300 mb-2">
                   Email Address
                 </label>
-                <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <div className="relative group">
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-pink-400 transition-colors" />
                   <Input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="pl-12 h-12 bg-gray-50 border-transparent focus:bg-white focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 rounded-xl transition-all"
+                    className="pl-12 h-12 bg-slate-800/50 border-slate-700/50 text-white placeholder:text-slate-500 focus:bg-slate-800 focus:border-pink-500/50 focus:ring-2 focus:ring-pink-500/20 rounded-xl transition-all"
                     placeholder="you@example.com"
                     required
                     data-testid="login-email-input"
@@ -189,21 +200,21 @@ const Login = () => {
 
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-sm font-medium text-gray-700">Password</label>
+                  <label className="text-sm font-medium text-slate-300">Password</label>
                   <Link 
                     to="/member/forgot-password" 
-                    className="text-sm text-teal-600 hover:text-teal-700 font-medium"
+                    className="text-sm text-pink-400 hover:text-pink-300 font-medium transition-colors"
                   >
                     Forgot password?
                   </Link>
                 </div>
-                <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <div className="relative group">
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-pink-400 transition-colors" />
                   <Input
                     type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="pl-12 pr-12 h-12 bg-gray-50 border-transparent focus:bg-white focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 rounded-xl transition-all"
+                    className="pl-12 pr-12 h-12 bg-slate-800/50 border-slate-700/50 text-white placeholder:text-slate-500 focus:bg-slate-800 focus:border-pink-500/50 focus:ring-2 focus:ring-pink-500/20 rounded-xl transition-all"
                     placeholder="Enter your password"
                     required
                     data-testid="login-password-input"
@@ -211,7 +222,7 @@ const Login = () => {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-pink-400 transition-colors"
                     data-testid="toggle-password-visibility"
                   >
                     {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -221,7 +232,7 @@ const Login = () => {
 
               <Button
                 type="submit"
-                className="w-full h-12 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-teal-500/25 transition-all hover:-translate-y-0.5 active:translate-y-0"
+                className="w-full h-12 bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-semibold rounded-full shadow-[0_0_20px_rgba(236,72,153,0.3)] hover:shadow-[0_0_30px_rgba(236,72,153,0.5)] transition-all hover:-translate-y-0.5 active:translate-y-0"
                 disabled={loading}
                 data-testid="login-submit-btn"
               >
@@ -244,23 +255,23 @@ const Login = () => {
           </div>
 
           {/* Sign Up Link */}
-          <p className="mt-8 text-center text-gray-600">
+          <p className="mt-8 text-center text-slate-400">
             New to The Doggy Company?{' '}
             <Link 
-              to="/pet-soul-onboard" 
-              className="text-teal-600 font-semibold hover:text-teal-700 hover:underline"
+              to="/join" 
+              className="text-pink-400 font-semibold hover:text-pink-300 transition-colors"
             >
               Create an account
             </Link>
           </p>
 
           {/* Trust Badges */}
-          <div className="mt-8 flex items-center justify-center gap-6 text-gray-400 text-xs">
-            <div className="flex items-center gap-1">
+          <div className="mt-8 flex items-center justify-center gap-6 text-slate-500 text-xs">
+            <div className="flex items-center gap-1.5">
               <Shield className="w-4 h-4" />
               <span>Secure Login</span>
             </div>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1.5">
               <Lock className="w-4 h-4" />
               <span>256-bit SSL</span>
             </div>
