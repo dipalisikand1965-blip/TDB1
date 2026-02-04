@@ -586,14 +586,24 @@ const MembershipOnboarding = () => {
                       <label className="block text-sm font-medium text-slate-300 mb-1.5">
                         Create Password *
                       </label>
-                      <Input
-                        type="password"
-                        value={parentData.password}
-                        onChange={(e) => setParentData({...parentData, password: e.target.value})}
-                        placeholder="••••••••"
-                        className={`bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-pink-500 ${parentErrors.password ? 'border-red-500' : ''}`}
-                        data-testid="parent-password-input"
-                      />
+                      <div className="relative">
+                        <Input
+                          type={showPassword ? "text" : "password"}
+                          value={parentData.password}
+                          onChange={(e) => setParentData({...parentData, password: e.target.value})}
+                          placeholder="••••••••"
+                          className={`pr-10 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-pink-500 ${parentErrors.password ? 'border-red-500' : ''}`}
+                          data-testid="parent-password-input"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-pink-400 transition-colors"
+                          data-testid="toggle-password"
+                        >
+                          {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                        </button>
+                      </div>
                       {parentErrors.password && <p className="text-red-400 text-xs mt-1">{parentErrors.password}</p>}
                     </div>
                     
@@ -601,14 +611,24 @@ const MembershipOnboarding = () => {
                       <label className="block text-sm font-medium text-slate-300 mb-1.5">
                         Confirm Password *
                       </label>
-                      <Input
-                        type="password"
-                        value={parentData.confirmPassword}
-                        onChange={(e) => setParentData({...parentData, confirmPassword: e.target.value})}
-                        placeholder="••••••••"
-                        className={`bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-pink-500 ${parentErrors.confirmPassword ? 'border-red-500' : ''}`}
-                        data-testid="parent-confirm-password-input"
-                      />
+                      <div className="relative">
+                        <Input
+                          type={showConfirmPassword ? "text" : "password"}
+                          value={parentData.confirmPassword}
+                          onChange={(e) => setParentData({...parentData, confirmPassword: e.target.value})}
+                          placeholder="••••••••"
+                          className={`pr-10 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500 focus:border-pink-500 ${parentErrors.confirmPassword ? 'border-red-500' : ''}`}
+                          data-testid="parent-confirm-password-input"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-pink-400 transition-colors"
+                          data-testid="toggle-confirm-password"
+                        >
+                          {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                        </button>
+                      </div>
                       {parentErrors.confirmPassword && <p className="text-red-400 text-xs mt-1">{parentErrors.confirmPassword}</p>}
                     </div>
                   </div>
