@@ -62,6 +62,8 @@ const MembershipOnboarding = () => {
     pincode: '',
     password: '',
     confirmPassword: '',
+    photo: null, // Pet Parent photo
+    photoPreview: null, // Preview URL
     // New fields
     preferredContact: 'whatsapp', // whatsapp, phone, email
     notifications: {
@@ -74,6 +76,9 @@ const MembershipOnboarding = () => {
     acceptTerms: false,
     acceptPrivacy: false
   });
+  
+  // Photo upload state
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
   
   // Password visibility state
   const [showPassword, setShowPassword] = useState(false);
