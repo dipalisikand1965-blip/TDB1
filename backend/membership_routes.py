@@ -265,8 +265,10 @@ async def create_payment(request: PaymentCreateRequest):
     db = get_db()
     logger = get_logger()
     
-    # Find the existing membership order - check both collections for compatibility
-    membership = await db.membership_orders.find_one({"id": request.order_id})
+    # Find the existing membership order - check both collections and field names for compatibility
+    membership = await db.membership_orders.find_one({"order_id": request.order_id})
+    if not membership:
+        membership = await db.membership_orders.find_one({"id": request.order_id})
     if not membership:
         # Fallback to memberships collection for backward compatibility
         membership = await db.memberships.find_one({"id": request.order_id})
@@ -292,7 +294,7 @@ async def create_payment(request: PaymentCreateRequest):
             
             # Update membership order with razorpay order id
             await db.membership_orders.update_one(
-                {"id": request.order_id},
+                {"order_id": request.order_id},
                 {"$set": {
                     "payment.razorpay_order_id": razorpay_order["id"],
                     "updated_at": datetime.now(timezone.utc).isoformat()
