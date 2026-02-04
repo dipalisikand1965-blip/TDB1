@@ -316,7 +316,18 @@ const MembershipOnboarding = () => {
         window.location.href = data.payment_url;
       } else if (data.order_id) {
         // Navigate to payment page with order details
-        navigate(`/membership/payment?order_id=${data.order_id}&user_id=${data.user_id}`);
+        const petName = petsData[0]?.name || '';
+        const petBreed = petsData[0]?.breed || '';
+        const params = new URLSearchParams({
+          order_id: data.order_id,
+          user_id: data.user_id,
+          plan: planType,
+          name: parentData.name,
+          email: parentData.email,
+          pet: petName,
+          breed: petBreed,
+        });
+        navigate(`/membership/payment?${params.toString()}`);
       } else {
         // If free or already processed, go to my-pets
         navigate('/my-pets');
