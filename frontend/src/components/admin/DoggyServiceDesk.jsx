@@ -3975,6 +3975,16 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                         Delete
                       </button>
                       
+                      {/* Merge Into Button - merge current ticket into another */}
+                      <button
+                        onClick={() => openMergeIntoModal(selectedTicket)}
+                        className="flex items-center gap-1 px-3 py-1.5 text-xs bg-white border border-purple-200 text-purple-600 rounded-full hover:bg-purple-50 hover:border-purple-300"
+                        title="Merge this ticket into another ticket"
+                      >
+                        <Copy className="w-3.5 h-3.5" />
+                        Merge Into...
+                      </button>
+                      
                       {/* Merge Button - show when 2+ tickets selected */}
                       {selectedTicketIds.length >= 2 && (
                         <button
