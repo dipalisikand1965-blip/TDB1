@@ -886,6 +886,79 @@ const Home = () => {
         </div>
       </section>
 
+      {/* ========== 14 LIFE PILLARS - Complete Pet Care Ecosystem ========== */}
+      <section className="relative py-20 sm:py-28 bg-gradient-to-b from-slate-950 to-purple-950/20 overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-slate-950 to-transparent" />
+        
+        <div className="relative max-w-6xl mx-auto px-4">
+          <div className="text-center mb-12">
+            <motion.div
+              className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/20 text-purple-300 rounded-full text-sm font-medium mb-6"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+            >
+              <Sparkles className="w-4 h-4" />
+              14 Life Pillars Unlocked
+            </motion.div>
+            <motion.h2
+              className="text-3xl sm:text-4xl font-bold text-white mb-4"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              Your Pet&apos;s Entire Life
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
+                Covered
+              </span>
+            </motion.h2>
+            <motion.p
+              className="text-white/60 text-lg max-w-xl mx-auto"
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: true }}
+            >
+              From celebrations to emergencies — everything your pet needs, in one place.
+            </motion.p>
+          </div>
+
+          {/* Pillars Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-4">
+            {LIFE_PILLARS.map((pillar, idx) => (
+              <motion.div
+                key={pillar.name}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.05 }}
+                className="group"
+              >
+                <div className="relative p-4 bg-white/5 rounded-2xl border border-white/10 hover:border-purple-500/50 hover:bg-white/10 transition-all duration-300 text-center h-full">
+                  <span className="text-3xl mb-2 block">{pillar.icon}</span>
+                  <h4 className="text-white font-semibold text-sm mb-1">{pillar.name}</h4>
+                  <p className="text-white/50 text-xs leading-snug hidden sm:block">{pillar.desc}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* CTA */}
+          <motion.div 
+            className="text-center mt-10"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+          >
+            <a href="https://thedoggycompany.in/membership" target="_blank" rel="noopener noreferrer">
+              <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 px-8 py-6 rounded-full text-lg">
+                Unlock All Pillars
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
+            </a>
+          </motion.div>
+        </div>
+      </section>
+
       {/* ========== THE BOND - Magical Mobile-First Gallery ========== */}
       <section className="relative py-16 sm:py-24 lg:py-32 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 overflow-hidden">
         {/* Ambient background glow */}
