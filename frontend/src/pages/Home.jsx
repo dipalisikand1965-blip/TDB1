@@ -610,8 +610,19 @@ const Home = () => {
         ref={heroRef}
         className="relative min-h-screen flex items-center justify-center overflow-hidden"
       >
-        {/* Rotating Photo Background - Emotional, Cinematic - CMS Driven */}
+        {/* AUTO-PLAYING VIDEO BACKGROUND - The emotional hook */}
         <div className="absolute inset-0 z-0">
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="absolute inset-0 w-full h-full object-cover"
+            poster={heroImages[0]}
+          >
+            <source src="/videos/brand_story/01_eyes_bright.mp4" type="video/mp4" />
+          </video>
+          {/* Fallback to rotating images if video fails */}
           <AnimatePresence mode="sync">
             {heroImages.map((img, idx) => (
               idx === currentHeroImage && (
@@ -621,7 +632,7 @@ const Home = () => {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 1.5 }}
-                  className="absolute inset-0"
+                  className="absolute inset-0 z-[-1]"
                 >
                   <img 
                     src={img} 
@@ -633,8 +644,8 @@ const Home = () => {
             ))}
           </AnimatePresence>
           {/* Cinematic overlay - creates the emotional depth */}
-          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/70 via-purple-950/60 to-slate-950/90" />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/50 via-transparent to-slate-950/50" />
+          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-purple-950/70 to-slate-950/95" />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/60 via-transparent to-slate-950/60" />
         </div>
         
         {/* Animated Background - Deep, soulful */}
@@ -690,58 +701,19 @@ const Home = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1 }}
           >
-            <p className="text-purple-300/80 text-lg sm:text-xl mb-4 tracking-wide">
+            <p className="text-purple-300/90 text-lg sm:text-xl md:text-2xl mb-6 tracking-wide font-light">
               Look into their eyes. You already know.
             </p>
           </motion.div>
 
-          {/* THE SOUL ORB - Central visual */}
+          {/* THE LIVING SOUL ORB - Now it BREATHES */}
           <motion.div
-            className="relative w-40 h-40 sm:w-56 sm:h-56 mx-auto mb-8"
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 1.2, delay: 0.5 }}
+            className="mb-8"
           >
-            {/* Outer glow rings */}
-            <motion.div
-              className="absolute inset-0 rounded-full"
-              style={{
-                background: 'radial-gradient(circle, rgba(168,85,247,0.4) 0%, transparent 70%)',
-              }}
-              animate={{
-                scale: [1, 1.3, 1],
-                opacity: [0.5, 0.8, 0.5],
-              }}
-              transition={{ duration: 3, repeat: Infinity }}
-            />
-            <motion.div
-              className="absolute inset-4 rounded-full"
-              style={{
-                background: 'radial-gradient(circle, rgba(236,72,153,0.3) 0%, transparent 70%)',
-              }}
-              animate={{
-                scale: [1.2, 1, 1.2],
-                opacity: [0.4, 0.7, 0.4],
-              }}
-              transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
-            />
-            
-            {/* Core orb */}
-            <motion.div
-              className="absolute inset-8 sm:inset-12 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-purple-600 shadow-2xl"
-              style={{
-                boxShadow: '0 0 60px rgba(168,85,247,0.6), 0 0 100px rgba(236,72,153,0.4), inset 0 0 30px rgba(255,255,255,0.2)',
-              }}
-              animate={{
-                scale: soulPulse ? 1.05 : 1,
-              }}
-              transition={{ duration: 1 }}
-            >
-              {/* Inner sparkle */}
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Sparkles className="w-8 h-8 sm:w-12 sm:h-12 text-white/80" />
-              </div>
-            </motion.div>
+            <LivingSoulOrb size="lg" className="mx-auto" />
           </motion.div>
 
           {/* Main Headline */}
@@ -766,13 +738,13 @@ const Home = () => {
 
           {/* Emotional Subtext */}
           <motion.p
-            className="text-lg sm:text-xl md:text-2xl text-white/60 max-w-2xl mx-auto mb-10 leading-relaxed"
+            className="text-lg sm:text-xl md:text-2xl text-white/70 max-w-2xl mx-auto mb-10 leading-relaxed"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 1.3 }}
           >
             We don&apos;t just manage pet services.<br className="hidden sm:block" />
-            <span className="text-white/90">We nurture the soul of your companion.</span>
+            <span className="text-white/90 font-medium">We nurture the soul of your companion.</span>
           </motion.p>
 
           {/* CTA - Single, powerful */}
