@@ -371,9 +371,9 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
           </div>
         )}
         
-        {/* Story Text - BOTTOM positioned, above controls */}
+        {/* Story Text - BOTTOM positioned, above mobile nav */}
         {!isEnding && (
-          <div className="absolute bottom-24 sm:bottom-28 md:bottom-24 left-0 right-0 z-20 pointer-events-none">
+          <div className="absolute bottom-36 sm:bottom-28 md:bottom-24 left-0 right-0 z-20 pointer-events-none">
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentClip}
