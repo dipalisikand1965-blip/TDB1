@@ -1030,10 +1030,20 @@ const FinanceManager = () => {
               className="bg-slate-800 rounded-2xl p-6 max-w-lg w-full max-h-[90vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
-              <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                <Banknote className="w-5 h-5 text-emerald-400" />
-                Record Offline Payment
-              </h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                  <Banknote className="w-5 h-5 text-emerald-400" />
+                  Record Payment
+                </h3>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowNewPaymentModal(false)}
+                  className="text-slate-400 hover:text-white"
+                >
+                  <X className="w-5 h-5" />
+                </Button>
+              </div>
               
               <div className="space-y-4">
                 <div>
@@ -1058,6 +1068,7 @@ const FinanceManager = () => {
                       <option value="product">Product</option>
                       <option value="membership">Membership</option>
                       <option value="quote">Quote</option>
+                      <option value="others">Others</option>
                     </select>
                   </div>
                   
@@ -1068,10 +1079,15 @@ const FinanceManager = () => {
                       onChange={(e) => setNewPayment(prev => ({ ...prev, payment_method: e.target.value }))}
                       className="w-full bg-slate-900/50 border border-slate-600 rounded-lg px-3 py-2 text-white"
                     >
-                      <option value="offline">Offline</option>
+                      <option value="razorpay">Razorpay</option>
+                      <option value="credit_card">Credit Card</option>
+                      <option value="debit_card">Debit Card</option>
+                      <option value="upi">UPI</option>
+                      <option value="netbanking">Net Banking</option>
                       <option value="bank_transfer">Bank Transfer</option>
                       <option value="cash">Cash</option>
-                      <option value="upi">UPI (Manual)</option>
+                      <option value="wallet">Wallet</option>
+                      <option value="others">Others</option>
                     </select>
                   </div>
                 </div>
