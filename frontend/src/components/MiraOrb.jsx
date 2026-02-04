@@ -280,7 +280,7 @@ const MiraOrb = ({
         animate={state}
       />
       
-      {/* Main orb button */}
+      {/* Main orb button - the soul vessel */}
       <motion.button
         onClick={(e) => {
           // Haptic feedback for mobile devices
@@ -294,11 +294,24 @@ const MiraOrb = ({
           width: config.orb,
           height: config.orb,
           background: `linear-gradient(135deg, ${MIRA_COLORS.primary} 0%, ${MIRA_COLORS.secondary} 100%)`,
-          boxShadow: `0 0 20px ${getStateColor()}60, inset 0 0 20px rgba(255,255,255,0.2)`,
+          boxShadow: `
+            0 0 30px ${getStateColor()}70, 
+            0 0 60px ${MIRA_COLORS.primary}40,
+            0 0 80px ${MIRA_COLORS.secondary}20,
+            inset 0 0 20px rgba(255,255,255,0.3)
+          `,
         }}
         variants={orbVariants}
         animate={state}
-        whileHover={{ scale: 1.1 }}
+        whileHover={{ 
+          scale: 1.15,
+          boxShadow: `
+            0 0 40px ${getStateColor()}80, 
+            0 0 80px ${MIRA_COLORS.primary}50,
+            0 0 100px ${MIRA_COLORS.secondary}30,
+            inset 0 0 25px rgba(255,255,255,0.4)
+          `,
+        }}
         whileTap={{ scale: 0.95 }}
         data-testid="mira-orb"
       >
