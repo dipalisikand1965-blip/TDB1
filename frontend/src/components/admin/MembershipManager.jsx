@@ -146,7 +146,10 @@ const MembershipManager = () => {
     try {
       const response = await fetch(`${API_URL}/api/admin/customers/${memberId}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Basic ${getAdminAuth()}`
+        },
         body: JSON.stringify({ membership_tier: newTier })
       });
       if (response.ok) {
@@ -161,7 +164,10 @@ const MembershipManager = () => {
     try {
       const response = await fetch(`${API_URL}/api/admin/members/${memberId}/points`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Basic ${getAdminAuth()}`
+        },
         body: JSON.stringify({ points, reason })
       });
       if (response.ok) {
@@ -177,7 +183,10 @@ const MembershipManager = () => {
     try {
       const response = await fetch(`${API_URL}/api/admin/members/${memberId}/gift`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Basic ${getAdminAuth()}`
+        },
         body: JSON.stringify({ duration_months: duration, tier })
       });
       if (response.ok) {
@@ -193,7 +202,10 @@ const MembershipManager = () => {
     try {
       const response = await fetch(`${API_URL}/api/admin/customers/${memberId}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Basic ${getAdminAuth()}`
+        },
         body: JSON.stringify(updates)
       });
       if (response.ok) {
