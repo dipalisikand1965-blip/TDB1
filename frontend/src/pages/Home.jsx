@@ -202,100 +202,116 @@ const BRAND_STORY_CLIPS = [
 const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
   const [currentClip, setCurrentClip] = useState(0);
   const [isEnding, setIsEnding] = useState(false);
+  const [isReady, setIsReady] = useState(false);
   const videoRef = useRef(null);
   const audioRef = useRef(null);
+  const timerRef = useRef(null);
   
-  // Auto-advance when audio ends (for better sync) or use duration as fallback
+  const clip = BRAND_STORY_CLIPS[currentClip];
+  
+  // Preload and sync video + audio together
   useEffect(() => {
-    const audio = audioRef.current;
+    if (isEnding) return;
     
-    const handleAudioEnd = () => {
-      // Audio finished, advance to next clip
-      if (currentClip < BRAND_STORY_CLIPS.length - 1) {
-        setCurrentClip(prev => prev + 1);
-      } else {
-        // Show ending screen before closing
-        setIsEnding(true);
-        setTimeout(() => {
-          setIsEnding(false);
-          setCurrentClip(0);
-        }, 3000);
+    const video = videoRef.current;
+    const audio = audioRef.current;
+    if (!video || !audio) return;
+    
+    // Reset ready state
+    setIsReady(false);
+    
+    // Clear any existing timer
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+    
+    // Load both media
+    video.src = clip.src;
+    audio.src = clip.audioSrc;
+    
+    let videoReady = false;
+    let audioReady = false;
+    
+    const tryPlayBoth = async () => {
+      if (!videoReady || !audioReady) return;
+      
+      setIsReady(true);
+      
+      try {
+        // Reset both to start
+        video.currentTime = 0;
+        audio.currentTime = 0;
+        
+        // Play video (always muted, we use separate audio)
+        video.muted = true;
+        await video.play();
+        
+        // Play audio if not muted
+        if (!videoMuted) {
+          await audio.play();
+        }
+        
+        // Get audio duration for precise timing
+        const audioDuration = audio.duration * 1000; // Convert to ms
+        const clipDuration = audioDuration > 0 ? audioDuration + 500 : clip.duration; // Add 500ms buffer
+        
+        // Advance to next clip when audio finishes
+        timerRef.current = setTimeout(() => {
+          if (currentClip < BRAND_STORY_CLIPS.length - 1) {
+            setCurrentClip(prev => prev + 1);
+          } else {
+            // Final clip done - show ending
+            setIsEnding(true);
+            setTimeout(() => {
+              onClose(); // Close modal after ending
+            }, 3000);
+          }
+        }, clipDuration);
+        
+      } catch (e) {
+        console.log('Playback error:', e.message);
       }
     };
     
-    // Listen for audio end if not muted
-    if (audio && !videoMuted) {
-      audio.addEventListener('ended', handleAudioEnd);
-    }
+    // Video ready handler
+    video.oncanplaythrough = () => {
+      videoReady = true;
+      tryPlayBoth();
+    };
     
-    // Fallback timer (if muted or audio fails)
-    const fallbackTimer = setTimeout(() => {
-      if (videoMuted) {
-        handleAudioEnd();
-      }
-    }, BRAND_STORY_CLIPS[currentClip].duration);
+    // Audio ready handler  
+    audio.oncanplaythrough = () => {
+      audioReady = true;
+      tryPlayBoth();
+    };
+    
+    // Start loading
+    video.load();
+    audio.load();
     
     return () => {
-      if (audio) {
-        audio.removeEventListener('ended', handleAudioEnd);
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
       }
-      clearTimeout(fallbackTimer);
+      video.oncanplaythrough = null;
+      audio.oncanplaythrough = null;
     };
-  }, [currentClip, videoMuted]);
+  }, [currentClip, isEnding, videoMuted, clip, onClose]);
   
-  // Play video and audio when clip changes
-  useEffect(() => {
-    if (!isEnding) {
-      const clip = BRAND_STORY_CLIPS[currentClip];
-      
-      // Play video first, then sync audio
-      if (videoRef.current) {
-        videoRef.current.src = clip.src;
-        videoRef.current.load();
-        
-        const playMedia = async () => {
-          try {
-            // Start video first
-            await videoRef.current?.play();
-            
-            // Small delay to ensure video is playing, then start audio
-            if (audioRef.current && !videoMuted) {
-              // Load audio source
-              audioRef.current.src = clip.audioSrc;
-              audioRef.current.load();
-              
-              // Wait for audio to be ready
-              audioRef.current.oncanplaythrough = async () => {
-                try {
-                  audioRef.current.currentTime = 0;
-                  await audioRef.current.play();
-                } catch (e) {
-                  console.log('Audio play failed:', e.message);
-                }
-              };
-            }
-          } catch (e) {
-            console.log('Video play failed:', e.message);
-          }
-        };
-        
-        playMedia();
-      }
-    }
-  }, [currentClip, isEnding, videoMuted]);
-  
-  // Handle mute toggle - stop/start audio
+  // Handle mute toggle
   useEffect(() => {
     if (audioRef.current) {
       if (videoMuted) {
         audioRef.current.pause();
-      } else if (!isEnding) {
+      } else if (isReady && !isEnding) {
+        // Sync audio to video position when unmuting
+        if (videoRef.current) {
+          audioRef.current.currentTime = videoRef.current.currentTime;
+        }
         audioRef.current.play().catch(() => {});
       }
     }
-  }, [videoMuted, isEnding]);
-  
-  const clip = BRAND_STORY_CLIPS[currentClip];
+  }, [videoMuted, isReady, isEnding]);
   
   return (
     <motion.div
