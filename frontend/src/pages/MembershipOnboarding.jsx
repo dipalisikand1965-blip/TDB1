@@ -1495,7 +1495,7 @@ const MembershipOnboarding = () => {
                         </div>
                       </div>
                       <p className="text-emerald-400 text-xs mt-1 font-semibold">Save ₹989/year vs monthly</p>
-                      {pricing.isFounder && (
+                      {pricing.isFoundation && (
                         <div className="mt-2 flex items-center gap-1 text-pink-400 text-sm">
                           <Check className="w-4 h-4" /> Selected
                         </div>
