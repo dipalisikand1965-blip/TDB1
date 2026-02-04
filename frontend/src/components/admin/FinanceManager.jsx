@@ -218,14 +218,10 @@ const FinanceManager = () => {
   // Process refund
   const handleRefund = async (paymentId, amount, reason) => {
     try {
-      const adminUsername = localStorage.getItem('adminUsername') || 'aditya';
-      const adminPassword = localStorage.getItem('adminPassword') || 'lola4304';
-      const basicAuth = btoa(`${adminUsername}:${adminPassword}`);
-      
       const response = await fetch(`${getApiUrl()}/api/admin/finance/payments/${paymentId}/refund`, {
         method: 'POST',
         headers: {
-          'Authorization': `Basic ${basicAuth}`,
+          'Authorization': getAuthHeader(),
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ amount, reason })
@@ -234,9 +230,85 @@ const FinanceManager = () => {
       if (response.ok) {
         fetchPayments();
         setSelectedPayment(null);
+      } else {
+        const errData = await response.json().catch(() => ({}));
+        alert(errData.detail || 'Failed to process refund');
       }
-    } catch (error) {
-      console.error('Failed to process refund:', error);
+    } catch (err) {
+      console.error('Failed to process refund:', err);
+      alert('Network error');
+    }
+  };
+
+  // Import CSV
+  const handleImportCSV = async (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    
+    setImporting(true);
+    try {
+      const text = await file.text();
+      const lines = text.split('\n').filter(line => line.trim());
+      const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+      
+      // Expected headers: member_email, type, amount, payment_method, reference_id, notes, discount_amount
+      const emailIdx = headers.findIndex(h => h.includes('email'));
+      const typeIdx = headers.findIndex(h => h.includes('type'));
+      const amountIdx = headers.findIndex(h => h.includes('amount') && !h.includes('discount'));
+      const methodIdx = headers.findIndex(h => h.includes('method'));
+      const refIdx = headers.findIndex(h => h.includes('reference'));
+      const notesIdx = headers.findIndex(h => h.includes('notes'));
+      const discountIdx = headers.findIndex(h => h.includes('discount'));
+      
+      let imported = 0;
+      let failed = 0;
+      
+      for (let i = 1; i < lines.length; i++) {
+        const values = lines[i].split(',').map(v => v.trim().replace(/^"|"$/g, ''));
+        
+        const payment = {
+          member_email: values[emailIdx] || '',
+          type: values[typeIdx] || 'service',
+          amount: parseFloat(values[amountIdx]) || 0,
+          payment_method: values[methodIdx] || 'offline',
+          reference_id: values[refIdx] || '',
+          notes: values[notesIdx] || `Imported from CSV row ${i + 1}`,
+          discount_amount: parseFloat(values[discountIdx]) || 0,
+          paw_points_used: 0
+        };
+        
+        if (payment.member_email && payment.amount > 0) {
+          try {
+            const response = await fetch(`${getApiUrl()}/api/admin/finance/payments/offline`, {
+              method: 'POST',
+              headers: {
+                'Authorization': getAuthHeader(),
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(payment)
+            });
+            
+            if (response.ok) {
+              imported++;
+            } else {
+              failed++;
+            }
+          } catch {
+            failed++;
+          }
+        }
+      }
+      
+      alert(`Import complete!\n✅ Imported: ${imported}\n❌ Failed: ${failed}`);
+      fetchPayments();
+    } catch (err) {
+      console.error('Import error:', err);
+      alert('Failed to parse CSV file');
+    } finally {
+      setImporting(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 
