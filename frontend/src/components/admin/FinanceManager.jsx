@@ -414,6 +414,17 @@ const FinanceManager = () => {
         </div>
       </div>
 
+      {/* Error Banner */}
+      {error && (
+        <div className="bg-red-500/20 border border-red-500/30 rounded-xl p-4 flex items-center gap-3">
+          <AlertTriangle className="w-5 h-5 text-red-400" />
+          <p className="text-red-400">{error}</p>
+          <Button variant="ghost" size="sm" onClick={() => setError(null)} className="ml-auto text-red-400">
+            <X className="w-4 h-4" />
+          </Button>
+        </div>
+      )}
+
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
         <motion.div
