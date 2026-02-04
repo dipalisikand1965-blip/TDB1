@@ -56,7 +56,8 @@ const TYPE_COLORS = {
   product: 'bg-gradient-to-r from-orange-500 to-amber-500',
   service: 'bg-gradient-to-r from-blue-500 to-cyan-500',
   refund: 'bg-gradient-to-r from-purple-500 to-indigo-500',
-  quote: 'bg-gradient-to-r from-emerald-500 to-teal-500'
+  quote: 'bg-gradient-to-r from-emerald-500 to-teal-500',
+  others: 'bg-gradient-to-r from-slate-500 to-gray-500'
 };
 
 const FinanceManager = () => {
