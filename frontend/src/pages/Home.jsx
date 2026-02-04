@@ -827,7 +827,10 @@ const Home = () => {
             
             {/* Stunning Video Play Button */}
             <motion.button
-              onClick={() => setShowVideo(true)}
+              onClick={() => {
+                setVideoMuted(false); // Unmute on user click (allowed by browser)
+                setShowVideo(true);
+              }}
               className="group flex items-center gap-3 px-4 py-2"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
