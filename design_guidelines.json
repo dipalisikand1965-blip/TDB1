@@ -1,126 +1,159 @@
 {
   "design_system": {
     "identity": {
-      "name": "Pet Life OS",
-      "tone": "Premium, Soulful, Tech-forward, Trustworthy",
-      "theme_mode": "dark"
-    },
-    "typography": {
-      "font_family": {
-        "headings": "Manrope, sans-serif",
-        "body": "Inter, sans-serif",
-        "special": "Syne, sans-serif"
-      },
-      "scale": {
-        "h1": "text-4xl md:text-5xl font-bold tracking-tight",
-        "h2": "text-3xl font-bold tracking-tight",
-        "h3": "text-2xl font-semibold",
-        "body": "text-base leading-relaxed",
-        "small": "text-sm text-slate-400"
-      }
+      "name": "The Doggy Company - Premium Dark",
+      "tone": "Premium, Tech-forward, Emotional, Gamified",
+      "archetype": "Luxury & Electric (Archetype 5/7 Hybrid)"
     },
     "colors": {
       "background": {
         "page": "bg-slate-950",
         "card": "bg-slate-900/60",
-        "input": "bg-slate-800/50"
+        "card_hover": "hover:bg-slate-800/60",
+        "overlay": "bg-black/50"
       },
       "text": {
         "primary": "text-white",
         "secondary": "text-slate-400",
-        "accent": "text-pink-500"
+        "tertiary": "text-slate-500",
+        "accent": "text-purple-400"
       },
-      "border": {
-        "subtle": "border-white/10",
-        "focus": "ring-pink-500/50"
+      "borders": {
+        "default": "border-white/10",
+        "active": "border-purple-500/50"
       },
       "gradients": {
-        "primary": "bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500",
-        "soul_orb": "bg-gradient-to-tr from-pink-500 to-purple-600",
-        "glass": "bg-white/5 backdrop-blur-xl"
+        "primary": "bg-gradient-to-r from-purple-600 to-pink-600",
+        "soul": "bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600",
+        "glass": "bg-gradient-to-b from-white/10 to-white/5"
+      }
+    },
+    "typography": {
+      "font_family": "Manrope, sans-serif",
+      "headings": "font-bold tracking-tight text-white",
+      "body": "text-slate-300 leading-relaxed"
+    },
+    "effects": {
+      "glassmorphism": {
+        "base": "backdrop-blur-xl bg-slate-900/60 border border-white/10 shadow-2xl",
+        "heavy": "backdrop-blur-2xl bg-slate-950/80 border border-white/5",
+        "light": "backdrop-blur-md bg-white/5 border border-white/10"
+      },
+      "shadows": {
+        "glow": "shadow-[0_0_20px_rgba(168,85,247,0.2)]",
+        "card": "shadow-xl shadow-black/20"
+      },
+      "animation": {
+        "hover": "transition-all duration-300 ease-out hover:scale-[1.02]",
+        "pulse_glow": "animate-pulse-slow"
       }
     },
     "layout": {
-      "structure": "Split Screen (Desktop) / Stacked (Mobile)",
-      "grid": "grid grid-cols-1 lg:grid-cols-2 h-screen w-full overflow-hidden",
+      "grid": "grid grid-cols-1 md:grid-cols-12 gap-6",
       "spacing": {
-        "container": "p-6 md:p-12 lg:p-24",
-        "gap": "gap-6"
+        "section": "py-8 md:py-12",
+        "container": "px-4 md:px-8 lg:px-12"
       }
-    },
-    "components": {
-      "Card": {
-        "path": "/app/frontend/src/components/ui/card.jsx",
-        "style": "bg-slate-900/60 backdrop-blur-xl border-white/10 shadow-2xl"
-      },
-      "Input": {
-        "path": "/app/frontend/src/components/ui/input.jsx",
-        "style": "bg-slate-950/50 border-slate-800 text-white placeholder:text-slate-500 focus:border-pink-500/50 focus:ring-pink-500/20 h-12"
-      },
-      "Button": {
-        "path": "/app/frontend/src/components/ui/button.jsx",
-        "variants": {
-          "primary": "bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-500 hover:to-purple-500 text-white font-semibold h-12 rounded-full shadow-[0_0_20px_rgba(236,72,153,0.3)] hover:shadow-[0_0_30px_rgba(236,72,153,0.5)] transition-all duration-300",
-          "social": "bg-white text-slate-900 hover:bg-slate-100 font-medium h-12 rounded-full border border-slate-200",
-          "ghost": "text-slate-400 hover:text-white hover:bg-white/5"
-        }
-      },
-      "Label": {
-        "path": "/app/frontend/src/components/ui/label.jsx",
-        "style": "text-slate-300 font-medium"
-      },
-      "Separator": {
-        "path": "/app/frontend/src/components/ui/separator.jsx",
-        "style": "bg-slate-800"
-      }
-    },
-    "visual_enhancers": {
-      "soul_orb": {
-        "description": "A glowing, floating gradient orb that represents the pet's soul/aura.",
-        "css_classes": "absolute w-96 h-96 rounded-full bg-gradient-to-tr from-pink-500 to-purple-600 blur-[100px] opacity-20 animate-pulse-slow pointer-events-none"
-      },
-      "glassmorphism": {
-        "description": "Frosted glass effect for cards and overlays.",
-        "css_classes": "backdrop-blur-xl bg-slate-900/70 border border-white/10 shadow-2xl"
-      }
-    },
-    "assets": {
-      "images": [
+    }
+  },
+  "components": {
+    "MemberDashboard": {
+      "path": "/app/frontend/src/pages/MemberDashboard.jsx",
+      "instructions": "Redesign the entire dashboard to match the premium dark theme. Replace all light mode classes with the defined dark mode system.",
+      "changes": [
         {
-          "category": "hero",
-          "url": "https://images.unsplash.com/photo-1477936432016-8172ed08637e?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njd8MHwxfHNlYXJjaHwzfHxkb2clMjBwb3J0cmFpdCUyMHN0dWRpbyUyMGxpZ2h0aW5nJTIwZGFyayUyMGJhY2tncm91bmQlMjBoaWdoJTIwcXVhbGl0eXxlbnwwfHx8fDE3NzAyMDA3Nzh8MA&ixlib=rb-4.1.0&q=85",
-          "description": "Soulful black dog portrait on dark background",
-          "placement": "Left panel background or hero image"
+          "selector": "main_container",
+          "current": "bg-[#FAFAF9]",
+          "new": "bg-slate-950 min-h-screen text-slate-200"
+        },
+        {
+          "selector": "header_user_card",
+          "current": "bg-white shadow-lg",
+          "new": "bg-slate-900/50 backdrop-blur-xl border border-white/10 shadow-2xl shadow-purple-900/20"
+        },
+        {
+          "selector": "tabs_list",
+          "current": "bg-white/70 border-white/20",
+          "new": "bg-slate-900/80 border-white/5 text-slate-400"
+        },
+        {
+          "selector": "tab_trigger",
+          "current": "data-[state=active]:bg-gradient... text-gray-600",
+          "new": "data-[state=active]:bg-purple-600 data-[state=active]:text-white text-slate-400 hover:text-white hover:bg-white/5"
+        },
+        {
+          "selector": "soul_score_card",
+          "current": "bg-white/10 (on gradient)",
+          "new": "bg-black/20 backdrop-blur-md border border-white/10 hover:bg-black/30"
         }
-      ],
-      "icons": {
-        "library": "lucide-react",
-        "required": ["Mail", "Lock", "Eye", "EyeOff", "Chrome", "ArrowRight", "PawPrint"]
+      ]
+    },
+    "GamificationBanner": {
+      "path": "/app/frontend/src/components/dashboard/GamificationBanner.jsx",
+      "instructions": "Update the banner to fit the dark theme. Ensure the 'white' parts are now semi-transparent dark glass.",
+      "changes": [
+        {
+          "selector": "card_base",
+          "current": "bg-white",
+          "new": "bg-slate-900/60 backdrop-blur-xl border border-white/10"
+        },
+        {
+          "selector": "progress_track",
+          "current": "bg-white/20",
+          "new": "bg-slate-800/50"
+        },
+        {
+          "selector": "badge_card",
+          "current": "bg-gray-50",
+          "new": "bg-slate-800/50 border border-white/5"
+        }
+      ]
+    },
+    "PetSoulScore": {
+      "path": "/app/frontend/src/components/PetSoulScore.jsx",
+      "instructions": "Update SVG rings for dark mode contrast.",
+      "changes": [
+        {
+          "selector": "background_circle",
+          "current": "stroke='#E5E7EB' fill='white'",
+          "new": "stroke='#334155' fill='transparent'"
+        },
+        {
+          "selector": "text",
+          "current": "text-gray-800",
+          "new": "text-white"
+        }
+      ]
+    }
+  },
+  "assets": {
+    "images": [
+      {
+        "category": "pet_avatar_main",
+        "url": "https://images.unsplash.com/photo-1457144759132-40d119c2f120?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA3MDB8MHwxfHNlYXJjaHwzfHxoYXBweSUyMGRvZyUyMHBvcnRyYWl0JTIwc3R1ZGlvJTIwbGlnaHRpbmd8ZW58MHx8fHwxNzcwMjAxODg1fDA&ixlib=rb-4.1.0&q=85",
+        "description": "Golden Retriever studio portrait - Use for main pet avatar example"
+      },
+      {
+        "category": "pet_avatar_secondary",
+        "url": "https://images.unsplash.com/photo-1736196674354-b5e918a64644?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA3MDB8MHwxfHNlYXJjaHwyfHxoYXBweSUyMGRvZyUyMHBvcnRyYWl0JTIwc3R1ZGlvJTIwbGlnaHRpbmd8ZW58MHx8fHwxNzcwMjAxODg1fDA&ixlib=rb-4.1.0&q=85",
+        "description": "White dog on black background - Use for secondary pet"
+      },
+      {
+        "category": "user_avatar",
+        "url": "https://images.unsplash.com/photo-1766211698040-d473603745fc?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2Njl8MHwxfHNlYXJjaHwxfHxkb2clMjBvd25lciUyMGxpZmVzdHlsZSUyMHByZW1pdW18ZW58MHx8fHwxNzcwMjAxODg4fDA&ixlib=rb-4.1.0&q=85",
+        "description": "Premium lifestyle shot - Use for user profile if needed"
       }
-    },
-    "accessibility": {
-      "contrast": "Ensure text is at least slate-400 on dark backgrounds. Important text must be white.",
-      "focus_states": "Visible pink/purple ring on focus.",
-      "labels": "All inputs must have visible labels or aria-labels."
-    },
-    "instructions_to_main_agent": [
-      "Redesign /login page to match the 'Premium Dark' aesthetic.",
-      "Use a split-screen layout: Left side for emotional imagery (Soul Orb + Dog), Right side for the login form.",
-      "Implement the 'Soul Orb' visual: a large, blurred gradient circle floating behind the content to give a 'living' feel.",
-      "Use the provided image URL for the hero section.",
-      "Customize Shadcn components (Card, Input, Button) with the specified Tailwind classes to achieve the glassmorphism look.",
-      "Ensure the 'Continue with Google' button is prominent but distinct from the primary action.",
-      "Add micro-interactions: Inputs should glow slightly on focus; buttons should have a subtle lift and glow on hover.",
-      "Maintain all existing functionality: Email/Password login, Google auth, Forgot Password link, Create Account link.",
-      "Use 'Manrope' for headings and 'Inter' for body text.",
-      "Ensure mobile responsiveness: Stack the layout, with the image becoming a header or subtle background."
     ],
-    "universal_guidelines": [
-      "Do not use generic centered layouts. Use asymmetry where possible.",
-      "Use 2-3x more spacing than typical designs.",
-      "Every interaction needs micro-animations.",
-      "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients.",
-      "Create depth through layered design elements with z-index hierarchy."
-    ]
-  }
+    "icons": "Use Lucide React icons (already installed). Prefer thin strokes (1.5px) for premium feel."
+  },
+  "universal_guidelines": [
+    "Use 'slate-950' as the absolute background color for the page.",
+    "NEVER use pure black (#000000) for backgrounds; use slate-950 or slate-900.",
+    "All cards must use glassmorphism: 'bg-slate-900/60 backdrop-blur-xl border border-white/10'.",
+    "Text hierarchy: Headings = text-white, Body = text-slate-400, Muted = text-slate-600.",
+    "Interactive elements must have a hover state: 'hover:bg-white/5' or 'hover:border-purple-500/50'.",
+    "Use 'data-testid' for all interactive elements.",
+    "Maintain the 'Manrope' font family.",
+    "Ensure all gradients are subtle and do not overpower the content."
+  ]
 }
