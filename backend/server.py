@@ -1618,6 +1618,13 @@ from content_routes import (
     set_database as set_content_db
 )
 
+# Import landing page CMS routes
+from landing_page_routes import (
+    landing_page_router,
+    landing_page_admin_router,
+    set_database as set_landing_page_db
+)
+
 # Import loyalty routes (refactored)
 from loyalty_routes import (
     loyalty_router,
