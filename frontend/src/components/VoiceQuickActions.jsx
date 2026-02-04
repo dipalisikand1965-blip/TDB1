@@ -105,8 +105,15 @@ const VoiceQuickActions = ({
   };
 
   const toggleListening = () => {
+    // Check for iOS
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    
     if (!recognition) {
-      toast.error('Voice input not supported in your browser');
+      if (isIOS) {
+        toast.error('Voice input is not fully supported on iOS Safari. Please use the quick action buttons below.');
+      } else {
+        toast.error('Voice input not supported in your browser');
+      }
       return;
     }
 
@@ -116,8 +123,14 @@ const VoiceQuickActions = ({
     } else {
       setTranscript('');
       setActionResult(null);
-      recognition.start();
-      setIsListening(true);
+      try {
+        recognition.start();
+        setIsListening(true);
+      } catch (err) {
+        console.error('Failed to start recognition:', err);
+        toast.error('Could not start voice input. Please try again.');
+      }
+    }
     }
   };
 
