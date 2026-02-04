@@ -43,7 +43,11 @@ const VoiceQuickActions = ({
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      if (SpeechRecognition) {
+      
+      // Check for iOS
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+      
+      if (SpeechRecognition && !isIOS) {
         const recognitionInstance = new SpeechRecognition();
         recognitionInstance.continuous = false;
         recognitionInstance.interimResults = true;
@@ -64,6 +68,10 @@ const VoiceQuickActions = ({
           setIsListening(false);
           if (event.error === 'not-allowed') {
             toast.error('Microphone access denied. Please enable it in your browser settings.');
+          } else if (event.error === 'network') {
+            toast.error('Network error. Please check your connection.');
+          } else {
+            toast.error('Voice input error. Try again or use the suggestions below.');
           }
         };
 
@@ -72,6 +80,8 @@ const VoiceQuickActions = ({
         };
 
         setRecognition(recognitionInstance);
+      } else if (isIOS) {
+        console.log('Voice input limited on iOS Safari - using suggestion chips instead');
       }
     }
 
