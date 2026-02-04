@@ -4507,6 +4507,9 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                 enhanced_concierge_action["form_fields"] = ["date", "time", "notes"]
         
         # 14. Return response with products and additional metadata
+        # Check if memories were used in this response
+        memories_used = bool(relationship_memory_prompt and len(relationship_memory_prompt.strip()) > 50)
+        
         return {
             "response": response,
             "session_id": session_id,
@@ -4530,6 +4533,7 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
             "pets": [{"id": p.get("id"), "name": p.get("name")} for p in pets] if pets else [],
             "selected_pet": selected_pet.get("name") if selected_pet else None,
             "research_mode": research_context is not None,
+            "memories_used": memories_used,  # NEW: Indicates if Mira used relationship memories
             "quick_prompts": get_pillar_quick_prompts(pillar),
             "end_state": "RESPONDED",
             "disclaimer_shown": is_nutrition_query  # Track if nutrition disclaimer should be shown
