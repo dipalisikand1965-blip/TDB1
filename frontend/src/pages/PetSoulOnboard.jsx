@@ -7,14 +7,13 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { 
   PawPrint, ArrowRight, ArrowLeft, Heart, Sparkles, 
-  Camera, Calendar, Dog, User, Mail, Phone, MapPin,
-  Lock, Check, Crown, Zap, Gift, ChevronRight,
-  MessageCircle, Bell, Shield
+  Camera, User, Mail, Phone, Plus, Trash2,
+  Lock, Check, Crown, MessageCircle, Shield, X
 } from 'lucide-react';
 import { getApiUrl } from '../utils/api';
 import SEOHead from '../components/SEOHead';
 
-// Plan options
+// Plan options - Same price for unlimited dogs!
 const PLANS = {
   explorer: {
     id: 'explorer',
@@ -22,7 +21,7 @@ const PLANS = {
     price: 'Free',
     period: '7 days',
     description: 'Discover the Pet Soul™ experience',
-    features: ['Basic Pet Profile', 'Limited Mira AI', 'Browse 14 Pillars'],
+    features: ['Basic Pet Profile', 'Limited Mira AI Concierge®', 'Browse 14 Pillars'],
     requiresPayment: false,
   },
   trial: {
@@ -30,8 +29,8 @@ const PLANS = {
     name: 'Pet Pass Trial',
     price: '₹499',
     period: '/month',
-    description: 'Full concierge experience',
-    features: ['Full Pet Soul™', 'Unlimited Mira AI', 'All 14 Pillars', 'Priority Support'],
+    description: 'Full Concierge® experience',
+    features: ['Full Pet Soul™', 'Unlimited Mira AI Concierge®', 'All 14 Pillars', 'Priority Support'],
     requiresPayment: true,
     badge: 'Try First',
   },
@@ -40,7 +39,7 @@ const PLANS = {
     name: 'Pet Pass Foundation',
     price: '₹4,999',
     period: '/year',
-    description: 'Best value - full relationship',
+    description: 'Best value - full Concierge® relationship',
     features: ['Everything in Trial', 'Double Paw Points', 'Birthday Surprise', 'Early Access'],
     requiresPayment: true,
     badge: 'Best Value',
@@ -62,6 +61,23 @@ const PERSONALITY_TRAITS = [
   'Curious', 'Lazy', 'Food-lover', 'Cuddly', 'Independent', 'Social'
 ];
 
+// Empty pet template
+const createEmptyPet = () => ({
+  id: Date.now(),
+  name: '',
+  breed: '',
+  age: '',
+  birthday: '',
+  gender: '',
+  photo: null,
+  photoPreview: null,
+  traits: [],
+  dietaryNeeds: '',
+  healthNotes: '',
+  favoriteTreat: '',
+  favoriteActivity: '',
+});
+
 const PetSoulOnboard = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -71,22 +87,10 @@ const PetSoulOnboard = () => {
   const [selectedPlan, setSelectedPlan] = useState(initialPlan);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [activePetIndex, setActivePetIndex] = useState(0);
   
-  // Pet data
-  const [petData, setPetData] = useState({
-    name: '',
-    breed: '',
-    age: '',
-    birthday: '',
-    gender: '',
-    photo: null,
-    photoPreview: null,
-    traits: [],
-    dietaryNeeds: '',
-    healthNotes: '',
-    favoriteTreat: '',
-    favoriteActivity: '',
-  });
+  // Multiple pets support - starts with one empty pet
+  const [pets, setPets] = useState([createEmptyPet()]);
   
   // Parent data
   const [parentData, setParentData] = useState({
@@ -101,21 +105,17 @@ const PetSoulOnboard = () => {
     password: '',
     confirmPassword: '',
     contactPreference: 'whatsapp',
-    notifications: {
-      orders: true,
-      reminders: true,
-      offers: false,
-      newsletter: false,
-      soulWhispers: true,
-    },
     agreeTerms: false,
     agreePrivacy: false,
   });
 
   const totalSteps = 4;
+  const activePet = pets[activePetIndex];
 
   const handlePetChange = (field, value) => {
-    setPetData(prev => ({ ...prev, [field]: value }));
+    setPets(prev => prev.map((pet, idx) => 
+      idx === activePetIndex ? { ...pet, [field]: value } : pet
+    ));
   };
 
   const handleParentChange = (field, value) => {
@@ -126,22 +126,30 @@ const PetSoulOnboard = () => {
   };
 
   const handleTraitToggle = (trait) => {
-    setPetData(prev => ({
-      ...prev,
-      traits: prev.traits.includes(trait) 
-        ? prev.traits.filter(t => t !== trait)
-        : [...prev.traits, trait].slice(0, 4) // Max 4 traits
-    }));
+    const currentTraits = activePet.traits || [];
+    const newTraits = currentTraits.includes(trait) 
+      ? currentTraits.filter(t => t !== trait)
+      : [...currentTraits, trait].slice(0, 4);
+    handlePetChange('traits', newTraits);
   };
 
   const handlePhotoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setPetData(prev => ({
-        ...prev,
-        photo: file,
-        photoPreview: URL.createObjectURL(file)
-      }));
+      handlePetChange('photo', file);
+      handlePetChange('photoPreview', URL.createObjectURL(file));
+    }
+  };
+
+  const addPet = () => {
+    setPets(prev => [...prev, createEmptyPet()]);
+    setActivePetIndex(pets.length);
+  };
+
+  const removePet = (index) => {
+    if (pets.length > 1) {
+      setPets(prev => prev.filter((_, idx) => idx !== index));
+      setActivePetIndex(Math.min(activePetIndex, pets.length - 2));
     }
   };
 
@@ -149,12 +157,10 @@ const PetSoulOnboard = () => {
     setError('');
     
     if (step === 1) {
-      if (!petData.name.trim()) {
-        setError('Please enter your pet\'s name');
-        return false;
-      }
-      if (!petData.breed) {
-        setError('Please select a breed');
+      // Check at least one pet has name and breed
+      const validPet = pets.some(pet => pet.name.trim() && pet.breed);
+      if (!validPet) {
+        setError('Please enter at least one pet with name and breed');
         return false;
       }
     }
@@ -219,7 +225,6 @@ const PetSoulOnboard = () => {
           city: parentData.city,
           pincode: parentData.pincode,
           contact_preference: parentData.contactPreference,
-          notifications: parentData.notifications,
         }),
       });
       
@@ -230,29 +235,32 @@ const PetSoulOnboard = () => {
       
       const { token, user } = await registerRes.json();
       
-      // Create pet profile
-      const petRes = await fetch(getApiUrl('/api/pets'), {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          name: petData.name,
-          breed: petData.breed,
-          age: petData.age,
-          birthday: petData.birthday,
-          gender: petData.gender,
-          traits: petData.traits,
-          dietary_needs: petData.dietaryNeeds,
-          health_notes: petData.healthNotes,
-          favorite_treat: petData.favoriteTreat,
-          favorite_activity: petData.favoriteActivity,
-        }),
-      });
+      // Create all pet profiles
+      const validPets = pets.filter(pet => pet.name.trim() && pet.breed);
+      for (const pet of validPets) {
+        await fetch(getApiUrl('/api/pets'), {
+          method: 'POST',
+          headers: { 
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            name: pet.name,
+            breed: pet.breed,
+            age: pet.age,
+            birthday: pet.birthday,
+            gender: pet.gender,
+            traits: pet.traits,
+            dietary_needs: pet.dietaryNeeds,
+            health_notes: pet.healthNotes,
+            favorite_treat: pet.favoriteTreat,
+            favorite_activity: pet.favoriteActivity,
+          }),
+        });
+      }
       
       // Create membership
-      const membershipRes = await fetch(getApiUrl('/api/memberships'), {
+      await fetch(getApiUrl('/api/memberships'), {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
@@ -268,14 +276,8 @@ const PetSoulOnboard = () => {
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
       
-      // If requires payment, redirect to payment
-      if (PLANS[selectedPlan].requiresPayment) {
-        // For now, just go to welcome (payment integration can be added)
-        setCurrentStep(4);
-      } else {
-        // Explorer - go directly to welcome
-        setCurrentStep(4);
-      }
+      // Go to welcome
+      setCurrentStep(4);
       
     } catch (err) {
       setError(err.message || 'Something went wrong. Please try again.');
@@ -308,7 +310,49 @@ const PetSoulOnboard = () => {
     </div>
   );
 
-  // Step 1: Pet Details
+  // Pet Tab Component
+  const PetTabs = () => (
+    <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
+      {pets.map((pet, idx) => (
+        <button
+          key={pet.id}
+          type="button"
+          onClick={() => setActivePetIndex(idx)}
+          className={`relative flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all ${
+            idx === activePetIndex
+              ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white'
+              : 'bg-white/10 text-white/70 hover:bg-white/20'
+          }`}
+        >
+          {pet.photoPreview ? (
+            <img src={pet.photoPreview} alt="" className="w-6 h-6 rounded-full object-cover" />
+          ) : (
+            <PawPrint className="w-4 h-4" />
+          )}
+          <span className="text-sm">{pet.name || `Dog ${idx + 1}`}</span>
+          {pets.length > 1 && (
+            <button
+              type="button"
+              onClick={(e) => { e.stopPropagation(); removePet(idx); }}
+              className="ml-1 p-0.5 hover:bg-white/20 rounded-full"
+            >
+              <X className="w-3 h-3" />
+            </button>
+          )}
+        </button>
+      ))}
+      <button
+        type="button"
+        onClick={addPet}
+        className="flex items-center gap-1 px-3 py-2 rounded-full bg-white/5 text-purple-300 hover:bg-white/10 transition-all border border-dashed border-purple-500/50"
+      >
+        <Plus className="w-4 h-4" />
+        <span className="text-sm">Add Dog</span>
+      </button>
+    </div>
+  );
+
+  // Step 1: Pet Details (with multi-dog support)
   const Step1PetDetails = () => (
     <motion.div
       initial={{ opacity: 0, x: 20 }}
@@ -316,146 +360,164 @@ const PetSoulOnboard = () => {
       exit={{ opacity: 0, x: -20 }}
       className="space-y-6"
     >
-      <div className="text-center mb-8">
+      <div className="text-center mb-6">
         <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center">
           <PawPrint className="w-10 h-10 text-white" />
         </div>
         <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">
-          Tell us about your furry friend
+          Tell us about your furry family
         </h2>
-        <p className="text-white/60">This helps us create their Pet Soul™ profile</p>
+        <p className="text-white/60">Add all your dogs — same price for your whole pack! 🐕</p>
       </div>
 
-      {/* Pet Photo */}
-      <div className="flex justify-center mb-6">
-        <label className="cursor-pointer group">
-          <div className={`w-32 h-32 rounded-full border-2 border-dashed ${petData.photoPreview ? 'border-purple-500' : 'border-white/30'} flex items-center justify-center overflow-hidden transition-all group-hover:border-purple-500`}>
-            {petData.photoPreview ? (
-              <img src={petData.photoPreview} alt="Pet" className="w-full h-full object-cover" />
-            ) : (
-              <div className="text-center">
-                <Camera className="w-8 h-8 text-white/50 mx-auto mb-1" />
-                <span className="text-xs text-white/50">Add Photo</span>
-              </div>
-            )}
+      {/* Pet Tabs */}
+      <PetTabs />
+
+      {/* Active Pet Form */}
+      <div className="space-y-4">
+        {/* Pet Photo */}
+        <div className="flex justify-center mb-4">
+          <label className="cursor-pointer group">
+            <div className={`w-28 h-28 rounded-full border-2 border-dashed ${activePet.photoPreview ? 'border-purple-500' : 'border-white/30'} flex items-center justify-center overflow-hidden transition-all group-hover:border-purple-500`}>
+              {activePet.photoPreview ? (
+                <img src={activePet.photoPreview} alt="Pet" className="w-full h-full object-cover" />
+              ) : (
+                <div className="text-center">
+                  <Camera className="w-6 h-6 text-white/50 mx-auto mb-1" />
+                  <span className="text-xs text-white/50">Photo</span>
+                </div>
+              )}
+            </div>
+            <input type="file" accept="image/*" onChange={handlePhotoChange} className="hidden" />
+          </label>
+        </div>
+
+        <div className="grid sm:grid-cols-2 gap-4">
+          {/* Pet Name */}
+          <div className="sm:col-span-2">
+            <Label className="text-white/80">Name *</Label>
+            <Input
+              value={activePet.name}
+              onChange={(e) => handlePetChange('name', e.target.value)}
+              placeholder="What&apos;s your dog&apos;s name?"
+              className="bg-white/10 border-white/20 text-white placeholder:text-white/40"
+            />
           </div>
-          <input type="file" accept="image/*" onChange={handlePhotoChange} className="hidden" />
-        </label>
-      </div>
 
-      <div className="grid sm:grid-cols-2 gap-4">
-        {/* Pet Name */}
-        <div className="sm:col-span-2">
-          <Label className="text-white/80">Pet Name *</Label>
-          <Input
-            value={petData.name}
-            onChange={(e) => handlePetChange('name', e.target.value)}
-            placeholder="What's your pet&apos;s name?"
-            className="bg-white/10 border-white/20 text-white placeholder:text-white/40"
-          />
+          {/* Breed */}
+          <div>
+            <Label className="text-white/80">Breed *</Label>
+            <select
+              value={activePet.breed}
+              onChange={(e) => handlePetChange('breed', e.target.value)}
+              className="w-full h-10 px-3 rounded-md bg-white/10 border border-white/20 text-white"
+            >
+              <option value="" className="bg-slate-900">Select breed</option>
+              {DOG_BREEDS.map(breed => (
+                <option key={breed} value={breed} className="bg-slate-900">{breed}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Gender */}
+          <div>
+            <Label className="text-white/80">Gender</Label>
+            <div className="flex gap-2">
+              {['Male', 'Female'].map(g => (
+                <button
+                  key={g}
+                  type="button"
+                  onClick={() => handlePetChange('gender', g.toLowerCase())}
+                  className={`flex-1 py-2 px-4 rounded-lg border transition-all ${
+                    activePet.gender === g.toLowerCase()
+                      ? 'bg-purple-600 border-purple-500 text-white'
+                      : 'bg-white/5 border-white/20 text-white/70 hover:bg-white/10'
+                  }`}
+                >
+                  {g}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Age */}
+          <div>
+            <Label className="text-white/80">Age</Label>
+            <Input
+              value={activePet.age}
+              onChange={(e) => handlePetChange('age', e.target.value)}
+              placeholder="e.g., 2 years"
+              className="bg-white/10 border-white/20 text-white placeholder:text-white/40"
+            />
+          </div>
+
+          {/* Birthday */}
+          <div>
+            <Label className="text-white/80">Birthday</Label>
+            <Input
+              type="date"
+              value={activePet.birthday}
+              onChange={(e) => handlePetChange('birthday', e.target.value)}
+              className="bg-white/10 border-white/20 text-white"
+            />
+          </div>
         </div>
 
-        {/* Breed */}
+        {/* Personality Traits */}
         <div>
-          <Label className="text-white/80">Breed *</Label>
-          <select
-            value={petData.breed}
-            onChange={(e) => handlePetChange('breed', e.target.value)}
-            className="w-full h-10 px-3 rounded-md bg-white/10 border border-white/20 text-white"
-          >
-            <option value="" className="bg-slate-900">Select breed</option>
-            {DOG_BREEDS.map(breed => (
-              <option key={breed} value={breed} className="bg-slate-900">{breed}</option>
-            ))}
-          </select>
-        </div>
-
-        {/* Gender */}
-        <div>
-          <Label className="text-white/80">Gender</Label>
-          <div className="flex gap-2">
-            {['Male', 'Female'].map(g => (
+          <Label className="text-white/80 mb-2 block">Personality (pick up to 4)</Label>
+          <div className="flex flex-wrap gap-2">
+            {PERSONALITY_TRAITS.map(trait => (
               <button
-                key={g}
+                key={trait}
                 type="button"
-                onClick={() => handlePetChange('gender', g.toLowerCase())}
-                className={`flex-1 py-2 px-4 rounded-lg border transition-all ${
-                  petData.gender === g.toLowerCase()
-                    ? 'bg-purple-600 border-purple-500 text-white'
-                    : 'bg-white/5 border-white/20 text-white/70 hover:bg-white/10'
+                onClick={() => handleTraitToggle(trait)}
+                className={`px-3 py-1.5 rounded-full text-sm transition-all ${
+                  (activePet.traits || []).includes(trait)
+                    ? 'bg-purple-600 text-white'
+                    : 'bg-white/10 text-white/70 hover:bg-white/20'
                 }`}
               >
-                {g}
+                {trait}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Age */}
-        <div>
-          <Label className="text-white/80">Age</Label>
-          <Input
-            value={petData.age}
-            onChange={(e) => handlePetChange('age', e.target.value)}
-            placeholder="e.g., 2 years"
-            className="bg-white/10 border-white/20 text-white placeholder:text-white/40"
-          />
-        </div>
-
-        {/* Birthday */}
-        <div>
-          <Label className="text-white/80">Birthday</Label>
-          <Input
-            type="date"
-            value={petData.birthday}
-            onChange={(e) => handlePetChange('birthday', e.target.value)}
-            className="bg-white/10 border-white/20 text-white"
-          />
-        </div>
-      </div>
-
-      {/* Personality Traits */}
-      <div>
-        <Label className="text-white/80 mb-2 block">Personality (pick up to 4)</Label>
-        <div className="flex flex-wrap gap-2">
-          {PERSONALITY_TRAITS.map(trait => (
-            <button
-              key={trait}
-              type="button"
-              onClick={() => handleTraitToggle(trait)}
-              className={`px-3 py-1.5 rounded-full text-sm transition-all ${
-                petData.traits.includes(trait)
-                  ? 'bg-purple-600 text-white'
-                  : 'bg-white/10 text-white/70 hover:bg-white/20'
-              }`}
-            >
-              {trait}
-            </button>
-          ))}
+        {/* Favorites */}
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div>
+            <Label className="text-white/80">Favorite Treat</Label>
+            <Input
+              value={activePet.favoriteTreat}
+              onChange={(e) => handlePetChange('favoriteTreat', e.target.value)}
+              placeholder="e.g., Peanut butter"
+              className="bg-white/10 border-white/20 text-white placeholder:text-white/40"
+            />
+          </div>
+          <div>
+            <Label className="text-white/80">Favorite Activity</Label>
+            <Input
+              value={activePet.favoriteActivity}
+              onChange={(e) => handlePetChange('favoriteActivity', e.target.value)}
+              placeholder="e.g., Beach walks"
+              className="bg-white/10 border-white/20 text-white placeholder:text-white/40"
+            />
+          </div>
         </div>
       </div>
 
-      {/* Favorites */}
-      <div className="grid sm:grid-cols-2 gap-4">
-        <div>
-          <Label className="text-white/80">Favorite Treat</Label>
-          <Input
-            value={petData.favoriteTreat}
-            onChange={(e) => handlePetChange('favoriteTreat', e.target.value)}
-            placeholder="e.g., Peanut butter"
-            className="bg-white/10 border-white/20 text-white placeholder:text-white/40"
-          />
+      {/* Summary of all pets */}
+      {pets.length > 1 && (
+        <div className="p-4 bg-purple-500/10 rounded-xl border border-purple-500/30">
+          <p className="text-purple-300 text-sm">
+            🐕 Your pack: {pets.filter(p => p.name).map(p => p.name).join(', ') || 'Add names above'}
+          </p>
+          <p className="text-white/50 text-xs mt-1">
+            All dogs included — no extra charge!
+          </p>
         </div>
-        <div>
-          <Label className="text-white/80">Favorite Activity</Label>
-          <Input
-            value={petData.favoriteActivity}
-            onChange={(e) => handlePetChange('favoriteActivity', e.target.value)}
-            placeholder="e.g., Beach walks"
-            className="bg-white/10 border-white/20 text-white placeholder:text-white/40"
-          />
-        </div>
-      </div>
+      )}
     </motion.div>
   );
 
@@ -474,11 +536,12 @@ const PetSoulOnboard = () => {
         <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">
           Now, tell us about you
         </h2>
-        <p className="text-white/60">So we can keep you connected with {petData.name || 'your pet'}&apos;s journey</p>
+        <p className="text-white/60">
+          So we can keep you connected with {pets.filter(p => p.name).map(p => p.name).join(' & ') || 'your pets'}
+        </p>
       </div>
 
       <div className="grid sm:grid-cols-2 gap-4">
-        {/* Name */}
         <div className="sm:col-span-2">
           <Label className="text-white/80">Your Name *</Label>
           <Input
@@ -489,7 +552,6 @@ const PetSoulOnboard = () => {
           />
         </div>
 
-        {/* Email */}
         <div className="sm:col-span-2">
           <Label className="text-white/80">Email Address *</Label>
           <Input
@@ -501,7 +563,6 @@ const PetSoulOnboard = () => {
           />
         </div>
 
-        {/* Phone */}
         <div>
           <Label className="text-white/80">Phone Number *</Label>
           <Input
@@ -512,7 +573,6 @@ const PetSoulOnboard = () => {
           />
         </div>
 
-        {/* WhatsApp */}
         <div>
           <Label className="text-white/80">WhatsApp Number</Label>
           <Input
@@ -533,7 +593,6 @@ const PetSoulOnboard = () => {
           </label>
         </div>
 
-        {/* Address */}
         <div className="sm:col-span-2">
           <Label className="text-white/80">Address</Label>
           <Input
@@ -544,7 +603,6 @@ const PetSoulOnboard = () => {
           />
         </div>
 
-        {/* City & Pincode */}
         <div>
           <Label className="text-white/80">City</Label>
           <Input
@@ -564,7 +622,6 @@ const PetSoulOnboard = () => {
           />
         </div>
 
-        {/* Password */}
         <div>
           <Label className="text-white/80">Create Password *</Label>
           <Input
@@ -642,166 +699,187 @@ const PetSoulOnboard = () => {
   );
 
   // Step 3: Plan Selection
-  const Step3PlanSelection = () => (
-    <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -20 }}
-      className="space-y-6"
-    >
-      <div className="text-center mb-8">
-        <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center">
-          <Crown className="w-10 h-10 text-white" />
-        </div>
-        <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">
-          Choose {petData.name || 'your pet'}&apos;s journey
-        </h2>
-        <p className="text-white/60">Start free or unlock the full experience</p>
-      </div>
-
-      <div className="grid gap-4">
-        {Object.values(PLANS).map((plan) => (
-          <button
-            key={plan.id}
-            type="button"
-            onClick={() => setSelectedPlan(plan.id)}
-            className={`relative p-5 rounded-xl border text-left transition-all ${
-              selectedPlan === plan.id
-                ? 'bg-purple-600/20 border-purple-500 ring-2 ring-purple-500/50'
-                : 'bg-white/5 border-white/20 hover:bg-white/10'
-            }`}
-          >
-            {plan.badge && (
-              <span className="absolute -top-2 right-4 px-2 py-0.5 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full text-xs font-semibold text-white">
-                {plan.badge}
-              </span>
-            )}
-            
-            <div className="flex items-start justify-between">
-              <div>
-                <h3 className="text-lg font-bold text-white">{plan.name}</h3>
-                <p className="text-sm text-white/60">{plan.description}</p>
-              </div>
-              <div className="text-right">
-                <span className="text-2xl font-bold text-white">{plan.price}</span>
-                <span className="text-white/60 text-sm">{plan.period}</span>
-                {plan.savings && (
-                  <p className="text-green-400 text-xs">{plan.savings}</p>
-                )}
-              </div>
-            </div>
-            
-            <div className="mt-3 flex flex-wrap gap-2">
-              {plan.features.map((feature, idx) => (
-                <span key={idx} className="text-xs px-2 py-1 bg-white/10 rounded-full text-white/70">
-                  {feature}
-                </span>
-              ))}
-            </div>
-            
-            {selectedPlan === plan.id && (
-              <div className="absolute top-1/2 -translate-y-1/2 right-4">
-                <Check className="w-6 h-6 text-purple-400" />
-              </div>
-            )}
-          </button>
-        ))}
-      </div>
-
-      {PLANS[selectedPlan].requiresPayment && (
-        <div className="p-4 bg-purple-500/10 rounded-xl border border-purple-500/30">
-          <div className="flex items-center gap-2 text-purple-300">
-            <Shield className="w-5 h-5" />
-            <span className="text-sm">Secure payment powered by Razorpay</span>
+  const Step3PlanSelection = () => {
+    const petNames = pets.filter(p => p.name).map(p => p.name);
+    
+    return (
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        exit={{ opacity: 0, x: -20 }}
+        className="space-y-6"
+      >
+        <div className="text-center mb-8">
+          <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center">
+            <Crown className="w-10 h-10 text-white" />
           </div>
+          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">
+            Choose your Concierge® journey
+          </h2>
+          <p className="text-white/60">
+            {petNames.length > 1 
+              ? `Same price for ${petNames.join(', ')} — your whole pack!`
+              : 'Start free or unlock the full experience'}
+          </p>
         </div>
-      )}
-    </motion.div>
-  );
+
+        <div className="grid gap-4">
+          {Object.values(PLANS).map((plan) => (
+            <button
+              key={plan.id}
+              type="button"
+              onClick={() => setSelectedPlan(plan.id)}
+              className={`relative p-5 rounded-xl border text-left transition-all ${
+                selectedPlan === plan.id
+                  ? 'bg-purple-600/20 border-purple-500 ring-2 ring-purple-500/50'
+                  : 'bg-white/5 border-white/20 hover:bg-white/10'
+              }`}
+            >
+              {plan.badge && (
+                <span className="absolute -top-2 right-4 px-2 py-0.5 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full text-xs font-semibold text-white">
+                  {plan.badge}
+                </span>
+              )}
+              
+              <div className="flex items-start justify-between">
+                <div>
+                  <h3 className="text-lg font-bold text-white">{plan.name}</h3>
+                  <p className="text-sm text-white/60">{plan.description}</p>
+                </div>
+                <div className="text-right">
+                  <span className="text-2xl font-bold text-white">{plan.price}</span>
+                  <span className="text-white/60 text-sm">{plan.period}</span>
+                  {plan.savings && (
+                    <p className="text-green-400 text-xs">{plan.savings}</p>
+                  )}
+                </div>
+              </div>
+              
+              <div className="mt-3 flex flex-wrap gap-2">
+                {plan.features.map((feature, idx) => (
+                  <span key={idx} className="text-xs px-2 py-1 bg-white/10 rounded-full text-white/70">
+                    {feature}
+                  </span>
+                ))}
+              </div>
+              
+              {selectedPlan === plan.id && (
+                <div className="absolute top-1/2 -translate-y-1/2 right-4">
+                  <Check className="w-6 h-6 text-purple-400" />
+                </div>
+              )}
+            </button>
+          ))}
+        </div>
+
+        {/* Pack summary */}
+        {petNames.length > 1 && (
+          <div className="p-4 bg-green-500/10 rounded-xl border border-green-500/30">
+            <p className="text-green-300 text-sm">
+              ✨ Great news! All {petNames.length} dogs ({petNames.join(', ')}) are included at no extra cost.
+            </p>
+          </div>
+        )}
+
+        {PLANS[selectedPlan].requiresPayment && (
+          <div className="p-4 bg-purple-500/10 rounded-xl border border-purple-500/30">
+            <div className="flex items-center gap-2 text-purple-300">
+              <Shield className="w-5 h-5" />
+              <span className="text-sm">Secure payment powered by Razorpay</span>
+            </div>
+          </div>
+        )}
+      </motion.div>
+    );
+  };
 
   // Step 4: Welcome
-  const Step4Welcome = () => (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
-      className="text-center py-8"
-    >
+  const Step4Welcome = () => {
+    const validPets = pets.filter(p => p.name.trim());
+    
+    return (
       <motion.div
-        initial={{ scale: 0 }}
-        animate={{ scale: 1 }}
-        transition={{ delay: 0.2, type: 'spring' }}
-        className="w-32 h-32 mx-auto mb-6 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center"
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="text-center py-8"
       >
-        <Sparkles className="w-16 h-16 text-white" />
-      </motion.div>
-      
-      <motion.h2
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        className="text-3xl sm:text-4xl font-bold text-white mb-4"
-      >
-        Welcome to the Family! 🎉
-      </motion.h2>
-      
-      <motion.p
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
-        className="text-xl text-white/70 mb-8"
-      >
-        {petData.name}&apos;s Pet Soul™ profile is ready
-      </motion.p>
-      
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.6 }}
-        className="inline-block p-6 bg-white/5 rounded-2xl border border-white/10 mb-8"
-      >
-        <div className="flex items-center gap-4">
-          {petData.photoPreview ? (
-            <img src={petData.photoPreview} alt={petData.name} className="w-16 h-16 rounded-full object-cover" />
-          ) : (
-            <div className="w-16 h-16 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center">
-              <PawPrint className="w-8 h-8 text-white" />
-            </div>
-          )}
-          <div className="text-left">
-            <h3 className="text-xl font-bold text-white">{petData.name}</h3>
-            <p className="text-white/60">{petData.breed}</p>
-            <div className="flex gap-1 mt-1">
-              {petData.traits.slice(0, 3).map(trait => (
-                <span key={trait} className="text-xs px-2 py-0.5 bg-purple-500/30 rounded-full text-purple-300">
-                  {trait}
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
-      </motion.div>
-      
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.8 }}
-      >
-        <Button
-          onClick={() => navigate('/dashboard')}
-          className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 px-8 py-6 text-lg rounded-full"
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: 0.2, type: 'spring' }}
+          className="w-32 h-32 mx-auto mb-6 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center"
         >
-          Meet Mira - Your Concierge
-          <ArrowRight className="w-5 h-5 ml-2" />
-        </Button>
+          <Sparkles className="w-16 h-16 text-white" />
+        </motion.div>
+        
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="text-3xl sm:text-4xl font-bold text-white mb-4"
+        >
+          Welcome to the Family! 🎉
+        </motion.h2>
+        
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="text-xl text-white/70 mb-8"
+        >
+          {validPets.length > 1 
+            ? `${validPets.map(p => p.name).join(' & ')}'s Pet Soul™ profiles are ready`
+            : `${validPets[0]?.name || 'Your pet'}'s Pet Soul™ profile is ready`}
+        </motion.p>
+        
+        {/* Pet cards */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="flex flex-wrap justify-center gap-4 mb-8"
+        >
+          {validPets.map((pet, idx) => (
+            <div key={pet.id} className="inline-block p-4 bg-white/5 rounded-2xl border border-white/10">
+              <div className="flex items-center gap-3">
+                {pet.photoPreview ? (
+                  <img src={pet.photoPreview} alt={pet.name} className="w-12 h-12 rounded-full object-cover" />
+                ) : (
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center">
+                    <PawPrint className="w-6 h-6 text-white" />
+                  </div>
+                )}
+                <div className="text-left">
+                  <h3 className="text-lg font-bold text-white">{pet.name}</h3>
+                  <p className="text-white/60 text-sm">{pet.breed}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </motion.div>
+        
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.8 }}
+        >
+          <Button
+            onClick={() => navigate('/dashboard')}
+            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 px-8 py-6 text-lg rounded-full"
+          >
+            Meet Mira - Your Concierge®
+            <ArrowRight className="w-5 h-5 ml-2" />
+          </Button>
+        </motion.div>
       </motion.div>
-    </motion.div>
-  );
+    );
+  };
 
   return (
     <>
       <SEOHead 
         title="Join Pet Soul™ | The Doggy Company"
-        description="Create your pet's soul profile and join the Pet Pass concierge experience"
+        description="Create your pet&apos;s soul profile and join the Pet Pass Concierge® experience"
       />
       
       <div className="min-h-screen bg-gradient-to-b from-slate-950 via-purple-950/20 to-slate-950 py-8 px-4">
