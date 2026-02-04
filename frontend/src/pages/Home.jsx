@@ -40,6 +40,7 @@ const Home = () => {
   const [showVideo, setShowVideo] = useState(false);
   const [videoMuted, setVideoMuted] = useState(true);
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
+  const [currentHeroImage, setCurrentHeroImage] = useState(0);
   const [soulPulse, setSoulPulse] = useState(false);
   const heroRef = useRef(null);
 
@@ -48,6 +49,14 @@ const Home = () => {
     const interval = setInterval(() => {
       setSoulPulse(prev => !prev);
     }, 2000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Rotate hero background images
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentHeroImage(prev => (prev + 1) % HERO_IMAGES.length);
+    }, 5000);
     return () => clearInterval(interval);
   }, []);
 
