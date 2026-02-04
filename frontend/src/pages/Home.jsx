@@ -142,7 +142,7 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
         {!isEnding && (
           <video 
             ref={videoRef}
-            className="absolute inset-0 w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full"
             autoPlay
             muted={videoMuted}
             playsInline
@@ -151,7 +151,9 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
             x5-video-player-type="h5"
             x5-video-player-fullscreen="true"
             style={{
-              objectFit: 'cover',
+              objectFit: 'contain',
+              objectPosition: 'center center',
+              backgroundColor: '#000',
               WebkitTransform: 'translateZ(0)',
               transform: 'translateZ(0)'
             }}
