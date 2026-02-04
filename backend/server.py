@@ -14531,6 +14531,10 @@ app.include_router(faq_admin_router)  # Admin FAQs at /api/admin/faqs
 app.include_router(content_router)  # Public content at /api/testimonials, /api/blog-posts
 app.include_router(content_admin_router)  # Admin content at /api/admin/testimonials, /api/admin/blog-posts
 
+# Landing Page CMS Routes
+app.include_router(landing_page_router)  # Public at /api/landing-page/content
+app.include_router(landing_page_admin_router)  # Admin at /api/admin/landing-page/*
+
 # Loyalty Routes (Refactored)
 app.include_router(loyalty_router)  # Public at /api/loyalty/*
 app.include_router(loyalty_admin_router)  # Admin at /api/admin/loyalty/*
