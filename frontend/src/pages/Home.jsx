@@ -327,7 +327,7 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
               ref={videoRef}
               className="absolute inset-0 w-full h-full"
               autoPlay
-              muted={videoMuted}
+              muted
               playsInline
               preload="auto"
               style={{
@@ -339,6 +339,15 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
             >
               <source src={clip.src} type="video/mp4" />
             </video>
+            
+            {/* Voiceover Audio - Separate from video for better control */}
+            <audio
+              ref={audioRef}
+              preload="auto"
+              className="hidden"
+            >
+              <source src={clip.audioSrc} type="audio/mpeg" />
+            </audio>
           </>
         )}
         
