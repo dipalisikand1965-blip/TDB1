@@ -134,6 +134,50 @@ async def get_membership_plans():
     }
 
 
+
+@router.get("/order/{order_id}")
+async def get_order_details(order_id: str):
+    """Get order details by order_id for payment page"""
+    db = get_db()
+    
+    # Find the order - check both field names for compatibility
+    order = await db.membership_orders.find_one({"order_id": order_id}, {"_id": 0})
+    if not order:
+        order = await db.membership_orders.find_one({"id": order_id}, {"_id": 0})
+    if not order:
+        order = await db.memberships.find_one({"id": order_id}, {"_id": 0})
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    # Get plan details
+    plan_type = order.get("plan_type", "annual")
+    is_founder = plan_type in ["annual", "founder", "foundation"]
+    
+    # Calculate pricing
+    amount = order.get("amount", {})
+    base_price = amount.get("base", 4999 if is_founder else 499)
+    gst = amount.get("gst", int(base_price * 0.18))
+    total = amount.get("total", base_price + gst)
+    
+    return {
+        "order_id": order.get("order_id", order.get("id")),
+        "user_id": order.get("user_id"),
+        "plan_type": "founder" if is_founder else "trial",
+        "plan_name": "Pet Pass Founder" if is_founder else "Pet Pass Trial",
+        "duration": "372 days" if is_founder else "37 days",
+        "base_price": base_price,
+        "gst": gst,
+        "total": total,
+        "bonus_days": 7,
+        "parent_name": order.get("user_name", order.get("parent_name", "")),
+        "parent_email": order.get("user_email", order.get("parent_email", "")),
+        "pet_name": order.get("pet_name", ""),
+        "pet_breed": order.get("pet_breed", ""),
+        "status": order.get("status", "pending")
+    }
+
+
+
 @router.post("/create-order")
 async def create_membership_order(request: MembershipPurchaseRequest):
     """Create Razorpay order for membership purchase"""
