@@ -106,11 +106,13 @@ const DiningConciergePicker = ({ onClose, compactMode = true }) => {
   const [showFormModal, setShowFormModal] = useState(false);
   const [selectedService, setSelectedService] = useState('restaurant_booking');
   const [city, setCity] = useState('');
+  const [customCity, setCustomCity] = useState(''); // For "Other" city option
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState('');
   const [guestCount, setGuestCount] = useState('');
   const [specialRequests, setSpecialRequests] = useState('');
   const [selectedPet, setSelectedPet] = useState(null);
+  const [selectedPetOption, setSelectedPetOption] = useState('all'); // 'all' or pet id
   const [userPets, setUserPets] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [ticketCreated, setTicketCreated] = useState(false);
