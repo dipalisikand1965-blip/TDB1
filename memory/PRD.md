@@ -1,7 +1,7 @@
 # The Doggy Company - Product Requirements Document
 
 ## Original Problem Statement
-Build "The Doggy Company," a one-stop-shop concierge for dog parents. This involves fixing numerous UI/UX bugs, restoring major features that were lost in a regression, and implementing a suite of new features.
+Build "The Doggy Company," a one-stop-shop concierge for dog parents with a focus on emotional connection and the "Pet Soul™" concept. Transform the site from a functional pet services marketplace into an emotionally resonant "Pet Life Operating System."
 
 ## Core Requirements
 
@@ -9,119 +9,106 @@ Build "The Doggy Company," a one-stop-shop concierge for dog parents. This invol
 All user actions (service requests, onboarding, etc.) must adhere to a unified flow:
 `User Request → Service Desk Ticket → Admin Notification → Member Notification`
 
-### 2. Member Dashboard
-- Gamified Soul Score with badges and points
-- Multi-pet selector
-- Quick-action question widgets
-- Responsive design for all devices
+### 2. Pet Soul™ as the Core
+The "Pet Soul™" concept is the central, living heart of the experience - understanding and nurturing the soul of every pet.
 
-### 3. Celebrate Pillar
-- Party Planning Wizard (6-step flow)
-- Custom cake requests
-- Birthday/Gotcha Day celebrations
+### 3. Mira AI - The Guardian
+Mira AI positioned as a "guardian angel" - personal, remembering details, not just a chatbot.
+
+---
 
 ## What's Been Implemented
 
-### February 2026 - Latest Session
-- ✅ iOS Voice Fix: Implemented audio context priming for ElevenLabs "Elise" voice on iOS Safari
-- ✅ Care Page UI/UX Overhaul: Added staggered entrance animations to match 10/10 standard
-  - Transformation Stories cards: animate-fade-in-up with stagger
-  - Quick Book service buttons: animate-scale-in with stagger
-  - How It Works steps: animate-fade-in-up with stagger
-  - Concierge Experience cards: animate-fade-in-up with stagger
-- ✅ Mobile responsiveness verified for Care page
-- ✅ Enjoy Page UI/UX Overhaul: Full mobile-first responsive redesign
-  - CSS keyframes: fadeInUp, scaleIn, slideInLeft
-  - Goal buttons: 2x2 mobile grid, 4-column desktop
-  - Transformation Stories: staggered fade-in-up animations
-  - Concierge Experience cards: staggered animations
-  - Event cards: staggered fade-in-up animations
-  - Products section: staggered scale-in animations
-  - Filter buttons: horizontally scrollable on mobile
-  - Full responsive text sizes with sm: breakpoints
-  - **Fixed**: ConversationalEntry now creates service tickets (not Mira)
-- ✅ Fit Page UI/UX Overhaul: Full mobile-first responsive redesign
-  - CSS keyframes: fadeInUp, scaleIn with stagger delays
-  - Hero section: responsive text, buttons, and trust indicators
-  - ConversationalEntry: creates service tickets (not Mira navigation)
-  - Concierge Experience cards: 2x2 mobile, 4-col desktop with animations
-  - Products & Bundles: staggered scale-in animations
-  - CTA section: responsive sizing
-  - All sections use sm: breakpoints for mobile
+### February 4, 2026 - Brand Story & Gallery Session
 
-### December 2025
-- ✅ Member Dashboard restoration (multi-pet Soul Score grid)
-- ✅ Soul Score calculation bug fix (alias system)
-- ✅ Responsive UI/UX overhaul for Dashboard
-- ✅ Unified flow for onboarding and payment verification
-- ✅ Party Planning Wizard connected to CelebrateConcierePicker
-- ✅ Unified flow audit verified for all key endpoints
-- ✅ Celebrate, Dine, Stay, Travel pages polished to 10/10
+#### Landing Page CMS
+- ✅ **Admin CMS for Landing Page** - Manage hero images and bond gallery from admin panel
+- ✅ **API Endpoints**: `/api/landing-page/content`, `/api/admin/landing-page/*`
+- ✅ **Hero Images CMS**: Add, remove, toggle active, reorder
+- ✅ **Bond Gallery CMS**: Add, remove, set layout (tall/wide), captions
 
-### Key Endpoints with Unified Flow
-- `/api/celebrate/party-request` - Party planning
-- `/api/service-requests` - Generic service requests
-- `/api/services/book` - Service booking
-- `/api/custom-cakes/request` - Custom cake orders
+#### Bond Gallery Redesign
+- ✅ **Elegant Floating Portraits** - 3 main cards with glow effects
+- ✅ **Mobile Horizontal Swipe Gallery** - Cards in swipeable row, not vertical scroll
+- ✅ **"← Swipe to explore →"** hint for mobile
+- ✅ **White Background Fix** - Vignette + purple tint overlay to blend photos
+- ✅ **Secondary Row** - Smaller portraits with hover captions
 
-## Page Scoring (Current State)
+#### Brand Story Video System
+- ✅ **8 Sora 2 AI Video Clips Generated**:
+  - 01_soulful_eyes.mp4, 01_eyes_bright.mp4
+  - 02_the_bond.mp4, 02_bond_bright.mp4
+  - 03_joy_bright.mp4, 04_pure_joy.mp4
+  - 04_family_bright.mp4, 05_family_moment.mp4
+- ✅ **Brand Story Script** - Full narrative at `/app/frontend/public/videos/BRAND_STORY_SCRIPT.md`
+- ✅ **Cinematic Video Player**:
+  - Auto-advancing clips (4 seconds each)
+  - Story text overlays with animations
+  - Progress dots for navigation
+  - Skip & mute controls
+  - Beautiful ending screen with Soul Orb
+- ✅ **Mobile Optimized** - Text at bottom (not covering faces), controls above nav bar
 
-| Page | Score | Status |
-|------|-------|--------|
-| Celebrate | 10/10 | ✅ Polished |
-| Dine | 10/10 | ✅ Polished |
-| Stay | 10/10 | ✅ Polished |
-| Travel | 10/10 | ✅ Polished |
-| Care | 10/10 | ✅ Polished |
-| Enjoy | 10/10 | ✅ Polished |
-| Fit | 10/10 | ✅ Polished |
-| Learn | 10/10 | ✅ Polished |
+#### Mira AI Per-Pillar Fix
+- ✅ **Fixed: Per-pillar message storage** - Each pillar now has its own sessionStorage key
+- ✅ **No cross-contamination** - Care shows "care needs", Dine shows "dine needs", etc.
 
-## Prioritized Backlog
+#### Hero Section Enhancements
+- ✅ **Rotating Background Photos** - User's authentic photos from Google Drive
+- ✅ **Stunning Play Button** - Pulsing gradient glow for "Watch Our Story"
+- ✅ **Soul Orb** - Glowing purple/pink orb with Sparkles icon
 
-### P0 - Critical
-- [x] ~~Fix quick action cards in `ConversationalEntry.jsx` (should trigger service requests, not Mira AI)~~ ✅ FIXED
-- [x] ~~Party Planning Wizard not appearing on Celebrate page~~ ✅ FIXED
-- [x] ~~iOS voice issue for guest users~~ ✅ FIXED
+### Previous Sessions
+- ✅ All 7 pillar pages polished to 10/10 standard
+- ✅ iOS audio fix for ElevenLabs TTS
+- ✅ ConversationalEntry creates service tickets
+- ✅ Mobile-first responsive design throughout
 
-### P1 - High Priority (Upcoming)
-- [ ] UI/UX overhaul for Learn pillar page
+---
 
-### P2 - Medium Priority (Future)
-- [ ] Mira Multi-Pet AI Personalization
-- [ ] Membership tiers implementation
-- [ ] "Pet Parent Magnet" marketing feature
-- [ ] WhatsApp Notifications (blocked on Meta approval)
-
-## Technical Architecture
-
+## User's Authentic Photos (Public URLs)
 ```
-/app
-├── backend
-│   ├── server.py                   # Main API server with unified flow
-│   ├── pet_score_logic.py          # Soul score calculation
-│   └── soul_intelligence.py        # Pet soul intelligence
-└── frontend
-    ├── src
-    │   ├── pages
-    │   │   ├── MemberDashboard.jsx # Gamified dashboard
-    │   │   ├── CelebratePage.jsx   # Celebrate pillar
-    │   │   ├── CarePage.jsx        # Care pillar (enhanced with animations)
-    │   │   └── UnifiedPetPage.jsx  # Pet profile
-    │   ├── components
-    │   │   ├── MiraAI.jsx          # AI assistant with iOS voice fix
-    │   │   ├── PartyPlanningWizard.jsx   # 6-step wizard
-    │   │   ├── CelebrateConcierePicker.jsx # Quick planner
-    │   │   └── SoulScoreArc.jsx          # Score display
+https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/0iy6sezo_shutterstock_504980047%20%282%29.jpg
+https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/phjxi6rd_dog-1194087_1920%20%281%29.jpg
+https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/3cqhqxwf_shutterstock_171983261%20%281%29.jpg
+https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/jlabx5e0_dog-813103%20%281%29.jpg
+https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/n600xuze_shutterstock_134149577%20%281%29.jpg
+https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/7oe8caws_shutterstock_1293337687%20%282%29.jpg
+https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/mjwttjs6_shutterstock_297030209%20%281%29.jpg
+https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/dbyt7aqs_shutterstock_139089332%20%281%29.jpg
+https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/einpahqm_dog-813103%20%281%29.jpg
+https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/q0alj5za_dog-1194087_1920%20%281%29.jpg
+https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/s4qmsach_shutterstock_199063937.jpg
+https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/4oryz05r_shutterstock_131282603%20%281%29.jpg
+https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/yl1otn9m_bulldog-1047518_1920%20%281%29.jpg
 ```
 
-## 3rd Party Integrations
-- **OpenAI GPT-4o**: Mira AI (Emergent LLM Key)
-- **ElevenLabs TTS**: Voice synthesis ("Elise" voice - EST9Ui6982FZPSi7gCHi)
-- **Razorpay**: Payments
-- **Resend**: Transactional emails
-- **WhatsApp**: Notifications (pending Meta approval)
+---
+
+## Future Reference
+- **OpenArt.ai Story Editor**: https://openart.ai/story/editor?story_id=OkRU19r0cChX72Gmjcfl&view=list
+- **User's Google Drive Photos**: Multiple folders with 50+ professional photoshoot images
+
+---
+
+## Upcoming Tasks (P1)
+- Polish remaining pages: `Paperwork`, `Advisory`, `Emergency`, `Farewell`, `Adopt`, `Shop`
+- Generate higher quality video content (when needed)
+- Add background music to brand story video
+
+## Future/Backlog (P2)
+- Pet Soul™ "living" visualization (make score feel alive)
+- Mira AI personality enhancement (remember pet details)
+- Real family video testimonials section
+- Membership value proposition redesign
+- Utility pages: `Autoship & Save`, `About Us`, `FAQs`, `TDC Insights`
+
+---
 
 ## Test Credentials
-- Admin: `aditya` / `lola4304`
-- Test User: `dipali@clubconcierge.in` / `lola4304`
+- **Admin**: `aditya` / `lola4304`
+- **Test User**: `dipali@clubconcierge.in` / `lola4304`
+
+---
+
+*Last Updated: February 4, 2026*
