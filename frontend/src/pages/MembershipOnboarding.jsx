@@ -1470,7 +1470,7 @@ const MembershipOnboarding = () => {
                       )}
                     </button>
 
-                    {/* Annual Founder Option */}
+                    {/* Annual Foundation Option */}
                     <button
                       type="button"
                       onClick={() => setPlanType('annual')}
