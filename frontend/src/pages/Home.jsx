@@ -248,25 +248,34 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
     if (!isEnding) {
       const clip = BRAND_STORY_CLIPS[currentClip];
       
-      // Play video with crossfade
+      // Play video first, then sync audio
       if (videoRef.current) {
         videoRef.current.src = clip.src;
         videoRef.current.load();
         
         const playMedia = async () => {
           try {
-            // Start video
+            // Start video first
             await videoRef.current?.play();
             
-            // Load and play new audio (if not muted)
+            // Small delay to ensure video is playing, then start audio
             if (audioRef.current && !videoMuted) {
+              // Load audio source
               audioRef.current.src = clip.audioSrc;
               audioRef.current.load();
-              audioRef.current.currentTime = 0;
-              await audioRef.current.play();
+              
+              // Wait for audio to be ready
+              audioRef.current.oncanplaythrough = async () => {
+                try {
+                  audioRef.current.currentTime = 0;
+                  await audioRef.current.play();
+                } catch (e) {
+                  console.log('Audio play failed:', e.message);
+                }
+              };
             }
           } catch (e) {
-            console.log('Media playback issue:', e.message);
+            console.log('Video play failed:', e.message);
           }
         };
         
