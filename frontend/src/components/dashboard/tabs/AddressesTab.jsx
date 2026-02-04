@@ -150,7 +150,7 @@ const AddressesTab = ({ savedAddresses = [], onAddressUpdate, onAddressDelete, o
             </div>
           ))}
           
-          {savedAddresses.length === 0 && (
+          {addresses.length === 0 && (
             <div className="col-span-full text-center py-8 sm:py-12">
               <div className="w-14 h-14 bg-slate-800/50 rounded-full flex items-center justify-center mx-auto mb-4">
                 <MapPin className="w-7 h-7 text-slate-500" />
