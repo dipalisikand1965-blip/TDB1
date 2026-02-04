@@ -900,9 +900,21 @@ const MemberDashboard = () => {
             <Button 
               variant="outline" 
               size="sm"
-              onClick={() => { logout(); navigate('/'); }}
-              className="text-red-400 hover:text-red-300 hover:bg-red-500/10 border-red-500/30 rounded-xl self-start sm:self-center transition-all hover:scale-105"
+              onClick={(e) => { 
+                e.preventDefault();
+                e.stopPropagation();
+                logout(); 
+                navigate('/'); 
+              }}
+              onTouchEnd={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                logout();
+                navigate('/');
+              }}
+              className="text-red-400 hover:text-red-300 hover:bg-red-500/10 border-red-500/30 rounded-xl self-start sm:self-center transition-all hover:scale-105 relative z-[100]"
               data-testid="signout-btn"
+              style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
             >
               <LogOut className="w-4 h-4 mr-2" />
               Sign Out
