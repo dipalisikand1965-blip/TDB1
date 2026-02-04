@@ -3894,8 +3894,8 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                         Delete
                       </button>
                       
-                      {/* Merge Button */}
-                      {selectedTicketIds.length > 0 && selectedTicketIds.includes(selectedTicket?.ticket_id) && (
+                      {/* Merge Button - show when 2+ tickets selected */}
+                      {selectedTicketIds.length >= 2 && (
                         <button
                           onClick={() => setShowMergeModal(true)}
                           className="flex items-center gap-1 px-3 py-1.5 text-xs bg-purple-100 text-purple-700 border border-purple-200 rounded-full hover:bg-purple-200"
