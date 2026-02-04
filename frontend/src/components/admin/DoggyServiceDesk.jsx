@@ -5285,7 +5285,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
       </div>
       
       {/* ==================== MERGE TICKETS MODAL ==================== */}
-      {showMergeModal && selectedTicket && (
+      {showMergeModal && selectedTicketIds.length >= 2 && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={() => setShowMergeModal(false)}>
           <Card className="w-full max-w-[500px] bg-white shadow-2xl max-h-[90vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
             <div className="p-6">
@@ -5297,23 +5297,34 @@ const DoggyServiceDesk = ({ authHeaders }) => {
               </div>
               
               <div className="space-y-4">
-                <div className="p-4 bg-emerald-50 rounded-lg border border-emerald-200">
-                  <div className="flex items-center gap-2 mb-2">
-                    <CheckCircle className="w-5 h-5 text-emerald-600" />
-                    <span className="font-medium text-emerald-800">Primary Ticket (Keep)</span>
-                  </div>
-                  <p className="text-sm text-emerald-700">{selectedTicket.ticket_id} - {selectedTicket.subject || selectedTicket.description?.slice(0, 40)}</p>
-                </div>
+                {/* Primary ticket = FIRST selected */}
+                {(() => {
+                  const primaryId = selectedTicketIds[0];
+                  const primaryTicket = allTickets.find(t => t.ticket_id === primaryId);
+                  return primaryTicket ? (
+                    <div className="p-4 bg-emerald-50 rounded-lg border border-emerald-200">
+                      <div className="flex items-center gap-2 mb-2">
+                        <CheckCircle className="w-5 h-5 text-emerald-600" />
+                        <span className="font-medium text-emerald-800">Primary Ticket (Keep) — First Selected</span>
+                      </div>
+                      <p className="text-sm text-emerald-700 font-mono">{primaryTicket.ticket_id}</p>
+                      <p className="text-sm text-emerald-600 truncate">{primaryTicket.subject || primaryTicket.description?.slice(0, 50)}</p>
+                    </div>
+                  ) : null;
+                })()}
                 
                 <div>
-                  <p className="text-sm text-gray-600 mb-2">The following tickets will be merged into the primary ticket:</p>
+                  <p className="text-sm text-gray-600 mb-2">The following {selectedTicketIds.length - 1} ticket(s) will be merged into the primary:</p>
                   <div className="space-y-2 max-h-40 overflow-y-auto">
-                    {selectedTicketIds.filter(id => id !== selectedTicket.ticket_id).map(id => {
+                    {selectedTicketIds.slice(1).map(id => {
                       const ticket = allTickets.find(t => t.ticket_id === id);
                       return ticket ? (
-                        <div key={id} className="p-3 bg-gray-50 rounded-lg border text-sm">
-                          <span className="font-mono text-xs text-gray-500">{id}</span>
-                          <p className="text-gray-700 truncate">{ticket.subject || ticket.description?.slice(0, 40)}</p>
+                        <div key={id} className="p-3 bg-gray-50 rounded-lg border text-sm flex items-center gap-2">
+                          <ArrowRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                          <div className="flex-1 min-w-0">
+                            <span className="font-mono text-xs text-gray-500">{id}</span>
+                            <p className="text-gray-700 truncate">{ticket.subject || ticket.description?.slice(0, 40)}</p>
+                          </div>
                         </div>
                       ) : null;
                     })}
@@ -5322,7 +5333,7 @@ const DoggyServiceDesk = ({ authHeaders }) => {
                 
                 <div className="p-3 bg-amber-50 rounded-lg border border-amber-200">
                   <p className="text-sm text-amber-800">
-                    ⚠️ This action will combine all messages and attachments. Secondary tickets will be closed.
+                    ⚠️ This action will combine all messages and attachments. Secondary tickets will be closed and marked as merged.
                   </p>
                 </div>
               </div>
