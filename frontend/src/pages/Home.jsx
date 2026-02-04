@@ -755,6 +755,58 @@ const SOUL_DIMENSIONS = [
   },
 ];
 
+// Bond Gallery - Emotional pet-human connection photos
+const BOND_GALLERY = [
+  {
+    image: 'https://images.unsplash.com/photo-1761590450095-401e8e312af5?w=600&h=600&fit=crop',
+    caption: 'Peaceful moments together',
+    tall: false,
+    wide: false,
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1752387632383-4ce85c32c9cc?w=600&h=600&fit=crop',
+    caption: 'First adventures',
+    tall: false,
+    wide: false,
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1608908507303-ddfde7c7d79e?w=600&h=800&fit=crop',
+    caption: 'Those soulful eyes',
+    tall: true,
+    wide: false,
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1749823029909-d2be10be5620?w=600&h=600&fit=crop',
+    caption: 'Unconditional love',
+    tall: false,
+    wide: false,
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1597854578220-07c43e51aff8?w=600&h=600&fit=crop',
+    caption: 'Pure connection',
+    tall: false,
+    wide: false,
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1745236852058-1cd0e504dc27?w=600&h=600&fit=crop',
+    caption: 'Sweet dreams',
+    tall: false,
+    wide: false,
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&h=600&fit=crop',
+    caption: 'Happy moments',
+    tall: false,
+    wide: false,
+  },
+  {
+    image: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=600&h=600&fit=crop',
+    caption: 'Best friends forever',
+    tall: false,
+    wide: false,
+  },
+];
+
 // Real Stories - Trust through real families
 const REAL_STORIES = [
   {
