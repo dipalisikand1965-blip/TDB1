@@ -38,6 +38,7 @@ import ShopManager from '../components/admin/ShopManager';
 import DataMigration from '../components/DataMigration';
 import { DashboardTab, OrdersTab, MembersTab, ChatsTab, DineManager, ServiceDesk, ProductTagsManager, MembershipManager, AboutManager, MemberDirectory } from '../components/admin';
 import PageContentManager from '../components/admin/PageContentManager';
+import LandingPageManager from '../components/admin/LandingPageManager';
 import NotificationBell from '../components/admin/NotificationBell';
 import UnifiedInbox from '../components/admin/UnifiedInbox';
 import CelebrationsCalendar from '../components/admin/CelebrationsCalendar';
