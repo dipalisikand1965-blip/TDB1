@@ -1549,7 +1549,7 @@ const Home = () => {
 
             <div className="grid sm:grid-cols-3 gap-6 mb-12">
               {[
-                { icon: Shield, title: '30-Day Guarantee', desc: 'Full refund if we don\'t earn your trust' },
+                { icon: Shield, title: 'Built on Trust', desc: 'Every interaction earns your confidence' },
                 { icon: Lock, title: 'Your Data, Your Control', desc: 'We never sell or share pet data' },
                 { icon: Heart, title: 'Lifetime Memory', desc: 'Your pet\'s soul lives forever with us' },
               ].map((item, idx) => (
