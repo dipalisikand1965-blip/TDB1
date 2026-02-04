@@ -547,6 +547,91 @@ const MiraAI = () => {
     }
   };
 
+  // Generate surprising insights based on pet data - Mira's wisdom
+  const generatePetInsight = useCallback(() => {
+    if (!userPets.length) return null;
+    
+    const pet = userPets[0];
+    const petName = pet.name;
+    const breed = pet.identity?.breed || pet.breed || '';
+    const age = pet.identity?.age_years || pet.age || null;
+    const weight = pet.health?.weight || pet.weight || null;
+    const allergies = pet.health?.allergies || [];
+    const temperament = pet.identity?.temperament || pet.temperament || [];
+    const birthday = pet.identity?.birthday || pet.birthday || null;
+    const soulScore = pet.overall_score || 0;
+    
+    const insights = [];
+    
+    // Breed-specific insights
+    const breedInsights = {
+      'Golden Retriever': `Golden Retrievers like ${petName} are prone to hip issues. Have you considered joint supplements?`,
+      'Labrador': `Labs are famous food lovers! ${petName} might benefit from puzzle feeders to slow down eating.`,
+      'German Shepherd': `German Shepherds are incredibly loyal. ${petName} probably loves having a job to do!`,
+      'Beagle': `Beagles have an incredible sense of smell — 220 million scent receptors! ${petName}'s nose knows more than we do.`,
+      'Poodle': `Poodles are one of the smartest breeds. ${petName} would thrive with mental stimulation games!`,
+      'Bulldog': `Bulldogs can overheat easily. Keep ${petName} cool during walks — morning or evening is best.`,
+      'Shih Tzu': `Shih Tzus were bred for Chinese royalty. ${petName} deserves the royal treatment!`,
+      'Dachshund': `Those long backs need extra care! Avoid letting ${petName} jump from furniture.`,
+      'Husky': `Huskies need lots of exercise and mental stimulation. ${petName} might enjoy "talking" back to you!`,
+      'Pug': `Pugs are natural comedians. I bet ${petName} has a talent for making you laugh!`,
+    };
+    
+    if (breed && breedInsights[breed]) {
+      insights.push({ type: 'breed', text: breedInsights[breed], icon: '🐕' });
+    }
+    
+    // Age-based insights
+    if (age) {
+      if (age < 1) {
+        insights.push({ type: 'age', text: `At under a year old, ${petName} is still learning about the world. This is the perfect time for training and socialization!`, icon: '🐶' });
+      } else if (age >= 1 && age < 3) {
+        insights.push({ type: 'age', text: `${petName} is in the prime of puppyhood! This is when their personality truly shines.`, icon: '✨' });
+      } else if (age >= 7) {
+        insights.push({ type: 'age', text: `At ${age} years, ${petName} is entering their golden years. Senior dogs often become more affectionate and wise.`, icon: '👴' });
+      }
+    }
+    
+    // Temperament-based insights
+    if (temperament.includes('anxious') || temperament.includes('nervous')) {
+      insights.push({ type: 'temperament', text: `I notice ${petName} can be a bit anxious. Calming music, consistent routines, and puzzle toys can help soothe them.`, icon: '💆' });
+    }
+    if (temperament.includes('playful') || temperament.includes('energetic')) {
+      insights.push({ type: 'temperament', text: `${petName}'s playful energy is a gift! They might enjoy agility training or fetch sessions.`, icon: '🎾' });
+    }
+    
+    // Health-based insights
+    if (allergies.length > 0) {
+      insights.push({ type: 'health', text: `I remember ${petName} has sensitivities to ${allergies.join(', ')}. All my recommendations account for this.`, icon: '⚕️' });
+    }
+    
+    // Soul score insight
+    if (soulScore > 0 && soulScore < 50) {
+      insights.push({ type: 'soul', text: `${petName}'s Soul is ${Math.round(soulScore)}% complete. Answer more questions to help me understand them better!`, icon: '✨' });
+    } else if (soulScore >= 80) {
+      insights.push({ type: 'soul', text: `With ${Math.round(soulScore)}% Soul completion, I truly understand ${petName}. Our connection runs deep.`, icon: '💜' });
+    }
+    
+    // Birthday insight
+    if (birthday) {
+      const bday = new Date(birthday);
+      const today = new Date();
+      const thisYearBday = new Date(today.getFullYear(), bday.getMonth(), bday.getDate());
+      const daysUntilBirthday = Math.ceil((thisYearBday - today) / (1000 * 60 * 60 * 24));
+      
+      if (daysUntilBirthday > 0 && daysUntilBirthday <= 14) {
+        insights.push({ type: 'birthday', text: `${petName}'s birthday is in just ${daysUntilBirthday} days! Shall I help plan something special?`, icon: '🎂' });
+      }
+    }
+    
+    // Return a random insight if we have any
+    if (insights.length > 0) {
+      return insights[Math.floor(Math.random() * insights.length)];
+    }
+    
+    return null;
+  }, [userPets]);
+
   // Check for speech recognition support
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
