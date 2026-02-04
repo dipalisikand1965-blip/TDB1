@@ -327,21 +327,28 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
         {/* Video - Full screen, Sora generated content only */}
         {!isEnding && (
           <>
-            <video 
-              ref={videoRef}
-              className="absolute inset-0 w-full h-full object-contain sm:object-cover"
-              autoPlay
-              muted
-              playsInline
-              preload="auto"
-              style={{
-                objectPosition: 'center center',
-                WebkitTransform: 'translateZ(0)',
-                transform: 'translateZ(0)'
-              }}
+            <motion.div
+              key={currentClip}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+              className="absolute inset-0"
             >
-              <source src={clip.src} type="video/mp4" />
-            </video>
+              <video 
+                ref={videoRef}
+                className="absolute inset-0 w-full h-full object-contain sm:object-cover"
+                autoPlay
+                muted
+                playsInline
+                preload="auto"
+                style={{
+                  objectPosition: 'center center',
+                  WebkitTransform: 'translateZ(0)',
+                  transform: 'translateZ(0)'
+                }}
+              />
+            </motion.div>
             
             {/* Voiceover Audio - Separate from video for better control */}
             <audio
