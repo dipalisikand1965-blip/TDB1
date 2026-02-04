@@ -281,10 +281,21 @@ const MembershipOnboarding = () => {
         })
       });
 
-      const data = await response.json();
+      // Clone response before reading to avoid "body stream already read" error
+      const responseClone = response.clone();
+      
+      let data;
+      try {
+        data = await response.json();
+      } catch (jsonErr) {
+        // If JSON parsing fails, try to get text
+        const text = await responseClone.text();
+        console.error('Response parsing error:', text);
+        throw new Error('Server returned invalid response');
+      }
       
       if (!response.ok) {
-        throw new Error(data.detail || 'Failed to create membership');
+        throw new Error(data.detail || data.message || 'Failed to create membership');
       }
 
       // Upload pet photos if any were selected
