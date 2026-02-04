@@ -415,8 +415,8 @@ const VIDEO_TESTIMONIALS = [
     id: 1,
     name: "Priya & Bruno",
     pet: "Bruno",
-    // Golden retriever thumbnail to match the AI video
-    thumbnail: "https://images.unsplash.com/photo-1633722715463-d30f4f325e24?w=400&h=300&fit=crop",
+    // Golden retriever face close-up - won't crop badly on desktop
+    thumbnail: "https://images.unsplash.com/photo-1743997182218-30d0e9c3b0f1?w=400&h=300&fit=crop",
     videoSrc: "/videos/testimonials/sharma_testimonial.mp4",
     quote: "They remembered Bruno's fear of thunderstorms before I even mentioned it.",
     duration: "0:04",
