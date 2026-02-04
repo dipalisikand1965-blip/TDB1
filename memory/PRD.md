@@ -6,7 +6,7 @@ Build "The Doggy Company," a one-stop-shop concierge for dog parents with a focu
 ## Core Philosophy
 - **We Celebrate Life** - Through every moment, joyful or challenging, we see celebration
 - **Mira interprets lives** - Memory and judgement layer, not a request fulfiller
-- **Brain vs Hand** - Mira is the brain, Concierge is the hand. One understands life, the other moves the world
+- **Brain vs Hand** - Mira is the brain, Concierge® is the hand. One understands life, the other moves the world
 
 ## Core Requirements
 
@@ -95,7 +95,7 @@ Mira AI positioned as the "memory and judgement layer" - she doesn't fulfil requ
 
 #### Mira Positioning Overhaul
 - ✅ **New Headline**: "She Doesn't Fulfil Requests. She Interprets Lives."
-- ✅ **Philosophy Quote**: "Mira is the brain. Concierge is the hand. One understands life. The other moves the world."
+- ✅ **Philosophy Quote**: "Mira is the brain. Concierge® is the hand. One understands life. The other moves the world."
 - ✅ **Memory Layer**: "Mira is the memory and judgement layer that turns infrastructure into relationship."
 - ✅ **New Feature Cards**: "She Sees Beyond Words", "She Builds Relationships", "She Remembers Everything"
 
