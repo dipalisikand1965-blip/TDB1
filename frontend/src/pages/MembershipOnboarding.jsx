@@ -905,49 +905,6 @@ const MembershipOnboarding = () => {
                         </div>
                         <p className="text-xs text-slate-500 mt-2">A clear photo helps us personalize your experience</p>
                       </div>
-                            onChange={(e) => handlePetPhotoSelect(idx, e)}
-                            className="hidden"
-                            id={`pet-photo-${idx}`}
-                            data-testid={`pet-${idx}-photo-input`}
-                          />
-                          <label
-                            htmlFor={`pet-photo-${idx}`}
-                            className="cursor-pointer block"
-                          >
-                            <div className="w-28 h-28 rounded-full bg-slate-800 border-3 border-dashed border-pink-500/50 flex items-center justify-center overflow-hidden hover:border-pink-500 transition-colors group-hover:shadow-lg group-hover:shadow-pink-500/20">
-                              {pet.photo_preview || pet.photo_url ? (
-                                <img 
-                                  src={pet.photo_preview || getPetPhotoUrl(pet)} 
-                                  alt="Pet" 
-                                  className="w-full h-full object-cover"
-                                />
-                              ) : (
-                                <div className="text-center">
-                                  <Camera className="w-8 h-8 text-pink-400 mx-auto" />
-                                  <span className="text-xs text-pink-400 mt-1 block">Add Photo</span>
-                                </div>
-                              )}
-                            </div>
-                            <div className="absolute bottom-0 right-0 w-8 h-8 bg-gradient-to-r from-pink-500 to-purple-600 rounded-full flex items-center justify-center text-white shadow-lg hover:opacity-90 transition-opacity">
-                              <Plus className="w-5 h-5" />
-                            </div>
-                          </label>
-                          {(pet.photo_preview || pet.photo_url) && (
-                            <button
-                              type="button"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                updatePetData(idx, 'photo_preview', null);
-                                updatePetData(idx, 'photo_url', '');
-                                updatePetData(idx, 'photo_file', null);
-                              }}
-                              className="absolute -top-1 -right-1 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center text-white shadow-md hover:bg-red-600"
-                            >
-                              <X className="w-3 h-3" />
-                            </button>
-                          )}
-                        </div>
-                      </div>
 
                       {/* Pet Name */}
                       <div>

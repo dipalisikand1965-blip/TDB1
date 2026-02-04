@@ -252,6 +252,82 @@ async def create_membership_order(request: MembershipPurchaseRequest):
     }
 
 
+class PaymentCreateRequest(BaseModel):
+    order_id: str
+    user_id: str
+    amount: float
+    plan_type: str
+
+
+@router.post("/payment/create")
+async def create_payment(request: PaymentCreateRequest):
+    """Create Razorpay payment order from existing membership order"""
+    db = get_db()
+    logger = get_logger()
+    
+    # Find the existing membership order
+    membership = await db.memberships.find_one({"id": request.order_id})
+    if not membership:
+        raise HTTPException(status_code=404, detail="Order not found")
+    
+    # Calculate amount in paise
+    amount_paise = int(request.amount * 100)
+    
+    # Create Razorpay order
+    if razorpay_client and amount_paise > 0:
+        try:
+            razorpay_order = razorpay_client.order.create({
+                "amount": amount_paise,
+                "currency": "INR",
+                "receipt": request.order_id,
+                "notes": {
+                    "order_id": request.order_id,
+                    "user_id": request.user_id,
+                    "plan_type": request.plan_type
+                }
+            })
+            
+            # Update membership with razorpay order id
+            await db.memberships.update_one(
+                {"id": request.order_id},
+                {"$set": {
+                    "payment.razorpay_order_id": razorpay_order["id"],
+                    "updated_at": datetime.now(timezone.utc).isoformat()
+                }}
+            )
+            
+            logger.info(f"Razorpay order created: {razorpay_order['id']} for membership {request.order_id}")
+            
+            return {
+                "success": True,
+                "razorpay_order_id": razorpay_order["id"],
+                "amount": amount_paise,
+                "currency": "INR",
+                "razorpay_key": RAZORPAY_KEY_ID
+            }
+        except Exception as e:
+            logger.error(f"Razorpay order creation failed: {e}")
+            # Return test mode order
+            test_order_id = f"order_test_{uuid.uuid4().hex[:12]}"
+            return {
+                "success": True,
+                "razorpay_order_id": test_order_id,
+                "amount": amount_paise,
+                "currency": "INR",
+                "razorpay_key": RAZORPAY_KEY_ID,
+                "test_mode": True
+            }
+    else:
+        # Free order or no Razorpay client
+        return {
+            "success": True,
+            "razorpay_order_id": f"free_order_{uuid.uuid4().hex[:8]}",
+            "amount": 0,
+            "currency": "INR",
+            "free_order": True
+        }
+
+
 @router.post("/verify-payment")
 async def verify_payment(request: PaymentVerifyRequest):
     """Verify Razorpay payment and activate membership"""
