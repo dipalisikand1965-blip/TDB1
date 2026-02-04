@@ -615,11 +615,24 @@ Submitted via Dining Concierge on the Dine pillar page.`;
             <Label className="text-sm font-medium text-gray-700 mb-2 block">
               <PawPrint className="w-4 h-4 inline mr-1" /> Select Pet
             </Label>
-            <Select value={selectedPet?.id || ''} onValueChange={(id) => setSelectedPet(userPets.find(p => p.id === id))}>
+            <Select 
+              value={selectedPetOption} 
+              onValueChange={(val) => {
+                setSelectedPetOption(val);
+                if (val === 'all') {
+                  setSelectedPet(null);
+                } else {
+                  setSelectedPet(userPets.find(p => p.id === val));
+                }
+              }}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Select pet" />
               </SelectTrigger>
               <SelectContent>
+                {userPets.length > 1 && (
+                  <SelectItem value="all">🐾 All My Pets ({userPets.length})</SelectItem>
+                )}
                 {userPets.map(pet => (
                   <SelectItem key={pet.id} value={pet.id}>{pet.name}</SelectItem>
                 ))}
