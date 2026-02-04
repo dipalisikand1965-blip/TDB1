@@ -350,7 +350,7 @@ const PetSoulOnboard = () => {
           <Input
             value={petData.name}
             onChange={(e) => handlePetChange('name', e.target.value)}
-            placeholder="What's your pet's name?"
+            placeholder="What's your pet&apos;s name?"
             className="bg-white/10 border-white/20 text-white placeholder:text-white/40"
           />
         </div>
@@ -474,7 +474,7 @@ const PetSoulOnboard = () => {
         <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">
           Now, tell us about you
         </h2>
-        <p className="text-white/60">So we can keep you connected with {petData.name || 'your pet'}'s journey</p>
+        <p className="text-white/60">So we can keep you connected with {petData.name || 'your pet'}&apos;s journey</p>
       </div>
 
       <div className="grid sm:grid-cols-2 gap-4">
@@ -654,7 +654,7 @@ const PetSoulOnboard = () => {
           <Crown className="w-10 h-10 text-white" />
         </div>
         <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">
-          Choose {petData.name || 'your pet'}'s journey
+          Choose {petData.name || 'your pet'}&apos;s journey
         </h2>
         <p className="text-white/60">Start free or unlock the full experience</p>
       </div>
@@ -750,7 +750,7 @@ const PetSoulOnboard = () => {
         transition={{ delay: 0.5 }}
         className="text-xl text-white/70 mb-8"
       >
-        {petData.name}'s Pet Soul™ profile is ready
+        {petData.name}&apos;s Pet Soul™ profile is ready
       </motion.p>
       
       <motion.div
