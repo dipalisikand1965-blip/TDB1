@@ -1238,6 +1238,27 @@ const MemberDashboard = () => {
           </div>
 
           {/* Tab Contents - All Lazy Loaded */}
+          
+          {/* Back to Home Button - Shows when on any tab except overview */}
+          {activeTab !== 'overview' && (
+            <div className="sticky top-0 z-30 bg-slate-950/90 backdrop-blur-xl border-b border-white/10 p-3 mb-4 -mx-4 px-4 md:hidden flex items-center justify-between">
+              <button
+                onClick={() => setActiveTab('overview')}
+                className="flex items-center gap-2 text-sm text-purple-400 hover:text-purple-300 transition-colors"
+              >
+                <ArrowRight className="w-4 h-4 rotate-180" />
+                Back to Home
+              </button>
+              <button
+                onClick={() => setActiveTab('overview')}
+                className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                aria-label="Close tab"
+              >
+                <X className="w-5 h-5 text-slate-400" />
+              </button>
+            </div>
+          )}
+          
           <TabsContent value="overview">
             <Suspense fallback={<TabLoader />}>
               <OverviewTab 
