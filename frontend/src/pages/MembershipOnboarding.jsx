@@ -329,31 +329,22 @@ const MembershipOnboarding = () => {
 
   // Calculate pricing - All dogs included at same price!
   const getPricing = () => {
-    // Explorer = FREE (7 days), Trial = 1 month (₹499 + GST), Founder = 12 months (₹4,999 + GST)
+    // Trial = 1 month (₹499 + GST) + 7 bonus days = 37 days
+    // Founder = 12 months (₹4,999 + GST) + 7 bonus days = 372 days
     // ALL DOGS INCLUDED - no additional pet pricing
-    const isExplorer = planType === 'explorer';
     const isTrialPlan = planType === 'trial' || planType === 'monthly';
     const isFounder = planType === 'annual' || planType === 'foundation' || planType === 'founder';
     
-    let basePrice = 0;
-    let planName = '7-Day Explorer';
-    let validityDays = 7;
-    
-    if (isTrialPlan) {
-      basePrice = 499;
-      planName = 'Trial (1 month)';
-      validityDays = 30;
-    } else if (isFounder) {
-      basePrice = 4999;
-      planName = 'Founder (12 months)';
-      validityDays = 365;
-    }
+    let basePrice = isTrialPlan ? 499 : 4999;
+    let planName = isTrialPlan ? 'Trial (37 days)' : 'Founder (372 days)';
+    let validityDays = isTrialPlan ? 37 : 372; // Including 7 bonus days
+    let bonusDays = 7;
     
     const subtotal = basePrice;
     const gst = Math.round(subtotal * 0.18);
     const total = subtotal + gst;
     
-    return { basePrice, subtotal, gst, total, isTrialPlan, isExplorer, isFounder, planName, validityDays, petCount: petsData.length };
+    return { basePrice, subtotal, gst, total, isTrialPlan, isFounder, planName, validityDays, bonusDays, petCount: petsData.length };
   };
 
   const pricing = getPricing();
