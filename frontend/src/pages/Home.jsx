@@ -319,13 +319,12 @@ const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
           <>
             <video 
               ref={videoRef}
-              className="absolute inset-0 w-full h-full"
+              className="absolute inset-0 w-full h-full object-contain sm:object-cover"
               autoPlay
               muted
               playsInline
               preload="auto"
               style={{
-                objectFit: 'cover',
                 objectPosition: 'center center',
                 WebkitTransform: 'translateZ(0)',
                 transform: 'translateZ(0)'
