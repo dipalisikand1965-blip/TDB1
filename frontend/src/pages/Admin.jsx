@@ -1928,16 +1928,19 @@ const Admin = () => {
                 {seedingAll ? 'Seeding...' : 'Universal Seed + Tags'}
               </button>
               
-              {/* Shopify Sync Button - RECOMMENDED for production */}
+              {/* 🚀 MASTER SYNC - One button for everything */}
               <button
-                onClick={() => { syncShopifyProducts(); setSidebarCollapsed(true); }}
+                onClick={() => { syncAllData(); setSidebarCollapsed(true); }}
                 disabled={syncingShopify}
-                className="w-full p-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:from-green-700 hover:to-emerald-700 disabled:opacity-50"
-                data-testid="shopify-sync-btn"
+                className="w-full p-4 bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:from-green-700 hover:via-emerald-700 hover:to-teal-700 disabled:opacity-50 shadow-lg"
+                data-testid="master-sync-btn"
               >
-                {syncingShopify ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShoppingBag className="w-4 h-4" />}
-                {syncingShopify ? 'Syncing...' : '🛒 Sync Shopify Products'}
+                {syncingShopify ? <RefreshCw className="w-5 h-5 animate-spin" /> : <ShoppingBag className="w-5 h-5" />}
+                {syncingShopify ? 'Syncing Everything...' : '🚀 SYNC ALL DATA'}
               </button>
+              <p className="text-xs text-gray-500 text-center mt-1">
+                Products + Services + All Pillars + Mira Whispers
+              </p>
             </div>
           </div>
           
