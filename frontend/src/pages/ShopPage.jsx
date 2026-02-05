@@ -901,12 +901,13 @@ const ShopPage = () => {
           {activeView === 'services' && (
             <>
               {filteredServices.length === 0 ? (
-                <div className="text-center py-16">
-                  <Briefcase className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-[#2D2D2D] mb-2">No services in this category</h3>
+                <div className="text-center py-12 sm:py-16 px-4">
+                  <Briefcase className="w-12 h-12 sm:w-16 sm:h-16 text-gray-300 mx-auto mb-3 sm:mb-4" />
+                  <h3 className="text-lg sm:text-xl font-semibold text-[#2D2D2D] mb-2">No services in this category</h3>
+                  <p className="text-sm text-[#9B9B9B] mb-4">Try a different pillar</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4 md:gap-6">
                   {filteredServices.map(service => (
                     <ServiceCard key={service.id} service={service} />
                   ))}
