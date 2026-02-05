@@ -552,7 +552,78 @@ const FinanceManager = () => {
           <p className="text-slate-400 text-sm mt-1">Track payments, refunds, discounts & reconcile accounts</p>
         </div>
         
-        <div className="flex flex-wrap gap-2">
+        {/* Date Range Presets */}
+        <div className="flex flex-wrap gap-1 bg-slate-800/50 rounded-xl p-2 border border-slate-700/50">
+          {[
+            { id: 'all', label: 'All Time' },
+            { id: 'today', label: 'Today' },
+            { id: 'yesterday', label: 'Yesterday' },
+            { id: 'this_week', label: 'This Week' },
+            { id: 'last_week', label: 'Last Week' },
+            { id: 'this_month', label: 'This Month' },
+            { id: 'last_month', label: 'Last Month' },
+            { id: 'this_quarter', label: 'This Quarter' },
+            { id: 'this_year', label: 'This Year' },
+            { id: 'custom', label: 'Custom' },
+          ].map(preset => (
+            <button
+              key={preset.id}
+              onClick={() => applyDatePreset(preset.id)}
+              className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
+                datePreset === preset.id 
+                  ? 'bg-emerald-500 text-white' 
+                  : 'text-slate-400 hover:bg-slate-700 hover:text-white'
+              }`}
+            >
+              {preset.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Custom Date Range (shows when custom is selected) */}
+      {datePreset === 'custom' && (
+        <div className="flex gap-3 items-center bg-slate-800/50 rounded-xl p-4 border border-slate-700/50">
+          <Calendar className="w-5 h-5 text-slate-400" />
+          <div className="flex gap-2 items-center">
+            <Input
+              type="date"
+              value={dateRange.start}
+              onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
+              className="bg-slate-900/50 border-slate-600 w-40"
+            />
+            <span className="text-slate-400">to</span>
+            <Input
+              type="date"
+              value={dateRange.end}
+              onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
+              className="bg-slate-900/50 border-slate-600 w-40"
+            />
+          </div>
+          {(dateRange.start || dateRange.end) && (
+            <span className="text-emerald-400 text-sm ml-2">
+              Showing {dateFilteredPayments.length} transactions
+            </span>
+          )}
+        </div>
+      )}
+
+      {/* Report Period Banner */}
+      {datePreset !== 'all' && (
+        <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-3 flex items-center justify-between">
+          <div className="flex items-center gap-2 text-emerald-400">
+            <Calendar className="w-4 h-4" />
+            <span className="text-sm font-medium">
+              Report Period: {dateRange.start ? new Date(dateRange.start).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Start'} 
+              {' → '}
+              {dateRange.end ? new Date(dateRange.end).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'End'}
+            </span>
+          </div>
+          <span className="text-emerald-400 text-sm">{dateFilteredPayments.length} transactions</span>
+        </div>
+      )}
+        
+      <div className="flex flex-wrap gap-2">
           {/* Hidden file input for CSV import */}
           <input
             ref={fileInputRef}
