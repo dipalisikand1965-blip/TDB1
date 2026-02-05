@@ -2605,7 +2605,7 @@ const UnifiedProductBox = () => {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Edit className="w-5 h-5 text-purple-500" />
-              Quick Edit: {quickEditType === 'image' ? 'Image' : quickEditType === 'price' ? 'Price' : 'Pillars'}
+              Quick Edit: {quickEditType === 'image' ? 'Image' : quickEditType === 'price' ? 'Price' : quickEditType === 'pillars' ? 'Pillars' : quickEditType === 'name' ? 'Name' : 'Mira Hint'}
             </DialogTitle>
           </DialogHeader>
           
@@ -2614,6 +2614,37 @@ const UnifiedProductBox = () => {
               <p className="text-sm text-gray-500 mb-4">
                 Editing: <span className="font-medium text-gray-700">{quickEditProduct.name}</span>
               </p>
+            )}
+            
+            {/* Name Edit */}
+            {quickEditType === 'name' && (
+              <div className="space-y-4">
+                <div>
+                  <Label>Product Name</Label>
+                  <Input
+                    value={quickEditValue || ''}
+                    onChange={(e) => setQuickEditValue(e.target.value)}
+                    placeholder="Enter product name..."
+                    className="mt-1"
+                  />
+                </div>
+              </div>
+            )}
+            
+            {/* Mira Hint Edit */}
+            {quickEditType === 'mira_hint' && (
+              <div className="space-y-4">
+                <div>
+                  <Label>Mira Hint (AI Assistant Tip)</Label>
+                  <textarea
+                    value={quickEditValue || ''}
+                    onChange={(e) => setQuickEditValue(e.target.value)}
+                    placeholder="Enter a helpful tip for Mira to use when recommending this product..."
+                    className="mt-1 w-full h-32 px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">This hint helps Mira make better recommendations to customers.</p>
+                </div>
+              </div>
             )}
             
             {/* Image Edit */}
