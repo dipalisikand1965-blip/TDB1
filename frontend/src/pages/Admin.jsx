@@ -1982,14 +1982,15 @@ const Admin = () => {
         <div className="md:hidden mb-4">
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="w-full flex items-center justify-between p-3 bg-white rounded-xl border shadow-sm"
+            className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl shadow-lg active:scale-[0.98] transition-transform"
             data-testid="admin-mobile-menu-btn"
           >
-            <span className="flex items-center gap-2">
-              <LayoutDashboard className="w-5 h-5 text-purple-600" />
-              <span className="font-medium">{activeTab.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
+            <span className="flex items-center gap-3">
+              <Menu className="w-6 h-6" />
+              <span className="font-bold text-lg">{activeTab.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}</span>
             </span>
-            <ChevronDown className={`w-5 h-5 transition-transform ${mobileMenuOpen ? 'rotate-180' : ''}`} />
+            <ChevronDown className={`w-6 h-6 transition-transform ${mobileMenuOpen ? 'rotate-180' : ''}`} />
+          </button>
           </button>
           
           {/* Mobile Menu Overlay */}
