@@ -31,8 +31,77 @@ const CATEGORIES = [
   { value: 'merchandise', label: 'Merchandise' },
   { value: 'mini-cakes', label: 'Mini Cakes' },
   { value: 'pan-india', label: 'Pan India' },
+  { value: 'toys', label: 'Toys' },
+  { value: 'grooming', label: 'Grooming' },
+  { value: 'travel', label: 'Travel Gear' },
+  { value: 'bandanas', label: 'Bandanas & Apparel' },
   { value: 'other', label: 'Other' }
 ];
+
+// Breed Intelligence Options for Mira
+const BREED_OPTIONS = {
+  breeds: [
+    { value: 'Indie', label: 'Indie (Indian Pariah)' },
+    { value: 'Golden Retriever', label: 'Golden Retriever' },
+    { value: 'Labrador', label: 'Labrador' },
+    { value: 'Beagle', label: 'Beagle' },
+    { value: 'Maltese', label: 'Maltese' },
+    { value: 'Maltipoo', label: 'Maltipoo' },
+    { value: 'Shih Tzu', label: 'Shih Tzu' },
+    { value: 'Pomeranian', label: 'Pomeranian' },
+    { value: 'German Shepherd', label: 'German Shepherd' },
+    { value: 'Pug', label: 'Pug' },
+    { value: 'Cocker Spaniel', label: 'Cocker Spaniel' },
+    { value: 'Dachshund', label: 'Dachshund' }
+  ],
+  sizes: [
+    { value: 'XS', label: 'XS (Under 5kg)' },
+    { value: 'S', label: 'S (5-10kg)' },
+    { value: 'M', label: 'M (10-20kg)' },
+    { value: 'L', label: 'L (20-35kg)' },
+    { value: 'XL', label: 'XL (35kg+)' }
+  ],
+  ageGroups: [
+    { value: 'puppy', label: 'Puppy (0-1 year)' },
+    { value: 'adult', label: 'Adult (1-7 years)' },
+    { value: 'senior', label: 'Senior (7+ years)' }
+  ],
+  chewStrength: [
+    { value: 'soft', label: 'Soft Chewer' },
+    { value: 'medium', label: 'Medium Chewer' },
+    { value: 'power_chewer', label: 'Power Chewer' }
+  ],
+  energyLevel: [
+    { value: 'calm', label: 'Calm / Low Energy' },
+    { value: 'moderate', label: 'Moderate Energy' },
+    { value: 'active', label: 'Active / High Energy' },
+    { value: 'high_energy', label: 'Very High Energy' }
+  ],
+  coatTypes: [
+    { value: 'short', label: 'Short Coat' },
+    { value: 'medium', label: 'Medium Coat' },
+    { value: 'long', label: 'Long Coat' },
+    { value: 'double', label: 'Double Coat' },
+    { value: 'curly', label: 'Curly Coat' },
+    { value: 'wire', label: 'Wire Coat' }
+  ],
+  sensitivities: [
+    { value: 'allergy_safe', label: 'Allergy Safe' },
+    { value: 'grain_free', label: 'Grain Free' },
+    { value: 'hypoallergenic', label: 'Hypoallergenic' },
+    { value: 'sensitive_stomach', label: 'Sensitive Stomach' },
+    { value: 'skin_sensitive', label: 'Skin Sensitive' }
+  ],
+  pillars: [
+    { value: 'celebrate', label: 'Celebrate' },
+    { value: 'dine', label: 'Dine' },
+    { value: 'stay', label: 'Stay' },
+    { value: 'travel', label: 'Travel' },
+    { value: 'care', label: 'Care' },
+    { value: 'enjoy', label: 'Enjoy' },
+    { value: 'fit', label: 'Fit' }
+  ]
+};
 
 const ProductManager = ({ credentials }) => {
   // Get credentials from props or localStorage
