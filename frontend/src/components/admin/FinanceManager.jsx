@@ -484,15 +484,6 @@ const FinanceManager = () => {
     a.click();
   };
 
-  // Filter payments by date range
-  const dateFilteredPayments = payments.filter(p => {
-    if (!dateRange.start && !dateRange.end) return true;
-    const paymentDate = new Date(p.created_at).toISOString().split('T')[0];
-    if (dateRange.start && paymentDate < dateRange.start) return false;
-    if (dateRange.end && paymentDate > dateRange.end) return false;
-    return true;
-  });
-
   // Calculate stats based on date-filtered payments
   const dateFilteredStats = {
     total_collected: dateFilteredPayments.filter(p => p.status === 'completed').reduce((sum, p) => sum + (p.total || p.amount || 0), 0),
