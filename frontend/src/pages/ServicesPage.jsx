@@ -769,13 +769,29 @@ const ServicesPage = () => {
       <section className="py-4 sm:py-6 bg-white">
         <div className="max-w-7xl mx-auto px-3 sm:px-6">
           <div className="flex items-center justify-between mb-3 sm:mb-4">
-            <h2 className="text-base sm:text-lg font-bold text-gray-900">
-              {selectedBreedFilter && selectedBreedFilter !== 'all' 
-                ? `Services for ${BREED_FILTERS.find(b => b.id === selectedBreedFilter)?.label || selectedBreedFilter}`
-                : selectedPillar === 'recommended' ? `For ${petName || 'You'}` 
-                : selectedPillar === 'all' ? 'All Services' 
-                : `${PILLARS.find(p => p.id === selectedPillar)?.label || ''}`}
-            </h2>
+            <div>
+              <h2 className="text-base sm:text-lg font-bold text-gray-900">
+                {selectedBreedFilter && selectedBreedFilter !== 'all' 
+                  ? `Services for ${BREED_FILTERS.find(b => b.id === selectedBreedFilter)?.label || selectedBreedFilter}`
+                  : selectedPillar === 'recommended' ? `For ${petName || 'You'}` 
+                  : selectedPillar === 'all' ? 'All Services' 
+                  : `${PILLARS.find(p => p.id === selectedPillar)?.label || ''}`}
+              </h2>
+              {/* Looking for different pet link */}
+              {selectedPillar === 'recommended' && selectedPet && (
+                <button 
+                  onClick={() => {
+                    // Scroll to breed filter and open it
+                    const breedBtn = document.querySelector('[data-testid="breed-filter-btn"]');
+                    if (breedBtn) breedBtn.click();
+                  }}
+                  className="text-[10px] sm:text-xs text-purple-600 hover:text-purple-700 hover:underline mt-0.5 flex items-center gap-1"
+                >
+                  <PawPrint className="w-3 h-3" />
+                  Looking for a friend's pet? Filter by breed →
+                </button>
+              )}
+            </div>
             {filteredServices.length > 0 && (
               <span className="text-[10px] sm:text-xs text-gray-500">{filteredServices.length} services</span>
             )}
