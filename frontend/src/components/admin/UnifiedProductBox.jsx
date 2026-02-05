@@ -101,6 +101,9 @@ const UnifiedProductBox = () => {
   const [filterStatus, setFilterStatus] = useState('');
   const [filterShipping, setFilterShipping] = useState('');
   const [filterRewardEligible, setFilterRewardEligible] = useState(null);
+  const [filterBreed, setFilterBreed] = useState('');
+  const [filterSize, setFilterSize] = useState('');
+  const [filterHasMiraHint, setFilterHasMiraHint] = useState('');
   
   // Pagination
   const [page, setPage] = useState(0);
