@@ -128,7 +128,20 @@ Build "The Doggy Company," a one-stop-shop concierge for dog parents with a focu
 - ✅ Images ARE seeded correctly - 78 products (cake: 20, accessories: 20, treats: 20, toys: 18)
 - ✅ Products display with images on /occasion-box/birthday
 
-#### 6. Finance Manager Verified
+#### 6. PetOSWrapper Component Created (Phase 1)
+- ✅ Created thin, declarative `/app/frontend/src/components/PetOSWrapper.jsx`
+- ✅ **Exports:**
+  - `usePetOS` hook - fetches pets, manages active pet state
+  - `NonMemberGate` - full or inline variant
+  - `MemberIdentity` - pet avatar + identity pills + Mira knows badge
+  - `HandledByMiraBadge` - "Handled by Mira for [PetName]"
+  - `MiraContextStrip` - Mira's note container
+  - `PILLAR_CONFIG` - all 14 pillars with colors/emojis
+- ✅ **Applied to CelebratePage** as first integration
+- ✅ Non-member inline gate showing on Celebrate page
+- ✅ Member identity ready for logged-in users
+
+#### 7. Finance Manager Verified
 - ✅ Works correctly in preview environment
 - ✅ Stats cards, date filters, Record Payment, Import CSV all functional
 - Production "Oops" may need cache clear after deployment
