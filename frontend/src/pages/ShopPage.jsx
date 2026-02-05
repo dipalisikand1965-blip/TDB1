@@ -780,21 +780,49 @@ const ShopPage = () => {
 
           {/* Products Grid */}
           <main className="flex-1">
+            {/* Products/Services Tab Toggle */}
+            <div className="flex items-center gap-2 mb-4 sm:mb-6 border-b pb-3 sm:pb-4">
+              <button
+                onClick={() => setActiveTab('products')}
+                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all ${
+                  activeTab === 'products'
+                    ? 'bg-teal-600 text-white shadow-md'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+                data-testid="tab-products"
+              >
+                <Package className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                Products ({filteredProducts.length})
+              </button>
+              <button
+                onClick={() => setActiveTab('services')}
+                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all ${
+                  activeTab === 'services'
+                    ? 'bg-teal-600 text-white shadow-md'
+                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`}
+                data-testid="tab-services"
+              >
+                <Briefcase className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                Services ({services.length})
+              </button>
+            </div>
+            
             {/* Toolbar */}
-            <div className="flex items-center justify-between mb-6">
-              <p className="text-gray-600">
-                {filteredProducts.length} products
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
+              <p className="text-xs sm:text-sm text-gray-600">
+                {activeTab === 'products' ? filteredProducts.length : services.length} {activeTab}
                 {searchQuery && ` for "${searchQuery}"`}
               </p>
               
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 sm:gap-4">
                 {/* Mobile Filter Button */}
                 <Button 
                   variant="outline" 
-                  className="lg:hidden"
+                  className="lg:hidden text-xs sm:text-sm h-8 sm:h-10"
                   onClick={() => setShowFilters(true)}
                 >
-                  <Filter className="w-4 h-4 mr-2" />
+                  <Filter className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                   Filters
                 </Button>
                 
@@ -802,7 +830,7 @@ const ShopPage = () => {
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
-                  className="px-3 py-2 border rounded-lg text-sm"
+                  className="px-2 sm:px-3 py-1.5 sm:py-2 border rounded-lg text-xs sm:text-sm"
                 >
                   <option value="featured">Featured</option>
                   <option value="price-low">Price: Low to High</option>
@@ -814,15 +842,15 @@ const ShopPage = () => {
                 <div className="hidden md:flex border rounded-lg overflow-hidden">
                   <button
                     onClick={() => setViewMode('grid')}
-                    className={`p-2 ${viewMode === 'grid' ? 'bg-purple-100 text-purple-600' : 'hover:bg-gray-100'}`}
+                    className={`p-1.5 sm:p-2 ${viewMode === 'grid' ? 'bg-purple-100 text-purple-600' : 'hover:bg-gray-100'}`}
                   >
-                    <Grid className="w-5 h-5" />
+                    <Grid className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                   <button
                     onClick={() => setViewMode('list')}
-                    className={`p-2 ${viewMode === 'list' ? 'bg-purple-100 text-purple-600' : 'hover:bg-gray-100'}`}
+                    className={`p-1.5 sm:p-2 ${viewMode === 'list' ? 'bg-purple-100 text-purple-600' : 'hover:bg-gray-100'}`}
                   >
-                    <List className="w-5 h-5" />
+                    <List className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                 </div>
               </div>
