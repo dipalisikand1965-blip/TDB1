@@ -608,7 +608,59 @@ const ShopPage = () => {
   const filteredProducts = useMemo(() => {
     let result = allProducts;
     
-    if (selectedPillar !== 'all' && selectedPillar !== 'shop' && selectedPillar !== 'recommended') {
+    // "For You" / "recommended" - Personalize based on pet
+    if (selectedPillar === 'recommended' && selectedPet) {
+      const petBreedLower = (selectedPet.breed || '').toLowerCase();
+      const petSize = selectedPet.size?.toLowerCase() || '';
+      const petAge = selectedPet.age_years || 0;
+      
+      // Score products for relevance
+      result = result.map(p => {
+        let score = 0;
+        const pName = (p.name || p.title || '').toLowerCase();
+        const pDesc = (p.description || '').toLowerCase();
+        const pTags = (p.tags || []).map(t => t?.toLowerCase()).join(' ');
+        const combined = `${pName} ${pDesc} ${pTags}`;
+        
+        // Breed match (highest priority)
+        if (petBreedLower) {
+          const breedWords = petBreedLower.split(/\s+/);
+          breedWords.forEach(word => {
+            if (word.length > 3 && combined.includes(word)) score += 50;
+          });
+          // Specific breed matches
+          if (petBreedLower.includes('retriever') && (combined.includes('retriever') || combined.includes('large') || combined.includes('active'))) score += 30;
+          if (petBreedLower.includes('shih') && (combined.includes('shih') || combined.includes('small') || combined.includes('toy'))) score += 30;
+          if (petBreedLower.includes('lab') && (combined.includes('lab') || combined.includes('large') || combined.includes('energetic'))) score += 30;
+          if (petBreedLower.includes('pug') && (combined.includes('pug') || combined.includes('small') || combined.includes('brachycephalic'))) score += 30;
+          if (petBreedLower.includes('beagle') && (combined.includes('beagle') || combined.includes('medium') || combined.includes('scent'))) score += 30;
+        }
+        
+        // Size match
+        if (petSize) {
+          if (petSize.includes('small') && combined.includes('small')) score += 20;
+          if (petSize.includes('medium') && combined.includes('medium')) score += 20;
+          if (petSize.includes('large') && combined.includes('large')) score += 20;
+        }
+        
+        // Age-appropriate
+        if (petAge < 1 && combined.includes('puppy')) score += 25;
+        if (petAge > 7 && combined.includes('senior')) score += 25;
+        
+        // Celebrate pillar gets boost (cakes, treats)
+        if (p.pillar === 'celebrate' || p.primary_pillar === 'celebrate') score += 10;
+        
+        // Products with breed whispers get boost
+        if (p.breed_whispers && Object.keys(p.breed_whispers).length > 0) score += 15;
+        
+        return { ...p, _relevanceScore: score };
+      });
+      
+      // Sort by relevance score, then filter to top relevant ones
+      result = result
+        .sort((a, b) => b._relevanceScore - a._relevanceScore)
+        .filter(p => p._relevanceScore > 0 || result.indexOf(p) < 50); // Show scored items + fallback
+    } else if (selectedPillar !== 'all' && selectedPillar !== 'shop') {
       result = result.filter(p => {
         const productPillars = p.pillars || [];
         return productPillars.includes(selectedPillar) || p.primary_pillar === selectedPillar || p.pillar === selectedPillar;
@@ -635,7 +687,7 @@ const ShopPage = () => {
     }
     
     return result;
-  }, [allProducts, selectedPillar, selectedSubcat, searchQuery]);
+  }, [allProducts, selectedPillar, selectedSubcat, searchQuery, selectedPet]);
   
   const displayedProducts = useMemo(() => filteredProducts.slice(0, displayCount), [filteredProducts, displayCount]);
   const hasMore = displayCount < filteredProducts.length;
