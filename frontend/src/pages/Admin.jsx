@@ -1900,6 +1900,17 @@ const Admin = () => {
                 {seedingAll ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
                 {seedingAll ? 'Seeding...' : 'Universal Seed + Tags'}
               </button>
+              
+              {/* Shopify Sync Button - RECOMMENDED for production */}
+              <button
+                onClick={() => { syncShopifyProducts(); setSidebarCollapsed(true); }}
+                disabled={syncingShopify}
+                className="w-full p-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:from-green-700 hover:to-emerald-700 disabled:opacity-50"
+                data-testid="shopify-sync-btn"
+              >
+                {syncingShopify ? <RefreshCw className="w-4 h-4 animate-spin" /> : <ShoppingBag className="w-4 h-4" />}
+                {syncingShopify ? 'Syncing...' : '🛒 Sync Shopify Products'}
+              </button>
             </div>
           </div>
           
