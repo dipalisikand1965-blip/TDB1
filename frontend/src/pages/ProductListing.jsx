@@ -535,7 +535,7 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
                   <PawPrint className="w-4 h-4" />
                   Set up your pet with Mira
                 </Link>
-                <span className="text-xs text-stone-400 mt-1.5">Takes about 2 minutes</span>
+                <span className="text-xs text-stone-400 mt-1.5">Takes about 2 minutes. You can change this anytime.</span>
               </div>
               <Link 
                 to="/login" 
@@ -545,6 +545,9 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
                 Continue with your pet profile
               </Link>
             </div>
+            
+            {/* Privacy reassurance */}
+            <p className="text-xs text-stone-400 mt-3">Your pet&apos;s information is used only to improve care. Never shared.</p>
             
             {/* Benefits card - outcomes, not perks */}
             <div className="mt-8 p-6 bg-white rounded-xl border border-stone-200 max-w-lg mx-auto text-left" data-testid="benefits-card">
