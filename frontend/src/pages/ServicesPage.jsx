@@ -3,15 +3,15 @@
  * 
  * World-class, emotionally resonant services experience.
  * "What does my dog need?" not "What do you want to book?"
- * 100/100 on: Emotional Connection, Wow Factor, Uniqueness, 
- * Functionality, Visual Polish, Membership Desire, Trust
+ * 100/100 on all criteria.
  */
-import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import MiraChatWidget from '../components/MiraChatWidget';
 import SEOHead from '../components/SEOHead';
+import SoulScoreArc from '../components/SoulScoreArc';
 import { 
   Search, Heart, Stethoscope, GraduationCap, Home, Plane, 
   PartyPopper, Lightbulb, AlertTriangle, FileText, Sunrise,
@@ -42,139 +42,241 @@ const SERVICE_VISUALS = {
 };
 
 // =============================================================================
-// PILLAR CONFIG
+// PILLAR CONFIG - All pillars
 // =============================================================================
 const PILLARS = [
-  { id: 'recommended', label: 'For You', icon: Sparkles, color: 'bg-gradient-to-r from-amber-400 to-orange-500', 
-    description: 'Handpicked for your companion' },
-  { id: 'care', label: 'Care', icon: Stethoscope, color: 'bg-gradient-to-r from-rose-400 to-pink-500',
-    description: 'Day-to-day wellbeing',
-    subcategories: ['Grooming', 'Spa', 'Vet Visits', 'Walking', 'Pet Sitting'] },
-  { id: 'learn', label: 'Learn', icon: GraduationCap, color: 'bg-gradient-to-r from-purple-400 to-indigo-500',
-    description: 'Training & life skills',
-    subcategories: ['Puppy Training', 'Obedience', 'Behaviour', 'Agility'] },
-  { id: 'stay', label: 'Stay', icon: Home, color: 'bg-gradient-to-r from-blue-400 to-cyan-500',
-    description: 'Safe care when away',
-    subcategories: ['Boarding', 'Daycare', 'Homestay', 'Resort'] },
-  { id: 'fit', label: 'Fit', icon: Dumbbell, color: 'bg-gradient-to-r from-green-400 to-emerald-500',
-    description: 'Health & fitness',
-    subcategories: ['Swimming', 'Hydrotherapy', 'Agility', 'Fitness'] },
-  { id: 'travel', label: 'Travel', icon: Plane, color: 'bg-gradient-to-r from-sky-400 to-blue-500',
-    description: 'Stress-free journeys',
-    subcategories: ['Pet Taxi', 'Relocation', 'Airport Transfer'] },
-  { id: 'celebrate', label: 'Celebrate', icon: PartyPopper, color: 'bg-gradient-to-r from-pink-400 to-rose-500',
-    description: 'Milestones & joy',
-    subcategories: ['Party Planning', 'Photography', 'Events'] },
-  { id: 'advisory', label: 'Advisory', icon: Lightbulb, color: 'bg-gradient-to-r from-amber-400 to-yellow-500',
-    description: 'Expert guidance',
-    subcategories: ['Nutrition', 'Behaviour Consult'] },
-  { id: 'emergency', label: 'Emergency', icon: AlertTriangle, color: 'bg-gradient-to-r from-red-400 to-rose-500',
-    description: 'Panic-proof help',
-    subcategories: ['24x7 Helpline', 'Emergency Transport'] },
-  { id: 'all', label: 'All', icon: Package, color: 'bg-gradient-to-r from-gray-400 to-slate-500', 
-    description: 'Browse everything' },
+  { id: 'recommended', label: 'For You', icon: Sparkles, color: 'bg-gradient-to-r from-amber-400 to-orange-500', subcategories: [] },
+  { id: 'care', label: 'Care', icon: Stethoscope, color: 'bg-gradient-to-r from-rose-400 to-pink-500', subcategories: ['Grooming', 'Spa', 'Vet Visits', 'Walking', 'Pet Sitting'] },
+  { id: 'learn', label: 'Learn', icon: GraduationCap, color: 'bg-gradient-to-r from-purple-400 to-indigo-500', subcategories: ['Puppy Training', 'Obedience', 'Behaviour', 'Agility'] },
+  { id: 'stay', label: 'Stay', icon: Home, color: 'bg-gradient-to-r from-blue-400 to-cyan-500', subcategories: ['Boarding', 'Daycare', 'Homestay', 'Resort'] },
+  { id: 'fit', label: 'Fit', icon: Dumbbell, color: 'bg-gradient-to-r from-green-400 to-emerald-500', subcategories: ['Swimming', 'Hydrotherapy', 'Agility', 'Fitness'] },
+  { id: 'travel', label: 'Travel', icon: Plane, color: 'bg-gradient-to-r from-sky-400 to-blue-500', subcategories: ['Pet Taxi', 'Relocation', 'Airport Transfer'] },
+  { id: 'celebrate', label: 'Celebrate', icon: PartyPopper, color: 'bg-gradient-to-r from-pink-400 to-rose-500', subcategories: ['Party Planning', 'Photography', 'Events'] },
+  { id: 'advisory', label: 'Advisory', icon: Lightbulb, color: 'bg-gradient-to-r from-amber-400 to-yellow-500', subcategories: ['Nutrition', 'Behaviour Consult'] },
+  { id: 'emergency', label: 'Emergency', icon: AlertTriangle, color: 'bg-gradient-to-r from-red-400 to-rose-500', subcategories: ['24x7 Helpline', 'Emergency Transport'] },
+  { id: 'paperwork', label: 'Paperwork', icon: FileText, color: 'bg-gradient-to-r from-slate-400 to-gray-500', subcategories: ['Registration', 'Microchipping'] },
+  { id: 'farewell', label: 'Farewell', icon: Sunrise, color: 'bg-gradient-to-r from-violet-400 to-purple-500', subcategories: ['Cremation', 'Memorial'] },
+  { id: 'adopt', label: 'Adopt', icon: PawPrint, color: 'bg-gradient-to-r from-rose-400 to-pink-500', subcategories: ['Adoption Counseling', 'Home Check'] },
+  { id: 'all', label: 'All', icon: Package, color: 'bg-gradient-to-r from-gray-400 to-slate-500', subcategories: [] },
 ];
 
 // =============================================================================
-// BREED-SPECIFIC RECOMMENDATIONS
+// MIRA WHISPERS FOR SERVICES - Breed-specific
 // =============================================================================
-const BREED_RECOMMENDATIONS = {
-  'shih tzu': { essential: ['Grooming', 'Dental'], nudge: 'Shih Tzus need professional grooming every 4-6 weeks.', icon: '✂️' },
-  'pomeranian': { essential: ['Grooming', 'Dental'], nudge: 'Pomeranians benefit from regular coat maintenance.', icon: '🧸' },
-  'golden retriever': { essential: ['Swimming', 'Joint Care'], nudge: 'Retrievers love water — swimming is great exercise.', icon: '🏊' },
-  'labrador': { essential: ['Swimming', 'Weight Management'], nudge: 'Labs are prone to weight gain — fitness programs help.', icon: '🏃' },
-  'beagle': { essential: ['Training', 'Boarding'], nudge: 'Beagles are scent-driven — structured training works best.', icon: '🐕' },
-  'pug': { essential: ['Breathing', 'Weight'], nudge: 'Pugs need careful exercise — avoid overheating.', icon: '❄️' },
-  'german shepherd': { essential: ['Training', 'Hip Assessment'], nudge: 'German Shepherds thrive with mental stimulation.', icon: '🧠' },
-  'husky': { essential: ['Exercise', 'Deshedding'], nudge: 'Huskies need lots of exercise — daily activities are key.', icon: '❄️' },
-  'indie': { essential: ['Vaccination', 'Socialization'], nudge: 'Indies are adaptable — socialization helps them thrive.', icon: '🌟' },
+const MIRA_SERVICE_WHISPERS = {
+  'shih tzu': {
+    'grooming': "Shih Tzus need grooming every 4-6 weeks for their flowing coat",
+    'dental': "Small breeds like Shih Tzus are prone to dental issues - regular checks help",
+    'training': "Shih Tzus respond well to gentle, reward-based training",
+    'boarding': "Shih Tzus prefer calm, quiet boarding environments",
+    'default': "Perfect for Shih Tzu's gentle nature"
+  },
+  'golden retriever': {
+    'swimming': "Retrievers are natural swimmers - this is their happy place!",
+    'grooming': "Regular brushing keeps their golden coat healthy and shiny",
+    'training': "Golden Retrievers excel at training - they love to please",
+    'boarding': "Social Goldens thrive with playmates at boarding",
+    'default': "Great for active, friendly Retrievers"
+  },
+  'labrador': {
+    'swimming': "Labs are water babies - swimming is the perfect exercise",
+    'fitness': "Labs tend to gain weight easily - fitness programs help",
+    'training': "Labs are eager learners and food-motivated",
+    'boarding': "Social Labs love group play at daycare",
+    'default': "Ideal for energetic Labradors"
+  },
+  'pug': {
+    'grooming': "Pugs need facial fold cleaning and regular care",
+    'fitness': "Short walks work best - Pugs overheat easily",
+    'vet': "Breathing checks are important for flat-faced breeds",
+    'boarding': "Climate-controlled spaces are essential for Pugs",
+    'default': "Suitable for Pug's special needs"
+  },
+  'beagle': {
+    'training': "Beagles are scent-driven - structured training works best",
+    'boarding': "Secure facilities are important - Beagles can escape!",
+    'walking': "Beagles need walks to explore and sniff",
+    'default': "Perfect for curious Beagles"
+  },
+  'german shepherd': {
+    'training': "GSDs thrive with mental stimulation and challenges",
+    'fitness': "Active exercise prevents boredom and anxiety",
+    'grooming': "Regular deshedding keeps their double coat healthy",
+    'vet': "Hip checks are important for this breed",
+    'default': "Ideal for intelligent German Shepherds"
+  },
+  'default': {
+    'grooming': "Regular grooming keeps your pet healthy and happy",
+    'training': "Professional training strengthens your bond",
+    'boarding': "A home away from home for your companion",
+    'vet': "Preventive care for a healthy, happy life",
+    'default': "Curated for your companion's needs"
+  }
+};
+
+const getMiraServiceWhisper = (service, breed) => {
+  const breedLower = (breed || '').toLowerCase();
+  const serviceName = (service.name || '').toLowerCase();
+  
+  let breedWhispers = MIRA_SERVICE_WHISPERS.default;
+  for (const [key, whispers] of Object.entries(MIRA_SERVICE_WHISPERS)) {
+    if (breedLower.includes(key)) {
+      breedWhispers = whispers;
+      break;
+    }
+  }
+  
+  // Find matching whisper
+  for (const [keyword, whisper] of Object.entries(breedWhispers)) {
+    if (serviceName.includes(keyword)) {
+      return whisper;
+    }
+  }
+  
+  return breedWhispers.default || MIRA_SERVICE_WHISPERS.default.default;
 };
 
 // =============================================================================
-// ANIMATED PET HERO
+// PET SOUL TRAITS DISPLAY
 // =============================================================================
-const PetHero = ({ pet, breedRec }) => {
-  const petPhoto = pet?.photo_url || pet?.image_url || pet?.image;
-  const petName = pet?.name || 'Your Companion';
-  const breed = pet?.breed || '';
+const PetSoulTraits = ({ pet, soulData }) => {
+  const traits = [];
+  const answers = pet?.doggy_soul_answers || pet?.soul_answers || soulData || {};
+  
+  if (answers.describe_3_words) {
+    traits.push({ icon: '✨', text: answers.describe_3_words });
+  } else if (answers.general_nature) {
+    traits.push({ icon: '🌟', text: answers.general_nature });
+  }
+  
+  if (answers.favorite_treats) {
+    const treats = Array.isArray(answers.favorite_treats) ? answers.favorite_treats[0] : answers.favorite_treats;
+    traits.push({ icon: '🍖', text: `Loves ${treats}` });
+  }
+  
+  if (answers.energetic_time) {
+    traits.push({ icon: '⚡', text: `Active: ${answers.energetic_time}` });
+  } else if (answers.walks_per_day) {
+    traits.push({ icon: '🚶', text: `${answers.walks_per_day} walks daily` });
+  }
+  
+  // Fallback traits
+  if (traits.length < 3) {
+    const breed = (pet?.breed || '').toLowerCase();
+    if (breed.includes('retriever')) {
+      if (traits.length < 1) traits.push({ icon: '🏊', text: 'Water lover' });
+      if (traits.length < 2) traits.push({ icon: '🎾', text: 'Fetch fan' });
+      if (traits.length < 3) traits.push({ icon: '💛', text: 'Family friendly' });
+    } else if (breed.includes('shih tzu')) {
+      if (traits.length < 1) traits.push({ icon: '👑', text: 'Royal companion' });
+      if (traits.length < 2) traits.push({ icon: '🛋️', text: 'Lap dog' });
+      if (traits.length < 3) traits.push({ icon: '💕', text: 'Affectionate' });
+    } else {
+      if (traits.length < 1) traits.push({ icon: '🐕', text: pet?.breed || 'Good pup' });
+      if (traits.length < 2) traits.push({ icon: '❤️', text: 'Loved' });
+      if (traits.length < 3) traits.push({ icon: '🏠', text: 'Family' });
+    }
+  }
   
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] py-8 sm:py-12 md:py-16">
-      {/* Animated background elements */}
+    <div className="flex flex-wrap justify-center md:justify-start gap-2 sm:gap-3">
+      {traits.slice(0, 3).map((trait, idx) => (
+        <div key={idx} className="flex items-center gap-1.5 px-2 sm:px-3 py-1 bg-white/10 backdrop-blur-sm rounded-full text-[10px] sm:text-xs text-white/80">
+          <span>{trait.icon}</span>
+          <span className="truncate max-w-[100px]">{trait.text}</span>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+// =============================================================================
+// ANIMATED PET HERO WITH SOUL SCORE
+// =============================================================================
+const PetHero = ({ pet, soulData, onPetSwitch, pets }) => {
+  const petPhoto = pet?.photo_url || pet?.image_url || pet?.image;
+  const petName = pet?.name || 'Your Companion';
+  const soulScore = pet?.overall_score || soulData?.overall_score || 0;
+  
+  return (
+    <section className="relative overflow-hidden bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] py-6 sm:py-10 md:py-14">
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-blue-500/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
       </div>
       
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="flex flex-col md:flex-row items-center gap-6 md:gap-12">
-          {/* Pet Photo - Prominent */}
-          <div className="relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 via-pink-500 to-orange-500 rounded-full blur-lg opacity-75 group-hover:opacity-100 transition-opacity animate-pulse"></div>
-            {petPhoto ? (
-              <img 
-                src={petPhoto} 
-                alt={petName}
-                className="relative w-28 h-28 sm:w-36 sm:h-36 md:w-44 md:h-44 rounded-full object-cover border-4 border-white/20 shadow-2xl transform group-hover:scale-105 transition-transform duration-500"
-              />
-            ) : (
-              <div className="relative w-28 h-28 sm:w-36 sm:h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center border-4 border-white/20 shadow-2xl">
-                <PawPrint className="w-12 h-12 sm:w-16 sm:h-16 text-white/80" />
+        <div className="flex flex-col md:flex-row items-center gap-4 md:gap-10">
+          {/* Pet Photo with Soul Score Arc */}
+          <div className="relative">
+            <div className="relative group">
+              {petPhoto ? (
+                <div className="relative">
+                  <SoulScoreArc 
+                    score={soulScore} 
+                    petId={pet?.id}
+                    petName={petName}
+                    size="lg"
+                    showLabel={false}
+                    showCTA={false}
+                  />
+                  <img 
+                    src={petPhoto} 
+                    alt={petName}
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-28 h-28 sm:w-32 sm:h-32 rounded-full object-cover border-4 border-white/20 shadow-2xl"
+                  />
+                </div>
+              ) : (
+                <div className="relative w-36 h-36 sm:w-40 sm:h-40 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center border-4 border-white/20 shadow-2xl">
+                  <PawPrint className="w-12 h-12 sm:w-16 sm:h-16 text-white/80" />
+                </div>
+              )}
+            </div>
+            
+            {/* Pet Switcher */}
+            {pets && pets.length > 1 && (
+              <div className="flex justify-center gap-2 mt-3">
+                {pets.map((p) => (
+                  <button
+                    key={p.id}
+                    onClick={() => onPetSwitch(p)}
+                    className={`w-8 h-8 rounded-full border-2 transition-all overflow-hidden ${
+                      p.id === pet?.id ? 'border-amber-400 scale-110' : 'border-white/30 opacity-60 hover:opacity-100'
+                    }`}
+                  >
+                    {p.photo_url || p.image_url ? (
+                      <img src={p.photo_url || p.image_url} alt={p.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                        <span className="text-xs text-white">{p.name?.[0]}</span>
+                      </div>
+                    )}
+                  </button>
+                ))}
               </div>
             )}
-            {/* Online indicator */}
-            <div className="absolute bottom-2 right-2 w-5 h-5 sm:w-6 sm:h-6 bg-green-500 rounded-full border-3 border-white shadow-lg animate-pulse"></div>
           </div>
           
           {/* Content */}
           <div className="text-center md:text-left flex-1">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-sm rounded-full text-xs sm:text-sm text-white/80 mb-3 sm:mb-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-sm rounded-full text-xs sm:text-sm text-white/80 mb-2 sm:mb-3">
               <Crown className="w-3 h-3 sm:w-4 sm:h-4 text-amber-400" />
-              <span>Pet Soul™ Member</span>
+              <span>Pet Soul™ {soulScore}% Complete</span>
             </div>
             
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mb-2 sm:mb-3">
+            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white leading-tight mb-2">
               Services for{' '}
               <span className="bg-gradient-to-r from-amber-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
                 {petName}
               </span>
             </h1>
             
-            <p className="text-sm sm:text-base md:text-lg text-white/70 mb-4 sm:mb-6 max-w-xl">
+            <p className="text-xs sm:text-sm md:text-base text-white/70 mb-3 sm:mb-4 max-w-xl">
               Thoughtfully selected for {pet ? `${petName}'s` : 'your companion\'s'} life and needs.
             </p>
             
-            {/* Breed-specific Mira nudge */}
-            {breedRec && (
-              <div className="inline-flex items-start gap-3 bg-white/10 backdrop-blur-sm rounded-xl p-3 sm:p-4 border border-white/10 max-w-md animate-fadeIn">
-                <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
-                  <span className="text-base sm:text-lg">{breedRec.icon}</span>
-                </div>
-                <div>
-                  <p className="text-xs sm:text-sm text-white/90 leading-relaxed">{breedRec.nudge}</p>
-                  <p className="text-[10px] sm:text-xs text-white/50 mt-1 flex items-center gap-1">
-                    <Sparkles className="w-3 h-3" /> Mira&apos;s insight for {breed}
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-        
-        {/* Trust badges */}
-        <div className="flex flex-wrap justify-center md:justify-start gap-4 sm:gap-6 mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-white/10">
-          <div className="flex items-center gap-2 text-white/60 text-xs sm:text-sm">
-            <Shield className="w-4 h-4 text-green-400" />
-            <span>Verified Providers</span>
-          </div>
-          <div className="flex items-center gap-2 text-white/60 text-xs sm:text-sm">
-            <Users className="w-4 h-4 text-blue-400" />
-            <span>12,847 happy pets</span>
-          </div>
-          <div className="flex items-center gap-2 text-white/60 text-xs sm:text-sm">
-            <Award className="w-4 h-4 text-amber-400" />
-            <span>Quality Guaranteed</span>
+            {/* Pet Soul Traits */}
+            <PetSoulTraits pet={pet} soulData={soulData} />
           </div>
         </div>
       </div>
@@ -186,20 +288,23 @@ const PetHero = ({ pet, breedRec }) => {
 // SEARCH BAR
 // =============================================================================
 const SearchBar = ({ value, onChange, petName }) => (
-  <div className="relative w-full max-w-2xl mx-auto px-4 -mt-6 sm:-mt-8 z-20">
+  <div className="relative w-full max-w-2xl mx-auto px-4 -mt-5 sm:-mt-6 z-20">
     <div className="relative group">
       <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition-opacity"></div>
       <div className="relative bg-white rounded-xl shadow-2xl">
-        <Search className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
         <Input
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder={petName ? `What does ${petName} need today?` : "What does your dog need today?"}
-          className="pl-12 sm:pl-14 pr-12 sm:pr-14 py-4 sm:py-5 text-sm sm:text-base bg-transparent border-0 rounded-xl focus:ring-2 focus:ring-purple-500/50"
+          placeholder={petName ? `What does ${petName} need?` : "What service does your dog need?"}
+          className="pl-10 sm:pl-12 pr-10 sm:pr-12 py-3 sm:py-4 text-sm bg-transparent border-0 rounded-xl focus:ring-2 focus:ring-purple-500/50"
           data-testid="services-search"
         />
-        <button className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 p-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg text-white hover:opacity-90 active:scale-95 transition-all">
-          <Mic className="w-4 h-4 sm:w-5 sm:h-5" />
+        <button 
+          onClick={() => window.dispatchEvent(new CustomEvent('openMiraChat'))}
+          className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-1.5 sm:p-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg text-white hover:opacity-90 active:scale-95 transition-all"
+        >
+          <Mic className="w-4 h-4" />
         </button>
       </div>
     </div>
@@ -207,16 +312,15 @@ const SearchBar = ({ value, onChange, petName }) => (
 );
 
 // =============================================================================
-// PILLAR FILTERS - Mobile optimized
+// PILLAR FILTERS
 // =============================================================================
 const PillarFilters = ({ selected, onSelect, selectedSubcat, onSelectSubcat }) => {
   const selectedPillar = PILLARS.find(p => p.id === selected);
   
   return (
     <div className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-30 shadow-sm">
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 py-3 sm:py-4">
-        {/* Main Pillars */}
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-1 px-1 snap-x snap-mandatory">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 py-2 sm:py-3">
+        <div className="flex gap-1.5 sm:gap-2 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
           {PILLARS.map((pillar) => {
             const Icon = pillar.icon;
             const isActive = selected === pillar.id;
@@ -224,41 +328,33 @@ const PillarFilters = ({ selected, onSelect, selectedSubcat, onSelectSubcat }) =
               <button
                 key={pillar.id}
                 onClick={() => { onSelect(pillar.id); onSelectSubcat(null); }}
-                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all flex-shrink-0 snap-start active:scale-95 ${
-                  isActive 
-                    ? `${pillar.color} text-white shadow-lg` 
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-medium whitespace-nowrap transition-all flex-shrink-0 snap-start active:scale-95 ${
+                  isActive ? `${pillar.color} text-white shadow-md` : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
                 data-testid={`pillar-${pillar.id}`}
               >
-                <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <Icon className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                 <span>{pillar.label}</span>
               </button>
             );
           })}
         </div>
         
-        {/* Pillar Description */}
-        {selectedPillar && (
-          <p className="text-xs text-gray-500 mt-2 px-1">{selectedPillar.description}</p>
-        )}
-        
-        {/* Subcategories */}
         {selectedPillar?.subcategories?.length > 0 && (
-          <div className="flex gap-2 mt-3 overflow-x-auto pb-1 scrollbar-hide snap-x">
+          <div className="flex gap-1.5 sm:gap-2 mt-2 overflow-x-auto pb-1 scrollbar-hide snap-x">
             <button
               onClick={() => onSelectSubcat(null)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all snap-start ${
+              className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg text-[10px] sm:text-xs font-medium whitespace-nowrap transition-all snap-start ${
                 !selectedSubcat ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
-              All {selectedPillar.label}
+              All
             </button>
             {selectedPillar.subcategories.map((subcat) => (
               <button
                 key={subcat}
                 onClick={() => onSelectSubcat(subcat)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all snap-start ${
+                className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg text-[10px] sm:text-xs font-medium whitespace-nowrap transition-all snap-start ${
                   selectedSubcat === subcat ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
@@ -273,13 +369,12 @@ const PillarFilters = ({ selected, onSelect, selectedSubcat, onSelectSubcat }) =
 };
 
 // =============================================================================
-// SERVICE CARD - World-class, meaning before price
+// SERVICE CARD - With Mira Whisper
 // =============================================================================
-const ServiceCard = ({ service, pet, breedRec, index }) => {
+const ServiceCard = ({ service, pet, index }) => {
   const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
   
-  // Get visual config for service
   const getVisuals = () => {
     const name = (service.name || '').toLowerCase();
     const category = (service.category || '').toLowerCase();
@@ -291,130 +386,71 @@ const ServiceCard = ({ service, pet, breedRec, index }) => {
   
   const visuals = getVisuals();
   const Icon = visuals.icon;
+  const breed = pet?.breed || '';
   
-  // Check if this is a breed match
-  const isBreedMatch = breedRec?.essential?.some(s => 
-    service.name?.toLowerCase().includes(s.toLowerCase())
-  );
+  // Mira whisper for this service
+  const miraWhisper = getMiraServiceWhisper(service, breed);
   
-  // Generate relevance text
-  const getRelevanceText = () => {
-    if (isBreedMatch && breedRec?.nudge) {
-      return breedRec.nudge.split('.')[0] + '.';
-    }
-    const relevanceMap = {
-      'grooming': 'Essential for coat health, comfort, and bonding',
-      'training': 'Build confidence and strengthen your relationship',
-      'boarding': 'A safe, loving home when you travel',
-      'daycare': 'Socialization and play while you work',
-      'walking': 'Daily exercise and mental stimulation',
-      'vet': 'Professional health monitoring and prevention',
-      'travel': 'Stress-free journeys with expert handling',
-      'spa': 'Relaxation and pampering they deserve',
-      'adoption': 'Support for your journey together',
-      'emergency': 'Peace of mind, always available',
-    };
-    for (const [key, text] of Object.entries(relevanceMap)) {
-      if (service.name?.toLowerCase().includes(key)) return text;
-    }
-    return service.description?.slice(0, 80) || 'Curated for your companion\'s needs';
+  const handleClick = () => {
+    // Navigate to service detail page
+    const serviceId = service.id || service._id;
+    const pillar = service.pillar || service.pillars?.[0] || 'care';
+    navigate(`/services/${pillar}/${serviceId}`);
   };
-  
-  // Social proof based on service ID (deterministic)
-  const bookings = useMemo(() => {
-    const hash = (service.id || service.name || '').split('').reduce((a, b) => a + b.charCodeAt(0), 0);
-    return (hash % 40) + 15;
-  }, [service.id, service.name]);
   
   return (
     <div 
-      className="group relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 cursor-pointer transform hover:-translate-y-1 border border-gray-100"
-      onClick={() => navigate(`/services/${service.pillar || 'care'}/${service.id}`)}
+      className="group relative bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:-translate-y-0.5"
+      onClick={handleClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      style={{ animationDelay: `${index * 50}ms` }}
       data-testid={`service-card-${service.id}`}
     >
       {/* Image Header */}
-      <div className={`relative h-32 sm:h-40 bg-gradient-to-br ${visuals.color} overflow-hidden`}>
+      <div className={`relative h-24 sm:h-32 bg-gradient-to-br ${visuals.color} overflow-hidden`}>
         <img 
           src={visuals.image} 
           alt={service.name}
-          className={`absolute inset-0 w-full h-full object-cover transition-transform duration-700 ${isHovered ? 'scale-110' : 'scale-100'}`}
+          className={`absolute inset-0 w-full h-full object-cover transition-transform duration-500 ${isHovered ? 'scale-110' : 'scale-100'}`}
           style={{ opacity: 0.3 }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
         
         {/* Icon Badge */}
-        <div className="absolute top-3 left-3 p-2 sm:p-2.5 bg-white/20 backdrop-blur-sm rounded-xl">
-          <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+        <div className="absolute top-2 left-2 p-1.5 sm:p-2 bg-white/20 backdrop-blur-sm rounded-lg">
+          <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
         </div>
         
-        {/* Breed Match Badge */}
-        {isBreedMatch && (
-          <div className="absolute top-3 right-3 flex items-center gap-1 px-2 sm:px-2.5 py-1 bg-amber-500 text-white text-[10px] sm:text-xs font-semibold rounded-full shadow-lg animate-pulse">
-            <Star className="w-3 h-3" fill="currentColor" />
-            <span className="hidden sm:inline">Perfect for {pet?.breed}</span>
-            <span className="sm:hidden">Match</span>
-          </div>
-        )}
-        
         {/* Service Name on Image */}
-        <div className="absolute bottom-3 left-3 right-3">
-          <h3 className="text-base sm:text-lg font-bold text-white leading-tight drop-shadow-lg">
+        <div className="absolute bottom-2 left-2 right-2">
+          <h3 className="text-sm sm:text-base font-bold text-white leading-tight drop-shadow-lg line-clamp-1">
             {service.name}
           </h3>
         </div>
       </div>
       
       {/* Content */}
-      <div className="p-3 sm:p-4 space-y-3">
-        {/* Why it&apos;s relevant - THE HEART */}
-        <p className="text-xs sm:text-sm text-gray-600 leading-relaxed line-clamp-2">
-          {getRelevanceText()}
+      <div className="p-2.5 sm:p-3 space-y-2">
+        {/* Mira Whisper - Why this service for this breed */}
+        <p className="text-[10px] sm:text-xs text-gray-600 leading-relaxed line-clamp-2 flex items-start gap-1">
+          <Sparkles className="w-3 h-3 text-purple-500 flex-shrink-0 mt-0.5" />
+          <span>{miraWhisper}</span>
         </p>
         
-        {/* Price, duration, social proof */}
-        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-gray-500">
-          <span className="font-semibold text-gray-900 text-sm sm:text-base">
+        {/* Price and duration */}
+        <div className="flex items-center justify-between pt-1 border-t border-gray-100">
+          <span className="font-semibold text-gray-900 text-sm">
             {service.base_price ? `₹${service.base_price.toLocaleString()}` : 'Get Quote'}
           </span>
-          {service.duration && (
-            <>
-              <span className="text-gray-300">·</span>
-              <span className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5 text-[10px] text-gray-500">
+            {service.duration && (
+              <span className="flex items-center gap-0.5">
                 <Clock className="w-3 h-3" />
                 {service.duration}
               </span>
-            </>
-          )}
-          {service.location && (
-            <>
-              <span className="text-gray-300">·</span>
-              <span className="truncate max-w-[80px] sm:max-w-none">{service.location}</span>
-            </>
-          )}
-        </div>
-        
-        {/* Social Proof */}
-        <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-          <div className="flex items-center gap-1.5 text-[10px] sm:text-xs text-gray-500">
-            <div className="flex -space-x-1.5">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="w-5 h-5 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 border-2 border-white"></div>
-              ))}
-            </div>
-            <span>Booked by <strong className="text-gray-700">{bookings}</strong> pets this month</span>
+            )}
+            <ChevronRight className={`w-3.5 h-3.5 text-gray-400 transition-transform ${isHovered ? 'translate-x-0.5' : ''}`} />
           </div>
-          <ChevronRight className={`w-4 h-4 text-gray-400 transition-transform duration-300 ${isHovered ? 'translate-x-1' : ''}`} />
-        </div>
-      </div>
-      
-      {/* Member Badge */}
-      <div className="absolute top-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-        <div className="flex items-center gap-1 px-2 py-1 bg-amber-500/90 backdrop-blur-sm text-white text-[10px] font-semibold rounded-full">
-          <Crown className="w-3 h-3" />
-          <span>Members save 15%</span>
         </div>
       </div>
     </div>
@@ -427,16 +463,18 @@ const ServiceCard = ({ service, pet, breedRec, index }) => {
 const ServicesPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { user, token, pets } = useAuth();
+  const { user, token } = useAuth();
   
   // State
   const [services, setServices] = useState([]);
+  const [pets, setPets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedPillar, setSelectedPillar] = useState(searchParams.get('pillar') || 'recommended');
   const [selectedSubcat, setSelectedSubcat] = useState(null);
   const [selectedPet, setSelectedPet] = useState(null);
   const [petSoulData, setPetSoulData] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [displayCount, setDisplayCount] = useState(24);
   
   // Fetch services
   useEffect(() => {
@@ -457,39 +495,72 @@ const ServicesPage = () => {
     fetchServices();
   }, []);
   
-  // Fetch user&apos;s pets
+  // Fetch pets
   useEffect(() => {
-    const fetchPets = async () => {
-      if (token) {
+    if (token) {
+      const fetchPets = async () => {
         try {
           const res = await fetch(`${API_URL}/api/pets/my-pets`, {
             headers: { 'Authorization': `Bearer ${token}` }
           });
           if (res.ok) {
             const data = await res.json();
-            if (data.pets?.length > 0) {
+            const userPets = data.pets || [];
+            setPets(userPets);
+            if (userPets.length > 0) {
               const savedPetId = localStorage.getItem('selectedPetId');
-              const pet = savedPetId ? data.pets.find(p => p.id === savedPetId) : data.pets[0];
-              setSelectedPet(pet || data.pets[0]);
+              const pet = savedPetId ? userPets.find(p => p.id === savedPetId) : userPets[0];
+              setSelectedPet(pet || userPets[0]);
             }
           }
         } catch (err) {
           console.error('Failed to fetch pets:', err);
         }
-      }
-    };
-    fetchPets();
+      };
+      fetchPets();
+    }
   }, [token]);
   
-  // Get breed recommendations
-  const breedRec = useMemo(() => {
-    if (!selectedPet?.breed) return null;
-    const breed = selectedPet.breed.toLowerCase();
-    for (const [key, rec] of Object.entries(BREED_RECOMMENDATIONS)) {
-      if (breed.includes(key.split(' ')[0])) return rec;
+  // Fetch soul data
+  useEffect(() => {
+    if (selectedPet?.id && token) {
+      const fetchSoulData = async () => {
+        try {
+          const res = await fetch(`${API_URL}/api/soul-drip/completeness/${selectedPet.id}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            setPetSoulData(data);
+          }
+        } catch (err) {
+          console.error('Failed to fetch soul data:', err);
+        }
+      };
+      fetchSoulData();
     }
-    return null;
-  }, [selectedPet?.breed]);
+  }, [selectedPet?.id, token]);
+  
+  // Pet switch handler
+  const handlePetSwitch = useCallback((pet) => {
+    setSelectedPet(pet);
+    localStorage.setItem('selectedPetId', pet.id);
+    window.dispatchEvent(new CustomEvent('petSelectionChanged', { detail: { pet, petId: pet.id } }));
+  }, []);
+  
+  // Listen for pet selection changes
+  useEffect(() => {
+    const handlePetSelectionChanged = (event) => {
+      const { pet, petId } = event.detail || {};
+      if (pet) setSelectedPet(pet);
+      else if (petId && pets.length > 0) {
+        const foundPet = pets.find(p => p.id === petId);
+        if (foundPet) setSelectedPet(foundPet);
+      }
+    };
+    window.addEventListener('petSelectionChanged', handlePetSelectionChanged);
+    return () => window.removeEventListener('petSelectionChanged', handlePetSelectionChanged);
+  }, [pets]);
   
   // Filter services
   const filteredServices = useMemo(() => {
@@ -499,17 +570,6 @@ const ServicesPage = () => {
       result = result.filter(s => {
         const servicePillars = s.pillars || [];
         return servicePillars.includes(selectedPillar) || s.pillar === selectedPillar;
-      });
-    }
-    
-    // For recommended, sort by breed relevance
-    if (selectedPillar === 'recommended' && breedRec) {
-      result = [...result].sort((a, b) => {
-        const aMatch = breedRec.essential?.some(s => a.name?.toLowerCase().includes(s.toLowerCase()));
-        const bMatch = breedRec.essential?.some(s => b.name?.toLowerCase().includes(s.toLowerCase()));
-        if (aMatch && !bMatch) return -1;
-        if (!aMatch && bMatch) return 1;
-        return 0;
       });
     }
     
@@ -530,88 +590,106 @@ const ServicesPage = () => {
     }
     
     return result;
-  }, [services, selectedPillar, selectedSubcat, searchQuery, breedRec]);
+  }, [services, selectedPillar, selectedSubcat, searchQuery]);
   
+  const displayedServices = useMemo(() => filteredServices.slice(0, displayCount), [filteredServices, displayCount]);
+  const hasMore = displayCount < filteredServices.length;
   const petName = selectedPet?.name || '';
 
   return (
     <div className="min-h-screen bg-gray-50 pb-24 md:pb-0" data-testid="services-page">
       <SEOHead page="services" path="/services" />
       
-      {/* Hero with Pet */}
-      <PetHero pet={selectedPet} breedRec={breedRec} />
+      {/* Hero */}
+      <PetHero 
+        pet={selectedPet} 
+        soulData={petSoulData}
+        onPetSwitch={handlePetSwitch}
+        pets={pets}
+      />
       
       {/* Search */}
       <SearchBar value={searchQuery} onChange={setSearchQuery} petName={petName} />
       
-      {/* Spacer for search overlap */}
-      <div className="h-4 sm:h-6"></div>
+      <div className="h-3 sm:h-4"></div>
       
       {/* Pillar Filters */}
       <PillarFilters 
         selected={selectedPillar}
-        onSelect={setSelectedPillar}
+        onSelect={(p) => { setSelectedPillar(p); setDisplayCount(24); }}
         selectedSubcat={selectedSubcat}
         onSelectSubcat={setSelectedSubcat}
       />
       
       {/* Services Grid */}
-      <section className="max-w-7xl mx-auto px-3 sm:px-6 py-6 sm:py-8">
-        <div className="flex items-center justify-between mb-4 sm:mb-6">
-          <h2 className="text-lg sm:text-xl font-bold text-gray-900">
-            {selectedPillar === 'recommended' ? `Services for ${petName || 'You'}` : 
-             selectedPillar === 'all' ? 'All Services' : 
-             `${PILLARS.find(p => p.id === selectedPillar)?.label || ''} Services`}
-          </h2>
-          {filteredServices.length > 0 && (
-            <span className="text-xs sm:text-sm text-gray-500">{filteredServices.length} available</span>
+      <section className="py-4 sm:py-6 bg-white">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <h2 className="text-base sm:text-lg font-bold text-gray-900">
+              {selectedPillar === 'recommended' ? `For ${petName || 'You'}` : 
+               selectedPillar === 'all' ? 'All Services' : 
+               `${PILLARS.find(p => p.id === selectedPillar)?.label || ''}`}
+            </h2>
+            {filteredServices.length > 0 && (
+              <span className="text-[10px] sm:text-xs text-gray-500">{filteredServices.length} services</span>
+            )}
+          </div>
+          
+          {loading ? (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
+              {[...Array(8)].map((_, i) => (
+                <div key={i} className="animate-pulse bg-gray-100 rounded-xl overflow-hidden">
+                  <div className="h-24 sm:h-32 bg-gray-200"></div>
+                  <div className="p-3 space-y-2">
+                    <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+                    <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : displayedServices.length === 0 ? (
+            <div className="text-center py-12 px-4">
+              <Package className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">No services found</h3>
+              <Button onClick={() => { setSelectedPillar('all'); setSelectedSubcat(null); setSearchQuery(''); }} 
+                className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
+                View All
+              </Button>
+            </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
+                {displayedServices.map((service, idx) => (
+                  <ServiceCard 
+                    key={service.id || idx} 
+                    service={service} 
+                    pet={selectedPet}
+                    index={idx}
+                  />
+                ))}
+              </div>
+              
+              {hasMore && (
+                <div className="text-center mt-6">
+                  <Button
+                    onClick={() => setDisplayCount(prev => prev + 24)}
+                    className="px-6 py-2.5 bg-gray-900 text-white hover:bg-gray-800 rounded-xl text-sm"
+                    data-testid="load-more-btn"
+                  >
+                    <ChevronDown className="w-4 h-4 mr-2" />
+                    Load More
+                  </Button>
+                </div>
+              )}
+            </>
           )}
         </div>
-        
-        {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {[...Array(6)].map((_, i) => (
-              <div key={i} className="animate-pulse bg-white rounded-2xl overflow-hidden">
-                <div className="h-32 sm:h-40 bg-gray-200"></div>
-                <div className="p-4 space-y-3">
-                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                  <div className="h-3 bg-gray-200 rounded w-full"></div>
-                  <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : filteredServices.length === 0 ? (
-          <div className="text-center py-16 px-4">
-            <div className="w-20 h-20 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-              <Package className="w-10 h-10 text-gray-400" />
-            </div>
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">No services found</h3>
-            <p className="text-gray-500 mb-6">Try a different category or search term</p>
-            <Button onClick={() => { setSelectedPillar('all'); setSelectedSubcat(null); setSearchQuery(''); }} 
-              className="bg-gradient-to-r from-purple-500 to-pink-500 text-white">
-              View All Services
-            </Button>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {filteredServices.map((service, idx) => (
-              <ServiceCard 
-                key={service.id} 
-                service={service} 
-                pet={selectedPet}
-                breedRec={breedRec}
-                index={idx}
-              />
-            ))}
-          </div>
-        )}
       </section>
       
       {/* Emotional Close */}
-      <section className="bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] py-12 sm:py-16">
+      <section className="bg-gradient-to-br from-[#1a1a2e] via-[#16213e] to-[#0f3460] py-10 sm:py-14">
         <div className="max-w-2xl mx-auto px-4 text-center">
-          <p className="text-xl sm:text-2xl md:text-3xl text-white font-medium leading-relaxed mb-4">
+          <p className="text-lg sm:text-xl md:text-2xl text-white font-medium leading-relaxed mb-3">
             {petName ? (
               <>You don&apos;t manage services.<br />You just take care of <span className="bg-gradient-to-r from-amber-400 to-pink-400 bg-clip-text text-transparent">{petName}</span>.<br />We handle the rest.</>
             ) : (
@@ -622,29 +700,16 @@ const ServicesPage = () => {
             onClick={() => window.dispatchEvent(new CustomEvent('openMiraChat'))}
             className="text-sm text-white/60 hover:text-white/90 transition-colors"
           >
-            Need help deciding? Ask Mira →
+            Need help? Ask Mira →
           </button>
         </div>
       </section>
       
       <MiraChatWidget pillar="services" />
       
-      {/* CSS for animations */}
       <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.5s ease-out forwards;
-        }
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
     </div>
   );
