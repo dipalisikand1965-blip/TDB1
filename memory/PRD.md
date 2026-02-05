@@ -179,10 +179,11 @@ Build "The Doggy Company," a one-stop-shop concierge for dog parents with a focu
 
 ## TEST CREDENTIALS
 
-- **Test User**: testnew@emergent.com / test1234
+- **Test User**: test@test.com / test (has pet Bruno)
 - **Demo User**: demo@doggy.com / demo1234
 - **Admin**: aditya / lola4304
 - **Test Pet ID**: pet-e3cd94659908
+- **Test Pet**: Bruno (Golden Retriever, 3yo, 25kg)
 
 ---
 
