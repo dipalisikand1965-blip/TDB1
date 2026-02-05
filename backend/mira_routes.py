@@ -4304,6 +4304,56 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                 
                 products = found_products
             
+            # ===================================================================
+            # BREED-SPECIFIC PRODUCT BOOSTING
+            # If user has a pet with a known breed, prioritize breed-specific products
+            # ===================================================================
+            detected_breed = None
+            if selected_pet:
+                detected_breed = selected_pet.get("breed") or (selected_pet.get("identity") or {}).get("breed")
+            
+            # Also detect breed from message if not from pet profile
+            if not detected_breed:
+                breed_keywords = {
+                    "labrador": "Labrador", "lab": "Labrador", "golden retriever": "Golden Retriever",
+                    "goldie": "Golden Retriever", "indie": "Indie", "german shepherd": "German Shepherd",
+                    "gsd": "German Shepherd", "beagle": "Beagle", "pug": "Pug", "shih tzu": "Shih Tzu",
+                    "pomeranian": "Pomeranian", "pom": "Pomeranian", "husky": "Husky", 
+                    "rottweiler": "Rottweiler", "rottie": "Rottweiler", "dachshund": "Dachshund",
+                    "cocker spaniel": "Cocker Spaniel", "french bulldog": "French Bulldog",
+                    "frenchie": "French Bulldog", "boxer": "Boxer", "great dane": "Great Dane",
+                    "doberman": "Doberman", "dobie": "Doberman", "maltese": "Maltese",
+                    "yorkie": "Yorkshire Terrier", "yorkshire": "Yorkshire Terrier",
+                    "lhasa apso": "Lhasa Apso", "chihuahua": "Chihuahua", "chi": "Chihuahua",
+                    "corgi": "Corgi", "samoyed": "Samoyed", "shiba": "Shiba Inu",
+                    "border collie": "Border Collie", "poodle": "Poodle", "bulldog": "Bulldog",
+                    "dalmatian": "Dalmatian", "akita": "Akita", "spitz": "Spitz"
+                }
+                msg_lower = user_message.lower()
+                for keyword, breed_name in breed_keywords.items():
+                    if keyword in msg_lower:
+                        detected_breed = breed_name
+                        break
+            
+            if detected_breed:
+                logger.info(f"[BREED BOOST] Detected breed: {detected_breed}, boosting breed-specific products")
+                
+                # Fetch breed-specific products
+                breed_products = await db.products_master.find({
+                    "breed_metadata.breed_name": detected_breed,
+                    "is_breed_specific": True
+                }, {"_id": 0}).limit(6).to_list(6)
+                
+                if breed_products:
+                    # Add breed-specific products to the front of the list
+                    # but keep some generic products for variety
+                    breed_product_ids = {p.get("id") for p in breed_products}
+                    generic_products = [p for p in products if p.get("id") not in breed_product_ids]
+                    
+                    # Mix: up to 3 breed-specific + remaining generic
+                    products = breed_products[:3] + generic_products[:5]
+                    logger.info(f"[BREED BOOST] Added {len(breed_products[:3])} breed-specific products for {detected_breed}")
+            
             # Fix image URLs for all products
             for p in products:
                 img = p.get("image", "")
