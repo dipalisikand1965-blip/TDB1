@@ -2,7 +2,7 @@
  * Product Box Editor - Comprehensive 6-Tab Editor
  * Handles all product configuration in a structured manner
  */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '../ui/dialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { Button } from '../ui/button';
@@ -14,13 +14,14 @@ import { Badge } from '../ui/badge';
 import { Card } from '../ui/card';
 import { 
   Package, Save, X, Loader2, Sparkles, AlertTriangle, Check,
-  ImagePlus, DollarSign, Truck, Shield, Bot, Tag, Gift, Eye
+  ImagePlus, DollarSign, Truck, Shield, Bot, Tag, Gift, Eye, RefreshCw
 } from 'lucide-react';
+import { API_URL } from '../../utils/api';
 import {
   ALL_PILLARS, PRODUCT_TYPES, LIFE_STAGES, SIZE_OPTIONS, ENERGY_LEVELS,
   CHEW_STRENGTHS, PLAY_TYPES, COAT_TYPES, COMMON_AVOIDS, MATERIAL_SAFETY_FLAGS,
   OCCASIONS, USE_CASE_TAGS, QUALITY_TIERS, INVENTORY_STATUS, DELIVERY_TYPES,
-  APPROVAL_STATUS, CITIES, DOG_BREEDS, MAIN_CATEGORIES
+  APPROVAL_STATUS, CITIES, MAIN_CATEGORIES
 } from './ProductBoxConfig';
 
 // Multi-select checkbox component
