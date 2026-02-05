@@ -7861,7 +7861,8 @@ async def get_products_by_breed(breed: str, limit: int = 50):
 async def recommend_products_for_breed(request: dict):
     """
     Get personalized product recommendations based on pet's breed profile.
-    Uses breed_metadata for intelligent matching.
+    PRIORITY: Breed-specific products (like "Labrador Birthday Cake") come FIRST,
+    then generic products that match the pillar.
     
     Request body:
     {
@@ -7878,62 +7879,95 @@ async def recommend_products_for_breed(request: dict):
     pillar = request.get("pillar")
     limit = min(request.get("limit", 10), 50)
     
-    # Build match query
-    query = {"is_active": True}
+    recommendations = []
     
-    if pillar:
-        # Match pillar in category, parent_category, or breed_metadata.pillars
-        query["$or"] = [
-            {"category": {"$regex": pillar, "$options": "i"}},
-            {"parent_category": {"$regex": pillar, "$options": "i"}},
-            {"breed_metadata.pillars": pillar}
-        ]
+    # STEP 1: First fetch breed-specific products (highest priority)
+    if breed:
+        breed_specific_query = {
+            "breed_metadata.breed_name": breed,
+            "is_breed_specific": True
+        }
+        
+        # If pillar specified, filter by pillar
+        if pillar:
+            breed_specific_query["$or"] = [
+                {"pillars": pillar},
+                {"primary_pillar": pillar},
+                {"category": {"$regex": pillar, "$options": "i"}}
+            ]
+        
+        breed_products = await db.products_master.find(
+            breed_specific_query,
+            {"_id": 0}
+        ).limit(limit).to_list(limit)
+        
+        # Mark these as breed-specific for UI
+        for p in breed_products:
+            p["_is_breed_match"] = True
+            p["_match_reason"] = f"Made for {breed}s"
+        
+        recommendations.extend(breed_products)
+        logger.info(f"[BREED RECOMMEND] Found {len(breed_products)} breed-specific products for {breed}")
     
-    # Fetch products
-    products = await db.products_master.find(
-        query,
-        {"_id": 0}
-    ).limit(200).to_list(200)
-    
-    # Score products based on breed matching
-    scored = []
-    for p in products:
-        score = 50  # Base score
-        meta = p.get("breed_metadata", {})
+    # STEP 2: Fill remaining slots with generic products
+    remaining_slots = limit - len(recommendations)
+    if remaining_slots > 0:
+        generic_query = {"is_breed_specific": {"$ne": True}}
         
-        # Breed match
-        breed_list = meta.get("breeds", [])
-        if not breed_list or breed in breed_list:
-            score += 30
+        if pillar:
+            generic_query["$or"] = [
+                {"pillars": pillar},
+                {"primary_pillar": pillar},
+                {"category": {"$regex": pillar, "$options": "i"}}
+            ]
         
-        # Size match
-        size_list = meta.get("sizes", [])
-        if not size_list or size in size_list:
-            score += 15
+        # Exclude already added products
+        existing_ids = [p.get("id") for p in recommendations if p.get("id")]
+        if existing_ids:
+            generic_query["id"] = {"$nin": existing_ids}
         
-        # Age match
-        age_list = meta.get("age_groups", [])
-        if not age_list or age in age_list:
-            score += 15
+        generic_products = await db.products_master.find(
+            generic_query,
+            {"_id": 0}
+        ).limit(remaining_slots * 2).to_list(remaining_slots * 2)  # Fetch extra for scoring
         
-        # Pillar match
-        pillar_list = meta.get("pillars", [])
-        if pillar and pillar in pillar_list:
-            score += 20
+        # Score generic products based on suitability
+        scored = []
+        for p in generic_products:
+            score = 50
+            meta = p.get("breed_metadata", {}) or {}
+            suitability = p.get("suitability", {}) or {}
+            pet_filters = suitability.get("pet_filters", {}) or {}
+            
+            # Size match
+            size_options = pet_filters.get("size_options", [])
+            if not size_options or "all" in size_options or size in size_options:
+                score += 20
+            
+            # Age match
+            life_stages = pet_filters.get("life_stages", [])
+            if not life_stages or "all" in life_stages or age in life_stages:
+                score += 15
+            
+            # Has mira_hint bonus
+            if p.get("mira_hint"):
+                score += 10
+            
+            # Has image bonus
+            if p.get("image_url"):
+                score += 5
+            
+            scored.append({"product": p, "score": score})
         
-        # Has mira_hint bonus
-        if p.get("mira_hint"):
-            score += 5
-        
-        scored.append({"product": p, "score": score})
-    
-    # Sort by score
-    scored.sort(key=lambda x: x["score"], reverse=True)
+        # Sort by score and take top ones
+        scored.sort(key=lambda x: x["score"], reverse=True)
+        recommendations.extend([s["product"] for s in scored[:remaining_slots]])
     
     return {
         "breed": breed,
-        "recommendations": [s["product"] for s in scored[:limit]],
-        "context": {"size": size, "age": age, "pillar": pillar}
+        "recommendations": recommendations[:limit],
+        "context": {"size": size, "age": age, "pillar": pillar},
+        "breed_specific_count": len([r for r in recommendations if r.get("_is_breed_match")])
     }
 
 
