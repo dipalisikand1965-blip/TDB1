@@ -43,6 +43,31 @@ Build "The Doggy Company," a one-stop-shop concierge for dog parents with a focu
 
 ---
 
+## SESSION 20 SUMMARY (February 5, 2026) - Data Quality Cleanup
+
+### DATA CLEANUP COMPLETED ✅
+
+**1. Services Collection Cleaned**
+- **Before**: 2,542 entries (mixed products + services)
+- **After**: 659 actual services
+- **Deleted**: Product-like entries (cakes, treats, toys, accessories, etc.)
+- **Removed**: Duplicate services
+
+**2. Product Filtering Fixed**
+- **Issue**: Products had wrong `pillars` array (e.g., Ladoos tagged with 'learn')
+- **Solution**: Now using `primary_pillar` instead of `pillars` array for filtering
+- **Result**: Ladoos now correctly appear under "Dine › Desi Treats" (not Learn)
+
+### VERIFIED RESULTS ✅
+- **Learn pillar**: 41 products - Training kits, books, puzzles (correct!)
+- **Dine pillar**: 169 products - Treats, desi-treats, meals, ladoos (correct!)
+- **Services**: 659 actual services (grooming, training, walking, etc.)
+
+### NOTE FOR USER
+User will provide corrected CSV for products with proper pillar assignments.
+
+---
+
 ## SESSION 19 SUMMARY (February 5, 2026) - Shop Page Pet Sync Fix
 
 ### CRITICAL BUG FIXED ✅
