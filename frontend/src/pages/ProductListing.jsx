@@ -1131,16 +1131,16 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
       {(activePet || user) && (
         <div className="max-w-6xl mx-auto px-4 py-6">
           
-          {/* Results Context */}
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-1.5">
-              <p className="text-sm text-stone-600">
+          {/* Results count - quieter */}
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-2">
+              <p className="text-sm text-stone-500">
                 {proposedProducts.length} options selected for {activePet?.name || 'your pet'}
               </p>
               <div className="relative group/info">
-                <Info className="w-3.5 h-3.5 text-stone-400 cursor-help" />
+                <Info className="w-3.5 h-3.5 text-stone-300 cursor-help" />
                 <div className="absolute left-0 top-full mt-1 hidden group-hover/info:block z-10">
-                  <div className="bg-stone-800 text-white text-xs px-2.5 py-1.5 rounded shadow-lg whitespace-nowrap">
+                  <div className="bg-stone-800 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-lg whitespace-nowrap">
                     Based on {activePet?.name || 'your pet'}&apos;s profile and this occasion
                   </div>
                 </div>
@@ -1148,21 +1148,19 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
             </div>
           </div>
           
-          {/* Mira's Note - Service integration (appears for celebration categories) */}
+          {/* Mira's Note - Service integration (appears for celebration categories) - softer */}
           {(category === 'cakes' || category === 'hampers' || category === 'accessories' || careFilters.includes('celebration')) && (
-            <div className="mb-6 p-4 bg-purple-50/30 rounded-xl border border-purple-100/30" data-testid="mira-note">
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full bg-white/80 flex items-center justify-center flex-shrink-0 shadow-sm">
+            <div className="mb-8 p-5 bg-gradient-to-r from-purple-50/50 to-transparent rounded-2xl border border-purple-100/20" data-testid="mira-note">
+              <div className="flex items-start gap-4">
+                <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center flex-shrink-0 border border-purple-100/50">
                   <Sparkles className="w-4 h-4 text-purple-400" />
                 </div>
-                <div>
-                  <p className="text-sm text-stone-600 mb-1">
-                    <span className="font-medium text-purple-600">Mira&apos;s note</span>
-                  </p>
+                <div className="flex-1">
+                  <p className="text-xs text-purple-500 mb-1.5">Mira&apos;s note</p>
                   <p className="text-sm text-stone-500 leading-relaxed">
                     Since this looks like a celebration, many pet parents prefer a little help with timing and delivery. I can take care of that for you.
                   </p>
-                  <button className="text-sm text-purple-500 hover:text-purple-600 mt-2 font-medium transition-colors">
+                  <button className="text-sm text-purple-500 hover:text-purple-600 mt-3 font-medium transition-colors">
                     Let Mira handle the arrangements
                   </button>
                 </div>
@@ -1195,9 +1193,9 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
             ))}
           </div>
         ) : (
-          /* Empty state - helpful */
-          <div className="text-center py-16">
-            <div className="w-16 h-16 rounded-full bg-stone-100 flex items-center justify-center mx-auto mb-4">
+          /* Empty state - helpful, calmer */
+          <div className="text-center py-20">
+            <div className="w-16 h-16 rounded-2xl bg-stone-100 flex items-center justify-center mx-auto mb-5">
               <Sparkles className="w-8 h-8 text-stone-300" />
             </div>
             <h3 className="text-lg font-medium text-stone-700 mb-2">
