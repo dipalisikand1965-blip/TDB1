@@ -29,6 +29,13 @@ import PawmeterDisplay, { PawmeterBadge } from '../components/PawmeterDisplay';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
+import { 
+  usePetOS, 
+  MemberIdentity, 
+  NonMemberGate, 
+  HandledByMiraBadge,
+  MiraContextStrip 
+} from '../components/PetOSWrapper';
 
 // Lazy load Soul Explainer for footer link
 const SoulExplainerVideo = lazy(() => import('../components/SoulExplainerVideo'));
