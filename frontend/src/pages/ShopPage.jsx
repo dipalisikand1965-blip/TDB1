@@ -428,7 +428,7 @@ const ShopPage = () => {
             </h1>
             <p className="text-base sm:text-lg text-[#9B9B9B] leading-relaxed mb-8 max-w-xl">
               Every product here is chosen with care. Vet-approved, pet-parent trusted, 
-              and backed by our promise: if it's not right for your companion, we'll make it right.
+              and backed by our promise: if it&apos;s not right for your companion, we&apos;ll make it right.
             </p>
           </div>
           
