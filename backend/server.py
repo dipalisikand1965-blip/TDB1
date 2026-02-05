@@ -16705,6 +16705,13 @@ async def get_all_breeds():
     return {"breeds": sorted(ALL_BREEDS), "total": len(ALL_BREEDS)}
 
 
+@app.get("/api/breeds")
+async def get_breeds_list():
+    """Get list of all recognized breeds - alias for /api/breed/all"""
+    from breed_utils import ALL_BREEDS
+    return {"breeds": sorted(ALL_BREEDS), "total": len(ALL_BREEDS)}
+
+
 # ============== MEMBER RECOGNITION API ==============
 
 from member_recognition import MemberRecognition, member_lookup_api
