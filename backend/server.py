@@ -6852,12 +6852,12 @@ async def get_pet_recommendations(pet_id: str, limit: int = 20, pillar: str = No
     weight = pet.get("weight")
     birth_date = pet.get("birth_date")
     breed = pet.get("breed", "").lower()
-    personality = pet.get("personality", [])
-    preferences = pet.get("preferences", {})
-    allergies = preferences.get("allergies", [])
+    personality = pet.get("personality", []) or []
+    preferences = pet.get("preferences") or {}
+    allergies = preferences.get("allergies", []) if preferences else []
     if isinstance(allergies, str):
         allergies = [a.strip().lower() for a in allergies.split(",") if a.strip()]
-    treat_size = preferences.get("treat_size", "")
+    treat_size = preferences.get("treat_size", "") if preferences else ""
     
     # Determine size category from weight
     size_category = "all-sizes"
