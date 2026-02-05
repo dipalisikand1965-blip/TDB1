@@ -380,7 +380,7 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
                   {hiddenCount > 0 && (
                     <p className="text-xs text-amber-700 mt-2 flex items-center gap-1">
                       <Shield className="w-3 h-3" />
-                      {hiddenCount} items hidden based on {activePet.name}'s dietary needs
+                      {hiddenCount} items hidden based on {activePet.name}&apos;s dietary needs
                     </p>
                   )}
                 </div>
