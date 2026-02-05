@@ -495,6 +495,14 @@ const ProductListing = ({ category = 'all' }) => {
   const [detectedCity, setDetectedCity] = useState(null);
   const [detectingLocation, setDetectingLocation] = useState(false);
   
+  // Ref to keep latest userPets for event handlers (fixes race condition)
+  const userPetsRef = useRef([]);
+  
+  // Keep ref in sync with state
+  useEffect(() => {
+    userPetsRef.current = userPets;
+  }, [userPets]);
+  
   // Additional filters for Celebrate products
   const [selectedBreed, setSelectedBreed] = useState('all');
   const [selectedShape, setSelectedShape] = useState('all');
