@@ -2217,6 +2217,13 @@ def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
     return credentials.username
 
 
+# Admin verification endpoint for frontend session validation
+@admin_router.get("/verify")
+async def verify_admin_session(username: str = Depends(verify_admin)):
+    """Verify admin credentials are still valid - used by frontend to validate stored sessions"""
+    return {"valid": True, "username": username}
+
+
 # ==================== ADMIN CREDENTIAL MANAGEMENT ====================
 
 @app.post("/api/admin/reset-credentials")
