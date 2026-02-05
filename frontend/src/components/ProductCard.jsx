@@ -1134,6 +1134,13 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', onClose }) => {
               </div>
             )}
 
+            {/* Quiet grey hint - pillar specific */}
+            {miraContext && (
+              <p className="text-[10px] text-gray-400 text-center py-2">
+                {miraContext.quietHints[Math.floor(Math.random() * miraContext.quietHints.length)]}
+              </p>
+            )}
+
             <div className="flex items-center justify-between pt-3 border-t">
               <div>
                 <p className="text-xs text-gray-500">Total Price</p>
@@ -1143,8 +1150,8 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', onClose }) => {
                 onClick={handleAddToCart}
                 className="bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 px-6"
               >
-                <ShoppingCart className="w-4 h-4 mr-2" />
-                Add to Cart
+                <Plus className="w-4 h-4 mr-2" />
+                {miraContext?.includeText || 'Include'}
               </Button>
             </div>
           </div>
