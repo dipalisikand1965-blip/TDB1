@@ -1,6 +1,6 @@
 # 🐕 The Doggy Company - Feature Status Report
 **Generated:** January 18, 2026
-**Preview URL:** https://doggo-delight-1.preview.emergentagent.com
+**Preview URL:** https://pawfect-service.preview.emergentagent.com
 
 ---
 
