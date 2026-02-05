@@ -108,12 +108,16 @@ const PILLAR_THEMES = {
 // The main Mira Orb component
 const MiraOrb = ({ 
   state = 'idle', // idle, listening, thinking, speaking, celebrating
+  pillar = null, // Current pillar context (celebrate, travel, care, etc.)
   onClick,
   size = 'md', // sm, md, lg
   showLabel = false, // Label hidden by default - the orb speaks for itself
   className = '',
 }) => {
   const orbRef = useRef(null);
+  
+  // Get pillar theme for badge
+  const pillarTheme = PILLAR_THEMES[pillar] || PILLAR_THEMES.default;
   
   // Size configurations - Enhanced glow radius
   const sizes = {
