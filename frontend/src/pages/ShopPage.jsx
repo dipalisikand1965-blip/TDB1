@@ -508,6 +508,7 @@ const ShopPage = () => {
   const [selectedSubcat, setSelectedSubcat] = useState(null);
   const [displayCount, setDisplayCount] = useState(24);
   const [selectedPet, setSelectedPet] = useState(null);
+  const [petSoulData, setPetSoulData] = useState(null);
   
   // Fetch products
   useEffect(() => {
