@@ -242,7 +242,11 @@ async def consolidate_products():
             for doc in docs:
                 # Normalize the document
                 normalized = normalize_product(doc.copy(), coll_name)
-                product_id = normalized['id']
+                if normalized is None:
+                    continue
+                product_id = normalized.get('id')
+                if not product_id:
+                    continue
                 shopify_id = normalized.get('shopify_id')
                 
                 # Check for existing product
