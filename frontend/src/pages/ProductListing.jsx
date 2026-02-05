@@ -51,6 +51,28 @@ const CATEGORY_HERO_CONTENT = {
     subtitle: '100% pet-safe, freshly baked cakes for your furry friend\'s special day',
     color: 'from-pink-600 via-rose-500 to-orange-500'
   },
+  // DINE PILLAR HERO CONTENT
+  'fresh-meals': {
+    badge: 'Freshly Made',
+    title: 'Fresh',
+    highlight: 'Meals 🍽️',
+    subtitle: 'Nutritious, home-cooked meals delivered fresh to your doorstep',
+    color: 'from-emerald-600 via-teal-500 to-green-500'
+  },
+  meals: {
+    badge: 'Freshly Made',
+    title: 'Fresh',
+    highlight: 'Meals 🍽️',
+    subtitle: 'Nutritious, home-cooked meals delivered fresh to your doorstep',
+    color: 'from-emerald-600 via-teal-500 to-green-500'
+  },
+  'pizzas-burgers': {
+    badge: 'Fun Favorites',
+    title: 'Pizzas &',
+    highlight: 'Burgers 🍕',
+    subtitle: 'Pet-safe versions of your favorite comfort foods!',
+    color: 'from-red-600 via-orange-500 to-yellow-500'
+  },
   treats: {
     badge: 'Healthy & Delicious',
     title: 'Treats &',
