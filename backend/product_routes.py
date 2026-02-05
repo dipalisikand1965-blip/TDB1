@@ -136,8 +136,8 @@ async def mongodb_fallback_search(
     
     # Search unified_products (primary source)
     try:
-        unified_total = await db.unified_products.count_documents(query)
-        unified_products = await db.unified_products.find(
+        unified_total = await db.products_master.count_documents(query)
+        unified_products = await db.products_master.find(
             query, {"_id": 0}
         ).sort("name", 1).skip(offset).limit(limit).to_list(limit)
         products_from_unified = unified_products
@@ -150,7 +150,7 @@ async def mongodb_fallback_search(
         legacy_query = {"$or": or_conditions}
         if category:
             legacy_query["category"] = category
-        legacy_products = await db.products.find(
+        legacy_products = await db.products_master.find(
             legacy_query, {"_id": 0}
         ).sort("name", 1).limit(limit - len(products_from_unified)).to_list(limit)
         products_from_legacy = legacy_products
@@ -258,7 +258,7 @@ async def search_typeahead(
         search_regex = {"$regex": q, "$options": "i"}
         
         # Search unified_products (primary) with more fields
-        products = await db.unified_products.find(
+        products = await db.products_master.find(
             {"$or": [
                 {"name": search_regex}, 
                 {"tags": search_regex}, 
@@ -272,7 +272,7 @@ async def search_typeahead(
         
         # Also search legacy products collection for completeness
         if len(products) < limit:
-            legacy_products = await db.products.find(
+            legacy_products = await db.products_master.find(
                 {"$or": [{"name": search_regex}, {"tags": search_regex}, {"category": search_regex}]},
                 {"_id": 0, "id": 1, "name": 1, "image": 1, "price": 1, "category": 1}
             ).limit(limit - len(products)).to_list(limit - len(products))
@@ -412,7 +412,7 @@ async def universal_search(
     results["pages"] = unique_pages[:5]
     
     # ==================== PRODUCT SEARCH ====================
-    products = await db.unified_products.find(
+    products = await db.products_master.find(
         {"$or": [
             {"name": search_regex},
             {"tags": search_regex},
@@ -518,7 +518,7 @@ async def reindex_search(credentials: HTTPBasicCredentials = Depends(security)):
     """Reindex all products in the search engine (admin only)"""
     verify_admin(credentials)
 
-    products = await db.products.find({}, {"_id": 0}).to_list(10000)
+    products = await db.products_master.find({}, {"_id": 0}).to_list(10000)
 
     if products:
         await search_service.index_products_batch(products)
@@ -559,7 +559,7 @@ async def get_collection(collection_id: str):
 
     # Get products in this collection
     product_ids = collection.get("product_ids", [])
-    products = await db.products.find(
+    products = await db.products_master.find(
         {"id": {"$in": product_ids}},
         {"_id": 0}
     ).to_list(100)
