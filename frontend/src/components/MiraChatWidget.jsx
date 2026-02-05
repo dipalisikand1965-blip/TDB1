@@ -1274,19 +1274,17 @@ const MiraChatWidget = ({
             {/* Pet Selector + Suggestions Row - Compact */}
             {pets.length > 0 && (
               <div className="px-3 py-2 border-b bg-gray-50 shrink-0">
-                <div className="flex items-center gap-2 overflow-x-auto">
+                <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
                   <span className="text-xs text-gray-500 shrink-0">For:</span>
+                  {/* Individual pet buttons */}
                   {pets.map(pet => (
                     <button
                       key={pet.id}
-                      onClick={() => {
-                        setSelectedPet(pet);
-                        trackClick('pet_switch', pet.id, { pillar, from_pet: selectedPet?.id });
-                      }}
+                      onClick={() => handlePetSwitch(pet)}
                       className={`px-3 py-2.5 min-h-[40px] rounded-full text-xs flex items-center gap-1.5 transition-all shrink-0 touch-manipulation active:scale-95 ${
-                        selectedPet?.id === pet.id 
+                        selectedPet?.id === pet.id && !allPetsMode
                           ? `bg-gradient-to-r ${config.color} text-white` 
-                          : 'bg-gray-100 text-gray-600'
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                       }`}
                       data-testid={`pet-select-${pet.id}`}
                     >
@@ -1294,6 +1292,21 @@ const MiraChatWidget = ({
                       <span className="font-semibold">{pet.name}</span>
                     </button>
                   ))}
+                  {/* "All Pets" option - Only show if user has multiple pets */}
+                  {pets.length > 1 && (
+                    <button
+                      onClick={() => handlePetSwitch('all')}
+                      className={`px-3 py-2.5 min-h-[40px] rounded-full text-xs flex items-center gap-1.5 transition-all shrink-0 touch-manipulation active:scale-95 ${
+                        allPetsMode
+                          ? `bg-gradient-to-r ${config.color} text-white` 
+                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                      }`}
+                      data-testid="pet-select-all"
+                    >
+                      <Heart className="w-3 h-3" />
+                      <span className="font-semibold">All Pets</span>
+                    </button>
+                  )}
                 </div>
               </div>
             )}
