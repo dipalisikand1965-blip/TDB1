@@ -836,7 +836,7 @@ async def clone_product(product_id: str, new_name: Optional[str] = None):
     if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
     
-    original = await db.unified_products.find_one({"id": product_id}, {"_id": 0})
+    original = await db.products_master.find_one({"id": product_id}, {"_id": 0})
     if not original:
         raise HTTPException(status_code=404, detail="Product not found")
     
@@ -851,7 +851,7 @@ async def clone_product(product_id: str, new_name: Optional[str] = None):
     clone["version"] = 1
     clone["shopify_id"] = None  # Don't copy external references
     
-    await db.unified_products.insert_one(clone)
+    await db.products_master.insert_one(clone)
     clone.pop("_id", None)
     
     return {"message": "Product cloned", "product": clone}
@@ -872,7 +872,7 @@ async def bulk_update_products(
     updates["updated_at"] = datetime.now(timezone.utc).isoformat()
     updates["updated_by"] = admin_user
     
-    result = await db.unified_products.update_many(
+    result = await db.products_master.update_many(
         {"id": {"$in": product_ids}},
         {"$set": updates}
     )
@@ -889,7 +889,7 @@ async def bulk_assign_pillar(product_ids: List[str], pillar: str):
     if pillar not in ALL_PILLARS:
         raise HTTPException(status_code=400, detail=f"Invalid pillar. Must be one of: {ALL_PILLARS}")
     
-    result = await db.unified_products.update_many(
+    result = await db.products_master.update_many(
         {"id": {"$in": product_ids}},
         {
             "$addToSet": {"pillars": pillar},
@@ -916,7 +916,7 @@ async def get_products_by_pillar(pillar: str, include_rewards: bool = True):
     if not include_rewards:
         query["paw_rewards.is_reward_only"] = {"$ne": True}
     
-    products = await db.unified_products.find(query, {"_id": 0}).to_list(200)
+    products = await db.products_master.find(query, {"_id": 0}).to_list(200)
     
     return {
         "pillar": pillar,
@@ -939,7 +939,7 @@ async def get_reward_products(pillar: Optional[str] = None):
     if pillar:
         query["pillars"] = pillar
     
-    products = await db.unified_products.find(query, {"_id": 0}).to_list(100)
+    products = await db.products_master.find(query, {"_id": 0}).to_list(100)
     
     return {
         "rewards": products,
@@ -967,7 +967,7 @@ async def get_mira_visible_products(
     if pillar:
         query["pillars"] = pillar
     
-    products = await db.unified_products.find(query, {"_id": 0}).to_list(100)
+    products = await db.products_master.find(query, {"_id": 0}).to_list(100)
     
     return {
         "products": products,
@@ -1012,7 +1012,7 @@ async def get_safe_products_for_pet(
     if pillar:
         query["pillars"] = pillar
     
-    products = await db.unified_products.find(query, {"_id": 0}).to_list(100)
+    products = await db.products_master.find(query, {"_id": 0}).to_list(100)
     
     return {
         "safe_products": products,
@@ -1034,31 +1034,31 @@ async def get_product_stats():
         raise HTTPException(status_code=500, detail="Database not configured")
     
     # Total counts
-    total = await db.unified_products.count_documents({})
-    active = await db.unified_products.count_documents({"visibility.status": "active"})
-    draft = await db.unified_products.count_documents({"visibility.status": "draft"})
-    archived = await db.unified_products.count_documents({"visibility.status": "archived"})
+    total = await db.products_master.count_documents({})
+    active = await db.products_master.count_documents({"visibility.status": "active"})
+    draft = await db.products_master.count_documents({"visibility.status": "draft"})
+    archived = await db.products_master.count_documents({"visibility.status": "archived"})
     
     # By type
     type_pipeline = [
         {"$group": {"_id": "$product_type", "count": {"$sum": 1}}}
     ]
-    by_type = await db.unified_products.aggregate(type_pipeline).to_list(10)
+    by_type = await db.products_master.aggregate(type_pipeline).to_list(10)
     
     # By pillar
     pillar_pipeline = [
         {"$unwind": "$pillars"},
         {"$group": {"_id": "$pillars", "count": {"$sum": 1}}}
     ]
-    by_pillar = await db.unified_products.aggregate(pillar_pipeline).to_list(20)
+    by_pillar = await db.products_master.aggregate(pillar_pipeline).to_list(20)
     
     # Reward stats
-    reward_eligible = await db.unified_products.count_documents({"paw_rewards.is_reward_eligible": True})
-    reward_only = await db.unified_products.count_documents({"paw_rewards.is_reward_only": True})
+    reward_eligible = await db.products_master.count_documents({"paw_rewards.is_reward_eligible": True})
+    reward_only = await db.products_master.count_documents({"paw_rewards.is_reward_only": True})
     
     # Mira stats
-    mira_visible = await db.unified_products.count_documents({"mira_visibility.can_reference": True})
-    mira_suggestable = await db.unified_products.count_documents({"mira_visibility.can_suggest_proactively": True})
+    mira_visible = await db.products_master.count_documents({"mira_visibility.can_reference": True})
+    mira_suggestable = await db.products_master.count_documents({"mira_visibility.can_suggest_proactively": True})
     
     return {
         "total": total,
@@ -1109,7 +1109,7 @@ async def migrate_existing_products(force: bool = False):
             continue
         
         # Check if already exists in unified_products by name
-        existing_unified = await db.unified_products.find_one({"name": product_name})
+        existing_unified = await db.products_master.find_one({"name": product_name})
         
         if existing_unified and not force:
             skipped += 1
@@ -1208,14 +1208,14 @@ async def migrate_existing_products(force: bool = False):
         
         if existing_unified:
             # Update existing
-            await db.unified_products.update_one(
+            await db.products_master.update_one(
                 {"name": product_name},
                 {"$set": unified}
             )
             updated += 1
         else:
             # Insert new
-            await db.unified_products.insert_one(unified)
+            await db.products_master.insert_one(unified)
             migrated += 1
     
     # ========== ALSO SYNC STAY PROPERTIES TO PRODUCTS ==========
@@ -1530,7 +1530,7 @@ async def auto_seed_pillars():
     if db is None:
         raise HTTPException(status_code=500, detail="Database not initialized")
     
-    collection = db.unified_products
+    collection = db.products_master
     products = await collection.find({}).to_list(length=10000)
     
     # Debug info
@@ -1639,7 +1639,7 @@ async def auto_enable_rewards(
     if db is None:
         raise HTTPException(status_code=500, detail="Database not initialized")
     
-    collection = db.unified_products
+    collection = db.products_master
     products = await collection.find({"visibility.status": "active"}).to_list(length=10000)
     
     import random
