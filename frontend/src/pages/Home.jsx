@@ -809,9 +809,10 @@ const Home = () => {
             ))}
           </div>
           
-          {/* Large glowing orbs */}
+          {/* Large glowing orbs - contained to prevent wobble */}
           <motion.div 
-            className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl"
+            className="absolute top-1/4 left-1/4 w-64 sm:w-96 h-64 sm:h-96 bg-purple-600/20 rounded-full blur-3xl"
+            style={{ willChange: 'transform, opacity', transform: 'translateZ(0)' }}
             animate={{
               scale: [1, 1.2, 1],
               opacity: [0.3, 0.5, 0.3],
