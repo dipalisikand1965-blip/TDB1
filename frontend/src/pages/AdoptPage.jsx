@@ -70,31 +70,31 @@ const HERO_IMAGES = [
 const AdoptablePetCard = ({ pet, onApply }) => {
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 group cursor-pointer">
-      <div className="relative h-48 overflow-hidden">
+      <div className="relative h-36 sm:h-44 md:h-48 overflow-hidden">
         <img
           src={pet.photos?.[0] || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&q=80'}
           alt={pet.name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
         <div className="absolute top-2 right-2">
-          <Badge className={`${pet.status === 'available' ? 'bg-green-500' : 'bg-amber-500'} text-white`}>
+          <Badge className={`${pet.status === 'available' ? 'bg-green-500' : 'bg-amber-500'} text-white text-xs`}>
             {pet.status === 'available' ? 'Available' : 'Pending'}
           </Badge>
         </div>
         {pet.special_needs && (
           <div className="absolute bottom-2 left-2">
-            <Badge variant="outline" className="bg-white/90 text-purple-600">
+            <Badge variant="outline" className="bg-white/90 text-purple-600 text-xs">
               <Heart className="w-3 h-3 mr-1" /> Special Needs
             </Badge>
           </div>
         )}
       </div>
       
-      <div className="p-4">
+      <div className="p-3 sm:p-4">
         <div className="flex items-center justify-between mb-2">
-          <h3 className="font-semibold text-lg text-gray-900">{pet.name}</h3>
+          <h3 className="font-semibold text-base sm:text-lg text-gray-900 truncate">{pet.name}</h3>
           {pet.gender && (
-            <span className={`text-sm ${pet.gender === 'male' ? 'text-blue-500' : 'text-pink-500'}`}>
+            <span className={`text-xs sm:text-sm ${pet.gender === 'male' ? 'text-blue-500' : 'text-pink-500'}`}>
               {pet.gender === 'male' ? '♂' : '♀'} {pet.gender}
             </span>
           )}
