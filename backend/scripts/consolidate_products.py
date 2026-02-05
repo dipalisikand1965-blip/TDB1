@@ -87,12 +87,17 @@ def normalize_product(doc: Dict[str, Any], source_collection: str) -> Dict[str, 
     Normalize a product document to the unified schema.
     Preserves all intelligence data.
     """
+    if doc is None:
+        return None
+        
     # Remove MongoDB _id (will regenerate)
     doc.pop('_id', None)
     
-    # Ensure we have an ID
+    # Ensure we have an ID - handle various ID scenarios
     if not doc.get('id'):
-        doc['id'] = f"PROD-{source_collection}-{doc.get('shopify_id', doc.get('name', 'unknown'))[:20]}"
+        name_part = str(doc.get('name', 'unknown'))[:20].replace(' ', '-')
+        shopify_part = str(doc.get('shopify_id', ''))[:10]
+        doc['id'] = f"PROD-{source_collection[:8]}-{shopify_part or name_part}"
     
     # Ensure pillars array exists
     if 'pillars' not in doc:
