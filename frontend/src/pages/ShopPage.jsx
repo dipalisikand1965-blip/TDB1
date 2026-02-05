@@ -521,22 +521,22 @@ const ShopPage = () => {
     }
   }, [token]);
   
-  // Poll localStorage for pet changes (same-tab updates from navbar)
+  // Listen for pet selection changes from Navbar (custom event)
   useEffect(() => {
-    let lastPetId = localStorage.getItem('selectedPetId');
-    
-    const checkForPetChange = () => {
-      const currentPetId = localStorage.getItem('selectedPetId');
-      if (currentPetId !== lastPetId && pets.length > 0) {
-        lastPetId = currentPetId;
-        const pet = pets.find(p => p.id === currentPetId);
-        if (pet) setSelectedPet(pet);
+    const handlePetSelectionChanged = (event) => {
+      const { pet, petId } = event.detail || {};
+      if (pet) {
+        // Full pet object provided
+        setSelectedPet(pet);
+      } else if (petId && pets.length > 0) {
+        // Only petId provided, find from pets list
+        const foundPet = pets.find(p => p.id === petId);
+        if (foundPet) setSelectedPet(foundPet);
       }
     };
     
-    // Check every 500ms for changes
-    const interval = setInterval(checkForPetChange, 500);
-    return () => clearInterval(interval);
+    window.addEventListener('petSelectionChanged', handlePetSelectionChanged);
+    return () => window.removeEventListener('petSelectionChanged', handlePetSelectionChanged);
   }, [pets]);
   
   // Filter products
