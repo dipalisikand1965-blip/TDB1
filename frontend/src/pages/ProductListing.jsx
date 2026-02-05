@@ -281,6 +281,114 @@ const getPillarRecommendationConfig = (pillar) => {
 };
 
 // ============================================
+// PILLAR-SPECIFIC MIRA NOTES & SERVICE CONTEXT
+// "Quiet whisper of service" - contextual, not pushy
+// ============================================
+
+const PILLAR_MIRA_CONTEXT = {
+  celebrate: {
+    note: (petName) => `Since this looks like a celebration, most parents also arrange a small setup or delivery help.`,
+    question: 'Would you like me to take care of that?',
+    action: 'Arrange celebration support',
+    quietHints: [
+      'Often paired with celebration setup',
+      'Can be delivered with a helper',
+      'Usually combined with a small surprise plan'
+    ],
+    includeText: 'Include',
+    addedMessage: (petName) => `Added to ${petName}'s celebration plan`
+  },
+  dine: {
+    note: (petName) => `Fresh meals taste best with the right timing. I can coordinate delivery with ${petName}'s feeding schedule.`,
+    question: 'Should I help with meal planning?',
+    action: 'Plan meal deliveries',
+    quietHints: [
+      'Can be scheduled with feeding times',
+      'Often paired with portion planning',
+      'Usually combined with diet tracking'
+    ],
+    includeText: 'Include',
+    addedMessage: (petName) => `Added to ${petName}'s meal plan`
+  },
+  care: {
+    note: (petName) => `Health products work best with proper guidance. I can set up reminders and track ${petName}'s wellness.`,
+    question: 'Would you like wellness tracking support?',
+    action: 'Set up care reminders',
+    quietHints: [
+      'Often paired with vet consultations',
+      'Can include dosage reminders',
+      'Usually combined with health tracking'
+    ],
+    includeText: 'Include',
+    addedMessage: (petName) => `Added to ${petName}'s care routine`
+  },
+  travel: {
+    note: (petName) => `Traveling with pets needs coordination. I can help plan the journey and ensure ${petName} is comfortable.`,
+    question: 'Should I help plan the trip?',
+    action: 'Plan travel support',
+    quietHints: [
+      'Often paired with travel checklist',
+      'Can include comfort stops planning',
+      'Usually combined with accommodation help'
+    ],
+    includeText: 'Include',
+    addedMessage: (petName) => `Added to ${petName}'s travel kit`
+  },
+  enjoy: {
+    note: (petName) => `Adventures are better planned. I can help coordinate outdoor activities and ensure ${petName} has everything needed.`,
+    question: 'Would you like adventure planning help?',
+    action: 'Plan adventure support',
+    quietHints: [
+      'Often paired with activity planning',
+      'Can include weather-based suggestions',
+      'Usually combined with safety checklist'
+    ],
+    includeText: 'Include',
+    addedMessage: (petName) => `Added to ${petName}'s adventure pack`
+  },
+  fit: {
+    note: (petName) => `Fitness goals need consistency. I can track progress and remind you of ${petName}'s exercise routine.`,
+    question: 'Should I set up fitness tracking?',
+    action: 'Set up fitness routine',
+    quietHints: [
+      'Often paired with exercise tracking',
+      'Can include progress milestones',
+      'Usually combined with diet coordination'
+    ],
+    includeText: 'Include',
+    addedMessage: (petName) => `Added to ${petName}'s fitness plan`
+  },
+  shop: {
+    note: (petName) => `I can remember what works for ${petName} and suggest refills when needed.`,
+    question: 'Would you like smart reorder reminders?',
+    action: 'Set up smart reminders',
+    quietHints: [
+      'Can be auto-reordered when low',
+      'Often paired with subscription savings',
+      'Usually combined with usage tracking'
+    ],
+    includeText: 'Include',
+    addedMessage: (petName) => `Added to ${petName}'s essentials`
+  },
+  default: {
+    note: (petName) => `I'm here to help make things easier for you and ${petName}.`,
+    question: 'Would you like any assistance?',
+    action: 'Get Mira\'s help',
+    quietHints: [
+      'Handled with care',
+      'Can be coordinated for you',
+      'Usually includes helpful reminders'
+    ],
+    includeText: 'Include',
+    addedMessage: (petName) => `Added for ${petName}`
+  }
+};
+
+const getPillarMiraContext = (pillar) => {
+  return PILLAR_MIRA_CONTEXT[pillar] || PILLAR_MIRA_CONTEXT.default;
+};
+
+// ============================================
 // PILLAR-SPECIFIC SUPPORT FILTERS
 // Rule: Support filters must mirror the emotional state of the page
 // ============================================
