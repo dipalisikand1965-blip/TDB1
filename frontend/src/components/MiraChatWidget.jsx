@@ -196,7 +196,8 @@ const MiraChatWidget = ({
   
   // Pillar-specific configurations
   const pillarConfig = {
-    general: { icon: '🐾', name: 'General', color: 'from-purple-600 to-indigo-600' },
+    general: { icon: '🐾', name: 'Services', color: 'from-purple-600 to-indigo-600' },
+    services: { icon: '✨', name: 'Services', color: 'from-purple-600 to-indigo-600' },
     stay: { icon: '🏨', name: 'Stay', color: 'from-purple-500 to-violet-500' },
     travel: { icon: '✈️', name: 'Travel', color: 'from-blue-500 to-cyan-500' },
     care: { icon: '💊', name: 'Care', color: 'from-rose-500 to-pink-600' },

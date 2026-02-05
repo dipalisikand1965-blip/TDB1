@@ -509,11 +509,7 @@ const ServicesPage = () => {
             
             {/* Subtitle - The Key Line */}
             <p className="text-sm sm:text-base md:text-lg text-[#6B6B6B] mb-4 sm:mb-6 max-w-xl mx-auto px-4">
-              {petName ? (
-                <>Based on who {petName} is and how {petName} lives.</>
-              ) : (
-                <>Based on who your dog is and how they live.</>
-              )}
+              Thoughtfully selected for his life and needs.
             </p>
             
             {/* Mira's Quiet Intelligence */}

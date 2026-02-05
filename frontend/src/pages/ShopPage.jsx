@@ -785,11 +785,7 @@ const ShopPage = () => {
             
             {/* Warm Subtitle - The key line */}
             <p className="text-sm sm:text-base md:text-lg text-[#6B6B6B] mb-4 sm:mb-6 max-w-xl mx-auto px-4">
-              {petName ? (
-                <>Thoughtfully selected for {petName}'s life and needs.</>
-              ) : (
-                <>Thoughtfully selected for your companion's life and needs.</>
-              )}
+              Thoughtfully selected for his life and needs.
             </p>
             
             {/* Mira's Quiet Intelligence - Subtle, factual, confident */}
