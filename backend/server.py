@@ -7975,9 +7975,13 @@ Generate ONE unique Mira hint for this product. Just the hint, nothing else."""
         if not api_key:
             return generate_mira_hint_fallback(product)
         
+        # System message defines Mira's personality
+        system_msg = """You are Mira, a soulful pet concierge. You create short, exciting product hints that capture the joy pets feel. Be warm, unique, and evocative. Never generic."""
+        
         chat = LlmChat(
             api_key=api_key,
-            session_id=f"mira-hint-{product.get('id', 'unknown')}"
+            session_id=f"mira-hint-{product.get('id', 'unknown')}",
+            system_message=system_msg
         )
         chat.with_model("openai", "gpt-4o-mini")  # Using mini for speed and cost
         chat.with_params(temperature=0.9, max_tokens=50)  # High creativity
