@@ -228,7 +228,7 @@ class TestAdminProductBoxUI:
     def test_product_box_products_pagination(self):
         """Test product box products endpoint with pagination"""
         response = requests.get(
-            f"{BASE_URL}/api/admin/product-box/products",
+            f"{BASE_URL}/api/product-box/products",
             params={"page": 1, "limit": 20}
         )
         assert response.status_code == 200, f"Products endpoint failed: {response.text}"
@@ -246,7 +246,7 @@ class TestAdminProductBoxUI:
     def test_product_box_search(self):
         """Test product box search functionality"""
         response = requests.get(
-            f"{BASE_URL}/api/admin/product-box/products",
+            f"{BASE_URL}/api/product-box/products",
             params={"search": "bandana", "limit": 20}
         )
         assert response.status_code == 200, f"Search failed: {response.text}"
