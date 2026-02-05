@@ -725,20 +725,20 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
           
           {/* Mira's Note - Service integration (appears for celebration categories) */}
           {(category === 'cakes' || category === 'hampers' || category === 'accessories' || careFilters.includes('celebration')) && (
-            <div className="mb-6 p-4 bg-gradient-to-r from-purple-50/50 to-pink-50/50 rounded-xl border border-purple-100/50" data-testid="mira-note">
+            <div className="mb-6 p-4 bg-purple-50/30 rounded-xl border border-purple-100/30" data-testid="mira-note">
               <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center flex-shrink-0 shadow-sm">
-                  <Sparkles className="w-4 h-4 text-purple-500" />
+                <div className="w-8 h-8 rounded-full bg-white/80 flex items-center justify-center flex-shrink-0 shadow-sm">
+                  <Sparkles className="w-4 h-4 text-purple-400" />
                 </div>
                 <div>
-                  <p className="text-sm text-stone-700 mb-1">
-                    <span className="font-medium text-purple-700">Mira&apos;s note</span>
+                  <p className="text-sm text-stone-600 mb-1">
+                    <span className="font-medium text-purple-600">Mira&apos;s note</span>
                   </p>
-                  <p className="text-sm text-stone-600 leading-relaxed">
-                    Since this looks like a celebration, most pet parents prefer a little help with timing and delivery. I can take care of that for you.
+                  <p className="text-sm text-stone-500 leading-relaxed">
+                    Since this looks like a celebration, many pet parents prefer a little help with timing and delivery. I can take care of that for you.
                   </p>
-                  <button className="text-sm text-purple-600 hover:text-purple-700 mt-2 font-medium">
-                    Let Mira handle the arrangements →
+                  <button className="text-sm text-purple-500 hover:text-purple-600 mt-2 font-medium transition-colors">
+                    Let Mira handle the arrangements
                   </button>
                 </div>
               </div>
