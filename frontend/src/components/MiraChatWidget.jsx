@@ -421,6 +421,7 @@ const MiraChatWidget = ({
     if (pet === 'all') {
       setAllPetsMode(true);
       setSelectedPet(null);
+      setActiveSupportFilters([]); // Clear filters in all-pets mode
       const allPetNames = pets.map(p => p.name).join(', ');
       setMessages(prev => [...prev, {
         id: `pet-change-${Date.now()}`,
@@ -430,10 +431,24 @@ const MiraChatWidget = ({
     } else {
       setAllPetsMode(false);
       setSelectedPet(pet);
-      const petBreed = pet.breed || pet.identity?.breed || '';
+      
+      // Load saved preferences for this pet
+      const savedPrefs = loadPetPreferences(pet.id);
       let switchMessage = `Okay **${pet.name}**! 🐾`;
+      const petBreed = pet.breed || pet.identity?.breed || '';
       if (petBreed) switchMessage += ` Your ${petBreed}.`;
-      switchMessage += ` What would you like help with?`;
+      
+      // Restore saved filters if available
+      if (savedPrefs?.supportFilters?.length > 0) {
+        setActiveSupportFilters(savedPrefs.supportFilters);
+        const filterNames = savedPrefs.supportFilters.map(f => {
+          const labels = { 'sensitive-stomach': 'Gentle', 'allergy-friendly': 'Allergy-safe', 'calming': 'Calming', 'special-care': 'Extra care' };
+          return labels[f] || f;
+        }).join(', ');
+        switchMessage += ` I remember ${pet.name} prefers **${filterNames}** products. Those filters are still active!`;
+      } else {
+        switchMessage += ` What would you like help with?`;
+      }
       
       setMessages(prev => [...prev, {
         id: `pet-change-${Date.now()}`,
