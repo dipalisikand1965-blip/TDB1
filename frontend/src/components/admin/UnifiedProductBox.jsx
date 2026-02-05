@@ -127,6 +127,9 @@ const UnifiedProductBox = () => {
       if (filterStatus) params.append('status', filterStatus);
       if (filterShipping) params.append('shipping', filterShipping);
       if (filterRewardEligible !== null) params.append('reward_eligible', filterRewardEligible.toString());
+      if (filterBreed) params.append('breed', filterBreed);
+      if (filterSize) params.append('size', filterSize);
+      if (filterHasMiraHint) params.append('has_mira_hint', filterHasMiraHint);
       
       const response = await fetch(`${API_URL}/api/product-box/products?${params}`);
       const data = await response.json();
@@ -139,7 +142,7 @@ const UnifiedProductBox = () => {
     } finally {
       setLoading(false);
     }
-  }, [page, searchTerm, filterType, filterPillar, filterStatus, filterShipping, filterRewardEligible]);
+  }, [page, searchTerm, filterType, filterPillar, filterStatus, filterShipping, filterRewardEligible, filterBreed, filterSize, filterHasMiraHint]);
 
   // Fetch stats
   const fetchStats = async () => {
