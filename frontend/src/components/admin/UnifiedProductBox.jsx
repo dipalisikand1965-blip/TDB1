@@ -631,8 +631,33 @@ const UnifiedProductBox = () => {
         </div>
       )}
 
+      {/* Pillar Quick Filters */}
+      <div className="flex flex-wrap gap-2">
+        <Button
+          variant={filterPillar === '' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setFilterPillar('')}
+          className="h-8"
+          data-testid="filter-all-product-pillars"
+        >
+          All Pillars
+        </Button>
+        {ALL_PILLARS.slice(0, 8).map(p => (
+          <Button
+            key={p.id}
+            variant={filterPillar === p.id ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setFilterPillar(p.id)}
+            className="h-8"
+            data-testid={`filter-product-pillar-${p.id}`}
+          >
+            {p.icon} {p.name}
+          </Button>
+        ))}
+      </div>
+
       {/* Filters */}
-      <Card className="p-4">
+      <Card className="p-4" data-testid="product-filters-card">
         <div className="flex flex-wrap gap-3 items-center">
           <div className="flex-1 min-w-[200px]">
             <div className="relative">
@@ -642,6 +667,7 @@ const UnifiedProductBox = () => {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-9"
+                data-testid="search-products-input"
               />
             </div>
           </div>
