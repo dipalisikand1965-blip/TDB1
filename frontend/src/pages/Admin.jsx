@@ -183,6 +183,7 @@ const Admin = () => {
   const [showLoginPassword, setShowLoginPassword] = useState(false);
   const [seedingAll, setSeedingAll] = useState(false);
   const [seedingProduction, setSeedingProduction] = useState(false);
+  const [syncingShopify, setSyncingShopify] = useState(false);
   
   // Collapsible sidebar state for mobile
   const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
