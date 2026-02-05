@@ -1684,6 +1684,20 @@ const Admin = () => {
     }
   }, [showHealthVaultModal, selectedPetForHealth]);
 
+  // Show loading while verifying stored credentials
+  if (isVerifying) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-800 to-pink-900 flex items-center justify-center p-4">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4 animate-pulse">
+            <Lock className="w-8 h-8 text-white" />
+          </div>
+          <p className="text-white/80">Verifying credentials...</p>
+        </div>
+      </div>
+    );
+  }
+
   // Login Screen
   if (!isAuthenticated) {
     return (
