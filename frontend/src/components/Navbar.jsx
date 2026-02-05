@@ -1334,6 +1334,50 @@ const Navbar = () => {
 
             <div className="border-t border-gray-200 my-3"></div>
 
+            {/* Shop & Services - Mobile */}
+            <div className="space-y-2 mb-2">
+              <div className="rounded-lg border border-purple-200 overflow-hidden bg-purple-50/50">
+                <Link
+                  to="/shop"
+                  onClick={() => setIsMenuOpen(false)}
+                  className={`flex items-center justify-between p-3 ${
+                    isActive('/shop') 
+                      ? 'bg-purple-100 text-purple-700' 
+                      : 'hover:bg-purple-100'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">🛒</span>
+                    <span className="font-semibold text-sm">Shop</span>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-purple-400" />
+                </Link>
+              </div>
+              
+              <div className="rounded-lg border border-purple-200 overflow-hidden bg-purple-50/50">
+                <Link
+                  to="/services"
+                  onClick={() => setIsMenuOpen(false)}
+                  className={`flex items-center justify-between p-3 ${
+                    isActive('/services') 
+                      ? 'bg-purple-100 text-purple-700' 
+                      : 'hover:bg-purple-100'
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">✨</span>
+                    <span className="font-semibold text-sm">Services</span>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-purple-400" />
+                </Link>
+                <div className="border-t border-purple-100 bg-white px-3 py-2 space-y-1">
+                  <Link to="/services?pillar=care" onClick={() => setIsMenuOpen(false)} className="block py-1.5 px-2 text-xs text-gray-600 hover:text-purple-600 rounded">Care & Grooming</Link>
+                  <Link to="/services?pillar=learn" onClick={() => setIsMenuOpen(false)} className="block py-1.5 px-2 text-xs text-gray-600 hover:text-purple-600 rounded">Training</Link>
+                  <Link to="/services?pillar=stay" onClick={() => setIsMenuOpen(false)} className="block py-1.5 px-2 text-xs text-gray-600 hover:text-purple-600 rounded">Boarding & Stay</Link>
+                </div>
+              </div>
+            </div>
+
             {/* All Pillars - Mobile with Expandable Dropdowns */}
             <div className="space-y-2">
               {PILLARS.map((pillar) => (
