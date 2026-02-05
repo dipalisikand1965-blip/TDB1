@@ -1830,7 +1830,7 @@ async def get_nps_by_product():
     enriched = []
     for p in products:
         product_id = p.get("_id")
-        product_info = await db.products.find_one({"id": product_id}, {"_id": 0, "images": 1, "name": 1})
+        product_info = await db.products_master.find_one({"id": product_id}, {"_id": 0, "images": 1, "name": 1})
         
         nps_score = None
         if p.get("responses_count", 0) > 0:

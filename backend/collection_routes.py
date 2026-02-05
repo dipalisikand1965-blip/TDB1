@@ -122,7 +122,7 @@ async def enrich_collection_items(sections: List[dict]) -> List[dict]:
             
             # Fetch actual item data based on type
             if item["item_type"] == "product":
-                product = await db.products.find_one({"id": item["item_id"]}, {"_id": 0})
+                product = await db.products_master.find_one({"id": item["item_id"]}, {"_id": 0})
                 if product:
                     enriched_item["actual_data"] = {
                         "name": product.get("name"),
@@ -470,7 +470,7 @@ async def search_items_for_collection(
     
     # Search products
     if item_type in ["all", "product"]:
-        products = await db.products.find(
+        products = await db.products_master.find(
             {"name": query_regex} if q else {},
             {"_id": 0, "id": 1, "name": 1, "image": 1, "price": 1, "category": 1}
         ).limit(limit).to_list(limit)

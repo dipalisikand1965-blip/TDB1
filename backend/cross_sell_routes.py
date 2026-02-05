@@ -188,7 +188,7 @@ async def get_cross_sell_recommendations(request: CrossSellRequest):
     }
     
     # Get products
-    products = await db.products.find(query, {"_id": 0}).limit(request.limit * 2).to_list(request.limit * 2)
+    products = await db.products_master.find(query, {"_id": 0}).limit(request.limit * 2).to_list(request.limit * 2)
     
     # If not enough, fallback to broader search
     if len(products) < request.limit:
@@ -196,7 +196,7 @@ async def get_cross_sell_recommendations(request: CrossSellRequest):
             "is_active": {"$ne": False},
             "pillar": request.pillar or "care"
         }
-        fallback_products = await db.products.find(fallback_query, {"_id": 0}).limit(request.limit).to_list(request.limit)
+        fallback_products = await db.products_master.find(fallback_query, {"_id": 0}).limit(request.limit).to_list(request.limit)
         
         existing_ids = {p.get("id") or p.get("product_id") for p in products}
         for p in fallback_products:

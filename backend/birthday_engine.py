@@ -117,7 +117,7 @@ async def get_suggested_products(pet_type: str, celebration_type: str, limit: in
     tags = tags_map.get(pet_type_lower, tags_map.get("default", ["treats"]))
     
     # Search products with these tags
-    products = await db.products.find({
+    products = await db.products_master.find({
         "$or": [
             {"tags": {"$in": tags}},
             {"title": {"$regex": "birthday|cake|celebration", "$options": "i"}}
@@ -127,7 +127,7 @@ async def get_suggested_products(pet_type: str, celebration_type: str, limit: in
     
     # If no products found, get any active products
     if not products:
-        products = await db.products.find(
+        products = await db.products_master.find(
             {"status": "active"},
             {"_id": 0, "id": 1, "title": 1, "images": 1, "variants": 1, "tags": 1}
         ).limit(limit).to_list(limit)
