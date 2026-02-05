@@ -517,6 +517,7 @@ const ServicesPage = () => {
   const [loading, setLoading] = useState(true);
   const [selectedPillar, setSelectedPillar] = useState(searchParams.get('pillar') || 'recommended');
   const [selectedSubcat, setSelectedSubcat] = useState(null);
+  const [selectedBreedFilter, setSelectedBreedFilter] = useState('all'); // NEW: Breed filter
   const [selectedPet, setSelectedPet] = useState(null);
   const [petSoulData, setPetSoulData] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
