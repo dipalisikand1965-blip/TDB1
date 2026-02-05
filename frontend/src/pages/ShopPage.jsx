@@ -511,7 +511,7 @@ const ShopPage = () => {
   const [pets, setPets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeView, setActiveView] = useState('products');
-  const [selectedPillar, setSelectedPillar] = useState('all');
+  const [selectedPillar, setSelectedPillar] = useState('recommended');
   const [selectedSubcat, setSelectedSubcat] = useState(null);
   const [displayCount, setDisplayCount] = useState(24);
   const [selectedPet, setSelectedPet] = useState(null);
