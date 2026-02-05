@@ -9,6 +9,34 @@ Transform the application into a highly personalized, "guided care" experience f
 - **Database:** MongoDB
 - **AI Assistant:** Mira (Pet Concierge) with voice capabilities
 
+## Recent Updates (Feb 5, 2025)
+
+### Pet Photo Upload - NEW ✅
+- "Upload from Phone" button in pet registration form
+- Opens camera/gallery on mobile
+- Preview before submit
+- Stores in MongoDB as base64 (persists across deployments)
+- Fallback URL option available
+
+### Breed Filter on Services - NEW ✅
+- Dropdown filter: Golden Retriever, Lab, Shih Tzu, Pug, Indie, etc.
+- "Looking for a friend's pet?" link
+- Prioritizes services with breed-specific content
+
+### "Why We Picked This" Tooltips - NEW ✅
+- Golden sparkle badge on recommended items
+- Hover shows personalized reason
+- Examples: "Great for active Golden Retrievers", "Perfect for Shih Tzu coat care"
+
+### Admin Notifications for Pet Updates - NEW ✅
+- Notification when users update pet profiles
+- Shows owner name, pet name, what was changed
+- Visible in admin bell icon
+
+### Data Sync Button - NEW ✅
+- "🚀 SYNC ALL DATA" button in admin
+- Syncs: Shopify products + Pillar products + Breed services + Mira whispers
+
 ## Completed Features (Feb 2025)
 
 ### Shop Page ✅ (Score: 92/100)
@@ -21,11 +49,11 @@ Transform the application into a highly personalized, "guided care" experience f
 ### Services Page ✅ (Score: 90/100)
 - Pet personalization with Soul traits
 - Breed-specific Mira whispers
-- All 13 pillars visible
+- All 13 pillars visible + Breed Filter
 - Card navigation to detail pages
 - Fully mobile responsive
 
-### Service Detail Page ✅ (Score: 88/100) - NEW
+### Service Detail Page ✅ (Score: 88/100)
 - Hero image with gradient overlay
 - Pet selector for multi-pet households
 - Mira's breed-specific insight box
