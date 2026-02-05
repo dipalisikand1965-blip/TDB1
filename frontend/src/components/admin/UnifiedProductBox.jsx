@@ -715,13 +715,41 @@ const UnifiedProductBox = () => {
             data-testid="filter-product-breed-select"
           >
             <option value="">🐕 All Breeds</option>
-            <option value="Indie">Indie</option>
             <option value="Labrador">Labrador</option>
             <option value="Golden Retriever">Golden Retriever</option>
+            <option value="Indie">Indie</option>
+            <option value="German Shepherd">German Shepherd</option>
             <option value="Beagle">Beagle</option>
-            <option value="Maltese">Maltese</option>
-            <option value="Shih Tzu">Shih Tzu</option>
             <option value="Pug">Pug</option>
+            <option value="Shih Tzu">Shih Tzu</option>
+            <option value="Pomeranian">Pomeranian</option>
+            <option value="Husky">Husky</option>
+            <option value="Rottweiler">Rottweiler</option>
+            <option value="Dachshund">Dachshund</option>
+            <option value="Cocker Spaniel">Cocker Spaniel</option>
+            <option value="French Bulldog">French Bulldog</option>
+            <option value="Boxer">Boxer</option>
+            <option value="Great Dane">Great Dane</option>
+            <option value="Doberman">Doberman</option>
+            <option value="Maltese">Maltese</option>
+            <option value="Yorkshire Terrier">Yorkshire Terrier</option>
+            <option value="Lhasa Apso">Lhasa Apso</option>
+            <option value="Chihuahua">Chihuahua</option>
+            <option value="Spitz">Spitz</option>
+            <option value="Saint Bernard">Saint Bernard</option>
+            <option value="Shiba Inu">Shiba Inu</option>
+            <option value="Border Collie">Border Collie</option>
+            <option value="Akita">Akita</option>
+            <option value="Dalmatian">Dalmatian</option>
+            <option value="Bulldog">Bulldog</option>
+            <option value="Poodle">Poodle</option>
+            <option value="Australian Shepherd">Australian Shepherd</option>
+            <option value="Cavalier King Charles">Cavalier King Charles</option>
+            <option value="Bernese Mountain Dog">Bernese Mountain Dog</option>
+            <option value="Samoyed">Samoyed</option>
+            <option value="Corgi">Corgi</option>
+            <option value="Jack Russell">Jack Russell</option>
+            <option value="Weimaraner">Weimaraner</option>
           </select>
           
           <select 
