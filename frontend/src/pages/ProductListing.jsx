@@ -1,124 +1,173 @@
 /**
- * ProductListing.jsx - Pet Life Operating System
+ * ProductListing.jsx - Mira-Driven Pet Operating System
  * 
- * This is not a store. This is a system that knows:
- * - Who your dog is
- * - What stage of life they're in
- * - What comes next
+ * Philosophy:
+ * - Products are PROPOSED, not browsed
+ * - Mira is the brain, catalog is just the body
+ * - Filters mirror how pet parents THINK, not how we manage inventory
  * 
- * Design Philosophy:
- * - Identity before inventory
- * - Calm, not noise
- * - Memory-driven
- * - Trust through transparency
+ * Filter Hierarchy:
+ * Layer 1: Identity (auto-applied from pet profile)
+ * Layer 2: Care & Suitability (trust-building)
+ * Layer 3: Values & Preferences (emotional alignment)
+ * 
+ * What we DON'T show prominently: Price, Brand, Pack size, Discounts
  */
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSearchParams, useLocation, Link } from 'react-router-dom';
 import { 
-  Loader2, PawPrint, Heart, MapPin, ChevronDown, ChevronRight,
-  Sparkles, Calendar, Shield, Truck, MessageCircle, X, Check,
-  Info, Filter, Search
+  PawPrint, Heart, Shield, Sparkles, ChevronDown, ChevronRight,
+  AlertTriangle, Check, MessageCircle, Loader2, X, Info,
+  Activity, Leaf, Droplets, Bone, Brain, HeartPulse, Baby
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
-import { Badge } from '../components/ui/badge';
 import { API_URL, getApiUrl } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import SEOHead from '../components/SEOHead';
 import { toast } from '../hooks/use-toast';
 
-// Life stage information for dogs
+// ============================================
+// MIRA'S UNDERSTANDING OF PET LIFE
+// ============================================
+
+// Life stages - how pet parents think about their dog's journey
 const LIFE_STAGES = {
   puppy: { 
     label: 'Puppy', 
-    ageRange: '0-1 year',
-    description: 'Growing, learning, discovering the world',
-    needs: ['Soft textures', 'Small portions', 'Training rewards', 'Gentle ingredients']
-  },
-  young_adult: { 
-    label: 'Young Adult', 
-    ageRange: '1-3 years',
-    description: 'Active, playful, full of energy',
-    needs: ['High protein', 'Joint support', 'Mental stimulation', 'Activity rewards']
+    icon: Baby,
+    color: 'text-pink-600 bg-pink-50',
+    needs: ['growth', 'gentle', 'small-portions', 'training']
   },
   adult: { 
     label: 'Adult', 
-    ageRange: '3-7 years',
-    description: 'Prime years, established routines',
-    needs: ['Balanced nutrition', 'Weight management', 'Dental health', 'Variety']
+    icon: Activity,
+    color: 'text-blue-600 bg-blue-50',
+    needs: ['maintenance', 'active', 'balanced']
   },
   senior: { 
     label: 'Senior', 
-    ageRange: '7+ years',
-    description: 'Wisdom years, comfort and care',
-    needs: ['Soft treats', 'Joint support', 'Easy digestion', 'Gentle rewards']
+    icon: Heart,
+    color: 'text-purple-600 bg-purple-50',
+    needs: ['joint-support', 'gentle', 'easy-digest', 'comfort']
   }
 };
+
+// Care needs - what pet parents are REALLY asking
+// NOT "health issues" - language matters
+const CARE_NEEDS = [
+  { id: 'sensitive-stomach', label: 'Sensitive tummy', icon: Droplets, desc: 'Gentle on digestion' },
+  { id: 'skin-coat', label: 'Skin & coat', icon: Sparkles, desc: 'For healthy shine' },
+  { id: 'weight', label: 'Weight support', icon: Activity, desc: 'Healthy weight management' },
+  { id: 'joints', label: 'Joint care', icon: Bone, desc: 'Mobility & comfort' },
+  { id: 'dental', label: 'Dental health', icon: Heart, desc: 'Clean teeth & gums' },
+  { id: 'calming', label: 'Calming', icon: Brain, desc: 'For anxious moments' },
+  { id: 'recovery', label: 'Recovery care', icon: HeartPulse, desc: 'Special nutrition needs' },
+  { id: 'allergy-friendly', label: 'Allergy-friendly', icon: Shield, desc: 'Limited ingredients' }
+];
+
+// Values - emotional alignment with pet parent identity
+const VALUES = [
+  { id: 'grain-free', label: 'Grain-free' },
+  { id: 'single-protein', label: 'Single protein' },
+  { id: 'limited-ingredient', label: 'Limited ingredient' },
+  { id: 'fresh', label: 'Fresh / gently cooked' },
+  { id: 'no-additives', label: 'No artificial additives' },
+  { id: 'human-grade', label: 'Human-grade' },
+  { id: 'mira-recommended', label: 'Mira recommended', special: true }
+];
+
+// Avoid if... (trust-building through honesty)
+const AVOID_WARNINGS = [
+  { id: 'chicken', label: 'Chicken' },
+  { id: 'beef', label: 'Beef' },
+  { id: 'dairy', label: 'Dairy' },
+  { id: 'wheat', label: 'Wheat/Gluten' },
+  { id: 'soy', label: 'Soy' },
+  { id: 'corn', label: 'Corn' }
+];
 
 // Size categories
 const SIZE_CATEGORIES = {
-  small: { label: 'Small', weight: 'Under 10kg', portion: 'Small portions' },
-  medium: { label: 'Medium', weight: '10-25kg', portion: 'Medium portions' },
-  large: { label: 'Large', weight: '25-40kg', portion: 'Larger portions' },
-  giant: { label: 'Giant', weight: '40kg+', portion: 'Extra large portions' }
+  small: { label: 'Small', weight: 'Under 10kg' },
+  medium: { label: 'Medium', weight: '10-25kg' },
+  large: { label: 'Large', weight: '25kg+' }
 };
 
-// Moment-based categories (not SKU-based)
-const MOMENT_CATEGORIES = {
-  celebration: {
-    label: 'Celebrations',
-    description: 'Birthdays, gotcha days, milestones',
-    icon: '🎂',
-    types: ['cakes', 'hampers', 'accessories']
-  },
-  daily: {
-    label: 'Daily Rituals',
-    description: 'Training, walks, bedtime',
-    icon: '🌅',
-    types: ['treats', 'training-treats', 'biscuits']
-  },
-  health: {
-    label: 'Health & Wellness',
-    description: 'Dental, joints, digestion',
-    icon: '💊',
-    types: ['dental', 'supplements', 'calming']
-  },
-  special: {
-    label: 'Special Occasions',
-    description: 'Festivals, seasons, gifts',
-    icon: '🎁',
-    types: ['desi', 'valentine', 'christmas', 'diwali']
-  }
-};
+// ============================================
+// HELPER FUNCTIONS
+// ============================================
 
-// Fresh delivery cities
-const DELIVERY_CITIES = [
-  { value: 'all', label: 'All Locations' },
-  { value: 'bangalore', label: 'Bangalore', fresh: true },
-  { value: 'mumbai', label: 'Mumbai', fresh: true },
-  { value: 'delhi', label: 'Delhi', fresh: true },
-  { value: 'chennai', label: 'Chennai', fresh: true },
-  { value: 'hyderabad', label: 'Hyderabad', fresh: true },
-  { value: 'pune', label: 'Pune', fresh: true },
-  { value: 'pan-india', label: 'Pan India (Packaged)', fresh: false }
-];
-
-// Determine life stage from age
-const getLifeStage = (ageYears) => {
+const getLifeStageFromAge = (ageYears) => {
   if (ageYears < 1) return 'puppy';
-  if (ageYears < 3) return 'young_adult';
   if (ageYears < 7) return 'adult';
   return 'senior';
 };
 
-// Determine size category from weight
-const getSizeCategory = (weightKg) => {
+const getSizeFromWeight = (weightKg) => {
   if (weightKg < 10) return 'small';
   if (weightKg < 25) return 'medium';
-  if (weightKg < 40) return 'large';
-  return 'giant';
+  return 'large';
 };
+
+// Generate "Why this works for your dog" badge
+const generateMiraInsight = (product, pet) => {
+  if (!pet) return null;
+  
+  const insights = [];
+  const productText = [product.name, product.description, product.ingredients, ...(product.tags || [])].join(' ').toLowerCase();
+  
+  // Life stage match
+  const petAge = pet.age_years || pet.age || 3;
+  const lifeStage = getLifeStageFromAge(petAge);
+  if (productText.includes(lifeStage) || productText.includes(LIFE_STAGES[lifeStage].label.toLowerCase())) {
+    insights.push(`Right for ${pet.name}'s life stage`);
+  }
+  
+  // Activity match
+  if (pet.activity_level === 'high' && productText.includes('active')) {
+    insights.push(`Matches ${pet.name}'s energy`);
+  }
+  
+  // Sensitive stomach
+  if (productText.includes('gentle') || productText.includes('sensitive')) {
+    insights.push('Gentle on tummy');
+  }
+  
+  // Joint support for seniors
+  if (lifeStage === 'senior' && (productText.includes('joint') || productText.includes('mobility'))) {
+    insights.push('Supports senior joints');
+  }
+  
+  return insights[0] || null;
+};
+
+// Check product safety against pet allergies
+const checkProductSafety = (product, pet) => {
+  if (!pet) return { safe: true, warnings: [] };
+  
+  const allergies = pet?.doggy_soul_answers?.food_allergies || 
+                   pet?.preferences?.allergies || 
+                   pet?.health?.allergies || [];
+  
+  if (!Array.isArray(allergies) || allergies.length === 0) return { safe: true, warnings: [] };
+  
+  const productText = [product.name, product.description, product.ingredients, ...(product.tags || [])].join(' ').toLowerCase();
+  const warnings = [];
+  
+  allergies.forEach(allergen => {
+    if (allergen && productText.includes(allergen.toLowerCase())) {
+      warnings.push(allergen);
+    }
+  });
+  
+  return { safe: warnings.length === 0, warnings };
+};
+
+// ============================================
+// MAIN COMPONENT
+// ============================================
 
 const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
   const [searchParams] = useSearchParams();
@@ -132,21 +181,31 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
   const [userPets, setUserPets] = useState([]);
   const [activePet, setActivePet] = useState(null);
   
-  // Filter state
-  const [deliveryCity, setDeliveryCity] = useState('all');
-  const [priceRange, setPriceRange] = useState('all');
-  const [sortBy, setSortBy] = useState('recommended');
-  const [searchInput, setSearchInput] = useState('');
-  const [showFilters, setShowFilters] = useState(false);
+  // Identity filters (Layer 1) - auto-applied from pet profile
+  const [identityFilters, setIdentityFilters] = useState({
+    lifeStage: null,  // puppy | adult | senior
+    size: null,       // small | medium | large
+    activityLevel: null // low | normal | high
+  });
+  
+  // Care needs filters (Layer 2) - trust-building
+  const [careFilters, setCareFilters] = useState([]);
+  
+  // Values filters (Layer 3) - emotional alignment
+  const [valueFilters, setValueFilters] = useState([]);
+  
+  // Avoid filters - honesty & trust
+  const [avoidFilters, setAvoidFilters] = useState([]);
   
   // UI state
+  const [showCareFilters, setShowCareFilters] = useState(false);
+  const [showValueFilters, setShowValueFilters] = useState(false);
+  const [showAvoidFilters, setShowAvoidFilters] = useState(false);
   const [showPetSelector, setShowPetSelector] = useState(false);
   
-  // Get category from props or URL
   const category = propCategory || searchParams.get('category') || 'all';
-  const searchQuery = searchParams.get('q') || searchParams.get('search') || '';
 
-  // Fetch user's pets for personalization
+  // Fetch user's pets
   useEffect(() => {
     const fetchPets = async () => {
       if (!user || !token) return;
@@ -160,7 +219,30 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
           const pets = data.pets || data || [];
           setUserPets(pets);
           if (pets.length > 0) {
-            setActivePet(pets[0]);
+            const pet = pets[0];
+            setActivePet(pet);
+            
+            // Auto-apply identity filters from pet profile
+            const ageYears = pet.age_years || pet.age || 3;
+            const weightKg = pet.weight || 15;
+            
+            setIdentityFilters({
+              lifeStage: getLifeStageFromAge(ageYears),
+              size: getSizeFromWeight(weightKg),
+              activityLevel: pet.activity_level || 'normal'
+            });
+            
+            // Auto-apply allergy avoidances
+            const allergies = pet?.doggy_soul_answers?.food_allergies || 
+                             pet?.preferences?.allergies || [];
+            if (Array.isArray(allergies)) {
+              const avoidIds = AVOID_WARNINGS
+                .filter(a => allergies.some(allergy => 
+                  allergy && allergy.toLowerCase().includes(a.id.toLowerCase())
+                ))
+                .map(a => a.id);
+              setAvoidFilters(avoidIds);
+            }
           }
         }
       } catch (error) {
@@ -177,237 +259,221 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
       setLoading(true);
       try {
         let url = `${getApiUrl()}/api/products?limit=100`;
-        
-        if (searchQuery) {
-          url = `${getApiUrl()}/api/products/search?q=${encodeURIComponent(searchQuery)}&limit=100`;
-        } else if (category && category !== 'all') {
+        if (category && category !== 'all') {
           url += `&category=${encodeURIComponent(category)}`;
-        }
-        
-        if (deliveryCity && deliveryCity !== 'all') {
-          if (deliveryCity === 'pan-india') {
-            url += `&availability=pan-india`;
-          } else {
-            url += `&fresh_delivery_city=${encodeURIComponent(deliveryCity)}`;
-          }
         }
         
         const response = await fetch(url);
         if (response.ok) {
           const data = await response.json();
-          const productsArray = Array.isArray(data.products) ? data.products : [];
-          setProducts(productsArray.filter(p => p !== null && p !== undefined));
-        } else {
-          setProducts([]);
+          setProducts(Array.isArray(data.products) ? data.products.filter(p => p) : []);
         }
       } catch (error) {
         console.error('Failed to fetch products:', error);
-        setProducts([]);
       }
       setLoading(false);
     };
     
     fetchProducts();
-  }, [category, searchQuery, deliveryCity]);
+  }, [category]);
 
-  // Intelligent filtering based on pet profile
-  const { filteredProducts, hiddenCount } = useMemo(() => {
-    let filtered = [...products];
+  // Mira-driven filtering and sorting
+  const { proposedProducts, hiddenCount, miraContext } = useMemo(() => {
+    let proposed = [...products];
     let hidden = 0;
+    let context = [];
     
-    // Pet Soul Filtering - Filter based on allergies
-    if (activePet) {
-      const rawAllergies = activePet?.doggy_soul_answers?.food_allergies || 
-                          activePet?.preferences?.allergies || 
-                          activePet?.health?.allergies || [];
-      const allergies = Array.isArray(rawAllergies) ? rawAllergies : [];
-      
-      if (allergies.length > 0) {
-        const allergyKeywords = allergies
-          .map(a => (a || '').toLowerCase())
-          .filter(a => a && a !== 'no' && a !== 'none' && a !== 'other');
-        
-        if (allergyKeywords.length > 0) {
-          const beforeCount = filtered.length;
-          filtered = filtered.filter(product => {
-            const productText = [
-              product.name || '',
-              product.description || '',
-              product.ingredients || '',
-              ...(product.tags || [])
-            ].join(' ').toLowerCase();
-            
-            return !allergyKeywords.some(allergen => productText.includes(allergen));
-          });
-          hidden = beforeCount - filtered.length;
-        }
+    // Layer 1: Identity filtering (auto-applied)
+    // These should already be right - if user is adjusting, we failed
+    
+    // Filter by avoid list (allergies)
+    if (avoidFilters.length > 0) {
+      const beforeCount = proposed.length;
+      proposed = proposed.filter(product => {
+        const productText = [product.name, product.description, product.ingredients, ...(product.tags || [])].join(' ').toLowerCase();
+        return !avoidFilters.some(avoid => productText.includes(avoid));
+      });
+      hidden = beforeCount - proposed.length;
+      if (hidden > 0) {
+        context.push(`${hidden} items hidden to keep ${activePet?.name || 'your pet'} safe`);
       }
     }
     
-    // Price filter
-    if (priceRange !== 'all') {
-      if (priceRange === 'under500') {
-        filtered = filtered.filter(p => (p.price || p.minPrice || 0) < 500);
-      } else if (priceRange === '500-1000') {
-        filtered = filtered.filter(p => {
-          const price = p.price || p.minPrice || 0;
-          return price >= 500 && price <= 1000;
+    // Layer 2: Care needs filtering
+    if (careFilters.length > 0) {
+      proposed = proposed.filter(product => {
+        const productText = [product.name, product.description, product.tags?.join(' ')].join(' ').toLowerCase();
+        return careFilters.some(care => {
+          const careKeywords = {
+            'sensitive-stomach': ['sensitive', 'gentle', 'easy digest', 'tummy'],
+            'skin-coat': ['skin', 'coat', 'shine', 'omega'],
+            'weight': ['weight', 'lean', 'light', 'low calorie'],
+            'joints': ['joint', 'mobility', 'glucosamine', 'hip'],
+            'dental': ['dental', 'teeth', 'oral', 'chew'],
+            'calming': ['calm', 'anxiety', 'relax', 'stress'],
+            'recovery': ['recovery', 'healing', 'special', 'therapeutic'],
+            'allergy-friendly': ['hypoallergenic', 'limited ingredient', 'single protein']
+          };
+          return (careKeywords[care] || []).some(kw => productText.includes(kw));
         });
-      } else if (priceRange === 'over1000') {
-        filtered = filtered.filter(p => (p.price || p.minPrice || 0) > 1000);
-      }
-    }
-    
-    // Search filter
-    if (searchInput.trim()) {
-      const searchLower = searchInput.toLowerCase().trim();
-      filtered = filtered.filter(p => {
-        const searchText = [p.name, p.description, ...(p.tags || [])].join(' ').toLowerCase();
-        return searchText.includes(searchLower);
       });
     }
     
-    // Sort
-    if (sortBy === 'price-low') {
-      filtered.sort((a, b) => (a.price || a.minPrice || 0) - (b.price || b.minPrice || 0));
-    } else if (sortBy === 'price-high') {
-      filtered.sort((a, b) => (b.price || b.minPrice || 0) - (a.price || a.minPrice || 0));
-    } else if (sortBy === 'rating') {
-      filtered.sort((a, b) => (b.rating || b.paw_score || 0) - (a.rating || a.paw_score || 0));
+    // Layer 3: Values filtering
+    if (valueFilters.length > 0) {
+      proposed = proposed.filter(product => {
+        const productText = [product.name, product.description, product.tags?.join(' ')].join(' ').toLowerCase();
+        return valueFilters.some(value => {
+          const valueKeywords = {
+            'grain-free': ['grain-free', 'grain free', 'no grain'],
+            'single-protein': ['single protein', 'one protein'],
+            'limited-ingredient': ['limited ingredient', 'simple'],
+            'fresh': ['fresh', 'gently cooked', 'raw'],
+            'no-additives': ['no artificial', 'natural', 'no preservatives'],
+            'human-grade': ['human-grade', 'human grade'],
+            'mira-recommended': ['recommended', 'best seller', 'top rated']
+          };
+          return (valueKeywords[value] || []).some(kw => productText.includes(kw));
+        });
+      });
     }
     
-    return { filteredProducts: filtered, hiddenCount: hidden };
-  }, [products, activePet, priceRange, searchInput, sortBy]);
-
-  // Get pet's life stage info
-  const petLifeStage = useMemo(() => {
-    if (!activePet) return null;
-    let ageYears = activePet.age_years || activePet.age;
-    if (!ageYears && activePet.date_of_birth) {
-      const birthDate = new Date(activePet.date_of_birth);
-      const now = new Date();
-      ageYears = Math.floor((now.getTime() - birthDate.getTime()) / (365.25 * 24 * 60 * 60 * 1000));
-    }
-    if (!ageYears) return null;
-    return LIFE_STAGES[getLifeStage(ageYears)];
-  }, [activePet]);
-
-  // Get category display info
-  const getCategoryInfo = () => {
-    const info = {
-      cakes: { title: 'Birthday Cakes', moment: 'celebration', desc: 'Freshly baked for your pet\'s special day' },
-      'breed-cakes': { title: 'Breed Cakes', moment: 'celebration', desc: 'Shaped like your beloved breed' },
-      treats: { title: 'Treats & Rewards', moment: 'daily', desc: 'For training, walks, and everyday joy' },
-      hampers: { title: 'Celebration Boxes', moment: 'celebration', desc: 'Complete party packages' },
-      desi: { title: 'Desi Treats', moment: 'special', desc: 'Traditional Indian flavors, pet-safe' },
-      accessories: { title: 'Celebration Gear', moment: 'celebration', desc: 'Bandanas, toys, and party essentials' },
-      'frozen-treats': { title: 'Frozen Delights', moment: 'daily', desc: 'Cool treats for hot days' },
-      pupcakes: { title: 'Pupcakes & Dognuts', moment: 'celebration', desc: 'Mini celebration treats' }
+    // Sort by "Best for your dog" - not price, not popularity
+    proposed.sort((a, b) => {
+      // Mira-recommended first
+      const aScore = (a.paw_score || a.rating || 0) + (a.mira_recommended ? 10 : 0);
+      const bScore = (b.paw_score || b.rating || 0) + (b.mira_recommended ? 10 : 0);
+      return bScore - aScore;
+    });
+    
+    return { 
+      proposedProducts: proposed, 
+      hiddenCount: hidden,
+      miraContext: context
     };
-    return info[category] || { title: 'All Products', moment: 'all', desc: 'Curated for your pet' };
+  }, [products, avoidFilters, careFilters, valueFilters, activePet]);
+
+  // Toggle care filter
+  const toggleCareFilter = (id) => {
+    setCareFilters(prev => 
+      prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]
+    );
   };
+
+  // Toggle value filter
+  const toggleValueFilter = (id) => {
+    setValueFilters(prev => 
+      prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]
+    );
+  };
+
+  // Toggle avoid filter
+  const toggleAvoidFilter = (id) => {
+    setAvoidFilters(prev => 
+      prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]
+    );
+  };
+
+  // Category info
+  const getCategoryInfo = () => ({
+    cakes: { title: 'Birthday Cakes', desc: 'Freshly baked celebrations' },
+    treats: { title: 'Treats & Rewards', desc: 'For training and everyday joy' },
+    hampers: { title: 'Celebration Boxes', desc: 'Complete party packages' },
+    desi: { title: 'Desi Treats', desc: 'Traditional flavors, pet-safe' },
+    accessories: { title: 'Celebration Gear', desc: 'Party essentials' }
+  }[category] || { title: 'Products', desc: 'Curated by Mira for your pet' });
   
   const categoryInfo = getCategoryInfo();
 
-  // Quick add to cart
-  const handleQuickAdd = async (product, e) => {
-    e.stopPropagation();
-    try {
-      await addToCart({
-        ...product,
-        quantity: 1,
-        selectedSize: product.sizes?.[0] || null,
-        selectedFlavor: product.flavors?.[0] || null
-      });
-      toast({
-        title: 'Added to cart',
-        description: `${product.name} added successfully`
-      });
-    } catch (error) {
-      toast({
-        title: 'Could not add',
-        description: 'Please try again',
-        variant: 'destructive'
-      });
-    }
-  };
-
-  // Loading state - calm, not flashy
+  // Loading state
   if (loading) {
     return (
       <div className="min-h-screen bg-stone-50 flex items-center justify-center" data-testid="loading-state">
         <div className="text-center space-y-4">
-          <div className="w-12 h-12 rounded-full bg-stone-200 animate-pulse mx-auto flex items-center justify-center">
-            <PawPrint className="w-6 h-6 text-stone-400" />
+          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center mx-auto">
+            <Sparkles className="w-7 h-7 text-purple-500 animate-pulse" />
           </div>
-          <p className="text-stone-500 text-sm">Finding the perfect treats...</p>
+          <p className="text-stone-500">Mira is finding the right treats...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-stone-50" data-testid="product-listing">
+    <div className="min-h-screen bg-stone-50" data-testid="product-listing-mira">
       <SEOHead page="products" path={location.pathname} />
       
-      {/* === PET IDENTITY SECTION === */}
-      {/* Identity before inventory - the system knows who we're shopping for */}
+      {/* ============================================ */}
+      {/* MIRA'S UNDERSTANDING - Pet Identity Section */}
+      {/* ============================================ */}
       {activePet ? (
-        <div className="bg-white border-b border-stone-200" data-testid="pet-identity-section">
+        <div className="bg-white border-b border-stone-100">
           <div className="max-w-6xl mx-auto px-4 py-6">
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex items-center gap-4">
-                {/* Pet Avatar */}
-                <div className="w-16 h-16 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center overflow-hidden flex-shrink-0">
-                  {activePet.photo_url ? (
-                    <img src={activePet.photo_url} alt={activePet.name} className="w-full h-full object-cover" />
-                  ) : (
-                    <PawPrint className="w-8 h-8 text-amber-600" />
+            <div className="flex items-start gap-4">
+              {/* Pet Avatar */}
+              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-amber-50 to-orange-50 flex items-center justify-center overflow-hidden flex-shrink-0 ring-2 ring-amber-100">
+                {activePet.photo_url ? (
+                  <img src={activePet.photo_url} alt={activePet.name} className="w-full h-full object-cover" />
+                ) : (
+                  <PawPrint className="w-7 h-7 text-amber-500" />
+                )}
+              </div>
+              
+              {/* Mira's Understanding */}
+              <div className="flex-1">
+                <div className="flex items-center gap-2 mb-1">
+                  <Sparkles className="w-4 h-4 text-purple-500" />
+                  <span className="text-xs font-medium text-purple-600">Mira understands</span>
+                </div>
+                <h1 className="text-xl font-semibold text-stone-900">
+                  {categoryInfo.title} for {activePet.name}
+                </h1>
+                
+                {/* Identity Pills - Auto-applied, read-only indicators */}
+                <div className="flex flex-wrap items-center gap-2 mt-3">
+                  {identityFilters.lifeStage && (
+                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${LIFE_STAGES[identityFilters.lifeStage].color}`}>
+                      {React.createElement(LIFE_STAGES[identityFilters.lifeStage].icon, { className: 'w-3 h-3' })}
+                      {LIFE_STAGES[identityFilters.lifeStage].label}
+                    </span>
+                  )}
+                  {identityFilters.size && (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium text-stone-600 bg-stone-100">
+                      {SIZE_CATEGORIES[identityFilters.size].label} breed
+                    </span>
+                  )}
+                  {activePet.breed && (
+                    <span className="text-xs text-stone-500">{activePet.breed}</span>
                   )}
                 </div>
                 
-                {/* Pet Info */}
-                <div>
-                  <h2 className="text-lg font-semibold text-stone-900">
-                    {categoryInfo.title} for {activePet.name}
-                  </h2>
-                  <p className="text-sm text-stone-500 mt-0.5">
-                    {activePet.breed || 'Dog'} • {activePet.age_years || activePet.age || '?'} years
-                    {activePet.weight && ` • ${activePet.weight}kg`}
+                {/* Mira Context - What's being filtered */}
+                {miraContext.length > 0 && (
+                  <p className="text-xs text-amber-700 mt-3 flex items-center gap-1.5">
+                    <Shield className="w-3.5 h-3.5" />
+                    {miraContext[0]}
                   </p>
-                  
-                  {/* Allergies/Restrictions Notice */}
-                  {hiddenCount > 0 && (
-                    <p className="text-xs text-amber-700 mt-2 flex items-center gap-1">
-                      <Shield className="w-3 h-3" />
-                      {hiddenCount} items hidden based on {activePet.name}&apos;s dietary needs
-                    </p>
-                  )}
-                </div>
+                )}
               </div>
               
-              {/* Pet Selector (if multiple pets) */}
+              {/* Switch Pet */}
               {userPets.length > 1 && (
                 <div className="relative">
                   <button
                     onClick={() => setShowPetSelector(!showPetSelector)}
-                    className="text-sm text-stone-600 hover:text-stone-900 flex items-center gap-1"
-                    data-testid="switch-pet-btn"
+                    className="text-xs text-stone-500 hover:text-stone-700 flex items-center gap-1"
                   >
-                    Switch pet <ChevronDown className="w-4 h-4" />
+                    Switch <ChevronDown className="w-3 h-3" />
                   </button>
-                  
                   {showPetSelector && (
-                    <div className="absolute right-0 top-8 bg-white rounded-lg shadow-lg border border-stone-200 py-2 min-w-[180px] z-20">
+                    <div className="absolute right-0 top-6 bg-white rounded-lg shadow-lg border border-stone-200 py-1 min-w-[140px] z-20">
                       {userPets.map(pet => (
                         <button
                           key={pet.id || pet._id}
                           onClick={() => { setActivePet(pet); setShowPetSelector(false); }}
-                          className={`w-full px-4 py-2 text-left text-sm hover:bg-stone-50 flex items-center gap-2 ${
-                            (pet.id || pet._id) === (activePet.id || activePet._id) ? 'bg-stone-50 font-medium' : ''
-                          }`}
+                          className="w-full px-3 py-2 text-left text-sm hover:bg-stone-50 flex items-center gap-2"
                         >
-                          <PawPrint className="w-4 h-4 text-amber-500" />
+                          <PawPrint className="w-3 h-3 text-amber-500" />
                           {pet.name}
                         </button>
                       ))}
@@ -416,40 +482,26 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
                 </div>
               )}
             </div>
-            
-            {/* Life Stage Context - Educational, not salesy */}
-            {petLifeStage && (
-              <div className="mt-4 p-4 bg-stone-50 rounded-lg" data-testid="life-stage-context">
-                <p className="text-sm text-stone-600">
-                  <span className="font-medium text-stone-800">{activePet.name}</span> is in their{' '}
-                  <span className="font-medium text-stone-800">{petLifeStage.label.toLowerCase()} years</span> ({petLifeStage.ageRange}).
-                  {' '}{petLifeStage.description}.
-                </p>
-                <div className="flex flex-wrap gap-2 mt-3">
-                  {petLifeStage.needs.slice(0, 4).map((need, i) => (
-                    <span key={i} className="text-xs bg-white px-2 py-1 rounded text-stone-600 border border-stone-200">
-                      {need}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         </div>
       ) : (
-        /* Guest/No Pet Experience */
-        <div className="bg-white border-b border-stone-200">
+        /* Guest Experience */
+        <div className="bg-white border-b border-stone-100">
           <div className="max-w-6xl mx-auto px-4 py-8">
+            <div className="flex items-center gap-2 mb-2">
+              <Sparkles className="w-4 h-4 text-purple-500" />
+              <span className="text-xs font-medium text-purple-600">Mira-curated</span>
+            </div>
             <h1 className="text-2xl font-semibold text-stone-900">{categoryInfo.title}</h1>
             <p className="text-stone-500 mt-1">{categoryInfo.desc}</p>
             
-            {user && (
+            {!user && (
               <Link 
-                to="/my-pets" 
-                className="inline-flex items-center gap-2 text-sm text-amber-700 hover:text-amber-800 mt-4"
+                to="/login" 
+                className="inline-flex items-center gap-2 text-sm text-purple-600 hover:text-purple-700 mt-4 font-medium"
               >
                 <PawPrint className="w-4 h-4" />
-                Add your pet for personalized recommendations
+                Sign in for personalized recommendations
                 <ChevronRight className="w-4 h-4" />
               </Link>
             )}
@@ -457,154 +509,226 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
         </div>
       )}
       
-      {/* === TRUST SIGNALS === */}
-      {/* Radical trust - transparent, calm, no dark patterns */}
-      <div className="bg-stone-100 border-b border-stone-200">
-        <div className="max-w-6xl mx-auto px-4 py-3">
-          <div className="flex items-center justify-center gap-6 text-xs text-stone-600 flex-wrap">
-            <span className="flex items-center gap-1.5">
-              <Shield className="w-3.5 h-3.5 text-green-600" />
-              100% Pet-Safe Ingredients
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Truck className="w-3.5 h-3.5 text-blue-600" />
-              Fresh Delivery in 6 Cities
-            </span>
-            <span className="flex items-center gap-1.5">
-              <MessageCircle className="w-3.5 h-3.5 text-purple-600" />
-              Expert Help Available
-            </span>
+      {/* ============================================ */}
+      {/* CARE & VALUES FILTERS - Trust Building */}
+      {/* ============================================ */}
+      <div className="bg-white border-b border-stone-100">
+        <div className="max-w-6xl mx-auto px-4 py-4">
+          
+          {/* Layer 2: Care Needs - "What are you looking to support?" */}
+          <div className="mb-4">
+            <button
+              onClick={() => setShowCareFilters(!showCareFilters)}
+              className="flex items-center gap-2 text-sm font-medium text-stone-700 hover:text-stone-900"
+            >
+              <Heart className="w-4 h-4 text-rose-500" />
+              What are you looking to support?
+              <ChevronDown className={`w-4 h-4 transition-transform ${showCareFilters ? 'rotate-180' : ''}`} />
+              {careFilters.length > 0 && (
+                <span className="ml-2 px-2 py-0.5 bg-rose-100 text-rose-700 text-xs rounded-full">
+                  {careFilters.length}
+                </span>
+              )}
+            </button>
+            
+            {showCareFilters && (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-3">
+                {CARE_NEEDS.map(care => (
+                  <button
+                    key={care.id}
+                    onClick={() => toggleCareFilter(care.id)}
+                    className={`flex items-center gap-2 p-3 rounded-lg border text-left transition-all ${
+                      careFilters.includes(care.id)
+                        ? 'border-rose-300 bg-rose-50 text-rose-700'
+                        : 'border-stone-200 hover:border-stone-300 text-stone-600'
+                    }`}
+                    data-testid={`care-filter-${care.id}`}
+                  >
+                    <care.icon className="w-4 h-4 flex-shrink-0" />
+                    <div>
+                      <span className="text-sm font-medium block">{care.label}</span>
+                      <span className="text-xs opacity-70">{care.desc}</span>
+                    </div>
+                    {careFilters.includes(care.id) && (
+                      <Check className="w-4 h-4 ml-auto text-rose-600" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          
+          {/* Layer 3: Values - Emotional alignment */}
+          <div className="mb-4">
+            <button
+              onClick={() => setShowValueFilters(!showValueFilters)}
+              className="flex items-center gap-2 text-sm font-medium text-stone-700 hover:text-stone-900"
+            >
+              <Leaf className="w-4 h-4 text-green-500" />
+              Values & preferences
+              <ChevronDown className={`w-4 h-4 transition-transform ${showValueFilters ? 'rotate-180' : ''}`} />
+              {valueFilters.length > 0 && (
+                <span className="ml-2 px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full">
+                  {valueFilters.length}
+                </span>
+              )}
+            </button>
+            
+            {showValueFilters && (
+              <div className="flex flex-wrap gap-2 mt-3">
+                {VALUES.map(value => (
+                  <button
+                    key={value.id}
+                    onClick={() => toggleValueFilter(value.id)}
+                    className={`px-3 py-2 rounded-full text-sm font-medium transition-all ${
+                      valueFilters.includes(value.id)
+                        ? value.special 
+                          ? 'bg-purple-100 text-purple-700 border border-purple-300'
+                          : 'bg-green-100 text-green-700 border border-green-300'
+                        : 'bg-stone-100 text-stone-600 hover:bg-stone-200 border border-transparent'
+                    }`}
+                    data-testid={`value-filter-${value.id}`}
+                  >
+                    {value.special && <Sparkles className="w-3 h-3 inline mr-1" />}
+                    {value.label}
+                    {valueFilters.includes(value.id) && <X className="w-3 h-3 inline ml-1" />}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+          
+          {/* Avoid If... - Trust through honesty */}
+          <div>
+            <button
+              onClick={() => setShowAvoidFilters(!showAvoidFilters)}
+              className="flex items-center gap-2 text-sm font-medium text-stone-700 hover:text-stone-900"
+            >
+              <AlertTriangle className="w-4 h-4 text-amber-500" />
+              Avoid if contains...
+              <ChevronDown className={`w-4 h-4 transition-transform ${showAvoidFilters ? 'rotate-180' : ''}`} />
+              {avoidFilters.length > 0 && (
+                <span className="ml-2 px-2 py-0.5 bg-amber-100 text-amber-700 text-xs rounded-full">
+                  {avoidFilters.length}
+                </span>
+              )}
+            </button>
+            
+            {showAvoidFilters && (
+              <div className="flex flex-wrap gap-2 mt-3">
+                {AVOID_WARNINGS.map(avoid => (
+                  <button
+                    key={avoid.id}
+                    onClick={() => toggleAvoidFilter(avoid.id)}
+                    className={`px-3 py-2 rounded-full text-sm font-medium transition-all ${
+                      avoidFilters.includes(avoid.id)
+                        ? 'bg-amber-100 text-amber-700 border border-amber-300'
+                        : 'bg-stone-100 text-stone-600 hover:bg-stone-200 border border-transparent'
+                    }`}
+                    data-testid={`avoid-filter-${avoid.id}`}
+                  >
+                    No {avoid.label}
+                    {avoidFilters.includes(avoid.id) && <X className="w-3 h-3 inline ml-1" />}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
       
-      {/* === MAIN CONTENT === */}
+      {/* ============================================ */}
+      {/* PROPOSED PRODUCTS - Not browsed, proposed */}
+      {/* ============================================ */}
       <div className="max-w-6xl mx-auto px-4 py-6">
         
-        {/* Filters - Clean, functional, dog-need based */}
-        <div className="flex flex-col md:flex-row flex-wrap items-stretch md:items-center gap-3 mb-6" data-testid="filters-section">
-          {/* Search */}
-          <div className="relative flex-1 min-w-[200px] md:max-w-xs">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
-            <input
-              type="text"
-              placeholder="Search..."
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              className="w-full pl-9 pr-4 py-2.5 text-sm bg-white border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
-              data-testid="search-input"
-            />
-          </div>
-          
-          {/* Filter Row - Horizontal on mobile */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
-            {/* City Filter */}
-            <select
-              value={deliveryCity}
-              onChange={(e) => setDeliveryCity(e.target.value)}
-              className="px-3 py-2.5 text-sm bg-white border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500/20 whitespace-nowrap flex-shrink-0"
-              data-testid="city-filter"
-            >
-              {DELIVERY_CITIES.map(city => (
-                <option key={city.value} value={city.value}>
-                  {city.label} {city.fresh && '(Fresh)'}
-                </option>
-              ))}
-            </select>
-            
-            {/* Price Filter */}
-            <select
-              value={priceRange}
-              onChange={(e) => setPriceRange(e.target.value)}
-              className="px-3 py-2.5 text-sm bg-white border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500/20 whitespace-nowrap flex-shrink-0"
-              data-testid="price-filter"
-            >
-              <option value="all">All Prices</option>
-              <option value="under500">Under ₹500</option>
-              <option value="500-1000">₹500 - ₹1000</option>
-              <option value="over1000">Over ₹1000</option>
-            </select>
-            
-            {/* Sort */}
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="px-3 py-2.5 text-sm bg-white border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500/20 whitespace-nowrap flex-shrink-0"
-              data-testid="sort-filter"
-            >
-              <option value="recommended">Recommended</option>
-              <option value="price-low">Price: Low to High</option>
-              <option value="price-high">Price: High to Low</option>
-              <option value="rating">Top Rated</option>
-            </select>
-          </div>
-          
-          {/* Results count - subtle */}
-          <span className="text-sm text-stone-500 md:ml-auto hidden md:block">
-            {filteredProducts.length} items
-          </span>
+        {/* Results Context */}
+        <div className="flex items-center justify-between mb-6">
+          <p className="text-sm text-stone-500">
+            {proposedProducts.length} products proposed for {activePet?.name || 'your pet'}
+          </p>
         </div>
         
-        {/* Mobile Results Count */}
-        <div className="flex items-center justify-between mb-4 md:hidden">
-          <span className="text-sm text-stone-500">{filteredProducts.length} items</span>
-        </div>
-        
-        {/* === PRODUCT GRID === */}
-        {/* 2x2 on mobile, 4 columns on desktop - calm, generous spacing */}
-        {filteredProducts.length > 0 ? (
-          <div 
-            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6"
-            data-testid="product-grid"
-          >
-            {filteredProducts.map((product) => (
-              <ProductCard 
-                key={product.id || product._id} 
-                product={product} 
+        {/* Product Grid - 2x2 mobile, 4 col desktop */}
+        {proposedProducts.length > 0 ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6" data-testid="product-grid">
+            {proposedProducts.map(product => (
+              <MiraProductCard
+                key={product.id || product._id}
+                product={product}
                 activePet={activePet}
-                onQuickAdd={handleQuickAdd}
+                onAdd={(p) => {
+                  addToCart({ ...p, quantity: 1 });
+                  toast({ title: 'Added', description: `${p.name} added to cart` });
+                }}
               />
             ))}
           </div>
         ) : (
-          /* Empty State - Helpful, not dismissive */
-          <div className="text-center py-16" data-testid="empty-state">
+          /* Empty state - helpful */
+          <div className="text-center py-16">
             <div className="w-16 h-16 rounded-full bg-stone-100 flex items-center justify-center mx-auto mb-4">
-              <PawPrint className="w-8 h-8 text-stone-300" />
+              <Sparkles className="w-8 h-8 text-stone-300" />
             </div>
-            <h3 className="text-lg font-medium text-stone-700 mb-2">No products found</h3>
+            <h3 className="text-lg font-medium text-stone-700 mb-2">
+              No products match these filters
+            </h3>
             <p className="text-sm text-stone-500 max-w-md mx-auto mb-6">
-              {searchInput 
-                ? `We couldn't find anything matching "${searchInput}". Try adjusting your search.`
-                : 'Try adjusting your filters or browse a different category.'
-              }
+              Try adjusting your care needs or values to see more options.
             </p>
             <Button
               variant="outline"
-              onClick={() => { setSearchInput(''); setPriceRange('all'); setDeliveryCity('all'); }}
-              className="text-sm"
+              onClick={() => { setCareFilters([]); setValueFilters([]); }}
             >
-              Clear all filters
+              Clear filters
             </Button>
           </div>
         )}
         
-        {/* === HELP SECTION === */}
-        {/* Human help always visible - no anxiety */}
-        <div className="mt-12 p-6 bg-white rounded-xl border border-stone-200" data-testid="help-section">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <div>
-              <h3 className="text-base font-medium text-stone-900">Need help choosing?</h3>
-              <p className="text-sm text-stone-500 mt-1">
-                Our pet nutrition experts are here to help you find the perfect treat.
-              </p>
+        {/* ============================================ */}
+        {/* SERVICE SUGGESTION - When products aren't enough */}
+        {/* ============================================ */}
+        {(careFilters.includes('calming') || careFilters.includes('sensitive-stomach')) && (
+          <div className="mt-8 p-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-100" data-testid="service-suggestion">
+            <div className="flex items-start gap-4">
+              <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center flex-shrink-0">
+                <Sparkles className="w-5 h-5 text-purple-500" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm text-purple-900 font-medium mb-1">
+                  Mira noticed you're looking for {careFilters.includes('calming') ? 'calming support' : 'digestive care'}
+                </p>
+                <p className="text-sm text-purple-700 mb-4">
+                  {careFilters.includes('calming') 
+                    ? `If ${activePet?.name || 'your pet'}'s anxiety continues, a behaviour consult might help more than products alone.`
+                    : `Ongoing tummy troubles? A nutrition consult can help find the root cause.`
+                  }
+                </p>
+                <div className="flex gap-3">
+                  <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white">
+                    <MessageCircle className="w-4 h-4 mr-2" />
+                    Talk to an expert
+                  </Button>
+                  <Button size="sm" variant="ghost" className="text-purple-600">
+                    Ask Mira
+                  </Button>
+                </div>
+              </div>
             </div>
-            <div className="flex gap-3">
-              <Button variant="outline" className="text-sm" data-testid="chat-expert-btn">
+          </div>
+        )}
+        
+        {/* Help Section */}
+        <div className="mt-12 p-6 bg-white rounded-xl border border-stone-200" data-testid="help-section">
+          <div className="text-center">
+            <p className="text-stone-600 mb-1">Not sure what's right for {activePet?.name || 'your pet'}?</p>
+            <p className="text-sm text-stone-500 mb-4">Our pet experts can help you choose.</p>
+            <div className="flex justify-center gap-3">
+              <Button variant="outline" className="text-sm">
                 <MessageCircle className="w-4 h-4 mr-2" />
-                Chat with Expert
+                Chat with expert
               </Button>
-              <Button className="text-sm bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700" data-testid="ask-mira-btn">
+              <Button className="text-sm bg-gradient-to-r from-purple-600 to-pink-600">
                 <Sparkles className="w-4 h-4 mr-2" />
                 Ask Mira
               </Button>
@@ -616,119 +740,107 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
   );
 };
 
-// === PRODUCT CARD COMPONENT ===
-// Calm, informative, trustworthy - not shouty
-const ProductCard = ({ product, activePet, onQuickAdd }) => {
+// ============================================
+// MIRA PRODUCT CARD - Answers "Is this right?"
+// ============================================
+const MiraProductCard = ({ product, activePet, onAdd }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [showDetails, setShowDetails] = useState(false);
   
   const PLACEHOLDER = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop';
   
   const getImage = () => {
-    if (product.image && product.image.startsWith('http')) return product.image;
-    if (product.images?.[0] && product.images[0].startsWith('http')) return product.images[0];
-    if (product.thumbnail && product.thumbnail.startsWith('http')) return product.thumbnail;
+    if (product.image?.startsWith('http')) return product.image;
+    if (product.images?.[0]?.startsWith('http')) return product.images[0];
+    if (product.thumbnail?.startsWith('http')) return product.thumbnail;
     return PLACEHOLDER;
   };
   
-  const getPrice = () => {
-    if (product.minPrice) return product.minPrice;
-    if (product.sizes?.length > 0) {
-      const prices = product.sizes.map(s => typeof s === 'object' ? s.price : product.price).filter(p => p > 0);
-      return prices.length > 0 ? Math.min(...prices) : product.price || 0;
-    }
-    return product.price || 0;
-  };
-  
-  const price = getPrice();
+  const price = product.minPrice || product.price || 0;
   const hasVariants = (product.sizes?.length > 1) || (product.flavors?.length > 1);
   
-  // Check if product is safe for the active pet
-  const isSafeForPet = useMemo(() => {
-    if (!activePet) return null;
-    const allergies = activePet?.doggy_soul_answers?.food_allergies || 
-                     activePet?.preferences?.allergies || 
-                     activePet?.health?.allergies || [];
-    if (!Array.isArray(allergies) || allergies.length === 0) return true;
-    
-    const productText = [product.name, product.description, product.ingredients, ...(product.tags || [])].join(' ').toLowerCase();
-    const hasAllergen = allergies.some(a => a && productText.includes(a.toLowerCase()));
-    return !hasAllergen;
-  }, [product, activePet]);
+  // Mira's insight - "Why this works for your dog"
+  const miraInsight = generateMiraInsight(product, activePet);
+  
+  // Safety check
+  const safety = checkProductSafety(product, activePet);
 
   return (
     <div 
-      className="group bg-white rounded-xl overflow-hidden border border-stone-200 hover:border-stone-300 hover:shadow-md transition-all duration-200 cursor-pointer"
-      onClick={() => setShowDetails(true)}
+      className="group bg-white rounded-xl overflow-hidden border border-stone-100 hover:border-stone-200 hover:shadow-lg transition-all duration-300"
       data-testid={`product-card-${product.id || product._id}`}
     >
-      {/* Image Container */}
-      <div className="relative aspect-square bg-stone-100 overflow-hidden">
-        {!imageLoaded && (
-          <div className="absolute inset-0 animate-pulse bg-stone-200" />
-        )}
+      {/* Image */}
+      <div className="relative aspect-square bg-stone-50 overflow-hidden">
+        {!imageLoaded && <div className="absolute inset-0 animate-pulse bg-stone-100" />}
         <img
           src={getImage()}
           alt={product.name}
-          className={`w-full h-full object-cover transition-opacity duration-300 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
+          className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
           onLoad={() => setImageLoaded(true)}
           onError={(e) => { e.target.src = PLACEHOLDER; setImageLoaded(true); }}
         />
         
-        {/* Safe for pet indicator - subtle, not a badge */}
-        {activePet && isSafeForPet && (
-          <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-green-500/90 flex items-center justify-center" title={`Safe for ${activePet.name}`}>
+        {/* Mira Insight Badge - "Why this works" */}
+        {miraInsight && (
+          <div className="absolute bottom-2 left-2 right-2">
+            <div className="bg-white/95 backdrop-blur-sm rounded-lg px-2.5 py-1.5 flex items-center gap-1.5 shadow-sm">
+              <Sparkles className="w-3 h-3 text-purple-500 flex-shrink-0" />
+              <span className="text-xs text-purple-700 font-medium truncate">{miraInsight}</span>
+            </div>
+          </div>
+        )}
+        
+        {/* Safety indicator */}
+        {activePet && safety.safe && (
+          <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-green-500 flex items-center justify-center" title={`Safe for ${activePet.name}`}>
             <Check className="w-3.5 h-3.5 text-white" />
+          </div>
+        )}
+        
+        {/* Warning if not safe */}
+        {activePet && !safety.safe && (
+          <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-amber-500 flex items-center justify-center" title={`Contains: ${safety.warnings.join(', ')}`}>
+            <AlertTriangle className="w-3.5 h-3.5 text-white" />
           </div>
         )}
       </div>
       
-      {/* Content - Clear hierarchy, no noise */}
-      <div className="p-3 md:p-4 space-y-2">
-        {/* Rating - Calm, not flashy */}
-        {(product.paw_score || product.rating) && (
-          <div className="flex items-center gap-1 text-xs text-stone-500">
-            <PawPrint className="w-3 h-3 fill-amber-400 text-amber-400" />
-            <span className="font-medium text-stone-700">{(product.paw_score || product.rating * 2).toFixed(1)}</span>
-            <span>/10</span>
-            {(product.paw_ratings_count || product.reviews) > 0 && (
-              <span className="text-stone-400">({product.paw_ratings_count || product.reviews})</span>
-            )}
-          </div>
-        )}
-        
-        {/* Product Name */}
-        <h3 className="font-medium text-stone-900 text-sm leading-snug line-clamp-2">
-          {product.name}
-        </h3>
-        
-        {/* Key Info - Ingredients transparency */}
-        {product.ingredients && (
-          <p className="text-xs text-stone-500 line-clamp-1">
-            {product.ingredients.split(',').slice(0, 3).join(', ')}
-          </p>
-        )}
-        
-        {/* Price */}
-        <div className="flex items-baseline gap-1.5 pt-1">
-          <span className="text-base font-semibold text-stone-900">
-            {hasVariants ? 'From ' : ''}₹{price.toLocaleString('en-IN')}
-          </span>
-          {product.compareAtPrice && product.compareAtPrice > price && (
-            <span className="text-xs text-stone-400 line-through">
-              ₹{product.compareAtPrice.toLocaleString('en-IN')}
+      {/* Content */}
+      <div className="p-3 md:p-4">
+        {/* Life stage & care indicators */}
+        <div className="flex items-center gap-1.5 mb-2 flex-wrap">
+          {product.life_stage && (
+            <span className="text-xs px-2 py-0.5 rounded bg-blue-50 text-blue-600">
+              {product.life_stage}
+            </span>
+          )}
+          {product.care_benefit && (
+            <span className="text-xs px-2 py-0.5 rounded bg-rose-50 text-rose-600">
+              {product.care_benefit}
             </span>
           )}
         </div>
         
-        {/* Quick Add Button - Visible on hover (desktop) or always (mobile) */}
-        <button
-          onClick={(e) => onQuickAdd(product, e)}
-          className="w-full mt-2 py-2 text-xs font-medium bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-lg transition-colors md:opacity-0 md:group-hover:opacity-100"
-          data-testid={`quick-add-${product.id || product._id}`}
-        >
-          Add to Cart
-        </button>
+        {/* Product name */}
+        <h3 className="font-medium text-stone-900 text-sm leading-snug line-clamp-2 mb-2">
+          {product.name}
+        </h3>
+        
+        {/* Price - NOT prominent */}
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-stone-600">
+            {hasVariants ? 'From ' : ''}₹{price.toLocaleString('en-IN')}
+          </span>
+          
+          {/* Quick add */}
+          <button
+            onClick={(e) => { e.stopPropagation(); onAdd(product); }}
+            className="text-xs font-medium text-purple-600 hover:text-purple-700 flex items-center gap-1"
+            data-testid={`add-${product.id || product._id}`}
+          >
+            Add <ChevronRight className="w-3 h-3" />
+          </button>
+        </div>
       </div>
     </div>
   );
