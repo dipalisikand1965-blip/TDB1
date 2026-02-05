@@ -21,6 +21,17 @@ export const ALL_PILLARS = [
   { id: 'shop', name: 'Shop', icon: '🛒', color: 'emerald' }
 ];
 
+// ALL 35 BREEDS
+export const ALL_BREEDS = [
+  'Labrador', 'Golden Retriever', 'Indie', 'German Shepherd', 'Beagle', 'Pug',
+  'Shih Tzu', 'Pomeranian', 'Husky', 'Rottweiler', 'Dachshund', 'Cocker Spaniel',
+  'French Bulldog', 'Boxer', 'Great Dane', 'Doberman', 'Maltese', 'Yorkshire Terrier',
+  'Lhasa Apso', 'Chihuahua', 'Spitz', 'Saint Bernard', 'Shiba Inu', 'Border Collie',
+  'Akita', 'Dalmatian', 'Bulldog', 'Poodle', 'Australian Shepherd', 
+  'Cavalier King Charles', 'Bernese Mountain Dog', 'Samoyed', 'Corgi', 
+  'Jack Russell', 'Weimaraner'
+];
+
 // Product Types
 export const PRODUCT_TYPES = [
   { id: 'physical', name: 'Physical Product', icon: '📦' },
