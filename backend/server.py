@@ -8132,7 +8132,7 @@ async def update_product_mira_hint(product_id: str, data: dict):
 
 
 @api_router.post("/admin/products/auto-seed-mira-hints")
-async def auto_seed_mira_hints(background_tasks: BackgroundTasks):
+async def auto_seed_mira_hints(background_tasks: BackgroundTasks, use_ai: bool = True):
     """Auto-seed mira_hint for all products that don't have one"""
     
     # Count products needing hints
@@ -8146,6 +8146,7 @@ async def auto_seed_mira_hints(background_tasks: BackgroundTasks):
     
     # Run seeding in background
     async def seed_hints():
+        import asyncio
         cursor = db.products.find({
             "$or": [
                 {"mira_hint": {"$exists": False}},
@@ -8156,48 +8157,85 @@ async def auto_seed_mira_hints(background_tasks: BackgroundTasks):
         
         updated = 0
         async for product in cursor:
-            hint = generate_mira_hint(product)
+            if use_ai:
+                hint = await generate_ai_mira_hint(product)
+                # Small delay to avoid rate limiting
+                await asyncio.sleep(0.3)
+            else:
+                hint = generate_mira_hint(product)
+            
             await db.products.update_one(
                 {"_id": product["_id"]},
                 {"$set": {"mira_hint": hint}}
             )
             updated += 1
+            
+            if updated % 10 == 0:
+                logging.info(f"[Mira Hints] Seeded {updated} products...")
         
-        logging.info(f"[Mira Hints] Auto-seeded {updated} products")
+        logging.info(f"[Mira Hints] Auto-seeded {updated} products with {'AI' if use_ai else 'fallback'} hints")
     
     background_tasks.add_task(seed_hints)
     
     return {
         "success": True,
-        "message": f"Auto-seeding {count} products in background",
-        "products_to_update": count
+        "message": f"Auto-seeding {count} products in background with {'AI-powered' if use_ai else 'rule-based'} hints",
+        "products_to_update": count,
+        "ai_enabled": use_ai
     }
 
 
 @api_router.post("/admin/products/regenerate-all-mira-hints")
-async def regenerate_all_mira_hints(background_tasks: BackgroundTasks):
-    """Regenerate mira_hint for ALL products (overwrites existing)"""
+async def regenerate_all_mira_hints(background_tasks: BackgroundTasks, use_ai: bool = True):
+    """Regenerate mira_hint for ALL products (overwrites existing) with AI-powered unique hints"""
     
     count = await db.products.count_documents({})
     
     async def regenerate_hints():
+        import asyncio
         cursor = db.products.find({})
         updated = 0
+        errors = 0
+        
         async for product in cursor:
-            hint = generate_mira_hint(product)
-            await db.products.update_one(
-                {"_id": product["_id"]},
-                {"$set": {"mira_hint": hint}}
-            )
-            updated += 1
-        logging.info(f"[Mira Hints] Regenerated hints for {updated} products")
+            try:
+                if use_ai:
+                    hint = await generate_ai_mira_hint(product)
+                    # Rate limit: 3 requests per second max
+                    await asyncio.sleep(0.35)
+                else:
+                    hint = generate_mira_hint(product)
+                
+                await db.products.update_one(
+                    {"_id": product["_id"]},
+                    {"$set": {"mira_hint": hint}}
+                )
+                updated += 1
+                
+                if updated % 10 == 0:
+                    logging.info(f"[Mira Hints] Regenerated {updated}/{count} products...")
+                    
+            except Exception as e:
+                errors += 1
+                logging.error(f"[Mira Hints] Error on product {product.get('name', 'unknown')}: {e}")
+                # Use fallback on error
+                hint = generate_mira_hint_fallback(product)
+                await db.products.update_one(
+                    {"_id": product["_id"]},
+                    {"$set": {"mira_hint": hint}}
+                )
+                updated += 1
+        
+        logging.info(f"[Mira Hints] Completed! Regenerated {updated} products, {errors} errors (used fallback)")
     
     background_tasks.add_task(regenerate_hints)
     
     return {
         "success": True,
-        "message": f"Regenerating hints for {count} products in background",
-        "products_to_update": count
+        "message": f"🌟 Regenerating {count} products with {'AI-powered unique' if use_ai else 'rule-based'} Mira hints in background",
+        "products_to_update": count,
+        "ai_enabled": use_ai,
+        "estimated_time_seconds": count * 0.4 if use_ai else count * 0.1
     }
 
 @api_router.get("/admin/products/{product_id}")
