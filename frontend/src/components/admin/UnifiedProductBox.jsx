@@ -630,7 +630,7 @@ const UnifiedProductBox = () => {
         >
           All Pillars
         </Button>
-        {ALL_PILLARS.slice(0, 8).map(p => (
+        {ALL_PILLARS.map(p => (
           <Button
             key={p.id}
             variant={filterPillar === p.id ? 'default' : 'outline'}
