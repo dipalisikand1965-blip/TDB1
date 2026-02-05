@@ -186,15 +186,15 @@ body {
 }
 
 .mobile-nav-item.active {
-  background: rgba(15, 118, 110, 0.1);
+  background: rgba(147, 51, 234, 0.1);
 }
 
 .mobile-nav-item.active .nav-icon {
-  color: var(--color-primary);
+  color: var(--color-mira);
 }
 
 .mobile-nav-item.active .nav-label {
-  color: var(--color-primary);
+  color: var(--color-mira);
   font-weight: 600;
 }
 
