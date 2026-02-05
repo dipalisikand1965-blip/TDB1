@@ -786,9 +786,9 @@ const ShopPage = () => {
             {/* Warm Subtitle - The key line */}
             <p className="text-sm sm:text-base md:text-lg text-[#6B6B6B] mb-4 sm:mb-6 max-w-xl mx-auto px-4">
               {petName ? (
-                <>Based on who {petName} is and how {petName} lives.</>
+                <>Thoughtfully selected for {petName}'s life and needs.</>
               ) : (
-                <>Based on who your dog is and how they live.</>
+                <>Thoughtfully selected for your companion's life and needs.</>
               )}
             </p>
             
