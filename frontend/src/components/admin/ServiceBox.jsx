@@ -953,7 +953,7 @@ const ServiceBox = () => {
                 
                 {/* What's Included */}
                 <div>
-                  <Label className="text-sm font-medium">What's Included (comma separated)</Label>
+                  <Label className="text-sm font-medium">What&apos;s Included (comma separated)</Label>
                   <Input
                     value={(selectedService.includes || []).join(', ')}
                     onChange={(e) => handleInputChange('includes', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
