@@ -53,18 +53,53 @@ Build "The Doggy Company," a one-stop-shop concierge for dog parents with a focu
 - **Deleted**: Product-like entries (cakes, treats, toys, accessories, etc.)
 - **Removed**: Duplicate services
 
-**2. Product Filtering Fixed**
-- **Issue**: Products had wrong `pillars` array (e.g., Ladoos tagged with 'learn')
-- **Solution**: Now using `primary_pillar` instead of `pillars` array for filtering
-- **Result**: Ladoos now correctly appear under "Dine › Desi Treats" (not Learn)
+**2. Intelligent Product Pillar Assignment**
+- Auto-assigned `primary_pillar` based on category:
+  - treats/desi-treats/meals → **dine**
+  - cakes/dognuts/hampers → **celebrate**
+  - training/books/puzzles → **learn**
+  - toys/plush → **enjoy**
+  - beds/bowls/mats → **stay**
+  - collars/leashes/harnesses → **fit**
+  - grooming/health → **care**
+  - carriers/travel-gear → **travel**
+- All products now also in **shop** pillar (unified view)
+
+**3. Intelligent Service Pillar Assignment**
+- Auto-assigned pillar based on category:
+  - grooming/vet/health → **care** (102 services)
+  - boarding/daycare → **stay** (90 services)
+  - training/obedience → **learn** (79 services)
+  - etc.
+
+### NEW PRODUCT DISTRIBUTION
+| Pillar | Count |
+|--------|-------|
+| shop | 572 |
+| celebrate | 443 |
+| stay | 269 |
+| care | 239 |
+| dine | 166 |
+| travel | 112 |
+| enjoy | 90 |
+| learn | 90 |
+| fit | 40 |
+| advisory | 38 |
+| adopt | 25 |
+| emergency | 23 |
+| paperwork | 22 |
+| farewell | 15 |
 
 ### VERIFIED RESULTS ✅
-- **Learn pillar**: 41 products - Training kits, books, puzzles (correct!)
-- **Dine pillar**: 169 products - Treats, desi-treats, meals, ladoos (correct!)
-- **Services**: 659 actual services (grooming, training, walking, etc.)
+- **Ladoos**: Now in "Dine › Desi Treats" ✅
+- **Cakes**: Now in "Celebrate" ✅
+- **Training**: Now in "Learn" ✅
+- **Services**: 659 actual services (no more products mixed in)
 
-### NOTE FOR USER
-User will provide corrected CSV for products with proper pillar assignments.
+### CSV EXPORTS PROVIDED
+User can download and manually refine:
+- `/products_complete.csv` - With pillar & breed checkbox columns
+- `/services_with_pillars.csv` - With pillar columns
 
 ---
 
