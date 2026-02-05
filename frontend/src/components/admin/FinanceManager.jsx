@@ -200,8 +200,8 @@ const FinanceManager = () => {
     fetchPayments();
   }, [fetchPayments]);
 
-  // Filter payments
-  const filteredPayments = payments.filter(p => {
+  // Filter payments (including date filter already applied)
+  const filteredPayments = dateFilteredPayments.filter(p => {
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       const matchesSearch = 
