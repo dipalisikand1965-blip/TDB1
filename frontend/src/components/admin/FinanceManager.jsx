@@ -475,19 +475,39 @@ const FinanceManager = () => {
     a.click();
   };
 
-  // Calculate advanced stats
+  // Filter payments by date range
+  const dateFilteredPayments = payments.filter(p => {
+    if (!dateRange.start && !dateRange.end) return true;
+    const paymentDate = new Date(p.created_at).toISOString().split('T')[0];
+    if (dateRange.start && paymentDate < dateRange.start) return false;
+    if (dateRange.end && paymentDate > dateRange.end) return false;
+    return true;
+  });
+
+  // Calculate stats based on date-filtered payments
+  const dateFilteredStats = {
+    total_collected: dateFilteredPayments.filter(p => p.status === 'completed').reduce((sum, p) => sum + (p.total || p.amount || 0), 0),
+    pending_amount: dateFilteredPayments.filter(p => p.status === 'pending').reduce((sum, p) => sum + (p.total || p.amount || 0), 0),
+    refunds_issued: dateFilteredPayments.filter(p => p.status === 'refunded' || p.type === 'refund').reduce((sum, p) => sum + Math.abs(p.refund_amount || p.total || p.amount || 0), 0),
+    paw_points_redeemed: dateFilteredPayments.reduce((sum, p) => sum + (p.paw_points_value || 0), 0),
+    discounts_given: dateFilteredPayments.reduce((sum, p) => sum + (p.discount_amount || 0), 0),
+    gst_collected: dateFilteredPayments.filter(p => p.status === 'completed').reduce((sum, p) => sum + (p.gst_amount || 0), 0),
+    transaction_count: dateFilteredPayments.filter(p => p.status === 'completed').length,
+  };
+
+  // Calculate advanced stats from date-filtered payments
   const advancedStats = {
-    gstCollected: payments.filter(p => p.status === 'completed').reduce((sum, p) => sum + (p.gst_amount || 0), 0),
-    avgTransactionValue: payments.length > 0 ? stats.total_collected / payments.filter(p => p.status === 'completed').length : 0,
-    pendingReconciliation: payments.filter(p => p.status === 'completed' && !p.reconciled).length,
-    thisMonthRevenue: payments.filter(p => {
+    gstCollected: dateFilteredStats.gst_collected,
+    avgTransactionValue: dateFilteredStats.transaction_count > 0 ? dateFilteredStats.total_collected / dateFilteredStats.transaction_count : 0,
+    pendingReconciliation: dateFilteredPayments.filter(p => p.status === 'completed' && !p.reconciled).length,
+    thisMonthRevenue: dateFilteredPayments.filter(p => {
       const paymentDate = new Date(p.created_at);
       const now = new Date();
       return paymentDate.getMonth() === now.getMonth() && 
              paymentDate.getFullYear() === now.getFullYear() && 
              p.status === 'completed';
     }).reduce((sum, p) => sum + (p.total || p.amount || 0), 0),
-    lastMonthRevenue: payments.filter(p => {
+    lastMonthRevenue: dateFilteredPayments.filter(p => {
       const paymentDate = new Date(p.created_at);
       const now = new Date();
       const lastMonth = now.getMonth() === 0 ? 11 : now.getMonth() - 1;
@@ -496,9 +516,9 @@ const FinanceManager = () => {
              paymentDate.getFullYear() === lastMonthYear && 
              p.status === 'completed';
     }).reduce((sum, p) => sum + (p.total || p.amount || 0), 0),
-    membershipRevenue: payments.filter(p => p.type === 'membership' && p.status === 'completed').reduce((sum, p) => sum + (p.total || p.amount || 0), 0),
-    serviceRevenue: payments.filter(p => p.type === 'service' && p.status === 'completed').reduce((sum, p) => sum + (p.total || p.amount || 0), 0),
-    productRevenue: payments.filter(p => p.type === 'product' && p.status === 'completed').reduce((sum, p) => sum + (p.total || p.amount || 0), 0),
+    membershipRevenue: dateFilteredPayments.filter(p => p.type === 'membership' && p.status === 'completed').reduce((sum, p) => sum + (p.total || p.amount || 0), 0),
+    serviceRevenue: dateFilteredPayments.filter(p => p.type === 'service' && p.status === 'completed').reduce((sum, p) => sum + (p.total || p.amount || 0), 0),
+    productRevenue: dateFilteredPayments.filter(p => p.type === 'product' && p.status === 'completed').reduce((sum, p) => sum + (p.total || p.amount || 0), 0),
   };
 
   const formatCurrency = (amount) => {
