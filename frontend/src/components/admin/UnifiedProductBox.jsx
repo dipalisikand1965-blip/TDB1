@@ -829,13 +829,23 @@ const UnifiedProductBox = () => {
                     <tr key={product.id} className="border-b hover:bg-gray-50" data-testid={`product-row-${product.id}`}>
                       <td className="p-3">
                         <div className="flex items-center gap-3">
-                          {product.thumbnail || product.image_url || product.images?.[0] ? (
-                            <img src={product.thumbnail || product.image_url || product.images?.[0]} alt="" className="w-10 h-10 rounded object-cover" />
-                          ) : (
-                            <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center">
-                              <Package className="w-5 h-5 text-gray-400" />
+                          {/* Clickable Image for Quick Edit */}
+                          <button 
+                            onClick={() => openQuickEdit(product, 'image')}
+                            className="relative group"
+                            title="Click to edit image"
+                          >
+                            {product.thumbnail || product.image_url || product.images?.[0] ? (
+                              <img src={product.thumbnail || product.image_url || product.images?.[0]} alt="" className="w-10 h-10 rounded object-cover group-hover:opacity-70 transition-opacity" />
+                            ) : (
+                              <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center group-hover:bg-purple-100 transition-colors">
+                                <Package className="w-5 h-5 text-gray-400 group-hover:text-purple-500" />
+                              </div>
+                            )}
+                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                              <Edit className="w-4 h-4 text-purple-600" />
                             </div>
-                          )}
+                          </button>
                           <div>
                             <p className="font-medium text-gray-900 truncate max-w-[200px]">{product.name}</p>
                             <p className="text-xs text-gray-500">{product.sku}</p>
@@ -847,8 +857,13 @@ const UnifiedProductBox = () => {
                           {PRODUCT_TYPES.find(t => t.id === product.product_type)?.icon} {product.product_type}
                         </Badge>
                       </td>
+                      {/* Clickable Pillars for Quick Edit */}
                       <td className="p-3">
-                        <div className="flex flex-wrap gap-1">
+                        <button
+                          onClick={() => openQuickEdit(product, 'pillars')}
+                          className="flex flex-wrap gap-1 hover:bg-purple-50 p-1 rounded transition-colors"
+                          title="Click to edit pillars"
+                        >
                           {(product.pillars || []).slice(0, 3).map(p => {
                             const pillar = ALL_PILLARS.find(ap => ap.id === p);
                             return (
@@ -860,10 +875,20 @@ const UnifiedProductBox = () => {
                           {(product.pillars || []).length > 3 && (
                             <Badge className="bg-gray-100 text-gray-600 text-xs">+{product.pillars.length - 3}</Badge>
                           )}
-                        </div>
+                          {(!product.pillars || product.pillars.length === 0) && (
+                            <span className="text-xs text-gray-400">+ Add</span>
+                          )}
+                        </button>
                       </td>
+                      {/* Clickable Price for Quick Edit */}
                       <td className="p-3">
-                        <span className="font-medium">₹{product.pricing?.base_price || 0}</span>
+                        <button
+                          onClick={() => openQuickEdit(product, 'price')}
+                          className="font-medium hover:text-purple-600 hover:bg-purple-50 px-2 py-1 rounded transition-colors"
+                          title="Click to edit price"
+                        >
+                          ₹{product.pricing?.base_price || product.price || 0}
+                        </button>
                       </td>
                       <td className="p-3 text-center">
                         {product.inventory?.track_inventory ? (
