@@ -18,17 +18,18 @@ import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
 import MiraChatWidget from '../components/MiraChatWidget';
 import SEOHead from '../components/SEOHead';
+import SoulScoreArc from '../components/SoulScoreArc';
 import {
   Search, Heart, ArrowRight, X, Package, Mic,
   PawPrint, Briefcase, Sparkles, Cake, Stethoscope, 
   UtensilsCrossed, Plane, Dumbbell, GraduationCap, Home,
   Shield, FileText, AlertTriangle, Flower2, ShoppingBag, 
   ChevronDown, ChevronRight, Star, Crown, Users, Award,
-  TrendingUp, CheckCircle2, Zap
+  TrendingUp, CheckCircle2, Zap, Brain, Clock, Utensils
 } from 'lucide-react';
 
 // =============================================================================
-// PILLAR CONFIG - With visual appeal
+// PILLAR CONFIG - All pillars visible
 // =============================================================================
 const PILLARS = [
   { id: 'recommended', label: 'For You', icon: Sparkles, color: 'bg-gradient-to-r from-amber-400 to-orange-500', subcategories: [] },
@@ -37,111 +38,239 @@ const PILLARS = [
   { id: 'stay', label: 'Stay', icon: Home, color: 'bg-gradient-to-r from-blue-400 to-cyan-500', subcategories: ['Beds', 'Mats', 'Kennels'] },
   { id: 'travel', label: 'Travel', icon: Plane, color: 'bg-gradient-to-r from-sky-400 to-blue-500', subcategories: ['Carriers', 'Car Accessories'] },
   { id: 'care', label: 'Care', icon: Stethoscope, color: 'bg-gradient-to-r from-rose-400 to-pink-500', subcategories: ['Grooming', 'Health', 'Supplements'] },
-  { id: 'enjoy', label: 'Enjoy', icon: Sparkles, color: 'bg-gradient-to-r from-yellow-400 to-orange-500', subcategories: ['Toys', 'Chews', 'Games'] },
+  { id: 'enjoy', label: 'Enjoy', icon: Heart, color: 'bg-gradient-to-r from-yellow-400 to-orange-500', subcategories: ['Toys', 'Chews', 'Games'] },
   { id: 'fit', label: 'Fit', icon: Dumbbell, color: 'bg-gradient-to-r from-green-400 to-emerald-500', subcategories: ['Leashes', 'Harnesses', 'Collars'] },
   { id: 'learn', label: 'Learn', icon: GraduationCap, color: 'bg-gradient-to-r from-indigo-400 to-purple-500', subcategories: ['Training Aids', 'Puzzles'] },
+  { id: 'advisory', label: 'Advisory', icon: Brain, color: 'bg-gradient-to-r from-purple-400 to-violet-500', subcategories: [] },
+  { id: 'paperwork', label: 'Paperwork', icon: FileText, color: 'bg-gradient-to-r from-slate-400 to-gray-500', subcategories: [] },
+  { id: 'emergency', label: 'Emergency', icon: AlertTriangle, color: 'bg-gradient-to-r from-red-400 to-rose-500', subcategories: [] },
+  { id: 'farewell', label: 'Farewell', icon: Flower2, color: 'bg-gradient-to-r from-violet-400 to-purple-500', subcategories: [] },
+  { id: 'adopt', label: 'Adopt', icon: PawPrint, color: 'bg-gradient-to-r from-rose-400 to-pink-500', subcategories: [] },
+  { id: 'shop', label: 'Shop', icon: ShoppingBag, color: 'bg-gradient-to-r from-teal-400 to-cyan-500', subcategories: [] },
   { id: 'all', label: 'All', icon: Package, color: 'bg-gradient-to-r from-gray-400 to-slate-500', subcategories: [] },
 ];
 
 // =============================================================================
-// BREED-SPECIFIC PRODUCT RECOMMENDATIONS
+// MIRA WHISPERS - Personalized product insights
 // =============================================================================
-const BREED_PRODUCT_REC = {
-  'shih tzu': { keywords: ['grooming', 'brush', 'dental', 'small'], nudge: 'Shih Tzus love soft toys and need regular grooming supplies.', icon: '✂️' },
-  'pomeranian': { keywords: ['small', 'plush', 'dental', 'coat'], nudge: 'Pomeranians adore plush toys and dental chews.', icon: '🧸' },
-  'golden retriever': { keywords: ['fetch', 'ball', 'joint', 'large'], nudge: 'Retrievers thrive with fetch toys and joint supplements.', icon: '🎾' },
-  'labrador': { keywords: ['fetch', 'water', 'chew', 'large'], nudge: 'Labs love water toys and sturdy chews. Watch portion sizes!', icon: '🏊' },
-  'beagle': { keywords: ['puzzle', 'scent', 'feeder'], nudge: 'Beagles are scent-driven — puzzle feeders work great.', icon: '🧩' },
-  'pug': { keywords: ['cooling', 'harness', 'small'], nudge: 'Pugs need cooling gear and comfortable harnesses.', icon: '❄️' },
-  'german shepherd': { keywords: ['training', 'chew', 'large'], nudge: 'German Shepherds benefit from training treats and tough chews.', icon: '🦴' },
-  'husky': { keywords: ['cooling', 'deshed', 'exercise'], nudge: 'Huskies need deshedding tools and cooling accessories.', icon: '❄️' },
-  'indie': { keywords: ['durable', 'outdoor', 'versatile'], nudge: 'Indies are adaptable — durable outdoor gear works best.', icon: '🌟' },
+const MIRA_WHISPERS = {
+  'shih tzu': [
+    "Perfect for Shih Tzu's delicate coat",
+    "Gentle on sensitive skin",
+    "Great for small mouths",
+    "Easy to groom with this",
+    "Shih Tzus love the soft texture"
+  ],
+  'golden retriever': [
+    "Built for active retrievers",
+    "Perfect for water-loving pups",
+    "Supports healthy joints",
+    "Ideal for outdoor adventures",
+    "Golden-approved quality"
+  ],
+  'labrador': [
+    "Sturdy enough for Labs",
+    "Perfect for energetic pups",
+    "Helps maintain healthy weight",
+    "Labs love this texture",
+    "Built for enthusiastic chewers"
+  ],
+  'pug': [
+    "Perfect for flat-faced breeds",
+    "Easy breathing design",
+    "Ideal portion for pugs",
+    "Cooling comfort included",
+    "Pug-sized perfection"
+  ],
+  'beagle': [
+    "Engages their keen nose",
+    "Perfect for scent-driven play",
+    "Satisfies their curiosity",
+    "Beagle-approved durability",
+    "Great for puzzle lovers"
+  ],
+  'german shepherd': [
+    "Built for intelligent breeds",
+    "Supports their active lifestyle",
+    "Perfect for training rewards",
+    "GSD-strength quality",
+    "Meets their high standards"
+  ],
+  'default': [
+    "Tail-wagging approved",
+    "Pet parent favorite",
+    "Vet recommended",
+    "Quality they deserve",
+    "Made with love"
+  ]
+};
+
+const getMiraWhisper = (product, breed) => {
+  const breedLower = (breed || '').toLowerCase();
+  let whispers = MIRA_WHISPERS.default;
+  
+  for (const [key, msgs] of Object.entries(MIRA_WHISPERS)) {
+    if (breedLower.includes(key)) {
+      whispers = msgs;
+      break;
+    }
+  }
+  
+  // Use product ID to get consistent whisper
+  const hash = (product.id || product.name || '').toString().split('').reduce((a, b) => a + b.charCodeAt(0), 0);
+  return whispers[hash % whispers.length];
 };
 
 // =============================================================================
-// ANIMATED PET HERO
+// PET SOUL TRAITS DISPLAY
 // =============================================================================
-const PetHero = ({ pet, breedRec }) => {
+const PetSoulTraits = ({ pet, soulData }) => {
+  const traits = [];
+  const answers = pet?.doggy_soul_answers || pet?.soul_answers || soulData || {};
+  
+  // Extract 3 personal traits
+  if (answers.describe_3_words) {
+    traits.push({ icon: '✨', text: answers.describe_3_words });
+  } else if (answers.general_nature) {
+    traits.push({ icon: '🌟', text: answers.general_nature });
+  }
+  
+  if (answers.favorite_treats) {
+    const treats = Array.isArray(answers.favorite_treats) ? answers.favorite_treats[0] : answers.favorite_treats;
+    traits.push({ icon: '🍖', text: `Loves ${treats}` });
+  } else if (answers.food_preference) {
+    traits.push({ icon: '🍖', text: answers.food_preference });
+  }
+  
+  if (answers.energetic_time) {
+    traits.push({ icon: '⚡', text: `Most active: ${answers.energetic_time}` });
+  } else if (answers.walks_per_day) {
+    traits.push({ icon: '🚶', text: `${answers.walks_per_day} walks daily` });
+  }
+  
+  // Fallback traits based on breed
+  if (traits.length < 3) {
+    const breed = (pet?.breed || '').toLowerCase();
+    if (breed.includes('retriever')) {
+      if (traits.length < 1) traits.push({ icon: '🏊', text: 'Water lover' });
+      if (traits.length < 2) traits.push({ icon: '🎾', text: 'Fetch enthusiast' });
+      if (traits.length < 3) traits.push({ icon: '💛', text: 'Family friendly' });
+    } else if (breed.includes('shih tzu')) {
+      if (traits.length < 1) traits.push({ icon: '👑', text: 'Royal companion' });
+      if (traits.length < 2) traits.push({ icon: '🛋️', text: 'Lap dog' });
+      if (traits.length < 3) traits.push({ icon: '💕', text: 'Affectionate' });
+    } else if (breed.includes('lab')) {
+      if (traits.length < 1) traits.push({ icon: '🏃', text: 'High energy' });
+      if (traits.length < 2) traits.push({ icon: '🍽️', text: 'Food motivated' });
+      if (traits.length < 3) traits.push({ icon: '🤗', text: 'Super friendly' });
+    } else {
+      if (traits.length < 1) traits.push({ icon: '🐕', text: pet?.breed || 'Good boy/girl' });
+      if (traits.length < 2) traits.push({ icon: '❤️', text: 'Loved unconditionally' });
+      if (traits.length < 3) traits.push({ icon: '🏠', text: 'Family member' });
+    }
+  }
+  
+  return (
+    <div className="flex flex-wrap justify-center md:justify-start gap-3 sm:gap-4">
+      {traits.slice(0, 3).map((trait, idx) => (
+        <div key={idx} className="flex items-center gap-2 px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-full text-xs sm:text-sm text-white/80">
+          <span>{trait.icon}</span>
+          <span className="truncate max-w-[120px]">{trait.text}</span>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+// =============================================================================
+// ANIMATED PET HERO WITH SOUL SCORE
+// =============================================================================
+const PetHero = ({ pet, soulData, onPetSwitch, pets }) => {
   const petPhoto = pet?.photo_url || pet?.image_url || pet?.image;
   const petName = pet?.name || 'Your Companion';
   const breed = pet?.breed || '';
+  const soulScore = pet?.overall_score || soulData?.overall_score || 0;
   
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-[#2D1B4E] via-[#1E3A5F] to-[#0D2137] py-8 sm:py-12 md:py-16">
+    <section className="relative overflow-hidden bg-gradient-to-br from-[#2D1B4E] via-[#1E3A5F] to-[#0D2137] py-6 sm:py-10 md:py-14">
       {/* Animated background */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-500/20 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-orange-500/20 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}}></div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-pink-500/10 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
       </div>
       
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="flex flex-col md:flex-row items-center gap-6 md:gap-12">
-          {/* Pet Photo */}
-          <div className="relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-orange-500 via-pink-500 to-purple-500 rounded-full blur-lg opacity-75 group-hover:opacity-100 transition-opacity animate-pulse"></div>
-            {petPhoto ? (
-              <img 
-                src={petPhoto} 
-                alt={petName}
-                className="relative w-28 h-28 sm:w-36 sm:h-36 md:w-44 md:h-44 rounded-full object-cover border-4 border-white/20 shadow-2xl transform group-hover:scale-105 transition-transform duration-500"
-              />
-            ) : (
-              <div className="relative w-28 h-28 sm:w-36 sm:h-36 md:w-44 md:h-44 rounded-full bg-gradient-to-br from-orange-500 to-pink-500 flex items-center justify-center border-4 border-white/20 shadow-2xl">
-                <PawPrint className="w-12 h-12 sm:w-16 sm:h-16 text-white/80" />
+        <div className="flex flex-col md:flex-row items-center gap-4 md:gap-10">
+          {/* Pet Photo with Soul Score Arc */}
+          <div className="relative">
+            <div className="relative group">
+              {petPhoto ? (
+                <div className="relative">
+                  <SoulScoreArc 
+                    score={soulScore} 
+                    petId={pet?.id}
+                    petName={petName}
+                    size="lg"
+                    showLabel={false}
+                    showCTA={false}
+                  />
+                  <img 
+                    src={petPhoto} 
+                    alt={petName}
+                    className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-28 h-28 sm:w-32 sm:h-32 rounded-full object-cover border-4 border-white/20 shadow-2xl"
+                  />
+                </div>
+              ) : (
+                <div className="relative w-36 h-36 sm:w-40 sm:h-40 rounded-full bg-gradient-to-br from-orange-500 to-pink-500 flex items-center justify-center border-4 border-white/20 shadow-2xl">
+                  <PawPrint className="w-12 h-12 sm:w-16 sm:h-16 text-white/80" />
+                </div>
+              )}
+            </div>
+            
+            {/* Pet Switcher */}
+            {pets && pets.length > 1 && (
+              <div className="flex justify-center gap-2 mt-3">
+                {pets.map((p) => (
+                  <button
+                    key={p.id}
+                    onClick={() => onPetSwitch(p)}
+                    className={`w-8 h-8 rounded-full border-2 transition-all overflow-hidden ${
+                      p.id === pet?.id ? 'border-amber-400 scale-110' : 'border-white/30 opacity-60 hover:opacity-100'
+                    }`}
+                  >
+                    {p.photo_url || p.image_url ? (
+                      <img src={p.photo_url || p.image_url} alt={p.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                        <span className="text-xs text-white">{p.name?.[0]}</span>
+                      </div>
+                    )}
+                  </button>
+                ))}
               </div>
             )}
-            <div className="absolute bottom-2 right-2 w-5 h-5 sm:w-6 sm:h-6 bg-green-500 rounded-full border-3 border-white shadow-lg animate-pulse"></div>
           </div>
           
           {/* Content */}
           <div className="text-center md:text-left flex-1">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-sm rounded-full text-xs sm:text-sm text-white/80 mb-3 sm:mb-4">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-sm rounded-full text-xs sm:text-sm text-white/80 mb-2 sm:mb-3">
               <Crown className="w-3 h-3 sm:w-4 sm:h-4 text-amber-400" />
-              <span>Pet Soul™ Member</span>
+              <span>Pet Soul™ {soulScore}% Complete</span>
             </div>
             
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight mb-2 sm:mb-3">
+            <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white leading-tight mb-2">
               Products for{' '}
               <span className="bg-gradient-to-r from-orange-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
                 {petName}
               </span>
             </h1>
             
-            <p className="text-sm sm:text-base md:text-lg text-white/70 mb-4 sm:mb-6 max-w-xl">
+            <p className="text-xs sm:text-sm md:text-base text-white/70 mb-3 sm:mb-4 max-w-xl">
               Thoughtfully selected for {pet ? `${petName}'s` : 'your companion\'s'} life and needs.
             </p>
             
-            {/* Breed-specific Mira nudge */}
-            {breedRec && (
-              <div className="inline-flex items-start gap-3 bg-white/10 backdrop-blur-sm rounded-xl p-3 sm:p-4 border border-white/10 max-w-md animate-fadeIn">
-                <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-orange-500 to-pink-500 rounded-full flex items-center justify-center">
-                  <span className="text-base sm:text-lg">{breedRec.icon}</span>
-                </div>
-                <div>
-                  <p className="text-xs sm:text-sm text-white/90 leading-relaxed">{breedRec.nudge}</p>
-                  <p className="text-[10px] sm:text-xs text-white/50 mt-1 flex items-center gap-1">
-                    <Sparkles className="w-3 h-3" /> Mira&apos;s insight for {breed}
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-        
-        {/* Trust badges */}
-        <div className="flex flex-wrap justify-center md:justify-start gap-4 sm:gap-6 mt-6 sm:mt-8 pt-6 sm:pt-8 border-t border-white/10">
-          <div className="flex items-center gap-2 text-white/60 text-xs sm:text-sm">
-            <Zap className="w-4 h-4 text-amber-400" />
-            <span>Same-day delivery</span>
-          </div>
-          <div className="flex items-center gap-2 text-white/60 text-xs sm:text-sm">
-            <Users className="w-4 h-4 text-blue-400" />
-            <span>15,432 happy pets</span>
-          </div>
-          <div className="flex items-center gap-2 text-white/60 text-xs sm:text-sm">
-            <Award className="w-4 h-4 text-green-400" />
-            <span>Quality guaranteed</span>
+            {/* Pet Soul Traits - Personalized */}
+            <PetSoulTraits pet={pet} soulData={soulData} />
           </div>
         </div>
       </div>
@@ -175,21 +304,24 @@ const SearchBar = ({ value, onChange, petName, products }) => {
   }, []);
   
   return (
-    <div ref={searchRef} className="relative w-full max-w-2xl mx-auto px-4 -mt-6 sm:-mt-8 z-20">
+    <div ref={searchRef} className="relative w-full max-w-2xl mx-auto px-4 -mt-5 sm:-mt-6 z-20">
       <div className="relative group">
         <div className="absolute -inset-1 bg-gradient-to-r from-orange-500 to-pink-500 rounded-2xl blur opacity-25 group-hover:opacity-50 transition-opacity"></div>
         <div className="relative bg-white rounded-xl shadow-2xl">
-          <Search className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
           <Input
             value={value}
             onChange={(e) => { onChange(e.target.value); setShowSuggestions(e.target.value.length >= 2); }}
             onFocus={() => value.length >= 2 && setShowSuggestions(true)}
-            placeholder={petName ? `What does ${petName} need today?` : "What does your dog need today?"}
-            className="pl-12 sm:pl-14 pr-12 sm:pr-14 py-4 sm:py-5 text-sm sm:text-base bg-transparent border-0 rounded-xl focus:ring-2 focus:ring-orange-500/50"
+            placeholder={petName ? `What does ${petName} need?` : "What does your dog need?"}
+            className="pl-10 sm:pl-12 pr-10 sm:pr-12 py-3 sm:py-4 text-sm bg-transparent border-0 rounded-xl focus:ring-2 focus:ring-orange-500/50"
             data-testid="shop-search"
           />
-          <button className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 p-2 bg-gradient-to-r from-orange-500 to-pink-500 rounded-lg text-white hover:opacity-90 active:scale-95 transition-all">
-            <Mic className="w-4 h-4 sm:w-5 sm:h-5" />
+          <button 
+            onClick={() => window.dispatchEvent(new CustomEvent('openMiraChat'))}
+            className="absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 p-1.5 sm:p-2 bg-gradient-to-r from-orange-500 to-pink-500 rounded-lg text-white hover:opacity-90 active:scale-95 transition-all"
+          >
+            <Mic className="w-4 h-4" />
           </button>
         </div>
       </div>
@@ -205,10 +337,10 @@ const SearchBar = ({ value, onChange, petName, products }) => {
               className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 border-b last:border-0 transition-colors"
             >
               {item.image ? (
-                <img src={item.image} alt="" className="w-12 h-12 rounded-lg object-cover" />
+                <img src={item.image} alt="" className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg object-cover" />
               ) : (
-                <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center">
-                  <Package className="w-6 h-6 text-gray-400" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gray-100 flex items-center justify-center">
+                  <Package className="w-5 h-5 text-gray-400" />
                 </div>
               )}
               <div className="flex-1 min-w-0">
@@ -224,15 +356,15 @@ const SearchBar = ({ value, onChange, petName, products }) => {
 };
 
 // =============================================================================
-// PILLAR FILTERS
+// PILLAR FILTERS - All pillars, responsive
 // =============================================================================
 const PillarFilters = ({ selected, onSelect, selectedSubcat, onSelectSubcat }) => {
   const selectedPillar = PILLARS.find(p => p.id === selected);
   
   return (
     <div className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-30 shadow-sm">
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 py-3 sm:py-4">
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-1 px-1 snap-x snap-mandatory">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 py-2 sm:py-3">
+        <div className="flex gap-1.5 sm:gap-2 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
           {PILLARS.map((pillar) => {
             const Icon = pillar.icon;
             const isActive = selected === pillar.id;
@@ -240,12 +372,12 @@ const PillarFilters = ({ selected, onSelect, selectedSubcat, onSelectSubcat }) =
               <button
                 key={pillar.id}
                 onClick={() => { onSelect(pillar.id); onSelectSubcat(null); }}
-                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all flex-shrink-0 snap-start active:scale-95 ${
-                  isActive ? `${pillar.color} text-white shadow-lg` : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-medium whitespace-nowrap transition-all flex-shrink-0 snap-start active:scale-95 ${
+                  isActive ? `${pillar.color} text-white shadow-md` : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
                 data-testid={`pillar-${pillar.id}`}
               >
-                <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <Icon className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                 <span>{pillar.label}</span>
               </button>
             );
@@ -254,20 +386,20 @@ const PillarFilters = ({ selected, onSelect, selectedSubcat, onSelectSubcat }) =
         
         {/* Subcategories */}
         {selectedPillar?.subcategories?.length > 0 && (
-          <div className="flex gap-2 mt-3 overflow-x-auto pb-1 scrollbar-hide snap-x">
+          <div className="flex gap-1.5 sm:gap-2 mt-2 overflow-x-auto pb-1 scrollbar-hide snap-x">
             <button
               onClick={() => onSelectSubcat(null)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all snap-start ${
+              className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg text-[10px] sm:text-xs font-medium whitespace-nowrap transition-all snap-start ${
                 !selectedSubcat ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
-              All {selectedPillar.label}
+              All
             </button>
             {selectedPillar.subcategories.map((subcat) => (
               <button
                 key={subcat}
                 onClick={() => onSelectSubcat(subcat)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all snap-start ${
+                className={`px-2 sm:px-3 py-1 sm:py-1.5 rounded-md sm:rounded-lg text-[10px] sm:text-xs font-medium whitespace-nowrap transition-all snap-start ${
                   selectedSubcat === subcat ? 'bg-gray-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                 }`}
               >
@@ -282,9 +414,9 @@ const PillarFilters = ({ selected, onSelect, selectedSubcat, onSelectSubcat }) =
 };
 
 // =============================================================================
-// PRODUCT CARD - World-class
+// PRODUCT CARD - With Mira Whisper
 // =============================================================================
-const ProductCard = ({ product, petName, isPetPick, index }) => {
+const ProductCard = ({ product, petName, breed, isPetPick, index }) => {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const navigate = useNavigate();
@@ -295,19 +427,15 @@ const ProductCard = ({ product, petName, isPetPick, index }) => {
   const image = product.image || product.image_url || product.images?.[0];
   const discount = comparePrice ? Math.round((1 - price / comparePrice) * 100) : 0;
   
-  // Social proof based on product ID (deterministic)
-  const buyers = useMemo(() => {
-    const hash = (product.id || product.name || '').toString().split('').reduce((a, b) => a + b.charCodeAt(0), 0);
-    return (hash % 50) + 20;
-  }, [product.id, product.name]);
+  // Mira whisper for this product
+  const miraWhisper = getMiraWhisper(product, breed);
 
   return (
     <div 
-      className="group relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 cursor-pointer transform hover:-translate-y-1"
+      className="group relative bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:-translate-y-0.5"
       onClick={() => navigate(`/product/${product.handle || product.id}`)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      style={{ animationDelay: `${index * 30}ms` }}
       data-testid={`product-card-${product.id}`}
     >
       {/* Image */}
@@ -315,17 +443,14 @@ const ProductCard = ({ product, petName, isPetPick, index }) => {
         <img
           src={image || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400'}
           alt={title}
-          className={`w-full h-full object-cover transition-transform duration-700 ${isHovered ? 'scale-110' : 'scale-100'}`}
+          className={`w-full h-full object-cover transition-transform duration-500 ${isHovered ? 'scale-105' : 'scale-100'}`}
         />
-        
-        {/* Gradient overlay on hover */}
-        <div className={`absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}></div>
         
         {/* Pet Pick Badge */}
         {isPetPick && petName && (
-          <div className="absolute top-3 left-3">
-            <span className="flex items-center gap-1 bg-gradient-to-r from-orange-500 to-pink-500 text-white text-[10px] sm:text-xs font-semibold px-2 sm:px-3 py-1 sm:py-1.5 rounded-full shadow-lg">
-              <Star className="w-3 h-3" fill="currentColor" />
+          <div className="absolute top-2 left-2">
+            <span className="flex items-center gap-1 bg-gradient-to-r from-orange-500 to-pink-500 text-white text-[9px] sm:text-[10px] font-semibold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full shadow-lg">
+              <Star className="w-2.5 h-2.5" fill="currentColor" />
               {petName}&apos;s Pick
             </span>
           </div>
@@ -333,8 +458,8 @@ const ProductCard = ({ product, petName, isPetPick, index }) => {
         
         {/* Discount Badge */}
         {discount > 0 && (
-          <div className="absolute top-3 right-3">
-            <span className="bg-red-500 text-white text-[10px] sm:text-xs font-bold px-2 py-1 rounded-full shadow-lg">
+          <div className="absolute top-2 right-2">
+            <span className="bg-red-500 text-white text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded-full">
               -{discount}%
             </span>
           </div>
@@ -343,57 +468,32 @@ const ProductCard = ({ product, petName, isPetPick, index }) => {
         {/* Wishlist */}
         <button
           onClick={(e) => { e.stopPropagation(); setIsWishlisted(!isWishlisted); }}
-          className={`absolute top-3 right-3 p-2 bg-white rounded-full shadow-lg transition-all duration-300 ${
-            isHovered || isWishlisted ? 'opacity-100 scale-100' : 'opacity-0 scale-90'
-          } ${discount > 0 ? 'top-12' : ''}`}
+          className={`absolute top-2 right-2 p-1.5 bg-white rounded-full shadow-lg transition-all ${
+            isWishlisted ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+          } ${discount > 0 ? 'top-8' : ''}`}
         >
-          <Heart className={`w-4 h-4 transition-colors ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
+          <Heart className={`w-3.5 h-3.5 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
         </button>
-        
-        {/* Quick add on hover */}
-        <div className={`absolute bottom-3 left-3 right-3 transition-all duration-300 ${isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-          <button 
-            onClick={(e) => { e.stopPropagation(); toast({ title: 'Added to cart!' }); }}
-            className="w-full py-2 bg-white/95 backdrop-blur-sm text-gray-900 text-xs sm:text-sm font-semibold rounded-lg hover:bg-white transition-colors"
-          >
-            Quick Add
-          </button>
-        </div>
       </div>
       
       {/* Content */}
-      <div className="p-3 sm:p-4">
-        <h3 className="font-medium text-gray-900 text-sm sm:text-base mb-2 line-clamp-2 leading-snug group-hover:text-orange-600 transition-colors">
+      <div className="p-2.5 sm:p-3">
+        <h3 className="font-medium text-gray-900 text-xs sm:text-sm mb-1 line-clamp-2 leading-snug group-hover:text-orange-600 transition-colors">
           {title}
         </h3>
         
-        {/* Price */}
-        <div className="flex items-center gap-2 mb-2">
-          <span className="text-base sm:text-lg font-bold text-gray-900">₹{price.toLocaleString()}</span>
-          {comparePrice && (
-            <span className="text-xs sm:text-sm text-gray-400 line-through">₹{comparePrice.toLocaleString()}</span>
-          )}
-        </div>
+        {/* Mira Whisper - Why this product */}
+        <p className="text-[10px] sm:text-xs text-gray-500 mb-1.5 flex items-center gap-1">
+          <Sparkles className="w-2.5 h-2.5 text-purple-500 flex-shrink-0" />
+          <span className="truncate">{miraWhisper}</span>
+        </p>
         
-        {/* Social Proof */}
-        <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-          <div className="flex items-center gap-1.5 text-[10px] sm:text-xs text-gray-500">
-            <div className="flex -space-x-1.5">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-gradient-to-br from-orange-400 to-pink-400 border-2 border-white"></div>
-              ))}
-            </div>
-            <span><strong className="text-gray-700">{buyers}</strong> bought this</span>
-          </div>
-          <ChevronRight className={`w-4 h-4 text-gray-400 transition-transform duration-300 ${isHovered ? 'translate-x-1 text-orange-500' : ''}`} />
-        </div>
-      </div>
-      
-      {/* Member Badge on hover */}
-      <div className={`absolute top-12 left-3 transition-all duration-300 ${isHovered && !isPetPick ? 'opacity-100' : 'opacity-0'}`}>
-        <div className="flex items-center gap-1 px-2 py-1 bg-amber-500/90 backdrop-blur-sm text-white text-[10px] font-semibold rounded-full">
-          <Crown className="w-3 h-3" />
-          <span>Members save 10%</span>
+        {/* Price */}
+        <div className="flex items-center gap-1.5">
+          <span className="text-sm sm:text-base font-bold text-gray-900">₹{price.toLocaleString()}</span>
+          {comparePrice && (
+            <span className="text-[10px] sm:text-xs text-gray-400 line-through">₹{comparePrice.toLocaleString()}</span>
+          )}
         </div>
       </div>
     </div>
@@ -415,6 +515,7 @@ const ShopPage = () => {
   const [selectedSubcat, setSelectedSubcat] = useState(null);
   const [displayCount, setDisplayCount] = useState(24);
   const [selectedPet, setSelectedPet] = useState(null);
+  const [petSoulData, setPetSoulData] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   
   // Fetch products
@@ -461,7 +562,35 @@ const ShopPage = () => {
     }
   }, [token]);
   
-  // Listen for pet selection changes
+  // Fetch soul data when pet changes
+  useEffect(() => {
+    if (selectedPet?.id && token) {
+      const fetchSoulData = async () => {
+        try {
+          const res = await fetch(`${API_URL}/api/soul-drip/completeness/${selectedPet.id}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            setPetSoulData(data);
+          }
+        } catch (err) {
+          console.error('Failed to fetch soul data:', err);
+        }
+      };
+      fetchSoulData();
+    }
+  }, [selectedPet?.id, token]);
+  
+  // Pet switch handler
+  const handlePetSwitch = useCallback((pet) => {
+    setSelectedPet(pet);
+    localStorage.setItem('selectedPetId', pet.id);
+    // Dispatch event for other components
+    window.dispatchEvent(new CustomEvent('petSelectionChanged', { detail: { pet, petId: pet.id } }));
+  }, []);
+  
+  // Listen for pet selection changes from other components
   useEffect(() => {
     const handlePetSelectionChanged = (event) => {
       const { pet, petId } = event.detail || {};
@@ -475,39 +604,14 @@ const ShopPage = () => {
     return () => window.removeEventListener('petSelectionChanged', handlePetSelectionChanged);
   }, [pets]);
   
-  // Get breed recommendations
-  const breedRec = useMemo(() => {
-    if (!selectedPet?.breed) return null;
-    const breed = selectedPet.breed.toLowerCase();
-    for (const [key, rec] of Object.entries(BREED_PRODUCT_REC)) {
-      if (breed.includes(key.split(' ')[0])) return rec;
-    }
-    return null;
-  }, [selectedPet?.breed]);
-  
   // Filter products
   const filteredProducts = useMemo(() => {
     let result = allProducts;
     
-    if (selectedPillar !== 'all' && selectedPillar !== 'recommended') {
+    if (selectedPillar !== 'all' && selectedPillar !== 'shop' && selectedPillar !== 'recommended') {
       result = result.filter(p => {
         const productPillars = p.pillars || [];
         return productPillars.includes(selectedPillar) || p.primary_pillar === selectedPillar || p.pillar === selectedPillar;
-      });
-    }
-    
-    // For recommended, prioritize breed-relevant products
-    if (selectedPillar === 'recommended' && breedRec) {
-      result = [...result].sort((a, b) => {
-        const aMatch = breedRec.keywords?.some(k => 
-          a.name?.toLowerCase().includes(k) || a.title?.toLowerCase().includes(k) || a.tags?.some(t => t?.toLowerCase().includes(k))
-        );
-        const bMatch = breedRec.keywords?.some(k => 
-          b.name?.toLowerCase().includes(k) || b.title?.toLowerCase().includes(k) || b.tags?.some(t => t?.toLowerCase().includes(k))
-        );
-        if (aMatch && !bMatch) return -1;
-        if (!aMatch && bMatch) return 1;
-        return 0;
       });
     }
     
@@ -531,40 +635,29 @@ const ShopPage = () => {
     }
     
     return result;
-  }, [allProducts, selectedPillar, selectedSubcat, searchQuery, breedRec]);
+  }, [allProducts, selectedPillar, selectedSubcat, searchQuery]);
   
-  // Displayed products
   const displayedProducts = useMemo(() => filteredProducts.slice(0, displayCount), [filteredProducts, displayCount]);
-  
-  // Pet picks
-  const petPicks = useMemo(() => {
-    if (!selectedPet?.breed) return allProducts.slice(0, 6);
-    const breed = selectedPet.breed.toLowerCase();
-    const picks = allProducts.filter(p => 
-      p.is_breed_specific && 
-      (p.breed_metadata?.breeds?.some(b => b.toLowerCase().includes(breed)) ||
-       p.name?.toLowerCase().includes(breed) ||
-       p.title?.toLowerCase().includes(breed))
-    ).slice(0, 6);
-    return picks.length >= 3 ? picks : allProducts.slice(0, 6);
-  }, [allProducts, selectedPet]);
-  
-  const handleLoadMore = () => setDisplayCount(prev => prev + 24);
   const hasMore = displayCount < filteredProducts.length;
   const petName = selectedPet?.name || '';
+  const petBreed = selectedPet?.breed || '';
 
   return (
     <div className="min-h-screen bg-gray-50 pb-24 md:pb-0" data-testid="shop-page">
       <SEOHead page="shop" path="/shop" />
       
       {/* Hero */}
-      <PetHero pet={selectedPet} breedRec={breedRec} />
+      <PetHero 
+        pet={selectedPet} 
+        soulData={petSoulData}
+        onPetSwitch={handlePetSwitch}
+        pets={pets}
+      />
       
       {/* Search */}
       <SearchBar value={searchQuery} onChange={setSearchQuery} petName={petName} products={allProducts} />
       
-      {/* Spacer */}
-      <div className="h-4 sm:h-6"></div>
+      <div className="h-3 sm:h-4"></div>
       
       {/* Pillar Filters */}
       <PillarFilters 
@@ -574,80 +667,65 @@ const ShopPage = () => {
         onSelectSubcat={setSelectedSubcat}
       />
       
-      {/* Pet's Top Picks */}
-      {petName && petPicks.length > 0 && selectedPillar === 'recommended' && (
-        <section className="py-6 sm:py-8 bg-gradient-to-b from-gray-50 to-white" data-testid="pet-picks-section">
-          <div className="max-w-7xl mx-auto px-3 sm:px-6">
-            <div className="flex items-center justify-between mb-4 sm:mb-6">
-              <h2 className="text-lg sm:text-xl font-bold text-gray-900 flex items-center gap-2">
-                <Star className="w-5 h-5 text-amber-500" fill="currentColor" />
-                {petName}&apos;s Top Picks
-              </h2>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-              {petPicks.map((product, idx) => (
-                <ProductCard key={product.id} product={product} petName={petName} isPetPick={true} index={idx} />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-      
       {/* Products Section */}
-      <section className="py-6 sm:py-8 bg-white">
+      <section className="py-4 sm:py-6 bg-white">
         <div className="max-w-7xl mx-auto px-3 sm:px-6">
-          <div className="flex items-center justify-between mb-4 sm:mb-6">
-            <h2 className="text-lg sm:text-xl font-bold text-gray-900">
-              {selectedPillar === 'recommended' ? `All Products for ${petName || 'You'}` :
-               selectedPillar === 'all' ? 'All Products' :
-               `${PILLARS.find(p => p.id === selectedPillar)?.label || ''} Products`}
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <h2 className="text-base sm:text-lg font-bold text-gray-900">
+              {selectedPillar === 'recommended' ? `For ${petName || 'You'}` :
+               selectedPillar === 'all' || selectedPillar === 'shop' ? 'All Products' :
+               `${PILLARS.find(p => p.id === selectedPillar)?.label || ''}`}
             </h2>
             {filteredProducts.length > 0 && (
-              <span className="text-xs sm:text-sm text-gray-500">{filteredProducts.length} products</span>
+              <span className="text-[10px] sm:text-xs text-gray-500">{filteredProducts.length} products</span>
             )}
           </div>
           
           {loading ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
               {[...Array(8)].map((_, i) => (
-                <div key={i} className="animate-pulse bg-gray-100 rounded-2xl overflow-hidden">
+                <div key={i} className="animate-pulse bg-gray-100 rounded-xl overflow-hidden">
                   <div className="aspect-square bg-gray-200"></div>
-                  <div className="p-4 space-y-3">
-                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                  <div className="p-3 space-y-2">
+                    <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+                    <div className="h-3 bg-gray-200 rounded w-1/2"></div>
                   </div>
                 </div>
               ))}
             </div>
           ) : displayedProducts.length === 0 ? (
-            <div className="text-center py-16 px-4">
-              <div className="w-20 h-20 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-                <Package className="w-10 h-10 text-gray-400" />
-              </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">No products found</h3>
-              <p className="text-gray-500 mb-6">Try a different category or search term</p>
+            <div className="text-center py-12 px-4">
+              <Package className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">No products found</h3>
               <Button onClick={() => { setSelectedPillar('all'); setSelectedSubcat(null); setSearchQuery(''); }} 
                 className="bg-gradient-to-r from-orange-500 to-pink-500 text-white">
-                View All Products
+                View All
               </Button>
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
                 {displayedProducts.map((product, idx) => (
-                  <ProductCard key={product.id} product={product} petName={petName} isPetPick={false} index={idx} />
+                  <ProductCard 
+                    key={product.id} 
+                    product={product} 
+                    petName={petName}
+                    breed={petBreed}
+                    isPetPick={idx < 4 && selectedPillar === 'recommended'}
+                    index={idx} 
+                  />
                 ))}
               </div>
               
               {hasMore && (
-                <div className="text-center mt-8">
+                <div className="text-center mt-6">
                   <Button
-                    onClick={handleLoadMore}
-                    className="px-8 py-3 bg-gray-900 text-white hover:bg-gray-800 rounded-xl"
+                    onClick={() => setDisplayCount(prev => prev + 24)}
+                    className="px-6 py-2.5 bg-gray-900 text-white hover:bg-gray-800 rounded-xl text-sm"
                     data-testid="load-more-btn"
                   >
-                    <ChevronDown className="w-5 h-5 mr-2" />
-                    Load More Products
+                    <ChevronDown className="w-4 h-4 mr-2" />
+                    Load More
                   </Button>
                 </div>
               )}
@@ -657,9 +735,9 @@ const ShopPage = () => {
       </section>
       
       {/* Emotional Close */}
-      <section className="bg-gradient-to-br from-[#2D1B4E] via-[#1E3A5F] to-[#0D2137] py-12 sm:py-16">
+      <section className="bg-gradient-to-br from-[#2D1B4E] via-[#1E3A5F] to-[#0D2137] py-10 sm:py-14">
         <div className="max-w-2xl mx-auto px-4 text-center">
-          <p className="text-xl sm:text-2xl md:text-3xl text-white font-medium leading-relaxed mb-4">
+          <p className="text-lg sm:text-xl md:text-2xl text-white font-medium leading-relaxed mb-3">
             {petName ? (
               <>You don&apos;t manage shopping.<br />You just love <span className="bg-gradient-to-r from-orange-400 to-pink-400 bg-clip-text text-transparent">{petName}</span>.<br />We handle the rest.</>
             ) : (
@@ -670,29 +748,16 @@ const ShopPage = () => {
             onClick={() => window.dispatchEvent(new CustomEvent('openMiraChat'))}
             className="text-sm text-white/60 hover:text-white/90 transition-colors"
           >
-            Need help deciding? Ask Mira →
+            Need help? Ask Mira →
           </button>
         </div>
       </section>
       
       <MiraChatWidget pillar="shop" />
       
-      {/* CSS */}
       <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fadeIn {
-          animation: fadeIn 0.5s ease-out forwards;
-        }
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
       `}</style>
     </div>
   );
