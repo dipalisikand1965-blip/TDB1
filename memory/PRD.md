@@ -137,18 +137,21 @@ Build "The Doggy Company," a one-stop-shop concierge for dog parents with a focu
 1. ~~Finance Manager testing~~ ✅ DONE
 2. ~~Product Box enhancement~~ ✅ DONE
 3. ~~Service Box enhancement~~ ✅ DONE
-4. **Incorporate pet photos in Brand Story video**
+4. ~~Non-member landing page copy rewrite~~ ✅ DONE
+5. **Incorporate pet photos in Brand Story video**
 
 ### P1 - Medium Priority
-5. Service Desk - Add SLA tracking
-6. Service Desk - Add canned responses
-7. Member Directory - Add 360 view
-8. Member Directory - Add LTV calculation
+6. Apply Pet OS philosophy to Pillar pages (Celebrate, Dine, Stay, etc.)
+7. Deepen service intertwining with "Handled by Mira" badge
+8. Service Desk - Add SLA tracking
+9. Service Desk - Add canned responses
+10. Member Directory - Add 360 view
+11. Member Directory - Add LTV calculation
 
 ### P2 - Nice to Have
-9. Mira - Add prompt editor UI
-10. System - Add approval workflows
-11. Reports - Add GST export CSV
+12. Mira - Add prompt editor UI
+13. System - Add approval workflows
+14. Reports - Add GST export CSV
 
 ---
 
