@@ -292,6 +292,14 @@ const CELEBRATE_SUPPORT = [
   { id: 'recovery', label: 'Extra care', icon: HeartPulse, desc: 'Special care needs' }
 ];
 
+const DINE_SUPPORT = [
+  { id: 'sensitive-stomach', label: 'Sensitive tummy', icon: Droplets, desc: 'Gentle on digestion' },
+  { id: 'weight', label: 'Weight-friendly', icon: Activity, desc: 'Portion controlled' },
+  { id: 'high-protein', label: 'High protein', icon: Star, desc: 'Muscle support' },
+  { id: 'allergy-friendly', label: 'Allergy-safe', icon: Shield, desc: 'Limited ingredients' },
+  { id: 'grain-free', label: 'Grain-free', icon: Heart, desc: 'No grains added' }
+];
+
 const TRAVEL_SUPPORT = [
   { id: 'sensitive-stomach', label: 'Travel-friendly', icon: Droplets, desc: 'Easy on digestion' },
   { id: 'calming', label: 'Journey calm', icon: Brain, desc: 'Anxiety support' },
@@ -308,6 +316,20 @@ const CARE_SUPPORT = [
   { id: 'allergy-friendly', label: 'Allergy-friendly', icon: Shield, desc: 'Limited ingredients' }
 ];
 
+const ENJOY_SUPPORT = [
+  { id: 'high-energy', label: 'High energy', icon: Activity, desc: 'Active play fuel' },
+  { id: 'portable', label: 'On-the-go', icon: MapPin, desc: 'Easy to carry' },
+  { id: 'allergy-friendly', label: 'Safe outdoors', icon: Shield, desc: 'Limited ingredients' },
+  { id: 'hydration', label: 'Hydrating', icon: Droplets, desc: 'Moisture-rich' }
+];
+
+const FIT_SUPPORT = [
+  { id: 'weight', label: 'Weight control', icon: Activity, desc: 'Low calorie' },
+  { id: 'high-protein', label: 'Lean protein', icon: Star, desc: 'Muscle building' },
+  { id: 'joints', label: 'Joint support', icon: Heart, desc: 'Mobility & comfort' },
+  { id: 'energy', label: 'Energy boost', icon: Sparkles, desc: 'Active lifestyle' }
+];
+
 const PILLAR_SUPPORT_FILTERS = {
   celebrate: CELEBRATE_SUPPORT,
   birthday: CELEBRATE_SUPPORT,
@@ -315,10 +337,18 @@ const PILLAR_SUPPORT_FILTERS = {
   hampers: CELEBRATE_SUPPORT,
   accessories: CELEBRATE_SUPPORT,
   treats: CELEBRATE_SUPPORT,
+  dine: DINE_SUPPORT,
+  meals: DINE_SUPPORT,
+  'fresh-meals': DINE_SUPPORT,
+  'pizzas-burgers': DINE_SUPPORT,
   travel: TRAVEL_SUPPORT,
   care: CARE_SUPPORT,
-  dine: CARE_SUPPORT,
-  fit: CARE_SUPPORT,
+  health: CARE_SUPPORT,
+  supplements: CARE_SUPPORT,
+  enjoy: ENJOY_SUPPORT,
+  adventure: ENJOY_SUPPORT,
+  fit: FIT_SUPPORT,
+  wellness: FIT_SUPPORT,
   default: CELEBRATE_SUPPORT
 };
 
