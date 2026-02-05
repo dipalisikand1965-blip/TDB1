@@ -666,3 +666,183 @@ async def get_catalogue_stats():
         },
         "supported_breeds": list(BREED_PROFILES.keys())
     }
+
+
+# ============================================
+# AI-POWERED TAGGING & HINTS
+# ============================================
+
+async def generate_ai_product_hint(product: dict) -> str:
+    """Generate AI-powered Mira hint for breed product"""
+    from emergentintegrations.llm.chat import LlmChat, UserMessage
+    
+    name = product.get("name", "")
+    who = product.get("who_for", "")
+    what = product.get("what_is", "")
+    why = product.get("why_fits", "")
+    desc = product.get("short_description", "")
+    category = product.get("category", "")
+    
+    prompt = f"""You are Mira, a soulful pet concierge. Generate a SHORT, exciting product hint (max 10 words) for:
+
+Product: {name}
+Who it's for: {who}
+What it is: {what}
+Why it fits: {why}
+Description: {desc}
+Category: {category}
+
+Rules:
+- Start with ✨
+- Max 10 words
+- Be specific to THIS product
+- Focus on the joy it brings
+- Never generic ("great product", "perfect for")
+
+Just the hint, nothing else."""
+
+    try:
+        api_key = os.environ.get("EMERGENT_LLM_KEY")
+        if not api_key:
+            return f"✨ {who}'s perfect {what}"
+        
+        chat = LlmChat(
+            api_key=api_key,
+            session_id=f"breed-hint-{product.get('id', 'unknown')}",
+            system_message="You are Mira, a soulful pet concierge."
+        )
+        chat.with_model("openai", "gpt-4o-mini")
+        chat.with_params(temperature=0.9, max_tokens=30)
+        
+        user_msg = UserMessage(text=prompt)
+        response = await chat.send_message(user_msg)
+        
+        hint = response.strip()
+        if not hint.startswith("✨"):
+            hint = "✨ " + hint.lstrip("✨").strip()
+        
+        return hint[:60]
+        
+    except Exception as e:
+        logging.error(f"[Breed AI Hint] Error: {e}")
+        return f"✨ {who}'s perfect {what}"
+
+
+async def generate_ai_tags(product: dict) -> List[str]:
+    """Generate AI-powered searchable tags"""
+    from emergentintegrations.llm.chat import LlmChat, UserMessage
+    
+    name = product.get("name", "")
+    desc = product.get("short_description", "")
+    category = product.get("category", "")
+    breed_tags = product.get("breed_tags", {})
+    
+    prompt = f"""Generate 5-8 searchable tags for this pet product:
+
+Name: {name}
+Description: {desc}
+Category: {category}
+Breeds: {breed_tags.get('breeds', [])}
+Sizes: {breed_tags.get('sizes', [])}
+
+Return ONLY a comma-separated list of lowercase tags. Focus on:
+- Product type
+- Use case
+- Target pet traits
+- Key benefits
+
+Example: durable, large dog, tug, interactive, bonding, exercise"""
+
+    try:
+        api_key = os.environ.get("EMERGENT_LLM_KEY")
+        if not api_key:
+            return [category, product.get("who_for", "").lower()]
+        
+        chat = LlmChat(
+            api_key=api_key,
+            session_id=f"breed-tags-{product.get('id', 'unknown')}",
+            system_message="You are a product tagging assistant."
+        )
+        chat.with_model("openai", "gpt-4o-mini")
+        chat.with_params(temperature=0.3, max_tokens=50)
+        
+        user_msg = UserMessage(text=prompt)
+        response = await chat.send_message(user_msg)
+        
+        tags = [t.strip().lower() for t in response.split(",") if t.strip()]
+        return tags[:8]
+        
+    except Exception as e:
+        logging.error(f"[Breed AI Tags] Error: {e}")
+        return [category]
+
+
+@router.post("/admin/auto-tag-products")
+async def auto_tag_all_products():
+    """Auto-generate AI hints and tags for all breed products"""
+    import asyncio
+    
+    products = await db.breed_products.find({"is_active": True}).to_list(200)
+    
+    updated = 0
+    for product in products:
+        try:
+            hint = await generate_ai_product_hint(product)
+            tags = await generate_ai_tags(product)
+            
+            await db.breed_products.update_one(
+                {"id": product["id"]},
+                {"$set": {
+                    "mira_hint": hint,
+                    "ai_tags": tags,
+                    "updated_at": datetime.now(timezone.utc)
+                }}
+            )
+            updated += 1
+            
+            # Rate limit
+            await asyncio.sleep(0.3)
+            
+        except Exception as e:
+            logging.error(f"[Auto-tag] Error on {product.get('name')}: {e}")
+    
+    return {
+        "success": True,
+        "message": f"Generated AI hints and tags for {updated} products",
+        "updated": updated
+    }
+
+
+@router.post("/admin/auto-tag-services")
+async def auto_tag_all_services():
+    """Auto-generate AI hints for all breed services"""
+    import asyncio
+    
+    services = await db.breed_services.find({"is_active": True}).to_list(100)
+    
+    updated = 0
+    for service in services:
+        try:
+            # Similar hint generation for services
+            who = service.get("who_for", "")
+            what = service.get("what_is", "")
+            hint = f"✨ {who}'s expert {what.lower()}"
+            
+            await db.breed_services.update_one(
+                {"id": service["id"]},
+                {"$set": {
+                    "mira_hint": hint,
+                    "updated_at": datetime.now(timezone.utc)
+                }}
+            )
+            updated += 1
+            
+        except Exception as e:
+            logging.error(f"[Auto-tag Service] Error: {e}")
+    
+    return {
+        "success": True,
+        "message": f"Generated hints for {updated} services",
+        "updated": updated
+    }
+
