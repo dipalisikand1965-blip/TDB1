@@ -310,65 +310,92 @@ const Admin = () => {
     }
   };
 
-  // Sync Shopify Products - Pulls REAL products from Shopify store
-  const syncShopifyProducts = async () => {
+  // 🚀 MASTER SYNC - Syncs ALL products & services to all pillars
+  const syncAllData = async () => {
     setSyncingShopify(true);
+    const results = { products: 0, services: 0, shopify: 0 };
+    
     try {
-      toast({ title: '🛍️ Shopify Sync Started', description: 'Pulling real products from Shopify... This may take 30-60 seconds.' });
-      
-      console.log('[Shopify Sync] Starting sync...');
-      
-      // First, cleanup any mock/placeholder products
-      toast({ title: '🧹 Cleaning up...', description: 'Removing placeholder products...' });
+      // Step 1: Sync Shopify Products (real products)
+      toast({ title: '🛍️ Step 1/4: Syncing Shopify Products...', description: 'Pulling real products from your store' });
       
       try {
-        const cleanupResponse = await fetch(`${API_URL}/api/admin/cleanup-mock-products`, {
+        const shopifyRes = await fetch(`${API_URL}/api/admin/sync-products`, {
           method: 'POST',
           headers: getAuthHeaders()
         });
-        
-        if (cleanupResponse.ok) {
-          const cleanupData = await cleanupResponse.json();
-          console.log('[Shopify Sync] Cleanup:', cleanupData);
+        if (shopifyRes.ok) {
+          const data = await shopifyRes.json();
+          results.shopify = data.synced || 0;
+          console.log('[Master Sync] Shopify:', results.shopify);
         }
       } catch (e) {
-        console.log('[Shopify Sync] Cleanup skipped:', e);
+        console.log('[Master Sync] Shopify sync error:', e);
       }
       
-      // Now sync from Shopify
-      const response = await fetch(`${API_URL}/api/admin/sync-products`, {
-        method: 'POST',
-        headers: getAuthHeaders()
+      // Step 2: Seed pillar products (products for each pillar)
+      toast({ title: '📦 Step 2/4: Seeding Pillar Products...', description: 'Adding products to all 14 pillars' });
+      
+      try {
+        const pillarRes = await fetch(`${API_URL}/api/admin/universal-seed`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        if (pillarRes.ok) {
+          const data = await pillarRes.json();
+          results.products = data.products?.created || 0;
+          console.log('[Master Sync] Pillar products:', results.products);
+        }
+      } catch (e) {
+        console.log('[Master Sync] Pillar seed error:', e);
+      }
+      
+      // Step 3: Seed breed-specific services
+      toast({ title: '🐕 Step 3/4: Seeding Breed Services...', description: 'Adding breed-specific services with Mira whispers' });
+      
+      try {
+        const breedRes = await fetch(`${API_URL}/api/service-box/seed-breed-services`, {
+          method: 'POST',
+          headers: getAuthHeaders()
+        });
+        if (breedRes.ok) {
+          const data = await breedRes.json();
+          results.services += data.created || 0;
+          console.log('[Master Sync] Breed services:', data.created);
+        }
+      } catch (e) {
+        console.log('[Master Sync] Breed services error:', e);
+      }
+      
+      // Step 4: Update all services with Mira whispers
+      toast({ title: '✨ Step 4/4: Adding Mira Whispers...', description: 'Personalizing all services' });
+      
+      try {
+        const whisperRes = await fetch(`${API_URL}/api/service-box/update-all-whispers`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        if (whisperRes.ok) {
+          const data = await whisperRes.json();
+          console.log('[Master Sync] Whispers updated:', data.updated);
+        }
+      } catch (e) {
+        console.log('[Master Sync] Whisper update error:', e);
+      }
+      
+      // Final toast
+      toast({
+        title: '✅ Master Sync Complete!',
+        description: `Shopify: ${results.shopify} | Pillar Products: ${results.products} | Services synced`,
+        duration: 10000
       });
       
-      console.log('[Shopify Sync] Response status:', response.status);
-      
-      if (response.ok) {
-        const data = await response.json();
-        console.log('[Shopify Sync] Success:', data);
-        
-        toast({
-          title: '✅ Shopify Sync Complete!',
-          description: `${data.synced || data.total_synced || 0} products synced from Shopify`,
-          duration: 8000
-        });
-      } else {
-        const errorText = await response.text();
-        console.error('[Shopify Sync] Failed:', response.status, errorText);
-        toast({ 
-          title: 'Sync Failed', 
-          description: `Status ${response.status}: ${errorText.slice(0, 100)}`, 
-          variant: 'destructive',
-          duration: 10000 
-        });
-      }
     } catch (error) {
-      console.error('[Shopify Sync] Error:', error);
+      console.error('[Master Sync] Error:', error);
       toast({ 
-        title: 'Network Error', 
-        description: `Failed: ${error.message}`, 
-        variant: 'destructive',
-        duration: 8000 
+        title: 'Sync Error', 
+        description: error.message, 
+        variant: 'destructive'
       });
     } finally {
       setSyncingShopify(false);
