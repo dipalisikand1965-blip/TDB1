@@ -58,6 +58,184 @@ def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
 
 # ==================== PUBLIC CART ROUTES ====================
 
+@cart_router.get("/cart")
+async def get_user_cart(session_id: Optional[str] = None, user_id: Optional[str] = None):
+    """Get the current cart for a user/session"""
+    try:
+        if not session_id and not user_id:
+            return {"cart": {"items": [], "subtotal": 0}, "message": "No cart identifier provided"}
+        
+        # Build query
+        query = {}
+        if user_id:
+            query["$or"] = [{"user_id": user_id}, {"session_id": session_id}] if session_id else [{"user_id": user_id}]
+        elif session_id:
+            query["session_id"] = session_id
+        
+        # Find the cart
+        cart = await db.abandoned_carts.find_one(query, {"_id": 0})
+        
+        if cart:
+            return {
+                "cart": {
+                    "id": cart.get("id"),
+                    "items": cart.get("items", []),
+                    "subtotal": cart.get("subtotal", 0),
+                    "status": cart.get("status", "active"),
+                    "email": cart.get("email"),
+                    "name": cart.get("name"),
+                    "updated_at": cart.get("updated_at")
+                }
+            }
+        else:
+            return {"cart": {"items": [], "subtotal": 0}, "message": "No active cart found"}
+    except Exception as e:
+        logger.error(f"Error getting cart: {e}")
+        return {"cart": {"items": [], "subtotal": 0}, "error": str(e)}
+
+
+@cart_router.post("/cart/add")
+async def add_to_cart(
+    session_id: str,
+    item: dict,
+    user_id: Optional[str] = None
+):
+    """Add item to cart"""
+    try:
+        now = datetime.now(timezone.utc).isoformat()
+        
+        # Find existing cart
+        filter_query = {"session_id": session_id}
+        if user_id:
+            filter_query = {"$or": [{"session_id": session_id}, {"user_id": user_id}]}
+        
+        existing = await db.abandoned_carts.find_one(filter_query)
+        
+        if existing:
+            # Check if item already exists
+            items = existing.get("items", [])
+            item_exists = False
+            for i, existing_item in enumerate(items):
+                if existing_item.get("id") == item.get("id") and existing_item.get("variant") == item.get("variant"):
+                    # Update quantity
+                    items[i]["quantity"] = items[i].get("quantity", 1) + item.get("quantity", 1)
+                    item_exists = True
+                    break
+            
+            if not item_exists:
+                items.append(item)
+            
+            # Calculate new subtotal
+            subtotal = sum(i.get("price", 0) * i.get("quantity", 1) for i in items)
+            
+            await db.abandoned_carts.update_one(
+                {"_id": existing["_id"]},
+                {"$set": {
+                    "items": items,
+                    "subtotal": subtotal,
+                    "updated_at": now,
+                    "status": "active"
+                }}
+            )
+            return {"message": "Item added to cart", "items_count": len(items), "subtotal": subtotal}
+        else:
+            # Create new cart
+            cart_id = f"cart-{uuid.uuid4().hex[:12]}"
+            cart_doc = {
+                "id": cart_id,
+                "session_id": session_id,
+                "user_id": user_id,
+                "items": [item],
+                "subtotal": item.get("price", 0) * item.get("quantity", 1),
+                "status": "active",
+                "created_at": now,
+                "updated_at": now,
+                "reminders_sent": 0
+            }
+            await db.abandoned_carts.insert_one(cart_doc)
+            return {"message": "Cart created", "id": cart_id, "items_count": 1, "subtotal": cart_doc["subtotal"]}
+    except Exception as e:
+        logger.error(f"Error adding to cart: {e}")
+        raise HTTPException(status_code=500, detail="Failed to add item to cart")
+
+
+@cart_router.delete("/cart/item")
+async def remove_from_cart(
+    session_id: str,
+    item_id: str,
+    variant: Optional[str] = None,
+    user_id: Optional[str] = None
+):
+    """Remove item from cart"""
+    try:
+        now = datetime.now(timezone.utc).isoformat()
+        
+        # Find existing cart
+        filter_query = {"session_id": session_id}
+        if user_id:
+            filter_query = {"$or": [{"session_id": session_id}, {"user_id": user_id}]}
+        
+        existing = await db.abandoned_carts.find_one(filter_query)
+        
+        if not existing:
+            raise HTTPException(status_code=404, detail="Cart not found")
+        
+        # Remove item
+        items = existing.get("items", [])
+        items = [i for i in items if not (i.get("id") == item_id and (not variant or i.get("variant") == variant))]
+        
+        # Calculate new subtotal
+        subtotal = sum(i.get("price", 0) * i.get("quantity", 1) for i in items)
+        
+        await db.abandoned_carts.update_one(
+            {"_id": existing["_id"]},
+            {"$set": {
+                "items": items,
+                "subtotal": subtotal,
+                "updated_at": now
+            }}
+        )
+        
+        return {"message": "Item removed from cart", "items_count": len(items), "subtotal": subtotal}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error removing from cart: {e}")
+        raise HTTPException(status_code=500, detail="Failed to remove item from cart")
+
+
+@cart_router.delete("/cart")
+async def clear_cart(
+    session_id: str,
+    user_id: Optional[str] = None
+):
+    """Clear all items from cart"""
+    try:
+        now = datetime.now(timezone.utc).isoformat()
+        
+        filter_query = {"session_id": session_id}
+        if user_id:
+            filter_query = {"$or": [{"session_id": session_id}, {"user_id": user_id}]}
+        
+        result = await db.abandoned_carts.update_one(
+            filter_query,
+            {"$set": {
+                "items": [],
+                "subtotal": 0,
+                "updated_at": now,
+                "status": "cleared"
+            }}
+        )
+        
+        if result.modified_count == 0:
+            return {"message": "No cart found to clear"}
+        
+        return {"message": "Cart cleared", "items_count": 0, "subtotal": 0}
+    except Exception as e:
+        logger.error(f"Error clearing cart: {e}")
+        raise HTTPException(status_code=500, detail="Failed to clear cart")
+
+
 @cart_router.post("/cart/snapshot")
 async def save_cart_snapshot(cart: CartSnapshot):
     """Save a cart snapshot for abandoned cart tracking"""
