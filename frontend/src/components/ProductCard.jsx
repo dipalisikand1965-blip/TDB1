@@ -1258,62 +1258,85 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
         )}
         
         {/* Net Pawmoter Score Section - Using Paws instead of Stars */}
-        <div className="border-t bg-gradient-to-br from-amber-50 to-orange-50 p-6" data-testid="nps-section">
+        <div className="border-t bg-gradient-to-br from-amber-50 to-orange-50 p-4 sm:p-6" data-testid="nps-section">
             <div className="flex justify-between items-center mb-4">
-                <h3 className="font-bold text-gray-900 flex items-center gap-2">
-                    <PawPrint className="w-5 h-5 text-amber-600" />
-                    Net Pawmoter Score™
+                <h3 className="font-bold text-gray-900 flex items-center gap-2 text-sm sm:text-base">
+                    <PawPrint className="w-4 h-4 sm:w-5 sm:h-5 text-amber-600" />
+                    Pawmeter™
                 </h3>
+                {user && (
+                  <span className="text-[10px] sm:text-xs text-amber-600/70">Rate this product</span>
+                )}
             </div>
             
-            {/* NPS Score Display */}
-            {npsScore !== null ? (
-                <div className="text-center mb-6">
-                    <div className="inline-flex items-center gap-2 bg-white px-6 py-3 rounded-full shadow-sm border border-amber-200">
-                        {/* Paw Rating - 5 paws for 0-10 scale (2 points per paw) */}
-                        <div className="flex items-center gap-1">
-                            {[1, 2, 3, 4, 5].map((paw) => (
+            {/* Interactive Paw Rating - Users can click to rate */}
+            <div className="text-center mb-4">
+                <div className="inline-flex flex-col items-center gap-2 bg-white px-4 sm:px-6 py-3 sm:py-4 rounded-xl shadow-sm border border-amber-200">
+                    {/* Display current score if exists */}
+                    {npsScore !== null && (
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-xl sm:text-2xl font-bold text-amber-600">{npsScore}</span>
+                        <span className="text-gray-500 text-xs sm:text-sm">/10 avg</span>
+                      </div>
+                    )}
+                    
+                    {/* Clickable Paw Rating */}
+                    <div className="flex items-center gap-1 sm:gap-2">
+                        {[1, 2, 3, 4, 5].map((paw) => (
+                            <button
+                                key={paw}
+                                onClick={() => {
+                                  if (!user) {
+                                    toast({ title: "Sign in required", description: "Please sign in to rate products", variant: "default" });
+                                    return;
+                                  }
+                                  const score = paw * 2; // 1 paw = 2 points, 5 paws = 10
+                                  setUserPawRating(paw);
+                                  // Submit rating to backend
+                                  submitPawRating(score);
+                                }}
+                                className={`transition-all transform hover:scale-110 active:scale-95 ${
+                                  userPawRating >= paw 
+                                    ? 'text-amber-500' 
+                                    : npsScore && paw <= Math.round(npsScore / 2)
+                                      ? 'text-amber-300'
+                                      : 'text-gray-300 hover:text-amber-200'
+                                }`}
+                                data-testid={`paw-rating-${paw}`}
+                            >
                                 <PawPrint 
-                                    key={paw}
-                                    className={`w-6 h-6 ${
-                                        paw <= Math.round(npsScore / 2) 
-                                            ? 'fill-amber-500 text-amber-500' 
-                                            : 'text-gray-300'
+                                    className={`w-7 h-7 sm:w-8 sm:h-8 ${
+                                      userPawRating >= paw ? 'fill-amber-500' : ''
                                     }`}
                                 />
-                            ))}
-                        </div>
-                        <span className="text-2xl font-bold text-amber-600">{npsScore}</span>
-                        <span className="text-gray-500 text-sm">/10</span>
-                    </div>
-                    <p className="text-xs text-gray-500 mt-2">Based on customer satisfaction surveys</p>
-                </div>
-            ) : (
-                <div className="text-center mb-6">
-                    <div className="inline-flex items-center gap-1 text-gray-400">
-                        {[1, 2, 3, 4, 5].map((paw) => (
-                            <PawPrint key={paw} className="w-6 h-6" />
+                            </button>
                         ))}
                     </div>
-                    <p className="text-sm text-gray-500 mt-2">No ratings yet</p>
-                    <p className="text-xs text-amber-600 italic mt-1">
-                        Purchase this product and share your experience!
+                    
+                    {/* Rating feedback */}
+                    <p className="text-[10px] sm:text-xs text-gray-500 mt-1">
+                      {userPawRating > 0 
+                        ? `You rated: ${userPawRating * 2}/10 ${userPawRating >= 4 ? '🎉' : userPawRating >= 3 ? '👍' : '🤔'}`
+                        : user 
+                          ? 'Tap to rate' 
+                          : 'Sign in to rate'
+                      }
                     </p>
                 </div>
-            )}
+            </div>
             
             {/* NPS Testimonials */}
             {npsTestimonials.length > 0 && (
-                <div className="space-y-3">
-                    <h4 className="text-sm font-semibold text-gray-700">What Pet Parents Say</h4>
+                <div className="space-y-2 sm:space-y-3">
+                    <h4 className="text-xs sm:text-sm font-semibold text-gray-700">What Pet Parents Say</h4>
                     {npsTestimonials.slice(0, 3).map((testimonial, idx) => (
-                        <div key={idx} className="bg-white p-4 rounded-xl border border-amber-100 shadow-sm">
+                        <div key={idx} className="bg-white p-3 sm:p-4 rounded-xl border border-amber-100 shadow-sm">
                             <div className="flex items-center gap-2 mb-2">
                                 <div className="flex items-center gap-0.5">
                                     {[1, 2, 3, 4, 5].map((paw) => (
                                         <PawPrint 
                                             key={paw}
-                                            className={`w-4 h-4 ${
+                                            className={`w-3 h-3 sm:w-4 sm:h-4 ${
                                                 paw <= Math.round((testimonial.score || 0) / 2) 
                                                     ? 'fill-amber-500 text-amber-500' 
                                                     : 'text-gray-300'
@@ -1321,16 +1344,16 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
                                         />
                                     ))}
                                 </div>
-                                <Badge className="bg-amber-100 text-amber-700 text-xs">
+                                <Badge className="bg-amber-100 text-amber-700 text-[10px] sm:text-xs">
                                     {testimonial.score}/10
                                 </Badge>
                             </div>
-                            <p className="text-sm text-gray-700 italic">&ldquo;{testimonial.feedback}&rdquo;</p>
+                            <p className="text-xs sm:text-sm text-gray-700 italic">&ldquo;{testimonial.feedback}&rdquo;</p>
                             <div className="flex items-center justify-between mt-2">
-                                <span className="text-xs text-gray-500">— {testimonial.member_name || 'Happy Pet Parent'}</span>
+                                <span className="text-[10px] sm:text-xs text-gray-500">— {testimonial.member_name || 'Happy Pet Parent'}</span>
                                 {testimonial.pet_name && (
-                                    <span className="text-xs text-amber-600 flex items-center gap-1">
-                                        <PawPrint className="w-3 h-3" /> {testimonial.pet_name}
+                                    <span className="text-[10px] sm:text-xs text-amber-600 flex items-center gap-1">
+                                        <PawPrint className="w-2.5 h-2.5 sm:w-3 sm:h-3" /> {testimonial.pet_name}
                                     </span>
                                 )}
                             </div>
@@ -1340,7 +1363,9 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
             )}
             
             {npsTestimonials.length === 0 && npsScore === null && (
-                <p className="text-center text-gray-500 italic py-4">Be the first to rate this product!</p>
+                <p className="text-center text-xs sm:text-sm text-gray-500 italic py-2">
+                  {user ? 'Be the first to rate! Tap the paws above.' : 'Sign in to be the first to rate!'}
+                </p>
             )}
         </div>
 
