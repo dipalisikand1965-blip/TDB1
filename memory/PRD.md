@@ -43,34 +43,45 @@ Build "The Doggy Company," a one-stop-shop concierge for dog parents with a focu
 
 ## SESSION 10 SUMMARY (February 5, 2026) - Product Catalog Expansion
 
-### COMPLETED: Competitor Products & Breed-Specific Personalization
+### COMPLETED: Curated Products & Breed-Specific Personalization
 
-#### HUFT Products Import (20 products)
-- Imported non-food, non-vet products from Heads Up For Tails
-- Categories: Toys, Apparel, Accessories, Grooming, Travel Gear, Beds
-- All products have proper pillar mapping (shop, care, travel, stay)
+#### Curated Non-Food, Non-Vet Products (20 products)
+- Imported high-quality accessories, toys, apparel, grooming, travel gear, beds
+- Categories: Toys (4), Apparel (3), Accessories (4), Grooming (3), Travel Gear (3), Beds (3)
+- All products branded "The Doggy Company" (NO competitor branding)
+- All images from Unsplash
+- Proper pillar mapping (shop, care, travel, stay, enjoy)
 - Script: `/app/backend/scripts/import_huft_products.py`
 
 #### Breed-Specific Personalized Products (160 products)
-- Generated for 20 popular breeds: Labrador, Golden Retriever, Indie, Shih Tzu, Pug, Beagle, Husky, etc.
+- Generated for 20 popular breeds: Labrador, Golden Retriever, Indie, Shih Tzu, Pug, Beagle, Husky, German Shepherd, Rottweiler, Dachshund, Cocker Spaniel, French Bulldog, Boxer, Great Dane, Doberman, Maltese, Yorkshire Terrier, Lhasa Apso, Chihuahua, Pomeranian
 - 8 product types per breed:
-  - {Breed} Pawfect Bandana
-  - {Breed} Mom/Dad Coffee Mug
-  - {Breed} Love T-Shirt (Pet)
-  - {Breed} Personalized Food Bowl
-  - {Breed} Charm Keychain
-  - {Breed} ID Tag (Bone Shaped)
-  - {Breed} Snuggle Blanket
-  - {Breed} Plush Lookalike Toy
-- Each product has `breed_metadata` for cross-population
+  - {Breed} Pawfect Bandana (₹399)
+  - {Breed} Mom/Dad Coffee Mug (₹499)
+  - {Breed} Love T-Shirt (₹599)
+  - {Breed} Personalized Food Bowl (₹799)
+  - {Breed} Charm Keychain (₹299)
+  - {Breed} ID Tag Bone Shaped (₹349)
+  - {Breed} Snuggle Blanket (₹899)
+  - {Breed} Plush Lookalike Toy (₹699)
+- Each product has `breed_metadata` for cross-population:
+  ```json
+  {
+    "breeds": ["Labrador"],
+    "breed_specific": true,
+    "breed_name": "Labrador",
+    "breed_icon": "lab"
+  }
+  ```
+- All branded "The Doggy Company"
+- All images from Unsplash
 - Script: `/app/backend/scripts/generate_breed_products.py`
 
 #### Product Database Stats (Post-Import)
 - **Total Products**: 2,503 (was 2,323)
-- **HUFT Products**: 20
+- **Curated Products**: 20
 - **Breed-Specific Products**: 160
-- **Mira Visible**: 1,468
-- **Proactive Suggestions**: 218
+- **Products by Pillar**: shop (2203), celebrate (611), care (305), fit (275), enjoy (267), travel (253), learn (244), dine (192)
 
 #### Cross-Population Example
 When user mentions "Mojo Indie birthday":
@@ -81,6 +92,11 @@ When user mentions "Mojo Indie birthday":
    - Indie Love T-Shirt (₹599)
    - Indie Plush Lookalike Toy (₹699)
 3. Plus regular birthday celebration products
+
+#### Competitor Branding Cleanup
+- **Removed all traces** of competitor names (Supertails, HUFT, PetSutra)
+- All 180 new products branded "The Doggy Company"
+- All product images replaced with Unsplash URLs
 
 ---
 
