@@ -1,7 +1,12 @@
 /**
  * ShopPage.jsx
- * Comprehensive Shopping Hub for All Pet Products
- * Features: Categories, filters, recommendations, deals
+ * 
+ * Design Philosophy:
+ * - Apple: Decision clarity (simple choices, clear paths)
+ * - Aesop: Trust through language (caring, knowledgeable copy)
+ * - Airbnb: Guided choice (personalized recommendations)
+ * 
+ * Core Message: "The easiest place in India to do the right thing for your dog."
  */
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
@@ -16,318 +21,309 @@ import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
 import MiraChatWidget from '../components/MiraChatWidget';
 import SEOHead from '../components/SEOHead';
-import PersonalizedPicks from '../components/PersonalizedPicks';
 import {
-  ShoppingBag, Search, Filter, Grid, List, Heart, Star, 
-  ChevronRight, ChevronDown, Sparkles, Tag, Truck, Shield, Gift, ArrowRight,
-  SlidersHorizontal, X, Check, Clock, Flame, Award, Package,
-  PawPrint, Cake, UtensilsCrossed, Scissors, Dog, Bone, Briefcase, MapPin, Calendar
+  Search, Heart, Star, ChevronRight, ArrowRight, X, Package,
+  PawPrint, Briefcase, MapPin, Calendar, Sparkles, CheckCircle,
+  Truck, Shield, Leaf, Award, Clock, ChevronDown
 } from 'lucide-react';
-import { PawmeterBadge, PawmeterStars } from '../components/PawmeterDisplay';
 
-// Shop Categories
-// Default categories (will be replaced by API data)
-const DEFAULT_SHOP_CATEGORIES = [
-  { id: 'all', name: 'All Products', emoji: '🛒', color: 'from-purple-500 to-pink-500' },
-  { id: 'celebrations', name: 'Celebrations', emoji: '🎂', color: 'from-amber-500 to-yellow-500' },
-  { id: 'treats', name: 'Treats', emoji: '🦴', color: 'from-pink-500 to-rose-500' },
-  { id: 'pupcakes', name: 'Pupcakes & Dognuts', emoji: '🍩', color: 'from-orange-500 to-amber-500' },
-  { id: 'accessories', name: 'Accessories & Toys', emoji: '🎁', color: 'from-blue-500 to-cyan-500' },
-  { id: 'fresh-food', name: 'Fresh Food', emoji: '🍕', color: 'from-green-500 to-emerald-500' },
-  { id: 'cat-corner', name: 'Cat Corner', emoji: '🐱', color: 'from-violet-500 to-purple-500' },
+// =============================================================================
+// DESIGN TOKENS - Aesop-inspired palette
+// =============================================================================
+const DESIGN = {
+  colors: {
+    cream: '#F7F5F0',      // Warm background
+    charcoal: '#2D2D2D',   // Primary text
+    sage: '#7A8B6F',       // Accent - trust
+    terracotta: '#C4785A', // Accent - warmth
+    stone: '#9B9B9B',      // Secondary text
+  },
+  spacing: {
+    section: 'py-16 md:py-24',
+    container: 'max-w-6xl mx-auto px-4 sm:px-6',
+  }
+};
+
+// =============================================================================
+// TRUST BADGES - Aesop-style language
+// =============================================================================
+const TRUST_BADGES = [
+  { icon: Shield, text: 'Vet-approved selections', detail: 'Every product reviewed by veterinarians' },
+  { icon: Leaf, text: 'Clean ingredients', detail: 'No harmful additives or fillers' },
+  { icon: Truck, text: 'Free delivery over ₹499', detail: 'Careful handling, always' },
+  { icon: Award, text: 'Satisfaction promise', detail: 'Not right? We\'ll make it right' },
 ];
 
-// Quick Filters
-const QUICK_FILTERS = [
-  { id: 'best-sellers', label: '🏆 Best Sellers', filter: { tag: 'best-seller' } },
-  { id: 'new-arrivals', label: '✨ New Arrivals', filter: { tag: 'new' } },
-  { id: 'high-pawmeter', label: '🐾 Pawmeter Rated', filter: { minPawmeter: 3 } },
-  { id: 'on-sale', label: '🔥 On Sale', filter: { onSale: true } },
-  { id: 'grain-free', label: '🌾 Grain Free', filter: { tag: 'grain-free' } },
-  { id: 'organic', label: '🌿 Organic', filter: { tag: 'organic' } },
-  { id: 'subscription', label: '📦 Subscribe & Save', filter: { subscription: true } }
-];
-
-// Pillar Filters for cross-pillar shopping
-const PILLAR_FILTERS = [
-  { id: 'all', label: 'All Pillars', icon: '🛒' },
-  { id: 'celebrate', label: 'Celebrate', icon: '🎂' },
-  { id: 'dine', label: 'Dine', icon: '🍖' },
-  { id: 'stay', label: 'Stay', icon: '🏠' },
-  { id: 'travel', label: 'Travel', icon: '✈️' },
-  { id: 'care', label: 'Care', icon: '💊' },
-  { id: 'enjoy', label: 'Enjoy', icon: '🎾' },
-  { id: 'fit', label: 'Fit', icon: '💪' },
-  { id: 'learn', label: 'Learn', icon: '📚' },
-  { id: 'shop', label: 'Shop', icon: '🛍️' }
-];
-
-// Product Card Component
-const ProductCard = ({ product, onAddToCart, viewMode = 'grid' }) => {
+// =============================================================================
+// PRODUCT CARD - Apple-style clarity
+// =============================================================================
+const ProductCard = ({ product, onAddToCart }) => {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const navigate = useNavigate();
   
-  const hasDiscount = product.compare_at_price && product.compare_at_price > product.price;
-  const discountPercent = hasDiscount 
-    ? Math.round((1 - product.price / product.compare_at_price) * 100) 
-    : 0;
+  const price = product.price || 0;
+  const comparePrice = product.compare_at_price;
+  const hasDiscount = comparePrice && comparePrice > price;
+  const title = product.title || product.name || 'Product';
+  const image = product.image || product.image_url || product.images?.[0];
 
-  const handleClick = () => {
-    // Use shopify_handle for cleaner URLs, fallback to id
-    const slug = product.shopify_handle || product.handle || product.id;
-    navigate(`/product/${slug}`);
-  };
-
-  if (viewMode === 'list') {
-    return (
-      <Card className="flex overflow-hidden hover:shadow-lg transition-all cursor-pointer" onClick={handleClick}>
-        <div className="w-48 h-48 flex-shrink-0 relative bg-gray-100">
-          <img
-            src={product.image || product.image_url || product.images?.[0] || 'https://via.placeholder.com/200'}
-            alt={product.title}
-            className="w-full h-full object-cover"
-          />
-          {hasDiscount && (
-            <Badge className="absolute top-2 left-2 bg-red-500 text-white">
-              -{discountPercent}%
-            </Badge>
-          )}
-        </div>
-        
-        <div className="flex-1 p-4 flex flex-col justify-between">
-          <div>
-            <div className="flex items-start justify-between">
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-1">{product.title}</h3>
-                <p className="text-sm text-gray-600 line-clamp-2">{product.description}</p>
-              </div>
-              <button
-                onClick={(e) => { e.stopPropagation(); setIsWishlisted(!isWishlisted); }}
-                className="p-2 hover:bg-gray-100 rounded-full"
-              >
-                <Heart className={`w-5 h-5 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-400'}`} />
-              </button>
-            </div>
-            
-            {product.tags?.length > 0 && (
-              <div className="flex gap-1 mt-2">
-                {product.tags.slice(0, 3).map(tag => (
-                  <Badge key={tag} variant="outline" className="text-xs">{tag}</Badge>
-                ))}
-              </div>
-            )}
-            
-            {/* Pawmeter Score for list view */}
-            {product.pawmeter?.overall && (
-              <div className="mt-2">
-                <PawmeterStars score={product.pawmeter.overall} size="sm" />
-              </div>
-            )}
-          </div>
-          
-          <div className="flex items-center justify-between mt-4">
-            <div>
-              <span className="text-xl font-bold text-teal-600">₹{product.price?.toLocaleString()}</span>
-              {hasDiscount && (
-                <span className="text-sm text-gray-400 line-through ml-2">
-                  ₹{product.compare_at_price?.toLocaleString()}
-                </span>
-              )}
-            </div>
-            <Button 
-              onClick={(e) => { e.stopPropagation(); onAddToCart(product); }}
-              className="bg-teal-600 hover:bg-teal-700"
-            >
-              Add to Cart
-            </Button>
-          </div>
-        </div>
-      </Card>
-    );
-  }
-
-  // Grid view
   return (
-    <Card 
-      className="overflow-hidden hover:shadow-lg transition-all cursor-pointer group"
-      onClick={handleClick}
+    <div 
+      className="group cursor-pointer"
+      onClick={() => navigate(`/product/${product.handle || product.id}`)}
+      data-testid={`product-card-${product.id}`}
     >
-      <div className="relative h-32 sm:h-40 md:h-48 bg-gray-100 overflow-hidden">
+      {/* Image Container - Clean, minimal */}
+      <div className="relative aspect-square bg-[#F7F5F0] rounded-lg overflow-hidden mb-4">
         <img
-          src={product.image || product.image_url || product.images?.[0] || 'https://via.placeholder.com/200'}
-          alt={product.title}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          src={image || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400'}
+          alt={title}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
         
-        {/* Badges */}
-        <div className="absolute top-1.5 sm:top-2 left-1.5 sm:left-2 flex flex-col gap-0.5 sm:gap-1">
-          {hasDiscount && (
-            <Badge className="bg-red-500 text-white text-[10px] sm:text-xs px-1.5 sm:px-2">-{discountPercent}%</Badge>
-          )}
-          {product.tags?.includes('best-seller') && (
-            <Badge className="bg-amber-500 text-white text-[10px] sm:text-xs px-1.5 sm:px-2 hidden sm:flex">🏆 Best</Badge>
-          )}
-          {product.tags?.includes('new') && (
-            <Badge className="bg-green-500 text-white text-[10px] sm:text-xs px-1.5 sm:px-2">New</Badge>
-          )}
-          {/* Show options indicator for products with variants */}
-          {(product.has_variants || product.variants?.length > 1 || 
-            (product.options?.length > 0 && product.options.some(o => o.values?.length > 1))) && (
-            <Badge className="bg-purple-500 text-white text-[10px] sm:text-xs px-1.5 sm:px-2 hidden sm:flex">Options</Badge>
-          )}
-        </div>
+        {/* Minimal badges - only show what matters */}
+        {hasDiscount && (
+          <div className="absolute top-3 left-3">
+            <span className="bg-[#C4785A] text-white text-xs font-medium px-2 py-1 rounded">
+              Save {Math.round((1 - price/comparePrice) * 100)}%
+            </span>
+          </div>
+        )}
         
-        {/* Wishlist Button */}
+        {/* Wishlist - subtle */}
         <button
           onClick={(e) => { e.stopPropagation(); setIsWishlisted(!isWishlisted); }}
-          className="absolute top-1.5 sm:top-2 right-1.5 sm:right-2 p-1.5 sm:p-2 bg-white/80 backdrop-blur-sm rounded-full hover:bg-white transition-colors"
+          className="absolute top-3 right-3 p-2 bg-white/90 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
         >
-          <Heart className={`w-3 h-3 sm:w-4 sm:h-4 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
+          <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-[#C4785A] text-[#C4785A]' : 'text-[#2D2D2D]'}`} />
         </button>
-        
-        {/* Quick Add Button - Desktop only */}
-        <div className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity hidden sm:block">
-          {/* If product has options, go to product page instead of quick add */}
-          {(product.has_variants || product.variants?.length > 1 || 
-            (product.options?.length > 0 && product.options.some(o => o.values?.length > 1))) ? (
-            <Button 
-              onClick={(e) => { e.stopPropagation(); handleClick(); }}
-              className="w-full bg-white text-purple-700 hover:bg-white/90 text-xs sm:text-sm"
-              size="sm"
-            >
-              <Package className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
-              Select Options
-            </Button>
-          ) : (
-            <Button 
-              onClick={(e) => { e.stopPropagation(); onAddToCart(product); }}
-              className="w-full bg-white text-teal-700 hover:bg-white/90 text-xs sm:text-sm"
-              size="sm"
-            >
-              <ShoppingBag className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
-              Quick Add
-            </Button>
-          )}
-        </div>
       </div>
       
-      <div className="p-2 sm:p-3 md:p-4">
-        <h3 className="font-semibold text-gray-900 mb-0.5 sm:mb-1 line-clamp-1 text-xs sm:text-sm md:text-base">{product.title || product.name}</h3>
-        <p className="text-[10px] sm:text-xs md:text-sm text-gray-600 line-clamp-2 mb-2 sm:mb-3 hidden sm:block">{product.description}</p>
+      {/* Product Info - Clear hierarchy */}
+      <div className="space-y-2">
+        <h3 className="font-medium text-[#2D2D2D] text-sm sm:text-base line-clamp-2 leading-snug">
+          {title}
+        </h3>
         
-        <div className="flex items-center justify-between">
-          <div>
-            <span className="text-sm sm:text-base md:text-lg font-bold text-teal-600">₹{product.price?.toLocaleString()}</span>
-            {hasDiscount && (
-              <span className="text-[10px] sm:text-xs text-gray-400 line-through ml-1 hidden sm:inline">
-                ₹{product.compare_at_price?.toLocaleString()}
-              </span>
-            )}
-          </div>
-          
-          {/* Pawmeter Score or Rating */}
-          {product.pawmeter?.overall ? (
-            <PawmeterBadge score={product.pawmeter.overall} size="xs" />
-          ) : product.rating ? (
-            <div className="flex items-center gap-0.5 sm:gap-1 text-amber-500">
-              <Star className="w-3 h-3 sm:w-4 sm:h-4 fill-current" />
-              <span className="text-[10px] sm:text-sm font-medium">{product.rating}</span>
-            </div>
-          ) : null}
+        {/* Trust indicator - Aesop style */}
+        {product.pawmeter?.overall >= 4 && (
+          <p className="text-xs text-[#7A8B6F] flex items-center gap-1">
+            <CheckCircle className="w-3 h-3" />
+            Highly rated by pet parents
+          </p>
+        )}
+        
+        {/* Price - Apple clarity */}
+        <div className="flex items-baseline gap-2">
+          <span className="text-base sm:text-lg font-semibold text-[#2D2D2D]">
+            ₹{price.toLocaleString()}
+          </span>
+          {hasDiscount && (
+            <span className="text-sm text-[#9B9B9B] line-through">
+              ₹{comparePrice.toLocaleString()}
+            </span>
+          )}
         </div>
         
-        {/* Mobile Add Button */}
-        <Button 
+        {/* Add to cart - Clean CTA */}
+        <Button
           onClick={(e) => { e.stopPropagation(); onAddToCart(product); }}
-          className="w-full mt-2 bg-teal-600 hover:bg-teal-700 text-xs h-7 sm:hidden"
-          size="sm"
+          variant="outline"
+          className="w-full mt-2 border-[#2D2D2D] text-[#2D2D2D] hover:bg-[#2D2D2D] hover:text-white transition-colors text-sm"
+          data-testid={`add-to-cart-${product.id}`}
         >
-          <ShoppingBag className="w-3 h-3 mr-1" />
-          Add
+          Add to bag
         </Button>
       </div>
-    </Card>
+    </div>
   );
 };
 
+// =============================================================================
+// SERVICE CARD - Airbnb guided choice
+// =============================================================================
+const ServiceCard = ({ service }) => {
+  const navigate = useNavigate();
+  
+  return (
+    <div 
+      className="group cursor-pointer"
+      onClick={() => navigate(`/services/${service.pillar}/${service.id}`)}
+      data-testid={`service-card-${service.id}`}
+    >
+      <div className="relative aspect-[4/3] bg-[#F7F5F0] rounded-lg overflow-hidden mb-4">
+        {service.image_url ? (
+          <img
+            src={service.image_url}
+            alt={service.name}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#7A8B6F] to-[#5A6B4F]">
+            <Briefcase className="w-12 h-12 text-white/40" />
+          </div>
+        )}
+        
+        {service.is_bookable && (
+          <div className="absolute bottom-3 left-3">
+            <span className="bg-white/95 text-[#2D2D2D] text-xs font-medium px-2 py-1 rounded flex items-center gap-1">
+              <Calendar className="w-3 h-3" />
+              Instant booking
+            </span>
+          </div>
+        )}
+      </div>
+      
+      <div className="space-y-2">
+        <h3 className="font-medium text-[#2D2D2D] text-sm sm:text-base line-clamp-2">
+          {service.name}
+        </h3>
+        <p className="text-xs text-[#9B9B9B] line-clamp-2">
+          {service.description || 'Professional care for your companion'}
+        </p>
+        <div className="flex items-baseline gap-2">
+          {service.base_price > 0 ? (
+            <span className="text-base font-semibold text-[#2D2D2D]">
+              From ₹{service.base_price?.toLocaleString()}
+            </span>
+          ) : service.is_free ? (
+            <span className="text-base font-semibold text-[#7A8B6F]">Complimentary</span>
+          ) : (
+            <span className="text-sm text-[#9B9B9B]">Get a quote</span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// =============================================================================
+// PERSONAL PICKS SECTION - Airbnb personalization
+// =============================================================================
+const PersonalPicks = ({ pets, products }) => {
+  const [selectedPet, setSelectedPet] = useState(pets?.[0] || null);
+  const navigate = useNavigate();
+  
+  // Filter products for selected pet's breed
+  const recommendedProducts = useMemo(() => {
+    if (!selectedPet?.breed || !products.length) return products.slice(0, 6);
+    
+    const breed = selectedPet.breed.toLowerCase();
+    const breedSpecific = products.filter(p => 
+      p.is_breed_specific && 
+      (p.breed_metadata?.breeds?.some(b => b.toLowerCase().includes(breed)) ||
+       p.name?.toLowerCase().includes(breed) ||
+       p.title?.toLowerCase().includes(breed))
+    );
+    
+    // If we have breed-specific products, prioritize them
+    if (breedSpecific.length >= 3) {
+      return breedSpecific.slice(0, 6);
+    }
+    
+    // Otherwise, return a mix
+    return [...breedSpecific, ...products.filter(p => !breedSpecific.includes(p))].slice(0, 6);
+  }, [selectedPet, products]);
+
+  if (!pets?.length) return null;
+
+  return (
+    <section className="py-12 md:py-20 bg-[#F7F5F0]" data-testid="personal-picks-section">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+        {/* Header - Aesop language */}
+        <div className="max-w-2xl mb-10">
+          <p className="text-sm text-[#7A8B6F] font-medium tracking-wide uppercase mb-3">
+            Curated for {selectedPet?.name || 'your companion'}
+          </p>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-[#2D2D2D] leading-tight mb-4">
+            {selectedPet?.breed ? (
+              <>Products thoughtfully selected for {selectedPet.breed}s</>
+            ) : (
+              <>Products we think you'll love</>
+            )}
+          </h2>
+          <p className="text-[#9B9B9B]">
+            Based on {selectedPet?.name}'s profile, dietary needs, and what other {selectedPet?.breed || 'pet'} parents trust.
+          </p>
+        </div>
+        
+        {/* Pet selector - if multiple pets */}
+        {pets.length > 1 && (
+          <div className="flex gap-3 mb-8 overflow-x-auto pb-2">
+            {pets.map(pet => (
+              <button
+                key={pet.id || pet.name}
+                onClick={() => setSelectedPet(pet)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full border transition-all whitespace-nowrap ${
+                  selectedPet?.id === pet.id || selectedPet?.name === pet.name
+                    ? 'bg-[#2D2D2D] text-white border-[#2D2D2D]'
+                    : 'bg-white text-[#2D2D2D] border-[#E5E5E5] hover:border-[#2D2D2D]'
+                }`}
+                data-testid={`pet-selector-${pet.name}`}
+              >
+                <PawPrint className="w-4 h-4" />
+                <span className="text-sm font-medium">{pet.name}</span>
+                {pet.breed && <span className="text-xs opacity-70">({pet.breed})</span>}
+              </button>
+            ))}
+          </div>
+        )}
+        
+        {/* Product Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+          {recommendedProducts.map(product => (
+            <ProductCard 
+              key={product.id} 
+              product={product}
+              onAddToCart={(p) => {
+                toast({ title: `${p.title || p.name} added to bag` });
+              }}
+            />
+          ))}
+        </div>
+        
+        {/* See all - Airbnb style */}
+        <div className="mt-10 text-center">
+          <button
+            onClick={() => navigate('/shop?for=' + (selectedPet?.breed || 'all'))}
+            className="inline-flex items-center gap-2 text-[#2D2D2D] font-medium hover:gap-3 transition-all"
+          >
+            See all recommendations for {selectedPet?.name}
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+// =============================================================================
+// MAIN SHOP PAGE
+// =============================================================================
 const ShopPage = () => {
   const { user, token } = useAuth();
   const { addToCart } = useCart();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   
+  // State
   const [products, setProducts] = useState([]);
   const [services, setServices] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState('grid'); // grid or list
-  const [activeTab, setActiveTab] = useState('products'); // products or services
-  const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
-  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'all');
-  const [selectedParentCategory, setSelectedParentCategory] = useState(searchParams.get('parent') || '');
-  const [selectedPillar, setSelectedPillar] = useState(searchParams.get('pillar') || 'all');
-  const [activeFilters, setActiveFilters] = useState([]);
-  const [sortBy, setSortBy] = useState('featured');
-  const [priceRange, setPriceRange] = useState([0, 10000]);
-  const [showFilters, setShowFilters] = useState(false);
   const [pets, setPets] = useState([]);
-  const [categoryHierarchy, setCategoryHierarchy] = useState([]);
-  const [expandedCategory, setExpandedCategory] = useState(null);
-
-  // Fetch category hierarchy on mount
+  const [loading, setLoading] = useState(true);
+  const [activeView, setActiveView] = useState('products'); // products | services
+  const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [showSearch, setShowSearch] = useState(false);
+  
+  // Fetch products
   useEffect(() => {
-    const fetchHierarchy = async () => {
+    const fetchProducts = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/categories/hierarchy`);
+        const res = await fetch(`${API_URL}/api/products?limit=100`);
         if (res.ok) {
           const data = await res.json();
-          setCategoryHierarchy(data.categories || []);
-        }
-      } catch (err) {
-        console.debug('Could not fetch category hierarchy:', err);
-      }
-    };
-    fetchHierarchy();
-  }, []);
-
-  // Fetch products when search/filter changes
-  useEffect(() => {
-    const fetchProductsData = async () => {
-      setLoading(true);
-      try {
-        let url = `${API_URL}/api/products?limit=500`;
-        
-        // If there's a search query, pass it to backend for efficient filtering
-        if (searchQuery && searchQuery.trim()) {
-          url += `&search=${encodeURIComponent(searchQuery.trim())}`;
-        }
-        
-        // Use parent_category if selected (shows all subcategories)
-        if (selectedParentCategory && selectedParentCategory !== 'all') {
-          url += `&parent_category=${selectedParentCategory}`;
-        } else if (selectedCategory && selectedCategory !== 'all') {
-          url += `&category=${selectedCategory}`;
-        }
-        
-        // Add pillar filter
-        if (selectedPillar && selectedPillar !== 'all') {
-          url += `&pillar=${selectedPillar}`;
-        }
-        
-        const res = await fetch(url);
-        if (res.ok) {
-          const data = await res.json();
-          let productList = data.products || data || [];
-          
-          // Sort products
-          if (sortBy === 'price-low') {
-            productList.sort((a, b) => (a.price || 0) - (b.price || 0));
-          } else if (sortBy === 'price-high') {
-            productList.sort((a, b) => (b.price || 0) - (a.price || 0));
-          } else if (sortBy === 'newest') {
-            productList.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
-          }
-          
-          setProducts(productList);
+          setProducts(data.products || []);
         }
       } catch (err) {
         console.error('Failed to fetch products:', err);
@@ -335,20 +331,14 @@ const ShopPage = () => {
         setLoading(false);
       }
     };
-    
-    fetchProductsData();
-  }, [searchQuery, selectedCategory, selectedParentCategory, selectedPillar, sortBy]);
-
-  // Fetch shop services
+    fetchProducts();
+  }, []);
+  
+  // Fetch services
   useEffect(() => {
-    const fetchServicesData = async () => {
+    const fetchServices = async () => {
       try {
-        let url = `${API_URL}/api/service-box/services?pillar=shop&limit=50`;
-        if (searchQuery && searchQuery.trim()) {
-          url += `&search=${encodeURIComponent(searchQuery.trim())}`;
-        }
-        
-        const res = await fetch(url);
+        const res = await fetch(`${API_URL}/api/service-box/services?pillar=shop&limit=50`);
         if (res.ok) {
           const data = await res.json();
           setServices(data.services || []);
@@ -357,730 +347,265 @@ const ShopPage = () => {
         console.error('Failed to fetch services:', err);
       }
     };
-    
-    fetchServicesData();
-  }, [searchQuery]);
-
-  // Fetch user's pets for recommendations
+    fetchServices();
+  }, []);
+  
+  // Fetch user's pets
   useEffect(() => {
     if (token) {
+      const fetchPets = async () => {
+        try {
+          const res = await fetch(`${API_URL}/api/pets/my-pets`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            setPets(data.pets || []);
+          }
+        } catch (err) {
+          console.error('Failed to fetch pets:', err);
+        }
+      };
       fetchPets();
     }
   }, [token]);
-
-  const fetchPets = async () => {
-    try {
-      const res = await fetch(`${API_URL}/api/pets/my-pets`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setPets(data.pets || []);
-      }
-    } catch (err) {
-      console.error('Failed to fetch pets:', err);
-    }
-  };
-
-  // Filter products based on search and filters
+  
+  // Filter products
   const filteredProducts = useMemo(() => {
     let result = products;
     
-    // Search filter - intelligent search across multiple fields
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      result = result.filter(p => 
+      result = result.filter(p =>
         p.title?.toLowerCase().includes(query) ||
         p.name?.toLowerCase().includes(query) ||
-        p.description?.toLowerCase().includes(query) ||
-        p.tags?.some(t => t?.toLowerCase().includes(query)) ||
-        p.product_type?.toLowerCase().includes(query) ||
-        p.vendor?.toLowerCase().includes(query) ||
-        p.brand?.toLowerCase().includes(query) ||
-        p.pillar?.toLowerCase().includes(query) ||
-        p.category?.toLowerCase().includes(query) ||
-        p.subcategory?.toLowerCase().includes(query)
+        p.description?.toLowerCase().includes(query)
       );
     }
     
-    // Price filter
-    result = result.filter(p => 
-      (p.price || 0) >= priceRange[0] && (p.price || 0) <= priceRange[1]
-    );
-    
-    // Quick filters - multiple can be active at once
-    if (activeFilters.includes('best-sellers')) {
-      result = result.filter(p => 
-        p.tags?.some(t => t.toLowerCase().includes('best-seller') || t.toLowerCase().includes('bestseller'))
+    if (selectedCategory && selectedCategory !== 'all') {
+      result = result.filter(p =>
+        p.product_type?.toLowerCase() === selectedCategory.toLowerCase() ||
+        p.category?.toLowerCase() === selectedCategory.toLowerCase() ||
+        p.tags?.some(t => t?.toLowerCase().includes(selectedCategory.toLowerCase()))
       );
-    }
-    if (activeFilters.includes('new-arrivals')) {
-      result = result.filter(p => 
-        p.tags?.some(t => t.toLowerCase().includes('new'))
-      );
-    }
-    if (activeFilters.includes('on-sale')) {
-      result = result.filter(p => p.compare_at_price && p.compare_at_price > p.price);
-    }
-    if (activeFilters.includes('grain-free')) {
-      result = result.filter(p => 
-        p.tags?.some(t => t.toLowerCase().includes('grain-free') || t.toLowerCase().includes('grainfree'))
-      );
-    }
-    if (activeFilters.includes('organic')) {
-      result = result.filter(p => 
-        p.tags?.some(t => t.toLowerCase().includes('organic') || t.toLowerCase().includes('natural'))
-      );
-    }
-    if (activeFilters.includes('subscription')) {
-      result = result.filter(p => 
-        p.tags?.some(t => t.toLowerCase().includes('subscription') || t.toLowerCase().includes('autoship'))
-      );
-    }
-    
-    // High Pawmeter filter - only show products with Pawmeter ratings
-    if (activeFilters.includes('high-pawmeter')) {
-      result = result.filter(p => (p.pawmeter?.overall || 0) >= 3.0);
     }
     
     return result;
-  }, [products, searchQuery, priceRange, activeFilters]);
-
-  const handleAddToCart = (product) => {
+  }, [products, searchQuery, selectedCategory]);
+  
+  // Handle add to cart
+  const handleAddToCart = useCallback((product) => {
     addToCart({
       id: product.id,
-      title: product.title,
+      name: product.title || product.name,
       price: product.price,
       image: product.image || product.image_url || product.images?.[0],
       quantity: 1
     });
     toast({
-      title: '🛒 Added to Cart',
-      description: `${product.title} has been added to your cart`
+      title: 'Added to your bag',
+      description: `${product.title || product.name}`,
     });
-  };
-
-  const toggleFilter = (filterId) => {
-    setActiveFilters(prev => 
-      prev.includes(filterId) 
-        ? prev.filter(f => f !== filterId)
-        : [...prev, filterId]
-    );
-  };
+  }, [addToCart]);
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* SEO Meta Tags */}
+    <div className="min-h-screen bg-white" data-testid="shop-page">
       <SEOHead page="shop" path="/shop" />
       
-      {/* Hero Section */}
-      <section className="bg-gradient-to-r from-teal-600 to-emerald-600 text-white py-8 sm:py-10 px-4 sm:px-6">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6">
-            <div className="text-center md:text-left w-full md:w-auto">
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">
-                Pet Shop
-              </h1>
-              <p className="text-teal-100 max-w-lg text-sm sm:text-base">
-                Premium products handpicked for your furry family members.
-                {pets.length > 0 && ` Personalised for ${pets[0].name}!`}
+      {/* ================================================================== */}
+      {/* HERO SECTION - Apple clarity + Aesop language */}
+      {/* ================================================================== */}
+      <section className="bg-[#F7F5F0] pt-8 pb-12 md:pt-12 md:pb-20">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          {/* Tagline */}
+          <div className="max-w-3xl">
+            <p className="text-sm text-[#7A8B6F] font-medium tracking-wide uppercase mb-4">
+              The Doggy Company
+            </p>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold text-[#2D2D2D] leading-[1.1] mb-6">
+              The easiest place in India to do the right thing for your dog.
+            </h1>
+            <p className="text-base sm:text-lg text-[#9B9B9B] leading-relaxed mb-8 max-w-xl">
+              Every product here is chosen with care. Vet-approved, pet-parent trusted, 
+              and backed by our promise: if it's not right for your companion, we'll make it right.
+            </p>
+          </div>
+          
+          {/* Search - Minimal, Apple-style */}
+          <div className="max-w-xl">
+            <div className="relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9B9B9B]" />
+              <Input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="What are you looking for?"
+                className="pl-12 pr-4 py-4 text-base bg-white border-0 rounded-full shadow-sm focus:ring-2 focus:ring-[#2D2D2D]"
+                data-testid="shop-search"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[#9B9B9B] hover:text-[#2D2D2D]"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              )}
+            </div>
+          </div>
+          
+          {/* Trust badges - Aesop style */}
+          <div className="mt-10 flex flex-wrap gap-6 md:gap-10">
+            {TRUST_BADGES.map((badge, i) => (
+              <div key={i} className="flex items-center gap-2 text-[#2D2D2D]">
+                <badge.icon className="w-5 h-5 text-[#7A8B6F]" />
+                <span className="text-sm font-medium">{badge.text}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+      
+      {/* ================================================================== */}
+      {/* PERSONAL PICKS - Airbnb personalization */}
+      {/* ================================================================== */}
+      {pets.length > 0 && (
+        <PersonalPicks pets={pets} products={products} />
+      )}
+      
+      {/* ================================================================== */}
+      {/* MAIN SHOP SECTION */}
+      {/* ================================================================== */}
+      <section className="py-12 md:py-20">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6">
+          {/* Section header */}
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
+            <div>
+              <h2 className="text-2xl sm:text-3xl font-semibold text-[#2D2D2D] mb-2">
+                {activeView === 'products' ? 'All products' : 'Services'}
+              </h2>
+              <p className="text-[#9B9B9B]">
+                {activeView === 'products' 
+                  ? `${filteredProducts.length} carefully curated items`
+                  : `${services.length} professional services`
+                }
               </p>
             </div>
             
-            {/* Search Bar */}
-            <div className="w-full md:w-96 mt-4 md:mt-0">
-              <div className="relative">
-                <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
-                <Input
-                  value={searchQuery}
-                  onChange={(e) => {
-                    const value = e.target.value;
-                    setSearchQuery(value);
-                    // Update URL params for shareable links
-                    setSearchParams(prev => {
-                      if (value) prev.set('q', value);
-                      else prev.delete('q');
-                      return prev;
-                    });
-                  }}
-                  placeholder="Search treats, toys, food..."
-                  className="pl-10 sm:pl-12 pr-8 sm:pr-10 py-3 sm:py-4 text-sm sm:text-base rounded-full bg-white text-gray-900 border-0 shadow-lg"
-                  data-testid="shop-search"
-                />
-                {searchQuery && (
-                  <button
-                    onClick={() => {
-                      setSearchQuery('');
-                      setSearchParams(prev => {
-                        prev.delete('q');
-                        return prev;
-                      });
-                    }}
-                    className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  >
-                    <X className="w-4 h-4 sm:w-5 sm:h-5" />
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-          
-          {/* Pillar Filter Pills - Services Hub style */}
-          <div className="mt-4 sm:mt-6 flex flex-wrap gap-1.5 sm:gap-2 justify-center md:justify-start">
-            {PILLAR_FILTERS.map((pillarItem) => (
+            {/* View toggle - Apple simplicity */}
+            <div className="flex items-center gap-1 bg-[#F7F5F0] p-1 rounded-full">
               <button
-                key={pillarItem.id}
-                onClick={() => {
-                  setSelectedPillar(pillarItem.id);
-                  setSearchParams(prev => {
-                    if (pillarItem.id === 'all') prev.delete('pillar');
-                    else prev.set('pillar', pillarItem.id);
-                    return prev;
-                  });
-                }}
-                className={`px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all ${
-                  selectedPillar === pillarItem.id
-                    ? 'bg-white text-teal-700 shadow-md'
-                    : 'bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm'
-                }`}
-                data-testid={`pillar-pill-${pillarItem.id}`}
-              >
-                <span className="mr-0.5 sm:mr-1">{pillarItem.icon}</span>
-                <span className="hidden sm:inline">{pillarItem.label}</span>
-                <span className="sm:hidden">{pillarItem.label.split(' ')[0]}</span>
-              </button>
-            ))}
-          </div>
-          
-          {/* Quick Stats - Services Hub style */}
-          <div className="mt-3 sm:mt-4 flex flex-wrap gap-3 sm:gap-4 justify-center md:justify-start text-xs sm:text-sm text-teal-100">
-            <span className="flex items-center gap-1">
-              <Package className="w-3 h-3 sm:w-4 sm:h-4" />
-              {products.length} Products
-            </span>
-            <span className="flex items-center gap-1">
-              <Tag className="w-3 h-3 sm:w-4 sm:h-4" />
-              14 Pillars
-            </span>
-          </div>
-        </div>
-      </section>
-
-      {/* Personalized Picks for User's Pet */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6 bg-white border-b">
-        <PersonalizedPicks pillar="shop" maxProducts={6} />
-      </div>
-
-      {/* Category Navigation with Subcategories */}
-      <section className="bg-white border-b sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
-          {/* Main Categories */}
-          <div className="flex gap-1.5 sm:gap-2 overflow-x-auto pb-2 scrollbar-hide">
-            {/* All Products */}
-            <button
-              onClick={() => {
-                setSelectedCategory('all');
-                setSelectedParentCategory('');
-                setExpandedCategory(null);
-              }}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all ${
-                selectedCategory === 'all' && !selectedParentCategory
-                  ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-md'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-              }`}
-            >
-              <ShoppingBag className="w-4 h-4" />
-              All Products
-            </button>
-            
-            {/* Dynamic Categories from API */}
-            {categoryHierarchy.map((cat) => (
-              <div key={cat.id} className="relative group">
-                <button
-                  onClick={() => {
-                    setSelectedParentCategory(cat.id);
-                    setSelectedCategory('all');
-                    setExpandedCategory(expandedCategory === cat.id ? null : cat.id);
-                  }}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all ${
-                    selectedParentCategory === cat.id
-                      ? 'bg-gradient-to-r from-teal-500 to-emerald-500 text-white shadow-md'
-                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                  }`}
-                >
-                  <span>{cat.emoji}</span>
-                  {cat.name}
-                  <span className="text-xs opacity-70">({cat.count})</span>
-                  {cat.subcategories?.length > 0 && (
-                    <ChevronDown className={`w-3 h-3 transition-transform ${expandedCategory === cat.id ? 'rotate-180' : ''}`} />
-                  )}
-                </button>
-                
-                {/* Subcategory Dropdown */}
-                {cat.subcategories?.length > 0 && expandedCategory === cat.id && (
-                  <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-xl border py-2 min-w-48 z-50">
-                    <button
-                      onClick={() => {
-                        setSelectedParentCategory(cat.id);
-                        setSelectedCategory('all');
-                      }}
-                      className={`w-full text-left px-4 py-2 hover:bg-gray-50 flex justify-between items-center ${
-                        selectedParentCategory === cat.id && selectedCategory === 'all' ? 'bg-teal-50 text-teal-700' : ''
-                      }`}
-                    >
-                      <span>All {cat.name}</span>
-                      <span className="text-xs text-gray-400">{cat.count}</span>
-                    </button>
-                    {cat.subcategories.map((sub) => (
-                      <button
-                        key={sub.id}
-                        onClick={() => {
-                          setSelectedCategory(sub.db_categories?.[0] || sub.id);
-                          setSelectedParentCategory('');
-                          setExpandedCategory(null);
-                        }}
-                        className={`w-full text-left px-4 py-2 hover:bg-gray-50 flex justify-between items-center ${
-                          selectedCategory === (sub.db_categories?.[0] || sub.id) ? 'bg-teal-50 text-teal-700' : ''
-                        }`}
-                      >
-                        <span>{sub.name}</span>
-                        <span className="text-xs text-gray-400">{sub.count}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-          
-          {/* Active Category Breadcrumb */}
-          {(selectedParentCategory || (selectedCategory && selectedCategory !== 'all')) && (
-            <div className="mt-2 flex items-center gap-2 text-sm text-gray-600">
-              <button onClick={() => { setSelectedCategory('all'); setSelectedParentCategory(''); }} className="hover:text-teal-600">
-                Shop
-              </button>
-              <ChevronRight className="w-4 h-4" />
-              {selectedParentCategory && (
-                <>
-                  <span className="font-medium text-teal-700">
-                    {categoryHierarchy.find(c => c.id === selectedParentCategory)?.emoji}{' '}
-                    {categoryHierarchy.find(c => c.id === selectedParentCategory)?.name}
-                  </span>
-                  {selectedCategory !== 'all' && (
-                    <>
-                      <ChevronRight className="w-4 h-4" />
-                      <span className="text-gray-900">{selectedCategory}</span>
-                    </>
-                  )}
-                </>
-              )}
-              {!selectedParentCategory && selectedCategory !== 'all' && (
-                <span className="font-medium text-teal-700">{selectedCategory}</span>
-              )}
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="flex gap-8">
-          {/* Filters Sidebar - Desktop */}
-          <aside className="hidden lg:block w-64 flex-shrink-0">
-            <Card className="p-4 sticky top-24">
-              <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <SlidersHorizontal className="w-5 h-5" />
-                Filters
-              </h3>
-              
-              {/* Pillar Filter */}
-              <div className="mb-6">
-                <h4 className="font-semibold text-gray-900 mb-3 text-sm">Shop by Pillar</h4>
-                <div className="space-y-1">
-                  {PILLAR_FILTERS.map((pillar) => (
-                    <button
-                      key={pillar.id}
-                      onClick={() => {
-                        setSelectedPillar(pillar.id);
-                        setSearchParams(prev => {
-                          if (pillar.id === 'all') prev.delete('pillar');
-                          else prev.set('pillar', pillar.id);
-                          return prev;
-                        });
-                      }}
-                      className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all flex items-center gap-2 ${
-                        selectedPillar === pillar.id
-                          ? 'bg-teal-100 text-teal-700 font-medium'
-                          : 'hover:bg-gray-100 text-gray-700'
-                      }`}
-                      data-testid={`pillar-filter-${pillar.id}`}
-                    >
-                      <span>{pillar.icon}</span>
-                      <span>{pillar.label}</span>
-                      {selectedPillar === pillar.id && (
-                        <Check className="w-4 h-4 ml-auto" />
-                      )}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              
-              {/* Quick Filters */}
-              <div className="space-y-2 mb-6 border-t pt-4">
-                <h4 className="font-semibold text-gray-900 mb-3 text-sm">Quick Filters</h4>
-                {QUICK_FILTERS.map((filter) => (
-                  <button
-                    key={filter.id}
-                    onClick={() => toggleFilter(filter.id)}
-                    className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${
-                      activeFilters.includes(filter.id)
-                        ? 'bg-teal-100 text-teal-700 font-medium'
-                        : 'hover:bg-gray-100 text-gray-700'
-                    }`}
-                  >
-                    {filter.label}
-                    {activeFilters.includes(filter.id) && (
-                      <Check className="w-4 h-4 inline ml-2" />
-                    )}
-                  </button>
-                ))}
-              </div>
-              
-              {/* Price Range */}
-              <div className="border-t pt-4">
-                <h4 className="font-semibold text-gray-900 mb-3">Price Range</h4>
-                <div className="flex items-center gap-2">
-                  <Input
-                    type="number"
-                    value={priceRange[0]}
-                    onChange={(e) => setPriceRange([Number(e.target.value), priceRange[1]])}
-                    className="w-20 text-sm"
-                    placeholder="Min"
-                  />
-                  <span className="text-gray-400">-</span>
-                  <Input
-                    type="number"
-                    value={priceRange[1]}
-                    onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])}
-                    className="w-20 text-sm"
-                    placeholder="Max"
-                  />
-                </div>
-              </div>
-              
-              {/* Clear Filters */}
-              {(activeFilters.length > 0 || selectedPillar !== 'all') && (
-                <Button 
-                  variant="outline" 
-                  className="w-full mt-4"
-                  onClick={() => {
-                    setActiveFilters([]);
-                    setSelectedPillar('all');
-                    setSearchParams(prev => {
-                      prev.delete('pillar');
-                      return prev;
-                    });
-                  }}
-                >
-                  Clear All Filters
-                </Button>
-              )}
-            </Card>
-          </aside>
-
-          {/* Products Grid */}
-          <main className="flex-1">
-            {/* Products/Services Tab Toggle */}
-            <div className="flex items-center gap-2 mb-4 sm:mb-6 border-b pb-3 sm:pb-4">
-              <button
-                onClick={() => setActiveTab('products')}
-                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all ${
-                  activeTab === 'products'
-                    ? 'bg-teal-600 text-white shadow-md'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                onClick={() => setActiveView('products')}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                  activeView === 'products'
+                    ? 'bg-white text-[#2D2D2D] shadow-sm'
+                    : 'text-[#9B9B9B] hover:text-[#2D2D2D]'
                 }`}
                 data-testid="tab-products"
               >
-                <Package className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 Products ({filteredProducts.length})
               </button>
               <button
-                onClick={() => setActiveTab('services')}
-                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium transition-all ${
-                  activeTab === 'services'
-                    ? 'bg-teal-600 text-white shadow-md'
-                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                onClick={() => setActiveView('services')}
+                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                  activeView === 'services'
+                    ? 'bg-white text-[#2D2D2D] shadow-sm'
+                    : 'text-[#9B9B9B] hover:text-[#2D2D2D]'
                 }`}
                 data-testid="tab-services"
               >
-                <Briefcase className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 Services ({services.length})
               </button>
             </div>
-            
-            {/* Toolbar */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
-              <p className="text-xs sm:text-sm text-gray-600">
-                {activeTab === 'products' ? filteredProducts.length : services.length} {activeTab}
-                {searchQuery && ` for "${searchQuery}"`}
-              </p>
-              
-              <div className="flex items-center gap-2 sm:gap-4">
-                {/* Mobile Filter Button */}
-                <Button 
-                  variant="outline" 
-                  className="lg:hidden text-xs sm:text-sm h-8 sm:h-10"
-                  onClick={() => setShowFilters(true)}
-                >
-                  <Filter className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                  Filters
-                </Button>
-                
-                {/* Sort */}
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="px-2 sm:px-3 py-1.5 sm:py-2 border rounded-lg text-xs sm:text-sm"
-                >
-                  <option value="featured">Featured</option>
-                  <option value="price-low">Price: Low to High</option>
-                  <option value="price-high">Price: High to Low</option>
-                  <option value="newest">Newest First</option>
-                </select>
-                
-                {/* View Toggle */}
-                <div className="hidden md:flex border rounded-lg overflow-hidden">
-                  <button
-                    onClick={() => setViewMode('grid')}
-                    className={`p-1.5 sm:p-2 ${viewMode === 'grid' ? 'bg-purple-100 text-purple-600' : 'hover:bg-gray-100'}`}
-                  >
-                    <Grid className="w-4 h-4 sm:w-5 sm:h-5" />
-                  </button>
-                  <button
-                    onClick={() => setViewMode('list')}
-                    className={`p-1.5 sm:p-2 ${viewMode === 'list' ? 'bg-purple-100 text-purple-600' : 'hover:bg-gray-100'}`}
-                  >
-                    <List className="w-4 h-4 sm:w-5 sm:h-5" />
-                  </button>
+          </div>
+          
+          {/* Products Grid */}
+          {activeView === 'products' && (
+            <>
+              {loading ? (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
+                  {[...Array(8)].map((_, i) => (
+                    <div key={i} className="animate-pulse">
+                      <div className="aspect-square bg-[#F7F5F0] rounded-lg mb-4"></div>
+                      <div className="h-4 bg-[#F7F5F0] rounded w-3/4 mb-2"></div>
+                      <div className="h-4 bg-[#F7F5F0] rounded w-1/2"></div>
+                    </div>
+                  ))}
                 </div>
-              </div>
-            </div>
-
-            {/* Active Filters Pills */}
-            {(activeFilters.length > 0 || selectedPillar !== 'all') && (
-              <div className="flex flex-wrap gap-2 mb-4">
-                {/* Pillar filter pill */}
-                {selectedPillar !== 'all' && (
-                  <Badge 
-                    className="bg-teal-100 text-teal-700 px-3 py-1 cursor-pointer hover:bg-teal-200"
-                    onClick={() => {
-                      setSelectedPillar('all');
-                      setSearchParams(prev => {
-                        prev.delete('pillar');
-                        return prev;
-                      });
-                    }}
+              ) : filteredProducts.length === 0 ? (
+                <div className="text-center py-20">
+                  <Package className="w-16 h-16 text-[#E5E5E5] mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-[#2D2D2D] mb-2">No products found</h3>
+                  <p className="text-[#9B9B9B] mb-6">Try adjusting your search or browse all products</p>
+                  <Button
+                    onClick={() => { setSearchQuery(''); setSelectedCategory('all'); }}
+                    variant="outline"
+                    className="border-[#2D2D2D] text-[#2D2D2D]"
                   >
-                    {PILLAR_FILTERS.find(p => p.id === selectedPillar)?.icon} {PILLAR_FILTERS.find(p => p.id === selectedPillar)?.label}
-                    <X className="w-3 h-3 ml-2" />
-                  </Badge>
-                )}
-                {activeFilters.map(filterId => {
-                  const filter = QUICK_FILTERS.find(f => f.id === filterId);
-                  return (
-                    <Badge 
-                      key={filterId}
-                      className="bg-purple-100 text-purple-700 px-3 py-1 cursor-pointer hover:bg-purple-200"
-                      onClick={() => toggleFilter(filterId)}
-                    >
-                      {filter?.label}
-                      <X className="w-3 h-3 ml-2" />
-                    </Badge>
-                  );
-                })}
-              </div>
-            )}
-
-            {/* Loading State */}
-            {loading ? (
-              <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-                  <Card key={i} className="animate-pulse">
-                    <div className="h-48 bg-gray-200"></div>
-                    <div className="p-4 space-y-3">
-                      <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                      <div className="h-3 bg-gray-200 rounded w-full"></div>
-                      <div className="h-6 bg-gray-200 rounded w-1/2"></div>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-            ) : activeTab === 'products' && filteredProducts.length === 0 ? (
-              <Card className="p-8 sm:p-12 text-center">
-                <Package className="w-12 h-12 sm:w-16 sm:h-16 text-gray-300 mx-auto mb-3 sm:mb-4" />
-                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">No products found</h3>
-                <p className="text-sm sm:text-base text-gray-600 mb-4">Try adjusting your filters or search query</p>
-                <Button onClick={() => { setSearchQuery(''); setActiveFilters([]); setSelectedCategory('all'); }}>
-                  Clear All Filters
-                </Button>
-              </Card>
-            ) : activeTab === 'products' ? (
-              <div className={viewMode === 'grid' 
-                ? 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-6' 
-                : 'space-y-3 sm:space-y-4'
-              }>
-                {filteredProducts.map((product) => (
-                  <ProductCard 
-                    key={product.id} 
-                    product={product} 
-                    onAddToCart={handleAddToCart}
-                    viewMode={viewMode}
-                  />
-                ))}
-              </div>
-            ) : services.length === 0 ? (
-              <Card className="p-8 sm:p-12 text-center">
-                <Briefcase className="w-12 h-12 sm:w-16 sm:h-16 text-gray-300 mx-auto mb-3 sm:mb-4" />
-                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">No services found</h3>
-                <p className="text-sm sm:text-base text-gray-600 mb-4">Shop services are being curated</p>
-              </Card>
-            ) : (
-              /* Services Grid */
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
-                {services.map((service) => (
-                  <Card 
-                    key={service.id} 
-                    className="overflow-hidden hover:shadow-lg transition-all group cursor-pointer"
-                    onClick={() => navigate(`/services/${service.pillar}/${service.id}`)}
-                    data-testid={`service-card-${service.id}`}
-                  >
-                    {/* Service Image */}
-                    <div className="relative h-32 sm:h-40 overflow-hidden bg-gradient-to-br from-teal-500 to-emerald-600">
-                      {service.image_url ? (
-                        <img 
-                          src={service.image_url} 
-                          alt={service.name}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <Briefcase className="w-12 h-12 sm:w-16 sm:h-16 text-white/30" />
-                        </div>
-                      )}
-                      {service.is_bookable && (
-                        <Badge className="absolute top-2 right-2 bg-green-500 text-white text-xs">
-                          <Calendar className="w-3 h-3 mr-1" />
-                          Bookable
-                        </Badge>
-                      )}
-                      {service.is_free && (
-                        <Badge className="absolute top-2 left-2 bg-amber-500 text-white text-xs">
-                          Free
-                        </Badge>
-                      )}
-                    </div>
-                    
-                    {/* Service Info */}
-                    <div className="p-3 sm:p-4">
-                      <div className="flex items-start justify-between gap-2 mb-2">
-                        <h3 className="font-semibold text-gray-900 text-sm sm:text-base line-clamp-2 group-hover:text-teal-600 transition-colors">
-                          {service.name}
-                        </h3>
-                        <Badge variant="outline" className="shrink-0 text-xs">
-                          {service.pillar}
-                        </Badge>
-                      </div>
-                      
-                      <p className="text-xs sm:text-sm text-gray-600 mb-3 line-clamp-2">
-                        {service.description || 'Professional pet service'}
-                      </p>
-                      
-                      <div className="flex items-center justify-between">
-                        <div>
-                          {service.base_price > 0 ? (
-                            <p className="font-bold text-teal-600 text-sm sm:text-base">
-                              ₹{service.base_price?.toLocaleString()}
-                              {service.duration_minutes && (
-                                <span className="text-xs text-gray-500 font-normal ml-1">
-                                  / {service.duration_minutes}min
-                                </span>
-                              )}
-                            </p>
-                          ) : service.is_free ? (
-                            <p className="font-bold text-green-600 text-sm sm:text-base">Free</p>
-                          ) : (
-                            <p className="text-xs sm:text-sm text-gray-500">Contact for pricing</p>
-                          )}
-                        </div>
-                        
-                        {service.available_cities?.length > 0 && (
-                          <div className="flex items-center text-xs text-gray-500">
-                            <MapPin className="w-3 h-3 mr-1" />
-                            {service.available_cities.length} cities
-                          </div>
-                        )}
-                      </div>
-                      
-                      {/* Quick Book Button */}
-                      <Button 
-                        className="w-full mt-3 bg-teal-600 hover:bg-teal-700 text-xs sm:text-sm h-8 sm:h-9"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/services/${service.pillar}/${service.id}?book=true`);
-                        }}
-                      >
-                        {service.is_bookable ? 'Book Now' : 'Learn More'}
-                      </Button>
-                    </div>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </main>
+                    Clear filters
+                  </Button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
+                  {filteredProducts.map(product => (
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      onAddToCart={handleAddToCart}
+                    />
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+          
+          {/* Services Grid */}
+          {activeView === 'services' && (
+            <>
+              {services.length === 0 ? (
+                <div className="text-center py-20">
+                  <Briefcase className="w-16 h-16 text-[#E5E5E5] mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-[#2D2D2D] mb-2">Services coming soon</h3>
+                  <p className="text-[#9B9B9B]">We're curating the best services for your companion</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+                  {services.map(service => (
+                    <ServiceCard key={service.id} service={service} />
+                  ))}
+                </div>
+              )}
+            </>
+          )}
         </div>
-      </div>
-
-      {/* Mira Floating Chat Widget */}
-      <MiraChatWidget pillar="shop" />
-
-      {/* Mobile Filters Drawer */}
-      {showFilters && (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          <div className="absolute inset-0 bg-black/50" onClick={() => setShowFilters(false)}></div>
-          <div className="absolute right-0 top-0 h-full w-72 sm:w-80 bg-white p-4 sm:p-6 overflow-y-auto">
-            <div className="flex items-center justify-between mb-4 sm:mb-6">
-              <h3 className="font-bold text-gray-900 text-sm sm:text-base">Filters</h3>
-              <button onClick={() => setShowFilters(false)}>
-                <X className="w-5 h-5 sm:w-6 sm:h-6" />
-              </button>
-            </div>
-            
-            {/* Quick Filters */}
-            <div className="space-y-1.5 sm:space-y-2 mb-4 sm:mb-6">
-              {QUICK_FILTERS.map((filter) => (
-                <button
-                  key={filter.id}
-                  onClick={() => toggleFilter(filter.id)}
-                  className={`w-full text-left px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition-all ${
-                    activeFilters.includes(filter.id)
-                      ? 'bg-purple-100 text-purple-700 font-medium'
-                      : 'hover:bg-gray-100 text-gray-700'
-                  }`}
-                >
-                  {filter.label}
-                </button>
-              ))}
-            </div>
-            
-            <Button 
-              onClick={() => setShowFilters(false)}
-              className="w-full bg-purple-600 hover:bg-purple-700 text-sm"
-            >
-              Apply Filters
-            </Button>
+      </section>
+      
+      {/* ================================================================== */}
+      {/* PROMISE SECTION - Aesop trust */}
+      {/* ================================================================== */}
+      <section className="py-16 md:py-24 bg-[#2D2D2D] text-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold mb-6">
+            Our promise to you and your companion
+          </h2>
+          <p className="text-lg text-white/80 leading-relaxed mb-10 max-w-2xl mx-auto">
+            Every product in our collection has been reviewed by veterinarians, tested by real pets, 
+            and approved by the families who love them. If something isn't right, tell us—we'll make it right, always.
+          </p>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+            {TRUST_BADGES.map((badge, i) => (
+              <div key={i} className="text-center">
+                <badge.icon className="w-8 h-8 mx-auto mb-3 text-[#7A8B6F]" />
+                <p className="text-sm font-medium mb-1">{badge.text}</p>
+                <p className="text-xs text-white/60">{badge.detail}</p>
+              </div>
+            ))}
           </div>
         </div>
-      )}
+      </section>
+      
+      {/* Mira Widget */}
+      <MiraChatWidget pillar="shop" />
     </div>
   );
 };
