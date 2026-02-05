@@ -268,6 +268,10 @@ const UnifiedProductBox = () => {
       setQuickEditValue(product.pricing?.base_price || product.price || 0);
     } else if (type === 'pillars') {
       setQuickEditValue(product.pillars || [product.primary_pillar].filter(Boolean));
+    } else if (type === 'name') {
+      setQuickEditValue(product.name || '');
+    } else if (type === 'mira_hint') {
+      setQuickEditValue(product.mira_hint || '');
     }
   };
 
