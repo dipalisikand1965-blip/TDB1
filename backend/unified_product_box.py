@@ -621,7 +621,10 @@ async def get_all_products(
     status: Optional[str] = None,
     reward_eligible: Optional[bool] = None,
     search: Optional[str] = None,
-    shipping: Optional[str] = None
+    shipping: Optional[str] = None,
+    breed: Optional[str] = None,
+    size: Optional[str] = None,
+    has_mira_hint: Optional[str] = None
 ):
     """Get all products with filtering"""
     if db is None:
@@ -648,6 +651,34 @@ async def get_all_products(
             query["is_pan_india_shippable"] = True
         elif shipping == "local":
             query["is_pan_india_shippable"] = {"$ne": True}
+    
+    # Breed Intelligence Filters
+    if breed:
+        query["$or"] = [
+            {"breed_metadata.breeds": breed},
+            {"breed_metadata.breeds": {"$size": 0}},  # Universal products
+            {"breed_tags": {"$regex": breed, "$options": "i"}}
+        ]
+    if size:
+        size_query = {
+            "$or": [
+                {"breed_metadata.sizes": size},
+                {"breed_metadata.sizes": {"$size": 0}}  # Universal products
+            ]
+        }
+        if "$and" not in query:
+            query["$and"] = []
+        query["$and"].append(size_query)
+    if has_mira_hint:
+        if has_mira_hint == "true":
+            query["mira_hint"] = {"$exists": True, "$ne": "", "$ne": None}
+        elif has_mira_hint == "false":
+            query["$or"] = [
+                {"mira_hint": {"$exists": False}},
+                {"mira_hint": ""},
+                {"mira_hint": None}
+            ]
+    
     if search:
         search_query = {
             "$or": [
