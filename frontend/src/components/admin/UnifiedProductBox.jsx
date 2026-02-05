@@ -524,22 +524,23 @@ const UnifiedProductBox = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" data-testid="product-box-container">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+          <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2" data-testid="product-box-title">
             <Package className="w-7 h-7 text-purple-600" />
             Unified Product Box
           </h2>
           <p className="text-gray-500 text-sm">Single source of truth for all products, rewards & experiences</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Button 
             onClick={seedAll} 
             variant="outline" 
             disabled={seeding}
             className="border-amber-300 text-amber-700 hover:bg-amber-50"
+            data-testid="seed-products-btn"
           >
             {seeding ? (
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -553,6 +554,7 @@ const UnifiedProductBox = () => {
             variant="outline" 
             disabled={exporting}
             className="border-green-300 text-green-700 hover:bg-green-50"
+            data-testid="export-products-btn"
           >
             {exporting ? (
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -561,38 +563,70 @@ const UnifiedProductBox = () => {
             )}
             Export CSV
           </Button>
-          <Button onClick={createNewProduct} className="bg-purple-600 hover:bg-purple-700">
+          <Button onClick={createNewProduct} className="bg-purple-600 hover:bg-purple-700" data-testid="add-product-btn">
             <Plus className="w-4 h-4 mr-2" /> Add Product
           </Button>
         </div>
       </div>
 
-      {/* Stats Overview */}
+      {/* Stats Overview - Enhanced with Icons */}
       {stats && (
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
-          <Card className="p-4 bg-gradient-to-br from-purple-50 to-white">
-            <p className="text-xs text-gray-500 mb-1">Total Products</p>
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3" data-testid="product-stats-cards">
+          <Card className="p-4 bg-gradient-to-br from-purple-50 to-white border-purple-100 hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-2 mb-1">
+              <Package className="w-4 h-4 text-purple-500" />
+              <p className="text-xs text-gray-500 font-medium">Total</p>
+            </div>
             <p className="text-2xl font-bold text-purple-600">{stats.total}</p>
           </Card>
-          <Card className="p-4 bg-gradient-to-br from-green-50 to-white">
-            <p className="text-xs text-gray-500 mb-1">Active</p>
+          <Card className="p-4 bg-gradient-to-br from-green-50 to-white border-green-100 hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-2 mb-1">
+              <Check className="w-4 h-4 text-green-500" />
+              <p className="text-xs text-gray-500 font-medium">Active</p>
+            </div>
             <p className="text-2xl font-bold text-green-600">{stats.by_status?.active || 0}</p>
           </Card>
-          <Card className="p-4 bg-gradient-to-br from-amber-50 to-white">
-            <p className="text-xs text-gray-500 mb-1">Reward Eligible</p>
+          <Card className="p-4 bg-gradient-to-br from-amber-50 to-white border-amber-100 hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-2 mb-1">
+              <Gift className="w-4 h-4 text-amber-500" />
+              <p className="text-xs text-gray-500 font-medium">Rewards</p>
+            </div>
             <p className="text-2xl font-bold text-amber-600">{stats.rewards?.eligible || 0}</p>
           </Card>
-          <Card className="p-4 bg-gradient-to-br from-blue-50 to-white">
-            <p className="text-xs text-gray-500 mb-1">Mira Visible</p>
+          <Card className="p-4 bg-gradient-to-br from-blue-50 to-white border-blue-100 hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-2 mb-1">
+              <Bot className="w-4 h-4 text-blue-500" />
+              <p className="text-xs text-gray-500 font-medium">Mira</p>
+            </div>
             <p className="text-2xl font-bold text-blue-600">{stats.mira?.visible || 0}</p>
           </Card>
-          <Card className="p-4 bg-gradient-to-br from-pink-50 to-white">
-            <p className="text-xs text-gray-500 mb-1">Mira Suggestable</p>
+          <Card className="p-4 bg-gradient-to-br from-pink-50 to-white border-pink-100 hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-2 mb-1">
+              <Sparkles className="w-4 h-4 text-pink-500" />
+              <p className="text-xs text-gray-500 font-medium">Suggest</p>
+            </div>
             <p className="text-2xl font-bold text-pink-600">{stats.mira?.suggestable || 0}</p>
           </Card>
-          <Card className="p-4 bg-gradient-to-br from-gray-50 to-white">
-            <p className="text-xs text-gray-500 mb-1">Draft</p>
+          <Card className="p-4 bg-gradient-to-br from-gray-50 to-white border-gray-100 hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-2 mb-1">
+              <Eye className="w-4 h-4 text-gray-500" />
+              <p className="text-xs text-gray-500 font-medium">Draft</p>
+            </div>
             <p className="text-2xl font-bold text-gray-600">{stats.by_status?.draft || 0}</p>
+          </Card>
+          <Card className="p-4 bg-gradient-to-br from-red-50 to-white border-red-100 hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-2 mb-1">
+              <AlertTriangle className="w-4 h-4 text-red-500" />
+              <p className="text-xs text-gray-500 font-medium">Low Stock</p>
+            </div>
+            <p className="text-2xl font-bold text-red-600">{stats.low_stock || 0}</p>
+          </Card>
+          <Card className="p-4 bg-gradient-to-br from-indigo-50 to-white border-indigo-100 hover:shadow-md transition-shadow">
+            <div className="flex items-center gap-2 mb-1">
+              <BarChart3 className="w-4 h-4 text-indigo-500" />
+              <p className="text-xs text-gray-500 font-medium">Sold</p>
+            </div>
+            <p className="text-2xl font-bold text-indigo-600">{stats.total_sold || 0}</p>
           </Card>
         </div>
       )}
