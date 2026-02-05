@@ -55,7 +55,8 @@ const CITIES = [
   { id: 'bangalore', label: 'Bangalore' },
   { id: 'chennai', label: 'Chennai' },
   { id: 'hyderabad', label: 'Hyderabad' },
-  { id: 'pune', label: 'Pune' }
+  { id: 'pune', label: 'Pune' },
+  { id: 'other', label: 'Other' }
 ];
 
 const ServicesPage = () => {
