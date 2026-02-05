@@ -1131,16 +1131,6 @@ const ProductListing = ({ category = 'all' }) => {
             </div>
           );
         })()}
-              <p className="text-xs text-purple-600 mt-2 flex items-center gap-1">
-                <Shield className="w-3 h-3" />
-                Showing products that support: {activeSupportFilters.map(id => {
-                  const filter = supportFilters.find(f => f.id === id);
-                  return filter?.label;
-                }).join(', ')}
-              </p>
-            )}
-          </div>
-        )}
 
         {/* Pet Soul Filtering Banner - Show when allergies are being filtered */}
         {activePet && petAllergies.length > 0 && !petAllergies.includes('No') && !petAllergies.includes('None') && (
