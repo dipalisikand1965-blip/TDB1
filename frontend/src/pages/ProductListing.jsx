@@ -140,7 +140,6 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
   const [showFilters, setShowFilters] = useState(false);
   
   // UI state
-  const [hiddenCount, setHiddenCount] = useState(0);
   const [showPetSelector, setShowPetSelector] = useState(false);
   
   // Get category from props or URL
