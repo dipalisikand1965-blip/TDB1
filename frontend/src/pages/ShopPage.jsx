@@ -720,34 +720,70 @@ const ShopPage = () => {
   const handleLoadMore = () => setDisplayCount(prev => prev + 24);
   const hasMore = displayCount < filteredProducts.length;
   const petName = selectedPet?.name || '';
+  const petPhoto = selectedPet?.photo_url || selectedPet?.image_url || selectedPet?.image;
 
   return (
     <div className="min-h-screen bg-[#F9F6F1]" data-testid="shop-page">
       <SEOHead page="shop" path="/shop" />
       
-      {/* Pet Bar */}
+      {/* Pet Bar with Dropdown */}
       <PetBar 
         pet={selectedPet} 
-        onChangePet={() => navigate('/my-pets')}
+        pets={pets}
+        onSelectPet={handleSelectPet}
       />
       
-      {/* Hero - NO NUMBERS */}
+      {/* Hero Section - With Pet Photo & Warm Mira Lines */}
       <section className="bg-[#F9F6F1] py-8 sm:py-12 md:py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center">
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-[#2D2D2D] leading-tight mb-4">
-            {petName ? (
-              <>Everything <span className="text-[#C4785A]">{petName}</span> needs</>
-            ) : (
-              <>Everything your pet needs</>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          {/* Pet-Centric Hero */}
+          <div className="text-center mb-8">
+            {/* Pet Photo (if available) */}
+            {petPhoto && (
+              <div className="mb-6">
+                <img 
+                  src={petPhoto} 
+                  alt={petName}
+                  className="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover mx-auto border-4 border-white shadow-lg"
+                />
+              </div>
             )}
-          </h1>
-          <p className="text-base sm:text-lg text-[#6B6B6B] mb-8 max-w-2xl mx-auto">
-            {petName ? (
-              <>Curated across all pillars, just for {petName}.</>
-            ) : (
-              <>Curated across all pillars, just for your companion.</>
+            
+            {/* Warm Headline */}
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-[#2D2D2D] leading-tight mb-4">
+              {petName ? (
+                <>Made with love for <span className="text-[#C4785A]">{petName}</span> 💝</>
+              ) : (
+                <>Made with love for your furry friend 💝</>
+              )}
+            </h1>
+            
+            {/* Warm Subtitle */}
+            <p className="text-base sm:text-lg text-[#6B6B6B] mb-6 max-w-2xl mx-auto">
+              {petName ? (
+                <>The best treats, toys, and care - all in one place, all for {petName}.</>
+              ) : (
+                <>The best treats, toys, and care - all in one place for your companion.</>
+              )}
+            </p>
+            
+            {/* Mira AI Personalized Lines */}
+            {miraLines && miraLines.length > 0 && (
+              <div className="bg-gradient-to-r from-[#F5F0E8] to-[#EDE6DA] rounded-2xl p-4 sm:p-6 max-w-xl mx-auto mb-8 shadow-sm">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-full bg-[#C4785A] flex items-center justify-center flex-shrink-0">
+                    <Sparkles className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="text-left">
+                    <p className="text-xs text-[#C4785A] font-medium mb-1">Mira says...</p>
+                    <p className="text-sm sm:text-base text-[#2D2D2D] leading-relaxed">
+                      {miraLines[0]}
+                    </p>
+                  </div>
+                </div>
+              </div>
             )}
-          </p>
+          </div>
           
           <IntelligentSearch petName={petName} products={allProducts} />
         </div>
