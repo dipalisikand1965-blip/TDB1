@@ -566,7 +566,7 @@ const ShopPage = () => {
                 <div className="text-center py-20">
                   <Briefcase className="w-16 h-16 text-[#E5E5E5] mx-auto mb-4" />
                   <h3 className="text-xl font-semibold text-[#2D2D2D] mb-2">Services coming soon</h3>
-                  <p className="text-[#9B9B9B]">We're curating the best services for your companion</p>
+                  <p className="text-[#9B9B9B]">We&apos;re curating the best services for your companion</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
