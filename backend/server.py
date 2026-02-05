@@ -84,6 +84,10 @@ from collection_routes import (
     set_collection_db,
     set_collection_admin_verify
 )
+from breed_catalogue import (
+    router as breed_catalogue_router,
+    set_database as set_breed_catalogue_db
+)
 from occasion_box_routes import (
     admin_router as occasion_box_admin_router,
     public_router as occasion_box_public_router,
