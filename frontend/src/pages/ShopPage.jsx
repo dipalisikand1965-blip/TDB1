@@ -757,18 +757,18 @@ const ShopPage = () => {
             {/* Warm Headline */}
             <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#2D2D2D] leading-tight mb-3 sm:mb-4 px-2">
               {petName ? (
-                <>Made with love for <span className="text-[#C4785A]">{petName}</span> 💝</>
+                <>Products curated for <span className="text-[#C4785A]">{petName}</span></>
               ) : (
-                <>Made with love for your furry friend 💝</>
+                <>Products curated for your companion</>
               )}
             </h1>
             
-            {/* Warm Subtitle */}
+            {/* Warm Subtitle - The key line */}
             <p className="text-sm sm:text-base md:text-lg text-[#6B6B6B] mb-4 sm:mb-6 max-w-xl mx-auto px-4">
               {petName ? (
-                <>The best treats, toys & care — all in one place, just for {petName}.</>
+                <>Based on who {petName} is and how {petName} lives.</>
               ) : (
-                <>The best treats, toys & care — all in one place for your companion.</>
+                <>Based on who your dog is and how they live.</>
               )}
             </p>
             
