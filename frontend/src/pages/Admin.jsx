@@ -135,7 +135,8 @@ import {
   Activity,
   BookOpen,
   Check,
-  IndianRupee
+  IndianRupee,
+  ShoppingBag
 } from 'lucide-react';
 import AdminEngagement from '../components/AdminEngagement';
 
