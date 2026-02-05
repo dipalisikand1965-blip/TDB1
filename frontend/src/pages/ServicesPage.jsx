@@ -454,10 +454,30 @@ const ServicesPage = () => {
   const filteredServices = useMemo(() => {
     let result = services;
     
-    if (selectedPillar !== 'all') {
+    // 'recommended' shows breed-relevant services first, 'all' shows everything
+    if (selectedPillar !== 'all' && selectedPillar !== 'recommended') {
       result = result.filter(s => {
         const servicePillars = s.pillars || [];
         return servicePillars.includes(selectedPillar) || s.pillar === selectedPillar;
+      });
+    }
+    
+    // For 'recommended', sort by breed relevance
+    if (selectedPillar === 'recommended' && breedRecommendation) {
+      result = [...result].sort((a, b) => {
+        const aMatch = breedRecommendation.essential?.some(s => 
+          a.name?.toLowerCase().includes(s.toLowerCase())
+        ) || breedRecommendation.recommended?.some(s => 
+          a.name?.toLowerCase().includes(s.toLowerCase())
+        );
+        const bMatch = breedRecommendation.essential?.some(s => 
+          b.name?.toLowerCase().includes(s.toLowerCase())
+        ) || breedRecommendation.recommended?.some(s => 
+          b.name?.toLowerCase().includes(s.toLowerCase())
+        );
+        if (aMatch && !bMatch) return -1;
+        if (!aMatch && bMatch) return 1;
+        return 0;
       });
     }
     
@@ -478,7 +498,7 @@ const ServicesPage = () => {
     }
     
     return result;
-  }, [services, selectedPillar, selectedSubcat, searchQuery]);
+  }, [services, selectedPillar, selectedSubcat, searchQuery, breedRecommendation]);
   
   // Handle pet selection
   const handleSelectPet = (pet) => {
