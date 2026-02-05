@@ -212,7 +212,7 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
   }, [category, searchQuery, deliveryCity]);
 
   // Intelligent filtering based on pet profile
-  const filteredProducts = useMemo(() => {
+  const { filteredProducts, hiddenCount } = useMemo(() => {
     let filtered = [...products];
     let hidden = 0;
     
@@ -244,8 +244,6 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
         }
       }
     }
-    
-    setHiddenCount(hidden);
     
     // Price filter
     if (priceRange !== 'all') {
@@ -279,7 +277,7 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
       filtered.sort((a, b) => (b.rating || b.paw_score || 0) - (a.rating || a.paw_score || 0));
     }
     
-    return filtered;
+    return { filteredProducts: filtered, hiddenCount: hidden };
   }, [products, activePet, priceRange, searchInput, sortBy]);
 
   // Get pet's life stage info
