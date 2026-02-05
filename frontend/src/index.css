@@ -19,6 +19,11 @@
   --color-primary-light: #14B8A6;
   --color-primary-dark: #0D5C56;
   
+  /* Mira Accent - Purple (Intelligence, AI) */
+  --color-mira: #9333EA;
+  --color-mira-light: #A855F7;
+  --color-mira-dark: #7C3AED;
+  
   /* Secondary Colors - Warm Amber (Energy, Play) */
   --color-secondary: #D97706;
   --color-secondary-light: #F59E0B;
