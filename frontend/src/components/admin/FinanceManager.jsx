@@ -607,50 +607,32 @@ const FinanceManager = () => {
           )}
         </div>
       )}
-          
-          {/* Export Dropdown */}
-          <div className="relative group">
-            <Button
-              variant="outline"
-              className="border-slate-600 text-slate-300"
-            >
-              <Download className="w-4 h-4 mr-2" />
-              Export
-              <ChevronDown className="w-4 h-4 ml-1" />
-            </Button>
-            <div className="absolute right-0 mt-1 w-48 bg-slate-800 border border-slate-700 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
-              <button
-                onClick={exportToCSV}
-                className="w-full px-4 py-2 text-left text-sm text-slate-300 hover:bg-slate-700 rounded-t-lg flex items-center gap-2"
-              >
-                <FileText className="w-4 h-4" /> All Payments (CSV)
-              </button>
-              <button
-                onClick={exportGSTReport}
-                className="w-full px-4 py-2 text-left text-sm text-slate-300 hover:bg-slate-700 flex items-center gap-2"
-              >
-                <Receipt className="w-4 h-4" /> GST Report
-              </button>
-              <button
-                onClick={() => {
-                  const email = prompt('Enter member email for ledger:');
-                  if (email) exportMemberLedger(email);
-                }}
-                className="w-full px-4 py-2 text-left text-sm text-slate-300 hover:bg-slate-700 rounded-b-lg flex items-center gap-2"
-              >
-                <User className="w-4 h-4" /> Member Ledger
-              </button>
-            </div>
-          </div>
-          
-          <Button
-            onClick={fetchPayments}
-            variant="outline"
-            className="border-slate-600 text-slate-300"
-          >
-            <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+      
+      {/* Action Buttons Row */}
+      <div className="flex flex-wrap gap-2">
+        {/* Export Dropdown */}
+        <div className="relative group">
+          <Button variant="outline" className="border-slate-600 text-slate-300">
+            <Download className="w-4 h-4 mr-2" />
+            Export
+            <ChevronDown className="w-4 h-4 ml-1" />
           </Button>
+          <div className="absolute right-0 mt-1 w-48 bg-slate-800 border border-slate-700 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+            <button onClick={exportToCSV} className="w-full px-4 py-2 text-left text-sm text-slate-300 hover:bg-slate-700 rounded-t-lg flex items-center gap-2">
+              <FileText className="w-4 h-4" /> All Payments
+            </button>
+            <button onClick={exportGSTReport} className="w-full px-4 py-2 text-left text-sm text-slate-300 hover:bg-slate-700 flex items-center gap-2">
+              <Receipt className="w-4 h-4" /> GST Report
+            </button>
+            <button onClick={() => { const email = prompt('Enter member email:'); if (email) exportMemberLedger(email); }} className="w-full px-4 py-2 text-left text-sm text-slate-300 hover:bg-slate-700 rounded-b-lg flex items-center gap-2">
+              <User className="w-4 h-4" /> Member Ledger
+            </button>
+          </div>
         </div>
+        
+        <Button onClick={fetchPayments} variant="outline" className="border-slate-600 text-slate-300">
+          <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+        </Button>
       </div>
 
       {/* Error Banner */}
