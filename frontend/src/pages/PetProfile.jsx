@@ -306,7 +306,7 @@ const PetProfile = ({ isEmbed = false }) => {
         species: formData.species,
         gender: formData.gender,
         weight: formData.weight ? parseFloat(formData.weight) : null,
-        photo_url: formData.photo_url,
+        photo_url: formData.photo_url?.startsWith('data:') ? '' : formData.photo_url, // Don't send base64
         birth_date: formData.birth_date,
         gotcha_date: formData.gotcha_date,
         soul: formData.soul,
@@ -335,6 +335,30 @@ const PetProfile = ({ isEmbed = false }) => {
 
       if (response.ok) {
         const data = await response.json();
+        const petId = data.pet?.id;
+        
+        // If we have a photo file to upload, do it now
+        if (petId && formData.photo_file && token) {
+          try {
+            const photoFormData = new FormData();
+            photoFormData.append('photo', formData.photo_file);
+            
+            const photoResponse = await fetch(`${API_URL}/api/pets/${petId}/photo`, {
+              method: 'POST',
+              headers: { 'Authorization': `Bearer ${token}` },
+              body: photoFormData
+            });
+            
+            if (photoResponse.ok) {
+              const photoData = await photoResponse.json();
+              data.pet.photo_url = photoData.photo_url;
+            }
+          } catch (photoError) {
+            console.error('Photo upload failed:', photoError);
+            // Continue anyway - pet was created
+          }
+        }
+        
         setCreatedPet(data.pet);
         // Save email for returning user recognition
         if (formData.owner_email) {
