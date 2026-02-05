@@ -23,7 +23,7 @@ import {
 import { API_URL } from '../../utils/api';
 import { toast } from '../../hooks/use-toast';
 import ProductBoxEditor from './ProductBoxEditor';
-import { ALL_PILLARS, DEFAULT_PRODUCT, LIFE_STAGES as LIFE_STAGES_CONFIG, SIZE_OPTIONS as SIZE_OPTIONS_CONFIG, OCCASIONS, MAIN_CATEGORIES, PRODUCT_TYPES } from './ProductBoxConfig';
+import { ALL_PILLARS, DEFAULT_PRODUCT, LIFE_STAGES, SIZE_OPTIONS, OCCASIONS, MAIN_CATEGORIES, PRODUCT_TYPES } from './ProductBoxConfig';
 
 // Keep local aliases for backward compatibility
 const DIETARY_FLAGS = [
