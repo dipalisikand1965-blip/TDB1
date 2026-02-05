@@ -89,22 +89,6 @@ const PARTICLE_PRESETS = [
   { duration: 3.4, size: 5, xOffset: -30, yOffset: 18 },
 ];
 
-// Pillar-specific colors and icons
-const PILLAR_THEMES = {
-  celebrate: { emoji: '🎂', color: '#EC4899', label: 'Celebrate' },
-  dine: { emoji: '🍽️', color: '#F59E0B', label: 'Dine' },
-  stay: { emoji: '🏠', color: '#10B981', label: 'Stay' },
-  travel: { emoji: '✈️', color: '#3B82F6', label: 'Travel' },
-  care: { emoji: '💊', color: '#14B8A6', label: 'Care' },
-  enjoy: { emoji: '🎾', color: '#8B5CF6', label: 'Enjoy' },
-  fit: { emoji: '🏃', color: '#EF4444', label: 'Fit' },
-  learn: { emoji: '📚', color: '#6366F1', label: 'Learn' },
-  emergency: { emoji: '🚨', color: '#DC2626', label: 'Emergency' },
-  farewell: { emoji: '🌈', color: '#9CA3AF', label: 'Farewell' },
-  shop: { emoji: '🛍️', color: '#9333EA', label: 'Shop' },
-  default: { emoji: '✨', color: '#9333EA', label: 'Mira' }
-};
-
 // The main Mira Orb component
 const MiraOrb = ({ 
   state = 'idle', // idle, listening, thinking, speaking, celebrating
