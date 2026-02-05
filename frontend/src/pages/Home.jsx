@@ -820,7 +820,8 @@ const Home = () => {
             transition={{ duration: 4, repeat: Infinity }}
           />
           <motion.div 
-            className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-600/20 rounded-full blur-3xl"
+            className="absolute bottom-1/4 right-1/4 w-64 sm:w-96 h-64 sm:h-96 bg-pink-600/20 rounded-full blur-3xl"
+            style={{ willChange: 'transform, opacity', transform: 'translateZ(0)' }}
             animate={{
               scale: [1.2, 1, 1.2],
               opacity: [0.3, 0.5, 0.3],
