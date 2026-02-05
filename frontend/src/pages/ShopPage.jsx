@@ -323,8 +323,11 @@ const ShopPage = () => {
   // Pet name for personalization
   const petName = selectedPet?.name || '';
   const petBreed = selectedPet?.breed || '';
-  const petAge = selectedPet?.age || selectedPet?.dob ? 
-    (new Date().getFullYear() - new Date(selectedPet.dob).getFullYear()) + ' years' : '';
+  const petAge = selectedPet?.age 
+    ? `${selectedPet.age} years` 
+    : (selectedPet?.dob 
+        ? `${new Date().getFullYear() - new Date(selectedPet.dob).getFullYear()} years` 
+        : '');
 
   return (
     <div className="min-h-screen bg-[#FDFBF7]" data-testid="shop-page">
