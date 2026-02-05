@@ -59,8 +59,9 @@ const CelebratePage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   
-  // Pet OS Integration
-  const { isLoggedIn, userPets, activePet, setActivePet, hasPets } = usePetOS();
+  // User pets state
+  const [userPets, setUserPets] = useState([]);
+  const [activePet, setActivePet] = useState(null);
 
   // Rotating hero images for visual appeal
   const HERO_IMAGES = [
