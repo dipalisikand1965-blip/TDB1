@@ -152,7 +152,7 @@ const ProductCard = ({ product, onAddToCart, viewMode = 'grid' }) => {
       className="overflow-hidden hover:shadow-lg transition-all cursor-pointer group"
       onClick={handleClick}
     >
-      <div className="relative h-48 bg-gray-100 overflow-hidden">
+      <div className="relative h-32 sm:h-40 md:h-48 bg-gray-100 overflow-hidden">
         <img
           src={product.image || product.image_url || product.images?.[0] || 'https://via.placeholder.com/200'}
           alt={product.title}
@@ -160,66 +160,66 @@ const ProductCard = ({ product, onAddToCart, viewMode = 'grid' }) => {
         />
         
         {/* Badges */}
-        <div className="absolute top-2 left-2 flex flex-col gap-1">
+        <div className="absolute top-1.5 sm:top-2 left-1.5 sm:left-2 flex flex-col gap-0.5 sm:gap-1">
           {hasDiscount && (
-            <Badge className="bg-red-500 text-white text-xs">-{discountPercent}%</Badge>
+            <Badge className="bg-red-500 text-white text-[10px] sm:text-xs px-1.5 sm:px-2">-{discountPercent}%</Badge>
           )}
           {product.tags?.includes('best-seller') && (
-            <Badge className="bg-amber-500 text-white text-xs">🏆 Best Seller</Badge>
+            <Badge className="bg-amber-500 text-white text-[10px] sm:text-xs px-1.5 sm:px-2 hidden sm:flex">🏆 Best</Badge>
           )}
           {product.tags?.includes('new') && (
-            <Badge className="bg-green-500 text-white text-xs">✨ New</Badge>
+            <Badge className="bg-green-500 text-white text-[10px] sm:text-xs px-1.5 sm:px-2">New</Badge>
           )}
           {/* Show options indicator for products with variants */}
           {(product.has_variants || product.variants?.length > 1 || 
             (product.options?.length > 0 && product.options.some(o => o.values?.length > 1))) && (
-            <Badge className="bg-purple-500 text-white text-xs">Options Available</Badge>
+            <Badge className="bg-purple-500 text-white text-[10px] sm:text-xs px-1.5 sm:px-2 hidden sm:flex">Options</Badge>
           )}
         </div>
         
         {/* Wishlist Button */}
         <button
           onClick={(e) => { e.stopPropagation(); setIsWishlisted(!isWishlisted); }}
-          className="absolute top-2 right-2 p-2 bg-white/80 backdrop-blur-sm rounded-full hover:bg-white transition-colors"
+          className="absolute top-1.5 sm:top-2 right-1.5 sm:right-2 p-1.5 sm:p-2 bg-white/80 backdrop-blur-sm rounded-full hover:bg-white transition-colors"
         >
-          <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
+          <Heart className={`w-3 h-3 sm:w-4 sm:h-4 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
         </button>
         
-        {/* Quick Add Button */}
-        <div className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
+        {/* Quick Add Button - Desktop only */}
+        <div className="absolute inset-x-0 bottom-0 p-2 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity hidden sm:block">
           {/* If product has options, go to product page instead of quick add */}
           {(product.has_variants || product.variants?.length > 1 || 
             (product.options?.length > 0 && product.options.some(o => o.values?.length > 1))) ? (
             <Button 
               onClick={(e) => { e.stopPropagation(); handleClick(); }}
-              className="w-full bg-white text-purple-700 hover:bg-white/90 text-sm"
+              className="w-full bg-white text-purple-700 hover:bg-white/90 text-xs sm:text-sm"
               size="sm"
             >
-              <Package className="w-4 h-4 mr-1" />
+              <Package className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
               Select Options
             </Button>
           ) : (
             <Button 
               onClick={(e) => { e.stopPropagation(); onAddToCart(product); }}
-              className="w-full bg-white text-teal-700 hover:bg-white/90 text-sm"
+              className="w-full bg-white text-teal-700 hover:bg-white/90 text-xs sm:text-sm"
               size="sm"
             >
-              <ShoppingBag className="w-4 h-4 mr-1" />
+              <ShoppingBag className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
               Quick Add
             </Button>
           )}
         </div>
       </div>
       
-      <div className="p-4">
-        <h3 className="font-semibold text-gray-900 mb-1 line-clamp-1">{product.title}</h3>
-        <p className="text-sm text-gray-600 line-clamp-2 mb-3">{product.description}</p>
+      <div className="p-2 sm:p-3 md:p-4">
+        <h3 className="font-semibold text-gray-900 mb-0.5 sm:mb-1 line-clamp-1 text-xs sm:text-sm md:text-base">{product.title || product.name}</h3>
+        <p className="text-[10px] sm:text-xs md:text-sm text-gray-600 line-clamp-2 mb-2 sm:mb-3 hidden sm:block">{product.description}</p>
         
         <div className="flex items-center justify-between">
           <div>
-            <span className="text-lg font-bold text-teal-600">₹{product.price?.toLocaleString()}</span>
+            <span className="text-sm sm:text-base md:text-lg font-bold text-teal-600">₹{product.price?.toLocaleString()}</span>
             {hasDiscount && (
-              <span className="text-xs text-gray-400 line-through ml-1">
+              <span className="text-[10px] sm:text-xs text-gray-400 line-through ml-1 hidden sm:inline">
                 ₹{product.compare_at_price?.toLocaleString()}
               </span>
             )}
@@ -229,12 +229,22 @@ const ProductCard = ({ product, onAddToCart, viewMode = 'grid' }) => {
           {product.pawmeter?.overall ? (
             <PawmeterBadge score={product.pawmeter.overall} size="xs" />
           ) : product.rating ? (
-            <div className="flex items-center gap-1 text-amber-500">
-              <Star className="w-4 h-4 fill-current" />
-              <span className="text-sm font-medium">{product.rating}</span>
+            <div className="flex items-center gap-0.5 sm:gap-1 text-amber-500">
+              <Star className="w-3 h-3 sm:w-4 sm:h-4 fill-current" />
+              <span className="text-[10px] sm:text-sm font-medium">{product.rating}</span>
             </div>
           ) : null}
         </div>
+        
+        {/* Mobile Add Button */}
+        <Button 
+          onClick={(e) => { e.stopPropagation(); onAddToCart(product); }}
+          className="w-full mt-2 bg-teal-600 hover:bg-teal-700 text-xs h-7 sm:hidden"
+          size="sm"
+        >
+          <ShoppingBag className="w-3 h-3 mr-1" />
+          Add
+        </Button>
       </div>
     </Card>
   );
