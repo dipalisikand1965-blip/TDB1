@@ -921,7 +921,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
     addToCart(cartItem, cartItem.selectedSize, cartItem.selectedFlavor);
     
     const petName = selectedPet?.name || 'your pet';
-    const successMessage = effectiveMiraContext?.addedMessage?.(petName) || `Added to cart! ✨`;
+    const successMessage = miraContext?.addedMessage?.(petName) || `Added to cart! ✨`;
     
     toast({
       title: successMessage,
