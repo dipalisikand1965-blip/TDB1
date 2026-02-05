@@ -699,7 +699,9 @@ const ProductListing = ({ category = 'all' }) => {
             const recData = await recRes.json();
             setPetRecommendations(recData.recommendations || []);
           }
-        } catch (e) {}
+        } catch (fallbackErr) {
+          console.debug('Fallback recommendation fetch also failed:', fallbackErr);
+        }
       }
       
       // Fetch pet's soul score
