@@ -23,37 +23,9 @@ import {
 import { API_URL } from '../../utils/api';
 import { toast } from '../../hooks/use-toast';
 import ProductBoxEditor from './ProductBoxEditor';
-import { ALL_PILLARS, DEFAULT_PRODUCT, LIFE_STAGES, SIZE_OPTIONS, OCCASIONS, MAIN_CATEGORIES } from './ProductBoxConfig';
+import { ALL_PILLARS, DEFAULT_PRODUCT, LIFE_STAGES as LIFE_STAGES_CONFIG, SIZE_OPTIONS as SIZE_OPTIONS_CONFIG, OCCASIONS, MAIN_CATEGORIES, PRODUCT_TYPES } from './ProductBoxConfig';
 
-// All pillars - THE 14 PILLARS
-const ALL_PILLARS = [
-  { id: 'celebrate', name: 'Celebrate', icon: '🎂' },
-  { id: 'dine', name: 'Dine', icon: '🍽️' },
-  { id: 'stay', name: 'Stay', icon: '🏨' },
-  { id: 'travel', name: 'Travel', icon: '✈️' },
-  { id: 'care', name: 'Care', icon: '💊' },
-  { id: 'enjoy', name: 'Enjoy', icon: '🎾' },
-  { id: 'fit', name: 'Fit', icon: '🏃' },
-  { id: 'learn', name: 'Learn', icon: '🎓' },
-  { id: 'paperwork', name: 'Paperwork', icon: '📄' },
-  { id: 'advisory', name: 'Advisory', icon: '📋' },
-  { id: 'emergency', name: 'Emergency', icon: '🚨' },
-  { id: 'farewell', name: 'Farewell', icon: '🌈' },
-  { id: 'adopt', name: 'Adopt', icon: '🐾' },
-  { id: 'shop', name: 'Shop', icon: '🛒' }
-];
-
-const PRODUCT_TYPES = [
-  { id: 'physical', name: 'Physical Product', icon: '📦' },
-  { id: 'service', name: 'Service', icon: '🛠️' },
-  { id: 'experience', name: 'Experience', icon: '✨' },
-  { id: 'reward', name: 'Reward Product', icon: '🎁' },
-  { id: 'concierge', name: 'Concierge®', icon: '🛎️' },
-  { id: 'bundle', name: 'Bundle', icon: '📦✨' }
-];
-
-const LIFE_STAGES = ['puppy', 'adult', 'senior', 'all'];
-const SIZE_OPTIONS = ['small', 'medium', 'large', 'all'];
+// Keep local aliases for backward compatibility
 const DIETARY_FLAGS = [
   'grain_free', 'single_protein', 'vegetarian', 'limited_ingredient',
   'hypoallergenic', 'high_protein', 'low_fat', 'raw_friendly'
@@ -65,18 +37,12 @@ const REWARD_TRIGGERS = [
 
 // Common product tags for auto-fill
 const COMMON_TAGS = [
-  // Pet types
   'dog', 'cat', 'puppy', 'kitten', 'senior',
-  // Diet
   'grain-free', 'organic', 'natural', 'human-grade', 'vegan', 'vegetarian', 'single-protein',
-  // Categories
   'treats', 'food', 'toys', 'grooming', 'health', 'accessories', 'celebration', 'birthday',
-  // Features
   'bestseller', 'new-arrival', 'sale', 'limited-edition', 'handmade', 'personalised',
   'eco-friendly', 'locally-made', 'imported', 'premium',
-  // Occasions
   'birthday-cake', 'party', 'gift', 'travel', 'training', 'dental', 'calming',
-  // Subscription
   'autoship-eligible', 'subscribe-save'
 ];
 
@@ -87,6 +53,7 @@ const SHIPPING_ZONES = [
   { id: 'national', name: 'National', baseCost: 149 },
   { id: 'remote', name: 'Remote Areas', baseCost: 249 }
 ];
+
 
 const UnifiedProductBox = () => {
   // State
