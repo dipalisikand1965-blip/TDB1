@@ -1267,13 +1267,20 @@ const MiraChatWidget = ({
     return 'idle';
   };
   
-  // Floating Button (when closed)
-  // MiraAI.jsx provides the global orb - we don't need a duplicate
-  // MiraChatWidget only provides the chat panel with pillar-specific context
-  // The openMiraChat event from MiraAI will open this widget
+  // Floating Button (when closed) - Uses the beautiful MiraOrb!
+  // On DESKTOP: MiraAI.jsx shows the global orb, so we hide ours
+  // On MOBILE: We show our orb (MiraAI is hidden on mobile)
   if (!isOpen) {
-    // Keep mounted but invisible - listen for openMiraChat event to open
-    return null;
+    return (
+      <div className={`fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[9999] flex-col items-end gap-3 flex md:hidden ${className}`}>
+        <MiraOrb 
+          state={getOrbState()}
+          size="md"
+          showLabel={true}
+          onClick={() => setIsOpen(true)}
+        />
+      </div>
+    );
   }
   
   // Chat Widget (when open) - RESPONSIVE for mobile
