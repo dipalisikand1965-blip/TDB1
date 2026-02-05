@@ -930,6 +930,25 @@ const ShopPage = () => {
         </div>
       </section>
       
+      {/* Emotional Close */}
+      <section className="bg-white py-12 sm:py-16 border-t border-gray-100">
+        <div className="max-w-2xl mx-auto px-4 text-center">
+          <p className="text-lg sm:text-xl md:text-2xl text-[#2D2D2D] font-medium leading-relaxed mb-4">
+            {petName ? (
+              <>You don't manage shopping.<br />You just love <span className="text-[#C4785A]">{petName}</span>.<br />We handle the rest.</>
+            ) : (
+              <>You don't manage shopping.<br />You just love your dog.<br />We handle the rest.</>
+            )}
+          </p>
+          <button 
+            onClick={() => window.dispatchEvent(new CustomEvent('openMiraChat'))}
+            className="text-sm text-[#9B9B9B] hover:text-[#C4785A] transition-colors"
+          >
+            Need help deciding? Ask Mira.
+          </button>
+        </div>
+      </section>
+      
       <MiraChatWidget pillar="shop" />
     </div>
   );
