@@ -13,7 +13,7 @@ import os
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 if not BASE_URL:
-    BASE_URL = "https://master-catalog-2.preview.emergentagent.com"
+    BASE_URL = "https://breed-picks-demo.preview.emergentagent.com"
 
 ADMIN_USERNAME = "aditya"
 ADMIN_PASSWORD = "lola4304"
