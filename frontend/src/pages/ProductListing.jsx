@@ -482,64 +482,72 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
       <div className="max-w-6xl mx-auto px-4 py-6">
         
         {/* Filters - Clean, functional, dog-need based */}
-        <div className="flex flex-wrap items-center gap-3 mb-6" data-testid="filters-section">
+        <div className="flex flex-col md:flex-row flex-wrap items-stretch md:items-center gap-3 mb-6" data-testid="filters-section">
           {/* Search */}
-          <div className="relative flex-1 min-w-[200px] max-w-xs">
+          <div className="relative flex-1 min-w-[200px] md:max-w-xs">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
             <input
               type="text"
               placeholder="Search..."
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 text-sm bg-white border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
+              className="w-full pl-9 pr-4 py-2.5 text-sm bg-white border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500"
               data-testid="search-input"
             />
           </div>
           
-          {/* City Filter */}
-          <select
-            value={deliveryCity}
-            onChange={(e) => setDeliveryCity(e.target.value)}
-            className="px-3 py-2 text-sm bg-white border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500/20"
-            data-testid="city-filter"
-          >
-            {DELIVERY_CITIES.map(city => (
-              <option key={city.value} value={city.value}>
-                {city.label} {city.fresh && '(Fresh)'}
-              </option>
-            ))}
-          </select>
-          
-          {/* Price Filter */}
-          <select
-            value={priceRange}
-            onChange={(e) => setPriceRange(e.target.value)}
-            className="px-3 py-2 text-sm bg-white border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500/20"
-            data-testid="price-filter"
-          >
-            <option value="all">All Prices</option>
-            <option value="under500">Under ₹500</option>
-            <option value="500-1000">₹500 - ₹1000</option>
-            <option value="over1000">Over ₹1000</option>
-          </select>
-          
-          {/* Sort */}
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="px-3 py-2 text-sm bg-white border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500/20"
-            data-testid="sort-filter"
-          >
-            <option value="recommended">Recommended</option>
-            <option value="price-low">Price: Low to High</option>
-            <option value="price-high">Price: High to Low</option>
-            <option value="rating">Top Rated</option>
-          </select>
+          {/* Filter Row - Horizontal on mobile */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0">
+            {/* City Filter */}
+            <select
+              value={deliveryCity}
+              onChange={(e) => setDeliveryCity(e.target.value)}
+              className="px-3 py-2.5 text-sm bg-white border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500/20 whitespace-nowrap flex-shrink-0"
+              data-testid="city-filter"
+            >
+              {DELIVERY_CITIES.map(city => (
+                <option key={city.value} value={city.value}>
+                  {city.label} {city.fresh && '(Fresh)'}
+                </option>
+              ))}
+            </select>
+            
+            {/* Price Filter */}
+            <select
+              value={priceRange}
+              onChange={(e) => setPriceRange(e.target.value)}
+              className="px-3 py-2.5 text-sm bg-white border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500/20 whitespace-nowrap flex-shrink-0"
+              data-testid="price-filter"
+            >
+              <option value="all">All Prices</option>
+              <option value="under500">Under ₹500</option>
+              <option value="500-1000">₹500 - ₹1000</option>
+              <option value="over1000">Over ₹1000</option>
+            </select>
+            
+            {/* Sort */}
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="px-3 py-2.5 text-sm bg-white border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500/20 whitespace-nowrap flex-shrink-0"
+              data-testid="sort-filter"
+            >
+              <option value="recommended">Recommended</option>
+              <option value="price-low">Price: Low to High</option>
+              <option value="price-high">Price: High to Low</option>
+              <option value="rating">Top Rated</option>
+            </select>
+          </div>
           
           {/* Results count - subtle */}
-          <span className="text-sm text-stone-500 ml-auto">
+          <span className="text-sm text-stone-500 md:ml-auto hidden md:block">
             {filteredProducts.length} items
           </span>
+        </div>
+        
+        {/* Mobile Results Count */}
+        <div className="flex items-center justify-between mb-4 md:hidden">
+          <span className="text-sm text-stone-500">{filteredProducts.length} items</span>
         </div>
         
         {/* === PRODUCT GRID === */}
