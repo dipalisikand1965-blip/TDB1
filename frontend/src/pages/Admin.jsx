@@ -309,6 +309,71 @@ const Admin = () => {
     }
   };
 
+  // Sync Shopify Products - Pulls REAL products from Shopify store
+  const syncShopifyProducts = async () => {
+    setSyncingShopify(true);
+    try {
+      toast({ title: '🛍️ Shopify Sync Started', description: 'Pulling real products from Shopify... This may take 30-60 seconds.' });
+      
+      console.log('[Shopify Sync] Starting sync...');
+      
+      // First, cleanup any mock/placeholder products
+      toast({ title: '🧹 Cleaning up...', description: 'Removing placeholder products...' });
+      
+      try {
+        const cleanupResponse = await fetch(`${API_URL}/api/admin/cleanup-mock-products`, {
+          method: 'POST',
+          headers: getAuthHeaders()
+        });
+        
+        if (cleanupResponse.ok) {
+          const cleanupData = await cleanupResponse.json();
+          console.log('[Shopify Sync] Cleanup:', cleanupData);
+        }
+      } catch (e) {
+        console.log('[Shopify Sync] Cleanup skipped:', e);
+      }
+      
+      // Now sync from Shopify
+      const response = await fetch(`${API_URL}/api/admin/sync-products`, {
+        method: 'POST',
+        headers: getAuthHeaders()
+      });
+      
+      console.log('[Shopify Sync] Response status:', response.status);
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('[Shopify Sync] Success:', data);
+        
+        toast({
+          title: '✅ Shopify Sync Complete!',
+          description: `${data.synced || data.total_synced || 0} products synced from Shopify`,
+          duration: 8000
+        });
+      } else {
+        const errorText = await response.text();
+        console.error('[Shopify Sync] Failed:', response.status, errorText);
+        toast({ 
+          title: 'Sync Failed', 
+          description: `Status ${response.status}: ${errorText.slice(0, 100)}`, 
+          variant: 'destructive',
+          duration: 10000 
+        });
+      }
+    } catch (error) {
+      console.error('[Shopify Sync] Error:', error);
+      toast({ 
+        title: 'Network Error', 
+        description: `Failed: ${error.message}`, 
+        variant: 'destructive',
+        duration: 8000 
+      });
+    } finally {
+      setSyncingShopify(false);
+    }
+  };
+
   useEffect(() => {
     if (selectedMember) {
       const fetchDetails = async () => {
