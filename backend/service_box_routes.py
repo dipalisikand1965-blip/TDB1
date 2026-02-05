@@ -164,10 +164,10 @@ async def list_services(
         query["is_free"] = is_free
     
     # Get total count
-    total = await db.service_catalog.count_documents(query)
+    total = await db.services_master.count_documents(query)
     
     # Get services
-    services = await db.service_catalog.find(query, {"_id": 0}).sort("pillar", 1).skip(skip).limit(limit).to_list(limit)
+    services = await db.services_master.find(query, {"_id": 0}).sort("pillar", 1).skip(skip).limit(limit).to_list(limit)
     
     return {
         "services": services,
@@ -185,7 +185,7 @@ async def get_service(service_id: str):
     """Get single service by ID"""
     db = get_db()
     
-    service = await db.service_catalog.find_one({"id": service_id}, {"_id": 0})
+    service = await db.services_master.find_one({"id": service_id}, {"_id": 0})
     
     if not service:
         raise HTTPException(status_code=404, detail="Service not found")
