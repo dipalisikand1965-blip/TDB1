@@ -344,11 +344,10 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
             From ₹{minPrice.toLocaleString('en-IN')}
           </p>
           
-          {/* Quiet Whisper of Service - Handled by Mira indicator */}
-          <div className="flex items-center gap-1 text-[9px] sm:text-[10px] text-purple-400">
-            <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-            <span className="opacity-70">Handled by Mira</span>
-          </div>
+          {/* Quiet grey hint - pillar specific, non-clicky */}
+          <p className="text-[8px] sm:text-[9px] text-gray-400 leading-tight mt-1">
+            {miraContext?.quietHints?.[0] || 'Handled by Mira'}
+          </p>
           
           {/* View Button */}
           <button 
@@ -364,6 +363,8 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
         <ProductDetailModal 
           product={product} 
           pillar={pillar}
+          selectedPet={selectedPet}
+          miraContext={miraContext}
           onClose={() => setShowModal(false)} 
         />,
         document.body
@@ -372,7 +373,7 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
   );
 };
 
-const ProductDetailModal = ({ product, pillar = 'celebrate', onClose }) => {
+const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null, miraContext = null, onClose }) => {
   // Extract options from product (e.g., Base, Flavour, Weight)
   const productOptions = product.options || [];
   const variants = product.variants || [];
