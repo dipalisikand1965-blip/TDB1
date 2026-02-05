@@ -4959,12 +4959,8 @@ async def get_all_products(
 
 @admin_router.get("/products/{product_id}")
 async def get_product(product_id: str, username: str = Depends(verify_admin)):
-    """Get single product by ID - searches both unified_products and legacy products"""
-    # Try unified_products first
-    product = await db.unified_products.find_one({"id": product_id}, {"_id": 0})
-    if not product:
-        # Fall back to legacy products
-        product = await db.products.find_one({"id": product_id}, {"_id": 0})
+    """Get single product by ID from products_master"""
+    product = await db.products_master.find_one({"id": product_id}, {"_id": 0})
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     return product
@@ -4972,13 +4968,13 @@ async def get_product(product_id: str, username: str = Depends(verify_admin)):
 
 @admin_router.post("/products")
 async def create_product(product: dict, username: str = Depends(verify_admin)):
-    """Create a new product in unified_products collection"""
+    """Create a new product in products_master collection"""
     product["id"] = str(uuid.uuid4())
     product["created_at"] = get_utc_timestamp()
     product["updated_at"] = get_utc_timestamp()
     
-    # Store in unified_products (primary collection)
-    await db.unified_products.insert_one(product)
+    # Store in products_master (single source of truth)
+    await db.products_master.insert_one(product)
     return {"message": "Product created", "id": product["id"]}
 
 
