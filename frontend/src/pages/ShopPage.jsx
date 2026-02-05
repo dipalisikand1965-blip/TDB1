@@ -568,6 +568,17 @@ const ShopPage = () => {
     return result;
   }, [allProducts, selectedPillar, selectedSubcat]);
   
+  // Filter services by pillar (services can also be in multiple pillars)
+  const filteredServices = useMemo(() => {
+    if (selectedPillar === 'all' || selectedPillar === 'shop') {
+      return services; // Shop shows all services
+    }
+    return services.filter(s => {
+      const servicePillars = s.pillars || [];
+      return servicePillars.includes(selectedPillar) || s.pillar === selectedPillar;
+    });
+  }, [services, selectedPillar]);
+  
   // Products to display
   const displayedProducts = useMemo(() => {
     return filteredProducts.slice(0, displayCount);
