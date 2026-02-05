@@ -31,7 +31,6 @@ Build "The Doggy Company," a one-stop-shop concierge for dog parents with a focu
 - ⚠️ Pet photo upload (backend works, frontend needs e2e testing)
 - ⚠️ Voice input on iOS (needs text input fallback)
 - ⚠️ Pet photos in Brand Story video (pending implementation)
-- ⚠️ Mira hints still regenerating (background process running)
 
 ---
 
