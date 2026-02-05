@@ -27,8 +27,8 @@ const MIRA_COLORS = {
   aura: '#A855F7',         // Violet - mystical aura
 };
 
-// Particle component for ambient effects
-const Particle = ({ delay, duration, size, color }) => (
+// Particle component for ambient effects - xOffset and yOffset pre-computed
+const Particle = ({ delay, duration, size, color, xOffset, yOffset }) => (
   <motion.div
     className="absolute rounded-full"
     style={{
@@ -46,8 +46,8 @@ const Particle = ({ delay, duration, size, color }) => (
     animate={{ 
       opacity: [0, 0.8, 0],
       scale: [0, 1, 0.5],
-      x: (Math.random() - 0.5) * 60,
-      y: (Math.random() - 0.5) * 60,
+      x: xOffset,
+      y: yOffset,
     }}
     transition={{
       duration: duration,
