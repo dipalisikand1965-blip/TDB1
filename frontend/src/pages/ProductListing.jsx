@@ -759,10 +759,16 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
                 activePet={activePet}
                 onAdd={(p) => {
                   addToCart({ ...p, quantity: 1 });
+                  const newCount = sessionItemsAdded + 1;
+                  setSessionItemsAdded(newCount);
                   toast({ 
                     title: 'Included', 
                     description: `Added to ${activePet?.name || 'your pet'}'s celebration plan` 
                   });
+                  // Show Mira nudge after 2 items
+                  if (newCount === 2) {
+                    setTimeout(() => setShowMiraNudge(true), 1500);
+                  }
                 }}
               />
             ))}
