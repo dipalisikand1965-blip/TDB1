@@ -46,6 +46,43 @@ def set_database(database: AsyncIOMotorDatabase):
     db = database
 
 
+async def sync_shopify_products_startup(database):
+    """Sync Shopify products on startup - called by server.py lifespan"""
+    global db
+    db = database
+    
+    try:
+        logger.info("=== AUTO SHOPIFY SYNC ON STARTUP ===")
+        shopify_products = await fetch_shopify_products()
+        
+        synced = 0
+        for sp in shopify_products:
+            existing = await db.products_master.find_one({"shopify_id": sp["id"]})
+            transformed = transform_shopify_product(sp)
+            
+            # Preserve hardcoded options
+            if existing and existing.get("hardcoded_options") == True:
+                transformed.pop("options", None)
+                transformed.pop("variants", None)
+                transformed.pop("has_variants", None)
+                transformed.pop("sizes", None)
+                transformed.pop("flavors", None)
+            
+            await db.products_master.update_one(
+                {"shopify_id": sp["id"]},
+                {"$set": transformed},
+                upsert=True
+            )
+            synced += 1
+        
+        logger.info(f"Auto Shopify sync completed: {synced} products")
+        return {"synced": synced, "success": True}
+        
+    except Exception as e:
+        logger.error(f"Auto Shopify sync failed: {e}")
+        return {"synced": 0, "success": False, "error": str(e)}
+
+
 def verify_admin(credentials: HTTPBasicCredentials = Depends(security)):
     """Verify admin credentials"""
     correct_username = secrets.compare_digest(credentials.username, ADMIN_USERNAME)
