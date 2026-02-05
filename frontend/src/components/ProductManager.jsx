@@ -12,7 +12,7 @@ import {
   ChevronLeft, ChevronRight, Filter, Download, Upload,
   RefreshCw, Eye, EyeOff, Copy, MoreVertical,
   Package, DollarSign, Tag, Layers, Grid, List,
-  ArrowUpDown, Check, AlertCircle, Loader2
+  ArrowUpDown, Check, AlertCircle, Loader2, PawPrint, Heart, Sparkles
 } from 'lucide-react';
 
 // Categories list
