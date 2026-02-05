@@ -495,6 +495,7 @@ const ProductListing = ({ category = 'all' }) => {
   const [deliveryCity, setDeliveryCity] = useState('all');
   const [detectedCity, setDetectedCity] = useState(null);
   const [detectingLocation, setDetectingLocation] = useState(false);
+  const [petSoulScore, setPetSoulScore] = useState(null);
   
   // Ref to keep latest userPets for event handlers (fixes race condition)
   const userPetsRef = useRef([]);
