@@ -73,6 +73,22 @@ const ListeningRipple = ({ delay }) => (
   />
 );
 
+// Pre-computed deterministic particle configurations to avoid Math.random in render
+const PARTICLE_PRESETS = [
+  { duration: 2.3, size: 6, xOffset: 25, yOffset: -18 },
+  { duration: 3.1, size: 8, xOffset: -22, yOffset: 28 },
+  { duration: 2.7, size: 5, xOffset: 30, yOffset: 12 },
+  { duration: 3.5, size: 7, xOffset: -28, yOffset: -25 },
+  { duration: 2.5, size: 9, xOffset: 15, yOffset: 30 },
+  { duration: 3.2, size: 6, xOffset: -20, yOffset: -15 },
+  { duration: 2.8, size: 8, xOffset: 28, yOffset: -22 },
+  { duration: 3.0, size: 5, xOffset: -25, yOffset: 20 },
+  { duration: 2.4, size: 7, xOffset: 18, yOffset: 25 },
+  { duration: 3.3, size: 6, xOffset: -15, yOffset: -28 },
+  { duration: 2.6, size: 8, xOffset: 22, yOffset: -12 },
+  { duration: 3.4, size: 5, xOffset: -30, yOffset: 18 },
+];
+
 // Pillar-specific colors and icons
 const PILLAR_THEMES = {
   celebrate: { emoji: '🎂', color: '#EC4899', label: 'Celebrate' },
