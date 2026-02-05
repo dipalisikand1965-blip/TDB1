@@ -427,6 +427,18 @@ const ProductManager = ({ credentials }) => {
       minPrice: product.minPrice || null,
       autoship_enabled: product.autoship_enabled || false,
       collection_ids: product.collection_ids || [],
+      mira_hint: product.mira_hint || '',
+      // Breed Intelligence Metadata
+      breed_metadata: product.breed_metadata || {
+        breeds: [],
+        sizes: [],
+        age_groups: [],
+        chew_strength: null,
+        energy_level: null,
+        coat_types: [],
+        sensitivities: [],
+        pillars: []
+      },
       // Local edit flag
       locally_edited: true
     });
