@@ -590,7 +590,7 @@ const ShopPage = () => {
           </h2>
           <p className="text-lg text-white/80 leading-relaxed mb-10 max-w-2xl mx-auto">
             Every product in our collection has been reviewed by veterinarians, tested by real pets, 
-            and approved by the families who love them. If something isn't right, tell us—we'll make it right, always.
+            and approved by the families who love them. If something isn&apos;t right, tell us—we&apos;ll make it right, always.
           </p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
             {TRUST_BADGES.map((badge, i) => (
