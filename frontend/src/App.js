@@ -156,6 +156,7 @@ const Admin = lazy(() => import("./pages/Admin"));
 const AdminDocs = lazy(() => import("./pages/AdminDocs"));
 const AgentPortal = lazy(() => import("./pages/AgentPortal"));
 const ServiceDeskPage = lazy(() => import("./pages/ServiceDeskPage"));
+const ServiceCRUDAdmin = lazy(() => import("./pages/ServiceCRUDAdmin"));
 const ConciergeRequestsDashboard = lazy(() => import("./components/admin/ConciergeRequestsDashboard"));
 
 // Member Dashboard (only loaded when member logs in)
