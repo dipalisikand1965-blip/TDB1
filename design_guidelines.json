@@ -1,84 +1,142 @@
 {
-  "design_strategy": {
-    "core_philosophy": "Cinematic Immersion with Device Respect",
-    "context": "Brand Story Video Modal for Mobile/iPhone",
-    "primary_goal": "Fix 'too big' video cropping on mobile while maintaining cinematic feel",
-    "emotional_tone": "Premium, Immersive, Emotional, Polished"
+  "project_name": "Pet Life OS - Shop Redesign",
+  "design_philosophy": {
+    "identity": "E1: The Anti-AI Designer",
+    "core_principles": [
+      "Fusion over Imitation: Aesop's Trust + Apple's Clarity + Airbnb's Guidance",
+      "Emotion First: Every pixel conveys 'Care' and 'Premium Utility'",
+      "Content is King: Products are heroes, text is the guide",
+      "Negative Space: Luxurious padding (2x-3x standard)",
+      "Zoom In: Intimate close-ups of textures and expressions"
+    ],
+    "anti_patterns": [
+      "No generic 'Shopify' grids (equal squares everywhere)",
+      "No 'Inter' for headings",
+      "No full-width gradients",
+      "No bright purple/teal CTAs (Use deep forest or warm amber)"
+    ]
   },
   "typography": {
-    "font_family": {
-      "headings": "Manrope, sans-serif",
-      "body": "Inter, sans-serif",
-      "special": "Syne, sans-serif"
+    "headings": {
+      "family": "Syne, sans-serif",
+      "usage": "Hero titles, Section headers, Emotional taglines",
+      "weights": ["700", "800"],
+      "tracking": "tight"
     },
-    "scale": {
-      "mobile_heading": "text-2xl sm:text-3xl",
-      "mobile_body": "text-base sm:text-lg"
+    "subheadings": {
+      "family": "Manrope, sans-serif",
+      "usage": "Card titles, Navigation, Filters",
+      "weights": ["600", "700"],
+      "tracking": "normal"
+    },
+    "body": {
+      "family": "Inter, sans-serif",
+      "usage": "Product descriptions, Reviews, Legal text",
+      "weights": ["400", "500"],
+      "tracking": "wide"
     }
   },
   "colors": {
-    "modal_bg": "#000000",
-    "text_primary": "#FFFFFF",
-    "text_secondary": "rgba(255, 255, 255, 0.7)",
-    "accent_primary": "#9333EA",
-    "accent_secondary": "#EC4899",
-    "overlay_gradient": "linear-gradient(to top, rgba(0,0,0,0.8), transparent)"
+    "palette_name": "Organic Trust",
+    "primary": "#0F766E",
+    "primary_foreground": "#FFFFFF",
+    "secondary": "#FAFAF9",
+    "accent_warm": "#D97706",
+    "accent_cool": "#E0F2F1",
+    "text_main": "#1C1917",
+    "text_muted": "#57534E",
+    "background": "#FAFAF9",
+    "surface": "#FFFFFF",
+    "border": "rgba(28, 25, 23, 0.08)"
   },
-  "layout_fixes": {
-    "modal_container": {
-      "description": "Full-screen fixed container",
-      "changes": "Remove padding-based safe-areas from the root container. The video background must bleed to the edges (behind the notch/home indicator).",
-      "classes": "fixed inset-0 z-[100] bg-black"
+  "layout_strategy": {
+    "grid_system": "The Bento-Tetris Hybrid",
+    "spacing": {
+      "container_padding": "p-6 md:p-12",
+      "section_gap": "gap-12 md:gap-24",
+      "item_gap": "gap-6"
     },
-    "video_element": {
-      "description": "The main video player",
-      "issue": "Currently uses object-fit: cover which zooms in heavily on landscape videos when viewed on portrait phones.",
-      "solution": "Use responsive object-fit. 'contain' for portrait mobile (to show full width) and 'cover' for desktop/landscape.",
-      "classes": "absolute inset-0 w-full h-full object-contain md:object-cover"
-    },
-    "safe_areas": {
-      "description": "Controls and text must respect device safe areas (notch, home bar)",
-      "implementation": "Apply padding-top/bottom: env(safe-area-inset-*) explicitly to the CONTROLS wrapper, not the video wrapper.",
-      "instruction": "Wrap close button and bottom controls in safe-area-aware containers."
+    "modes": {
+      "marketing": "Asymmetrical, large hero elements, overlapping text",
+      "listing": "Dense but breathable grid (3 columns on desktop, 1 on mobile)"
     }
   },
-  "components": [
-    {
-      "name": "BrandStoryModal",
-      "path": "/app/frontend/src/pages/Home.jsx",
-      "type": "internal_component",
-      "instructions": [
-        "1. Remove inline style padding from the outer motion.div (lines 267-272). Let it fill the screen.",
-        "2. Update <video> className: Change 'object-cover' to 'object-contain md:object-cover' to prevent mobile zooming.",
-        "3. Update <video> inline styles: Remove 'objectFit: cover' from inline styles to let CSS classes handle it.",
-        "4. Update Close Button: Add 'top-4 sm:top-6 pt-[env(safe-area-inset-top)]' to ensure it clears the notch.",
-        "5. Update Bottom Controls: Add 'pb-[env(safe-area-inset-bottom)]' to the bottom control container.",
-        "6. Mobile Optimization: Ensure text overlays (title/subtitle) are positioned with 'bottom-24' or similar to clear the specific mobile controls layout."
-      ]
-    }
-  ],
-  "motion": {
-    "entrance": {
-      "type": "spring",
-      "damping": 25,
-      "stiffness": 120,
-      "initial": { "opacity": 0, "scale": 0.95 },
-      "animate": { "opacity": 1, "scale": 1 }
+  "components": {
+    "hero_section": {
+      "type": "Immersive Sanctuary",
+      "layout": "Full-width image with 'Glass' overlay for text",
+      "content": "Personalized greeting ('Good morning, [Pet Name]') + Key Value Prop",
+      "image_style": "Warm, studio-quality, emotional connection"
     },
-    "exit": {
-      "duration": 0.3,
-      "initial": { "opacity": 1 },
-      "animate": { "opacity": 0 }
+    "tabs_navigation": {
+      "style": "Floating Pill",
+      "animation": "Slide highlight",
+      "items": ["Products (638)", "Services (706)"]
+    },
+    "product_card": {
+      "style": "Minimal Aesop",
+      "elements": [
+        "High-res image (aspect-square)",
+        "Title (Manrope, Bold)",
+        "Price (Clean)",
+        "Match Score (Ring indicator, e.g., '98% Match for Bruno')",
+        "Quick Add (Hover reveal)"
+      ],
+      "hover_effect": "Lift + Shadow Glow"
+    },
+    "personal_picks": {
+      "layout": "Horizontal Scroll (Soul Journey)",
+      "vibe": "Curated, thoughtful, specific to pet needs"
+    },
+    "filters": {
+      "style": "Pillar Pills",
+      "location": "Horizontal scrollable bar or Drawer on mobile",
+      "interaction": "Instant filter with 'fade-in-up' animation"
     }
   },
   "assets": {
-    "icons": "Lucide React (already installed)",
-    "video_source": "Keep existing sources (Sora generated)"
+    "images": {
+      "hero_bg": "https://images.unsplash.com/photo-1699686160376-940e512f65f8?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "product_placeholder": "https://images.unsplash.com/photo-1684882726821-2999db517441?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "service_placeholder": "https://images.unsplash.com/photo-1647002380358-fc70ed2f04e0?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "grooming_service": "https://images.unsplash.com/photo-1727510190155-51abda425a82?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "treats_category": "https://images.unsplash.com/photo-1709810024789-4519a14f05ae?crop=entropy&cs=srgb&fm=jpg&q=85"
+    },
+    "icons": "Lucide React (Feather icons) - stroke-width: 1.5px (Fine lines for premium feel)"
   },
+  "motion": {
+    "entrance": "stagger-children delay-100",
+    "hover": "transform scale-102 transition-all duration-300",
+    "interaction": "micro-bounce on click",
+    "scroll": "smooth-scroll behavior"
+  },
+  "accessibility": {
+    "contrast": "WCAG AA compliant colors",
+    "focus_states": "Visible focus ring (Warm Amber)",
+    "semantic_html": "Use <section>, <article>, <nav> correctly"
+  },
+  "instructions_to_main_agent": [
+    "1. USE EXISTING SHADCN COMPONENTS: Do not reinvent the wheel. Use /components/ui/tabs, /card, /button, /badge.",
+    "2. CUSTOMIZE VIA TAILWIND: Add the 'Aesop' feel by using the design tokens (Syne font, deep teal, warm stone bg).",
+    "3. PERSONALIZATION IS KEY: The 'Personal Picks' section must be the first thing the user sees after the Hero. It should feel like a 'For You' page.",
+    "4. PRODUCTS & SERVICES TABS: Implement a clean toggle that switches the grid content without full page reload if possible (client-side state).",
+    "5. SEARCH & FILTERS: Make search prominent (Apple style). Use 'Pills' for category filtering.",
+    "6. MOBILE FIRST: Ensure the grid collapses to 1 column on mobile and images don't overflow.",
+    "7. IMAGE ASPECT RATIO: Use aspect-square for products, but allow aspect-video for services to differentiate.",
+    "8. MOCK DATA: If API fails, fallback to elegant mock data.",
+    "9. DATA-TESTID: Add data-testid to all interactive elements (buttons, inputs, tabs)."
+  ],
   "universal_guidelines": [
-    "Do not use gradients on the video element itself.",
-    "Ensure 'Close' button is at least 44x44px touch target on mobile.",
-    "Use data-testid attributes for all interactive elements.",
-    "Maintain the existing auto-advance logic."
+    "Avoid generic 'AI slop' aesthetics.",
+    "Dark colors look good when used independently without gradients.",
+    "Don't make generic centered layouts.",
+    "Create depth through layered design elements.",
+    "Use glass-morphism effects with backdrop filters.",
+    "NO 'transition: all'.",
+    "NO center aligning the App container.",
+    "Every interaction needs micro-animations.",
+    "Use 2-3x more spacing than feels comfortable.",
+    "Subtle grain textures/noise overlays are encouraged.",
+    "NEVER use AI assistant Emoji characters."
   ]
 }
