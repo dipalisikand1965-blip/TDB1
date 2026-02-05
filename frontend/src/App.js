@@ -426,6 +426,7 @@ function MainLayout() {
         <Route path="/farewell" element={<FarewellPage />} />
         <Route path="/shop" element={<ShopPage />} />
         <Route path="/services" element={<ServicesPage />} />
+        <Route path="/services/:pillar/:serviceId" element={<ServiceDetailPage />} />
         <Route path="/product/:productId" element={<ProductDetailPage />} />
         <Route path="/community" element={<PillarPage />} />
         
