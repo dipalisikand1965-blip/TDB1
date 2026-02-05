@@ -1249,6 +1249,11 @@ const MiraAI = () => {
   if (shouldHideCompletely) {
     return null;
   }
+  
+  // On DESKTOP pillar pages, hide completely - MiraChatWidget handles everything
+  if (shouldHideOnDesktop) {
+    return null;
+  }
 
   // Determine orb state based on current activity
   const getOrbState = () => {
@@ -1258,7 +1263,7 @@ const MiraAI = () => {
     return 'idle';
   };
 
-  // Always show the orb (except on admin/login pages)
+  // Always show the orb (except on admin/login pages and desktop pillar pages)
   // But HIDE on mobile since MobileNavBar has its own Mira FAB
   if (!isOpen) {
     return (
@@ -1276,7 +1281,6 @@ const MiraAI = () => {
     );
   }
   
-  // On desktop pillar pages with embedded widgets, only show the orb (handled above)
   // The full chat panel opens on click
   
 
