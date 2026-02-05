@@ -80,12 +80,25 @@ Transform the application into a highly personalized, "guided care" experience f
 - 653 services updated, 42 already had whispers
 - Total: 695 services with 100% whisper coverage
 
+### ✅ Added Shopify Sync Button to Admin Panel
+- New green "🛒 Sync Shopify Products" button added
+- Cleans up mock products and syncs real Shopify data
+- Location: Admin sidebar (below Universal Seed button)
+- **USE THIS BUTTON ON PRODUCTION** to fix product data
+
 ### ✅ Backend Testing - ALL PASS
 - Cart endpoints: GET/POST/DELETE working
 - Service whispers: 100% coverage verified
 - Authentication: Token auth working
 - Pet personalization: Returns user pets correctly
 - Test report: `/app/test_reports/iteration_239.json`
+
+## Admin Button Guide
+| Button | What it does | When to use |
+|--------|--------------|-------------|
+| **Universal Seed** | Creates 146 placeholder products | Demo/testing only - NOT for production |
+| **Seed Production** | Seeds FAQs, Collections, Tickets | Safe anytime |
+| **🛒 Sync Shopify Products** | Pulls 2000+ real products from Shopify | **USE ON PRODUCTION** |
 
 ## Pending Issues
 
