@@ -1992,7 +1992,6 @@ const Admin = () => {
             </span>
             <ChevronDown className={`w-6 h-6 transition-transform ${mobileMenuOpen ? 'rotate-180' : ''}`} />
           </button>
-          </button>
           
           {/* Mobile Menu Overlay */}
           {mobileMenuOpen && (
