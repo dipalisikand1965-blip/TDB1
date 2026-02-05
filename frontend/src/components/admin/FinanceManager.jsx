@@ -82,6 +82,67 @@ const FinanceManager = () => {
   const [typeFilter, setTypeFilter] = useState('all');
   const [dateRange, setDateRange] = useState({ start: '', end: '' });
   const [showFilters, setShowFilters] = useState(false);
+  const [datePreset, setDatePreset] = useState('all');
+  
+  // Date preset options
+  const applyDatePreset = (preset) => {
+    setDatePreset(preset);
+    const today = new Date();
+    let start = '';
+    let end = today.toISOString().split('T')[0];
+    
+    switch (preset) {
+      case 'today':
+        start = end;
+        break;
+      case 'yesterday':
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+        start = end = yesterday.toISOString().split('T')[0];
+        break;
+      case 'this_week':
+        const weekStart = new Date(today);
+        weekStart.setDate(today.getDate() - today.getDay());
+        start = weekStart.toISOString().split('T')[0];
+        break;
+      case 'last_week':
+        const lastWeekEnd = new Date(today);
+        lastWeekEnd.setDate(today.getDate() - today.getDay() - 1);
+        const lastWeekStart = new Date(lastWeekEnd);
+        lastWeekStart.setDate(lastWeekEnd.getDate() - 6);
+        start = lastWeekStart.toISOString().split('T')[0];
+        end = lastWeekEnd.toISOString().split('T')[0];
+        break;
+      case 'this_month':
+        start = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+        break;
+      case 'last_month':
+        const lastMonthEnd = new Date(today.getFullYear(), today.getMonth(), 0);
+        const lastMonthStart = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+        start = lastMonthStart.toISOString().split('T')[0];
+        end = lastMonthEnd.toISOString().split('T')[0];
+        break;
+      case 'this_quarter':
+        const quarterMonth = Math.floor(today.getMonth() / 3) * 3;
+        start = new Date(today.getFullYear(), quarterMonth, 1).toISOString().split('T')[0];
+        break;
+      case 'this_year':
+        start = new Date(today.getFullYear(), 0, 1).toISOString().split('T')[0];
+        break;
+      case 'last_year':
+        start = new Date(today.getFullYear() - 1, 0, 1).toISOString().split('T')[0];
+        end = new Date(today.getFullYear() - 1, 11, 31).toISOString().split('T')[0];
+        break;
+      case 'custom':
+        // Keep existing dates
+        return;
+      default:
+        start = '';
+        end = '';
+    }
+    
+    setDateRange({ start, end });
+  };
   
   // Selected payment for detail view
   const [selectedPayment, setSelectedPayment] = useState(null);
