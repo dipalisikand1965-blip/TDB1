@@ -627,9 +627,9 @@ const ServicesPage = () => {
         <div className="max-w-2xl mx-auto px-4 text-center">
           <p className="text-lg sm:text-xl md:text-2xl text-[#2D2D2D] font-medium leading-relaxed mb-4">
             {petName ? (
-              <>You don't manage services.<br />You just take care of <span className="text-[#7A8B6F]">{petName}</span>.<br />We handle the rest.</>
+              <>You don&apos;t manage services.<br />You just take care of <span className="text-[#7A8B6F]">{petName}</span>.<br />We handle the rest.</>
             ) : (
-              <>You don't manage services.<br />You just take care of your dog.<br />We handle the rest.</>
+              <>You don&apos;t manage services.<br />You just take care of your dog.<br />We handle the rest.</>
             )}
           </p>
           <button 
