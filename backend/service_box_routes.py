@@ -650,6 +650,27 @@ async def seed_breed_specific_services():
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.post("/update-all-whispers")
+async def update_all_service_whispers():
+    """Update ALL existing services with appropriate Mira whispers"""
+    db = get_db()
+    
+    try:
+        from update_service_whispers import update_existing_services_with_whispers
+        result = await update_existing_services_with_whispers(db)
+        
+        logger.info(f"[SERVICE BOX] Whispers update complete: {result}")
+        
+        return {
+            "success": True,
+            **result,
+            "message": "All services updated with Mira whispers"
+        }
+    except Exception as e:
+        logger.error(f"[SERVICE BOX] Update whispers error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ==================== SERVICE BOOKINGS ====================
 
 @router.get("/bookings")
