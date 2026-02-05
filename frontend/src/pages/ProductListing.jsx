@@ -161,7 +161,101 @@ const CATEGORY_TO_PILLAR = {
   'cat-treats': 'shop',
   'valentine': 'celebrate',
   'autoship': 'shop',
-  'all': 'shop'
+  'all': 'shop',
+  // Extended pillar mappings
+  'enjoy': 'enjoy',
+  'adventure': 'enjoy',
+  'travel': 'travel',
+  'carriers': 'travel',
+  'care': 'care',
+  'health': 'care',
+  'supplements': 'care',
+  'fit': 'fit',
+  'wellness': 'fit'
+};
+
+// ============================================
+// PILLAR-SPECIFIC PET SOUL MESSAGING
+// Each pillar has unique emotional context for recommendations
+// ============================================
+
+const PILLAR_RECOMMENDATION_CONFIG = {
+  celebrate: {
+    icon: '🎂',
+    title: (petName) => `Perfect picks for ${petName}!`,
+    subtitle: (pet) => `Based on ${pet.name}'s profile • ${pet.breed || 'Mixed'} • ${pet.age ? `${pet.age}y` : 'Age unknown'}`,
+    bgColor: 'from-amber-50 to-orange-50',
+    borderColor: 'border-amber-200',
+    accentColor: 'text-amber-900',
+    badgeColor: 'bg-amber-500'
+  },
+  dine: {
+    icon: '🍽️',
+    title: (petName) => `Meals suited to ${petName}'s dietary needs`,
+    subtitle: (pet) => `Personalized for ${pet.name} • ${pet.weight ? `${pet.weight}kg` : ''} ${pet.breed || 'Mixed'}`,
+    bgColor: 'from-emerald-50 to-teal-50',
+    borderColor: 'border-emerald-200',
+    accentColor: 'text-emerald-900',
+    badgeColor: 'bg-emerald-500'
+  },
+  care: {
+    icon: '💊',
+    title: (petName) => `Health products for ${petName}'s wellness`,
+    subtitle: (pet) => `Supporting ${pet.name}'s health journey • ${pet.breed || 'Mixed'}`,
+    bgColor: 'from-blue-50 to-cyan-50',
+    borderColor: 'border-blue-200',
+    accentColor: 'text-blue-900',
+    badgeColor: 'bg-blue-500'
+  },
+  enjoy: {
+    icon: '🎾',
+    title: (petName) => `Adventure essentials for ${petName}`,
+    subtitle: (pet) => `Everything ${pet.name} needs for the perfect outing`,
+    bgColor: 'from-purple-50 to-pink-50',
+    borderColor: 'border-purple-200',
+    accentColor: 'text-purple-900',
+    badgeColor: 'bg-purple-500'
+  },
+  travel: {
+    icon: '✈️',
+    title: (petName) => `Travel gear for ${petName}'s journey`,
+    subtitle: (pet) => `Safe & comfortable travel for ${pet.name} • ${pet.weight ? `${pet.weight}kg` : ''}`,
+    bgColor: 'from-sky-50 to-indigo-50',
+    borderColor: 'border-sky-200',
+    accentColor: 'text-sky-900',
+    badgeColor: 'bg-sky-500'
+  },
+  fit: {
+    icon: '💪',
+    title: (petName) => `Fitness picks for ${petName}`,
+    subtitle: (pet) => `Keep ${pet.name} active & healthy • ${pet.breed || 'Mixed'}`,
+    bgColor: 'from-lime-50 to-green-50',
+    borderColor: 'border-lime-200',
+    accentColor: 'text-lime-900',
+    badgeColor: 'bg-lime-600'
+  },
+  shop: {
+    icon: '🛍️',
+    title: (petName) => `Curated for ${petName}`,
+    subtitle: (pet) => `Handpicked based on ${pet.name}'s profile`,
+    bgColor: 'from-rose-50 to-pink-50',
+    borderColor: 'border-rose-200',
+    accentColor: 'text-rose-900',
+    badgeColor: 'bg-rose-500'
+  },
+  default: {
+    icon: '🐾',
+    title: (petName) => `Perfect picks for ${petName}!`,
+    subtitle: (pet) => `Based on ${pet.name}'s profile`,
+    bgColor: 'from-gray-50 to-slate-50',
+    borderColor: 'border-gray-200',
+    accentColor: 'text-gray-900',
+    badgeColor: 'bg-gray-500'
+  }
+};
+
+const getPillarRecommendationConfig = (pillar) => {
+  return PILLAR_RECOMMENDATION_CONFIG[pillar] || PILLAR_RECOMMENDATION_CONFIG.default;
 };
 
 // ============================================
