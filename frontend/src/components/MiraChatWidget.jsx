@@ -348,12 +348,22 @@ const MiraChatWidget = ({
         const newPet = pets.find(p => p.id === newPetId);
         if (newPet) {
           setSelectedPet(newPet);
-          // NOTE: Don't clear messages - users expect conversation to persist
-          // Just add a note that pet has changed
+          setAllPetsMode(false); // Exit all pets mode when specific pet selected
+          // Add a warm, conversational note about the pet switch
+          const petBreed = newPet.breed || newPet.identity?.breed || '';
+          const petAge = newPet.age || newPet.identity?.age_years || '';
+          let switchMessage = `Of course! Switching to **${newPet.name}** now. 🐾`;
+          if (petBreed) {
+            switchMessage += ` Your lovely ${petBreed}`;
+            if (petAge) switchMessage += ` (${petAge}y)`;
+            switchMessage += '.';
+          }
+          switchMessage += ` How can I help ${newPet.name} today?`;
+          
           setMessages(prev => [...prev, {
             id: `pet-change-${Date.now()}`,
             role: 'assistant',
-            content: `I'm now helping with ${newPet.name}! 🐾`
+            content: switchMessage
           }]);
         }
       }
@@ -362,6 +372,34 @@ const MiraChatWidget = ({
     window.addEventListener('petSelectionChanged', handlePetChange);
     return () => window.removeEventListener('petSelectionChanged', handlePetChange);
   }, [pets]);
+  
+  // Handle pet switch within the widget (local click)
+  const handlePetSwitch = (pet) => {
+    if (pet === 'all') {
+      setAllPetsMode(true);
+      setSelectedPet(null);
+      const allPetNames = pets.map(p => p.name).join(', ');
+      setMessages(prev => [...prev, {
+        id: `pet-change-${Date.now()}`,
+        role: 'assistant',
+        content: `Got it! I'll help with all your pets: **${allPetNames}**. 🐾 What do you need for your furry family?`
+      }]);
+    } else {
+      setAllPetsMode(false);
+      setSelectedPet(pet);
+      const petBreed = pet.breed || pet.identity?.breed || '';
+      let switchMessage = `Okay **${pet.name}**! 🐾`;
+      if (petBreed) switchMessage += ` Your ${petBreed}.`;
+      switchMessage += ` What would you like help with?`;
+      
+      setMessages(prev => [...prev, {
+        id: `pet-change-${Date.now()}`,
+        role: 'assistant',
+        content: switchMessage
+      }]);
+    }
+    trackClick('pet_switch', pet === 'all' ? 'all' : pet.id, { pillar, from_pet: selectedPet?.id });
+  };
   
   // Fetch pet-specific recommendations and soul insights when pet changes
   useEffect(() => {
