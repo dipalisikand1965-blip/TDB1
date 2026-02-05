@@ -1432,6 +1432,12 @@ const MiraChatWidget = ({
                       <span>{filter.label}</span>
                     </button>
                   ))}
+                  {/* "Remembered" indicator - shows when filters were auto-loaded */}
+                  {activeSupportFilters.length > 0 && selectedPet && (
+                    <span className="text-[9px] text-purple-400 shrink-0 ml-1 flex items-center gap-0.5">
+                      <span>💾</span> Remembered
+                    </span>
+                  )}
                 </div>
               </div>
             )}
