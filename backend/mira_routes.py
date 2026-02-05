@@ -4314,24 +4314,35 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
             
             # Also detect breed from message if not from pet profile
             if not detected_breed:
-                breed_keywords = {
-                    "labrador": "Labrador", "lab": "Labrador", "golden retriever": "Golden Retriever",
-                    "goldie": "Golden Retriever", "indie": "Indie", "german shepherd": "German Shepherd",
-                    "gsd": "German Shepherd", "beagle": "Beagle", "pug": "Pug", "shih tzu": "Shih Tzu",
-                    "pomeranian": "Pomeranian", "pom": "Pomeranian", "husky": "Husky", 
-                    "rottweiler": "Rottweiler", "rottie": "Rottweiler", "dachshund": "Dachshund",
-                    "cocker spaniel": "Cocker Spaniel", "french bulldog": "French Bulldog",
-                    "frenchie": "French Bulldog", "boxer": "Boxer", "great dane": "Great Dane",
-                    "doberman": "Doberman", "dobie": "Doberman", "maltese": "Maltese",
-                    "yorkie": "Yorkshire Terrier", "yorkshire": "Yorkshire Terrier",
-                    "lhasa apso": "Lhasa Apso", "chihuahua": "Chihuahua", "chi": "Chihuahua",
-                    "corgi": "Corgi", "samoyed": "Samoyed", "shiba": "Shiba Inu",
-                    "border collie": "Border Collie", "poodle": "Poodle", "bulldog": "Bulldog",
-                    "dalmatian": "Dalmatian", "akita": "Akita", "spitz": "Spitz"
-                }
+                import re
+                # Use word boundaries to avoid false matches (e.g., "chi" in "Mochi")
+                breed_patterns = [
+                    (r'\blabrador\b', "Labrador"), (r'\blab\b', "Labrador"),
+                    (r'\bgolden\s*retriever\b', "Golden Retriever"), (r'\bgoldie\b', "Golden Retriever"),
+                    (r'\bindie\b', "Indie"), (r'\bgerman\s*shepherd\b', "German Shepherd"),
+                    (r'\bgsd\b', "German Shepherd"), (r'\bbeagle\b', "Beagle"), (r'\bpug\b', "Pug"),
+                    (r'\bshih\s*tzu\b', "Shih Tzu"), (r'\bpomeranian\b', "Pomeranian"),
+                    (r'\bpom\b', "Pomeranian"), (r'\bhusky\b', "Husky"),
+                    (r'\brottweiler\b', "Rottweiler"), (r'\brottie\b', "Rottweiler"),
+                    (r'\bdachshund\b', "Dachshund"), (r'\bcocker\s*spaniel\b', "Cocker Spaniel"),
+                    (r'\bfrench\s*bulldog\b', "French Bulldog"), (r'\bfrenchie\b', "French Bulldog"),
+                    (r'\bboxer\b', "Boxer"), (r'\bgreat\s*dane\b', "Great Dane"),
+                    (r'\bdoberman\b', "Doberman"), (r'\bdobie\b', "Doberman"),
+                    (r'\bmaltese\b', "Maltese"), (r'\byorkie\b', "Yorkshire Terrier"),
+                    (r'\byorkshire\b', "Yorkshire Terrier"), (r'\blhasa\s*apso\b', "Lhasa Apso"),
+                    (r'\bchihuahua\b', "Chihuahua"), (r'\bcorgi\b', "Corgi"),
+                    (r'\bsamoyed\b', "Samoyed"), (r'\bshiba\b', "Shiba Inu"),
+                    (r'\bborder\s*collie\b', "Border Collie"), (r'\bpoodle\b', "Poodle"),
+                    (r'\bbulldog\b', "Bulldog"), (r'\bdalmatian\b', "Dalmatian"),
+                    (r'\bakita\b', "Akita"), (r'\bspitz\b', "Spitz"),
+                    (r'\bjack\s*russell\b', "Jack Russell"), (r'\bjrt\b', "Jack Russell"),
+                    (r'\bsaint\s*bernard\b', "Saint Bernard"), (r'\bbernese\b', "Bernese Mountain Dog"),
+                    (r'\bcavalier\b', "Cavalier King Charles"), (r'\baussie\b', "Australian Shepherd"),
+                    (r'\baustralian\s*shepherd\b', "Australian Shepherd"), (r'\bweimaraner\b', "Weimaraner")
+                ]
                 msg_lower = user_message.lower()
-                for keyword, breed_name in breed_keywords.items():
-                    if keyword in msg_lower:
+                for pattern, breed_name in breed_patterns:
+                    if re.search(pattern, msg_lower):
                         detected_breed = breed_name
                         break
             
