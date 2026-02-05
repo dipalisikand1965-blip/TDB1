@@ -1068,56 +1068,69 @@ const ProductListing = ({ category = 'all' }) => {
         </div>
         
         {/* NEW: Mira Support Filters Row - Personalized guidance for your pet */}
-        {selectedPet && supportFilters.length > 0 && (
-          <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-100" data-testid="support-filters-section">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-purple-500" />
-                <span className="text-sm font-medium text-purple-900">
-                  Personalized for {selectedPet.name}
-                </span>
-                {activeSupportFilters.length > 0 && (
-                  <span className="text-xs text-purple-600 bg-purple-100 px-2 py-0.5 rounded-full">
-                    {activeSupportFilters.length} active
+        {selectedPet && supportFilters.length > 0 && (() => {
+          const recConfig = getPillarRecommendationConfig(pillar);
+          return (
+            <div className={`mb-6 p-4 bg-gradient-to-r ${recConfig.bgColor} rounded-xl border ${recConfig.borderColor}`} data-testid="support-filters-section">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <Sparkles className={`w-4 h-4 ${recConfig.accentColor}`} />
+                  <span className={`text-sm font-medium ${recConfig.accentColor}`}>
+                    Personalized for {selectedPet.name}
                   </span>
+                  {activeSupportFilters.length > 0 && (
+                    <span className={`text-xs ${recConfig.accentColor} bg-white/50 px-2 py-0.5 rounded-full`}>
+                      {activeSupportFilters.length} active
+                    </span>
+                  )}
+                </div>
+                {activeSupportFilters.length > 0 && (
+                  <button 
+                    onClick={() => setActiveSupportFilters([])}
+                    className={`text-xs ${recConfig.accentColor} opacity-70 hover:opacity-100 flex items-center gap-1`}
+                  >
+                    <X className="w-3 h-3" /> Clear all
+                  </button>
                 )}
               </div>
+              
+              {/* Support Filter Pills - Horizontal scrollable */}
+              <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                {supportFilters.map(filter => {
+                  const isActive = activeSupportFilters.includes(filter.id);
+                  const Icon = filter.icon;
+                  return (
+                    <button
+                      key={filter.id}
+                      onClick={() => toggleSupportFilter(filter.id)}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
+                        isActive
+                          ? `${recConfig.badgeColor} text-white shadow-md`
+                          : `bg-white text-gray-700 border ${recConfig.borderColor} hover:bg-white/80`
+                      }`}
+                      data-testid={`support-filter-${filter.id}`}
+                    >
+                      <Icon className="w-4 h-4" />
+                      {filter.label}
+                      {isActive && <Check className="w-3 h-3" />}
+                    </button>
+                  );
+                })}
+              </div>
+              
+              {/* Active filter description */}
               {activeSupportFilters.length > 0 && (
-                <button 
-                  onClick={() => setActiveSupportFilters([])}
-                  className="text-xs text-purple-500 hover:text-purple-700 flex items-center gap-1"
-                >
-                  <X className="w-3 h-3" /> Clear all
-                </button>
+                <p className={`text-xs ${recConfig.accentColor} opacity-70 mt-2 flex items-center gap-1`}>
+                  <Shield className="w-3 h-3" />
+                  Showing products that support: {activeSupportFilters.map(id => {
+                    const filter = supportFilters.find(f => f.id === id);
+                    return filter?.label;
+                  }).join(', ')}
+                </p>
               )}
             </div>
-            
-            {/* Support Filter Pills - Horizontal scrollable */}
-            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-              {supportFilters.map(filter => {
-                const isActive = activeSupportFilters.includes(filter.id);
-                const Icon = filter.icon;
-                return (
-                  <button
-                    key={filter.id}
-                    onClick={() => toggleSupportFilter(filter.id)}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
-                      isActive
-                        ? 'bg-purple-600 text-white shadow-md'
-                        : 'bg-white text-gray-700 border border-gray-200 hover:border-purple-300 hover:bg-purple-50'
-                    }`}
-                    data-testid={`support-filter-${filter.id}`}
-                  >
-                    <Icon className="w-4 h-4" />
-                    {filter.label}
-                    {isActive && <Check className="w-3 h-3" />}
-                  </button>
-                );
-              })}
-            </div>
-            
-            {/* Active filter description */}
-            {activeSupportFilters.length > 0 && (
+          );
+        })()}
               <p className="text-xs text-purple-600 mt-2 flex items-center gap-1">
                 <Shield className="w-3 h-3" />
                 Showing products that support: {activeSupportFilters.map(id => {
