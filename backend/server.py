@@ -4980,25 +4980,18 @@ async def create_product(product: dict, username: str = Depends(verify_admin)):
 
 @admin_router.put("/products/{product_id}")
 async def update_product(product_id: str, updates: dict, username: str = Depends(verify_admin)):
-    """Update an existing product - searches both collections"""
+    """Update an existing product in products_master"""
     updates["updated_at"] = get_utc_timestamp()
     
     # Remove id from updates if present
     updates.pop("id", None)
     updates.pop("_id", None)
     
-    # Try unified_products first
-    result = await db.unified_products.update_one(
+    # Update in products_master
+    result = await db.products_master.update_one(
         {"id": product_id},
         {"$set": updates}
     )
-    
-    if result.matched_count == 0:
-        # Fall back to legacy products
-        result = await db.products.update_one(
-            {"id": product_id},
-            {"$set": updates}
-        )
     
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Product not found")
@@ -5007,12 +5000,8 @@ async def update_product(product_id: str, updates: dict, username: str = Depends
 
 @admin_router.delete("/products/{product_id}")
 async def delete_product(product_id: str, username: str = Depends(verify_admin)):
-    """Delete a product - searches both collections"""
-    # Try unified_products first
-    result = await db.unified_products.delete_one({"id": product_id})
-    if result.deleted_count == 0:
-        # Fall back to legacy products
-        result = await db.products.delete_one({"id": product_id})
+    """Delete a product from products_master"""
+    result = await db.products_master.delete_one({"id": product_id})
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Product not found")
     return {"message": "Product deleted successfully"}
@@ -5020,7 +5009,7 @@ async def delete_product(product_id: str, username: str = Depends(verify_admin))
 
 @admin_router.post("/products/bulk-import")
 async def bulk_import_products(products: List[dict], username: str = Depends(verify_admin)):
-    """Bulk import products (for initial data migration)"""
+    """Bulk import products to products_master"""
     for product in products:
         if "id" not in product:
             product["id"] = str(uuid.uuid4())
@@ -5028,7 +5017,7 @@ async def bulk_import_products(products: List[dict], username: str = Depends(ver
         product["updated_at"] = get_utc_timestamp()
     
     if products:
-        await db.products.insert_many(products)
+        await db.products_master.insert_many(products)
     
     return {"message": f"Imported {len(products)} products"}
 
