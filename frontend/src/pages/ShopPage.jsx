@@ -1,20 +1,19 @@
 /**
  * ShopPage.jsx
  * 
- * Design Philosophy:
- * - Apple: Decision clarity (simple choices, clear paths)
- * - Aesop: Trust through language (caring, knowledgeable copy)
- * - Airbnb: Guided choice (personalized recommendations)
+ * Design: Personalized Pet-First Experience
+ * Inspired by the reference design with pet name throughout
  * 
- * Core Message: "The easiest place in India to do the right thing for your dog."
+ * "Let's make life easier for {petName}."
  */
 
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
-import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Card } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Badge } from '../components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
@@ -22,136 +21,139 @@ import { toast } from '../hooks/use-toast';
 import MiraChatWidget from '../components/MiraChatWidget';
 import SEOHead from '../components/SEOHead';
 import {
-  Search, Heart, Star, ChevronRight, ArrowRight, X, Package,
-  PawPrint, Briefcase, MapPin, Calendar, Sparkles, CheckCircle,
-  Truck, Shield, Leaf, Award, Clock, ChevronDown
+  Search, Heart, ChevronDown, ArrowRight, X, Package,
+  PawPrint, Briefcase, Shield, Truck, RotateCcw, CheckCircle
 } from 'lucide-react';
 
 // =============================================================================
-// DESIGN TOKENS - Aesop-inspired palette
+// BREED PLACEHOLDER IMAGES - Beautiful stock photos by breed
 // =============================================================================
-const DESIGN = {
-  colors: {
-    cream: '#F7F5F0',      // Warm background
-    charcoal: '#2D2D2D',   // Primary text
-    sage: '#7A8B6F',       // Accent - trust
-    terracotta: '#C4785A', // Accent - warmth
-    stone: '#9B9B9B',      // Secondary text
-  },
-  spacing: {
-    section: 'py-16 md:py-24',
-    container: 'max-w-6xl mx-auto px-4 sm:px-6',
+const BREED_IMAGES = {
+  'labrador': 'https://images.unsplash.com/photo-1591769225440-811ad7d6eab3?w=800&q=80',
+  'golden retriever': 'https://images.unsplash.com/photo-1609348490161-a879e4327ae9?w=800&q=80',
+  'indie': 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800&q=80',
+  'german shepherd': 'https://images.unsplash.com/photo-1589941013453-ec89f33b5e95?w=800&q=80',
+  'beagle': 'https://images.unsplash.com/photo-1505628346881-b72b27e84530?w=800&q=80',
+  'pug': 'https://images.unsplash.com/photo-1517849845537-4d257902454a?w=800&q=80',
+  'shih tzu': 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=800&q=80',
+  'pomeranian': 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800&q=80',
+  'husky': 'https://images.unsplash.com/photo-1605568427561-40dd23c2acea?w=800&q=80',
+  'default': 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800&q=80'
+};
+
+// Get breed image - pet photo or beautiful breed stock
+const getBreedImage = (pet) => {
+  if (pet?.photo_url || pet?.image_url) {
+    return pet.photo_url || pet.image_url;
   }
+  const breed = pet?.breed?.toLowerCase() || 'default';
+  return BREED_IMAGES[breed] || BREED_IMAGES['default'];
 };
 
 // =============================================================================
-// TRUST BADGES - Aesop-style language
+// DESIGN COLORS - Warm, inviting palette
+// =============================================================================
+const COLORS = {
+  cream: '#F5F0E8',
+  terracotta: '#C4785A',
+  charcoal: '#2D2D2D',
+  sage: '#7A8B6F',
+  stone: '#9B9B9B',
+  warmWhite: '#FDFBF7',
+};
+
+// =============================================================================
+// TRUST BADGES
 // =============================================================================
 const TRUST_BADGES = [
-  { icon: Shield, text: 'Vet-approved selections', detail: 'Every product reviewed by veterinarians' },
-  { icon: Leaf, text: 'Clean ingredients', detail: 'No harmful additives or fillers' },
-  { icon: Truck, text: 'Free delivery over ₹499', detail: 'Careful handling, always' },
-  { icon: Award, text: 'Satisfaction promise', detail: 'Not right? We\'ll make it right' },
+  { icon: Shield, text: 'Vet Approved Advice' },
+  { icon: RotateCcw, text: 'Easy Returns Anytime' },
+  { icon: Truck, text: 'Free Delivery Right To Your Door' },
 ];
 
 // =============================================================================
-// PRODUCT CARD - Apple-style clarity
+// PRODUCT CARD - With personalized "Pet's Pick" badge
 // =============================================================================
-const ProductCard = ({ product, onAddToCart }) => {
+const ProductCard = ({ product, onAddToCart, petName, isPetPick }) => {
   const [isWishlisted, setIsWishlisted] = useState(false);
   const navigate = useNavigate();
   
   const price = product.price || 0;
-  const comparePrice = product.compare_at_price;
-  const hasDiscount = comparePrice && comparePrice > price;
   const title = product.title || product.name || 'Product';
   const image = product.image || product.image_url || product.images?.[0];
+  const description = product.description || '';
+
+  // Personalize description with pet name
+  const personalizedDesc = petName 
+    ? description.replace(/your pet|your dog|your companion/gi, petName)
+    : description;
 
   return (
     <div 
-      className="group cursor-pointer"
+      className="group cursor-pointer bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
       onClick={() => navigate(`/product/${product.handle || product.id}`)}
       data-testid={`product-card-${product.id}`}
     >
-      {/* Image Container - Clean, minimal */}
-      <div className="relative aspect-square bg-[#F7F5F0] rounded-lg overflow-hidden mb-4">
+      {/* Image Container */}
+      <div className="relative aspect-square bg-[#F5F0E8] overflow-hidden">
         <img
           src={image || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400'}
           alt={title}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
         
-        {/* Minimal badges - only show what matters */}
-        {hasDiscount && (
+        {/* Pet's Pick Badge */}
+        {isPetPick && petName && (
           <div className="absolute top-3 left-3">
-            <span className="bg-[#C4785A] text-white text-xs font-medium px-2 py-1 rounded">
-              Save {Math.round((1 - price/comparePrice) * 100)}%
+            <span className="bg-[#C4785A] text-white text-xs font-medium px-3 py-1.5 rounded-full shadow-sm">
+              {petName}&apos;s Pick
             </span>
           </div>
         )}
         
-        {/* Wishlist - subtle */}
+        {/* Wishlist */}
         <button
           onClick={(e) => { e.stopPropagation(); setIsWishlisted(!isWishlisted); }}
-          className="absolute top-3 right-3 p-2 bg-white/90 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+          className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
         >
-          <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-[#C4785A] text-[#C4785A]' : 'text-[#2D2D2D]'}`} />
+          <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-[#C4785A] text-[#C4785A]' : 'text-gray-600'}`} />
         </button>
       </div>
       
-      {/* Product Info - Clear hierarchy */}
-      <div className="space-y-2">
-        <h3 className="font-medium text-[#2D2D2D] text-sm sm:text-base line-clamp-2 leading-snug">
+      {/* Product Info */}
+      <div className="p-4">
+        <h3 className="font-semibold text-[#2D2D2D] text-sm sm:text-base mb-1 line-clamp-1">
           {title}
         </h3>
+        <p className="text-xs sm:text-sm text-[#9B9B9B] mb-3 line-clamp-2">
+          {personalizedDesc.slice(0, 80)}
+        </p>
         
-        {/* Trust indicator - Aesop style */}
-        {product.pawmeter?.overall >= 4 && (
-          <p className="text-xs text-[#7A8B6F] flex items-center gap-1">
-            <CheckCircle className="w-3 h-3" />
-            Highly rated by pet parents
-          </p>
-        )}
-        
-        {/* Price - Apple clarity */}
-        <div className="flex items-baseline gap-2">
-          <span className="text-base sm:text-lg font-semibold text-[#2D2D2D]">
+        {/* Price and Arrow */}
+        <div className="flex items-center justify-between">
+          <span className="text-base font-semibold text-[#2D2D2D]">
             ₹{price.toLocaleString()}
           </span>
-          {hasDiscount && (
-            <span className="text-sm text-[#9B9B9B] line-through">
-              ₹{comparePrice.toLocaleString()}
-            </span>
-          )}
+          <ArrowRight className="w-4 h-4 text-[#C4785A] group-hover:translate-x-1 transition-transform" />
         </div>
-        
-        {/* Add to cart - Clean CTA */}
-        <Button
-          onClick={(e) => { e.stopPropagation(); onAddToCart(product); }}
-          variant="outline"
-          className="w-full mt-2 border-[#2D2D2D] text-[#2D2D2D] hover:bg-[#2D2D2D] hover:text-white transition-colors text-sm"
-          data-testid={`add-to-cart-${product.id}`}
-        >
-          Add to bag
-        </Button>
       </div>
     </div>
   );
 };
 
 // =============================================================================
-// SERVICE CARD - Airbnb guided choice
+// SERVICE CARD
 // =============================================================================
-const ServiceCard = ({ service }) => {
+const ServiceCard = ({ service, petName }) => {
   const navigate = useNavigate();
   
   return (
     <div 
-      className="group cursor-pointer"
+      className="group cursor-pointer bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow"
       onClick={() => navigate(`/services/${service.pillar}/${service.id}`)}
       data-testid={`service-card-${service.id}`}
     >
-      <div className="relative aspect-[4/3] bg-[#F7F5F0] rounded-lg overflow-hidden mb-4">
+      <div className="relative aspect-[4/3] bg-gradient-to-br from-[#7A8B6F] to-[#5A6B4F] overflow-hidden">
         {service.image_url ? (
           <img
             src={service.image_url}
@@ -159,141 +161,31 @@ const ServiceCard = ({ service }) => {
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#7A8B6F] to-[#5A6B4F]">
-            <Briefcase className="w-12 h-12 text-white/40" />
-          </div>
-        )}
-        
-        {service.is_bookable && (
-          <div className="absolute bottom-3 left-3">
-            <span className="bg-white/95 text-[#2D2D2D] text-xs font-medium px-2 py-1 rounded flex items-center gap-1">
-              <Calendar className="w-3 h-3" />
-              Instant booking
-            </span>
+          <div className="w-full h-full flex items-center justify-center">
+            <Briefcase className="w-12 h-12 text-white/30" />
           </div>
         )}
       </div>
       
-      <div className="space-y-2">
-        <h3 className="font-medium text-[#2D2D2D] text-sm sm:text-base line-clamp-2">
+      <div className="p-4">
+        <h3 className="font-semibold text-[#2D2D2D] text-sm sm:text-base mb-1 line-clamp-2">
           {service.name}
         </h3>
-        <p className="text-xs text-[#9B9B9B] line-clamp-2">
+        <p className="text-xs text-[#9B9B9B] mb-3 line-clamp-2">
           {service.description || 'Professional care for your companion'}
         </p>
-        <div className="flex items-baseline gap-2">
+        <div className="flex items-center justify-between">
           {service.base_price > 0 ? (
             <span className="text-base font-semibold text-[#2D2D2D]">
               From ₹{service.base_price?.toLocaleString()}
             </span>
-          ) : service.is_free ? (
-            <span className="text-base font-semibold text-[#7A8B6F]">Complimentary</span>
           ) : (
-            <span className="text-sm text-[#9B9B9B]">Get a quote</span>
+            <span className="text-sm text-[#7A8B6F] font-medium">Get a quote</span>
           )}
+          <ArrowRight className="w-4 h-4 text-[#C4785A] group-hover:translate-x-1 transition-transform" />
         </div>
       </div>
     </div>
-  );
-};
-
-// =============================================================================
-// PERSONAL PICKS SECTION - Airbnb personalization
-// =============================================================================
-const PersonalPicks = ({ pets, products }) => {
-  const [selectedPet, setSelectedPet] = useState(pets?.[0] || null);
-  const navigate = useNavigate();
-  
-  // Filter products for selected pet's breed
-  const recommendedProducts = useMemo(() => {
-    if (!selectedPet?.breed || !products.length) return products.slice(0, 6);
-    
-    const breed = selectedPet.breed.toLowerCase();
-    const breedSpecific = products.filter(p => 
-      p.is_breed_specific && 
-      (p.breed_metadata?.breeds?.some(b => b.toLowerCase().includes(breed)) ||
-       p.name?.toLowerCase().includes(breed) ||
-       p.title?.toLowerCase().includes(breed))
-    );
-    
-    // If we have breed-specific products, prioritize them
-    if (breedSpecific.length >= 3) {
-      return breedSpecific.slice(0, 6);
-    }
-    
-    // Otherwise, return a mix
-    return [...breedSpecific, ...products.filter(p => !breedSpecific.includes(p))].slice(0, 6);
-  }, [selectedPet, products]);
-
-  if (!pets?.length) return null;
-
-  return (
-    <section className="py-12 md:py-20 bg-[#F7F5F0]" data-testid="personal-picks-section">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        {/* Header - Aesop language */}
-        <div className="max-w-2xl mb-10">
-          <p className="text-sm text-[#7A8B6F] font-medium tracking-wide uppercase mb-3">
-            Curated for {selectedPet?.name || 'your companion'}
-          </p>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-[#2D2D2D] leading-tight mb-4">
-            {selectedPet?.breed ? (
-              <>Products thoughtfully selected for {selectedPet.breed}s</>
-            ) : (
-              <>Products we think you&apos;ll love</>
-            )}
-          </h2>
-          <p className="text-[#9B9B9B]">
-            Based on {selectedPet?.name}&apos;s profile, dietary needs, and what other {selectedPet?.breed || 'pet'} parents trust.
-          </p>
-        </div>
-        
-        {/* Pet selector - if multiple pets */}
-        {pets.length > 1 && (
-          <div className="flex gap-3 mb-8 overflow-x-auto pb-2">
-            {pets.map(pet => (
-              <button
-                key={pet.id || pet.name}
-                onClick={() => setSelectedPet(pet)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full border transition-all whitespace-nowrap ${
-                  selectedPet?.id === pet.id || selectedPet?.name === pet.name
-                    ? 'bg-[#2D2D2D] text-white border-[#2D2D2D]'
-                    : 'bg-white text-[#2D2D2D] border-[#E5E5E5] hover:border-[#2D2D2D]'
-                }`}
-                data-testid={`pet-selector-${pet.name}`}
-              >
-                <PawPrint className="w-4 h-4" />
-                <span className="text-sm font-medium">{pet.name}</span>
-                {pet.breed && <span className="text-xs opacity-70">({pet.breed})</span>}
-              </button>
-            ))}
-          </div>
-        )}
-        
-        {/* Product Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
-          {recommendedProducts.map(product => (
-            <ProductCard 
-              key={product.id} 
-              product={product}
-              onAddToCart={(p) => {
-                toast({ title: `${p.title || p.name} added to bag` });
-              }}
-            />
-          ))}
-        </div>
-        
-        {/* See all - Airbnb style */}
-        <div className="mt-10 text-center">
-          <button
-            onClick={() => navigate('/shop?for=' + (selectedPet?.breed || 'all'))}
-            className="inline-flex items-center gap-2 text-[#2D2D2D] font-medium hover:gap-3 transition-all"
-          >
-            See all recommendations for {selectedPet?.name}
-            <ArrowRight className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
-    </section>
   );
 };
 
@@ -311,10 +203,14 @@ const ShopPage = () => {
   const [services, setServices] = useState([]);
   const [pets, setPets] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeView, setActiveView] = useState('products'); // products | services
+  const [activeView, setActiveView] = useState('products');
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [showSearch, setShowSearch] = useState(false);
+  
+  // Pet filters
+  const [selectedPet, setSelectedPet] = useState(null);
+  const [selectedAge, setSelectedAge] = useState('all');
+  const [selectedCity, setSelectedCity] = useState('all');
+  const [selectedEnergy, setSelectedEnergy] = useState('all');
   
   // Fetch products
   useEffect(() => {
@@ -360,7 +256,11 @@ const ShopPage = () => {
           });
           if (res.ok) {
             const data = await res.json();
-            setPets(data.pets || []);
+            const userPets = data.pets || [];
+            setPets(userPets);
+            if (userPets.length > 0 && !selectedPet) {
+              setSelectedPet(userPets[0]);
+            }
           }
         } catch (err) {
           console.error('Failed to fetch pets:', err);
@@ -370,8 +270,8 @@ const ShopPage = () => {
     }
   }, [token]);
   
-  // Filter products
-  const filteredProducts = useMemo(() => {
+  // Filter and personalize products
+  const { filteredProducts, petPicks } = useMemo(() => {
     let result = products;
     
     if (searchQuery) {
@@ -383,16 +283,27 @@ const ShopPage = () => {
       );
     }
     
-    if (selectedCategory && selectedCategory !== 'all') {
-      result = result.filter(p =>
-        p.product_type?.toLowerCase() === selectedCategory.toLowerCase() ||
-        p.category?.toLowerCase() === selectedCategory.toLowerCase() ||
-        p.tags?.some(t => t?.toLowerCase().includes(selectedCategory.toLowerCase()))
-      );
+    // Get pet-specific picks
+    let picks = [];
+    if (selectedPet?.breed) {
+      const breed = selectedPet.breed.toLowerCase();
+      picks = products.filter(p => 
+        p.is_breed_specific && 
+        (p.breed_metadata?.breeds?.some(b => b.toLowerCase().includes(breed)) ||
+         p.name?.toLowerCase().includes(breed) ||
+         p.title?.toLowerCase().includes(breed))
+      ).slice(0, 6);
     }
     
-    return result;
-  }, [products, searchQuery, selectedCategory]);
+    // If no breed-specific, get general recommendations
+    if (picks.length < 3) {
+      picks = products
+        .filter(p => p.pawmeter?.overall >= 4 || p.rating >= 4)
+        .slice(0, 6);
+    }
+    
+    return { filteredProducts: result, petPicks: picks };
+  }, [products, searchQuery, selectedPet]);
   
   // Handle add to cart
   const handleAddToCart = useCallback((product) => {
@@ -409,57 +320,213 @@ const ShopPage = () => {
     });
   }, [addToCart]);
 
+  // Pet name for personalization
+  const petName = selectedPet?.name || '';
+  const petBreed = selectedPet?.breed || '';
+  const petAge = selectedPet?.age || selectedPet?.dob ? 
+    (new Date().getFullYear() - new Date(selectedPet.dob).getFullYear()) + ' years' : '';
+
   return (
-    <div className="min-h-screen bg-white" data-testid="shop-page">
+    <div className="min-h-screen bg-[#FDFBF7]" data-testid="shop-page">
       <SEOHead page="shop" path="/shop" />
       
       {/* ================================================================== */}
-      {/* HERO SECTION - Apple clarity + Aesop language */}
+      {/* HERO SECTION - Personalized */}
       {/* ================================================================== */}
-      <section className="bg-[#F7F5F0] pt-8 pb-12 md:pt-12 md:pb-20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          {/* Tagline */}
-          <div className="max-w-3xl">
-            <p className="text-sm text-[#7A8B6F] font-medium tracking-wide uppercase mb-4">
-              The Doggy Company
-            </p>
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold text-[#2D2D2D] leading-[1.1] mb-6">
-              The easiest place in India to do the right thing for your dog.
-            </h1>
-            <p className="text-base sm:text-lg text-[#9B9B9B] leading-relaxed mb-8 max-w-xl">
-              Every product here is chosen with care. Vet-approved, pet-parent trusted, 
-              and backed by our promise: if it&apos;s not right for your companion, we&apos;ll make it right.
-            </p>
-          </div>
-          
-          {/* Search - Minimal, Apple-style */}
-          <div className="max-w-xl">
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9B9B9B]" />
-              <Input
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="What are you looking for?"
-                className="pl-12 pr-4 py-4 text-base bg-white border-0 rounded-full shadow-sm focus:ring-2 focus:ring-[#2D2D2D]"
-                data-testid="shop-search"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[#9B9B9B] hover:text-[#2D2D2D]"
-                >
-                  <X className="w-5 h-5" />
-                </button>
+      <section className="relative bg-[#F5F0E8] overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-12 md:py-16">
+          <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
+            {/* Left: Content */}
+            <div className="flex-1 text-center lg:text-left">
+              {/* Main Headline */}
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-[#2D2D2D] leading-tight mb-4">
+                {petName ? (
+                  <>Let&apos;s make life easier for <span className="text-[#C4785A]">{petName}</span>.</>
+                ) : (
+                  <>Let&apos;s make life easier for your companion.</>
+                )}
+              </h1>
+              
+              <p className="text-base sm:text-lg text-[#9B9B9B] mb-8">
+                {petName ? (
+                  <>Personalized care for <span className="text-[#C4785A] font-medium">{petName}</span> is just a click away.</>
+                ) : (
+                  <>Personalized care for your pet is just a click away.</>
+                )}
+              </p>
+              
+              {/* Pet Filters - Dropdowns */}
+              {pets.length > 0 ? (
+                <div className="flex flex-wrap justify-center lg:justify-start gap-2 sm:gap-3 mb-6">
+                  {/* Pet Selector */}
+                  <Select value={selectedPet?.id || selectedPet?.name || ''} onValueChange={(v) => {
+                    const pet = pets.find(p => (p.id || p.name) === v);
+                    setSelectedPet(pet);
+                  }}>
+                    <SelectTrigger className="w-32 sm:w-36 bg-white border-gray-200 rounded-lg" data-testid="pet-selector">
+                      <SelectValue placeholder="Select pet" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {pets.map(pet => (
+                        <SelectItem key={pet.id || pet.name} value={pet.id || pet.name}>
+                          {pet.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  
+                  {/* Age */}
+                  <Select value={selectedAge} onValueChange={setSelectedAge}>
+                    <SelectTrigger className="w-28 sm:w-32 bg-white border-gray-200 rounded-lg">
+                      <SelectValue placeholder="Age" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">{petAge || 'Any age'}</SelectItem>
+                      <SelectItem value="puppy">Puppy</SelectItem>
+                      <SelectItem value="adult">Adult</SelectItem>
+                      <SelectItem value="senior">Senior</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  
+                  {/* City */}
+                  <Select value={selectedCity} onValueChange={setSelectedCity}>
+                    <SelectTrigger className="w-28 sm:w-32 bg-white border-gray-200 rounded-lg">
+                      <SelectValue placeholder="City" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Cities</SelectItem>
+                      <SelectItem value="mumbai">Mumbai</SelectItem>
+                      <SelectItem value="bangalore">Bangalore</SelectItem>
+                      <SelectItem value="delhi">Delhi</SelectItem>
+                      <SelectItem value="gurgaon">Gurgaon</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  
+                  {/* Energy Level */}
+                  <Select value={selectedEnergy} onValueChange={setSelectedEnergy}>
+                    <SelectTrigger className="w-28 sm:w-36 bg-white border-gray-200 rounded-lg">
+                      <SelectValue placeholder="Energy" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Energy</SelectItem>
+                      <SelectItem value="low">Low Energy</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="high">High Energy</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              ) : (
+                /* Search for non-logged-in users */
+                <div className="max-w-md mx-auto lg:mx-0 mb-6">
+                  <div className="relative">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                    <Input
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="What are you looking for?"
+                      className="pl-12 pr-4 py-3 bg-white border-gray-200 rounded-full"
+                      data-testid="shop-search"
+                    />
+                  </div>
+                </div>
+              )}
+              
+              {/* CTA Button */}
+              <Button
+                onClick={() => document.getElementById('pet-picks')?.scrollIntoView({ behavior: 'smooth' })}
+                className="bg-[#C4785A] hover:bg-[#B06A4D] text-white px-8 py-3 rounded-lg text-base font-medium shadow-sm"
+                data-testid="show-selection-btn"
+              >
+                Show My Selection
+              </Button>
+            </div>
+            
+            {/* Right: Pet Image */}
+            <div className="relative w-64 h-64 sm:w-80 sm:h-80 lg:w-96 lg:h-96">
+              {/* Background paw pattern - subtle */}
+              <div className="absolute inset-0 opacity-5">
+                <PawPrint className="absolute top-4 left-4 w-8 h-8" />
+                <PawPrint className="absolute top-12 right-8 w-6 h-6" />
+                <PawPrint className="absolute bottom-8 left-12 w-10 h-10" />
+              </div>
+              
+              {/* Pet Image - peeking from corner */}
+              <div className="absolute right-0 bottom-0 w-full h-full">
+                <img
+                  src={getBreedImage(selectedPet)}
+                  alt={petName || 'Happy dog'}
+                  className="w-full h-full object-cover object-center rounded-tl-[100px]"
+                  data-testid="hero-pet-image"
+                />
+              </div>
+              
+              {/* Pet name overlay */}
+              {petName && (
+                <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm px-3 py-1.5 rounded-full shadow-sm">
+                  <span className="text-sm font-medium text-[#2D2D2D]">{petName}</span>
+                  {petBreed && <span className="text-xs text-[#9B9B9B] ml-1">({petBreed})</span>}
+                </div>
               )}
             </div>
           </div>
+        </div>
+      </section>
+      
+      {/* ================================================================== */}
+      {/* PERSONALIZED PICKS - "For {petName}, {age}, {city}, {energy}" */}
+      {/* ================================================================== */}
+      <section id="pet-picks" className="py-12 md:py-16 bg-white" data-testid="pet-picks-section">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          {/* Section Header */}
+          <div className="text-center mb-10">
+            <h2 className="text-2xl sm:text-3xl font-semibold text-[#2D2D2D] mb-2">
+              {petName ? (
+                <>For {petName}{petAge ? `, ${petAge}` : ''}{selectedCity !== 'all' ? `, ${selectedCity}` : ''}{selectedEnergy !== 'all' ? `, ${selectedEnergy.charAt(0).toUpperCase() + selectedEnergy.slice(1)} Energy` : ''}</>
+              ) : (
+                <>Recommended for you</>
+              )}
+            </h2>
+            <p className="text-[#9B9B9B]">
+              {petName ? `Chosen just for ${selectedPet?.gender === 'female' ? 'her' : 'him'}.` : 'Curated with care.'}
+            </p>
+          </div>
           
-          {/* Trust badges - Aesop style */}
-          <div className="mt-10 flex flex-wrap gap-6 md:gap-10">
+          {/* Pet Picks Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {petPicks.length > 0 ? petPicks.map((product, idx) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                onAddToCart={handleAddToCart}
+                petName={petName}
+                isPetPick={idx < 3}
+              />
+            )) : (
+              /* Fallback - show some products */
+              products.slice(0, 6).map((product, idx) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onAddToCart={handleAddToCart}
+                  petName={petName}
+                  isPetPick={idx < 3}
+                />
+              ))
+            )}
+          </div>
+        </div>
+      </section>
+      
+      {/* ================================================================== */}
+      {/* TRUST BADGES */}
+      {/* ================================================================== */}
+      <section className="py-8 md:py-12 bg-[#FDFBF7] border-y border-gray-100">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6">
+          <div className="flex flex-wrap justify-center gap-8 md:gap-16">
             {TRUST_BADGES.map((badge, i) => (
-              <div key={i} className="flex items-center gap-2 text-[#2D2D2D]">
-                <badge.icon className="w-5 h-5 text-[#7A8B6F]" />
-                <span className="text-sm font-medium">{badge.text}</span>
+              <div key={i} className="flex flex-col items-center text-center">
+                <badge.icon className="w-8 h-8 text-[#C4785A] mb-2" strokeWidth={1.5} />
+                <span className="text-sm text-[#2D2D2D] font-medium">{badge.text}</span>
               </div>
             ))}
           </div>
@@ -467,22 +534,29 @@ const ShopPage = () => {
       </section>
       
       {/* ================================================================== */}
-      {/* PERSONAL PICKS - Airbnb personalization */}
+      {/* FOOTER MESSAGE */}
       {/* ================================================================== */}
-      {pets.length > 0 && (
-        <PersonalPicks pets={pets} products={products} />
-      )}
+      <section className="py-12 md:py-16 bg-white">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
+          <h2 className="text-2xl sm:text-3xl font-semibold text-[#2D2D2D] mb-2">
+            Less worry, more wagging.
+          </h2>
+          <p className="text-lg text-[#9B9B9B]">
+            Let&apos;s start with what <span className="text-[#C4785A] font-medium">{petName || 'your pet'}</span> needs.
+          </p>
+        </div>
+      </section>
       
       {/* ================================================================== */}
-      {/* MAIN SHOP SECTION */}
+      {/* ALL PRODUCTS SECTION */}
       {/* ================================================================== */}
-      <section className="py-12 md:py-20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6">
-          {/* Section header */}
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-10">
+      <section className="py-12 md:py-16 bg-[#F5F0E8]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          {/* Section Header with Tabs */}
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
             <div>
-              <h2 className="text-2xl sm:text-3xl font-semibold text-[#2D2D2D] mb-2">
-                {activeView === 'products' ? 'All products' : 'Services'}
+              <h2 className="text-2xl sm:text-3xl font-semibold text-[#2D2D2D]">
+                {activeView === 'products' ? 'All Products' : 'All Services'}
               </h2>
               <p className="text-[#9B9B9B]">
                 {activeView === 'products' 
@@ -492,66 +566,90 @@ const ShopPage = () => {
               </p>
             </div>
             
-            {/* View toggle - Apple simplicity */}
-            <div className="flex items-center gap-1 bg-[#F7F5F0] p-1 rounded-full">
-              <button
+            {/* View Toggle */}
+            <div className="flex gap-2">
+              <Button
                 onClick={() => setActiveView('products')}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                  activeView === 'products'
-                    ? 'bg-white text-[#2D2D2D] shadow-sm'
-                    : 'text-[#9B9B9B] hover:text-[#2D2D2D]'
-                }`}
+                variant={activeView === 'products' ? 'default' : 'outline'}
+                className={activeView === 'products' 
+                  ? 'bg-[#C4785A] hover:bg-[#B06A4D] text-white' 
+                  : 'border-gray-300 text-[#2D2D2D]'
+                }
                 data-testid="tab-products"
               >
                 Products ({filteredProducts.length})
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => setActiveView('services')}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                  activeView === 'services'
-                    ? 'bg-white text-[#2D2D2D] shadow-sm'
-                    : 'text-[#9B9B9B] hover:text-[#2D2D2D]'
-                }`}
+                variant={activeView === 'services' ? 'default' : 'outline'}
+                className={activeView === 'services' 
+                  ? 'bg-[#C4785A] hover:bg-[#B06A4D] text-white' 
+                  : 'border-gray-300 text-[#2D2D2D]'
+                }
                 data-testid="tab-services"
               >
                 Services ({services.length})
-              </button>
+              </Button>
             </div>
           </div>
+          
+          {/* Search for all products */}
+          {pets.length > 0 && (
+            <div className="max-w-md mb-8">
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Input
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search products..."
+                  className="pl-12 pr-4 py-2.5 bg-white border-gray-200 rounded-full"
+                  data-testid="shop-search"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
           
           {/* Products Grid */}
           {activeView === 'products' && (
             <>
               {loading ? (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
                   {[...Array(8)].map((_, i) => (
-                    <div key={i} className="animate-pulse">
-                      <div className="aspect-square bg-[#F7F5F0] rounded-lg mb-4"></div>
-                      <div className="h-4 bg-[#F7F5F0] rounded w-3/4 mb-2"></div>
-                      <div className="h-4 bg-[#F7F5F0] rounded w-1/2"></div>
+                    <div key={i} className="animate-pulse bg-white rounded-xl">
+                      <div className="aspect-square bg-gray-200 rounded-t-xl"></div>
+                      <div className="p-4">
+                        <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+                        <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                      </div>
                     </div>
                   ))}
                 </div>
               ) : filteredProducts.length === 0 ? (
-                <div className="text-center py-20">
-                  <Package className="w-16 h-16 text-[#E5E5E5] mx-auto mb-4" />
+                <div className="text-center py-16 bg-white rounded-xl">
+                  <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                   <h3 className="text-xl font-semibold text-[#2D2D2D] mb-2">No products found</h3>
-                  <p className="text-[#9B9B9B] mb-6">Try adjusting your search or browse all products</p>
-                  <Button
-                    onClick={() => { setSearchQuery(''); setSelectedCategory('all'); }}
-                    variant="outline"
-                    className="border-[#2D2D2D] text-[#2D2D2D]"
-                  >
-                    Clear filters
+                  <p className="text-[#9B9B9B] mb-4">Try a different search</p>
+                  <Button onClick={() => setSearchQuery('')} variant="outline">
+                    Clear search
                   </Button>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 md:gap-8">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
                   {filteredProducts.map(product => (
                     <ProductCard
                       key={product.id}
                       product={product}
                       onAddToCart={handleAddToCart}
+                      petName={petName}
+                      isPetPick={false}
                     />
                   ))}
                 </div>
@@ -563,44 +661,20 @@ const ShopPage = () => {
           {activeView === 'services' && (
             <>
               {services.length === 0 ? (
-                <div className="text-center py-20">
-                  <Briefcase className="w-16 h-16 text-[#E5E5E5] mx-auto mb-4" />
+                <div className="text-center py-16 bg-white rounded-xl">
+                  <Briefcase className="w-16 h-16 text-gray-300 mx-auto mb-4" />
                   <h3 className="text-xl font-semibold text-[#2D2D2D] mb-2">Services coming soon</h3>
-                  <p className="text-[#9B9B9B]">We&apos;re curating the best services for your companion</p>
+                  <p className="text-[#9B9B9B]">We&apos;re curating the best services</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
                   {services.map(service => (
-                    <ServiceCard key={service.id} service={service} />
+                    <ServiceCard key={service.id} service={service} petName={petName} />
                   ))}
                 </div>
               )}
             </>
           )}
-        </div>
-      </section>
-      
-      {/* ================================================================== */}
-      {/* PROMISE SECTION - Aesop trust */}
-      {/* ================================================================== */}
-      <section className="py-16 md:py-24 bg-[#2D2D2D] text-white">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold mb-6">
-            Our promise to you and your companion
-          </h2>
-          <p className="text-lg text-white/80 leading-relaxed mb-10 max-w-2xl mx-auto">
-            Every product in our collection has been reviewed by veterinarians, tested by real pets, 
-            and approved by the families who love them. If something isn&apos;t right, tell us—we&apos;ll make it right, always.
-          </p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
-            {TRUST_BADGES.map((badge, i) => (
-              <div key={i} className="text-center">
-                <badge.icon className="w-8 h-8 mx-auto mb-3 text-[#7A8B6F]" />
-                <p className="text-sm font-medium mb-1">{badge.text}</p>
-                <p className="text-xs text-white/60">{badge.detail}</p>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
       
