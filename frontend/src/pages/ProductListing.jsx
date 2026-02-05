@@ -10,6 +10,7 @@ import CelebrateConcierePicker from '../components/CelebrateConcierePicker';
 import { useAuth } from '../context/AuthContext';
 import SEOHead from '../components/SEOHead';
 import { toast } from 'sonner';
+import SoulScoreBanner from '../components/SoulScoreBanner';
 
 const PRODUCTS_PER_PAGE = 20;
 
