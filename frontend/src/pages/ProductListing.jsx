@@ -684,15 +684,28 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
         <div className="bg-white border-b border-stone-100">
           <div className="max-w-6xl mx-auto px-4 py-4">
           
-          {/* Applied indicator - shows system is thinking */}
-          {activePet && (avoidFilters.length > 0 || identityFilters.lifeStage) && (
-            <div className="flex items-center gap-1.5 text-xs text-green-600 mb-3">
-              <Check className="w-3.5 h-3.5" />
-              <span>Applied for {activePet.name}</span>
+          {/* Auto-applied indicator - shows Mira is thinking */}
+          {activePet && (avoidFilters.length > 0 || careFilters.some(f => autoAppliedFilters.includes(f))) && (
+            <div className="flex flex-wrap items-center gap-2 text-xs mb-3">
+              {autoAppliedFilters.filter(f => careFilters.includes(f)).map(filterId => {
+                const filterDef = getSupportFilters(category, pillar).find(f => f.id === filterId);
+                return filterDef ? (
+                  <span key={filterId} className="inline-flex items-center gap-1 text-green-600 bg-green-50 px-2 py-1 rounded-full">
+                    <Check className="w-3 h-3" />
+                    {filterDef.label} applied for {activePet.name}
+                  </span>
+                ) : null;
+              })}
+              {avoidFilters.length > 0 && (
+                <span className="inline-flex items-center gap-1 text-amber-600 bg-amber-50 px-2 py-1 rounded-full">
+                  <Shield className="w-3 h-3" />
+                  {avoidFilters.length} ingredient{avoidFilters.length > 1 ? 's' : ''} filtered for {activePet.name}
+                </span>
+              )}
             </div>
           )}
           
-          {/* Layer 2: Care Needs */}
+          {/* Layer 2: Pillar-Specific Support - emotionally aligned */}
           <div className="mb-4">
             <button
               onClick={() => setShowCareFilters(!showCareFilters)}
@@ -709,28 +722,50 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
             </button>
             
             {showCareFilters && (
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-3">
-                {CARE_NEEDS.map(care => (
-                  <button
-                    key={care.id}
-                    onClick={() => toggleCareFilter(care.id)}
-                    className={`flex items-center gap-2 p-3 rounded-lg border text-left transition-all ${
-                      careFilters.includes(care.id)
-                        ? 'border-rose-300 bg-rose-50 text-rose-700'
-                        : 'border-stone-200 hover:border-stone-300 text-stone-600'
-                    }`}
-                    data-testid={`care-filter-${care.id}`}
-                  >
-                    <care.icon className="w-4 h-4 flex-shrink-0" />
-                    <div>
-                      <span className="text-sm font-medium block">{care.label}</span>
-                      <span className="text-xs opacity-70">{care.desc}</span>
-                    </div>
-                    {careFilters.includes(care.id) && (
-                      <Check className="w-4 h-4 ml-auto text-rose-600" />
-                    )}
-                  </button>
-                ))}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 mt-3">
+                {getSupportFilters(category, pillar).map(support => {
+                  const isAutoApplied = autoAppliedFilters.includes(support.id);
+                  const isSelected = careFilters.includes(support.id);
+                  return (
+                    <button
+                      key={support.id}
+                      onClick={() => toggleCareFilter(support.id)}
+                      className={`flex items-start gap-3 p-3 rounded-lg border text-left transition-all ${
+                        isSelected
+                          ? 'border-rose-300 bg-rose-50 text-rose-700'
+                          : isAutoApplied
+                          ? 'border-green-200 bg-green-50/50 text-stone-600'
+                          : 'border-stone-200 hover:border-stone-300 text-stone-600'
+                      }`}
+                      data-testid={`care-filter-${support.id}`}
+                    >
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
+                        isSelected ? 'bg-rose-100' : isAutoApplied ? 'bg-green-100' : 'bg-stone-100'
+                      }`}>
+                        <support.icon className={`w-4 h-4 ${
+                          isSelected ? 'text-rose-600' : isAutoApplied ? 'text-green-600' : 'text-stone-500'
+                        }`} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-sm font-medium">{support.label}</span>
+                          {isAutoApplied && !isSelected && (
+                            <span className="text-[10px] text-green-600 bg-green-100 px-1.5 py-0.5 rounded">
+                              Auto
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-xs opacity-70 block">{support.desc}</span>
+                        {support.subtext && (
+                          <span className="text-[11px] text-stone-400 block mt-0.5">{support.subtext}</span>
+                        )}
+                      </div>
+                      {isSelected && (
+                        <Check className="w-4 h-4 text-rose-600 flex-shrink-0 mt-1" />
+                      )}
+                    </button>
+                  );
+                })}
               </div>
             )}
           </div>
