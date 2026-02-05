@@ -614,38 +614,58 @@ const ShopPage = () => {
     }
   }, [selectedPet?.id, token]);
   
-  // Generate warm Mira AI lines based on pet's personality
+  // Generate quiet Mira intelligence based on pet's breed & personality
   const miraLines = useMemo(() => {
     if (!selectedPet) return null;
     
     const petName = selectedPet.name;
-    const breed = selectedPet.breed || '';
+    const breed = (selectedPet.breed || '').toLowerCase();
     const soul = petSoulData?.soul || petSoulData;
     
-    // Extract personality from soul data
-    const personality = soul?.describe_3_words || soul?.personality || '';
-    const nature = soul?.general_nature || soul?.nature || '';
-    const likes = soul?.favorite_things || soul?.likes || '';
+    // Breed-specific quiet nudges (factual, calm, confident)
+    const breedNudges = {
+      'shih tzu': `${breed.includes('shih') ? 'Shih Tzus' : petName} typically need grooming supplies every 4-6 weeks.`,
+      'pomeranian': `Pomeranians love plush toys and dental chews.`,
+      'golden retriever': `Retrievers thrive with fetch toys and joint supplements.`,
+      'labrador': `Labs love water toys. Consider travel bowls for outdoor adventures.`,
+      'beagle': `Beagles are scent-driven — puzzle feeders work great for them.`,
+      'pug': `Pugs need cooling gear in summer and gentle harnesses.`,
+      'german shepherd': `German Shepherds benefit from training treats and chew toys.`,
+      'husky': `Huskies need deshedding tools and cooling mats.`,
+      'indie': `Indies are adaptable — focus on nutrition and outdoor gear.`,
+      'dachshund': `Dachshunds need back-friendly beds and ramps.`,
+    };
     
-    // Generate personalized lines
+    // Find matching breed nudge
+    let breedLine = null;
+    for (const [breedKey, nudge] of Object.entries(breedNudges)) {
+      if (breed.includes(breedKey.split(' ')[0].toLowerCase())) {
+        breedLine = nudge;
+        break;
+      }
+    }
+    
+    // Extract personality from soul data for secondary nudge
+    const personality = soul?.describe_3_words || soul?.personality || '';
+    const nature = soul?.general_nature || '';
+    
     const lines = [];
     
-    if (personality) {
-      lines.push(`✨ ${petName} is ${personality.toLowerCase()} - I've picked treats and toys to match!`);
-    }
-    if (nature) {
-      lines.push(`💝 Since ${petName} is ${nature.toLowerCase()}, you'll love these curated finds.`);
-    }
-    if (likes) {
-      lines.push(`🎁 I know ${petName} loves ${likes.toLowerCase()} - check out these picks!`);
+    // Primary: Breed-specific
+    if (breedLine) {
+      lines.push(breedLine);
     }
     
-    // Fallback generic warm lines
-    if (lines.length === 0) {
-      if (breed) {
-        lines.push(`🐾 Handpicked goodies for your beautiful ${breed}!`);
-      }
-      lines.push(`💕 Everything here is chosen with ${petName}'s happiness in mind.`);
+    // Secondary: Personality-based (if available)
+    if (nature && nature.toLowerCase().includes('playful')) {
+      lines.push(`Since ${petName} is playful, interactive toys are a great pick.`);
+    } else if (nature && nature.toLowerCase().includes('calm')) {
+      lines.push(`${petName} seems calm — comfort items like beds work well.`);
+    }
+    
+    // Fallback if no specific data
+    if (lines.length === 0 && petName) {
+      lines.push(`Products selected with ${petName}'s needs in mind.`);
     }
     
     return lines;
