@@ -43,6 +43,45 @@ Build "The Doggy Company," a one-stop-shop concierge for dog parents with a focu
 
 ---
 
+## SESSION 16 SUMMARY (February 5, 2026) - Shop Page Intelligent Known-Facts Design
+
+### DESIGN CHANGES ✅
+
+**Removed:**
+- Trust badges (Vet Approved, Easy Returns, Free Delivery)
+
+**Added/Changed:**
+- **Main headline**: "Let's make life easier for {petName}."
+- **Subline**: "We've curated what {petName} needs right now. You can adjust this anytime."
+- **Known Facts Pill** (not dropdowns): `{petName} · {LifeStage} · {City} · {Energy}` + Edit link
+- **CTA**: "See what {petName} needs" (scrolls to picks)
+- **Pet Image**: With name badge, "Profile created for {petName}", "Known to us since..."
+- **Pillar Filters**: All, Care, Nourish, Celebrate, Travel, Fitness, Learn
+
+### WHY THIS DESIGN ✅
+
+1. **Signals intelligence** - Shows we know the pet's profile
+2. **Reduces cognitive load** - No decisions needed upfront
+3. **Preserves flexibility** - Edit available when needed
+
+### HELPER FUNCTIONS ✅
+
+```javascript
+getLifeStage(pet) → 'Puppy' | 'Adult' | 'Senior'
+getRelationshipText(pet) → 'Known to us since puppyhood' etc.
+getBreedImage(pet) → Pet photo or Unsplash fallback
+```
+
+### TEST RESULTS (Iteration 233)
+- Frontend: 90% (automation limitation for logged-in testing)
+- Logged-out: All features work perfectly
+- Mobile 375px/390px: Responsive layout working
+- Desktop 1920px: Side-by-side hero layout
+- Pillar filters: All 7 working
+- Search: Filters correctly
+
+---
+
 ## SESSION 15 SUMMARY (February 5, 2026) - Shop Page Personalized Pet-First Experience
 
 ### DESIGN REFERENCE IMPLEMENTATION ✅
