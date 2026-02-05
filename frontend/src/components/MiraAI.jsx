@@ -1243,8 +1243,8 @@ const MiraAI = () => {
     sendQuickMessage();
   };
 
-  // Don't render on hidden paths (admin, agent, login)
-  if (shouldHide) {
+  // Don't render at all on admin/login paths
+  if (shouldHideCompletely) {
     return null;
   }
 
@@ -1256,6 +1256,7 @@ const MiraAI = () => {
     return 'idle';
   };
 
+  // Always show the orb (except on admin/login pages)
   if (!isOpen) {
     return (
       <div 
@@ -1270,6 +1271,10 @@ const MiraAI = () => {
       </div>
     );
   }
+  
+  // On desktop pillar pages with embedded widgets, only show the orb (handled above)
+  // The full chat panel opens on click
+  
 
   return (
     <div 
