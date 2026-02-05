@@ -204,7 +204,7 @@ const ServiceDetailPage = () => {
   const petBreed = selectedPet?.breed || '';
   const miraInsight = service ? getMiraInsight(service, petBreed) : '';
   
-  // Handle booking - Creates a service request ticket
+  // Handle booking - Creates a service request ticket via unified flow
   const handleBookNow = async () => {
     if (!user) {
       toast({
@@ -217,6 +217,8 @@ const ServiceDetailPage = () => {
     
     // Create service request ticket via unified flow
     try {
+      const pillar = service.pillar || service.pillars?.[0] || 'care';
+      
       const response = await fetch(`${API_URL}/api/service-requests`, {
         method: 'POST',
         headers: {
@@ -224,17 +226,25 @@ const ServiceDetailPage = () => {
           'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
-          service_id: service.id,
-          service_name: service.name,
-          pillar: service.pillar || service.pillars?.[0] || 'care',
-          pet_id: selectedPet?.id,
-          pet_name: selectedPet?.name,
-          pet_breed: selectedPet?.breed,
-          user_email: user.email,
-          user_name: user.name,
+          type: 'service_booking',
+          pillar: pillar,
           source: 'service_detail_page',
-          message: `I'd like to book ${service.name} for ${selectedPet?.name || 'my pet'}`,
-          price: service.base_price
+          customer: {
+            name: user.name || user.email,
+            email: user.email,
+            phone: user.phone || null
+          },
+          details: {
+            service_id: service.id,
+            service_name: service.name,
+            pet_id: selectedPet?.id || null,
+            pet_name: selectedPet?.name || null,
+            pet_breed: selectedPet?.breed || null,
+            price: service.base_price || null,
+            message: `I'd like to book ${service.name}${selectedPet ? ` for ${selectedPet.name}` : ''}`
+          },
+          priority: 'normal',
+          intent: `Book ${service.name}`
         })
       });
       
@@ -242,21 +252,16 @@ const ServiceDetailPage = () => {
         const data = await response.json();
         toast({
           title: "✨ Request Sent!",
-          description: `Our team will contact you shortly about ${service.name}`,
-          duration: 5000
+          description: `Our team will contact you shortly about ${service.name}. Ticket: ${data.ticket_id || 'Created'}`,
+          duration: 6000
         });
         
         // Also open Mira chat for immediate assistance
         window.dispatchEvent(new CustomEvent('openMiraChat', {
-          detail: { prompt: `I just requested ${service.name} for ${selectedPet?.name || 'my pet'}. Can you help me with any questions?` }
+          detail: { prompt: `I just requested to book ${service.name}${selectedPet ? ` for ${selectedPet.name}` : ''}. Can you help me with any questions?` }
         }));
       } else {
-        // Fallback to just opening Mira
-        window.dispatchEvent(new CustomEvent('openMiraChat'));
-        toast({
-          title: "Let's book this!",
-          description: "Mira will help you schedule this service",
-        });
+        throw new Error('Request failed');
       }
     } catch (error) {
       console.error('Booking request failed:', error);
