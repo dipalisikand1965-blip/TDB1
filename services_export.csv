@@ -1,0 +1,660 @@
+_id,id,name,pillar,category,type,service_type,description,base_price,image_url
+69844ada5fbad351cb5e02d0,svc-fit-15e96e63,Fitness Assessment & Programme Design,fit,assessment,service,,"Comprehensive fitness evaluation including body condition scoring, mobility assessment, and personalised exercise programme design.",2499,
+69844ada5fbad351cb5e02d1,svc-fit-85322381,Personal Training Programme - 8 Weeks,fit,training,service,,One-on-one training sessions with a certified canine fitness trainer. Includes home exercises and weekly progress reviews.,7999,
+69844ada5fbad351cb5e02d2,svc-fit-6772e766,Weight Management Programme,fit,weight,service,,"Structured weight loss or gain programme with nutrition planning, exercise routines, and regular weigh-ins.",5999,
+69844ada5fbad351cb5e02d3,svc-fit-a6d208d2,Hydrotherapy Sessions,fit,therapy,service,,"Water-based therapy sessions for rehabilitation, fitness, or senior mobility. Supervised by trained hydrotherapists.",1499,
+69844ada5fbad351cb5e02d4,svc-fit-314163ce,Senior Mobility Programme,fit,senior,service,,"Gentle exercise programme designed for senior dogs. Focus on maintaining mobility, joint health, and quality of life.",4999,
+69844ada5fbad351cb5e02d5,svc-fit-2b0721c5,Puppy Development Programme,fit,puppy,service,,Age-appropriate fitness activities for puppies. Build healthy exercise habits and proper physical development.,3999,
+69844ada5fbad351cb5e02d6,svc-fit-c4ff6597,Agility Foundation Course,fit,agility,service,,"Introduction to agility training. Learn basic obstacles, commands, and course navigation in a fun environment.",4499,
+69844ada5fbad351cb5e02d7,svc-fit-b3b39dbe,Canine Yoga (Doga) Session,fit,wellness,service,,"Relaxing yoga session with your dog. Great for bonding, flexibility, and stress relief for both pet and parent.",799,
+69844ada5fbad351cb5e02d8,svc-celebrate-party,Birthday Party Planning,celebrate,party,,,Complete party coordination,,
+69844ada5fbad351cb5e02dc,svc-celebrate-gotcha,Gotcha Day Celebration,celebrate,gotcha,,,Celebrate your pet's adoption anniversary with a special gotcha day package.,,
+69844ada5fbad351cb5e02dd,svc-celebrate-surprise,Surprise Delivery Service,celebrate,surprise,,product,Send surprise treats and gifts to any pet parent! We deliver joy anywhere.,1499,https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=800
+69844ada5fbad351cb5e02df,svc-stay-concierge,Stay Concierge,stay,,,,Find perfect pet-friendly accommodation,,
+69844ada5fbad351cb5e02e0,svc-stay-premium,Premium Boarding Setup,stay,,,,Custom boarding arrangement,,
+69844ada5fbad351cb5e02e1,svc-travel-planning,Travel Planning,travel,,,,Complete travel coordination,,
+69844ada5fbad351cb5e02e2,svc-travel-relocation,Relocation Concierge,travel,,,,Full relocation support,,
+69844ada5fbad351cb5e02e3,svc-feed-nutrition,Nutrition Consultation,feed,,,,Expert diet planning,,
+69844ada5fbad351cb5e02e4,svc-feed-meal-plan,Custom Meal Planning,feed,,,,Personalized meal plans,,
+69844ada5fbad351cb5e02e6,svc-care-emergency,Emergency Care Coordination,care,,,,24/7 emergency support,,
+69844ada5fbad351cb5e02e7,svc-fit-assessment,Fitness Assessment,fit,assessment,,,Complete fitness evaluation,,
+69844ada5fbad351cb5e02e8,svc-fit-program,Personal Training Program,fit,,,,8-week fitness journey,,
+69844ada5fbad351cb5e02ea,svc-learn-behavior,Behavior Consultation,learn,,,,Address specific issues,,
+69844ada5fbad351cb5e02eb,svc-enjoy-adventure,Adventure Day Planning,enjoy,,,,Custom adventure experience,,
+69844ada5fbad351cb5e02ec,svc-enjoy-playdate,Playdate Coordination,enjoy,,,,Group play sessions,,
+69844ada5fbad351cb5e02ee,svc-groom-mobile,Mobile Grooming,groom,,,,Grooming at your doorstep,,
+69844ada5fbad351cb5e02ef,svc-adopt-match,Pet Matching Service,adopt,,,,Find your perfect pet,,
+69844ada5fbad351cb5e02f0,svc-adopt-support,New Pet Support,adopt,,,,30-day transition support,,
+69844ada5fbad351cb5e02f1,svc-farewell-memorial,Memorial Planning,farewell,,,,Dignified farewell service,,
+69844ada5fbad351cb5e02f2,svc-farewell-grief,Grief Support,farewell,,,,Counseling and support,,
+69844ada5fbad351cb5e02f3,svc-dine-reservation,VIP Restaurant Reservations,dine,,,,Priority booking at pet-friendly restaurants,,
+69844ada5fbad351cb5e02f4,svc-dine-picnic,Gourmet Picnic Setup,dine,,,,Complete pet-friendly picnic arrangement,,
+69844ada5fbad351cb5e02f5,svc-insure-consult,Insurance Consultation,insure,,,,Find the right coverage,,
+69844ada5fbad351cb5e02f6,svc-insure-claims,Claims Assistance,insure,,,,Help with insurance claims,,
+69844ada5fbad351cb5e02f7,svc-shop-styling,Pet Styling Consultation,shop,,,,Product recommendations,,
+69844ada5fbad351cb5e02f9,svc-dine-chefs-table,Chef's Table Experience,dine,,,,Private chef dining at pet-friendly restaurants,,
+69844ada5fbad351cb5e02fa,svc-dine-private-home,Private Home Dining,dine,,,,Chef comes to your home with pet-safe menu,,
+69844ada5fbad351cb5e02fb,svc-dine-catering,Pet Party Catering,dine,,,,Catering for pet birthdays & events,,
+69844ada5fbad351cb5e02fc,svc-dine-subscription,Fresh Meal Subscription,dine,,,,Weekly fresh pet meals delivered,,
+69844ada5fbad351cb5e02fd,svc-dine-group-event,Group Dining Events,dine,,,,Organize pet parent meetups,,
+69844ada5fbad351cb5e0305,svc-care-grooming,Premium Grooming Session,care,grooming,,,"Full grooming service including bath, haircut, nail trim, and ear cleaning.",,
+69844ada5fbad351cb5e0306,svc-care-vet,Vet Consultation at Home,care,vet,,,Licensed veterinarian visits your home for check-ups and consultations.,,
+69844ada5fbad351cb5e0307,svc-care-sitting,Pet Sitting (Daily),care,sitting,,,Professional pet sitter cares for your pet at your home.,,
+69844ada5fbad351cb5e0309,svc-celebrate-venue,Pet-Friendly Venue Booking,celebrate,venue,,,We find and book the perfect pet-friendly venue for your celebration.,,
+69844ada5fbad351cb5e049a,svc-learn_prod_clicker,Professional Training Clicker,care,care,,product,High-quality clicker for positive reinforcement training.,299,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400
+69844ada5fbad351cb5e04a9,svc-dine-f9364aff,Pet Café Visit,enjoy,experiences,,product,Pet-friendly café experience with treats,499,https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=600&q=80
+69844ada5fbad351cb5e04aa,svc-dine-f4bebcb6,Doggy Brunch Reservation,enjoy,experiences,,product,Weekend brunch at pet-friendly restaurant,799,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80
+69844ada5fbad351cb5e04ab,svc-dine-1dd03b79,Home Chef Pet Meal,dine,meals,,product,Fresh home-cooked meal for your pet,399,https://images.unsplash.com/photo-1546527868-ccb7ee7dfa6a?w=600&q=80
+69844ada5fbad351cb5e04ac,svc-dine-149222dc,Gourmet Pet Platter,dine,meals,,product,Premium selection of pet-safe treats,649,https://images.unsplash.com/photo-1546527868-ccb7ee7dfa6a?w=600&q=80
+69844ada5fbad351cb5e04ae,svc-stay-eb1b89c2,Pet Hotel Standard Room,stay,boarding,,product,Comfortable overnight stay for your pet,1499,https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=600&q=80
+69844ada5fbad351cb5e04af,svc-stay-9aeb0242,Luxury Pet Suite,stay,boarding,,product,Premium suite with extra amenities,2999,https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=600&q=80
+69844ada5fbad351cb5e04b0,svc-stay-dc128835,Doggy Daycare Pass,care,daycare,,product,Full day supervised play and care,599,https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=600&q=80
+69844ada5fbad351cb5e04b5,svc-travel-14fe2322,Pet Passport Service,shop,services,,product,Complete documentation for international travel,1999,https://images.unsplash.com/photo-1601758174493-4e6f3f1e8b3e?w=600&q=80
+69844ada5fbad351cb5e04b7,svc-travel-bf4970ea,Pet Transport Service,travel,services,,product,Door-to-door pet transportation,3999,https://images.unsplash.com/photo-1601758174493-4e6f3f1e8b3e?w=600&q=80
+69844ada5fbad351cb5e04b8,svc-enjoy-efd5110c,Dog Park Meetup Pass,enjoy,events,,product,Access to exclusive dog park events,299,https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=600&q=80
+69844ada5fbad351cb5e04b9,svc-enjoy-1d90a879,Pet Photography Session,enjoy,experiences,,product,Professional pet photoshoot,1999,https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=600&q=80
+69844ada5fbad351cb5e04ba,svc-enjoy-2307e263,Doggy Swimming Session,enjoy,activities,,product,Supervised pool time for dogs,799,https://images.unsplash.com/photo-1558929996-da64ba858215?w=600&q=80
+69844ada5fbad351cb5e04bd,svc-fit-9a00b7ab,Dog Running Session,fit,fitness,,product,Professional dog running service,499,https://images.unsplash.com/photo-1558929996-da64ba858215?w=600&q=80
+69844ada5fbad351cb5e04be,svc-fit-0d19a648,Canine Yoga Class,learn,classes,,product,Yoga session with your dog,799,https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600&q=80
+69844ada5fbad351cb5e04bf,svc-fit-e07de578,Weight Management Program,shop,weight,,product,3-month fitness & diet program,2999,https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600&q=80
+69844ada5fbad351cb5e04c0,svc-fit-5a3d45ff,Agility Training Session,learn,training,,product,Obstacle course training,999,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80
+69844ada5fbad351cb5e04c3,svc-advisory-4816ac9b,Behaviour Assessment,shop,consultations,,product,Professional behaviour evaluation,1499,https://images.unsplash.com/photo-1601758174493-4e6f3f1e8b3e?w=600&q=80
+69844ada5fbad351cb5e04c4,svc-advisory-347e8209,Pet Life Planning,shop,planning,,product,Comprehensive pet care roadmap,2499,https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600&q=80
+69844ada5fbad351cb5e04c6,svc-advisory-4c13f2cb,Senior Pet Care Plan,care,planning,,product,Specialized care for aging pets,1999,https://images.unsplash.com/photo-1546527868-ccb7ee7dfa6a?w=600&q=80
+69844ada5fbad351cb5e04c7,svc-paperwork-9dc28c77,Pet Insurance Assistance,shop,services,,product,Help with insurance paperwork,499,https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=600&q=80
+69844ada5fbad351cb5e04c8,svc-paperwork-f7b2af2c,Registration Service,shop,services,,product,Pet registration and licensing,299,https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=600&q=80
+69844ada5fbad351cb5e04c9,svc-paperwork-18b00074,Health Certificate,care,certificates,,product,Official health documentation,799,https://images.unsplash.com/photo-1558929996-da64ba858215?w=600&q=80
+69844ada5fbad351cb5e04ca,svc-paperwork-de483ae1,Microchip Registration,shop,documentation,,product,Microchip and database registration,599,https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600&q=80
+69844ada5fbad351cb5e04cb,svc-paperwork-48c6de72,Pet Will & Trust Setup,shop,legal,,product,Legal pet care documentation,4999,https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=600&q=80
+69844ada5fbad351cb5e04ce,svc-emergency-27c8523d,Emergency Transport Service,emergency,emergency,,product,Priority pet ambulance service,2999,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80
+69844ada5fbad351cb5e04cf,svc-emergency-5aa61513,Lost Pet Recovery Plan,shop,services,,product,GPS tracking and recovery service,1999,https://images.unsplash.com/photo-1558929996-da64ba858215?w=600&q=80
+69844ada5fbad351cb5e04d0,svc-emergency-b0e9efe5,Emergency Fund Setup,emergency,financial,,product,Pet emergency savings plan setup,499,https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600&q=80
+69844ada5fbad351cb5e04d1,svc-adopt-5b8366a7,Adoption Counselling,adopt,services,,product,Expert guidance for pet adoption,799,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80
+69844ada5fbad351cb5e04d3,svc-adopt-6878a0e9,Home Assessment Service,shop,services,,product,Pet-proofing home consultation,999,https://images.unsplash.com/photo-1546527868-ccb7ee7dfa6a?w=600&q=80
+69844ada5fbad351cb5e04d6,svc-dine-d6cfc31d,Puppy Picnic Set,enjoy,experiences,,product,Complete picnic setup for you and your pet,899,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400
+69844ada5fbad351cb5e04d8,svc-dine-5e2c2519,Pet Food Tasting Session,enjoy,experiences,,product,Sample premium pet foods,599,https://images.unsplash.com/photo-1601758124510-52d02ddb7cbd?w=400
+69844ada5fbad351cb5e04da,svc-dine-d71fa051,Pet Chef Consultation,shop,consultations,,product,One-on-one with pet nutrition chef,999,https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400
+69844ada5fbad351cb5e04db,svc-dine-c0c2215d,Doggy Ice Cream Party,enjoy,events,,product,Ice cream party for pets,1499,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400
+69844ada5fbad351cb5e04dc,svc-dine-394247c0,Pet Bakery Tour,enjoy,experiences,,product,Behind the scenes at pet bakery,799,https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=400
+69844ada5fbad351cb5e04dd,svc-dine-58949d34,Weekly Meal Prep Service,shop,services,,product,Fresh meals prepared weekly,1999,https://images.unsplash.com/photo-1543352634-99a5d50ae78e?w=400
+69844ada5fbad351cb5e04e2,svc-dine-fddb1596,Pet Wine & Dine Night,enjoy,experiences,,product,Luxury dining experience,2499,https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=400
+69844ada5fbad351cb5e04e4,svc-dine-5d0174ec,Pet Nutrition Workshop,learn,classes,,product,Learn about pet nutrition,1299,https://images.unsplash.com/photo-1516467508483-a7212febe31a?w=400
+69844ada5fbad351cb5e04e5,svc-stay-5cf25fe8,Cat Condo Rental,stay,boarding,,product,Private cat accommodation,999,https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400
+69844ada5fbad351cb5e04e6,svc-stay-d0c8ba69,VIP Pet Penthouse,stay,boarding,,product,Top-floor luxury suite,4999,https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=400
+69844ada5fbad351cb5e04e7,svc-stay-d393d42c,Home Pet Sitting,shop,services,,product,In-home pet care service,1299,https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=400
+69844ada5fbad351cb5e04e8,svc-stay-c57c999b,Overnight Pet Nanny,shop,services,,product,24-hour in-home care,1999,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400
+69844ada5fbad351cb5e04e9,svc-stay-8d906e2b,Pet Vacation Resort,stay,boarding,,product,Resort-style boarding,6999,https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=400
+69844ada5fbad351cb5e04eb,svc-stay-65422098,Senior Pet Care Room,stay,boarding,,product,Specialized senior pet boarding,1799,https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=400
+69844ada5fbad351cb5e04ec,svc-stay-cfb19d45,Puppy Kindergarten Stay,stay,boarding,,product,Socialization-focused boarding,1299,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400
+69844ada5fbad351cb5e04ed,svc-stay-66f12a22,Pet Hotel Pool Access,stay,amenities,,product,Swimming pool day pass,499,https://images.unsplash.com/photo-1601758003122-53c40e686a19?w=400
+69844ada5fbad351cb5e04ef,svc-stay-96af6b89,Extended Stay Discount,stay,packages,,product,30-day boarding package,24999,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400
+69844ada5fbad351cb5e04f1,svc-stay-bee84036,Special Needs Boarding,stay,boarding,,product,Medical care included,2499,https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=400
+69844ada5fbad351cb5e04f2,svc-stay-6e89377d,Holiday Pet Hotel,stay,boarding,,product,Festive themed stays,1999,https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=400
+69844ada5fbad351cb5e04f3,svc-stay-b08656a8,Pet Playgroup Session,enjoy,activities,,product,Supervised group play,399,https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=400
+69844ada5fbad351cb5e04f7,svc-travel-96ad5c22,Pet Travel Insurance,travel,insurance,,product,Comprehensive coverage,2999,https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=400
+69844ada5fbad351cb5e04f9,svc-travel-128855a2,Airline Pet Booking,shop,services,,product,Flight booking assistance,4999,https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=400
+69844ada5fbad351cb5e04fc,svc-travel-718ace51,Pet Hotel Finder,stay,services,,product,Find pet-friendly stays,499,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400
+69844ada5fbad351cb5e0500,svc-travel-da888f2b,International Vet Check,shop,services,,product,Travel health certificate,1999,https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?w=400
+69844ada5fbad351cb5e0501,svc-travel-c36b8834,Pet Relocation Service,shop,relocation,,product,Complete moving service,14999,https://images.unsplash.com/photo-1449824913935-59a10b8d2000?w=400
+69844ada5fbad351cb5e0503,svc-enjoy-f676cf07,Doggy Birthday Party,enjoy,events,,product,Full birthday celebration,2999,https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=400
+69844ada5fbad351cb5e0504,svc-enjoy-bd8e74a7,Pet Spa Day,enjoy,experiences,,product,Relaxation and pampering,1499,https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?w=400
+69844ada5fbad351cb5e0505,svc-enjoy-eabfa586,Dog Beach Day,enjoy,activities,,product,Beach outing package,599,https://images.unsplash.com/photo-1507146426996-ef05306b995a?w=400
+69844ada5fbad351cb5e0506,svc-enjoy-f662a5ef,Pet Movie Night,enjoy,events,,product,Outdoor cinema for pets,799,https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?w=400
+69844ada5fbad351cb5e0507,svc-enjoy-c2ccdd9c,Hiking Trail Pass,enjoy,activities,,product,Access to pet trails,399,https://images.unsplash.com/photo-1551632811-561732d1e306?w=400
+69844ada5fbad351cb5e0508,svc-enjoy-5a8978d2,Pet Art Class,learn,classes,,product,Create art with your pet,999,https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=400
+69844ada5fbad351cb5e0509,svc-enjoy-c4374ad1,Doggy Yoga Session,learn,classes,,product,Doga class for you both,699,https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=400
+69844ada5fbad351cb5e050b,svc-enjoy-edad76f0,Sunrise Dog Walk,enjoy,activities,,product,Group morning walks,499,https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400
+69844ada5fbad351cb5e050c,svc-enjoy-dbe300ab,Pet Costume Party,enjoy,events,,product,Themed costume event,799,https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=400
+69844ada5fbad351cb5e050d,svc-enjoy-8cb5de63,Doggy Dance Class,learn,classes,,product,Learn tricks together,899,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400
+69844ada5fbad351cb5e050e,svc-enjoy-9ed5a32d,Pet Camping Trip,enjoy,experiences,,product,Overnight camping adventure,3999,https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=400
+69844ada5fbad351cb5e050f,svc-enjoy-1ffae7ad,Bubble Play Session,enjoy,activities,,product,Pet-safe bubble fun,299,https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=400
+69844ada5fbad351cb5e0510,svc-enjoy-aeb3d517,Pet Photobooth Access,enjoy,experiences,,product,Fun photo opportunities,399,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400
+69844ada5fbad351cb5e0512,svc-fit-da240769,Hydrotherapy Session,shop,therapy,,product,Water-based exercise,1299,https://images.unsplash.com/photo-1601758003122-53c40e686a19?w=400
+69844ada5fbad351cb5e0513,svc-fit-89526281,Personal Dog Trainer,learn,training,,product,One-on-one training,1999,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400
+69844ada5fbad351cb5e0514,svc-fit-773d1514,Treadmill Training,fit,fitness,,product,Indoor running session,799,https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400
+69844ada5fbad351cb5e0515,svc-fit-0abbc0b8,Canine CrossFit,fit,fitness,,product,High-intensity workout,899,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400
+69844ada5fbad351cb5e0516,svc-fit-cb1e54ed,Swimming Lessons,learn,classes,,product,Learn to swim safely,1499,https://images.unsplash.com/photo-1601758003122-53c40e686a19?w=400
+69844ada5fbad351cb5e0517,svc-fit-bdfea102,Obstacle Course Pass,enjoy,activities,,product,Access to agility course,699,https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400
+69844ada5fbad351cb5e051a,svc-fit-ca1d02b3,Canine Massage Session,care,wellness,,product,Post-workout recovery,999,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400
+69844ada5fbad351cb5e051c,svc-fit-196b6fe2,Monthly Fitness Plan,fit,programs,,product,Customized workout plan,4999,https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400
+69844ada5fbad351cb5e051e,svc-fit-e863d305,Balance Ball Training,learn,classes,,product,Core strengthening,699,https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400
+69844ada5fbad351cb5e051f,svc-fit-de7330a4,Sprint Training Session,fit,fitness,,product,Speed and agility,599,https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400
+69844ada5fbad351cb5e0521,svc-learn-76313bd3,Basic Obedience Course,learn,training,,product,Foundation training,2999,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400
+69844ada5fbad351cb5e0522,svc-learn-1feabe4b,Puppy Socialization Class,learn,classes,,product,Early social skills,1499,https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=400
+69844ada5fbad351cb5e0523,svc-learn-f285fc00,Advanced Commands Training,learn,courses,,product,Complex commands,3999,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400
+69844ada5fbad351cb5e0524,svc-learn-ad2ada40,Trick Training Workshop,learn,workshops,,product,Fun tricks to learn,999,https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=400
+69844ada5fbad351cb5e0527,svc-learn-bdff5948,Behaviour Modification,shop,programs,,product,Address problem behaviours,4999,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400
+69844ada5fbad351cb5e0528,svc-learn-332dfec9,Service Dog Training,learn,specialized,,product,Professional service training,9999,https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=400
+69844ada5fbad351cb5e0529,svc-learn-a6904223,Therapy Dog Certification,shop,certification,,product,Become a therapy team,5999,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400
+69844ada5fbad351cb5e052a,svc-learn-4781e95d,Recall Training Intensive,learn,courses,,product,Perfect recall every time,2499,https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400
+69844ada5fbad351cb5e052c,svc-learn-2e9e8ba7,House Training Program,learn,programs,,product,Potty training success,1999,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400
+69844ada5fbad351cb5e052d,svc-learn-cb9efa29,Separation Anxiety Course,learn,courses,,product,Build independence,3499,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400
+69844ada5fbad351cb5e052e,svc-learn-a10dd645,Canine Good Citizen Prep,shop,certifications,,product,CGC certification prep,2999,https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=400
+69844ada5fbad351cb5e052f,svc-learn-d28a0927,Online Training Course,learn,training,,product,Learn at your pace,1499,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400
+69844ada5fbad351cb5e0530,svc-learn-f44696cb,Group Training Classes,learn,classes,,product,Social learning,999,https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=400
+69844ada5fbad351cb5e0531,svc-learn-f64be77d,Private Training Session,learn,training,,product,One-on-one instruction,1999,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400
+69844ada5fbad351cb5e0532,svc-learn-403fe5c2,Reactive Dog Workshop,shop,workshops,,product,Help reactive dogs,2999,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400
+69844ada5fbad351cb5e0533,svc-learn-a3b0b70a,Nose Work Introduction,learn,classes,,product,Scent detection basics,1299,https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=400
+69844ada5fbad351cb5e0535,svc-care-9e3e93a4,Annual Wellness Checkup,care,checkups,,product,Comprehensive health exam,1999,https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?w=400
+69844ada5fbad351cb5e0537,svc-care-d91b0143,Dental Cleaning,shop,dental,,product,Professional dental care,3999,https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?w=400
+69844ada5fbad351cb5e0538,svc-care-1377d639,Flea & Tick Prevention,shop,preventive,,product,Monthly protection,999,https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400
+69844ada5fbad351cb5e053a,svc-care-ab29b4f4,Microchipping Service,shop,services,,product,Permanent ID implant,999,https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?w=400
+69844ada5fbad351cb5e053c,svc-care-c4f7e586,Allergy Testing,shop,diagnostics,,product,Identify allergies,2999,https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?w=400
+69844ada5fbad351cb5e053d,svc-care-6cc875d7,Blood Panel Test,shop,diagnostics,,product,Complete blood work,1999,https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400
+69844ada5fbad351cb5e0543,svc-care-4c49bf18,Heartworm Prevention,shop,preventive,,product,Monthly heartworm protection,1499,https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400
+69844ada5fbad351cb5e0545,svc-care-48c44b71,Anxiety Relief Drops,care,wellness,,product,Natural calming aid,799,https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400
+69844ada5fbad351cb5e0546,svc-care-72f32b25,Pain Management Plan,shop,treatments,,product,Chronic pain care,2999,https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?w=400
+69844ada5fbad351cb5e0547,svc-care-9edbbfba,Wellness Blood Test,care,diagnostics,,product,Preventive screening,1499,https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=400
+69844ada5fbad351cb5e0549,svc-advisory-893ea747,New Pet Parent Consult,shop,consultations,,product,First-time owner guidance,799,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400
+69844ada5fbad351cb5e054a,svc-advisory-a40e35c5,Multi-Pet Household Plan,shop,planning,,product,Managing multiple pets,1499,https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=400
+69844ada5fbad351cb5e054b,svc-advisory-9869b0bb,Pet Insurance Review,shop,financial,,product,Insurance comparison,499,https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=400
+69844ada5fbad351cb5e054c,svc-advisory-868116bf,Vet Selection Assistance,shop,guidance,,product,Find the right vet,599,https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?w=400
+69844ada5fbad351cb5e054d,svc-advisory-ec3071d6,Pet Budget Planning,shop,financial,,product,Financial pet planning,699,https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=400
+69844ada5fbad351cb5e054e,svc-advisory-f318ce10,Exercise Plan Consult,fit,consultations,,product,Custom fitness plan,899,https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400
+69844ada5fbad351cb5e0551,svc-advisory-15cac1ec,Diet Transition Plan,shop,planning,,product,Safe food switching,799,https://images.unsplash.com/photo-1589924691995-400dc9ecc119?w=400
+69844ada5fbad351cb5e0553,svc-advisory-4dff9608,Pet Safety Audit,shop,assessments,,product,Home safety check,999,https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=400
+69844ada5fbad351cb5e0554,svc-advisory-4bcf8a7b,Training Method Consult,learn,consultations,,product,Find right training style,699,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400
+69844ada5fbad351cb5e0555,svc-advisory-4dcadc67,End-of-Life Planning,shop,planning,,product,Compassionate guidance,999,https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=400
+69844ada5fbad351cb5e0556,svc-advisory-cd79487b,Rehoming Consultation,shop,consultations,,product,Responsible rehoming help,599,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400
+69844ada5fbad351cb5e0558,svc-fit-20c869ef,Personal Fitness Assessment,fit,fitness_assessment,,product,"Comprehensive fitness evaluation for your pet including body condition score, mobility check, and personalised exercise plan",1499,https://images.unsplash.com/photo-1676729274491-579573327bd0?w=800
+69844ada5fbad351cb5e055a,svc-fit-cd0415bd,Agility Training Sessions (4 Pack),fit,exercise_plan,,product,"Fun agility training sessions to improve coordination, confidence and fitness",2499,https://images.pexels.com/photos/6089707/pexels-photo-6089707.jpeg?w=800
+69844ada5fbad351cb5e055b,svc-fit-0706f65f,Swimming Therapy Session,fit,exercise_plan,,product,Low-impact aquatic exercise perfect for senior pets or those recovering from injury,1299,https://images.unsplash.com/photo-1676729274562-1dad4383f550?w=800
+69844ada5fbad351cb5e055d,svc-learn-c970f784,Puppy Foundation Course,learn,puppy_training,,product,"Essential training for puppies 8-16 weeks covering socialisation, basic commands, and house training",4999,https://images.unsplash.com/photo-1759914915132-9878a4c702e6?w=800
+69844ada5fbad351cb5e055e,svc-learn-59efacc8,Basic Obedience Training (8 Sessions),learn,basic_obedience,,product,"Master sit, stay, come, heel, and leash walking with certified trainers",6999,https://images.unsplash.com/photo-1707595114464-f7e953d5f3bb?w=800
+69844ada5fbad351cb5e055f,svc-learn-86a761b7,Behaviour Modification Programme,learn,behavior_modification,,product,"Address specific behavioural issues like aggression, anxiety, or excessive barking",8999,https://images.pexels.com/photos/6568478/pexels-photo-6568478.jpeg?w=800
+69844ada5fbad351cb5e0560,svc-learn-1c73605c,Advanced Tricks & Commands,learn,advanced_training,,product,"Fun advanced training including tricks, off-leash reliability, and complex commands",5499,https://images.unsplash.com/photo-1764377720157-b10acb5c32a9?w=800
+69844ada5fbad351cb5e0561,svc-learn-9f57f471,Private In-Home Training Session,learn,basic_obedience,,product,One-on-one training session at your home for personalised attention,2499,https://images.pexels.com/photos/10013055/pexels-photo-10013055.jpeg?w=800
+69844ada5fbad351cb5e0563,svc-groom-f1f657ff,Spa Bath & Pamper Session,shop,spa_bath,,product,"Luxury spa experience with aromatherapy bath, massage, and premium conditioning",2499,https://images.unsplash.com/photo-1611173622933-91942d394b04?w=800
+69844ada5fbad351cb5e0564,svc-groom-34eaf366,Nail Trim & Paw Care,care,nail_care,,product,Professional nail trimming with paw pad moisturising treatment,499,https://images.unsplash.com/photo-1657552253868-1832eb7e5228?w=800
+69844ada5fbad351cb5e0566,svc-groom-fed640c9,Breed-Specific Styling,shop,styling,,product,Expert breed-standard styling by certified groomers familiar with your breed,2999,https://images.unsplash.com/photo-1736849807143-a7826aedf2f1?w=800
+69844ada5fbad351cb5e0567,svc-advisory-94989eb8,Behaviour Consultation,advisory,behaviour,,product,60-minute consultation with certified animal behaviourist to address concerns,2999,https://images.pexels.com/photos/6235650/pexels-photo-6235650.jpeg?w=800
+69844ada5fbad351cb5e0568,svc-advisory-4dd08198,Nutrition Planning Session,advisory,nutrition,,product,Personalised nutrition plan developed by veterinary nutritionist,1999,https://images.unsplash.com/photo-1692906456160-385d805be646?w=800
+69844ada5fbad351cb5e0569,svc-advisory-bad10d2a,Senior Pet Care Consultation,advisory,consultation,,product,Comprehensive guidance for caring for your ageing pet with comfort and dignity,1499,https://images.pexels.com/photos/7470635/pexels-photo-7470635.jpeg?w=800
+69844ada5fbad351cb5e056a,svc-advisory-f696c03b,New Pet Parent Coaching,advisory,coaching,,product,One-on-one coaching for new pet parents covering everything from feeding to training,2499,https://images.unsplash.com/photo-1713764054247-3685535a0221?w=800
+69844ada5fbad351cb5e056b,svc-advisory-9cfa5cb2,Breed Selection Guidance,advisory,breed_selection,,product,Expert advice to help you choose the perfect breed for your lifestyle,999,https://images.unsplash.com/photo-1563460716037-460a3ad24ba9?w=800
+69844ada5fbad351cb5e056c,svc-paperwork-9c3cb546,Pet Passport Application Service,paperwork,travel,,product,Complete assistance with pet passport application including documentation and vet coordination,3999,https://images.unsplash.com/photo-1639034741369-1e0c771adaeb?w=800
+69844ada5fbad351cb5e056d,svc-paperwork-5f32695e,KCI Registration Assistance,paperwork,documentation,,product,Help with Kennel Club of India registration including pedigree verification,2499,https://images.unsplash.com/photo-1613244470181-e4ff087b4a24?w=800
+69844ada5fbad351cb5e056e,svc-paperwork-5e994d0f,Medical Records Digitisation,paperwork,medical,,product,Convert all physical medical records to secure digital format with cloud backup,999,https://images.pexels.com/photos/6815936/pexels-photo-6815936.jpeg?w=800
+69844ada5fbad351cb5e056f,svc-paperwork-e96964aa,Import/Export Documentation,paperwork,documentation,,product,Complete documentation assistance for international pet relocation,7999,https://images.unsplash.com/photo-1654163600175-efc47ce20b29?w=800
+69844ada5fbad351cb5e0572,svc-emergency-8d11080b,24/7 Emergency Helpline Subscription,emergency,helpline,,product,Annual subscription to 24/7 veterinary emergency helpline with instant advice,2999,https://images.unsplash.com/photo-1661552066736-935e0cad1782?w=800
+69844ada5fbad351cb5e0574,svc-emergency-afc24ad7,Lost Pet Alert Service,emergency,lost_pet,,product,"Instant alert broadcast to local community, shelters, and veterinary clinics",999,https://images.pexels.com/photos/5673523/pexels-photo-5673523.jpeg?w=800
+69844ada5fbad351cb5e0575,svc-emergency-84b8d7ec,First Aid Training Course,emergency,training,,product,Learn essential pet first aid skills from certified professionals,3499,https://images.unsplash.com/photo-1643227991784-fabfe0cf4470?w=800
+69844ada5fbad351cb5e0576,svc-adopt-899ac12c,Adoption Application Processing,adopt,adoption_process,,product,Complete adoption application processing with background checks and home visit,499,https://images.unsplash.com/photo-1593991910463-03658d3de800?w=800
+69844ada5fbad351cb5e0579,svc-adopt-8baf7a60,Adoption Counselling Session,adopt,consultation,,product,Expert guidance to help you find the perfect pet match for your family,999,https://images.unsplash.com/photo-1593991910379-b414c1e3bd74?w=800
+69844ada5fbad351cb5e057a,svc-adopt-bc5b1cf3,Shelter Support Donation,adopt,donation,,product,Direct donation to partner shelters to support rescued animals,500,https://images.pexels.com/photos/16465591/pexels-photo-16465591.jpeg?w=800
+69844ada5fbad351cb5e057b,svc-farewell-0b79f1d7,Private Cremation Service,farewell,cremation,,product,Dignified private cremation with ashes returned in an elegant urn,4999,https://images.unsplash.com/photo-1732870013417-9a76a854c646?w=800
+69844ada5fbad351cb5e057d,svc-farewell-caa3632b,Rainbow Bridge Ceremony,farewell,ceremony,,product,Touching farewell ceremony with readings and memorial moment,2499,https://images.unsplash.com/photo-1661166849809-28e10e74b75b?w=800
+69844ada5fbad351cb5e057e,svc-farewell-2b3012b4,Grief Support Counselling,farewell,grief_support,,product,Professional pet loss counselling to help you through this difficult time,1499,https://images.pexels.com/photos/5766435/pexels-photo-5766435.jpeg?w=800
+69844ada5fbad351cb5e057f,svc-farewell-6374faf4,Paw Print Memorial,farewell,memorial,,product,Professional clay paw print impression as a lasting tribute,999,https://images.unsplash.com/photo-1514569794956-45786fee478d?w=800
+69844ada5fbad351cb5e0580,svc-insure-4c7b4100,Basic Health Coverage,insure,insurance,,product,Essential health insurance covering accidents and basic illnesses,2999,https://images.unsplash.com/photo-1563460716037-460a3ad24ba9?w=800
+69844ada5fbad351cb5e0581,svc-insure-d823ef58,Comprehensive Pet Insurance,insure,comprehensive,,product,"Full coverage including accidents, illness, surgeries, and preventive care",5999,https://images.pexels.com/photos/7736039/pexels-photo-7736039.jpeg?w=800
+69844ada5fbad351cb5e0582,svc-insure-45d2f162,Senior Pet Insurance,insure,senior_coverage,,product,Specialised coverage for pets over 7 years with pre-existing condition options,4499,https://images.unsplash.com/photo-1567615875328-a8c598685688?w=800
+69844ada5fbad351cb5e0583,svc-insure-3e2d91fd,Wellness Add-On,insure,wellness,,product,Add preventive care coverage including vaccinations and annual check-ups,1499,https://images.pexels.com/photos/7731333/pexels-photo-7731333.jpeg?w=800
+69844ada5fbad351cb5e0584,svc-insure-9212f433,Travel Insurance for Pets,insure,travel_insurance,,product,Coverage for pets during domestic and international travel,999,https://images.unsplash.com/photo-1768903430440-e97bc1069622?w=800
+69844ada5fbad351cb5e0585,svc-community-6898a12a,Dog Park Meetup Pass (Monthly),community,meetups,,product,Monthly pass for organised dog park meetups with socialisation activities,999,https://images.unsplash.com/photo-1758426157062-3622db44ecd6?w=800
+69844ada5fbad351cb5e0586,svc-community-6771dc01,Pet Parent Social Club Membership,community,membership,,product,Annual membership to exclusive pet parent community with events and networking,2499,https://images.pexels.com/photos/11733510/pexels-photo-11733510.jpeg?w=800
+69844ada5fbad351cb5e0587,svc-community-81fae822,Breed-Specific Playdate,community,playdates,,product,Organised playdate with dogs of the same breed for specialised socialisation,499,https://images.pexels.com/photos/33728364/pexels-photo-33728364.jpeg?w=800
+69844ada5fbad351cb5e0588,svc-community-96d0306f,Pet-Friendly Event Ticket,community,events,,product,Entry to premium pet-friendly events including festivals and exhibitions,799,https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=800
+69844ada5fbad351cb5e0589,svc-community-7258b354,Pet Photography Meetup,community,photo_meetup,,product,Join other pet parents for a fun photo session with professional photographer,1499,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800
+69844ada5fbad351cb5e058a,svc-bundle-fit-transformation,Complete Fitness Transformation,fit,fitness_bundle,,product,"12-week programme combining assessment, weight management, and exercise sessions",8999,https://images.unsplash.com/photo-1676729274491-579573327bd0?w=800
+69844ada5fbad351cb5e058b,svc-bundle-learn-puppy-starter,Puppy Learning Journey,learn,training_bundle,,product,Complete puppy training from foundation through basic obedience,9999,https://images.unsplash.com/photo-1707595114464-f7e953d5f3bb?w=800
+69844ada5fbad351cb5e058c,svc-bundle-groom-pamper-day,Ultimate Pamper Day,care,grooming_bundle,,product,"Full day of pampering including spa bath, full grooming, and de-shedding",4499,https://images.unsplash.com/photo-1611173622933-91942d394b04?w=800
+69844ada5fbad351cb5e058d,svc-bundle-advisory-new-parent,New Pet Parent Essentials,advisory,advisory_bundle,,product,"Everything new pet parents need including coaching, nutrition, and behaviour guidance",4999,https://images.pexels.com/photos/6235650/pexels-photo-6235650.jpeg?w=800
+69844ada5fbad351cb5e0592,svc-bundle-insure-complete-protection,Complete Protection Plan,insure,insurance_bundle,,product,Full insurance coverage with wellness add-on and travel protection,7499,https://images.pexels.com/photos/7736039/pexels-photo-7736039.jpeg?w=800
+69844ada5fbad351cb5e0594,svc-PROD-F1680CB37170,IATA Approved Travel Crate - Small,travel,travel,,product,,0,https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600&q=80
+69844ada5fbad351cb5e0595,svc-PROD-AF47C448D1C4,IATA Approved Travel Crate - Medium,travel,travel,,product,,0,https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=600&q=80
+69844ada5fbad351cb5e0596,svc-PROD-B6630E1C959D,IATA Approved Travel Crate - Large,travel,travel,,product,,0,https://images.unsplash.com/photo-1601758174493-4e6f3f1e8b3e?w=600&q=80
+69844ada5fbad351cb5e059a,svc-PROD-F8008846F354,Portable Pet Water Bottle,travel,travel,,product,,0,https://images.unsplash.com/photo-1546527868-ccb7ee7dfa6a?w=600&q=80
+69844ada5fbad351cb5e059d,svc-PROD-66EA6B650090,GPS Smart ID Tag,travel,travel,,product,,0,https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=600&q=80
+69844ada5fbad351cb5e059e,svc-PROD-4897907A5EBE,Premium Deshedding Brush,care,care,,product,,0,https://images.unsplash.com/photo-1601758174493-4e6f3f1e8b3e?w=600&q=80
+69844ada5fbad351cb5e059f,svc-PROD-BF7EBA0D2EC2,Safety Nail Clipper Set,care,care,,product,,0,https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600&q=80
+69844ada5fbad351cb5e05a0,svc-PROD-CD37054E7D05,Gentle Oatmeal Shampoo,care,care,,product,,0,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80
+69844ada5fbad351cb5e05a1,svc-PROD-CC3AD8944742,Ear Cleaning Solution,care,care,,product,,0,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80
+69844ada5fbad351cb5e05a4,svc-PROD-7FBD4D907103,Biodegradable Poop Bags (120 Count),care,care,,product,,0,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80
+69844ada5fbad351cb5e05a6,svc-PROD-8C4134CAF38F,Calming Pheromone Spray,care,care,,product,,0,https://images.unsplash.com/photo-1546527868-ccb7ee7dfa6a?w=600&q=80
+69844ada5fbad351cb5e05a9,svc-PROD-C1600C3F930F,Pet Dining Placemat,dine,dine,,product,,0,https://images.unsplash.com/photo-1558929996-da64ba858215?w=600&q=80
+69844ada5fbad351cb5e05ac,svc-PROD-62236491D609,Dine-Time Calming Spray,dine,dine,,product,,0,https://images.unsplash.com/photo-1558929996-da64ba858215?w=600&q=80
+69844ada5fbad351cb5e05ad,svc-PROD-3E55A7BAFAC4,Café Ready Bandana,dine,dine,,product,,0,https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=600&q=80
+69844ada5fbad351cb5e05ae,svc-PROD-639D63468799,Reusable Pup Cup,dine,dine,,product,,0,https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=600&q=80
+69844ada5fbad351cb5e05af,svc-PROD-53AC5CACA0BB,Outdoor Dining Mat,dine,dine,,product,,0,https://images.unsplash.com/photo-1601758174493-4e6f3f1e8b3e?w=600&q=80
+69844ada5fbad351cb5e05b0,svc-PROD-FBB90DF3D120,Café Cooling Vest,dine,dine,,product,,0,https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600&q=80
+69844ada5fbad351cb5e05b2,svc-PROD-CDADEE5AF32A,Fresh Breath Dental Chews,dine,dine,,product,,0,https://images.unsplash.com/photo-1601758174493-4e6f3f1e8b3e?w=600&q=80
+69844ada5fbad351cb5e05b4,svc-fit-prod-915b63cd,Dog Yoga Mat,fit,fit,,product,Non-slip yoga mat designed for pet stretching and relaxation exercises. Perfect for doga sessions with your furry friend.,1299,https://images.unsplash.com/photo-1601758003122-53c40e686a19?w=800
+69844ada5fbad351cb5e05b5,svc-fit-prod-cc80aef8,Interactive Fetch Launcher,fit,fit,,product,Automatic ball launcher with adjustable distance settings. Great for high-energy dogs who love fetch.,2499,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800
+69844ada5fbad351cb5e05b7,svc-fit-prod-ec10e862,Swimming Vest (All Sizes),fit,fit,,product,High-visibility flotation vest for water-loving dogs. Adjustable straps and handle for easy lifting.,1799,https://images.unsplash.com/photo-1560743641-3914f2c45636?w=800
+69844ada5fbad351cb5e05b8,svc-fit-prod-358bfdea,Treadmill for Dogs,fit,fit,,product,Indoor exercise solution for dogs. Variable speed settings and safety rails. Perfect for rainy days or apartment living.,15999,https://images.unsplash.com/photo-1676729274491-579573327bd0?w=800
+69844ada5fbad351cb5e05cd,svc-seed-stay-40a736ce,Standard Boarding - 1 Night,stay,boarding,,product,Comfortable overnight stay with meals,999,https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=600&q=80
+69844ada5fbad351cb5e05ce,svc-seed-stay-25beac5b,Premium Suite - 1 Night,stay,boarding,,product,Luxury suite with AC and webcam access,1499,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80
+69844ada5fbad351cb5e05cf,svc-seed-stay-b4d82068,Daycare Pass - Single Day,stay,daycare,,product,Full day of play and supervision,599,https://images.unsplash.com/photo-1582719508461-905c673771fd?w=600&q=80
+69844ada5fbad351cb5e05d0,svc-seed-stay-e053f179,Daycare Pack - 10 Days,stay,daycare,,product,10-day daycare pass with 2 bonus days,4999,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80
+69844ada5fbad351cb5e05d1,svc-seed-stay-b06d0e4e,Home Boarding Service,stay,boarding,,product,Stay with a certified pet host,1299,https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=600&q=80
+69844ada5fbad351cb5e05d2,svc-seed-stay-35e67a6c,Puppy Daycare (under 1 Year),stay,daycare,,product,Specialized care for young puppies,699,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80
+69844ada5fbad351cb5e05d3,svc-seed-stay-f621ab50,Senior Dog Stay,stay,boarding,,product,Gentle care for senior pets,1199,https://images.unsplash.com/photo-1582719508461-905c673771fd?w=600&q=80
+69844ada5fbad351cb5e05d4,svc-seed-stay-5cc83de6,Medical Boarding,stay,boarding,,product,Boarding with medication administration,1799,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80
+69844ada5fbad351cb5e05d5,svc-seed-stay-96811e4b,Holiday Pet Sitting,stay,boarding,,product,In-home pet sitting during holidays,1599,https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=600&q=80
+69844ada5fbad351cb5e05d6,svc-seed-stay-c60487d8,Airport Pickup & Drop,stay,services,,product,Pet transport to/from airport,799,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80
+69844ada5fbad351cb5e05dc,svc-seed-travel-c9c0c605,International Flight Assistance,shop,services,,product,End-to-end international travel support,9999,https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=600&q=80
+69844ada5fbad351cb5e05dd,svc-seed-travel-48f44771,Pet-Friendly Hotel Booking,shop,services,,product,We find the perfect pet-friendly stay,499,https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=600&q=80
+69844ada5fbad351cb5e05e1,svc-seed-care-c87e3042,Full Grooming Session,care,grooming,,product,"Bath, haircut, nail trim, ear cleaning",999,https://images.unsplash.com/photo-1612531386530-97286d97c2d2?w=600&q=80
+69844ada5fbad351cb5e05e3,svc-seed-care-ee82dfd6,Puppy First Groom,care,grooming,,product,Gentle introduction to grooming,699,https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=600&q=80
+69844ada5fbad351cb5e05e6,svc-seed-care-3e3213a3,Flea & Tick Prevention Pack,care,health,,product,3-month protection pack,799,https://images.unsplash.com/photo-1612531386530-97286d97c2d2?w=600&q=80
+69844ada5fbad351cb5e05e7,svc-seed-care-c9ee4699,Joint Support Supplements,care,health,,product,Glucosamine & chondroitin formula,899,https://images.unsplash.com/photo-1585846416120-3a7354ed7d39?w=600&q=80
+69844ada5fbad351cb5e05e8,svc-seed-care-acd7d9dc,Skin & Coat Supplements,care,health,,product,Omega-rich formula for shiny coat,699,https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=600&q=80
+69844ada5fbad351cb5e05e9,svc-seed-care-3421b3a8,Vet Video Consultation,care,health,,product,Online vet consultation,499,https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?w=600&q=80
+69844ada5fbad351cb5e05f2,svc-seed-enjoy-d9d90d45,Dog Park Playdate Booking,enjoy,services,,product,Organized playdate at local park,399,https://images.unsplash.com/photo-1601758174493-4e6f3f1e8b3e?w=600&q=80
+69844ada5fbad351cb5e05f3,svc-seed-enjoy-dd8937e5,Swimming Pool Session,enjoy,services,,product,Supervised pool time for dogs,799,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80
+69844ada5fbad351cb5e05f4,svc-seed-enjoy-53d38976,Agility Course Access,enjoy,services,,product,Access to agility training course,599,https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600&q=80
+69844ada5fbad351cb5e05f5,svc-seed-fit-9fbbea2b,Personal Training Session,fit,training,,product,One-on-one fitness training,999,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80
+69844ada5fbad351cb5e05f6,svc-seed-fit-6e3038cf,Weight Loss Program (4 Weeks),fit,programs,,product,Structured weight management program,3999,https://images.unsplash.com/photo-1558929996-da64ba858215?w=600&q=80
+69844ada5fbad351cb5e05f7,svc-seed-fit-ce084921,Puppy Fitness Starter,fit,programs,,product,Age-appropriate exercise program,2499,https://images.unsplash.com/photo-1546527868-ccb7ee7dfa6a?w=600&q=80
+69844ada5fbad351cb5e05f8,svc-seed-fit-cee46735,Senior Mobility Program,fit,programs,,product,Gentle exercises for older dogs,2999,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80
+69844ada5fbad351cb5e05f9,svc-seed-fit-bfc542fb,Canine Treadmill Session,fit,training,,product,Supervised treadmill workout,599,https://images.unsplash.com/photo-1601758174493-4e6f3f1e8b3e?w=600&q=80
+69844ada5fbad351cb5e05fa,svc-seed-fit-92c2a48f,Swimming Fitness Class,fit,training,,product,Low-impact aqua fitness,799,https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=600&q=80
+69844ada5fbad351cb5e05fb,svc-seed-fit-0f7980a3,Agility Training Course,fit,programs,,product,8-week agility training program,4999,https://images.unsplash.com/photo-1558929996-da64ba858215?w=600&q=80
+69844ada5fbad351cb5e05fd,svc-seed-fit-dc3c3a43,Monthly Fitness Subscription,fit,programs,,product,Unlimited fitness sessions,2999,https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600&q=80
+69844ada5fbad351cb5e05fe,svc-seed-fit-a62e3b62,Dog Yoga (Doga) Session,fit,training,,product,Relaxing yoga with your dog,599,https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=600&q=80
+69844ada5fbad351cb5e0600,svc-seed-learn-bb2c3631,Puppy Kindergarten (8 Weeks),learn,training,,product,Foundation training for puppies,5999,https://images.unsplash.com/photo-1558929996-da64ba858215?w=600&q=80
+69844ada5fbad351cb5e0601,svc-seed-learn-02b0a368,Advanced Training Program,learn,training,,product,Complex commands & tricks,7999,https://images.unsplash.com/photo-1546527868-ccb7ee7dfa6a?w=600&q=80
+69844ada5fbad351cb5e0602,svc-seed-learn-63540423,Behavior Modification,learn,training,,product,Address specific behavior issues,6999,https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600&q=80
+69844ada5fbad351cb5e0604,svc-seed-learn-3e36e599,Socialization Classes,learn,training,,product,Safe exposure to new experiences,2499,https://images.unsplash.com/photo-1558929996-da64ba858215?w=600&q=80
+69844ada5fbad351cb5e0605,svc-seed-learn-4b9c4d98,Trick Training Course,learn,training,,product,Fun tricks to impress everyone,3499,https://images.unsplash.com/photo-1546527868-ccb7ee7dfa6a?w=600&q=80
+69844ada5fbad351cb5e0609,svc-seed-paperwork-34b4f03d,Pet Registration Service,paperwork,documentation,,product,Complete municipal registration,999,
+69844ada5fbad351cb5e060c,svc-seed-paperwork-4a148e22,Pet Insurance Consultation,paperwork,consultation,,product,Find the right pet insurance,499,
+69844ada5fbad351cb5e060d,svc-seed-paperwork-6b8dd44e,Vaccination Record Book,paperwork,documentation,,product,Official vaccination record,299,
+69844ada5fbad351cb5e060e,svc-seed-paperwork-c3fef725,Pet Will & Trust Service,paperwork,legal,,product,Legal protection for your pet's future,4999,
+69844ada5fbad351cb5e0610,svc-seed-paperwork-f835e76f,Breeding License Assistance,paperwork,documentation,,product,Help with breeding permits,3999,
+69844ada5fbad351cb5e0613,svc-seed-advisory-2a9fd38d,Pre-Adoption Counseling,advisory,consultation,,product,Choose the right pet for your family,799,
+69844ada5fbad351cb5e0614,svc-seed-advisory-c58433b2,New Pet Parent Guidance,advisory,consultation,,product,Everything you need to know,999,
+69844ada5fbad351cb5e0616,svc-seed-advisory-1089da9f,Multi-Pet Household Advisory,advisory,consultation,,product,Introducing new pets safely,1499,
+69844ada5fbad351cb5e0617,svc-seed-advisory-b4e6501b,Breed Selection Service,shop,consultation,,product,Find your perfect breed match,1999,
+69844ada5fbad351cb5e0618,svc-seed-advisory-08449aa0,Pet-Proofing Home Audit,advisory,services,,product,Make your home pet-safe,1499,
+69844ada5fbad351cb5e0619,svc-seed-emergency-ff35f1cb,24/7 Emergency Vet Hotline,emergency,emergency,,product,Round-the-clock vet access,299,
+69844ada5fbad351cb5e061b,svc-seed-emergency-0fba5b04,First Aid Training Workshop,travel,training,,product,Learn pet first aid,1999,
+69844ada5fbad351cb5e061d,svc-seed-emergency-c46d5e62,Poison Control Consultation,emergency,emergency,,product,Immediate toxicity guidance,499,
+69844ada5fbad351cb5e061e,svc-seed-emergency-8fa7b9f2,Lost Pet Search Service,emergency,services,,product,Professional pet search team,1999,
+69844ada5fbad351cb5e061f,svc-seed-farewell-d7cdaca0,Cremation Service - Standard,shop,cremation,,product,Dignified cremation service,3999,
+69844ada5fbad351cb5e0620,svc-seed-farewell-a55e74fd,Cremation Service - Premium,shop,cremation,,product,Private cremation with ceremony,6999,
+69844ada5fbad351cb5e0622,svc-seed-farewell-479e1cf7,Paw Print Keepsake,farewell,memorial,,product,Clay paw print impression,999,
+69844ada5fbad351cb5e0623,svc-seed-farewell-6629655d,Photo Memorial Frame,farewell,memorial,,product,Custom photo memorial,1499,
+69844ada5fbad351cb5e0625,svc-seed-farewell-94125864,Memorial Garden Stone,farewell,memorial,,product,Engraved garden memorial,2499,
+69844ada5fbad351cb5e0626,svc-seed-farewell-15584e8a,Pet Loss Counseling Session,farewell,services,,product,Grief support counseling,999,
+69844ada5fbad351cb5e0627,svc-seed-adopt-45858257,Adoption Counseling,adopt,services,,product,Free adoption guidance,0,
+69844ada5fbad351cb5e0629,svc-seed-adopt-54adefbc,Rescue Dog Rehabilitation,adopt,services,,product,Behavior support for rescues,4999,
+69844ada5fbad351cb5e062a,svc-seed-adopt-71274095,Foster-to-Adopt Program,adopt,programs,,product,Try before you commit,0,
+69844ada5fbad351cb5e062c,svc-seed-adopt-ffcdaa55,Senior Pet Adoption Support,adopt,services,,product,Support for adopting older pets,999,
+69844ada5fbad351cb5e062e,svc-seed-adopt-13400197,Second Chance Sponsorship,adopt,donation,,product,Sponsor a shelter pet,500,
+69844ada5fbad351cb5e0637,svc-seed-shop-e1b40287,Grooming Brush Set,shop,grooming,,product,Complete brush collection,799,
+69844ada5fbad351cb5e0638,svc-svc-celebrate-7f5048e6,Birthday Pawty Planning - Home,celebrate,party-planning,,product,"Complete birthday celebration planning at your home. Includes décor, cake coordination, photography, and party games for your furry friend and their pals.",4999,https://images.unsplash.com/photo-1587402092301-725e37c70fd8?w=600&q=80
+69844ada5fbad351cb5e0639,svc-svc-celebrate-1d7dabb1,Birthday Pawty Planning - Café/Venue,celebrate,party-planning,,product,"Premium birthday celebration at a pet-friendly café or venue. Full Concierge® service with venue booking, décor, catering, and entertainment.",7999,https://images.unsplash.com/photo-1576201836106-db1758fd1c97?w=600&q=80
+69844ada5fbad351cb5e063a,svc-svc-celebrate-7a925790,Birthday Pawty Planning - Resort Experience,celebrate,party-planning,,product,"Luxury resort birthday experience. Exclusive venue, gourmet menu, spa treatments, and overnight stay option for the birthday pup.",14999,https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80
+69844ada5fbad351cb5e063c,svc-svc-celebrate-096f3547,Milestone Celebration - Puppy to Adult,celebrate,milestone,,product,Mark your puppy's transition to adulthood with a special ceremony. Includes growth photo compilation and celebration.,2999,https://images.unsplash.com/photo-1587402092301-725e37c70fd8?w=600&q=80
+69844ada5fbad351cb5e063d,svc-svc-celebrate-7f1565c4,Milestone Celebration - Senior Honours,celebrate,milestone,,product,Honour your pet's golden years with a dignified senior celebration. Gentle activities suited to their pace.,3499,https://images.unsplash.com/photo-1576201836106-db1758fd1c97?w=600&q=80
+69844ada5fbad351cb5e063e,svc-svc-celebrate-b5b832db,Surprise Delivery & Moment,celebrate,surprise,,product,"Surprise your pet parent with an unexpected celebration delivery. Perfect for birthdays, anniversaries, or just because.",1999,https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=600&q=80
+69844ada5fbad351cb5e063f,svc-svc-celebrate-26caef13,Party Coordination Service,celebrate,coordination,,product,"Full party coordination without venue booking. We handle décor, cake, invites, and guest management.",2499,https://images.unsplash.com/photo-1601979031925-424e53b6caaa?w=600&q=80
+69844ada5fbad351cb5e0643,svc-svc-celebrate-68e6d5f5,Breed Day Celebration,celebrate,breed-day,,product,Celebrate your pet's breed heritage on their official Breed Day. Connect with other breed enthusiasts and honour their lineage.,2499,https://images.unsplash.com/photo-1601979031925-424e53b6caaa?w=600&q=80
+69844ada5fbad351cb5e0644,svc-svc-celebrate-da88476b,Adoption Anniversary Ritual,celebrate,anniversary,,product,Annual ritual to celebrate the bond between you and your adopted pet. Includes donation to rescue organisations.,1999,https://images.unsplash.com/photo-1587402092301-725e37c70fd8?w=600&q=80
+69844ada5fbad351cb5e0645,svc-svc-dine-2f4ace47,Nutrition Assessment & Meal Plan,dine,consultation,,product,"Comprehensive nutrition assessment by a certified pet nutritionist. Personalised meal plan based on breed, age, and health conditions.",1999,https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&q=80
+69844ada5fbad351cb5e0646,svc-svc-dine-44e36ece,Diet Transition Support,dine,support,,product,Guided transition to new food with monitoring and adjustments. Ideal for switching to fresh food or managing sensitivities.,1499,https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&q=80
+69844ada5fbad351cb5e0648,svc-svc-dine-ec77bdf1,Allergy Testing & Diet Planning,dine,health,,product,Comprehensive food allergy testing with elimination diet planning. Identify triggers and create a safe meal plan.,3999,https://images.unsplash.com/photo-1552566626-52f8b828add9?w=600&q=80
+69844ada5fbad351cb5e0649,svc-svc-dine-d5633fd0,Home Cooking Workshop,dine,workshop,,product,Learn to prepare nutritious homemade meals for your pet. Hands-on workshop with recipes and tips.,2499,https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&q=80
+69844ada5fbad351cb5e064a,svc-svc-dine-0d03dd02,Meal Prep Service - Weekly,dine,meal-prep,,product,Weekly meal preparation and portioning service. Fresh meals prepared and delivered to your doorstep.,1999,https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=600&q=80
+69844ada5fbad351cb5e064b,svc-svc-stay-6268afff,Boarding Concierge® - Standard,stay,boarding,,product,Full-service boarding coordination with our Concierge® team. We find the perfect stay based on your pet's personality.,1499,https://images.unsplash.com/photo-1582719508461-905c673771fd?w=600&q=80
+69844ada5fbad351cb5e064c,svc-svc-stay-9a248569,Boarding Concierge® - Premium,stay,boarding,,product,"Premium boarding with luxury amenities. Private suite, spa treatment, and personalised attention.",2499,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80
+69844ada5fbad351cb5e064d,svc-svc-stay-11abdb7a,Daycare Planning & Coordination,stay,daycare,,product,"Regular daycare scheduling and coordination. We manage bookings, transportation, and daily reports.",799,https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=600&q=80
+69844ada5fbad351cb5e064e,svc-svc-stay-0c95a0ef,Home Pet Sitter Matching,shop,pet-sitting,,product,"We match you with a vetted, compatible home pet sitter. Your pet stays in a loving home environment.",999,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80
+69844ada5fbad351cb5e0650,svc-svc-stay-10f6ffd7,Trial Stay Experience,stay,trial,,product,Short trial stay to help your pet adjust to boarding. Perfect for anxious pets or first-timers.,499,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80
+69844ada5fbad351cb5e0651,svc-svc-travel-d9c2f29d,Pet Travel Planning - Domestic,travel,planning,,product,"Complete domestic travel planning for you and your pet. Flight/train bookings, pet-friendly stays, and itinerary.",2999,https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=600&q=80
+69844ada5fbad351cb5e0652,svc-svc-travel-fbdc8657,Pet Travel Planning - International,travel,planning,,product,"Comprehensive international travel planning including documentation, quarantine requirements, and airline coordination.",9999,https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=600&q=80
+69844ada5fbad351cb5e0653,svc-svc-travel-12312229,Pet Relocation Service - Domestic,shop,relocation,,product,End-to-end pet relocation within India. Door-to-door service with climate-controlled transport.,14999,https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=600&q=80
+69844ada5fbad351cb5e0654,svc-svc-travel-3d30fbb1,Pet Relocation Service - International,shop,relocation,,product,"Complete international pet relocation with all documentation, customs clearance, and destination delivery.",49999,https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=600&q=80
+69844ada5fbad351cb5e0655,svc-svc-travel-fe9aae55,Travel Documentation Service,travel,documentation,,product,"We handle all pet travel documentation - health certificates, import permits, and airline forms.",3999,https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=600&q=80
+69844ada5fbad351cb5e0656,svc-svc-travel-7f7b4df1,Airport Assistance Service,shop,assistance,,product,"Personal assistance at the airport for pet check-in, security, and boarding. Reduces travel stress.",1999,https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=600&q=80
+69844ada5fbad351cb5e0657,svc-svc-travel-9fa70123,Pet-Friendly Destination Research,shop,research,,product,"Detailed research on pet-friendly destinations, activities, and accommodations for your trip.",999,https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=600&q=80
+69844ada5fbad351cb5e0658,svc-svc-care-391f33bc,Grooming Concierge® - Full Service,care,grooming,,product,"Premium grooming with Concierge® coordination. We book, transport, and ensure your pet's comfort throughout.",1499,https://images.unsplash.com/photo-1612531386530-97286d97c2d2?w=600&q=80
+69844ada5fbad351cb5e0659,svc-svc-care-4b3a0f05,Home Grooming Service,care,grooming,,product,Professional grooming in the comfort of your home. Less stress for anxious pets.,1999,https://images.unsplash.com/photo-1585846416120-3a7354ed7d39?w=600&q=80
+69844ada5fbad351cb5e065a,svc-svc-care-ab1ef415,Vet Appointment Coordination,care,health,,product,"We schedule and coordinate all vet appointments. Reminders, transport, and report collection included.",499,https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=600&q=80
+69844ada5fbad351cb5e065b,svc-svc-care-dc450729,Wellness Programme - Annual,care,wellness,,product,"Comprehensive annual wellness programme with scheduled check-ups, vaccinations, and preventive care.",9999,https://images.unsplash.com/photo-1628009368231-7bb7cfcb0def?w=600&q=80
+69844ada5fbad351cb5e065c,svc-svc-care-350a66bc,Senior Pet Care Programme,care,senior-care,,product,"Specialised care programme for senior pets. Enhanced monitoring, mobility support, and comfort care.",12999,https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?w=600&q=80
+69844ada5fbad351cb5e065d,svc-svc-care-0d344ead,Post-Surgery Care Coordination,care,recovery,,product,"Complete post-surgery care coordination including medication management, wound care, and recovery monitoring.",2999,https://images.unsplash.com/photo-1612531386530-97286d97c2d2?w=600&q=80
+69844ada5fbad351cb5e065e,svc-svc-enjoy-57ba0150,Playdate Coordination Service,shop,social,,product,We find compatible playmates and coordinate regular playdates for your social pup.,799,https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=600&q=80
+69844ada5fbad351cb5e065f,svc-svc-enjoy-a8ba8999,Social Calendar Management,enjoy,social,,product,"Monthly social calendar with curated events, meetups, and activities for your pet.",1999,https://images.unsplash.com/photo-1601758174493-4e6f3f1e8b3e?w=600&q=80
+69844ada5fbad351cb5e0660,svc-svc-enjoy-a2f999b2,Adventure Day Out,enjoy,experience,,product,"Curated adventure day with hiking, beach visit, or nature exploration. Supervised fun for active dogs.",2999,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80
+69844ada5fbad351cb5e0661,svc-svc-enjoy-aabd3519,Swimming Session - Pool,enjoy,activity,,product,"Supervised swimming session at a pet pool. Great exercise and fun, especially in summer.",999,https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600&q=80
+69844ada5fbad351cb5e0663,svc-svc-enjoy-87f1504a,Pet Café Experience,enjoy,experience,,product,"Special outing to a pet café with treats, playtime, and socialisation. Perfect for a pawrent-pet date.",1499,https://images.unsplash.com/photo-1601758174493-4e6f3f1e8b3e?w=600&q=80
+69844ada5fbad351cb5e066a,svc-svc-learn-83554778,Behaviour Assessment & Plan,learn,assessment,,product,In-depth behaviour assessment with customised modification plan for specific issues.,2499,https://images.unsplash.com/photo-1546527868-ccb7ee7dfa6a?w=600&q=80
+69844ada5fbad351cb5e066b,svc-svc-learn-dd8da108,Private Training - Home Visit,learn,training,,product,One-on-one training session at your home. Address specific behaviours in familiar environment.,1999,https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600&q=80
+69844ada5fbad351cb5e066c,svc-svc-learn-d6d763c9,Puppy Socialisation Programme,learn,socialisation,,product,Structured socialisation programme for puppies during critical development period.,4999,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80
+69844ada5fbad351cb5e066d,svc-svc-learn-185e5ed3,Reactivity Rehabilitation,learn,behaviour,,product,Intensive programme for reactive dogs. Build confidence and change responses to triggers.,8999,https://images.unsplash.com/photo-1558929996-da64ba858215?w=600&q=80
+69844ada5fbad351cb5e066e,svc-svc-learn-041b71ca,Separation Anxiety Programme,learn,behaviour,,product,Structured programme to address separation anxiety with gradual desensitisation.,5999,https://images.unsplash.com/photo-1546527868-ccb7ee7dfa6a?w=600&q=80
+69844ada5fbad351cb5e066f,svc-svc-learn-ea112dba,Canine Good Citizen Preparation,learn,certification,,product,Preparation course for Canine Good Citizen certification. Build skills for public access.,6999,https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600&q=80
+69844ada5fbad351cb5e0671,svc-svc-paperwork-e0b6d991,Breed Registration - KCI,paperwork,breed-registry,,product,Complete Kennel Club of India registration with pedigree documentation.,4999,
+69844ada5fbad351cb5e0672,svc-svc-paperwork-28f1caa3,Pet Insurance Advisory,paperwork,insurance,,product,"Compare and select the best pet insurance based on your pet's breed, age, and health history.",999,
+69844ada5fbad351cb5e0673,svc-svc-paperwork-58af97fc,Document Organisation Service,shop,organisation,,product,"We organise and digitise all your pet's documents in a secure, accessible format.",1499,
+69844ada5fbad351cb5e0674,svc-svc-paperwork-2eeb4d14,Import/Export Permit Service,paperwork,permits,,product,Handle all permits and documentation for international pet movement.,7999,
+69844ada5fbad351cb5e0675,svc-svc-advisory-313f87f4,New Pet Parent Consultation,advisory,consultation,,product,Comprehensive consultation for new pet parents. Everything you need to know about caring for your new family member.,1499,
+69844ada5fbad351cb5e0676,svc-svc-advisory-e266850f,Breed Selection Advisory,advisory,advisory,,product,"Expert guidance to choose the perfect breed based on your lifestyle, home, and preferences.",1999,
+69844ada5fbad351cb5e0677,svc-svc-advisory-48c9949f,Second Opinion Service,advisory,health,,product,Connect with specialist vets for second opinions on diagnoses or treatment plans.,999,
+69844ada5fbad351cb5e0678,svc-svc-advisory-bf6e8f0a,End-of-Life Consultation,advisory,consultation,,product,Compassionate guidance during your pet's final chapter. Quality of life assessment and care planning.,1499,
+69844ada5fbad351cb5e067a,svc-svc-emergency-442c9ca6,Lost Pet Search & Recovery,emergency,search,,product,"Professional search team activated within hours. Flyers, social media, and ground search.",4999,
+69844ada5fbad351cb5e067b,svc-svc-emergency-7f7d140a,Pet First Aid Training,travel,training,,product,Learn essential pet first aid skills. Certification included.,2499,
+69844ada5fbad351cb5e067c,svc-svc-farewell-eb4da3dc,Rainbow Bridge Ceremony - Complete,shop,ceremony,,product,"Dignified farewell ceremony with cremation, memorial service, and keepsakes.",9999,
+69844ada5fbad351cb5e067d,svc-svc-farewell-6c595c14,At-Home Euthanasia Coordination,farewell,end-of-life,,product,Arrange peaceful at-home euthanasia with a compassionate vet. Dignified goodbye in familiar surroundings.,4999,
+69844ada5fbad351cb5e067e,svc-svc-farewell-072144bb,Memorial Planning Service,farewell,memorial,,product,"Complete memorial planning including keepsakes, tribute video, and remembrance options.",2999,
+69844ada5fbad351cb5e067f,svc-svc-farewell-81704345,Grief Support Sessions,farewell,support,,product,Professional grief counselling for pet loss. Individual or family sessions available.,1499,
+69844ada5fbad351cb5e0682,svc-svc-adopt-1d41ca6f,Foster-to-Adopt Programme,adopt,programme,,product,Trial foster period before committing to adoption. Support throughout the transition.,999,
+69844ada5fbad351cb5e0683,svc-PROD-B04D6E0B0E54,Agility Training Set,learn,training-equipment,,product,,0,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80
+69844ada5fbad351cb5e0684,svc-PROD-62FC20BB6710,Interactive Puzzle Feeder,fit,mental-fitness,,product,,0,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80
+69844ada5fbad351cb5e0687,svc-PROD-A942D09526CB,Balance Board for Dogs,learn,core-training,,product,,0,https://images.unsplash.com/photo-1558929996-da64ba858215?w=600&q=80
+69844ada5fbad351cb5e0688,svc-PROD-7C422F22E055,Tug Rope - Heavy Duty,shop,strength,,product,,0,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80
+69844ada5fbad351cb5e068a,svc-PROD-5C48703D7A1C,Cooling Vest,shop,weather-gear,,product,,0,https://images.unsplash.com/photo-1558929996-da64ba858215?w=600&q=80
+69844ada5fbad351cb5e068c,svc-PROD-6F6D84BDC0E9,Portable Water Bottle,shop,hydration,,product,,0,https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600&q=80
+69844ada5fbad351cb5e0691,svc-PROD-A0564BEEC5EC,Pet Health Monitor,advisory,advisory,,product,,0,https://images.unsplash.com/photo-1558929996-da64ba858215?w=600&q=80
+69844ada5fbad351cb5e0693,svc-PROD-A1863A58DC1B,Pheromone Calming Diffuser,advisory,advisory,,product,,0,https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=600&q=80
+69844ada5fbad351cb5e0694,svc-PROD-79B99C9EAE9F,Pet Weight Management Scale,advisory,advisory,,product,,0,https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=600&q=80
+69844ada5fbad351cb5e0695,svc-PROD-2DDF6CE64594,Senior Pet Mobility Ramp,advisory,advisory,,product,,0,https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=600&q=80
+69844ada5fbad351cb5e0699,svc-PROD-F9A3CC092F39,GPS Pet Tracker - Real Time,emergency,emergency,,product,,0,https://images.unsplash.com/photo-1601758174493-4e6f3f1e8b3e?w=600&q=80
+69844ada5fbad351cb5e069a,svc-PROD-A965615904A2,GPS Pet Tracker - Mini (Cats & Small Dogs),emergency,emergency,,product,,0,https://images.unsplash.com/photo-1546527868-ccb7ee7dfa6a?w=600&q=80
+69844ada5fbad351cb5e069c,svc-PROD-043BC49784BC,Smart QR ID Tag - Emergency,emergency,emergency,,product,,0,https://images.unsplash.com/photo-1558929996-da64ba858215?w=600&q=80
+69844ada5fbad351cb5e069d,svc-PROD-152B28DF6024,High-Visibility Reflective Vest,emergency,emergency,,product,,0,https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600&q=80
+69844ada5fbad351cb5e069f,svc-PROD-71B4BBAC613C,Soft Emergency Muzzle Set (3 Sizes),emergency,emergency,,product,,0,https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=600&q=80
+69844ada5fbad351cb5e06a0,svc-PROD-47DBD1D3E4B5,Emergency Calming Spray,emergency,emergency,,product,,0,https://images.unsplash.com/photo-1546527868-ccb7ee7dfa6a?w=600&q=80
+69844ada5fbad351cb5e06a4,svc-PROD-3E1D5C1620CF,Smart QR ID Tag,paperwork,paperwork,,product,,0,https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=600&q=80
+69844ada5fbad351cb5e06a6,svc-PROD-D8983D38FF03,Digital Pet ID Card,paperwork,paperwork,,product,,0,https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=600&q=80
+69844ada5fbad351cb5e06a7,svc-PROD-5B40E90BEC36,Digital Health Record Wallet,paperwork,paperwork,,product,,0,https://images.unsplash.com/photo-1546527868-ccb7ee7dfa6a?w=600&q=80
+69844ada5fbad351cb5e06a8,svc-PROD-D107BDD9357E,TDC Health File Folder,paperwork,paperwork,,product,,0,https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=600&q=80
+69844ada5fbad351cb5e06a9,svc-PROD-9C95D4BDF688,Vaccination Booklet Holder,paperwork,paperwork,,product,,0,https://images.unsplash.com/photo-1558929996-da64ba858215?w=600&q=80
+69844ada5fbad351cb5e06aa,svc-PROD-AC067D096252,Waterproof Document Sleeve,paperwork,paperwork,,product,,0,https://images.unsplash.com/photo-1601758174493-4e6f3f1e8b3e?w=600&q=80
+69844ada5fbad351cb5e06ac,svc-PROD-72C0658B94A3,Travel Document Pouch,paperwork,paperwork,,product,,0,https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=600&q=80
+69844ada5fbad351cb5e06ad,svc-PROD-B2C5887FA570,Emergency Document Wallet,paperwork,paperwork,,product,,0,https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=600&q=80
+69844ada5fbad351cb5e06af,svc-PROD-6228C21DF7F2,Emergency Contact Cards (Pack of 5),paperwork,paperwork,,product,,0,https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=600&q=80
+69844ada5fbad351cb5e06b0,svc-PROD-DD9E2442FCB4,Pet Insurance Document Organizer,paperwork,paperwork,,product,,0,https://images.unsplash.com/photo-1601758174493-4e6f3f1e8b3e?w=600&q=80
+69844ada5fbad351cb5e06b1,svc-PROD-482BF9EC24AE,Annual Compliance Checklist,paperwork,paperwork,,product,,0,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80
+69844ada5fbad351cb5e06b2,svc-PROD-1B2DC302D424,Smart Activity Tracker,fit,fit,,product,,0,https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=600&q=80
+69844ada5fbad351cb5e06b3,svc-PROD-A938A011CBB1,Pet Weight Scale,fit,fit,,product,,0,https://images.unsplash.com/photo-1546527868-ccb7ee7dfa6a?w=600&q=80
+69844ada5fbad351cb5e06b5,svc-PROD-550F0F7BAFC7,Automatic Ball Launcher,fit,fit,,product,,0,https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=600&q=80
+69844ada5fbad351cb5e06b6,svc-PROD-F74AADD1F080,Pet Treadmill,fit,fit,,product,,0,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80
+69844ada5fbad351cb5e06b7,svc-PROD-8A93C77102D9,Swimming Safety Vest,fit,fit,,product,,0,https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=600&q=80
+69844ada5fbad351cb5e06ba,svc-PROD-1ADD9E952CB3,Joint Support Supplement,fit,fit,,product,,0,https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=600&q=80
+69844ada5fbad351cb5e06bb,svc-PROD-D47FAB5ABD8B,Cooling Exercise Vest,fit,fit,,product,,0,https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=600&q=80
+69844ada5fbad351cb5e06bc,svc-PROD-BB71B4AAA52A,Canine Balance Board,fit,fit,,product,,0,https://images.unsplash.com/photo-1601758174493-4e6f3f1e8b3e?w=600&q=80
+69844ada5fbad351cb5e06be,svc-PROD-F19DE643DFD0,Social Butterfly Bandana,enjoy,enjoy,,product,,0,https://images.unsplash.com/photo-1558929996-da64ba858215?w=600&q=80
+69844ada5fbad351cb5e06c0,svc-PROD-3ED36187B10C,Cooling Vest for Outdoor Fun,enjoy,enjoy,,product,,0,https://images.unsplash.com/photo-1546527868-ccb7ee7dfa6a?w=600&q=80
+69844ada5fbad351cb5e06c5,svc-PROD-A1F794467B3C,Safety Swim Vest,enjoy,enjoy,,product,,0,https://images.unsplash.com/photo-1546527868-ccb7ee7dfa6a?w=600&q=80
+69844ada5fbad351cb5e06c7,svc-PROD-CAECA555999E,Event Day Backpack,enjoy,enjoy,,product,,0,https://images.unsplash.com/photo-1601758174493-4e6f3f1e8b3e?w=600&q=80
+69844ada5fbad351cb5e06c9,svc-PROD-B3CCF01E24A5,Portable Outdoor Bed,enjoy,enjoy,,product,,0,https://images.unsplash.com/photo-1546527868-ccb7ee7dfa6a?w=600&q=80
+69844ada5fbad351cb5e06ca,svc-PROD-1E8FFC699847,Social Profile Tag,enjoy,enjoy,,product,,0,https://images.unsplash.com/photo-1558929996-da64ba858215?w=600&q=80
+69844ada5fbad351cb5e0737,svc-stay-696d061f899ee8015c535faa,The Leela Goa,stay,stay,,product,Luxury beachfront resort set amidst 75 acres of lush gardens. One of India's most pet-welcoming luxury properties with dedicated pet amenities.,12000,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800
+69844ada5fbad351cb5e0738,svc-stay-696d061f899ee8015c535fab,W Goa,stay,stay,,product,Trendy beachside escape with vibrant design and pet-friendly policies. Perfect for young pet parents seeking style and comfort.,12000,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800
+69844ada5fbad351cb5e0739,svc-stay-696d061f899ee8015c535fac,Ahilya By the Sea,shop,stay,,product,Intimate heritage property with just 8 rooms. Dogs are treated as family here with personalized care.,5000,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800
+69844ada5fbad351cb5e073a,svc-stay-696d061f899ee8015c535fad,SUJÁN Jawai,stay,stay,,product,Luxury tented camp in leopard country. One of India's most exclusive pet-friendly wilderness experiences.,12000,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800
+69844ada5fbad351cb5e073b,svc-stay-696d061f899ee8015c535fae,Taj Lake Palace,stay,stay,,product,Iconic floating palace on Lake Pichola. Pets are welcomed as royal guests with special arrangements.,25000,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800
+69844ada5fbad351cb5e073c,svc-stay-696d061f899ee8015c535faf,The Oberoi Rajvilas,stay,stay,,product,32-acre luxury resort with Rajasthani architecture. Pets are pampered with dedicated walking areas.,12000,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800
+69844ada5fbad351cb5e073d,svc-stay-696d061f899ee8015c535fb0,CGH Earth - Coconut Lagoon,stay,stay,,product,Eco-friendly backwater resort accessible only by boat. Pets enjoy the natural surroundings.,12000,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800
+69844ada5fbad351cb5e073e,svc-stay-696d061f899ee8015c535fb1,Marari Beach Resort,stay,stay,,product,Beachside eco-resort with traditional Kerala cottages. Perfect for beach-loving dogs.,12000,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800
+69844ada5fbad351cb5e073f,svc-stay-696d061f899ee8015c535fb2,The Oberoi Cecil,stay,stay,,product,Colonial heritage hotel with stunning mountain views. Pets enjoy the crisp mountain air.,5000,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800
+69844ada5fbad351cb5e0740,svc-stay-696d061f899ee8015c535fb3,Wildflower Hall,stay,stay,,product,"Former residence of Lord Kitchener at 8,250 ft. Surrounded by cedar forests perfect for pet walks.",12000,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800
+69844ada5fbad351cb5e0743,svc-stay-696d061f899ee8015c535fb6,Della Resorts,stay,stay,,product,Adventure resort with India's largest collection of adventure activities. Pet-friendly rooms available.,12000,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800
+69844ada5fbad351cb5e0744,svc-stay-696d061f899ee8015c535fb7,Radisson Blu Resort & Spa Alibaug,stay,stay,,product,Beachside resort perfect for weekend getaways from Mumbai. Pet-friendly rooms with garden access.,12000,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800
+69844ada5fbad351cb5e0745,svc-stay-696d061f899ee8015c535fb8,Evolve Back Coorg,stay,stay,,product,Luxury plantation resort in coffee country. Expansive grounds perfect for pets to explore.,12000,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800
+69844ada5fbad351cb5e0746,svc-stay-696d061f899ee8015c535fb9,The Serai Kabini,stay,stay,,product,Wildlife resort on the banks of Kabini River. Perfect for nature-loving pet families.,12000,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800
+69844ada5fbad351cb5e0747,svc-stay-696d061f899ee8015c535fba,The Tamara Kodai,stay,stay,,product,Boutique resort in the Palani Hills. Misty mountains and forest walks for pets.,12000,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800
+69844ada5fbad351cb5e0748,svc-stay-696d061f899ee8015c535fbb,Taj Fisherman's Cove,stay,stay,,product,Beachfront resort near Chennai. Pet-friendly cottages with direct beach access.,12000,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800
+69844ada5fbad351cb5e0749,svc-stay-696d061f899ee8015c535fbc,"The Oberoi, Gurugram",shop,stay,,product,Urban luxury hotel with pet-friendly rooms. Ideal for business travelers with pets.,5000,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800
+69844ada5fbad351cb5e074a,svc-stay-696d061f899ee8015c535fbd,ITC Grand Bharat,stay,stay,,product,All-suite resort spread across 100 acres. Pets enjoy the expansive grounds and golf course.,12000,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800
+69844ada5fbad351cb5e074b,svc-stay-696d061f899ee8015c535fbe,Taj Exotica Resort & Spa,stay,stay,,product,Island paradise with pet-friendly villas. Near Asia's best beach.,12000,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800
+69844ada5fbad351cb5e074c,svc-stay-696d061f899ee8015c535fbf,Palais De Mahe,stay,stay,,product,Boutique heritage hotel in French Quarter. Pet-friendly rooms with courtyard access.,5000,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800
+69844ada5fbad351cb5e074d,svc-stay-696d061f899ee8015c535fc0,Treehouse Jaipur,stay,stay,,product,Unique treehouse-style property with pet-friendly rooms. Great city views.,5000,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800
+69844ada5fbad351cb5e074e,svc-stay-696d061f899ee8015c535fc1,SaffronStays Casa Del Sol,stay,stay,,product,Private villa perfect for pet families. Fully fenced garden and pool.,5000,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800
+69844ada5fbad351cb5e074f,svc-stay-696d061f899ee8015c535fc2,Atmantan Wellness Centre,stay,stay,,product,Luxury wellness resort with pet-friendly options. Holistic retreat for you and your pet.,12000,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800
+69844ada5fbad351cb5e0750,svc-stay-696d061f899ee8015c535fc3,Himalaica,stay,stay,,product,Cozy mountain homestay with incredible views. Dogs love the apple orchards.,5000,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800
+69844ada5fbad351cb5e0751,svc-stay-696d061f899ee8015c535fc4,Camp Wildex,stay,stay,,product,Adventure camp by the Ganges. Perfect for active pet families.,12000,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800
+69844ada5fbad351cb5e0752,svc-stay-696d061f899ee8015c535fc5,The Windflower Prakruthi,stay,stay,,product,Nature resort near Bangalore airport. Great for pet staycations.,12000,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800
+69844ada5fbad351cb5e0753,svc-stay-696d061f899ee8015c535fc6,Mahua Kothi,stay,stay,,product,Luxury jungle lodge near tiger reserve. Pet-friendly with precautions.,12000,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800
+69844ada5fbad351cb5e0754,svc-stay-696d061f899ee8015c535fc7,Vivanta Dal View,stay,stay,,product,Lakeside luxury with Dal Lake views. Pet-friendly rooms with garden access.,5000,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800
+69844ada5fbad351cb5e0755,svc-stay-696d061f899ee8015c535fc8,The Machan,stay,stay,,product,Treehouse eco-resort in the forest. Unique experience for nature-loving pets.,12000,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800
+69844ada5fbad351cb5e0756,svc-stay-696d061f899ee8015c535fc9,Aahana Resort,stay,stay,,product,Nature resort at the foothills of the Himalayas. Pet-friendly with large grounds.,12000,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800
+69844ada5fbad351cb5e0757,svc-boarding-69787d6a3fbee8a72eb13f67,Pawsome Pet Resort,stay,boarding,,product,Luxury pet resort with spacious rooms and 24/7 vet access,1500,https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=600&q=80
+69844ada5fbad351cb5e0758,svc-boarding-69787d6a3fbee8a72eb13f68,Happy Tails Boarding,stay,boarding,,product,Cozy home environment with personal attention,800,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80
+69844ada5fbad351cb5e0759,svc-boarding-69787d6a3fbee8a72eb13f69,Pet Paradise Delhi,stay,boarding,,product,Luxury pet boarding with individual suites and personalized care,1200,https://images.unsplash.com/photo-1582719508461-905c673771fd?w=600&q=80
+69844ada5fbad351cb5e075a,svc-PROD-0FFA097BFEAE,Pet-Friendly Hotel Stay,stay,hotel,,product,,0,https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600&q=80
+69844ada5fbad351cb5e075b,svc-PROD-C856199055D2,Resort Getaway with Pets,shop,resort,,product,,0,https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600&q=80
+69844ada5fbad351cb5e075c,svc-PROD-EDA35289A625,Private Villa Rental,shop,villa,,product,,0,https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=600&q=80
+69844ada5fbad351cb5e075d,svc-PROD-FA4435430533,Countryside Farmstay,stay,farmstay,,product,,0,https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=600&q=80
+69844ada5fbad351cb5e075e,svc-PROD-2D04300F4A79,Premium Pet Boarding,stay,boarding,,product,,0,https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=600&q=80
+69844ada5fbad351cb5e075f,svc-PROD-EA4C3657AEE4,Standard Pet Boarding,stay,boarding,,product,,0,https://images.unsplash.com/photo-1546527868-ccb7ee7dfa6a?w=600&q=80
+69844ada5fbad351cb5e0760,svc-PROD-86D3B6F5F70D,Home-style Pet Boarding,stay,homestay,,product,,0,https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600&q=80
+69844ada5fbad351cb5e0761,svc-PROD-D93F6220C860,Pet Daycare - Full Day,care,daycare,,product,,0,https://images.unsplash.com/photo-1601758174493-4e6f3f1e8b3e?w=600&q=80
+69844ada5fbad351cb5e0762,svc-PROD-557FA7031AB5,Pet-Friendly Cab Service,travel,cab,,product,,0,https://images.unsplash.com/photo-1601758174493-4e6f3f1e8b3e?w=600&q=80
+69844ada5fbad351cb5e0763,svc-PROD-B6C7791C00B8,Train Travel Assistance,travel,train,,product,,0,https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=600&q=80
+69844ada5fbad351cb5e0764,svc-PROD-C39634C3CEDD,Domestic Flight Coordination,shop,flight,,product,,0,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600&q=80
+69844ada5fbad351cb5e0765,svc-PROD-AA7BD1002E51,Pet Taxi - City Rides,shop,taxi,,product,,0,https://images.unsplash.com/photo-1558929996-da64ba858215?w=600&q=80
+69844ada5fbad351cb5e0766,svc-PROD-E2B791EAA694,Bath & Brush,care,grooming,,product,,0,https://images.unsplash.com/photo-1601758174493-4e6f3f1e8b3e?w=600&q=80
+69844ada5fbad351cb5e0767,svc-PROD-2054D6966F5F,Daily Dog Walking,shop,walking,,product,,0,https://images.unsplash.com/photo-1601758174493-4e6f3f1e8b3e?w=600&q=80
+69844ada5fbad351cb5e0768,svc-PROD-03407A0BBFD4,Pet Sitting (8 Hours),shop,sitting,,product,,0,https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=600&q=80
+69844ada5fbad351cb5e0769,svc-PROD-8C21C8B5AB85,Basic Obedience Training,learn,training,,product,,0,https://images.unsplash.com/photo-1546527868-ccb7ee7dfa6a?w=600&q=80
+69844ada5fbad351cb5e076a,svc-PROD-9ED37697CC22,Vet Consultation Booking,shop,vet,,product,,0,https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=600&q=80
+69844ada5fbad351cb5e076b,svc-PROD-1B4B9807E262,Agility Training Class,fit,agility,,product,,0,https://images.unsplash.com/photo-1558929996-da64ba858215?w=600&q=80
+69844ada5fbad351cb5e076c,svc-PROD-B19A48A8F5F8,Dog Park Day Pass,shop,park,,product,,0,https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=600&q=80
+69844ada5fbad351cb5e076d,svc-PROD-DDB61969ADCC,Pet Cafe Voucher,shop,cafe,,product,,0,https://images.unsplash.com/photo-1546527868-ccb7ee7dfa6a?w=600&q=80
+69844ada5fbad351cb5e076e,svc-PROD-750BE03D6799,Beach Day Experience,shop,beach,,product,,0,https://images.unsplash.com/photo-1546527868-ccb7ee7dfa6a?w=600&q=80
+69844ada5fbad351cb5e076f,svc-PROD-6C40202B715E,Puppy Training Course,learn,puppy,,product,,0,https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=600&q=80
+69844ada5fbad351cb5e0770,svc-PROD-FB8A502EBBD3,Fun Tricks Workshop,shop,tricks,,product,,0,https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600&q=80
+69844ada5fbad351cb5e090d,svc-69763578bf962b2a4806bb6c,Biodegradable Poop Bags (120 count),care,care,,product,Eco-friendly waste bags. Extra thick and leak-proof.,0,
+69844ada5fbad351cb5e0938,svc-6977d50cf1ba3c3bd6e57597,Puppy Daycare (under 1 year),care,daycare,,product,Specialized care for young puppies,0,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=600&q=80
+69844ada5fbad351cb5e095c,svc-6977d50cf1ba3c3bd6e575bb,Weight Loss Program (4 weeks),shop,programs,,product,Structured weight management program,0,https://images.unsplash.com/photo-1558929996-da64ba858215?w=600&q=80
+69844ada5fbad351cb5e0966,svc-6977d50cf1ba3c3bd6e575c5,Puppy Kindergarten (8 weeks),learn,training,,product,Foundation training for puppies,0,https://images.unsplash.com/photo-1558929996-da64ba858215?w=600&q=80
+69844ada5fbad351cb5e0a06,svc-697838c4fdefa8a5b3756286,Soft Emergency Muzzle Set (3 sizes),emergency,emergency,,product,Breathable mesh muzzle set for safe handling during injuries. Non-intimidating design.,0,
+69844ada5fbad351cb5e0a35,svc-69787d6ab1ffb9d0ef5fe0ee,Ahilya by the Sea,stay,stay,,product,Intimate heritage property with just 8 rooms. Dogs are treated as family here with personalized care.,0,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800
+69844ada5fbad351cb5e0a48,svc-69787d6ab1ffb9d0ef5fe127,Palais de Mahe,stay,stay,,product,Boutique heritage hotel in French Quarter. Pet-friendly rooms with courtyard access.,0,https://images.unsplash.com/photo-1566073771259-6a8506099945?w=800
+69844ada5fbad351cb5e0a57,svc-697888da1b42203bef3270d5,Pet Resort Getaway,shop,resort,,product,Luxury resort for pets,0,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800
+69844ada5fbad351cb5e0a66,svc-697888da1b42203bef3270f3,Pet Sitting (8 hours),shop,sitting,,product,In-home pet sitting,0,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800
+69844ada5fbad351cb5e0a7b,svc-6978936e1b42203bef327c71,Pet Adventure Day,shop,adventure,,product,Guided outdoor adventure,0,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800
+69844ada5fbad351cb5e0a7d,svc-6978936e1b42203bef327c75,Basic Grooming,care,basic,,product,Bath and brush,0,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800
+69844ada5fbad351cb5e0a7e,svc-6978936e1b42203bef327c77,Nail Trim & Filing,shop,nail,,product,Professional nail care,0,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800
+69844ada5fbad351cb5e0a7f,svc-6978936e1b42203bef327c79,Adoption Consultation,adopt,consultation,,product,Find your perfect match,0,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800
+69844ada5fbad351cb5e0a81,svc-6978936e1b42203bef327c7d,Post-Adoption Support,adopt,support,,product,30-day support package,0,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800
+69844ada5fbad351cb5e0a82,svc-6978936e1b42203bef327c7f,Memorial Service,shop,memorial,,product,Dignified memorial ceremony,0,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800
+69844ada5fbad351cb5e0a83,svc-6978936e1b42203bef327c81,Private Cremation,shop,cremation,,product,Private cremation service,0,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800
+69844ada5fbad351cb5e0a86,svc-6978936e1b42203bef327c87,Premium Reservation Service,shop,service,,product,Guaranteed pet-friendly seating,0,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800
+69844ada5fbad351cb5e0a89,svc-6978936e1b42203bef327c8d,Premium Coverage Plan,shop,insurance,,product,Comprehensive insurance,0,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800
+69844ada5fbad351cb5e0a8a,svc-6978936e1b42203bef327c8f,Accident Only Plan,shop,insurance,,product,Accident coverage,0,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800
+69844ada5fbad351cb5e0a95,svc-PROD-BFE3F2280142,TEST_Product_20260127163538,shop,,,product,,0,https://example.com/test-image.jpg
+69844ada5fbad351cb5e0a97,svc-PROD-9D6CD1ACECAA,Woof Woof Inn,stay,boarding,,product,,0,
+69844ada5fbad351cb5e0a98,svc-PROD-7748FF2AE515,Pet Paradise,stay,boarding,,product,,0,
+69844ada5fbad351cb5e0a99,svc-PROD-F93923E1924D,Furry Friends Haven,stay,boarding,,product,,0,
+69844ada5fbad351cb5e0a9a,svc-PROD-B05597A41C87,K9 Comfort Zone,stay,boarding,,product,,0,
+69844ada5fbad351cb5e0a9b,svc-PROD-80831CD98BC1,Doggy Daycare & Stay,stay,boarding,,product,,0,
+69844ada5fbad351cb5e0a9c,svc-PROD-99933649AFC7,Paws & Relax,stay,boarding,,product,,0,
+69844ada5fbad351cb5e0a9d,svc-PROD-731F55854916,The Barking Lot,stay,boarding,,product,,0,
+69844ada5fbad351cb5e0a9e,svc-PROD-77E11E436578,Snout House,stay,boarding,,product,,0,
+69844ada5fbad351cb5e0a9f,svc-PROD-20F63A029858,Tail Waggers Resort,stay,boarding,,product,,0,
+69844ada5fbad351cb5e0aa0,svc-PROD-B32A4EDECAE1,Cuddles Pet Care,stay,boarding,,product,,0,
+69844ada5fbad351cb5e0aa1,svc-PROD-755FEDC753C9,Canine Castle Mumbai,stay,boarding,,product,,0,
+69844ada5fbad351cb5e0aa2,svc-PROD-6662F741F7C7,Paws & Play Delhi,stay,boarding,,product,,0,
+69844ada5fbad351cb5e0aa3,svc-PROD-BA6C178F255B,The Dog Lodge Gurgaon,stay,boarding,,product,,0,
+69844ada5fbad351cb5e0aa4,svc-PROD-FE005F55E37A,Furry Friends Pune,stay,boarding,,product,,0,
+69844ada5fbad351cb5e0aa5,svc-PROD-8AAD5AB36F94,Wagging Tails Hyderabad,stay,boarding,,product,,0,
+69844ada5fbad351cb5e0aa6,svc-PROD-57AA27BE46AC,Pet Paradise Chennai,stay,boarding,,product,,0,
+69844ada5fbad351cb5e0abb,svc-697c3ed8d9fc024950dca197,Allergy-Safe Diet Planning,shop,feed,,product,Specialized diet planning for pets with food allergies,0,https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?w=800
+69844ada5fbad351cb5e0abc,svc-697c3ed8d9fc024950dca199,Puppy Nutrition Programme,shop,feed,,product,Age-appropriate nutrition guidance for growing puppies,0,https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?w=800
+69844ada5fbad351cb5e0abd,svc-697c3ed8d9fc024950dca19b,Senior Pet Nutrition,shop,feed,,product,Specialized nutrition support for aging pets,0,https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?w=800
+69844ada5fbad351cb5e0abe,svc-697c3ed8d9fc024950dca19d,Prescription Diet Coordination,shop,feed,,product,Help sourcing and managing prescription diets,0,https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?w=800
+69844ada5fbad351cb5e0abf,svc-697c3ed8d9fc024950dca1a9,Free Insurance Quote Comparison,insure,insure,,product,Get quotes from multiple pet insurance providers - completely free,0,https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800
+69844ada5fbad351cb5e0ac0,svc-697c3ed8d9fc024950dca1ab,Policy Review & Optimization,insure,insure,,product,Expert review of your current pet insurance policy,0,https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800
+69844ada5fbad351cb5e0ac1,svc-697c3ed8d9fc024950dca1ad,Claim Filing Assistance,insure,insure,,product,Professional help filing and tracking insurance claims,0,https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800
+69844ada5fbad351cb5e0ac2,svc-697c3ed8d9fc024950dca1af,Renewal Management Service,insure,insure,,product,Never miss a renewal with automated reminders,0,https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800
+69844ada5fbad351cb5e0acd,svc-697dbae5572fc2185da93e75,Comfort Crate for New Pets,adopt,adopt,,product,Cozy crate to help adopted pets feel safe,0,https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600
+69844ada5fbad351cb5e0ace,svc-697dbae5572fc2185da93e77,Rescue Calming Supplement,adopt,adopt,,product,Natural calming aid for anxious rescue pets,0,https://images.unsplash.com/photo-1507146426996-ef05306b995a?w=600
+69844ada5fbad351cb5e0acf,svc-697dbae5572fc2185da93e79,Orthopedic Comfort Bed,adopt,adopt,,product,Memory foam bed for senior rescues,0,https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=600
+69844ada5fbad351cb5e0ad1,svc-697dbae5572fc2185da93e7d,Shelter Donation Gift Card,adopt,adopt,,product,Support local shelters with a donation,0,https://images.unsplash.com/photo-1534361960057-19889db9621e?w=600
+69844ada5fbad351cb5e0ad2,svc-697dbae5572fc2185da93e7f,Dog Treadmill (Small),fit,fit,,product,Indoor exercise treadmill for small dogs,0,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600
+69844ada5fbad351cb5e0ad3,svc-697dbae5572fc2185da93e81,Weighted Vest for Dogs,fit,fit,,product,Adjustable weight vest for strength training,0,https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600
+69844ada5fbad351cb5e0ad6,svc-697dbae5572fc2185da93e87,Exercise Ball Launcher,fit,fit,,product,Automatic ball launcher for fetch exercises,0,https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=600
+69844ada5fbad351cb5e0ad9,svc-697dbaeb572fc2185da93e9b,Squeaky Ball Set (3 pack),enjoy,enjoy,,product,Durable tennis balls with squeaker,0,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600
+69844ada5fbad351cb5e0adc,svc-697dbaeb572fc2185da93ea1,Portable Dog Pool,enjoy,enjoy,,product,Foldable splash pool for summer fun,0,https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=600
+69844ada5fbad351cb5e0add,svc-697dbaeb572fc2185da93ea3,Party Bandana Set,enjoy,enjoy,,product,Stylish bandanas for meetups & events,0,https://images.unsplash.com/photo-1534361960057-19889db9621e?w=600
+69844ada5fbad351cb5e0ae8,svc-tdc-4e286279e18a,Professional Deshedding Brush,care,grooming,,product,"Stainless steel deshedding tool reduces shedding by up to 90%. Ergonomic handle, gentle on skin. For medium to large coats.",849.0,https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?w=400
+69844ada5fbad351cb5e0ae9,svc-tdc-f30a7b52c8c4,Gentle Oatmeal Shampoo - 500ml,care,grooming,,product,"Soothing oatmeal formula for sensitive skin. pH balanced, paraben-free. Leaves coat soft, shiny, and fresh-smelling.",549.0,https://images.unsplash.com/photo-1585664811087-47f65abbad64?w=400
+69844ada5fbad351cb5e0aea,svc-tdc-5463661d58e0,Nail Clipper & File Set,care,grooming,,product,"Professional-grade nail clipper with safety guard. Includes nail file and quick guide. Stainless steel, non-slip grip.",449.0,https://images.unsplash.com/photo-1601758177266-bc599de87707?w=400
+69844ada5fbad351cb5e0aeb,svc-tdc-e72bcd5a54e8,Paw Balm & Nose Butter Duo,care,grooming,,product,"Organic balm set for cracked paws and dry noses. Made with shea butter, coconut oil, and vitamin E. Safe if licked.",699.0,https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=400
+69844ada5fbad351cb5e0aec,svc-tdc-f49554dcf585,Ear Cleaning Solution - 120ml,care,grooming,,product,"Gentle ear cleaner removes wax and debris. Prevents infections, reduces odor. Vet-recommended formula.",399.0,https://images.unsplash.com/photo-1535930749574-1399327ce78f?w=400
+69844ada5fbad351cb5e0afb,svc-travel-171532b1a134,Wahl Cargo Seat Cover for Pets,travel,car-accessories,,product,"Premium cargo area seat cover to protect your car from pet hair, dirt, and scratches. Waterproof backing, machine washable. Universal fit for most SUVs and hatchbacks. Dimensions: 59x55 inches.",1898.0,https://images.unsplash.com/photo-1548199982-03cce0bbc87b?w=400
+69844ada5fbad351cb5e0b01,svc-travel-c9a35347e75a,Pet Passport & Document Holder,travel,travel-accessories,,product,"Organized document holder for all pet travel paperwork. Holds vaccination records, health certificates, insurance, and ID. Water-resistant material. Perfect for international travel.",549.0,https://images.unsplash.com/photo-1548199988-03cce0bbc87b?w=400
+69844ada5fbad351cb5e0b02,svc-travel-07dae68ed728,Car Window Mesh Barrier,travel,car-accessories,,product,Breathable mesh barrier for car windows. Allows fresh air while preventing pets from jumping out. Easy magnetic installation. Set of 2 for front or rear windows.,799.0,https://images.unsplash.com/photo-1548199989-03cce0bbc87b?w=400
+69844ada5fbad351cb5e0b23,svc-dine-item-f9230be5,TDC Freeze-dried Liver,dine,general,,product,Individual item from Gourmet Treats Box. Premium quality dining essential from The Doggy Company.,349,
+69844ada5fbad351cb5e0b24,svc-dine-item-0229ab12,TDC Dental Chews,dine,general,,product,Individual item from Gourmet Treats Box. Premium quality dining essential from The Doggy Company.,249,
+69844ada5fbad351cb5e0b26,svc-dine-item-475cda5d,TDC Photo Frame,dine,photo_services,,product,Individual item from Adoption Anniversary Special. Premium quality dining essential from The Doggy Company.,999,
+69844ada5fbad351cb5e0b2a,svc-dine-item-b75c8ac7,TDC Gourmet Meal,dine,meals,,product,Individual item from Puppy Date Night. Premium quality dining essential from The Doggy Company.,399,
+69844ada5fbad351cb5e0b2d,svc-dine-item-6910756b,TDC Dine-fresh-chicken,dine,general,,product,Individual item from Weekly Fresh Meal Plan. Premium quality dining essential from The Doggy Company.,399,
+69844ada5fbad351cb5e0b2e,svc-dine-item-58a0bc3e,TDC Dine-lamb-rice,dine,general,,product,Individual item from Weekly Fresh Meal Plan. Premium quality dining essential from The Doggy Company.,399,
+69844ada5fbad351cb5e0b2f,svc-dine-item-587ac910,TDC Dine-fish-omega,dine,general,,product,Individual item from Weekly Fresh Meal Plan. Premium quality dining essential from The Doggy Company.,399,
+69844ada5fbad351cb5e0b9f,svc-enjoy-prod-ball,Squeaky Ball Set (3 Pack),enjoy,enjoy,,product,Durable tennis balls with squeaker,299,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600
+69844ada5fbad351cb5e0ba9,svc-travel-prod-a9ec81b2,Pet Passport Holder,travel,travel,,product,"Waterproof holder for vaccination records, health certificates, and ID tags.",399,https://images.unsplash.com/photo-1517849845537-4d257902454a?w=400
+69844ada5fbad351cb5e0bab,svc-travel-prod-555f5c1e,Motion Sickness Relief Drops,travel,travel,,product,Natural remedy for car sickness. Give 30 mins before travel.,349,https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=400
+69844ada5fbad351cb5e0bb7,svc-adopt-prod-anxiety-wrap,ThunderShirt Anxiety Wrap,adopt,adopt-calming,,product,"Pressure wrap that applies gentle, constant pressure to reduce anxiety",1899,https://images.unsplash.com/photo-1534361960057-19889db9621e?w=600
+69844ada5fbad351cb5e0bb8,svc-adopt-prod-crate-soft,Soft-Sided Comfort Crate,adopt,adopt-comfort,,product,Cozy collapsible crate with plush lining - perfect safe space for new pets,2499,https://images.unsplash.com/photo-1601758124096-1fd661873db9?w=600
+69844ada5fbad351cb5e0bb9,svc-adopt-prod-hideaway,Covered Pet Hideaway Bed,adopt,adopt-comfort,,product,Cave-style bed providing security for nervous rescues,1799,https://images.unsplash.com/photo-1518882605630-8307abd49bcc?w=600
+69844ada5fbad351cb5e0bba,svc-adopt-prod-orthopedic-bed,Orthopedic Memory Foam Bed,adopt,adopt-comfort,,product,Premium memory foam bed for senior or injured rescue pets,2999,https://images.unsplash.com/photo-1530281700549-e82e7bf110d6?w=600
+69844ada5fbad351cb5e0bbd,svc-adopt-prod-snuffle-mat,Snuffle Mat for Slow Feeding,adopt,adopt-enrichment,,product,Interactive feeding mat that encourages natural foraging behavior,799,https://images.unsplash.com/photo-1544568100-847a948585b9?w=600
+69844ada5fbad351cb5e0bbe,svc-adopt-prod-probiotic,Digestive Health Probiotic,adopt,adopt-health,,product,Probiotic supplement to help rescued pets adjust to new diet,999,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600
+69844ada5fbad351cb5e0bbf,svc-adopt-prod-immune-boost,Immune Support Supplement,adopt,adopt-health,,product,Boost immunity during the transition period with vitamins & antioxidants,1199,https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=600
+69844ada5fbad351cb5e0bc0,svc-adopt-prod-gentle-shampoo,Gentle Rescue Pet Shampoo,adopt,adopt-grooming,,product,"Hypoallergenic, tear-free shampoo for sensitive rescue pets",499,https://images.unsplash.com/photo-1507146426996-ef05306b995a?w=600
+69844ada5fbad351cb5e0bc2,svc-adopt-prod-guide-book,Adoption Success Handbook,adopt,adopt-guide,,product,Complete guide to helping your rescue pet adjust and thrive,449,https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=600
+69844ada5fbad351cb5e0bc3,svc-adopt-prod-behavior-guide,Understanding Rescue Behavior,adopt,adopt-guide,,product,Expert guide on common rescue pet behaviors and how to help,549,https://images.unsplash.com/photo-1534361960057-19889db9621e?w=600
+69844ada5fbad351cb5e0bc4,svc-adopt-prod-donation-500,Shelter Support - ₹500,adopt,adopt-donation,,product,Donate to local shelters and support rescue operations,500,https://images.unsplash.com/photo-1541364983171-a8ba01e95cfc?w=600
+69844ada5fbad351cb5e0bc5,svc-adopt-prod-donation-1000,Shelter Support - ₹1000,adopt,adopt-donation,,product,Generous donation to help rescue more animals in need,1000,https://images.unsplash.com/photo-1534361960057-19889db9621e?w=600
+69844ada5fbad351cb5e0bca,svc-stay-prod-travel-food-container,Airtight Travel Food Container,stay,travel-feeding,,product,"3-compartment container for food, treats, and supplements - leak-proof design.",899,https://images.unsplash.com/photo-1535930891776-0c2dfb7fda1a?w=600
+69844ada5fbad351cb5e0bcb,svc-stay-prod-bed-portable,Portable Memory Foam Travel Bed,stay,travel-comfort,,product,"Lightweight, foldable bed with removable, washable cover - rolls up for easy packing.",1799,https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=600
+69844ada5fbad351cb5e0bcd,svc-stay-prod-cooling-mat,Pressure-Activated Cooling Mat,stay,travel-comfort,,product,Self-cooling gel mat for hot weather travel - no refrigeration needed.,1299,https://images.unsplash.com/photo-1544568100-847a948585b9?w=600
+69844ada5fbad351cb5e0bcf,svc-stay-prod-car-seat,Elevated Pet Car Seat,stay,travel-safety,,product,Booster seat with safety tether - lets small pets see out the window safely.,2299,https://images.unsplash.com/photo-1541364983171-a8ba01e95cfc?w=600
+69844ada5fbad351cb5e0bd3,svc-stay-prod-calming-treats,Travel Calming Chews,stay,travel-calming,,product,"Soft chews with chamomile, valerian & L-theanine - 30 count.",799,https://images.unsplash.com/photo-1535930891776-0c2dfb7fda1a?w=600
+69844ada5fbad351cb5e0bd5,svc-stay-prod-motion-sickness,Motion Sickness Relief Tablets,stay,travel-health,,product,Natural anti-nausea tablets for car and air travel - 30 tablets.,599,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=600
+69844ada5fbad351cb5e0bd6,svc-stay-prod-pet-passport,Pet Travel Document Organizer,stay,travel-docs,,product,"Waterproof organizer for vaccination records, health certificates, and ID.",699,https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=600
+69844ada5fbad351cb5e0bd7,svc-stay-prod-id-tags,Engraved Travel ID Tag Set,stay,travel-docs,,product,"Set of 2 durable metal tags with name, phone & destination info.",399,https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=600
+69844ada5fbad351cb5e0bd9,svc-fit-product-45c35fa8,Agility Training Hurdle Set,fit,fit,,product,Adjustable hurdles for backyard agility training,1299,https://images.unsplash.com/photo-1546815708-410983510897?crop=entropy&cs=srgb&fm=jpg&w=400
+69844ada5fbad351cb5e0bdc,svc-fit-product-c9bbcf1b,Dog Treadmill - Compact,fit,fit,,product,Indoor exercise treadmill for dogs up to 25kg,8999,https://images.unsplash.com/photo-1544456948-c7ba22fe7111?crop=entropy&cs=srgb&fm=jpg&w=400
+69844ada5fbad351cb5e0bdf,svc-fit-product-ac023770,Swimming Vest for Dogs,fit,fit,,product,Buoyancy vest for safe water exercise and swimming,999,https://images.unsplash.com/photo-1651464435879-bf0be3203949?crop=entropy&cs=srgb&fm=jpg&w=400
+69844ada5fbad351cb5e0be0,svc-fit-product-f67ff376,Snuffle Mat - Large,fit,fit,,product,Enrichment mat for mental stimulation during feeding,699,https://images.unsplash.com/photo-1544456948-c7ba22fe7111?crop=entropy&cs=srgb&fm=jpg&w=400
+69844ada5fbad351cb5e0be1,svc-fit-product-122b5f91,Weighted Exercise Vest,fit,fit,,product,Adjustable weighted vest for strength training walks,1799,https://images.unsplash.com/photo-1546815708-410983510897?crop=entropy&cs=srgb&fm=jpg&w=400
+69844ada5fbad351cb5e0bee,svc-travel-b1f06bf6,Premium Car Seat for Dogs,travel,travel-safety,,product,"Elevated car seat with safety harness attachment. Plush memory foam, waterproof base. Perfect for road trips.",3499,https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=400
+69844ada5fbad351cb5e0bf2,svc-travel-c9e34699,Pet Travel Bag Organizer,travel,travel-accessories,,product,"Multi-pocket bag for all pet essentials. Fits food, treats, bowls, toys, documents. Waterproof base, shoulder strap.",1499,https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=400
+69844ada5fbad351cb5e0bf3,svc-travel-d3a5a022,Portable Travel Bed,travel,travel-comfort,,product,Foldable memory foam bed with waterproof cover. Sets up in seconds. Provides familiar comfort away from home.,1999,https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400
+69844ada5fbad351cb5e0bf4,svc-travel-1f08385f,Calming Travel Spray,travel,travel-health,,product,"Pheromone-based spray for carriers, cars, hotel rooms. Reduces travel anxiety naturally. Vet recommended.",699,https://images.unsplash.com/photo-1512069772995-ec65ed45afd6?w=400
+69844ada5fbad351cb5e0bf5,svc-travel-3c00808d,Pet Passport Holder & Document Organizer,travel,travel-docs,,product,"Premium holder for vaccination records, health certificates, ID tags. RFID-protected pocket for microchip info.",899,https://images.unsplash.com/photo-1583337130417-3346a1be7dee?w=400
+69844ada5fbad351cb5e0c32,SVC-GROOM-FULL,Full Spa Grooming,care,grooming,,,"Complete spa experience with massage, premium products",1500,
+69844ada5fbad351cb5e0c33,SVC-VET-CONSULT,Vet Consultation,care,vet,,,General health checkup and consultation,600,
+69844ada5fbad351cb5e0c34,SVC-CELEB-BDAY-HOME,Birthday Party - Home,celebrate,,,,Complete birthday planning and execution at your home,5000,
+69844ada5fbad351cb5e0c35,SVC-CELEB-BDAY-VENUE,Birthday Party - Venue,celebrate,,,,Birthday celebration at a pet-friendly venue,8000,
+69844ada5fbad351cb5e0c37,SVC-CELEB-MILESTONE,Milestone Celebration,celebrate,,,,"First travel, senior years, recovery milestones",,
+69844ada5fbad351cb5e0c38,SVC-CELEB-FESTIVE,Festive Celebration Planning,celebrate,,,,"Diwali, Christmas, Holi celebrations with your pet",4000,
+69844ada5fbad351cb5e0c39,SVC-CELEB-SURPRISE,Surprise Coordination,celebrate,,,,Surprise party or gift coordination for pet parents,,
+69844ada5fbad351cb5e0c3a,SVC-CELEB-REMINDERS,Life Moment Tracking,celebrate,,,,"Automated reminders for birthdays, gotcha days, milestones",0,
+69844ada5fbad351cb5e0c3b,SVC-DINE-DISCOVER,Pet-Friendly Restaurant Discovery,dine,,,,Find the perfect restaurant that welcomes your pet,0,
+69844ada5fbad351cb5e0c3c,SVC-DINE-RESERVE,Reservation Assistance,dine,,,,We confirm pet acceptance and make the reservation,200,
+69844ada5fbad351cb5e0c3d,SVC-DINE-ETIQUETTE,Dining Etiquette Guidance,dine,,,,Tips and training for dining out with your pet,500,
+69844ada5fbad351cb5e0c3e,SVC-DINE-ADVISORY,Venue Suitability Advisory,dine,,,,Breed and size suitability check for venues,0,
+69844ada5fbad351cb5e0c3f,SVC-DINE-BACKUP,Backup Dining Alternatives,dine,,,,Alternative options if plans change last minute,,
+69844ada5fbad351cb5e0c40,SVC-STAY-DISCOVER,Pet-Friendly Hotel Discovery,stay,,,,Find hotels and resorts that welcome your pet,0,
+69844ada5fbad351cb5e0c41,SVC-STAY-VERIFY,Property Rule Verification,stay,,,,"Verify breed, size, and number restrictions",300,
+69844ada5fbad351cb5e0c42,SVC-STAY-ADVISORY,Room Suitability Advisory,stay,,,,Recommend the right room type for your pet,0,
+69844ada5fbad351cb5e0c43,SVC-STAY-LONGTERM,Long-Stay Assistance,stay,,,,Serviced apartments and extended stay planning,,
+69844ada5fbad351cb5e0c44,SVC-STAY-BOARDING,Boarding Alternatives,stay,,,,"When hotel stays aren't possible, we find boarding",800,
+69844ada5fbad351cb5e0c45,SVC-TRAVEL-AIRLINE,Airline Policy Interpretation,travel,,,,Route-specific pet policy guidance,500,
+69844ada5fbad351cb5e0c46,SVC-TRAVEL-CABIN-CARGO,Cabin vs Cargo Advisory,travel,,,,Feasibility check based on pet size and route,300,
+69844ada5fbad351cb5e0c47,SVC-TRAVEL-ROAD-RAIL,Train & Road Travel Planning,travel,,,,Complete road trip or train journey planning,800,
+69844ada5fbad351cb5e0c48,SVC-TRAVEL-DESTINATION,Destination Pet Rules,travel,,,,Pet rules and requirements at your destination,400,
+69844ada5fbad351cb5e0c49,SVC-TRAVEL-RELOCATE-DOM,Domestic Relocation Planning,travel,,,,Complete domestic move with your pet,5000,
+69844ada5fbad351cb5e0c4a,SVC-TRAVEL-RELOCATE-INTL,International Relocation,travel,,,,International move with quarantine and documentation,15000,
+69844ada5fbad351cb5e0c4b,SVC-TRAVEL-TRANSIT,Transit & Handling Guidance,travel,,,,Airport handling and transit coordination,1000,
+69844ada5fbad351cb5e0c4c,SVC-CARE-VET-GENERAL,Vet Consultation - General,care,,,,General health checkup and consultation,600,
+69844ada5fbad351cb5e0c4d,SVC-CARE-VET-SPECIALTY,Vet Consultation - Specialty,care,,,,"Specialist consultation (dermatology, cardiology, etc.)",1500,
+69844ada5fbad351cb5e0c4e,SVC-CARE-VET-HOME,Vet Visit - Home,care,,,,Vet comes to your home,1200,
+69844ada5fbad351cb5e0c51,SVC-CARE-GROOM-HOME,Home Grooming,care,,,,Groomer comes to your home,1200,
+69844ada5fbad351cb5e0c52,SVC-CARE-PREVENT,Preventive Care Reminders,care,,,,"Vaccination, deworming, health check reminders",0,
+69844ada5fbad351cb5e0c53,SVC-CARE-NUTRITION,Nutrition Guidance,care,,,,Non-medical diet and nutrition planning,800,
+69844ada5fbad351cb5e0c54,SVC-CARE-RECOVERY,Recovery Care Coordination,care,,,,Post-surgery or treatment care coordination,,
+69844ada5fbad351cb5e0c55,SVC-CARE-SENIOR,Senior Pet Care Planning,care,,,,Comprehensive care plan for senior pets,1500,
+69844ada5fbad351cb5e0c56,SVC-ENJOY-PARKS,Pet Parks Discovery,enjoy,,,,Find dog parks and open spaces near you,0,
+69844ada5fbad351cb5e0c58,SVC-ENJOY-EVENTS,Pet Events & Experiences,enjoy,,,,"Pet-friendly events, meetups, experiences",500,
+69844ada5fbad351cb5e0c59,SVC-ENJOY-SOCIAL,Socialisation Planning,enjoy,,,,Structured socialisation for puppies and shy dogs,800,
+69844ada5fbad351cb5e0c5a,SVC-ENJOY-WEEKEND,Weekend Outing Planning,enjoy,,,,Complete weekend activity plan with your pet,400,
+69844ada5fbad351cb5e0c5b,SVC-FIT-WALK-DAILY,Dog Walking - Daily,fit,,,,Daily dog walking service,300,
+69844ada5fbad351cb5e0c5d,SVC-FIT-ACTIVITY,Breed-Appropriate Activity Plan,fit,,,,Customized exercise routine for your breed,1000,
+69844ada5fbad351cb5e0c5e,SVC-FIT-INDOOR,Indoor Exercise Routines,fit,,,,Exercise plans for apartment living,800,
+69844ada5fbad351cb5e0c5f,SVC-FIT-OUTDOOR,Outdoor Exercise Sessions,fit,,,,Guided outdoor exercise and play,500,
+69844ada5fbad351cb5e0c61,SVC-FIT-SENIOR,Senior Mobility Planning,fit,,,,Gentle exercise for senior dogs,1200,
+69844ada5fbad351cb5e0c62,SVC-FIT-SWIM,Swimming Sessions,fit,,,,Hydrotherapy and recreational swimming,1000,
+69844ada5fbad351cb5e0c63,SVC-LEARN-NEWPARENT,New Pet Parent Onboarding,learn,,,,Everything you need to know as a first-time pet parent,1500,
+69844ada5fbad351cb5e0c64,SVC-LEARN-BREED,Breed Education Session,learn,,,,Understand your breed's needs and temperament,800,
+69844ada5fbad351cb5e0c65,SVC-LEARN-PUPPY,Puppy Transition Guidance,learn,,,,First 30 days with your new puppy,2000,
+69844ada5fbad351cb5e0c66,SVC-LEARN-SENIOR,Senior Pet Care Education,learn,,,,Understanding and caring for aging pets,1000,
+69844ada5fbad351cb5e0c67,SVC-LEARN-BEHAVIOR,Behavior Understanding,learn,,,,Learn to read and understand your pet's behavior,1200,
+69844ada5fbad351cb5e0c69,SVC-LEARN-TRAINING-ADV,Advanced Training,learn,,,,Advanced commands and tricks,5000,
+69844ada5fbad351cb5e0c6a,SVC-PAPER-REGISTER,Pet Registration Guidance,paperwork,,,,Help with local pet registration,500,
+69844ada5fbad351cb5e0c6b,SVC-PAPER-MICROCHIP,Microchipping Assistance,paperwork,,,,Microchip registration and documentation,300,
+69844ada5fbad351cb5e0c6c,SVC-PAPER-LICENSE,Licensing & Compliance,paperwork,,,,Local compliance and licensing guidance,400,
+69844ada5fbad351cb5e0c6d,SVC-PAPER-TRAVEL,Travel Documentation,paperwork,,,,"Pet passport, health certificates, NOCs",1500,
+69844ada5fbad351cb5e0c6e,SVC-PAPER-INSURANCE,Insurance Paperwork Advisory,paperwork,,,,Help with pet insurance documentation,300,
+69844ada5fbad351cb5e0c6f,SVC-PAPER-ADOPTION,Adoption Documentation,paperwork,,,,Adoption papers and transfer documentation,500,
+69844ada5fbad351cb5e0c71,SVC-ADVISE-HOUSING,Housing & Society Advisory,advisory,,,,Navigate pet rules in housing societies,500,
+69844ada5fbad351cb5e0c72,SVC-ADVISE-MULTI,Multi-Pet Household Planning,advisory,,,,Adding another pet to your family,1000,
+69844ada5fbad351cb5e0c73,SVC-ADVISE-BEHAVIOR,Behavior Escalation Pathways,advisory,,,,Non-clinical behavior concern guidance,,
+69844ada5fbad351cb5e0c74,SVC-ADVISE-EOL,End-of-Life Preparation,advisory,,,,Planning for your pet's final chapter,,
+69844ada5fbad351cb5e0c75,SVC-EMERG-VET,Emergency Vet Discovery,emergency,,,,Find nearest emergency vet immediately,0,
+69844ada5fbad351cb5e0c76,SVC-EMERG-AFTER,After-Hours Care Guidance,emergency,,,,Guidance when regular vets are closed,0,
+69844ada5fbad351cb5e0c77,SVC-EMERG-RESPONSE,Accident & Poisoning Response,emergency,,,,Immediate guidance for emergencies,0,
+69844ada5fbad351cb5e0c78,SVC-EMERG-LOST,Lost Pet Response,emergency,,,,Coordination for lost pet recovery,,
+69844ada5fbad351cb5e0c79,SVC-EMERG-TRANSPORT,Emergency Transport,emergency,,,,Emergency pet ambulance coordination,1500,
+69844ada5fbad351cb5e0c7b,SVC-FARE-EUTHANASIA,Euthanasia Coordination,farewell,,,,Vet-guided peaceful passing,,
+69844ada5fbad351cb5e0c7c,SVC-FARE-CREMATION,Cremation & Burial,farewell,,,,Dignified final arrangements,3000,
+69844ada5fbad351cb5e0c7d,SVC-FARE-MEMORIAL,Memorial & Remembrance,farewell,,,,Memorial planning and keepsakes,2000,
+69844ada5fbad351cb5e0c7e,SVC-FARE-GRIEF,Grief Support Resources,farewell,,,,Support during difficult times,0,
+69844ada5fbad351cb5e0c7f,SVC-ADOPT-DISCOVER,Ethical Adoption Discovery,adopt,,,,Find verified shelters and rescues,0,
+69844ada5fbad351cb5e0c80,SVC-ADOPT-SUITABILITY,Breed Suitability Advisory,adopt,,,,Find the right breed for your lifestyle,500,
+69844ada5fbad351cb5e0c81,SVC-ADOPT-READINESS,Adoption Readiness Planning,adopt,,,,Are you ready for a pet?,300,
+69844ada5fbad351cb5e0c82,SVC-ADOPT-HOME,Home Preparation Guidance,adopt,,,,Prepare your home for a new pet,500,
+69844ada5fbad351cb5e0c83,SVC-ADOPT-TRANSITION,First 30 Days Support,adopt,,,,Transition support for new adoptions,2000,
+69844ada5fbad351cb5e0c84,SVC-SHOP-PERSONAL,Personal Shopping Assistance,shop,,,,Help finding the right products,0,
+69844ada5fbad351cb5e0c85,SVC-SHOP-EMERGENCY,Emergency Sourcing,shop,,,,Urgent product sourcing,,
+69844ada5fbad351cb5e0c86,SVC-SHOP-VET-REC,Vet-Recommended Sourcing,shop,,,,Find specific vet-recommended products,200,
+69844ada5fbad351cb5e0c87,SVC-SHOP-RELOCATE,Travel & Relocation Sourcing,shop,,,,All products needed for travel/move,500,
+69844ada5fbad351cb5e0c88,SVC-CARE-TEST-CUSTOM-SERVICE,Test Custom Service UPDATED,care,,,,Updated description,1299.0,
+69844ada5fbad351cb5e0c89,TEST-SVC-5D8A3471,Updated Test Grooming Service,care,,,,Updated description for testing,600.0,
+69844ada5fbad351cb5e0c8a,abee0bac-9551-42d4-99be-f69e91bd267e,Long Coat · Full Grooming · Complete Spa Day,,grooming,,,,1500,
+69844ada5fbad351cb5e0c8b,2dd76537-4583-4912-80cc-7a0715430abf,Short Coat · Express Grooming · Quick Refresh,,grooming,,,,800,
+69844ada5fbad351cb5e0c8d,8b890e95-3ea6-469d-8b48-854a504f6b8f,Curly Coat · Poodle Mix Grooming · Doodle Specialist,,grooming,,,,1800,
+69844ada5fbad351cb5e0c8e,1024f74b-5c74-480e-bbed-9731acb0e0d9,Small Breed · Puppy's First Groom · Gentle Introduction,,grooming,,,,600,
+69844ada5fbad351cb5e0c8f,de9405c2-449b-4ac3-9fc5-c0b6113521e7,Large Breed · Big Dog Bath · Home Service,,grooming,,,,1200,
+69844ada5fbad351cb5e0c90,ac74cb79-b36a-402c-a195-1f4423998da5,High Energy · Obedience Training · Focus Building,,training,,,,8000,
+69844ada5fbad351cb5e0c91,6aeae591-3da4-4973-a6c8-2b6755c1f2f7,Indie Dog · Street Dog Rehab · Urban Adjustment,,training,,,,10000,
+69844ada5fbad351cb5e0c92,121ac3cd-02d2-41e8-9b7c-a2fbbad6b97f,Small Breed · Puppy Socialization · Early Learning,,training,,,,4000,
+69844ada5fbad351cb5e0c93,64e5baf2-66a3-461d-b5b5-15191c7ca940,Anxious Dog · Behavior Modification · Calm Building,,training,,,,15000,
+69844ada5fbad351cb5e0c94,83efaae5-32ed-4d97-b7f1-340b2bb18bc6,Scent Dog · Nose Work Training · Mental Exercise,,training,,,,5000,
+69844ada5fbad351cb5e0c95,67efce7d-5801-41fd-961e-c82679989ea5,High Energy · Power Walk · Energy Drain,,walking_sitting,,,,400,
+69844ada5fbad351cb5e0c96,16485ae2-e7d9-441c-b2a3-62b1a4b46d41,Small Breed · Gentle Walk · Leisurely Pace,,walking_sitting,,,,300,
+69844ada5fbad351cb5e0c97,073943d0-cf28-40aa-8e26-efbed6c9f6b5,Large Breed · Adventure Walk · Trail Exploration,,walking_sitting,,,,800,
+69844ada5fbad351cb5e0c98,737ec42d-639c-4ef8-b839-a1374f08299e,All Breeds · Pet Sitting · Home Care,,walking_sitting,,,,800,
+69844ada5fbad351cb5e0c99,14b6c5b1-38bc-41b6-ac1b-363af4c60cfc,Small Breed · Lap Dog Sitter · Companion Care,,walking_sitting,,,,1000,
+69844ada5fbad351cb5e0c9a,e1cd76b4-3819-4db0-aa3d-fc355eef919b,Large Breed · Flight Crate Training · Travel Prep,,travel_handling,,,,5000,
+69844ada5fbad351cb5e0c9b,1dd18410-3731-497d-9102-4ed5551b7e94,Small Breed · Cabin Travel Prep · Fly With Me,,travel_handling,,,,3000,
+69844ada5fbad351cb5e0c9c,d22634c2-3ca2-49ae-9e95-8a506ad30a43,All Breeds · Road Trip Setup · Car Travel Ready,,travel_handling,,,,2000,
+69844ada5fbad351cb5e0c9d,a231db07-6203-48f1-916f-39dc170da2f6,Anxious Traveler · Travel Anxiety Support · Calm Journey,,travel_handling,,,,4000,
+69844ada5fbad351cb5e0c9e,f8aa5da4-0d44-47ec-b90d-a4e894b38ed9,All Breeds · Birthday Party Setup · Complete Celebration,,celebration_support,,,,5000,
+69844ada5fbad351cb5e0c9f,d6e9c387-3cf0-4f28-b16b-3c6d49bffaa6,All Breeds · Gotcha Day Surprise · Adoption Anniversary,,celebration_support,,,,2000,
+69844ada5fbad351cb5e0ca0,57d74757-d22f-4e70-ab8c-cd59ffa239a8,All Breeds · Photoshoot Coordination · Memory Capture,,celebration_support,,,,3000,
+69844ada5fbad351cb5e0ca1,5e23ba03-49ab-4cfe-a5be-2ef4f24241e4,Large Breed · Party Venue Booking · Space For Play,,celebration_support,,,,,
+69844ada5fbad351cb5e0ca2,1a7670a5-57fb-4f0f-a2b7-5807326b382a,All Breeds · Nutrition Consultation · Diet Planning,,care_support,,,,1500,
+69844ada5fbad351cb5e0ca3,d4484726-9605-48d4-908b-44a3238bf2e3,Senior Dog · Geriatric Care Plan · Golden Years,,care_support,,,,2500,
+69844ada5fbad351cb5e0ca4,c41b7b10-8d31-42c1-bc86-6aa3af73b69a,Large Breed · Joint Health Support · Mobility Care,,care_support,,,,3000,
+69844ada5fbad351cb5e0ca5,fa71748c-c72a-4b89-9099-9c3e44b0cd7f,Sensitive Skin · Allergy Management · Comfort Plan,,care_support,,,,4000,
+69844ada5fbad351cb5e0ca6,92bec617-1ab1-43d3-8415-dfcbe900296b,Post-Surgery · Recovery Support · Healing Help,,care_support,,,,,
+69844ada5fbad351cb5e0cab,care-svc-8ad65147,Puppy Training Programme,,training,,,Foundation training for puppies aged 8 weeks to 6 months.,,
+69844ada5fbad351cb5e0cac,care-svc-6db53eb2,Anxiety & Behaviour Therapy,,training,,,"Specialized programme for anxiety, reactivity, and behavioural issues.",,
+69844ada5fbad351cb5e0cae,care-svc-1541bac1,Pet Sitting (Day),,walking,,,Daytime pet sitting at your home or sitter's home.,,
+69844ada5fbad351cb5e0caf,care-svc-85955aa3,Overnight Pet Sitting,,walking,,,Overnight care at your home with bedtime routine and morning walks.,,
+69844ada5fbad351cb5e0cb0,care-svc-f7f6d143,Vet Visit Coordination,,health,,,"We find the right vet, book the appointment, and manage your records.",,
+69844ada5fbad351cb5e0cb1,care-svc-9986120f,Emergency Support Line,,health,,,24/7 emergency support with vet locator and transport coordination.,,
+69844ada5fbad351cb5e0cb2,care-svc-920db090,Senior Pet Wellness Check,,health,,,Comprehensive wellness assessment for senior pets (7+ years).,,
+69844ada5fbad351cb5e0cb6,care-vet-002,Home Vet Visit,care,vet,,,Veterinarian visits your home for check-up and basic treatments.,,
+69844ada5fbad351cb5e0cba,care-wellness-001,Wellness Check-up,care,wellness,,,Complete health screening with blood work and physical examination.,,
+69844ada5fbad351cb5e0cbd,groom-dc4393fd,Spa Day Experience,,premium,,,Luxury spa treatment with aromatherapy and massage,,
