@@ -760,8 +760,12 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', onClose }) => {
       autoshipMsg = ` (Autoship: ${autoshipDetails.numDeliveries} deliveries, save ₹${autoshipDetails.savings})`;
     }
     
+    // Use pillar-specific success message
+    const petName = selectedPet?.name || 'your pet';
+    const successMessage = miraContext?.addedMessage?.(petName) || `Added to cart! 🎉`;
+    
     toast({
-      title: 'Added to cart! 🎉',
+      title: successMessage,
       description: `${product.name} - ₹${currentPrice}${autoshipMsg}`,
     });
     onClose();
@@ -776,8 +780,12 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', onClose }) => {
       selectedFlavor: relatedProduct.flavors?.[0]?.name || 'Standard',
     };
     addToCart(cartItem, cartItem.selectedSize, cartItem.selectedFlavor);
+    
+    const petName = selectedPet?.name || 'your pet';
+    const successMessage = miraContext?.addedMessage?.(petName) || `Added to cart! ✨`;
+    
     toast({
-      title: 'Added to cart! ✨',
+      title: successMessage,
       description: `${relatedProduct.name} - ₹${price}`,
     });
   };
