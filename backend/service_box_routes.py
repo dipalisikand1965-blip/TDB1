@@ -96,12 +96,12 @@ async def get_service_stats():
     """Get service statistics"""
     db = get_db()
     
-    total = await db.service_catalog.count_documents({})
-    active = await db.service_catalog.count_documents({"is_active": {"$ne": False}})
-    bookable = await db.service_catalog.count_documents({"is_bookable": True})
-    free_services = await db.service_catalog.count_documents({"is_free": True})
-    consultation_required = await db.service_catalog.count_documents({"requires_consultation": True})
-    emergency_24x7 = await db.service_catalog.count_documents({"is_24x7": True})
+    total = await db.services_master.count_documents({})
+    active = await db.services_master.count_documents({"is_active": {"$ne": False}})
+    bookable = await db.services_master.count_documents({"is_bookable": True})
+    free_services = await db.services_master.count_documents({"is_free": True})
+    consultation_required = await db.services_master.count_documents({"requires_consultation": True})
+    emergency_24x7 = await db.services_master.count_documents({"is_24x7": True})
     
     # Count by pillar
     pillar_counts = {}
@@ -109,7 +109,7 @@ async def get_service_stats():
         {"$group": {"_id": "$pillar", "count": {"$sum": 1}}},
         {"$sort": {"_id": 1}}
     ]
-    async for doc in db.service_catalog.aggregate(pipeline):
+    async for doc in db.services_master.aggregate(pipeline):
         pillar_counts[doc["_id"]] = doc["count"]
     
     return {
