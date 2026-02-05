@@ -43,60 +43,62 @@ Build "The Doggy Company," a one-stop-shop concierge for dog parents with a focu
 
 ## SESSION 10 SUMMARY (February 5, 2026) - Product Catalog Expansion
 
-### COMPLETED: Curated Products & Breed-Specific Personalization
+### COMPLETED: Comprehensive Breed-Specific Product Catalog
 
-#### Curated Non-Food, Non-Vet Products (20 products)
-- Imported high-quality accessories, toys, apparel, grooming, travel gear, beds
-- Categories: Toys (4), Apparel (3), Accessories (4), Grooming (3), Travel Gear (3), Beds (3)
-- All products branded "The Doggy Company" (NO competitor branding)
-- All images from Unsplash
-- Proper pillar mapping (shop, care, travel, stay, enjoy)
-- Script: `/app/backend/scripts/import_huft_products.py`
-
-#### Breed-Specific Personalized Products (160 products)
-- Generated for 20 popular breeds: Labrador, Golden Retriever, Indie, Shih Tzu, Pug, Beagle, Husky, German Shepherd, Rottweiler, Dachshund, Cocker Spaniel, French Bulldog, Boxer, Great Dane, Doberman, Maltese, Yorkshire Terrier, Lhasa Apso, Chihuahua, Pomeranian
-- 8 product types per breed:
-  - {Breed} Pawfect Bandana (₹399)
-  - {Breed} Mom/Dad Coffee Mug (₹499)
-  - {Breed} Love T-Shirt (₹599)
-  - {Breed} Personalized Food Bowl (₹799)
-  - {Breed} Charm Keychain (₹299)
-  - {Breed} ID Tag Bone Shaped (₹349)
-  - {Breed} Snuggle Blanket (₹899)
-  - {Breed} Plush Lookalike Toy (₹699)
-- Each product has `breed_metadata` for cross-population:
-  ```json
-  {
-    "breeds": ["Labrador"],
-    "breed_specific": true,
-    "breed_name": "Labrador",
-    "breed_icon": "lab"
-  }
-  ```
-- All branded "The Doggy Company"
-- All images from Unsplash
+#### Phase 1: Initial Import (180 products)
+- 20 curated non-food, non-vet products (toys, apparel, accessories, grooming, travel, beds)
+- 160 breed-specific products for 20 breeds × 8 product types
 - Script: `/app/backend/scripts/generate_breed_products.py`
 
-#### Product Database Stats (Post-Import)
-- **Total Products**: 2,503 (was 2,323)
-- **Curated Products**: 20
-- **Breed-Specific Products**: 160
-- **Products by Pillar**: shop (2203), celebrate (611), care (305), fit (275), enjoy (267), travel (253), learn (244), dine (192)
+#### Phase 2: Expanded Catalog (330 new products)
+- **15 NEW breeds added**: Spitz, Saint Bernard, Shiba Inu, Border Collie, Akita, Dalmatian, Bulldog, Poodle, Australian Shepherd, Cavalier King Charles, Bernese Mountain Dog, Samoyed, Corgi, Jack Russell, Weimaraner
+- **6 NEW product categories** for all 35 breeds:
+  - {Breed} Comfort Bed (₹1,499) - stay pillar
+  - {Breed} Elevated Feeder Set (₹1,299) - dine pillar
+  - {Breed} Training Starter Kit (₹999) - learn pillar
+  - {Breed} Grooming Essentials Kit (₹1,199) - care pillar
+  - {Breed} Dental Care Kit (₹799) - care pillar
+  - {Breed} Walking Adventure Set (₹1,599) - travel pillar
+- Script: `/app/backend/scripts/generate_expanded_breed_products.py`
+
+#### TOTAL BREED-SPECIFIC PRODUCTS: 490
+- **35 breeds** (20 original + 15 new)
+- **14 product types** per breed (8 original + 6 new)
+- All branded "The Doggy Company"
+- All images from Unsplash
+
+#### Complete Breed List (35 breeds)
+Akita, Australian Shepherd, Beagle, Bernese Mountain Dog, Border Collie, Boxer, Bulldog, Cavalier King Charles, Chihuahua, Cocker Spaniel, Corgi, Dachshund, Dalmatian, Doberman, French Bulldog, German Shepherd, Golden Retriever, Great Dane, Husky, Indie, Jack Russell, Labrador, Lhasa Apso, Maltese, Pomeranian, Poodle, Pug, Rottweiler, Saint Bernard, Samoyed, Shiba Inu, Shih Tzu, Spitz, Weimaraner, Yorkshire Terrier
+
+#### Product Database Stats (Final)
+- **Total Products**: 2,833 (was 2,323)
+- **Breed-Specific Products**: 490
+- **Products by Pillar**: shop (2,533), celebrate (671), care (390), fit (310), travel (288), enjoy (282), learn (279), dine (242), stay (223)
 
 #### Cross-Population Example
-When user mentions "Mojo Indie birthday":
-1. System detects breed = Indie
-2. Returns Indie-themed products:
-   - Indie Pawfect Bandana (₹399)
-   - Indie Mom/Dad Coffee Mug (₹499)
-   - Indie Love T-Shirt (₹599)
-   - Indie Plush Lookalike Toy (₹699)
+When user mentions "Mojo Samoyed birthday":
+1. System detects breed = Samoyed
+2. Returns ALL 14 Samoyed-themed products:
+   - Samoyed Pawfect Bandana (₹399)
+   - Samoyed Mom/Dad Coffee Mug (₹499)
+   - Samoyed Love T-Shirt (₹599)
+   - Samoyed Personalized Food Bowl (₹799)
+   - Samoyed Charm Keychain (₹299)
+   - Samoyed ID Tag (₹349)
+   - Samoyed Snuggle Blanket (₹899)
+   - Samoyed Plush Lookalike Toy (₹699)
+   - Samoyed Comfort Bed (₹1,499)
+   - Samoyed Elevated Feeder Set (₹1,299)
+   - Samoyed Training Starter Kit (₹999)
+   - Samoyed Grooming Essentials Kit (₹1,199)
+   - Samoyed Dental Care Kit (₹799)
+   - Samoyed Walking Adventure Set (₹1,599)
 3. Plus regular birthday celebration products
 
-#### Competitor Branding Cleanup
-- **Removed all traces** of competitor names (Supertails, HUFT, PetSutra)
-- All 180 new products branded "The Doggy Company"
-- All product images replaced with Unsplash URLs
+#### Competitor Branding Status
+- **CLEAN** - No trace of competitor names (Supertails, HUFT, PetSutra)
+- All products branded "The Doggy Company"
+- All product images from Unsplash
 
 ---
 
