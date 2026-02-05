@@ -539,17 +539,21 @@ const ShopPage = () => {
     return () => window.removeEventListener('petSelectionChanged', handlePetSelectionChanged);
   }, [pets]);
   
-  // Filter products - Use primary_pillar for accurate filtering (not pillars array which has bad data)
+  // Filter products - Use pillars array (products can belong to multiple pillars)
+  // Shop = cumulative view of ALL products
   const filteredProducts = useMemo(() => {
     let result = allProducts;
     
-    if (selectedPillar !== 'all') {
-      // Priority: primary_pillar > pillar (ignore pillars array due to data quality issues)
+    if (selectedPillar !== 'all' && selectedPillar !== 'shop') {
+      // Filter by pillars array - products can be in multiple pillars
       result = result.filter(p => {
-        const productPillar = p.primary_pillar || p.pillar;
-        return productPillar === selectedPillar;
+        const productPillars = p.pillars || [];
+        return productPillars.includes(selectedPillar) || 
+               p.primary_pillar === selectedPillar || 
+               p.pillar === selectedPillar;
       });
     }
+    // 'all' or 'shop' shows everything (shop is cumulative)
     
     if (selectedSubcat) {
       const subLower = selectedSubcat.toLowerCase().replace(/\s+/g, '-');
