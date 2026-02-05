@@ -295,8 +295,11 @@ const ProductCard = ({ product, petName, isPetPick, index }) => {
   const image = product.image || product.image_url || product.images?.[0];
   const discount = comparePrice ? Math.round((1 - price / comparePrice) * 100) : 0;
   
-  // Random social proof
-  const buyers = useMemo(() => Math.floor(Math.random() * 50) + 20, []);
+  // Social proof based on product ID (deterministic)
+  const buyers = useMemo(() => {
+    const hash = (product.id || product.name || '').toString().split('').reduce((a, b) => a + b.charCodeAt(0), 0);
+    return (hash % 50) + 20;
+  }, [product.id, product.name]);
 
   return (
     <div 

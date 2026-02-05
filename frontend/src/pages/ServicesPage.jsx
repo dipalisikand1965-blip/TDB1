@@ -320,8 +320,11 @@ const ServiceCard = ({ service, pet, breedRec, index }) => {
     return service.description?.slice(0, 80) || 'Curated for your companion\'s needs';
   };
   
-  // Random social proof
-  const bookings = useMemo(() => Math.floor(Math.random() * 40) + 15, []);
+  // Social proof based on service ID (deterministic)
+  const bookings = useMemo(() => {
+    const hash = (service.id || service.name || '').split('').reduce((a, b) => a + b.charCodeAt(0), 0);
+    return (hash % 40) + 15;
+  }, [service.id, service.name]);
   
   return (
     <div 
