@@ -847,6 +847,24 @@ const UnifiedProductBox = () => {
                         <span className="font-medium">₹{product.pricing?.base_price || 0}</span>
                       </td>
                       <td className="p-3 text-center">
+                        {product.inventory?.track_inventory ? (
+                          <div className="flex flex-col items-center">
+                            <span className={`text-sm font-medium ${
+                              (product.inventory?.stock_quantity || 0) <= (product.inventory?.low_stock_threshold || 5)
+                                ? 'text-red-600'
+                                : 'text-green-600'
+                            }`}>
+                              {product.inventory?.stock_quantity || 0}
+                            </span>
+                            {(product.inventory?.stock_quantity || 0) <= (product.inventory?.low_stock_threshold || 5) && (
+                              <AlertTriangle className="w-3 h-3 text-red-500" />
+                            )}
+                          </div>
+                        ) : (
+                          <Badge variant="outline" className="text-xs">No Track</Badge>
+                        )}
+                      </td>
+                      <td className="p-3 text-center">
                         {product.paw_rewards?.is_reward_eligible ? (
                           <Gift className="w-5 h-5 text-amber-500 mx-auto" />
                         ) : (
