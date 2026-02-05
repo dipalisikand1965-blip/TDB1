@@ -343,6 +343,36 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
                 .map(a => a.id);
               setAvoidFilters(avoidIds);
             }
+            
+            // Auto-apply support filters based on pet profile
+            // Mira intelligently applies relevant filters
+            const autoFilters = [];
+            
+            // If pet has known allergies, auto-apply allergy-aware filter
+            if (allergies && allergies.length > 0) {
+              autoFilters.push('allergy-friendly');
+            }
+            
+            // If pet has sensitive stomach noted
+            if (pet?.health?.digestive_issues || pet?.doggy_soul_answers?.digestive_sensitivity) {
+              autoFilters.push('sensitive-stomach');
+            }
+            
+            // If pet has anxiety noted
+            if (pet?.health?.anxiety || pet?.doggy_soul_answers?.anxiety_level === 'high') {
+              autoFilters.push('calming');
+            }
+            
+            // If pet is senior, add gentle care
+            if (ageYears >= 7) {
+              autoFilters.push('recovery');
+            }
+            
+            // Apply and track auto-applied filters
+            if (autoFilters.length > 0) {
+              setAutoAppliedFilters(autoFilters);
+              setCareFilters(autoFilters);
+            }
           }
         }
       } catch (error) {
