@@ -1647,6 +1647,194 @@ const UnifiedProductBox = () => {
                     rows={2}
                   />
                 </div>
+                
+                {/* Mira Hint */}
+                <div>
+                  <Label className="flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-purple-500" />
+                    Mira Hint (Product Card Tip)
+                  </Label>
+                  <Input 
+                    value={selectedProduct.mira_hint || ''}
+                    onChange={(e) => setSelectedProduct({
+                      ...selectedProduct,
+                      mira_hint: e.target.value
+                    })}
+                    placeholder="✨ Tail wags guaranteed with every bite!"
+                    className="mt-1"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">AI-generated tip shown on product cards</p>
+                </div>
+                
+                {/* Breed Intelligence Section */}
+                <Card className="p-4 bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200">
+                  <div className="flex items-center gap-2 mb-4">
+                    <PawPrint className="w-5 h-5 text-purple-600" />
+                    <div>
+                      <h3 className="font-semibold text-purple-900">Breed Intelligence</h3>
+                      <p className="text-xs text-purple-600">Help Mira recommend this product to the right pets</p>
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    {/* Target Breeds */}
+                    <div>
+                      <Label className="text-sm text-purple-800">Target Breeds</Label>
+                      <p className="text-[10px] text-gray-500 mb-1">Leave empty for all breeds</p>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {['Indie', 'Golden Retriever', 'Labrador', 'Beagle', 'Maltese', 'Shih Tzu', 'Pug', 'German Shepherd'].map(breed => (
+                          <button
+                            key={breed}
+                            type="button"
+                            onClick={() => {
+                              const current = selectedProduct.breed_metadata?.breeds || [];
+                              const updated = current.includes(breed)
+                                ? current.filter(b => b !== breed)
+                                : [...current, breed];
+                              setSelectedProduct({
+                                ...selectedProduct,
+                                breed_metadata: { ...selectedProduct.breed_metadata, breeds: updated }
+                              });
+                            }}
+                            className={`px-2 py-0.5 text-[10px] rounded-full border transition-colors ${
+                              (selectedProduct.breed_metadata?.breeds || []).includes(breed)
+                                ? 'bg-purple-600 text-white border-purple-600'
+                                : 'bg-white text-gray-700 border-gray-300 hover:border-purple-400'
+                            }`}
+                          >
+                            {breed.split(' ')[0]}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    {/* Sizes */}
+                    <div>
+                      <Label className="text-sm text-purple-800">Dog Sizes</Label>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {['XS', 'S', 'M', 'L', 'XL'].map(size => (
+                          <button
+                            key={size}
+                            type="button"
+                            onClick={() => {
+                              const current = selectedProduct.breed_metadata?.sizes || [];
+                              const updated = current.includes(size)
+                                ? current.filter(s => s !== size)
+                                : [...current, size];
+                              setSelectedProduct({
+                                ...selectedProduct,
+                                breed_metadata: { ...selectedProduct.breed_metadata, sizes: updated }
+                              });
+                            }}
+                            className={`px-2 py-0.5 text-[10px] rounded-full border transition-colors ${
+                              (selectedProduct.breed_metadata?.sizes || []).includes(size)
+                                ? 'bg-purple-600 text-white border-purple-600'
+                                : 'bg-white text-gray-700 border-gray-300 hover:border-purple-400'
+                            }`}
+                          >
+                            {size}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    {/* Life Stage */}
+                    <div>
+                      <Label className="text-sm text-purple-800">Life Stage</Label>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {['puppy', 'adult', 'senior'].map(age => (
+                          <button
+                            key={age}
+                            type="button"
+                            onClick={() => {
+                              const current = selectedProduct.breed_metadata?.age_groups || [];
+                              const updated = current.includes(age)
+                                ? current.filter(a => a !== age)
+                                : [...current, age];
+                              setSelectedProduct({
+                                ...selectedProduct,
+                                breed_metadata: { ...selectedProduct.breed_metadata, age_groups: updated }
+                              });
+                            }}
+                            className={`px-2 py-0.5 text-[10px] rounded-full border transition-colors capitalize ${
+                              (selectedProduct.breed_metadata?.age_groups || []).includes(age)
+                                ? 'bg-green-600 text-white border-green-600'
+                                : 'bg-white text-gray-700 border-gray-300 hover:border-green-400'
+                            }`}
+                          >
+                            {age}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    {/* Chew Strength */}
+                    <div>
+                      <Label className="text-sm text-purple-800">Chew Strength</Label>
+                      <select
+                        className="w-full mt-1 px-2 py-1.5 text-xs border rounded-lg bg-white"
+                        value={selectedProduct.breed_metadata?.chew_strength || ''}
+                        onChange={(e) => setSelectedProduct({
+                          ...selectedProduct,
+                          breed_metadata: { ...selectedProduct.breed_metadata, chew_strength: e.target.value || null }
+                        })}
+                      >
+                        <option value="">Any chewer</option>
+                        <option value="soft">Soft Chewer</option>
+                        <option value="medium">Medium Chewer</option>
+                        <option value="power_chewer">Power Chewer</option>
+                      </select>
+                    </div>
+                    
+                    {/* Energy Level */}
+                    <div>
+                      <Label className="text-sm text-purple-800">Energy Level</Label>
+                      <select
+                        className="w-full mt-1 px-2 py-1.5 text-xs border rounded-lg bg-white"
+                        value={selectedProduct.breed_metadata?.energy_level || ''}
+                        onChange={(e) => setSelectedProduct({
+                          ...selectedProduct,
+                          breed_metadata: { ...selectedProduct.breed_metadata, energy_level: e.target.value || null }
+                        })}
+                      >
+                        <option value="">Any energy</option>
+                        <option value="calm">Calm / Low Energy</option>
+                        <option value="moderate">Moderate Energy</option>
+                        <option value="active">Active / High Energy</option>
+                      </select>
+                    </div>
+                    
+                    {/* Sensitivities */}
+                    <div>
+                      <Label className="text-sm text-purple-800">Sensitivities</Label>
+                      <div className="flex flex-wrap gap-1 mt-1">
+                        {['allergy_safe', 'grain_free', 'sensitive_stomach'].map(sens => (
+                          <button
+                            key={sens}
+                            type="button"
+                            onClick={() => {
+                              const current = selectedProduct.breed_metadata?.sensitivities || [];
+                              const updated = current.includes(sens)
+                                ? current.filter(s => s !== sens)
+                                : [...current, sens];
+                              setSelectedProduct({
+                                ...selectedProduct,
+                                breed_metadata: { ...selectedProduct.breed_metadata, sensitivities: updated }
+                              });
+                            }}
+                            className={`px-2 py-0.5 text-[10px] rounded-full border transition-colors ${
+                              (selectedProduct.breed_metadata?.sensitivities || []).includes(sens)
+                                ? 'bg-red-600 text-white border-red-600'
+                                : 'bg-white text-gray-700 border-gray-300 hover:border-red-400'
+                            }`}
+                          >
+                            {sens.replace(/_/g, ' ').replace('safe', '')}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </Card>
               </TabsContent>
               
               {/* Pricing Tab */}
