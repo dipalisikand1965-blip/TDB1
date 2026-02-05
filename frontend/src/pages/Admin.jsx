@@ -623,24 +623,50 @@ const Admin = () => {
     }
   };
 
-  // Check for stored auth
+  // Check for stored auth - MUST VERIFY with backend
   useEffect(() => {
-    const storedAuth = localStorage.getItem('adminAuth');
-    if (storedAuth) {
-      // Decode and restore username/password from stored auth
+    const verifyStoredAuth = async () => {
+      const storedAuth = localStorage.getItem('adminAuth');
+      if (!storedAuth) return;
+      
       try {
-        const decoded = atob(storedAuth);
-        const [storedUsername, storedPassword] = decoded.split(':');
-        if (storedUsername && storedPassword) {
-          setUsername(storedUsername);
-          setPassword(storedPassword);
+        // IMPORTANT: Verify credentials with backend before allowing access
+        const verifyResponse = await fetch(`${API_URL}/api/admin/verify`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Basic ${storedAuth}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (verifyResponse.ok) {
+          // Credentials are valid - restore session
+          try {
+            const decoded = atob(storedAuth);
+            const [storedUsername, storedPassword] = decoded.split(':');
+            if (storedUsername && storedPassword) {
+              setUsername(storedUsername);
+              setPassword(storedPassword);
+            }
+          } catch (e) {
+            console.error('Error decoding stored auth:', e);
+          }
+          setIsAuthenticated(true);
+          fetchDashboard();
+        } else {
+          // Invalid credentials - clear storage and show login
+          console.log('Admin auth invalid - clearing stored credentials');
+          localStorage.removeItem('adminAuth');
+          setIsAuthenticated(false);
         }
-      } catch (e) {
-        console.error('Error decoding stored auth:', e);
+      } catch (error) {
+        console.error('Admin auth verification failed:', error);
+        localStorage.removeItem('adminAuth');
+        setIsAuthenticated(false);
       }
-      setIsAuthenticated(true);
-      fetchDashboard();
-    }
+    };
+    
+    verifyStoredAuth();
   }, []);
 
   const fetchChats = async () => {
