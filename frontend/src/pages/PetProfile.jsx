@@ -53,6 +53,7 @@ const PetProfile = ({ isEmbed = false }) => {
     species: 'dog',
     gender: '',
     photo_url: '',
+    photo_file: null, // For file upload
     
     // Age Info
     birth_date: '',
