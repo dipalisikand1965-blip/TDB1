@@ -15077,6 +15077,10 @@ app.include_router(pet_vault_admin_router, prefix="/api/admin/pet-vault")
 app.include_router(pet_gate_router)  # Pet gating at /api/pet-gate/*
 app.include_router(soul_drip_router)  # Soul drip at /api/soul-drip/*
 
+# Breed-Aware Product & Service Catalogue
+app.include_router(breed_catalogue_router)  # Breed catalogue at /api/breed-catalogue/*
+set_breed_catalogue_db(db)  # Initialize Breed Catalogue with database
+
 # Mira AI Concierge System (New)
 app.include_router(mira_router)  # Mira AI routes at /api/mira/*
 app.include_router(mira_intelligence_router)  # Mira Intelligence at /api/mira/intelligence/*
