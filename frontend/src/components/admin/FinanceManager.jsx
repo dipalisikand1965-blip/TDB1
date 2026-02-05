@@ -610,9 +610,41 @@ const FinanceManager = () => {
       
       {/* Action Buttons Row */}
       <div className="flex flex-wrap gap-2">
+        {/* Record Payment Button */}
+        <Button 
+          onClick={() => setShowNewPaymentModal(true)} 
+          className="bg-emerald-500 hover:bg-emerald-600 text-white"
+          data-testid="record-payment-btn"
+        >
+          <CreditCard className="w-4 h-4 mr-2" />
+          Record Payment
+        </Button>
+        
+        {/* Import CSV Button */}
+        <Button 
+          variant="outline" 
+          className="border-slate-600 text-slate-300"
+          onClick={() => fileInputRef.current?.click()}
+          disabled={importing}
+          data-testid="import-csv-btn"
+        >
+          <Upload className="w-4 h-4 mr-2" />
+          {importing ? 'Importing...' : 'Import CSV'}
+        </Button>
+        
+        {/* Hidden file input for CSV import */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".csv"
+          onChange={handleImportCSV}
+          className="hidden"
+          data-testid="csv-file-input"
+        />
+        
         {/* Export Dropdown */}
         <div className="relative group">
-          <Button variant="outline" className="border-slate-600 text-slate-300">
+          <Button variant="outline" className="border-slate-600 text-slate-300" data-testid="export-btn">
             <Download className="w-4 h-4 mr-2" />
             Export
             <ChevronDown className="w-4 h-4 ml-1" />
@@ -630,7 +662,7 @@ const FinanceManager = () => {
           </div>
         </div>
         
-        <Button onClick={fetchPayments} variant="outline" className="border-slate-600 text-slate-300">
+        <Button onClick={fetchPayments} variant="outline" className="border-slate-600 text-slate-300" data-testid="refresh-btn">
           <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
         </Button>
       </div>
