@@ -1409,10 +1409,10 @@ const ProductListing = ({ category = 'all' }) => {
                     <a href={`/product/${product.id}`} className="block group">
                       <div className="relative bg-white rounded-lg sm:rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
                         <div className="aspect-square bg-gray-100">
-                          {product.image && (
+                          {(product.image || product.image_url || product.thumbnail) && (
                             <img 
-                              src={product.image} 
-                              alt={product.title}
+                              src={product.image || product.image_url || product.thumbnail} 
+                              alt={product.title || product.name}
                               className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                             />
                           )}
