@@ -607,48 +607,6 @@ const FinanceManager = () => {
           )}
         </div>
       )}
-
-      {/* Report Period Banner */}
-      {datePreset !== 'all' && (
-        <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-3 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-emerald-400">
-            <Calendar className="w-4 h-4" />
-            <span className="text-sm font-medium">
-              Report Period: {dateRange.start ? new Date(dateRange.start).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Start'} 
-              {' → '}
-              {dateRange.end ? new Date(dateRange.end).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'End'}
-            </span>
-          </div>
-          <span className="text-emerald-400 text-sm">{dateFilteredPayments.length} transactions</span>
-        </div>
-      )}
-
-      {/* Action Buttons */}
-      <div className="flex flex-wrap gap-2">
-        {/* Hidden file input for CSV import */}
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".csv"
-          onChange={handleImportCSV}
-          className="hidden"
-        />
-        <Button
-          onClick={() => setShowNewPaymentModal(true)}
-          className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600"
-        >
-          <Banknote className="w-4 h-4 mr-2" />
-          Record Payment
-        </Button>
-        <Button
-          onClick={() => fileInputRef.current?.click()}
-          variant="outline"
-          className="border-slate-600 text-slate-300"
-          disabled={importing}
-        >
-          <Upload className={`w-4 h-4 mr-2 ${importing ? 'animate-spin' : ''}`} />
-          {importing ? 'Importing...' : 'Import CSV'}
-        </Button>
           
           {/* Export Dropdown */}
           <div className="relative group">
