@@ -951,10 +951,19 @@ const MiraProductCard = ({ product, activePet, onAdd }) => {
           </div>
         )}
         
-        {/* Safety indicator */}
+        {/* Safety/Recommended indicator with tooltip */}
         {activePet && safety.safe && (
-          <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-green-500 flex items-center justify-center" title={`Safe for ${activePet.name}`}>
+          <div 
+            className="absolute top-2 right-2 w-6 h-6 rounded-full bg-green-500 flex items-center justify-center cursor-help group/tip" 
+            title={`Recommended for ${activePet.name}`}
+          >
             <Check className="w-3.5 h-3.5 text-white" />
+            {/* Custom tooltip */}
+            <div className="absolute top-full right-0 mt-1 hidden group-hover/tip:block z-10">
+              <div className="bg-stone-800 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap">
+                Recommended for {activePet.name}
+              </div>
+            </div>
           </div>
         )}
         
