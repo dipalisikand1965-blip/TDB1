@@ -676,6 +676,7 @@ const UnifiedProductBox = () => {
             value={filterType} 
             onChange={(e) => setFilterType(e.target.value)}
             className="h-10 px-3 rounded-md border border-gray-200 text-sm"
+            data-testid="filter-product-type-select"
           >
             <option value="">All Types</option>
             {PRODUCT_TYPES.map(t => (
@@ -687,6 +688,7 @@ const UnifiedProductBox = () => {
             value={filterPillar} 
             onChange={(e) => setFilterPillar(e.target.value)}
             className="h-10 px-3 rounded-md border border-gray-200 text-sm"
+            data-testid="filter-product-pillar-select"
           >
             <option value="">All Pillars</option>
             {ALL_PILLARS.map(p => (
@@ -698,6 +700,7 @@ const UnifiedProductBox = () => {
             value={filterStatus} 
             onChange={(e) => setFilterStatus(e.target.value)}
             className="h-10 px-3 rounded-md border border-gray-200 text-sm"
+            data-testid="filter-product-status-select"
           >
             <option value="">All Status</option>
             <option value="active">Active</option>
@@ -709,10 +712,11 @@ const UnifiedProductBox = () => {
             value={filterShipping} 
             onChange={(e) => setFilterShipping(e.target.value)}
             className="h-10 px-3 rounded-md border border-gray-200 text-sm"
+            data-testid="filter-product-shipping-select"
           >
             <option value="">All Shipping</option>
-            <option value="pan-india">🚚 Pan India</option>
-            <option value="local">📍 Local Only</option>
+            <option value="pan-india">Pan India</option>
+            <option value="local">Local Only</option>
           </select>
           
           <Button variant="outline" size="sm" onClick={() => {
@@ -722,7 +726,7 @@ const UnifiedProductBox = () => {
             setFilterStatus('');
             setFilterShipping('');
             setFilterRewardEligible(null);
-          }}>
+          }} data-testid="clear-product-filters-btn">
             <RefreshCw className="w-4 h-4 mr-1" /> Clear
           </Button>
           
