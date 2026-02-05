@@ -173,13 +173,17 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
   const [searchParams] = useSearchParams();
   const location = useLocation();
   const { user, token } = useAuth();
-  const { addToCart } = useCart();
+  const { addToCart, cart } = useCart();
   
   // Core state
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userPets, setUserPets] = useState([]);
   const [activePet, setActivePet] = useState(null);
+  
+  // Track items added this session for Mira nudge
+  const [sessionItemsAdded, setSessionItemsAdded] = useState(0);
+  const [showMiraNudge, setShowMiraNudge] = useState(false);
   
   // Identity filters (Layer 1) - auto-applied from pet profile
   const [identityFilters, setIdentityFilters] = useState({
