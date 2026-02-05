@@ -726,6 +726,48 @@ const UnifiedProductBox = () => {
             <option value="local">Local Only</option>
           </select>
           
+          {/* Breed Intelligence Filters */}
+          <select 
+            value={filterBreed} 
+            onChange={(e) => setFilterBreed(e.target.value)}
+            className="h-10 px-3 rounded-md border border-purple-200 text-sm bg-purple-50"
+            data-testid="filter-product-breed-select"
+          >
+            <option value="">🐕 All Breeds</option>
+            <option value="Indie">Indie</option>
+            <option value="Labrador">Labrador</option>
+            <option value="Golden Retriever">Golden Retriever</option>
+            <option value="Beagle">Beagle</option>
+            <option value="Maltese">Maltese</option>
+            <option value="Shih Tzu">Shih Tzu</option>
+            <option value="Pug">Pug</option>
+          </select>
+          
+          <select 
+            value={filterSize} 
+            onChange={(e) => setFilterSize(e.target.value)}
+            className="h-10 px-3 rounded-md border border-purple-200 text-sm bg-purple-50"
+            data-testid="filter-product-size-select"
+          >
+            <option value="">📏 All Sizes</option>
+            <option value="XS">XS (Toy)</option>
+            <option value="S">S (Small)</option>
+            <option value="M">M (Medium)</option>
+            <option value="L">L (Large)</option>
+            <option value="XL">XL (Giant)</option>
+          </select>
+          
+          <select 
+            value={filterHasMiraHint} 
+            onChange={(e) => setFilterHasMiraHint(e.target.value)}
+            className="h-10 px-3 rounded-md border border-blue-200 text-sm bg-blue-50"
+            data-testid="filter-mira-hint-select"
+          >
+            <option value="">✨ Mira Hints</option>
+            <option value="true">Has Hint</option>
+            <option value="false">No Hint</option>
+          </select>
+          
           <Button variant="outline" size="sm" onClick={() => {
             setSearchTerm('');
             setFilterType('');
