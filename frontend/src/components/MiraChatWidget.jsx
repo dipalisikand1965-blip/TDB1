@@ -1268,18 +1268,10 @@ const MiraChatWidget = ({
   };
   
   // Floating Button (when closed) - Uses the beautiful MiraOrb!
-  // HIDE on mobile since MobileNavBar has its own Mira FAB
+  // DISABLED - MiraAI.jsx in App.js already renders the global MiraOrb
+  // This prevents duplicate orbs on pages that import MiraChatWidget
   if (!isOpen) {
-    return (
-      <div className={`fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[9999] flex-col items-end gap-3 hidden md:flex ${className}`}>
-        <MiraOrb 
-          state={getOrbState()}
-          size="md"
-          showLabel={true}
-          onClick={() => setIsOpen(true)}
-        />
-      </div>
-    );
+    return null; // MiraAI handles the orb globally
   }
   
   // Chat Widget (when open) - RESPONSIVE for mobile
