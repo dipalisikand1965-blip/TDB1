@@ -127,49 +127,6 @@ const MiraChatWidget = ({
   // Support filters state (Mira-driven personalization)
   const [activeSupportFilters, setActiveSupportFilters] = useState([]);
   
-  // Pet Preference Memory - Remember each pet's preferences across sessions
-  const PET_PREFS_KEY = 'mira_pet_preferences';
-  
-  // Load pet preferences from localStorage
-  const loadPetPreferences = (petId) => {
-    try {
-      const stored = localStorage.getItem(PET_PREFS_KEY);
-      if (stored) {
-        const allPrefs = JSON.parse(stored);
-        return allPrefs[petId] || null;
-      }
-    } catch (e) {
-      console.debug('Could not load pet preferences:', e);
-    }
-    return null;
-  };
-  
-  // Save pet preferences to localStorage
-  const savePetPreferences = (petId, prefs) => {
-    try {
-      const stored = localStorage.getItem(PET_PREFS_KEY);
-      const allPrefs = stored ? JSON.parse(stored) : {};
-      allPrefs[petId] = {
-        ...prefs,
-        lastUpdated: new Date().toISOString()
-      };
-      localStorage.setItem(PET_PREFS_KEY, JSON.stringify(allPrefs));
-    } catch (e) {
-      console.debug('Could not save pet preferences:', e);
-    }
-  };
-  
-  // Auto-save preferences when they change
-  useEffect(() => {
-    if (selectedPet?.id && !allPetsMode) {
-      savePetPreferences(selectedPet.id, {
-        pillar: currentPillar,
-        supportFilters: activeSupportFilters,
-        lastVisitedPillar: pillar
-      });
-    }
-  }, [selectedPet?.id, currentPillar, activeSupportFilters, pillar, allPetsMode]);
-  
   // Voice state
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -196,8 +153,7 @@ const MiraChatWidget = ({
   
   // Pillar-specific configurations
   const pillarConfig = {
-    general: { icon: '🐾', name: 'Services', color: 'from-purple-600 to-indigo-600' },
-    services: { icon: '✨', name: 'Services', color: 'from-purple-600 to-indigo-600' },
+    general: { icon: '🐾', name: 'General', color: 'from-purple-600 to-indigo-600' },
     stay: { icon: '🏨', name: 'Stay', color: 'from-purple-500 to-violet-500' },
     travel: { icon: '✈️', name: 'Travel', color: 'from-blue-500 to-cyan-500' },
     care: { icon: '💊', name: 'Care', color: 'from-rose-500 to-pink-600' },
@@ -303,12 +259,6 @@ const MiraChatWidget = ({
   useEffect(() => {
     trackPillarVisit(pillar);
     
-    // Listen for external open requests (from voice buttons on pages)
-    const handleOpenMiraChat = () => {
-      setIsOpen(true);
-    };
-    window.addEventListener('openMiraChat', handleOpenMiraChat);
-    
     // Fetch pillar-specific quick prompts
     const fetchQuickPrompts = async () => {
       try {
@@ -340,10 +290,6 @@ const MiraChatWidget = ({
     
     fetchQuickPrompts();
     fetchMiraContext();
-    
-    return () => {
-      window.removeEventListener('openMiraChat', handleOpenMiraChat);
-    };
   }, [pillar, trackPillarVisit, token]);
   
   // Set pillar-specific quick actions immediately (no auth required)
@@ -432,7 +378,6 @@ const MiraChatWidget = ({
     if (pet === 'all') {
       setAllPetsMode(true);
       setSelectedPet(null);
-      setActiveSupportFilters([]); // Clear filters in all-pets mode
       const allPetNames = pets.map(p => p.name).join(', ');
       setMessages(prev => [...prev, {
         id: `pet-change-${Date.now()}`,
@@ -442,24 +387,10 @@ const MiraChatWidget = ({
     } else {
       setAllPetsMode(false);
       setSelectedPet(pet);
-      
-      // Load saved preferences for this pet
-      const savedPrefs = loadPetPreferences(pet.id);
-      let switchMessage = `Okay **${pet.name}**! 🐾`;
       const petBreed = pet.breed || pet.identity?.breed || '';
+      let switchMessage = `Okay **${pet.name}**! 🐾`;
       if (petBreed) switchMessage += ` Your ${petBreed}.`;
-      
-      // Restore saved filters if available
-      if (savedPrefs?.supportFilters?.length > 0) {
-        setActiveSupportFilters(savedPrefs.supportFilters);
-        const filterNames = savedPrefs.supportFilters.map(f => {
-          const labels = { 'sensitive-stomach': 'Gentle', 'allergy-friendly': 'Allergy-safe', 'calming': 'Calming', 'special-care': 'Extra care' };
-          return labels[f] || f;
-        }).join(', ');
-        switchMessage += ` I remember ${pet.name} prefers **${filterNames}** products. Those filters are still active!`;
-      } else {
-        switchMessage += ` What would you like help with?`;
-      }
+      switchMessage += ` What would you like help with?`;
       
       setMessages(prev => [...prev, {
         id: `pet-change-${Date.now()}`,
@@ -1268,11 +1199,10 @@ const MiraChatWidget = ({
   };
   
   // Floating Button (when closed) - Uses the beautiful MiraOrb!
-  // MiraChatWidget handles pillar pages with rich context
-  // Show orb on both mobile AND desktop pillar pages
+  // HIDE on mobile since MobileNavBar has its own Mira FAB
   if (!isOpen) {
     return (
-      <div className={`fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-[9999] flex flex-col items-end gap-3 ${className}`}>
+      <div className={`fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[9999] flex-col items-end gap-3 hidden md:flex ${className}`}>
         <MiraOrb 
           state={getOrbState()}
           size="md"
@@ -1344,56 +1274,37 @@ const MiraChatWidget = ({
             {/* Pet Selector + Suggestions Row - Compact */}
             {pets.length > 0 && (
               <div className="px-3 py-2 border-b bg-gray-50 shrink-0">
-                <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
+                <div className="flex items-center gap-2 overflow-x-auto">
                   <span className="text-xs text-gray-500 shrink-0">For:</span>
-                  {/* Individual pet buttons */}
-                  {pets.map(pet => {
-                    const hasSavedPrefs = loadPetPreferences(pet.id)?.supportFilters?.length > 0;
-                    return (
-                      <button
-                        key={pet.id}
-                        onClick={() => handlePetSwitch(pet)}
-                        className={`px-3 py-2.5 min-h-[40px] rounded-full text-xs flex items-center gap-1.5 transition-all shrink-0 touch-manipulation active:scale-95 ${
-                          selectedPet?.id === pet.id && !allPetsMode
-                            ? `bg-gradient-to-r ${config.color} text-white` 
-                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                        }`}
-                        data-testid={`pet-select-${pet.id}`}
-                      >
-                        <PawPrint className="w-3 h-3" />
-                        <span className="font-semibold">{pet.name}</span>
-                        {hasSavedPrefs && selectedPet?.id !== pet.id && (
-                          <span className="text-[8px] opacity-60">💾</span>
-                        )}
-                      </button>
-                    );
-                  })}
-                  {/* "All Pets" option - Only show if user has multiple pets */}
-                  {pets.length > 1 && (
+                  {pets.map(pet => (
                     <button
-                      onClick={() => handlePetSwitch('all')}
+                      key={pet.id}
+                      onClick={() => {
+                        setSelectedPet(pet);
+                        trackClick('pet_switch', pet.id, { pillar, from_pet: selectedPet?.id });
+                      }}
                       className={`px-3 py-2.5 min-h-[40px] rounded-full text-xs flex items-center gap-1.5 transition-all shrink-0 touch-manipulation active:scale-95 ${
-                        allPetsMode
+                        selectedPet?.id === pet.id 
                           ? `bg-gradient-to-r ${config.color} text-white` 
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          : 'bg-gray-100 text-gray-600'
                       }`}
-                      data-testid="pet-select-all"
+                      data-testid={`pet-select-${pet.id}`}
                     >
-                      <Heart className="w-3 h-3" />
-                      <span className="font-semibold">All Pets</span>
+                      <PawPrint className="w-3 h-3" />
+                      <span className="font-semibold">{pet.name}</span>
                     </button>
-                  )}
+                  ))}
                 </div>
               </div>
             )}
             
             {/* SUGGESTED FOR [PET] - Compact horizontal scroll */}
-            {(selectedPet || allPetsMode) && petRecommendations.length > 0 && (
+            {selectedPet && petRecommendations.length > 0 && (
               <div className="px-3 py-2 border-b bg-gradient-to-r from-purple-50/50 to-pink-50/50 shrink-0">
                 <p className="text-[10px] font-bold text-purple-700 uppercase tracking-wider mb-1.5">
-                  ✨ {allPetsMode ? `For ${pets.map(p => p.name).join(', ')}` : `For ${selectedPet.name}`}
+                  ✨ For {selectedPet.name}
                 </p>
-                <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+                <div className="flex gap-2 overflow-x-auto pb-1">
                   {petRecommendations.slice(0, 4).map(product => {
                     const imageUrl = product.image?.startsWith('http') 
                       ? product.image 
@@ -1415,47 +1326,6 @@ const MiraChatWidget = ({
                       </div>
                     );
                   })}
-                </div>
-              </div>
-            )}
-            
-            {/* Support Filters - Pillar-specific care filters */}
-            {(selectedPet || allPetsMode) && (
-              <div className="px-3 py-2 border-b bg-white shrink-0">
-                <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1">
-                  <span className="text-[10px] text-gray-500 shrink-0 uppercase tracking-wide">Needs:</span>
-                  {[
-                    { id: 'sensitive-stomach', label: 'Gentle', icon: '🫧' },
-                    { id: 'allergy-friendly', label: 'Allergy-safe', icon: '🛡️' },
-                    { id: 'calming', label: 'Calming', icon: '🧘' },
-                    { id: 'special-care', label: 'Extra care', icon: '💝' }
-                  ].map(filter => (
-                    <button
-                      key={filter.id}
-                      onClick={() => {
-                        setActiveSupportFilters(prev => 
-                          prev.includes(filter.id) 
-                            ? prev.filter(f => f !== filter.id)
-                            : [...prev, filter.id]
-                        );
-                      }}
-                      className={`px-2.5 py-1.5 rounded-full text-[11px] flex items-center gap-1 transition-all shrink-0 touch-manipulation active:scale-95 ${
-                        activeSupportFilters.includes(filter.id)
-                          ? 'bg-purple-600 text-white'
-                          : 'bg-gray-100 text-gray-600 hover:bg-purple-50 hover:text-purple-700'
-                      }`}
-                      data-testid={`support-filter-${filter.id}`}
-                    >
-                      <span>{filter.icon}</span>
-                      <span>{filter.label}</span>
-                    </button>
-                  ))}
-                  {/* "Remembered" indicator - shows when filters were auto-loaded */}
-                  {activeSupportFilters.length > 0 && selectedPet && (
-                    <span className="text-[9px] text-purple-400 shrink-0 ml-1 flex items-center gap-0.5">
-                      <span>💾</span> Remembered
-                    </span>
-                  )}
                 </div>
               </div>
             )}
