@@ -668,6 +668,19 @@ const ProductListing = ({ category = 'all' }) => {
       } catch (err) {
         console.debug('Could not fetch recommendations:', err);
       }
+      
+      // Fetch pet's soul score
+      try {
+        const scoreRes = await fetch(`${getApiUrl()}/api/pet-score/${pet.id}/score_state`, {
+          headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        });
+        if (scoreRes.ok) {
+          const scoreData = await scoreRes.json();
+          setPetSoulScore(scoreData.overall_score || scoreData.score || 0);
+        }
+      } catch (err) {
+        console.debug('Could not fetch pet soul score:', err);
+      }
     }
   };
   
@@ -695,6 +708,16 @@ const ProductListing = ({ category = 'all' }) => {
               }
             })
             .catch(err => console.debug('Could not fetch recommendations:', err));
+          
+          // Fetch pet's soul score
+          fetch(`${getApiUrl()}/api/pet-score/${pet.id}/score_state`)
+            .then(res => res.ok ? res.json() : null)
+            .then(data => {
+              if (data) {
+                setPetSoulScore(data.overall_score || data.score || 0);
+              }
+            })
+            .catch(err => console.debug('Could not fetch pet soul score:', err));
         }
       }
     };
