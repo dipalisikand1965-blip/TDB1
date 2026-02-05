@@ -198,10 +198,13 @@ const MiraAI = () => {
   const pillarPaths = ['/care', '/celebrate', '/advisory', '/dine', '/stay', '/travel', '/emergency', '/enjoy', '/fit', '/learn', '/farewell', '/adopt', '/paperwork', '/shop', '/all', '/product', '/services', '/cakes', '/treats'];
   
   // On mobile, only hide on admin/login paths - allow Mira on pillar pages via MobileNavBar FAB
-  const shouldHide = isMobile 
-    ? hiddenPaths.some(path => location.pathname.startsWith(path))
-    : hiddenPaths.some(path => location.pathname.startsWith(path)) ||
-      pillarPaths.some(path => location.pathname === path || location.pathname.startsWith(path + '/'));
+  // The orb should ALWAYS be visible except on admin/login pages
+  const shouldHideCompletely = hiddenPaths.some(path => location.pathname.startsWith(path));
+  
+  // On desktop pillar pages, we hide the chat panel (pillar pages have embedded MiraChatWidget)
+  // But the ORB should still be visible for direct access
+  const shouldHideChatOnDesktop = !isMobile && 
+    pillarPaths.some(path => location.pathname === path || location.pathname.startsWith(path + '/'));
   
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
