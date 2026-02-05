@@ -538,7 +538,7 @@ async def get_travel_products(limit: int = 50):
     """Get travel-related products (kits, crates, harnesses, etc.)"""
     db = get_db()
     
-    products = await db.products.find(
+    products = await db.products_master.find(
         {"$or": [
             {"category": {"$regex": "travel", "$options": "i"}},
             {"tags": {"$in": ["travel", "crate", "harness", "carrier", "calming"]}},
@@ -601,7 +601,7 @@ async def create_travel_product(product: TravelProductCreate):
         "updated_at": get_consistent_timestamp()
     }
     
-    await db.products.insert_one(product_doc)
+    await db.products_master.insert_one(product_doc)
     logger.info(f"Travel product created: {product_id}")
     
     return {"success": True, "product_id": product_id, "product": {k: v for k, v in product_doc.items() if k != "_id"}}
@@ -618,7 +618,7 @@ async def update_travel_product(product_id: str, product: TravelProductCreate):
         "updated_at": get_consistent_timestamp()
     }
     
-    result = await db.products.update_one(
+    result = await db.products_master.update_one(
         {"id": product_id},
         {"$set": update_doc}
     )
@@ -636,7 +636,7 @@ async def delete_travel_product(product_id: str):
     db = get_db()
     logger = get_logger()
     
-    result = await db.products.delete_one({"id": product_id})
+    result = await db.products_master.delete_one({"id": product_id})
     
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Product not found")
@@ -680,7 +680,7 @@ async def import_travel_products(products: List[Dict[str, Any]]):
             }
             
             # Upsert - update if exists, insert if not
-            await db.products.update_one(
+            await db.products_master.update_one(
                 {"id": product_id},
                 {"$set": product_doc},
                 upsert=True
@@ -699,7 +699,7 @@ async def export_travel_products():
     """Export all travel products as CSV-ready data"""
     db = get_db()
     
-    products = await db.products.find(
+    products = await db.products_master.find(
         {"category": "travel"},
         {"_id": 0}
     ).to_list(500)
@@ -1673,7 +1673,7 @@ async def seed_travel_products():
     for product in default_products:
         product["created_at"] = get_consistent_timestamp()
         product["updated_at"] = get_consistent_timestamp()
-        await db.products.update_one(
+        await db.products_master.update_one(
             {"id": product["id"]},
             {"$set": product},
             upsert=True
@@ -1708,7 +1708,7 @@ async def get_travel_config():
     settings = await db.app_settings.find_one({"key": "travel_settings"}, {"_id": 0})
     
     # Get product counts
-    product_count = await db.products.count_documents({"category": "travel"})
+    product_count = await db.products_master.count_documents({"category": "travel"})
     bundle_count = await db.product_bundles.count_documents({"bundle_type": "travel"})
     
     return {

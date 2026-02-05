@@ -511,8 +511,8 @@ async def admin_update_product(product_id: str, product: CelebrateProductCreate)
     
     # If not found, try main products collection (Shopify synced products)
     if not existing:
-        existing = await db.products.find_one({"$or": [{"id": product_id}, {"shopify_id": product_id}]})
-        collection = db.products
+        existing = await db.products_master.find_one({"$or": [{"id": product_id}, {"shopify_id": product_id}]})
+        collection = db.products_master
     
     if not existing:
         raise HTTPException(status_code=404, detail="Product not found")
@@ -522,7 +522,7 @@ async def admin_update_product(product_id: str, product: CelebrateProductCreate)
         "updated_at": datetime.now(timezone.utc)
     }
     
-    if collection == db.products:
+    if collection == db.products_master:
         # For Shopify products, use the _id or shopify_id
         query = {"$or": [{"id": product_id}, {"shopify_id": product_id}]}
     else:

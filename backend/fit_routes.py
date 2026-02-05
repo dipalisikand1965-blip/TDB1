@@ -449,8 +449,8 @@ async def get_fit_products(
     if fit_type:
         query["category"] = fit_type
     
-    products = await db.unified_products.find(query, {"_id": 0}).to_list(limit)
-    total = await db.unified_products.count_documents(query)
+    products = await db.products_master.find(query, {"_id": 0}).to_list(limit)
+    total = await db.products_master.count_documents(query)
     
     return {"products": products, "total": total}
 
@@ -468,7 +468,7 @@ async def create_fit_product(product_data: dict):
         "updated_at": get_utc_timestamp()
     }
     
-    await db.products.insert_one({k: v for k, v in product.items() if k != "_id"})
+    await db.products_master.insert_one({k: v for k, v in product.items() if k != "_id"})
     
     return {"message": "Product created", "id": product["id"]}
 
@@ -482,7 +482,7 @@ async def update_fit_product(product_id: str, product_data: dict):
     product_data.pop("id", None)
     product_data.pop("_id", None)
     
-    result = await db.products.update_one({"id": product_id}, {"$set": product_data})
+    result = await db.products_master.update_one({"id": product_id}, {"$set": product_data})
     
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Product not found")
@@ -495,7 +495,7 @@ async def delete_fit_product(product_id: str):
     """Delete a fitness product"""
     db = get_db()
     
-    result = await db.products.delete_one({"id": product_id})
+    result = await db.products_master.delete_one({"id": product_id})
     
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Product not found")
@@ -522,7 +522,7 @@ async def seed_fit_products():
     for product in default_products:
         product["created_at"] = now
         product["updated_at"] = now
-        result = await db.products.update_one({"id": product["id"]}, {"$set": product}, upsert=True)
+        result = await db.products_master.update_one({"id": product["id"]}, {"$set": product}, upsert=True)
         if result.upserted_id or result.modified_count:
             seeded += 1
     
@@ -542,7 +542,7 @@ async def import_fit_products(products: List[dict]):
         product["pillar"] = "fit"
         product["created_at"] = now
         product["updated_at"] = now
-        await db.products.update_one({"id": product["id"]}, {"$set": product}, upsert=True)
+        await db.products_master.update_one({"id": product["id"]}, {"$set": product}, upsert=True)
         imported += 1
     
     return {"message": f"Imported {imported} products", "imported": imported}
@@ -739,7 +739,7 @@ async def export_fit_requests():
 async def export_fit_products():
     """Export fitness products"""
     db = get_db()
-    products = await db.products.find({"category": "fit"}, {"_id": 0}).to_list(500)
+    products = await db.products_master.find({"category": "fit"}, {"_id": 0}).to_list(500)
     return {"products": products, "total": len(products)}
 
 
@@ -1232,7 +1232,7 @@ async def seed_fit_data():
         await db.fit_plans.update_one({"id": plan["id"]}, {"$set": plan}, upsert=True)
     
     for product in default_products:
-        await db.products.update_one({"id": product["id"]}, {"$set": product}, upsert=True)
+        await db.products_master.update_one({"id": product["id"]}, {"$set": product}, upsert=True)
     
     for bundle in default_bundles:
         await db.fit_bundles.update_one({"id": bundle["id"]}, {"$set": bundle}, upsert=True)
@@ -1322,7 +1322,7 @@ async def seed_extra_fit_products():
         if not existing:
             await db.fit_products.insert_one(product)
             # Also add to unified_products
-            await db.unified_products.update_one(
+            await db.products_master.update_one(
                 {"name": product["name"]},
                 {"$set": product},
                 upsert=True

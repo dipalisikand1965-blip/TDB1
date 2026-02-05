@@ -637,10 +637,10 @@ async def get_enjoy_products(limit: int = 50):
         {"tags": {"$in": ["enjoy", "outdoor", "social", "adventure", "meetup"]}}
     ]}
     
-    products = await db.unified_products.find(query, {"_id": 0}).limit(limit).to_list(limit)
+    products = await db.products_master.find(query, {"_id": 0}).limit(limit).to_list(limit)
     
     # Also check legacy products collection
-    legacy_products = await db.products.find(
+    legacy_products = await db.products_master.find(
         {"$or": [
             {"category": "enjoy"},
             {"tags": {"$in": ["enjoy", "outdoor", "social", "adventure", "meetup"]}}
@@ -663,7 +663,7 @@ async def export_enjoy_products():
     """Export enjoy products as CSV-ready data"""
     db = get_db()
     
-    products = await db.products.find(
+    products = await db.products_master.find(
         {"$or": [{"category": "enjoy"}, {"enjoy_type": {"$exists": True}}]},
         {"_id": 0}
     ).to_list(500)
@@ -681,7 +681,7 @@ async def create_enjoy_product(product: dict):
     product["created_at"] = get_utc_timestamp()
     product["updated_at"] = get_utc_timestamp()
     
-    await db.products.insert_one({k: v for k, v in product.items() if k != "_id"})
+    await db.products_master.insert_one({k: v for k, v in product.items() if k != "_id"})
     
     return {"message": "Product created", "id": product["id"]}
 
@@ -695,7 +695,7 @@ async def update_enjoy_product(product_id: str, product_data: dict):
     product_data.pop("id", None)
     product_data.pop("_id", None)
     
-    result = await db.products.update_one(
+    result = await db.products_master.update_one(
         {"id": product_id},
         {"$set": product_data}
     )
@@ -711,7 +711,7 @@ async def delete_enjoy_product(product_id: str):
     """Delete an enjoy product"""
     db = get_db()
     
-    result = await db.products.delete_one({"id": product_id})
+    result = await db.products_master.delete_one({"id": product_id})
     
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Product not found")
@@ -738,7 +738,7 @@ async def seed_enjoy_products():
     for product in default_products:
         product["created_at"] = now
         product["updated_at"] = now
-        result = await db.products.update_one({"id": product["id"]}, {"$set": product}, upsert=True)
+        result = await db.products_master.update_one({"id": product["id"]}, {"$set": product}, upsert=True)
         if result.upserted_id or result.modified_count:
             seeded += 1
     
@@ -758,7 +758,7 @@ async def import_enjoy_products(products: List[dict]):
         product["pillar"] = "enjoy"
         product["created_at"] = now
         product["updated_at"] = now
-        await db.products.update_one({"id": product["id"]}, {"$set": product}, upsert=True)
+        await db.products_master.update_one({"id": product["id"]}, {"$set": product}, upsert=True)
         imported += 1
     
     return {"message": f"Imported {imported} products", "imported": imported}
@@ -1587,7 +1587,7 @@ async def seed_enjoy_data():
     for prod in default_products:
         prod["created_at"] = get_utc_timestamp()
         prod["updated_at"] = get_utc_timestamp()
-        await db.products.update_one(
+        await db.products_master.update_one(
             {"id": prod["id"]},
             {"$set": prod},
             upsert=True

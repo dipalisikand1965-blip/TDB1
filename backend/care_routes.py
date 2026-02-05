@@ -730,7 +730,7 @@ async def get_care_products(care_type: Optional[str] = None, limit: int = 50):
     if care_type:
         query = {"$and": [query, {"$or": [{"care_type": care_type}, {"category": care_type}, {"tags": care_type}]}]}
     
-    products = await db.products.find(query, {"_id": 0}).limit(limit).to_list(limit)
+    products = await db.products_master.find(query, {"_id": 0}).limit(limit).to_list(limit)
     
     return {"products": products, "total": len(products)}
 
@@ -751,7 +751,7 @@ async def create_care_product(product: CareProductCreate):
         "updated_at": get_utc_timestamp()
     }
     
-    await db.products.insert_one(product_doc)
+    await db.products_master.insert_one(product_doc)
     logger.info(f"Care product created: {product_id}")
     
     return {"success": True, "product_id": product_id, "product": {k: v for k, v in product_doc.items() if k != "_id"}}
@@ -768,7 +768,7 @@ async def update_care_product(product_id: str, product: CareProductCreate):
         "updated_at": get_utc_timestamp()
     }
     
-    result = await db.products.update_one(
+    result = await db.products_master.update_one(
         {"id": product_id},
         {"$set": update_doc}
     )
@@ -786,7 +786,7 @@ async def delete_care_product(product_id: str):
     db = get_db()
     logger = get_logger()
     
-    result = await db.products.delete_one({"id": product_id})
+    result = await db.products_master.delete_one({"id": product_id})
     
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Product not found")
@@ -800,7 +800,7 @@ async def export_care_products():
     """Export all care products as CSV-ready data"""
     db = get_db()
     
-    products = await db.products.find(
+    products = await db.products_master.find(
         {"$or": [{"category": "care"}, {"care_type": {"$exists": True}}]},
         {"_id": 0}
     ).to_list(500)
@@ -860,7 +860,7 @@ async def import_care_products(products: List[Dict[str, Any]]):
                 "updated_at": get_utc_timestamp()
             }
             
-            await db.products.update_one(
+            await db.products_master.update_one(
                 {"id": product_id},
                 {"$set": product_doc},
                 upsert=True
@@ -1473,7 +1473,7 @@ async def seed_care_products():
     for product in default_products:
         product["created_at"] = get_utc_timestamp()
         product["updated_at"] = get_utc_timestamp()
-        await db.products.update_one(
+        await db.products_master.update_one(
             {"id": product["id"]},
             {"$set": product},
             upsert=True
@@ -1566,7 +1566,7 @@ async def get_care_config():
     db = get_db()
     
     settings = await db.app_settings.find_one({"key": "care_settings"}, {"_id": 0})
-    product_count = await db.products.count_documents({"$or": [{"category": "care"}, {"care_type": {"$exists": True}}]})
+    product_count = await db.products_master.count_documents({"$or": [{"category": "care"}, {"care_type": {"$exists": True}}]})
     bundle_count = await db.product_bundles.count_documents({"bundle_type": "care"})
     partner_count = await db.care_partners.count_documents({"is_active": True})
     

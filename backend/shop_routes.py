@@ -51,10 +51,10 @@ async def get_shop_stats():
     db = get_db()
     
     # Product stats
-    total_products = await db.products.count_documents({})
-    unified_products = await db.unified_products.count_documents({})
-    in_stock = await db.products.count_documents({"available": True})
-    out_of_stock = await db.products.count_documents({"available": False})
+    total_products = await db.products_master.count_documents({})
+    unified_products = await db.products_master.count_documents({})
+    in_stock = await db.products_master.count_documents({"available": True})
+    out_of_stock = await db.products_master.count_documents({"available": False})
     
     # Order stats (from orders collection)
     total_orders = await db.orders.count_documents({})
@@ -71,7 +71,7 @@ async def get_shop_stats():
     
     # Top categories
     category_counts = {}
-    products = await db.products.find({}, {"category": 1}).to_list(5000)
+    products = await db.products_master.find({}, {"category": 1}).to_list(5000)
     for p in products:
         cat = p.get("category", "uncategorised")
         category_counts[cat] = category_counts.get(cat, 0) + 1
@@ -124,8 +124,8 @@ async def get_shop_products(
             {"description": {"$regex": search, "$options": "i"}}
         ]
     
-    products = await db.products.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
-    total = await db.products.count_documents(query)
+    products = await db.products_master.find(query, {"_id": 0}).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+    total = await db.products_master.count_documents(query)
     
     return {"products": products, "total": total}
 
@@ -135,7 +135,7 @@ async def get_shop_product(product_id: str):
     """Get a single product by ID"""
     db = get_db()
     
-    product = await db.products.find_one(
+    product = await db.products_master.find_one(
         {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
         {"_id": 0}
     )
@@ -159,11 +159,11 @@ async def create_shop_product(product_data: dict):
         "source": "admin"
     }
     
-    await db.products.insert_one(product)
+    await db.products_master.insert_one(product)
     
     # Also add to unified_products
     unified = {**product, "sync_source": "admin_created"}
-    await db.unified_products.update_one(
+    await db.products_master.update_one(
         {"id": product["id"]},
         {"$set": unified},
         upsert=True
@@ -179,13 +179,13 @@ async def update_shop_product(product_id: str, product_data: dict):
     
     product_data["updated_at"] = datetime.now(timezone.utc).isoformat()
     
-    result = await db.products.update_one(
+    result = await db.products_master.update_one(
         {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
         {"$set": product_data}
     )
     
     # Also update unified_products
-    await db.unified_products.update_one(
+    await db.products_master.update_one(
         {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
         {"$set": product_data}
     )
@@ -201,8 +201,8 @@ async def delete_shop_product(product_id: str):
     """Delete a shop product"""
     db = get_db()
     
-    result = await db.products.delete_one({"$or": [{"id": product_id}, {"shopify_id": product_id}]})
-    await db.unified_products.delete_one({"$or": [{"id": product_id}, {"shopify_id": product_id}]})
+    result = await db.products_master.delete_one({"$or": [{"id": product_id}, {"shopify_id": product_id}]})
+    await db.products_master.delete_one({"$or": [{"id": product_id}, {"shopify_id": product_id}]})
     
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Product not found")
@@ -215,7 +215,7 @@ async def export_shop_products():
     """Export all products for CSV download"""
     db = get_db()
     
-    products = await db.products.find({}, {"_id": 0}).to_list(10000)
+    products = await db.products_master.find({}, {"_id": 0}).to_list(10000)
     return {"products": products}
 
 
@@ -230,14 +230,14 @@ async def import_shop_products(products: List[dict]):
         product["created_at"] = datetime.now(timezone.utc).isoformat()
         product["source"] = "csv_import"
         
-        await db.products.update_one(
+        await db.products_master.update_one(
             {"id": product["id"]},
             {"$set": product},
             upsert=True
         )
         
         # Also sync to unified
-        await db.unified_products.update_one(
+        await db.products_master.update_one(
             {"id": product["id"]},
             {"$set": {**product, "sync_source": "csv_import"}},
             upsert=True
@@ -338,13 +338,13 @@ async def get_inventory_status():
     db = get_db()
     
     # Low stock products (quantity < 10)
-    low_stock = await db.products.find(
+    low_stock = await db.products_master.find(
         {"quantity": {"$lt": 10, "$gt": 0}},
         {"_id": 0, "id": 1, "title": 1, "quantity": 1}
     ).to_list(100)
     
     # Out of stock
-    out_of_stock = await db.products.find(
+    out_of_stock = await db.products_master.find(
         {"$or": [{"quantity": 0}, {"available": False}]},
         {"_id": 0, "id": 1, "title": 1}
     ).to_list(100)
@@ -368,7 +368,7 @@ async def update_inventory(product_id: str, inventory_data: dict):
         "updated_at": datetime.now(timezone.utc).isoformat()
     }
     
-    result = await db.products.update_one(
+    result = await db.products_master.update_one(
         {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
         {"$set": update}
     )
@@ -449,7 +449,7 @@ async def get_products_report():
         {"$sort": {"count": -1}}
     ]
     
-    by_category = await db.products.aggregate(pipeline).to_list(50)
+    by_category = await db.products_master.aggregate(pipeline).to_list(50)
     
     # Products by pillar
     pipeline_pillar = [
@@ -458,7 +458,7 @@ async def get_products_report():
         {"$sort": {"count": -1}}
     ]
     
-    by_pillar = await db.products.aggregate(pipeline_pillar).to_list(20)
+    by_pillar = await db.products_master.aggregate(pipeline_pillar).to_list(20)
     
     return {
         "by_category": [{"category": c["_id"] or "Uncategorised", "count": c["count"]} for c in by_category],
@@ -522,11 +522,11 @@ async def sync_to_unified_products():
     db = get_db()
     logger = get_logger()
     
-    products = await db.products.find({}, {"_id": 0}).to_list(10000)
+    products = await db.products_master.find({}, {"_id": 0}).to_list(10000)
     
     synced = 0
     for product in products:
-        await db.unified_products.update_one(
+        await db.products_master.update_one(
             {"$or": [{"id": product.get("id")}, {"shopify_id": product.get("shopify_id")}]},
             {"$set": {**product, "sync_source": "manual_sync", "synced_at": datetime.now(timezone.utc).isoformat()}},
             upsert=True
@@ -543,8 +543,8 @@ async def get_sync_status():
     """Get sync status between products and unified_products"""
     db = get_db()
     
-    products_count = await db.products.count_documents({})
-    unified_count = await db.unified_products.count_documents({})
+    products_count = await db.products_master.count_documents({})
+    unified_count = await db.products_master.count_documents({})
     
     return {
         "products_collection": products_count,

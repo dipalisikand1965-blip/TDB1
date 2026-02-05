@@ -97,12 +97,12 @@ async def seed_dine_products_data():
             "in_stock": True
         }
     ]
-    existing = await db.products.count_documents({"category": "dine"})
+    existing = await db.products_master.count_documents({"category": "dine"})
     if existing > 0:
         return {"products_seeded": 0, "message": "Products exist"}
     for p in sample_products:
         p["created_at"] = get_utc_timestamp()
-        await db.products.insert_one(p)
+        await db.products_master.insert_one(p)
     return {"products_seeded": len(sample_products)}
 
 # Admin credentials
@@ -2561,14 +2561,14 @@ async def get_dine_products(
         query["dine_type"] = dine_type
     
     # Get from products collection (dine accessories)
-    dine_products = await db.products.find({"category": "dine"}, {"_id": 0}).to_list(50)
+    dine_products = await db.products_master.find({"category": "dine"}, {"_id": 0}).to_list(50)
     
     # Get fresh meals from unified_products
     fresh_meals_query = {"category": "fresh-meals"}
     if in_stock is not None:
         fresh_meals_query["in_stock"] = {"$ne": False}  # Include if not explicitly false
     
-    fresh_meals = await db.unified_products.find(fresh_meals_query, {"_id": 0}).to_list(50)
+    fresh_meals = await db.products_master.find(fresh_meals_query, {"_id": 0}).to_list(50)
     
     # Combine both
     all_products = dine_products + fresh_meals
@@ -2582,7 +2582,7 @@ async def get_dine_products(
 @dine_router.get("/dine/products/{product_id}")
 async def get_dine_product(product_id: str):
     """Get a specific dine product"""
-    product = await db.products.find_one({"id": product_id, "category": "dine"}, {"_id": 0})
+    product = await db.products_master.find_one({"id": product_id, "category": "dine"}, {"_id": 0})
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     return product
@@ -2599,7 +2599,7 @@ async def create_dine_product(product_data: dict, username: str = Depends(verify
         "updated_at": get_utc_timestamp()
     }
     
-    await db.products.insert_one({k: v for k, v in product.items() if k != "_id"})
+    await db.products_master.insert_one({k: v for k, v in product.items() if k != "_id"})
     product.pop("_id", None)
     
     return {"message": "Product created", "product": product}
@@ -2612,7 +2612,7 @@ async def update_dine_product(product_id: str, product_data: dict, username: str
     product_data.pop("id", None)
     product_data.pop("_id", None)
     
-    result = await db.products.update_one({"id": product_id}, {"$set": product_data})
+    result = await db.products_master.update_one({"id": product_id}, {"$set": product_data})
     
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Product not found")
@@ -2623,7 +2623,7 @@ async def update_dine_product(product_id: str, product_data: dict, username: str
 @dine_router.delete("/admin/dine/products/{product_id}")
 async def delete_dine_product(product_id: str, username: str = Depends(verify_admin)):
     """Delete a dine product"""
-    result = await db.products.delete_one({"id": product_id})
+    result = await db.products_master.delete_one({"id": product_id})
     
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Product not found")
@@ -2636,7 +2636,7 @@ async def seed_dine_products(username: str = Depends(verify_admin)):
     """Seed dine products with sample data"""
     
     # Check if products already exist
-    existing_count = await db.products.count_documents({"category": "dine"})
+    existing_count = await db.products_master.count_documents({"category": "dine"})
     if existing_count > 0:
         return {"message": f"Products already exist ({existing_count}). Skipping seed.", "seeded": 0}
     
@@ -2817,7 +2817,7 @@ async def seed_dine_products(username: str = Depends(verify_admin)):
     for product in sample_products:
         product["created_at"] = get_utc_timestamp()
         product["updated_at"] = get_utc_timestamp()
-        await db.products.insert_one(product)
+        await db.products_master.insert_one(product)
     
     return {"message": "Dine products seeded successfully", "seeded": len(sample_products)}
 
