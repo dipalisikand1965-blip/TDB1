@@ -1874,7 +1874,7 @@ const ProductManager = ({ credentials }) => {
                   ))}
                   {(!createForm.flavors || createForm.flavors.length === 0) && (
                     <p className="text-sm text-gray-500 text-center py-4 bg-gray-50 rounded-lg">
-                      No flavors added. Click "Add Flavor" to add options.
+                      No flavors added. Click &quot;Add Flavor&quot; to add options.
                     </p>
                   )}
                 </div>
