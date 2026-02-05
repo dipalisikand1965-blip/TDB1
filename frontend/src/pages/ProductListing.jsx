@@ -313,7 +313,6 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
   const filterBarRef = useRef(null);
   
   // Pillar transition tracking
-  const [previousPillar, setPreviousPillar] = useState(null);
   const [showPillarTransition, setShowPillarTransition] = useState(false);
   const hasShownTransitionRef = useRef(false);
   
@@ -321,9 +320,6 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
   
   // Health/sensitivity filters that persist across pillars
   const PERSISTENT_FILTERS = ['sensitive-stomach', 'allergy-friendly', 'calming', 'recovery'];
-  
-  // Occasion-specific filters that reset when leaving pillar
-  const OCCASION_FILTERS = ['breed-appropriate', 'weight', 'hydration', 'portable', 'energy', 'comfort', 'favorite-treats', 'familiar'];
 
   // Track scroll for sticky filter bar (desktop)
   useEffect(() => {
