@@ -384,13 +384,9 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
               </button>
             </div>
           ) : (
-            <button 
-              onClick={(e) => { e.stopPropagation(); setShowModal(true); }}
-              className="flex items-center gap-1 text-[10px] text-amber-600 hover:text-amber-700"
-            >
-              <PawPrint className="w-3 h-3 text-amber-400" />
-              <span className="underline">Be first to rate</span>
-            </button>
+            <p className="text-[10px] sm:text-[11px] text-purple-500/80">
+              {productMiraTip}
+            </p>
           )}
 
           <h3 className="font-semibold text-gray-900 line-clamp-2 text-xs sm:text-sm">{product.name}</h3>
