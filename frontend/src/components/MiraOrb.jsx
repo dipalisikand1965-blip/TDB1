@@ -112,16 +112,29 @@ const MiraOrb = ({
   
   const config = sizes[size];
   
-  // Generate particles based on state - use useMemo to avoid effect setState
+  // Pre-computed deterministic particle configurations to avoid Math.random in render
+  const PARTICLE_PRESETS = [
+    { duration: 2.3, size: 6, xOffset: 25, yOffset: -18 },
+    { duration: 3.1, size: 8, xOffset: -22, yOffset: 28 },
+    { duration: 2.7, size: 5, xOffset: 30, yOffset: 12 },
+    { duration: 3.5, size: 7, xOffset: -28, yOffset: -25 },
+    { duration: 2.5, size: 9, xOffset: 15, yOffset: 30 },
+    { duration: 3.2, size: 6, xOffset: -20, yOffset: -15 },
+    { duration: 2.8, size: 8, xOffset: 28, yOffset: -22 },
+    { duration: 3.0, size: 5, xOffset: -25, yOffset: 20 },
+    { duration: 2.4, size: 7, xOffset: 18, yOffset: 25 },
+    { duration: 3.3, size: 6, xOffset: -15, yOffset: -28 },
+    { duration: 2.6, size: 8, xOffset: 22, yOffset: -12 },
+    { duration: 3.4, size: 5, xOffset: -30, yOffset: 18 },
+  ];
+  
+  // Generate particles based on state using pre-computed values
   const particles = useMemo(() => {
     const particleCount = state === 'celebrating' ? 12 : config.particles;
     return Array.from({ length: particleCount }, (_, i) => ({
       id: i,
       delay: i * 0.3,
-      duration: 2 + Math.random() * 2,
-      size: 4 + Math.random() * 6,
-      xOffset: (Math.random() - 0.5) * 60,
-      yOffset: (Math.random() - 0.5) * 60,
+      ...PARTICLE_PRESETS[i % PARTICLE_PRESETS.length],
       color: state === 'celebrating' 
         ? ['#EC4899', '#F59E0B', '#10B981', '#3B82F6'][i % 4]
         : MIRA_COLORS.glow,
