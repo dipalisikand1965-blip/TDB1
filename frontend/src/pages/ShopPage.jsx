@@ -687,11 +687,11 @@ const ShopPage = () => {
   };
   
   // Filter products - Use pillars array (products can belong to multiple pillars)
-  // Shop = cumulative view of ALL products
+  // 'recommended' shows breed-relevant products first, 'all'/'shop' shows everything
   const filteredProducts = useMemo(() => {
     let result = allProducts;
     
-    if (selectedPillar !== 'all' && selectedPillar !== 'shop') {
+    if (selectedPillar !== 'all' && selectedPillar !== 'shop' && selectedPillar !== 'recommended') {
       // Filter by pillars array - products can be in multiple pillars
       result = result.filter(p => {
         const productPillars = p.pillars || [];
@@ -700,7 +700,25 @@ const ShopPage = () => {
                p.pillar === selectedPillar;
       });
     }
-    // 'all' or 'shop' shows everything (shop is cumulative)
+    // 'all', 'shop', or 'recommended' shows everything
+    
+    // For 'recommended', sort breed-specific products first
+    if (selectedPillar === 'recommended' && selectedPet?.breed) {
+      const breed = selectedPet.breed.toLowerCase();
+      result = [...result].sort((a, b) => {
+        const aBreedMatch = a.is_breed_specific && 
+          (a.breed_metadata?.breeds?.some(b => b.toLowerCase().includes(breed)) ||
+           a.name?.toLowerCase().includes(breed) ||
+           a.title?.toLowerCase().includes(breed));
+        const bBreedMatch = b.is_breed_specific && 
+          (b.breed_metadata?.breeds?.some(b => b.toLowerCase().includes(breed)) ||
+           b.name?.toLowerCase().includes(breed) ||
+           b.title?.toLowerCase().includes(breed));
+        if (aBreedMatch && !bBreedMatch) return -1;
+        if (!aBreedMatch && bBreedMatch) return 1;
+        return 0;
+      });
+    }
     
     if (selectedSubcat) {
       const subLower = selectedSubcat.toLowerCase().replace(/\s+/g, '-');
@@ -713,12 +731,12 @@ const ShopPage = () => {
     }
     
     return result;
-  }, [allProducts, selectedPillar, selectedSubcat]);
+  }, [allProducts, selectedPillar, selectedSubcat, selectedPet?.breed]);
   
   // Filter services by pillar (services can also be in multiple pillars)
   const filteredServices = useMemo(() => {
-    if (selectedPillar === 'all' || selectedPillar === 'shop') {
-      return services; // Shop shows all services
+    if (selectedPillar === 'all' || selectedPillar === 'shop' || selectedPillar === 'recommended') {
+      return services; // These show all services
     }
     return services.filter(s => {
       const servicePillars = s.pillars || [];
