@@ -1248,21 +1248,6 @@ const MiraAI = () => {
     return null;
   }
 
-  // Detect current pillar from URL
-  const getCurrentPillar = () => {
-    const path = location.pathname.toLowerCase();
-    const pillars = ['celebrate', 'dine', 'stay', 'travel', 'care', 'enjoy', 'fit', 'learn', 'emergency', 'farewell', 'shop'];
-    for (const pillar of pillars) {
-      if (path.includes(pillar)) return pillar;
-    }
-    // Check for product categories that map to pillars
-    if (path.includes('cakes') || path.includes('birthday') || path.includes('hampers')) return 'celebrate';
-    if (path.includes('treats') || path.includes('food')) return 'dine';
-    return null;
-  };
-  
-  const currentPillar = getCurrentPillar();
-
   // Determine orb state based on current activity
   const getOrbState = () => {
     if (isListening) return 'listening';
