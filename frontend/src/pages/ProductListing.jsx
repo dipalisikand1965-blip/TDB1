@@ -889,14 +889,14 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
                                   </span>
                                 )}
                               </div>
-                              <span className="text-xs text-stone-500 block">{support.desc}</span>
+                              <span className="text-xs text-stone-400 block">{support.desc}</span>
                               {/* Subtext on hover (desktop only) */}
                               {support.subtext && (
-                                <span className="text-[11px] text-stone-400 hidden group-hover:block">{support.subtext}</span>
+                                <span className="text-[11px] text-stone-300 hidden group-hover:block mt-0.5">{support.subtext}</span>
                               )}
                             </div>
                             {isSelected && (
-                              <Check className="w-5 h-5 text-rose-600 flex-shrink-0" />
+                              <Check className="w-5 h-5 text-purple-500 flex-shrink-0" />
                             )}
                           </button>
                         );
@@ -909,33 +909,33 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
                 <div>
                   <button
                     onClick={() => setShowAvoidFilters(!showAvoidFilters)}
-                    className="flex items-center gap-2 text-sm font-medium text-stone-700 hover:text-stone-900"
+                    className="flex items-center gap-2 text-sm text-stone-600 hover:text-stone-800 py-1"
                   >
-                    <Shield className="w-4 h-4 text-amber-500" />
+                    <Shield className="w-4 h-4 text-amber-400" />
                     <span>Avoid if sensitive to...</span>
                     {avoidFilters.length > 0 && (
-                      <span className="px-1.5 py-0.5 bg-amber-100 text-amber-700 text-xs rounded-full">
+                      <span className="px-1.5 py-0.5 bg-amber-50 text-amber-600 text-[10px] rounded-full border border-amber-100">
                         {avoidFilters.length}
                       </span>
                     )}
-                    <ChevronDown className={`w-4 h-4 ml-auto transition-transform ${showAvoidFilters ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={`w-4 h-4 ml-auto text-stone-400 transition-transform ${showAvoidFilters ? 'rotate-180' : ''}`} />
                   </button>
                   
                   {showAvoidFilters && (
-                    <div className="flex flex-wrap gap-2 mt-3">
+                    <div className="flex flex-wrap gap-2 mt-4">
                       {AVOID_WARNINGS.map(avoid => (
                         <button
                           key={avoid.id}
                           onClick={() => toggleAvoidFilter(avoid.id)}
-                          className={`px-3 py-2 rounded-full text-sm transition-all min-h-[40px] ${
+                          className={`px-3.5 py-2 rounded-lg text-sm transition-all min-h-[40px] ${
                             avoidFilters.includes(avoid.id)
-                              ? 'bg-amber-100 text-amber-700 border border-amber-300'
-                              : 'bg-stone-100 text-stone-600 hover:bg-stone-200 border border-transparent'
+                              ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                              : 'bg-stone-50 text-stone-500 hover:bg-stone-100 border border-stone-100'
                           }`}
                           data-testid={`avoid-filter-${avoid.id}`}
                         >
                           No {avoid.label}
-                          {avoidFilters.includes(avoid.id) && <X className="w-3 h-3 inline ml-1.5" />}
+                          {avoidFilters.includes(avoid.id) && <X className="w-3 h-3 inline ml-1.5 opacity-50" />}
                         </button>
                       ))}
                     </div>
@@ -952,15 +952,15 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
                 setPendingCareFilters([...careFilters]);
                 setShowFilterSheet(true);
               }}
-              className="w-full flex items-center justify-between p-3 bg-stone-50 rounded-lg"
+              className="w-full flex items-center justify-between p-3.5 bg-stone-50/80 rounded-xl border border-stone-100"
               data-testid="mobile-filter-trigger"
             >
               <div className="flex items-center gap-2">
-                <SlidersHorizontal className="w-4 h-4 text-stone-500" />
-                <span className="text-sm font-medium text-stone-700">Support & preferences</span>
+                <SlidersHorizontal className="w-4 h-4 text-stone-400" />
+                <span className="text-sm text-stone-600">Support & preferences</span>
               </div>
               {(careFilters.length > 0 || avoidFilters.length > 0) && (
-                <span className="px-2 py-0.5 bg-rose-100 text-rose-700 text-xs rounded-full">
+                <span className="px-2 py-0.5 bg-purple-50 text-purple-600 text-xs rounded-full border border-purple-100">
                   {careFilters.length + avoidFilters.length} active
                 </span>
               )}
