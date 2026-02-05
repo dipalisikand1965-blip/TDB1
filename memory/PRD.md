@@ -65,7 +65,20 @@ Build "The Doggy Company," a one-stop-shop concierge for dog parents with a focu
 - ✅ Added tooltip on green checkmark: "Recommended for Bruno"
 - ✅ Added Mira nudge popup after 2+ items: "You've picked some lovely things for Bruno. Would you like me to coordinate delivery timing?"
 
-#### 4. Navigation Update
+#### 4. Pillar-Specific Support Filters (Experience Orchestration)
+- ✅ **Rule implemented**: Support filters must mirror the emotional state of the page
+- ✅ **Birthday/Celebrate filters**: Celebration-safe, Birthday treats, Breed-appropriate, Allergy-aware, Calm moments, Extra care
+- ✅ **Travel filters**: Travel-friendly, Journey calm, Safe snacking, Hydration help, Easy to pack
+- ✅ **Care filters**: Full health catalogue (Sensitive tummy, Skin & coat, Weight, Joints, Dental, Calming, Recovery, Allergy-friendly)
+- ✅ **Dine filters**: Gentle meals, Portion perfect, Limited ingredient, Nourishing, Senior-friendly
+- ✅ **Fit filters**: Energy boost, Joint support, Lean & fit, Post-activity, Hydration
+- ✅ **Emergency filters**: Recovery support, Easy digest, Stress relief, Hydration
+- ✅ **Farewell filters**: Comfort care, Easy on tummy, Peaceful, Favorite treats
+- ✅ **Stay filters**: Settling in, Routine-friendly, Safe options, Home comforts
+- ✅ **Auto-applied filters**: Mira intelligently applies filters based on pet profile (allergies → Allergy-aware, anxiety → Calm moments, etc.)
+- ✅ **Visual indicators**: "Auto" badge on auto-applied filters, green highlight for Mira-applied filters
+
+#### 5. Navigation Update
 - ✅ Changed "SERVICES" to "CARE" in bottom mobile navigation bar to align with Pet OS philosophy
 
 #### 5. Test User & Pet Created
