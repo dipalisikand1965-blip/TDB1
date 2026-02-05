@@ -736,14 +736,14 @@ const ShopPage = () => {
           {/* Services Grid */}
           {activeView === 'services' && (
             <>
-              {services.length === 0 ? (
+              {filteredServices.length === 0 ? (
                 <div className="text-center py-16">
                   <Briefcase className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-[#2D2D2D] mb-2">Services coming soon</h3>
+                  <h3 className="text-xl font-semibold text-[#2D2D2D] mb-2">No services in this category</h3>
                 </div>
               ) : (
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
-                  {services.map(service => (
+                  {filteredServices.map(service => (
                     <ServiceCard key={service.id} service={service} />
                   ))}
                 </div>
