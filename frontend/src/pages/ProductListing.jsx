@@ -732,15 +732,25 @@ const ProductListing = ({ category = 'all' }) => {
           setSelectedPet(pet);
           setPersonalizedMessage(`🎂 Perfect picks for ${pet.name}!`);
           
-          // Fetch recommendations for new pet
-          fetch(`${getApiUrl()}/api/products/recommendations/for-pet/${pet.id}?limit=8`)
+          // Use breed-aware recommendation API
+          fetch(`${getApiUrl()}/api/products/recommend-for-breed`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              breed: pet.breed || 'Mixed',
+              size: pet.size || 'M',
+              age: pet.age_category || 'adult',
+              pillar: pillar,
+              limit: 8
+            })
+          })
             .then(res => res.ok ? res.json() : null)
             .then(data => {
               if (data?.recommendations) {
                 setPetRecommendations(data.recommendations);
               }
             })
-            .catch(err => console.debug('Could not fetch recommendations:', err));
+            .catch(err => console.debug('Could not fetch breed recommendations:', err));
           
           // Fetch pet's soul score
           fetch(`${getApiUrl()}/api/pet-score/${pet.id}/score_state`)
