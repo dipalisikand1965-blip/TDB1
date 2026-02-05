@@ -82,6 +82,7 @@ const ServicesPage = () => {
   const [showBookingModal, setShowBookingModal] = useState(false);
   const [priceConfig, setPriceConfig] = useState({
     city: 'mumbai',
+    customCity: '',
     petSize: 'medium',
     petCount: 1,
     selectedAddOns: []
