@@ -897,23 +897,35 @@ const MiraProductCard = ({ product, activePet, onAdd }) => {
         </div>
         
         {/* Product name */}
-        <h3 className="font-medium text-stone-900 text-sm leading-snug line-clamp-2 mb-2">
+        <h3 className="font-medium text-stone-900 text-sm leading-snug line-clamp-2 mb-1">
           {product.name}
         </h3>
         
-        {/* Price - NOT prominent */}
+        {/* Service-enabled microcopy - ties product to moment */}
+        <p className="text-xs text-stone-400 mb-2">
+          {product.category === 'cakes' || product.tags?.includes('celebration') 
+            ? 'Works well for celebrations'
+            : product.tags?.includes('birthday')
+            ? 'Often chosen for birthdays'
+            : product.tags?.includes('training')
+            ? 'Great for training moments'
+            : 'Mira can coordinate this'
+          }
+        </p>
+        
+        {/* Price - calm, not decorated */}
         <div className="flex items-center justify-between">
           <span className="text-sm text-stone-600">
             {hasVariants ? 'From ' : ''}₹{price.toLocaleString('en-IN')}
           </span>
           
-          {/* Quick add */}
+          {/* Include (not Add) */}
           <button
             onClick={(e) => { e.stopPropagation(); onAdd(product); }}
             className="text-xs font-medium text-purple-600 hover:text-purple-700 flex items-center gap-1"
-            data-testid={`add-${product.id || product._id}`}
+            data-testid={`include-${product.id || product._id}`}
           >
-            Add <ChevronRight className="w-3 h-3" />
+            Include <ChevronRight className="w-3 h-3" />
           </button>
         </div>
       </div>
