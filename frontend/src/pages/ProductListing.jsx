@@ -1373,6 +1373,18 @@ const ProductListing = ({ category = 'all' }) => {
             {/* Calm Mira Strip - Quiet whisper of service above products */}
             {selectedPet && (() => {
               const miraContext = getPillarMiraContext(pillar);
+              // Pillar-specific service links
+              const serviceLinks = {
+                celebrate: '/celebrate#plan-celebration',
+                dine: '/dine/meal-planning',
+                care: '/care#wellness',
+                travel: '/travel#plan-trip',
+                enjoy: '/enjoy#activities',
+                fit: '/fit#fitness-plan',
+                shop: '/shop'
+              };
+              const serviceLink = serviceLinks[pillar] || '/';
+              
               return (
                 <div className="mb-6 p-4 sm:p-5 bg-gradient-to-r from-stone-50 to-white rounded-xl sm:rounded-2xl border border-stone-100" data-testid="mira-service-strip">
                   <div className="flex items-start gap-3 sm:gap-4">
@@ -1388,18 +1400,13 @@ const ProductListing = ({ category = 'all' }) => {
                         {miraContext.note(selectedPet.name)} <span className="text-stone-400">{miraContext.question}</span>
                       </p>
                       
-                      {/* Soft Action */}
-                      <button 
-                        className="text-xs sm:text-sm text-purple-600 hover:text-purple-700 font-medium transition-colors"
-                        onClick={() => {
-                          toast({
-                            title: "Mira is on it! ✨",
-                            description: `I'll help coordinate ${miraContext.action.toLowerCase()} for ${selectedPet.name}.`,
-                          });
-                        }}
+                      {/* Soft Action - Links to relevant service */}
+                      <a 
+                        href={serviceLink}
+                        className="text-xs sm:text-sm text-purple-600 hover:text-purple-700 font-medium transition-colors inline-flex items-center gap-1"
                       >
                         {miraContext.action} →
-                      </button>
+                      </a>
                     </div>
                   </div>
                 </div>
