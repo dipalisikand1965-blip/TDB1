@@ -629,7 +629,12 @@ const Admin = () => {
   useEffect(() => {
     const verifyStoredAuth = async () => {
       const storedAuth = localStorage.getItem('adminAuth');
-      if (!storedAuth) return;
+      
+      // No stored auth - just show login
+      if (!storedAuth) {
+        setIsVerifying(false);
+        return;
+      }
       
       try {
         // IMPORTANT: Verify credentials with backend before allowing access
@@ -654,17 +659,21 @@ const Admin = () => {
             console.error('Error decoding stored auth:', e);
           }
           setIsAuthenticated(true);
+          setIsVerifying(false);
           fetchDashboard();
         } else {
           // Invalid credentials - clear storage and show login
           console.log('Admin auth invalid - clearing stored credentials');
           localStorage.removeItem('adminAuth');
           setIsAuthenticated(false);
+          setIsVerifying(false);
         }
       } catch (error) {
-        console.error('Admin auth verification failed:', error);
+        // Network error or endpoint doesn't exist - show login page
+        console.log('Admin auth verification failed (network/endpoint):', error.message);
         localStorage.removeItem('adminAuth');
         setIsAuthenticated(false);
+        setIsVerifying(false);
       }
     };
     
