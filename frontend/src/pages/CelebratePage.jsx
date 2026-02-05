@@ -29,7 +29,6 @@ import PawmeterDisplay, { PawmeterBadge } from '../components/PawmeterDisplay';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
-import { API_URL as API_BASE, getApiUrl } from '../utils/api';
 
 // Lazy load Soul Explainer for footer link
 const SoulExplainerVideo = lazy(() => import('../components/SoulExplainerVideo'));
