@@ -334,25 +334,29 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
   
-  // Handle pillar transitions - reset occasion filters, keep health filters
+  // Handle pillar transitions - using a ref to track and compare
+  const currentPillarRef = useRef(null);
+  
   useEffect(() => {
     const currentPillar = PILLAR_SUPPORT_FILTERS[category] ? category : pillar;
+    const prevPillar = currentPillarRef.current;
     
-    if (previousPillar && previousPillar !== currentPillar && activePet) {
-      // Filter out occasion-specific filters, keep persistent ones
-      const persistentActive = careFilters.filter(f => PERSISTENT_FILTERS.includes(f));
-      setCareFilters(persistentActive);
-      
+    // Only run on pillar change (not initial mount)
+    if (prevPillar && prevPillar !== currentPillar && activePet) {
       // Show transition toast (once per session)
       if (!hasShownTransitionRef.current) {
         setShowPillarTransition(true);
         hasShownTransitionRef.current = true;
         setTimeout(() => setShowPillarTransition(false), 3000);
       }
+      
+      // Reset occasion-specific filters, keep persistent health filters
+      // Using functional update to avoid dependency issues
+      setCareFilters(prev => prev.filter(f => PERSISTENT_FILTERS.includes(f)));
     }
     
-    setPreviousPillar(currentPillar);
-  }, [category, pillar]);
+    currentPillarRef.current = currentPillar;
+  }, [category, pillar, activePet]);
 
   // Fetch user's pets
   useEffect(() => {
