@@ -685,19 +685,20 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
             )}
           </div>
         </div>
-      </div>
+      )}
       
       {/* ============================================ */}
-      {/* PROPOSED PRODUCTS - Not browsed, proposed */}
+      {/* PROPOSED PRODUCTS - Only for members */}
       {/* ============================================ */}
-      <div className="max-w-6xl mx-auto px-4 py-6">
-        
-        {/* Results Context */}
-        <div className="flex items-center justify-between mb-6">
-          <p className="text-sm text-stone-500">
-            {proposedProducts.length} products proposed for {activePet?.name || 'your pet'}
-          </p>
-        </div>
+      {(activePet || user) && (
+        <div className="max-w-6xl mx-auto px-4 py-6">
+          
+          {/* Results Context */}
+          <div className="flex items-center justify-between mb-6">
+            <p className="text-sm text-stone-500">
+              {proposedProducts.length} products proposed for {activePet?.name || 'your pet'}
+            </p>
+          </div>
         
         {/* Product Grid - 2x2 mobile, 4 col desktop */}
         {proposedProducts.length > 0 ? (
