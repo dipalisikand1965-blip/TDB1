@@ -669,18 +669,37 @@ const ProductListing = ({ category = 'all' }) => {
     }
   };
   
-  // Listen for pet selection changes from navbar
+  // Listen for pet selection changes from navbar - using ref to avoid stale closure
   useEffect(() => {
     const handleNavbarPetChange = (e) => {
       const newPetId = e.detail?.petId;
-      if (newPetId && userPets.length > 0) {
-        handlePetChange(newPetId);
+      const currentPets = userPetsRef.current;
+      
+      console.log('[ProductListing] Pet change event received:', { newPetId, petsAvailable: currentPets.length });
+      
+      if (newPetId && currentPets.length > 0) {
+        const pet = currentPets.find(p => p.id === newPetId);
+        if (pet) {
+          console.log('[ProductListing] Found pet, updating:', pet.name);
+          setSelectedPet(pet);
+          setPersonalizedMessage(`🎂 Perfect picks for ${pet.name}!`);
+          
+          // Fetch recommendations for new pet
+          fetch(`${getApiUrl()}/api/products/recommendations/for-pet/${pet.id}?limit=8`)
+            .then(res => res.ok ? res.json() : null)
+            .then(data => {
+              if (data?.recommendations) {
+                setPetRecommendations(data.recommendations);
+              }
+            })
+            .catch(err => console.debug('Could not fetch recommendations:', err));
+        }
       }
     };
     
     window.addEventListener('petSelectionChanged', handleNavbarPetChange);
     return () => window.removeEventListener('petSelectionChanged', handleNavbarPetChange);
-  }, [userPets]);
+  }, []); // Empty deps - handler uses ref
 
   // Fetch products from API
   useEffect(() => {
