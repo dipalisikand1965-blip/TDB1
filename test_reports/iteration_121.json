@@ -29,7 +29,7 @@
   },
   "test_credentials": {
     "test_pet_id": "pet-99a708f1722a",
-    "API_URL": "https://product-master-3.preview.emergentagent.com"
+    "API_URL": "https://master-catalog-2.preview.emergentagent.com"
   },
   "seed_data_creation": "None - used existing pet data",
   "retest_needed": false,
