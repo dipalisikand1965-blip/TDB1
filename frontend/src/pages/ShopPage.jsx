@@ -905,19 +905,19 @@ const ShopPage = () => {
                   </Card>
                 ))}
               </div>
-            ) : filteredProducts.length === 0 ? (
-              <Card className="p-12 text-center">
-                <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">No products found</h3>
-                <p className="text-gray-600 mb-4">Try adjusting your filters or search query</p>
+            ) : activeTab === 'products' && filteredProducts.length === 0 ? (
+              <Card className="p-8 sm:p-12 text-center">
+                <Package className="w-12 h-12 sm:w-16 sm:h-16 text-gray-300 mx-auto mb-3 sm:mb-4" />
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">No products found</h3>
+                <p className="text-sm sm:text-base text-gray-600 mb-4">Try adjusting your filters or search query</p>
                 <Button onClick={() => { setSearchQuery(''); setActiveFilters([]); setSelectedCategory('all'); }}>
                   Clear All Filters
                 </Button>
               </Card>
-            ) : (
+            ) : activeTab === 'products' ? (
               <div className={viewMode === 'grid' 
-                ? 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6' 
-                : 'space-y-4'
+                ? 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-3 md:gap-6' 
+                : 'space-y-3 sm:space-y-4'
               }>
                 {filteredProducts.map((product) => (
                   <ProductCard 
@@ -926,6 +926,103 @@ const ShopPage = () => {
                     onAddToCart={handleAddToCart}
                     viewMode={viewMode}
                   />
+                ))}
+              </div>
+            ) : services.length === 0 ? (
+              <Card className="p-8 sm:p-12 text-center">
+                <Briefcase className="w-12 h-12 sm:w-16 sm:h-16 text-gray-300 mx-auto mb-3 sm:mb-4" />
+                <h3 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">No services found</h3>
+                <p className="text-sm sm:text-base text-gray-600 mb-4">Shop services are being curated</p>
+              </Card>
+            ) : (
+              /* Services Grid */
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
+                {services.map((service) => (
+                  <Card 
+                    key={service.id} 
+                    className="overflow-hidden hover:shadow-lg transition-all group cursor-pointer"
+                    onClick={() => navigate(`/services/${service.pillar}/${service.id}`)}
+                    data-testid={`service-card-${service.id}`}
+                  >
+                    {/* Service Image */}
+                    <div className="relative h-32 sm:h-40 overflow-hidden bg-gradient-to-br from-teal-500 to-emerald-600">
+                      {service.image_url ? (
+                        <img 
+                          src={service.image_url} 
+                          alt={service.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Briefcase className="w-12 h-12 sm:w-16 sm:h-16 text-white/30" />
+                        </div>
+                      )}
+                      {service.is_bookable && (
+                        <Badge className="absolute top-2 right-2 bg-green-500 text-white text-xs">
+                          <Calendar className="w-3 h-3 mr-1" />
+                          Bookable
+                        </Badge>
+                      )}
+                      {service.is_free && (
+                        <Badge className="absolute top-2 left-2 bg-amber-500 text-white text-xs">
+                          Free
+                        </Badge>
+                      )}
+                    </div>
+                    
+                    {/* Service Info */}
+                    <div className="p-3 sm:p-4">
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <h3 className="font-semibold text-gray-900 text-sm sm:text-base line-clamp-2 group-hover:text-teal-600 transition-colors">
+                          {service.name}
+                        </h3>
+                        <Badge variant="outline" className="shrink-0 text-xs">
+                          {service.pillar}
+                        </Badge>
+                      </div>
+                      
+                      <p className="text-xs sm:text-sm text-gray-600 mb-3 line-clamp-2">
+                        {service.description || 'Professional pet service'}
+                      </p>
+                      
+                      <div className="flex items-center justify-between">
+                        <div>
+                          {service.base_price > 0 ? (
+                            <p className="font-bold text-teal-600 text-sm sm:text-base">
+                              ₹{service.base_price?.toLocaleString()}
+                              {service.duration_minutes && (
+                                <span className="text-xs text-gray-500 font-normal ml-1">
+                                  / {service.duration_minutes}min
+                                </span>
+                              )}
+                            </p>
+                          ) : service.is_free ? (
+                            <p className="font-bold text-green-600 text-sm sm:text-base">Free</p>
+                          ) : (
+                            <p className="text-xs sm:text-sm text-gray-500">Contact for pricing</p>
+                          )}
+                        </div>
+                        
+                        {service.available_cities?.length > 0 && (
+                          <div className="flex items-center text-xs text-gray-500">
+                            <MapPin className="w-3 h-3 mr-1" />
+                            {service.available_cities.length} cities
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Quick Book Button */}
+                      <Button 
+                        className="w-full mt-3 bg-teal-600 hover:bg-teal-700 text-xs sm:text-sm h-8 sm:h-9"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/services/${service.pillar}/${service.id}?book=true`);
+                        }}
+                      >
+                        {service.is_bookable ? 'Book Now' : 'Learn More'}
+                      </Button>
+                    </div>
+                  </Card>
                 ))}
               </div>
             )}
@@ -940,21 +1037,21 @@ const ShopPage = () => {
       {showFilters && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-black/50" onClick={() => setShowFilters(false)}></div>
-          <div className="absolute right-0 top-0 h-full w-80 bg-white p-6 overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="font-bold text-gray-900">Filters</h3>
+          <div className="absolute right-0 top-0 h-full w-72 sm:w-80 bg-white p-4 sm:p-6 overflow-y-auto">
+            <div className="flex items-center justify-between mb-4 sm:mb-6">
+              <h3 className="font-bold text-gray-900 text-sm sm:text-base">Filters</h3>
               <button onClick={() => setShowFilters(false)}>
-                <X className="w-6 h-6" />
+                <X className="w-5 h-5 sm:w-6 sm:h-6" />
               </button>
             </div>
             
             {/* Quick Filters */}
-            <div className="space-y-2 mb-6">
+            <div className="space-y-1.5 sm:space-y-2 mb-4 sm:mb-6">
               {QUICK_FILTERS.map((filter) => (
                 <button
                   key={filter.id}
                   onClick={() => toggleFilter(filter.id)}
-                  className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-all ${
+                  className={`w-full text-left px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm transition-all ${
                     activeFilters.includes(filter.id)
                       ? 'bg-purple-100 text-purple-700 font-medium'
                       : 'hover:bg-gray-100 text-gray-700'
@@ -967,7 +1064,7 @@ const ShopPage = () => {
             
             <Button 
               onClick={() => setShowFilters(false)}
-              className="w-full bg-purple-600 hover:bg-purple-700"
+              className="w-full bg-purple-600 hover:bg-purple-700 text-sm"
             >
               Apply Filters
             </Button>
