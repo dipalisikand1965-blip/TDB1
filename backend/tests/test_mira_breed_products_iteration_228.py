@@ -23,29 +23,29 @@ class TestProductStats:
     """Test product statistics API - confirms products_master collection usage"""
     
     def test_product_stats_endpoint(self):
-        """Test /api/admin/product-box/stats endpoint returns product counts"""
-        response = requests.get(f"{BASE_URL}/api/admin/product-box/stats")
+        """Test /api/product-box/stats endpoint returns product counts"""
+        response = requests.get(f"{BASE_URL}/api/product-box/stats")
         assert response.status_code == 200, f"Stats endpoint failed: {response.text}"
         
         data = response.json()
-        assert "status_counts" in data, "Missing status_counts in response"
+        assert "total" in data, "Missing total in response"
+        assert "by_status" in data, "Missing by_status in response"
         
-        # Check total products count is reasonable
-        total_active = data.get("status_counts", {}).get("active", 0)
-        print(f"Total active products: {total_active}")
-        assert total_active > 2000, f"Expected >2000 products, got {total_active}"
+        # Check total products count matches expected 2833
+        total = data.get("total", 0)
+        print(f"Total products from stats API: {total}")
+        assert total >= 2800, f"Expected ~2833 products, got {total}"
     
     def test_product_stats_total_count(self):
         """Test that total products is around 2833 as expected"""
-        response = requests.get(f"{BASE_URL}/api/admin/product-box/stats")
+        response = requests.get(f"{BASE_URL}/api/product-box/stats")
         assert response.status_code == 200
         
         data = response.json()
-        status_counts = data.get("status_counts", {})
-        total = sum(status_counts.values())
-        print(f"Total products in stats: {total}")
-        # Allow some tolerance for data changes
-        assert total > 2500, f"Expected ~2833 products, got {total}"
+        total = data.get("total", 0)
+        print(f"Total products: {total}")
+        # Check expected count of 2833
+        assert total >= 2800, f"Expected ~2833 products, got {total}"
 
 
 class TestBreedSpecificProducts:
