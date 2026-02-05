@@ -52,9 +52,17 @@ Build "The Doggy Company," a one-stop-shop concierge for dog parents with a focu
 - **"All Pets" Option**: New button to select all pets at once
 - **Warm Switch Messages**: When switching pets, Mira now says things like:
   - "Okay **Lola**! 🐾 Your Golden Retriever. What would you like help with?"
-  - "Got it! I'll help with all your pets: **Mojo, Lola, Mystique, Luna**. 🐾 What do you need for your furry family?"
+  - "Got it! I'll help with all your pets: **Mojo, Lola, Mystique, Luna**. 🐾"
 - **Auto-Switching Recommendations**: When pet changes, recommendations update automatically
 - **Support Filters in Mira Panel**: Added "Needs:" row with Gentle, Allergy-safe, Calming, Extra care filters
+
+#### 4. Pet Preference Memory System (NEW) ✅
+- **Remember Preferences**: Each pet's filter preferences are saved to localStorage
+- **Auto-Restore**: When switching back to a pet, Mira says: "I remember Lola prefers **Gentle, Calming** products. Those filters are still active!"
+- **Visual Indicators**: 
+  - 💾 badge on pet tabs showing saved preferences
+  - "💾 Remembered" label in filters section when preferences are restored
+- **Automatic Saving**: Preferences auto-save when changed (pillar, filters)
 
 ---
 
