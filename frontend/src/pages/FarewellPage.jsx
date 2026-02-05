@@ -343,7 +343,7 @@ const FarewellPage = () => {
             Compassionate end-of-life services to celebrate the beautiful life your pet lived and the love you shared.
           </p>
           
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4">
             <Button 
               onClick={() => setShowServiceModal(true)}
               className="bg-white text-purple-700 hover:bg-white/90 px-8 py-3"
