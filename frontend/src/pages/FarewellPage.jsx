@@ -315,7 +315,7 @@ const FarewellPage = () => {
       <SEOHead page="farewell" path="/farewell" />
 
       {/* Hero Section - Soft and Compassionate */}
-      <section className="relative py-20 px-4 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white overflow-hidden">
+      <section className="relative py-12 sm:py-16 md:py-20 px-4 sm:px-6 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white overflow-hidden">
         {/* Mobile Back Button */}
         <button 
           onClick={() => navigate(-1)}
