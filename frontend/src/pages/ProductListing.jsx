@@ -565,14 +565,14 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
         <div className="bg-white border-b border-stone-100">
           <div className="max-w-6xl mx-auto px-4 py-4">
           
-          {/* Layer 2: Care Needs - "What are you looking to support?" */}
+          {/* Layer 2: Care Needs */}
           <div className="mb-4">
             <button
               onClick={() => setShowCareFilters(!showCareFilters)}
               className="flex items-center gap-2 text-sm font-medium text-stone-700 hover:text-stone-900"
             >
               <Heart className="w-4 h-4 text-rose-500" />
-              What are you looking to support?
+              What would you like to support right now?
               <ChevronDown className={`w-4 h-4 transition-transform ${showCareFilters ? 'rotate-180' : ''}`} />
               {careFilters.length > 0 && (
                 <span className="ml-2 px-2 py-0.5 bg-rose-100 text-rose-700 text-xs rounded-full">
@@ -608,14 +608,14 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
             )}
           </div>
           
-          {/* Layer 3: Values - Emotional alignment */}
+          {/* Layer 3: Your preferences */}
           <div className="mb-4">
             <button
               onClick={() => setShowValueFilters(!showValueFilters)}
               className="flex items-center gap-2 text-sm font-medium text-stone-700 hover:text-stone-900"
             >
               <Leaf className="w-4 h-4 text-green-500" />
-              Values & preferences
+              Your preferences
               <ChevronDown className={`w-4 h-4 transition-transform ${showValueFilters ? 'rotate-180' : ''}`} />
               {valueFilters.length > 0 && (
                 <span className="ml-2 px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full">
