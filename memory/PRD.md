@@ -159,9 +159,9 @@ Build "The Doggy Company," a one-stop-shop concierge for dog parents with a focu
 
 | File | Changes |
 |------|---------|
-| `/app/frontend/src/components/admin/FinanceManager.jsx` | Fixed JS error, added buttons |
-| `/app/frontend/src/components/admin/UnifiedProductBox.jsx` | Enhanced stats, pillar filters, testids |
-| `/app/frontend/src/components/admin/ServiceBox.jsx` | Complete rewrite with views, provider |
+| `/app/frontend/src/pages/ProductListing.jsx` | Complete rewrite of non-member landing copy for Pet OS |
+| `/app/frontend/src/components/MobileNavBar.jsx` | Changed "Services" to "Care" in bottom nav |
+| `/app/frontend/src/components/MemberMobileNav.jsx` | Changed "Services" to "Care" in member nav |
 
 ---
 
