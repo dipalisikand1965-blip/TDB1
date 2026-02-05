@@ -792,20 +792,12 @@ const ShopPage = () => {
               )}
             </p>
             
-            {/* Mira AI Personalized Lines */}
+            {/* Mira's Quiet Intelligence - Subtle, factual, confident */}
             {miraLines && miraLines.length > 0 && (
-              <div className="bg-gradient-to-r from-[#FDF8F3] via-[#F9F3EC] to-[#FDF8F3] rounded-2xl p-3 sm:p-4 md:p-5 max-w-md mx-auto mb-6 sm:mb-8 shadow-sm border border-[#E8DDD0]">
-                <div className="flex items-start gap-2 sm:gap-3">
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-[#C4785A] to-[#A66248] flex items-center justify-center flex-shrink-0 shadow-md">
-                    <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                  </div>
-                  <div className="text-left flex-1">
-                    <p className="text-xs text-[#C4785A] font-semibold mb-0.5 sm:mb-1">Mira says...</p>
-                    <p className="text-xs sm:text-sm md:text-base text-[#2D2D2D] leading-relaxed">
-                      {miraLines[0]}
-                    </p>
-                  </div>
-                </div>
+              <div className="bg-[#F5F3F0] rounded-xl p-3 sm:p-4 max-w-md mx-auto mb-6 sm:mb-8 border border-[#E8E4DF]">
+                <p className="text-xs sm:text-sm text-[#6B6B6B] leading-relaxed text-center">
+                  {miraLines[0]}
+                </p>
               </div>
             )}
           </div>
