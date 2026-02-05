@@ -106,22 +106,15 @@ const PetBar = ({ pet }) => {
 const IntelligentSearch = ({ petName, products, onSelectProduct }) => {
   const [query, setQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [suggestions, setSuggestions] = useState([]);
   const searchRef = useRef(null);
   const navigate = useNavigate();
   
-  // Filter products based on query
-  useEffect(() => {
-    if (query.trim().length < 2) {
-      if (suggestions.length > 0 || showSuggestions) {
-        setSuggestions([]);
-        setShowSuggestions(false);
-      }
-      return;
-    }
+  // Filter products based on query using useMemo
+  const suggestions = useMemo(() => {
+    if (query.trim().length < 2) return [];
     
     const q = query.toLowerCase();
-    const matches = products
+    return products
       .filter(p => 
         p.name?.toLowerCase().includes(q) ||
         p.title?.toLowerCase().includes(q) ||
@@ -138,10 +131,7 @@ const IntelligentSearch = ({ petName, products, onSelectProduct }) => {
         pillar: p.primary_pillar || p.pillar || p.pillars?.[0],
         url: `/product/${p.handle || p.id}`
       }));
-    
-    setSuggestions(matches);
-    setShowSuggestions(matches.length > 0);
-  }, [query, products, suggestions.length, showSuggestions]);
+  }, [query, products]);
   
   // Close on outside click
   useEffect(() => {
