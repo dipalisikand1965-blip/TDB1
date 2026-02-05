@@ -38,42 +38,40 @@ async def get_ai_enrichment(product: Dict[str, Any]) -> Dict[str, Any]:
 
 Product: {name}
 Category: {category}
-Description: {description}
-Tags: {', '.join(tags[:10]) if tags else 'none'}
+Description: {description[:200] if description else 'N/A'}
+Tags: {', '.join(tags[:5]) if tags else 'none'}
 
-Return ONLY valid JSON (no markdown, no explanation) with these fields:
+Return ONLY valid JSON with these fields:
 {{
-  "energy_level_match": ["low"|"medium"|"high"|"all"],  // List of applicable energy levels
-  "coat_type_match": ["short"|"medium"|"long"|"double_coat"|"curly"],  // Empty if not coat-related
-  "play_types": ["fetch"|"tug"|"chew"|"puzzle"|"comfort"|"training"],  // For toys/accessories
-  "chew_strength": "gentle"|"moderate"|"power_chewer"|null,  // Only for toys
-  "occasions": ["birthday"|"gotcha_day"|"new_puppy"|"travel"|"party"|"holiday"],  // When relevant
-  "use_case_tags": ["giftable"|"subscription_friendly"|"travel_friendly"|"indoor"|"outdoor"|"routine_essential"],
-  "is_giftable": true|false,
-  "subscription_friendly": true|false,
-  "travel_friendly": true|false
+  "energy_level_match": ["low", "medium", "high"],
+  "coat_type_match": ["short", "medium", "long", "double_coat", "curly"],
+  "play_types": ["fetch", "tug", "chew", "puzzle", "comfort", "training"],
+  "chew_strength": "gentle" or "moderate" or "power_chewer" or null,
+  "occasions": ["birthday", "gotcha_day", "new_puppy", "travel", "party", "holiday"],
+  "use_case_tags": ["giftable", "subscription_friendly", "travel_friendly", "indoor", "outdoor", "routine_essential"],
+  "is_giftable": true or false,
+  "subscription_friendly": true or false,
+  "travel_friendly": true or false
 }}
 
-Be conservative - only include attributes that clearly apply based on the product type and name.
-For treats/food: focus on dietary aspects, not play/coat.
-For toys: focus on play_types and chew_strength.
-For grooming: focus on coat_type_match.
-For accessories/apparel: consider all applicable."""
+Rules:
+- For treats/food: focus on dietary aspects, empty arrays for play/coat
+- For toys: focus on play_types and chew_strength
+- For grooming: focus on coat_type_match
+- Only include values that CLEARLY apply
+- Return arrays, not single values for list fields"""
 
     try:
         llm = LlmChat(
             api_key=os.environ.get("EMERGENT_LLM_KEY"),
-            session_id=f"enrich-{product.get('id', 'unknown')}",
-            system_message="You are a pet product analyst. Return only valid JSON."
-        ).with_model("anthropic", "claude-4-sonnet-20250514")
+            session_id=f"enrich-{product.get('id', 'unknown')[:20]}",
+            system_message="You are a pet product analyst. Return only valid JSON, no explanations."
+        ).with_model("anthropic", "claude-sonnet-4-20250514")
         
-        response = await llm.send_message_async(
-            message=UserMessage(text=prompt),
-            max_tokens=500
-        )
+        response = await llm.send_message(UserMessage(text=prompt))
         
         # Parse JSON from response
-        response_text = response.text.strip()
+        response_text = str(response).strip()
         # Handle markdown code blocks
         if "```json" in response_text:
             response_text = response_text.split("```json")[1].split("```")[0].strip()
@@ -83,7 +81,7 @@ For accessories/apparel: consider all applicable."""
         return json.loads(response_text)
         
     except Exception as e:
-        logger.warning(f"AI enrichment failed for {name}: {e}")
+        logger.warning(f"AI enrichment failed for {name[:30]}: {e}")
         return {}
 
 
