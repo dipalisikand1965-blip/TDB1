@@ -66,7 +66,7 @@ const UnifiedProductBox = () => {
   
   // Quick Edit States
   const [quickEditProduct, setQuickEditProduct] = useState(null);
-  const [quickEditType, setQuickEditType] = useState(null); // 'image', 'price', 'pillars'
+  const [quickEditType, setQuickEditType] = useState(null); // 'image', 'price', 'pillars', 'name', 'mira_hint'
   const [quickEditValue, setQuickEditValue] = useState(null);
   const [quickSaving, setQuickSaving] = useState(false);
   
