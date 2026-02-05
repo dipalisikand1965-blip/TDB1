@@ -7908,128 +7908,208 @@ async def update_product_bundle_config(product_id: str, bundle_config: dict):
 # AI-powered product hints for personalized shopping experience
 # ============================================
 
-def generate_mira_hint(product: dict) -> str:
-    """Generate an intelligent mira_hint based on product attributes"""
+# AI-Powered Mira Hint Generator using Emergent LLM
+async def generate_ai_mira_hint(product: dict) -> str:
+    """
+    Generate a truly unique, soulful, exciting Mira hint using AI.
+    Each hint should feel personal, different, and capture the product's soul.
+    """
+    import asyncio
+    
+    name = product.get("name", "Product")
+    category = product.get("category", "")
+    description = product.get("description", "")[:200] if product.get("description") else ""
+    tags = product.get("tags", [])
+    price = product.get("price", 0)
+    
+    # Build context about the product
+    product_context = f"""
+Product: {name}
+Category: {category}
+Tags: {', '.join(tags[:5]) if tags else 'None'}
+Description: {description}
+Price: ₹{price}
+"""
+    
+    # The soul of Mira - our AI concierge's personality and philosophy
+    mira_prompt = f"""You are Mira, a soulful pet concierge with deep empathy for the bond between pets and their parents.
+
+Your task: Create ONE short, exciting product hint (max 8-10 words) that will appear on a product card.
+
+CRITICAL RULES:
+1. Start with ✨ emoji
+2. Maximum 10 words - be CONCISE
+3. Be UNIQUE - no generic phrases like "freshly baked" or "made with love"
+4. Capture the SPECIFIC JOY this product brings
+5. Think about the MOMENT of delight - the tail wag, the happy licks, the cozy nap
+6. Be WARM but not salesy - you're whispering a secret to a friend
+7. Reference SPECIFIC benefits or sensations when possible
+8. NEVER use: "perfect for", "great for", "ideal for", "best for"
+9. Avoid generic words: amazing, wonderful, special, delicious, healthy
+
+EXAMPLES OF WHAT WE WANT (unique, specific, evocative):
+- ✨ Watch their eyes light up with the first bite
+- ✨ That satisfied post-bath shake? Priceless
+- ✨ The zoomies will be epic after this
+- ✨ Nose twitches guaranteed at first sniff
+- ✨ They'll dream of this during naptime
+- ✨ The happy dance starts before you open it
+- ✨ Lick-the-bowl-clean kind of yummy
+- ✨ Instant cozy curl-up spot finder
+- ✨ Adventure buddy essential - tested on trails
+- ✨ The grateful sighs will melt your heart
+
+EXAMPLES TO AVOID (too generic):
+- ✨ Made with love (BORING)
+- ✨ Perfect for your pet (GENERIC)
+- ✨ Freshly baked goodness (CLICHÉ)
+- ✨ Healthy and delicious (BLAH)
+- ✨ Great quality product (MARKETING SPEAK)
+
+{product_context}
+
+Generate ONE unique Mira hint for this product. Just the hint, nothing else."""
+
+    try:
+        api_key = os.environ.get("EMERGENT_LLM_KEY")
+        if not api_key:
+            return generate_mira_hint_fallback(product)
+        
+        chat = LlmChat(
+            api_key=api_key,
+            session_id=f"mira-hint-{product.get('id', 'unknown')}"
+        )
+        chat.with_model("openai", "gpt-4o-mini")  # Using mini for speed and cost
+        chat.with_params(temperature=0.9, max_tokens=50)  # High creativity
+        
+        user_msg = UserMessage(text=mira_prompt)
+        response = await chat.send_message(user_msg)
+        
+        # Clean up the response
+        hint = response.strip()
+        
+        # Ensure it starts with ✨
+        if not hint.startswith("✨"):
+            hint = "✨ " + hint.lstrip("✨").strip()
+        
+        # Truncate if too long (safety)
+        if len(hint) > 60:
+            hint = hint[:57] + "..."
+        
+        return hint
+        
+    except Exception as e:
+        logging.error(f"[Mira AI Hint] Error generating hint for {name}: {e}")
+        return generate_mira_hint_fallback(product)
+
+
+def generate_mira_hint_fallback(product: dict) -> str:
+    """Fallback hint generator when AI is unavailable - improved variety"""
+    import random
+    
     name = (product.get("name") or "").lower()
     category = (product.get("category") or "").lower()
     tags = [t.lower() for t in (product.get("tags") or [])]
     description = (product.get("description") or "").lower()
-    
-    # Combine all text for analysis
     all_text = f"{name} {category} {' '.join(tags)} {description}"
     
-    # GROOMING & CARE products
+    # Improved, varied hints by category
+    grooming_hints = [
+        "✨ That fresh-from-the-spa feeling awaits",
+        "✨ Get ready for the post-bath zoomies",
+        "✨ Softer fur = more snuggles",
+        "✨ The satisfied shake says it all",
+        "✨ Nose boops feel even better after this"
+    ]
+    
+    travel_hints = [
+        "✨ Adventure buddy tested & approved",
+        "✨ Car rides just got tail-waggingly better",
+        "✨ Every journey deserves a cozy companion",
+        "✨ From doorstep to destination, in style",
+        "✨ The world is their dog park now"
+    ]
+    
+    cake_hints = [
+        "✨ Birthday wishes never tasted this good",
+        "✨ Watch the happy dance begin",
+        "✨ Candles optional, joy guaranteed",
+        "✨ The nose twitches start immediately",
+        "✨ This moment deserves all the treats"
+    ]
+    
+    meal_hints = [
+        "✨ The bowl will be licked spotless",
+        "✨ Dinnertime just became event time",
+        "✨ Happy tummy, happy everything",
+        "✨ The eager sit happens before you pour",
+        "✨ Real food, real excitement"
+    ]
+    
+    treat_hints = [
+        "✨ The ultimate good-boy reward",
+        "✨ Training just got tastier",
+        "✨ One sniff and they're hooked",
+        "✨ Paws up for this one",
+        "✨ The tail tells no lies"
+    ]
+    
+    toy_hints = [
+        "✨ Zoomies incoming in 3... 2... 1...",
+        "✨ Their new favorite thing (until the next one)",
+        "✨ Endless entertainment unlocked",
+        "✨ Squeaky satisfaction guaranteed",
+        "✨ Playtime just leveled up"
+    ]
+    
+    bed_hints = [
+        "✨ The instant curl-up spot",
+        "✨ Dream chasing headquarters",
+        "✨ Where twitchy-leg naps happen",
+        "✨ Cozy loading... complete",
+        "✨ The contented sighs begin here"
+    ]
+    
+    supplement_hints = [
+        "✨ Extra years of zoomies, bottled",
+        "✨ Love in every dose",
+        "✨ Because they deserve the best years",
+        "✨ Supporting the wiggles and wags",
+        "✨ Future tail wags start today"
+    ]
+    
+    default_hints = [
+        "✨ Mira picked this one just for them",
+        "✨ Trust the tail wag test",
+        "✨ Pet parent approved, fur baby loved",
+        "✨ The good stuff, no compromises",
+        "✨ Every pet deserves this"
+    ]
+    
+    # Match category and return random hint
     if any(w in all_text for w in ['shampoo', 'conditioner', 'soap', 'wash', 'grooming']):
-        if 'oatmeal' in all_text:
-            return "✨ Soothes sensitive skin naturally"
-        if 'puppy' in all_text:
-            return "✨ Gentle formula for young pups"
-        if 'anti-tick' in all_text or 'flea' in all_text:
-            return "✨ Protection against pests"
-        if 'deodorizing' in all_text:
-            return "✨ Keeps your pet fresh & clean"
-        return "✨ For a healthy, shiny coat"
+        return random.choice(grooming_hints)
+    elif any(w in all_text for w in ['carrier', 'crate', 'travel', 'harness', 'leash', 'collar']):
+        return random.choice(travel_hints)
+    elif any(w in all_text for w in ['cake', 'birthday', 'celebration', 'pupcake', 'dognut']):
+        return random.choice(cake_hints)
+    elif any(w in all_text for w in ['meal', 'food', 'dinner', 'lunch', 'fresh']):
+        return random.choice(meal_hints)
+    elif any(w in all_text for w in ['treat', 'snack', 'biscuit', 'cookie', 'chew', 'jerky']):
+        return random.choice(treat_hints)
+    elif any(w in all_text for w in ['toy', 'ball', 'rope', 'plush', 'squeaky']):
+        return random.choice(toy_hints)
+    elif any(w in all_text for w in ['bed', 'mat', 'blanket', 'cushion']):
+        return random.choice(bed_hints)
+    elif any(w in all_text for w in ['supplement', 'vitamin', 'probiotic', 'omega', 'joint']):
+        return random.choice(supplement_hints)
     
-    # TRAVEL products
-    if any(w in all_text for w in ['carrier', 'crate', 'travel', 'harness', 'leash', 'collar']):
-        if 'iata' in all_text or 'flight' in all_text:
-            return "✨ IATA approved for safe flights"
-        if 'car' in all_text or 'safety' in all_text:
-            return "✨ Safety-tested for road trips"
-        if 'soft' in all_text:
-            return "✨ Soft & comfy for short trips"
-        if 'harness' in all_text:
-            return "✨ Secure & comfortable fit"
-        if 'leash' in all_text:
-            return "✨ Perfect for daily walks"
-        return "✨ Travel-friendly choice"
-    
-    # CAKES & CELEBRATION
-    if any(w in all_text for w in ['cake', 'birthday', 'celebration']):
-        if 'peanut butter' in all_text:
-            return "✨ Peanut butter is a pet favorite!"
-        if 'carrot' in all_text:
-            return "✨ Carrots add natural sweetness"
-        if 'banana' in all_text:
-            return "✨ Banana makes it extra moist"
-        if 'chicken' in all_text:
-            return "✨ Savory treat for meat lovers"
-        if 'cheese' in all_text:
-            return "✨ Cheesy goodness they'll love"
-        return "✨ Freshly baked with love"
-    
-    # MEALS & FOOD
-    if any(w in all_text for w in ['meal', 'food', 'dinner', 'lunch', 'breakfast']):
-        if 'mutton' in all_text or 'lamb' in all_text:
-            return "✨ Rich in protein & iron"
-        if 'chicken' in all_text:
-            return "✨ Lean protein, easy to digest"
-        if 'paneer' in all_text or 'vegetarian' in all_text:
-            return "✨ Great vegetarian option"
-        if 'fish' in all_text or 'salmon' in all_text:
-            return "✨ Omega-3 for healthy coat"
-        if 'beef' in all_text:
-            return "✨ Premium beef for active dogs"
-        return "✨ Balanced nutrition in every bite"
-    
-    # TREATS & SNACKS
-    if any(w in all_text for w in ['treat', 'snack', 'biscuit', 'cookie', 'chew']):
-        if 'dental' in all_text:
-            return "✨ Helps keep teeth clean"
-        if 'training' in all_text:
-            return "✨ Perfect size for rewards"
-        if 'soft' in all_text:
-            return "✨ Easy to chew for all ages"
-        if 'jerky' in all_text:
-            return "✨ High protein, irresistible taste"
-        return "✨ Tail-wagging guaranteed"
-    
-    # PIZZA & BURGERS
-    if any(w in all_text for w in ['pizza', 'burger']):
-        return "✨ A fun twist on mealtime"
-    
-    # FROZEN & ICE CREAM
-    if any(w in all_text for w in ['frozen', 'ice cream', 'popsicle', 'cool']):
-        return "✨ Perfect for hot days"
-    
-    # SUPPLEMENTS & HEALTH
-    if any(w in all_text for w in ['supplement', 'vitamin', 'probiotic', 'omega', 'joint']):
-        if 'joint' in all_text or 'hip' in all_text:
-            return "✨ Supports mobility & comfort"
-        if 'probiotic' in all_text or 'digestive' in all_text:
-            return "✨ For healthy digestion"
-        if 'skin' in all_text or 'coat' in all_text:
-            return "✨ For a healthy, shiny coat"
-        return "✨ For your pet's wellbeing"
-    
-    # TOYS & ACCESSORIES
-    if any(w in all_text for w in ['toy', 'ball', 'rope', 'plush', 'squeaky']):
-        return "✨ Hours of fun guaranteed"
-    
-    # BEDS & COMFORT
-    if any(w in all_text for w in ['bed', 'mat', 'blanket', 'cushion']):
-        return "✨ Cozy comfort for naptime"
-    
-    # BOWL & FEEDING
-    if any(w in all_text for w in ['bowl', 'feeder', 'dispenser']):
-        return "✨ Mealtime made easy"
-    
-    # Default based on category
-    category_defaults = {
-        'celebrate': "✨ Makes celebrations special",
-        'dine': "✨ Nutritious & delicious",
-        'care': "✨ For your pet's wellbeing",
-        'travel': "✨ Travel-ready essential",
-        'enjoy': "✨ Adventure ready",
-        'fit': "✨ Supports active lifestyle",
-        'shop': "✨ Handpicked for quality"
-    }
-    
-    for cat, hint in category_defaults.items():
-        if cat in category:
-            return hint
-    
-    return "✨ Mira recommends"
+    return random.choice(default_hints)
+
+
+def generate_mira_hint(product: dict) -> str:
+    """Synchronous wrapper - uses fallback for sync contexts"""
+    return generate_mira_hint_fallback(product)
 
 
 @api_router.put("/admin/products/{product_id}/mira-hint")
