@@ -622,32 +622,33 @@ const FinanceManager = () => {
           <span className="text-emerald-400 text-sm">{dateFilteredPayments.length} transactions</span>
         </div>
       )}
-        
+
+      {/* Action Buttons */}
       <div className="flex flex-wrap gap-2">
-          {/* Hidden file input for CSV import */}
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept=".csv"
-            onChange={handleImportCSV}
-            className="hidden"
-          />
-          <Button
-            onClick={() => setShowNewPaymentModal(true)}
-            className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600"
-          >
-            <Banknote className="w-4 h-4 mr-2" />
-            Record Payment
-          </Button>
-          <Button
-            onClick={() => fileInputRef.current?.click()}
-            variant="outline"
-            className="border-slate-600 text-slate-300"
-            disabled={importing}
-          >
-            <Upload className={`w-4 h-4 mr-2 ${importing ? 'animate-spin' : ''}`} />
-            {importing ? 'Importing...' : 'Import CSV'}
-          </Button>
+        {/* Hidden file input for CSV import */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".csv"
+          onChange={handleImportCSV}
+          className="hidden"
+        />
+        <Button
+          onClick={() => setShowNewPaymentModal(true)}
+          className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600"
+        >
+          <Banknote className="w-4 h-4 mr-2" />
+          Record Payment
+        </Button>
+        <Button
+          onClick={() => fileInputRef.current?.click()}
+          variant="outline"
+          className="border-slate-600 text-slate-300"
+          disabled={importing}
+        >
+          <Upload className={`w-4 h-4 mr-2 ${importing ? 'animate-spin' : ''}`} />
+          {importing ? 'Importing...' : 'Import CSV'}
+        </Button>
           
           {/* Export Dropdown */}
           <div className="relative group">
