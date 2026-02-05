@@ -1360,6 +1360,16 @@ const ProductListing = ({ category = 'all' }) => {
                 )}
               </div>
               
+              {/* Soul Score Banner - encourage profile completion */}
+              {petSoulScore !== null && petSoulScore < 90 && (
+                <SoulScoreBanner 
+                  score={petSoulScore}
+                  petId={selectedPet.id}
+                  petName={selectedPet.name}
+                  className="mb-4"
+                />
+              )}
+              
               {/* Recommended Products Carousel */}
               <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
                 {petRecommendations.slice(0, 6).map(product => (
