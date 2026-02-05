@@ -430,19 +430,34 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
     }
     
     // Layer 2: Care needs filtering
+    // Keywords map all filter IDs (from all pillars) to searchable terms
     if (careFilters.length > 0) {
       proposed = proposed.filter(product => {
         const productText = [product.name, product.description, product.tags?.join(' ')].join(' ').toLowerCase();
         return careFilters.some(care => {
           const careKeywords = {
-            'sensitive-stomach': ['sensitive', 'gentle', 'easy digest', 'tummy'],
-            'skin-coat': ['skin', 'coat', 'shine', 'omega'],
-            'weight': ['weight', 'lean', 'light', 'low calorie'],
-            'joints': ['joint', 'mobility', 'glucosamine', 'hip'],
+            // Core health filters
+            'sensitive-stomach': ['sensitive', 'gentle', 'easy digest', 'tummy', 'digestive'],
+            'skin-coat': ['skin', 'coat', 'shine', 'omega', 'fur'],
+            'weight': ['weight', 'lean', 'light', 'low calorie', 'diet', 'balanced'],
+            'joints': ['joint', 'mobility', 'glucosamine', 'hip', 'arthritis'],
             'dental': ['dental', 'teeth', 'oral', 'chew'],
-            'calming': ['calm', 'anxiety', 'relax', 'stress'],
-            'recovery': ['recovery', 'healing', 'special', 'therapeutic'],
-            'allergy-friendly': ['hypoallergenic', 'limited ingredient', 'single protein']
+            'calming': ['calm', 'anxiety', 'relax', 'stress', 'soothing'],
+            'recovery': ['recovery', 'healing', 'special', 'therapeutic', 'gentle'],
+            'allergy-friendly': ['hypoallergenic', 'limited ingredient', 'single protein', 'allergy'],
+            // Celebration-specific
+            'breed-appropriate': ['breed', 'size appropriate', 'portion'],
+            // Travel-specific
+            'hydration': ['hydration', 'moisture', 'water', 'wet'],
+            'portable': ['travel', 'portable', 'pack', 'convenient'],
+            // Fit-specific
+            'energy': ['energy', 'active', 'performance', 'protein'],
+            'senior': ['senior', 'older', 'mature', 'age'],
+            // Stay-specific
+            'familiar': ['comfort', 'home', 'familiar'],
+            // Farewell-specific
+            'comfort': ['comfort', 'gentle', 'soothing', 'peaceful'],
+            'favorite-treats': ['favorite', 'special', 'indulgent', 'treat']
           };
           return (careKeywords[care] || []).some(kw => productText.includes(kw));
         });
