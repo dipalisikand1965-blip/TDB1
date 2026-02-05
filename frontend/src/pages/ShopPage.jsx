@@ -592,6 +592,73 @@ const ShopPage = () => {
     return () => window.removeEventListener('petSelectionChanged', handlePetSelectionChanged);
   }, [pets]);
   
+  // Fetch pet's soul data for Mira AI personalization
+  useEffect(() => {
+    if (selectedPet?.id && token) {
+      const fetchPetSoul = async () => {
+        try {
+          const res = await fetch(`${API_URL}/api/pet-soul/${selectedPet.id}`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            setPetSoulData(data);
+          }
+        } catch (err) {
+          console.error('Failed to fetch pet soul:', err);
+        }
+      };
+      fetchPetSoul();
+    } else {
+      setPetSoulData(null);
+    }
+  }, [selectedPet?.id, token]);
+  
+  // Generate warm Mira AI lines based on pet's personality
+  const miraLines = useMemo(() => {
+    if (!selectedPet) return null;
+    
+    const petName = selectedPet.name;
+    const breed = selectedPet.breed || '';
+    const soul = petSoulData?.soul || petSoulData;
+    
+    // Extract personality from soul data
+    const personality = soul?.describe_3_words || soul?.personality || '';
+    const nature = soul?.general_nature || soul?.nature || '';
+    const likes = soul?.favorite_things || soul?.likes || '';
+    
+    // Generate personalized lines
+    const lines = [];
+    
+    if (personality) {
+      lines.push(`✨ ${petName} is ${personality.toLowerCase()} - I've picked treats and toys to match!`);
+    }
+    if (nature) {
+      lines.push(`💝 Since ${petName} is ${nature.toLowerCase()}, you'll love these curated finds.`);
+    }
+    if (likes) {
+      lines.push(`🎁 I know ${petName} loves ${likes.toLowerCase()} - check out these picks!`);
+    }
+    
+    // Fallback generic warm lines
+    if (lines.length === 0) {
+      if (breed) {
+        lines.push(`🐾 Handpicked goodies for your beautiful ${breed}!`);
+      }
+      lines.push(`💕 Everything here is chosen with ${petName}'s happiness in mind.`);
+    }
+    
+    return lines;
+  }, [selectedPet, petSoulData]);
+  
+  // Handler for pet selection from dropdown
+  const handleSelectPet = (pet) => {
+    setSelectedPet(pet);
+    localStorage.setItem('selectedPetId', pet.id);
+    // Dispatch event so navbar can sync
+    window.dispatchEvent(new CustomEvent('petSelectionChanged', { detail: { pet, petId: pet.id } }));
+  };
+  
   // Filter products - Use pillars array (products can belong to multiple pillars)
   // Shop = cumulative view of ALL products
   const filteredProducts = useMemo(() => {
