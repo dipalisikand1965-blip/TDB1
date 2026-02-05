@@ -286,6 +286,12 @@ const Footer = () => {
                 <li><Link to="/enjoy" className="hover:text-pink-400 transition-colors">🎾 Enjoy</Link></li>
                 <li><Link to="/fit" className="hover:text-pink-400 transition-colors">🏃 Fit</Link></li>
                 <li><Link to="/learn" className="hover:text-pink-400 transition-colors">🎓 Learn</Link></li>
+                <li><Link to="/paperwork" className="hover:text-pink-400 transition-colors">📄 Paperwork</Link></li>
+                <li><Link to="/advisory" className="hover:text-pink-400 transition-colors">📋 Advisory</Link></li>
+                <li><Link to="/emergency" className="hover:text-pink-400 transition-colors">🚨 Emergency</Link></li>
+                <li><Link to="/farewell" className="hover:text-pink-400 transition-colors">🌈 Farewell</Link></li>
+                <li><Link to="/adopt" className="hover:text-pink-400 transition-colors">🐾 Adopt</Link></li>
+                <li><Link to="/shop" className="hover:text-pink-400 transition-colors">🛒 Shop</Link></li>
               </ul>
             </div>
 
