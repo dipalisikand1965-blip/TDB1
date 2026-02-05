@@ -4360,26 +4360,24 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                 }
                 
                 if is_celebration_context:
-                    # First try to get celebration-specific breed products
-                    breed_products = await db.products_master.find({
+                    # First get celebration-specific breed products (cakes, party hats, etc.)
+                    celebration_breed_products = await db.products_master.find({
                         **breed_query,
-                        "$or": [
-                            {"is_celebration_item": True},
-                            {"primary_pillar": "celebrate"},
-                            {"occasions": {"$in": ["birthday", "gotcha_day", "party"]}}
-                        ]
-                    }, {"_id": 0}).limit(6).to_list(6)
-                    logger.info(f"[BREED BOOST] Celebration context - found {len(breed_products)} celebration products for {detected_breed}")
+                        "is_celebration_item": True
+                    }, {"_id": 0}).limit(5).to_list(5)
+                    
+                    # Then get other breed products with celebration occasions
+                    occasion_breed_products = await db.products_master.find({
+                        **breed_query,
+                        "is_celebration_item": {"$ne": True},
+                        "occasions": {"$in": ["birthday", "gotcha_day", "party"]}
+                    }, {"_id": 0}).limit(3).to_list(3)
+                    
+                    # Combine: celebration items first, then occasion-tagged items
+                    breed_products = celebration_breed_products + occasion_breed_products
+                    logger.info(f"[BREED BOOST] Celebration context - found {len(celebration_breed_products)} celebration + {len(occasion_breed_products)} occasion products for {detected_breed}")
                 else:
                     breed_products = await db.products_master.find(breed_query, {"_id": 0}).limit(6).to_list(6)
-                
-                # If we didn't find enough celebration products, supplement with other breed products
-                if is_celebration_context and len(breed_products) < 3:
-                    other_breed_products = await db.products_master.find({
-                        **breed_query,
-                        "id": {"$nin": [p.get("id") for p in breed_products]}
-                    }, {"_id": 0}).limit(3).to_list(3)
-                    breed_products.extend(other_breed_products)
                 
                 if breed_products:
                     # Add breed-specific products to the front of the list
