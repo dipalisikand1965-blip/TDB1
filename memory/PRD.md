@@ -44,24 +44,31 @@ Build "The Doggy Company," a one-stop-shop concierge for dog parents with a focu
 - ✅ **Headline**: Changed from "Members-Only Experience" to "Personalised for Your Pet"
 - ✅ **Micro-line**: Added "No spam. No upselling. Just thoughtful care."
 - ✅ **Supporting line**: Now explains WHY Mira needs context, not just THAT access is gated
-- ✅ **Primary CTA**: Changed "Join Pet Pass" to "Set up your pet with Mira" with "Takes about 2 minutes" subtext
+- ✅ **Primary CTA**: Changed "Join Pet Pass" to "Set up your pet with Mira" with "Takes about 2 minutes. You can change this anytime." subtext
 - ✅ **Secondary CTA**: Changed "Sign In" to "Continue with your pet profile"
 - ✅ **Benefits heading**: Changed from "What Pet Pass members get:" to "Once Mira knows your pet, you'll notice:"
 - ✅ **Benefits bullets**: Rewritten as outcomes, not perks (sensitivities, life stage, memory, human help)
-- ✅ **Grounding line**: Added "You can explore freely — Mira simply helps narrow things down."
+- ✅ **Grounding line**: Added "You can explore freely — Mira simply helps make things easier."
+- ✅ **Privacy line**: Added "Your pet's information is used only to improve care. Never shared."
 
-#### 2. Navigation Update
+#### 2. Micro-Copy Refinements (Precision Polish)
+- ✅ "past care" → "care history" (more considered)
+- ✅ "right" → "appropriate" (safer, more responsible)
+- ✅ Added comma in "Quiet access to human help, when you need it" (softer)
+- ✅ "most pet parents" → "many pet parents" (avoids social pressure)
+- ✅ Removed arrow from "Let Mira handle the arrangements" (suggestion, not conversion action)
+- ✅ Softened Mira's note visual contrast (whisper, not callout)
+
+#### 3. Member Experience UX Enhancements
+- ✅ Added "✓ Applied for Bruno" indicator above filters
+- ✅ Added info tooltip on results line: "Based on Bruno's profile and this occasion"
+- ✅ Added tooltip on green checkmark: "Recommended for Bruno"
+- ✅ Added Mira nudge popup after 2+ items: "You've picked some lovely things for Bruno. Would you like me to coordinate delivery timing?"
+
+#### 4. Navigation Update
 - ✅ Changed "SERVICES" to "CARE" in bottom mobile navigation bar to align with Pet OS philosophy
 
-#### 3. Member Experience Verified
-- ✅ Login flow working (test@test.com/test)
-- ✅ "Mira knows [PetName]" badge displays correctly
-- ✅ Personalized page titles (e.g., "Birthday Cakes for Bruno")
-- ✅ Care-based filters operational
-- ✅ "Mira's note" context strip appears for celebration categories
-- ✅ "Include" button (not "Add to Cart")
-
-#### 4. Test User & Pet Created
+#### 5. Test User & Pet Created
 - ✅ Created test@test.com/test user account
 - ✅ Created Bruno (Golden Retriever, 3yo, 25kg) pet profile
 
