@@ -11,7 +11,7 @@ from base64 import b64encode
 # Get BASE_URL from environment
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 if not BASE_URL:
-    BASE_URL = "https://concierge-ux.preview.emergentagent.com"
+    BASE_URL = "https://product-master-3.preview.emergentagent.com"
 
 # Admin credentials
 ADMIN_USERNAME = "aditya"
