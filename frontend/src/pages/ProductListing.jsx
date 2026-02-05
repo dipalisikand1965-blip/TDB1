@@ -521,7 +521,7 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
             <div className="text-stone-600 max-w-md mx-auto mb-6 space-y-1">
               <p className="font-medium">Mira works best once she understands your pet.</p>
               <p className="text-sm text-stone-500">
-                This space is personalised using your pet&apos;s age, sensitivities, routines, and past care — so only what&apos;s right is shown.
+                This space is personalised using your pet&apos;s age, sensitivities, routines, and care history — so only what&apos;s appropriate is shown.
               </p>
             </div>
             
