@@ -308,44 +308,44 @@ const PaperworkPage = () => {
       {/* Hero Section */}
       <section className="relative overflow-hidden text-white">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=1200')] bg-cover bg-center opacity-10"></div>
-        <div className="relative max-w-7xl mx-auto px-4 py-16 md:py-20">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-16 md:py-20">
           <div className="max-w-3xl">
-            <Badge className="bg-blue-500/20 text-blue-200 border-blue-400/30 mb-4">
+            <Badge className="bg-blue-500/20 text-blue-200 border-blue-400/30 mb-3 sm:mb-4 text-xs sm:text-sm">
               <Lock className="w-3 h-3 mr-1" /> Secure Pet Document Vault
             </Badge>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4">
               Your Dog's Complete Life File
             </h1>
-            <p className="text-lg md:text-xl text-blue-100 mb-8">
+            <p className="text-sm sm:text-base md:text-lg lg:text-xl text-blue-100 mb-6 sm:mb-8">
               Identity, medical records, travel papers, insurance — neatly organized, 
               securely stored, instantly accessible when you need them.
             </p>
-            <div className="flex flex-wrap gap-4">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
               {user ? (
                 <Button 
                   size="lg" 
-                  className="bg-white text-blue-900 hover:bg-blue-50"
+                  className="bg-white text-blue-900 hover:bg-blue-50 w-full sm:w-auto text-sm sm:text-base"
                   onClick={() => setShowUploadModal(true)}
                   data-testid="upload-document-btn"
                 >
-                  <Upload className="w-5 h-5 mr-2" /> Upload Document
+                  <Upload className="w-4 h-4 sm:w-5 sm:h-5 mr-2" /> Upload Document
                 </Button>
               ) : (
                 <Button 
                   size="lg" 
-                  className="bg-white text-blue-900 hover:bg-blue-50"
+                  className="bg-white text-blue-900 hover:bg-blue-50 w-full sm:w-auto text-sm sm:text-base"
                   onClick={() => setShowUploadModal(true)}
                 >
-                  <FileText className="w-5 h-5 mr-2" /> Access Document Vault
+                  <FileText className="w-4 h-4 sm:w-5 sm:h-5 mr-2" /> Access Document Vault
                 </Button>
               )}
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="border-white/30 text-white hover:bg-white/10"
+                className="border-white/30 text-white hover:bg-white/10 w-full sm:w-auto text-sm sm:text-base"
                 onClick={() => document.getElementById('paperwork-products')?.scrollIntoView({ behavior: 'smooth' })}
               >
-                <FileText className="w-5 h-5 mr-2" /> Shop Document Kits
+                <FileText className="w-4 h-4 sm:w-5 sm:h-5 mr-2" /> Shop Document Kits
               </Button>
             </div>
           </div>
