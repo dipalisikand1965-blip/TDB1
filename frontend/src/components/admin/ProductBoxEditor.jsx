@@ -146,7 +146,7 @@ const BreedAutoSuggest = ({ breeds, selected = [], onChange }) => {
         
         {filteredBreeds.length === 0 && (
           <p className="text-center text-gray-500 text-sm py-4">
-            No breeds found matching "{search}"
+            No breeds found matching &quot;{search}&quot;
           </p>
         )}
       </div>
