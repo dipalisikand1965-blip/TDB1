@@ -1,140 +1,197 @@
-/**
- * ProductListing.jsx - Mira-Driven Pet Operating System
- * 
- * Philosophy:
- * - Products are PROPOSED, not browsed
- * - Mira is the brain, catalog is just the body
- * - Filters mirror how pet parents THINK, not how we manage inventory
- * 
- * Filter Hierarchy:
- * Layer 1: Identity (auto-applied from pet profile)
- * Layer 2: Care & Suitability (trust-building)
- * Layer 3: Values & Preferences (emotional alignment)
- * 
- * What we DON'T show prominently: Price, Brand, Pack size, Discounts
- */
-
-import React, { useState, useEffect, useMemo, useRef } from 'react';
-import { useSearchParams, useLocation, Link } from 'react-router-dom';
-import { 
-  PawPrint, Heart, Shield, Sparkles, ChevronDown, ChevronRight,
-  AlertTriangle, Check, MessageCircle, Loader2, X, Info,
-  Activity, Leaf, Droplets, Bone, Brain, HeartPulse, Baby,
-  SlidersHorizontal, RotateCcw
-} from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import ProductCard from '../components/ProductCard';
 import { Button } from '../components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
+import { SlidersHorizontal, Loader2, ChevronDown, Sparkles, PawPrint, Cake, Gift, Star, Heart, MapPin, Shield, Activity, Droplets, Brain, HeartPulse, X, Check } from 'lucide-react';
+import { useSearchParams, useLocation } from 'react-router-dom';
 import { API_URL, getApiUrl } from '../utils/api';
+import MiraChatWidget from '../components/MiraChatWidget';
+import CelebrateConcierePicker from '../components/CelebrateConcierePicker';
 import { useAuth } from '../context/AuthContext';
-import { useCart } from '../context/CartContext';
 import SEOHead from '../components/SEOHead';
-import { toast } from '../hooks/use-toast';
 
-// ============================================
-// MIRA'S UNDERSTANDING OF PET LIFE
-// ============================================
+const PRODUCTS_PER_PAGE = 20;
 
-// Life stages - how pet parents think about their dog's journey
-const LIFE_STAGES = {
-  puppy: { 
-    label: 'Puppy', 
-    icon: Baby,
-    color: 'text-pink-600 bg-pink-50',
-    needs: ['growth', 'gentle', 'small-portions', 'training']
+// Hero images for different categories
+const CATEGORY_HERO_IMAGES = {
+  cakes: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=1200&q=80',
+  'breed-cakes': 'https://images.unsplash.com/photo-1535591273668-578e31182c4f?w=1200&q=80',
+  treats: 'https://images.unsplash.com/photo-1601758228041-f3b2795255f1?w=1200&q=80',
+  hampers: 'https://images.unsplash.com/photo-1530041539828-114de669390e?w=1200&q=80',
+  desi: 'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=1200&q=80',
+  'frozen-treats': 'https://images.unsplash.com/photo-1567446537708-ac4aa75c9c28?w=1200&q=80',
+  'mini-cakes': 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=1200&q=80',
+  dognuts: 'https://images.unsplash.com/photo-1551106652-a5bcf4b29ab6?w=1200&q=80',
+  valentine: 'https://images.unsplash.com/photo-1518199266791-5375a83190b7?w=1200&q=80',
+  cat: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=1200&q=80',
+  'cat-treats': 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=1200&q=80',
+  default: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=1200&q=80'
+};
+
+// Hero content for different categories
+const CATEGORY_HERO_CONTENT = {
+  cakes: {
+    badge: 'Celebrate with Love',
+    title: 'Birthday Cakes',
+    highlight: 'Made with Joy',
+    subtitle: 'Freshly baked, 100% pet-safe cakes for your furry friend\'s special day',
+    color: 'from-pink-600 via-rose-500 to-orange-500'
   },
-  adult: { 
-    label: 'Adult', 
-    icon: Activity,
-    color: 'text-blue-600 bg-blue-50',
-    needs: ['maintenance', 'active', 'balanced']
+  'breed-cakes': {
+    badge: 'Custom Designs',
+    title: 'Breed-Specific',
+    highlight: 'Cakes',
+    subtitle: 'Cakes shaped like your beloved breed - from Labradors to Pugs!',
+    color: 'from-purple-600 via-violet-500 to-pink-500'
   },
-  senior: { 
-    label: 'Senior', 
-    icon: Heart,
-    color: 'text-purple-600 bg-purple-50',
-    needs: ['joint-support', 'gentle', 'easy-digest', 'comfort']
+  Birthdays: {
+    badge: 'Celebrate with Love',
+    title: 'Birthday Cakes',
+    highlight: 'Made Fresh',
+    subtitle: '100% pet-safe, freshly baked cakes for your furry friend\'s special day',
+    color: 'from-pink-600 via-rose-500 to-orange-500'
+  },
+  treats: {
+    badge: 'Healthy & Delicious',
+    title: 'Treats &',
+    highlight: 'Snacks',
+    subtitle: 'Training treats, healthy bites, and everyday rewards your pet will love',
+    color: 'from-amber-600 via-orange-500 to-yellow-500'
+  },
+  accessories: {
+    badge: 'Party Essentials',
+    title: 'Party',
+    highlight: 'Accessories',
+    subtitle: 'Bandanas, hats, toys and everything to make your pet\'s party special!',
+    color: 'from-rose-600 via-pink-500 to-purple-500'
+  },
+  hampers: {
+    badge: 'Perfect Gifts',
+    title: 'Celebration',
+    highlight: 'Hampers',
+    subtitle: 'Complete party boxes with cakes, treats, bandanas, and toys!',
+    color: 'from-emerald-600 via-teal-500 to-cyan-500'
+  },
+  desi: {
+    badge: 'Indian Flavors',
+    title: 'Desi Doggy',
+    highlight: 'Treats 🪔',
+    subtitle: 'Traditional Indian sweets made pet-friendly - perfect for festivals!',
+    color: 'from-orange-600 via-amber-500 to-yellow-500'
+  },
+  'desi-treats': {
+    badge: 'Indian Flavors',
+    title: 'Desi Doggy',
+    highlight: 'Treats 🪔',
+    subtitle: 'Traditional Indian sweets made pet-friendly - perfect for festivals!',
+    color: 'from-orange-600 via-amber-500 to-yellow-500'
+  },
+  'frozen-treats': {
+    badge: 'Beat the Heat',
+    title: 'Frozen',
+    highlight: 'Delights',
+    subtitle: 'Cool, refreshing ice creams and frozen treats for hot days',
+    color: 'from-cyan-600 via-blue-500 to-indigo-500'
+  },
+  'mini-cakes': {
+    badge: 'Bite-Sized Joy',
+    title: 'Bowto',
+    highlight: 'Cakes',
+    subtitle: 'Mini celebration cakes perfect for any occasion',
+    color: 'from-rose-600 via-pink-500 to-purple-500'
+  },
+  dognuts: {
+    badge: 'Fun Shapes',
+    title: 'Pupcakes &',
+    highlight: 'Dognuts',
+    subtitle: 'Adorable mini baked treats - cupcakes and donuts for dogs!',
+    color: 'from-pink-600 via-rose-500 to-red-500'
+  },
+  valentine: {
+    badge: 'Share the Love',
+    title: 'Valentine',
+    highlight: 'Collection 💕',
+    subtitle: 'Show your pet how much you love them with our special collection',
+    color: 'from-red-600 via-rose-500 to-pink-500'
+  },
+  cat: {
+    badge: 'For Felines',
+    title: 'Cat',
+    highlight: 'Treats 🐱',
+    subtitle: 'Special treats crafted for our feline friends',
+    color: 'from-violet-600 via-purple-500 to-indigo-500'
+  },
+  'cat-treats': {
+    badge: 'For Felines',
+    title: 'Cat',
+    highlight: 'Treats 🐱',
+    subtitle: 'Special treats crafted for our feline friends',
+    color: 'from-violet-600 via-purple-500 to-indigo-500'
+  },
+  default: {
+    badge: 'Celebrate Every Moment',
+    title: 'Celebrate',
+    highlight: 'With Your Pet 🎉',
+    subtitle: 'Cakes, treats, and celebration essentials for your furry family',
+    color: 'from-purple-600 via-pink-500 to-rose-500'
   }
+};
+
+// Map category to pillar for Mira panel
+const CATEGORY_TO_PILLAR = {
+  'cakes': 'celebrate',
+  'custom': 'celebrate',
+  'breed-cakes': 'celebrate',
+  'treats': 'celebrate',
+  'desi': 'celebrate',
+  'desi-treats': 'celebrate',
+  'hampers': 'celebrate',
+  'meals': 'dine',
+  'fresh-meals': 'dine',
+  'frozen': 'celebrate',
+  'frozen-treats': 'celebrate',
+  'mini-cakes': 'celebrate',
+  'dognuts': 'celebrate',
+  'pizzas-burgers': 'dine',
+  'merchandise': 'shop',
+  'accessories': 'shop',
+  'nut-butters': 'shop',
+  'pan-india': 'shop',
+  'cat': 'shop',
+  'cat-treats': 'shop',
+  'valentine': 'celebrate',
+  'autoship': 'shop',
+  'all': 'shop'
 };
 
 // ============================================
 // PILLAR-SPECIFIC SUPPORT FILTERS
 // Rule: Support filters must mirror the emotional state of the page
-// Health logic stays. Language shifts.
 // ============================================
 
-// Birthday / Celebration = joy, safety, reassurance
 const CELEBRATE_SUPPORT = [
-  { id: 'sensitive-stomach', label: 'Celebration-safe', icon: Sparkles, desc: 'Gentle on digestion', subtext: 'For happy tummies during celebrations' },
-  { id: 'weight', label: 'Birthday treats', icon: Heart, desc: 'Balanced indulgence', subtext: 'Special, but still suitable for your pet' },
-  { id: 'breed-appropriate', label: 'Breed-appropriate', icon: PawPrint, desc: 'Right for size & breed', subtext: 'Portion and texture that suits them' },
-  { id: 'allergy-friendly', label: 'Allergy-aware', icon: Shield, desc: 'Limited ingredients', subtext: 'Designed for pets with sensitivities' },
-  { id: 'calming', label: 'Calm moments', icon: Brain, desc: 'Low excitement treats', subtext: 'For pets who get overwhelmed' },
-  { id: 'recovery', label: 'Extra care', icon: HeartPulse, desc: 'Special care needs', subtext: 'For pets recovering or needing extra caution' }
+  { id: 'sensitive-stomach', label: 'Celebration-safe', icon: Sparkles, desc: 'Gentle on digestion' },
+  { id: 'allergy-friendly', label: 'Allergy-aware', icon: Shield, desc: 'Limited ingredients' },
+  { id: 'calming', label: 'Calm moments', icon: Brain, desc: 'Low excitement treats' },
+  { id: 'recovery', label: 'Extra care', icon: HeartPulse, desc: 'Special care needs' }
 ];
 
-// Travel = comfort, safety, familiarity
 const TRAVEL_SUPPORT = [
-  { id: 'sensitive-stomach', label: 'Travel-friendly', icon: Droplets, desc: 'Easy on digestion', subtext: 'For sensitive stomachs on the go' },
-  { id: 'calming', label: 'Journey calm', icon: Brain, desc: 'Anxiety support', subtext: 'For nervous travelers' },
-  { id: 'allergy-friendly', label: 'Safe snacking', icon: Shield, desc: 'Limited ingredients', subtext: 'Reliable options away from home' },
-  { id: 'hydration', label: 'Hydration help', icon: Droplets, desc: 'Moisture-rich', subtext: 'Keeps them hydrated during travel' },
-  { id: 'portable', label: 'Easy to pack', icon: Activity, desc: 'Travel-sized', subtext: 'Convenient for journeys' }
+  { id: 'sensitive-stomach', label: 'Travel-friendly', icon: Droplets, desc: 'Easy on digestion' },
+  { id: 'calming', label: 'Journey calm', icon: Brain, desc: 'Anxiety support' },
+  { id: 'allergy-friendly', label: 'Safe snacking', icon: Shield, desc: 'Limited ingredients' },
+  { id: 'hydration', label: 'Hydration help', icon: Droplets, desc: 'Moisture-rich' }
 ];
 
-// Care / Daily = health, maintenance, long-term wellness
 const CARE_SUPPORT = [
-  { id: 'sensitive-stomach', label: 'Sensitive tummy', icon: Droplets, desc: 'Gentle on digestion', subtext: 'For everyday digestive comfort' },
-  { id: 'skin-coat', label: 'Skin & coat', icon: Sparkles, desc: 'For healthy shine', subtext: 'Nourishment from within' },
-  { id: 'weight', label: 'Weight support', icon: Activity, desc: 'Healthy weight management', subtext: 'Balanced nutrition' },
-  { id: 'joints', label: 'Joint care', icon: Bone, desc: 'Mobility & comfort', subtext: 'For active and aging pets' },
-  { id: 'dental', label: 'Dental health', icon: Heart, desc: 'Clean teeth & gums', subtext: 'Oral care support' },
-  { id: 'calming', label: 'Calming', icon: Brain, desc: 'For anxious moments', subtext: 'Daily stress relief' },
-  { id: 'recovery', label: 'Recovery care', icon: HeartPulse, desc: 'Special nutrition needs', subtext: 'Extra support when needed' },
-  { id: 'allergy-friendly', label: 'Allergy-friendly', icon: Shield, desc: 'Limited ingredients', subtext: 'For sensitive pets' }
+  { id: 'sensitive-stomach', label: 'Sensitive tummy', icon: Droplets, desc: 'Gentle on digestion' },
+  { id: 'skin-coat', label: 'Skin & coat', icon: Sparkles, desc: 'For healthy shine' },
+  { id: 'weight', label: 'Weight support', icon: Activity, desc: 'Healthy weight management' },
+  { id: 'joints', label: 'Joint care', icon: Heart, desc: 'Mobility & comfort' },
+  { id: 'calming', label: 'Calming', icon: Brain, desc: 'For anxious moments' },
+  { id: 'allergy-friendly', label: 'Allergy-friendly', icon: Shield, desc: 'Limited ingredients' }
 ];
 
-// Dine = nutrition, daily meals, balance
-const DINE_SUPPORT = [
-  { id: 'sensitive-stomach', label: 'Gentle meals', icon: Droplets, desc: 'Easy to digest', subtext: 'For sensitive digestive systems' },
-  { id: 'weight', label: 'Portion perfect', icon: Activity, desc: 'Calorie-conscious', subtext: 'Balanced for healthy weight' },
-  { id: 'allergy-friendly', label: 'Limited ingredient', icon: Shield, desc: 'Simple recipes', subtext: 'Fewer ingredients, less risk' },
-  { id: 'skin-coat', label: 'Nourishing', icon: Sparkles, desc: 'Omega-rich', subtext: 'For coat health from the inside' },
-  { id: 'senior', label: 'Senior-friendly', icon: Heart, desc: 'Age-appropriate', subtext: 'Nutrition for older pets' }
-];
-
-// Fit = energy, activity, performance
-const FIT_SUPPORT = [
-  { id: 'energy', label: 'Energy boost', icon: Activity, desc: 'High performance', subtext: 'For active lifestyles' },
-  { id: 'joints', label: 'Joint support', icon: Bone, desc: 'Mobility & recovery', subtext: 'For active joints' },
-  { id: 'weight', label: 'Lean & fit', icon: Activity, desc: 'Protein-rich', subtext: 'Maintains muscle, not fat' },
-  { id: 'recovery', label: 'Post-activity', icon: HeartPulse, desc: 'Recovery nutrition', subtext: 'Refuel after exercise' },
-  { id: 'hydration', label: 'Hydration', icon: Droplets, desc: 'Moisture support', subtext: 'Stay hydrated during activity' }
-];
-
-// Emergency = urgency, safety, immediate needs
-const EMERGENCY_SUPPORT = [
-  { id: 'recovery', label: 'Recovery support', icon: HeartPulse, desc: 'Gentle nutrition', subtext: 'For pets in recovery' },
-  { id: 'sensitive-stomach', label: 'Easy digest', icon: Droplets, desc: 'Bland & gentle', subtext: 'When stomachs are upset' },
-  { id: 'calming', label: 'Stress relief', icon: Brain, desc: 'Calming support', subtext: 'For anxious moments' },
-  { id: 'hydration', label: 'Hydration', icon: Droplets, desc: 'Fluid support', subtext: 'Essential for recovery' }
-];
-
-// Farewell = comfort, dignity, gentleness
-const FAREWELL_SUPPORT = [
-  { id: 'comfort', label: 'Comfort care', icon: Heart, desc: 'Gentle & soothing', subtext: 'For peaceful moments' },
-  { id: 'sensitive-stomach', label: 'Easy on tummy', icon: Droplets, desc: 'Very gentle', subtext: 'Minimal digestive stress' },
-  { id: 'calming', label: 'Peaceful', icon: Brain, desc: 'Calming support', subtext: 'For quiet, restful times' },
-  { id: 'favorite-treats', label: 'Favorite treats', icon: Sparkles, desc: 'Special indulgences', subtext: 'Whatever brings them joy' }
-];
-
-// Stay = comfort away from home
-const STAY_SUPPORT = [
-  { id: 'calming', label: 'Settling in', icon: Brain, desc: 'Calming support', subtext: 'For new environments' },
-  { id: 'sensitive-stomach', label: 'Routine-friendly', icon: Droplets, desc: 'Gentle options', subtext: 'Keeping digestion stable' },
-  { id: 'allergy-friendly', label: 'Safe options', icon: Shield, desc: 'Known ingredients', subtext: 'No surprises while away' },
-  { id: 'familiar', label: 'Home comforts', icon: Heart, desc: 'Familiar favorites', subtext: 'Tastes like home' }
-];
-
-// Map pillars to their support filters
 const PILLAR_SUPPORT_FILTERS = {
   celebrate: CELEBRATE_SUPPORT,
   birthday: CELEBRATE_SUPPORT,
@@ -144,1308 +201,922 @@ const PILLAR_SUPPORT_FILTERS = {
   treats: CELEBRATE_SUPPORT,
   travel: TRAVEL_SUPPORT,
   care: CARE_SUPPORT,
-  dine: DINE_SUPPORT,
-  fit: FIT_SUPPORT,
-  emergency: EMERGENCY_SUPPORT,
-  farewell: FAREWELL_SUPPORT,
-  stay: STAY_SUPPORT,
-  // Default fallback
-  default: CARE_SUPPORT
+  dine: CARE_SUPPORT,
+  fit: CARE_SUPPORT,
+  default: CELEBRATE_SUPPORT
 };
 
-// Get support filters for current context
 const getSupportFilters = (category, pillar) => {
-  // Check category first, then pillar, then default
   if (PILLAR_SUPPORT_FILTERS[category]) return PILLAR_SUPPORT_FILTERS[category];
   if (PILLAR_SUPPORT_FILTERS[pillar]) return PILLAR_SUPPORT_FILTERS[pillar];
   return PILLAR_SUPPORT_FILTERS.default;
 };
 
-// Values - emotional alignment with pet parent identity
-const VALUES = [
-  { id: 'grain-free', label: 'Grain-free' },
-  { id: 'single-protein', label: 'Single protein' },
-  { id: 'limited-ingredient', label: 'Limited ingredient' },
-  { id: 'fresh', label: 'Fresh / gently cooked' },
-  { id: 'no-additives', label: 'No artificial additives' },
-  { id: 'human-grade', label: 'Human-grade' },
-  { id: 'mira-recommended', label: 'Mira recommended', special: true }
-];
-
-// Avoid if... (trust-building through honesty)
-const AVOID_WARNINGS = [
-  { id: 'chicken', label: 'Chicken' },
-  { id: 'beef', label: 'Beef' },
-  { id: 'dairy', label: 'Dairy' },
-  { id: 'wheat', label: 'Wheat/Gluten' },
-  { id: 'soy', label: 'Soy' },
-  { id: 'corn', label: 'Corn' }
-];
-
-// Size categories
-const SIZE_CATEGORIES = {
-  small: { label: 'Small', weight: 'Under 10kg' },
-  medium: { label: 'Medium', weight: '10-25kg' },
-  large: { label: 'Large', weight: '25kg+' }
-};
-
-// ============================================
-// HELPER FUNCTIONS
-// ============================================
-
-const getLifeStageFromAge = (ageYears) => {
-  if (ageYears < 1) return 'puppy';
-  if (ageYears < 7) return 'adult';
-  return 'senior';
-};
-
-const getSizeFromWeight = (weightKg) => {
-  if (weightKg < 10) return 'small';
-  if (weightKg < 25) return 'medium';
-  return 'large';
-};
-
-// Generate "Why this works for your dog" badge
-const generateMiraInsight = (product, pet) => {
-  if (!pet) return null;
-  
-  const insights = [];
-  const productText = [product.name, product.description, product.ingredients, ...(product.tags || [])].join(' ').toLowerCase();
-  
-  // Life stage match
-  const petAge = pet.age_years || pet.age || 3;
-  const lifeStage = getLifeStageFromAge(petAge);
-  if (productText.includes(lifeStage) || productText.includes(LIFE_STAGES[lifeStage].label.toLowerCase())) {
-    insights.push(`Right for ${pet.name}'s life stage`);
-  }
-  
-  // Activity match
-  if (pet.activity_level === 'high' && productText.includes('active')) {
-    insights.push(`Matches ${pet.name}'s energy`);
-  }
-  
-  // Sensitive stomach
-  if (productText.includes('gentle') || productText.includes('sensitive')) {
-    insights.push('Gentle on tummy');
-  }
-  
-  // Joint support for seniors
-  if (lifeStage === 'senior' && (productText.includes('joint') || productText.includes('mobility'))) {
-    insights.push('Supports senior joints');
-  }
-  
-  return insights[0] || null;
-};
-
-// Check product safety against pet allergies
-const checkProductSafety = (product, pet) => {
-  if (!pet) return { safe: true, warnings: [] };
-  
-  const allergies = pet?.doggy_soul_answers?.food_allergies || 
-                   pet?.preferences?.allergies || 
-                   pet?.health?.allergies || [];
-  
-  if (!Array.isArray(allergies) || allergies.length === 0) return { safe: true, warnings: [] };
-  
-  const productText = [product.name, product.description, product.ingredients, ...(product.tags || [])].join(' ').toLowerCase();
-  const warnings = [];
-  
-  allergies.forEach(allergen => {
-    if (allergen && productText.includes(allergen.toLowerCase())) {
-      warnings.push(allergen);
-    }
-  });
-  
-  return { safe: warnings.length === 0, warnings };
-};
-
-// ============================================
-// MAIN COMPONENT
-// ============================================
-
-const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
+const ProductListing = ({ category = 'all' }) => {
   const [searchParams] = useSearchParams();
   const location = useLocation();
+  const searchQuery = searchParams.get('search');
   const { user, token } = useAuth();
-  const { addToCart, cart } = useCart();
   
-  // Core state
+  // Determine the SEO page type based on category and path
+  const getSeoPage = () => {
+    const path = location.pathname;
+    if (path.includes('/celebrate') || category === 'cakes') return 'celebrate';
+    if (path.includes('/cakes')) return 'cakes';
+    if (path.includes('/treats')) return 'treats';
+    return 'shop';
+  };
+  
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [sortBy, setSortBy] = useState('featured');
+  const [priceRange, setPriceRange] = useState('all');
+  const [visibleCount, setVisibleCount] = useState(PRODUCTS_PER_PAGE);
   const [userPets, setUserPets] = useState([]);
-  const [activePet, setActivePet] = useState(null);
+  const [selectedPet, setSelectedPet] = useState(null);
+  const [petRecommendations, setPetRecommendations] = useState([]);
+  const [personalizedMessage, setPersonalizedMessage] = useState('');
+  const [deliveryCity, setDeliveryCity] = useState('all');
+  const [detectedCity, setDetectedCity] = useState(null);
+  const [detectingLocation, setDetectingLocation] = useState(false);
   
-  // Track items added this session for Mira nudge
-  const [sessionItemsAdded, setSessionItemsAdded] = useState(0);
-  const [showMiraNudge, setShowMiraNudge] = useState(false);
+  // Additional filters for Celebrate products
+  const [selectedBreed, setSelectedBreed] = useState('all');
+  const [selectedShape, setSelectedShape] = useState('all');
+  const [availableBreeds, setAvailableBreeds] = useState([]);
+  const [availableShapes, setAvailableShapes] = useState([]);
+  const [searchInput, setSearchInput] = useState('');
   
-  // Identity filters (Layer 1) - auto-applied from pet profile
-  const [identityFilters, setIdentityFilters] = useState({
-    lifeStage: null,  // puppy | adult | senior
-    size: null,       // small | medium | large
-    activityLevel: null // low | normal | high
-  });
-  
-  // Care needs filters (Layer 2) - trust-building
-  const [careFilters, setCareFilters] = useState([]);
-  
-  // Track which filters were auto-applied by Mira
-  const [autoAppliedFilters, setAutoAppliedFilters] = useState([]);
-  
-  // Values filters (Layer 3) - emotional alignment
-  const [valueFilters, setValueFilters] = useState([]);
-  
-  // Avoid filters - honesty & trust
-  const [avoidFilters, setAvoidFilters] = useState([]);
-  
-  // UI state
-  const [showCareFilters, setShowCareFilters] = useState(false);
-  const [showValueFilters, setShowValueFilters] = useState(false);
-  const [showAvoidFilters, setShowAvoidFilters] = useState(false);
-  const [showPetSelector, setShowPetSelector] = useState(false);
-  
-  // Bottom sheet state (mobile)
-  const [showFilterSheet, setShowFilterSheet] = useState(false);
-  const [pendingCareFilters, setPendingCareFilters] = useState([]);
-  
-  // Scroll and sticky state
-  const [isScrolled, setIsScrolled] = useState(false);
-  const filterBarRef = useRef(null);
-  
-  // Pillar transition tracking
-  const [showPillarTransition, setShowPillarTransition] = useState(false);
-  const hasShownTransitionRef = useRef(false);
-  
-  const category = propCategory || searchParams.get('category') || 'all';
-  
-  // Health/sensitivity filters that persist across pillars
-  const PERSISTENT_FILTERS = ['sensitive-stomach', 'allergy-friendly', 'calming', 'recovery'];
+  // NEW: Support filters state (for Mira-driven personalization)
+  const [activeSupportFilters, setActiveSupportFilters] = useState([]);
+  const [showSupportFilters, setShowSupportFilters] = useState(false);
 
-  // Track scroll for sticky filter bar (desktop)
-  useEffect(() => {
-    const handleScroll = () => {
-      setIsScrolled(window.scrollY > 100);
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  // Check if this is a cake category that needs availability filter
+  const isCakeCategory = ['cakes', 'breed-cakes', 'custom', 'birthday-cakes', 'pupcakes', 'dognuts', 'mini-cakes'].includes(category);
   
-  // Handle pillar transitions - using a ref to track and compare
-  const currentPillarRef = useRef(null);
+  // Check if this is breed cakes - needs breed filter
+  const isBreedCakeCategory = category === 'breed-cakes';
   
-  useEffect(() => {
-    const currentPillar = PILLAR_SUPPORT_FILTERS[category] ? category : pillar;
-    const prevPillar = currentPillarRef.current;
-    
-    // Only run on pillar change (not initial mount)
-    if (prevPillar && prevPillar !== currentPillar && activePet) {
-      // Show transition toast (once per session) - using queueMicrotask to avoid sync setState
-      if (!hasShownTransitionRef.current) {
-        queueMicrotask(() => {
-          setShowPillarTransition(true);
-          hasShownTransitionRef.current = true;
-          setTimeout(() => setShowPillarTransition(false), 3000);
-        });
-      }
-      
-      // Reset occasion-specific filters, keep persistent health filters
-      const persistentFilters = ['sensitive-stomach', 'allergy-friendly', 'calming', 'recovery'];
-      queueMicrotask(() => {
-        setCareFilters(prev => prev.filter(f => persistentFilters.includes(f)));
-      });
+  // Check if this needs shape filter (birthday cakes, cakes)
+  const needsShapeFilter = ['cakes', 'birthday-cakes', 'Birthdays'].includes(category);
+
+  // Available cities for fresh delivery
+  const FRESH_DELIVERY_CITIES = [
+    { value: 'all', label: 'All Availability' },
+    { value: 'bangalore', label: '🏙️ Bangalore (Fresh)' },
+    { value: 'mumbai', label: '🏙️ Mumbai (Fresh)' },
+    { value: 'delhi ncr', label: '🏙️ Delhi NCR (Fresh)' },
+    { value: 'pan-india', label: '📦 Pan-India Only' },
+  ];
+
+  // Location detection function
+  const detectLocation = () => {
+    if (!navigator.geolocation) {
+      console.log('Geolocation not supported');
+      return;
     }
     
-    currentPillarRef.current = currentPillar;
-  }, [category, pillar, activePet]);
+    setDetectingLocation(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const { latitude, longitude } = position.coords;
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+          );
+          const data = await response.json();
+          
+          const city = data.address?.city || data.address?.town || data.address?.state_district || '';
+          const cityLower = city.toLowerCase();
+          
+          let matchedCity = null;
+          if (cityLower.includes('bangalore') || cityLower.includes('bengaluru')) {
+            matchedCity = 'bangalore';
+          } else if (cityLower.includes('mumbai')) {
+            matchedCity = 'mumbai';
+          } else if (cityLower.includes('delhi') || cityLower.includes('noida') || cityLower.includes('gurgaon') || cityLower.includes('gurugram')) {
+            matchedCity = 'delhi ncr';
+          }
+          
+          if (matchedCity) {
+            setDetectedCity(matchedCity);
+            setDeliveryCity(matchedCity);
+          } else {
+            setDetectedCity('other');
+          }
+        } catch (err) {
+          console.error('Failed to detect location:', err);
+        } finally {
+          setDetectingLocation(false);
+        }
+      },
+      (error) => {
+        console.error('Geolocation error:', error);
+        setDetectingLocation(false);
+      },
+      { timeout: 10000 }
+    );
+  };
 
-  // Fetch user's pets
+  // Auto-detect location on mount for cake categories
+  useEffect(() => {
+    if (isCakeCategory && !detectedCity) {
+      detectLocation();
+    }
+  }, [isCakeCategory]);
+
+  // Get the pillar for this category
+  const pillar = CATEGORY_TO_PILLAR[category] || 'shop';
+
+  // Fetch user's pets for personalization
   useEffect(() => {
     const fetchPets = async () => {
-      if (!user || !token) return;
-      
-      try {
-        const response = await fetch(`${getApiUrl()}/api/pets/my-pets`, {
-          headers: { 'Authorization': `Bearer ${token}` }
-        });
-        if (response.ok) {
-          const data = await response.json();
-          const pets = data.pets || data || [];
-          setUserPets(pets);
-          if (pets.length > 0) {
-            const pet = pets[0];
-            setActivePet(pet);
+      if (token) {
+        try {
+          const res = await fetch(`${getApiUrl()}/api/pets/my-pets`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            setUserPets(data.pets || []);
             
-            // Auto-apply identity filters from pet profile
-            const ageYears = pet.age_years || pet.age || 3;
-            const weightKg = pet.weight || 15;
-            
-            setIdentityFilters({
-              lifeStage: getLifeStageFromAge(ageYears),
-              size: getSizeFromWeight(weightKg),
-              activityLevel: pet.activity_level || 'normal'
-            });
-            
-            // Auto-apply allergy avoidances
-            const allergies = pet?.doggy_soul_answers?.food_allergies || 
-                             pet?.preferences?.allergies || [];
-            if (Array.isArray(allergies)) {
-              const avoidIds = AVOID_WARNINGS
-                .filter(a => allergies.some(allergy => 
-                  allergy && allergy.toLowerCase().includes(a.id.toLowerCase())
-                ))
-                .map(a => a.id);
-              setAvoidFilters(avoidIds);
-            }
-            
-            // Auto-apply support filters based on pet profile
-            // Mira intelligently applies relevant filters
-            const autoFilters = [];
-            
-            // If pet has known allergies, auto-apply allergy-aware filter
-            if (allergies && allergies.length > 0) {
-              autoFilters.push('allergy-friendly');
-            }
-            
-            // If pet has sensitive stomach noted
-            if (pet?.health?.digestive_issues || pet?.doggy_soul_answers?.digestive_sensitivity) {
-              autoFilters.push('sensitive-stomach');
-            }
-            
-            // If pet has anxiety noted
-            if (pet?.health?.anxiety || pet?.doggy_soul_answers?.anxiety_level === 'high') {
-              autoFilters.push('calming');
-            }
-            
-            // If pet is senior, add gentle care
-            if (ageYears >= 7) {
-              autoFilters.push('recovery');
-            }
-            
-            // Apply and track auto-applied filters
-            if (autoFilters.length > 0) {
-              setAutoAppliedFilters(autoFilters);
-              setCareFilters(autoFilters);
+            if (data.pets && data.pets.length > 0) {
+              const pet = data.pets[0];
+              setSelectedPet(pet);
+              
+              const messages = [
+                `🎂 Perfect picks for ${pet.name}!`,
+                `${pet.name} would love these! 🐾`,
+                `${pet.name}'s tail will wag for these! 🎉`,
+                `Made with love for ${pet.name}! 💕`,
+              ];
+              setPersonalizedMessage(messages[Math.floor(Math.random() * messages.length)]);
+              
+              // Auto-apply support filters based on pet profile
+              const autoFilters = [];
+              const allergies = pet?.doggy_soul_answers?.food_allergies || pet?.preferences?.allergies || [];
+              if (Array.isArray(allergies) && allergies.length > 0 && !allergies.includes('No') && !allergies.includes('None')) {
+                autoFilters.push('allergy-friendly');
+              }
+              if (pet?.health?.digestive_issues || pet?.doggy_soul_answers?.digestive_sensitivity) {
+                autoFilters.push('sensitive-stomach');
+              }
+              if (pet?.health?.anxiety || pet?.doggy_soul_answers?.anxiety_level === 'high') {
+                autoFilters.push('calming');
+              }
+              if (autoFilters.length > 0) {
+                setActiveSupportFilters(autoFilters);
+              }
+              
+              try {
+                const recRes = await fetch(`${getApiUrl()}/api/products/recommendations/for-pet/${pet.id}?limit=8`);
+                if (recRes.ok) {
+                  const recData = await recRes.json();
+                  setPetRecommendations(recData.recommendations || []);
+                }
+              } catch (recErr) {
+                console.debug('Could not fetch recommendations:', recErr);
+              }
             }
           }
+        } catch (err) {
+          console.debug('Failed to fetch pets:', err);
         }
-      } catch (error) {
-        console.error('Failed to fetch pets:', error);
       }
     };
-    
     fetchPets();
-  }, [user, token]);
+  }, [token]);
+  
+  // Fetch recommendations when pet changes
+  const handlePetChange = async (petId) => {
+    const pet = userPets.find(p => p.id === petId);
+    if (pet) {
+      setSelectedPet(pet);
+      setPersonalizedMessage(`🎂 Perfect picks for ${pet.name}!`);
+      
+      try {
+        const recRes = await fetch(`${getApiUrl()}/api/products/recommendations/for-pet/${pet.id}?limit=8`);
+        if (recRes.ok) {
+          const recData = await recRes.json();
+          setPetRecommendations(recData.recommendations || []);
+        }
+      } catch (err) {
+        console.debug('Could not fetch recommendations:', err);
+      }
+    }
+  };
 
-  // Fetch products
+  // Fetch products from API
   useEffect(() => {
     const fetchProducts = async () => {
       setLoading(true);
       try {
-        let url = `${getApiUrl()}/api/products?limit=100`;
-        if (category && category !== 'all') {
-          url += `&category=${encodeURIComponent(category)}`;
-        }
-        
-        const response = await fetch(url);
-        if (response.ok) {
-          const data = await response.json();
-          setProducts(Array.isArray(data.products) ? data.products.filter(p => p) : []);
+        if (category === 'pan-india') {
+          const categories = ['pan-india', 'treats', 'desi-treats', 'nut-butters'];
+          const allProducts = [];
+          
+          for (const cat of categories) {
+            try {
+              const response = await fetch(`${getApiUrl()}/api/products?limit=500&category=${cat}`);
+              if (response.ok) {
+                const data = await response.json();
+                allProducts.push(...(data.products || []));
+              }
+            } catch (fetchError) {
+              console.warn(`Failed to fetch ${cat} products:`, fetchError);
+            }
+          }
+          
+          const uniqueProducts = allProducts.filter((product, index, self) =>
+            product && product.id && index === self.findIndex((p) => p && p.id === product.id)
+          );
+          
+          setProducts(uniqueProducts);
+        } else if (category === 'autoship') {
+          const response = await fetch(`${getApiUrl()}/api/products?limit=500&autoship_enabled=true`);
+          if (response.ok) {
+            const data = await response.json();
+            const autoshipProducts = (data.products || []).filter(p => p && p.autoship_enabled === true);
+            setProducts(autoshipProducts);
+          } else {
+            setProducts([]);
+          }
+        } else {
+          let url = `${API_URL}/api/products?limit=500`;
+          if (searchQuery) {
+            url += `&search=${encodeURIComponent(searchQuery)}`;
+          } else if (category && category !== 'all') {
+            const collectionCategories = ['valentine', 'seasonal', 'bestsellers'];
+            if (collectionCategories.includes(category.toLowerCase())) {
+              url += `&collection=${category}`;
+            } else {
+              url += `&category=${category}`;
+            }
+          }
+          
+          if (isCakeCategory && deliveryCity && deliveryCity !== 'all') {
+            if (deliveryCity === 'pan-india') {
+              url += `&availability=pan-india`;
+            } else {
+              url += `&fresh_delivery_city=${encodeURIComponent(deliveryCity)}`;
+            }
+          }
+          
+          const response = await fetch(url);
+          if (response.ok) {
+            const data = await response.json();
+            const productsArray = Array.isArray(data.products) ? data.products : [];
+            const validProducts = productsArray.filter(p => p !== null && p !== undefined);
+            setProducts(validProducts);
+            
+            // Extract unique breeds and shapes from products for filters
+            const breeds = new Set();
+            const shapes = new Set();
+            
+            validProducts.forEach(product => {
+              const productTags = product.tags || [];
+              const productName = (product.name || '').toLowerCase();
+              
+              const breedPatterns = ['labrador', 'golden retriever', 'pug', 'beagle', 'husky', 'german shepherd', 
+                'bulldog', 'poodle', 'rottweiler', 'dachshund', 'shih tzu', 'boxer', 'doberman', 
+                'great dane', 'chihuahua', 'corgi', 'dalmatian', 'pomeranian', 'indie', 'spitz'];
+              
+              breedPatterns.forEach(breed => {
+                if (productName.includes(breed) || productTags.some(t => (t || '').toLowerCase().includes(breed))) {
+                  breeds.add(breed.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '));
+                }
+              });
+              
+              const shapePatterns = ['round', 'square', 'heart', 'bone', 'paw', 'star', 'number', 'letter', 'custom'];
+              
+              shapePatterns.forEach(shape => {
+                if (productName.includes(shape) || productTags.some(t => (t || '').toLowerCase().includes(shape))) {
+                  shapes.add(shape.charAt(0).toUpperCase() + shape.slice(1));
+                }
+              });
+            });
+            
+            setAvailableBreeds(['all', ...Array.from(breeds).sort()]);
+            setAvailableShapes(['all', ...Array.from(shapes).sort()]);
+          } else {
+            console.error('Failed to fetch products, status:', response.status);
+            setProducts([]);
+          }
         }
       } catch (error) {
         console.error('Failed to fetch products:', error);
+        setProducts([]);
       }
       setLoading(false);
     };
-    
     fetchProducts();
-  }, [category]);
+  }, [category, searchQuery, deliveryCity, isCakeCategory]);
 
-  // Mira-driven filtering and sorting
-  const { proposedProducts, hiddenCount, miraContext } = useMemo(() => {
-    let proposed = [...products];
-    let hidden = 0;
-    let context = [];
-    
-    // Layer 1: Identity filtering (auto-applied)
-    // These should already be right - if user is adjusting, we failed
-    
-    // Filter by avoid list (allergies)
-    if (avoidFilters.length > 0) {
-      const beforeCount = proposed.length;
-      proposed = proposed.filter(product => {
-        const productText = [product.name, product.description, product.ingredients, ...(product.tags || [])].join(' ').toLowerCase();
-        return !avoidFilters.some(avoid => productText.includes(avoid));
-      });
-      hidden = beforeCount - proposed.length;
-      if (hidden > 0) {
-        context.push(`${hidden} items hidden to keep ${activePet?.name || 'your pet'} safe`);
-      }
-    }
-    
-    // Layer 2: Care needs filtering
-    // Keywords map all filter IDs (from all pillars) to searchable terms
-    if (careFilters.length > 0) {
-      proposed = proposed.filter(product => {
-        const productText = [product.name, product.description, product.tags?.join(' ')].join(' ').toLowerCase();
-        return careFilters.some(care => {
-          const careKeywords = {
-            // Core health filters
-            'sensitive-stomach': ['sensitive', 'gentle', 'easy digest', 'tummy', 'digestive'],
-            'skin-coat': ['skin', 'coat', 'shine', 'omega', 'fur'],
-            'weight': ['weight', 'lean', 'light', 'low calorie', 'diet', 'balanced'],
-            'joints': ['joint', 'mobility', 'glucosamine', 'hip', 'arthritis'],
-            'dental': ['dental', 'teeth', 'oral', 'chew'],
-            'calming': ['calm', 'anxiety', 'relax', 'stress', 'soothing'],
-            'recovery': ['recovery', 'healing', 'special', 'therapeutic', 'gentle'],
-            'allergy-friendly': ['hypoallergenic', 'limited ingredient', 'single protein', 'allergy'],
-            // Celebration-specific
-            'breed-appropriate': ['breed', 'size appropriate', 'portion'],
-            // Travel-specific
-            'hydration': ['hydration', 'moisture', 'water', 'wet'],
-            'portable': ['travel', 'portable', 'pack', 'convenient'],
-            // Fit-specific
-            'energy': ['energy', 'active', 'performance', 'protein'],
-            'senior': ['senior', 'older', 'mature', 'age'],
-            // Stay-specific
-            'familiar': ['comfort', 'home', 'familiar'],
-            // Farewell-specific
-            'comfort': ['comfort', 'gentle', 'soothing', 'peaceful'],
-            'favorite-treats': ['favorite', 'special', 'indulgent', 'treat']
-          };
-          return (careKeywords[care] || []).some(kw => productText.includes(kw));
-        });
-      });
-    }
-    
-    // Layer 3: Values filtering
-    if (valueFilters.length > 0) {
-      proposed = proposed.filter(product => {
-        const productText = [product.name, product.description, product.tags?.join(' ')].join(' ').toLowerCase();
-        return valueFilters.some(value => {
-          const valueKeywords = {
-            'grain-free': ['grain-free', 'grain free', 'no grain'],
-            'single-protein': ['single protein', 'one protein'],
-            'limited-ingredient': ['limited ingredient', 'simple'],
-            'fresh': ['fresh', 'gently cooked', 'raw'],
-            'no-additives': ['no artificial', 'natural', 'no preservatives'],
-            'human-grade': ['human-grade', 'human grade'],
-            'mira-recommended': ['recommended', 'best seller', 'top rated']
-          };
-          return (valueKeywords[value] || []).some(kw => productText.includes(kw));
-        });
-      });
-    }
-    
-    // Sort by "Best for your dog" - not price, not popularity
-    proposed.sort((a, b) => {
-      // Mira-recommended first
-      const aScore = (a.paw_score || a.rating || 0) + (a.mira_recommended ? 10 : 0);
-      const bScore = (b.paw_score || b.rating || 0) + (b.mira_recommended ? 10 : 0);
-      return bScore - aScore;
-    });
-    
-    return { 
-      proposedProducts: proposed, 
-      hiddenCount: hidden,
-      miraContext: context
-    };
-  }, [products, avoidFilters, careFilters, valueFilters, activePet]);
-
-  // Toggle care filter
-  const toggleCareFilter = (id) => {
-    setCareFilters(prev => 
-      prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]
-    );
-  };
-
-  // Toggle value filter
-  const toggleValueFilter = (id) => {
-    setValueFilters(prev => 
-      prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]
-    );
-  };
-
-  // Toggle avoid filter
-  const toggleAvoidFilter = (id) => {
-    setAvoidFilters(prev => 
-      prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]
-    );
-  };
-
-  // Category info
-  const getCategoryInfo = () => ({
-    cakes: { title: 'Birthday Cakes', desc: 'Freshly baked celebrations' },
-    treats: { title: 'Treats & Rewards', desc: 'For training and everyday joy' },
-    hampers: { title: 'Celebration Boxes', desc: 'Complete party packages' },
-    desi: { title: 'Desi Treats', desc: 'Traditional flavors, pet-safe' },
-    accessories: { title: 'Celebration Gear', desc: 'Party essentials' }
-  }[category] || { title: 'Products', desc: 'Curated by Mira for your pet' });
+  // Use a key-based approach to reset visible count
+  const filterKey = `${category}-${searchQuery}-${priceRange}-${sortBy}-${selectedBreed}-${selectedShape}-${searchInput}-${activeSupportFilters.join(',')}`;
+  const [lastFilterKey, setLastFilterKey] = useState(filterKey);
   
-  const categoryInfo = getCategoryInfo();
+  if (filterKey !== lastFilterKey) {
+    setLastFilterKey(filterKey);
+    setVisibleCount(PRODUCTS_PER_PAGE);
+  }
 
-  // Loading state
+  let filteredProducts = [...products].filter(p => p !== null && p !== undefined);
+
+  // PET SOUL FILTERING - Filter out products based on pet's allergies/restrictions
+  const activePet = userPets?.[0];
+  
+  const rawAllergies = activePet?.doggy_soul_answers?.food_allergies || 
+                       activePet?.preferences?.allergies || 
+                       activePet?.health?.allergies;
+  const petAllergies = Array.isArray(rawAllergies) ? rawAllergies : [];
+  
+  if (petAllergies.length > 0 && !petAllergies.includes('No') && !petAllergies.includes('None')) {
+    const allergyKeywords = petAllergies.map(a => (a || '').toLowerCase()).filter(a => a && a !== 'no' && a !== 'none' && a !== 'other');
+    
+    if (allergyKeywords.length > 0) {
+      filteredProducts = filteredProducts.filter(product => {
+        if (!product) return false;
+        const productName = (product.name || product.title || '').toLowerCase();
+        const productDesc = (product.description || '').toLowerCase();
+        const productIngredients = (product.ingredients || '').toLowerCase();
+        const productTags = Array.isArray(product.tags) ? product.tags.map(t => (t || '').toLowerCase()).join(' ') : '';
+        
+        const hasAllergen = allergyKeywords.some(allergen => 
+          productName.includes(allergen) || 
+          productDesc.includes(allergen) || 
+          productIngredients.includes(allergen) ||
+          productTags.includes(allergen)
+        );
+        
+        return !hasAllergen;
+      });
+    }
+  }
+
+  // Filter by price range
+  if (priceRange === 'under500') {
+    filteredProducts = filteredProducts.filter(p => (p.price || p.minPrice || 0) < 500);
+  } else if (priceRange === '500-1000') {
+    filteredProducts = filteredProducts.filter(p => {
+      const price = p.price || p.minPrice || 0;
+      return price >= 500 && price <= 1000;
+    });
+  } else if (priceRange === 'over1000') {
+    filteredProducts = filteredProducts.filter(p => (p.price || p.minPrice || 0) > 1000);
+  }
+  
+  // Filter by breed (for breed-cakes category)
+  if (selectedBreed !== 'all' && isBreedCakeCategory) {
+    const breedLower = selectedBreed.toLowerCase();
+    filteredProducts = filteredProducts.filter(p => {
+      const productName = (p.name || '').toLowerCase();
+      const productTags = Array.isArray(p.tags) ? p.tags.map(t => (t || '').toLowerCase()) : [];
+      return productName.includes(breedLower) || productTags.some(t => t.includes(breedLower));
+    });
+  }
+  
+  // Filter by shape (for birthday cakes)
+  if (selectedShape !== 'all' && needsShapeFilter) {
+    const shapeLower = selectedShape.toLowerCase();
+    filteredProducts = filteredProducts.filter(p => {
+      const productName = (p.name || '').toLowerCase();
+      const productTags = Array.isArray(p.tags) ? p.tags.map(t => (t || '').toLowerCase()) : [];
+      return productName.includes(shapeLower) || productTags.some(t => t.includes(shapeLower));
+    });
+  }
+  
+  // Filter by search input
+  if (searchInput.trim()) {
+    const searchLower = searchInput.toLowerCase().trim();
+    filteredProducts = filteredProducts.filter(p => {
+      const productName = (p.name || '').toLowerCase();
+      const productTags = Array.isArray(p.tags) ? p.tags.map(t => (t || '').toLowerCase()).join(' ') : '';
+      const productDesc = (p.description || '').toLowerCase();
+      return productName.includes(searchLower) || productTags.includes(searchLower) || productDesc.includes(searchLower);
+    });
+  }
+  
+  // NEW: Filter by support filters (Mira-driven personalization)
+  if (activeSupportFilters.length > 0) {
+    filteredProducts = filteredProducts.filter(product => {
+      const productText = [product.name, product.description, product.tags?.join(' ')].join(' ').toLowerCase();
+      return activeSupportFilters.some(care => {
+        const careKeywords = {
+          'sensitive-stomach': ['sensitive', 'gentle', 'easy digest', 'tummy', 'digestive'],
+          'skin-coat': ['skin', 'coat', 'shine', 'omega', 'fur'],
+          'weight': ['weight', 'lean', 'light', 'low calorie', 'diet', 'balanced'],
+          'joints': ['joint', 'mobility', 'glucosamine', 'hip', 'arthritis'],
+          'calming': ['calm', 'anxiety', 'relax', 'stress', 'soothing'],
+          'recovery': ['recovery', 'healing', 'special', 'therapeutic', 'gentle'],
+          'allergy-friendly': ['hypoallergenic', 'limited ingredient', 'single protein', 'allergy'],
+          'hydration': ['hydration', 'moisture', 'water', 'wet'],
+        };
+        return (careKeywords[care] || []).some(kw => productText.includes(kw));
+      });
+    });
+  }
+
+  // Sort products
+  if (sortBy === 'price-low') {
+    filteredProducts = [...filteredProducts].sort((a, b) => (a.price || a.minPrice || 0) - (b.price || b.minPrice || 0));
+  } else if (sortBy === 'price-high') {
+    filteredProducts = [...filteredProducts].sort((a, b) => (b.price || b.minPrice || 0) - (a.price || a.minPrice || 0));
+  } else if (sortBy === 'rating') {
+    filteredProducts = [...filteredProducts].sort((a, b) => (b.rating || 0) - (a.rating || 0));
+  }
+
+  const getCategoryTitle = () => {
+    if (searchQuery) return `Search Results for "${searchQuery}"`;
+    switch (category) {
+      case 'cakes': return 'Dog Cakes';
+      case 'custom': return 'Breed-Specific Cakes';
+      case 'breed-cakes': return 'Breed-Specific Cakes';
+      case 'treats': return 'Treats & Snacks';
+      case 'desi': return 'Desi Doggy Treats 🪔';
+      case 'desi-treats': return 'Desi Doggy Treats 🪔';
+      case 'merchandise': return 'Merchandise';
+      case 'hampers': return 'Gift Hampers & Party Boxes 🎁';
+      case 'meals': return 'Fresh Meals & Pizzas';
+      case 'fresh-meals': return 'Fresh Meals';
+      case 'frozen': return 'Frozen Treats';
+      case 'frozen-treats': return 'Frozen Treats';
+      case 'accessories': return 'Accessories & Toys';
+      case 'pan-india': return 'Pan India Delivery';
+      case 'mini-cakes': return 'Bowto Cakes';
+      case 'cat': return 'Cat Treats';
+      case 'cat-treats': return 'Cat Treats 🐱';
+      case 'pizzas-burgers': return 'Pizzas & Burgers';
+      case 'dognuts': return 'Pupcakes & Dognuts';
+      case 'nut-butters': return 'Nut Butters';
+      case 'autoship': return 'Autoship Products 🔄';
+      case 'valentine': return 'Valentine Collection 💕';
+      case 'other': return 'More Products';
+      default: return 'All Products';
+    }
+  };
+
+  // Get hero content for current category
+  const heroContent = CATEGORY_HERO_CONTENT[category] || CATEGORY_HERO_CONTENT.default;
+  const heroImage = CATEGORY_HERO_IMAGES[category] || CATEGORY_HERO_IMAGES.default;
+  
+  // Get support filters for this pillar/category
+  const supportFilters = getSupportFilters(category, pillar);
+  
+  // Toggle support filter
+  const toggleSupportFilter = (id) => {
+    setActiveSupportFilters(prev => 
+      prev.includes(id) ? prev.filter(f => f !== id) : [...prev, id]
+    );
+  };
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-stone-50 flex items-center justify-center" data-testid="loading-state">
-        <div className="text-center space-y-4">
-          <div className="w-14 h-14 rounded-full bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center mx-auto">
-            <Sparkles className="w-7 h-7 text-purple-500 animate-pulse" />
-          </div>
-          <p className="text-stone-500">Mira is finding the right treats...</p>
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="w-12 h-12 animate-spin text-teal-600 mx-auto mb-4" />
+          <p className="text-gray-600">Loading products...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-stone-50" data-testid="product-listing-mira">
-      <SEOHead page="products" path={location.pathname} />
+    <div className="min-h-screen bg-gray-50">
+      {/* SEO Meta Tags */}
+      <SEOHead page={getSeoPage()} path={location.pathname} />
       
-      {/* ============================================ */}
-      {/* MIRA'S UNDERSTANDING - Pet Identity Section */}
-      {/* ============================================ */}
-      {activePet ? (
-        <div className="bg-white border-b border-stone-100">
-          <div className="max-w-6xl mx-auto px-4 py-8">
-            <div className="flex items-start gap-5">
-              {/* Pet Avatar - Softer, more refined */}
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center overflow-hidden flex-shrink-0 border border-purple-100/50">
-                {activePet.photo_url ? (
-                  <img src={activePet.photo_url} alt={activePet.name} className="w-full h-full object-cover" />
-                ) : (
-                  <span className="text-2xl">{activePet.name?.charAt(0) || '🐕'}</span>
-                )}
+      {/* === HERO SECTION === */}
+      <div className={`relative overflow-hidden bg-gradient-to-br ${heroContent.color} text-white`}>
+        {/* Background Image with Overlay */}
+        <div className="absolute inset-0">
+          <img 
+            src={heroImage} 
+            alt={getCategoryTitle()} 
+            className="w-full h-full object-cover opacity-25"
+          />
+          <div className={`absolute inset-0 bg-gradient-to-r ${heroContent.color} opacity-90`} />
+        </div>
+        
+        {/* Content */}
+        <div className="relative max-w-7xl mx-auto px-4 py-16 md:py-24">
+          <div className="max-w-2xl">
+            {/* Badge */}
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
+              <Sparkles className="w-4 h-4 text-yellow-400" />
+              <span className="text-sm font-medium">{heroContent.badge}</span>
+            </div>
+            
+            {/* Main Headline */}
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
+              {heroContent.title}
+              <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-pink-300">
+                {heroContent.highlight}
+              </span>
+            </h1>
+            
+            <p className="text-lg md:text-xl text-white/90 mb-8 max-w-lg">
+              {heroContent.subtitle}
+            </p>
+            
+            {/* Quick Stats */}
+            <div className="flex flex-wrap gap-4">
+              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg">
+                <PawPrint className="w-5 h-5 text-pink-300" />
+                <span className="text-sm">100% Pet-Friendly</span>
               </div>
-              
-              {/* Mira's Understanding */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1.5 mb-2">
-                  <Sparkles className="w-3.5 h-3.5 text-purple-400" />
-                  <span className="text-xs text-purple-500">Mira knows {activePet.name}</span>
-                </div>
-                <h1 className="text-xl font-semibold text-stone-800 mb-3">
-                  {categoryInfo.title} for {activePet.name}
-                </h1>
-                
-                {/* Identity Pills - Softer, unified style */}
-                <div className="flex flex-wrap items-center gap-2">
-                  {identityFilters.lifeStage && (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-purple-700 bg-purple-50 border border-purple-100">
-                      {React.createElement(LIFE_STAGES[identityFilters.lifeStage].icon, { className: 'w-3 h-3' })}
-                      {LIFE_STAGES[identityFilters.lifeStage].label}
-                    </span>
-                  )}
-                  {identityFilters.size && (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-stone-600 bg-stone-50 border border-stone-100">
-                      {SIZE_CATEGORIES[identityFilters.size].label} breed
-                    </span>
-                  )}
-                  {activePet.breed && (
-                    <span className="text-xs text-stone-400">{activePet.breed}</span>
-                  )}
-                </div>
-                
-                {/* Mira Context - What's being filtered - quieter */}
-                {miraContext.length > 0 && (
-                  <p className="text-xs text-stone-400 mt-4 flex items-center gap-1.5">
-                    <Shield className="w-3.5 h-3.5 text-amber-400" />
-                    {miraContext[0]}
-                  </p>
-                )}
+              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg">
+                <Heart className="w-5 h-5 text-red-300" />
+                <span className="text-sm">Loved by 45,000+ Pets</span>
               </div>
-              
-              {/* Switch Pet */}
-              {userPets.length > 1 && (
-                <div className="relative">
-                  <button
-                    onClick={() => setShowPetSelector(!showPetSelector)}
-                    className="text-xs text-stone-400 hover:text-stone-600 flex items-center gap-1 transition-colors"
-                  >
-                    Switch <ChevronDown className="w-3 h-3" />
-                  </button>
-                  {showPetSelector && (
-                    <div className="absolute right-0 top-6 bg-white rounded-xl shadow-lg border border-stone-100 py-2 min-w-[150px] z-20">
-                      {userPets.map(pet => (
-                        <button
-                          key={pet.id || pet._id}
-                          onClick={() => { setActivePet(pet); setShowPetSelector(false); }}
-                          className="w-full px-4 py-2.5 text-left text-sm hover:bg-stone-50 flex items-center gap-2 text-stone-600"
-                        >
-                          <span className="text-base">{pet.name?.charAt(0) || '🐕'}</span>
-                          {pet.name}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
+              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-lg">
+                <Star className="w-5 h-5 text-yellow-300" />
+                <span className="text-sm">Chemical-Free</span>
+              </div>
             </div>
           </div>
         </div>
-      ) : user ? (
-        /* Logged in but no pets - prompt to add */
-        <div className="bg-white border-b border-stone-100">
-          <div className="max-w-6xl mx-auto px-4 py-8">
-            <div className="flex items-center gap-2 mb-2">
-              <Sparkles className="w-4 h-4 text-purple-500" />
-              <span className="text-xs font-medium text-purple-600">Mira-curated</span>
-            </div>
-            <h1 className="text-2xl font-semibold text-stone-900">{categoryInfo.title}</h1>
-            <p className="text-stone-500 mt-1">{categoryInfo.desc}</p>
-            
-            <Link 
-              to="/my-pets" 
-              className="inline-flex items-center gap-2 text-sm text-purple-600 hover:text-purple-700 mt-4 font-medium bg-purple-50 px-4 py-2 rounded-lg"
-            >
-              <PawPrint className="w-4 h-4" />
-              Add your pet for personalized recommendations
-              <ChevronRight className="w-4 h-4" />
-            </Link>
+      </div>
+      
+      {/* === CELEBRATE CONCIERGE PICKER === */}
+      {pillar === 'celebrate' && !searchQuery && (
+        <CelebrateConcierePicker category={category} />
+      )}
+      
+      {/* Main Content Area */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Search Results Title (only for search) */}
+        {searchQuery && (
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">
+              Search Results for &ldquo;{searchQuery}&rdquo;
+            </h2>
+            <p className="text-gray-600 mt-1">Found {filteredProducts.length} products</p>
           </div>
-        </div>
-      ) : (
-        /* NOT LOGGED IN - Explaining why intelligence requires context */
-        <div className="bg-gradient-to-b from-purple-50 to-white border-b border-stone-100" data-testid="non-member-landing">
-          <div className="max-w-6xl mx-auto px-4 py-14 text-center">
-            <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-5">
-              <Sparkles className="w-8 h-8 text-purple-500" />
+        )}
+
+        {/* Location Detection Banner - Only for cake categories */}
+        {isCakeCategory && detectedCity && detectedCity !== 'other' && (
+          <div className="mb-4 p-3 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl flex items-center gap-3" data-testid="location-detected-banner">
+            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+              <MapPin className="w-4 h-4 text-green-600" />
             </div>
-            <h1 className="text-2xl font-semibold text-stone-900 mb-3" data-testid="headline">Personalised for Your Pet</h1>
-            
-            {/* Micro-line - addresses modern user anxiety */}
-            <p className="text-xs text-stone-400/80 mb-6">No spam. No upselling. Just thoughtful care.</p>
-            
-            {/* Visual separator */}
-            <div className="w-12 h-px bg-stone-200 mx-auto mb-6"></div>
-            
-            {/* Supporting line - explains WHY, not THAT */}
-            <div className="text-stone-600 max-w-md mx-auto mb-8 space-y-2">
-              <p className="font-medium text-stone-700">Mira works best once she understands your pet.</p>
-              <p className="text-sm text-stone-500 leading-relaxed">
-                This space is personalised using your pet&apos;s age, sensitivities, routines, and care history — so only what&apos;s appropriate is shown.
+            <div className="flex-1">
+              <p className="text-sm font-medium text-green-800">
+                📍 Detected: {detectedCity.charAt(0).toUpperCase() + detectedCity.slice(1)} - Showing fresh delivery cakes!
               </p>
             </div>
-            
-            {/* CTAs with more vertical spacing */}
-            <div className="flex flex-col sm:flex-row justify-center gap-4 items-center">
-              <div className="flex flex-col items-center">
-                <Link 
-                  to="/membership" 
-                  className="inline-flex items-center gap-2 px-7 py-3.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all shadow-sm"
-                  data-testid="setup-pet-btn"
-                >
-                  <PawPrint className="w-4 h-4" />
-                  Set up your pet with Mira
-                </Link>
-                <span className="text-[11px] text-stone-400 mt-2">Takes about 2 minutes. You can change this anytime.</span>
-              </div>
-              {/* Secondary CTA - more de-emphasised */}
-              <Link 
-                to="/login" 
-                className="inline-flex items-center gap-2 px-6 py-3 text-stone-500 text-sm font-medium hover:text-stone-700 transition-all"
-                data-testid="continue-profile-btn"
-              >
-                Continue with your pet profile
-                <ChevronRight className="w-4 h-4" />
-              </Link>
-            </div>
-            
-            {/* Privacy reassurance - quieter */}
-            <p className="text-[11px] text-stone-300 mt-5">Your pet&apos;s information is used only to improve care. Never shared.</p>
-            
-            {/* Benefits card - outcomes, not perks */}
-            <div className="mt-10 p-6 bg-white rounded-xl border border-stone-100 max-w-lg mx-auto text-left shadow-sm" data-testid="benefits-card">
-              <p className="text-sm font-medium text-stone-700 mb-4">Once Mira knows your pet, you&apos;ll notice:</p>
-              <ul className="space-y-3 text-sm text-stone-600">
-                <li className="flex items-start gap-2.5">
-                  <Check className="w-4 h-4 text-purple-500 mt-0.5 flex-shrink-0" />
-                  Only options that suit your pet&apos;s sensitivities
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <Check className="w-4 h-4 text-purple-500 mt-0.5 flex-shrink-0" />
-                  Suggestions matched to your pet&apos;s life stage
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <Check className="w-4 h-4 text-purple-500 mt-0.5 flex-shrink-0" />
-                  Mira remembers what&apos;s worked — and what hasn&apos;t
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <Check className="w-4 h-4 text-purple-500 mt-0.5 flex-shrink-0" />
-                  Quiet access to human help, when you need it
-                </li>
-              </ul>
-            </div>
-            
-            {/* Grounding line - removes fear of commitment */}
-            <p className="text-sm text-stone-400 mt-6">
-              You can explore freely — Mira simply helps make things easier.
-            </p>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="text-green-700 hover:text-green-800"
+              onClick={() => { setDetectedCity(null); setDeliveryCity('all'); }}
+            >
+              Clear
+            </Button>
           </div>
-        </div>
-      )}
-      
-      {/* ============================================ */}
-      {/* PILLAR TRANSITION TOAST */}
-      {/* ============================================ */}
-      {showPillarTransition && activePet && (
-        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-top-2 duration-300">
-          <div className="bg-purple-900 text-white px-4 py-2 rounded-lg shadow-lg text-sm flex items-center gap-2">
-            <Sparkles className="w-4 h-4" />
-            <span>Switching to {category || pillar} mode for {activePet.name}. Adjusting recommendations.</span>
-          </div>
-        </div>
-      )}
-      
-      {/* ============================================ */}
-      {/* FILTER BAR - Desktop: inline, Mobile: trigger button */}
-      {/* ============================================ */}
-      {(activePet || user) && (
-        <>
-          {/* Desktop Filter Bar */}
-          <div 
-            ref={filterBarRef}
-            className={`hidden md:block bg-white border-b border-stone-100 transition-all duration-200 ${
-              isScrolled ? 'sticky top-0 z-40 shadow-sm' : ''
-            }`}
-          >
-            <div className="max-w-6xl mx-auto px-4 py-3">
-              {/* Applied filters chip row (desktop) */}
-              {(careFilters.length > 0 || avoidFilters.length > 0) && (
-                <div className="flex items-center gap-2 mb-3 text-xs">
-                  <span className="text-stone-400 text-[11px]">Applied for {activePet?.name || 'your pet'}:</span>
-                  {careFilters.map(filterId => {
-                    const filterDef = getSupportFilters(category, pillar).find(f => f.id === filterId);
-                    const isAuto = autoAppliedFilters.includes(filterId);
-                    return filterDef ? (
-                      <button
-                        key={filterId}
-                        onClick={() => toggleCareFilter(filterId)}
-                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all ${
-                          isAuto ? 'bg-purple-50 text-purple-600 border border-purple-100' : 'bg-stone-50 text-stone-600 border border-stone-100'
-                        } hover:opacity-70`}
-                      >
-                        {filterDef.label}
-                        <X className="w-3 h-3 opacity-50" />
-                      </button>
-                    ) : null;
-                  })}
-                  {careFilters.length > 0 && (
-                    <button 
-                      onClick={() => setCareFilters(autoAppliedFilters)}
-                      className="text-stone-300 hover:text-stone-500 text-[11px] ml-1 transition-colors"
-                    >
-                      Reset to {activePet?.name || 'profile'}
-                    </button>
-                  )}
-                </div>
-              )}
-              
-              {/* Desktop filter sections - vertical stack for thoughtfulness */}
-              <div className="space-y-4">
-                {/* Support filters */}
-                <div>
-                  <button
-                    onClick={() => setShowCareFilters(!showCareFilters)}
-                    className="flex items-center gap-2 text-sm text-stone-600 hover:text-stone-800 w-full py-1"
-                  >
-                    <Heart className="w-4 h-4 text-purple-400" />
-                    <span>What would you like to support right now?</span>
-                    <ChevronDown className={`w-4 h-4 ml-auto text-stone-400 transition-transform ${showCareFilters ? 'rotate-180' : ''}`} />
-                  </button>
-                  
-                  {showCareFilters && (
-                    <div className="mt-4 space-y-2 max-w-xl">
-                      {getSupportFilters(category, pillar).map(support => {
-                        const isAutoApplied = autoAppliedFilters.includes(support.id);
-                        const isSelected = careFilters.includes(support.id);
-                        return (
-                          <button
-                            key={support.id}
-                            onClick={() => toggleCareFilter(support.id)}
-                            className={`w-full flex items-center gap-4 p-4 rounded-xl border text-left transition-all min-h-[60px] group ${
-                              isSelected
-                                ? 'border-purple-200 bg-purple-50/50'
-                                : isAutoApplied
-                                ? 'border-purple-100 bg-purple-50/30'
-                                : 'border-stone-100 hover:border-stone-200 hover:bg-stone-50/50'
-                            }`}
-                            data-testid={`care-filter-${support.id}`}
-                          >
-                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                              isSelected ? 'bg-purple-100' : isAutoApplied ? 'bg-purple-100/50' : 'bg-stone-100 group-hover:bg-stone-100'
-                            }`}>
-                              <support.icon className={`w-5 h-5 ${
-                                isSelected ? 'text-purple-600' : isAutoApplied ? 'text-purple-500' : 'text-stone-400'
-                              }`} />
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2">
-                                <span className={`text-sm font-medium ${isSelected ? 'text-purple-700' : 'text-stone-700'}`}>
-                                  {support.label}
-                                </span>
-                                {isAutoApplied && (
-                                  <span className="text-[10px] text-purple-500">
-                                    (applied for {activePet?.name})
-                                  </span>
-                                )}
-                              </div>
-                              <span className="text-xs text-stone-400 block">{support.desc}</span>
-                              {/* Subtext on hover (desktop only) */}
-                              {support.subtext && (
-                                <span className="text-[11px] text-stone-300 hidden group-hover:block mt-0.5">{support.subtext}</span>
-                              )}
-                            </div>
-                            {isSelected && (
-                              <Check className="w-5 h-5 text-purple-500 flex-shrink-0" />
-                            )}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-                
-                {/* Avoid filters */}
-                <div>
-                  <button
-                    onClick={() => setShowAvoidFilters(!showAvoidFilters)}
-                    className="flex items-center gap-2 text-sm text-stone-600 hover:text-stone-800 py-1"
-                  >
-                    <Shield className="w-4 h-4 text-amber-400" />
-                    <span>Avoid if sensitive to...</span>
-                    {avoidFilters.length > 0 && (
-                      <span className="px-1.5 py-0.5 bg-amber-50 text-amber-600 text-[10px] rounded-full border border-amber-100">
-                        {avoidFilters.length}
-                      </span>
-                    )}
-                    <ChevronDown className={`w-4 h-4 ml-auto text-stone-400 transition-transform ${showAvoidFilters ? 'rotate-180' : ''}`} />
-                  </button>
-                  
-                  {showAvoidFilters && (
-                    <div className="flex flex-wrap gap-2 mt-4">
-                      {AVOID_WARNINGS.map(avoid => (
-                        <button
-                          key={avoid.id}
-                          onClick={() => toggleAvoidFilter(avoid.id)}
-                          className={`px-3.5 py-2 rounded-lg text-sm transition-all min-h-[40px] ${
-                            avoidFilters.includes(avoid.id)
-                              ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                              : 'bg-stone-50 text-stone-500 hover:bg-stone-100 border border-stone-100'
-                          }`}
-                          data-testid={`avoid-filter-${avoid.id}`}
-                        >
-                          No {avoid.label}
-                          {avoidFilters.includes(avoid.id) && <X className="w-3 h-3 inline ml-1.5 opacity-50" />}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
+        )}
+
+        {/* Filters Bar */}
+        <div className="flex flex-wrap items-center gap-3 mb-4 p-4 bg-white rounded-xl shadow-sm" data-testid="filter-bar">
+          <div className="flex items-center gap-2 text-gray-700">
+            <SlidersHorizontal className="w-5 h-5" />
+            <span className="font-medium">Filters:</span>
           </div>
           
-          {/* Mobile Filter Button - Opens Bottom Sheet */}
-          <div className="md:hidden bg-white border-b border-stone-100 px-4 py-3 sticky top-0 z-40">
-            <button
-              onClick={() => {
-                setPendingCareFilters([...careFilters]);
-                setShowFilterSheet(true);
-              }}
-              className="w-full flex items-center justify-between p-3.5 bg-stone-50/80 rounded-xl border border-stone-100"
-              data-testid="mobile-filter-trigger"
-            >
-              <div className="flex items-center gap-2">
-                <SlidersHorizontal className="w-4 h-4 text-stone-400" />
-                <span className="text-sm text-stone-600">Support & preferences</span>
-              </div>
-              {(careFilters.length > 0 || avoidFilters.length > 0) && (
-                <span className="px-2 py-0.5 bg-purple-50 text-purple-600 text-xs rounded-full border border-purple-100">
-                  {careFilters.length + avoidFilters.length} active
-                </span>
+          {/* Search within category */}
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              className="w-[150px] pl-8 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              data-testid="search-input"
+            />
+            <svg className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          
+          {/* Breed Filter - Only for breed-cakes */}
+          {isBreedCakeCategory && availableBreeds.length > 1 && (
+            <Select value={selectedBreed} onValueChange={setSelectedBreed}>
+              <SelectTrigger className="w-[160px] border-purple-200 bg-purple-50">
+                <SelectValue placeholder="All Breeds" />
+              </SelectTrigger>
+              <SelectContent>
+                {availableBreeds.map(breed => (
+                  <SelectItem key={breed} value={breed}>
+                    {breed === 'all' ? '🐕 All Breeds' : `🐕 ${breed}`}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+          
+          {/* Shape Filter - Only for birthday cakes */}
+          {needsShapeFilter && availableShapes.length > 1 && (
+            <Select value={selectedShape} onValueChange={setSelectedShape}>
+              <SelectTrigger className="w-[150px] border-pink-200 bg-pink-50" data-testid="shape-filter">
+                <SelectValue placeholder="All Shapes" />
+              </SelectTrigger>
+              <SelectContent>
+                {availableShapes.map(shape => (
+                  <SelectItem key={shape} value={shape}>
+                    {shape === 'all' ? '🎂 All Shapes' : `🎂 ${shape}`}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+          
+          {/* Delivery City Filter - Only for cake categories */}
+          {isCakeCategory && (
+            <div className="flex items-center gap-2">
+              <Select value={deliveryCity} onValueChange={setDeliveryCity} data-testid="delivery-city-filter">
+                <SelectTrigger className="w-[180px] border-purple-200 bg-purple-50">
+                  <SelectValue placeholder="Select City" />
+                </SelectTrigger>
+                <SelectContent>
+                  {FRESH_DELIVERY_CITIES.map(city => (
+                    <SelectItem key={city.value} value={city.value}>
+                      {city.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {!detectedCity && (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="text-purple-600 border-purple-200"
+                  onClick={detectLocation}
+                  disabled={detectingLocation}
+                >
+                  {detectingLocation ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                      Detecting...
+                    </>
+                  ) : (
+                    <>
+                      <MapPin className="w-4 h-4 mr-1" />
+                      Detect Location
+                    </>
+                  )}
+                </Button>
               )}
-            </button>
-            
-            {/* Applied filters summary (mobile) */}
-            {careFilters.length > 0 && (
-              <div className="flex items-center gap-2 mt-2 overflow-x-auto pb-1 text-xs">
-                {careFilters.slice(0, 3).map(filterId => {
-                  const filterDef = getSupportFilters(category, pillar).find(f => f.id === filterId);
-                  const isAuto = autoAppliedFilters.includes(filterId);
-                  return filterDef ? (
-                    <span
-                      key={filterId}
-                      className={`inline-flex items-center gap-1 px-2 py-1 rounded-full whitespace-nowrap ${
-                        isAuto ? 'bg-green-50 text-green-700' : 'bg-rose-50 text-rose-700'
-                      }`}
-                    >
-                      <Check className="w-3 h-3" />
-                      {filterDef.label}
-                    </span>
-                  ) : null;
-                })}
-                {careFilters.length > 3 && (
-                  <span className="text-stone-400">+{careFilters.length - 3} more</span>
+            </div>
+          )}
+          
+          <Select value={priceRange} onValueChange={setPriceRange}>
+            <SelectTrigger className="w-[150px]" data-testid="price-filter">
+              <SelectValue placeholder="All Prices" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Prices</SelectItem>
+              <SelectItem value="under500">Under ₹500</SelectItem>
+              <SelectItem value="500-1000">₹500 - ₹1000</SelectItem>
+              <SelectItem value="over1000">Over ₹1000</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select value={sortBy} onValueChange={setSortBy}>
+            <SelectTrigger className="w-[150px]" data-testid="sort-filter">
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="featured">Featured</SelectItem>
+              <SelectItem value="price-low">Price: Low to High</SelectItem>
+              <SelectItem value="price-high">Price: High to Low</SelectItem>
+              <SelectItem value="rating">Top Rated</SelectItem>
+            </SelectContent>
+          </Select>
+          
+          <p className="ml-auto text-purple-600 text-sm font-medium" data-testid="product-count">
+            Showing {filteredProducts.length} products
+          </p>
+        </div>
+        
+        {/* NEW: Mira Support Filters Row - Personalized guidance for your pet */}
+        {selectedPet && supportFilters.length > 0 && (
+          <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-100" data-testid="support-filters-section">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-purple-500" />
+                <span className="text-sm font-medium text-purple-900">
+                  Personalized for {selectedPet.name}
+                </span>
+                {activeSupportFilters.length > 0 && (
+                  <span className="text-xs text-purple-600 bg-purple-100 px-2 py-0.5 rounded-full">
+                    {activeSupportFilters.length} active
+                  </span>
                 )}
               </div>
+              {activeSupportFilters.length > 0 && (
+                <button 
+                  onClick={() => setActiveSupportFilters([])}
+                  className="text-xs text-purple-500 hover:text-purple-700 flex items-center gap-1"
+                >
+                  <X className="w-3 h-3" /> Clear all
+                </button>
+              )}
+            </div>
+            
+            {/* Support Filter Pills - Horizontal scrollable */}
+            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+              {supportFilters.map(filter => {
+                const isActive = activeSupportFilters.includes(filter.id);
+                const Icon = filter.icon;
+                return (
+                  <button
+                    key={filter.id}
+                    onClick={() => toggleSupportFilter(filter.id)}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
+                      isActive
+                        ? 'bg-purple-600 text-white shadow-md'
+                        : 'bg-white text-gray-700 border border-gray-200 hover:border-purple-300 hover:bg-purple-50'
+                    }`}
+                    data-testid={`support-filter-${filter.id}`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    {filter.label}
+                    {isActive && <Check className="w-3 h-3" />}
+                  </button>
+                );
+              })}
+            </div>
+            
+            {/* Active filter description */}
+            {activeSupportFilters.length > 0 && (
+              <p className="text-xs text-purple-600 mt-2 flex items-center gap-1">
+                <Shield className="w-3 h-3" />
+                Showing products that support: {activeSupportFilters.map(id => {
+                  const filter = supportFilters.find(f => f.id === id);
+                  return filter?.label;
+                }).join(', ')}
+              </p>
             )}
           </div>
-          
-          {/* Mobile Bottom Sheet */}
-          {showFilterSheet && (
-            <div className="md:hidden fixed inset-0 z-50" data-testid="filter-bottom-sheet">
-              {/* Backdrop */}
-              <div 
-                className="absolute inset-0 bg-black/40"
-                onClick={() => setShowFilterSheet(false)}
-              />
-              
-              {/* Sheet */}
-              <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl max-h-[70vh] flex flex-col animate-in slide-in-from-bottom duration-300">
-                {/* Handle */}
-                <div className="flex justify-center pt-3 pb-2">
-                  <div className="w-10 h-1 bg-stone-300 rounded-full" />
-                </div>
-                
-                {/* Header */}
-                <div className="px-4 pb-3 border-b border-stone-100 flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-stone-900">Support for {activePet?.name || 'your pet'}</h3>
-                  <button 
-                    onClick={() => setShowFilterSheet(false)}
-                    className="p-2 -mr-2 text-stone-400 hover:text-stone-600"
-                  >
-                    <X className="w-5 h-5" />
-                  </button>
-                </div>
-                
-                {/* Filter Cards - Scrollable, Full-width stacked */}
-                <div className="flex-1 overflow-y-auto px-4 py-4 space-y-2">
-                  {getSupportFilters(category, pillar).map(support => {
-                    const isAutoApplied = autoAppliedFilters.includes(support.id);
-                    const isSelected = pendingCareFilters.includes(support.id);
-                    return (
-                      <button
-                        key={support.id}
-                        onClick={() => {
-                          setPendingCareFilters(prev => 
-                            prev.includes(support.id) 
-                              ? prev.filter(f => f !== support.id)
-                              : [...prev, support.id]
-                          );
-                        }}
-                        className={`w-full flex items-center gap-3 p-4 rounded-xl border text-left transition-all min-h-[64px] active:scale-[0.98] ${
-                          isSelected
-                            ? 'border-rose-300 bg-rose-50'
-                            : isAutoApplied
-                            ? 'border-green-200 bg-green-50/50'
-                            : 'border-stone-200 bg-white'
-                        }`}
-                        data-testid={`mobile-filter-${support.id}`}
-                      >
-                        <div className={`w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0 ${
-                          isSelected ? 'bg-rose-100' : isAutoApplied ? 'bg-green-100' : 'bg-stone-100'
-                        }`}>
-                          <support.icon className={`w-5 h-5 ${
-                            isSelected ? 'text-rose-600' : isAutoApplied ? 'text-green-600' : 'text-stone-500'
-                          }`} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <span className={`text-sm font-medium ${isSelected ? 'text-rose-700' : 'text-stone-800'}`}>
-                              {support.label}
-                            </span>
-                            {isAutoApplied && (
-                              <span className="text-[10px] text-green-600 bg-green-100 px-1.5 py-0.5 rounded">
-                                applied for {activePet?.name}
-                              </span>
-                            )}
-                          </div>
-                          <span className="text-sm text-stone-500">{support.desc}</span>
-                        </div>
-                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
-                          isSelected 
-                            ? 'border-rose-500 bg-rose-500' 
-                            : 'border-stone-300'
-                        }`}>
-                          {isSelected && <Check className="w-4 h-4 text-white" />}
-                        </div>
-                      </button>
-                    );
-                  })}
-                  
-                  {/* Avoid section in sheet */}
-                  <div className="pt-4 mt-4 border-t border-stone-100">
-                    <p className="text-sm font-medium text-stone-700 mb-3 flex items-center gap-2">
-                      <Shield className="w-4 h-4 text-amber-500" />
-                      Avoid if sensitive to...
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {AVOID_WARNINGS.map(avoid => (
-                        <button
-                          key={avoid.id}
-                          onClick={() => toggleAvoidFilter(avoid.id)}
-                          className={`px-4 py-2.5 rounded-full text-sm transition-all min-h-[44px] ${
-                            avoidFilters.includes(avoid.id)
-                              ? 'bg-amber-100 text-amber-700 border border-amber-300'
-                              : 'bg-stone-100 text-stone-600 border border-transparent'
-                          }`}
-                        >
-                          No {avoid.label}
-                          {avoidFilters.includes(avoid.id) && <X className="w-3 h-3 inline ml-1.5" />}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-                
-                {/* Footer Actions */}
-                <div className="px-4 py-4 border-t border-stone-100 bg-white flex gap-3">
-                  <button
-                    onClick={() => {
-                      setPendingCareFilters(autoAppliedFilters);
-                    }}
-                    className="flex-1 py-3 px-4 rounded-xl border border-stone-200 text-stone-600 font-medium flex items-center justify-center gap-2"
-                  >
-                    <RotateCcw className="w-4 h-4" />
-                    Reset to {activePet?.name}
-                  </button>
-                  <button
-                    onClick={() => {
-                      setCareFilters(pendingCareFilters);
-                      setShowFilterSheet(false);
-                    }}
-                    className="flex-1 py-3 px-4 rounded-xl bg-rose-600 text-white font-medium"
-                  >
-                    Apply
-                  </button>
-                </div>
-              </div>
+        )}
+
+        {/* Pet Soul Filtering Banner - Show when allergies are being filtered */}
+        {activePet && petAllergies.length > 0 && !petAllergies.includes('No') && !petAllergies.includes('None') && (
+          <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-xl flex items-center gap-3" data-testid="pet-soul-filter-banner">
+            <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+              <Heart className="w-5 h-5 text-purple-600" />
             </div>
-          )}
-        </>
-      )}
-      
-      {/* ============================================ */}
-      {/* PROPOSED PRODUCTS - Only for members */}
-      {/* ============================================ */}
-      {(activePet || user) && (
-        <div className="max-w-6xl mx-auto px-4 py-6">
-          
-          {/* Results count - quieter */}
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-2">
-              <p className="text-sm text-stone-500">
-                {proposedProducts.length} options selected for {activePet?.name || 'your pet'}
+            <div className="flex-1">
+              <p className="text-sm font-medium text-purple-900">
+                Filtered for {activePet.name}&apos;s safety
               </p>
-              <div className="relative group/info">
-                <Info className="w-3.5 h-3.5 text-stone-300 cursor-help" />
-                <div className="absolute left-0 top-full mt-1 hidden group-hover/info:block z-10">
-                  <div className="bg-stone-800 text-white text-xs px-2.5 py-1.5 rounded-lg shadow-lg whitespace-nowrap">
-                    Based on {activePet?.name || 'your pet'}&apos;s profile and this occasion
-                  </div>
-                </div>
-              </div>
+              <p className="text-xs text-purple-600">
+                Hiding products with: {petAllergies.filter(a => a !== 'No' && a !== 'None' && a !== 'Other').join(', ')}
+              </p>
             </div>
+            <PawPrint className="w-5 h-5 text-purple-400" />
           </div>
-          
-          {/* Mira's Note - Service integration (appears for celebration categories) - softer */}
-          {(category === 'cakes' || category === 'hampers' || category === 'accessories' || careFilters.includes('celebration')) && (
-            <div className="mb-8 p-5 bg-gradient-to-r from-purple-50/50 to-transparent rounded-2xl border border-purple-100/20" data-testid="mira-note">
-              <div className="flex items-start gap-4">
-                <div className="w-9 h-9 rounded-xl bg-white flex items-center justify-center flex-shrink-0 border border-purple-100/50">
-                  <Sparkles className="w-4 h-4 text-purple-400" />
+        )}
+
+        {/* PET PERSONALIZED RECOMMENDATIONS */}
+        {selectedPet && petRecommendations.length > 0 && isCakeCategory && (
+          <div className="mb-8 bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-6 border border-amber-200">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-amber-400 flex items-center justify-center text-white text-xl">
+                  🎂
                 </div>
-                <div className="flex-1">
-                  <p className="text-xs text-purple-500 mb-1.5">Mira&apos;s note</p>
-                  <p className="text-sm text-stone-500 leading-relaxed">
-                    Since this looks like a celebration, many pet parents prefer a little help with timing and delivery. I can take care of that for you.
+                <div>
+                  <h3 className="font-bold text-lg text-amber-900">{personalizedMessage}</h3>
+                  <p className="text-sm text-amber-700">
+                    Based on {selectedPet.name}&apos;s profile • {selectedPet.breed || 'Mixed'} • {selectedPet.age || 'Age unknown'}
                   </p>
-                  <button className="text-sm text-purple-500 hover:text-purple-600 mt-3 font-medium transition-colors">
-                    Let Mira handle the arrangements
-                  </button>
                 </div>
               </div>
+              
+              {/* Pet Selector (if multiple pets) */}
+              {userPets.length > 1 && (
+                <select 
+                  value={selectedPet?.id || ''}
+                  onChange={(e) => handlePetChange(e.target.value)}
+                  className="px-3 py-2 rounded-lg border border-amber-300 bg-white text-sm"
+                >
+                  {userPets.map(pet => (
+                    <option key={pet.id} value={pet.id}>🐕 {pet.name}</option>
+                  ))}
+                </select>
+              )}
             </div>
-          )}
-        
-        {/* Product Grid - 2x2 mobile, 4 col desktop */}
-        {proposedProducts.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6" data-testid="product-grid">
-            {proposedProducts.map(product => (
-              <MiraProductCard
-                key={product.id || product._id}
-                product={product}
-                activePet={activePet}
-                onAdd={(p) => {
-                  addToCart({ ...p, quantity: 1 });
-                  const newCount = sessionItemsAdded + 1;
-                  setSessionItemsAdded(newCount);
-                  toast({ 
-                    title: 'Included', 
-                    description: `Added to ${activePet?.name || 'your pet'}'s celebration plan` 
-                  });
-                  // Show Mira nudge after 2 items
-                  if (newCount === 2) {
-                    setTimeout(() => setShowMiraNudge(true), 1500);
-                  }
-                }}
-              />
-            ))}
+            
+            {/* Recommended Products Carousel */}
+            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+              {petRecommendations.slice(0, 6).map(product => (
+                <div key={product.id} className="flex-shrink-0 w-40">
+                  <a href={`/product/${product.id}`} className="block group">
+                    <div className="relative bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
+                      <div className="aspect-square bg-gray-100">
+                        {product.image && (
+                          <img 
+                            src={product.image} 
+                            alt={product.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                          />
+                        )}
+                      </div>
+                      <div className="p-2">
+                        <p className="text-xs font-medium text-gray-900 truncate">{product.title}</p>
+                        <p className="text-xs text-amber-600 font-bold">₹{product.price || product.minPrice}</p>
+                      </div>
+                      <div className="absolute top-2 right-2 bg-amber-500 text-white text-[10px] px-2 py-0.5 rounded-full">
+                        For {selectedPet.name}
+                      </div>
+                    </div>
+                  </a>
+                </div>
+              ))}
+            </div>
+            
+            {/* Shopping for someone else? */}
+            <div className="mt-4 pt-4 border-t border-amber-200 flex items-center justify-between">
+              <p className="text-sm text-amber-700">
+                <Gift className="w-4 h-4 inline mr-1" />
+                Shopping for another dog? 
+              </p>
+              <div className="flex items-center gap-3">
+                <a 
+                  href="/shop?pillar=celebrate" 
+                  className="text-sm font-medium text-amber-600 hover:text-amber-800 underline"
+                >
+                  Browse Full Collection →
+                </a>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setSelectedPet(null);
+                    setPetRecommendations([]);
+                  }}
+                  className="text-xs border-amber-300 hover:bg-amber-100"
+                >
+                  Clear Filters
+                </Button>
+              </div>
+            </div>
           </div>
-        ) : (
-          /* Empty state - Mira-centric, helpful */
-          <div className="text-center py-20">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center mx-auto mb-6 border border-purple-100/50">
-              <Sparkles className="w-10 h-10 text-purple-400" />
-            </div>
-            <h3 className="text-lg font-medium text-stone-700 mb-2">
-              These filters didn&apos;t find a match
-            </h3>
-            <p className="text-sm text-stone-400 max-w-sm mx-auto mb-8">
-              {activePet?.name ? `Mira is still learning what works best for ${activePet.name}.` : 'Try adjusting your preferences to see more options.'}
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+        )}
+
+        {/* Products Grid */}
+        {filteredProducts.length === 0 ? (
+          <div className="text-center py-16">
+            <PawPrint className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <p className="text-gray-500 text-lg">No products found in this category.</p>
+            <p className="text-gray-400 text-sm mt-2">Try adjusting your filters or browse other categories</p>
+            {activeSupportFilters.length > 0 && (
               <Button
                 variant="outline"
-                onClick={() => { setCareFilters(autoAppliedFilters); setValueFilters([]); }}
-                className="text-stone-600 border-stone-200"
+                className="mt-4"
+                onClick={() => setActiveSupportFilters([])}
               >
-                <RotateCcw className="w-4 h-4 mr-2" />
-                Reset to {activePet?.name || 'profile'}
+                Clear support filters
               </Button>
-              <button 
-                onClick={() => window.dispatchEvent(new CustomEvent('openMira'))}
-                className="text-sm text-purple-600 hover:text-purple-700 font-medium flex items-center gap-1.5"
-              >
-                <Sparkles className="w-4 h-4" />
-                Ask Mira for help
-              </button>
-            </div>
+            )}
           </div>
-        )}
-        
-        {/* ============================================ */}
-        {/* SERVICE SUGGESTION - When products aren't enough */}
-        {/* ============================================ */}
-        {(careFilters.includes('calming') || careFilters.includes('sensitive-stomach')) && (
-          <div className="mt-8 p-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl border border-purple-100" data-testid="service-suggestion">
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center flex-shrink-0">
-                <Sparkles className="w-5 h-5 text-purple-500" />
-              </div>
-              <div className="flex-1">
-                <p className="text-sm text-purple-900 font-medium mb-1">
-                  Mira noticed you&apos;re looking for {careFilters.includes('calming') ? 'calming support' : 'digestive care'}
-                </p>
-                <p className="text-sm text-purple-700 mb-4">
-                  {careFilters.includes('calming') 
-                    ? `If ${activePet?.name || 'your pet'}'s anxiety continues, a behaviour consult might help more than products alone.`
-                    : `Ongoing tummy troubles? A nutrition consult can help find the root cause.`
-                  }
-                </p>
-                <div className="flex gap-3">
-                  <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white">
-                    <MessageCircle className="w-4 h-4 mr-2" />
-                    Talk to an expert
-                  </Button>
-                  <Button size="sm" variant="ghost" className="text-purple-600">
-                    Ask Mira
-                  </Button>
-                </div>
-              </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6" data-testid="product-grid">
+              {filteredProducts.slice(0, visibleCount).map((product) => (
+                <ProductCard key={product.id} product={product} pillar={pillar} />
+              ))}
             </div>
-          </div>
-        )}
-        
-        {/* ============================================ */}
-        {/* MIRA NUDGE - After 2+ items added */}
-        {/* ============================================ */}
-        {showMiraNudge && (
-          <div className="fixed bottom-24 left-4 right-4 md:left-auto md:right-8 md:max-w-sm z-50 animate-in slide-in-from-bottom-4 duration-300" data-testid="mira-nudge">
-            <div className="bg-white rounded-xl shadow-lg border border-purple-100 p-4">
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 rounded-full bg-purple-50 flex items-center justify-center flex-shrink-0">
-                  <Sparkles className="w-4 h-4 text-purple-500" />
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm text-stone-700 mb-2">
-                    You&apos;ve picked some lovely things for {activePet?.name || 'your pet'}.
-                  </p>
-                  <p className="text-sm text-stone-500 mb-3">
-                    Would you like me to coordinate delivery timing or add a simple setup?
-                  </p>
-                  <div className="flex gap-2">
-                    <button 
-                      className="text-sm font-medium text-purple-600 hover:text-purple-700 px-3 py-1.5 bg-purple-50 rounded-lg"
-                      onClick={() => setShowMiraNudge(false)}
-                    >
-                      Yes, please
-                    </button>
-                    <button 
-                      className="text-sm text-stone-500 hover:text-stone-700 px-3 py-1.5"
-                      onClick={() => setShowMiraNudge(false)}
-                    >
-                      Not now
-                    </button>
-                  </div>
-                </div>
-                <button 
-                  className="text-stone-400 hover:text-stone-600"
-                  onClick={() => setShowMiraNudge(false)}
+            
+            {/* Load More Button */}
+            {visibleCount < filteredProducts.length && (
+              <div className="text-center mt-12">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-2 border-purple-600 text-purple-600 hover:bg-purple-50 px-8"
+                  onClick={() => setVisibleCount(prev => prev + PRODUCTS_PER_PAGE)}
+                  data-testid="load-more-btn"
                 >
-                  <X className="w-4 h-4" />
-                </button>
+                  <ChevronDown className="w-5 h-5 mr-2" />
+                  Load More ({filteredProducts.length - visibleCount} remaining)
+                </Button>
               </div>
-            </div>
-          </div>
-        )}
-        
-        {/* Help Section */}
-        <div className="mt-12 p-6 bg-white rounded-xl border border-stone-200" data-testid="help-section">
-          <div className="text-center">
-            <p className="text-stone-600 mb-1">Not sure what&apos;s right for {activePet?.name || 'your pet'}?</p>
-            <p className="text-sm text-stone-500 mb-4">Our pet experts can help you choose.</p>
-            <div className="flex justify-center gap-3">
-              <Button variant="outline" className="text-sm">
-                <MessageCircle className="w-4 h-4 mr-2" />
-                Chat with expert
-              </Button>
-              <Button className="text-sm bg-gradient-to-r from-purple-600 to-pink-600">
-                <Sparkles className="w-4 h-4 mr-2" />
-                Ask Mira
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-      )}
-    </div>
-  );
-};
-
-// ============================================
-// MIRA PRODUCT CARD - Answers "Is this right?"
-// ============================================
-const MiraProductCard = ({ product, activePet, onAdd }) => {
-  const [imageLoaded, setImageLoaded] = useState(false);
-  
-  const PLACEHOLDER = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop';
-  
-  const getImage = () => {
-    if (product.image?.startsWith('http')) return product.image;
-    if (product.images?.[0]?.startsWith('http')) return product.images[0];
-    if (product.thumbnail?.startsWith('http')) return product.thumbnail;
-    return PLACEHOLDER;
-  };
-  
-  const price = product.minPrice || product.price || 0;
-  const hasVariants = (product.sizes?.length > 1) || (product.flavors?.length > 1);
-  
-  // Mira's insight - "Why this works for your dog"
-  const miraInsight = generateMiraInsight(product, activePet);
-  
-  // Safety check
-  const safety = checkProductSafety(product, activePet);
-
-  return (
-    <div 
-      className="group bg-white rounded-xl overflow-hidden border border-stone-100 hover:border-stone-200 hover:shadow-lg transition-all duration-300"
-      data-testid={`product-card-${product.id || product._id}`}
-    >
-      {/* Image */}
-      <div className="relative aspect-square bg-stone-50 overflow-hidden">
-        {!imageLoaded && <div className="absolute inset-0 animate-pulse bg-stone-100" />}
-        <img
-          src={getImage()}
-          alt={product.name}
-          className={`w-full h-full object-cover transition-all duration-300 group-hover:scale-105 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
-          onLoad={() => setImageLoaded(true)}
-          onError={(e) => { e.target.src = PLACEHOLDER; setImageLoaded(true); }}
-        />
-        
-        {/* Mira Insight Badge - "Why this works" */}
-        {miraInsight && (
-          <div className="absolute bottom-2 left-2 right-2">
-            <div className="bg-white/95 backdrop-blur-sm rounded-lg px-2.5 py-1.5 flex items-center gap-1.5 shadow-sm">
-              <Sparkles className="w-3 h-3 text-purple-500 flex-shrink-0" />
-              <span className="text-xs text-purple-700 font-medium truncate">{miraInsight}</span>
-            </div>
-          </div>
-        )}
-        
-        {/* Safety/Recommended indicator with tooltip */}
-        {activePet && safety.safe && (
-          <div 
-            className="absolute top-2 right-2 w-6 h-6 rounded-full bg-green-500 flex items-center justify-center cursor-help group/tip" 
-            title={`Recommended for ${activePet.name}`}
-          >
-            <Check className="w-3.5 h-3.5 text-white" />
-            {/* Custom tooltip */}
-            <div className="absolute top-full right-0 mt-1 hidden group-hover/tip:block z-10">
-              <div className="bg-stone-800 text-white text-xs px-2 py-1 rounded shadow-lg whitespace-nowrap">
-                Recommended for {activePet.name}
-              </div>
-            </div>
-          </div>
-        )}
-        
-        {/* Warning if not safe */}
-        {activePet && !safety.safe && (
-          <div className="absolute top-2 right-2 w-6 h-6 rounded-full bg-amber-500 flex items-center justify-center" title={`Contains: ${safety.warnings.join(', ')}`}>
-            <AlertTriangle className="w-3.5 h-3.5 text-white" />
-          </div>
+            )}
+            
+            {/* Showing count */}
+            <p className="text-center text-gray-500 text-sm mt-4">
+              Showing {Math.min(visibleCount, filteredProducts.length)} of {filteredProducts.length} products
+            </p>
+          </>
         )}
       </div>
       
-      {/* Content */}
-      <div className="p-3 md:p-4">
-        {/* Life stage & care indicators */}
-        <div className="flex items-center gap-1.5 mb-2 flex-wrap">
-          {product.life_stage && (
-            <span className="text-xs px-2 py-0.5 rounded bg-blue-50 text-blue-600">
-              {product.life_stage}
-            </span>
-          )}
-          {product.care_benefit && (
-            <span className="text-xs px-2 py-0.5 rounded bg-rose-50 text-rose-600">
-              {product.care_benefit}
-            </span>
-          )}
-        </div>
-        
-        {/* Product name */}
-        <h3 className="font-medium text-stone-900 text-sm leading-snug line-clamp-2 mb-1">
-          {product.name}
-        </h3>
-        
-        {/* Service-enabled microcopy - ties product to moment */}
-        <p className="text-xs text-stone-400 mb-2">
-          {product.category === 'cakes' || product.tags?.includes('celebration') 
-            ? 'Works well for celebrations'
-            : product.tags?.includes('birthday')
-            ? 'Often chosen for birthdays'
-            : product.tags?.includes('training')
-            ? 'Great for training moments'
-            : 'Mira can coordinate this'
-          }
-        </p>
-        
-        {/* Price - calm, not decorated */}
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-stone-600">
-            {hasVariants ? 'From ' : ''}₹{price.toLocaleString('en-IN')}
-          </span>
-          
-          {/* Include (not Add) */}
-          <button
-            onClick={(e) => { e.stopPropagation(); onAdd(product); }}
-            className="text-xs font-medium text-purple-600 hover:text-purple-700 flex items-center gap-1"
-            data-testid={`include-${product.id || product._id}`}
-          >
-            Include <ChevronRight className="w-3 h-3" />
-          </button>
-        </div>
-      </div>
+      {/* Mira Floating Chat Widget */}
+      <MiraChatWidget pillar={pillar} />
     </div>
   );
 };
