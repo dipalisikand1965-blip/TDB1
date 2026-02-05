@@ -253,11 +253,32 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
   // Use provided miraContext or fall back to default based on pillar
   const effectiveMiraContext = miraContext || defaultMiraContext[pillar] || defaultMiraContext.celebrate;
   
-  // Generate product-specific Mira tip based on product name/category/tags
+  // Use product's mira_hint from database if available, otherwise generate one
   const getProductMiraTip = () => {
+    // First check if product has a mira_hint from database
+    if (product.mira_hint) {
+      return product.mira_hint;
+    }
+    
+    // Fallback: Generate based on product name/category
     const name = (product.name || '').toLowerCase();
     const tags = (product.tags || []).map(t => t?.toLowerCase() || '');
     const category = (product.category || '').toLowerCase();
+    const allText = `${name} ${category} ${tags.join(' ')}`;
+    
+    // Grooming products
+    if (allText.match(/shampoo|conditioner|soap|wash|grooming/)) {
+      if (name.includes('oatmeal')) return '✨ Soothes sensitive skin naturally';
+      if (name.includes('puppy')) return '✨ Gentle formula for young pups';
+      return '✨ For a healthy, shiny coat';
+    }
+    
+    // Travel products
+    if (allText.match(/carrier|crate|travel|harness|leash/)) {
+      if (name.includes('iata')) return '✨ IATA approved for safe flights';
+      if (name.includes('car') || name.includes('safety')) return '✨ Safety-tested for road trips';
+      return '✨ Travel-friendly choice';
+    }
     
     // Cake-specific tips
     if (name.includes('cake') || category.includes('cake')) {
@@ -265,7 +286,6 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
       if (name.includes('carrot')) return '✨ Carrots add natural sweetness';
       if (name.includes('banana')) return '✨ Banana makes it extra moist';
       if (name.includes('chicken')) return '✨ Savory choice for meat lovers';
-      if (name.includes('birthday')) return '✨ Perfect for the big day';
       return '✨ Freshly baked with love';
     }
     
