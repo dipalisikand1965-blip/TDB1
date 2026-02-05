@@ -371,24 +371,24 @@ const FarewellPage = () => {
       </section>
 
       {/* Service Categories - 2x2 on mobile, 4 cols on desktop */}
-      <section className="py-12 px-4 -mt-8 relative z-10">
+      <section className="py-8 sm:py-12 px-4 sm:px-6 -mt-6 sm:-mt-8 relative z-10">
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
             {Object.values(SERVICE_CATEGORIES).map((cat) => {
               const Icon = cat.icon;
               return (
                 <Card 
                   key={cat.id}
-                  className={`p-6 cursor-pointer transition-all hover:shadow-lg ${
+                  className={`p-3 sm:p-4 md:p-6 cursor-pointer transition-all hover:shadow-lg ${
                     selectedCategory === cat.id ? 'ring-2 ring-purple-500 shadow-lg' : ''
                   }`}
                   onClick={() => setSelectedCategory(cat.id === selectedCategory ? 'all' : cat.id)}
                 >
-                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-r ${cat.color} flex items-center justify-center mb-4`}>
-                    <Icon className="w-6 h-6 text-white" />
+                  <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-r ${cat.color} flex items-center justify-center mb-2 sm:mb-4`}>
+                    <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                   </div>
-                  <h3 className="font-bold text-gray-900 mb-1">{cat.name}</h3>
-                  <p className="text-sm text-gray-600">{cat.description}</p>
+                  <h3 className="font-bold text-gray-900 mb-1 text-sm sm:text-base">{cat.name}</h3>
+                  <p className="text-xs sm:text-sm text-gray-600 hidden sm:block">{cat.description}</p>
                 </Card>
               );
             })}
