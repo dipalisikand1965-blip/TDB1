@@ -286,32 +286,104 @@ const SearchBar = ({ value, onChange, petName }) => (
 );
 
 // =============================================================================
-// PILLAR FILTERS
+// POPULAR BREEDS FOR FILTER
 // =============================================================================
-const PillarFilters = ({ selected, onSelect, selectedSubcat, onSelectSubcat }) => {
+const BREED_FILTERS = [
+  { id: 'all', label: 'All Breeds' },
+  { id: 'golden_retriever', label: 'Golden Retriever' },
+  { id: 'labrador', label: 'Labrador' },
+  { id: 'shih_tzu', label: 'Shih Tzu' },
+  { id: 'pug', label: 'Pug' },
+  { id: 'beagle', label: 'Beagle' },
+  { id: 'german_shepherd', label: 'German Shepherd' },
+  { id: 'indie', label: 'Indie / Mixed' },
+  { id: 'pomeranian', label: 'Pomeranian' },
+  { id: 'husky', label: 'Husky' },
+  { id: 'rottweiler', label: 'Rottweiler' },
+  { id: 'cocker_spaniel', label: 'Cocker Spaniel' },
+  { id: 'dachshund', label: 'Dachshund' },
+];
+
+// =============================================================================
+// PILLAR FILTERS WITH BREED DROPDOWN
+// =============================================================================
+const PillarFilters = ({ selected, onSelect, selectedSubcat, onSelectSubcat, selectedBreed, onSelectBreed }) => {
   const selectedPillar = PILLARS.find(p => p.id === selected);
+  const [breedDropdownOpen, setBreedDropdownOpen] = useState(false);
+  const breedDropdownRef = useRef(null);
+  
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (breedDropdownRef.current && !breedDropdownRef.current.contains(e.target)) {
+        setBreedDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+  
+  const currentBreedLabel = BREED_FILTERS.find(b => b.id === selectedBreed)?.label || 'All Breeds';
   
   return (
     <div className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-30 shadow-sm">
       <div className="max-w-7xl mx-auto px-2 sm:px-4 py-2 sm:py-3">
-        <div className="flex gap-1.5 sm:gap-2 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
-          {PILLARS.map((pillar) => {
-            const Icon = pillar.icon;
-            const isActive = selected === pillar.id;
-            return (
-              <button
-                key={pillar.id}
-                onClick={() => { onSelect(pillar.id); onSelectSubcat(null); }}
-                className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-medium whitespace-nowrap transition-all flex-shrink-0 snap-start active:scale-95 ${
-                  isActive ? `${pillar.color} text-white shadow-md` : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                }`}
-                data-testid={`pillar-${pillar.id}`}
-              >
-                <Icon className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-                <span>{pillar.label}</span>
-              </button>
-            );
-          })}
+        {/* Pillar row with Breed Filter */}
+        <div className="flex items-center gap-2">
+          {/* Pillar pills - scrollable */}
+          <div className="flex-1 flex gap-1.5 sm:gap-2 overflow-x-auto pb-2 scrollbar-hide snap-x snap-mandatory">
+            {PILLARS.map((pillar) => {
+              const Icon = pillar.icon;
+              const isActive = selected === pillar.id;
+              return (
+                <button
+                  key={pillar.id}
+                  onClick={() => { onSelect(pillar.id); onSelectSubcat(null); }}
+                  className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-[10px] sm:text-xs font-medium whitespace-nowrap transition-all flex-shrink-0 snap-start active:scale-95 ${
+                    isActive ? `${pillar.color} text-white shadow-md` : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                  data-testid={`pillar-${pillar.id}`}
+                >
+                  <Icon className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                  <span>{pillar.label}</span>
+                </button>
+              );
+            })}
+          </div>
+          
+          {/* Breed Filter Dropdown */}
+          <div className="relative flex-shrink-0" ref={breedDropdownRef}>
+            <button
+              onClick={() => setBreedDropdownOpen(!breedDropdownOpen)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl text-[10px] sm:text-xs font-medium transition-all ${
+                selectedBreed && selectedBreed !== 'all' 
+                  ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-md' 
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+              data-testid="breed-filter-btn"
+            >
+              <PawPrint className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+              <span className="hidden sm:inline">{currentBreedLabel}</span>
+              <span className="sm:hidden">Breed</span>
+              <ChevronDown className={`w-3 h-3 transition-transform ${breedDropdownOpen ? 'rotate-180' : ''}`} />
+            </button>
+            
+            {breedDropdownOpen && (
+              <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-1 z-50 max-h-64 overflow-y-auto">
+                {BREED_FILTERS.map((breed) => (
+                  <button
+                    key={breed.id}
+                    onClick={() => { onSelectBreed(breed.id); setBreedDropdownOpen(false); }}
+                    className={`w-full text-left px-3 py-2 text-xs hover:bg-gray-50 transition-colors ${
+                      selectedBreed === breed.id ? 'bg-purple-50 text-purple-700 font-medium' : 'text-gray-700'
+                    }`}
+                  >
+                    {breed.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
         
         {selectedPillar?.subcategories?.length > 0 && (
