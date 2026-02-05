@@ -417,7 +417,7 @@ const AdoptPage = () => {
       <SEOHead page="adopt" path="/adopt" />
 
       {/* Hero Section */}
-      <section className="relative py-16 px-4 overflow-hidden">
+      <section className="relative py-10 sm:py-12 md:py-16 px-4 sm:px-6 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-purple-600/90 to-pink-600/90" />
         <div 
           className="absolute inset-0 opacity-20"
@@ -429,25 +429,25 @@ const AdoptPage = () => {
         />
         
         <div className="relative max-w-7xl mx-auto text-center text-white">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <Heart className="w-8 h-8 animate-pulse" />
-            <span className="text-sm font-medium bg-white/20 px-3 py-1 rounded-full">
+          <div className="flex items-center justify-center gap-2 mb-3 sm:mb-4">
+            <Heart className="w-6 h-6 sm:w-8 sm:h-8 animate-pulse" />
+            <span className="text-xs sm:text-sm font-medium bg-white/20 px-2 sm:px-3 py-1 rounded-full">
               Give a Pet a Forever Home
             </span>
           </div>
           
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">
             Adopt, Don&apos;t Shop
           </h1>
-          <p className="text-lg md:text-xl opacity-90 max-w-2xl mx-auto mb-8">
+          <p className="text-base sm:text-lg md:text-xl opacity-90 max-w-2xl mx-auto mb-6 sm:mb-8 px-2">
             Every pet deserves a loving home. Find your perfect companion from our network of rescues and shelters.
           </p>
           
           {/* Stats */}
           {stats && (
-            <div className="flex flex-wrap justify-center gap-6 mb-8">
-              <div className="bg-white/20 backdrop-blur-sm rounded-lg px-6 py-3">
-                <p className="text-3xl font-bold">{stats.available_pets || 0}</p>
+            <div className="flex flex-wrap justify-center gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8">
+              <div className="bg-white/20 backdrop-blur-sm rounded-lg px-3 sm:px-4 md:px-6 py-2 sm:py-3">
+                <p className="text-xl sm:text-2xl md:text-3xl font-bold">{stats.available_pets || 0}</p>
                 <p className="text-sm opacity-80">Pets Available</p>
               </div>
               <div className="bg-white/20 backdrop-blur-sm rounded-lg px-6 py-3">
