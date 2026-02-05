@@ -460,26 +460,26 @@ const FarewellPage = () => {
       </section>
 
       {/* Memorial Products */}
-      <section className="py-16 px-4 bg-gradient-to-b from-white to-purple-50">
+      <section className="py-10 sm:py-12 md:py-16 px-4 sm:px-6 bg-gradient-to-b from-white to-purple-50">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              <Star className="w-8 h-8 inline mr-2 text-amber-500" />
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">
+              <Star className="w-6 h-6 sm:w-8 sm:h-8 inline mr-2 text-amber-500" />
               Memorial Keepsakes
             </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
+            <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto px-2">
               Beautiful ways to preserve the memory of your beloved companion.
             </p>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4 md:gap-6">
             {MEMORIAL_PRODUCTS.map((product) => (
               <Card 
                 key={product.id}
                 className="overflow-hidden hover:shadow-lg transition-all group"
               >
                 <div 
-                  className="relative h-40 overflow-hidden bg-gray-100 cursor-pointer"
+                  className="relative h-28 sm:h-36 md:h-40 overflow-hidden bg-gray-100 cursor-pointer"
                   onClick={() => {
                     setSelectedProduct(product);
                     setShowProductModal(true);
@@ -491,13 +491,14 @@ const FarewellPage = () => {
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                   />
                 </div>
-                <div className="p-4">
-                  <h3 className="font-semibold text-gray-900 mb-1">{product.name}</h3>
-                  <p className="text-sm text-gray-600 mb-2 line-clamp-2">{product.description}</p>
+                <div className="p-2 sm:p-3 md:p-4">
+                  <h3 className="font-semibold text-gray-900 mb-1 text-xs sm:text-sm md:text-base line-clamp-1">{product.name}</h3>
+                  <p className="text-xs sm:text-sm text-gray-600 mb-2 line-clamp-2 hidden sm:block">{product.description}</p>
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-purple-600">₹{product.price.toLocaleString()}</span>
+                    <span className="font-bold text-purple-600 text-sm sm:text-base">₹{product.price.toLocaleString()}</span>
                     <Button 
                       size="sm" 
+                      className="h-7 sm:h-8 px-2 sm:px-3 text-xs sm:text-sm" 
                       className="bg-purple-600 hover:bg-purple-700 text-white"
                       onClick={(e) => {
                         e.stopPropagation();
