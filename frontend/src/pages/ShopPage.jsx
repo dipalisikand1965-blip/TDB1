@@ -27,14 +27,14 @@ import {
 } from 'lucide-react';
 
 // =============================================================================
-// PILLAR CONFIG - With subcategories
+// PILLAR CONFIG - With subcategories (Recommended first, All last)
 // =============================================================================
 const PILLARS = [
   { 
-    id: 'all', 
-    label: 'All', 
+    id: 'recommended', 
+    label: 'Recommended', 
     icon: Sparkles, 
-    color: 'bg-gray-100',
+    color: 'bg-amber-100',
     subcategories: []
   },
   { 
@@ -134,6 +134,13 @@ const PILLARS = [
     icon: ShoppingBag, 
     color: 'bg-teal-100',
     subcategories: ['Apparel', 'Accessories', 'Bowls', 'Feeders']
+  },
+  { 
+    id: 'all', 
+    label: 'All', 
+    icon: Package, 
+    color: 'bg-gray-100',
+    subcategories: []
   },
 ];
 
