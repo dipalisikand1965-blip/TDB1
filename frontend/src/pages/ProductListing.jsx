@@ -633,6 +633,7 @@ const ProductListing = ({ category = 'all' }) => {
                 setActiveSupportFilters(autoFilters);
               }
               
+              // Fetch recommendations
               try {
                 const recRes = await fetch(`${getApiUrl()}/api/products/recommendations/for-pet/${pet.id}?limit=8`);
                 if (recRes.ok) {
@@ -641,6 +642,19 @@ const ProductListing = ({ category = 'all' }) => {
                 }
               } catch (recErr) {
                 console.debug('Could not fetch recommendations:', recErr);
+              }
+              
+              // Fetch pet's soul score for banner
+              try {
+                const scoreRes = await fetch(`${getApiUrl()}/api/pet-score/${pet.id}/score_state`, {
+                  headers: { 'Authorization': `Bearer ${token}` }
+                });
+                if (scoreRes.ok) {
+                  const scoreData = await scoreRes.json();
+                  setPetSoulScore(scoreData.overall_score || scoreData.score || 0);
+                }
+              } catch (scoreErr) {
+                console.debug('Could not fetch pet soul score:', scoreErr);
               }
             }
           }
