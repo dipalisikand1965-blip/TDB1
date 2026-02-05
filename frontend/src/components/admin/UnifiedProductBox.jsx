@@ -861,7 +861,13 @@ const UnifiedProductBox = () => {
                             </div>
                           </button>
                           <div>
-                            <p className="font-medium text-gray-900 truncate max-w-[200px]">{product.name}</p>
+                            <button 
+                              onClick={() => openQuickEdit(product, 'name')}
+                              className="font-medium text-gray-900 truncate max-w-[200px] hover:text-purple-600 text-left"
+                              title="Click to edit name"
+                            >
+                              {product.name}
+                            </button>
                             <p className="text-xs text-gray-500">{product.sku}</p>
                           </div>
                         </div>
