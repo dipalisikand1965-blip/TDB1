@@ -440,14 +440,14 @@ const ShopPage = () => {
       <SEOHead page="shop" path="/shop" />
       
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-teal-600 to-emerald-600 text-white py-10 px-4">
+      <section className="bg-gradient-to-r from-teal-600 to-emerald-600 text-white py-8 sm:py-10 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div>
-              <h1 className="text-2xl md:text-3xl font-bold mb-2">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 sm:gap-6">
+            <div className="text-center md:text-left w-full md:w-auto">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">
                 Pet Shop
               </h1>
-              <p className="text-teal-100 max-w-lg">
+              <p className="text-teal-100 max-w-lg text-sm sm:text-base">
                 Premium products handpicked for your furry family members.
                 {pets.length > 0 && ` Personalised for ${pets[0].name}!`}
               </p>
