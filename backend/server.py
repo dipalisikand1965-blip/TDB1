@@ -6202,6 +6202,8 @@ Request Details:
         "success": True,
         "request_id": request_id,
         "ticket_id": ticket_id,
+        "notification_id": notification_id,
+        "inbox_id": inbox_id,
         "message": f"Your request has been submitted. Our team will contact you shortly."
     }
 
