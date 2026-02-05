@@ -356,7 +356,7 @@ async def get_template_products(slug: str):
         
         # First get featured products
         if featured_ids:
-            featured = await db.products.find(
+            featured = await db.products_master.find(
                 {"id": {"$in": featured_ids}},
                 {"_id": 0}
             ).to_list(len(featured_ids))
@@ -368,7 +368,7 @@ async def get_template_products(slug: str):
         if filters:
             # Add is_active filter
             query = {"$and": [filters, {"is_active": {"$ne": False}}]}
-            filtered = await db.products.find(query, {"_id": 0}).limit(20).to_list(20)
+            filtered = await db.products_master.find(query, {"_id": 0}).limit(20).to_list(20)
             
             # Don't duplicate featured products
             featured_set = set(featured_ids)

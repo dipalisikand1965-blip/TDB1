@@ -398,7 +398,7 @@ async def cron_sync_products(secret: str):
         
         for sp in shopify_products:
             # Check if product exists
-            existing = await db.products.find_one({"shopify_id": sp["id"]})
+            existing = await db.products_master.find_one({"shopify_id": sp["id"]})
             
             transformed = transform_shopify_product(sp)
             
@@ -411,7 +411,7 @@ async def cron_sync_products(secret: str):
                 transformed.pop("sizes", None)
                 transformed.pop("flavors", None)
             
-            await db.products.update_one(
+            await db.products_master.update_one(
                 {"shopify_id": sp["id"]},
                 {"$set": transformed},
                 upsert=True
@@ -461,7 +461,7 @@ async def admin_sync_products(username: str = Depends(verify_admin)):
         preserved_options = 0
         
         for sp in shopify_products:
-            existing = await db.products.find_one({"shopify_id": sp["id"]})
+            existing = await db.products_master.find_one({"shopify_id": sp["id"]})
             
             transformed = transform_shopify_product(sp)
             
@@ -476,7 +476,7 @@ async def admin_sync_products(username: str = Depends(verify_admin)):
                 preserved_options += 1
                 logger.debug(f"Preserved hardcoded options for: {transformed.get('name')}")
             
-            await db.products.update_one(
+            await db.products_master.update_one(
                 {"shopify_id": sp["id"]},
                 {"$set": transformed},
                 upsert=True
@@ -522,8 +522,8 @@ async def get_sync_status(username: str = Depends(verify_admin)):
     ).sort("timestamp", -1).limit(10).to_list(10)
     
     # Get product counts
-    total_products = await db.products.count_documents({})
-    shopify_products = await db.products.count_documents({"shopify_id": {"$exists": True}})
+    total_products = await db.products_master.count_documents({})
+    shopify_products = await db.products_master.count_documents({"shopify_id": {"$exists": True}})
     
     # Get last successful sync
     last_success = await db.sync_logs.find_one(
@@ -545,7 +545,7 @@ async def cleanup_mock_products(username: str = Depends(verify_admin)):
     """Remove mock products that don't have shopify_id, keeping only real Shopify-synced products"""
     try:
         # Delete products that don't have a shopify_id field or have mock-style IDs
-        result = await db.products.delete_many({
+        result = await db.products_master.delete_many({
             "$or": [
                 {"shopify_id": {"$exists": False}},
                 {"id": {"$regex": "^(bc-|cake-|treat-|cat-|frozen-|meal-|acc-)"}}
@@ -555,7 +555,7 @@ async def cleanup_mock_products(username: str = Depends(verify_admin)):
         deleted_count = result.deleted_count
         
         # Count remaining products
-        remaining = await db.products.count_documents({})
+        remaining = await db.products_master.count_documents({})
         
         logger.info(f"Admin {username} cleaned up {deleted_count} mock products. {remaining} Shopify products remaining.")
         
@@ -572,7 +572,7 @@ async def cleanup_mock_products(username: str = Depends(verify_admin)):
 @shopify_admin_router.get("/untitled-products")
 async def get_untitled_products(username: str = Depends(verify_admin)):
     """Get products that might have been synced without proper titles"""
-    untitled = await db.products.find(
+    untitled = await db.products_master.find(
         {
             "$or": [
                 {"name": {"$regex": "^Product "}},
@@ -595,7 +595,7 @@ async def fix_untitled_products(username: str = Depends(verify_admin)):
     """Attempt to fix untitled products by re-fetching from Shopify"""
     try:
         # Get untitled products
-        untitled = await db.products.find(
+        untitled = await db.products_master.find(
             {
                 "$or": [
                     {"name": {"$regex": "^Product "}},
@@ -627,7 +627,7 @@ async def fix_untitled_products(username: str = Depends(verify_admin)):
                     new_name = sp.get("handle", "").replace("-", " ").title()
                 
                 if new_name and new_name != product.get("name"):
-                    await db.products.update_one(
+                    await db.products_master.update_one(
                         {"shopify_id": shopify_id},
                         {"$set": {"name": new_name, "updated_at": datetime.now(timezone.utc).isoformat()}}
                     )

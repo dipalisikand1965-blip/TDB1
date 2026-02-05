@@ -94,8 +94,8 @@ async def get_product_pricing(
         ]
     
     # Get products
-    products = await db.products.find(query, {"_id": 0}).skip(skip).limit(limit).to_list(limit)
-    total = await db.products.count_documents(query)
+    products = await db.products_master.find(query, {"_id": 0}).skip(skip).limit(limit).to_list(limit)
+    total = await db.products_master.count_documents(query)
     
     # Enrich with pricing data
     enriched = []
@@ -149,7 +149,7 @@ async def update_product_pricing(product_id: str, pricing: ProductPricing):
     )
     
     # Also update the main product's price
-    await db.products.update_one(
+    await db.products_master.update_one(
         {"id": product_id},
         {"$set": {
             "price": pricing.selling_price,
@@ -167,7 +167,7 @@ async def bulk_update_pricing(update: BulkPricingUpdate):
     
     for product_id in update.product_ids:
         pricing = await db.product_pricing.find_one({"product_id": product_id})
-        product = await db.products.find_one({"id": product_id})
+        product = await db.products_master.find_one({"id": product_id})
         
         if not product:
             continue
@@ -213,7 +213,7 @@ async def bulk_update_pricing(update: BulkPricingUpdate):
             upsert=True
         )
         
-        await db.products.update_one(
+        await db.products_master.update_one(
             {"id": product_id},
             {"$set": {"price": pricing["selling_price"], "gst_percent": pricing["gst_percent"]}}
         )
@@ -385,7 +385,7 @@ async def export_pricing_data(pillar: Optional[str] = None):
         product_ids = [p["product_id"] for p in placements]
         query["id"] = {"$in": product_ids}
     
-    products = await db.products.find(query, {"_id": 0}).to_list(5000)
+    products = await db.products_master.find(query, {"_id": 0}).to_list(5000)
     
     output = io.StringIO()
     writer = csv.writer(output)
@@ -464,7 +464,7 @@ async def import_pricing_data(file: UploadFile = File(...)):
                 upsert=True
             )
             
-            await db.products.update_one(
+            await db.products_master.update_one(
                 {"id": product_id},
                 {"$set": {
                     "price": pricing["selling_price"],
@@ -488,7 +488,7 @@ async def import_pricing_data(file: UploadFile = File(...)):
 @router.get("/stats")
 async def get_pricing_stats():
     """Get pricing dashboard statistics"""
-    total_products = await db.products.count_documents({})
+    total_products = await db.products_master.count_documents({})
     
     # Get products with pricing data
     priced_products = await db.product_pricing.count_documents({})
@@ -557,7 +557,7 @@ async def get_autoship_settings():
     
     # Get product names for overrides
     for override in overrides:
-        product = await db.products.find_one({"id": override["product_id"]}, {"_id": 0, "name": 1, "image": 1})
+        product = await db.products_master.find_one({"id": override["product_id"]}, {"_id": 0, "name": 1, "image": 1})
         if product:
             override["product_name"] = product.get("name")
             override["product_image"] = product.get("image")
@@ -599,7 +599,7 @@ async def update_autoship_tiers(tiers: List[AutoshipTier]):
 async def add_product_autoship_override(override: AutoshipProductOverride):
     """Add or update autoship discount override for a specific product"""
     # Verify product exists
-    product = await db.products.find_one({"id": override.product_id})
+    product = await db.products_master.find_one({"id": override.product_id})
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     
@@ -623,7 +623,7 @@ async def add_product_autoship_override(override: AutoshipProductOverride):
     )
     
     # Also update the product document for quick access
-    await db.products.update_one(
+    await db.products_master.update_one(
         {"id": override.product_id},
         {
             "$set": {
@@ -648,7 +648,7 @@ async def remove_product_autoship_override(product_id: str):
     result = await db.autoship_product_overrides.delete_one({"product_id": product_id})
     
     # Also remove from product document
-    await db.products.update_one(
+    await db.products_master.update_one(
         {"id": product_id},
         {
             "$unset": {
@@ -669,7 +669,7 @@ async def remove_product_autoship_override(product_id: str):
 @router.get("/autoship/products")
 async def get_products_for_autoship():
     """Get all products with their autoship settings for the admin UI"""
-    products = await db.products.find(
+    products = await db.products_master.find(
         {},
         {
             "_id": 0,
@@ -717,7 +717,7 @@ async def bulk_update_autoship_overrides(
             upsert=True
         )
         
-        await db.products.update_one(
+        await db.products_master.update_one(
             {"id": product_id},
             {
                 "$set": {

@@ -339,7 +339,7 @@ async def convert_to_listing(partner_id: str, username: str = Depends(lambda: ve
             "created_at": now,
             "updated_at": now
         }
-        await db.services.insert_one(listing)
+        await db.services_master.insert_one(listing)
         listing_collection = "services"
     
     # Update application status

@@ -247,7 +247,7 @@ async def get_eligible_reward_products(pillar: str, max_value: float = 600):
     if config.get("product_collection"):
         query["collections"] = config["product_collection"]
     
-    products = await db.products.find(query, {"_id": 0}).limit(20).to_list(20)
+    products = await db.products_master.find(query, {"_id": 0}).limit(20).to_list(20)
     
     return {
         "pillar": pillar,

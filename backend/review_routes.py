@@ -148,7 +148,7 @@ async def create_admin_notification(**kwargs):
 async def create_review(review: ReviewCreate, current_user: dict = Depends(get_current_user_optional)):
     """Submit a new review"""
     # Get product info for the review
-    product = await db.products.find_one({"id": review.product_id}, {"_id": 0, "name": 1, "image": 1})
+    product = await db.products_master.find_one({"id": review.product_id}, {"_id": 0, "name": 1, "image": 1})
     
     review_doc = Review(
         product_id=review.product_id,
@@ -197,7 +197,7 @@ async def get_my_reviews(current_user: dict = Depends(get_current_user_from_toke
     
     # Enrich with product info
     for r in reviews:
-        product = await db.products.find_one({"id": r.get("product_id")}, {"_id": 0, "name": 1, "image": 1})
+        product = await db.products_master.find_one({"id": r.get("product_id")}, {"_id": 0, "name": 1, "image": 1})
         if product:
             r["product_name"] = product.get("name")
             r["product_image"] = product.get("image")
@@ -270,7 +270,7 @@ async def get_admin_reviews(status: Optional[str] = None, username: str = Depend
     
     # Enrich with product names
     for r in reviews:
-        product = await db.products.find_one({"id": r["product_id"]}, {"name": 1})
+        product = await db.products_master.find_one({"id": r["product_id"]}, {"name": 1})
         if product:
             r["product_name"] = product["name"]
             
@@ -297,7 +297,7 @@ async def update_review_status(review_id: str, update: dict, username: str = Dep
             ]
             stats = await db.reviews.aggregate(pipeline).to_list(1)
             if stats:
-                await db.products.update_one(
+                await db.products_master.update_one(
                     {"id": review["product_id"]},
                     {"$set": {
                         "rating": stats[0]["avg_rating"],

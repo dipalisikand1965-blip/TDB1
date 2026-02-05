@@ -152,7 +152,7 @@ async def enrich_collection_items(sections: List[dict]) -> List[dict]:
                     }
             
             elif item["item_type"] == "service":
-                service = await db.services.find_one({"id": item["item_id"]}, {"_id": 0})
+                service = await db.services_master.find_one({"id": item["item_id"]}, {"_id": 0})
                 if service:
                     enriched_item["actual_data"] = {
                         "name": service.get("name"),
@@ -522,7 +522,7 @@ async def search_items_for_collection(
     
     # Search services
     if item_type in ["all", "service"]:
-        services = await db.services.find(
+        services = await db.services_master.find(
             {"name": query_regex} if q else {},
             {"_id": 0, "id": 1, "name": 1, "image": 1, "price": 1}
         ).limit(limit).to_list(limit)

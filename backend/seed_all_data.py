@@ -674,11 +674,11 @@ async def seed_all():
     try:
         # 1. Seed Products
         print("\n📦 Seeding Products...")
-        await db.products.delete_many({})
+        await db.products_master.delete_many({})
         for p in SAMPLE_PRODUCTS:
             p["created_at"] = now
             p["updated_at"] = now
-        result = await db.products.insert_many(SAMPLE_PRODUCTS)
+        result = await db.products_master.insert_many(SAMPLE_PRODUCTS)
         print(f"   ✅ Seeded {len(result.inserted_ids)} products")
         
         # 2. Seed Categories

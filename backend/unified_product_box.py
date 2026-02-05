@@ -1096,7 +1096,7 @@ async def migrate_existing_products(force: bool = False):
         raise HTTPException(status_code=500, detail="Database not configured")
     
     # Get existing products from main products collection
-    existing = await db.products.find({}, {"_id": 0}).to_list(5000)
+    existing = await db.products_master.find({}, {"_id": 0}).to_list(5000)
     
     migrated = 0
     updated = 0
@@ -1257,7 +1257,7 @@ async def migrate_existing_products(force: bool = False):
                 "source": "stay_properties",
                 "created_at": datetime.now(timezone.utc).isoformat()
             }
-            await db.products.update_one({"id": product_id}, {"$set": product}, upsert=True)
+            await db.products_master.update_one({"id": product_id}, {"$set": product}, upsert=True)
             stay_synced += 1
         
         # Sync boarding facilities
@@ -1278,13 +1278,13 @@ async def migrate_existing_products(force: bool = False):
                 "source": "stay_boarding_facilities",
                 "created_at": datetime.now(timezone.utc).isoformat()
             }
-            await db.products.update_one({"id": product_id}, {"$set": product}, upsert=True)
+            await db.products_master.update_one({"id": product_id}, {"$set": product}, upsert=True)
             stay_synced += 1
             
         # ========== SEED DEFAULT PILLAR PRODUCTS IF NONE EXIST ==========
         pillar_counts = {}
         for pillar in ['travel', 'care', 'fit', 'enjoy', 'learn']:
-            count = await db.products.count_documents({"pillar": pillar})
+            count = await db.products_master.count_documents({"pillar": pillar})
             pillar_counts[pillar] = count
             
             if count == 0:
@@ -1292,7 +1292,7 @@ async def migrate_existing_products(force: bool = False):
                 defaults = get_default_pillar_products(pillar)
                 for p in defaults:
                     p["created_at"] = datetime.now(timezone.utc).isoformat()
-                    await db.products.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
+                    await db.products_master.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
                 pillar_counts[pillar] = len(defaults)
                 
     except Exception as e:

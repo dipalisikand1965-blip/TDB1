@@ -894,7 +894,7 @@ async def get_trip_planner_options():
 async def get_random_reward_product():
     """Get a random treat product under ₹600 for Paw Reward"""
     # Try to find products from the products collection (treats under ₹600)
-    products = await db.products.find({
+    products = await db.products_master.find({
         "category": {"$in": ["treats", "Treats", "snacks", "Snacks"]},
         "price": {"$lte": 600},
         "price": {"$gt": 0}
@@ -929,7 +929,7 @@ async def get_random_reward_product():
 @stay_router.get("/paw-rewards/eligible-products")
 async def get_eligible_reward_products():
     """Get all products eligible for Paw Reward (treats under ₹600)"""
-    products = await db.products.find({
+    products = await db.products_master.find({
         "category": {"$in": ["treats", "Treats", "snacks", "Snacks"]},
         "price": {"$lte": 600},
         "price": {"$gt": 0}
@@ -1587,7 +1587,7 @@ async def seed_stay_products(username: str = Depends(verify_admin)):
         product["updated_at"] = now
         product["created_by"] = username
         
-        result = await db.products.update_one(
+        result = await db.products_master.update_one(
             {"id": product["id"]},
             {"$set": product},
             upsert=True
@@ -1601,7 +1601,7 @@ async def seed_stay_products(username: str = Depends(verify_admin)):
 @stay_admin_router.get("/products")
 async def get_admin_stay_products(username: str = Depends(verify_admin)):
     """Get all stay products for admin"""
-    products = await db.products.find(
+    products = await db.products_master.find(
         {"pillar": "stay"},
         {"_id": 0}
     ).sort("created_at", -1).to_list(100)
@@ -1631,7 +1631,7 @@ async def create_stay_product(product: dict, username: str = Depends(verify_admi
         "created_by": username
     }
     
-    await db.products.insert_one(product_doc)
+    await db.products_master.insert_one(product_doc)
     return {"message": "Product created", "id": product_id, "product": {k: v for k, v in product_doc.items() if k != "_id"}}
 
 
@@ -1657,7 +1657,7 @@ async def update_stay_product(product_id: str, product: dict, username: str = De
     # Remove None values
     update_doc = {k: v for k, v in update_doc.items() if v is not None}
     
-    result = await db.products.update_one(
+    result = await db.products_master.update_one(
         {"id": product_id},
         {"$set": update_doc}
     )
@@ -1671,7 +1671,7 @@ async def update_stay_product(product_id: str, product: dict, username: str = De
 @stay_admin_router.delete("/products/{product_id}")
 async def delete_stay_product(product_id: str, username: str = Depends(verify_admin)):
     """Delete a stay product"""
-    result = await db.products.delete_one({"id": product_id})
+    result = await db.products_master.delete_one({"id": product_id})
     
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Product not found")

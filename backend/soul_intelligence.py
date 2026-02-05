@@ -583,7 +583,7 @@ async def infer_from_repeat_purchase(pet_id: str, product_id: str):
     
     if count >= 3:
         # Get product details
-        product = await db.products.find_one({"id": product_id}, {"_id": 0})
+        product = await db.products_master.find_one({"id": product_id}, {"_id": 0})
         if product:
             await save_soul_enrichment(pet_id, [{
                 "field": "strong_preferences",
@@ -600,7 +600,7 @@ async def infer_from_return(pet_id: str, product_id: str, return_reason: str):
     """
     db = get_db()
     
-    product = await db.products.find_one({"id": product_id}, {"_id": 0})
+    product = await db.products_master.find_one({"id": product_id}, {"_id": 0})
     if not product:
         return
     

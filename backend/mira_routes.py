@@ -101,7 +101,7 @@ async def get_admin_kit_template(db, kit_type: str, pillar: str = None, pet_type
         # Fetch actual products for the template items
         product_ids = [item.get("product_id") for item in template.get("items", []) if item.get("product_id")]
         if product_ids:
-            products = await db.products.find({"id": {"$in": product_ids}}).to_list(20)
+            products = await db.products_master.find({"id": {"$in": product_ids}}).to_list(20)
             product_map = {p["id"]: p for p in products}
             
             # Enrich items with product data and custom narrations
@@ -137,7 +137,7 @@ async def get_admin_mira_picks(db, limit: int = 6, pet_id: str = None):
     
     # Fetch product details
     product_ids = [p.get("product_id") for p in picks]
-    products = await db.products.find({"id": {"$in": product_ids}}).to_list(limit)
+    products = await db.products_master.find({"id": {"$in": product_ids}}).to_list(limit)
     product_map = {p["id"]: p for p in products}
     
     enriched_picks = []
@@ -4166,7 +4166,7 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                         for field, condition in pillar_exclude_query.items():
                             item_query["$and"].append({field: condition})
                     
-                    found = await db.products.find(item_query, {"_id": 0}).limit(2).to_list(2)
+                    found = await db.products_master.find(item_query, {"_id": 0}).limit(2).to_list(2)
                     
                     if found:
                         for p in found:
@@ -4239,7 +4239,7 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                             {"name": {"$not": {"$regex": "toy|game|ball", "$options": "i"}}}  # Exclude toys
                         ]
                     }
-                    found_products = await db.products.find(query, {"_id": 0}).limit(6).to_list(6)
+                    found_products = await db.products_master.find(query, {"_id": 0}).limit(6).to_list(6)
                 elif is_treat_request:
                     query = {
                         "$or": [
@@ -4248,7 +4248,7 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                             {"name": {"$regex": "treat|snack|chew", "$options": "i"}}
                         ]
                     }
-                    found_products = await db.products.find(query, {"_id": 0}).limit(6).to_list(6)
+                    found_products = await db.products_master.find(query, {"_id": 0}).limit(6).to_list(6)
                 elif is_toy_request:
                     query = {
                         "$or": [
@@ -4257,7 +4257,7 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                             {"name": {"$regex": "toy|ball|tug|fetch", "$options": "i"}}
                         ]
                     }
-                    found_products = await db.products.find(query, {"_id": 0}).limit(6).to_list(6)
+                    found_products = await db.products_master.find(query, {"_id": 0}).limit(6).to_list(6)
                 else:
                     # ===================================================================
                     # Use the NEW PillarResolver for pillar-based searches
@@ -4275,7 +4275,7 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                             pillar_query["is_active"] = {"$ne": False}
                             
                             logger.info(f"[PILLAR RESOLVER] Using rule-based query for pillar '{search_pillar}': {pillar_query}")
-                            found_products = await db.products.find(pillar_query, {"_id": 0}).limit(8).to_list(8)
+                            found_products = await db.products_master.find(pillar_query, {"_id": 0}).limit(8).to_list(8)
                             logger.info(f"[PILLAR RESOLVER] Found {len(found_products)} products for '{search_pillar}'")
                         else:
                             found_products = []
@@ -4292,12 +4292,12 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                                 {"name": {"$regex": "|".join(search_terms[:5]), "$options": "i"}}
                             ]
                         }
-                        found_products = await db.products.find(text_query, {"_id": 0}).limit(6).to_list(6)
+                        found_products = await db.products_master.find(text_query, {"_id": 0}).limit(6).to_list(6)
                 
                 # Legacy fallback: if still no products, try the old pillar field (for transition period)
                 if not found_products:
                     logger.info(f"[PILLAR RESOLVER] No products via new system, falling back to legacy pillar field")
-                    found_products = await db.products.find(
+                    found_products = await db.products_master.find(
                         {"$or": [{"pillar": search_pillar}, {"category": search_pillar}]},
                         {"_id": 0}
                     ).limit(6).to_list(6)
@@ -4790,7 +4790,7 @@ async def get_pet_recommendations(
     }
     
     # Get products for this pillar
-    products = await db.products.find(query, {"_id": 0}).limit(50).to_list(50)
+    products = await db.products_master.find(query, {"_id": 0}).limit(50).to_list(50)
     
     # Score and rank products based on pet profile
     scored_products = []
@@ -5244,7 +5244,7 @@ async def get_pillar_suggestions(pillar: str, pet: Dict, category: str = None) -
             
             if not products:
                 # Fall back to old products collection
-                products = await db.products.find(
+                products = await db.products_master.find(
                     {"category": {"$in": categories}, "available": True},
                     {"_id": 0, "id": 1, "name": 1, "price": 1, "image": 1, "images": 1}
                 ).limit(3).to_list(3)

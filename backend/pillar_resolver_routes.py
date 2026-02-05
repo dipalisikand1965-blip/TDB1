@@ -60,7 +60,7 @@ async def get_pillar_products(
         if category:
             query["category"] = category
         
-        products = await db.products.find(query, {"_id": 0}).skip(skip).limit(limit).to_list(limit)
+        products = await db.products_master.find(query, {"_id": 0}).skip(skip).limit(limit).to_list(limit)
         return {
             "pillar": pillar_name,
             "products": products,
@@ -88,7 +88,7 @@ async def get_pillar_products(
     query["is_active"] = {"$ne": False}
     if additional_filters:
         query.update(additional_filters)
-    total = await db.products.count_documents(query)
+    total = await db.products_master.count_documents(query)
     
     logger.info(f"[PILLAR API] {pillar_name} returned {len(products)} products (total: {total})")
     

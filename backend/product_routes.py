@@ -464,7 +464,7 @@ async def universal_search(
     
     # ==================== SERVICE SEARCH ====================
     if any(word in q_lower for word in ["vet", "groom", "train", "care", "service", "boarding", "walking", "sitting"]):
-        services = await db.services.find(
+        services = await db.services_master.find(
             {"$or": [{"name": search_regex}, {"category": search_regex}, {"description": search_regex}]},
             {"_id": 0, "id": 1, "name": 1, "category": 1, "price_range": 1, "image_url": 1}
         ).limit(5).to_list(5)

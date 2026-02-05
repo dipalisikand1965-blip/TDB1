@@ -273,7 +273,7 @@ async def sync_products_to_db(db, products_to_sync=None, limit=20):
     for product in products_to_sync:
         try:
             # Check if product already exists by name
-            existing = await db.products.find_one({"name": product["name"]})
+            existing = await db.products_master.find_one({"name": product["name"]})
             if existing:
                 results["skipped"] += 1
                 continue
@@ -282,7 +282,7 @@ async def sync_products_to_db(db, products_to_sync=None, limit=20):
             tdc_product = transform_to_tdc_format(product)
             
             # Insert into products collection
-            await db.products.insert_one(tdc_product)
+            await db.products_master.insert_one(tdc_product)
             
             # Also insert into unified_products for search
             unified_product = tdc_product.copy()

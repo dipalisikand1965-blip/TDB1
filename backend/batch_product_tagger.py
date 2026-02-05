@@ -92,7 +92,7 @@ async def main():
     db = client[db_name]
     
     # Get all products without base_tags
-    all_products = await db.products.find(
+    all_products = await db.products_master.find(
         {"base_tags": {"$exists": False}},
         {"_id": 1, "id": 1, "name": 1, "description": 1, "category": 1, "price": 1, "minPrice": 1, "ingredients": 1}
     ).to_list(1000)
@@ -117,7 +117,7 @@ async def main():
             
             if result["success"]:
                 # Update product with base_tags
-                await db.products.update_one(
+                await db.products_master.update_one(
                     {"_id": product["_id"]},
                     {"$set": {"base_tags": result["base_tags"]}}
                 )

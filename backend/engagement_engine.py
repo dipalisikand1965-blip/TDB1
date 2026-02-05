@@ -1192,7 +1192,7 @@ async def get_journey_recommendations(request: JourneyRecommendationRequest):
     if allergy_filter:
         pillar_query.update(allergy_filter)
     
-    pillar_products = await db.products.find(
+    pillar_products = await db.products_master.find(
         pillar_query,
         {"_id": 0, "id": 1, "name": 1, "title": 1, "price": 1, "image": 1, "pillar": 1, "type": 1}
     ).limit(4).to_list(4)
@@ -1226,7 +1226,7 @@ async def get_journey_recommendations(request: JourneyRecommendationRequest):
         if allergy_filter:
             cross_query.update(allergy_filter)
         
-        cross_products = await db.products.find(
+        cross_products = await db.products_master.find(
             cross_query,
             {"_id": 0, "id": 1, "name": 1, "title": 1, "price": 1, "image": 1, "pillar": 1}
         ).limit(2).to_list(2)
@@ -1243,7 +1243,7 @@ async def get_journey_recommendations(request: JourneyRecommendationRequest):
             })
     
     # Get services from current pillar
-    services = await db.services.find(
+    services = await db.services_master.find(
         {"pillar": request.pillar, "is_active": {"$ne": False}},
         {"_id": 0, "id": 1, "name": 1, "title": 1, "price": 1, "image": 1, "pillar": 1}
     ).limit(2).to_list(2)

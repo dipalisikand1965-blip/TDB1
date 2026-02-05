@@ -567,7 +567,7 @@ async def get_filtered_products(pet_id: str, product_ids: List[str] = None, limi
             query = {"$and": [query, exclusions]}
         
         # Fetch products
-        products = await db.products.find(
+        products = await db.products_master.find(
             query,
             {"_id": 0}
         ).limit(limit).to_list(limit)
@@ -586,7 +586,7 @@ async def get_filtered_products(pet_id: str, product_ids: List[str] = None, limi
         
     except ImportError:
         # Fallback - no filtering
-        products = await db.products.find(
+        products = await db.products_master.find(
             {"status": "active"},
             {"_id": 0}
         ).limit(limit).to_list(limit)

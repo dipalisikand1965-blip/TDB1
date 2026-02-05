@@ -383,7 +383,7 @@ class ProductIntelligenceEngine:
         
         # Get all products from BOTH collections
         unified_products = await self.db.unified_products.find({}, {"_id": 0}).to_list(None)
-        legacy_products = await self.db.products.find({}, {"_id": 0}).to_list(None)
+        legacy_products = await self.db.products_master.find({}, {"_id": 0}).to_list(None)
         
         # Process unified_products (primary)
         for product in unified_products:
@@ -473,7 +473,7 @@ class ProductIntelligenceEngine:
                     if analysis["needs_name_update"]:
                         update_doc["name"] = analysis["cleaned_name"]
                     
-                    await self.db.products.update_one(
+                    await self.db.products_master.update_one(
                         {"id": product_id},
                         {"$set": update_doc}
                     )
@@ -505,7 +505,7 @@ async def add_stock_images_to_products(db: AsyncIOMotorDatabase) -> Dict[str, An
     }
     
     # Find products without images
-    products = await db.products.find(
+    products = await db.products_master.find(
         {"$or": [{"image": None}, {"image": ""}, {"image": {"$exists": False}}]},
         {"_id": 0, "id": 1, "category": 1, "name": 1}
     ).to_list(None)
@@ -514,7 +514,7 @@ async def add_stock_images_to_products(db: AsyncIOMotorDatabase) -> Dict[str, An
         category = product.get("category", "default")
         image_url = STOCK_IMAGES.get(category, STOCK_IMAGES["default"])
         
-        await db.products.update_one(
+        await db.products_master.update_one(
             {"id": product["id"]},
             {"$set": {"image": image_url, "is_stock_image": True}}
         )

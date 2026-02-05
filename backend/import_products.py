@@ -62,7 +62,7 @@ async def import_to_mongo():
     print(f"Parsed {len(products)} products from mockData.js")
     
     # Clear existing products
-    await db.products.delete_many({})
+    await db.products_master.delete_many({})
     
     # Add timestamps
     for p in products:
@@ -72,7 +72,7 @@ async def import_to_mongo():
         p['updated_at'] = datetime.now(timezone.utc).isoformat()
     
     if products:
-        await db.products.insert_many(products)
+        await db.products_master.insert_many(products)
         print(f"Imported {len(products)} products to MongoDB")
     
     client.close()

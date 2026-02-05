@@ -160,7 +160,7 @@ async def get_my_autoship_subscriptions(current_user: dict = Depends(get_current
         {"_id": 0}
     ):
         # Fetch product details
-        product = await db.products.find_one({"id": sub.get("product_id")}, {"_id": 0, "name": 1, "image": 1})
+        product = await db.products_master.find_one({"id": sub.get("product_id")}, {"_id": 0, "name": 1, "image": 1})
         if product:
             sub["product"] = product
         subscriptions.append(sub)
@@ -175,7 +175,7 @@ async def create_autoship_subscription(
 ):
     """Create a new autoship subscription"""
     # Get product details
-    product = await db.products.find_one({"id": data.product_id}, {"_id": 0})
+    product = await db.products_master.find_one({"id": data.product_id}, {"_id": 0})
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     

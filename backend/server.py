@@ -323,7 +323,7 @@ async def auto_sync_products():
             
             for sp in shopify_products:
                 transformed = transform_shopify_product(sp)
-                result = await db.products.update_one(
+                result = await db.products_master.update_one(
                     {"shopify_id": sp["id"]},
                     {"$set": transformed},
                     upsert=True
@@ -734,7 +734,7 @@ async def force_initialize_database():
                 logger.info(f"✓ User exists: {default_email}")
         
         # 3. Check products count
-        product_count = await db.products.count_documents({})
+        product_count = await db.products_master.count_documents({})
         logger.info(f"✓ Products in database: {product_count}")
         
         # 4. AUTO-SEED CRITICAL DATA ON STARTUP
@@ -791,7 +791,7 @@ async def auto_seed_critical_data():
         
         # Seed Services for all pillars if none exist
         try:
-            service_count = await db.services.count_documents({})
+            service_count = await db.services_master.count_documents({})
             if service_count == 0:
                 logger.info("Seeding Concierge® Services...")
                 await auto_seed_all_services()
@@ -1186,7 +1186,7 @@ async def auto_seed_all_services():
     all_services = fit_services + care_services + celebrate_services + insure_services
     
     for service in all_services:
-        await db.services.update_one({"id": service["id"]}, {"$set": service}, upsert=True)
+        await db.services_master.update_one({"id": service["id"]}, {"$set": service}, upsert=True)
     
     logger.info(f"✓ AUTO-SEEDED {len(all_services)} Concierge® Services")
 
@@ -1305,7 +1305,7 @@ async def lifespan(app: FastAPI):
         try:
             await asyncio.wait_for(search_service.connect(), timeout=5.0)
             # Index products in background after app is ready
-            products = await db.products.find({}, {"_id": 0}).to_list(10000)
+            products = await db.products_master.find({}, {"_id": 0}).to_list(10000)
             if products:
                 await search_service.index_products_batch(products)
             # Index collections
@@ -1451,8 +1451,8 @@ async def get_site_status():
     stats = {}
     try:
         # Core counts
-        stats["products"] = await db.products.count_documents({})
-        stats["services"] = await db.services.count_documents({})
+        stats["products"] = await db.products_master.count_documents({})
+        stats["services"] = await db.services_master.count_documents({})
         stats["members"] = await db.users.count_documents({})
         stats["orders"] = await db.orders.count_documents({})
         stats["pets"] = await db.pets.count_documents({})
@@ -1855,7 +1855,7 @@ async def db_health_check():
     try:
         # Ping MongoDB to check connection
         await client.admin.command('ping')
-        count = await db.products.count_documents({})
+        count = await db.products_master.count_documents({})
         return {"status": "healthy", "database": "connected", "products_count": count}
     except Exception as e:
         logger.error(f"Database health check failed: {e}")
@@ -1866,7 +1866,7 @@ async def api_db_health_check():
     """Database connectivity health check under /api prefix"""
     try:
         await client.admin.command('ping')
-        count = await db.products.count_documents({})
+        count = await db.products_master.count_documents({})
         return {"status": "healthy", "database": "connected", "products_count": count}
     except Exception as e:
         logger.error(f"Database health check failed: {e}")
@@ -1979,7 +1979,7 @@ async def ensure_default_user_exists():
 async def seed_initial_products():
     """Seed initial products if database is empty"""
     try:
-        product_count = await db.products.count_documents({})
+        product_count = await db.products_master.count_documents({})
         if product_count > 0:
             logger.info(f"Products already exist: {product_count} products")
             return
@@ -2024,7 +2024,7 @@ async def seed_initial_products():
             product["created_at"] = get_utc_timestamp()
             product["synced_at"] = get_utc_timestamp()
         
-        await db.products.insert_many(sample_products)
+        await db.products_master.insert_many(sample_products)
         logger.info(f"Seeded {len(sample_products)} initial products")
         
     except Exception as e:
@@ -2039,7 +2039,7 @@ async def auto_enhance_product_tags():
     """
     try:
         # Check if we need to run enhancement
-        products_count = await db.products.count_documents({})
+        products_count = await db.products_master.count_documents({})
         unified_count = await db.unified_products.count_documents({})
         
         if products_count == 0 and unified_count == 0:
@@ -2139,7 +2139,7 @@ async def auto_enhance_product_tags():
         
         # Process products collection
         products_updated = 0
-        async for product in db.products.find({}):
+        async for product in db.products_master.find({}):
             updates = {}
             pillar = extract_pillar(product)
             if pillar != product.get('pillar'):
@@ -2151,7 +2151,7 @@ async def auto_enhance_product_tags():
             if breed_tags != product.get('breed_tags'):
                 updates['breed_tags'] = breed_tags
             if updates:
-                await db.products.update_one({"_id": product["_id"]}, {"$set": updates})
+                await db.products_master.update_one({"_id": product["_id"]}, {"$set": updates})
                 products_updated += 1
         
         logger.info(f"✅ Auto-enhanced tags: {updated} unified_products, {products_updated} products")
@@ -3417,7 +3417,7 @@ async def force_seed_all_products():
         for p in stay_products:
             p["created_at"] = get_utc_timestamp()
             p["image"] = "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800"
-            await db.products.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
+            await db.products_master.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
         results["seeded"]["stay"] = len(stay_products)
         
         # ========== TRAVEL PRODUCTS ==========
@@ -3432,7 +3432,7 @@ async def force_seed_all_products():
         for p in travel_products:
             p["created_at"] = get_utc_timestamp()
             p["image"] = "https://images.unsplash.com/photo-1544568100-847a948585b9?w=800"
-            await db.products.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
+            await db.products_master.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
         results["seeded"]["travel"] = len(travel_products)
         
         # ========== CARE PRODUCTS ==========
@@ -3455,7 +3455,7 @@ async def force_seed_all_products():
         for p in care_products:
             p["created_at"] = get_utc_timestamp()
             p["image"] = "https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?w=800"
-            await db.products.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
+            await db.products_master.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
         results["seeded"]["care"] = len(care_products)
         
         # ========== FIT PRODUCTS ==========
@@ -3469,7 +3469,7 @@ async def force_seed_all_products():
         for p in fit_products:
             p["created_at"] = get_utc_timestamp()
             p["image"] = "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800"
-            await db.products.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
+            await db.products_master.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
         results["seeded"]["fit"] = len(fit_products)
         
         # ========== ENJOY PRODUCTS ==========
@@ -3482,7 +3482,7 @@ async def force_seed_all_products():
         for p in enjoy_products:
             p["created_at"] = get_utc_timestamp()
             p["image"] = "https://images.unsplash.com/photo-1601758124096-1fd661873b95?w=800"
-            await db.products.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
+            await db.products_master.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
         results["seeded"]["enjoy"] = len(enjoy_products)
         
         # ========== LEARN PRODUCTS ==========
@@ -3495,7 +3495,7 @@ async def force_seed_all_products():
         for p in learn_products:
             p["created_at"] = get_utc_timestamp()
             p["image"] = "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=800"
-            await db.products.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
+            await db.products_master.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
         results["seeded"]["learn"] = len(learn_products)
         
         # ========== INSURE PRODUCTS (under Paperwork) ==========
@@ -3510,7 +3510,7 @@ async def force_seed_all_products():
         for p in insure_products:
             p["created_at"] = get_utc_timestamp()
             p["image"] = "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=800"
-            await db.products.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
+            await db.products_master.update_one({"id": p["id"]}, {"$set": p}, upsert=True)
         results["seeded"]["insure"] = len(insure_products)
         
         # ========== FEED & NUTRITION BUNDLES ==========
@@ -5120,7 +5120,7 @@ async def update_product_fulfilment(
     if fulfilment.regions is not None:
         update_data["regions"] = fulfilment.regions
     
-    result = await db.products.update_one(
+    result = await db.products_master.update_one(
         {"id": product_id},
         {"$set": update_data}
     )
@@ -5150,7 +5150,7 @@ async def bulk_update_product_fulfilment(
     if regions is not None:
         update_data["regions"] = regions
     
-    result = await db.products.update_many(
+    result = await db.products_master.update_many(
         {"id": {"$in": product_ids}},
         {"$set": update_data}
     )
@@ -5170,7 +5170,7 @@ async def migrate_products_with_fulfilment_defaults(username: str = Depends(veri
     pickup_cities = settings.get("pickup_cities", ["Mumbai", "Gurugram", "Bangalore"]) if settings else ["Mumbai", "Gurugram", "Bangalore"]
     
     # Update bakery items (cakes, fresh treats) - store_pickup only
-    bakery_result = await db.products.update_many(
+    bakery_result = await db.products_master.update_many(
         {
             "fulfilment_type": {"$exists": False},
             "$or": [
@@ -5188,7 +5188,7 @@ async def migrate_products_with_fulfilment_defaults(username: str = Depends(veri
     )
     
     # Update all other products - shipping (pan-india)
-    other_result = await db.products.update_many(
+    other_result = await db.products_master.update_many(
         {"fulfilment_type": {"$exists": False}},
         {
             "$set": {
@@ -5754,7 +5754,7 @@ async def get_category_hierarchy():
     # Add product counts for each parent category
     result = []
     for parent_id, parent_data in hierarchy.items():
-        parent_count = await db.products.count_documents({"parent_category": parent_id})
+        parent_count = await db.products_master.count_documents({"parent_category": parent_id})
         
         # Get subcategory counts
         subcategories = []
@@ -5762,7 +5762,7 @@ async def get_category_hierarchy():
             db_cats = sub_data.get("db_categories", [])
             sub_count = 0
             for db_cat in db_cats:
-                sub_count += await db.products.count_documents({"category": db_cat})
+                sub_count += await db.products_master.count_documents({"category": db_cat})
             
             subcategories.append({
                 "id": sub_id,
@@ -5886,7 +5886,7 @@ async def get_public_products(
     seen_ids = set()
     
     # First, query old products collection
-    old_products = await db.products.find(query, {"_id": 0}).to_list(500)
+    old_products = await db.products_master.find(query, {"_id": 0}).to_list(500)
     for p in old_products:
         pid = p.get("id") or p.get("shopify_id")
         if pid and pid not in seen_ids:
@@ -5988,7 +5988,7 @@ async def get_services(
         query["category"] = category
     
     # Sort by created_at descending to show newest items first
-    services = await db.services.find(query, {"_id": 0}).sort("created_at", -1).limit(limit).to_list(limit)
+    services = await db.services_master.find(query, {"_id": 0}).sort("created_at", -1).limit(limit).to_list(limit)
     
     return {"services": services, "total": len(services)}
 
@@ -5996,7 +5996,7 @@ async def get_services(
 @api_router.get("/services/{service_id}")
 async def get_service_detail(service_id: str):
     """Get single service details"""
-    service = await db.services.find_one(
+    service = await db.services_master.find_one(
         {"$or": [{"id": service_id}, {"name": service_id}]},
         {"_id": 0}
     )
@@ -6317,7 +6317,7 @@ async def book_service(
 ):
     """Book a Concierge® service - creates a ticket in the service desk"""
     # Fetch service details
-    service = await db.services.find_one({"id": service_id}, {"_id": 0})
+    service = await db.services_master.find_one({"id": service_id}, {"_id": 0})
     if not service:
         raise HTTPException(status_code=404, detail="Service not found")
     
@@ -6696,7 +6696,7 @@ async def get_personalized_recommendations(
         if exclude_list:
             query["id"] = {"$nin": exclude_list}
     
-    products = await db.products.find(
+    products = await db.products_master.find(
         query,
         {"_id": 0, "id": 1, "name": 1, "price": 1, "image": 1, "images": 1, "category": 1, "tags": 1, "pillar": 1, "description": 1}
     ).sort("created_at", -1).limit(limit * 4).to_list(limit * 4)
@@ -6783,7 +6783,7 @@ async def get_product_recommendations(
         if exclude_list:
             query["id"] = {"$nin": exclude_list}
     
-    products = await db.products.find(
+    products = await db.products_master.find(
         query,
         {"_id": 0, "id": 1, "name": 1, "price": 1, "image": 1, "images": 1, "category": 1, "tags": 1, "pillar": 1}
     ).sort("created_at", -1).limit(limit * 3).to_list(limit * 3)
@@ -6876,12 +6876,12 @@ async def get_pet_recommendations(pet_id: str, limit: int = 20, pillar: str = No
             query["tags"] = {"$nin": clean_allergies}
     
     # Fetch products - get more variety
-    products = await db.products.find(query, {"_id": 0}).limit(limit * 3).to_list(limit * 3)
+    products = await db.products_master.find(query, {"_id": 0}).limit(limit * 3).to_list(limit * 3)
     
     # If pillar filtered and not enough results, fetch without pillar
     if pillar and len(products) < limit:
         query.pop("pillar", None)
-        additional = await db.products.find(query, {"_id": 0}).limit(limit * 2).to_list(limit * 2)
+        additional = await db.products_master.find(query, {"_id": 0}).limit(limit * 2).to_list(limit * 2)
         products.extend([p for p in additional if p not in products])
     
     # Also get celebrate products (cakes, treats) if pillar is celebrate or dine
@@ -7079,7 +7079,7 @@ async def get_frequently_bought_together(product_id: str, limit: int = 5):
     # Fetch product details
     result_products = []
     for prod_id, count in top_co_purchased:
-        product = await db.products.find_one(
+        product = await db.products_master.find_one(
             {"$or": [{"id": prod_id}, {"shopify_id": prod_id}]},
             {"_id": 0}
         )
@@ -7125,7 +7125,7 @@ async def get_repeat_purchase_suggestions(pet_id: str, limit: int = 6):
             
             # Get product details if not cached
             if product_id not in product_details_cache:
-                product = await db.products.find_one(
+                product = await db.products_master.find_one(
                     {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
                     {"_id": 0}
                 )
@@ -7198,7 +7198,7 @@ async def get_repeat_purchase_suggestions(pet_id: str, limit: int = 6):
 async def get_product_detail(product_id: str):
     """Get single product by ID or handle for detail page"""
     # Try products collection first - search by id, shopify_id, or shopify_handle
-    product = await db.products.find_one(
+    product = await db.products_master.find_one(
         {"$or": [
             {"id": product_id}, 
             {"shopify_id": product_id},
@@ -7225,7 +7225,7 @@ async def get_related_products(product_id: str, limit: int = 4, pillar: str = No
     """Get products that go well with the specified product - pillar-aware smart recommendations"""
     
     # Find the current product
-    product = await db.products.find_one(
+    product = await db.products_master.find_one(
         {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
         {"_id": 0}
     )
@@ -7290,7 +7290,7 @@ async def get_related_products(product_id: str, limit: int = 4, pillar: str = No
     
     # For pan-india category, prioritize pan-india shippable products
     if current_category == "pan-india":
-        pan_india_products = await db.products.find(
+        pan_india_products = await db.products_master.find(
             {"category": "pan-india", "id": {"$ne": product_id}},
             {"_id": 0}
         ).limit(limit).to_list(limit)
@@ -7298,7 +7298,7 @@ async def get_related_products(product_id: str, limit: int = 4, pillar: str = No
     else:
         # Strategy 1: Find products in same pillar with complementary subcategories
         for comp_subcat in complementary:
-            subcat_products = await db.products.find(
+            subcat_products = await db.products_master.find(
                 {
                     "$or": [
                         {"category": product_pillar, "subcategory": comp_subcat},
@@ -7315,7 +7315,7 @@ async def get_related_products(product_id: str, limit: int = 4, pillar: str = No
         if len(related_products) < limit:
             remaining = limit - len(related_products)
             existing_ids = {product_id} | {p.get("id") for p in related_products}
-            pillar_products = await db.products.find(
+            pillar_products = await db.products_master.find(
                 {
                     "$or": [
                         {"pillar": product_pillar},
@@ -7331,7 +7331,7 @@ async def get_related_products(product_id: str, limit: int = 4, pillar: str = No
         if len(related_products) < limit:
             remaining = limit - len(related_products)
             existing_ids = {product_id} | {p.get("id") for p in related_products}
-            popular = await db.products.find(
+            popular = await db.products_master.find(
                 {
                     "id": {"$nin": list(existing_ids)},
                     "category": {"$in": ["treats", "accessories"]}
@@ -7341,7 +7341,7 @@ async def get_related_products(product_id: str, limit: int = 4, pillar: str = No
             related_products.extend(popular)
     
     # Also get similar products from same category (different price range)
-    similar = await db.products.find(
+    similar = await db.products_master.find(
         {
             "category": current_category,
             "id": {"$ne": product_id},
@@ -7365,8 +7365,8 @@ async def get_related_products(product_id: str, limit: int = 4, pillar: str = No
     bundles = []
     
     if product_pillar == "celebrate" and current_category in ["cakes", "pupcakes"]:
-        treat = await db.products.find_one({"category": "treats"}, {"_id": 0})
-        bandana = await db.products.find_one({"category": {"$in": ["accessories", "bandanas"]}}, {"_id": 0})
+        treat = await db.products_master.find_one({"category": "treats"}, {"_id": 0})
+        bandana = await db.products_master.find_one({"category": {"$in": ["accessories", "bandanas"]}}, {"_id": 0})
         if treat and bandana:
             bundle_price = current_price + treat.get("price", 0) + bandana.get("price", 0)
             bundles.append({
@@ -7379,8 +7379,8 @@ async def get_related_products(product_id: str, limit: int = 4, pillar: str = No
             })
     
     elif product_pillar == "travel":
-        calming = await db.products.find_one({"subcategory": "calming"}, {"_id": 0})
-        accessory = await db.products.find_one({"subcategory": "accessory"}, {"_id": 0})
+        calming = await db.products_master.find_one({"subcategory": "calming"}, {"_id": 0})
+        accessory = await db.products_master.find_one({"subcategory": "accessory"}, {"_id": 0})
         if calming and accessory:
             bundle_price = current_price + calming.get("price", 0) + accessory.get("price", 0)
             bundles.append({
@@ -7553,7 +7553,7 @@ async def delete_product_tag(tag_id: str):
         raise HTTPException(status_code=400, detail="Cannot delete default tags")
     
     # Remove tag from all products that have it
-    await db.products.update_many(
+    await db.products_master.update_many(
         {"display_tags": tag_id},
         {"$pull": {"display_tags": tag_id}}
     )
@@ -7566,7 +7566,7 @@ async def delete_product_tag(tag_id: str):
 @api_router.get("/admin/products-by-tag/{tag_id}")
 async def get_products_by_tag(tag_id: str, limit: int = 50):
     """Get all products with a specific tag"""
-    products = await db.products.find(
+    products = await db.products_master.find(
         {"display_tags": tag_id},
         {"_id": 0}
     ).limit(limit).to_list(limit)
@@ -7582,7 +7582,7 @@ async def bulk_tag_products(data: dict):
     if not product_ids or not tags_to_add:
         raise HTTPException(status_code=400, detail="product_ids and tags are required")
     
-    result = await db.products.update_many(
+    result = await db.products_master.update_many(
         {"$or": [{"id": {"$in": product_ids}}, {"shopify_id": {"$in": product_ids}}]},
         {"$addToSet": {"display_tags": {"$each": tags_to_add}}}
     )
@@ -7598,7 +7598,7 @@ async def bulk_untag_products(data: dict):
     if not product_ids or not tags_to_remove:
         raise HTTPException(status_code=400, detail="product_ids and tags are required")
     
-    result = await db.products.update_many(
+    result = await db.products_master.update_many(
         {"$or": [{"id": {"$in": product_ids}}, {"shopify_id": {"$in": product_ids}}]},
         {"$pull": {"display_tags": {"$in": tags_to_remove}}}
     )
@@ -7612,7 +7612,7 @@ async def get_all_pillar_products(limit: int = 100, pillar: str = None):
     if pillar:
         query["pillar"] = pillar
     
-    products = await db.products.find(
+    products = await db.products_master.find(
         query,
         {"_id": 0, "id": 1, "title": 1, "name": 1, "pillar": 1, "category": 1, "display_tags": 1, "images": 1, "image": 1, "price": 1}
     ).limit(limit).to_list(limit)
@@ -7690,14 +7690,14 @@ async def get_intelligence_stats(
     verify_admin(credentials)
     
     # Count products with intelligent tags
-    total = await db.products.count_documents({})
-    with_intelligent_tags = await db.products.count_documents({"intelligent_tags": {"$exists": True, "$ne": []}})
-    with_breed_tags = await db.products.count_documents({"breed_tags": {"$exists": True, "$ne": []}})
-    with_health_tags = await db.products.count_documents({"health_tags": {"$exists": True, "$ne": []}})
-    without_images = await db.products.count_documents(
+    total = await db.products_master.count_documents({})
+    with_intelligent_tags = await db.products_master.count_documents({"intelligent_tags": {"$exists": True, "$ne": []}})
+    with_breed_tags = await db.products_master.count_documents({"breed_tags": {"$exists": True, "$ne": []}})
+    with_health_tags = await db.products_master.count_documents({"health_tags": {"$exists": True, "$ne": []}})
+    without_images = await db.products_master.count_documents(
         {"$or": [{"image": None}, {"image": ""}, {"image": {"$exists": False}}]}
     )
-    with_stock_images = await db.products.count_documents({"is_stock_image": True})
+    with_stock_images = await db.products_master.count_documents({"is_stock_image": True})
     
     # Get tag distribution
     pipeline = [
@@ -7706,7 +7706,7 @@ async def get_intelligence_stats(
         {"$sort": {"count": -1}},
         {"$limit": 30}
     ]
-    top_tags = await db.products.aggregate(pipeline).to_list(30)
+    top_tags = await db.products_master.aggregate(pipeline).to_list(30)
     
     return {
         "total_products": total,
@@ -7728,7 +7728,7 @@ async def get_display_tag_options():
 @api_router.put("/admin/products/{product_id}/display-tags")
 async def update_product_display_tags(product_id: str, tags: List[str]):
     """Update display tags for a product"""
-    result = await db.products.update_one(
+    result = await db.products_master.update_one(
         {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
         {"$set": {"display_tags": tags, "updated_at": get_utc_timestamp()}}
     )
@@ -7804,7 +7804,7 @@ async def add_custom_breed(data: dict):
 @api_router.put("/admin/products/{product_id}/breed-tags")
 async def update_product_breed_tags(product_id: str, breed_tags: List[str]):
     """Update breed tags for a product"""
-    result = await db.products.update_one(
+    result = await db.products_master.update_one(
         {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
         {"$set": {"breed_tags": breed_tags, "updated_at": get_utc_timestamp()}}
     )
@@ -7836,7 +7836,7 @@ async def bulk_update_breed_tags(data: dict):
         else:
             continue
             
-        result = await db.products.update_one(
+        result = await db.products_master.update_one(
             {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
             {**update, "$set": {"updated_at": get_utc_timestamp()}}
         )
@@ -7849,7 +7849,7 @@ async def bulk_update_breed_tags(data: dict):
 @api_router.get("/admin/products/by-breed/{breed}")
 async def get_products_by_breed(breed: str, limit: int = 50):
     """Get all products tagged with a specific breed"""
-    products = await db.products.find(
+    products = await db.products_master.find(
         {"breed_tags": {"$regex": breed, "$options": "i"}},
         {"_id": 0, "id": 1, "name": 1, "price": 1, "image": 1, "breed_tags": 1, "category": 1}
     ).limit(limit).to_list(limit)
@@ -7890,7 +7890,7 @@ async def recommend_products_for_breed(request: dict):
         ]
     
     # Fetch products
-    products = await db.products.find(
+    products = await db.products_master.find(
         query,
         {"_id": 0}
     ).limit(200).to_list(200)
@@ -7940,7 +7940,7 @@ async def recommend_products_for_breed(request: dict):
 @api_router.put("/admin/products/{product_id}/bundle-config")
 async def update_product_bundle_config(product_id: str, bundle_config: dict):
     """Update bundle configuration for a product"""
-    result = await db.products.update_one(
+    result = await db.products_master.update_one(
         {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
         {"$set": {
             "bundle_type": bundle_config.get("bundle_type"),
@@ -7963,7 +7963,7 @@ async def bulk_seed_breed_metadata(background_tasks: BackgroundTasks):
     """
     
     # Count products without breed_metadata
-    count = await db.products.count_documents({
+    count = await db.products_master.count_documents({
         "$or": [
             {"breed_metadata": {"$exists": False}},
             {"breed_metadata": None},
@@ -8010,7 +8010,7 @@ async def bulk_seed_breed_metadata(background_tasks: BackgroundTasks):
             "allergy": {"sensitivities": ["allergy_safe"]}
         }
         
-        cursor = db.products.find({
+        cursor = db.products_master.find({
             "$or": [
                 {"breed_metadata": {"$exists": False}},
                 {"breed_metadata": None},
@@ -8075,7 +8075,7 @@ async def bulk_seed_breed_metadata(background_tasks: BackgroundTasks):
                 metadata["pillars"] = list(set(metadata["pillars"]))
                 
                 # Update product
-                await db.products.update_one(
+                await db.products_master.update_one(
                     {"_id": product["_id"]},
                     {"$set": {
                         "breed_metadata": metadata,
@@ -8319,7 +8319,7 @@ async def update_product_mira_hint(product_id: str, data: dict):
     """Update mira_hint for a specific product"""
     mira_hint = data.get("mira_hint", "")
     
-    result = await db.products.update_one(
+    result = await db.products_master.update_one(
         {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
         {"$set": {
             "mira_hint": mira_hint,
@@ -8338,7 +8338,7 @@ async def auto_seed_mira_hints(background_tasks: BackgroundTasks, use_ai: bool =
     """Auto-seed mira_hint for all products that don't have one"""
     
     # Count products needing hints
-    count = await db.products.count_documents({
+    count = await db.products_master.count_documents({
         "$or": [
             {"mira_hint": {"$exists": False}},
             {"mira_hint": None},
@@ -8349,7 +8349,7 @@ async def auto_seed_mira_hints(background_tasks: BackgroundTasks, use_ai: bool =
     # Run seeding in background
     async def seed_hints():
         import asyncio
-        cursor = db.products.find({
+        cursor = db.products_master.find({
             "$or": [
                 {"mira_hint": {"$exists": False}},
                 {"mira_hint": None},
@@ -8366,7 +8366,7 @@ async def auto_seed_mira_hints(background_tasks: BackgroundTasks, use_ai: bool =
             else:
                 hint = generate_mira_hint(product)
             
-            await db.products.update_one(
+            await db.products_master.update_one(
                 {"_id": product["_id"]},
                 {"$set": {"mira_hint": hint}}
             )
@@ -8391,11 +8391,11 @@ async def auto_seed_mira_hints(background_tasks: BackgroundTasks, use_ai: bool =
 async def regenerate_all_mira_hints(background_tasks: BackgroundTasks, use_ai: bool = True):
     """Regenerate mira_hint for ALL products (overwrites existing) with AI-powered unique hints"""
     
-    count = await db.products.count_documents({})
+    count = await db.products_master.count_documents({})
     
     async def regenerate_hints():
         import asyncio
-        cursor = db.products.find({})
+        cursor = db.products_master.find({})
         updated = 0
         errors = 0
         
@@ -8408,7 +8408,7 @@ async def regenerate_all_mira_hints(background_tasks: BackgroundTasks, use_ai: b
                 else:
                     hint = generate_mira_hint(product)
                 
-                await db.products.update_one(
+                await db.products_master.update_one(
                     {"_id": product["_id"]},
                     {"$set": {"mira_hint": hint}}
                 )
@@ -8422,7 +8422,7 @@ async def regenerate_all_mira_hints(background_tasks: BackgroundTasks, use_ai: b
                 logging.error(f"[Mira Hints] Error on product {product.get('name', 'unknown')}: {e}")
                 # Use fallback on error
                 hint = generate_mira_hint_fallback(product)
-                await db.products.update_one(
+                await db.products_master.update_one(
                     {"_id": product["_id"]},
                     {"$set": {"mira_hint": hint}}
                 )
@@ -8443,7 +8443,7 @@ async def regenerate_all_mira_hints(background_tasks: BackgroundTasks, use_ai: b
 @api_router.get("/admin/products/{product_id}")
 async def get_admin_product_details(product_id: str):
     """Get full product details for admin editing"""
-    product = await db.products.find_one(
+    product = await db.products_master.find_one(
         {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
         {"_id": 0}
     )
@@ -8469,7 +8469,7 @@ async def update_admin_product(product_id: str, updates: dict):
     sanitized["updated_at"] = get_utc_timestamp()
     sanitized["locally_edited"] = True
     
-    result = await db.products.update_one(
+    result = await db.products_master.update_one(
         {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
         {"$set": sanitized}
     )
@@ -8495,7 +8495,7 @@ async def import_products_csv(
     for product_data in request.products:
         try:
             # Check if product exists by name
-            existing = await db.products.find_one({"name": product_data.get("name")})
+            existing = await db.products_master.find_one({"name": product_data.get("name")})
             
             product_doc = {
                 "name": product_data.get("name", ""),
@@ -8514,7 +8514,7 @@ async def import_products_csv(
             
             if existing:
                 # Update existing product
-                await db.products.update_one(
+                await db.products_master.update_one(
                     {"_id": existing["_id"]},
                     {"$set": product_doc}
                 )
@@ -8523,7 +8523,7 @@ async def import_products_csv(
                 # Create new product
                 product_doc["id"] = f"csv-{uuid.uuid4().hex[:12]}"
                 product_doc["created_at"] = get_utc_timestamp()
-                await db.products.insert_one(product_doc)
+                await db.products_master.insert_one(product_doc)
                 imported += 1
                 
         except Exception as e:
@@ -8543,7 +8543,7 @@ async def export_products_csv(
     """Export all products as CSV file"""
     verify_admin(credentials)
     
-    products = await db.products.find({}, {"_id": 0}).to_list(10000)
+    products = await db.products_master.find({}, {"_id": 0}).to_list(10000)
     
     # Create CSV content
     output = io.StringIO()
@@ -8764,7 +8764,7 @@ async def analyze_single_product(
     """Analyze a single product and return suggested tags (without saving)"""
     verify_admin(credentials)
     
-    product = await db.products.find_one(
+    product = await db.products_master.find_one(
         {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
         {"_id": 0}
     )
@@ -8830,7 +8830,7 @@ async def full_product_update(
     sanitized = {k: v for k, v in updates.items() if k in allowed_fields}
     sanitized["updated_at"] = get_utc_timestamp()
     
-    result = await db.products.update_one(
+    result = await db.products_master.update_one(
         {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
         {"$set": sanitized}
     )
@@ -9157,12 +9157,12 @@ async def seed_meal_products(
     inserted = 0
     updated = 0
     for product in meal_products:
-        existing = await db.products.find_one({"name": product["name"]})
+        existing = await db.products_master.find_one({"name": product["name"]})
         if existing:
-            await db.products.update_one({"name": product["name"]}, {"$set": product})
+            await db.products_master.update_one({"name": product["name"]}, {"$set": product})
             updated += 1
         else:
-            await db.products.insert_one(product)
+            await db.products_master.insert_one(product)
             inserted += 1
     
     return {
@@ -9492,12 +9492,12 @@ async def seed_travel_products(
     inserted = 0
     updated = 0
     for product in travel_products:
-        existing = await db.products.find_one({"name": product["name"]})
+        existing = await db.products_master.find_one({"name": product["name"]})
         if existing:
-            await db.products.update_one({"name": product["name"]}, {"$set": product})
+            await db.products_master.update_one({"name": product["name"]}, {"$set": product})
             updated += 1
         else:
-            await db.products.insert_one(product)
+            await db.products_master.insert_one(product)
             inserted += 1
     
     return {
@@ -9550,7 +9550,7 @@ async def fix_confusing_product_names(
     fixed_names = []
     
     for old_name, fix_data in name_fixes.items():
-        result = await db.products.update_many(
+        result = await db.products_master.update_many(
             {"name": {"$regex": f"^{old_name}$", "$options": "i"}},
             {
                 "$set": {
@@ -9573,7 +9573,7 @@ async def fix_confusing_product_names(
     ]
     
     for pattern_data in clarify_patterns:
-        await db.products.update_many(
+        await db.products_master.update_many(
             {
                 "name": {"$regex": pattern_data["pattern"], "$options": "i"},
                 "pillar": {"$in": ["celebrate", "dine", "care"]}
@@ -9602,7 +9602,7 @@ async def enhance_all_product_tags(
     verify_admin(credentials)
     
     # Fetch all products
-    products = await db.products.find({}, {"_id": 0}).to_list(None)
+    products = await db.products_master.find({}, {"_id": 0}).to_list(None)
     
     enhanced_count = 0
     
@@ -9709,7 +9709,7 @@ async def enhance_all_product_tags(
         # Update if new tags were added
         new_tags_list = list(new_tags)
         if len(new_tags_list) > len(existing_tags):
-            await db.products.update_one(
+            await db.products_master.update_one(
                 {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
                 {"$set": {"intelligent_tags": new_tags_list, "tags_enhanced_at": get_utc_timestamp()}}
             )
@@ -9768,8 +9768,8 @@ async def mongodb_fallback_search_legacy(
     elif sort == "name_desc":
         sort_field = [("name", -1)]
     
-    total = await db.products.count_documents(query)
-    products = await db.products.find(query, {"_id": 0}).sort(sort_field).skip(offset).limit(limit).to_list(limit)
+    total = await db.products_master.count_documents(query)
+    products = await db.products_master.find(query, {"_id": 0}).sort(sort_field).skip(offset).limit(limit).to_list(limit)
     
     return {
         "hits": products,
@@ -9854,7 +9854,7 @@ async def search_typeahead(
     # Fallback to MongoDB if Meilisearch is not available
     if not search_service or not search_service._initialized:
         search_regex = {"$regex": q, "$options": "i"}
-        products = await db.products.find(
+        products = await db.products_master.find(
             {"$or": [{"name": search_regex}, {"tags": search_regex}, {"category": search_regex}]},
             {"_id": 0, "id": 1, "name": 1, "image": 1, "price": 1, "category": 1}
         ).limit(limit).to_list(limit)
@@ -10086,7 +10086,7 @@ async def universal_search(
     }
     
     # Search Products
-    products = await db.products.find({
+    products = await db.products_master.find({
         "$or": [
             {"name": {"$regex": q, "$options": "i"}},
             {"title": {"$regex": q, "$options": "i"}},
@@ -10099,7 +10099,7 @@ async def universal_search(
     results["products"] = products
     
     # Search Services
-    services = await db.services.find({
+    services = await db.services_master.find({
         "$or": [
             {"name": {"$regex": q, "$options": "i"}},
             {"description": {"$regex": q, "$options": "i"}},
@@ -10244,7 +10244,7 @@ async def reindex_search(credentials: HTTPBasicCredentials = Depends(security)):
     verify_admin(credentials)
     
     # Fetch all products
-    products = await db.products.find({}, {"_id": 0}).to_list(10000)
+    products = await db.products_master.find({}, {"_id": 0}).to_list(10000)
     
     if products:
         await search_service.index_products_batch(products)
@@ -11949,18 +11949,18 @@ async def sync_from_shopify(username: str = Depends(verify_admin)):
                 logger.error(f"  - From Shopify ID: {shopify_id}")
             
             # Check if product exists
-            existing = await db.products.find_one({"shopify_id": sp["id"]})
+            existing = await db.products_master.find_one({"shopify_id": sp["id"]})
             
             if existing:
                 # Update existing
-                await db.products.update_one(
+                await db.products_master.update_one(
                     {"shopify_id": sp["id"]},
                     {"$set": transformed}
                 )
                 updated += 1
             else:
                 # Insert new
-                await db.products.insert_one(transformed)
+                await db.products_master.insert_one(transformed)
                 added += 1
             
             # ALSO sync to unified_products for Product Box
@@ -12063,14 +12063,14 @@ async def sync_from_shopify(username: str = Depends(verify_admin)):
                 await db.collections.insert_one(collection)
             
             # Update products with this category to have this collection_id
-            await db.products.update_many(
+            await db.products_master.update_many(
                 {"category": cat},
                 {"$addToSet": {"collection_ids": collection["id"]}}
             )
             
             # Update collection product_ids
             # Find all products with this category
-            cat_products = await db.products.find({"category": cat}, {"id": 1}).to_list(1000)
+            cat_products = await db.products_master.find({"category": cat}, {"id": 1}).to_list(1000)
             p_ids = [p["id"] for p in cat_products]
             
             await db.collections.update_one(
@@ -12127,8 +12127,8 @@ async def get_sync_status(username: str = Depends(verify_admin)):
         sort=[("timestamp", -1)]
     )
     
-    product_count = await db.products.count_documents({})
-    shopify_count = await db.products.count_documents({"shopify_id": {"$exists": True}})
+    product_count = await db.products_master.count_documents({})
+    shopify_count = await db.products_master.count_documents({"shopify_id": {"$exists": True}})
     
     return {
         "last_sync": last_sync,
@@ -12162,7 +12162,7 @@ async def get_sync_logs(limit: int = 10, username: str = Depends(verify_admin)):
 @admin_router.get("/sync/problematic-products")
 async def get_problematic_products(username: str = Depends(verify_admin)):
     """Get products that may have issues (untitled, missing data, etc.)"""
-    problematic = await db.products.find({
+    problematic = await db.products_master.find({
         "$or": [
             {"name": {"$regex": "^Product ", "$options": "i"}},
             {"name": ""},
@@ -12243,10 +12243,10 @@ async def import_products_csv(
                     continue
                 
                 # Check if product exists by name
-                existing = await db.products.find_one({"name": product["name"]})
+                existing = await db.products_master.find_one({"name": product["name"]})
                 
                 if existing:
-                    await db.products.update_one(
+                    await db.products_master.update_one(
                         {"name": product["name"]},
                         {"$set": product}
                     )
@@ -12254,7 +12254,7 @@ async def import_products_csv(
                 else:
                     product["id"] = str(uuid.uuid4())
                     product["created_at"] = get_utc_timestamp()
-                    await db.products.insert_one(product)
+                    await db.products_master.insert_one(product)
                     imported += 1
                     
             except Exception as e:
@@ -12276,7 +12276,7 @@ async def export_products_csv(username: str = Depends(verify_admin)):
     """Export all products as CSV"""
     from fastapi.responses import StreamingResponse
     
-    products = await db.products.find({}, {"_id": 0}).to_list(1000)
+    products = await db.products_master.find({}, {"_id": 0}).to_list(1000)
     
     output = io.StringIO()
     fieldnames = ['name', 'category', 'price', 'originalPrice', 'description', 'image', 'sizes', 'flavors']
@@ -12386,7 +12386,7 @@ async def create_collection(collection: CollectionCreate, username: str = Depend
     
     # Update products with this collection_id
     if new_col.product_ids:
-        await db.products.update_many(
+        await db.products_master.update_many(
             {"id": {"$in": new_col.product_ids}},
             {"$addToSet": {"collection_ids": new_col.id}}
         )
@@ -12449,7 +12449,7 @@ async def create_collection(collection: CollectionCreate, username: str = Depend
     
     # Update products with this collection_id
     if new_col.product_ids:
-        await db.products.update_many(
+        await db.products_master.update_many(
             {"id": {"$in": new_col.product_ids}},
             {"$addToSet": {"collection_ids": new_col.id}}
         )
@@ -12478,13 +12478,13 @@ async def update_collection(collection_id: str, update: CollectionUpdate, userna
         added_ids = list(new_ids - old_ids)
         
         if removed_ids:
-            await db.products.update_many(
+            await db.products_master.update_many(
                 {"id": {"$in": removed_ids}},
                 {"$pull": {"collection_ids": collection_id}}
             )
             
         if added_ids:
-            await db.products.update_many(
+            await db.products_master.update_many(
                 {"id": {"$in": added_ids}},
                 {"$addToSet": {"collection_ids": collection_id}}
             )
@@ -12499,7 +12499,7 @@ async def delete_collection(collection_id: str, username: str = Depends(verify_a
         raise HTTPException(status_code=404, detail="Collection not found")
         
     # Remove collection_id from products
-    await db.products.update_many(
+    await db.products_master.update_many(
         {"collection_ids": collection_id},
         {"$pull": {"collection_ids": collection_id}}
     )
@@ -13601,7 +13601,7 @@ async def seed_core_data(credentials: HTTPBasicCredentials = Depends(security)):
         
         # Seed Concierge services
         await auto_seed_all_services()
-        services_count = await db.services.count_documents({})
+        services_count = await db.services_master.count_documents({})
         results["services_created"] = services_count
         
         logger.info(f"Core data seeded: {results}")
@@ -14838,7 +14838,7 @@ async def initialize_database():
                 results["user"] = "password_hash_added"
         
         # 3. Seed products if empty
-        product_count = await db.products.count_documents({})
+        product_count = await db.products_master.count_documents({})
         if product_count == 0:
             sample_products = [
                 # CAKES (15 products)
@@ -14911,7 +14911,7 @@ async def initialize_database():
                 product["sizes"] = [{"name": "Regular", "price": product["price"]}]
                 product["tags"] = [product["category"]]
             
-            await db.products.insert_many(sample_products)
+            await db.products_master.insert_many(sample_products)
             results["products"] = f"created_{len(sample_products)}"
             logger.info(f"Seeded {len(sample_products)} products")
         else:
@@ -15622,7 +15622,7 @@ async def sync_stay_to_products_endpoint():
                 "created_at": get_utc_timestamp()
             }
             
-            await db.products.update_one({"id": product_id}, {"$set": product}, upsert=True)
+            await db.products_master.update_one({"id": product_id}, {"$set": product}, upsert=True)
             synced += 1
         
         # Also sync boarding facilities
@@ -15643,7 +15643,7 @@ async def sync_stay_to_products_endpoint():
                 "source": "stay_boarding_facilities",
                 "created_at": get_utc_timestamp()
             }
-            await db.products.update_one({"id": product_id}, {"$set": product}, upsert=True)
+            await db.products_master.update_one({"id": product_id}, {"$set": product}, upsert=True)
             synced += 1
         
         logger.info(f"Synced {synced} stay properties to products collection")
@@ -16476,7 +16476,7 @@ async def generate_report(
         }
     
     elif report_type == "product_performance":
-        products = await db.products.find({}).to_list(1000)
+        products = await db.products_master.find({}).to_list(1000)
         orders = await db.orders.find({"created_at": date_filter}).to_list(10000)
         
         # Count product sales
@@ -17009,7 +17009,7 @@ async def bulk_add_product_images(username: str = Depends(verify_admin)):
     import random
     
     # Get products without images
-    products_without_images = await db.products.find({
+    products_without_images = await db.products_master.find({
         "$or": [
             {"image": {"$exists": False}},
             {"image": None},
@@ -17037,7 +17037,7 @@ async def bulk_add_product_images(username: str = Depends(verify_admin)):
         images = PILLAR_STOCK_IMAGES.get(pillar, PILLAR_STOCK_IMAGES["default"])
         selected_image = random.choice(images)
         
-        await db.products.update_one(
+        await db.products_master.update_one(
             {"_id": product["_id"]},
             {"$set": {"image": selected_image, "images": [selected_image]}}
         )

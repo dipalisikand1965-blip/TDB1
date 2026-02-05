@@ -88,7 +88,7 @@ async def get_pillars(username: str = Depends(lambda: verify_admin)):
         pillar["categories"] = categories
         
         # Get product count for this pillar
-        count = await db.products.count_documents({
+        count = await db.products_master.count_documents({
             "placements.pillar_id": pillar["id"]
         })
         pillar["product_count"] = count
@@ -153,7 +153,7 @@ async def delete_pillar(pillar_id: str, username: str = Depends(lambda: verify_a
         raise HTTPException(status_code=404, detail="Pillar not found")
     
     # Check if products are assigned
-    product_count = await db.products.count_documents({"placements.pillar_id": pillar_id})
+    product_count = await db.products_master.count_documents({"placements.pillar_id": pillar_id})
     if product_count > 0:
         raise HTTPException(
             status_code=400, 
@@ -244,7 +244,7 @@ async def delete_category(category_id: str, username: str = Depends(lambda: veri
         raise HTTPException(status_code=404, detail="Category not found")
     
     # Check if products are assigned
-    product_count = await db.products.count_documents({
+    product_count = await db.products_master.count_documents({
         "placements.category_id": category_id
     })
     if product_count > 0:
@@ -261,7 +261,7 @@ async def delete_category(category_id: str, username: str = Depends(lambda: veri
 @router.get("/products/{product_id}/placements")
 async def get_product_placements(product_id: str, username: str = Depends(lambda: verify_admin)):
     """Get placements for a specific product"""
-    product = await db.products.find_one({"id": product_id}, {"_id": 0, "placements": 1})
+    product = await db.products_master.find_one({"id": product_id}, {"_id": 0, "placements": 1})
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     
@@ -274,7 +274,7 @@ async def update_product_placements(
     username: str = Depends(lambda: verify_admin)
 ):
     """Update placements for a product"""
-    product = await db.products.find_one({"id": product_id})
+    product = await db.products_master.find_one({"id": product_id})
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     
@@ -321,7 +321,7 @@ async def update_product_placements(
         raise HTTPException(status_code=400, detail="Only one placement can be primary")
     
     # Update product
-    await db.products.update_one(
+    await db.products_master.update_one(
         {"id": product_id},
         {
             "$set": {
@@ -358,7 +358,7 @@ async def migrate_legacy_categories(username: str = Depends(lambda: verify_admin
     dine_categories = ["fresh-meals", "frozen-treats", "nut-butters"]
     
     # Get products without placements
-    products = await db.products.find(
+    products = await db.products_master.find(
         {"placements": {"$exists": False}},
         {"_id": 0, "id": 1, "category": 1}
     ).to_list(10000)
@@ -406,7 +406,7 @@ async def migrate_legacy_categories(username: str = Depends(lambda: verify_admin
             "display_order": 0
         }
         
-        await db.products.update_one(
+        await db.products_master.update_one(
             {"id": product["id"]},
             {"$set": {"placements": [placement]}}
         )
@@ -456,7 +456,7 @@ async def public_get_pillar(pillar_slug: str):
     pillar["categories"] = categories
     
     # Get products for this pillar
-    products = await db.products.find(
+    products = await db.products_master.find(
         {
             "placements": {
                 "$elemMatch": {
@@ -489,7 +489,7 @@ async def public_get_category_products(pillar_slug: str, category_slug: str):
         raise HTTPException(status_code=404, detail="Category not found")
     
     # Get products for this pillar/category
-    products = await db.products.find(
+    products = await db.products_master.find(
         {
             "placements": {
                 "$elemMatch": {

@@ -152,13 +152,13 @@ async def restore_all():
         # 1. Restore Products from Shopify
         shopify_products = await fetch_shopify_products()
         if shopify_products:
-            existing_count = await db.products.count_documents({})
+            existing_count = await db.products_master.count_documents({})
             print(f"   Current products in DB: {existing_count}")
             
             imported = 0
             for sp in shopify_products:
                 # Check if product already exists by title
-                existing = await db.products.find_one({
+                existing = await db.products_master.find_one({
                     "$or": [
                         {"shopify_id": sp.get('id')},
                         {"title": sp.get('title')},
@@ -185,7 +185,7 @@ async def restore_all():
                         'created_at': now,
                         'updated_at': now
                     }
-                    await db.products.insert_one(product_doc)
+                    await db.products_master.insert_one(product_doc)
                     imported += 1
             
             print(f"   ✅ Imported {imported} new Shopify products")
@@ -195,7 +195,7 @@ async def restore_all():
         if mock_products:
             imported = 0
             for mp in mock_products:
-                existing = await db.products.find_one({
+                existing = await db.products_master.find_one({
                     "$or": [
                         {"id": mp.get('id')},
                         {"name": mp.get('name')}
@@ -205,7 +205,7 @@ async def restore_all():
                 if not existing:
                     mp['created_at'] = now
                     mp['updated_at'] = now
-                    await db.products.insert_one(mp)
+                    await db.products_master.insert_one(mp)
                     imported += 1
             
             print(f"   ✅ Imported {imported} new mockData products")

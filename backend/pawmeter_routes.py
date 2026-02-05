@@ -58,7 +58,7 @@ async def submit_paw_rating(rating: PawRatingCreate):
         raise HTTPException(status_code=400, detail="Paw score must be between 1 and 10")
     
     # Check if product exists
-    product = await db.products.find_one({"id": rating.product_id})
+    product = await db.products_master.find_one({"id": rating.product_id})
     if not product:
         raise HTTPException(status_code=404, detail="Product not found")
     
@@ -174,7 +174,7 @@ async def get_top_rated_products(limit: int = 10, min_ratings: int = 3):
     # Enrich with product details
     top_products = []
     for r in results:
-        product = await db.products.find_one({"id": r["_id"]}, {"_id": 0, "id": 1, "name": 1, "image": 1, "price": 1})
+        product = await db.products_master.find_one({"id": r["_id"]}, {"_id": 0, "id": 1, "name": 1, "image": 1, "price": 1})
         if product:
             top_products.append({
                 "product": product,
@@ -235,7 +235,7 @@ async def update_product_paw_score(product_id: str):
     """Update the cached paw score on the product document"""
     stats = await get_product_paw_stats(product_id)
     
-    await db.products.update_one(
+    await db.products_master.update_one(
         {"id": product_id},
         {"$set": {
             "paw_score": stats.get("average_score", 0),

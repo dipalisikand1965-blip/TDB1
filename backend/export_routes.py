@@ -29,7 +29,7 @@ async def export_products_with_tags(format: str = "csv"):
         return {"error": "Database not connected"}
     
     # Fetch all products with tags
-    products = await db.products.find(
+    products = await db.products_master.find(
         {},
         {
             "_id": 0,

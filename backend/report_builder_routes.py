@@ -345,7 +345,7 @@ async def generate_report(
         }
     
     elif report_type == "product_performance":
-        products = await db.products.find({}).to_list(1000)
+        products = await db.products_master.find({}).to_list(1000)
         orders = await db.orders.find({"created_at": date_filter}).to_list(10000)
         
         product_sales = {}

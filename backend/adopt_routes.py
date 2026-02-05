@@ -248,7 +248,7 @@ async def delete_adoptable_pet(pet_id: str):
 async def get_adopt_products(limit: int = 50):
     """Get adoption-related products"""
     db = get_db()
-    products = await db.products.find(
+    products = await db.products_master.find(
         {"$or": [{"pillar": "adopt"}, {"category": "adopt"}, {"tags": {"$in": ["adopt", "adoption", "rescue"]}}]},
         {"_id": 0}
     ).limit(limit).to_list(limit)
@@ -275,7 +275,7 @@ async def create_adopt_product(product: dict):
         "updated_at": get_utc_timestamp()
     }
     
-    await db.products.insert_one(product_doc)
+    await db.products_master.insert_one(product_doc)
     return {"message": "Product created", "id": product_id}
 
 
@@ -288,7 +288,7 @@ async def update_adopt_product(product_id: str, product: dict):
     product.pop("id", None)
     product.pop("_id", None)
     
-    result = await db.products.update_one({"id": product_id}, {"$set": product})
+    result = await db.products_master.update_one({"id": product_id}, {"$set": product})
     
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Product not found")
@@ -300,7 +300,7 @@ async def update_adopt_product(product_id: str, product: dict):
 async def delete_adopt_product(product_id: str):
     """Delete an adopt product"""
     db = get_db()
-    result = await db.products.delete_one({"id": product_id})
+    result = await db.products_master.delete_one({"id": product_id})
     
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Product not found")
@@ -734,7 +734,7 @@ async def seed_adopt_products():
     for product in default_products:
         product["created_at"] = now
         product["updated_at"] = now
-        result = await db.products.update_one({"id": product["id"]}, {"$set": product}, upsert=True)
+        result = await db.products_master.update_one({"id": product["id"]}, {"$set": product}, upsert=True)
         if result.upserted_id or result.modified_count:
             seeded += 1
     
@@ -745,7 +745,7 @@ async def seed_adopt_products():
 async def export_adopt_products():
     """Export adopt products as CSV-ready data"""
     db = get_db()
-    products = await db.products.find({"pillar": "adopt"}, {"_id": 0}).to_list(500)
+    products = await db.products_master.find({"pillar": "adopt"}, {"_id": 0}).to_list(500)
     return {"products": products, "total": len(products)}
 
 
@@ -762,7 +762,7 @@ async def import_adopt_products(products: List[dict]):
         product["pillar"] = "adopt"
         product["created_at"] = now
         product["updated_at"] = now
-        await db.products.update_one({"id": product["id"]}, {"$set": product}, upsert=True)
+        await db.products_master.update_one({"id": product["id"]}, {"$set": product}, upsert=True)
         imported += 1
     
     return {"message": f"Imported {imported} products", "imported": imported}

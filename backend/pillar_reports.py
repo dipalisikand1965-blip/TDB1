@@ -188,7 +188,7 @@ async def get_pillar_summary(period: str = "this_month", start_date: str = None,
                 "items_sold": celebrate_items,
                 "estimated_profit": round(celebrate_profit, 2),
                 "avg_margin": round(avg_margin, 1),
-                "products_count": await db.products.count_documents({})
+                "products_count": await db.products_master.count_documents({})
             },
             "dine": {
                 "name": "Dine",

@@ -192,7 +192,7 @@ async def get_household_recommendations(user_email: str):
         query["$nor"] = nor_conditions
     
     # Get safe products
-    safe_products = await db.products.find(query).limit(20).to_list(length=20)
+    safe_products = await db.products_master.find(query).limit(20).to_list(length=20)
     
     return {
         "household_allergies": list(all_allergies),

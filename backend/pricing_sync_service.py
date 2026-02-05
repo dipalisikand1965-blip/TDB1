@@ -150,7 +150,7 @@ async def sync_all_products_to_services() -> dict:
             errors.append(result.get("error"))
     
     # Sync from products collection as well
-    async for product in db.products.find({}):
+    async for product in db.products_master.find({}):
         result = await sync_product_to_service(product)
         if result.get("success"):
             synced += 1
@@ -194,7 +194,7 @@ async def update_product_price(product_id: str, new_price: float) -> dict:
     timestamp = get_utc_timestamp()
     
     # Update in products collection
-    await db.products.update_one(
+    await db.products_master.update_one(
         {"id": product_id},
         {"$set": {"price": new_price, "updated_at": timestamp}}
     )

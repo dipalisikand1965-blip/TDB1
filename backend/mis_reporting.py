@@ -473,7 +473,7 @@ async def get_dashboard():
             "stay_bookings": active_bookings
         },
         "quick_stats": {
-            "total_products": await db.products.count_documents({}),
+            "total_products": await db.products_master.count_documents({}),
             "total_customers": await db.users.count_documents({}),
             "total_orders_all_time": await db.orders.count_documents({})
         }

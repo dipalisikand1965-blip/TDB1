@@ -946,7 +946,7 @@ async def get_paperwork_products(
     if in_stock:
         query["in_stock"] = True
     
-    products = await db.products.find(query, {"_id": 0}).to_list(limit)
+    products = await db.products_master.find(query, {"_id": 0}).to_list(limit)
     
     return {"products": products, "total": len(products)}
 
@@ -964,7 +964,7 @@ async def create_paperwork_product(product_data: dict):
         "updated_at": datetime.now(timezone.utc).isoformat()
     }
     
-    await db.products.insert_one({k: v for k, v in product.items() if k != "_id"})
+    await db.products_master.insert_one({k: v for k, v in product.items() if k != "_id"})
     
     return {"message": "Product created", "product_id": product["id"]}
 
@@ -1062,7 +1062,7 @@ async def update_paperwork_product(product_id: str, product_data: dict):
     product_data.pop("id", None)
     product_data.pop("_id", None)
     
-    result = await db.products.update_one({"id": product_id}, {"$set": product_data})
+    result = await db.products_master.update_one({"id": product_id}, {"$set": product_data})
     
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Product not found")
@@ -1075,7 +1075,7 @@ async def delete_paperwork_product(product_id: str):
     """Delete a paperwork product"""
     db = get_db()
     
-    result = await db.products.delete_one({"id": product_id})
+    result = await db.products_master.delete_one({"id": product_id})
     
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Product not found")
@@ -1304,7 +1304,7 @@ async def get_paperwork_stats():
     for cat_id in DOCUMENT_CATEGORIES.keys():
         category_breakdown[cat_id] = await db.paperwork_documents.count_documents({"category": cat_id, "status": "active"})
     
-    total_products = await db.products.count_documents({"category": "paperwork"})
+    total_products = await db.products_master.count_documents({"category": "paperwork"})
     total_bundles = await db.paperwork_bundles.count_documents({"is_active": True})
     
     # Pets with documents
@@ -1339,7 +1339,7 @@ async def get_paperwork_config():
     db = get_db()
     
     doc_count = await db.paperwork_documents.count_documents({"status": "active"})
-    product_count = await db.products.count_documents({"category": "paperwork"})
+    product_count = await db.products_master.count_documents({"category": "paperwork"})
     
     return {
         "categories": DOCUMENT_CATEGORIES,
@@ -1645,7 +1645,7 @@ async def seed_paperwork_data():
     for product in default_products:
         product["created_at"] = datetime.now(timezone.utc).isoformat()
         product["updated_at"] = datetime.now(timezone.utc).isoformat()
-        await db.products.update_one({"id": product["id"]}, {"$set": product}, upsert=True)
+        await db.products_master.update_one({"id": product["id"]}, {"$set": product}, upsert=True)
     
     for bundle in default_bundles:
         bundle["created_at"] = datetime.now(timezone.utc).isoformat()

@@ -381,7 +381,7 @@ async def create_advisory_product(product_data: dict):
         "updated_at": datetime.now(timezone.utc).isoformat()
     }
     
-    await db.products.insert_one({k: v for k, v in product.items() if k != "_id"})
+    await db.products_master.insert_one({k: v for k, v in product.items() if k != "_id"})
     
     return {"message": "Product created", "product_id": product["id"]}
 
@@ -393,7 +393,7 @@ async def export_advisory_products_csv():
     """Export advisory products to CSV"""
     db = get_db()
     
-    products = await db.products.find({"pillar": "advisory"}).to_list(length=1000)
+    products = await db.products_master.find({"pillar": "advisory"}).to_list(length=1000)
     
     output = io.StringIO()
     writer = csv.writer(output)
@@ -458,13 +458,13 @@ async def import_advisory_products_csv(file: UploadFile = File(...)):
             "updated_at": datetime.now(timezone.utc).isoformat()
         }
         
-        existing = await db.products.find_one({"id": product_id})
+        existing = await db.products_master.find_one({"id": product_id})
         if existing:
-            await db.products.update_one({"id": product_id}, {"$set": product_doc})
+            await db.products_master.update_one({"id": product_id}, {"$set": product_doc})
             updated += 1
         else:
             product_doc["created_at"] = datetime.now(timezone.utc).isoformat()
-            await db.products.insert_one(product_doc)
+            await db.products_master.insert_one(product_doc)
             imported += 1
     
     return {"message": f"Imported {imported} new, updated {updated} products"}
@@ -479,7 +479,7 @@ async def update_advisory_product(product_id: str, product_data: dict):
     product_data.pop("id", None)
     product_data.pop("_id", None)
     
-    result = await db.products.update_one({"id": product_id}, {"$set": product_data})
+    result = await db.products_master.update_one({"id": product_id}, {"$set": product_data})
     
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Product not found")
@@ -492,7 +492,7 @@ async def delete_advisory_product(product_id: str):
     """Delete an advisory product"""
     db = get_db()
     
-    result = await db.products.delete_one({"id": product_id})
+    result = await db.products_master.delete_one({"id": product_id})
     
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Product not found")
@@ -723,7 +723,7 @@ async def get_advisory_stats():
         severity_breakdown[severity] = await db.advisory_requests.count_documents({"severity": severity})
     
     total_partners = await db.advisory_partners.count_documents({"is_active": True})
-    total_products = await db.products.count_documents({"category": "advisory"})
+    total_products = await db.products_master.count_documents({"category": "advisory"})
     total_bundles = await db.advisory_bundles.count_documents({"is_active": True})
     
     return {
@@ -756,7 +756,7 @@ async def get_advisory_config():
     db = get_db()
     
     advisor_count = await db.advisory_partners.count_documents({"is_active": True})
-    product_count = await db.products.count_documents({"category": "advisory"})
+    product_count = await db.products_master.count_documents({"category": "advisory"})
     
     return {
         "advisory_types": ADVISORY_TYPES,
@@ -1106,7 +1106,7 @@ async def seed_advisory_data():
     for product in default_products:
         product["created_at"] = datetime.now(timezone.utc).isoformat()
         product["updated_at"] = datetime.now(timezone.utc).isoformat()
-        await db.products.update_one({"id": product["id"]}, {"$set": product}, upsert=True)
+        await db.products_master.update_one({"id": product["id"]}, {"$set": product}, upsert=True)
     
     for bundle in default_bundles:
         bundle["created_at"] = datetime.now(timezone.utc).isoformat()

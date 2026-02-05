@@ -1143,7 +1143,7 @@ async def get_products_by_breed(breed: str, limit: int = Query(10, ge=1, le=50))
     # Search products with breed in name, tags, or description
     breed_lower = breed.lower()
     
-    products = await db.products.find({
+    products = await db.products_master.find({
         "$or": [
             {"name": {"$regex": breed, "$options": "i"}},
             {"tags": {"$regex": breed, "$options": "i"}},
@@ -1172,7 +1172,7 @@ async def get_breed_products(breed: str, limit: int = Query(6, ge=1, le=20)):
     breed_lower = breed.lower()
     
     # Search products with breed in name, tags, or breed_tags
-    products = await db.products.find({
+    products = await db.products_master.find({
         "$or": [
             {"name": {"$regex": breed, "$options": "i"}},
             {"tags": {"$regex": breed, "$options": "i"}},

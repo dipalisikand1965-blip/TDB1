@@ -445,7 +445,7 @@ async def get_learn_products(limit: int = 20):
     
     # Also check legacy products collection
     if len(products) < limit:
-        legacy = await db.products.find(
+        legacy = await db.products_master.find(
             {"pillar": "learn", "is_active": {"$ne": False}},
             {"_id": 0}
         ).limit(limit - len(products)).to_list(limit - len(products))

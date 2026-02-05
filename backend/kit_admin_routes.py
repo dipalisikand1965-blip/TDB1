@@ -103,7 +103,7 @@ async def get_kit_template(template_id: str):
     # Fetch product details for each item
     product_ids = [item.get("product_id") for item in template.get("items", [])]
     if product_ids:
-        products = await db.products.find({"id": {"$in": product_ids}}).to_list(100)
+        products = await db.products_master.find({"id": {"$in": product_ids}}).to_list(100)
         product_map = {p["id"]: p for p in products}
         
         for item in template.get("items", []):
@@ -200,7 +200,7 @@ async def get_mira_picks(
     # Fetch product details
     product_ids = [p.get("product_id") for p in picks]
     if product_ids:
-        products = await db.products.find({"id": {"$in": product_ids}}).to_list(100)
+        products = await db.products_master.find({"id": {"$in": product_ids}}).to_list(100)
         product_map = {p["id"]: p for p in products}
         
         for pick in picks:
@@ -286,7 +286,7 @@ async def preview_voice_script(
     
     # If product_id provided, get product context
     if product_id:
-        product = await db.products.find_one({"id": product_id})
+        product = await db.products_master.find_one({"id": product_id})
         if product:
             product.pop("_id", None)
             result["product"] = {
@@ -340,7 +340,7 @@ async def get_all_voice_scripts(template_id: str):
     # Product narrations
     product_ids = [item.get("product_id") for item in template.get("items", [])]
     if product_ids:
-        products = await db.products.find({"id": {"$in": product_ids}}).to_list(100)
+        products = await db.products_master.find({"id": {"$in": product_ids}}).to_list(100)
         product_map = {p["id"]: p for p in products}
         
         for i, item in enumerate(template.get("items", [])):
@@ -425,7 +425,7 @@ async def seed_default_kits():
     
     # Get products by category for kit assembly
     async def get_products_by_keywords(keywords, limit=10):
-        return await db.products.find({
+        return await db.products_master.find({
             "$or": [
                 {"tags": {"$in": keywords}},
                 {"category": {"$regex": "|".join(keywords), "$options": "i"}},
@@ -448,7 +448,7 @@ async def seed_default_kits():
     outdoor_products = await get_products_by_keywords(["outdoor", "rain", "jacket", "boot", "paw"])
     
     # All products as fallback
-    all_products = await db.products.find({}).limit(50).to_list(50)
+    all_products = await db.products_master.find({}).limit(50).to_list(50)
     
     def make_items(products, narration_template):
         return [
@@ -846,7 +846,7 @@ async def get_active_mira_picks(limit: int = 10):
     # Fetch product details
     product_ids = [p.get("product_id") for p in picks]
     if product_ids:
-        products = await db.products.find({"id": {"$in": product_ids}}).to_list(100)
+        products = await db.products_master.find({"id": {"$in": product_ids}}).to_list(100)
         product_map = {p["id"]: p for p in products}
         
         for pick in picks:
@@ -910,7 +910,7 @@ async def export_mira_picks_csv():
     
     # Fetch product details
     product_ids = [p.get("product_id") for p in picks]
-    products = await db.products.find({"id": {"$in": product_ids}}).to_list(100) if product_ids else []
+    products = await db.products_master.find({"id": {"$in": product_ids}}).to_list(100) if product_ids else []
     product_map = {p["id"]: p for p in products}
     
     headers = ["id", "product_id", "product_name", "display_tagline", "reason", "voice_script", "priority", "is_active", "created_at"]

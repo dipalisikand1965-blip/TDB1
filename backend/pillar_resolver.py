@@ -153,7 +153,7 @@ class PillarResolver:
         sort = [("_id", -1)]  # Default sort
         
         try:
-            cursor = db.products.find(query, {"_id": 0}).skip(skip).limit(limit).sort(sort)
+            cursor = db.products_master.find(query, {"_id": 0}).skip(skip).limit(limit).sort(sort)
             products = await cursor.to_list(length=limit)
             
             logger.info(f"Pillar '{pillar}' returned {len(products)} products")
@@ -302,7 +302,7 @@ async def get_products_by_pillar_legacy(pillar: str, db, limit: int = 20) -> Lis
     Use this while transitioning to new system
     """
     query = {"pillar": pillar, "is_active": {"$ne": False}}
-    cursor = db.products.find(query, {"_id": 0}).limit(limit)
+    cursor = db.products_master.find(query, {"_id": 0}).limit(limit)
     return await cursor.to_list(length=limit)
 
 

@@ -562,7 +562,7 @@ async def create_emergency_product(product_data: dict):
         "updated_at": datetime.now(timezone.utc).isoformat()
     }
     
-    await db.products.insert_one({k: v for k, v in product.items() if k != "_id"})
+    await db.products_master.insert_one({k: v for k, v in product.items() if k != "_id"})
     
     return {"message": "Product created", "product_id": product["id"]}
 
@@ -662,7 +662,7 @@ async def update_emergency_product(product_id: str, product_data: dict):
     product_data.pop("id", None)
     product_data.pop("_id", None)
     
-    result = await db.products.update_one({"id": product_id}, {"$set": product_data})
+    result = await db.products_master.update_one({"id": product_id}, {"$set": product_data})
     
     if result.matched_count == 0:
         raise HTTPException(status_code=404, detail="Product not found")
@@ -675,7 +675,7 @@ async def delete_emergency_product(product_id: str):
     """Delete an emergency product"""
     db = get_db()
     
-    result = await db.products.delete_one({"id": product_id})
+    result = await db.products_master.delete_one({"id": product_id})
     
     if result.deleted_count == 0:
         raise HTTPException(status_code=404, detail="Product not found")
@@ -913,7 +913,7 @@ async def get_emergency_stats():
     
     total_partners = await db.emergency_partners.count_documents({"is_active": True})
     partners_24hr = await db.emergency_partners.count_documents({"is_active": True, "is_24hr": True})
-    total_products = await db.products.count_documents({"category": "emergency"})
+    total_products = await db.products_master.count_documents({"category": "emergency"})
     total_bundles = await db.emergency_bundles.count_documents({"is_active": True})
     
     return {
@@ -949,7 +949,7 @@ async def get_emergency_config():
     db = get_db()
     
     partner_count = await db.emergency_partners.count_documents({"is_active": True})
-    product_count = await db.products.count_documents({"category": "emergency"})
+    product_count = await db.products_master.count_documents({"category": "emergency"})
     active_emergencies = await db.emergency_requests.count_documents({"status": {"$in": ["active", "responding"]}})
     
     return {
@@ -1290,7 +1290,7 @@ async def seed_emergency_data():
     for product in default_products:
         product["created_at"] = datetime.now(timezone.utc).isoformat()
         product["updated_at"] = datetime.now(timezone.utc).isoformat()
-        await db.products.update_one({"id": product["id"]}, {"$set": product}, upsert=True)
+        await db.products_master.update_one({"id": product["id"]}, {"$set": product}, upsert=True)
     
     for bundle in default_bundles:
         bundle["created_at"] = datetime.now(timezone.utc).isoformat()

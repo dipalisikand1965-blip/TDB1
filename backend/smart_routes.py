@@ -396,7 +396,7 @@ async def get_smart_recommendations(
     admin_picks = await db.mira_picks.find({"is_active": True}).sort("priority", -1).limit(6).to_list(6)
     if admin_picks:
         admin_product_ids = [p.get("product_id") for p in admin_picks]
-        admin_products = await db.products.find({"id": {"$in": admin_product_ids}}).to_list(10)
+        admin_products = await db.products_master.find({"id": {"$in": admin_product_ids}}).to_list(10)
         admin_product_map = {p["id"]: p for p in admin_products}
         
         for pick in admin_picks:
