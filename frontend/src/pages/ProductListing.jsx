@@ -674,13 +674,32 @@ const ProductListing = ({ category = 'all' }) => {
       setPersonalizedMessage(`🎂 Perfect picks for ${pet.name}!`);
       
       try {
-        const recRes = await fetch(`${getApiUrl()}/api/products/recommendations/for-pet/${pet.id}?limit=8`);
+        // Use breed-aware recommendation API
+        const recRes = await fetch(`${getApiUrl()}/api/products/recommend-for-breed`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            breed: pet.breed || 'Mixed',
+            size: pet.size || 'M',
+            age: pet.age_category || 'adult',
+            pillar: pillar,
+            limit: 8
+          })
+        });
         if (recRes.ok) {
           const recData = await recRes.json();
           setPetRecommendations(recData.recommendations || []);
         }
       } catch (err) {
-        console.debug('Could not fetch recommendations:', err);
+        console.debug('Could not fetch breed recommendations:', err);
+        // Fallback to old endpoint
+        try {
+          const recRes = await fetch(`${getApiUrl()}/api/products/recommendations/for-pet/${pet.id}?limit=8`);
+          if (recRes.ok) {
+            const recData = await recRes.json();
+            setPetRecommendations(recData.recommendations || []);
+          }
+        } catch (e) {}
       }
       
       // Fetch pet's soul score
