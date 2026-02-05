@@ -690,13 +690,13 @@ const Navbar = () => {
                 }}
                 onFocus={() => setShowSearchSuggestions(true)}
                 placeholder={primaryPet ? `Search for ${primaryPet.name}...` : "Search products, services..."}
-                className="flex-1 px-4 py-2.5 text-sm text-gray-900 bg-white rounded-l-full focus:outline-none"
+                className="flex-1 px-4 py-3.5 text-sm text-gray-900 bg-white rounded-l-full focus:outline-none"
                 data-testid="navbar-search-input-mobile"
               />
               <button 
                 type="button"
                 onClick={toggleVoiceWizard}
-                className={`px-3 ${isListening ? 'bg-red-500' : 'bg-purple-500'}`}
+                className={`px-3.5 ${isListening ? 'bg-red-500' : 'bg-purple-500'}`}
               >
                 <Mic className="w-4 h-4 text-white" />
               </button>
