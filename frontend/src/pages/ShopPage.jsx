@@ -239,7 +239,7 @@ const PersonalPicks = ({ pets, products }) => {
             {selectedPet?.breed ? (
               <>Products thoughtfully selected for {selectedPet.breed}s</>
             ) : (
-              <>Products we think you'll love</>
+              <>Products we think you&apos;ll love</>
             )}
           </h2>
           <p className="text-[#9B9B9B]">
