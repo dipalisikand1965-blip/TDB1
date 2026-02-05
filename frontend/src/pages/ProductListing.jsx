@@ -54,18 +54,111 @@ const LIFE_STAGES = {
   }
 };
 
-// Care needs - what pet parents are REALLY asking
-// NOT "health issues" - language matters
-const CARE_NEEDS = [
-  { id: 'sensitive-stomach', label: 'Sensitive tummy', icon: Droplets, desc: 'Gentle on digestion' },
-  { id: 'skin-coat', label: 'Skin & coat', icon: Sparkles, desc: 'For healthy shine' },
-  { id: 'weight', label: 'Weight support', icon: Activity, desc: 'Healthy weight management' },
-  { id: 'joints', label: 'Joint care', icon: Bone, desc: 'Mobility & comfort' },
-  { id: 'dental', label: 'Dental health', icon: Heart, desc: 'Clean teeth & gums' },
-  { id: 'calming', label: 'Calming', icon: Brain, desc: 'For anxious moments' },
-  { id: 'recovery', label: 'Recovery care', icon: HeartPulse, desc: 'Special nutrition needs' },
-  { id: 'allergy-friendly', label: 'Allergy-friendly', icon: Shield, desc: 'Limited ingredients' }
+// ============================================
+// PILLAR-SPECIFIC SUPPORT FILTERS
+// Rule: Support filters must mirror the emotional state of the page
+// Health logic stays. Language shifts.
+// ============================================
+
+// Birthday / Celebration = joy, safety, reassurance
+const CELEBRATE_SUPPORT = [
+  { id: 'sensitive-stomach', label: 'Celebration-safe', icon: Sparkles, desc: 'Gentle on digestion', subtext: 'For happy tummies during celebrations' },
+  { id: 'weight', label: 'Birthday treats', icon: Heart, desc: 'Balanced indulgence', subtext: 'Special, but still suitable for your pet' },
+  { id: 'breed-appropriate', label: 'Breed-appropriate', icon: PawPrint, desc: 'Right for size & breed', subtext: 'Portion and texture that suits them' },
+  { id: 'allergy-friendly', label: 'Allergy-aware', icon: Shield, desc: 'Limited ingredients', subtext: 'Designed for pets with sensitivities' },
+  { id: 'calming', label: 'Calm moments', icon: Brain, desc: 'Low excitement treats', subtext: 'For pets who get overwhelmed' },
+  { id: 'recovery', label: 'Extra care', icon: HeartPulse, desc: 'Special care needs', subtext: 'For pets recovering or needing extra caution' }
 ];
+
+// Travel = comfort, safety, familiarity
+const TRAVEL_SUPPORT = [
+  { id: 'sensitive-stomach', label: 'Travel-friendly', icon: Droplets, desc: 'Easy on digestion', subtext: 'For sensitive stomachs on the go' },
+  { id: 'calming', label: 'Journey calm', icon: Brain, desc: 'Anxiety support', subtext: 'For nervous travelers' },
+  { id: 'allergy-friendly', label: 'Safe snacking', icon: Shield, desc: 'Limited ingredients', subtext: 'Reliable options away from home' },
+  { id: 'hydration', label: 'Hydration help', icon: Droplets, desc: 'Moisture-rich', subtext: 'Keeps them hydrated during travel' },
+  { id: 'portable', label: 'Easy to pack', icon: Activity, desc: 'Travel-sized', subtext: 'Convenient for journeys' }
+];
+
+// Care / Daily = health, maintenance, long-term wellness
+const CARE_SUPPORT = [
+  { id: 'sensitive-stomach', label: 'Sensitive tummy', icon: Droplets, desc: 'Gentle on digestion', subtext: 'For everyday digestive comfort' },
+  { id: 'skin-coat', label: 'Skin & coat', icon: Sparkles, desc: 'For healthy shine', subtext: 'Nourishment from within' },
+  { id: 'weight', label: 'Weight support', icon: Activity, desc: 'Healthy weight management', subtext: 'Balanced nutrition' },
+  { id: 'joints', label: 'Joint care', icon: Bone, desc: 'Mobility & comfort', subtext: 'For active and aging pets' },
+  { id: 'dental', label: 'Dental health', icon: Heart, desc: 'Clean teeth & gums', subtext: 'Oral care support' },
+  { id: 'calming', label: 'Calming', icon: Brain, desc: 'For anxious moments', subtext: 'Daily stress relief' },
+  { id: 'recovery', label: 'Recovery care', icon: HeartPulse, desc: 'Special nutrition needs', subtext: 'Extra support when needed' },
+  { id: 'allergy-friendly', label: 'Allergy-friendly', icon: Shield, desc: 'Limited ingredients', subtext: 'For sensitive pets' }
+];
+
+// Dine = nutrition, daily meals, balance
+const DINE_SUPPORT = [
+  { id: 'sensitive-stomach', label: 'Gentle meals', icon: Droplets, desc: 'Easy to digest', subtext: 'For sensitive digestive systems' },
+  { id: 'weight', label: 'Portion perfect', icon: Activity, desc: 'Calorie-conscious', subtext: 'Balanced for healthy weight' },
+  { id: 'allergy-friendly', label: 'Limited ingredient', icon: Shield, desc: 'Simple recipes', subtext: 'Fewer ingredients, less risk' },
+  { id: 'skin-coat', label: 'Nourishing', icon: Sparkles, desc: 'Omega-rich', subtext: 'For coat health from the inside' },
+  { id: 'senior', label: 'Senior-friendly', icon: Heart, desc: 'Age-appropriate', subtext: 'Nutrition for older pets' }
+];
+
+// Fit = energy, activity, performance
+const FIT_SUPPORT = [
+  { id: 'energy', label: 'Energy boost', icon: Activity, desc: 'High performance', subtext: 'For active lifestyles' },
+  { id: 'joints', label: 'Joint support', icon: Bone, desc: 'Mobility & recovery', subtext: 'For active joints' },
+  { id: 'weight', label: 'Lean & fit', icon: Activity, desc: 'Protein-rich', subtext: 'Maintains muscle, not fat' },
+  { id: 'recovery', label: 'Post-activity', icon: HeartPulse, desc: 'Recovery nutrition', subtext: 'Refuel after exercise' },
+  { id: 'hydration', label: 'Hydration', icon: Droplets, desc: 'Moisture support', subtext: 'Stay hydrated during activity' }
+];
+
+// Emergency = urgency, safety, immediate needs
+const EMERGENCY_SUPPORT = [
+  { id: 'recovery', label: 'Recovery support', icon: HeartPulse, desc: 'Gentle nutrition', subtext: 'For pets in recovery' },
+  { id: 'sensitive-stomach', label: 'Easy digest', icon: Droplets, desc: 'Bland & gentle', subtext: 'When stomachs are upset' },
+  { id: 'calming', label: 'Stress relief', icon: Brain, desc: 'Calming support', subtext: 'For anxious moments' },
+  { id: 'hydration', label: 'Hydration', icon: Droplets, desc: 'Fluid support', subtext: 'Essential for recovery' }
+];
+
+// Farewell = comfort, dignity, gentleness
+const FAREWELL_SUPPORT = [
+  { id: 'comfort', label: 'Comfort care', icon: Heart, desc: 'Gentle & soothing', subtext: 'For peaceful moments' },
+  { id: 'sensitive-stomach', label: 'Easy on tummy', icon: Droplets, desc: 'Very gentle', subtext: 'Minimal digestive stress' },
+  { id: 'calming', label: 'Peaceful', icon: Brain, desc: 'Calming support', subtext: 'For quiet, restful times' },
+  { id: 'favorite-treats', label: 'Favorite treats', icon: Sparkles, desc: 'Special indulgences', subtext: 'Whatever brings them joy' }
+];
+
+// Stay = comfort away from home
+const STAY_SUPPORT = [
+  { id: 'calming', label: 'Settling in', icon: Brain, desc: 'Calming support', subtext: 'For new environments' },
+  { id: 'sensitive-stomach', label: 'Routine-friendly', icon: Droplets, desc: 'Gentle options', subtext: 'Keeping digestion stable' },
+  { id: 'allergy-friendly', label: 'Safe options', icon: Shield, desc: 'Known ingredients', subtext: 'No surprises while away' },
+  { id: 'familiar', label: 'Home comforts', icon: Heart, desc: 'Familiar favorites', subtext: 'Tastes like home' }
+];
+
+// Map pillars to their support filters
+const PILLAR_SUPPORT_FILTERS = {
+  celebrate: CELEBRATE_SUPPORT,
+  birthday: CELEBRATE_SUPPORT,
+  cakes: CELEBRATE_SUPPORT,
+  hampers: CELEBRATE_SUPPORT,
+  accessories: CELEBRATE_SUPPORT,
+  treats: CELEBRATE_SUPPORT,
+  travel: TRAVEL_SUPPORT,
+  care: CARE_SUPPORT,
+  dine: DINE_SUPPORT,
+  fit: FIT_SUPPORT,
+  emergency: EMERGENCY_SUPPORT,
+  farewell: FAREWELL_SUPPORT,
+  stay: STAY_SUPPORT,
+  // Default fallback
+  default: CARE_SUPPORT
+};
+
+// Get support filters for current context
+const getSupportFilters = (category, pillar) => {
+  // Check category first, then pillar, then default
+  if (PILLAR_SUPPORT_FILTERS[category]) return PILLAR_SUPPORT_FILTERS[category];
+  if (PILLAR_SUPPORT_FILTERS[pillar]) return PILLAR_SUPPORT_FILTERS[pillar];
+  return PILLAR_SUPPORT_FILTERS.default;
+};
 
 // Values - emotional alignment with pet parent identity
 const VALUES = [
