@@ -1812,7 +1812,7 @@ const ProductManager = ({ credentials }) => {
                   ))}
                   {(!createForm.sizes || createForm.sizes.length === 0) && (
                     <p className="text-sm text-gray-500 text-center py-4 bg-gray-50 rounded-lg">
-                      No sizes added. Click "Add Size" to add variants.
+                      No sizes added. Click &quot;Add Size&quot; to add variants.
                     </p>
                   )}
                 </div>
