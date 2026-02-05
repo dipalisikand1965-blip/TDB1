@@ -591,6 +591,14 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
         <div className="bg-white border-b border-stone-100">
           <div className="max-w-6xl mx-auto px-4 py-4">
           
+          {/* Applied indicator - shows system is thinking */}
+          {activePet && (avoidFilters.length > 0 || identityFilters.lifeStage) && (
+            <div className="flex items-center gap-1.5 text-xs text-green-600 mb-3">
+              <Check className="w-3.5 h-3.5" />
+              <span>Applied for {activePet.name}</span>
+            </div>
+          )}
+          
           {/* Layer 2: Care Needs */}
           <div className="mb-4">
             <button
