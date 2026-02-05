@@ -775,6 +775,9 @@ const UnifiedProductBox = () => {
             setFilterStatus('');
             setFilterShipping('');
             setFilterRewardEligible(null);
+            setFilterBreed('');
+            setFilterSize('');
+            setFilterHasMiraHint('');
           }} data-testid="clear-product-filters-btn">
             <RefreshCw className="w-4 h-4 mr-1" /> Clear
           </Button>
