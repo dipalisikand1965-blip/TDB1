@@ -209,7 +209,7 @@ async def create_service(service: ServiceCreate):
         service_id = service.id
     
     # Check if exists
-    existing = await db.service_catalog.find_one({"id": service_id})
+    existing = await db.services_master.find_one({"id": service_id})
     if existing:
         raise HTTPException(status_code=400, detail=f"Service with ID {service_id} already exists")
     
@@ -257,7 +257,7 @@ async def create_service(service: ServiceCreate):
         "updated_at": now
     }
     
-    await db.service_catalog.insert_one(service_doc)
+    await db.services_master.insert_one(service_doc)
     
     logger.info(f"[SERVICE BOX] Created service: {service_id}")
     
@@ -271,7 +271,7 @@ async def update_service(service_id: str, service: ServiceCreate):
     """Update existing service"""
     db = get_db()
     
-    existing = await db.service_catalog.find_one({"id": service_id})
+    existing = await db.services_master.find_one({"id": service_id})
     if not existing:
         raise HTTPException(status_code=404, detail="Service not found")
     
