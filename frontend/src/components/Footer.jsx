@@ -96,6 +96,28 @@ const Footer = () => {
               )}
             </div>
             
+            {/* Services Section - Mobile */}
+            <div className="border border-gray-800 rounded-lg overflow-hidden">
+              <button 
+                onClick={() => toggleSection('services')}
+                className="w-full flex items-center justify-between px-4 py-3 bg-gray-800/50 hover:bg-gray-800 transition-colors"
+              >
+                <span className="font-semibold text-white text-sm">Services</span>
+                {expandedSection === 'services' ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              </button>
+              {expandedSection === 'services' && (
+                <div className="grid grid-cols-2 gap-2 p-4">
+                  <Link to="/services/grooming" className="text-sm py-2 hover:text-pink-400 transition-colors">✂️ Grooming</Link>
+                  <Link to="/services/training" className="text-sm py-2 hover:text-pink-400 transition-colors">🎓 Training</Link>
+                  <Link to="/services/boarding" className="text-sm py-2 hover:text-pink-400 transition-colors">🏠 Boarding</Link>
+                  <Link to="/services/daycare" className="text-sm py-2 hover:text-pink-400 transition-colors">🌞 Daycare</Link>
+                  <Link to="/services/vet" className="text-sm py-2 hover:text-pink-400 transition-colors">🏥 Vet Care</Link>
+                  <Link to="/services/walking" className="text-sm py-2 hover:text-pink-400 transition-colors">🐕 Dog Walking</Link>
+                  <Link to="/services/photography" className="text-sm py-2 hover:text-pink-400 transition-colors">📸 Pet Photo</Link>
+                </div>
+              )}
+            </div>
+            
             {/* Intelligence Section */}
             <div className="border border-gray-800 rounded-lg overflow-hidden">
               <button 
