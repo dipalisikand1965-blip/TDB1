@@ -266,7 +266,7 @@ class TestProductsMasterCollection:
     def test_products_master_text_search(self):
         """Test products_master search works via API"""
         response = requests.get(
-            f"{BASE_URL}/api/admin/product-box/products",
+            f"{BASE_URL}/api/product-box/products",
             params={"search": "birthday", "limit": 30}
         )
         assert response.status_code == 200
@@ -282,17 +282,17 @@ class TestProductsMasterCollection:
             assert "name" in p, "Product missing name"
             print(f"Sample product: {p.get('name')}")
     
-    def test_breed_filter_uses_products_master(self):
-        """Test breed filter queries products_master collection"""
+    def test_pillar_filter_uses_products_master(self):
+        """Test pillar filter queries products_master collection"""
         response = requests.get(
-            f"{BASE_URL}/api/admin/product-box/products",
-            params={"breed_filter": "Golden Retriever", "limit": 20}
+            f"{BASE_URL}/api/product-box/by-pillar/celebrate",
+            params={"limit": 20}
         )
         assert response.status_code == 200
         
         data = response.json()
         products = data.get("products", [])
-        print(f"Golden Retriever products: {len(products)}")
+        print(f"Celebrate pillar products: {len(products)}")
 
 
 if __name__ == "__main__":
