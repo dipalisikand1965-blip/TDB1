@@ -200,6 +200,15 @@ const FinanceManager = () => {
     fetchPayments();
   }, [fetchPayments]);
 
+  // Filter payments by date range - MUST be defined before filteredPayments
+  const dateFilteredPayments = payments.filter(p => {
+    if (!dateRange.start && !dateRange.end) return true;
+    const paymentDate = new Date(p.created_at).toISOString().split('T')[0];
+    if (dateRange.start && paymentDate < dateRange.start) return false;
+    if (dateRange.end && paymentDate > dateRange.end) return false;
+    return true;
+  });
+
   // Filter payments (including date filter already applied)
   const filteredPayments = dateFilteredPayments.filter(p => {
     if (searchQuery) {
