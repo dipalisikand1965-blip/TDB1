@@ -2469,6 +2469,17 @@ const UnifiedProductBox = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      
+      {/* NEW: Enhanced 6-Tab Product Editor */}
+      <ProductBoxEditor
+        product={selectedProduct}
+        setProduct={setSelectedProduct}
+        open={showEditor}
+        onClose={() => setShowEditor(false)}
+        onSave={saveProduct}
+        saving={saving}
+        onGenerateMiraHint={generateMiraHint}
+      />
     </div>
   );
 };
