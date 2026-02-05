@@ -706,65 +706,71 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
       ) : (
         /* NOT LOGGED IN - Explaining why intelligence requires context */
         <div className="bg-gradient-to-b from-purple-50 to-white border-b border-stone-100" data-testid="non-member-landing">
-          <div className="max-w-6xl mx-auto px-4 py-12 text-center">
-            <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-4">
+          <div className="max-w-6xl mx-auto px-4 py-14 text-center">
+            <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-5">
               <Sparkles className="w-8 h-8 text-purple-500" />
             </div>
-            <h1 className="text-2xl font-semibold text-stone-900 mb-2" data-testid="headline">Personalised for Your Pet</h1>
+            <h1 className="text-2xl font-semibold text-stone-900 mb-3" data-testid="headline">Personalised for Your Pet</h1>
             
             {/* Micro-line - addresses modern user anxiety */}
-            <p className="text-xs text-stone-400 mb-4">No spam. No upselling. Just thoughtful care.</p>
+            <p className="text-xs text-stone-400/80 mb-6">No spam. No upselling. Just thoughtful care.</p>
+            
+            {/* Visual separator */}
+            <div className="w-12 h-px bg-stone-200 mx-auto mb-6"></div>
             
             {/* Supporting line - explains WHY, not THAT */}
-            <div className="text-stone-600 max-w-md mx-auto mb-6 space-y-1">
-              <p className="font-medium">Mira works best once she understands your pet.</p>
-              <p className="text-sm text-stone-500">
+            <div className="text-stone-600 max-w-md mx-auto mb-8 space-y-2">
+              <p className="font-medium text-stone-700">Mira works best once she understands your pet.</p>
+              <p className="text-sm text-stone-500 leading-relaxed">
                 This space is personalised using your pet&apos;s age, sensitivities, routines, and care history — so only what&apos;s appropriate is shown.
               </p>
             </div>
             
-            <div className="flex flex-col sm:flex-row justify-center gap-3 items-center">
+            {/* CTAs with more vertical spacing */}
+            <div className="flex flex-col sm:flex-row justify-center gap-4 items-center">
               <div className="flex flex-col items-center">
                 <Link 
                   to="/membership" 
-                  className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all"
+                  className="inline-flex items-center gap-2 px-7 py-3.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all shadow-sm"
                   data-testid="setup-pet-btn"
                 >
                   <PawPrint className="w-4 h-4" />
                   Set up your pet with Mira
                 </Link>
-                <span className="text-xs text-stone-400 mt-1.5">Takes about 2 minutes. You can change this anytime.</span>
+                <span className="text-[11px] text-stone-400 mt-2">Takes about 2 minutes. You can change this anytime.</span>
               </div>
+              {/* Secondary CTA - more de-emphasised */}
               <Link 
                 to="/login" 
-                className="inline-flex items-center gap-2 px-6 py-3 bg-white text-stone-700 font-medium rounded-lg border border-stone-200 hover:bg-stone-50 transition-all"
+                className="inline-flex items-center gap-2 px-6 py-3 text-stone-500 text-sm font-medium hover:text-stone-700 transition-all"
                 data-testid="continue-profile-btn"
               >
                 Continue with your pet profile
+                <ChevronRight className="w-4 h-4" />
               </Link>
             </div>
             
-            {/* Privacy reassurance */}
-            <p className="text-xs text-stone-400 mt-3">Your pet&apos;s information is used only to improve care. Never shared.</p>
+            {/* Privacy reassurance - quieter */}
+            <p className="text-[11px] text-stone-300 mt-5">Your pet&apos;s information is used only to improve care. Never shared.</p>
             
             {/* Benefits card - outcomes, not perks */}
-            <div className="mt-8 p-6 bg-white rounded-xl border border-stone-200 max-w-lg mx-auto text-left" data-testid="benefits-card">
-              <p className="text-sm font-medium text-stone-700 mb-3">Once Mira knows your pet, you&apos;ll notice:</p>
-              <ul className="space-y-2.5 text-sm text-stone-600">
-                <li className="flex items-start gap-2">
-                  <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+            <div className="mt-10 p-6 bg-white rounded-xl border border-stone-100 max-w-lg mx-auto text-left shadow-sm" data-testid="benefits-card">
+              <p className="text-sm font-medium text-stone-700 mb-4">Once Mira knows your pet, you&apos;ll notice:</p>
+              <ul className="space-y-3 text-sm text-stone-600">
+                <li className="flex items-start gap-2.5">
+                  <Check className="w-4 h-4 text-purple-500 mt-0.5 flex-shrink-0" />
                   Only options that suit your pet&apos;s sensitivities
                 </li>
-                <li className="flex items-start gap-2">
-                  <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                <li className="flex items-start gap-2.5">
+                  <Check className="w-4 h-4 text-purple-500 mt-0.5 flex-shrink-0" />
                   Suggestions matched to your pet&apos;s life stage
                 </li>
-                <li className="flex items-start gap-2">
-                  <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                <li className="flex items-start gap-2.5">
+                  <Check className="w-4 h-4 text-purple-500 mt-0.5 flex-shrink-0" />
                   Mira remembers what&apos;s worked — and what hasn&apos;t
                 </li>
-                <li className="flex items-start gap-2">
-                  <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                <li className="flex items-start gap-2.5">
+                  <Check className="w-4 h-4 text-purple-500 mt-0.5 flex-shrink-0" />
                   Quiet access to human help, when you need it
                 </li>
               </ul>
