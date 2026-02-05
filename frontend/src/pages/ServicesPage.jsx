@@ -61,73 +61,54 @@ const PILLARS = [
 ];
 
 // =============================================================================
-// MIRA WHISPERS FOR SERVICES - Breed-specific
+// MIRA WHISPERS FOR SERVICES - Uses API breed_whispers or fallback
 // =============================================================================
-const MIRA_SERVICE_WHISPERS = {
-  'shih tzu': {
-    'grooming': "Shih Tzus need grooming every 4-6 weeks for their flowing coat",
-    'dental': "Small breeds like Shih Tzus are prone to dental issues - regular checks help",
-    'training': "Shih Tzus respond well to gentle, reward-based training",
-    'boarding': "Shih Tzus prefer calm, quiet boarding environments",
-    'default': "Perfect for Shih Tzu's gentle nature"
-  },
-  'golden retriever': {
-    'swimming': "Retrievers are natural swimmers - this is their happy place!",
-    'grooming': "Regular brushing keeps their golden coat healthy and shiny",
-    'training': "Golden Retrievers excel at training - they love to please",
-    'boarding': "Social Goldens thrive with playmates at boarding",
-    'default': "Great for active, friendly Retrievers"
-  },
-  'labrador': {
-    'swimming': "Labs are water babies - swimming is the perfect exercise",
-    'fitness': "Labs tend to gain weight easily - fitness programs help",
-    'training': "Labs are eager learners and food-motivated",
-    'boarding': "Social Labs love group play at daycare",
-    'default': "Ideal for energetic Labradors"
-  },
-  'pug': {
-    'grooming': "Pugs need facial fold cleaning and regular care",
-    'fitness': "Short walks work best - Pugs overheat easily",
-    'vet': "Breathing checks are important for flat-faced breeds",
-    'boarding': "Climate-controlled spaces are essential for Pugs",
-    'default': "Suitable for Pug's special needs"
-  },
-  'beagle': {
-    'training': "Beagles are scent-driven - structured training works best",
-    'boarding': "Secure facilities are important - Beagles can escape!",
-    'walking': "Beagles need walks to explore and sniff",
-    'default': "Perfect for curious Beagles"
-  },
-  'german shepherd': {
-    'training': "GSDs thrive with mental stimulation and challenges",
-    'fitness': "Active exercise prevents boredom and anxiety",
-    'grooming': "Regular deshedding keeps their double coat healthy",
-    'vet': "Hip checks are important for this breed",
-    'default': "Ideal for intelligent German Shepherds"
-  },
-  'default': {
-    'grooming': "Regular grooming keeps your pet healthy and happy",
-    'training': "Professional training strengthens your bond",
-    'boarding': "A home away from home for your companion",
-    'vet': "Preventive care for a healthy, happy life",
-    'default': "Curated for your companion's needs"
-  }
-};
-
 const getMiraServiceWhisper = (service, breed) => {
-  const breedLower = (breed || '').toLowerCase();
-  const serviceName = (service.name || '').toLowerCase();
+  const breedLower = (breed || '').toLowerCase().replace(/\s+/g, '_');
   
-  let breedWhispers = MIRA_SERVICE_WHISPERS.default;
-  for (const [key, whispers] of Object.entries(MIRA_SERVICE_WHISPERS)) {
-    if (breedLower.includes(key)) {
-      breedWhispers = whispers;
-      break;
+  // First check if service has breed_whispers from API
+  if (service.breed_whispers) {
+    // Try to find breed-specific whisper
+    for (const [key, whisper] of Object.entries(service.breed_whispers)) {
+      if (breedLower.includes(key.replace(/\s+/g, '_'))) {
+        return whisper;
+      }
+    }
+    // Fall back to default whisper
+    if (service.breed_whispers.default) {
+      return service.breed_whispers.default;
     }
   }
   
-  // Find matching whisper
-  for (const [keyword, whisper] of Object.entries(breedWhispers)) {
+  // Use mira_whisper field if available
+  if (service.mira_whisper) {
+    return service.mira_whisper;
+  }
+  
+  // Fallback to generic based on service category
+  const serviceName = (service.name || '').toLowerCase();
+  const fallbacks = {
+    'grooming': 'Professional grooming for a healthy, beautiful coat',
+    'training': 'Expert training to build confidence and good behavior',
+    'boarding': 'A safe, loving home away from home',
+    'daycare': 'Supervised play and socialization',
+    'walking': 'Daily exercise and mental stimulation',
+    'vet': 'Professional health care and prevention',
+    'spa': 'Relaxation and pampering they deserve',
+    'swimming': 'Low-impact exercise that dogs love',
+    'travel': 'Stress-free journeys for your companion',
+    'emergency': 'Expert help when you need it most',
+    'adoption': 'Find your perfect companion match',
+  };
+  
+  for (const [keyword, whisper] of Object.entries(fallbacks)) {
+    if (serviceName.includes(keyword)) {
+      return whisper;
+    }
+  }
+  
+  return service.description?.slice(0, 80) || 'Curated for your companion\'s needs';
+};
     if (serviceName.includes(keyword)) {
       return whisper;
     }
