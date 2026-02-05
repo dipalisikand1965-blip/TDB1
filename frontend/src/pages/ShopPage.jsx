@@ -401,7 +401,7 @@ const PillarFilters = ({ selected, onSelect, selectedSubcat, onSelectSubcat }) =
 };
 
 // =============================================================================
-// PRODUCT CARD - NO item counts
+// PRODUCT CARD - Touch-optimized, emotionally engaging
 // =============================================================================
 const ProductCard = ({ product, petName, isPetPick }) => {
   const [isWishlisted, setIsWishlisted] = useState(false);
@@ -413,11 +413,11 @@ const ProductCard = ({ product, petName, isPetPick }) => {
 
   return (
     <div 
-      className="group cursor-pointer bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all"
+      className="group cursor-pointer bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-sm hover:shadow-xl active:shadow-md transition-all active:scale-[0.98]"
       onClick={() => navigate(`/product/${product.handle || product.id}`)}
       data-testid={`product-card-${product.id}`}
     >
-      <div className="relative aspect-square bg-[#F5F0E8] overflow-hidden">
+      <div className="relative aspect-square bg-gradient-to-br from-[#F9F6F1] to-[#F0EBE3] overflow-hidden">
         <img
           src={image || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400'}
           alt={title}
