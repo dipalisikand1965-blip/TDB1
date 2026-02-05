@@ -716,7 +716,7 @@ const FinanceManager = () => {
             <TrendingUp className="w-4 h-4" />
             <span className="text-xs font-medium">Total Collected</span>
           </div>
-          <p className="text-xl font-bold text-white">{formatCurrency(stats.total_collected)}</p>
+          <p className="text-xl font-bold text-white">{formatCurrency(dateFilteredStats.total_collected)}</p>
         </motion.div>
 
         <motion.div
@@ -729,7 +729,7 @@ const FinanceManager = () => {
             <Clock className="w-4 h-4" />
             <span className="text-xs font-medium">Pending</span>
           </div>
-          <p className="text-xl font-bold text-white">{formatCurrency(stats.pending_amount)}</p>
+          <p className="text-xl font-bold text-white">{formatCurrency(dateFilteredStats.pending_amount)}</p>
         </motion.div>
 
         <motion.div
@@ -742,7 +742,7 @@ const FinanceManager = () => {
             <ArrowDownLeft className="w-4 h-4" />
             <span className="text-xs font-medium">Refunds</span>
           </div>
-          <p className="text-xl font-bold text-white">{formatCurrency(stats.refunds_issued)}</p>
+          <p className="text-xl font-bold text-white">{formatCurrency(dateFilteredStats.refunds_issued)}</p>
         </motion.div>
 
         <motion.div
@@ -755,7 +755,7 @@ const FinanceManager = () => {
             <Star className="w-4 h-4" />
             <span className="text-xs font-medium">Paw Points Used</span>
           </div>
-          <p className="text-xl font-bold text-white">{formatCurrency(stats.paw_points_redeemed)}</p>
+          <p className="text-xl font-bold text-white">{formatCurrency(dateFilteredStats.paw_points_redeemed)}</p>
         </motion.div>
 
         <motion.div
@@ -768,7 +768,7 @@ const FinanceManager = () => {
             <Tag className="w-4 h-4" />
             <span className="text-xs font-medium">Discounts Given</span>
           </div>
-          <p className="text-xl font-bold text-white">{formatCurrency(stats.discounts_given)}</p>
+          <p className="text-xl font-bold text-white">{formatCurrency(dateFilteredStats.discounts_given)}</p>
         </motion.div>
 
         <motion.div
