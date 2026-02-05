@@ -344,6 +344,12 @@ const ProductCard = ({ product, pillar = 'celebrate' }) => {
             From ₹{minPrice.toLocaleString('en-IN')}
           </p>
           
+          {/* Quiet Whisper of Service - Handled by Mira indicator */}
+          <div className="flex items-center gap-1 text-[9px] sm:text-[10px] text-purple-400">
+            <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+            <span className="opacity-70">Handled by Mira</span>
+          </div>
+          
           {/* View Button */}
           <button 
             onClick={(e) => { e.stopPropagation(); setShowModal(true); }}
