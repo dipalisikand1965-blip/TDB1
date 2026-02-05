@@ -339,16 +339,20 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
     
     // Only run on pillar change (not initial mount)
     if (prevPillar && prevPillar !== currentPillar && activePet) {
-      // Show transition toast (once per session)
+      // Show transition toast (once per session) - using queueMicrotask to avoid sync setState
       if (!hasShownTransitionRef.current) {
-        setShowPillarTransition(true);
-        hasShownTransitionRef.current = true;
-        setTimeout(() => setShowPillarTransition(false), 3000);
+        queueMicrotask(() => {
+          setShowPillarTransition(true);
+          hasShownTransitionRef.current = true;
+          setTimeout(() => setShowPillarTransition(false), 3000);
+        });
       }
       
       // Reset occasion-specific filters, keep persistent health filters
-      // Using functional update to avoid dependency issues
-      setCareFilters(prev => prev.filter(f => PERSISTENT_FILTERS.includes(f)));
+      const persistentFilters = ['sensitive-stomach', 'allergy-friendly', 'calming', 'recovery'];
+      queueMicrotask(() => {
+        setCareFilters(prev => prev.filter(f => persistentFilters.includes(f)));
+      });
     }
     
     currentPillarRef.current = currentPillar;
