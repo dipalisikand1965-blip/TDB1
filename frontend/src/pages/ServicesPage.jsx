@@ -109,13 +109,6 @@ const getMiraServiceWhisper = (service, breed) => {
   
   return service.description?.slice(0, 80) || 'Curated for your companion\'s needs';
 };
-    if (serviceName.includes(keyword)) {
-      return whisper;
-    }
-  }
-  
-  return breedWhispers.default || MIRA_SERVICE_WHISPERS.default.default;
-};
 
 // =============================================================================
 // PET SOUL TRAITS DISPLAY
