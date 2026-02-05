@@ -466,15 +466,88 @@ const PetProfile = ({ isEmbed = false }) => {
           💡 Don't know their birthday? No worries! Celebrate their Gotcha Day - the day they joined your family!
         </p>
 
-        <div>
-          <Label htmlFor="photo_url">Photo URL (optional)</Label>
-          <Input
-            id="photo_url"
-            placeholder="https://... link to pet's photo"
-            value={formData.photo_url}
-            onChange={(e) => updateFormData('photo_url', e.target.value)}
-            className="mt-1"
-          />
+        {/* Photo Upload Section */}
+        <div className="space-y-3">
+          <Label className="flex items-center gap-2">
+            <Camera className="w-4 h-4" />
+            Pet Photo
+          </Label>
+          
+          {/* Photo Preview */}
+          {formData.photo_url && (
+            <div className="flex items-center gap-3 p-3 bg-green-50 rounded-xl border border-green-200">
+              <img 
+                src={formData.photo_url} 
+                alt="Pet preview" 
+                className="w-16 h-16 rounded-full object-cover border-2 border-white shadow-md"
+                onError={(e) => e.target.style.display = 'none'}
+              />
+              <div className="flex-1">
+                <p className="text-sm text-green-700 font-medium">Photo added! ✨</p>
+                <button 
+                  type="button"
+                  onClick={() => updateFormData('photo_url', '')}
+                  className="text-xs text-red-500 hover:underline"
+                >
+                  Remove
+                </button>
+              </div>
+            </div>
+          )}
+          
+          {/* Upload Button */}
+          <div className="flex flex-col sm:flex-row gap-2">
+            <label className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl cursor-pointer hover:from-purple-600 hover:to-pink-600 transition-all shadow-md">
+              <Camera className="w-5 h-5" />
+              <span className="font-medium">Upload from Phone</span>
+              <input
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="hidden"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  
+                  // Validate
+                  if (!file.type.startsWith('image/')) {
+                    alert('Please select an image file');
+                    return;
+                  }
+                  if (file.size > 5 * 1024 * 1024) {
+                    alert('Image must be less than 5MB');
+                    return;
+                  }
+                  
+                  // Create preview immediately
+                  const reader = new FileReader();
+                  reader.onload = (ev) => {
+                    updateFormData('photo_url', ev.target.result);
+                    updateFormData('photo_file', file);
+                  };
+                  reader.readAsDataURL(file);
+                }}
+              />
+            </label>
+          </div>
+          
+          <p className="text-xs text-gray-500 text-center">
+            📱 Tap to select a photo from your gallery or take a new one
+          </p>
+          
+          {/* Optional URL input */}
+          <details className="text-sm">
+            <summary className="text-gray-500 cursor-pointer hover:text-gray-700">
+              Or paste a URL instead
+            </summary>
+            <Input
+              id="photo_url"
+              placeholder="https://... link to pet's photo"
+              value={formData.photo_url?.startsWith('data:') ? '' : formData.photo_url}
+              onChange={(e) => updateFormData('photo_url', e.target.value)}
+              className="mt-2"
+            />
+          </details>
         </div>
       </div>
     </div>
