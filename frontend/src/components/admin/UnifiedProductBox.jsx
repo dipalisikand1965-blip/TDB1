@@ -280,39 +280,51 @@ const UnifiedProductBox = () => {
         return;
       }
       
-      // CSV Headers
+      // CSV Headers - includes Breed Intelligence
       const headers = [
         'ID', 'Name', 'Type', 'Status', 'Category', 'Tags',
         'Primary Pillar', 'All Pillars', 'Base Price', 'GST Rate',
         'In Stock', 'Reward Eligible', 'Reward Value', 'Reward Triggers',
         'Life Stages', 'Size Suitability', 'Dietary Flags',
-        'Mira Can Reference', 'Mira Can Suggest', 'Short Description', 'Image URL'
+        'Mira Can Reference', 'Mira Can Suggest', 'Mira Hint',
+        'Breed Targets', 'Size Targets', 'Age Groups', 'Chew Strength', 'Energy Level', 'Sensitivities',
+        'Short Description', 'Image URL'
       ];
       
       // Build CSV rows
-      const rows = allProducts.map(p => [
-        p.id || '',
-        `"${(p.name || p.product_name || '').replace(/"/g, '""')}"`,
-        p.product_type || '',
-        p.visibility?.status || p.status || '',
-        p.category || '',
-        `"${(p.tags || []).join(', ')}"`,
-        p.primary_pillar || '',
-        `"${(p.pillars || []).join(', ')}"`,
-        p.pricing?.base_price || p.base_price || 0,
-        p.pricing?.gst_rate || 18,
-        p.in_stock ? 'Yes' : 'No',
-        p.paw_rewards?.is_reward_eligible ? 'Yes' : 'No',
-        p.paw_rewards?.reward_value || 0,
-        `"${(p.paw_rewards?.trigger_conditions || []).join(', ')}"`,
-        `"${(p.pet_safety?.life_stages || []).join(', ')}"`,
-        `"${(p.pet_safety?.size_suitability || []).join(', ')}"`,
-        `"${(p.pet_safety?.dietary_flags || []).join(', ')}"`,
-        p.mira_visibility?.can_reference ? 'Yes' : 'No',
-        p.mira_visibility?.can_suggest_proactively ? 'Yes' : 'No',
-        `"${(p.short_description || '').replace(/"/g, '""').substring(0, 200)}"`,
-        `"${p.image_url || p.images?.[0] || p.thumbnail || ''}"`
-      ]);
+      const rows = allProducts.map(p => {
+        const breedMeta = p.breed_metadata || {};
+        return [
+          p.id || '',
+          `"${(p.name || p.product_name || '').replace(/"/g, '""')}"`,
+          p.product_type || '',
+          p.visibility?.status || p.status || '',
+          p.category || '',
+          `"${(p.tags || []).join(', ')}"`,
+          p.primary_pillar || '',
+          `"${(p.pillars || []).join(', ')}"`,
+          p.pricing?.base_price || p.base_price || 0,
+          p.pricing?.gst_rate || 18,
+          p.in_stock ? 'Yes' : 'No',
+          p.paw_rewards?.is_reward_eligible ? 'Yes' : 'No',
+          p.paw_rewards?.reward_value || 0,
+          `"${(p.paw_rewards?.trigger_conditions || []).join(', ')}"`,
+          `"${(p.pet_safety?.life_stages || []).join(', ')}"`,
+          `"${(p.pet_safety?.size_suitability || []).join(', ')}"`,
+          `"${(p.pet_safety?.dietary_flags || []).join(', ')}"`,
+          p.mira_visibility?.can_reference ? 'Yes' : 'No',
+          p.mira_visibility?.can_suggest_proactively ? 'Yes' : 'No',
+          `"${(p.mira_hint || '').replace(/"/g, '""')}"`,
+          `"${(breedMeta.breeds || []).join(', ')}"`,
+          `"${(breedMeta.sizes || []).join(', ')}"`,
+          `"${(breedMeta.age_groups || []).join(', ')}"`,
+          breedMeta.chew_strength || '',
+          breedMeta.energy_level || '',
+          `"${(breedMeta.sensitivities || []).join(', ')}"`,
+          `"${(p.short_description || '').replace(/"/g, '""').substring(0, 200)}"`,
+          `"${p.image_url || p.images?.[0] || p.thumbnail || ''}"`
+        ];
+      });
       
       // Create CSV content
       const csvContent = [
