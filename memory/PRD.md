@@ -36,9 +36,40 @@ Build "The Doggy Company," a one-stop-shop concierge for dog parents with a focu
 
 ---
 
+## SESSION 6 SUMMARY (February 5, 2026)
+
+### Completed Today - Pet Operating System Non-Member Landing Page:
+
+#### 1. Non-Member Landing Page Copy Rewrite (10/10)
+- ✅ **Headline**: Changed from "Members-Only Experience" to "Personalised for Your Pet"
+- ✅ **Micro-line**: Added "No spam. No upselling. Just thoughtful care."
+- ✅ **Supporting line**: Now explains WHY Mira needs context, not just THAT access is gated
+- ✅ **Primary CTA**: Changed "Join Pet Pass" to "Set up your pet with Mira" with "Takes about 2 minutes" subtext
+- ✅ **Secondary CTA**: Changed "Sign In" to "Continue with your pet profile"
+- ✅ **Benefits heading**: Changed from "What Pet Pass members get:" to "Once Mira knows your pet, you'll notice:"
+- ✅ **Benefits bullets**: Rewritten as outcomes, not perks (sensitivities, life stage, memory, human help)
+- ✅ **Grounding line**: Added "You can explore freely — Mira simply helps narrow things down."
+
+#### 2. Navigation Update
+- ✅ Changed "SERVICES" to "CARE" in bottom mobile navigation bar to align with Pet OS philosophy
+
+#### 3. Member Experience Verified
+- ✅ Login flow working (test@test.com/test)
+- ✅ "Mira knows [PetName]" badge displays correctly
+- ✅ Personalized page titles (e.g., "Birthday Cakes for Bruno")
+- ✅ Care-based filters operational
+- ✅ "Mira's note" context strip appears for celebration categories
+- ✅ "Include" button (not "Add to Cart")
+
+#### 4. Test User & Pet Created
+- ✅ Created test@test.com/test user account
+- ✅ Created Bruno (Golden Retriever, 3yo, 25kg) pet profile
+
+---
+
 ## SESSION 5 SUMMARY (February 5, 2026)
 
-### Completed Today (Part 2 - Bug Fixes):
+### Completed (Part 2 - Bug Fixes):
 
 #### 4. Footer Services Section Added
 - ✅ Added "SERVICES" column to desktop footer (Grooming, Training, Boarding, Daycare, Vet Care, Dog Walking, Pet Photography)
