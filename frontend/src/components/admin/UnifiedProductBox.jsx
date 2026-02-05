@@ -194,7 +194,7 @@ const UnifiedProductBox = () => {
     }
   };
 
-  // Quick Edit Save - for image, price, pillars
+  // Quick Edit Save - for image, price, pillars, name, mira_hint
   const quickSave = async () => {
     if (!quickEditProduct || !quickEditType) return;
     
@@ -221,6 +221,16 @@ const UnifiedProductBox = () => {
         updateData = {
           pillars: quickEditValue,
           primary_pillar: quickEditValue[0] || quickEditProduct.primary_pillar
+        };
+      } else if (quickEditType === 'name') {
+        updateData = {
+          name: quickEditValue,
+          product_name: quickEditValue,
+          display_name: quickEditValue
+        };
+      } else if (quickEditType === 'mira_hint') {
+        updateData = {
+          mira_hint: quickEditValue
         };
       }
       
