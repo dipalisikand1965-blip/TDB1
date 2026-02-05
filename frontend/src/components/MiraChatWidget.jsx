@@ -121,6 +121,12 @@ const MiraChatWidget = ({
   const [petSoulInsights, setPetSoulInsights] = useState(null);
   const [quickActions, setQuickActions] = useState([]);
   
+  // "All Pets" mode - when true, shows recommendations for all pets
+  const [allPetsMode, setAllPetsMode] = useState(false);
+  
+  // Support filters state (Mira-driven personalization)
+  const [activeSupportFilters, setActiveSupportFilters] = useState([]);
+  
   // Voice state
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
