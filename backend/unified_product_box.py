@@ -768,7 +768,7 @@ async def update_product(product_id: str, updates: Dict[str, Any], admin_user: s
     
     try:
         # Check exists
-        existing = await db.unified_products.find_one({"id": product_id})
+        existing = await db.products_master.find_one({"id": product_id})
         if not existing:
             raise HTTPException(status_code=404, detail="Product not found")
         
@@ -793,13 +793,13 @@ async def update_product(product_id: str, updates: Dict[str, Any], admin_user: s
         updates["updated_by"] = admin_user
         updates["version"] = existing.get("version", 1) + 1
         
-        await db.unified_products.update_one(
+        await db.products_master.update_one(
             {"id": product_id},
             {"$set": updates}
         )
         
         # Get updated product
-        updated = await db.unified_products.find_one({"id": product_id}, {"_id": 0})
+        updated = await db.products_master.find_one({"id": product_id}, {"_id": 0})
         
         logger.info(f"Updated product: {product_id}")
         return {"message": "Product updated", "product": updated}
