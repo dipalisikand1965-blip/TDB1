@@ -606,49 +606,49 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
       {/* ============================================ */}
       {activePet ? (
         <div className="bg-white border-b border-stone-100">
-          <div className="max-w-6xl mx-auto px-4 py-6">
-            <div className="flex items-start gap-4">
-              {/* Pet Avatar */}
-              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-amber-50 to-orange-50 flex items-center justify-center overflow-hidden flex-shrink-0 ring-2 ring-amber-100">
+          <div className="max-w-6xl mx-auto px-4 py-8">
+            <div className="flex items-start gap-5">
+              {/* Pet Avatar - Softer, more refined */}
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center overflow-hidden flex-shrink-0 border border-purple-100/50">
                 {activePet.photo_url ? (
                   <img src={activePet.photo_url} alt={activePet.name} className="w-full h-full object-cover" />
                 ) : (
-                  <PawPrint className="w-7 h-7 text-amber-500" />
+                  <span className="text-2xl">{activePet.name?.charAt(0) || '🐕'}</span>
                 )}
               </div>
               
               {/* Mira's Understanding */}
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <Sparkles className="w-4 h-4 text-purple-500" />
-                  <span className="text-xs font-medium text-purple-600">Mira knows {activePet.name}</span>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5 mb-2">
+                  <Sparkles className="w-3.5 h-3.5 text-purple-400" />
+                  <span className="text-xs text-purple-500">Mira knows {activePet.name}</span>
                 </div>
-                <h1 className="text-xl font-semibold text-stone-900">
+                <h1 className="text-xl font-semibold text-stone-800 mb-3">
                   {categoryInfo.title} for {activePet.name}
                 </h1>
                 
-                {/* Identity Pills - Auto-applied, read-only indicators */}
-                <div className="flex flex-wrap items-center gap-2 mt-3">
+                {/* Identity Pills - Softer, unified style */}
+                <div className="flex flex-wrap items-center gap-2">
                   {identityFilters.lifeStage && (
-                    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${LIFE_STAGES[identityFilters.lifeStage].color}`}>
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-purple-700 bg-purple-50 border border-purple-100">
                       {React.createElement(LIFE_STAGES[identityFilters.lifeStage].icon, { className: 'w-3 h-3' })}
                       {LIFE_STAGES[identityFilters.lifeStage].label}
                     </span>
                   )}
                   {identityFilters.size && (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium text-stone-600 bg-stone-100">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-stone-600 bg-stone-50 border border-stone-100">
                       {SIZE_CATEGORIES[identityFilters.size].label} breed
                     </span>
                   )}
                   {activePet.breed && (
-                    <span className="text-xs text-stone-500">{activePet.breed}</span>
+                    <span className="text-xs text-stone-400">{activePet.breed}</span>
                   )}
                 </div>
                 
-                {/* Mira Context - What's being filtered */}
+                {/* Mira Context - What's being filtered - quieter */}
                 {miraContext.length > 0 && (
-                  <p className="text-xs text-amber-700 mt-3 flex items-center gap-1.5">
-                    <Shield className="w-3.5 h-3.5" />
+                  <p className="text-xs text-stone-400 mt-4 flex items-center gap-1.5">
+                    <Shield className="w-3.5 h-3.5 text-amber-400" />
                     {miraContext[0]}
                   </p>
                 )}
@@ -659,19 +659,19 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
                 <div className="relative">
                   <button
                     onClick={() => setShowPetSelector(!showPetSelector)}
-                    className="text-xs text-stone-500 hover:text-stone-700 flex items-center gap-1"
+                    className="text-xs text-stone-400 hover:text-stone-600 flex items-center gap-1 transition-colors"
                   >
                     Switch <ChevronDown className="w-3 h-3" />
                   </button>
                   {showPetSelector && (
-                    <div className="absolute right-0 top-6 bg-white rounded-lg shadow-lg border border-stone-200 py-1 min-w-[140px] z-20">
+                    <div className="absolute right-0 top-6 bg-white rounded-xl shadow-lg border border-stone-100 py-2 min-w-[150px] z-20">
                       {userPets.map(pet => (
                         <button
                           key={pet.id || pet._id}
                           onClick={() => { setActivePet(pet); setShowPetSelector(false); }}
-                          className="w-full px-3 py-2 text-left text-sm hover:bg-stone-50 flex items-center gap-2"
+                          className="w-full px-4 py-2.5 text-left text-sm hover:bg-stone-50 flex items-center gap-2 text-stone-600"
                         >
-                          <PawPrint className="w-3 h-3 text-amber-500" />
+                          <span className="text-base">{pet.name?.charAt(0) || '🐕'}</span>
                           {pet.name}
                         </button>
                       ))}
