@@ -1298,7 +1298,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
                 className="bg-gradient-to-r from-pink-600 to-purple-600 hover:from-pink-700 hover:to-purple-700 px-6"
               >
                 <Plus className="w-4 h-4 mr-2" />
-                {effectiveMiraContext?.includeText || 'Include'}
+                {miraContext?.includeText || 'Include'}
               </Button>
             </div>
           </div>
