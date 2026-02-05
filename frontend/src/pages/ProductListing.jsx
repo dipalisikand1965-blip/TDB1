@@ -304,7 +304,55 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
   const [showAvoidFilters, setShowAvoidFilters] = useState(false);
   const [showPetSelector, setShowPetSelector] = useState(false);
   
+  // Bottom sheet state (mobile)
+  const [showFilterSheet, setShowFilterSheet] = useState(false);
+  const [pendingCareFilters, setPendingCareFilters] = useState([]);
+  
+  // Scroll and sticky state
+  const [isScrolled, setIsScrolled] = useState(false);
+  const filterBarRef = useRef(null);
+  
+  // Pillar transition tracking
+  const [previousPillar, setPreviousPillar] = useState(null);
+  const [showPillarTransition, setShowPillarTransition] = useState(false);
+  const hasShownTransitionRef = useRef(false);
+  
   const category = propCategory || searchParams.get('category') || 'all';
+  
+  // Health/sensitivity filters that persist across pillars
+  const PERSISTENT_FILTERS = ['sensitive-stomach', 'allergy-friendly', 'calming', 'recovery'];
+  
+  // Occasion-specific filters that reset when leaving pillar
+  const OCCASION_FILTERS = ['breed-appropriate', 'weight', 'hydration', 'portable', 'energy', 'comfort', 'favorite-treats', 'familiar'];
+
+  // Track scroll for sticky filter bar (desktop)
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 100);
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+  
+  // Handle pillar transitions - reset occasion filters, keep health filters
+  useEffect(() => {
+    const currentPillar = PILLAR_SUPPORT_FILTERS[category] ? category : pillar;
+    
+    if (previousPillar && previousPillar !== currentPillar && activePet) {
+      // Filter out occasion-specific filters, keep persistent ones
+      const persistentActive = careFilters.filter(f => PERSISTENT_FILTERS.includes(f));
+      setCareFilters(persistentActive);
+      
+      // Show transition toast (once per session)
+      if (!hasShownTransitionRef.current) {
+        setShowPillarTransition(true);
+        hasShownTransitionRef.current = true;
+        setTimeout(() => setShowPillarTransition(false), 3000);
+      }
+    }
+    
+    setPreviousPillar(currentPillar);
+  }, [category, pillar]);
 
   // Fetch user's pets
   useEffect(() => {
