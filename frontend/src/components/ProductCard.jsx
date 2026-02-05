@@ -439,7 +439,7 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
           
           {/* Quiet grey hint - pillar specific, non-clicky */}
           <p className="text-[8px] sm:text-[9px] text-gray-400 leading-tight mt-1">
-            {miraContext?.quietHints?.[0] || 'Handled by Mira'}
+            {effectiveMiraContext?.quietHints?.[0] || 'Handled by Mira'}
           </p>
           
           {/* View Button */}
