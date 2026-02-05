@@ -2578,6 +2578,118 @@ const UnifiedProductBox = () => {
         saving={saving}
         onGenerateMiraHint={generateMiraHint}
       />
+      
+      {/* Quick Edit Dialog - Image, Price, Pillars */}
+      <Dialog open={!!quickEditProduct && !!quickEditType} onOpenChange={() => { setQuickEditProduct(null); setQuickEditType(null); }}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Edit className="w-5 h-5 text-purple-500" />
+              Quick Edit: {quickEditType === 'image' ? 'Image' : quickEditType === 'price' ? 'Price' : 'Pillars'}
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="py-4">
+            {quickEditProduct && (
+              <p className="text-sm text-gray-500 mb-4">
+                Editing: <span className="font-medium text-gray-700">{quickEditProduct.name}</span>
+              </p>
+            )}
+            
+            {/* Image Edit */}
+            {quickEditType === 'image' && (
+              <div className="space-y-4">
+                <div className="flex gap-4 items-start">
+                  <div className="w-20 h-20 rounded border overflow-hidden flex-shrink-0">
+                    {quickEditValue ? (
+                      <img src={quickEditValue} alt="Preview" className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                        <Package className="w-8 h-8 text-gray-300" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <Label>Image URL</Label>
+                    <Input
+                      value={quickEditValue || ''}
+                      onChange={(e) => setQuickEditValue(e.target.value)}
+                      placeholder="https://..."
+                      className="mt-1"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Paste a direct image URL (Shopify, Unsplash, etc.)</p>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {/* Price Edit */}
+            {quickEditType === 'price' && (
+              <div className="space-y-4">
+                <div>
+                  <Label>Selling Price (₹)</Label>
+                  <Input
+                    type="number"
+                    value={quickEditValue || 0}
+                    onChange={(e) => setQuickEditValue(e.target.value)}
+                    className="mt-1 text-2xl font-bold"
+                    min="0"
+                  />
+                </div>
+                <p className="text-xs text-gray-500">This will update both base_price and selling_price</p>
+              </div>
+            )}
+            
+            {/* Pillars Edit */}
+            {quickEditType === 'pillars' && (
+              <div className="space-y-4">
+                <Label>Select Pillars (product will appear in all selected pillars)</Label>
+                <div className="grid grid-cols-3 gap-2 mt-2 max-h-[300px] overflow-y-auto p-2 border rounded">
+                  {ALL_PILLARS.map(pillar => {
+                    const isSelected = (quickEditValue || []).includes(pillar.id);
+                    return (
+                      <label
+                        key={pillar.id}
+                        className={`flex items-center gap-2 p-2 rounded cursor-pointer transition-colors ${
+                          isSelected ? 'bg-purple-100 text-purple-700' : 'hover:bg-gray-50'
+                        }`}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setQuickEditValue([...(quickEditValue || []), pillar.id]);
+                            } else {
+                              setQuickEditValue((quickEditValue || []).filter(p => p !== pillar.id));
+                            }
+                          }}
+                          className="rounded"
+                        />
+                        <span className="text-lg">{pillar.icon}</span>
+                        <span className="text-sm">{pillar.name}</span>
+                      </label>
+                    );
+                  })}
+                </div>
+                <p className="text-xs text-gray-500">
+                  Selected: {(quickEditValue || []).length} pillar(s). First pillar will be the primary.
+                </p>
+              </div>
+            )}
+          </div>
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => { setQuickEditProduct(null); setQuickEditType(null); }}>
+              Cancel
+            </Button>
+            <Button onClick={quickSave} disabled={quickSaving} className="bg-purple-600 hover:bg-purple-700">
+              {quickSaving ? <RefreshCw className="w-4 h-4 animate-spin mr-2" /> : <Save className="w-4 h-4 mr-2" />}
+              Save
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
