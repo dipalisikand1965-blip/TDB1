@@ -113,10 +113,10 @@ const MiraOrb = ({
   
   const config = sizes[size];
   
-  // Generate particles based on state - pre-compute random values
-  useEffect(() => {
+  // Generate particles based on state - use useMemo to avoid effect setState
+  const particles = useMemo(() => {
     const particleCount = state === 'celebrating' ? 12 : config.particles;
-    const newParticles = Array.from({ length: particleCount }, (_, i) => ({
+    return Array.from({ length: particleCount }, (_, i) => ({
       id: i,
       delay: i * 0.3,
       duration: 2 + Math.random() * 2,
@@ -127,8 +127,6 @@ const MiraOrb = ({
         ? ['#EC4899', '#F59E0B', '#10B981', '#3B82F6'][i % 4]
         : MIRA_COLORS.glow,
     }));
-    // Use functional update to avoid lint warning
-    setParticles(() => newParticles);
   }, [state, config.particles]);
   
   // Animation variants for different states
