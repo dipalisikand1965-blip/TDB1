@@ -730,9 +730,19 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
           
           {/* Results Context */}
           <div className="flex items-center justify-between mb-4">
-            <p className="text-sm text-stone-600">
-              {proposedProducts.length} options selected for {activePet?.name || 'your pet'}
-            </p>
+            <div className="flex items-center gap-1.5">
+              <p className="text-sm text-stone-600">
+                {proposedProducts.length} options selected for {activePet?.name || 'your pet'}
+              </p>
+              <div className="relative group/info">
+                <Info className="w-3.5 h-3.5 text-stone-400 cursor-help" />
+                <div className="absolute left-0 top-full mt-1 hidden group-hover/info:block z-10">
+                  <div className="bg-stone-800 text-white text-xs px-2.5 py-1.5 rounded shadow-lg whitespace-nowrap">
+                    Based on {activePet?.name || 'your pet'}&apos;s profile and this occasion
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
           
           {/* Mira's Note - Service integration (appears for celebration categories) */}
