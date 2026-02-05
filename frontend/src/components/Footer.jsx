@@ -252,7 +252,7 @@ const Footer = () => {
               </div>
             </div>
 
-            {/* COLUMN 2 — THE PILLARS */}
+            {/* COLUMN 2 — PILLARS */}
             <div>
               <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Pillars</h3>
               <ul className="space-y-2 text-sm">
@@ -263,20 +263,21 @@ const Footer = () => {
                 <li><Link to="/care" className="hover:text-pink-400 transition-colors">💊 Care</Link></li>
                 <li><Link to="/enjoy" className="hover:text-pink-400 transition-colors">🎾 Enjoy</Link></li>
                 <li><Link to="/fit" className="hover:text-pink-400 transition-colors">🏃 Fit</Link></li>
+                <li><Link to="/learn" className="hover:text-pink-400 transition-colors">🎓 Learn</Link></li>
               </ul>
             </div>
 
-            {/* COLUMN 3 — MORE PILLARS */}
+            {/* COLUMN 3 — SERVICES (NEW) */}
             <div>
-              <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider opacity-0">More</h3>
+              <h3 className="text-white font-semibold mb-4 text-sm uppercase tracking-wider">Services</h3>
               <ul className="space-y-2 text-sm">
-                <li><Link to="/learn" className="hover:text-pink-400 transition-colors">🎓 Learn</Link></li>
-                <li><Link to="/paperwork" className="hover:text-pink-400 transition-colors">📄 Paperwork</Link></li>
-                <li><Link to="/advisory" className="hover:text-pink-400 transition-colors">📋 Advisory</Link></li>
-                <li><Link to="/emergency" className="hover:text-pink-400 transition-colors">🚨 Emergency</Link></li>
-                <li><Link to="/farewell" className="hover:text-pink-400 transition-colors">🌈 Farewell</Link></li>
-                <li><Link to="/adopt" className="hover:text-pink-400 transition-colors">🐾 Adopt</Link></li>
-                <li><Link to="/shop" className="hover:text-pink-400 transition-colors">🛒 Shop</Link></li>
+                <li><Link to="/services/grooming" className="hover:text-pink-400 transition-colors">✂️ Grooming</Link></li>
+                <li><Link to="/services/training" className="hover:text-pink-400 transition-colors">🎓 Training</Link></li>
+                <li><Link to="/services/boarding" className="hover:text-pink-400 transition-colors">🏠 Boarding</Link></li>
+                <li><Link to="/services/daycare" className="hover:text-pink-400 transition-colors">🌞 Daycare</Link></li>
+                <li><Link to="/services/vet" className="hover:text-pink-400 transition-colors">🏥 Vet Care</Link></li>
+                <li><Link to="/services/walking" className="hover:text-pink-400 transition-colors">🐕 Dog Walking</Link></li>
+                <li><Link to="/services/photography" className="hover:text-pink-400 transition-colors">📸 Pet Photography</Link></li>
               </ul>
             </div>
 
