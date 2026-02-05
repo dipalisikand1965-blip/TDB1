@@ -98,6 +98,7 @@ import {
   Syringe,
   Pill,
   Stethoscope,
+  Menu,
   Scale,
   FileText,
   HelpCircle,
