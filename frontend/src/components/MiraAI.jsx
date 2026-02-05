@@ -1257,10 +1257,11 @@ const MiraAI = () => {
   };
 
   // Always show the orb (except on admin/login pages)
+  // But HIDE on mobile since MobileNavBar has its own Mira FAB
   if (!isOpen) {
     return (
       <div 
-        className="fixed bottom-24 right-4 sm:bottom-8 sm:right-8 z-[9998]" 
+        className="fixed bottom-8 right-8 z-[9998] hidden md:block" 
         data-testid="mira-orb-container"
       >
         <MiraOrb 
