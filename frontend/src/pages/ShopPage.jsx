@@ -337,10 +337,10 @@ const PillarFilters = ({ selected, onSelect, selectedSubcat, onSelectSubcat }) =
   const selectedPillar = PILLARS.find(p => p.id === selected);
   
   return (
-    <div className="bg-white border-b border-gray-100 sticky top-0 z-30">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
-        {/* Main Pillars - Horizontally scrollable */}
-        <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-1 px-1">
+    <div className="bg-white/95 backdrop-blur-sm border-b border-gray-100 sticky top-0 z-30 shadow-sm">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 sm:py-4">
+        {/* Main Pillars - Horizontally scrollable with touch-friendly sizing */}
+        <div className="flex gap-1.5 sm:gap-2 overflow-x-auto pb-2 scrollbar-hide -mx-1 px-1 snap-x snap-mandatory">
           {PILLARS.map((pillar) => {
             const Icon = pillar.icon;
             const isActive = selected === pillar.id;
@@ -352,15 +352,15 @@ const PillarFilters = ({ selected, onSelect, selectedSubcat, onSelectSubcat }) =
                   onSelect(pillar.id);
                   onSelectSubcat(null);
                 }}
-                className={`flex items-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-medium whitespace-nowrap transition-all flex-shrink-0 ${
+                className={`flex items-center gap-1 sm:gap-1.5 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-all flex-shrink-0 snap-start active:scale-95 ${
                   isActive
                     ? 'bg-[#2D2D2D] text-white shadow-md'
-                    : `${pillar.color} text-[#2D2D2D] hover:shadow-md`
+                    : `${pillar.color} text-[#2D2D2D] hover:shadow-md active:shadow-md`
                 }`}
                 data-testid={`pillar-${pillar.id}`}
               >
-                <Icon className="w-4 h-4" />
-                {pillar.label}
+                <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                <span>{pillar.label}</span>
               </button>
             );
           })}
@@ -368,10 +368,10 @@ const PillarFilters = ({ selected, onSelect, selectedSubcat, onSelectSubcat }) =
         
         {/* Subcategories - Show if pillar has them */}
         {selectedPillar?.subcategories?.length > 0 && (
-          <div className="flex gap-2 mt-3 overflow-x-auto pb-1 scrollbar-hide">
+          <div className="flex gap-1.5 sm:gap-2 mt-2 sm:mt-3 overflow-x-auto pb-1 scrollbar-hide snap-x">
             <button
               onClick={() => onSelectSubcat(null)}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
+              className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-medium whitespace-nowrap transition-all snap-start active:scale-95 ${
                 !selectedSubcat
                   ? 'bg-[#C4785A] text-white'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -383,7 +383,7 @@ const PillarFilters = ({ selected, onSelect, selectedSubcat, onSelectSubcat }) =
               <button
                 key={subcat}
                 onClick={() => onSelectSubcat(subcat)}
-                className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-all ${
+                className={`px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[10px] sm:text-xs font-medium whitespace-nowrap transition-all snap-start active:scale-95 ${
                   selectedSubcat === subcat
                     ? 'bg-[#C4785A] text-white'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
