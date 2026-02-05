@@ -8266,11 +8266,14 @@ async def update_admin_product(product_id: str, updates: dict):
     allowed_fields = [
         "name", "description", "price", "category", "display_tags",
         "bundle_type", "bundle_includes", "options", "available",
-        "is_pan_india_shippable"
+        "is_pan_india_shippable", "tags", "minPrice", "autoship_enabled",
+        "collection_ids", "image", "status", "sizes", "flavors", "variants",
+        "mira_hint", "breed_metadata"
     ]
     
     sanitized = {k: v for k, v in updates.items() if k in allowed_fields}
     sanitized["updated_at"] = get_utc_timestamp()
+    sanitized["locally_edited"] = True
     
     result = await db.products.update_one(
         {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
