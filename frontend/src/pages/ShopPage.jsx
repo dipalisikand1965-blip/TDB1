@@ -454,9 +454,9 @@ const ShopPage = () => {
             </div>
             
             {/* Search Bar */}
-            <div className="w-full md:w-96">
+            <div className="w-full md:w-96 mt-4 md:mt-0">
               <div className="relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-gray-400" />
                 <Input
                   value={searchQuery}
                   onChange={(e) => {
@@ -469,8 +469,8 @@ const ShopPage = () => {
                       return prev;
                     });
                   }}
-                  placeholder="Search treats, toys, food... try 'birthday' or 'grain-free'"
-                  className="pl-12 pr-10 py-4 text-base rounded-full bg-white text-gray-900 border-0 shadow-lg"
+                  placeholder="Search treats, toys, food..."
+                  className="pl-10 sm:pl-12 pr-8 sm:pr-10 py-3 sm:py-4 text-sm sm:text-base rounded-full bg-white text-gray-900 border-0 shadow-lg"
                   data-testid="shop-search"
                 />
                 {searchQuery && (
@@ -482,9 +482,9 @@ const ShopPage = () => {
                         return prev;
                       });
                     }}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                   >
-                    <X className="w-5 h-5" />
+                    <X className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                 )}
               </div>
@@ -492,7 +492,7 @@ const ShopPage = () => {
           </div>
           
           {/* Pillar Filter Pills - Services Hub style */}
-          <div className="mt-6 flex flex-wrap gap-2 justify-center md:justify-start">
+          <div className="mt-4 sm:mt-6 flex flex-wrap gap-1.5 sm:gap-2 justify-center md:justify-start">
             {PILLAR_FILTERS.map((pillarItem) => (
               <button
                 key={pillarItem.id}
@@ -504,27 +504,28 @@ const ShopPage = () => {
                     return prev;
                   });
                 }}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                className={`px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all ${
                   selectedPillar === pillarItem.id
                     ? 'bg-white text-teal-700 shadow-md'
                     : 'bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm'
                 }`}
                 data-testid={`pillar-pill-${pillarItem.id}`}
               >
-                <span className="mr-1">{pillarItem.icon}</span>
-                {pillarItem.label}
+                <span className="mr-0.5 sm:mr-1">{pillarItem.icon}</span>
+                <span className="hidden sm:inline">{pillarItem.label}</span>
+                <span className="sm:hidden">{pillarItem.label.split(' ')[0]}</span>
               </button>
             ))}
           </div>
           
           {/* Quick Stats - Services Hub style */}
-          <div className="mt-4 flex flex-wrap gap-4 justify-center md:justify-start text-sm text-teal-100">
+          <div className="mt-3 sm:mt-4 flex flex-wrap gap-3 sm:gap-4 justify-center md:justify-start text-xs sm:text-sm text-teal-100">
             <span className="flex items-center gap-1">
-              <Package className="w-4 h-4" />
+              <Package className="w-3 h-3 sm:w-4 sm:h-4" />
               {products.length} Products
             </span>
             <span className="flex items-center gap-1">
-              <Tag className="w-4 h-4" />
+              <Tag className="w-3 h-3 sm:w-4 sm:h-4" />
               14 Pillars
             </span>
           </div>
@@ -532,15 +533,15 @@ const ShopPage = () => {
       </section>
 
       {/* Personalized Picks for User's Pet */}
-      <div className="max-w-7xl mx-auto px-4 py-6 bg-white border-b">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6 bg-white border-b">
         <PersonalizedPicks pillar="shop" maxProducts={6} />
       </div>
 
       {/* Category Navigation with Subcategories */}
       <section className="bg-white border-b sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto px-4 py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
           {/* Main Categories */}
-          <div className="flex gap-2 overflow-x-auto pb-2">
+          <div className="flex gap-1.5 sm:gap-2 overflow-x-auto pb-2 scrollbar-hide">
             {/* All Products */}
             <button
               onClick={() => {
