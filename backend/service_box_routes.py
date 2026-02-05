@@ -382,13 +382,13 @@ async def toggle_service(service_id: str):
     """Toggle service active/inactive"""
     db = get_db()
     
-    existing = await db.service_catalog.find_one({"id": service_id})
+    existing = await db.services_master.find_one({"id": service_id})
     if not existing:
         raise HTTPException(status_code=404, detail="Service not found")
     
     new_status = not existing.get("is_active", True)
     
-    await db.service_catalog.update_one(
+    await db.services_master.update_one(
         {"id": service_id},
         {"$set": {"is_active": new_status, "updated_at": datetime.now(timezone.utc)}}
     )
@@ -437,17 +437,17 @@ async def seed_all_services():
                     "deposit_percentage": 20
                 }
                 
-                existing = await db.service_catalog.find_one({"id": service["id"]})
+                existing = await db.services_master.find_one({"id": service["id"]})
                 
                 if existing:
-                    await db.service_catalog.update_one(
+                    await db.services_master.update_one(
                         {"id": service["id"]},
                         {"$set": {**service_doc, "created_at": existing.get("created_at", now)}}
                     )
                     total_updated += 1
                 else:
                     service_doc["created_at"] = now
-                    await db.service_catalog.insert_one(service_doc)
+                    await db.services_master.insert_one(service_doc)
                     total_created += 1
         
         # Ensure indexes
