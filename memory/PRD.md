@@ -49,21 +49,49 @@ Build "The Doggy Company," a one-stop-shop concierge for dog parents with a focu
   - "✨ Festive flavors that spark joy in every wag!" (Diwali Treat Box)
   - "✨ Tail-wagging satisfaction in every mouthwatering bite!" (Mutton & Veggies Meal)
 
-#### 2. AI Hint Generation System
-- Created `generate_ai_mira_hint()` function using Emergent LLM (GPT-4o-mini)
-- High-temperature (0.9) for maximum creativity and uniqueness
-- Detailed prompt engineering to ensure hints are:
-  - Evocative and emotion-focused
-  - Never generic ("made with love", "perfect for")
-  - Specific to the product's joy-bringing qualities
-- Fallback system with improved variety for when AI is unavailable
-- Background processing: ~1,000 products regenerated with unique hints
+#### 2. Soul Score Banner Component ✅
+- Shows near recommendations to encourage profile completion
+- Animated arc with score percentage
+- Messages adapt based on score level (gamified)
+- Mobile-responsive with UNIFORM flow pattern
 
-#### 3. Pet Name Sync Bug Fix (P1) ✅
-- Fixed race condition in `ProductListing.jsx` where pet name wouldn't update
-- Added `useRef` to always access latest `userPets` array
-- Event listener now correctly handles pet changes from navbar
-- Added console logging for debugging
+#### 3. Breed-Aware Product & Service Catalogue (NEW!) ✅
+- **Created comprehensive breed-intelligent recommendation system**
+- 41 Products seeded across categories: toys, accessories, bandanas, clothes, celebration add-ons
+- 29 Services seeded: grooming, training, walking, travel, celebration, care support
+- **Naming Convention**: `[Who it's for] · [What it is] · [Why it fits]`
+  - "Power Chewer · Rope Toy · Extra Durable"
+  - "Indie Dog · Desi Pride Bandana · Heritage Style"
+  - "Long Coat · Full Grooming · Complete Spa Day"
+
+#### 4. Mira Breed Intelligence Engine ✅
+- **Breed profiles** with size, coat type, energy level, chew tendency, grooming needs
+- **Smart matching** that scores products/services by breed compatibility
+- **Supported breeds**: Indie, Golden Retriever, Labrador, Beagle, Maltese, Maltipoo, Shih Tzu
+- **AI-powered tagging** generates hints and searchable tags automatically
+
+---
+
+## BREED CATALOGUE ARCHITECTURE
+
+```
+/api/breed-catalogue/
+├── /products                    # CRUD for breed-aware products
+├── /services                    # CRUD for breed-aware services
+├── /recommend/for-pet           # Mira's brain - personalized recommendations
+├── /breed-profiles              # Get all known breed profiles
+├── /breed-profile/{breed}       # Get specific breed profile
+├── /stats                       # Catalogue statistics
+├── /admin/auto-tag-products     # AI-generate hints & tags
+└── /admin/auto-tag-services     # AI-generate service hints
+```
+
+### How It Works (Moo the Indie Example):
+1. User selects "Moo" (Indie breed) in navbar
+2. Mira detects: Size=M, Coat=short, Energy=active, Chew=medium
+3. On Celebrate pillar: Recommends "Indie Dog · Desi Pride Bandana · Heritage Style"
+4. On Enjoy pillar: Recommends "Active Breed · Puzzle Toy · Mental Stimulation"
+5. On Care pillar: Recommends "Short Coat · Express Grooming · Quick Refresh"
 
 ---
 
