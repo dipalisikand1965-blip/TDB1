@@ -1329,17 +1329,18 @@ const ProductListing = ({ category = 'all' }) => {
         {selectedPet && petRecommendations.length > 0 && (() => {
           const recConfig = getPillarRecommendationConfig(pillar);
           return (
-            <div className={`mb-8 bg-gradient-to-r ${recConfig.bgColor} rounded-2xl p-6 border ${recConfig.borderColor}`} data-testid="pet-recommendations-section">
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <div className={`w-12 h-12 rounded-full ${recConfig.badgeColor} flex items-center justify-center text-white text-xl`}>
+            <div className={`mb-6 sm:mb-8 bg-gradient-to-r ${recConfig.bgColor} rounded-xl sm:rounded-2xl p-3 sm:p-6 border ${recConfig.borderColor}`} data-testid="pet-recommendations-section">
+              {/* Header - stacks on mobile */}
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 mb-3 sm:mb-4">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <div className={`w-8 h-8 sm:w-12 sm:h-12 rounded-full ${recConfig.badgeColor} flex items-center justify-center text-white text-sm sm:text-xl`}>
                     {recConfig.icon}
                   </div>
-                  <div>
-                    <h3 className={`font-bold text-lg ${recConfig.accentColor}`}>
+                  <div className="min-w-0 flex-1">
+                    <h3 className={`font-bold text-sm sm:text-lg ${recConfig.accentColor} truncate`}>
                       {recConfig.title(selectedPet.name)}
                     </h3>
-                    <p className={`text-sm ${recConfig.accentColor} opacity-70`}>
+                    <p className={`text-[10px] sm:text-sm ${recConfig.accentColor} opacity-70 truncate`}>
                       {recConfig.subtitle(selectedPet)}
                     </p>
                   </div>
@@ -1350,7 +1351,7 @@ const ProductListing = ({ category = 'all' }) => {
                   <select 
                     value={selectedPet?.id || ''}
                     onChange={(e) => handlePetChange(e.target.value)}
-                    className={`px-3 py-2 rounded-lg border ${recConfig.borderColor} bg-white text-sm font-medium`}
+                    className={`px-2 sm:px-3 py-1.5 sm:py-2 rounded-lg border ${recConfig.borderColor} bg-white text-xs sm:text-sm font-medium w-full sm:w-auto`}
                     data-testid="pet-selector-dropdown"
                   >
                     {userPets.map(pet => (
@@ -1366,16 +1367,16 @@ const ProductListing = ({ category = 'all' }) => {
                   score={petSoulScore}
                   petId={selectedPet.id}
                   petName={selectedPet.name}
-                  className="mb-4"
+                  className="mb-3 sm:mb-4"
                 />
               )}
               
-              {/* Recommended Products Carousel */}
-              <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+              {/* Recommended Products Carousel - Mobile-optimized */}
+              <div className="flex gap-2 sm:gap-4 overflow-x-auto pb-2 scrollbar-hide -mx-1 px-1">
                 {petRecommendations.slice(0, 6).map(product => (
-                  <div key={product.id} className="flex-shrink-0 w-40">
+                  <div key={product.id} className="flex-shrink-0 w-28 sm:w-40">
                     <a href={`/product/${product.id}`} className="block group">
-                      <div className="relative bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
+                      <div className="relative bg-white rounded-lg sm:rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
                         <div className="aspect-square bg-gray-100">
                           {product.image && (
                             <img 
@@ -1385,9 +1386,9 @@ const ProductListing = ({ category = 'all' }) => {
                             />
                           )}
                         </div>
-                        <div className="p-2">
-                          <p className="text-xs font-medium text-gray-900 truncate">{product.title || product.name}</p>
-                          <p className={`text-xs font-bold ${recConfig.accentColor}`}>₹{product.price || product.minPrice}</p>
+                        <div className="p-1.5 sm:p-2">
+                          <p className="text-[10px] sm:text-xs font-medium text-gray-900 truncate">{product.title || product.name}</p>
+                          <p className={`text-[10px] sm:text-xs font-bold ${recConfig.accentColor}`}>₹{product.price || product.minPrice}</p>
                         </div>
                         <div className={`absolute top-2 right-2 ${recConfig.badgeColor} text-white text-[10px] px-2 py-0.5 rounded-full`}>
                           For {selectedPet.name}
