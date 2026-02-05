@@ -262,7 +262,7 @@ const PillarFilters = ({ selected, onSelect, selectedSubcat, onSelectSubcat }) =
 };
 
 // =============================================================================
-// SERVICE CARD - Concierge-grade, not marketplace
+// SERVICE CARD - Concierge-grade, meaning before price
 // =============================================================================
 const ServiceCard = ({ service, pet, breedRecommendation }) => {
   const navigate = useNavigate();
@@ -270,68 +270,82 @@ const ServiceCard = ({ service, pet, breedRecommendation }) => {
     service.name?.toLowerCase().includes(s.toLowerCase())
   );
   
+  // Generate relevance text based on service and pet
+  const getRelevanceText = () => {
+    if (breedMatch && breedRecommendation?.nudge) {
+      return breedRecommendation.nudge;
+    }
+    // Generic relevance based on service category
+    const category = (service.category || service.pillar || '').toLowerCase();
+    const relevanceMap = {
+      'grooming': 'Essential for coat health and comfort',
+      'training': 'Build confidence and strengthen your bond',
+      'boarding': 'A safe, loving home away from home',
+      'daycare': 'Socialization and exercise while you\'re at work',
+      'walking': 'Daily exercise and mental stimulation',
+      'vet': 'Professional health monitoring and care',
+      'travel': 'Stress-free journeys for your companion',
+      'spa': 'Relaxation and pampering they deserve',
+      'adopt': 'Helpful for first-time pet parents and puppies settling in',
+      'emergency': 'Peace of mind when you need it most',
+    };
+    for (const [key, text] of Object.entries(relevanceMap)) {
+      if (category.includes(key) || service.name?.toLowerCase().includes(key)) {
+        return text;
+      }
+    }
+    return service.description?.slice(0, 60) || 'Curated for your companion\'s needs';
+  };
+  
   return (
     <div 
       className="group cursor-pointer bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-sm hover:shadow-xl active:shadow-md transition-all active:scale-[0.98] border border-gray-100"
       onClick={() => navigate(`/services/${service.pillar || 'care'}/${service.id}`)}
       data-testid={`service-card-${service.id}`}
     >
-      {/* Service Header */}
-      <div className="relative p-4 sm:p-5 bg-gradient-to-br from-[#7A8B6F]/10 to-[#7A8B6F]/5">
-        {/* Breed Match Badge */}
-        {breedMatch && (
-          <div className="absolute top-3 right-3">
-            <span className="inline-flex items-center gap-1 px-2 py-1 bg-[#7A8B6F] text-white text-[10px] sm:text-xs font-medium rounded-full">
-              <Star className="w-3 h-3" fill="currentColor" />
-              Great match
-            </span>
-          </div>
-        )}
-        
-        <h3 className="text-sm sm:text-base font-semibold text-[#2D2D2D] mb-1 pr-20">
+      {/* Service Content - Meaning first, price last */}
+      <div className="p-4 sm:p-5 space-y-3">
+        {/* Service Name - Primary */}
+        <h3 className="text-base sm:text-lg font-semibold text-[#2D2D2D] leading-snug">
           {service.name}
         </h3>
         
-        {/* Why this is suggested - quiet intelligence */}
-        {pet && breedRecommendation?.nudge && breedMatch && (
-          <p className="text-[10px] sm:text-xs text-[#6B6B6B] mb-2 leading-relaxed">
-            {breedRecommendation.nudge}
-          </p>
-        )}
+        {/* Why it's relevant - The heart of the card */}
+        <p className="text-sm text-[#6B6B6B] leading-relaxed">
+          {getRelevanceText()}
+        </p>
         
-        {/* Category */}
-        <span className="inline-block px-2 py-0.5 bg-white/80 rounded text-[10px] text-[#6B6B6B]">
-          {service.category || service.pillar || 'Service'}
-        </span>
-      </div>
-      
-      {/* Service Details */}
-      <div className="p-4 sm:p-5 space-y-2.5">
-        {/* Price */}
-        <div className="flex items-center justify-between">
-          <span className="text-lg sm:text-xl font-bold text-[#2D2D2D]">
+        {/* Price, duration, location - Secondary info */}
+        <div className="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-[#9B9B9B]">
+          <span className="font-medium text-[#2D2D2D]">
             {service.base_price ? `₹${service.base_price.toLocaleString()}` : 'Get Quote'}
           </span>
           {service.duration && (
-            <span className="flex items-center gap-1 text-xs text-[#9B9B9B]">
-              <Clock className="w-3 h-3" />
-              {service.duration}
-            </span>
+            <>
+              <span>·</span>
+              <span className="flex items-center gap-1">
+                <Clock className="w-3 h-3" />
+                {service.duration}
+              </span>
+            </>
+          )}
+          {service.location && (
+            <>
+              <span>·</span>
+              <span>{service.location}</span>
+            </>
           )}
         </div>
         
-        {/* Location/Provider */}
-        {service.location && (
-          <div className="flex items-center gap-1 text-xs text-[#6B6B6B]">
-            <MapPin className="w-3 h-3" />
-            <span>{service.location}</span>
+        {/* Good match badge - if breed-specific */}
+        {breedMatch && (
+          <div className="flex items-center gap-1.5">
+            <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-[#7A8B6F]/10 text-[#7A8B6F] text-xs font-medium rounded-full">
+              <Star className="w-3 h-3" fill="currentColor" />
+              Good match for {pet?.breed || 'your pet'}
+            </span>
           </div>
         )}
-        
-        {/* CTA */}
-        <button className="w-full mt-2 py-2 sm:py-2.5 bg-[#7A8B6F] text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-[#6A7B5F] active:scale-[0.98] transition-all">
-          Book Now
-        </button>
       </div>
     </div>
   );
