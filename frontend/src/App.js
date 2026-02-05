@@ -264,6 +264,7 @@ function AppRouter() {
         
         {/* Full-Screen Service Desk - NO navbar/footer */}
         <Route path="/admin/service-desk" element={<ServiceDeskPage />} />
+        <Route path="/admin/services" element={<ServiceCRUDAdmin />} />
         
         {/* Full-Screen Concierge® Dashboard - NO navbar/footer */}
         <Route path="/admin/concierge" element={<ConciergeRequestsDashboard />} />
