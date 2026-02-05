@@ -211,6 +211,48 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
   const [showModal, setShowModal] = useState(false);
   const { user, token } = useAuth();
   
+  // Default miraContext if not provided - generates pillar-appropriate messaging
+  const defaultMiraContext = {
+    celebrate: {
+      quietHints: ['Often paired with celebration setup', 'Can be delivered with a helper', 'Usually combined with a small surprise plan'],
+      includeText: 'Include',
+      addedMessage: (petName) => `Added to ${petName || 'your pet'}'s celebration plan`
+    },
+    dine: {
+      quietHints: ['Can be scheduled with feeding times', 'Often paired with portion planning', 'Usually combined with diet tracking'],
+      includeText: 'Include',
+      addedMessage: (petName) => `Added to ${petName || 'your pet'}'s meal plan`
+    },
+    care: {
+      quietHints: ['Often paired with vet consultations', 'Can include dosage reminders', 'Usually combined with health tracking'],
+      includeText: 'Include',
+      addedMessage: (petName) => `Added to ${petName || 'your pet'}'s care routine`
+    },
+    travel: {
+      quietHints: ['Often paired with travel checklist', 'Can include comfort stops planning', 'Usually combined with accommodation help'],
+      includeText: 'Include',
+      addedMessage: (petName) => `Added to ${petName || 'your pet'}'s travel kit`
+    },
+    enjoy: {
+      quietHints: ['Often paired with activity planning', 'Can include weather-based suggestions', 'Usually combined with safety checklist'],
+      includeText: 'Include',
+      addedMessage: (petName) => `Added to ${petName || 'your pet'}'s adventure pack`
+    },
+    fit: {
+      quietHints: ['Often paired with exercise tracking', 'Can include progress milestones', 'Usually combined with diet coordination'],
+      includeText: 'Include',
+      addedMessage: (petName) => `Added to ${petName || 'your pet'}'s fitness plan`
+    },
+    shop: {
+      quietHints: ['Can be auto-reordered when low', 'Often paired with subscription savings', 'Usually combined with usage tracking'],
+      includeText: 'Include',
+      addedMessage: (petName) => `Added to ${petName || 'your pet'}'s essentials`
+    }
+  };
+  
+  // Use provided miraContext or fall back to default based on pillar
+  const effectiveMiraContext = miraContext || defaultMiraContext[pillar] || defaultMiraContext.celebrate;
+  
   // Generate product-specific Mira tip based on product name/category/tags
   const getProductMiraTip = () => {
     const name = (product.name || '').toLowerCase();
