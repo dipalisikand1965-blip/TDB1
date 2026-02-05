@@ -48,6 +48,112 @@ const MultiSelect = ({ options, selected = [], onChange, columns = 3 }) => (
   </div>
 );
 
+// Breed Auto-Suggest Multi-Select with search
+const BreedAutoSuggest = ({ breeds, selected = [], onChange }) => {
+  const [search, setSearch] = useState('');
+  const [showAll, setShowAll] = useState(false);
+  
+  // Filter breeds based on search
+  const filteredBreeds = search 
+    ? breeds.filter(b => 
+        (b.name || b).toLowerCase().includes(search.toLowerCase())
+      )
+    : breeds;
+  
+  // Show limited results unless expanded
+  const displayBreeds = showAll ? filteredBreeds : filteredBreeds.slice(0, 20);
+  
+  return (
+    <div className="space-y-2">
+      {/* Search Input */}
+      <div className="relative">
+        <input
+          type="text"
+          placeholder="Search breeds... (e.g., Labrador, Corgi)"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+        />
+        {search && (
+          <button 
+            onClick={() => setSearch('')}
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+          >
+            ×
+          </button>
+        )}
+      </div>
+      
+      {/* Selected Breeds Pills */}
+      {selected.length > 0 && (
+        <div className="flex flex-wrap gap-1 p-2 bg-purple-50 rounded-lg">
+          {selected.map(breed => (
+            <span 
+              key={breed}
+              className="inline-flex items-center gap-1 px-2 py-1 bg-purple-100 text-purple-700 rounded-full text-xs"
+            >
+              {breed}
+              <button 
+                onClick={() => onChange(selected.filter(s => s !== breed))}
+                className="hover:text-purple-900"
+              >
+                ×
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
+      
+      {/* Breed Grid */}
+      <div className="max-h-48 overflow-y-auto border rounded-lg p-2">
+        <div className="grid grid-cols-3 gap-1">
+          {displayBreeds.map(breed => {
+            const breedName = breed.name || breed;
+            const isSelected = selected.includes(breedName);
+            return (
+              <label 
+                key={breedName}
+                className={`flex items-center gap-2 cursor-pointer p-1.5 rounded text-sm ${
+                  isSelected ? 'bg-purple-100 text-purple-700' : 'hover:bg-gray-50'
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  checked={isSelected}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      onChange([...selected, breedName]);
+                    } else {
+                      onChange(selected.filter(s => s !== breedName));
+                    }
+                  }}
+                  className="rounded border-gray-300"
+                />
+                <span className="truncate">{breedName}</span>
+              </label>
+            );
+          })}
+        </div>
+        
+        {filteredBreeds.length > 20 && !showAll && (
+          <button
+            onClick={() => setShowAll(true)}
+            className="w-full mt-2 py-1 text-sm text-purple-600 hover:text-purple-700"
+          >
+            Show all {filteredBreeds.length} breeds...
+          </button>
+        )}
+        
+        {filteredBreeds.length === 0 && (
+          <p className="text-center text-gray-500 text-sm py-4">
+            No breeds found matching "{search}"
+          </p>
+        )}
+      </div>
+    </div>
+  );
+};
+
 // Section header
 const SectionHeader = ({ icon: Icon, title, subtitle }) => (
   <div className="flex items-center gap-2 mb-3 pb-2 border-b">
