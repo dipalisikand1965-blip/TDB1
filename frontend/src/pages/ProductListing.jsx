@@ -812,7 +812,7 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
               {/* Applied filters chip row (desktop) */}
               {(careFilters.length > 0 || avoidFilters.length > 0) && (
                 <div className="flex items-center gap-2 mb-3 text-xs">
-                  <span className="text-stone-500">Applied for {activePet?.name || 'your pet'}:</span>
+                  <span className="text-stone-400 text-[11px]">Applied for {activePet?.name || 'your pet'}:</span>
                   {careFilters.map(filterId => {
                     const filterDef = getSupportFilters(category, pillar).find(f => f.id === filterId);
                     const isAuto = autoAppliedFilters.includes(filterId);
@@ -820,19 +820,19 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
                       <button
                         key={filterId}
                         onClick={() => toggleCareFilter(filterId)}
-                        className={`inline-flex items-center gap-1 px-2 py-1 rounded-full ${
-                          isAuto ? 'bg-green-50 text-green-700' : 'bg-rose-50 text-rose-700'
-                        } hover:opacity-80`}
+                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all ${
+                          isAuto ? 'bg-purple-50 text-purple-600 border border-purple-100' : 'bg-stone-50 text-stone-600 border border-stone-100'
+                        } hover:opacity-70`}
                       >
                         {filterDef.label}
-                        <X className="w-3 h-3" />
+                        <X className="w-3 h-3 opacity-50" />
                       </button>
                     ) : null;
                   })}
                   {careFilters.length > 0 && (
                     <button 
                       onClick={() => setCareFilters(autoAppliedFilters)}
-                      className="text-stone-400 hover:text-stone-600 ml-1"
+                      className="text-stone-300 hover:text-stone-500 text-[11px] ml-1 transition-colors"
                     >
                       Reset to {activePet?.name || 'profile'}
                     </button>
@@ -841,20 +841,20 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
               )}
               
               {/* Desktop filter sections - vertical stack for thoughtfulness */}
-              <div className="space-y-3">
+              <div className="space-y-4">
                 {/* Support filters */}
                 <div>
                   <button
                     onClick={() => setShowCareFilters(!showCareFilters)}
-                    className="flex items-center gap-2 text-sm font-medium text-stone-700 hover:text-stone-900 w-full"
+                    className="flex items-center gap-2 text-sm text-stone-600 hover:text-stone-800 w-full py-1"
                   >
-                    <Heart className="w-4 h-4 text-rose-500" />
+                    <Heart className="w-4 h-4 text-purple-400" />
                     <span>What would you like to support right now?</span>
-                    <ChevronDown className={`w-4 h-4 ml-auto transition-transform ${showCareFilters ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={`w-4 h-4 ml-auto text-stone-400 transition-transform ${showCareFilters ? 'rotate-180' : ''}`} />
                   </button>
                   
                   {showCareFilters && (
-                    <div className="mt-3 space-y-2 max-w-xl">
+                    <div className="mt-4 space-y-2 max-w-xl">
                       {getSupportFilters(category, pillar).map(support => {
                         const isAutoApplied = autoAppliedFilters.includes(support.id);
                         const isSelected = careFilters.includes(support.id);
@@ -862,29 +862,29 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
                           <button
                             key={support.id}
                             onClick={() => toggleCareFilter(support.id)}
-                            className={`w-full flex items-center gap-3 p-3 rounded-lg border text-left transition-all min-h-[56px] group ${
+                            className={`w-full flex items-center gap-4 p-4 rounded-xl border text-left transition-all min-h-[60px] group ${
                               isSelected
-                                ? 'border-rose-300 bg-rose-50'
+                                ? 'border-purple-200 bg-purple-50/50'
                                 : isAutoApplied
-                                ? 'border-green-200 bg-green-50/30'
-                                : 'border-stone-200 hover:border-stone-300 hover:bg-stone-50'
+                                ? 'border-purple-100 bg-purple-50/30'
+                                : 'border-stone-100 hover:border-stone-200 hover:bg-stone-50/50'
                             }`}
                             data-testid={`care-filter-${support.id}`}
                           >
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
-                              isSelected ? 'bg-rose-100' : isAutoApplied ? 'bg-green-100' : 'bg-stone-100 group-hover:bg-stone-200'
+                            <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                              isSelected ? 'bg-purple-100' : isAutoApplied ? 'bg-purple-100/50' : 'bg-stone-100 group-hover:bg-stone-100'
                             }`}>
                               <support.icon className={`w-5 h-5 ${
-                                isSelected ? 'text-rose-600' : isAutoApplied ? 'text-green-600' : 'text-stone-500'
+                                isSelected ? 'text-purple-600' : isAutoApplied ? 'text-purple-500' : 'text-stone-400'
                               }`} />
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2">
-                                <span className={`text-sm font-medium ${isSelected ? 'text-rose-700' : 'text-stone-700'}`}>
+                                <span className={`text-sm font-medium ${isSelected ? 'text-purple-700' : 'text-stone-700'}`}>
                                   {support.label}
                                 </span>
                                 {isAutoApplied && (
-                                  <span className="text-[10px] text-green-600">
+                                  <span className="text-[10px] text-purple-500">
                                     (applied for {activePet?.name})
                                   </span>
                                 )}
