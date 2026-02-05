@@ -787,6 +787,7 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
           </div>
         </div>
       </div>
+      )}
     </div>
   );
 };
