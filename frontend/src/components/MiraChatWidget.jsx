@@ -1267,11 +1267,19 @@ const MiraChatWidget = ({
     return 'idle';
   };
   
-  // Floating Button (when closed) - Uses the beautiful MiraOrb!
-  // DISABLED - MiraAI.jsx in App.js already renders the global MiraOrb
-  // This prevents duplicate orbs on pages that import MiraChatWidget
+  // Floating Button (when closed)
+  // On pillar pages, MiraChatWidget provides pillar-specific context
+  // But the ORB is handled by MiraAI globally - so we show a hidden trigger
   if (!isOpen) {
-    return null; // MiraAI handles the orb globally
+    // Don't render the orb (MiraAI does that), but keep the component mounted
+    // for pillar context. The global MiraAI orb will open THIS widget.
+    return (
+      <div 
+        className="hidden"
+        data-pillar={pillar}
+        data-testid="mira-chat-widget-hidden"
+      />
+    );
   }
   
   // Chat Widget (when open) - RESPONSIVE for mobile
