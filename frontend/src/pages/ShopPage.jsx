@@ -138,9 +138,23 @@ const PILLARS = [
 ];
 
 // =============================================================================
-// PET BAR - Shows selected pet's photo (synced with navbar)
+// PET BAR - Shows selected pet's photo with dropdown to switch pets
 // =============================================================================
-const PetBar = ({ pet, onChangePet }) => {
+const PetBar = ({ pet, pets, onSelectPet }) => {
+  const [showDropdown, setShowDropdown] = useState(false);
+  const dropdownRef = useRef(null);
+  
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+  
   if (!pet) return null;
   
   const petPhoto = pet.photo_url || pet.image_url || pet.image;
@@ -171,17 +185,55 @@ const PetBar = ({ pet, onChangePet }) => {
               Shopping for <span className="text-[#C4785A]">{pet.name}</span>
             </h2>
             <p className="text-xs sm:text-sm text-[#9B9B9B]">
-              {pet.breed || 'Your companion'} • Personalized for {pet.name}
+              {pet.breed || 'Your companion'} • Personalized picks just for {pet.name}
             </p>
           </div>
           
-          {/* Change Pet */}
-          <button 
-            onClick={onChangePet}
-            className="text-xs sm:text-sm text-[#C4785A] font-medium hover:underline hidden sm:block"
-          >
-            Change pet
-          </button>
+          {/* Pet Dropdown Selector */}
+          {pets && pets.length > 1 && (
+            <div className="relative" ref={dropdownRef}>
+              <button 
+                onClick={() => setShowDropdown(!showDropdown)}
+                className="flex items-center gap-2 px-3 py-2 text-sm text-[#2D2D2D] bg-[#F5F0E8] rounded-full hover:bg-[#E8E0D5] transition-colors"
+              >
+                <span className="hidden sm:inline">Switch pet</span>
+                <ChevronDown className={`w-4 h-4 transition-transform ${showDropdown ? 'rotate-180' : ''}`} />
+              </button>
+              
+              {showDropdown && (
+                <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-50">
+                  {pets.map(p => (
+                    <button
+                      key={p.id}
+                      onClick={() => { onSelectPet(p); setShowDropdown(false); }}
+                      className={`w-full flex items-center gap-3 px-4 py-2.5 hover:bg-[#F9F6F1] transition-colors ${
+                        p.id === pet.id ? 'bg-[#F9F6F1]' : ''
+                      }`}
+                    >
+                      {(p.photo_url || p.image_url || p.image) ? (
+                        <img 
+                          src={p.photo_url || p.image_url || p.image} 
+                          alt={p.name}
+                          className="w-8 h-8 rounded-full object-cover border border-gray-200"
+                        />
+                      ) : (
+                        <div className="w-8 h-8 rounded-full bg-[#F5F0E8] flex items-center justify-center">
+                          <PawPrint className="w-4 h-4 text-[#C4785A]" />
+                        </div>
+                      )}
+                      <div className="text-left">
+                        <div className="text-sm font-medium text-[#2D2D2D]">{p.name}</div>
+                        <div className="text-xs text-[#9B9B9B]">{p.breed || 'Pet'}</div>
+                      </div>
+                      {p.id === pet.id && (
+                        <div className="ml-auto w-2 h-2 bg-[#C4785A] rounded-full"></div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
     </div>
