@@ -764,12 +764,20 @@ const ProductListing = ({ category = 'all' }) => {
         const careKeywords = {
           'sensitive-stomach': ['sensitive', 'gentle', 'easy digest', 'tummy', 'digestive'],
           'skin-coat': ['skin', 'coat', 'shine', 'omega', 'fur'],
-          'weight': ['weight', 'lean', 'light', 'low calorie', 'diet', 'balanced'],
+          'weight': ['weight', 'lean', 'light', 'low calorie', 'diet', 'balanced', 'portion'],
           'joints': ['joint', 'mobility', 'glucosamine', 'hip', 'arthritis'],
           'calming': ['calm', 'anxiety', 'relax', 'stress', 'soothing'],
           'recovery': ['recovery', 'healing', 'special', 'therapeutic', 'gentle'],
-          'allergy-friendly': ['hypoallergenic', 'limited ingredient', 'single protein', 'allergy'],
+          'allergy-friendly': ['hypoallergenic', 'limited ingredient', 'single protein', 'allergy', 'grain-free'],
           'hydration': ['hydration', 'moisture', 'water', 'wet'],
+          // Dine-specific
+          'high-protein': ['protein', 'meat', 'chicken', 'lamb', 'beef', 'fish', 'muscle'],
+          'grain-free': ['grain-free', 'grain free', 'no grain', 'paleo'],
+          // Enjoy-specific
+          'high-energy': ['energy', 'active', 'sport', 'performance', 'power'],
+          'portable': ['portable', 'travel', 'on-the-go', 'pocket', 'mini', 'bite'],
+          // Fit-specific
+          'energy': ['energy', 'active', 'vitality', 'stamina'],
         };
         return (careKeywords[care] || []).some(kw => productText.includes(kw));
       });
