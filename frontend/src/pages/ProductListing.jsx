@@ -574,7 +574,7 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
             
             {/* Grounding line - removes fear of commitment */}
             <p className="text-sm text-stone-400 mt-6">
-              You can explore freely — Mira simply helps narrow things down.
+              You can explore freely — Mira simply helps make things easier.
             </p>
           </div>
         </div>
