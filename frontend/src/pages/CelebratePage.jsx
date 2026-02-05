@@ -336,6 +336,21 @@ const CelebratePage = () => {
         </div>
       </div>
 
+      {/* Pet OS Layer - Member Identity or Non-Member Inline Gate */}
+      {isLoggedIn && activePet ? (
+        <MemberIdentity
+          activePet={activePet}
+          userPets={userPets}
+          onPetChange={setActivePet}
+          pillar="celebrate"
+          title={`Celebrate with ${activePet.name}`}
+        />
+      ) : !isLoggedIn && (
+        <div className="max-w-6xl mx-auto px-4 pt-6">
+          <NonMemberGate pillar="celebrate" variant="inline" />
+        </div>
+      )}
+
       {/* Quick Categories - 2x2 grid on mobile, 6 cols on desktop */}
       <div className="max-w-6xl mx-auto px-4 -mt-6 sm:-mt-8 relative z-10">
         {/* 2x2 grid on mobile, 6 cols on desktop */}
