@@ -298,7 +298,7 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
   // Get category display info
   const getCategoryInfo = () => {
     const info = {
-      cakes: { title: 'Birthday Cakes', moment: 'celebration', desc: 'Freshly baked for your pet\'s special day' },
+      cakes: { title: 'Birthday Cakes', moment: 'celebration', desc: 'Freshly baked for your pet&apos;s special day' },
       'breed-cakes': { title: 'Breed Cakes', moment: 'celebration', desc: 'Shaped like your beloved breed' },
       treats: { title: 'Treats & Rewards', moment: 'daily', desc: 'For training, walks, and everyday joy' },
       hampers: { title: 'Celebration Boxes', moment: 'celebration', desc: 'Complete party packages' },
