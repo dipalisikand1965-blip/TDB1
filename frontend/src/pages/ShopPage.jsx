@@ -279,9 +279,9 @@ const IntelligentSearch = ({ petName, products }) => {
   }, []);
   
   return (
-    <div ref={searchRef} className="relative w-full max-w-2xl mx-auto">
+    <div ref={searchRef} className="relative w-full max-w-xl mx-auto px-2">
       <div className="relative">
-        <Search className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9B9B9B]" />
+        <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-[#9B9B9B]" />
         <Input
           value={query}
           onChange={(e) => { 
@@ -289,12 +289,12 @@ const IntelligentSearch = ({ petName, products }) => {
             setShowSuggestions(e.target.value.length >= 2);
           }}
           onFocus={() => query.length >= 2 && setShowSuggestions(true)}
-          placeholder={petName ? `Search for ${petName}...` : "Search everything..."}
-          className="pl-12 sm:pl-14 pr-12 py-4 sm:py-5 text-base bg-white border border-gray-200 rounded-full shadow-sm focus:ring-2 focus:ring-[#C4785A]"
+          placeholder={petName ? `Search for ${petName}...` : "Search treats, toys, more..."}
+          className="pl-10 sm:pl-12 pr-10 sm:pr-12 py-3 sm:py-4 text-sm sm:text-base bg-white border border-gray-200 rounded-full shadow-sm focus:ring-2 focus:ring-[#C4785A]/50 focus:border-[#C4785A]"
           data-testid="shop-search"
         />
-        <button className="absolute right-4 sm:right-5 top-1/2 -translate-y-1/2 text-[#9B9B9B] hover:text-[#C4785A]">
-          <Mic className="w-5 h-5" />
+        <button className="absolute right-3 sm:right-4 top-1/2 -translate-y-1/2 text-[#9B9B9B] hover:text-[#C4785A] active:scale-95 transition-all p-1">
+          <Mic className="w-4 h-4 sm:w-5 sm:h-5" />
         </button>
       </div>
       
