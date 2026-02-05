@@ -21,7 +21,7 @@ import {
   ShoppingBag, Search, Filter, Grid, List, Heart, Star, 
   ChevronRight, ChevronDown, Sparkles, Tag, Truck, Shield, Gift, ArrowRight,
   SlidersHorizontal, X, Check, Clock, Flame, Award, Package,
-  PawPrint, Cake, UtensilsCrossed, Scissors, Dog, Bone
+  PawPrint, Cake, UtensilsCrossed, Scissors, Dog, Bone, Briefcase, MapPin, Calendar
 } from 'lucide-react';
 import { PawmeterBadge, PawmeterStars } from '../components/PawmeterDisplay';
 
