@@ -830,7 +830,7 @@ const ServicesPage = () => {
       />
       
       {/* Services Grid */}
-      <section className="py-4 sm:py-6 bg-white">
+      <section className="py-4 sm:py-6 bg-white pb-24 sm:pb-6">
         <div className="max-w-7xl mx-auto px-3 sm:px-6">
           <div className="flex items-center justify-between mb-3 sm:mb-4">
             <div>
