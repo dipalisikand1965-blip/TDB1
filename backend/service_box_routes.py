@@ -315,7 +315,7 @@ async def update_service(service_id: str, service: ServiceCreate):
         "updated_at": datetime.now(timezone.utc)
     }
     
-    await db.service_catalog.update_one({"id": service_id}, {"$set": update_doc})
+    await db.services_master.update_one({"id": service_id}, {"$set": update_doc})
     
     logger.info(f"[SERVICE BOX] Updated service: {service_id}")
     
@@ -329,11 +329,11 @@ async def delete_service(service_id: str):
     """Archive/deactivate service (soft delete)"""
     db = get_db()
     
-    existing = await db.service_catalog.find_one({"id": service_id})
+    existing = await db.services_master.find_one({"id": service_id})
     if not existing:
         raise HTTPException(status_code=404, detail="Service not found")
     
-    await db.service_catalog.update_one(
+    await db.services_master.update_one(
         {"id": service_id},
         {"$set": {"is_active": False, "archived_at": datetime.now(timezone.utc)}}
     )
@@ -350,7 +350,7 @@ async def clone_service(service_id: str):
     """Clone existing service"""
     db = get_db()
     
-    existing = await db.service_catalog.find_one({"id": service_id}, {"_id": 0})
+    existing = await db.services_master.find_one({"id": service_id}, {"_id": 0})
     if not existing:
         raise HTTPException(status_code=404, detail="Service not found")
     
@@ -368,7 +368,7 @@ async def clone_service(service_id: str):
         "updated_at": now
     }
     
-    await db.service_catalog.insert_one(new_service)
+    await db.services_master.insert_one(new_service)
     
     logger.info(f"[SERVICE BOX] Cloned service {service_id} to {new_id}")
     
