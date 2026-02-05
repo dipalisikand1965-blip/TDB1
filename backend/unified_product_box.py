@@ -742,7 +742,7 @@ async def create_product(product: UnifiedProduct, admin_user: str = "system"):
         product.sku = f"SKU-{product.product_type[:3].upper()}-{secrets.token_hex(4).upper()}"
     
     # Check for duplicate
-    existing = await db.unified_products.find_one({"id": product.id})
+    existing = await db.products_master.find_one({"id": product.id})
     if existing:
         raise HTTPException(status_code=400, detail="Product ID already exists")
     
@@ -751,7 +751,7 @@ async def create_product(product: UnifiedProduct, admin_user: str = "system"):
     product_dict["created_by"] = admin_user
     product_dict["created_at"] = datetime.now(timezone.utc).isoformat()
     
-    await db.unified_products.insert_one(product_dict)
+    await db.products_master.insert_one(product_dict)
     
     # Remove _id from response
     product_dict.pop("_id", None)
