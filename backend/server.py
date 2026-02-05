@@ -1984,8 +1984,8 @@ async def seed_initial_products():
         # ALWAYS try to sync from Shopify to ensure latest products
         logger.info(f"Current products: {product_count}. Auto-syncing from Shopify...")
         try:
-            from shopify_sync_routes import sync_shopify_products
-            sync_result = await sync_shopify_products(db)
+            from shopify_sync_routes import sync_shopify_products_startup
+            sync_result = await sync_shopify_products_startup(db)
             logger.info(f"Shopify auto-sync: {sync_result.get('synced', 0)} products synced")
         except Exception as sync_error:
             logger.warning(f"Shopify auto-sync skipped: {sync_error}")
