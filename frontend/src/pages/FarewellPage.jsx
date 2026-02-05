@@ -397,14 +397,14 @@ const FarewellPage = () => {
       </section>
 
       {/* Service Packages */}
-      <section id="packages" className="py-16 px-4">
+      <section id="packages" className="py-10 sm:py-12 md:py-16 px-4 sm:px-6">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              <Flower2 className="w-8 h-8 inline mr-2 text-purple-600" />
+          <div className="text-center mb-8 sm:mb-12">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">
+              <Flower2 className="w-6 h-6 sm:w-8 sm:h-8 inline mr-2 text-purple-600" />
               Memorial Service Packages
             </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
+            <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto px-2">
               Each package is designed with love and respect to honour your beloved companion.
             </p>
           </div>
