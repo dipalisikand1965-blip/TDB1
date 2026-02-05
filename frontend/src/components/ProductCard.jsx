@@ -1282,7 +1282,7 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
             {/* Quiet grey hint - pillar specific */}
             {miraContext && (
               <p className="text-[10px] text-gray-400 text-center py-2">
-                {miraContext.quietHints[Math.floor(Math.random() * miraContext.quietHints.length)]}
+                {effectiveMiraContext.quietHints[Math.floor(Math.random() * effectiveMiraContext.quietHints.length)]}
               </p>
             )}
 
