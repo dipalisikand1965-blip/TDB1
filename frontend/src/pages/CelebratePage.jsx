@@ -370,9 +370,6 @@ const CelebratePage = () => {
             <Badge className="bg-gradient-to-r from-pink-500 to-purple-500 text-white px-3 sm:px-4 py-1 text-xs sm:text-sm">
               <Crown className="w-3 h-3 mr-1 inline" /> Elevated Concierge®
             </Badge>
-            {isLoggedIn && activePet && (
-              <HandledByMiraBadge petName={activePet.name} variant="default" />
-            )}
           </div>
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 sm:mb-3">
             Celebrations, Perfected
@@ -382,14 +379,6 @@ const CelebratePage = () => {
             from intimate gatherings to grand pawties.
           </p>
         </div>
-        
-        {/* Mira Context Strip for members */}
-        {isLoggedIn && activePet && (
-          <MiraContextStrip className="mb-8">
-            Planning a celebration for {activePet.name}? I can coordinate timing, delivery, and setup. 
-            Just include what you need, and I&apos;ll handle the rest.
-          </MiraContextStrip>
-        )}
 
         {/* Elevated Concierge Experiences - 2x2 on mobile with staggered animations */}
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
