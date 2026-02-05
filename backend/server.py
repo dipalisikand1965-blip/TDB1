@@ -7988,6 +7988,152 @@ async def update_product_bundle_config(product_id: str, bundle_config: dict):
     return {"success": True, "config": bundle_config}
 
 
+@api_router.post("/admin/products/bulk-seed-breed-metadata")
+async def bulk_seed_breed_metadata(background_tasks: BackgroundTasks):
+    """
+    Auto-generate breed_metadata for all products based on their names, categories, and tags.
+    Uses AI to intelligently assign breed compatibility, sizes, age groups, etc.
+    """
+    
+    # Count products without breed_metadata
+    count = await db.products.count_documents({
+        "$or": [
+            {"breed_metadata": {"$exists": False}},
+            {"breed_metadata": None},
+            {"breed_metadata": {}}
+        ]
+    })
+    
+    async def seed_metadata():
+        import asyncio
+        
+        # Breed size mapping
+        SIZE_MAPPING = {
+            "small": ["XS", "S"],
+            "medium": ["M"],
+            "large": ["L", "XL"],
+            "mini": ["XS", "S"],
+            "puppy": ["S", "M"],
+            "toy": ["XS", "S"],
+            "giant": ["XL"]
+        }
+        
+        # Category to pillar mapping
+        CATEGORY_PILLARS = {
+            "cakes": ["celebrate"],
+            "treats": ["celebrate", "dine"],
+            "fresh-meals": ["dine"],
+            "grooming": ["care"],
+            "travel": ["travel"],
+            "toys": ["enjoy"],
+            "accessories": ["travel", "care"],
+            "frozen-treats": ["dine", "celebrate"],
+            "hampers": ["celebrate"]
+        }
+        
+        # Keywords for breed matching
+        BREED_KEYWORDS = {
+            "large breed": ["L", "XL"],
+            "small breed": ["XS", "S"],
+            "power chewer": {"chew_strength": "power_chewer", "sizes": ["L", "XL"]},
+            "gentle": {"chew_strength": "soft", "sizes": ["XS", "S"]},
+            "puppy": {"age_groups": ["puppy"]},
+            "senior": {"age_groups": ["senior"]},
+            "grain free": {"sensitivities": ["grain_free"]},
+            "allergy": {"sensitivities": ["allergy_safe"]}
+        }
+        
+        cursor = db.products.find({
+            "$or": [
+                {"breed_metadata": {"$exists": False}},
+                {"breed_metadata": None},
+                {"breed_metadata": {}}
+            ]
+        })
+        
+        updated = 0
+        async for product in cursor:
+            try:
+                name = (product.get("name") or "").lower()
+                category = (product.get("category") or "").lower()
+                tags = [t.lower() for t in (product.get("tags") or [])]
+                all_text = f"{name} {category} {' '.join(tags)}"
+                
+                # Initialize metadata
+                metadata = {
+                    "breeds": [],  # Empty = all breeds
+                    "sizes": [],
+                    "age_groups": [],
+                    "chew_strength": None,
+                    "energy_level": None,
+                    "sensitivities": [],
+                    "pillars": []
+                }
+                
+                # Detect sizes from keywords
+                for keyword, sizes in SIZE_MAPPING.items():
+                    if keyword in all_text:
+                        metadata["sizes"].extend(sizes)
+                
+                # If no size detected, default based on category
+                if not metadata["sizes"]:
+                    if category in ["toys", "treats", "cakes"]:
+                        metadata["sizes"] = ["S", "M", "L"]  # Universal
+                    elif "large" in all_text or "big" in all_text:
+                        metadata["sizes"] = ["L", "XL"]
+                    elif "small" in all_text or "tiny" in all_text:
+                        metadata["sizes"] = ["XS", "S"]
+                
+                # Detect pillars from category
+                if category in CATEGORY_PILLARS:
+                    metadata["pillars"] = CATEGORY_PILLARS[category]
+                
+                # Detect special attributes
+                for keyword, attrs in BREED_KEYWORDS.items():
+                    if keyword in all_text:
+                        if isinstance(attrs, dict):
+                            for k, v in attrs.items():
+                                if k in metadata:
+                                    if isinstance(v, list):
+                                        metadata[k].extend(v)
+                                    else:
+                                        metadata[k] = v
+                        elif isinstance(attrs, list):
+                            metadata["sizes"].extend(attrs)
+                
+                # Deduplicate
+                metadata["sizes"] = list(set(metadata["sizes"]))
+                metadata["age_groups"] = list(set(metadata["age_groups"]))
+                metadata["sensitivities"] = list(set(metadata["sensitivities"]))
+                metadata["pillars"] = list(set(metadata["pillars"]))
+                
+                # Update product
+                await db.products.update_one(
+                    {"_id": product["_id"]},
+                    {"$set": {
+                        "breed_metadata": metadata,
+                        "updated_at": get_utc_timestamp()
+                    }}
+                )
+                updated += 1
+                
+                if updated % 50 == 0:
+                    logging.info(f"[Breed Metadata] Seeded {updated} products...")
+                    
+            except Exception as e:
+                logging.error(f"[Breed Metadata] Error on product {product.get('name')}: {e}")
+        
+        logging.info(f"[Breed Metadata] Completed! Seeded {updated} products")
+    
+    background_tasks.add_task(seed_metadata)
+    
+    return {
+        "success": True,
+        "message": f"Seeding breed_metadata for {count} products in background",
+        "products_to_update": count
+    }
+
+
 # ============================================
 # MIRA HINT MANAGEMENT
 # AI-powered product hints for personalized shopping experience
