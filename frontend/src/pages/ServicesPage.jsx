@@ -21,11 +21,11 @@ import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 
 // =============================================================================
-// PILLAR CONFIG - Services focus
+// PILLAR CONFIG - Services focus (Recommended first, All last)
 // =============================================================================
 const PILLARS = [
-  { id: 'all', label: 'All', icon: Sparkles, color: 'bg-gray-100', 
-    description: 'All services for your companion' },
+  { id: 'recommended', label: 'Recommended', icon: Sparkles, color: 'bg-amber-100', 
+    description: 'Services curated for your companion' },
   { id: 'care', label: 'Care', icon: Stethoscope, color: 'bg-rose-100',
     description: 'Day-to-day wellbeing & reliability',
     subcategories: ['Grooming', 'Spa', 'Vet Visits', 'Walking', 'Pet Sitting'] },
@@ -59,6 +59,8 @@ const PILLARS = [
   { id: 'adopt', label: 'Adopt', icon: PawPrint, color: 'bg-orange-100',
     description: 'Responsible beginnings',
     subcategories: ['Adoption Counseling', 'Home Check', 'Foster Care'] },
+  { id: 'all', label: 'All', icon: Package, color: 'bg-gray-100', 
+    description: 'Browse all services' },
 ];
 
 // =============================================================================
