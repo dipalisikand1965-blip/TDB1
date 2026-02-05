@@ -41,34 +41,51 @@ Build "The Doggy Company," a one-stop-shop concierge for dog parents with a focu
 
 #### 1. AI-Powered Mira Hints (P0) ✅
 - **Transformed product card hints from generic to soulful using AI**
-- Each product now has a unique, exciting tip that captures its essence
-- Hints are now warm, personalized, and reflect the brand's philosophy
-- Examples of new AI hints:
-  - "✨ Tail wags and happy howls with every slice!" (Kawaii Woofy Cake)
-  - "✨ Squeaky sips of joy with every playful paw!" (Puppuccino Toy)
-  - "✨ Festive flavors that spark joy in every wag!" (Diwali Treat Box)
-  - "✨ Tail-wagging satisfaction in every mouthwatering bite!" (Mutton & Veggies Meal)
+- All 1,026 products regenerated with unique AI hints
+- Examples:
+  - "✨ Tail wags and happy howls with every slice!"
+  - "✨ Unleash joy with our ultra-tough, chew-friendly rope toy!"
 
 #### 2. Soul Score Banner Component ✅
 - Shows near recommendations to encourage profile completion
 - Animated arc with score percentage
-- Messages adapt based on score level (gamified)
 - Mobile-responsive with UNIFORM flow pattern
 
-#### 3. Breed-Aware Product & Service Catalogue (NEW!) ✅
-- **Created comprehensive breed-intelligent recommendation system**
-- 41 Products seeded across categories: toys, accessories, bandanas, clothes, celebration add-ons
-- 29 Services seeded: grooming, training, walking, travel, celebration, care support
-- **Naming Convention**: `[Who it's for] · [What it is] · [Why it fits]`
-  - "Power Chewer · Rope Toy · Extra Durable"
-  - "Indie Dog · Desi Pride Bandana · Heritage Style"
-  - "Long Coat · Full Grooming · Complete Spa Day"
+#### 3. Breed Intelligence System - FULLY INTEGRATED ✅
+**Backend:**
+- `POST /api/products/recommend-for-breed` - Breed-aware recommendations
+- `POST /api/admin/products/bulk-seed-breed-metadata` - Auto-seed breed data
+- All 1,026 products seeded with `breed_metadata`
 
-#### 4. Mira Breed Intelligence Engine ✅
-- **Breed profiles** with size, coat type, energy level, chew tendency, grooming needs
-- **Smart matching** that scores products/services by breed compatibility
-- **Supported breeds**: Indie, Golden Retriever, Labrador, Beagle, Maltese, Maltipoo, Shih Tzu
-- **AI-powered tagging** generates hints and searchable tags automatically
+**Admin UI (UnifiedProductBox - Mira AI Tab):**
+- ✨ Mira Hint field for product card tips
+- 🐾 Breed Intelligence section with:
+  - Target Breeds (multi-select: Indie, Labrador, Golden Retriever, etc.)
+  - Dog Sizes (XS, S, M, L, XL)
+  - Life Stage (puppy, adult, senior)
+  - Chew Strength dropdown
+  - Energy Level dropdown
+  - Sensitivities (allergy safe, grain free, sensitive stomach)
+
+**ProductListing Page:**
+- Integrated breed-aware recommendations
+- Fetches recommendations based on pet's breed, size, age, and current pillar
+
+#### 4. How Breed Intelligence Works:
+```
+User selects "Moo" (Indie breed) on Celebrate pillar
+  ↓
+System detects: breed=Indie, size=M, energy=active
+  ↓
+API: POST /api/products/recommend-for-breed
+  ↓
+Products scored by breed_metadata match:
+  - Size match: +15 points
+  - Pillar match: +20 points
+  - Has Mira hint: +5 points
+  ↓
+Returns: Birthday cakes, celebration bandanas, party kits
+```
 
 ---
 
