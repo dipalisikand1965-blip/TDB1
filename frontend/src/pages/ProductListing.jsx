@@ -285,8 +285,12 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
   // Get pet's life stage info
   const petLifeStage = useMemo(() => {
     if (!activePet) return null;
-    const ageYears = activePet.age_years || activePet.age || 
-      (activePet.date_of_birth ? Math.floor((Date.now() - new Date(activePet.date_of_birth)) / (365.25 * 24 * 60 * 60 * 1000)) : null);
+    let ageYears = activePet.age_years || activePet.age;
+    if (!ageYears && activePet.date_of_birth) {
+      const birthDate = new Date(activePet.date_of_birth);
+      const now = new Date();
+      ageYears = Math.floor((now.getTime() - birthDate.getTime()) / (365.25 * 24 * 60 * 60 * 1000));
+    }
     if (!ageYears) return null;
     return LIFE_STAGES[getLifeStage(ageYears)];
   }, [activePet]);
