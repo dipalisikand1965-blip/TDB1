@@ -207,7 +207,7 @@ const PILLAR_CROSS_SELL_TITLES = {
   default: "You May Also Like"
 };
 
-const ProductCard = ({ product, pillar = 'celebrate' }) => {
+const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraContext = null }) => {
   const [showModal, setShowModal] = useState(false);
   const { user, token } = useAuth();
   
