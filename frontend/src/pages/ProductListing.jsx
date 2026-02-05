@@ -405,6 +405,19 @@ const ProductListing = ({ category = 'all' }) => {
       }
     }
   };
+  
+  // Listen for pet selection changes from navbar
+  useEffect(() => {
+    const handleNavbarPetChange = (e) => {
+      const newPetId = e.detail?.petId;
+      if (newPetId && userPets.length > 0) {
+        handlePetChange(newPetId);
+      }
+    };
+    
+    window.addEventListener('petSelectionChanged', handleNavbarPetChange);
+    return () => window.removeEventListener('petSelectionChanged', handleNavbarPetChange);
+  }, [userPets]);
 
   // Fetch products from API
   useEffect(() => {
