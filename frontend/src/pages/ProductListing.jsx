@@ -827,6 +827,49 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
           </div>
         )}
         
+        {/* ============================================ */}
+        {/* MIRA NUDGE - After 2+ items added */}
+        {/* ============================================ */}
+        {showMiraNudge && (
+          <div className="fixed bottom-24 left-4 right-4 md:left-auto md:right-8 md:max-w-sm z-50 animate-in slide-in-from-bottom-4 duration-300" data-testid="mira-nudge">
+            <div className="bg-white rounded-xl shadow-lg border border-purple-100 p-4">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-full bg-purple-50 flex items-center justify-center flex-shrink-0">
+                  <Sparkles className="w-4 h-4 text-purple-500" />
+                </div>
+                <div className="flex-1">
+                  <p className="text-sm text-stone-700 mb-2">
+                    You&apos;ve picked some lovely things for {activePet?.name || 'your pet'}.
+                  </p>
+                  <p className="text-sm text-stone-500 mb-3">
+                    Would you like me to coordinate delivery timing or add a simple setup?
+                  </p>
+                  <div className="flex gap-2">
+                    <button 
+                      className="text-sm font-medium text-purple-600 hover:text-purple-700 px-3 py-1.5 bg-purple-50 rounded-lg"
+                      onClick={() => setShowMiraNudge(false)}
+                    >
+                      Yes, please
+                    </button>
+                    <button 
+                      className="text-sm text-stone-500 hover:text-stone-700 px-3 py-1.5"
+                      onClick={() => setShowMiraNudge(false)}
+                    >
+                      Not now
+                    </button>
+                  </div>
+                </div>
+                <button 
+                  className="text-stone-400 hover:text-stone-600"
+                  onClick={() => setShowMiraNudge(false)}
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+        
         {/* Help Section */}
         <div className="mt-12 p-6 bg-white rounded-xl border border-stone-200" data-testid="help-section">
           <div className="text-center">
