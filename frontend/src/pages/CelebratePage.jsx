@@ -114,6 +114,31 @@ const CelebratePage = () => {
       }));
     }
   }, [user]);
+  
+  // Fetch user's pets
+  useEffect(() => {
+    const fetchPets = async () => {
+      if (!user || !token) return;
+      
+      try {
+        const response = await fetch(`${getApiUrl()}/api/pets/my-pets`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          const pets = data.pets || data || [];
+          setUserPets(pets);
+          if (pets.length > 0) {
+            setActivePet(pets[0]);
+          }
+        }
+      } catch (error) {
+        console.error('[CelebratePage] Error fetching pets:', error);
+      }
+    };
+    
+    fetchPets();
+  }, [user, token]);
 
   // Listen for openSoulExplainer event from footer
   useEffect(() => {
