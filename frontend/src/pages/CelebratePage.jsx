@@ -16,7 +16,7 @@ import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { Input } from '../components/ui/input';
-import { API_URL } from '../utils/api';
+import { API_URL, getApiUrl } from '../utils/api';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import ProductCard from '../components/ProductCard';
 import PersonalizedPicks from '../components/PersonalizedPicks';
