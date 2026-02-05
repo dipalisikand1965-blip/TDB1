@@ -1312,12 +1312,12 @@ const MiraChatWidget = ({
             )}
             
             {/* SUGGESTED FOR [PET] - Compact horizontal scroll */}
-            {selectedPet && petRecommendations.length > 0 && (
+            {(selectedPet || allPetsMode) && petRecommendations.length > 0 && (
               <div className="px-3 py-2 border-b bg-gradient-to-r from-purple-50/50 to-pink-50/50 shrink-0">
                 <p className="text-[10px] font-bold text-purple-700 uppercase tracking-wider mb-1.5">
-                  ✨ For {selectedPet.name}
+                  ✨ {allPetsMode ? `For ${pets.map(p => p.name).join(', ')}` : `For ${selectedPet.name}`}
                 </p>
-                <div className="flex gap-2 overflow-x-auto pb-1">
+                <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
                   {petRecommendations.slice(0, 4).map(product => {
                     const imageUrl = product.image?.startsWith('http') 
                       ? product.image 
@@ -1339,6 +1339,41 @@ const MiraChatWidget = ({
                       </div>
                     );
                   })}
+                </div>
+              </div>
+            )}
+            
+            {/* Support Filters - Pillar-specific care filters */}
+            {(selectedPet || allPetsMode) && (
+              <div className="px-3 py-2 border-b bg-white shrink-0">
+                <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide pb-1">
+                  <span className="text-[10px] text-gray-500 shrink-0 uppercase tracking-wide">Needs:</span>
+                  {[
+                    { id: 'sensitive-stomach', label: 'Gentle', icon: '🫧' },
+                    { id: 'allergy-friendly', label: 'Allergy-safe', icon: '🛡️' },
+                    { id: 'calming', label: 'Calming', icon: '🧘' },
+                    { id: 'special-care', label: 'Extra care', icon: '💝' }
+                  ].map(filter => (
+                    <button
+                      key={filter.id}
+                      onClick={() => {
+                        setActiveSupportFilters(prev => 
+                          prev.includes(filter.id) 
+                            ? prev.filter(f => f !== filter.id)
+                            : [...prev, filter.id]
+                        );
+                      }}
+                      className={`px-2.5 py-1.5 rounded-full text-[11px] flex items-center gap-1 transition-all shrink-0 touch-manipulation active:scale-95 ${
+                        activeSupportFilters.includes(filter.id)
+                          ? 'bg-purple-600 text-white'
+                          : 'bg-gray-100 text-gray-600 hover:bg-purple-50 hover:text-purple-700'
+                      }`}
+                      data-testid={`support-filter-${filter.id}`}
+                    >
+                      <span>{filter.icon}</span>
+                      <span>{filter.label}</span>
+                    </button>
+                  ))}
                 </div>
               </div>
             )}
