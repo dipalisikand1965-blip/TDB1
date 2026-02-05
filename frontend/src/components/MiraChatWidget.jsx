@@ -340,6 +340,10 @@ const MiraChatWidget = ({
     
     fetchQuickPrompts();
     fetchMiraContext();
+    
+    return () => {
+      window.removeEventListener('openMiraChat', handleOpenMiraChat);
+    };
   }, [pillar, trackPillarVisit, token]);
   
   // Set pillar-specific quick actions immediately (no auth required)
