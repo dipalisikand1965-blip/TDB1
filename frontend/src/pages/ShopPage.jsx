@@ -243,7 +243,7 @@ const PersonalPicks = ({ pets, products }) => {
             )}
           </h2>
           <p className="text-[#9B9B9B]">
-            Based on {selectedPet?.name}'s profile, dietary needs, and what other {selectedPet?.breed || 'pet'} parents trust.
+            Based on {selectedPet?.name}&apos;s profile, dietary needs, and what other {selectedPet?.breed || 'pet'} parents trust.
           </p>
         </div>
         
