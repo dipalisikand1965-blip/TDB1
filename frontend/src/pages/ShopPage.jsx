@@ -723,7 +723,7 @@ const ShopPage = () => {
   const petPhoto = selectedPet?.photo_url || selectedPet?.image_url || selectedPet?.image;
 
   return (
-    <div className="min-h-screen bg-[#F9F6F1]" data-testid="shop-page">
+    <div className="min-h-screen bg-[#F9F6F1] pb-24 md:pb-0" data-testid="shop-page">
       <SEOHead page="shop" path="/shop" />
       
       {/* Pet Bar with Dropdown */}
@@ -734,23 +734,28 @@ const ShopPage = () => {
       />
       
       {/* Hero Section - With Pet Photo & Warm Mira Lines */}
-      <section className="bg-[#F9F6F1] py-8 sm:py-12 md:py-16">
+      <section className="bg-gradient-to-b from-[#F9F6F1] to-white py-6 sm:py-10 md:py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           {/* Pet-Centric Hero */}
-          <div className="text-center mb-8">
+          <div className="text-center mb-6 sm:mb-8">
             {/* Pet Photo (if available) */}
             {petPhoto && (
-              <div className="mb-6">
-                <img 
-                  src={petPhoto} 
-                  alt={petName}
-                  className="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover mx-auto border-4 border-white shadow-lg"
-                />
+              <div className="mb-4 sm:mb-6">
+                <div className="relative inline-block">
+                  <img 
+                    src={petPhoto} 
+                    alt={petName}
+                    className="w-20 h-20 sm:w-28 sm:h-28 md:w-32 md:h-32 rounded-full object-cover mx-auto border-4 border-white shadow-xl ring-4 ring-[#C4785A]/20"
+                  />
+                  <div className="absolute -bottom-1 -right-1 w-6 h-6 sm:w-8 sm:h-8 bg-green-500 rounded-full border-3 border-white flex items-center justify-center">
+                    <span className="text-white text-xs">✓</span>
+                  </div>
+                </div>
               </div>
             )}
             
             {/* Warm Headline */}
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-[#2D2D2D] leading-tight mb-4">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-[#2D2D2D] leading-tight mb-3 sm:mb-4 px-2">
               {petName ? (
                 <>Made with love for <span className="text-[#C4785A]">{petName}</span> 💝</>
               ) : (
@@ -759,24 +764,24 @@ const ShopPage = () => {
             </h1>
             
             {/* Warm Subtitle */}
-            <p className="text-base sm:text-lg text-[#6B6B6B] mb-6 max-w-2xl mx-auto">
+            <p className="text-sm sm:text-base md:text-lg text-[#6B6B6B] mb-4 sm:mb-6 max-w-xl mx-auto px-4">
               {petName ? (
-                <>The best treats, toys, and care - all in one place, all for {petName}.</>
+                <>The best treats, toys & care — all in one place, just for {petName}.</>
               ) : (
-                <>The best treats, toys, and care - all in one place for your companion.</>
+                <>The best treats, toys & care — all in one place for your companion.</>
               )}
             </p>
             
             {/* Mira AI Personalized Lines */}
             {miraLines && miraLines.length > 0 && (
-              <div className="bg-gradient-to-r from-[#F5F0E8] to-[#EDE6DA] rounded-2xl p-4 sm:p-6 max-w-xl mx-auto mb-8 shadow-sm">
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#C4785A] flex items-center justify-center flex-shrink-0">
-                    <Sparkles className="w-5 h-5 text-white" />
+              <div className="bg-gradient-to-r from-[#FDF8F3] via-[#F9F3EC] to-[#FDF8F3] rounded-2xl p-3 sm:p-4 md:p-5 max-w-md mx-auto mb-6 sm:mb-8 shadow-sm border border-[#E8DDD0]">
+                <div className="flex items-start gap-2 sm:gap-3">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-gradient-to-br from-[#C4785A] to-[#A66248] flex items-center justify-center flex-shrink-0 shadow-md">
+                    <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                   </div>
-                  <div className="text-left">
-                    <p className="text-xs text-[#C4785A] font-medium mb-1">Mira says...</p>
-                    <p className="text-sm sm:text-base text-[#2D2D2D] leading-relaxed">
+                  <div className="text-left flex-1">
+                    <p className="text-xs text-[#C4785A] font-semibold mb-0.5 sm:mb-1">Mira says...</p>
+                    <p className="text-xs sm:text-sm md:text-base text-[#2D2D2D] leading-relaxed">
                       {miraLines[0]}
                     </p>
                   </div>
