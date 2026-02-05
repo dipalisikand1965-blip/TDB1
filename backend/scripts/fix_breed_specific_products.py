@@ -39,14 +39,9 @@ async def fix_breed_products():
     
     for breed in BREEDS:
         # Find products with this breed name (case-insensitive)
+        # Use word boundary-like matching to avoid partial matches
         query = {
-            "name": {"$regex": breed, "$options": "i"},
-            "$or": [
-                {"is_breed_specific": {"$ne": True}},
-                {"breed_metadata.breeds": {"$size": 0}},
-                {"breed_metadata.breeds": {"$exists": False}},
-                {"breed_metadata.breed_name": {"$exists": False}}
-            ]
+            "name": {"$regex": f"\\b{breed}\\b", "$options": "i"}
         }
         
         products = await db.products_master.find(query).to_list(1000)
