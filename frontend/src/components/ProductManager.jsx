@@ -1136,6 +1136,252 @@ const ProductManager = ({ credentials }) => {
                 />
               </div>
               
+              {/* Mira Hint */}
+              <div>
+                <Label className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-purple-500" />
+                  Mira Hint
+                </Label>
+                <Input
+                  value={editForm.mira_hint || ''}
+                  onChange={(e) => setEditForm({ ...editForm, mira_hint: e.target.value })}
+                  placeholder="✨ Tail wags guaranteed with every bite!"
+                  className="mt-1"
+                />
+                <p className="text-xs text-gray-500 mt-1">AI-generated tip shown on product cards</p>
+              </div>
+              
+              {/* Breed Intelligence Section */}
+              <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-xl p-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <PawPrint className="w-5 h-5 text-purple-600" />
+                  <div>
+                    <h3 className="font-semibold text-purple-900">Breed Intelligence</h3>
+                    <p className="text-xs text-purple-600">Help Mira recommend this product to the right pets</p>
+                  </div>
+                </div>
+                
+                <div className="grid md:grid-cols-2 gap-4">
+                  {/* Target Breeds */}
+                  <div>
+                    <Label className="text-sm text-purple-800">Target Breeds</Label>
+                    <p className="text-[10px] text-gray-500 mb-1">Leave empty for all breeds</p>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {BREED_OPTIONS.breeds.map(breed => (
+                        <button
+                          key={breed.value}
+                          type="button"
+                          onClick={() => {
+                            const current = editForm.breed_metadata?.breeds || [];
+                            const updated = current.includes(breed.value)
+                              ? current.filter(b => b !== breed.value)
+                              : [...current, breed.value];
+                            setEditForm({
+                              ...editForm,
+                              breed_metadata: { ...editForm.breed_metadata, breeds: updated }
+                            });
+                          }}
+                          className={`px-2 py-0.5 text-[10px] rounded-full border transition-colors ${
+                            (editForm.breed_metadata?.breeds || []).includes(breed.value)
+                              ? 'bg-purple-600 text-white border-purple-600'
+                              : 'bg-white text-gray-700 border-gray-300 hover:border-purple-400'
+                          }`}
+                        >
+                          {breed.label.split(' ')[0]}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Sizes */}
+                  <div>
+                    <Label className="text-sm text-purple-800">Sizes</Label>
+                    <p className="text-[10px] text-gray-500 mb-1">Leave empty for all sizes</p>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {BREED_OPTIONS.sizes.map(size => (
+                        <button
+                          key={size.value}
+                          type="button"
+                          onClick={() => {
+                            const current = editForm.breed_metadata?.sizes || [];
+                            const updated = current.includes(size.value)
+                              ? current.filter(s => s !== size.value)
+                              : [...current, size.value];
+                            setEditForm({
+                              ...editForm,
+                              breed_metadata: { ...editForm.breed_metadata, sizes: updated }
+                            });
+                          }}
+                          className={`px-2 py-0.5 text-[10px] rounded-full border transition-colors ${
+                            (editForm.breed_metadata?.sizes || []).includes(size.value)
+                              ? 'bg-purple-600 text-white border-purple-600'
+                              : 'bg-white text-gray-700 border-gray-300 hover:border-purple-400'
+                          }`}
+                        >
+                          {size.value}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Age Groups */}
+                  <div>
+                    <Label className="text-sm text-purple-800">Life Stage</Label>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {BREED_OPTIONS.ageGroups.map(age => (
+                        <button
+                          key={age.value}
+                          type="button"
+                          onClick={() => {
+                            const current = editForm.breed_metadata?.age_groups || [];
+                            const updated = current.includes(age.value)
+                              ? current.filter(a => a !== age.value)
+                              : [...current, age.value];
+                            setEditForm({
+                              ...editForm,
+                              breed_metadata: { ...editForm.breed_metadata, age_groups: updated }
+                            });
+                          }}
+                          className={`px-2 py-0.5 text-[10px] rounded-full border transition-colors ${
+                            (editForm.breed_metadata?.age_groups || []).includes(age.value)
+                              ? 'bg-green-600 text-white border-green-600'
+                              : 'bg-white text-gray-700 border-gray-300 hover:border-green-400'
+                          }`}
+                        >
+                          {age.label.split(' ')[0]}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Chew Strength */}
+                  <div>
+                    <Label className="text-sm text-purple-800">Chew Strength</Label>
+                    <select
+                      className="w-full mt-1 px-2 py-1.5 text-xs border rounded-lg bg-white"
+                      value={editForm.breed_metadata?.chew_strength || ''}
+                      onChange={(e) => setEditForm({
+                        ...editForm,
+                        breed_metadata: { ...editForm.breed_metadata, chew_strength: e.target.value || null }
+                      })}
+                    >
+                      <option value="">Any chewer</option>
+                      {BREED_OPTIONS.chewStrength.map(c => (
+                        <option key={c.value} value={c.value}>{c.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  {/* Energy Level */}
+                  <div>
+                    <Label className="text-sm text-purple-800">Energy Level</Label>
+                    <select
+                      className="w-full mt-1 px-2 py-1.5 text-xs border rounded-lg bg-white"
+                      value={editForm.breed_metadata?.energy_level || ''}
+                      onChange={(e) => setEditForm({
+                        ...editForm,
+                        breed_metadata: { ...editForm.breed_metadata, energy_level: e.target.value || null }
+                      })}
+                    >
+                      <option value="">Any energy</option>
+                      {BREED_OPTIONS.energyLevel.map(e => (
+                        <option key={e.value} value={e.value}>{e.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  {/* Coat Types */}
+                  <div>
+                    <Label className="text-sm text-purple-800">Coat Types</Label>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {BREED_OPTIONS.coatTypes.map(coat => (
+                        <button
+                          key={coat.value}
+                          type="button"
+                          onClick={() => {
+                            const current = editForm.breed_metadata?.coat_types || [];
+                            const updated = current.includes(coat.value)
+                              ? current.filter(c => c !== coat.value)
+                              : [...current, coat.value];
+                            setEditForm({
+                              ...editForm,
+                              breed_metadata: { ...editForm.breed_metadata, coat_types: updated }
+                            });
+                          }}
+                          className={`px-2 py-0.5 text-[10px] rounded-full border transition-colors ${
+                            (editForm.breed_metadata?.coat_types || []).includes(coat.value)
+                              ? 'bg-amber-600 text-white border-amber-600'
+                              : 'bg-white text-gray-700 border-gray-300 hover:border-amber-400'
+                          }`}
+                        >
+                          {coat.label.replace(' Coat', '')}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Sensitivities */}
+                  <div>
+                    <Label className="text-sm text-purple-800">Sensitivities</Label>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {BREED_OPTIONS.sensitivities.map(sens => (
+                        <button
+                          key={sens.value}
+                          type="button"
+                          onClick={() => {
+                            const current = editForm.breed_metadata?.sensitivities || [];
+                            const updated = current.includes(sens.value)
+                              ? current.filter(s => s !== sens.value)
+                              : [...current, sens.value];
+                            setEditForm({
+                              ...editForm,
+                              breed_metadata: { ...editForm.breed_metadata, sensitivities: updated }
+                            });
+                          }}
+                          className={`px-2 py-0.5 text-[10px] rounded-full border transition-colors ${
+                            (editForm.breed_metadata?.sensitivities || []).includes(sens.value)
+                              ? 'bg-red-600 text-white border-red-600'
+                              : 'bg-white text-gray-700 border-gray-300 hover:border-red-400'
+                          }`}
+                        >
+                          {sens.label.replace(' Safe', '').replace('Sensitive ', '')}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  {/* Pillars */}
+                  <div>
+                    <Label className="text-sm text-purple-800">Applicable Pillars</Label>
+                    <div className="flex flex-wrap gap-1 mt-1">
+                      {BREED_OPTIONS.pillars.map(pillar => (
+                        <button
+                          key={pillar.value}
+                          type="button"
+                          onClick={() => {
+                            const current = editForm.breed_metadata?.pillars || [];
+                            const updated = current.includes(pillar.value)
+                              ? current.filter(p => p !== pillar.value)
+                              : [...current, pillar.value];
+                            setEditForm({
+                              ...editForm,
+                              breed_metadata: { ...editForm.breed_metadata, pillars: updated }
+                            });
+                          }}
+                          className={`px-2 py-0.5 text-[10px] rounded-full border transition-colors ${
+                            (editForm.breed_metadata?.pillars || []).includes(pillar.value)
+                              ? 'bg-blue-600 text-white border-blue-600'
+                              : 'bg-white text-gray-700 border-gray-300 hover:border-blue-400'
+                          }`}
+                        >
+                          {pillar.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
               {/* Product Options (Base, Flavour, Weight, etc.) */}
               <div>
                 <div className="flex items-center justify-between mb-3">
