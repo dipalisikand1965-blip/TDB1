@@ -695,11 +695,33 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
         <div className="max-w-6xl mx-auto px-4 py-6">
           
           {/* Results Context */}
-          <div className="flex items-center justify-between mb-6">
-            <p className="text-sm text-stone-500">
-              {proposedProducts.length} products proposed for {activePet?.name || 'your pet'}
+          <div className="flex items-center justify-between mb-4">
+            <p className="text-sm text-stone-600">
+              {proposedProducts.length} options selected for {activePet?.name || 'your pet'}
             </p>
           </div>
+          
+          {/* Mira's Note - Service integration (appears for celebration categories) */}
+          {(category === 'cakes' || category === 'hampers' || category === 'accessories' || careFilters.includes('celebration')) && (
+            <div className="mb-6 p-4 bg-gradient-to-r from-purple-50/50 to-pink-50/50 rounded-xl border border-purple-100/50" data-testid="mira-note">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center flex-shrink-0 shadow-sm">
+                  <Sparkles className="w-4 h-4 text-purple-500" />
+                </div>
+                <div>
+                  <p className="text-sm text-stone-700 mb-1">
+                    <span className="font-medium text-purple-700">Mira&apos;s note</span>
+                  </p>
+                  <p className="text-sm text-stone-600 leading-relaxed">
+                    Since this looks like a celebration, most pet parents prefer a little help with timing and delivery. I can take care of that for you.
+                  </p>
+                  <button className="text-sm text-purple-600 hover:text-purple-700 mt-2 font-medium">
+                    Let Mira handle the arrangements →
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         
         {/* Product Grid - 2x2 mobile, 4 col desktop */}
         {proposedProducts.length > 0 ? (
