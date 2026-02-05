@@ -288,6 +288,9 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
   // Care needs filters (Layer 2) - trust-building
   const [careFilters, setCareFilters] = useState([]);
   
+  // Track which filters were auto-applied by Mira
+  const [autoAppliedFilters, setAutoAppliedFilters] = useState([]);
+  
   // Values filters (Layer 3) - emotional alignment
   const [valueFilters, setValueFilters] = useState([]);
   
