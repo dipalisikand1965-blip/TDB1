@@ -648,14 +648,14 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
             )}
           </div>
           
-          {/* Avoid If... - Trust through honesty */}
+          {/* Avoid if sensitive to... */}
           <div>
             <button
               onClick={() => setShowAvoidFilters(!showAvoidFilters)}
               className="flex items-center gap-2 text-sm font-medium text-stone-700 hover:text-stone-900"
             >
               <AlertTriangle className="w-4 h-4 text-amber-500" />
-              Avoid if contains...
+              Avoid if sensitive to...
               <ChevronDown className={`w-4 h-4 transition-transform ${showAvoidFilters ? 'rotate-180' : ''}`} />
               {avoidFilters.length > 0 && (
                 <span className="ml-2 px-2 py-0.5 bg-amber-100 text-amber-700 text-xs rounded-full">
