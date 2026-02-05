@@ -1268,11 +1268,11 @@ const MiraChatWidget = ({
   };
   
   // Floating Button (when closed) - Uses the beautiful MiraOrb!
-  // On DESKTOP: MiraAI.jsx shows the global orb, so we hide ours
-  // On MOBILE: We show our orb (MiraAI is hidden on mobile)
+  // MiraChatWidget handles pillar pages with rich context
+  // Show orb on both mobile AND desktop pillar pages
   if (!isOpen) {
     return (
-      <div className={`fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[9999] flex-col items-end gap-3 flex md:hidden ${className}`}>
+      <div className={`fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-[9999] flex flex-col items-end gap-3 ${className}`}>
         <MiraOrb 
           state={getOrbState()}
           size="md"
