@@ -69,6 +69,30 @@ const ProductBoxEditor = ({
   onGenerateMiraHint 
 }) => {
   const [activeTab, setActiveTab] = useState('basics');
+  const [dogBreeds, setDogBreeds] = useState([]);
+  const [loadingBreeds, setLoadingBreeds] = useState(false);
+  
+  // Fetch breeds dynamically from breed manager
+  useEffect(() => {
+    const fetchBreeds = async () => {
+      setLoadingBreeds(true);
+      try {
+        const response = await fetch(`${API_URL}/api/admin/breed-tags/options`);
+        if (response.ok) {
+          const data = await response.json();
+          setDogBreeds(data.breeds || []);
+        }
+      } catch (err) {
+        console.error('Failed to fetch breeds:', err);
+      } finally {
+        setLoadingBreeds(false);
+      }
+    };
+    
+    if (open) {
+      fetchBreeds();
+    }
+  }, [open]);
   
   if (!product) return null;
   
