@@ -684,6 +684,45 @@ const ServicesPage = () => {
       );
     }
     
+    // NEW: Breed filter - filter services that have whispers for the selected breed
+    if (selectedBreedFilter && selectedBreedFilter !== 'all') {
+      const breedKey = selectedBreedFilter.replace(/\s+/g, '_').toLowerCase();
+      result = result.map(s => {
+        let breedScore = 0;
+        const sName = (s.name || '').toLowerCase();
+        const sDesc = (s.description || '').toLowerCase();
+        const combined = `${sName} ${sDesc}`;
+        
+        // Check breed_whispers
+        if (s.breed_whispers) {
+          if (s.breed_whispers[breedKey]) breedScore += 100;
+          // Partial match
+          Object.keys(s.breed_whispers).forEach(key => {
+            if (key.includes(breedKey) || breedKey.includes(key)) breedScore += 50;
+          });
+        }
+        
+        // Check name/description for breed keywords
+        const breedWords = breedKey.split('_');
+        breedWords.forEach(word => {
+          if (word.length > 3 && combined.includes(word)) breedScore += 30;
+        });
+        
+        // Breed-specific associations
+        if (breedKey.includes('retriever') && (combined.includes('swim') || combined.includes('joint') || combined.includes('active'))) breedScore += 20;
+        if (breedKey.includes('shih') && (combined.includes('grooming') || combined.includes('small') || combined.includes('coat'))) breedScore += 20;
+        if (breedKey.includes('lab') && (combined.includes('weight') || combined.includes('exercise'))) breedScore += 20;
+        if (breedKey.includes('pug') && (combined.includes('breathing') || combined.includes('flat') || combined.includes('brachycephalic'))) breedScore += 20;
+        if (breedKey.includes('german') && (combined.includes('hip') || combined.includes('protection') || combined.includes('training'))) breedScore += 20;
+        if (breedKey.includes('indie') && (combined.includes('indie') || combined.includes('mixed') || combined.includes('desi'))) breedScore += 20;
+        
+        return { ...s, _breedScore: breedScore };
+      });
+      
+      // Sort by breed relevance and show all (don't filter out, just prioritize)
+      result = result.sort((a, b) => b._breedScore - a._breedScore);
+    }
+    
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       result = result.filter(s =>
@@ -693,7 +732,7 @@ const ServicesPage = () => {
     }
     
     return result;
-  }, [services, selectedPillar, selectedSubcat, searchQuery, selectedPet]);
+  }, [services, selectedPillar, selectedSubcat, searchQuery, selectedPet, selectedBreedFilter]);
   
   const displayedServices = useMemo(() => filteredServices.slice(0, displayCount), [filteredServices, displayCount]);
   const hasMore = displayCount < filteredServices.length;
