@@ -174,7 +174,8 @@ const UnifiedProductBox = () => {
         'variants', 'options', 'has_variants', 'in_stock', 'visibility',
         'primary_pillar', 'pillars', 'paw_rewards', 'pet_safety', 'mira_visibility',
         'shopify_handle', 'sku', 'intelligent_tags', 'search_keywords',
-        'breed_tags', 'health_tags', 'occasion_tags', 'diet_tags', 'lifestage_tags', 'size_tags'
+        'breed_tags', 'health_tags', 'occasion_tags', 'diet_tags', 'lifestage_tags', 'size_tags',
+        'breed_metadata', 'mira_hint'
       ];
       
       for (const field of allowedFields) {
