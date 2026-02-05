@@ -1087,47 +1087,98 @@ const ProductListing = ({ category = 'all' }) => {
           </div>
         )}
 
-        {/* PET PERSONALIZED RECOMMENDATIONS */}
-        {selectedPet && petRecommendations.length > 0 && isCakeCategory && (
-          <div className="mb-8 bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl p-6 border border-amber-200">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-amber-400 flex items-center justify-center text-white text-xl">
-                  🎂
+        {/* PET PERSONALIZED RECOMMENDATIONS - Now works across ALL pillars */}
+        {selectedPet && petRecommendations.length > 0 && (() => {
+          const recConfig = getPillarRecommendationConfig(pillar);
+          return (
+            <div className={`mb-8 bg-gradient-to-r ${recConfig.bgColor} rounded-2xl p-6 border ${recConfig.borderColor}`} data-testid="pet-recommendations-section">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className={`w-12 h-12 rounded-full ${recConfig.badgeColor} flex items-center justify-center text-white text-xl`}>
+                    {recConfig.icon}
+                  </div>
+                  <div>
+                    <h3 className={`font-bold text-lg ${recConfig.accentColor}`}>
+                      {recConfig.title(selectedPet.name)}
+                    </h3>
+                    <p className={`text-sm ${recConfig.accentColor} opacity-70`}>
+                      {recConfig.subtitle(selectedPet)}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-bold text-lg text-amber-900">{personalizedMessage}</h3>
-                  <p className="text-sm text-amber-700">
-                    Based on {selectedPet.name}&apos;s profile • {selectedPet.breed || 'Mixed'} • {selectedPet.age || 'Age unknown'}
-                  </p>
-                </div>
+                
+                {/* Pet Selector (if multiple pets) */}
+                {userPets.length > 1 && (
+                  <select 
+                    value={selectedPet?.id || ''}
+                    onChange={(e) => handlePetChange(e.target.value)}
+                    className={`px-3 py-2 rounded-lg border ${recConfig.borderColor} bg-white text-sm font-medium`}
+                    data-testid="pet-selector-dropdown"
+                  >
+                    {userPets.map(pet => (
+                      <option key={pet.id} value={pet.id}>🐕 {pet.name}</option>
+                    ))}
+                  </select>
+                )}
               </div>
               
-              {/* Pet Selector (if multiple pets) */}
-              {userPets.length > 1 && (
-                <select 
-                  value={selectedPet?.id || ''}
-                  onChange={(e) => handlePetChange(e.target.value)}
-                  className="px-3 py-2 rounded-lg border border-amber-300 bg-white text-sm"
-                >
-                  {userPets.map(pet => (
-                    <option key={pet.id} value={pet.id}>🐕 {pet.name}</option>
-                  ))}
-                </select>
-              )}
+              {/* Recommended Products Carousel */}
+              <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+                {petRecommendations.slice(0, 6).map(product => (
+                  <div key={product.id} className="flex-shrink-0 w-40">
+                    <a href={`/product/${product.id}`} className="block group">
+                      <div className="relative bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
+                        <div className="aspect-square bg-gray-100">
+                          {product.image && (
+                            <img 
+                              src={product.image} 
+                              alt={product.title}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                            />
+                          )}
+                        </div>
+                        <div className="p-2">
+                          <p className="text-xs font-medium text-gray-900 truncate">{product.title || product.name}</p>
+                          <p className={`text-xs font-bold ${recConfig.accentColor}`}>₹{product.price || product.minPrice}</p>
+                        </div>
+                        <div className={`absolute top-2 right-2 ${recConfig.badgeColor} text-white text-[10px] px-2 py-0.5 rounded-full`}>
+                          For {selectedPet.name}
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+                ))}
+              </div>
+              
+              {/* Shopping for someone else? */}
+              <div className={`mt-4 pt-4 border-t ${recConfig.borderColor} flex items-center justify-between`}>
+                <p className={`text-sm ${recConfig.accentColor} opacity-70`}>
+                  <Gift className="w-4 h-4 inline mr-1" />
+                  Shopping for another dog? 
+                </p>
+                <div className="flex items-center gap-3">
+                  <a 
+                    href={`/shop?pillar=${pillar}`}
+                    className={`text-sm font-medium ${recConfig.accentColor} hover:opacity-80 underline`}
+                  >
+                    Browse Full Collection →
+                  </a>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setSelectedPet(null);
+                      setPetRecommendations([]);
+                    }}
+                    className={`text-xs ${recConfig.borderColor} hover:bg-white/50`}
+                  >
+                    Clear Filters
+                  </Button>
+                </div>
+              </div>
             </div>
-            
-            {/* Recommended Products Carousel */}
-            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
-              {petRecommendations.slice(0, 6).map(product => (
-                <div key={product.id} className="flex-shrink-0 w-40">
-                  <a href={`/product/${product.id}`} className="block group">
-                    <div className="relative bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-shadow">
-                      <div className="aspect-square bg-gray-100">
-                        {product.image && (
-                          <img 
-                            src={product.image} 
-                            alt={product.title}
+          );
+        })()}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                           />
                         )}
