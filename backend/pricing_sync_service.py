@@ -63,7 +63,7 @@ async def sync_product_to_service(product: dict) -> dict:
         }
         
         # Upsert to services collection
-        await db.services.update_one(
+        await db.services_master.update_one(
             {"source_product_id": product_id},
             {"$set": service_data, "$setOnInsert": {"created_at": get_utc_timestamp()}},
             upsert=True
@@ -172,7 +172,7 @@ async def sync_all_services_to_products() -> dict:
     synced = 0
     errors = []
     
-    async for service in db.services.find({"is_synced_from_product": {"$ne": True}}):
+    async for service in db.services_master.find({"is_synced_from_product": {"$ne": True}}):
         result = await sync_service_to_product(service)
         if result.get("success"):
             synced += 1
@@ -206,7 +206,7 @@ async def update_product_price(product_id: str, new_price: float) -> dict:
     )
     
     # Sync to service
-    await db.services.update_one(
+    await db.services_master.update_one(
         {"source_product_id": product_id},
         {"$set": {"price": new_price, "base_price": new_price, "sync_timestamp": timestamp, "updated_at": timestamp}}
     )
@@ -222,7 +222,7 @@ async def update_service_price(service_id: str, new_price: float) -> dict:
     timestamp = get_utc_timestamp()
     
     # Update in services collection
-    await db.services.update_one(
+    await db.services_master.update_one(
         {"id": service_id},
         {"$set": {"price": new_price, "base_price": new_price, "updated_at": timestamp}}
     )
@@ -293,7 +293,7 @@ async def update_item_pawmeter(item_id: str, item_type: str = "product") -> dict
         return {"success": False, "error": "Database not initialized"}
     
     # Get item
-    collection = db.unified_products if item_type == "product" else db.services
+    collection = db.unified_products if item_type == "product" else db.services_master
     item = await collection.find_one({"id": item_id})
     
     if not item:
@@ -328,9 +328,9 @@ async def batch_update_pawmeters() -> dict:
         updated["products"] += 1
     
     # Update services
-    async for service in db.services.find({}):
+    async for service in db.services_master.find({}):
         pawmeter = await calculate_pawmeter_score(service)
-        await db.services.update_one(
+        await db.services_master.update_one(
             {"_id": service["_id"]},
             {"$set": {"pawmeter": pawmeter}}
         )
