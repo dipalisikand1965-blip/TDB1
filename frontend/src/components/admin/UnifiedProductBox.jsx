@@ -935,16 +935,23 @@ const UnifiedProductBox = () => {
                           <span className="text-gray-300">-</span>
                         )}
                       </td>
+                      {/* Clickable Mira column for quick hint edit */}
                       <td className="p-3 text-center">
-                        {product.mira_visibility?.can_reference ? (
-                          product.mira_visibility?.can_suggest_proactively ? (
-                            <Bot className="w-5 h-5 text-green-500 mx-auto" />
+                        <button
+                          onClick={() => openQuickEdit(product, 'mira_hint')}
+                          className="hover:bg-purple-50 p-1 rounded transition-colors"
+                          title={product.mira_hint ? 'Click to edit Mira hint' : 'Click to add Mira hint'}
+                        >
+                          {product.mira_visibility?.can_reference ? (
+                            product.mira_visibility?.can_suggest_proactively ? (
+                              <Bot className="w-5 h-5 text-green-500 mx-auto" />
+                            ) : (
+                              <Bot className="w-5 h-5 text-blue-400 mx-auto" />
+                            )
                           ) : (
-                            <Bot className="w-5 h-5 text-blue-400 mx-auto" />
-                          )
-                        ) : (
-                          <EyeOff className="w-5 h-5 text-gray-300 mx-auto" />
-                        )}
+                            <EyeOff className="w-5 h-5 text-gray-300 mx-auto" />
+                          )}
+                        </button>
                       </td>
                       <td className="p-3 text-center">
                         {product.pet_safety?.is_validated ? (
