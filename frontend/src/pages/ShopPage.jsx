@@ -539,16 +539,16 @@ const ShopPage = () => {
     return () => window.removeEventListener('petSelectionChanged', handlePetSelectionChanged);
   }, [pets]);
   
-  // Filter products
+  // Filter products - Use primary_pillar for accurate filtering (not pillars array which has bad data)
   const filteredProducts = useMemo(() => {
     let result = allProducts;
     
     if (selectedPillar !== 'all') {
-      result = result.filter(p =>
-        p.pillars?.includes(selectedPillar) ||
-        p.primary_pillar === selectedPillar ||
-        p.pillar === selectedPillar
-      );
+      // Priority: primary_pillar > pillar (ignore pillars array due to data quality issues)
+      result = result.filter(p => {
+        const productPillar = p.primary_pillar || p.pillar;
+        return productPillar === selectedPillar;
+      });
     }
     
     if (selectedSubcat) {
