@@ -506,54 +506,73 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
           </div>
         </div>
       ) : (
-        /* NOT LOGGED IN - This is members only */
-        <div className="bg-gradient-to-b from-purple-50 to-white border-b border-stone-100">
+        /* NOT LOGGED IN - Explaining why intelligence requires context */
+        <div className="bg-gradient-to-b from-purple-50 to-white border-b border-stone-100" data-testid="non-member-landing">
           <div className="max-w-6xl mx-auto px-4 py-12 text-center">
             <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-4">
               <Sparkles className="w-8 h-8 text-purple-500" />
             </div>
-            <h1 className="text-2xl font-semibold text-stone-900 mb-2">Members-Only Experience</h1>
-            <p className="text-stone-600 max-w-md mx-auto mb-6">
-              Our shop is personalized for Pet Pass members. Mira learns your pet and proposes products tailored to their needs.
-            </p>
-            <div className="flex justify-center gap-3">
-              <Link 
-                to="/membership" 
-                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all"
-              >
-                <PawPrint className="w-4 h-4" />
-                Join Pet Pass
-              </Link>
+            <h1 className="text-2xl font-semibold text-stone-900 mb-2" data-testid="headline">Personalised for Your Pet</h1>
+            
+            {/* Micro-line - addresses modern user anxiety */}
+            <p className="text-xs text-stone-400 mb-4">No spam. No upselling. Just thoughtful care.</p>
+            
+            {/* Supporting line - explains WHY, not THAT */}
+            <div className="text-stone-600 max-w-md mx-auto mb-6 space-y-1">
+              <p className="font-medium">Mira works best once she understands your pet.</p>
+              <p className="text-sm text-stone-500">
+                This space is personalised using your pet&apos;s age, sensitivities, routines, and past care — so only what&apos;s right is shown.
+              </p>
+            </div>
+            
+            <div className="flex flex-col sm:flex-row justify-center gap-3 items-center">
+              <div className="flex flex-col items-center">
+                <Link 
+                  to="/membership" 
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all"
+                  data-testid="setup-pet-btn"
+                >
+                  <PawPrint className="w-4 h-4" />
+                  Set up your pet with Mira
+                </Link>
+                <span className="text-xs text-stone-400 mt-1.5">Takes about 2 minutes</span>
+              </div>
               <Link 
                 to="/login" 
                 className="inline-flex items-center gap-2 px-6 py-3 bg-white text-stone-700 font-medium rounded-lg border border-stone-200 hover:bg-stone-50 transition-all"
+                data-testid="continue-profile-btn"
               >
-                Sign In
+                Continue with your pet profile
               </Link>
             </div>
             
-            {/* Preview of what members get */}
-            <div className="mt-8 p-6 bg-white rounded-xl border border-stone-200 max-w-lg mx-auto text-left">
-              <p className="text-sm font-medium text-stone-700 mb-3">What Pet Pass members get:</p>
-              <ul className="space-y-2 text-sm text-stone-600">
-                <li className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-green-500" />
-                  Products filtered for your pet&apos;s allergies
+            {/* Benefits card - outcomes, not perks */}
+            <div className="mt-8 p-6 bg-white rounded-xl border border-stone-200 max-w-lg mx-auto text-left" data-testid="benefits-card">
+              <p className="text-sm font-medium text-stone-700 mb-3">Once Mira knows your pet, you&apos;ll notice:</p>
+              <ul className="space-y-2.5 text-sm text-stone-600">
+                <li className="flex items-start gap-2">
+                  <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                  Only options that suit your pet&apos;s sensitivities
                 </li>
-                <li className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-green-500" />
-                  Life-stage appropriate recommendations
+                <li className="flex items-start gap-2">
+                  <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                  Suggestions matched to your pet&apos;s life stage
                 </li>
-                <li className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-green-500" />
-                  Mira remembers preferences &amp; history
+                <li className="flex items-start gap-2">
+                  <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                  Mira remembers what&apos;s worked — and what hasn&apos;t
                 </li>
-                <li className="flex items-center gap-2">
-                  <Check className="w-4 h-4 text-green-500" />
-                  Expert help always available
+                <li className="flex items-start gap-2">
+                  <Check className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                  Quiet access to human help when you need it
                 </li>
               </ul>
             </div>
+            
+            {/* Grounding line - removes fear of commitment */}
+            <p className="text-sm text-stone-400 mt-6">
+              You can explore freely — Mira simply helps narrow things down.
+            </p>
           </div>
         </div>
       )}
