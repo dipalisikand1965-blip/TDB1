@@ -761,6 +761,8 @@ const ServicesPage = () => {
         onSelect={(p) => { setSelectedPillar(p); setDisplayCount(24); }}
         selectedSubcat={selectedSubcat}
         onSelectSubcat={setSelectedSubcat}
+        selectedBreed={selectedBreedFilter}
+        onSelectBreed={(b) => { setSelectedBreedFilter(b); setDisplayCount(24); }}
       />
       
       {/* Services Grid */}
@@ -768,9 +770,11 @@ const ServicesPage = () => {
         <div className="max-w-7xl mx-auto px-3 sm:px-6">
           <div className="flex items-center justify-between mb-3 sm:mb-4">
             <h2 className="text-base sm:text-lg font-bold text-gray-900">
-              {selectedPillar === 'recommended' ? `For ${petName || 'You'}` : 
-               selectedPillar === 'all' ? 'All Services' : 
-               `${PILLARS.find(p => p.id === selectedPillar)?.label || ''}`}
+              {selectedBreedFilter && selectedBreedFilter !== 'all' 
+                ? `Services for ${BREED_FILTERS.find(b => b.id === selectedBreedFilter)?.label || selectedBreedFilter}`
+                : selectedPillar === 'recommended' ? `For ${petName || 'You'}` 
+                : selectedPillar === 'all' ? 'All Services' 
+                : `${PILLARS.find(p => p.id === selectedPillar)?.label || ''}`}
             </h2>
             {filteredServices.length > 0 && (
               <span className="text-[10px] sm:text-xs text-gray-500">{filteredServices.length} services</span>
