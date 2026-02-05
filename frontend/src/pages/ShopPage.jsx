@@ -247,8 +247,10 @@ const ShopPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   
   const [products, setProducts] = useState([]);
+  const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState('grid'); // grid or list
+  const [activeTab, setActiveTab] = useState('products'); // products or services
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
   const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'all');
   const [selectedParentCategory, setSelectedParentCategory] = useState(searchParams.get('parent') || '');
