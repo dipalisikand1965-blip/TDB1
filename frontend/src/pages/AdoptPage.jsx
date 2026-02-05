@@ -461,22 +461,22 @@ const AdoptPage = () => {
             </div>
           )}
           
-          <div className="flex flex-wrap justify-center gap-4">
+          <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4">
             <Button
               size="lg"
-              className="bg-white text-purple-600 hover:bg-gray-100"
+              className="bg-white text-purple-600 hover:bg-gray-100 w-full sm:w-auto text-sm sm:text-base"
               onClick={() => document.getElementById('pets-section')?.scrollIntoView({ behavior: 'smooth' })}
             >
-              <PawPrint className="w-5 h-5 mr-2" />
+              <PawPrint className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
               Meet Adoptable Pets
             </Button>
             <Button
               size="lg"
               variant="outline"
-              className="border-white text-white hover:bg-white/20"
+              className="border-white text-white hover:bg-white/20 w-full sm:w-auto text-sm sm:text-base"
               onClick={() => setShowFosterModal(true)}
             >
-              <Heart className="w-5 h-5 mr-2" />
+              <Heart className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
               Become a Foster
             </Button>
           </div>
@@ -484,26 +484,26 @@ const AdoptPage = () => {
       </section>
       
       {/* Categories */}
-      <section className="py-12 px-4">
+      <section className="py-8 sm:py-12 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-2xl font-bold text-gray-900 text-center mb-8">How Would You Like to Help?</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 text-center mb-6 sm:mb-8">How Would You Like to Help?</h2>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 md:gap-6">
             {Object.values(ADOPT_CATEGORIES).map(category => {
               const Icon = category.icon;
               return (
                 <Card
                   key={category.id}
-                  className={`p-6 cursor-pointer hover:shadow-lg transition-all ${
+                  className={`p-3 sm:p-4 md:p-6 cursor-pointer hover:shadow-lg transition-all ${
                     selectedCategory === category.id ? 'ring-2 ring-purple-500' : ''
                   }`}
                   onClick={() => setSelectedCategory(category.id === selectedCategory ? null : category.id)}
                 >
-                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${category.color} flex items-center justify-center mb-4`}>
-                    <Icon className="w-6 h-6 text-white" />
+                  <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br ${category.color} flex items-center justify-center mb-2 sm:mb-4`}>
+                    <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                   </div>
-                  <h3 className="font-semibold text-gray-900 mb-2">{category.name}</h3>
-                  <p className="text-sm text-gray-600">{category.description}</p>
+                  <h3 className="font-semibold text-gray-900 mb-1 sm:mb-2 text-sm sm:text-base">{category.name}</h3>
+                  <p className="text-xs sm:text-sm text-gray-600 hidden sm:block">{category.description}</p>
                 </Card>
               );
             })}
@@ -512,18 +512,18 @@ const AdoptPage = () => {
       </section>
       
       {/* Adoptable Pets Section */}
-      <section id="pets-section" className="py-12 px-4 bg-white">
+      <section id="pets-section" className="py-8 sm:py-12 px-4 sm:px-6 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">Meet Our Adoptable Pets</h2>
-              <p className="text-gray-600">Find your perfect furry companion</p>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4 mb-6 sm:mb-8">
+            <div className="text-center md:text-left">
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Meet Our Adoptable Pets</h2>
+              <p className="text-sm sm:text-base text-gray-600">Find your perfect furry companion</p>
             </div>
             
             {/* Filters */}
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap justify-center md:justify-end gap-2">
               <Select value={filters.species} onValueChange={v => setFilters({...filters, species: v})}>
-                <SelectTrigger className="w-32">
+                <SelectTrigger className="w-28 sm:w-32 text-xs sm:text-sm">
                   <SelectValue placeholder="Species" />
                 </SelectTrigger>
                 <SelectContent>
@@ -534,7 +534,7 @@ const AdoptPage = () => {
               </Select>
               
               <Select value={filters.size} onValueChange={v => setFilters({...filters, size: v})}>
-                <SelectTrigger className="w-32">
+                <SelectTrigger className="w-28 sm:w-32 text-xs sm:text-sm">
                   <SelectValue placeholder="Size" />
                 </SelectTrigger>
                 <SelectContent>
@@ -546,7 +546,7 @@ const AdoptPage = () => {
               </Select>
               
               <Select value={filters.age} onValueChange={v => setFilters({...filters, age: v})}>
-                <SelectTrigger className="w-32">
+                <SelectTrigger className="w-28 sm:w-32 text-xs sm:text-sm">
                   <SelectValue placeholder="Age" />
                 </SelectTrigger>
                 <SelectContent>
