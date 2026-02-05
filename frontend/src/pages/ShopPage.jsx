@@ -2,9 +2,10 @@
  * ShopPage.jsx
  * 
  * Design Philosophy:
- * - Signals intelligence (known facts, not questions)
- * - Reduces cognitive load (no dropdowns upfront)
- * - Preserves flexibility (edit option available)
+ * - Signals intelligence (known facts from Pet Soul)
+ * - Syncs with navbar's selected pet
+ * - Products across all 14 pillars
+ * - Intelligent search "Search for {petName}..."
  * 
  * "Let's make life easier for {petName}."
  */
@@ -24,37 +25,65 @@ import { toast } from '../hooks/use-toast';
 import MiraChatWidget from '../components/MiraChatWidget';
 import SEOHead from '../components/SEOHead';
 import {
-  Search, Heart, ArrowRight, X, Package, Edit3,
+  Search, Heart, ArrowRight, X, Package, Edit3, Mic,
   PawPrint, Briefcase, Sparkles, Cake, Stethoscope, 
-  UtensilsCrossed, Plane, Dumbbell, GraduationCap
+  UtensilsCrossed, Plane, Dumbbell, GraduationCap, Home,
+  Shield, FileText, AlertTriangle, Flower2, ShoppingBag
 } from 'lucide-react';
 
 // =============================================================================
-// BREED PLACEHOLDER IMAGES - Beautiful stock photos by breed
+// PILLAR FILTERS - All 14 pillars
 // =============================================================================
-const BREED_IMAGES = {
-  'labrador': 'https://images.unsplash.com/photo-1591769225440-811ad7d6eab3?w=800&q=80',
-  'golden retriever': 'https://images.unsplash.com/photo-1609348490161-a879e4327ae9?w=800&q=80',
-  'indie': 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800&q=80',
-  'german shepherd': 'https://images.unsplash.com/photo-1589941013453-ec89f33b5e95?w=800&q=80',
-  'beagle': 'https://images.unsplash.com/photo-1505628346881-b72b27e84530?w=800&q=80',
-  'pug': 'https://images.unsplash.com/photo-1517849845537-4d257902454a?w=800&q=80',
-  'shih tzu': 'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=800&q=80',
-  'pomeranian': 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800&q=80',
-  'husky': 'https://images.unsplash.com/photo-1605568427561-40dd23c2acea?w=800&q=80',
-  'default': 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=800&q=80'
-};
+const ALL_PILLARS = [
+  { id: 'all', label: 'All', icon: Sparkles },
+  { id: 'celebrate', label: 'Celebrate', icon: Cake },
+  { id: 'dine', label: 'Dine', icon: UtensilsCrossed },
+  { id: 'stay', label: 'Stay', icon: Home },
+  { id: 'travel', label: 'Travel', icon: Plane },
+  { id: 'care', label: 'Care', icon: Stethoscope },
+  { id: 'enjoy', label: 'Enjoy', icon: Sparkles },
+  { id: 'fit', label: 'Fit', icon: Dumbbell },
+  { id: 'learn', label: 'Learn', icon: GraduationCap },
+  { id: 'paperwork', label: 'Paperwork', icon: FileText },
+  { id: 'advisory', label: 'Advisory', icon: Shield },
+  { id: 'emergency', label: 'Emergency', icon: AlertTriangle },
+  { id: 'farewell', label: 'Farewell', icon: Flower2 },
+  { id: 'adopt', label: 'Adopt', icon: Heart },
+  { id: 'shop', label: 'Shop', icon: ShoppingBag },
+];
 
-// Get breed image - pet photo or beautiful breed stock
-const getBreedImage = (pet) => {
-  if (pet?.photo_url || pet?.image_url) {
-    return pet.photo_url || pet.image_url;
+// =============================================================================
+// Get pet description from Soul data
+// =============================================================================
+const getPetSoulDescription = (pet) => {
+  if (!pet) return '';
+  
+  const soul = pet.soul || pet.soul_data || {};
+  const answers = soul.answers || soul;
+  
+  // Try to build description from soul answers
+  const threeWords = answers.describe_3_words;
+  const nature = answers.general_nature;
+  const socialPref = answers.social_preference;
+  
+  if (threeWords) {
+    return threeWords;
   }
-  const breed = pet?.breed?.toLowerCase() || 'default';
-  return BREED_IMAGES[breed] || BREED_IMAGES['default'];
+  
+  // Fallback to nature + preference
+  let desc = [];
+  if (nature) desc.push(nature.toLowerCase());
+  if (socialPref) desc.push(socialPref.toLowerCase().replace('being ', ''));
+  
+  if (desc.length > 0) {
+    return `${pet.name} is ${desc.join(' and ')}`;
+  }
+  
+  // Final fallback - use breed characteristics
+  return pet.breed ? `A wonderful ${pet.breed}` : '';
 };
 
-// Calculate pet life stage
+// Get life stage from pet data
 const getLifeStage = (pet) => {
   if (pet?.life_stage) return pet.life_stage;
   if (!pet?.dob && !pet?.age) return 'Adult';
@@ -67,37 +96,21 @@ const getLifeStage = (pet) => {
   return 'Senior';
 };
 
-// Get relationship duration text
-const getRelationshipText = (pet) => {
-  if (!pet?.created_at && !pet?.added_at) return 'Known to us since recently';
+// Get energy level from soul
+const getEnergyLevel = (pet) => {
+  const soul = pet?.soul || pet?.soul_data || {};
+  const answers = soul.answers || soul;
   
-  const addedDate = new Date(pet.created_at || pet.added_at);
-  const now = new Date();
-  const monthsDiff = Math.floor((now - addedDate) / (30 * 24 * 60 * 60 * 1000));
+  const nature = answers?.general_nature;
+  if (nature === 'Highly energetic') return 'High Energy';
+  if (nature === 'Playful' || nature === 'Curious') return 'Moderate';
+  if (nature === 'Calm') return 'Calm';
   
-  if (monthsDiff < 1) return 'Known to us since recently';
-  if (monthsDiff < 12) return `Known to us for ${monthsDiff} months`;
-  
-  const lifeStage = getLifeStage(pet);
-  if (lifeStage === 'Puppy') return 'Known to us since puppyhood';
-  return `Known to us for ${Math.floor(monthsDiff/12)} years`;
+  return pet?.energy_level || 'Moderate';
 };
 
 // =============================================================================
-// PILLAR FILTERS - For browsing by category
-// =============================================================================
-const PILLAR_FILTERS = [
-  { id: 'all', label: 'All', icon: Sparkles },
-  { id: 'care', label: 'Care', icon: Stethoscope },
-  { id: 'dine', label: 'Nourish', icon: UtensilsCrossed },
-  { id: 'celebrate', label: 'Celebrate', icon: Cake },
-  { id: 'travel', label: 'Travel', icon: Plane },
-  { id: 'fit', label: 'Fitness', icon: Dumbbell },
-  { id: 'learn', label: 'Learn', icon: GraduationCap },
-];
-
-// =============================================================================
-// PRODUCT CARD - Clean, minimal design
+// PRODUCT CARD
 // =============================================================================
 const ProductCard = ({ product, onAddToCart, petName, isPetPick }) => {
   const [isWishlisted, setIsWishlisted] = useState(false);
@@ -113,7 +126,6 @@ const ProductCard = ({ product, onAddToCart, petName, isPetPick }) => {
       onClick={() => navigate(`/product/${product.handle || product.id}`)}
       data-testid={`product-card-${product.id}`}
     >
-      {/* Image Container */}
       <div className="relative aspect-square bg-[#F5F0E8] overflow-hidden">
         <img
           src={image || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400'}
@@ -121,7 +133,6 @@ const ProductCard = ({ product, onAddToCart, petName, isPetPick }) => {
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
         
-        {/* Pet's Pick Badge */}
         {isPetPick && petName && (
           <div className="absolute top-3 left-3">
             <span className="bg-[#C4785A] text-white text-xs font-medium px-3 py-1.5 rounded-full shadow-sm">
@@ -130,7 +141,6 @@ const ProductCard = ({ product, onAddToCart, petName, isPetPick }) => {
           </div>
         )}
         
-        {/* Wishlist */}
         <button
           onClick={(e) => { e.stopPropagation(); setIsWishlisted(!isWishlisted); }}
           className="absolute top-3 right-3 p-2 bg-white rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity"
@@ -139,13 +149,10 @@ const ProductCard = ({ product, onAddToCart, petName, isPetPick }) => {
         </button>
       </div>
       
-      {/* Product Info */}
       <div className="p-3 sm:p-4">
         <h3 className="font-medium text-[#2D2D2D] text-sm sm:text-base mb-1 line-clamp-2 leading-snug">
           {title}
         </h3>
-        
-        {/* Price and Arrow */}
         <div className="flex items-center justify-between mt-2">
           <span className="text-base sm:text-lg font-semibold text-[#2D2D2D]">
             ₹{price.toLocaleString()}
@@ -160,7 +167,7 @@ const ProductCard = ({ product, onAddToCart, petName, isPetPick }) => {
 // =============================================================================
 // SERVICE CARD
 // =============================================================================
-const ServiceCard = ({ service, petName }) => {
+const ServiceCard = ({ service }) => {
   const navigate = useNavigate();
   
   return (
@@ -214,11 +221,10 @@ const EditProfileModal = ({ open, onClose, pets, selectedPet, onSelectPet, filte
         </DialogHeader>
         
         <div className="space-y-4 py-4">
-          {/* Pet Selector */}
           <div>
             <label className="text-sm font-medium text-gray-700 mb-2 block">Pet</label>
-            <Select value={selectedPet?.id || selectedPet?.name || ''} onValueChange={(v) => {
-              const pet = pets.find(p => (p.id || p.name) === v);
+            <Select value={selectedPet?.id || ''} onValueChange={(v) => {
+              const pet = pets.find(p => p.id === v);
               onSelectPet(pet);
             }}>
               <SelectTrigger>
@@ -226,7 +232,7 @@ const EditProfileModal = ({ open, onClose, pets, selectedPet, onSelectPet, filte
               </SelectTrigger>
               <SelectContent>
                 {pets.map(pet => (
-                  <SelectItem key={pet.id || pet.name} value={pet.id || pet.name}>
+                  <SelectItem key={pet.id} value={pet.id}>
                     {pet.name} ({pet.breed || 'Unknown breed'})
                   </SelectItem>
                 ))}
@@ -234,13 +240,10 @@ const EditProfileModal = ({ open, onClose, pets, selectedPet, onSelectPet, filte
             </Select>
           </div>
           
-          {/* Life Stage */}
           <div>
             <label className="text-sm font-medium text-gray-700 mb-2 block">Life Stage</label>
             <Select value={filters.lifeStage} onValueChange={(v) => onUpdateFilters({...filters, lifeStage: v})}>
-              <SelectTrigger>
-                <SelectValue placeholder="Life stage" />
-              </SelectTrigger>
+              <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="Puppy">Puppy</SelectItem>
                 <SelectItem value="Adult">Adult</SelectItem>
@@ -249,31 +252,24 @@ const EditProfileModal = ({ open, onClose, pets, selectedPet, onSelectPet, filte
             </Select>
           </div>
           
-          {/* City */}
           <div>
             <label className="text-sm font-medium text-gray-700 mb-2 block">City</label>
             <Select value={filters.city} onValueChange={(v) => onUpdateFilters({...filters, city: v})}>
-              <SelectTrigger>
-                <SelectValue placeholder="City" />
-              </SelectTrigger>
+              <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="Bangalore">Bangalore</SelectItem>
                 <SelectItem value="Mumbai">Mumbai</SelectItem>
                 <SelectItem value="Delhi">Delhi</SelectItem>
                 <SelectItem value="Gurgaon">Gurgaon</SelectItem>
                 <SelectItem value="Hyderabad">Hyderabad</SelectItem>
-                <SelectItem value="Chennai">Chennai</SelectItem>
               </SelectContent>
             </Select>
           </div>
           
-          {/* Energy Level */}
           <div>
             <label className="text-sm font-medium text-gray-700 mb-2 block">Energy Level</label>
             <Select value={filters.energy} onValueChange={(v) => onUpdateFilters({...filters, energy: v})}>
-              <SelectTrigger>
-                <SelectValue placeholder="Energy" />
-              </SelectTrigger>
+              <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="Calm">Calm</SelectItem>
                 <SelectItem value="Moderate">Moderate</SelectItem>
@@ -310,19 +306,20 @@ const ShopPage = () => {
   const [selectedPillar, setSelectedPillar] = useState('all');
   const [showEditModal, setShowEditModal] = useState(false);
   
-  // Pet selection and filters
+  // Pet selection synced with navbar via localStorage
   const [selectedPet, setSelectedPet] = useState(null);
   const [filters, setFilters] = useState({
     lifeStage: 'Adult',
     city: 'Bangalore',
-    energy: 'Calm'
+    energy: 'Moderate'
   });
   
-  // Fetch products
+  // Fetch products from all pillars
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/products?limit=100`);
+        // Fetch from product-box which has all pillar products
+        const res = await fetch(`${API_URL}/api/product-box/products?limit=200`);
         if (res.ok) {
           const data = await res.json();
           setProducts(data.products || []);
@@ -340,7 +337,7 @@ const ShopPage = () => {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/service-box/services?pillar=shop&limit=50`);
+        const res = await fetch(`${API_URL}/api/service-box/services?limit=100`);
         if (res.ok) {
           const data = await res.json();
           setServices(data.services || []);
@@ -352,7 +349,7 @@ const ShopPage = () => {
     fetchServices();
   }, []);
   
-  // Fetch user's pets
+  // Fetch user's pets and sync with navbar selection
   useEffect(() => {
     if (token) {
       const fetchPets = async () => {
@@ -364,14 +361,20 @@ const ShopPage = () => {
             const data = await res.json();
             const userPets = data.pets || [];
             setPets(userPets);
-            if (userPets.length > 0 && !selectedPet) {
-              const pet = userPets[0];
+            
+            if (userPets.length > 0) {
+              // Sync with navbar's selected pet via localStorage
+              const savedPetId = localStorage.getItem('selectedPetId');
+              const savedPet = savedPetId ? userPets.find(p => p.id === savedPetId) : null;
+              const pet = savedPet || userPets[0];
+              
               setSelectedPet(pet);
-              // Set filters based on pet data
+              
+              // Set filters from pet's soul data
               setFilters({
                 lifeStage: getLifeStage(pet),
                 city: pet.city || 'Bangalore',
-                energy: pet.energy_level || 'Calm'
+                energy: getEnergyLevel(pet)
               });
             }
           }
@@ -383,21 +386,40 @@ const ShopPage = () => {
     }
   }, [token]);
   
-  // Filter and personalize products
+  // Listen for pet selection changes from navbar
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === 'selectedPetId' && pets.length > 0) {
+        const pet = pets.find(p => p.id === e.newValue);
+        if (pet) {
+          setSelectedPet(pet);
+          setFilters({
+            lifeStage: getLifeStage(pet),
+            city: pet.city || filters.city,
+            energy: getEnergyLevel(pet)
+          });
+        }
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [pets, filters.city]);
+  
+  // Filter products
   const { filteredProducts, petPicks } = useMemo(() => {
     let result = products;
     
-    // Search filter
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       result = result.filter(p =>
         p.title?.toLowerCase().includes(query) ||
         p.name?.toLowerCase().includes(query) ||
-        p.description?.toLowerCase().includes(query)
+        p.description?.toLowerCase().includes(query) ||
+        p.tags?.some(t => t?.toLowerCase().includes(query))
       );
     }
     
-    // Pillar filter
     if (selectedPillar && selectedPillar !== 'all') {
       result = result.filter(p =>
         p.pillars?.includes(selectedPillar) ||
@@ -406,7 +428,7 @@ const ShopPage = () => {
       );
     }
     
-    // Get pet-specific picks
+    // Get pet-specific picks based on breed
     let picks = [];
     if (selectedPet?.breed) {
       const breed = selectedPet.breed.toLowerCase();
@@ -418,7 +440,6 @@ const ShopPage = () => {
       ).slice(0, 6);
     }
     
-    // If no breed-specific, get general recommendations
     if (picks.length < 3) {
       picks = products
         .filter(p => p.pawmeter?.overall >= 4 || p.rating >= 4)
@@ -437,25 +458,39 @@ const ShopPage = () => {
       image: product.image || product.image_url || product.images?.[0],
       quantity: 1
     });
-    toast({
-      title: 'Added to your bag',
-      description: `${product.title || product.name}`,
-    });
+    toast({ title: 'Added to your bag', description: `${product.title || product.name}` });
   }, [addToCart]);
+  
+  // Handle pet selection and sync with navbar
+  const handlePetSelect = (pet) => {
+    setSelectedPet(pet);
+    if (pet) {
+      localStorage.setItem('selectedPetId', pet.id);
+      localStorage.setItem('selectedPetName', pet.name || '');
+      localStorage.setItem('selectedPetBreed', pet.breed || '');
+      setFilters({
+        lifeStage: getLifeStage(pet),
+        city: pet.city || filters.city,
+        energy: getEnergyLevel(pet)
+      });
+    }
+  };
 
   // Pet info
   const petName = selectedPet?.name || '';
   const petBreed = selectedPet?.breed || '';
-  const lifeStage = filters.lifeStage || getLifeStage(selectedPet);
-  const city = filters.city || 'Bangalore';
-  const energy = filters.energy || 'Calm';
+  const petPhoto = selectedPet?.photo_url || selectedPet?.image_url || selectedPet?.image;
+  const petSoulDesc = getPetSoulDescription(selectedPet);
+  const lifeStage = filters.lifeStage;
+  const city = filters.city;
+  const energy = filters.energy;
 
   return (
     <div className="min-h-screen bg-[#F9F6F1]" data-testid="shop-page">
       <SEOHead page="shop" path="/shop" />
       
       {/* ================================================================== */}
-      {/* HERO SECTION - Personalized, Intelligent */}
+      {/* HERO SECTION */}
       {/* ================================================================== */}
       <section className="relative bg-[#F9F6F1] overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12 md:py-16 lg:py-20">
@@ -463,7 +498,7 @@ const ShopPage = () => {
             
             {/* Left: Content */}
             <div className="flex-1 text-center lg:text-left w-full">
-              {/* Main Headline */}
+              {/* Main Headline - Synced with navbar pet name */}
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold text-[#2D2D2D] leading-[1.1] mb-4 sm:mb-6">
                 Let&apos;s make life easier<br className="hidden sm:block" />
                 for <span className="text-[#C4785A]">{petName || 'your companion'}</span>.
@@ -478,8 +513,8 @@ const ShopPage = () => {
                 )}
               </p>
               
-              {/* Known Facts Display - Not dropdowns */}
-              {pets.length > 0 && selectedPet && (
+              {/* Known Facts Display */}
+              {selectedPet && (
                 <div className="inline-flex items-center gap-2 bg-white rounded-full px-4 sm:px-6 py-3 sm:py-4 shadow-sm mb-6 sm:mb-8">
                   <span className="text-sm sm:text-base text-[#2D2D2D]">
                     <span className="font-medium">{petName}</span>
@@ -512,7 +547,7 @@ const ShopPage = () => {
               </div>
             </div>
             
-            {/* Right: Pet Image */}
+            {/* Right: Pet's Actual Photo */}
             <div className="relative w-full max-w-sm sm:max-w-md lg:max-w-lg">
               {/* Profile Created Label */}
               {petName && (
@@ -521,14 +556,21 @@ const ShopPage = () => {
                 </div>
               )}
               
-              {/* Pet Image Container */}
-              <div className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-xl">
-                <img
-                  src={getBreedImage(selectedPet)}
-                  alt={petName || 'Happy dog'}
-                  className="w-full h-full object-cover"
-                  data-testid="hero-pet-image"
-                />
+              {/* Pet's Actual Photo */}
+              <div className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-xl bg-[#E8E4DD]">
+                {petPhoto ? (
+                  <img
+                    src={petPhoto}
+                    alt={petName || 'Your pet'}
+                    className="w-full h-full object-cover"
+                    data-testid="hero-pet-image"
+                  />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center text-[#9B9B9B]">
+                    <PawPrint className="w-16 h-16 mb-4 opacity-50" />
+                    <p className="text-sm">Add a photo of {petName || 'your pet'}</p>
+                  </div>
+                )}
                 
                 {/* Name Badge on Image */}
                 {petName && (
@@ -541,36 +583,67 @@ const ShopPage = () => {
                 )}
               </div>
               
-              {/* Relationship Text */}
-              <p className="text-center text-sm sm:text-base text-[#9B9B9B] mt-4 italic">
-                {getRelationshipText(selectedPet)}
-              </p>
+              {/* Soul Description from Pet Data */}
+              {petSoulDesc && (
+                <p className="text-center text-sm sm:text-base text-[#6B6B6B] mt-4 italic">
+                  {petSoulDesc}
+                </p>
+              )}
             </div>
           </div>
         </div>
       </section>
       
       {/* ================================================================== */}
-      {/* PILLAR FILTERS - Browse by category */}
+      {/* INTELLIGENT SEARCH BAR - Like navbar */}
       {/* ================================================================== */}
       <section className="py-6 sm:py-8 bg-white border-y border-gray-100">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6">
+          <div className="relative">
+            <Search className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-[#9B9B9B]" />
+            <Input
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={petName ? `Search for ${petName}...` : "Search products, services..."}
+              className="pl-12 sm:pl-14 pr-12 py-4 sm:py-5 text-base sm:text-lg bg-[#F5F5F5] border-0 rounded-full focus:ring-2 focus:ring-[#C4785A]"
+              data-testid="shop-search"
+            />
+            <button className="absolute right-4 sm:right-5 top-1/2 -translate-y-1/2 text-[#9B9B9B] hover:text-[#C4785A] transition-colors">
+              <Mic className="w-5 h-5" />
+            </button>
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-12 top-1/2 -translate-y-1/2 text-[#9B9B9B] hover:text-gray-600"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+        </div>
+      </section>
+      
+      {/* ================================================================== */}
+      {/* PILLAR FILTERS - All 14 pillars */}
+      {/* ================================================================== */}
+      <section className="py-4 sm:py-6 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 scrollbar-hide">
-            {PILLAR_FILTERS.map((pillar) => {
+            {ALL_PILLARS.map((pillar) => {
               const Icon = pillar.icon;
               const isActive = selectedPillar === pillar.id;
               return (
                 <button
                   key={pillar.id}
                   onClick={() => setSelectedPillar(pillar.id)}
-                  className={`flex items-center gap-2 px-4 sm:px-6 py-2.5 sm:py-3 rounded-full text-sm sm:text-base font-medium whitespace-nowrap transition-all ${
+                  className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium whitespace-nowrap transition-all ${
                     isActive
                       ? 'bg-[#2D2D2D] text-white shadow-md'
                       : 'bg-[#F5F5F5] text-[#6B6B6B] hover:bg-[#EBEBEB]'
                   }`}
                   data-testid={`pillar-filter-${pillar.id}`}
                 >
-                  <Icon className="w-4 h-4" />
+                  <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   {pillar.label}
                 </button>
               );
@@ -584,7 +657,6 @@ const ShopPage = () => {
       {/* ================================================================== */}
       <section id="pet-picks" className="py-10 sm:py-12 md:py-16 bg-[#F9F6F1]" data-testid="pet-picks-section">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          {/* Section Header */}
           <div className="text-center mb-8 sm:mb-10">
             <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-[#2D2D2D] mb-2">
               {petName ? `For ${petName}` : 'Recommended for you'}
@@ -594,7 +666,6 @@ const ShopPage = () => {
             </p>
           </div>
           
-          {/* Pet Picks Grid */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
             {petPicks.length > 0 ? petPicks.map((product, idx) => (
               <ProductCard
@@ -620,72 +691,46 @@ const ShopPage = () => {
       </section>
       
       {/* ================================================================== */}
-      {/* ALL PRODUCTS SECTION */}
+      {/* ALL PRODUCTS/SERVICES SECTION */}
       {/* ================================================================== */}
       <section className="py-10 sm:py-12 md:py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          {/* Section Header with Tabs and Search */}
-          <div className="flex flex-col gap-4 mb-8">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div>
-                <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-[#2D2D2D]">
-                  {activeView === 'products' ? 'All Products' : 'All Services'}
-                </h2>
-                <p className="text-[#9B9B9B] text-sm sm:text-base">
-                  {activeView === 'products' 
-                    ? `${filteredProducts.length} items`
-                    : `${services.length} services`
-                  }
-                </p>
-              </div>
-              
-              {/* View Toggle */}
-              <div className="flex gap-2">
-                <Button
-                  onClick={() => setActiveView('products')}
-                  variant={activeView === 'products' ? 'default' : 'outline'}
-                  className={`text-sm sm:text-base ${activeView === 'products' 
-                    ? 'bg-[#2D2D2D] hover:bg-[#3D3D3D] text-white' 
-                    : 'border-gray-200 text-[#6B6B6B]'
-                  }`}
-                  data-testid="tab-products"
-                >
-                  Products
-                </Button>
-                <Button
-                  onClick={() => setActiveView('services')}
-                  variant={activeView === 'services' ? 'default' : 'outline'}
-                  className={`text-sm sm:text-base ${activeView === 'services' 
-                    ? 'bg-[#2D2D2D] hover:bg-[#3D3D3D] text-white' 
-                    : 'border-gray-200 text-[#6B6B6B]'
-                  }`}
-                  data-testid="tab-services"
-                >
-                  Services
-                </Button>
-              </div>
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+            <div>
+              <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-[#2D2D2D]">
+                {activeView === 'products' ? 'All Products' : 'All Services'}
+              </h2>
+              <p className="text-[#9B9B9B] text-sm sm:text-base">
+                {activeView === 'products' 
+                  ? `${filteredProducts.length} items across all pillars`
+                  : `${services.length} services`
+                }
+              </p>
             </div>
             
-            {/* Search */}
-            <div className="max-w-md">
-              <div className="relative">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                <Input
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search..."
-                  className="pl-12 pr-4 py-3 bg-[#F5F5F5] border-0 rounded-xl text-sm sm:text-base"
-                  data-testid="shop-search"
-                />
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery('')}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                )}
-              </div>
+            <div className="flex gap-2">
+              <Button
+                onClick={() => setActiveView('products')}
+                variant={activeView === 'products' ? 'default' : 'outline'}
+                className={`text-sm sm:text-base ${activeView === 'products' 
+                  ? 'bg-[#2D2D2D] hover:bg-[#3D3D3D] text-white' 
+                  : 'border-gray-200 text-[#6B6B6B]'
+                }`}
+                data-testid="tab-products"
+              >
+                Products
+              </Button>
+              <Button
+                onClick={() => setActiveView('services')}
+                variant={activeView === 'services' ? 'default' : 'outline'}
+                className={`text-sm sm:text-base ${activeView === 'services' 
+                  ? 'bg-[#2D2D2D] hover:bg-[#3D3D3D] text-white' 
+                  : 'border-gray-200 text-[#6B6B6B]'
+                }`}
+                data-testid="tab-services"
+              >
+                Services
+              </Button>
             </div>
           </div>
           
@@ -741,7 +786,7 @@ const ShopPage = () => {
               ) : (
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
                   {services.map(service => (
-                    <ServiceCard key={service.id} service={service} petName={petName} />
+                    <ServiceCard key={service.id} service={service} />
                   ))}
                 </div>
               )}
@@ -756,16 +801,7 @@ const ShopPage = () => {
         onClose={() => setShowEditModal(false)}
         pets={pets}
         selectedPet={selectedPet}
-        onSelectPet={(pet) => {
-          setSelectedPet(pet);
-          if (pet) {
-            setFilters({
-              lifeStage: getLifeStage(pet),
-              city: pet.city || filters.city,
-              energy: pet.energy_level || filters.energy
-            });
-          }
-        }}
+        onSelectPet={handlePetSelect}
         filters={filters}
         onUpdateFilters={setFilters}
       />
