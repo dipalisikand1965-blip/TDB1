@@ -382,9 +382,13 @@ const ProductBoxEditor = ({
                 
                 {getValue('suitability.pet_filters.breed_applicability') === 'selected' && (
                   <div>
-                    <Label className="mb-2 block">Applicable Breeds</Label>
+                    <div className="flex items-center justify-between mb-2">
+                      <Label>Applicable Breeds</Label>
+                      {loadingBreeds && <RefreshCw className="w-3 h-3 animate-spin text-gray-400" />}
+                      <span className="text-xs text-gray-500">{dogBreeds.length} breeds available</span>
+                    </div>
                     <MultiSelect 
-                      options={DOG_BREEDS}
+                      options={dogBreeds}
                       selected={getValue('suitability.pet_filters.applicable_breeds', [])}
                       onChange={(v) => updateField('suitability.pet_filters.applicable_breeds', v)}
                       columns={4}
