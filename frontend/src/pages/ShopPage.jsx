@@ -58,7 +58,8 @@ const ALL_PILLARS = [
 const getPetSoulDescription = (pet) => {
   if (!pet) return '';
   
-  const soul = pet.soul || pet.soul_data || {};
+  // Soul data can be in multiple locations depending on data source
+  const soul = pet.soul || pet.soul_data || pet.doggy_soul_answers || {};
   const answers = soul.answers || soul;
   
   // Try to build description from soul answers
