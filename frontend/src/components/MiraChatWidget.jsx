@@ -1335,21 +1335,27 @@ const MiraChatWidget = ({
                 <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
                   <span className="text-xs text-gray-500 shrink-0">For:</span>
                   {/* Individual pet buttons */}
-                  {pets.map(pet => (
-                    <button
-                      key={pet.id}
-                      onClick={() => handlePetSwitch(pet)}
-                      className={`px-3 py-2.5 min-h-[40px] rounded-full text-xs flex items-center gap-1.5 transition-all shrink-0 touch-manipulation active:scale-95 ${
-                        selectedPet?.id === pet.id && !allPetsMode
-                          ? `bg-gradient-to-r ${config.color} text-white` 
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                      }`}
-                      data-testid={`pet-select-${pet.id}`}
-                    >
-                      <PawPrint className="w-3 h-3" />
-                      <span className="font-semibold">{pet.name}</span>
-                    </button>
-                  ))}
+                  {pets.map(pet => {
+                    const hasSavedPrefs = loadPetPreferences(pet.id)?.supportFilters?.length > 0;
+                    return (
+                      <button
+                        key={pet.id}
+                        onClick={() => handlePetSwitch(pet)}
+                        className={`px-3 py-2.5 min-h-[40px] rounded-full text-xs flex items-center gap-1.5 transition-all shrink-0 touch-manipulation active:scale-95 ${
+                          selectedPet?.id === pet.id && !allPetsMode
+                            ? `bg-gradient-to-r ${config.color} text-white` 
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        }`}
+                        data-testid={`pet-select-${pet.id}`}
+                      >
+                        <PawPrint className="w-3 h-3" />
+                        <span className="font-semibold">{pet.name}</span>
+                        {hasSavedPrefs && selectedPet?.id !== pet.id && (
+                          <span className="text-[8px] opacity-60">💾</span>
+                        )}
+                      </button>
+                    );
+                  })}
                   {/* "All Pets" option - Only show if user has multiple pets */}
                   {pets.length > 1 && (
                     <button
