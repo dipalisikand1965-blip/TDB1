@@ -211,6 +211,61 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
   const [showModal, setShowModal] = useState(false);
   const { user, token } = useAuth();
   
+  // Generate product-specific Mira tip based on product name/category/tags
+  const getProductMiraTip = () => {
+    const name = (product.name || '').toLowerCase();
+    const tags = (product.tags || []).map(t => t?.toLowerCase() || '');
+    const category = (product.category || '').toLowerCase();
+    
+    // Cake-specific tips
+    if (name.includes('cake') || category.includes('cake')) {
+      if (name.includes('peanut butter')) return '✨ Peanut butter is a pet favorite!';
+      if (name.includes('carrot')) return '✨ Carrots add natural sweetness';
+      if (name.includes('banana')) return '✨ Banana makes it extra moist';
+      if (name.includes('chicken')) return '✨ Savory choice for meat lovers';
+      if (name.includes('birthday')) return '✨ Perfect for the big day';
+      return '✨ Freshly baked with love';
+    }
+    
+    // Meal-specific tips
+    if (name.includes('meal') || category.includes('meal') || category.includes('dine')) {
+      if (name.includes('mutton')) return '✨ Rich in protein & iron';
+      if (name.includes('chicken')) return '✨ Lean protein, easy to digest';
+      if (name.includes('paneer')) return '✨ Great vegetarian option';
+      if (name.includes('fish')) return '✨ Omega-3 for healthy coat';
+      return '✨ Balanced nutrition in every bite';
+    }
+    
+    // Treat-specific tips
+    if (name.includes('treat') || category.includes('treat')) {
+      if (name.includes('dental')) return '✨ Helps keep teeth clean';
+      if (name.includes('training')) return '✨ Perfect size for rewards';
+      if (name.includes('soft')) return '✨ Easy for seniors to chew';
+      return '✨ Tail-wagging guaranteed';
+    }
+    
+    // Pizza/burger tips
+    if (name.includes('pizza') || name.includes('burger')) {
+      return '✨ A fun twist on mealtime';
+    }
+    
+    // Frozen treats
+    if (name.includes('frozen') || name.includes('ice')) {
+      return '✨ Perfect for hot days';
+    }
+    
+    // Default based on pillar
+    if (pillar === 'celebrate') return '✨ Makes celebrations special';
+    if (pillar === 'dine') return '✨ Nutritious & delicious';
+    if (pillar === 'care') return '✨ For your pet\'s wellbeing';
+    if (pillar === 'travel') return '✨ Travel-friendly choice';
+    if (pillar === 'enjoy') return '✨ Adventure ready';
+    
+    return '✨ Mira recommends';
+  };
+  
+  const productMiraTip = getProductMiraTip();
+  
   // Fallback placeholder image
   const PLACEHOLDER_IMAGE = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop';
   
