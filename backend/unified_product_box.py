@@ -716,7 +716,7 @@ async def get_product(product_id: str):
     if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
     
-    product = await db.unified_products.find_one(
+    product = await db.products_master.find_one(
         {"$or": [{"id": product_id}, {"sku": product_id}]},
         {"_id": 0}
     )
