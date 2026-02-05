@@ -559,10 +559,11 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
       )}
       
       {/* ============================================ */}
-      {/* CARE & VALUES FILTERS - Trust Building */}
+      {/* CARE & VALUES FILTERS - Only for members */}
       {/* ============================================ */}
-      <div className="bg-white border-b border-stone-100">
-        <div className="max-w-6xl mx-auto px-4 py-4">
+      {(activePet || user) && (
+        <div className="bg-white border-b border-stone-100">
+          <div className="max-w-6xl mx-auto px-4 py-4">
           
           {/* Layer 2: Care Needs - "What are you looking to support?" */}
           <div className="mb-4">
