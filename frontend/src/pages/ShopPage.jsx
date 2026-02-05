@@ -113,8 +113,10 @@ const IntelligentSearch = ({ petName, products, onSelectProduct }) => {
   // Filter products based on query
   useEffect(() => {
     if (query.trim().length < 2) {
-      setSuggestions([]);
-      setShowSuggestions(false);
+      if (suggestions.length > 0 || showSuggestions) {
+        setSuggestions([]);
+        setShowSuggestions(false);
+      }
       return;
     }
     
@@ -139,7 +141,7 @@ const IntelligentSearch = ({ petName, products, onSelectProduct }) => {
     
     setSuggestions(matches);
     setShowSuggestions(matches.length > 0);
-  }, [query, products]);
+  }, [query, products, suggestions.length, showSuggestions]);
   
   // Close on outside click
   useEffect(() => {
