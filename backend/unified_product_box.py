@@ -816,7 +816,7 @@ async def delete_product(product_id: str):
     if db is None:
         raise HTTPException(status_code=500, detail="Database not configured")
     
-    result = await db.unified_products.update_one(
+    result = await db.products_master.update_one(
         {"id": product_id},
         {"$set": {
             "visibility.status": "archived",
