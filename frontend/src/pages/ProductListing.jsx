@@ -423,7 +423,7 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
               <div className="flex-1">
                 <div className="flex items-center gap-2 mb-1">
                   <Sparkles className="w-4 h-4 text-purple-500" />
-                  <span className="text-xs font-medium text-purple-600">Mira understands</span>
+                  <span className="text-xs font-medium text-purple-600">Mira knows {activePet.name}</span>
                 </div>
                 <h1 className="text-xl font-semibold text-stone-900">
                   {categoryInfo.title} for {activePet.name}
@@ -484,8 +484,8 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
             </div>
           </div>
         </div>
-      ) : (
-        /* Guest Experience */
+      ) : user ? (
+        /* Logged in but no pets - prompt to add */
         <div className="bg-white border-b border-stone-100">
           <div className="max-w-6xl mx-auto px-4 py-8">
             <div className="flex items-center gap-2 mb-2">
@@ -495,16 +495,65 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
             <h1 className="text-2xl font-semibold text-stone-900">{categoryInfo.title}</h1>
             <p className="text-stone-500 mt-1">{categoryInfo.desc}</p>
             
-            {!user && (
+            <Link 
+              to="/my-pets" 
+              className="inline-flex items-center gap-2 text-sm text-purple-600 hover:text-purple-700 mt-4 font-medium bg-purple-50 px-4 py-2 rounded-lg"
+            >
+              <PawPrint className="w-4 h-4" />
+              Add your pet for personalized recommendations
+              <ChevronRight className="w-4 h-4" />
+            </Link>
+          </div>
+        </div>
+      ) : (
+        /* NOT LOGGED IN - This is members only */
+        <div className="bg-gradient-to-b from-purple-50 to-white border-b border-stone-100">
+          <div className="max-w-6xl mx-auto px-4 py-12 text-center">
+            <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-4">
+              <Sparkles className="w-8 h-8 text-purple-500" />
+            </div>
+            <h1 className="text-2xl font-semibold text-stone-900 mb-2">Members-Only Experience</h1>
+            <p className="text-stone-600 max-w-md mx-auto mb-6">
+              Our shop is personalized for Pet Pass members. Mira learns your pet and proposes products tailored to their needs.
+            </p>
+            <div className="flex justify-center gap-3">
               <Link 
-                to="/login" 
-                className="inline-flex items-center gap-2 text-sm text-purple-600 hover:text-purple-700 mt-4 font-medium"
+                to="/membership" 
+                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all"
               >
                 <PawPrint className="w-4 h-4" />
-                Sign in for personalized recommendations
-                <ChevronRight className="w-4 h-4" />
+                Join Pet Pass
               </Link>
-            )}
+              <Link 
+                to="/login" 
+                className="inline-flex items-center gap-2 px-6 py-3 bg-white text-stone-700 font-medium rounded-lg border border-stone-200 hover:bg-stone-50 transition-all"
+              >
+                Sign In
+              </Link>
+            </div>
+            
+            {/* Preview of what members get */}
+            <div className="mt-8 p-6 bg-white rounded-xl border border-stone-200 max-w-lg mx-auto text-left">
+              <p className="text-sm font-medium text-stone-700 mb-3">What Pet Pass members get:</p>
+              <ul className="space-y-2 text-sm text-stone-600">
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-green-500" />
+                  Products filtered for your pet&apos;s allergies
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-green-500" />
+                  Life-stage appropriate recommendations
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-green-500" />
+                  Mira remembers preferences &amp; history
+                </li>
+                <li className="flex items-center gap-2">
+                  <Check className="w-4 h-4 text-green-500" />
+                  Expert help always available
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       )}
