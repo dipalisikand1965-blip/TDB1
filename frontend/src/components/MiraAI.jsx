@@ -1265,7 +1265,6 @@ const MiraAI = () => {
       >
         <MiraOrb 
           state={getOrbState()}
-          pillar={currentPillar}
           onClick={() => setIsOpen(true)}
           size="md"
         />
