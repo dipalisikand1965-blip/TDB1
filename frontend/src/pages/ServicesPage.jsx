@@ -540,7 +540,63 @@ const ServicesPage = () => {
   const filteredServices = useMemo(() => {
     let result = services;
     
-    if (selectedPillar !== 'all' && selectedPillar !== 'recommended') {
+    // "For You" / "recommended" - Personalize based on pet
+    if (selectedPillar === 'recommended' && selectedPet) {
+      const petBreedLower = (selectedPet.breed || '').toLowerCase();
+      const petSize = selectedPet.size?.toLowerCase() || '';
+      const petAge = selectedPet.age_years || 0;
+      
+      // Score services for relevance
+      result = result.map(s => {
+        let score = 0;
+        const sName = (s.name || '').toLowerCase();
+        const sDesc = (s.description || '').toLowerCase();
+        const combined = `${sName} ${sDesc}`;
+        
+        // Breed-specific whisper (highest priority)
+        if (s.breed_whispers) {
+          const breedKey = petBreedLower.replace(/\s+/g, '_');
+          if (s.breed_whispers[breedKey]) score += 60;
+          // Check partial matches
+          Object.keys(s.breed_whispers).forEach(key => {
+            if (petBreedLower.includes(key.replace(/_/g, ' '))) score += 40;
+          });
+        }
+        
+        // Breed match in name/description
+        if (petBreedLower) {
+          const breedWords = petBreedLower.split(/\s+/);
+          breedWords.forEach(word => {
+            if (word.length > 3 && combined.includes(word)) score += 30;
+          });
+          // Specific breed associations
+          if (petBreedLower.includes('retriever') && (combined.includes('swim') || combined.includes('active') || combined.includes('joint'))) score += 25;
+          if (petBreedLower.includes('shih') && (combined.includes('grooming') || combined.includes('small') || combined.includes('coat'))) score += 25;
+          if (petBreedLower.includes('lab') && (combined.includes('weight') || combined.includes('exercise') || combined.includes('active'))) score += 25;
+          if (petBreedLower.includes('pug') && (combined.includes('breathing') || combined.includes('flat') || combined.includes('brachycephalic'))) score += 25;
+        }
+        
+        // Size match
+        if (petSize) {
+          if (petSize.includes('small') && combined.includes('small')) score += 15;
+          if (petSize.includes('large') && combined.includes('large')) score += 15;
+        }
+        
+        // Age-appropriate
+        if (petAge < 1 && combined.includes('puppy')) score += 20;
+        if (petAge > 7 && (combined.includes('senior') || combined.includes('mobility'))) score += 20;
+        
+        // Boost services with whispers
+        if (s.mira_whisper) score += 5;
+        
+        return { ...s, _relevanceScore: score };
+      });
+      
+      // Sort by relevance, show top relevant + fallback
+      result = result
+        .sort((a, b) => b._relevanceScore - a._relevanceScore)
+        .filter(s => s._relevanceScore > 0 || result.indexOf(s) < 30);
+    } else if (selectedPillar !== 'all') {
       result = result.filter(s => {
         const servicePillars = s.pillars || [];
         return servicePillars.includes(selectedPillar) || s.pillar === selectedPillar;
@@ -564,7 +620,7 @@ const ServicesPage = () => {
     }
     
     return result;
-  }, [services, selectedPillar, selectedSubcat, searchQuery]);
+  }, [services, selectedPillar, selectedSubcat, searchQuery, selectedPet]);
   
   const displayedServices = useMemo(() => filteredServices.slice(0, displayCount), [filteredServices, displayCount]);
   const hasMore = displayCount < filteredServices.length;
