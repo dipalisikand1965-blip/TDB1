@@ -78,7 +78,36 @@ Build "The Doggy Company," a one-stop-shop concierge for dog parents with a focu
 - ✅ **Auto-applied filters**: Mira intelligently applies filters based on pet profile (allergies → Allergy-aware, anxiety → Calm moments, etc.)
 - ✅ **Visual indicators**: "Auto" badge on auto-applied filters, green highlight for Mira-applied filters
 
-#### 5. Navigation Update
+#### 5. Complete Filter UI/UX Redesign (Mobile + Desktop)
+
+**Mobile (Bottom Sheet)**
+- ✅ Full-width stacked cards (not 2-column grid)
+- ✅ Minimum 64px height touch targets
+- ✅ Bottom sheet opens at 70% height
+- ✅ Swipe-down handle to dismiss
+- ✅ "Apply" and "Reset to Bruno" footer actions
+- ✅ Inline auto-applied badges: "applied for Bruno"
+- ✅ Active scale animation on tap (0.98)
+- ✅ Summary chips in trigger bar showing applied filters
+
+**Desktop**
+- ✅ Single column vertical stack (not grid)
+- ✅ Hover reveal for subtext
+- ✅ Sticky filter bar after first scroll
+- ✅ Clickable chip row for applied filters with X to remove
+- ✅ "Reset to Bruno" clear action
+
+**Unified Shop Behavior**
+- ✅ Health/sensitivity filters persist across pillars (sensitive-stomach, allergy-friendly, calming, recovery)
+- ✅ Occasion-specific filters reset when leaving pillar
+- ✅ Soft transition toast: "Switching to [pillar] mode for Bruno. Adjusting recommendations."
+- ✅ Toast shows once per session (ref-tracked)
+
+**Internal Rule Implemented:**
+> Filters are not controls. They are reassurance tools.
+> If a filter ever feels like work, it's wrong.
+
+#### 6. Navigation Update
 - ✅ Changed "SERVICES" to "CARE" in bottom mobile navigation bar to align with Pet OS philosophy
 
 #### 5. Test User & Pet Created
