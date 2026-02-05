@@ -214,6 +214,7 @@ const VoiceOrder = lazy(() => import("./pages/VoiceOrder"));
 const NPSFeedbackPage = lazy(() => import("./pages/NPSFeedbackPage"));
 const UnifiedPetPage = lazy(() => import("./pages/UnifiedPetPage"));
 const ServicesPage = lazy(() => import("./pages/ServicesPage"));
+const ServiceDetailPage = lazy(() => import("./pages/ServiceDetailPage"));
 const MealPlanPage = lazy(() => import("./pages/MealPlanPage"));
 const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
 const MembershipPayment = lazy(() => import("./pages/MembershipPayment"));
