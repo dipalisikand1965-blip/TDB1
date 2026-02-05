@@ -64,6 +64,12 @@ const UnifiedProductBox = () => {
   const [showEditor, setShowEditor] = useState(false);
   const [saving, setSaving] = useState(false);
   
+  // Quick Edit States
+  const [quickEditProduct, setQuickEditProduct] = useState(null);
+  const [quickEditType, setQuickEditType] = useState(null); // 'image', 'price', 'pillars'
+  const [quickEditValue, setQuickEditValue] = useState(null);
+  const [quickSaving, setQuickSaving] = useState(false);
+  
   // Filters
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState('');
