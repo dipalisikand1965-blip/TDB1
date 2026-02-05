@@ -329,6 +329,28 @@ const ShopPage = () => {
     fetchProductsData();
   }, [searchQuery, selectedCategory, selectedParentCategory, selectedPillar, sortBy]);
 
+  // Fetch shop services
+  useEffect(() => {
+    const fetchServicesData = async () => {
+      try {
+        let url = `${API_URL}/api/service-box/services?pillar=shop&limit=50`;
+        if (searchQuery && searchQuery.trim()) {
+          url += `&search=${encodeURIComponent(searchQuery.trim())}`;
+        }
+        
+        const res = await fetch(url);
+        if (res.ok) {
+          const data = await res.json();
+          setServices(data.services || []);
+        }
+      } catch (err) {
+        console.error('Failed to fetch services:', err);
+      }
+    };
+    
+    fetchServicesData();
+  }, [searchQuery]);
+
   // Fetch user's pets for recommendations
   useEffect(() => {
     if (token) {
