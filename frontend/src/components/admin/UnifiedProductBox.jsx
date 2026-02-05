@@ -1,6 +1,7 @@
 /**
  * Unified Product Box - Admin Component
  * The single source of truth for all products, rewards, and experiences
+ * Enhanced with comprehensive 6-tab editor
  */
 import React, { useState, useEffect, useCallback } from 'react';
 import { Card } from '../ui/card';
@@ -17,10 +18,12 @@ import {
   Gift, Eye, EyeOff, Tag, DollarSign, Shield, Bot, Truck,
   AlertTriangle, Check, ChevronDown, ChevronRight, RefreshCw,
   PawPrint, Heart, Sparkles, ShoppingBag, Loader2, BarChart3,
-  Download, Image, ImagePlus
+  Download, Image, ImagePlus, Upload
 } from 'lucide-react';
 import { API_URL } from '../../utils/api';
 import { toast } from '../../hooks/use-toast';
+import ProductBoxEditor from './ProductBoxEditor';
+import { ALL_PILLARS, DEFAULT_PRODUCT, LIFE_STAGES, SIZE_OPTIONS, OCCASIONS, MAIN_CATEGORIES } from './ProductBoxConfig';
 
 // All pillars - THE 14 PILLARS
 const ALL_PILLARS = [
