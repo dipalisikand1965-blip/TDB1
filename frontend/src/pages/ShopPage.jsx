@@ -829,11 +829,12 @@ const ShopPage = () => {
               {selectedSubcat && ` › ${selectedSubcat}`}
             </h2>
             
-            <div className="flex gap-2">
+            {/* Toggle Buttons - Mobile optimized */}
+            <div className="flex gap-1.5 sm:gap-2">
               <Button
                 onClick={() => setActiveView('products')}
                 variant={activeView === 'products' ? 'default' : 'outline'}
-                className={`text-sm ${activeView === 'products' ? 'bg-[#2D2D2D] text-white' : 'border-gray-200'}`}
+                className={`text-xs sm:text-sm px-3 sm:px-4 py-2 ${activeView === 'products' ? 'bg-[#2D2D2D] text-white' : 'border-gray-200'}`}
                 data-testid="tab-products"
               >
                 Products
@@ -841,7 +842,7 @@ const ShopPage = () => {
               <Button
                 onClick={() => setActiveView('services')}
                 variant={activeView === 'services' ? 'default' : 'outline'}
-                className={`text-sm ${activeView === 'services' ? 'bg-[#2D2D2D] text-white' : 'border-gray-200'}`}
+                className={`text-xs sm:text-sm px-3 sm:px-4 py-2 ${activeView === 'services' ? 'bg-[#2D2D2D] text-white' : 'border-gray-200'}`}
                 data-testid="tab-services"
               >
                 Services
@@ -853,40 +854,40 @@ const ShopPage = () => {
           {activeView === 'products' && (
             <>
               {loading ? (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4 md:gap-6">
                   {[...Array(8)].map((_, i) => (
-                    <div key={i} className="animate-pulse bg-gray-100 rounded-2xl">
-                      <div className="aspect-square bg-gray-200 rounded-t-2xl"></div>
-                      <div className="p-4"><div className="h-4 bg-gray-200 rounded w-3/4"></div></div>
+                    <div key={i} className="animate-pulse bg-gray-100 rounded-xl sm:rounded-2xl">
+                      <div className="aspect-square bg-gray-200 rounded-t-xl sm:rounded-t-2xl"></div>
+                      <div className="p-3 sm:p-4"><div className="h-4 bg-gray-200 rounded w-3/4"></div></div>
                     </div>
                   ))}
                 </div>
               ) : displayedProducts.length === 0 ? (
-                <div className="text-center py-16">
-                  <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-[#2D2D2D] mb-2">No products found</h3>
-                  <p className="text-[#9B9B9B] mb-4">Try selecting a different category</p>
-                  <Button onClick={() => { setSelectedPillar('all'); setSelectedSubcat(null); }} variant="outline">
+                <div className="text-center py-12 sm:py-16 px-4">
+                  <Package className="w-12 h-12 sm:w-16 sm:h-16 text-gray-300 mx-auto mb-3 sm:mb-4" />
+                  <h3 className="text-lg sm:text-xl font-semibold text-[#2D2D2D] mb-2">No products found</h3>
+                  <p className="text-sm sm:text-base text-[#9B9B9B] mb-4">Try selecting a different category</p>
+                  <Button onClick={() => { setSelectedPillar('all'); setSelectedSubcat(null); }} variant="outline" className="text-sm">
                     View All
                   </Button>
                 </div>
               ) : (
                 <>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4 md:gap-6">
                     {displayedProducts.map(product => (
                       <ProductCard key={product.id} product={product} petName={petName} isPetPick={false} />
                     ))}
                   </div>
                   
                   {hasMore && (
-                    <div className="text-center mt-8">
+                    <div className="text-center mt-6 sm:mt-8">
                       <Button
                         onClick={handleLoadMore}
                         variant="outline"
-                        className="px-8 py-3 text-base border-[#2D2D2D] text-[#2D2D2D] hover:bg-[#2D2D2D] hover:text-white"
+                        className="px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base border-[#2D2D2D] text-[#2D2D2D] hover:bg-[#2D2D2D] hover:text-white active:scale-95 transition-all"
                         data-testid="load-more-btn"
                       >
-                        <ChevronDown className="w-5 h-5 mr-2" />
+                        <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2" />
                         Load More
                       </Button>
                     </div>
