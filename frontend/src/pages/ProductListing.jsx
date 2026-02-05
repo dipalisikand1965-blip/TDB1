@@ -14,12 +14,13 @@
  * What we DON'T show prominently: Price, Brand, Pack size, Discounts
  */
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useSearchParams, useLocation, Link } from 'react-router-dom';
 import { 
   PawPrint, Heart, Shield, Sparkles, ChevronDown, ChevronRight,
   AlertTriangle, Check, MessageCircle, Loader2, X, Info,
-  Activity, Leaf, Droplets, Bone, Brain, HeartPulse, Baby
+  Activity, Leaf, Droplets, Bone, Brain, HeartPulse, Baby,
+  SlidersHorizontal, RotateCcw
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { API_URL, getApiUrl } from '../utils/api';
