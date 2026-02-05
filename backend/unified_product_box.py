@@ -1678,3 +1678,225 @@ async def auto_enable_rewards(
         "message": f"Enabled rewards for {updated_count} products ({percentage}%)",
         "updated_count": updated_count
     }
+
+
+# ==================== CSV EXPORT ====================
+
+@product_box_router.get("/export/csv")
+async def export_products_csv(
+    pillar: Optional[str] = None,
+    category: Optional[str] = None,
+    include_all_fields: bool = Query(default=False, description="Include all schema fields")
+):
+    """
+    Export products to CSV with comprehensive schema fields.
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    query = {}
+    if pillar:
+        query["$or"] = [
+            {"primary_pillar": pillar},
+            {"pillars": pillar},
+            {"pillars_occasions.pillar.primary_pillar": pillar}
+        ]
+    if category:
+        query["$or"] = query.get("$or", []) + [
+            {"category": category},
+            {"commerce_ops.category": category}
+        ]
+    
+    products = await db.products_master.find(query, {"_id": 0}).to_list(length=10000)
+    
+    # Define CSV columns
+    basic_columns = [
+        'id', 'sku', 'name', 'brand', 'product_type', 
+        'primary_pillar', 'pillars', 'category', 'subcategory',
+        'mrp', 'selling_price', 'cost_price', 'margin_band',
+        'inventory_status', 'in_stock', 'is_bakery_product',
+        'mira_recommendable', 'mira_hint',
+        'life_stages', 'size_options', 'applicable_breeds',
+        'occasions', 'use_case_tags',
+        'image', 'tags'
+    ]
+    
+    all_columns = basic_columns + [
+        'short_description', 'long_description',
+        'gst_rate', 'hsn_code', 'delivery_type',
+        'returnable', 'cold_chain_required', 'fragile',
+        'available_cities', 'quality_tier', 'approval_status',
+        'allergy_aware', 'common_avoids', 'material_safety_flags',
+        'energy_level_match', 'chew_strength', 'play_types',
+        'coat_type_match', 'brachycephalic_friendly', 'senior_friendly',
+        'is_giftable', 'subscription_friendly', 'travel_friendly',
+        'breed_metadata', 'intelligent_tags'
+    ]
+    
+    columns = all_columns if include_all_fields else basic_columns
+    
+    # Create CSV in memory
+    output = io.StringIO()
+    writer = csv.DictWriter(output, fieldnames=columns, extrasaction='ignore')
+    writer.writeheader()
+    
+    for product in products:
+        row = {}
+        for col in columns:
+            # Handle nested fields
+            if col == 'mrp':
+                row[col] = product.get('mrp') or product.get('commerce_ops', {}).get('pricing', {}).get('mrp', 0)
+            elif col == 'selling_price':
+                row[col] = product.get('price') or product.get('commerce_ops', {}).get('pricing', {}).get('selling_price', 0)
+            elif col == 'cost_price':
+                row[col] = product.get('commerce_ops', {}).get('pricing', {}).get('cost_price', '')
+            elif col == 'margin_band':
+                row[col] = product.get('commerce_ops', {}).get('pricing', {}).get('margin_band', '')
+            elif col == 'inventory_status':
+                row[col] = product.get('commerce_ops', {}).get('inventory', {}).get('inventory_status', 'in_stock')
+            elif col == 'mira_recommendable':
+                row[col] = product.get('mira_ai', {}).get('mira', {}).get('mira_recommendable', True)
+            elif col == 'mira_hint':
+                row[col] = product.get('mira_hint') or product.get('mira_ai', {}).get('ai_enrichment', {}).get('mira_hint', '')
+            elif col == 'life_stages':
+                stages = product.get('suitability', {}).get('pet_filters', {}).get('life_stages', [])
+                row[col] = ','.join(stages) if isinstance(stages, list) else stages
+            elif col == 'size_options':
+                sizes = product.get('suitability', {}).get('pet_filters', {}).get('size_options', [])
+                row[col] = ','.join(sizes) if isinstance(sizes, list) else sizes
+            elif col == 'applicable_breeds':
+                breeds = product.get('suitability', {}).get('pet_filters', {}).get('applicable_breeds', [])
+                row[col] = ','.join(breeds) if isinstance(breeds, list) else breeds
+            elif col == 'occasions':
+                occasions = product.get('pillars_occasions', {}).get('occasion', {}).get('occasions', [])
+                row[col] = ','.join(occasions) if isinstance(occasions, list) else occasions
+            elif col == 'use_case_tags':
+                tags = product.get('pillars_occasions', {}).get('use_case', {}).get('use_case_tags', [])
+                row[col] = ','.join(tags) if isinstance(tags, list) else tags
+            elif col == 'pillars':
+                pillars = product.get('pillars', [])
+                row[col] = ','.join(pillars) if isinstance(pillars, list) else pillars
+            elif col == 'tags':
+                tags = product.get('tags', [])
+                row[col] = ','.join(tags) if isinstance(tags, list) else tags
+            elif col == 'image':
+                row[col] = product.get('image') or product.get('media', {}).get('primary_image', '')
+            elif col == 'breed_metadata':
+                bm = product.get('breed_metadata') or product.get('mira_ai', {}).get('ai_enrichment', {}).get('breed_metadata')
+                row[col] = str(bm) if bm else ''
+            elif col == 'intelligent_tags':
+                it = product.get('intelligent_tags', []) or product.get('mira_ai', {}).get('ai_enrichment', {}).get('intelligent_tags', [])
+                row[col] = ','.join(it) if isinstance(it, list) else it
+            elif col == 'available_cities':
+                cities = product.get('commerce_ops', {}).get('fulfillment', {}).get('available_cities', [])
+                row[col] = ','.join(cities) if isinstance(cities, list) else cities
+            elif col == 'common_avoids':
+                avoids = product.get('suitability', {}).get('safety', {}).get('common_avoids', [])
+                row[col] = ','.join(avoids) if isinstance(avoids, list) else avoids
+            elif col == 'material_safety_flags':
+                flags = product.get('suitability', {}).get('safety', {}).get('material_safety_flags', [])
+                row[col] = ','.join(flags) if isinstance(flags, list) else flags
+            elif col == 'energy_level_match':
+                energy = product.get('suitability', {}).get('behavior', {}).get('energy_level_match', [])
+                row[col] = ','.join(energy) if isinstance(energy, list) else energy
+            elif col == 'chew_strength':
+                row[col] = product.get('suitability', {}).get('behavior', {}).get('chew_strength', '')
+            elif col == 'play_types':
+                play = product.get('suitability', {}).get('behavior', {}).get('play_types', [])
+                row[col] = ','.join(play) if isinstance(play, list) else play
+            elif col == 'coat_type_match':
+                coat = product.get('suitability', {}).get('physical_traits', {}).get('coat_type_match', [])
+                row[col] = ','.join(coat) if isinstance(coat, list) else coat
+            elif col == 'brachycephalic_friendly':
+                row[col] = product.get('suitability', {}).get('physical_traits', {}).get('brachycephalic_friendly', True)
+            elif col == 'senior_friendly':
+                row[col] = product.get('suitability', {}).get('physical_traits', {}).get('senior_friendly', True)
+            elif col == 'allergy_aware':
+                row[col] = product.get('suitability', {}).get('safety', {}).get('allergy_aware', False)
+            elif col == 'is_giftable':
+                row[col] = product.get('pillars_occasions', {}).get('use_case', {}).get('is_giftable', False)
+            elif col == 'subscription_friendly':
+                row[col] = product.get('pillars_occasions', {}).get('use_case', {}).get('subscription_friendly', False)
+            elif col == 'travel_friendly':
+                row[col] = product.get('pillars_occasions', {}).get('use_case', {}).get('travel_friendly', False)
+            elif col == 'gst_rate':
+                row[col] = product.get('commerce_ops', {}).get('pricing', {}).get('gst_rate', 18)
+            elif col == 'hsn_code':
+                row[col] = product.get('commerce_ops', {}).get('pricing', {}).get('hsn_code', '')
+            elif col == 'delivery_type':
+                row[col] = product.get('commerce_ops', {}).get('fulfillment', {}).get('delivery_type', 'ship')
+            elif col == 'returnable':
+                row[col] = product.get('commerce_ops', {}).get('fulfillment', {}).get('returnable', True)
+            elif col == 'cold_chain_required':
+                row[col] = product.get('commerce_ops', {}).get('fulfillment', {}).get('cold_chain_required', False)
+            elif col == 'fragile':
+                row[col] = product.get('commerce_ops', {}).get('fulfillment', {}).get('fragile', False)
+            elif col == 'quality_tier':
+                row[col] = product.get('commerce_ops', {}).get('quality_tier', 'standard')
+            elif col == 'approval_status':
+                row[col] = product.get('commerce_ops', {}).get('approval_status', 'live')
+            elif col == 'short_description':
+                row[col] = product.get('basics', {}).get('short_description', '') or product.get('short_description', '')
+            elif col == 'long_description':
+                row[col] = product.get('basics', {}).get('long_description', '') or product.get('description', '')
+            else:
+                row[col] = product.get(col, '')
+        
+        writer.writerow(row)
+    
+    output.seek(0)
+    
+    filename = f"products_export_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+    
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv",
+        headers={"Content-Disposition": f"attachment; filename={filename}"}
+    )
+
+
+@product_box_router.get("/stats/comprehensive")
+async def get_comprehensive_stats():
+    """Get comprehensive statistics about the product catalog."""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not initialized")
+    
+    total = await db.products_master.count_documents({})
+    
+    # By pillar
+    pillar_pipeline = [
+        {"$group": {"_id": "$primary_pillar", "count": {"$sum": 1}}}
+    ]
+    pillar_stats = {doc["_id"]: doc["count"] for doc in await db.products_master.aggregate(pillar_pipeline).to_list(None) if doc["_id"]}
+    
+    # By category
+    category_pipeline = [
+        {"$group": {"_id": "$category", "count": {"$sum": 1}}}
+    ]
+    category_stats = {doc["_id"]: doc["count"] for doc in await db.products_master.aggregate(category_pipeline).to_list(None) if doc["_id"]}
+    
+    # Intelligence stats
+    with_mira_hint = await db.products_master.count_documents({"mira_hint": {"$exists": True, "$ne": ""}})
+    with_breed_metadata = await db.products_master.count_documents({"breed_metadata": {"$exists": True}})
+    bakery_products = await db.products_master.count_documents({"is_bakery_product": True})
+    
+    # Schema v2 stats
+    enhanced_v2 = await db.products_master.count_documents({"_schema_version": "2.0"})
+    
+    return {
+        "total_products": total,
+        "by_pillar": pillar_stats,
+        "by_category": dict(sorted(category_stats.items(), key=lambda x: x[1], reverse=True)[:15]),
+        "intelligence": {
+            "with_mira_hint": with_mira_hint,
+            "with_breed_metadata": with_breed_metadata,
+            "bakery_products": bakery_products,
+            "enhanced_v2_schema": enhanced_v2
+        },
+        "data_quality": {
+            "mira_hint_coverage": f"{(with_mira_hint/total*100):.1f}%" if total > 0 else "0%",
+            "breed_data_coverage": f"{(with_breed_metadata/total*100):.1f}%" if total > 0 else "0%",
+            "v2_schema_coverage": f"{(enhanced_v2/total*100):.1f}%" if total > 0 else "0%"
+        }
+    }
+
