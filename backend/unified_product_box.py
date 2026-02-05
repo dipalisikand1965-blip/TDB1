@@ -695,21 +695,12 @@ async def get_all_products(
         else:
             query.update(search_query)
     
-    # Execute query - check both products and unified_products collections
-    products = await db.unified_products.find(
+    # Execute query from products_master (single source of truth)
+    products = await db.products_master.find(
         query, {"_id": 0}
     ).skip(skip).limit(limit).to_list(limit)
     
-    # If no results from unified_products, try products collection
-    if not products:
-        products_query = query.copy()
-        products = await db.products.find(
-            products_query, {"_id": 0}
-        ).skip(skip).limit(limit).to_list(limit)
-    
-    total = await db.unified_products.count_documents(query)
-    if total == 0:
-        total = await db.products.count_documents(query)
+    total = await db.products_master.count_documents(query)
     
     return {
         "products": products,
