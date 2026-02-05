@@ -696,7 +696,7 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
               </div>
               <div className="flex-1">
                 <p className="text-sm text-purple-900 font-medium mb-1">
-                  Mira noticed you're looking for {careFilters.includes('calming') ? 'calming support' : 'digestive care'}
+                  Mira noticed you&apos;re looking for {careFilters.includes('calming') ? 'calming support' : 'digestive care'}
                 </p>
                 <p className="text-sm text-purple-700 mb-4">
                   {careFilters.includes('calming') 
@@ -721,7 +721,7 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
         {/* Help Section */}
         <div className="mt-12 p-6 bg-white rounded-xl border border-stone-200" data-testid="help-section">
           <div className="text-center">
-            <p className="text-stone-600 mb-1">Not sure what's right for {activePet?.name || 'your pet'}?</p>
+            <p className="text-stone-600 mb-1">Not sure what&apos;s right for {activePet?.name || 'your pet'}?</p>
             <p className="text-sm text-stone-500 mb-4">Our pet experts can help you choose.</p>
             <div className="flex justify-center gap-3">
               <Button variant="outline" className="text-sm">
