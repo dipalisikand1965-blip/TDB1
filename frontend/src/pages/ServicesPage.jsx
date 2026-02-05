@@ -891,6 +891,7 @@ const ServicesPage = () => {
                     service={service} 
                     pet={selectedPet}
                     index={idx}
+                    showWhyPicked={selectedPillar === 'recommended' && selectedPet && service._relevanceScore > 0}
                   />
                 ))}
               </div>
