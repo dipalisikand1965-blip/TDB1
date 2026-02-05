@@ -1,16 +1,14 @@
 /**
  * PetOSWrapper - The Operating System Frame
  * 
- * This component owns the Pet OS chrome layer:
- * - Non-member hero + Mira explanation + CTAs
- * - Member header ("Mira knows [PetName]")
- * - "Handled by Mira" badge component
- * - Mira contextual strip container
+ * This module provides Pet OS chrome components:
+ * - NonMemberGate: Shows when user isn't logged in (can be full page or inline)
+ * - MemberIdentity: Pet header for logged-in users
+ * - HandledByMiraBadge: Service badge
+ * - MiraContextStrip: Contextual note from Mira
  * 
- * It does NOT own:
- * - Support filter definitions (page-specific)
- * - Pillar-specific copy/tone
- * - Service/product orchestration logic
+ * Usage:
+ *   import { NonMemberGate, MemberIdentity, HandledByMiraBadge } from '../components/PetOSWrapper';
  * 
  * Wrapper = operating system frame
  * Page = lived experience
@@ -25,7 +23,7 @@ import { API_URL } from '../utils/api';
 // ============================================
 // PILLAR CONFIGURATION
 // ============================================
-const PILLAR_CONFIG = {
+export const PILLAR_CONFIG = {
   celebrate: { 
     name: 'Celebrate', 
     emoji: '🎂', 
@@ -115,26 +113,26 @@ const PILLAR_CONFIG = {
 // ============================================
 // LIFE STAGES (for identity pills)
 // ============================================
-const LIFE_STAGES = {
+export const LIFE_STAGES = {
   puppy: { label: 'Puppy', icon: '🐶' },
   adult: { label: 'Adult', icon: '🐕' },
   senior: { label: 'Senior', icon: '🦮' },
 };
 
-const SIZE_CATEGORIES = {
+export const SIZE_CATEGORIES = {
   small: { label: 'Small', weight: '<10kg' },
   medium: { label: 'Medium', weight: '10-25kg' },
   large: { label: 'Large', weight: '25kg+' },
 };
 
 // Helper functions
-const getLifeStageFromAge = (age) => {
+export const getLifeStageFromAge = (age) => {
   if (age <= 1) return 'puppy';
   if (age >= 7) return 'senior';
   return 'adult';
 };
 
-const getSizeFromWeight = (weight) => {
+export const getSizeFromWeight = (weight) => {
   if (weight < 10) return 'small';
   if (weight <= 25) return 'medium';
   return 'large';
@@ -144,7 +142,6 @@ const getSizeFromWeight = (weight) => {
 // HANDLED BY MIRA BADGE
 // ============================================
 export const HandledByMiraBadge = ({ 
-  service, 
   petName,
   variant = 'default', // default, subtle, prominent
   onClick 
@@ -152,13 +149,13 @@ export const HandledByMiraBadge = ({
   const variants = {
     default: 'bg-purple-50 text-purple-600 border-purple-100',
     subtle: 'bg-stone-50 text-stone-500 border-stone-100',
-    prominent: 'bg-gradient-to-r from-purple-500 to-pink-500 text-white border-transparent',
+    prominent: 'bg-gradient-to-r from-purple-500 to-pink-500 text-white border-transparent shadow-lg',
   };
   
   return (
     <button
       onClick={onClick}
-      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all hover:opacity-80 ${variants[variant]}`}
+      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all hover:scale-105 ${variants[variant]}`}
       data-testid="handled-by-mira-badge"
     >
       <Sparkles className="w-3 h-3" />
@@ -172,17 +169,14 @@ export const HandledByMiraBadge = ({
 // ============================================
 export const MiraContextStrip = ({ 
   children, 
-  pillar,
-  petName,
-  show = true 
+  show = true,
+  className = ''
 }) => {
   if (!show || !children) return null;
   
-  const config = PILLAR_CONFIG[pillar] || PILLAR_CONFIG.celebrate;
-  
   return (
     <div 
-      className="mb-6 p-5 bg-gradient-to-r from-purple-50/50 to-transparent rounded-2xl border border-purple-100/20" 
+      className={`p-5 bg-gradient-to-r from-purple-50/50 to-transparent rounded-2xl border border-purple-100/20 ${className}`}
       data-testid="mira-context-strip"
     >
       <div className="flex items-start gap-4">
@@ -201,26 +195,63 @@ export const MiraContextStrip = ({
 };
 
 // ============================================
-// NON-MEMBER HERO
+// NON-MEMBER GATE (Inline or Full)
 // ============================================
-const NonMemberHero = ({ pillar }) => {
+export const NonMemberGate = ({ 
+  pillar = 'celebrate',
+  variant = 'full', // 'full' = standalone page, 'inline' = embedded section
+  className = ''
+}) => {
   const config = PILLAR_CONFIG[pillar] || PILLAR_CONFIG.celebrate;
   
+  if (variant === 'inline') {
+    // Compact inline version for embedding in existing pages
+    return (
+      <div className={`bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-100/50 ${className}`} data-testid="pet-os-non-member-inline">
+        <div className="flex items-start gap-4">
+          <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center flex-shrink-0 shadow-sm">
+            <Sparkles className="w-6 h-6 text-purple-500" />
+          </div>
+          <div className="flex-1">
+            <h3 className="font-semibold text-stone-800 mb-1">Personalised for Your Pet</h3>
+            <p className="text-sm text-stone-500 mb-4">
+              Mira can help with {config.miraGreeting} once she knows your pet.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Link 
+                to="/membership" 
+                className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm font-medium rounded-lg hover:from-purple-700 hover:to-pink-700 transition-all"
+              >
+                <PawPrint className="w-4 h-4" />
+                Set up your pet
+              </Link>
+              <Link 
+                to="/login" 
+                className="inline-flex items-center gap-2 px-4 py-2 text-stone-500 text-sm font-medium hover:text-stone-700 transition-all"
+              >
+                Sign in
+                <ChevronRight className="w-4 h-4" />
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
+  // Full standalone version
   return (
-    <div className="bg-gradient-to-b from-purple-50 to-white border-b border-stone-100" data-testid="pet-os-non-member">
+    <div className={`bg-gradient-to-b from-purple-50 to-white border-b border-stone-100 ${className}`} data-testid="pet-os-non-member">
       <div className="max-w-6xl mx-auto px-4 py-14 text-center">
         <div className="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center mx-auto mb-5">
           <Sparkles className="w-8 h-8 text-purple-500" />
         </div>
         <h1 className="text-2xl font-semibold text-stone-900 mb-3">Personalised for Your Pet</h1>
         
-        {/* Micro-line */}
         <p className="text-xs text-stone-400/80 mb-6">No spam. No upselling. Just thoughtful care.</p>
         
-        {/* Visual separator */}
         <div className="w-12 h-px bg-stone-200 mx-auto mb-6"></div>
         
-        {/* Supporting line */}
         <div className="text-stone-600 max-w-md mx-auto mb-8 space-y-2">
           <p className="font-medium text-stone-700">Mira works best once she understands your pet.</p>
           <p className="text-sm text-stone-500 leading-relaxed">
@@ -228,7 +259,6 @@ const NonMemberHero = ({ pillar }) => {
           </p>
         </div>
         
-        {/* CTAs */}
         <div className="flex flex-col sm:flex-row justify-center gap-4 items-center">
           <div className="flex flex-col items-center">
             <Link 
@@ -251,10 +281,8 @@ const NonMemberHero = ({ pillar }) => {
           </Link>
         </div>
         
-        {/* Privacy reassurance */}
         <p className="text-[11px] text-stone-300 mt-5">Your pet&apos;s information is used only to improve care. Never shared.</p>
         
-        {/* Benefits card */}
         <div className="mt-10 p-6 bg-white rounded-xl border border-stone-100 max-w-lg mx-auto text-left shadow-sm">
           <p className="text-sm font-medium text-stone-700 mb-4">Once Mira knows your pet, you&apos;ll notice:</p>
           <ul className="space-y-3 text-sm text-stone-600">
@@ -277,7 +305,6 @@ const NonMemberHero = ({ pillar }) => {
           </ul>
         </div>
         
-        {/* Grounding line */}
         <p className="text-sm text-stone-400 mt-6">
           You can explore freely — Mira simply helps make things easier.
         </p>
@@ -287,18 +314,22 @@ const NonMemberHero = ({ pillar }) => {
 };
 
 // ============================================
-// MEMBER HEADER
+// MEMBER IDENTITY HEADER
 // ============================================
-const MemberHeader = ({ 
+export const MemberIdentity = ({ 
   activePet, 
-  userPets, 
+  userPets = [], 
   onPetChange,
-  pillar,
+  pillar = 'celebrate',
   title,
-  miraContext 
+  subtitle,
+  miraContext,
+  className = ''
 }) => {
   const [showPetSelector, setShowPetSelector] = useState(false);
   const config = PILLAR_CONFIG[pillar] || PILLAR_CONFIG.celebrate;
+  
+  if (!activePet) return null;
   
   // Calculate identity
   const ageYears = activePet?.age_years || activePet?.age || 3;
@@ -307,45 +338,45 @@ const MemberHeader = ({
   const size = getSizeFromWeight(weightKg);
   
   return (
-    <div className="bg-white border-b border-stone-100" data-testid="pet-os-member-header">
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="flex items-start gap-5">
+    <div className={`bg-white border-b border-stone-100 ${className}`} data-testid="pet-os-member-identity">
+      <div className="max-w-6xl mx-auto px-4 py-6">
+        <div className="flex items-start gap-4">
           {/* Pet Avatar */}
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center overflow-hidden flex-shrink-0 border border-purple-100/50">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center overflow-hidden flex-shrink-0 border border-purple-100/50">
             {activePet?.photo_url ? (
               <img src={activePet.photo_url} alt={activePet.name} className="w-full h-full object-cover" />
             ) : (
-              <span className="text-2xl">{activePet?.name?.charAt(0) || '🐕'}</span>
+              <span className="text-xl">{activePet?.name?.charAt(0) || '🐕'}</span>
             )}
           </div>
           
-          {/* Mira's Understanding */}
+          {/* Identity */}
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-1.5 mb-2">
+            <div className="flex items-center gap-1.5 mb-1">
               <Sparkles className="w-3.5 h-3.5 text-purple-400" />
               <span className="text-xs text-purple-500">Mira knows {activePet?.name}</span>
             </div>
-            <h1 className="text-xl font-semibold text-stone-800 mb-3">
+            <h2 className="text-lg font-semibold text-stone-800 mb-2">
               {title || `${config.name} for ${activePet?.name}`}
-            </h1>
+            </h2>
             
-            {/* Identity Pills */}
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-purple-700 bg-purple-50 border border-purple-100">
+            {/* Identity Pills - Compact */}
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-[11px] font-medium text-purple-700 bg-purple-50">
                 {LIFE_STAGES[lifeStage]?.icon} {LIFE_STAGES[lifeStage]?.label}
               </span>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-stone-600 bg-stone-50 border border-stone-100">
-                {SIZE_CATEGORIES[size]?.label} breed
+              <span className="inline-flex items-center px-2 py-1 rounded-md text-[11px] font-medium text-stone-600 bg-stone-100">
+                {SIZE_CATEGORIES[size]?.label}
               </span>
               {activePet?.breed && (
-                <span className="text-xs text-stone-400">{activePet.breed}</span>
+                <span className="text-[11px] text-stone-400">{activePet.breed}</span>
               )}
             </div>
             
-            {/* Mira Context */}
+            {/* Mira Context - inline */}
             {miraContext && (
-              <p className="text-xs text-stone-400 mt-4 flex items-center gap-1.5">
-                <Shield className="w-3.5 h-3.5 text-amber-400" />
+              <p className="text-xs text-stone-400 mt-2 flex items-center gap-1">
+                <Shield className="w-3 h-3 text-amber-400" />
                 {miraContext}
               </p>
             )}
@@ -361,7 +392,7 @@ const MemberHeader = ({
                 Switch <ChevronDown className="w-3 h-3" />
               </button>
               {showPetSelector && (
-                <div className="absolute right-0 top-6 bg-white rounded-xl shadow-lg border border-stone-100 py-2 min-w-[150px] z-20">
+                <div className="absolute right-0 top-6 bg-white rounded-xl shadow-lg border border-stone-100 py-2 min-w-[140px] z-20">
                   {userPets.map(pet => (
                     <button
                       key={pet.id || pet._id}
@@ -369,9 +400,9 @@ const MemberHeader = ({
                         onPetChange?.(pet); 
                         setShowPetSelector(false); 
                       }}
-                      className="w-full px-4 py-2.5 text-left text-sm hover:bg-stone-50 flex items-center gap-2 text-stone-600"
+                      className="w-full px-3 py-2 text-left text-sm hover:bg-stone-50 flex items-center gap-2 text-stone-600"
                     >
-                      <span className="text-base">{pet.name?.charAt(0) || '🐕'}</span>
+                      <span>{pet.name?.charAt(0) || '🐕'}</span>
                       {pet.name}
                     </button>
                   ))}
@@ -386,22 +417,14 @@ const MemberHeader = ({
 };
 
 // ============================================
-// MAIN WRAPPER COMPONENT
+// CUSTOM HOOK: usePetOS
 // ============================================
-const PetOSWrapper = ({ 
-  children, 
-  pillar = 'celebrate',
-  title,
-  miraContext,
-  showNonMemberHero = true,
-  showMemberHeader = true,
-}) => {
+export const usePetOS = () => {
   const { user, token } = useAuth();
   const [userPets, setUserPets] = useState([]);
   const [activePet, setActivePet] = useState(null);
   const [loading, setLoading] = useState(true);
   
-  // Fetch user's pets
   useEffect(() => {
     const fetchPets = async () => {
       if (!user || !token) {
@@ -423,7 +446,7 @@ const PetOSWrapper = ({
           }
         }
       } catch (error) {
-        console.error('[PetOSWrapper] Error fetching pets:', error);
+        console.error('[usePetOS] Error fetching pets:', error);
       } finally {
         setLoading(false);
       }
@@ -432,48 +455,61 @@ const PetOSWrapper = ({
     fetchPets();
   }, [user, token]);
   
-  // Loading state
+  return {
+    user,
+    isLoggedIn: !!user,
+    userPets,
+    activePet,
+    setActivePet,
+    loading,
+    hasPets: userPets.length > 0,
+  };
+};
+
+// ============================================
+// MAIN WRAPPER COMPONENT (for simple use cases)
+// ============================================
+const PetOSWrapper = ({ 
+  children, 
+  pillar = 'celebrate',
+  title,
+  showNonMemberGate = true,
+}) => {
+  const { user, isLoggedIn, userPets, activePet, setActivePet, loading } = usePetOS();
+  
   if (loading) {
     return (
-      <div className="min-h-screen bg-stone-50 flex items-center justify-center">
-        <div className="w-12 h-12 rounded-full bg-purple-100 animate-pulse flex items-center justify-center">
-          <Sparkles className="w-6 h-6 text-purple-400" />
+      <div className="flex items-center justify-center py-12">
+        <div className="w-10 h-10 rounded-full bg-purple-100 animate-pulse flex items-center justify-center">
+          <Sparkles className="w-5 h-5 text-purple-400" />
         </div>
       </div>
     );
   }
   
-  // Non-member view
-  if (!user && showNonMemberHero) {
-    return <NonMemberHero pillar={pillar} />;
+  // Non-member: show gate if enabled
+  if (!isLoggedIn && showNonMemberGate) {
+    return <NonMemberGate pillar={pillar} variant="full" />;
   }
   
-  // Member view
+  // Member: render children with context
   return (
-    <div className="min-h-screen bg-stone-50" data-testid="pet-os-wrapper">
-      {/* Member Header */}
-      {showMemberHeader && activePet && (
-        <MemberHeader
+    <>
+      {activePet && (
+        <MemberIdentity
           activePet={activePet}
           userPets={userPets}
           onPetChange={setActivePet}
           pillar={pillar}
           title={title}
-          miraContext={miraContext}
         />
       )}
-      
-      {/* Page Content - receives activePet via render prop or context */}
-      <div className="max-w-6xl mx-auto px-4 py-6">
-        {typeof children === 'function' 
-          ? children({ activePet, userPets, pillar })
-          : children
-        }
-      </div>
-    </div>
+      {typeof children === 'function' 
+        ? children({ activePet, userPets, isLoggedIn })
+        : children
+      }
+    </>
   );
 };
 
-// Export everything
 export default PetOSWrapper;
-export { PILLAR_CONFIG, LIFE_STAGES, SIZE_CATEGORIES };
