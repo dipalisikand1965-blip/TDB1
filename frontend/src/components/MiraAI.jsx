@@ -1267,17 +1267,7 @@ const MiraAI = () => {
         <MiraOrb 
           state={getOrbState()}
           pillar={currentPillar}
-          onClick={() => {
-            // On pillar pages, dispatch event to open MiraChatWidget (pillar-specific)
-            // This ensures pillar context is preserved
-            if (shouldHideChatOnDesktop) {
-              window.dispatchEvent(new CustomEvent('openMiraChat', { 
-                detail: { pillar: currentPillar }
-              }));
-            } else {
-              setIsOpen(true);
-            }
-          }}
+          onClick={() => setIsOpen(true)}
           size="md"
         />
       </div>
