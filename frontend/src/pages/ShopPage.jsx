@@ -456,14 +456,14 @@ const ProductCard = ({ product, petName, isPetPick }) => {
 };
 
 // =============================================================================
-// SERVICE CARD
+// SERVICE CARD - Touch-optimized
 // =============================================================================
 const ServiceCard = ({ service }) => {
   const navigate = useNavigate();
   
   return (
     <div 
-      className="group cursor-pointer bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all"
+      className="group cursor-pointer bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-sm hover:shadow-xl active:shadow-md transition-all active:scale-[0.98]"
       onClick={() => navigate(`/services/${service.pillar}/${service.id}`)}
     >
       <div className="relative aspect-[4/3] bg-gradient-to-br from-[#7A8B6F] to-[#5A6B4F] overflow-hidden">
