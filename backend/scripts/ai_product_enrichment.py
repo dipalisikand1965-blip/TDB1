@@ -62,9 +62,10 @@ For accessories/apparel: consider all applicable."""
 
     try:
         llm = LlmChat(
-            api_key=os.environ.get("EMERGENT_API_KEY"),
-            model="anthropic/claude-sonnet-4-20250514"
-        )
+            api_key=os.environ.get("EMERGENT_LLM_KEY"),
+            session_id=f"enrich-{product.get('id', 'unknown')}",
+            system_message="You are a pet product analyst. Return only valid JSON."
+        ).with_model("anthropic", "claude-4-sonnet-20250514")
         
         response = await llm.send_message_async(
             message=UserMessage(text=prompt),
