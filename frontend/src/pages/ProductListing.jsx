@@ -1193,23 +1193,34 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
             ))}
           </div>
         ) : (
-          /* Empty state - helpful, calmer */
+          /* Empty state - Mira-centric, helpful */
           <div className="text-center py-20">
-            <div className="w-16 h-16 rounded-2xl bg-stone-100 flex items-center justify-center mx-auto mb-5">
-              <Sparkles className="w-8 h-8 text-stone-300" />
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-purple-50 to-pink-50 flex items-center justify-center mx-auto mb-6 border border-purple-100/50">
+              <Sparkles className="w-10 h-10 text-purple-400" />
             </div>
             <h3 className="text-lg font-medium text-stone-700 mb-2">
-              No products match these filters
+              These filters didn&apos;t find a match
             </h3>
-            <p className="text-sm text-stone-500 max-w-md mx-auto mb-6">
-              Try adjusting your care needs or values to see more options.
+            <p className="text-sm text-stone-400 max-w-sm mx-auto mb-8">
+              {activePet?.name ? `Mira is still learning what works best for ${activePet.name}.` : 'Try adjusting your preferences to see more options.'}
             </p>
-            <Button
-              variant="outline"
-              onClick={() => { setCareFilters([]); setValueFilters([]); }}
-            >
-              Clear filters
-            </Button>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+              <Button
+                variant="outline"
+                onClick={() => { setCareFilters(autoAppliedFilters); setValueFilters([]); }}
+                className="text-stone-600 border-stone-200"
+              >
+                <RotateCcw className="w-4 h-4 mr-2" />
+                Reset to {activePet?.name || 'profile'}
+              </Button>
+              <button 
+                onClick={() => window.dispatchEvent(new CustomEvent('openMira'))}
+                className="text-sm text-purple-600 hover:text-purple-700 font-medium flex items-center gap-1.5"
+              >
+                <Sparkles className="w-4 h-4" />
+                Ask Mira for help
+              </button>
+            </div>
           </div>
         )}
         
