@@ -775,176 +775,344 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
       )}
       
       {/* ============================================ */}
-      {/* CARE & VALUES FILTERS - Only for members */}
+      {/* PILLAR TRANSITION TOAST */}
       {/* ============================================ */}
-      {(activePet || user) && (
-        <div className="bg-white border-b border-stone-100">
-          <div className="max-w-6xl mx-auto px-4 py-4">
-          
-          {/* Auto-applied indicator - shows Mira is thinking */}
-          {activePet && (avoidFilters.length > 0 || careFilters.some(f => autoAppliedFilters.includes(f))) && (
-            <div className="flex flex-wrap items-center gap-2 text-xs mb-3">
-              {autoAppliedFilters.filter(f => careFilters.includes(f)).map(filterId => {
-                const filterDef = getSupportFilters(category, pillar).find(f => f.id === filterId);
-                return filterDef ? (
-                  <span key={filterId} className="inline-flex items-center gap-1 text-green-600 bg-green-50 px-2 py-1 rounded-full">
-                    <Check className="w-3 h-3" />
-                    {filterDef.label} applied for {activePet.name}
-                  </span>
-                ) : null;
-              })}
-              {avoidFilters.length > 0 && (
-                <span className="inline-flex items-center gap-1 text-amber-600 bg-amber-50 px-2 py-1 rounded-full">
-                  <Shield className="w-3 h-3" />
-                  {avoidFilters.length} ingredient{avoidFilters.length > 1 ? 's' : ''} filtered for {activePet.name}
-                </span>
-              )}
-            </div>
-          )}
-          
-          {/* Layer 2: Pillar-Specific Support - emotionally aligned */}
-          <div className="mb-4">
-            <button
-              onClick={() => setShowCareFilters(!showCareFilters)}
-              className="flex items-center gap-2 text-sm font-medium text-stone-700 hover:text-stone-900"
-            >
-              <Heart className="w-4 h-4 text-rose-500" />
-              What would you like to support right now?
-              <ChevronDown className={`w-4 h-4 transition-transform ${showCareFilters ? 'rotate-180' : ''}`} />
-              {careFilters.length > 0 && (
-                <span className="ml-2 px-2 py-0.5 bg-rose-100 text-rose-700 text-xs rounded-full">
-                  {careFilters.length}
-                </span>
-              )}
-            </button>
-            
-            {showCareFilters && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 mt-3">
-                {getSupportFilters(category, pillar).map(support => {
-                  const isAutoApplied = autoAppliedFilters.includes(support.id);
-                  const isSelected = careFilters.includes(support.id);
-                  return (
-                    <button
-                      key={support.id}
-                      onClick={() => toggleCareFilter(support.id)}
-                      className={`flex items-start gap-3 p-3 rounded-lg border text-left transition-all ${
-                        isSelected
-                          ? 'border-rose-300 bg-rose-50 text-rose-700'
-                          : isAutoApplied
-                          ? 'border-green-200 bg-green-50/50 text-stone-600'
-                          : 'border-stone-200 hover:border-stone-300 text-stone-600'
-                      }`}
-                      data-testid={`care-filter-${support.id}`}
-                    >
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                        isSelected ? 'bg-rose-100' : isAutoApplied ? 'bg-green-100' : 'bg-stone-100'
-                      }`}>
-                        <support.icon className={`w-4 h-4 ${
-                          isSelected ? 'text-rose-600' : isAutoApplied ? 'text-green-600' : 'text-stone-500'
-                        }`} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-1.5">
-                          <span className="text-sm font-medium">{support.label}</span>
-                          {isAutoApplied && !isSelected && (
-                            <span className="text-[10px] text-green-600 bg-green-100 px-1.5 py-0.5 rounded">
-                              Auto
-                            </span>
-                          )}
-                        </div>
-                        <span className="text-xs opacity-70 block">{support.desc}</span>
-                        {support.subtext && (
-                          <span className="text-[11px] text-stone-400 block mt-0.5">{support.subtext}</span>
-                        )}
-                      </div>
-                      {isSelected && (
-                        <Check className="w-4 h-4 text-rose-600 flex-shrink-0 mt-1" />
-                      )}
-                    </button>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-          
-          {/* Layer 3: Your preferences */}
-          <div className="mb-4">
-            <button
-              onClick={() => setShowValueFilters(!showValueFilters)}
-              className="flex items-center gap-2 text-sm font-medium text-stone-700 hover:text-stone-900"
-            >
-              <Leaf className="w-4 h-4 text-green-500" />
-              Your preferences
-              <ChevronDown className={`w-4 h-4 transition-transform ${showValueFilters ? 'rotate-180' : ''}`} />
-              {valueFilters.length > 0 && (
-                <span className="ml-2 px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full">
-                  {valueFilters.length}
-                </span>
-              )}
-            </button>
-            
-            {showValueFilters && (
-              <div className="flex flex-wrap gap-2 mt-3">
-                {VALUES.map(value => (
-                  <button
-                    key={value.id}
-                    onClick={() => toggleValueFilter(value.id)}
-                    className={`px-3 py-2 rounded-full text-sm font-medium transition-all ${
-                      valueFilters.includes(value.id)
-                        ? value.special 
-                          ? 'bg-purple-100 text-purple-700 border border-purple-300'
-                          : 'bg-green-100 text-green-700 border border-green-300'
-                        : 'bg-stone-100 text-stone-600 hover:bg-stone-200 border border-transparent'
-                    }`}
-                    data-testid={`value-filter-${value.id}`}
-                  >
-                    {value.special && <Sparkles className="w-3 h-3 inline mr-1" />}
-                    {value.label}
-                    {valueFilters.includes(value.id) && <X className="w-3 h-3 inline ml-1" />}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-          
-          {/* Avoid if sensitive to... */}
-          <div>
-            <button
-              onClick={() => setShowAvoidFilters(!showAvoidFilters)}
-              className="flex items-center gap-2 text-sm font-medium text-stone-700 hover:text-stone-900"
-            >
-              <AlertTriangle className="w-4 h-4 text-amber-500" />
-              Avoid if sensitive to...
-              <ChevronDown className={`w-4 h-4 transition-transform ${showAvoidFilters ? 'rotate-180' : ''}`} />
-              {avoidFilters.length > 0 && (
-                <span className="ml-2 px-2 py-0.5 bg-amber-100 text-amber-700 text-xs rounded-full">
-                  {avoidFilters.length}
-                </span>
-              )}
-            </button>
-            
-            {showAvoidFilters && (
-              <div className="flex flex-wrap gap-2 mt-3">
-                {AVOID_WARNINGS.map(avoid => (
-                  <button
-                    key={avoid.id}
-                    onClick={() => toggleAvoidFilter(avoid.id)}
-                    className={`px-3 py-2 rounded-full text-sm font-medium transition-all ${
-                      avoidFilters.includes(avoid.id)
-                        ? 'bg-amber-100 text-amber-700 border border-amber-300'
-                        : 'bg-stone-100 text-stone-600 hover:bg-stone-200 border border-transparent'
-                    }`}
-                    data-testid={`avoid-filter-${avoid.id}`}
-                  >
-                    No {avoid.label}
-                    {avoidFilters.includes(avoid.id) && <X className="w-3 h-3 inline ml-1" />}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+      {showPillarTransition && activePet && (
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="bg-purple-900 text-white px-4 py-2 rounded-lg shadow-lg text-sm flex items-center gap-2">
+            <Sparkles className="w-4 h-4" />
+            <span>Switching to {category || pillar} mode for {activePet.name}. Adjusting recommendations.</span>
           </div>
         </div>
+      )}
+      
+      {/* ============================================ */}
+      {/* FILTER BAR - Desktop: inline, Mobile: trigger button */}
+      {/* ============================================ */}
+      {(activePet || user) && (
+        <>
+          {/* Desktop Filter Bar */}
+          <div 
+            ref={filterBarRef}
+            className={`hidden md:block bg-white border-b border-stone-100 transition-all duration-200 ${
+              isScrolled ? 'sticky top-0 z-40 shadow-sm' : ''
+            }`}
+          >
+            <div className="max-w-6xl mx-auto px-4 py-3">
+              {/* Applied filters chip row (desktop) */}
+              {(careFilters.length > 0 || avoidFilters.length > 0) && (
+                <div className="flex items-center gap-2 mb-3 text-xs">
+                  <span className="text-stone-500">Applied for {activePet?.name || 'your pet'}:</span>
+                  {careFilters.map(filterId => {
+                    const filterDef = getSupportFilters(category, pillar).find(f => f.id === filterId);
+                    const isAuto = autoAppliedFilters.includes(filterId);
+                    return filterDef ? (
+                      <button
+                        key={filterId}
+                        onClick={() => toggleCareFilter(filterId)}
+                        className={`inline-flex items-center gap-1 px-2 py-1 rounded-full ${
+                          isAuto ? 'bg-green-50 text-green-700' : 'bg-rose-50 text-rose-700'
+                        } hover:opacity-80`}
+                      >
+                        {filterDef.label}
+                        <X className="w-3 h-3" />
+                      </button>
+                    ) : null;
+                  })}
+                  {careFilters.length > 0 && (
+                    <button 
+                      onClick={() => setCareFilters(autoAppliedFilters)}
+                      className="text-stone-400 hover:text-stone-600 ml-1"
+                    >
+                      Reset to {activePet?.name || 'profile'}
+                    </button>
+                  )}
+                </div>
+              )}
+              
+              {/* Desktop filter sections - vertical stack for thoughtfulness */}
+              <div className="space-y-3">
+                {/* Support filters */}
+                <div>
+                  <button
+                    onClick={() => setShowCareFilters(!showCareFilters)}
+                    className="flex items-center gap-2 text-sm font-medium text-stone-700 hover:text-stone-900 w-full"
+                  >
+                    <Heart className="w-4 h-4 text-rose-500" />
+                    <span>What would you like to support right now?</span>
+                    <ChevronDown className={`w-4 h-4 ml-auto transition-transform ${showCareFilters ? 'rotate-180' : ''}`} />
+                  </button>
+                  
+                  {showCareFilters && (
+                    <div className="mt-3 space-y-2 max-w-xl">
+                      {getSupportFilters(category, pillar).map(support => {
+                        const isAutoApplied = autoAppliedFilters.includes(support.id);
+                        const isSelected = careFilters.includes(support.id);
+                        return (
+                          <button
+                            key={support.id}
+                            onClick={() => toggleCareFilter(support.id)}
+                            className={`w-full flex items-center gap-3 p-3 rounded-lg border text-left transition-all min-h-[56px] group ${
+                              isSelected
+                                ? 'border-rose-300 bg-rose-50'
+                                : isAutoApplied
+                                ? 'border-green-200 bg-green-50/30'
+                                : 'border-stone-200 hover:border-stone-300 hover:bg-stone-50'
+                            }`}
+                            data-testid={`care-filter-${support.id}`}
+                          >
+                            <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0 ${
+                              isSelected ? 'bg-rose-100' : isAutoApplied ? 'bg-green-100' : 'bg-stone-100 group-hover:bg-stone-200'
+                            }`}>
+                              <support.icon className={`w-5 h-5 ${
+                                isSelected ? 'text-rose-600' : isAutoApplied ? 'text-green-600' : 'text-stone-500'
+                              }`} />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <span className={`text-sm font-medium ${isSelected ? 'text-rose-700' : 'text-stone-700'}`}>
+                                  {support.label}
+                                </span>
+                                {isAutoApplied && (
+                                  <span className="text-[10px] text-green-600">
+                                    (applied for {activePet?.name})
+                                  </span>
+                                )}
+                              </div>
+                              <span className="text-xs text-stone-500 block">{support.desc}</span>
+                              {/* Subtext on hover (desktop only) */}
+                              {support.subtext && (
+                                <span className="text-[11px] text-stone-400 hidden group-hover:block">{support.subtext}</span>
+                              )}
+                            </div>
+                            {isSelected && (
+                              <Check className="w-5 h-5 text-rose-600 flex-shrink-0" />
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+                
+                {/* Avoid filters */}
+                <div>
+                  <button
+                    onClick={() => setShowAvoidFilters(!showAvoidFilters)}
+                    className="flex items-center gap-2 text-sm font-medium text-stone-700 hover:text-stone-900"
+                  >
+                    <Shield className="w-4 h-4 text-amber-500" />
+                    <span>Avoid if sensitive to...</span>
+                    {avoidFilters.length > 0 && (
+                      <span className="px-1.5 py-0.5 bg-amber-100 text-amber-700 text-xs rounded-full">
+                        {avoidFilters.length}
+                      </span>
+                    )}
+                    <ChevronDown className={`w-4 h-4 ml-auto transition-transform ${showAvoidFilters ? 'rotate-180' : ''}`} />
+                  </button>
+                  
+                  {showAvoidFilters && (
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {AVOID_WARNINGS.map(avoid => (
+                        <button
+                          key={avoid.id}
+                          onClick={() => toggleAvoidFilter(avoid.id)}
+                          className={`px-3 py-2 rounded-full text-sm transition-all min-h-[40px] ${
+                            avoidFilters.includes(avoid.id)
+                              ? 'bg-amber-100 text-amber-700 border border-amber-300'
+                              : 'bg-stone-100 text-stone-600 hover:bg-stone-200 border border-transparent'
+                          }`}
+                          data-testid={`avoid-filter-${avoid.id}`}
+                        >
+                          No {avoid.label}
+                          {avoidFilters.includes(avoid.id) && <X className="w-3 h-3 inline ml-1.5" />}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Mobile Filter Button - Opens Bottom Sheet */}
+          <div className="md:hidden bg-white border-b border-stone-100 px-4 py-3 sticky top-0 z-40">
+            <button
+              onClick={() => {
+                setPendingCareFilters([...careFilters]);
+                setShowFilterSheet(true);
+              }}
+              className="w-full flex items-center justify-between p-3 bg-stone-50 rounded-lg"
+              data-testid="mobile-filter-trigger"
+            >
+              <div className="flex items-center gap-2">
+                <SlidersHorizontal className="w-4 h-4 text-stone-500" />
+                <span className="text-sm font-medium text-stone-700">Support & preferences</span>
+              </div>
+              {(careFilters.length > 0 || avoidFilters.length > 0) && (
+                <span className="px-2 py-0.5 bg-rose-100 text-rose-700 text-xs rounded-full">
+                  {careFilters.length + avoidFilters.length} active
+                </span>
+              )}
+            </button>
+            
+            {/* Applied filters summary (mobile) */}
+            {careFilters.length > 0 && (
+              <div className="flex items-center gap-2 mt-2 overflow-x-auto pb-1 text-xs">
+                {careFilters.slice(0, 3).map(filterId => {
+                  const filterDef = getSupportFilters(category, pillar).find(f => f.id === filterId);
+                  const isAuto = autoAppliedFilters.includes(filterId);
+                  return filterDef ? (
+                    <span
+                      key={filterId}
+                      className={`inline-flex items-center gap-1 px-2 py-1 rounded-full whitespace-nowrap ${
+                        isAuto ? 'bg-green-50 text-green-700' : 'bg-rose-50 text-rose-700'
+                      }`}
+                    >
+                      <Check className="w-3 h-3" />
+                      {filterDef.label}
+                    </span>
+                  ) : null;
+                })}
+                {careFilters.length > 3 && (
+                  <span className="text-stone-400">+{careFilters.length - 3} more</span>
+                )}
+              </div>
+            )}
+          </div>
+          
+          {/* Mobile Bottom Sheet */}
+          {showFilterSheet && (
+            <div className="md:hidden fixed inset-0 z-50" data-testid="filter-bottom-sheet">
+              {/* Backdrop */}
+              <div 
+                className="absolute inset-0 bg-black/40"
+                onClick={() => setShowFilterSheet(false)}
+              />
+              
+              {/* Sheet */}
+              <div className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl max-h-[70vh] flex flex-col animate-in slide-in-from-bottom duration-300">
+                {/* Handle */}
+                <div className="flex justify-center pt-3 pb-2">
+                  <div className="w-10 h-1 bg-stone-300 rounded-full" />
+                </div>
+                
+                {/* Header */}
+                <div className="px-4 pb-3 border-b border-stone-100 flex items-center justify-between">
+                  <h3 className="text-lg font-semibold text-stone-900">Support for {activePet?.name || 'your pet'}</h3>
+                  <button 
+                    onClick={() => setShowFilterSheet(false)}
+                    className="p-2 -mr-2 text-stone-400 hover:text-stone-600"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                
+                {/* Filter Cards - Scrollable, Full-width stacked */}
+                <div className="flex-1 overflow-y-auto px-4 py-4 space-y-2">
+                  {getSupportFilters(category, pillar).map(support => {
+                    const isAutoApplied = autoAppliedFilters.includes(support.id);
+                    const isSelected = pendingCareFilters.includes(support.id);
+                    return (
+                      <button
+                        key={support.id}
+                        onClick={() => {
+                          setPendingCareFilters(prev => 
+                            prev.includes(support.id) 
+                              ? prev.filter(f => f !== support.id)
+                              : [...prev, support.id]
+                          );
+                        }}
+                        className={`w-full flex items-center gap-3 p-4 rounded-xl border text-left transition-all min-h-[64px] active:scale-[0.98] ${
+                          isSelected
+                            ? 'border-rose-300 bg-rose-50'
+                            : isAutoApplied
+                            ? 'border-green-200 bg-green-50/50'
+                            : 'border-stone-200 bg-white'
+                        }`}
+                        data-testid={`mobile-filter-${support.id}`}
+                      >
+                        <div className={`w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0 ${
+                          isSelected ? 'bg-rose-100' : isAutoApplied ? 'bg-green-100' : 'bg-stone-100'
+                        }`}>
+                          <support.icon className={`w-5 h-5 ${
+                            isSelected ? 'text-rose-600' : isAutoApplied ? 'text-green-600' : 'text-stone-500'
+                          }`} />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className={`text-sm font-medium ${isSelected ? 'text-rose-700' : 'text-stone-800'}`}>
+                              {support.label}
+                            </span>
+                            {isAutoApplied && (
+                              <span className="text-[10px] text-green-600 bg-green-100 px-1.5 py-0.5 rounded">
+                                applied for {activePet?.name}
+                              </span>
+                            )}
+                          </div>
+                          <span className="text-sm text-stone-500">{support.desc}</span>
+                        </div>
+                        <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                          isSelected 
+                            ? 'border-rose-500 bg-rose-500' 
+                            : 'border-stone-300'
+                        }`}>
+                          {isSelected && <Check className="w-4 h-4 text-white" />}
+                        </div>
+                      </button>
+                    );
+                  })}
+                  
+                  {/* Avoid section in sheet */}
+                  <div className="pt-4 mt-4 border-t border-stone-100">
+                    <p className="text-sm font-medium text-stone-700 mb-3 flex items-center gap-2">
+                      <Shield className="w-4 h-4 text-amber-500" />
+                      Avoid if sensitive to...
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {AVOID_WARNINGS.map(avoid => (
+                        <button
+                          key={avoid.id}
+                          onClick={() => toggleAvoidFilter(avoid.id)}
+                          className={`px-4 py-2.5 rounded-full text-sm transition-all min-h-[44px] ${
+                            avoidFilters.includes(avoid.id)
+                              ? 'bg-amber-100 text-amber-700 border border-amber-300'
+                              : 'bg-stone-100 text-stone-600 border border-transparent'
+                          }`}
+                        >
+                          No {avoid.label}
+                          {avoidFilters.includes(avoid.id) && <X className="w-3 h-3 inline ml-1.5" />}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Footer Actions */}
+                <div className="px-4 py-4 border-t border-stone-100 bg-white flex gap-3">
+                  <button
+                    onClick={() => {
+                      setPendingCareFilters(autoAppliedFilters);
+                    }}
+                    className="flex-1 py-3 px-4 rounded-xl border border-stone-200 text-stone-600 font-medium flex items-center justify-center gap-2"
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                    Reset to {activePet?.name}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setCareFilters(pendingCareFilters);
+                      setShowFilterSheet(false);
+                    }}
+                    className="flex-1 py-3 px-4 rounded-xl bg-rose-600 text-white font-medium"
+                  >
+                    Apply
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </>
       )}
       
       {/* ============================================ */}
