@@ -12,7 +12,7 @@
  * - celebrating: Burst of joy particles
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Mira's soul colors - Enhanced for magical presence
