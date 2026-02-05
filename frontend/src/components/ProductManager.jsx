@@ -465,6 +465,8 @@ const ProductManager = ({ credentials }) => {
         minPrice: editForm.minPrice ? parseFloat(editForm.minPrice) : null,
         autoship_enabled: editForm.autoship_enabled,
         collection_ids: editForm.collection_ids,
+        mira_hint: editForm.mira_hint,
+        breed_metadata: editForm.breed_metadata,
         updated_at: new Date().toISOString(),
         locally_edited: true
       };
