@@ -372,144 +372,56 @@ const UnifiedProductBox = () => {
     }
   };
 
-  // Create new product
+  // Create new product using DEFAULT_PRODUCT template
   const createNewProduct = () => {
     setSelectedProduct({
+      ...JSON.parse(JSON.stringify(DEFAULT_PRODUCT)),
       id: `NEW-${Date.now()}`,
+      // Legacy flat fields for backward compat
       name: '',
       product_type: 'physical',
       primary_pillar: 'shop',
       pillars: ['shop'],
-      
-      // Basic info
-      short_description: '',
-      long_description: '',
-      usage_context: '',
-      key_benefits: [],
-      brand: '',
-      
-      // Categorization
       category: '',
-      subcategory: '',
-      tags: [],
-      intelligent_tags: [],
-      collections: [],
-      
-      // Media
-      image_url: '',
-      image_alt: '',
-      images: [],
-      video_url: '',
-      
-      // Identity
-      identity: {
-        barcode: '',
-        shopify_id: '',
-        external_source: 'manual',
-        vendor_id: '',
-        partner_id: ''
-      },
-      
-      // Pricing
-      pricing: {
-        base_price: 0,
-        compare_at_price: null,
-        cost_price: null,
-        gst_applicable: true,
-        gst_rate: 18,
-        hsn_code: '',
-        price_includes_gst: false,
-        price_model: 'fixed',
-        currency: 'INR'
-      },
-      
-      // Inventory
-      inventory: {
-        in_stock: true,
-        track_inventory: false,
-        stock_quantity: null,
-        low_stock_threshold: 5,
-        allow_backorder: false
-      },
-      
-      // Shipping
-      shipping: {
-        requires_shipping: true,
-        shipping_class: 'standard',
-        cold_chain_required: false,
-        is_pan_india: false,
-        delivery_zones: [],
-        preparation_time: '',
-        dispatch_sla_hours: 48,
-        delivery_sla_days: 5,
-        at_home_available: false
-      },
-      
-      // Pet Safety
-      pet_safety: {
-        species: 'dog',
-        life_stages: ['all'],
-        size_suitability: ['all'],
-        dietary_flags: [],
-        allergens: [],
-        ingredients: [],
-        known_exclusions: [],
-        risk_level: 'safe',
-        safety_notes: '',
-        is_validated: false
-      },
-      
-      // Paw Rewards
-      paw_rewards: {
-        points_per_rupee: 1,
-        is_redeemable: false,
-        is_reward_only: false,
-        points_required: null,
-        reward_value: 0,
-        trigger_conditions: [],
-        tier_eligibility: ['all'],
-        stackable_with_coupons: true
-      },
-      
-      // Mira AI
-      mira_visibility: {
-        can_reference: true,
-        can_suggest_proactively: false,
-        suggestion_contexts: [],
-        knowledge_confidence: 'high',
-        requires_verification: false,
-        upsell_items: [],
-        cross_sell_items: []
-      },
-      
-      // Bundle
-      bundle: {
-        is_bundle: false,
-        bundle_items: [],
-        bundle_price: null,
-        savings_display: ''
-      },
-      
-      // Visibility
-      visibility: {
-        status: 'draft',
-        visible_on_site: true,
-        member_only: false,
-        concierge_only: false,
-        featured: false,
-        searchable: true,
-        city_visibility: [],
-        publish_date: null
-      },
-      
-      // Pillar-specific config (populated based on primary_pillar)
-      pillar_config: {},
-      
-      // Legacy compat
+      price: 0,
+      mrp: 0,
       in_stock: true,
-      stock_quantity: null
+      image: '',
+      images: [],
+      tags: []
     });
     setShowEditor(true);
+  };
+
+  // Generate Mira hint for a product using AI
+  const generateMiraHint = async (product) => {
+    try {
+      const response = await fetch(`${API_URL}/api/products/${product.id || product.basics?.id}/generate-hint`, {
+        method: 'POST'
+      });
+      if (response.ok) {
+        const data = await response.json();
+        const hint = data.hint || data.mira_hint;
+        if (hint) {
+          setSelectedProduct(prev => ({
+            ...prev,
+            mira_hint: hint,
+            mira_ai: {
+              ...prev.mira_ai,
+              ai_enrichment: {
+                ...prev.mira_ai?.ai_enrichment,
+                mira_hint: hint,
+                mira_hint_generated_at: new Date().toISOString()
+              }
+            }
+          }));
+          toast({ title: 'Generated!', description: 'Mira hint created' });
+        }
+      }
+    } catch (err) {
+      console.error('Error generating hint:', err);
+      toast({ title: 'Error', description: 'Failed to generate hint', variant: 'destructive' });
+    }
   };
 
   return (
