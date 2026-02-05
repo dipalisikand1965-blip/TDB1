@@ -1977,16 +1977,28 @@ async def ensure_default_user_exists():
 
 
 async def seed_initial_products():
-    """Seed initial products if database is empty"""
+    """Seed initial products if database is empty AND auto-sync from Shopify"""
     try:
         product_count = await db.products_master.count_documents({})
+        
+        # ALWAYS try to sync from Shopify to ensure latest products
+        logger.info(f"Current products: {product_count}. Auto-syncing from Shopify...")
+        try:
+            from shopify_sync_routes import sync_shopify_products
+            sync_result = await sync_shopify_products(db)
+            logger.info(f"Shopify auto-sync: {sync_result.get('synced', 0)} products synced")
+        except Exception as sync_error:
+            logger.warning(f"Shopify auto-sync skipped: {sync_error}")
+        
+        # Check count again after sync
+        product_count = await db.products_master.count_documents({})
         if product_count > 0:
-            logger.info(f"Products already exist: {product_count} products")
+            logger.info(f"Products ready: {product_count} products")
             return
         
-        logger.info("No products found, seeding initial products...")
+        logger.info("No products found after sync, seeding sample products...")
         
-        # Sample products for each category
+        # Sample products for each category (fallback only)
         sample_products = [
             # Cakes
             {"id": "cake-001", "name": "Classic Peanut Butter Cake", "description": "Delicious peanut butter cake for dogs", "price": 899, "originalPrice": 899, "image": "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=600", "category": "cakes", "sizes": [{"name": "Small (500g)", "price": 899}, {"name": "Medium (1kg)", "price": 1499}], "flavors": ["Peanut Butter"], "tags": ["birthday", "celebration"], "available": True},
