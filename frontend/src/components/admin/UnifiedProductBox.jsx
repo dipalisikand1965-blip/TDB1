@@ -904,6 +904,7 @@ const UnifiedProductBox = () => {
                             variant="ghost"
                             size="sm"
                             onClick={() => { setSelectedProduct(product); setShowEditor(true); }}
+                            data-testid={`edit-product-${product.id}`}
                           >
                             <Edit className="w-4 h-4" />
                           </Button>
@@ -911,6 +912,7 @@ const UnifiedProductBox = () => {
                             variant="ghost"
                             size="sm"
                             onClick={() => cloneProduct(product.id)}
+                            data-testid={`clone-product-${product.id}`}
                           >
                             <Copy className="w-4 h-4" />
                           </Button>
@@ -919,6 +921,7 @@ const UnifiedProductBox = () => {
                             size="sm"
                             onClick={() => archiveProduct(product.id)}
                             className="text-red-500 hover:text-red-700"
+                            data-testid={`delete-product-${product.id}`}
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>
@@ -941,6 +944,7 @@ const UnifiedProductBox = () => {
                   size="sm" 
                   disabled={page === 0}
                   onClick={() => setPage(p => p - 1)}
+                  data-testid="products-prev-page-btn"
                 >
                   Previous
                 </Button>
@@ -949,6 +953,7 @@ const UnifiedProductBox = () => {
                   size="sm"
                   disabled={(page + 1) * limit >= totalProducts}
                   onClick={() => setPage(p => p + 1)}
+                  data-testid="products-next-page-btn"
                 >
                   Next
                 </Button>
