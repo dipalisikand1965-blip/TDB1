@@ -8,7 +8,7 @@ import requests
 import os
 from datetime import datetime, timedelta
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://filter-fix-phase.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://concierge-ux.preview.emergentagent.com')
 AUTH_HEADER = "Basic YWRpdHlhOmxvbGE0MzA0"  # aditya:lola4304
 
 # Test pet ID - Mojo

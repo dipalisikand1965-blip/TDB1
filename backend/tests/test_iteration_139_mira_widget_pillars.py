@@ -11,7 +11,7 @@ import requests
 import os
 import uuid
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://filter-fix-phase.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://concierge-ux.preview.emergentagent.com').rstrip('/')
 ADMIN_USERNAME = "aditya"
 ADMIN_PASSWORD = "lola4304"
 
