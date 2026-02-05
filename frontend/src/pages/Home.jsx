@@ -736,7 +736,7 @@ const Home = () => {
   }
 
   return (
-    <div className="min-h-screen bg-black overflow-x-hidden" data-testid="home-page">
+    <div className="min-h-screen bg-black overflow-x-hidden overflow-y-auto" style={{ overscrollBehavior: 'none', WebkitOverflowScrolling: 'touch' }} data-testid="home-page">
       <SEOHead page="home" path="/" />
       
       {/* ========== THE EMOTIONAL HOOK - First 3 Seconds ========== */}
