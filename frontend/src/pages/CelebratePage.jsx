@@ -58,13 +58,15 @@ const CelebratePage = () => {
   const [showPartyWizard, setShowPartyWizard] = useState(false);
   const [showConciergeModal, setShowConciergeModal] = useState(false);
   const [conciergeSubmitting, setConciergeSubmitting] = useState(false);
-  const [userPets, setUserPets] = useState([]);
   const [showSoulExplainer, setShowSoulExplainer] = useState(false);
   const [heroIndex, setHeroIndex] = useState(0);
   const { addToCart } = useCart();
   const { user, token } = useAuth();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+  
+  // Pet OS Integration
+  const { isLoggedIn, userPets, activePet, setActivePet, hasPets } = usePetOS();
 
   // Rotating hero images for visual appeal
   const HERO_IMAGES = [
