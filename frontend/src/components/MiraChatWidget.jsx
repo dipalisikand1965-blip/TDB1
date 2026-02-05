@@ -127,6 +127,49 @@ const MiraChatWidget = ({
   // Support filters state (Mira-driven personalization)
   const [activeSupportFilters, setActiveSupportFilters] = useState([]);
   
+  // Pet Preference Memory - Remember each pet's preferences across sessions
+  const PET_PREFS_KEY = 'mira_pet_preferences';
+  
+  // Load pet preferences from localStorage
+  const loadPetPreferences = (petId) => {
+    try {
+      const stored = localStorage.getItem(PET_PREFS_KEY);
+      if (stored) {
+        const allPrefs = JSON.parse(stored);
+        return allPrefs[petId] || null;
+      }
+    } catch (e) {
+      console.debug('Could not load pet preferences:', e);
+    }
+    return null;
+  };
+  
+  // Save pet preferences to localStorage
+  const savePetPreferences = (petId, prefs) => {
+    try {
+      const stored = localStorage.getItem(PET_PREFS_KEY);
+      const allPrefs = stored ? JSON.parse(stored) : {};
+      allPrefs[petId] = {
+        ...prefs,
+        lastUpdated: new Date().toISOString()
+      };
+      localStorage.setItem(PET_PREFS_KEY, JSON.stringify(allPrefs));
+    } catch (e) {
+      console.debug('Could not save pet preferences:', e);
+    }
+  };
+  
+  // Auto-save preferences when they change
+  useEffect(() => {
+    if (selectedPet?.id && !allPetsMode) {
+      savePetPreferences(selectedPet.id, {
+        pillar: currentPillar,
+        supportFilters: activeSupportFilters,
+        lastVisitedPillar: pillar
+      });
+    }
+  }, [selectedPet?.id, currentPillar, activeSupportFilters, pillar, allPetsMode]);
+  
   // Voice state
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
