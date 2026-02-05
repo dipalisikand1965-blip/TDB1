@@ -477,13 +477,177 @@ async def export_services():
     """Export all services as JSON (for CSV conversion in frontend)"""
     db = get_db()
     
-    services = await db.service_catalog.find({}, {"_id": 0}).to_list(1000)
+    services = await db.services_master.find({}, {"_id": 0}).to_list(1000)
     
     return {
         "services": services,
         "count": len(services),
         "exported_at": datetime.now(timezone.utc).isoformat()
     }
+
+
+@router.get("/export-csv")
+async def export_services_csv():
+    """Export services as CSV-ready format"""
+    db = get_db()
+    
+    services = await db.services_master.find({}, {"_id": 0}).to_list(1000)
+    
+    # Flatten for CSV
+    csv_services = []
+    for s in services:
+        csv_row = {
+            "id": s.get("id", ""),
+            "name": s.get("name", ""),
+            "pillar": s.get("pillar", ""),
+            "description": s.get("description", ""),
+            "base_price": s.get("base_price", 0),
+            "duration": s.get("duration", ""),
+            "is_bookable": s.get("is_bookable", True),
+            "is_free": s.get("is_free", False),
+            "is_active": s.get("is_active", True),
+            "mira_whisper": s.get("mira_whisper", ""),
+            "includes": ";".join(s.get("includes", [])),
+            # Breed whispers flattened
+            "whisper_shih_tzu": s.get("breed_whispers", {}).get("shih_tzu", ""),
+            "whisper_golden_retriever": s.get("breed_whispers", {}).get("golden_retriever", ""),
+            "whisper_labrador": s.get("breed_whispers", {}).get("labrador", ""),
+            "whisper_pug": s.get("breed_whispers", {}).get("pug", ""),
+            "whisper_beagle": s.get("breed_whispers", {}).get("beagle", ""),
+            "whisper_german_shepherd": s.get("breed_whispers", {}).get("german_shepherd", ""),
+            "whisper_default": s.get("breed_whispers", {}).get("default", ""),
+        }
+        csv_services.append(csv_row)
+    
+    return {
+        "services": csv_services,
+        "count": len(csv_services),
+        "columns": list(csv_services[0].keys()) if csv_services else [],
+        "exported_at": datetime.now(timezone.utc).isoformat()
+    }
+
+
+# ==================== IMPORT CSV ====================
+
+from pydantic import BaseModel as PydanticBaseModel
+
+class ServiceImportRow(PydanticBaseModel):
+    id: str
+    name: str
+    pillar: str
+    description: Optional[str] = ""
+    base_price: Optional[float] = 0
+    duration: Optional[str] = ""
+    is_bookable: Optional[bool] = True
+    is_free: Optional[bool] = False
+    is_active: Optional[bool] = True
+    mira_whisper: Optional[str] = ""
+    includes: Optional[str] = ""
+    whisper_shih_tzu: Optional[str] = ""
+    whisper_golden_retriever: Optional[str] = ""
+    whisper_labrador: Optional[str] = ""
+    whisper_pug: Optional[str] = ""
+    whisper_beagle: Optional[str] = ""
+    whisper_german_shepherd: Optional[str] = ""
+    whisper_default: Optional[str] = ""
+
+@router.post("/import-csv")
+async def import_services_csv(services: List[ServiceImportRow]):
+    """Import services from CSV format"""
+    db = get_db()
+    
+    now = datetime.now(timezone.utc)
+    created = 0
+    updated = 0
+    errors = []
+    
+    for row in services:
+        try:
+            # Build breed whispers
+            breed_whispers = {}
+            if row.whisper_shih_tzu:
+                breed_whispers["shih_tzu"] = row.whisper_shih_tzu
+            if row.whisper_golden_retriever:
+                breed_whispers["golden_retriever"] = row.whisper_golden_retriever
+            if row.whisper_labrador:
+                breed_whispers["labrador"] = row.whisper_labrador
+            if row.whisper_pug:
+                breed_whispers["pug"] = row.whisper_pug
+            if row.whisper_beagle:
+                breed_whispers["beagle"] = row.whisper_beagle
+            if row.whisper_german_shepherd:
+                breed_whispers["german_shepherd"] = row.whisper_german_shepherd
+            if row.whisper_default:
+                breed_whispers["default"] = row.whisper_default
+            
+            # Find pillar info
+            pillar_info = next((p for p in ALL_PILLARS if p["id"] == row.pillar), None)
+            
+            service_doc = {
+                "id": row.id,
+                "name": row.name,
+                "pillar": row.pillar,
+                "pillars": [row.pillar],
+                "pillar_name": pillar_info["name"] if pillar_info else row.pillar.title(),
+                "pillar_icon": pillar_info["icon"] if pillar_info else "📦",
+                "description": row.description or "",
+                "base_price": row.base_price,
+                "duration": row.duration,
+                "is_bookable": row.is_bookable,
+                "is_free": row.is_free,
+                "is_active": row.is_active,
+                "mira_whisper": row.mira_whisper or row.whisper_default or "Curated for your companion",
+                "breed_whispers": breed_whispers if breed_whispers else {"default": "Curated for your companion"},
+                "includes": row.includes.split(";") if row.includes else [],
+                "updated_at": now
+            }
+            
+            existing = await db.services_master.find_one({"id": row.id})
+            
+            if existing:
+                await db.services_master.update_one(
+                    {"id": row.id},
+                    {"$set": {**service_doc, "created_at": existing.get("created_at", now)}}
+                )
+                updated += 1
+            else:
+                service_doc["created_at"] = now
+                await db.services_master.insert_one(service_doc)
+                created += 1
+                
+        except Exception as e:
+            errors.append({"id": row.id, "error": str(e)})
+    
+    return {
+        "success": True,
+        "created": created,
+        "updated": updated,
+        "errors": errors,
+        "total_processed": created + updated
+    }
+
+
+# ==================== SEED BREED-SPECIFIC SERVICES ====================
+
+@router.post("/seed-breed-services")
+async def seed_breed_specific_services():
+    """Seed services with breed-specific Mira whispers"""
+    db = get_db()
+    
+    try:
+        from seed_breed_services import seed_services_with_whispers
+        result = await seed_services_with_whispers(db)
+        
+        logger.info(f"[SERVICE BOX] Breed-specific seed complete: {result}")
+        
+        return {
+            "success": True,
+            **result,
+            "message": "Services seeded with breed-specific Mira whispers"
+        }
+    except Exception as e:
+        logger.error(f"[SERVICE BOX] Seed error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 # ==================== SERVICE BOOKINGS ====================
