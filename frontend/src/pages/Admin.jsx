@@ -2407,6 +2407,17 @@ const Admin = () => {
               <Button
                 variant="outline"
                 size="sm"
+                className="bg-gradient-to-r from-green-600 to-emerald-600 text-white border-0 text-xs font-bold shadow-md"
+                onClick={syncAllData}
+                disabled={syncingShopify}
+                data-testid="sync-all-data-btn"
+              >
+                {syncingShopify ? <RefreshCw className="w-3 h-3 mr-1 animate-spin" /> : <ShoppingBag className="w-3 h-3 mr-1" />}
+                {syncingShopify ? 'Syncing...' : '🚀 SYNC ALL'}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
                 className="bg-gradient-to-r from-purple-600 to-pink-600 text-white border-0 text-xs font-bold"
                 onClick={seedAllPillars}
                 disabled={seedingAll}
