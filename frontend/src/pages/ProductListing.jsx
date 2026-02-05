@@ -1369,9 +1369,45 @@ const ProductListing = ({ category = 'all' }) => {
           </div>
         ) : (
           <>
+            {/* Calm Mira Strip - Quiet whisper of service above products */}
+            {selectedPet && (() => {
+              const miraContext = getPillarMiraContext(pillar);
+              return (
+                <div className="mb-6 p-4 sm:p-5 bg-gradient-to-r from-stone-50 to-white rounded-xl sm:rounded-2xl border border-stone-100" data-testid="mira-service-strip">
+                  <div className="flex items-start gap-3 sm:gap-4">
+                    {/* Mira Avatar */}
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-white flex items-center justify-center flex-shrink-0 border border-purple-100/50 shadow-sm">
+                      <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400" />
+                    </div>
+                    
+                    {/* Note Content */}
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[10px] sm:text-xs text-purple-500 mb-1">Mira&apos;s note for {selectedPet.name}</p>
+                      <p className="text-xs sm:text-sm text-stone-600 leading-relaxed mb-2">
+                        {miraContext.note(selectedPet.name)} <span className="text-stone-400">{miraContext.question}</span>
+                      </p>
+                      
+                      {/* Soft Action */}
+                      <button 
+                        className="text-xs sm:text-sm text-purple-600 hover:text-purple-700 font-medium transition-colors"
+                        onClick={() => {
+                          toast({
+                            title: "Mira is on it! ✨",
+                            description: `I'll help coordinate ${miraContext.action.toLowerCase()} for ${selectedPet.name}.`,
+                          });
+                        }}
+                      >
+                        {miraContext.action} →
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+            
             <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6" data-testid="product-grid">
               {filteredProducts.slice(0, visibleCount).map((product) => (
-                <ProductCard key={product.id} product={product} pillar={pillar} />
+                <ProductCard key={product.id} product={product} pillar={pillar} selectedPet={selectedPet} miraContext={getPillarMiraContext(pillar)} />
               ))}
             </div>
             
