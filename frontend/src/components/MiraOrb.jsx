@@ -411,6 +411,22 @@ const MiraOrb = ({
         >
           <path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-4 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm8 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-4 6c-1.7 0-3 1.3-3 3v1h6v-1c0-1.7-1.3-3-3-3z"/>
         </svg>
+        
+        {/* Pillar context badge - shows current pillar */}
+        {pillar && pillar !== 'default' && (
+          <motion.div
+            className="absolute -top-1 -right-1 w-6 h-6 rounded-full flex items-center justify-center text-xs shadow-lg"
+            style={{ 
+              background: pillarTheme.color,
+              boxShadow: `0 2px 8px ${pillarTheme.color}60`
+            }}
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          >
+            <span className="text-white">{pillarTheme.emoji}</span>
+          </motion.div>
+        )}
       </motion.button>
       
       {/* State label */}
