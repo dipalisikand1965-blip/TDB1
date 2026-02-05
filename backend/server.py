@@ -7902,6 +7902,224 @@ async def update_product_bundle_config(product_id: str, bundle_config: dict):
     
     return {"success": True, "config": bundle_config}
 
+
+# ============================================
+# MIRA HINT MANAGEMENT
+# AI-powered product hints for personalized shopping experience
+# ============================================
+
+def generate_mira_hint(product: dict) -> str:
+    """Generate an intelligent mira_hint based on product attributes"""
+    name = (product.get("name") or "").lower()
+    category = (product.get("category") or "").lower()
+    tags = [t.lower() for t in (product.get("tags") or [])]
+    description = (product.get("description") or "").lower()
+    
+    # Combine all text for analysis
+    all_text = f"{name} {category} {' '.join(tags)} {description}"
+    
+    # GROOMING & CARE products
+    if any(w in all_text for w in ['shampoo', 'conditioner', 'soap', 'wash', 'grooming']):
+        if 'oatmeal' in all_text:
+            return "✨ Soothes sensitive skin naturally"
+        if 'puppy' in all_text:
+            return "✨ Gentle formula for young pups"
+        if 'anti-tick' in all_text or 'flea' in all_text:
+            return "✨ Protection against pests"
+        if 'deodorizing' in all_text:
+            return "✨ Keeps your pet fresh & clean"
+        return "✨ For a healthy, shiny coat"
+    
+    # TRAVEL products
+    if any(w in all_text for w in ['carrier', 'crate', 'travel', 'harness', 'leash', 'collar']):
+        if 'iata' in all_text or 'flight' in all_text:
+            return "✨ IATA approved for safe flights"
+        if 'car' in all_text or 'safety' in all_text:
+            return "✨ Safety-tested for road trips"
+        if 'soft' in all_text:
+            return "✨ Soft & comfy for short trips"
+        if 'harness' in all_text:
+            return "✨ Secure & comfortable fit"
+        if 'leash' in all_text:
+            return "✨ Perfect for daily walks"
+        return "✨ Travel-friendly choice"
+    
+    # CAKES & CELEBRATION
+    if any(w in all_text for w in ['cake', 'birthday', 'celebration']):
+        if 'peanut butter' in all_text:
+            return "✨ Peanut butter is a pet favorite!"
+        if 'carrot' in all_text:
+            return "✨ Carrots add natural sweetness"
+        if 'banana' in all_text:
+            return "✨ Banana makes it extra moist"
+        if 'chicken' in all_text:
+            return "✨ Savory treat for meat lovers"
+        if 'cheese' in all_text:
+            return "✨ Cheesy goodness they'll love"
+        return "✨ Freshly baked with love"
+    
+    # MEALS & FOOD
+    if any(w in all_text for w in ['meal', 'food', 'dinner', 'lunch', 'breakfast']):
+        if 'mutton' in all_text or 'lamb' in all_text:
+            return "✨ Rich in protein & iron"
+        if 'chicken' in all_text:
+            return "✨ Lean protein, easy to digest"
+        if 'paneer' in all_text or 'vegetarian' in all_text:
+            return "✨ Great vegetarian option"
+        if 'fish' in all_text or 'salmon' in all_text:
+            return "✨ Omega-3 for healthy coat"
+        if 'beef' in all_text:
+            return "✨ Premium beef for active dogs"
+        return "✨ Balanced nutrition in every bite"
+    
+    # TREATS & SNACKS
+    if any(w in all_text for w in ['treat', 'snack', 'biscuit', 'cookie', 'chew']):
+        if 'dental' in all_text:
+            return "✨ Helps keep teeth clean"
+        if 'training' in all_text:
+            return "✨ Perfect size for rewards"
+        if 'soft' in all_text:
+            return "✨ Easy to chew for all ages"
+        if 'jerky' in all_text:
+            return "✨ High protein, irresistible taste"
+        return "✨ Tail-wagging guaranteed"
+    
+    # PIZZA & BURGERS
+    if any(w in all_text for w in ['pizza', 'burger']):
+        return "✨ A fun twist on mealtime"
+    
+    # FROZEN & ICE CREAM
+    if any(w in all_text for w in ['frozen', 'ice cream', 'popsicle', 'cool']):
+        return "✨ Perfect for hot days"
+    
+    # SUPPLEMENTS & HEALTH
+    if any(w in all_text for w in ['supplement', 'vitamin', 'probiotic', 'omega', 'joint']):
+        if 'joint' in all_text or 'hip' in all_text:
+            return "✨ Supports mobility & comfort"
+        if 'probiotic' in all_text or 'digestive' in all_text:
+            return "✨ For healthy digestion"
+        if 'skin' in all_text or 'coat' in all_text:
+            return "✨ For a healthy, shiny coat"
+        return "✨ For your pet's wellbeing"
+    
+    # TOYS & ACCESSORIES
+    if any(w in all_text for w in ['toy', 'ball', 'rope', 'plush', 'squeaky']):
+        return "✨ Hours of fun guaranteed"
+    
+    # BEDS & COMFORT
+    if any(w in all_text for w in ['bed', 'mat', 'blanket', 'cushion']):
+        return "✨ Cozy comfort for naptime"
+    
+    # BOWL & FEEDING
+    if any(w in all_text for w in ['bowl', 'feeder', 'dispenser']):
+        return "✨ Mealtime made easy"
+    
+    # Default based on category
+    category_defaults = {
+        'celebrate': "✨ Makes celebrations special",
+        'dine': "✨ Nutritious & delicious",
+        'care': "✨ For your pet's wellbeing",
+        'travel': "✨ Travel-ready essential",
+        'enjoy': "✨ Adventure ready",
+        'fit': "✨ Supports active lifestyle",
+        'shop': "✨ Handpicked for quality"
+    }
+    
+    for cat, hint in category_defaults.items():
+        if cat in category:
+            return hint
+    
+    return "✨ Mira recommends"
+
+
+@api_router.put("/admin/products/{product_id}/mira-hint")
+async def update_product_mira_hint(product_id: str, data: dict):
+    """Update mira_hint for a specific product"""
+    mira_hint = data.get("mira_hint", "")
+    
+    result = await db.products.update_one(
+        {"$or": [{"id": product_id}, {"shopify_id": product_id}]},
+        {"$set": {
+            "mira_hint": mira_hint,
+            "updated_at": get_utc_timestamp()
+        }}
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail="Product not found")
+    
+    return {"success": True, "mira_hint": mira_hint}
+
+
+@api_router.post("/admin/products/auto-seed-mira-hints")
+async def auto_seed_mira_hints(background_tasks: BackgroundTasks):
+    """Auto-seed mira_hint for all products that don't have one"""
+    
+    # Count products needing hints
+    count = await db.products.count_documents({
+        "$or": [
+            {"mira_hint": {"$exists": False}},
+            {"mira_hint": None},
+            {"mira_hint": ""}
+        ]
+    })
+    
+    # Run seeding in background
+    async def seed_hints():
+        cursor = db.products.find({
+            "$or": [
+                {"mira_hint": {"$exists": False}},
+                {"mira_hint": None},
+                {"mira_hint": ""}
+            ]
+        })
+        
+        updated = 0
+        async for product in cursor:
+            hint = generate_mira_hint(product)
+            await db.products.update_one(
+                {"_id": product["_id"]},
+                {"$set": {"mira_hint": hint}}
+            )
+            updated += 1
+        
+        logging.info(f"[Mira Hints] Auto-seeded {updated} products")
+    
+    background_tasks.add_task(seed_hints)
+    
+    return {
+        "success": True,
+        "message": f"Auto-seeding {count} products in background",
+        "products_to_update": count
+    }
+
+
+@api_router.post("/admin/products/regenerate-all-mira-hints")
+async def regenerate_all_mira_hints(background_tasks: BackgroundTasks):
+    """Regenerate mira_hint for ALL products (overwrites existing)"""
+    
+    count = await db.products.count_documents({})
+    
+    async def regenerate_hints():
+        cursor = db.products.find({})
+        updated = 0
+        async for product in cursor:
+            hint = generate_mira_hint(product)
+            await db.products.update_one(
+                {"_id": product["_id"]},
+                {"$set": {"mira_hint": hint}}
+            )
+            updated += 1
+        logging.info(f"[Mira Hints] Regenerated hints for {updated} products")
+    
+    background_tasks.add_task(regenerate_hints)
+    
+    return {
+        "success": True,
+        "message": f"Regenerating hints for {count} products in background",
+        "products_to_update": count
+    }
+
 @api_router.get("/admin/products/{product_id}")
 async def get_admin_product_details(product_id: str):
     """Get full product details for admin editing"""
