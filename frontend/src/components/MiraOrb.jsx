@@ -98,7 +98,6 @@ const MiraOrb = ({
   showLabel = false, // Label hidden by default - the orb speaks for itself
   className = '',
 }) => {
-  const [particles, setParticles] = useState([]);
   const orbRef = useRef(null);
   
   // Get pillar theme
