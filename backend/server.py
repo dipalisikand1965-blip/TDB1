@@ -7889,6 +7889,87 @@ async def get_products_by_breed(breed: str, limit: int = 50):
     
     return {"breed": breed, "products": products, "count": len(products)}
 
+
+@api_router.post("/products/recommend-for-breed")
+async def recommend_products_for_breed(request: dict):
+    """
+    Get personalized product recommendations based on pet's breed profile.
+    Uses breed_metadata for intelligent matching.
+    
+    Request body:
+    {
+        "breed": "Labrador",
+        "size": "L",
+        "age": "adult",
+        "pillar": "celebrate",
+        "limit": 10
+    }
+    """
+    breed = request.get("breed", "")
+    size = request.get("size", "M")
+    age = request.get("age", "adult")
+    pillar = request.get("pillar")
+    limit = min(request.get("limit", 10), 50)
+    
+    # Build match query
+    query = {"is_active": True}
+    
+    if pillar:
+        # Match pillar in category, parent_category, or breed_metadata.pillars
+        query["$or"] = [
+            {"category": {"$regex": pillar, "$options": "i"}},
+            {"parent_category": {"$regex": pillar, "$options": "i"}},
+            {"breed_metadata.pillars": pillar}
+        ]
+    
+    # Fetch products
+    products = await db.products.find(
+        query,
+        {"_id": 0}
+    ).limit(200).to_list(200)
+    
+    # Score products based on breed matching
+    scored = []
+    for p in products:
+        score = 50  # Base score
+        meta = p.get("breed_metadata", {})
+        
+        # Breed match
+        breed_list = meta.get("breeds", [])
+        if not breed_list or breed in breed_list:
+            score += 30
+        
+        # Size match
+        size_list = meta.get("sizes", [])
+        if not size_list or size in size_list:
+            score += 15
+        
+        # Age match
+        age_list = meta.get("age_groups", [])
+        if not age_list or age in age_list:
+            score += 15
+        
+        # Pillar match
+        pillar_list = meta.get("pillars", [])
+        if pillar and pillar in pillar_list:
+            score += 20
+        
+        # Has mira_hint bonus
+        if p.get("mira_hint"):
+            score += 5
+        
+        scored.append({"product": p, "score": score})
+    
+    # Sort by score
+    scored.sort(key=lambda x: x["score"], reverse=True)
+    
+    return {
+        "breed": breed,
+        "recommendations": [s["product"] for s in scored[:limit]],
+        "context": {"size": size, "age": age, "pillar": pillar}
+    }
+
+
 @api_router.put("/admin/products/{product_id}/bundle-config")
 async def update_product_bundle_config(product_id: str, bundle_config: dict):
     """Update bundle configuration for a product"""
