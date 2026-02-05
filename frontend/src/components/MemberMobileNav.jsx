@@ -90,7 +90,7 @@ const MemberMobileNav = () => {
       items: [
         { path: '/', label: 'Home', icon: Home },
         { path: '/shop', label: 'Shop', icon: ShoppingBag },
-        { path: '/services', label: 'Care', icon: Sparkles },
+        { path: '/services', label: 'Services', icon: Sparkles },
       ]
     },
     {
