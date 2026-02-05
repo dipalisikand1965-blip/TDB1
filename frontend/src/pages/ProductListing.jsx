@@ -733,7 +733,10 @@ const ProductListing = ({ category: propCategory, pillar = 'celebrate' }) => {
                 activePet={activePet}
                 onAdd={(p) => {
                   addToCart({ ...p, quantity: 1 });
-                  toast({ title: 'Added', description: `${p.name} added to cart` });
+                  toast({ 
+                    title: 'Included', 
+                    description: `Added to ${activePet?.name || 'your pet'}'s celebration plan` 
+                  });
                 }}
               />
             ))}
