@@ -10853,6 +10853,43 @@ async def update_pet_profile(pet_id: str, updates: PetProfileUpdate):
     
     await db.pets.update_one({"id": pet_id}, {"$set": update_data})
     
+    # Create admin notification for pet profile update
+    try:
+        pet_name = pet.get("name", "Unknown Pet")
+        owner_email = pet.get("owner_email", "Unknown")
+        # Get owner info from members collection
+        member = await db.members.find_one({"pets.id": pet_id})
+        if member:
+            owner_email = member.get("email", owner_email)
+            owner_name = member.get("name", member.get("email", "Unknown"))
+        else:
+            owner_name = pet.get("owner_name", owner_email)
+        
+        # Determine what was updated
+        updated_fields = list(update_data.keys())
+        updated_fields = [f for f in updated_fields if f not in ['updated_at']]
+        changes_summary = ", ".join(updated_fields[:3])
+        if len(updated_fields) > 3:
+            changes_summary += f" +{len(updated_fields) - 3} more"
+        
+        notification = {
+            "id": f"notif-{uuid.uuid4().hex[:12]}",
+            "type": "pet_profile_updated",
+            "title": f"🐕 {pet_name}'s profile updated",
+            "message": f"{owner_name} updated {pet_name}'s profile: {changes_summary}",
+            "pet_id": pet_id,
+            "pet_name": pet_name,
+            "owner_email": owner_email,
+            "changes": updated_fields,
+            "read": False,
+            "created_at": get_utc_timestamp()
+        }
+        await db.admin_notifications.insert_one(notification)
+        logger.info(f"Admin notification created for pet update: {pet_name} by {owner_name}")
+    except Exception as e:
+        logger.error(f"Failed to create admin notification: {e}")
+        # Don't fail the request if notification fails
+    
     updated_pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
     return {"message": "Pet profile updated", "pet": updated_pet}
 
