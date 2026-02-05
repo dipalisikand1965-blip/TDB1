@@ -194,6 +194,73 @@ const UnifiedProductBox = () => {
     }
   };
 
+  // Quick Edit Save - for image, price, pillars
+  const quickSave = async () => {
+    if (!quickEditProduct || !quickEditType) return;
+    
+    setQuickSaving(true);
+    try {
+      let updateData = {};
+      
+      if (quickEditType === 'image') {
+        updateData = {
+          image_url: quickEditValue,
+          thumbnail: quickEditValue,
+          images: [quickEditValue]
+        };
+      } else if (quickEditType === 'price') {
+        updateData = {
+          pricing: {
+            ...quickEditProduct.pricing,
+            base_price: parseFloat(quickEditValue) || 0,
+            selling_price: parseFloat(quickEditValue) || 0
+          },
+          price: parseFloat(quickEditValue) || 0
+        };
+      } else if (quickEditType === 'pillars') {
+        updateData = {
+          pillars: quickEditValue,
+          primary_pillar: quickEditValue[0] || quickEditProduct.primary_pillar
+        };
+      }
+      
+      const response = await fetch(`${API_URL}/api/product-box/products/${quickEditProduct.id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(updateData)
+      });
+      
+      if (response.ok) {
+        toast({ title: 'Updated!', description: `${quickEditType} updated successfully` });
+        setQuickEditProduct(null);
+        setQuickEditType(null);
+        setQuickEditValue(null);
+        fetchProducts();
+      } else {
+        const err = await response.json();
+        toast({ title: 'Error', description: err.detail || 'Failed to update', variant: 'destructive' });
+      }
+    } catch (err) {
+      console.error('Quick edit error:', err);
+      toast({ title: 'Error', description: 'Failed to update', variant: 'destructive' });
+    } finally {
+      setQuickSaving(false);
+    }
+  };
+
+  // Open quick edit dialog
+  const openQuickEdit = (product, type) => {
+    setQuickEditProduct(product);
+    setQuickEditType(type);
+    if (type === 'image') {
+      setQuickEditValue(product.image_url || '');
+    } else if (type === 'price') {
+      setQuickEditValue(product.pricing?.base_price || product.price || 0);
+    } else if (type === 'pillars') {
+      setQuickEditValue(product.pillars || [product.primary_pillar].filter(Boolean));
+    }
+  };
+
   // Clone product
   const cloneProduct = async (productId) => {
     try {
