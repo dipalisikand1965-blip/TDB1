@@ -303,6 +303,12 @@ const MiraChatWidget = ({
   useEffect(() => {
     trackPillarVisit(pillar);
     
+    // Listen for external open requests (from voice buttons on pages)
+    const handleOpenMiraChat = () => {
+      setIsOpen(true);
+    };
+    window.addEventListener('openMiraChat', handleOpenMiraChat);
+    
     // Fetch pillar-specific quick prompts
     const fetchQuickPrompts = async () => {
       try {
