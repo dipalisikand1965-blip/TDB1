@@ -362,7 +362,7 @@ const ServicesPage = () => {
   // State
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selectedPillar, setSelectedPillar] = useState(searchParams.get('pillar') || 'all');
+  const [selectedPillar, setSelectedPillar] = useState(searchParams.get('pillar') || 'recommended');
   const [selectedSubcat, setSelectedSubcat] = useState(null);
   const [selectedPet, setSelectedPet] = useState(null);
   const [petSoulData, setPetSoulData] = useState(null);
