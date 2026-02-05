@@ -1179,51 +1179,6 @@ const ProductListing = ({ category = 'all' }) => {
             </div>
           );
         })()}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform"
-                          />
-                        )}
-                      </div>
-                      <div className="p-2">
-                        <p className="text-xs font-medium text-gray-900 truncate">{product.title}</p>
-                        <p className="text-xs text-amber-600 font-bold">₹{product.price || product.minPrice}</p>
-                      </div>
-                      <div className="absolute top-2 right-2 bg-amber-500 text-white text-[10px] px-2 py-0.5 rounded-full">
-                        For {selectedPet.name}
-                      </div>
-                    </div>
-                  </a>
-                </div>
-              ))}
-            </div>
-            
-            {/* Shopping for someone else? */}
-            <div className="mt-4 pt-4 border-t border-amber-200 flex items-center justify-between">
-              <p className="text-sm text-amber-700">
-                <Gift className="w-4 h-4 inline mr-1" />
-                Shopping for another dog? 
-              </p>
-              <div className="flex items-center gap-3">
-                <a 
-                  href="/shop?pillar=celebrate" 
-                  className="text-sm font-medium text-amber-600 hover:text-amber-800 underline"
-                >
-                  Browse Full Collection →
-                </a>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setSelectedPet(null);
-                    setPetRecommendations([]);
-                  }}
-                  className="text-xs border-amber-300 hover:bg-amber-100"
-                >
-                  Clear Filters
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* Products Grid */}
         {filteredProducts.length === 0 ? (
