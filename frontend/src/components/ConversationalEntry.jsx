@@ -11,6 +11,7 @@ import { MessageCircle, Sparkles, ChevronRight, Target, Scale, Zap, Heart, Baby,
 import { useNavigate } from 'react-router-dom';
 import { toast } from '../hooks/use-toast';
 import { Button } from './ui/button';
+import { API_URL } from '../utils/api';
 
 // PILLAR-SPECIFIC GOALS - Each pillar has its own relevant options
 const PILLAR_GOALS = {
