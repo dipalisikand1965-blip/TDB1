@@ -42,8 +42,10 @@ const RequestsTab = ({
     
     setSending(true);
     try {
+      // Use ticket_id if available, otherwise use id
+      const requestId = messageDialog.request.ticket_id || messageDialog.request.id;
       const response = await fetch(
-        `${API}/api/user/request/${messageDialog.request.id}/message?email=${encodeURIComponent(userEmail)}`,
+        `${API}/api/user/request/${requestId}/message?email=${encodeURIComponent(userEmail)}`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
