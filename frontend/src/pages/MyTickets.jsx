@@ -11,8 +11,7 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { usePushNotifications } from '../hooks/usePushNotifications';
 import { toast } from 'sonner';
-
-const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+import { API_URL } from '../utils/api';
 
 // SLA Timer Component
 const SLATimer = ({ createdAt, priority }) => {
