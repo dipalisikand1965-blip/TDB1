@@ -10,8 +10,7 @@ import {
   ShoppingBag, Stethoscope, Star, Percent
 } from 'lucide-react';
 import MemoryTimeline from './MemoryTimeline';
-
-const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+import { API_URL } from '../utils/api';
 
 // Persona icons
 const PERSONA_ICONS = {
