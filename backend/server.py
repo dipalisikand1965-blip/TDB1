@@ -5909,8 +5909,25 @@ async def get_public_products(
     products = []
     seen_ids = set()
     
-    # First, query old products collection
-    old_products = await db.products_master.find(query, {"_id": 0}).to_list(500)
+    # Add breed filter if specified
+    if breed:
+        breed_lower = breed.lower()
+        query["$or"] = query.get("$or", []) + [
+            {"breed_tags": {"$regex": breed_lower, "$options": "i"}},
+            {"tags": {"$regex": breed_lower, "$options": "i"}}
+        ]
+    
+    # Get total count first for pagination
+    total_count = await db.products_master.count_documents(query if query else {})
+    
+    # Calculate skip for pagination
+    skip = (page - 1) * limit
+    
+    # First, query products_master collection with pagination
+    old_products = await db.products_master.find(
+        query, 
+        {"_id": 0}
+    ).skip(skip).limit(limit).to_list(limit)
     for p in old_products:
         pid = p.get("id") or p.get("shopify_id")
         if pid and pid not in seen_ids:
