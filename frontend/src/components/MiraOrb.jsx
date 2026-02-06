@@ -1,152 +1,159 @@
 /**
- * MiraOrb - A Living, Breathing AI Entity
+ * MiraOrb - A Premium, Ethereal AI Presence
  * 
- * A GLOWING, ETHEREAL ORB of light.
- * Premium, calm, intelligent presence.
+ * Not a button. An entity.
+ * Deep, intelligent, calm.
+ * Internal moving light - the intelligence within.
  * 
- * Layered Light approach:
- * - Ambient bloom (back)
- * - Main glowing orb body  
- * - Specular highlight
- * - Soft paw print icon (properly sized)
+ * Inspired by: Apple, Nothing, Vercel, Linear
+ * Designed to hit the soul.
  */
 
 import React from 'react';
 import { motion } from 'framer-motion';
 
-// Paw Print SVG - properly proportioned
-const PawIcon = ({ size }) => (
-  <svg 
-    viewBox="0 0 24 24" 
-    fill="currentColor"
-    style={{ 
-      width: size * 0.4, 
-      height: size * 0.4,
-    }}
-    className="text-white/90 drop-shadow-[0_0_10px_rgba(255,255,255,0.9)]"
-  >
-    <path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-4 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm8 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-4 6c-1.7 0-3 1.3-3 3v1h6v-1c0-1.7-1.3-3-3-3z"/>
-  </svg>
-);
-
-const MiraOrb = ({ 
-  onClick,
-  size = 'md',
-  className = '',
-}) => {
+const MiraOrb = ({ onClick, size = 'md', className = '' }) => {
   const sizes = {
-    sm: { orb: 56 },
-    md: { orb: 72 },
-    lg: { orb: 88 },
+    sm: 64,
+    md: 80,
+    lg: 96,
   };
   
-  const config = sizes[size];
+  const orbSize = sizes[size];
 
   return (
-    <motion.button
+    <motion.div
+      className={`relative cursor-pointer group ${className}`}
+      style={{ width: orbSize, height: orbSize }}
       onClick={(e) => {
-        if (navigator.vibrate) navigator.vibrate(20);
+        if (navigator.vibrate) navigator.vibrate(15);
         onClick?.(e);
       }}
-      className={`relative cursor-pointer focus:outline-none ${className}`}
-      style={{
-        width: config.orb,
-        height: config.orb,
-      }}
-      whileHover={{ scale: 1.1 }}
+      whileHover={{ scale: 1.08 }}
       whileTap={{ scale: 0.95 }}
       data-testid="mira-orb"
     >
-      {/* Layer 1: Ambient Bloom - Large, diffuse purple glow */}
+      {/* Outer Ambient Glow - The 'Aura' */}
       <motion.div
         className="absolute rounded-full pointer-events-none"
         style={{
-          width: config.orb * 1.6,
-          height: config.orb * 1.6,
+          width: orbSize * 2,
+          height: orbSize * 2,
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          background: 'radial-gradient(circle, rgba(168,85,247,0.6) 0%, rgba(124,58,237,0.3) 50%, transparent 70%)',
-          filter: 'blur(16px)',
+          background: 'radial-gradient(circle, rgba(124,58,237,0.5) 0%, rgba(76,29,149,0.25) 40%, transparent 70%)',
+          filter: 'blur(20px)',
         }}
         animate={{
           scale: [1, 1.15, 1],
-          opacity: [0.7, 1, 0.7],
+          opacity: [0.4, 0.7, 0.4],
         }}
         transition={{
-          duration: 4,
+          duration: 6,
           repeat: Infinity,
           ease: "easeInOut",
         }}
       />
 
-      {/* Layer 2: Main Orb Body - Glowing magenta/pink gradient */}
+      {/* Secondary Glow - Cyan accent */}
       <motion.div
         className="absolute rounded-full pointer-events-none"
         style={{
-          width: config.orb,
-          height: config.orb,
-          top: 0,
-          left: 0,
-          background: 'radial-gradient(circle at 35% 35%, #F0ABFC 0%, #D946EF 35%, #A855F7 65%, #7C3AED 100%)',
-          boxShadow: '0 0 30px rgba(217,70,239,0.6), 0 0 60px rgba(168,85,247,0.3), inset 0 0 20px rgba(255,255,255,0.4)',
-        }}
-        animate={{
-          scale: [1, 1.06, 1],
-          opacity: [0.9, 1, 0.9],
-        }}
-        transition={{
-          duration: 4,
-          repeat: Infinity,
-          ease: "easeInOut",
-        }}
-      />
-
-      {/* Layer 3: Inner Glow - Hot white/pink center */}
-      <motion.div
-        className="absolute rounded-full pointer-events-none"
-        style={{
-          width: config.orb * 0.6,
-          height: config.orb * 0.6,
+          width: orbSize * 1.4,
+          height: orbSize * 1.4,
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          background: 'radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(240,171,252,0.5) 60%, transparent 80%)',
-          filter: 'blur(6px)',
+          background: 'radial-gradient(circle at 70% 70%, rgba(34,211,238,0.3) 0%, transparent 50%)',
+          filter: 'blur(12px)',
         }}
         animate={{
-          scale: [1, 1.1, 1],
-          opacity: [0.8, 1, 0.8],
+          opacity: [0.2, 0.4, 0.2],
         }}
         transition={{
-          duration: 3,
+          duration: 4,
           repeat: Infinity,
           ease: "easeInOut",
-          delay: 0.3,
+          delay: 1,
         }}
       />
 
-      {/* Layer 4: Specular Highlight - Top-left glass shine */}
-      <div
-        className="absolute rounded-full pointer-events-none"
+      {/* The Core Entity */}
+      <div 
+        className="relative rounded-full overflow-hidden shadow-2xl"
         style={{
-          width: config.orb * 0.3,
-          height: config.orb * 0.2,
-          top: '12%',
-          left: '18%',
-          background: 'linear-gradient(135deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0) 100%)',
-          filter: 'blur(3px)',
-          borderRadius: '50%',
+          width: orbSize,
+          height: orbSize,
+          boxShadow: '0 0 40px rgba(124,58,237,0.3), 0 0 80px rgba(76,29,149,0.2), inset 0 0 30px rgba(0,0,0,0.8)',
+          border: '1px solid rgba(255,255,255,0.08)',
         }}
-      />
-
-      {/* Layer 5: Paw Icon - Centered, properly sized */}
-      <div
-        className="absolute inset-0 flex items-center justify-center pointer-events-none"
       >
-        <PawIcon size={config.orb} />
+        {/* Deep Space Background */}
+        <div 
+          className="absolute inset-0"
+          style={{
+            background: 'radial-gradient(circle at 30% 30%, #1a1a2e 0%, #0a0a12 50%, #050508 100%)',
+          }}
+        />
+
+        {/* Moving Internal Light - The 'Intelligence' */}
+        <motion.div
+          className="absolute pointer-events-none"
+          style={{
+            width: orbSize * 2,
+            height: orbSize * 2,
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            background: 'conic-gradient(from 0deg, transparent 0%, rgba(139,92,246,0.6) 15%, transparent 30%, rgba(56,189,248,0.4) 50%, transparent 65%, rgba(167,139,250,0.5) 80%, transparent 100%)',
+            filter: 'blur(15px)',
+            opacity: 0.8,
+          }}
+          animate={{
+            rotate: 360,
+          }}
+          transition={{
+            duration: 12,
+            repeat: Infinity,
+            ease: "linear",
+          }}
+        />
+
+        {/* Inner Core Highlight - Glass reflection */}
+        <div
+          className="absolute inset-0 rounded-full pointer-events-none"
+          style={{
+            background: 'radial-gradient(circle at 25% 25%, rgba(255,255,255,0.2) 0%, transparent 50%)',
+          }}
+        />
+
+        {/* Second reflection - bottom */}
+        <div
+          className="absolute inset-0 rounded-full pointer-events-none"
+          style={{
+            background: 'radial-gradient(circle at 70% 80%, rgba(124,58,237,0.15) 0%, transparent 40%)',
+          }}
+        />
+        
+        {/* Subtle Pulse Overlay - The heartbeat */}
+        <motion.div
+          className="absolute inset-0 rounded-full pointer-events-none"
+          style={{
+            background: 'radial-gradient(circle, rgba(139,92,246,0.3) 0%, transparent 70%)',
+          }}
+          animate={{ 
+            opacity: [0, 0.3, 0],
+            scale: [0.8, 1, 0.8],
+          }}
+          transition={{ 
+            duration: 4, 
+            repeat: Infinity, 
+            ease: "easeInOut" 
+          }}
+        />
       </div>
-    </motion.button>
+    </motion.div>
   );
 };
 
