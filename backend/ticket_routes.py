@@ -732,8 +732,8 @@ async def list_tickets(
     # Fetch from BOTH collections and merge
     all_tickets = []
     
-    # Fetch double the limit from each collection to ensure proper sorting after merge
-    fetch_limit = limit * 2
+    # Fetch more from each collection to ensure we get all recent tickets
+    fetch_limit = max(limit * 3, 100)
     
     # 1. From tickets collection (legacy)
     try:
