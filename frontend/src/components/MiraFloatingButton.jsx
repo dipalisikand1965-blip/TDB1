@@ -16,6 +16,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Sparkles, MessageCircle, X, Zap, Phone } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import Pulse from './Pulse';
+import { API_URL } from '../utils/api';
 
 // Pillars where Mira should auto-show (NOT auto-speak)
 const AUTO_SHOW_PILLARS = ['/care', '/emergency', '/farewell'];
