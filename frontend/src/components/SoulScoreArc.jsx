@@ -39,7 +39,17 @@ const SoulScoreArc = ({
     xl: { container: 200, stroke: 12, fontSize: 'text-4xl', labelSize: 'text-lg' }
   };
 
-  const config = sizes[size] || sizes.md;
+  // Handle both string and numeric size prop
+  const getConfig = () => {
+    if (typeof size === 'number') {
+      // Numeric size - calculate proportionally
+      const strokeW = strokeWidth || Math.max(4, size / 20);
+      return { container: size, stroke: strokeW, fontSize: 'text-2xl', labelSize: 'text-sm' };
+    }
+    return sizes[size] || sizes.md;
+  };
+  
+  const config = getConfig();
   const radius = (config.container - config.stroke) / 2;
   const circumference = 2 * Math.PI * radius;
   const strokeDashoffset = circumference - (animatedScore / 100) * circumference;
