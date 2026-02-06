@@ -867,12 +867,9 @@ const EnjoyPage = () => {
         maxServices={8}
       />
       
-      {/* Mira Floating Chat Widget */}
-      <MiraChatWidget pillar="enjoy" />
-      
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="enjoy" position="bottom-left" />
-    </div>
+    </PillarPageLayout>
   );
 };
 
