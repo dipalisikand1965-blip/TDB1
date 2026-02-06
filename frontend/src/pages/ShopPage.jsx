@@ -19,6 +19,7 @@ import { toast } from '../hooks/use-toast';
 import MiraChatWidget from '../components/MiraChatWidget';
 import SEOHead from '../components/SEOHead';
 import SoulScoreArc from '../components/SoulScoreArc';
+import PersonalizedHero from '../components/PersonalizedHero';
 import {
   Search, Heart, ArrowRight, X, Package, Mic,
   PawPrint, Briefcase, Sparkles, Cake, Stethoscope, 
