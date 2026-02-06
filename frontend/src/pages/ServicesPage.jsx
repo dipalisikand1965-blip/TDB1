@@ -902,7 +902,7 @@ const ServicesPage = () => {
                   className="text-xs sm:text-sm text-purple-600 hover:text-purple-700 hover:underline mt-1 flex items-center gap-1.5"
                 >
                   <PawPrint className="w-3.5 h-3.5" />
-                  Looking for a friend's pet? Filter by breed →
+                  Looking for a friend&apos;s pet? Filter by breed →
                 </button>
               )}
             </div>
