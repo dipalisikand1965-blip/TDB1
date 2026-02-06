@@ -311,70 +311,42 @@ const FarewellPage = () => {
   return (
     <PillarPageLayout
       pillar="farewell"
-      title="Honouring Your Pet"
-      description="Support with dignity and care"
+      title="Farewell - Memorial Services | The Doggy Company"
+      description="Compassionate end-of-life services. Support with dignity and care."
     >
-      {/* SEO Meta Tags */}
-      <SEOHead page="farewell" path="/farewell" />
-
-      {/* Hero Section - Soft and Compassionate */}
-      <section className="relative py-20 px-4 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white overflow-hidden">
-        {/* Mobile Back Button */}
-        <button 
-          onClick={() => navigate(-1)}
-          className="sm:hidden absolute top-4 left-4 z-10 p-2 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-colors"
-          aria-label="Go back"
-        >
-          <ChevronLeft className="w-6 h-6 text-white" />
-        </button>
-        
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-10 left-10 w-32 h-32 bg-white rounded-full blur-3xl"></div>
-          <div className="absolute bottom-10 right-10 w-48 h-48 bg-pink-300 rounded-full blur-3xl"></div>
-        </div>
-        
-        <div className="relative max-w-6xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 mb-6">
-            <Rainbow className="w-5 h-5" />
-            <span className="font-medium">Farewell with Love</span>
-          </div>
-          
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Honouring the Bond 🌈
-          </h1>
-          <p className="text-xl text-white/90 max-w-2xl mx-auto mb-8">
-            Compassionate end-of-life services to celebrate the beautiful life your pet lived and the love you shared.
-          </p>
-          
-          <div className="flex flex-wrap justify-center gap-4">
-            <Button 
-              onClick={() => setShowServiceModal(true)}
-              className="bg-white text-purple-700 hover:bg-white/90 px-8 py-3"
-              data-testid="farewell-get-support-btn"
-            >
-              <Heart className="w-5 h-5 mr-2" />
-              Get Support Now
-            </Button>
-            <Button 
-              variant="outline"
-              className="border-white/50 text-white hover:bg-white/10 px-8 py-3"
-              onClick={() => document.getElementById('packages').scrollIntoView({ behavior: 'smooth' })}
-            >
-              View Services
-              <ChevronRight className="w-4 h-4 ml-1" />
-            </Button>
-          </div>
-          
-          {/* 24/7 Support Notice */}
-          <div className="mt-8 inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
-            <Phone className="w-4 h-4" />
-            <span className="text-sm">24/7 Compassionate Support: <strong>+91 98765 43210</strong></span>
+      {/* 24/7 Support Banner - Below Hero */}
+      <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-4">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <Phone className="w-5 h-5" />
+              <span className="text-sm">24/7 Compassionate Support: <strong>+91 98765 43210</strong></span>
+            </div>
+            <div className="flex gap-3">
+              <Button 
+                size="sm"
+                onClick={() => setShowServiceModal(true)}
+                className="bg-white text-purple-700 hover:bg-white/90"
+                data-testid="farewell-get-support-btn"
+              >
+                <Heart className="w-4 h-4 mr-1" />
+                Get Support
+              </Button>
+              <Button 
+                size="sm"
+                variant="outline"
+                className="border-white/50 text-white hover:bg-white/10"
+                onClick={() => document.getElementById('packages').scrollIntoView({ behavior: 'smooth' })}
+              >
+                View Services
+              </Button>
+            </div>
           </div>
         </div>
-      </section>
+      </div>
 
       {/* Service Categories - 2x2 on mobile, 4 cols on desktop */}
-      <section className="py-12 px-4 -mt-8 relative z-10">
+      <section className="py-12 px-4 relative z-10">
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             {Object.values(SERVICE_CATEGORIES).map((cat) => {
