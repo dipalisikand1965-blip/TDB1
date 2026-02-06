@@ -2,85 +2,158 @@
  * MiraLoveNote.jsx
  * A beautiful, emotional message from Mira about the pet
  * Makes pet parents go "wow, they really know my baby!"
+ * Now with TIME-OF-DAY awareness!
  */
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { Sparkles, Heart, Quote } from 'lucide-react';
 
-// Emotional, personalized messages based on pet data
+// Get time of day
+const getTimeOfDay = () => {
+  const hour = new Date().getHours();
+  if (hour >= 5 && hour < 12) return 'morning';
+  if (hour >= 12 && hour < 17) return 'afternoon';
+  if (hour >= 17 && hour < 21) return 'evening';
+  return 'night';
+};
+
+// Emotional, personalized messages based on pet data AND time of day
 const generateLoveNote = (pet) => {
   if (!pet) return null;
   
   const name = pet.name || 'your furry friend';
   const breed = (pet.breed || '').toLowerCase();
+  const timeOfDay = getTimeOfDay();
   const answers = pet.doggy_soul_answers || pet.soul_answers || {};
   
   // Check for specific soul data
   const nature = answers.describe_3_words || answers.general_nature || '';
   const treats = answers.favorite_treats || '';
   const activeTime = answers.energetic_time || '';
-  const walks = answers.walks_per_day || '';
   
   // Build personalized messages based on what we know
   const messages = [];
   
-  // Breed-specific emotional messages
+  // ============================================
+  // TIME-OF-DAY SPECIFIC MESSAGES (Priority!)
+  // ============================================
+  if (timeOfDay === 'morning') {
+    messages.push(
+      `${name}'s morning zoomies are the best alarm clock! ☀️`,
+      `Good morning starts with ${name}'s excited face 🌅`,
+      `${name} woke up ready to make today amazing ✨`,
+      `Those sleepy ${name} stretches melt hearts every morning 🥰`,
+      `${name}'s breakfast excitement is pure joy to watch 🍳`
+    );
+    if (breed.includes('shih')) {
+      messages.push(`${name}'s morning floof is absolutely majestic ☀️`);
+    }
+    if (breed.includes('retriever') || breed.includes('golden')) {
+      messages.push(`${name} is already planning today's adventures! 🌞`);
+    }
+  }
+  
+  if (timeOfDay === 'afternoon') {
+    messages.push(
+      `${name} hopes you're having a wonderful day! 🌤️`,
+      `Afternoon cuddle break with ${name}? Yes please! 💕`,
+      `${name} is thinking about you right now 🥰`,
+      `${name}'s afternoon nap face is everything 😴`,
+      `Mid-day ${name} check-in: still adorable ✨`
+    );
+    if (breed.includes('shih')) {
+      messages.push(`${name} is perfecting the art of the afternoon lounge 👑`);
+    }
+    if (breed.includes('pug')) {
+      messages.push(`${name} is snoring through the afternoon in the cutest way 😴`);
+    }
+  }
+  
+  if (timeOfDay === 'evening') {
+    messages.push(
+      `${name} can't wait for evening walkies! 🌅`,
+      `Evening snuggles with ${name} are the best reward 💕`,
+      `${name} is ready for couch cuddles and treats 🛋️`,
+      `The best part of your day? Coming home to ${name} 🏠`,
+      `${name}'s happy dance when you come home... priceless 💕`
+    );
+    if (breed.includes('retriever') || breed.includes('golden')) {
+      messages.push(`${name} saved all their tail wags for you! 🌙`);
+    }
+  }
+  
+  if (timeOfDay === 'night') {
+    messages.push(
+      `${name} is ready for bedtime snuggles 🌙`,
+      `Sweet dreams are made of ${name}'s love 💫`,
+      `${name}'s sleepy eyes say "one more treat?" 🥺`,
+      `Goodnight kisses from ${name} are the best 😘`,
+      `${name} will keep your feet warm tonight 🛏️`
+    );
+    if (breed.includes('shih')) {
+      messages.push(`${name} has claimed their spot on the bed already 👑🌙`);
+    }
+  }
+  
+  // ============================================
+  // BREED-SPECIFIC MESSAGES (Always included)
+  // ============================================
   if (breed.includes('shih')) {
     messages.push(
       `${name}'s little paws leave the biggest prints on your heart 🐾`,
-      `That royal Shih Tzu attitude? ${name} was born to be adored`,
-      `${name}'s silky coat deserves nothing but the finest care`,
+      `That royal Shih Tzu attitude? ${name} was born to be adored 👑`,
+      `${name}'s silky coat deserves nothing but the finest care ✨`,
       `Every moment with ${name} is a royal affair 👑`
     );
   } else if (breed.includes('retriever') || breed.includes('golden')) {
     messages.push(
       `${name}'s golden heart shines brighter than their coat ✨`,
-      `That wagging tail? ${name} spreads pure joy everywhere`,
-      `${name} lives life with boundless enthusiasm - and we love that`,
+      `That wagging tail? ${name} spreads pure joy everywhere 💕`,
+      `${name} lives life with boundless enthusiasm - and we love that ⚡`,
       `Every tennis ball is an adventure when you're ${name} 🎾`
     );
   } else if (breed.includes('lab')) {
     messages.push(
       `${name}'s love is as endless as their appetite for treats 💕`,
-      `That Lab loyalty? ${name} is your forever friend`,
-      `${name} makes every day a celebration`,
-      `Swimming, playing, loving - ${name} does it all with heart`
+      `That Lab loyalty? ${name} is your forever friend 🤝`,
+      `${name} makes every day a celebration 🎉`,
+      `Swimming, playing, loving - ${name} does it all with heart 💙`
     );
   } else if (breed.includes('pug')) {
     messages.push(
       `${name}'s snorts and wiggles make every day better 🥰`,
-      `That Pug personality? ${name} is pure entertainment`,
-      `${name}'s smooshy face holds so much love`,
-      `Compact size, enormous heart - that's ${name}`
+      `That Pug personality? ${name} is pure entertainment 🎭`,
+      `${name}'s smooshy face holds so much love 💕`,
+      `Compact size, enormous heart - that's ${name} 💖`
     );
   } else if (breed.includes('beagle')) {
     messages.push(
       `${name}'s nose leads to adventure, but their heart leads home 🏠`,
-      `That Beagle howl? Music to your ears`,
-      `${name} finds joy in every sniff and discovery`,
-      `Curious, loving, loyal - ${name} is the whole package`
+      `That Beagle howl? Music to your ears 🎵`,
+      `${name} finds joy in every sniff and discovery 🔍`,
+      `Curious, loving, loyal - ${name} is the whole package 💕`
     );
   } else if (breed.includes('german') || breed.includes('shepherd')) {
     messages.push(
       `${name}'s intelligence is matched only by their devotion 🌟`,
-      `Loyal protector, loving companion - ${name} is both`,
-      `${name} doesn't just follow commands, they follow their heart`,
-      `That noble spirit? ${name} was born to be your guardian`
+      `Loyal protector, loving companion - ${name} is both 🛡️`,
+      `${name} doesn't just follow commands, they follow their heart 💕`,
+      `That noble spirit? ${name} was born to be your guardian 👑`
     );
   } else if (breed.includes('poodle')) {
     messages.push(
       `${name}'s elegance is only surpassed by their smarts ✨`,
-      `That curly coat holds a heart of gold`,
-      `${name} isn't just beautiful - they're brilliant`,
-      `Grace, intelligence, love - ${name} has it all`
+      `That curly coat holds a heart of gold 💛`,
+      `${name} isn't just beautiful - they're brilliant 🧠`,
+      `Grace, intelligence, love - ${name} has it all 💕`
     );
   } else {
     // Generic but still emotional
     messages.push(
       `${name} makes every day a little brighter 🌟`,
-      `That look in ${name}'s eyes? Pure, unconditional love`,
-      `${name} doesn't need words to tell you how much they care`,
-      `Every tail wag from ${name} is a love letter to you 💕`
+      `That look in ${name}'s eyes? Pure, unconditional love 💕`,
+      `${name} doesn't need words to tell you how much they care 🥰`,
+      `Every tail wag from ${name} is a love letter to you 💌`
     );
   }
   
@@ -102,17 +175,8 @@ const generateLoveNote = (pet) => {
     messages.push(`We know ${name} would do anything for ${treatStr} 🦴`);
   }
   
-  if (activeTime) {
-    if (activeTime.toLowerCase().includes('morning')) {
-      messages.push(`${name}'s morning energy? Better than any coffee ☀️`);
-    }
-    if (activeTime.toLowerCase().includes('evening')) {
-      messages.push(`Evening cuddles with ${name}? The best way to end any day 🌙`);
-    }
-  }
-  
-  // Pick a random message
-  const randomIndex = Math.floor(Date.now() / 60000) % messages.length; // Changes every minute
+  // Pick a message - changes every minute, prioritizes time-based
+  const randomIndex = Math.floor(Date.now() / 60000) % messages.length;
   return messages[randomIndex];
 };
 
