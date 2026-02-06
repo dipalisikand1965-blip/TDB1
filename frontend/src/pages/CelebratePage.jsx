@@ -309,129 +309,148 @@ const CelebratePage = () => {
         path="/celebrate"
       />
       
-      {/* Hero Section - Personalized for Meister! */}
-      <div className="relative bg-gradient-to-r from-pink-600 via-rose-600 to-purple-600 text-white py-8 sm:py-16 px-4 overflow-hidden">
-        {/* Rotating background images */}
-        <div className="absolute inset-0">
-          <img 
-            src={HERO_IMAGES[heroIndex]}
-            alt="Pet Celebration"
-            className="w-full h-full object-cover opacity-20 transition-opacity duration-1000"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-pink-600/90 via-rose-600/80 to-purple-600/70" />
+      {/* Hero Section - Matching Shop/Services Design! */}
+      <div className="relative bg-gradient-to-br from-[#4A1942] via-[#2D1B4E] to-[#1E3A5F] text-white overflow-hidden">
+        {/* Decorative elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-10 right-10 w-64 h-64 bg-pink-500/20 rounded-full blur-3xl" />
+          <div className="absolute bottom-10 left-10 w-48 h-48 bg-purple-500/20 rounded-full blur-3xl" />
+          {/* Floating paw prints */}
+          {[...Array(4)].map((_, i) => (
+            <PawPrint
+              key={i}
+              className="absolute text-white/5"
+              style={{
+                left: `${20 + i * 20}%`,
+                top: `${30 + (i % 2) * 40}%`,
+                width: `${40 + i * 10}px`,
+                height: `${40 + i * 10}px`,
+                transform: `rotate(${i * 15}deg)`
+              }}
+            />
+          ))}
+          {/* Floating party decorations */}
+          <div className="absolute top-6 sm:top-10 left-4 sm:left-10 text-3xl sm:text-4xl animate-bounce opacity-30">🎈</div>
+          <div className="absolute top-12 sm:top-20 right-4 sm:right-20 text-2xl sm:text-3xl animate-pulse opacity-30">🎉</div>
         </div>
         
-        {/* Floating decorations */}
-        <div className="absolute top-6 sm:top-10 left-4 sm:left-10 text-3xl sm:text-4xl animate-bounce opacity-50">🎈</div>
-        <div className="absolute top-12 sm:top-20 right-4 sm:right-20 text-2xl sm:text-3xl animate-pulse opacity-50">🎉</div>
-        <div className="absolute bottom-6 sm:bottom-10 left-1/4 text-xl sm:text-2xl animate-bounce opacity-50" style={{animationDelay: '0.5s'}}>🎂</div>
-        
-        {/* Mobile Back Button */}
-        <button 
-          onClick={() => navigate(-1)}
-          className="sm:hidden absolute top-4 left-4 z-10 p-2 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-colors"
-          aria-label="Go back"
-        >
-          <ChevronLeft className="w-6 h-6 text-white" />
-        </button>
-        
-        <div className="relative max-w-6xl mx-auto">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 lg:py-10 relative z-10">
           <div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-10">
             
-            {/* Pet Photo Section - MEISTER IS THE HERO! */}
+            {/* Pet Avatar with Soul Score Arc */}
             {activePet && (
               <div className="relative flex-shrink-0">
                 {/* Glow effect */}
-                <div className="absolute inset-0 bg-gradient-to-br from-pink-400/40 to-purple-400/40 rounded-full blur-xl scale-125 animate-pulse" />
+                <div className="absolute inset-0 bg-gradient-to-br from-pink-500/30 to-purple-500/30 rounded-full blur-xl scale-125 animate-pulse" />
                 
-                {/* Pet Photo */}
-                <div className="relative w-28 h-28 sm:w-36 sm:h-36 rounded-full overflow-hidden border-4 border-white/30 shadow-2xl">
-                  {activePet.photo_url || activePet.image ? (
-                    <img 
-                      src={activePet.photo_url || activePet.image}
-                      alt={activePet.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-pink-200 to-purple-200 flex items-center justify-center">
-                      <Dog className="w-14 h-14 text-pink-400" />
+                {/* Soul Score Arc */}
+                <div className="relative">
+                  <SoulScoreArc score={petSoulData?.overall_score || activePet?.soul_score || 0} size={140} strokeWidth={6}>
+                    {/* Pet Photo */}
+                    <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-white/20 shadow-2xl">
+                      {activePet.photo_url || activePet.image ? (
+                        <img 
+                          src={activePet.photo_url || activePet.image}
+                          alt={activePet.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-pink-200 to-purple-200 flex items-center justify-center">
+                          <PawPrint className="w-12 h-12 text-pink-400" />
+                        </div>
+                      )}
                     </div>
-                  )}
+                  </SoulScoreArc>
                 </div>
                 
-                {/* Party hat decoration */}
+                {/* Party decoration */}
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 text-3xl">🎂</div>
               </div>
             )}
             
             {/* Content */}
             <div className={`flex-1 ${activePet ? 'text-center lg:text-left' : 'text-center'}`}>
-              <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-white/20 backdrop-blur-sm rounded-full mb-4 sm:mb-5 animate-fade-in-up">
-                <PartyPopper className="w-4 sm:w-5 h-4 sm:h-5" />
-                <span className="font-medium text-sm sm:text-base">
-                  {activePet ? `🎉 Party time for ${activePet.name}!` : 'Every Paw Deserves a Party'}
-                </span>
-              </div>
+              {/* Soul badge */}
+              {activePet && (
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 backdrop-blur rounded-full text-white/90 text-xs sm:text-sm mb-3">
+                  <Crown className="w-4 h-4 text-amber-400" />
+                  <span>Pet Soul™ {petSoulData?.overall_score || activePet?.soul_score || 0}% Complete</span>
+                </div>
+              )}
               
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 animate-fade-in-up" style={{animationDelay: '0.1s'}}>
-                {activePet ? (
-                  <>Celebrate <span className="text-pink-200">{activePet.name}</span></>
-                ) : (
-                  'Celebrate'
-                )}
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-white leading-tight mb-2">
+                Celebrate{' '}
+                <span className="bg-gradient-to-r from-pink-400 via-rose-400 to-amber-400 bg-clip-text text-transparent">
+                  {activePet ? activePet.name : 'Your Pet'}
+                </span>
               </h1>
               
-              <p className="text-base sm:text-lg md:text-xl text-pink-100 max-w-2xl mb-4 sm:mb-5 px-2 lg:px-0 animate-fade-in-up" style={{animationDelay: '0.2s'}}>
+              <p className="text-sm sm:text-base lg:text-lg text-white/70 mb-3 sm:mb-4 max-w-xl">
                 {activePet 
-                  ? `Custom cakes, treats & unforgettable celebrations for ${activePet.name}`
+                  ? `Custom cakes, treats & unforgettable celebrations curated for ${activePet.name}`
                   : 'Custom cakes, treats & unforgettable celebrations for your furry family members'
                 }
               </p>
               
-              {/* Mira's emotional message for the pet */}
+              {/* Soul Traits */}
+              {activePet && petSoulData?.answers && (
+                <div className="flex flex-wrap gap-2 mb-4 justify-center lg:justify-start">
+                  {petSoulData.answers.describe_3_words && (
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-full text-white/90 text-xs sm:text-sm">
+                      <span>✨</span>
+                      <span>{Array.isArray(petSoulData.answers.describe_3_words) ? petSoulData.answers.describe_3_words.slice(0, 3).join(', ') : petSoulData.answers.describe_3_words}</span>
+                    </div>
+                  )}
+                  {petSoulData.answers.favorite_treats && (
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-full text-white/90 text-xs sm:text-sm">
+                      <span>🍖</span>
+                      <span>Loves {Array.isArray(petSoulData.answers.favorite_treats) ? petSoulData.answers.favorite_treats.slice(0, 2).join(', ') : petSoulData.answers.favorite_treats}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+              
+              {/* Mira's emotional message */}
               {activePet && (
-                <div className="flex items-start gap-3 mb-5 justify-center lg:justify-start animate-fade-in-up" style={{animationDelay: '0.25s'}}>
-                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                <div className="flex items-start gap-3 mb-5 justify-center lg:justify-start">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-pink-400 flex items-center justify-center shadow-lg">
                     <Sparkles className="w-4 h-4 text-white" />
                   </div>
-                  <div className="bg-white/10 backdrop-blur-md rounded-2xl rounded-tl-sm px-4 py-2.5 max-w-md">
-                    <p className="text-sm text-white/90 font-medium">
-                      &ldquo;{activePet.name}&apos;s birthday is the most important day of the year! Let&apos;s make it unforgettable 🎂&rdquo;
+                  <div className="bg-white/10 backdrop-blur-md rounded-2xl rounded-tl-sm px-4 py-3 border border-white/20 max-w-md">
+                    <p className="text-sm md:text-base text-white/90 font-medium leading-relaxed">
+                      &ldquo;🎂 Is it almost {activePet.name}&apos;s birthday? Let&apos;s make it unforgettable!&rdquo;
                     </p>
-                    <p className="text-xs text-white/50 mt-1 flex items-center gap-1">
-                      <Heart className="w-3 h-3 fill-pink-300 text-pink-300" />
-                      Mira loves {activePet.name}
+                    <p className="text-xs text-white/50 mt-1.5 flex items-center gap-1">
+                      <Heart className="w-3 h-3 fill-pink-400 text-pink-400" />
+                      Mira knows {activePet.name}
                     </p>
                   </div>
                 </div>
               )}
               
-              {/* Action buttons */}
-              <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-3 sm:gap-4 px-4 sm:px-0 animate-fade-in-up" style={{animationDelay: '0.3s'}}>
-                <Button 
-                  size="lg" 
-                  onClick={() => setShowPartyWizard(true)}
-                  className="w-full sm:w-auto bg-white text-pink-600 hover:bg-pink-50 gap-2 h-12 sm:h-11 text-base font-semibold shadow-lg active:scale-95 transition-transform"
-                  data-testid="party-planning-wizard-btn"
-                >
-                  <Sparkles className="w-5 h-5" />
-                  {activePet ? `🎉 Plan ${activePet.name}'s Party` : '🎉 Plan My Party'}
-                </Button>
-                <Button 
-                  size="lg" 
-                  onClick={() => handleBuildBox('birthday')}
-                  className="w-full sm:w-auto bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 border border-white/40 gap-2 h-12 sm:h-11 text-base font-semibold active:scale-95 transition-transform"
-                  data-testid="build-birthday-box-btn"
-                >
-                  <Package className="w-5 h-5" />
-                  Build Birthday Box
-                </Button>
-                <Link to="/celebrate/birthday-cakes" className="w-full sm:w-auto">
-                  <Button size="lg" variant="outline" className="w-full sm:w-auto border-white text-white hover:bg-white/20 gap-2 h-12 sm:h-11 text-base active:scale-95 transition-transform">
-                    <Cake className="w-5 h-5" />
-                    Shop Cakes
-                  </Button>
-                </Link>
+              {/* Search Bar */}
+              <div className="relative max-w-xl mx-auto lg:mx-0">
+                <div className="flex items-center bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
+                  <Search className="ml-4 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder={activePet ? `What does ${activePet.name} need to celebrate?` : 'Search celebrations...'}
+                    className="flex-1 px-4 py-4 text-base bg-transparent focus:outline-none text-gray-900"
+                  />
+                  <button className="p-3 m-1.5 rounded-xl bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:opacity-90 transition-opacity">
+                    <Mic className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Bottom gradient fade */}
+        <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-gray-50 to-transparent" />
+      </div>
               </div>
             </div>
           </div>
