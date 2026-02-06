@@ -332,17 +332,17 @@ const MiraDemoPage = () => {
               <Bot className="w-12 h-12 text-white" />
             </div>
             <h2 className="text-3xl font-bold text-white mb-3">
-              Hi! I'm Mira
+              Hi! I&apos;m Mira
             </h2>
             <p className="text-white/60 text-lg mb-8 max-w-md mx-auto">
-              I'm here to help with everything for {pet.name}. Just ask me anything!
+              I&apos;m here to help with everything for {pet.name}. Just ask me anything!
             </p>
             
             {/* Suggestion Chips */}
             <div className="flex flex-wrap justify-center gap-3 max-w-2xl mx-auto">
               {[
-                `Soft treats for ${pet.name}'s evening`,
-                `Plan ${pet.name}'s birthday`,
+                `Soft treats for ${pet.name}&apos;s evening`,
+                `Plan ${pet.name}&apos;s birthday`,
                 `Compare food options`,
                 `What toys suit a ${pet.breed}?`,
               ].map((suggestion, idx) => (
