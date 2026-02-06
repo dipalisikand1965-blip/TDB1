@@ -2032,7 +2032,10 @@ async def add_reply(ticket_id: str, reply: TicketReply):
         "attachments": attachment_list
     }
     
-    update_doc = {"updated_at": now}
+    update_doc = {
+        "updated_at": now,
+        "has_new_member_message": False  # Clear flag when concierge replies
+    }
     
     if not ticket.get("first_response_at") and not reply.is_internal:
         update_doc["first_response_at"] = now
