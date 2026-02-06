@@ -32,7 +32,7 @@ const MiraSearchPanel = ({
   autoFocus = false
 }) => {
   const { token } = useAuth();
-  const { selectedPet } = usePillar();
+  const { selectedPet } = usePillarContext();
   const navigate = useNavigate();
   
   // State
