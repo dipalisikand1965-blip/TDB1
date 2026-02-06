@@ -17,7 +17,7 @@ import requests
 import os
 from datetime import datetime
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://unified-pet-pages.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://mira-chat-lab.preview.emergentagent.com').rstrip('/')
 
 # Test credentials
 ADMIN_USERNAME = "aditya"
