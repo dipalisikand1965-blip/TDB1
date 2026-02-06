@@ -769,13 +769,11 @@ async def list_tickets(
         if val is None:
             return datetime.min.replace(tzinfo=timezone.utc) if sort_order == "desc" else datetime.max.replace(tzinfo=timezone.utc)
         if isinstance(val, datetime):
-            # Ensure timezone-aware
             if val.tzinfo is None:
                 val = val.replace(tzinfo=timezone.utc)
             return val
         if isinstance(val, str):
             try:
-                # Parse ISO format with or without timezone
                 from dateutil.parser import parse
                 parsed = parse(val)
                 if parsed.tzinfo is None:
@@ -785,20 +783,7 @@ async def list_tickets(
                 return datetime.min.replace(tzinfo=timezone.utc) if sort_order == "desc" else datetime.max.replace(tzinfo=timezone.utc)
         return datetime.min.replace(tzinfo=timezone.utc) if sort_order == "desc" else datetime.max.replace(tzinfo=timezone.utc)
     
-    # Debug: Check total tickets before sort
-    tkt_count = len([t for t in all_tickets if (t.get('ticket_id') or '').startswith('TKT-2026')])
-    logger.info(f"Before sort: {len(all_tickets)} total tickets, {tkt_count} TKT-2026 tickets")
-    
-    # Log sort keys for comparison
-    for t in all_tickets:
-        if (t.get('ticket_id') or '').startswith('TKT-20260206-02'):
-            key = get_sort_key(t)
-            logger.info(f"TKT sort key: {t.get('ticket_id')}: {key}")
-    
     all_tickets.sort(key=get_sort_key, reverse=(sort_order == "desc"))
-    
-    # Debug logging
-    logger.info(f"After sort: First 5: {[t.get('ticket_id') for t in all_tickets[:5]]}")
     
     # Apply limit
     all_tickets = all_tickets[:limit]
