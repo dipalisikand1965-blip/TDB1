@@ -1,74 +1,73 @@
 {
-  "identity": {
-    "name": "E1",
-    "role": "Anti-AI Designer",
-    "mission": "Create soulful, premium, and non-generic designs that break category conventions."
+  "brand_identity": {
+    "name": "Mira",
+    "archetype": "Organic & Earthy + Jewel & Luxury",
+    "core_values": ["Soulful", "Intelligent", "Organic", "Premium"],
+    "emotional_tone": "A mystical connection between pet and parent. Tech that feels like magic, not code."
   },
-  "project_context": {
-    "name": "Mira AI Orb Redesign",
-    "goal": "Reimagine the AI presence to be premium, intelligent, and calm.",
-    "target_audience": "Users seeking high-end, intelligent assistance.",
-    "emotional_tone": "Ethereal, Deep, Intelligent, Calm, Luxury.",
-    "references": ["Emergent platform", "Apple", "Nothing", "Vercel", "Linear"]
-  },
-  "design_system": {
-    "typography": {
-      "headings": "Manrope (Bold/ExtraBold) - Clean, modern, geometric.",
-      "body": "Inter (Regular/Medium) - Highly legible, neutral.",
-      "special": "Syne (for 'Soul' elements) - Artistic, unique."
-    },
-    "colors": {
-      "palette": {
-        "obsidian": "#050505",
-        "deep_violet": "#1a0b2e",
-        "electric_violet": "#7c3aed",
-        "mystic_silver": "#e2e8f0",
-        "glow_purple": "rgba(124, 58, 237, 0.5)",
-        "glow_cyan": "rgba(34, 211, 238, 0.3)"
-      },
-      "gradients": {
-        "mira_core": "radial-gradient(circle at 30% 30%, rgba(255,255,255,0.1) 0%, rgba(124,58,237,0.4) 40%, #0f0f23 100%)",
-        "mira_glow": "conic-gradient(from 0deg, #4c1d95, #000000, #5b21b6, #4c1d95)"
-      }
-    },
-    "spacing": {
-      "base": "0.25rem",
-      "scale": ["p-2", "p-4", "p-8", "p-12", "p-16", "p-24", "p-32"],
-      "philosophy": "Generous spacing. 2-3x standard for premium feel."
-    },
-    "motion": {
-      "breathing": "Scale 1 -> 1.05 over 6s, ease-in-out.",
-      "rotation": "Slow 360deg rotation over 20s for internal textures.",
-      "pulse": "Subtle opacity shift 0.8 -> 1.0 on 'heartbeat'."
+  "typography": {
+    "display": "Manrope",
+    "body": "Inter",
+    "special": "Syne",
+    "rules": {
+      "headings": "font-display font-bold tracking-tight",
+      "body": "font-body leading-relaxed",
+      "accent": "font-special font-bold"
     }
   },
-  "components": {
-    "MiraOrb": {
-      "path": "/app/frontend/src/components/MiraOrb.jsx",
-      "description": "A premium, ethereal AI presence. Not a button, but an entity.",
-      "specs": {
-        "size": "Desktop: 80px, Mobile: Integrated in Nav",
-        "position": "Fixed bottom-right (Desktop)",
-        "interaction": "Hover: Intensify glow, slight scale up. Click: Haptic feedback + Active state.",
-        "visuals": "Dark core with internal moving light. No paw print. Soft, large outer glow."
-      },
-      "code_recipe": "See 'instructions_to_main_agent' for full implementation."
+  "colors": {
+    "primary": {
+      "teal": "#0F766E",
+      "teal_light": "#14B8A6",
+      "teal_dark": "#0D5C56"
+    },
+    "mira": {
+      "purple": "#9333EA",
+      "purple_light": "#A855F7",
+      "purple_dark": "#7C3AED"
+    },
+    "soul": {
+      "pink": "#EC4899",
+      "amber": "#F59E0B",
+      "gradient": "linear-gradient(135deg, #9333EA 0%, #EC4899 50%, #F59E0B 100%)"
+    },
+    "backgrounds": {
+      "warm_stone": "#FAFAF9",
+      "surface": "#FFFFFF",
+      "deep_space": "#0f172a"
     }
   },
-  "instructions_to_main_agent": {
-    "task": "Implement the reimagined MiraOrb component.",
-    "step_by_step": [
-      "1. Replace the content of '/app/frontend/src/components/MiraOrb.jsx' with the code provided below.",
-      "2. Ensure 'framer-motion' is installed (it should be).",
-      "3. Verify the orb is positioned correctly in the layout (usually in a Layout component or App.js)."
-    ],
-    "mira_orb_code": "import React from 'react';\nimport { motion } from 'framer-motion';\n\nconst MiraOrb = ({ onClick, className = '' }) => {\n  return (\n    <motion.div\n      className={`relative cursor-pointer group ${className}`}\n      onClick={onClick}\n      whileHover={{ scale: 1.05 }}\n      whileTap={{ scale: 0.95 }}\n      data-testid=\"mira-orb\"\n    >\n      {/* Outer Ambient Glow - The 'Aura' */}\n      <motion.div\n        className=\"absolute inset-0 rounded-full blur-3xl opacity-40 group-hover:opacity-60 transition-opacity duration-700\"\n        style={{\n          background: 'radial-gradient(circle, rgba(124,58,237,0.6) 0%, rgba(76,29,149,0.3) 50%, transparent 70%)',\n          transform: 'scale(1.5)',\n        }}\n        animate={{\n          scale: [1.4, 1.6, 1.4],\n          opacity: [0.3, 0.5, 0.3],\n        }}\n        transition={{\n          duration: 6,\n          repeat: Infinity,\n          ease: \"easeInOut\",\n        }}\n      />\n\n      {/* The Core Entity */}\n      <div className=\"relative w-20 h-20 rounded-full overflow-hidden shadow-2xl ring-1 ring-white/10 backdrop-blur-sm\">\n        {/* Deep Space Background */}\n        <div className=\"absolute inset-0 bg-[#0a0a12]\" />\n\n        {/* Moving Internal Light - The 'Intelligence' */}\n        <motion.div\n          className=\"absolute inset-[-50%] opacity-70\"\n          style={{\n            background: 'conic-gradient(from 0deg, transparent 0%, rgba(139, 92, 246, 0.5) 20%, transparent 40%, rgba(56, 189, 248, 0.3) 60%, transparent 100%)',\n            filter: 'blur(12px)',\n          }}\n          animate={{\n            rotate: 360,\n          }}\n          transition={{\n            duration: 10,\n            repeat: Infinity,\n            ease: \"linear\",\n          }}\n        />\n\n        {/* Inner Core Highlight */}\n        <motion.div\n          className=\"absolute inset-0 rounded-full\"\n          style={{\n            background: 'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.15) 0%, transparent 60%)',\n          }}\n        />\n        \n        {/* Subtle Pulse Overlay */}\n        <motion.div\n            className=\"absolute inset-0 bg-violet-500/10 rounded-full\"\n            animate={{ opacity: [0, 0.2, 0] }}\n            transition={{ duration: 4, repeat: Infinity, ease: \"easeInOut\" }}\n        />\n      </div>\n    </motion.div>\n  );\n};\n\nexport default MiraOrb;"
+  "mira_orb_redesign": {
+    "concept": "The Soul Pearl",
+    "rationale": "Replaces the 'Cyber' look with a 'Jewel' look. Uses the brand's Soul Gradient (Purple-Pink-Amber) to ensure harmony on both dark and light backgrounds.",
+    "specs": {
+      "core_background": "radial-gradient(circle at 30% 30%, #581c87 0%, #2e1065 40%, #020617 100%)",
+      "outer_glow": "radial-gradient(circle, rgba(147,51,234,0.35) 0%, rgba(236,72,153,0.15) 50%, transparent 70%)",
+      "inner_light": "conic-gradient(from 0deg, transparent 0%, rgba(245,158,11,0.5) 15%, transparent 30%, rgba(236,72,153,0.5) 50%, transparent 65%, rgba(147,51,234,0.5) 80%, transparent 100%)",
+      "rim_highlight": "rgba(255,255,255,0.15)",
+      "animation": "Slow rotation (12s) + Gentle Pulse (4s)"
+    },
+    "contrast_strategy": {
+      "on_dark": "The lighter purple top-left highlight (#581c87) ensures visibility against dark navy backgrounds.",
+      "on_light": "The deep obsidian bottom-right shadow (#020617) ensures weight and presence against white backgrounds."
+    }
+  },
+  "component_rules": {
+    "cards": "bg-white rounded-2xl shadow-sm border border-stone-100 hover:shadow-md transition-all",
+    "buttons": "rounded-full font-bold tracking-wide transition-transform active:scale-95",
+    "inputs": "bg-stone-50 border-transparent focus:bg-white focus:border-purple-200 focus:ring-4 focus:ring-purple-500/10 rounded-xl",
+    "glass": "bg-white/80 backdrop-blur-xl border border-white/20 shadow-lg"
+  },
+  "layout_strategies": {
+    "bento_grid": "Use grid-cols-1 md:grid-cols-4 gap-4. Mix aspect ratios (1:1, 2:1, 2:2).",
+    "spacing": "Use 'space-premium' (2rem+) between sections. Don't crowd the soul."
   },
   "universal_guidelines": [
-    "Do not use generic gradients.",
-    "Prioritize 'Soul' and 'Feel' over standard UI patterns.",
-    "Use 'Manrope' for headings and 'Inter' for body.",
-    "Ensure all interactive elements have 'data-testid'.",
-    "Dark mode elements should have depth via shadows and subtle borders, not just flat colors."
-  ]
+    "Avoid 'AI Slop': No generic centered layouts. Use asymmetry.",
+    "Micro-interactions: Every click needs a scale effect. Every hover needs a lift.",
+    "Texture: Use subtle noise or grain on dark backgrounds to prevent banding.",
+    "Accessibility: Ensure text contrast is > 4.5:1. Use 'data-testid' on all interactables.",
+    "Motion: Use 'framer-motion' for smooth, physics-based animations. No linear easings."
+  ],
+  "instructions_to_main_agent": "Implement the new MiraOrb.jsx using the specs above. Ensure it replaces the old 'Cyber' version globally. Update any hardcoded colors in pages to use the CSS variables defined in index.css."
 }
