@@ -6008,7 +6008,15 @@ async def get_public_products(
     except Exception as e:
         logger.warning(f"Error querying unified_products: {e}")
     
-    return {"products": products, "total": len(products)}
+    # Return with pagination info
+    return {
+        "products": products, 
+        "total": total_count,
+        "page": page,
+        "limit": limit,
+        "pages": (total_count + limit - 1) // limit,  # Total pages
+        "has_more": skip + len(products) < total_count
+    }
 
 
 # ==================== SERVICES API (Concierge® Services) ====================
