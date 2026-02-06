@@ -64,8 +64,11 @@ const DinePage = () => {
   const [currentUser, setCurrentUser] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
-  const [restaurantsToShow, setRestaurantsToShow] = useState(8); // Load More state
+  const [restaurantsToShow, setRestaurantsToShow] = useState(8);
   const [heroIndex, setHeroIndex] = useState(0);
+  
+  // Pet state for personalization
+  const [activePet, setActivePet] = useState(null);
 
   // Rotating hero images for visual appeal
   const HERO_IMAGES = [
@@ -88,6 +91,28 @@ const DinePage = () => {
       setCurrentUser(authUser);
     }
   }, [authUser]);
+  
+  // Fetch user's pets for personalization
+  useEffect(() => {
+    const fetchPets = async () => {
+      if (!token) return;
+      try {
+        const response = await fetch(`${API_URL}/api/pets/my-pets`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          const pets = data.pets || [];
+          if (pets.length > 0) {
+            setActivePet(pets[0]);
+          }
+        }
+      } catch (err) {
+        console.debug('Failed to fetch pets:', err);
+      }
+    };
+    fetchPets();
+  }, [token]);
 
   // Scroll to top on mount
   useEffect(() => {
