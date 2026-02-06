@@ -803,3 +803,74 @@ async def get_whatsapp_link_for_ticket(
         "phone": customer_phone,
         "ticket_id": ticket_id
     }
+
+
+# ============== MEMBER NOTIFICATIONS ==============
+
+@router.get("/notifications")
+async def get_member_notifications(
+    email: str = Query(..., description="User's email"),
+    unread_only: bool = Query(False, description="Only unread notifications"),
+    limit: int = Query(20, le=50)
+):
+    """
+    Get notifications for a member (concierge replies, booking confirmations, etc.)
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not connected")
+    
+    query = {"user_email": email}
+    if unread_only:
+        query["read"] = False
+    
+    notifications = await db.member_notifications.find(query).sort("created_at", -1).limit(limit).to_list(limit)
+    
+    # Count unread
+    unread_count = await db.member_notifications.count_documents({"user_email": email, "read": False})
+    
+    # Serialize
+    for n in notifications:
+        n.pop("_id", None)
+    
+    return {
+        "notifications": notifications,
+        "unread_count": unread_count,
+        "total": len(notifications)
+    }
+
+
+@router.post("/notifications/{notification_id}/read")
+async def mark_notification_read(
+    notification_id: str,
+    email: str = Query(..., description="User's email for verification")
+):
+    """Mark a notification as read"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not connected")
+    
+    result = await db.member_notifications.update_one(
+        {"id": notification_id, "user_email": email},
+        {"$set": {"read": True, "read_at": datetime.now(timezone.utc).isoformat()}}
+    )
+    
+    if result.modified_count == 0:
+        raise HTTPException(status_code=404, detail="Notification not found")
+    
+    return {"success": True}
+
+
+@router.post("/notifications/read-all")
+async def mark_all_notifications_read(
+    email: str = Query(..., description="User's email")
+):
+    """Mark all notifications as read for a user"""
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not connected")
+    
+    now = datetime.now(timezone.utc).isoformat()
+    result = await db.member_notifications.update_many(
+        {"user_email": email, "read": False},
+        {"$set": {"read": True, "read_at": now}}
+    )
+    
+    return {"success": True, "marked_read": result.modified_count}
