@@ -8,10 +8,67 @@ Transform the application into a highly personalized, "guided care" experience f
 - **Backend:** Python FastAPI
 - **Database:** MongoDB
 - **AI Assistant:** Mira (Pet Concierge) with voice capabilities
+- **Communication Backbone:** Multi-channel messaging (in-app, email, WhatsApp)
 
 ## Recent Updates (Feb 6, 2025)
 
-### Two-Way Concierge Messaging - NEW ✅
+### Unified Communication Backbone - NEW ✅
+A Zendesk/Freshdesk-style multi-channel communication system:
+
+**Architecture:**
+```
+┌─────────────────────────────────────────────────────────────┐
+│                    MEMBER CHANNELS                          │
+├─────────────────┬─────────────────┬─────────────────────────┤
+│    📱 In-App    │    📧 Email     │    💬 WhatsApp         │
+│  (RequestsTab)  │  (Coming Soon)  │   (Coming Soon)        │
+└────────┬────────┴────────┬────────┴───────────┬────────────┘
+         │                 │                     │
+         └─────────────────┼─────────────────────┘
+                           ▼
+              ┌────────────────────────┐
+              │   Unified Inbox        │
+              │   (Service Desk)       │
+              │   - Auto-detect channel│
+              │   - Reply same channel │
+              │   - Track all messages │
+              └────────────────────────┘
+                           │
+                           ▼
+              ┌────────────────────────┐
+              │   Concierge Response   │
+              │   → Same channel back  │
+              │   → Member notified    │
+              └────────────────────────┘
+```
+
+**Key Features:**
+- **Channel Tracking:** Every message records its source channel (in_app, email, whatsapp)
+- **Auto-Reply Channel:** Concierge replies go back via same channel customer used
+- **Unified Inbox:** All channels funnel into Service Desk
+- **Member Notifications:** Bell icon shows new concierge replies
+- **Agent Indicators:** "💬 NEW" badge on tickets needing response
+
+**API Endpoints (Conversation Backbone):**
+- `POST /api/conversations/start` - Start new conversation
+- `POST /api/conversations/{id}/message` - Member sends message
+- `POST /api/conversations/{id}/reply` - Concierge replies (auto-detects channel)
+- `GET /api/conversations/{id}` - Get full conversation
+- `GET /api/conversations` - List all conversations (for Service Desk)
+
+**Legacy Endpoints (Still Working):**
+- `POST /api/user/request/{id}/message` - User sends message
+- `GET /api/user/request/{id}/messages` - Get conversation history
+- `POST /api/tickets/{id}/reply` - Admin reply
+
+**Files:**
+- `/app/backend/conversation_routes.py` - NEW: Unified communication backbone
+- `/app/backend/user_tickets_routes.py` - Legacy messaging endpoints
+- `/app/frontend/src/components/dashboard/tabs/RequestsTab.jsx` - Member conversation UI
+- `/app/frontend/src/components/MemberNotificationBell.jsx` - NEW: Member notifications
+- `/app/frontend/src/components/admin/ServiceDeskWorkspace.jsx` - Agent inbox
+
+### Two-Way Concierge Messaging ✅
 A complete helpdesk-style messaging system like Zoho for user-concierge communication:
 
 **User Features:**
