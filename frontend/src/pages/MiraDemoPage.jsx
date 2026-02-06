@@ -341,8 +341,8 @@ const MiraDemoPage = () => {
             {/* Suggestion Chips */}
             <div className="flex flex-wrap justify-center gap-3 max-w-2xl mx-auto">
               {[
-                `Soft treats for ${pet.name}&apos;s evening`,
-                `Plan ${pet.name}&apos;s birthday`,
+                `Soft treats for ${pet.name}'s evening`,
+                `Plan ${pet.name}'s birthday`,
                 `Compare food options`,
                 `What toys suit a ${pet.breed}?`,
               ].map((suggestion, idx) => (
