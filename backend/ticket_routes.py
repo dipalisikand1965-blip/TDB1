@@ -785,15 +785,20 @@ async def list_tickets(
                 return datetime.min.replace(tzinfo=timezone.utc) if sort_order == "desc" else datetime.max.replace(tzinfo=timezone.utc)
         return datetime.min.replace(tzinfo=timezone.utc) if sort_order == "desc" else datetime.max.replace(tzinfo=timezone.utc)
     
-    # Debug: Log the sort keys for first few tickets
-    for t in all_tickets[:5]:
-        key = get_sort_key(t)
-        logger.info(f"Sort key for {t.get('ticket_id')}: {key} (original: {t.get(sort_by)})")
+    # Debug: Check total tickets before sort
+    tkt_count = len([t for t in all_tickets if (t.get('ticket_id') or '').startswith('TKT-2026')])
+    logger.info(f"Before sort: {len(all_tickets)} total tickets, {tkt_count} TKT-2026 tickets")
+    
+    # Log sort keys for comparison
+    for t in all_tickets:
+        if (t.get('ticket_id') or '').startswith('TKT-20260206-02'):
+            key = get_sort_key(t)
+            logger.info(f"TKT sort key: {t.get('ticket_id')}: {key}")
     
     all_tickets.sort(key=get_sort_key, reverse=(sort_order == "desc"))
     
     # Debug logging
-    logger.info(f"After sort: First 5: {[(t.get('ticket_id'), str(get_sort_key(t))) for t in all_tickets[:5]]}")
+    logger.info(f"After sort: First 5: {[t.get('ticket_id') for t in all_tickets[:5]]}")
     
     # Apply limit
     all_tickets = all_tickets[:limit]
