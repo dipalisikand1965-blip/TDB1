@@ -402,6 +402,9 @@ const PetHero = ({ pet, soulData, onPetSwitch, pets }) => {
             
             {/* Pet Soul Traits */}
             <PetSoulTraits pet={pet} soulData={soulData} />
+            
+            {/* Mira's Love Note - Emotional message about the pet */}
+            {pet && <MiraLoveNote pet={pet} variant="hero" />}
           </div>
         </div>
       </div>
