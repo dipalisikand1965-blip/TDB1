@@ -305,25 +305,54 @@ const BREED_FILTERS = [
 ];
 
 // =============================================================================
-// PILLAR FILTERS WITH BREED DROPDOWN
+// PILLAR FILTERS WITH SMART BREED SEARCH
 // =============================================================================
 const PillarFilters = ({ selected, onSelect, selectedSubcat, onSelectSubcat, selectedBreed, onSelectBreed }) => {
   const selectedPillar = PILLARS.find(p => p.id === selected);
-  const [breedDropdownOpen, setBreedDropdownOpen] = useState(false);
-  const breedDropdownRef = useRef(null);
+  const [breedSearchOpen, setBreedSearchOpen] = useState(false);
+  const [breedSearchValue, setBreedSearchValue] = useState('');
+  const breedSearchRef = useRef(null);
   
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
-      if (breedDropdownRef.current && !breedDropdownRef.current.contains(e.target)) {
-        setBreedDropdownOpen(false);
+      if (breedSearchRef.current && !breedSearchRef.current.contains(e.target)) {
+        setBreedSearchOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
   
-  const currentBreedLabel = BREED_FILTERS.find(b => b.id === selectedBreed)?.label || 'All Breeds';
+  // Comprehensive breed list for search
+  const BREED_LIST = [
+    'Golden Retriever', 'Labrador', 'German Shepherd', 'Shih Tzu', 'Pug', 
+    'Beagle', 'Rottweiler', 'Doberman', 'Husky', 'Pomeranian', 'Chihuahua',
+    'French Bulldog', 'Bulldog', 'Boxer', 'Dachshund', 'Great Dane',
+    'Cocker Spaniel', 'Border Collie', 'Australian Shepherd', 'Dalmatian',
+    'Indie', 'Indian Pariah', 'Rajapalayam', 'Mudhol Hound', 'Kombai',
+    'Maltese', 'Yorkshire Terrier', 'Boston Terrier', 'Cavalier King Charles',
+    'Jack Russell', 'Miniature Schnauzer', 'Shiba Inu', 'Corgi', 'Samoyed',
+    'Bernese Mountain Dog', 'Saint Bernard', 'Newfoundland', 'Akita', 'Malamute',
+    'Mixed Breed', 'Persian Cat', 'Siamese Cat', 'Maine Coon', 'British Shorthair'
+  ];
+  
+  // Filter breeds based on search
+  const filteredBreeds = breedSearchValue.trim() 
+    ? BREED_LIST.filter(b => b.toLowerCase().includes(breedSearchValue.toLowerCase()))
+    : BREED_LIST.slice(0, 12);
+  
+  const handleBreedSelect = (breed) => {
+    const breedId = breed.toLowerCase().replace(/\s+/g, '_');
+    onSelectBreed(breedId);
+    setBreedSearchValue(breed);
+    setBreedSearchOpen(false);
+  };
+  
+  const clearBreedFilter = () => {
+    onSelectBreed('all');
+    setBreedSearchValue('');
+  };
   
   return (
     <div className="bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-30 shadow-sm">
@@ -351,36 +380,57 @@ const PillarFilters = ({ selected, onSelect, selectedSubcat, onSelectSubcat, sel
             })}
           </div>
           
-          {/* Breed Filter Dropdown */}
-          <div className="relative flex-shrink-0" ref={breedDropdownRef}>
-            <button
-              onClick={() => setBreedDropdownOpen(!breedDropdownOpen)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 sm:py-2 rounded-xl text-[10px] sm:text-xs font-medium transition-all ${
-                selectedBreed && selectedBreed !== 'all' 
-                  ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-md' 
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-              data-testid="breed-filter-btn"
-            >
-              <PawPrint className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-              <span className="hidden sm:inline">{currentBreedLabel}</span>
-              <span className="sm:hidden">Breed</span>
-              <ChevronDown className={`w-3 h-3 transition-transform ${breedDropdownOpen ? 'rotate-180' : ''}`} />
-            </button>
+          {/* Smart Breed Search */}
+          <div className="relative flex-shrink-0" ref={breedSearchRef}>
+            <div className="relative">
+              <input
+                type="text"
+                value={breedSearchValue}
+                onChange={(e) => {
+                  setBreedSearchValue(e.target.value);
+                  setBreedSearchOpen(true);
+                }}
+                onFocus={() => setBreedSearchOpen(true)}
+                placeholder="Search breed..."
+                className={`w-28 sm:w-40 pl-8 pr-8 py-1.5 sm:py-2 text-xs rounded-xl border transition-all ${
+                  selectedBreed && selectedBreed !== 'all'
+                    ? 'border-purple-400 bg-purple-50 text-purple-700'
+                    : 'border-gray-200 bg-gray-50 text-gray-700 focus:border-purple-400 focus:bg-white'
+                }`}
+                data-testid="breed-search-input"
+              />
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+              {selectedBreed && selectedBreed !== 'all' && (
+                <button
+                  onClick={clearBreedFilter}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 bg-purple-500 text-white rounded-full flex items-center justify-center hover:bg-purple-600"
+                >
+                  <X className="w-2.5 h-2.5" />
+                </button>
+              )}
+            </div>
             
-            {breedDropdownOpen && (
-              <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-1 z-50 max-h-64 overflow-y-auto">
-                {BREED_FILTERS.map((breed) => (
+            {/* Breed Search Dropdown */}
+            {breedSearchOpen && filteredBreeds.length > 0 && (
+              <div className="absolute right-0 top-full mt-1 w-56 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 max-h-64 overflow-y-auto">
+                <div className="px-3 py-1 text-[10px] text-gray-400 uppercase tracking-wider">
+                  {breedSearchValue ? 'Matching Breeds' : 'Popular Breeds'}
+                </div>
+                {filteredBreeds.map((breed) => (
                   <button
-                    key={breed.id}
-                    onClick={() => { onSelectBreed(breed.id); setBreedDropdownOpen(false); }}
-                    className={`w-full text-left px-3 py-2 text-xs hover:bg-gray-50 transition-colors ${
-                      selectedBreed === breed.id ? 'bg-purple-50 text-purple-700 font-medium' : 'text-gray-700'
-                    }`}
+                    key={breed}
+                    onClick={() => handleBreedSelect(breed)}
+                    className="w-full text-left px-3 py-2 text-xs hover:bg-purple-50 transition-colors flex items-center gap-2"
                   >
-                    {breed.label}
+                    <PawPrint className="w-3 h-3 text-purple-400" />
+                    <span>{breed}</span>
                   </button>
                 ))}
+                {breedSearchValue && filteredBreeds.length === 0 && (
+                  <div className="px-3 py-2 text-xs text-gray-500">
+                    No breeds found
+                  </div>
+                )}
               </div>
             )}
           </div>
