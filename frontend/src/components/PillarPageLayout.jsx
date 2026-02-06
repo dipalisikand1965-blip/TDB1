@@ -117,10 +117,17 @@ const PillarPageLayout = ({
   const { user, token } = useAuth();
   const navigate = useNavigate();
   
-  // Pet state
-  const [activePet, setActivePet] = useState(null);
-  const [userPets, setUserPets] = useState([]);
-  const [petSoulData, setPetSoulData] = useState(null);
+  // Use global pet from PillarContext - ensures consistency when pet is switched elsewhere
+  const { currentPet, setCurrentPet, pets: contextPets, petSoulData: contextSoulData } = usePillarContext();
+  
+  // Pet state - fallback to local fetch if context not available
+  const [localPets, setLocalPets] = useState([]);
+  const [localSoulData, setLocalSoulData] = useState(null);
+  
+  // Use context values if available, otherwise use local
+  const userPets = contextPets?.length > 0 ? contextPets : localPets;
+  const activePet = currentPet || (userPets.length > 0 ? userPets[0] : null);
+  const petSoulData = contextSoulData || localSoulData;
   
   // Navigation state
   const [viewMode, setViewMode] = useState(defaultViewMode);
@@ -128,10 +135,10 @@ const PillarPageLayout = ({
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
   const [shoppingForOther, setShoppingForOther] = useState(false);
   
-  // Fetch user's pets
+  // Fetch user's pets (fallback if context doesn't have them)
   useEffect(() => {
     const fetchPets = async () => {
-      if (!token) return;
+      if (!token || contextPets?.length > 0) return;
       try {
         const response = await fetch(`${API_URL}/api/pets/my-pets`, {
           headers: { Authorization: `Bearer ${token}` }
@@ -139,9 +146,10 @@ const PillarPageLayout = ({
         if (response.ok) {
           const data = await response.json();
           const pets = data.pets || [];
-          setUserPets(pets);
-          if (pets.length > 0) {
-            setActivePet(pets[0]);
+          setLocalPets(pets);
+          // Set global currentPet if not already set
+          if (pets.length > 0 && !currentPet) {
+            setCurrentPet(pets[0]);
           }
         }
       } catch (err) {
@@ -149,7 +157,7 @@ const PillarPageLayout = ({
       }
     };
     fetchPets();
-  }, [token]);
+  }, [token, contextPets, currentPet, setCurrentPet]);
   
   // Fetch soul data when pet changes
   useEffect(() => {
