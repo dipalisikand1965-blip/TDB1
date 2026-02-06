@@ -464,10 +464,11 @@ const CarePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      {/* SEO Meta Tags */}
-      <SEOHead page="care" path="/care" />
-      
+    <PillarPageLayout
+      pillar="care"
+      title="Care - Pet Grooming & Wellness | The Doggy Company"
+      description="From grooming to training, walks to wellness — we understand your pet's unique needs."
+    >
       {/* Staggered Animation Styles */}
       <style>{`
         @keyframes fadeInUp {
