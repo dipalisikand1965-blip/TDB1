@@ -12,15 +12,14 @@ import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
-import MiraChatWidget from '../components/MiraChatWidget';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import AdminQuickEdit from '../components/AdminQuickEdit';
 import ProductCard from '../components/ProductCard';
 import PersonalizedPicks from '../components/PersonalizedPicks';
 import { getPetPhotoUrl } from '../utils/petAvatar';
-import SEOHead from '../components/SEOHead';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import { useNavigate } from 'react-router-dom';
+import PillarPageLayout from '../components/PillarPageLayout';
 import {
   GraduationCap, BookOpen, Brain, Star, Award, Trophy,
   CheckCircle, ChevronRight, Sparkles, Loader2, Send,
@@ -384,20 +383,11 @@ const LearnPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-      {/* SEO Meta Tags */}
-      <SEOHead page="learn" path="/learn" />
-
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white" data-testid="learn-page">
-      {/* Mira Floating Chat Widget */}
-      <MiraChatWidget pillar="learn" />
-
+    <PillarPageLayout
+      pillar="learn"
+      title="Learning with {name}"
+      description="Training and guidance that respects personality"
+    >
       {/* Hero Section */}
       <div className="relative h-[500px] overflow-hidden">
         {/* Mobile Back Button */}
@@ -1210,8 +1200,7 @@ const LearnPage = () => {
       
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="learn" position="bottom-left" />
-    </div>
+    </PillarPageLayout>
   );
 };
-
 export default LearnPage;
