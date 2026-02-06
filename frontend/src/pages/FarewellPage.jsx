@@ -527,7 +527,7 @@ const FarewellPage = () => {
           )}
         </DialogContent>
       </Dialog>
-    </div>
+    </PillarPageLayout>
   );
 };
 
