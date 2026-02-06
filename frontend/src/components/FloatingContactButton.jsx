@@ -161,7 +161,7 @@ const FloatingContactButton = ({ user, isLoggedIn }) => {
               <div className="bg-white rounded-2xl shadow-2xl border border-purple-100 overflow-hidden w-64">
                 <div className="bg-gradient-to-r from-purple-600 to-pink-600 px-4 py-3">
                   <h4 className="text-white font-semibold">Contact Concierge®</h4>
-                  <p className="text-white/80 text-xs">We're here to help!</p>
+                  <p className="text-white/80 text-xs">We&apos;re here to help!</p>
                 </div>
                 
                 <div className="p-2">
@@ -297,7 +297,7 @@ const MobileContactSheet = ({ isLoggedIn, user, onWhatsApp, onEmail, onInAppChat
             <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-4" />
             
             <h3 className="text-lg font-bold text-gray-800 mb-1">Contact Concierge®</h3>
-            <p className="text-sm text-gray-500 mb-4">Choose how you'd like to reach us</p>
+            <p className="text-sm text-gray-500 mb-4">Choose how you&apos;d like to reach us</p>
             
             <div className="grid grid-cols-2 gap-3">
               {/* WhatsApp */}
