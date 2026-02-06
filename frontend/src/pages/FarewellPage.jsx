@@ -561,9 +561,6 @@ const FarewellPage = () => {
         maxServices={8}
       />
 
-      {/* Mira Floating Chat Widget */}
-      <MiraChatWidget pillar="farewell" />
-
       {/* Service Request Modal */}
       <Dialog open={showServiceModal} onOpenChange={setShowServiceModal}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
