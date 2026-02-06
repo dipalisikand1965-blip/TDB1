@@ -370,6 +370,13 @@ class UserMessage(BaseModel):
     message: str
     request_id: Optional[str] = None  # For service requests/bookings
 
+
+class ConciergeReply(BaseModel):
+    message: str
+    notify_email: bool = True
+    notify_whatsapp: bool = False
+    is_internal: bool = False
+
 @router.post("/ticket/{ticket_id}/message")
 async def send_user_message_to_ticket(
     ticket_id: str, 
