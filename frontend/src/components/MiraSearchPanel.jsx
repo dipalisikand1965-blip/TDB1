@@ -258,7 +258,7 @@ const MiraSearchPanel = ({
             onChange={(e) => setQuery(e.target.value)}
             onFocus={() => miraResponse && setShowResults(true)}
             placeholder={selectedPet ? `Ask Mira anything for ${selectedPet.name}...` : placeholder}
-            className={`w-full px-4 py-2.5 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+            className={`w-full px-4 py-3 text-base text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-[48px] ${
               variant === 'hero' ? 'rounded-l-full pl-5' : 'rounded-l-md'
             }`}
             style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
