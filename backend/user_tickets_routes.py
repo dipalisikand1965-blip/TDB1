@@ -106,7 +106,7 @@ async def send_ticket_update_email(
         </html>
         """
         
-        result = resend.Emails.send({
+        resend.Emails.send({
             "from": f"The Doggy Company <{SENDER_EMAIL}>",
             "to": to_email,
             "subject": subject,
