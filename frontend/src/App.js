@@ -279,6 +279,10 @@ function AppRouter() {
         <Route path="/mira" element={<MiraPage />} />
         <Route path="/ask-mira" element={<MiraPage />} />
         
+        {/* MIRA OS SANDBOX - Phase 1 Demo of Pet Operating System */}
+        <Route path="/mira-demo" element={<MiraDemoPage />} />
+        <Route path="/mira-os" element={<MiraDemoPage />} />
+        
         {/* Membership Landing Page - NO navbar/footer for clean entry */}
         <Route path="/membership" element={<MembershipPage />} />
         
