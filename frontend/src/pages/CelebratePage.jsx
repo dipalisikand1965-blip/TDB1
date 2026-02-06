@@ -451,11 +451,6 @@ const CelebratePage = () => {
         {/* Bottom gradient fade */}
         <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-gray-50 to-transparent" />
       </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
       
       {/* Navigation Bar - Product/Service Toggle + Subcategories */}
       <div className="bg-white border-b border-gray-100 sticky top-0 z-40">
