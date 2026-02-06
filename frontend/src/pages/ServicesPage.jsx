@@ -951,27 +951,30 @@ const ServicesPage = () => {
     <div className="min-h-screen bg-gray-50 pb-24 md:pb-0" data-testid="services-page">
       <SEOHead page="services" path="/services" />
       
-      {/* Hero - Restored the beautiful dark gradient version with soul traits */}
-      <PetHero 
-        pet={selectedPet} 
+      {/* Unified Hero - Meister is the HERO! */}
+      <UnifiedHero 
+        pet={selectedPet}
         soulData={petSoulData}
-        onPetSwitch={handlePetSwitch}
-        pets={pets}
+        pillar={selectedPillar}
+        viewMode="services"
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        shoppingForOther={shoppingForOther}
       />
       
-      {/* Search */}
-      <SearchBar value={searchQuery} onChange={setSearchQuery} petName={petName} />
-      
-      <div className="h-3 sm:h-4"></div>
-      
-      {/* Pillar Filters */}
-      <PillarFilters 
-        selected={selectedPillar}
-        onSelect={(p) => { setSelectedPillar(p); setDisplayCount(24); }}
-        selectedSubcat={selectedSubcat}
-        onSelectSubcat={setSelectedSubcat}
-        selectedBreed={selectedBreedFilter}
-        onSelectBreed={(b) => { setSelectedBreedFilter(b); setDisplayCount(24); }}
+      {/* Pillar Navigation with Product/Service toggle */}
+      <PillarNav
+        selectedPillar={selectedPillar}
+        onSelectPillar={(p) => { setSelectedPillar(p); setDisplayCount(24); }}
+        viewMode="services"
+        onViewModeChange={(mode) => {
+          if (mode === 'products') {
+            window.location.href = '/shop';
+          }
+        }}
+        petName={petName}
+        shoppingForOther={shoppingForOther}
+        onShoppingForOtherClick={() => setShoppingForOther(!shoppingForOther)}
       />
       
       {/* Services Grid */}
@@ -986,20 +989,6 @@ const ServicesPage = () => {
                   : selectedPillar === 'all' ? 'All Services' 
                   : `${PILLARS.find(p => p.id === selectedPillar)?.label || ''}`}
               </h2>
-              {/* Looking for different pet link */}
-              {selectedPillar === 'recommended' && selectedPet && (
-                <button 
-                  onClick={() => {
-                    // Scroll to breed filter and open it
-                    const breedBtn = document.querySelector('[data-testid="breed-filter-btn"]');
-                    if (breedBtn) breedBtn.click();
-                  }}
-                  className="text-xs sm:text-sm text-purple-600 hover:text-purple-700 hover:underline mt-1 flex items-center gap-1.5"
-                >
-                  <PawPrint className="w-3.5 h-3.5" />
-                  Looking for a friend&apos;s pet? Filter by breed →
-                </button>
-              )}
             </div>
             {filteredServices.length > 0 && (
               <span className="text-xs sm:text-sm text-gray-500">{filteredServices.length} services</span>
