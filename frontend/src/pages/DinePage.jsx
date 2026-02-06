@@ -672,12 +672,9 @@ const DinePage = () => {
         />
       )}
       
-      {/* Mira Floating Chat Widget */}
-      <MiraChatWidget pillar="dine" />
-      
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="dine" position="bottom-left" />
-    </div>
+    </PillarPageLayout>
   );
 };
 
