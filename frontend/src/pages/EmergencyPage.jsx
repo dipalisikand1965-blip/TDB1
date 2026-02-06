@@ -234,86 +234,42 @@ const EmergencyPage = () => {
   const featuredPartners = partners.filter(p => p.is_featured);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-red-50 via-white to-orange-50" data-testid="emergency-page">
-      {/* SEO Meta Tags */}
-      <SEOHead page="emergency" path="/emergency" />
-
-      {/* Hero Section - Red/Urgent Theme */}
-      <section className="relative overflow-hidden bg-gradient-to-r from-red-600 via-red-700 to-rose-800 text-white">
-        <div className="absolute inset-0 opacity-20">
-          <img 
-            src={HERO_IMAGES[heroIndex]} 
-            alt="Emergency" 
-            className="w-full h-full object-cover transition-opacity duration-1000"
-          />
-        </div>
-        
-        {/* Animated Emergency Stripes */}
-        <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-yellow-400 via-red-500 to-yellow-400 animate-pulse"></div>
-        
-        <div className="relative max-w-7xl mx-auto px-4 py-16 md:py-24">
-          <div className="max-w-3xl">
-            <Badge className="bg-yellow-400 text-red-800 border-0 mb-4 animate-pulse">
-              <Siren className="w-3 h-3 mr-1" /> 24/7 Emergency Support
-            </Badge>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              Pet Emergency? We're Here 24/7
-            </h1>
-            <p className="text-lg md:text-xl opacity-90 mb-8">
-              Lost pet? Medical emergency? Accident? Get immediate help. 
-              Our team and partner network are ready to respond.
-            </p>
-            <div className="flex flex-wrap gap-4">
+    <PillarPageLayout
+      pillar="emergency"
+      title="Emergency - 24/7 Pet Support | The Doggy Company"
+      description="Immediate help for lost pets, medical emergencies, accidents, and more. Our team and partner network are ready to respond 24/7."
+    >
+      {/* Emergency Hotline Banner - Below Hero */}
+      <div className="bg-gradient-to-r from-red-600 to-rose-700 text-white py-4">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-full bg-yellow-400 flex items-center justify-center animate-pulse">
+                <Phone className="w-5 h-5 text-red-800" />
+              </div>
+              <div>
+                <p className="text-sm opacity-80">24/7 Emergency Hotline</p>
+                <p className="text-xl font-bold">{config.hotline || '+91 96631 85747'}</p>
+              </div>
+            </div>
+            <div className="flex gap-3">
               <Button 
-                size="lg" 
-                className="bg-white text-red-600 hover:bg-red-50 animate-pulse"
+                size="sm" 
+                className="bg-white text-red-600 hover:bg-red-50"
                 onClick={() => handleEmergencyRequest()}
                 data-testid="report-emergency-btn"
               >
-                <AlertTriangle className="w-5 h-5 mr-2" /> Report Emergency
+                <AlertTriangle className="w-4 h-4 mr-1" /> Report Emergency
               </Button>
               <a href={`tel:${config.hotline || '+919663185747'}`}>
-                <Button 
-                  size="lg" 
-                  variant="outline" 
-                  className="border-white text-white hover:bg-white/10"
-                >
-                  <PhoneCall className="w-5 h-5 mr-2" /> Call Hotline
+                <Button size="sm" variant="outline" className="border-white text-white hover:bg-white/10">
+                  <PhoneCall className="w-4 h-4 mr-1" /> Call Now
                 </Button>
               </a>
             </div>
-            
-            {/* Emergency Hotline Banner */}
-            <div className="mt-8 p-4 bg-white/10 rounded-xl backdrop-blur-sm border border-white/20">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-yellow-400 flex items-center justify-center animate-pulse">
-                  <Phone className="w-6 h-6 text-red-800" />
-                </div>
-                <div>
-                  <p className="text-sm opacity-80">24/7 Emergency Hotline</p>
-                  <p className="text-2xl font-bold">{config.hotline || '+91 96631 85747'}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          {/* Quick Stats */}
-          <div className="mt-12 grid grid-cols-3 gap-4 max-w-2xl">
-            <div className="text-center p-4 bg-white/10 rounded-xl backdrop-blur-sm">
-              <p className="text-2xl font-bold">&lt;15min</p>
-              <p className="text-sm opacity-80">Response Time</p>
-            </div>
-            <div className="text-center p-4 bg-white/10 rounded-xl backdrop-blur-sm">
-              <p className="text-2xl font-bold">{partners.length}+</p>
-              <p className="text-sm opacity-80">Emergency Partners</p>
-            </div>
-            <div className="text-center p-4 bg-white/10 rounded-xl backdrop-blur-sm">
-              <p className="text-2xl font-bold">24/7</p>
-              <p className="text-sm opacity-80">Always Available</p>
-            </div>
           </div>
         </div>
-      </section>
+      </div>
 
       {/* Emergency Types Grid */}
       <section id="emergency-services" className="py-12 bg-white">
