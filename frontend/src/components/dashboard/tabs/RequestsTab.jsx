@@ -136,7 +136,7 @@ const RequestsTab = ({
         </div>
       )}
 
-      <Card className="p-4 sm:p-6 bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl">
+      <Card className="p-4 sm:p-6 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-xl">
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
           <h3 className="text-lg sm:text-xl font-bold flex items-center gap-2 text-white">
