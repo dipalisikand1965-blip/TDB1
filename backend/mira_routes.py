@@ -505,7 +505,33 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
                 limit=6
             )
         
-        # Step 3: Build response
+        # Step 3: If CONCIERGE, create ticket and notifications
+        ticket_id = None
+        if execution_type == "CONCIERGE":
+            try:
+                # Determine ticket type based on intent
+                ticket_type = "concierge"
+                if intent == "PLAN":
+                    ticket_type = "concierge"
+                elif understanding.get("concierge_reason") and "health" in understanding.get("concierge_reason", "").lower():
+                    ticket_type = "advisory"
+                
+                # Create the ticket
+                ticket_result = await create_mira_ticket(
+                    user_input=request.input,
+                    ticket_type=ticket_type,
+                    pet_id=request.pet_id,
+                    pet_context=request.pet_context or {},
+                    understanding=understanding,
+                    products=real_products[:3] if real_products else [],
+                    page_context=request.page_context
+                )
+                ticket_id = ticket_result.get("ticket_id") if ticket_result else None
+                logger.info(f"Created Mira ticket {ticket_id} for CONCIERGE handoff")
+            except Exception as ticket_error:
+                logger.error(f"Failed to create ticket for CONCIERGE: {ticket_error}")
+        
+        # Step 4: Build response
         return {
             "success": True,
             "understanding": {
@@ -519,7 +545,8 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
                 "products": real_products if real_products else understanding.get("products", []),
                 "next_action": understanding.get("next_action", ""),
                 "concierge_reason": understanding.get("concierge_reason"),
-                "has_real_products": len(real_products) > 0
+                "has_real_products": len(real_products) > 0,
+                "ticket_id": ticket_id
             },
             "execution_type": execution_type
         }
