@@ -292,6 +292,27 @@ async def mira_os_handoff(
 # REAL PRODUCT SEARCH FOR MIRA OS
 # ============================================
 
+def safe_lower(val):
+    """Safely convert value to lowercase string"""
+    if isinstance(val, str):
+        return val.lower()
+    elif isinstance(val, dict):
+        return str(val).lower()
+    elif val is None:
+        return ""
+    else:
+        return str(val).lower()
+
+def safe_string_list(val):
+    """Safely convert value to list of lowercase strings"""
+    if val is None:
+        return []
+    if isinstance(val, str):
+        return [val.lower()]
+    if isinstance(val, list):
+        return [safe_lower(item) for item in val if item]
+    return []
+
 async def search_real_products(
     entities: Dict[str, Any],
     pet_context: Dict[str, Any],
@@ -303,6 +324,7 @@ async def search_real_products(
     """
     db = get_db()
     if db is None:
+        logger.warning("Database not available for product search")
         return []
     
     products = []
@@ -311,9 +333,13 @@ async def search_real_products(
         # Build search query based on entities
         query = {"available": {"$ne": False}}
         
-        product_type = entities.get("product_type", "").lower()
-        attributes = entities.get("attributes", [])
-        constraints = entities.get("constraints", [])
+        # Safely extract and normalize product type
+        raw_product_type = entities.get("product_type", "")
+        product_type = safe_lower(raw_product_type) if raw_product_type else ""
+        
+        # Safely extract attributes and constraints as string lists
+        attributes = safe_string_list(entities.get("attributes", []))
+        constraints = safe_string_list(entities.get("constraints", []))
         
         # Map product types to categories
         category_map = {
