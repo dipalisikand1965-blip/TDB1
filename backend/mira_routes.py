@@ -289,6 +289,237 @@ async def mira_os_handoff(
     }
 
 # ============================================
+# REAL PRODUCT SEARCH FOR MIRA OS
+# ============================================
+
+async def search_real_products(
+    entities: Dict[str, Any],
+    pet_context: Dict[str, Any],
+    limit: int = 6
+) -> List[Dict[str, Any]]:
+    """
+    Search real products from the database based on Mira's understanding.
+    Returns actual products with images, prices, and personalized "why for pet" reasons.
+    """
+    db = get_db()
+    if not db:
+        return []
+    
+    products = []
+    
+    try:
+        # Build search query based on entities
+        query = {"available": {"$ne": False}}
+        
+        product_type = entities.get("product_type", "").lower()
+        attributes = entities.get("attributes", [])
+        constraints = entities.get("constraints", [])
+        
+        # Map product types to categories
+        category_map = {
+            "treats": ["treats", "snacks", "biscuits"],
+            "food": ["food", "meals", "fresh-meals"],
+            "toys": ["toys", "play"],
+            "cakes": ["cakes", "birthday", "pupcakes", "dognuts"],
+            "grooming": ["grooming", "spa"],
+            "accessories": ["accessories", "collars", "leashes"],
+        }
+        
+        # Add category filter if product type specified
+        if product_type:
+            categories = category_map.get(product_type, [product_type])
+            query["$or"] = [
+                {"category": {"$in": categories}},
+                {"tags": {"$in": categories}},
+                {"name": {"$regex": product_type, "$options": "i"}},
+                {"description": {"$regex": product_type, "$options": "i"}}
+            ]
+        
+        # Search products
+        cursor = db.products_master.find(query, {"_id": 0}).limit(limit * 2)
+        all_products = await cursor.to_list(length=limit * 2)
+        
+        # If no results with filter, try broader search
+        if not all_products and product_type:
+            cursor = db.products_master.find(
+                {"$or": [
+                    {"name": {"$regex": product_type, "$options": "i"}},
+                    {"description": {"$regex": product_type, "$options": "i"}},
+                    {"tags": {"$regex": product_type, "$options": "i"}}
+                ]},
+                {"_id": 0}
+            ).limit(limit * 2)
+            all_products = await cursor.to_list(length=limit * 2)
+        
+        # Still no results? Get popular/featured products
+        if not all_products:
+            cursor = db.products_master.find(
+                {"available": {"$ne": False}},
+                {"_id": 0}
+            ).limit(limit)
+            all_products = await cursor.to_list(length=limit)
+        
+        # Score and filter products based on pet context
+        pet_name = pet_context.get("name", "your pet")
+        pet_breed = pet_context.get("breed", "")
+        sensitivities = pet_context.get("sensitivities", [])
+        favorites = pet_context.get("favorites", [])
+        
+        scored_products = []
+        for product in all_products:
+            score = 0
+            why_reasons = []
+            skip = False
+            
+            product_name = product.get("name", "").lower()
+            product_desc = product.get("description", "").lower()
+            product_tags = [t.lower() for t in product.get("tags", [])]
+            product_flavors = [f.lower() for f in product.get("flavors", [])]
+            
+            # Check sensitivities (negative filter)
+            for sensitivity in sensitivities:
+                sens_lower = sensitivity.lower()
+                if sens_lower in product_name or sens_lower in product_desc or sens_lower in product_flavors:
+                    if "allergy" in sens_lower or "chicken" in sens_lower:
+                        # Skip chicken products for chicken allergy
+                        if "chicken" in product_name or "chicken" in product_flavors:
+                            skip = True
+                            break
+            
+            if skip:
+                continue
+            
+            # Check favorites (positive score)
+            for favorite in favorites:
+                fav_lower = favorite.lower()
+                if fav_lower in product_name or fav_lower in product_desc or fav_lower in product_flavors:
+                    score += 10
+                    why_reasons.append(f"{pet_name} loves {favorite}")
+            
+            # Check attributes match
+            for attr in attributes:
+                attr_lower = attr.lower()
+                if attr_lower in product_name or attr_lower in product_desc or attr_lower in product_tags:
+                    score += 5
+                    why_reasons.append(f"Matches '{attr}' preference")
+            
+            # Check constraints
+            for constraint in constraints:
+                const_lower = constraint.lower()
+                if const_lower in product_name or const_lower in product_desc or const_lower in product_tags:
+                    score += 3
+            
+            # Generate personalized "why for pet" reason
+            if not why_reasons:
+                if "soft" in product_name or "soft" in product_desc:
+                    why_reasons.append(f"Soft texture, easy on teeth")
+                if "natural" in product_tags or "healthy" in product_tags:
+                    why_reasons.append(f"Natural ingredients for {pet_name}")
+                if "training" in product_tags:
+                    why_reasons.append(f"Great for training sessions")
+                if not why_reasons:
+                    why_reasons.append(f"Popular choice for {pet_breed or 'dogs'}s")
+            
+            scored_products.append({
+                "product": product,
+                "score": score,
+                "why_for_pet": " • ".join(why_reasons[:2])
+            })
+        
+        # Sort by score and take top results
+        scored_products.sort(key=lambda x: x["score"], reverse=True)
+        
+        # Format for response
+        for item in scored_products[:limit]:
+            p = item["product"]
+            products.append({
+                "id": p.get("id", ""),
+                "name": p.get("name", ""),
+                "description": p.get("description", ""),
+                "price": p.get("price", 0),
+                "originalPrice": p.get("originalPrice", p.get("price", 0)),
+                "image": p.get("image", ""),
+                "category": p.get("category", ""),
+                "why_for_pet": item["why_for_pet"],
+                "sizes": p.get("sizes", []),
+                "available": p.get("available", True)
+            })
+        
+        return products
+        
+    except Exception as e:
+        logger.error(f"Product search error: {e}")
+        return []
+
+@router.post("/os/understand-with-products")
+async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
+    """
+    MIRA OS - Enhanced understanding endpoint with REAL products.
+    1. Uses LLM to understand intent and extract entities
+    2. Queries real product database based on entities
+    3. Returns personalized results with actual products
+    """
+    try:
+        # Step 1: Get LLM understanding
+        understanding = await understand_with_llm(
+            user_input=request.input,
+            pet_context=request.pet_context or {},
+            page_context=request.page_context
+        )
+        
+        execution_type = understanding.get("execution_type", "INSTANT")
+        intent = understanding.get("intent", "EXPLORE")
+        entities = understanding.get("entities", {})
+        
+        # Step 2: For FIND/ORDER intents, get real products
+        real_products = []
+        if intent in ["FIND", "ORDER", "COMPARE"] and execution_type == "INSTANT":
+            real_products = await search_real_products(
+                entities=entities,
+                pet_context=request.pet_context or {},
+                limit=6
+            )
+        
+        # Step 3: Build response
+        return {
+            "success": True,
+            "understanding": {
+                "intent": intent,
+                "confidence": understanding.get("confidence", 0.8),
+                "entities": entities,
+                "pet_relevance": understanding.get("pet_relevance", "")
+            },
+            "response": {
+                "message": understanding.get("message", ""),
+                "products": real_products if real_products else understanding.get("products", []),
+                "next_action": understanding.get("next_action", ""),
+                "concierge_reason": understanding.get("concierge_reason"),
+                "has_real_products": len(real_products) > 0
+            },
+            "execution_type": execution_type
+        }
+    except Exception as e:
+        logger.error(f"Mira OS understand-with-products error: {e}")
+        return {
+            "success": True,
+            "understanding": {
+                "intent": "EXPLORE",
+                "confidence": 0.5,
+                "entities": {},
+                "pet_relevance": ""
+            },
+            "response": {
+                "message": "I'll connect you with your pet concierge to help with this.",
+                "products": [],
+                "next_action": "Your concierge will reach out shortly.",
+                "concierge_reason": str(e),
+                "has_real_products": False
+            },
+            "execution_type": "CONCIERGE"
+        }
+
+
+# ============================================
 # ADMIN-MANAGED KIT TEMPLATES INTEGRATION
 # ============================================
 
