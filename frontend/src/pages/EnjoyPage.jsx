@@ -312,9 +312,11 @@ const EnjoyPage = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <SEOHead page="enjoy" path="/enjoy" />
-
+    <PillarPageLayout
+      pillar="enjoy"
+      title="Enjoy - Pet Events & Experiences | The Doggy Company"
+      description="Discover pet-friendly events, trails, meetups, and experiences curated for you and your furry companion."
+    >
       {/* Staggered Animation Styles */}
       <style>{`
         @keyframes fadeInUp {
