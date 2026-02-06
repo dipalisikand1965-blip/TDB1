@@ -857,16 +857,14 @@ const ServicesPage = () => {
     <div className="min-h-screen bg-gray-50 pb-24 md:pb-0" data-testid="services-page">
       <SEOHead page="services" path="/services" />
       
-      {/* Hero */}
-      <PetHero 
-        pet={selectedPet} 
-        soulData={petSoulData}
-        onPetSwitch={handlePetSwitch}
-        pets={pets}
+      {/* Magical Personalized Hero */}
+      <PersonalizedHero 
+        pet={selectedPet}
+        pageType="services"
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        onVoiceClick={() => setMiraChatOpen(true)}
       />
-      
-      {/* Search */}
-      <SearchBar value={searchQuery} onChange={setSearchQuery} petName={petName} />
       
       <div className="h-3 sm:h-4"></div>
       
