@@ -99,63 +99,75 @@ const PILLAR_MESSAGES = {
   },
   emergency: {
     messages: (name, breed) => [
+      `I'll focus on what needs attention now`,
       `🚨 We're here for ${name}, always`,
       `❤️‍🩹 ${name}'s safety is our priority`,
-      `🆘 24/7 support for ${name}`,
-      `🏥 Emergency care when ${name} needs it`,
-      `💪 ${name} is in safe hands`
+      `🆘 24/7 support for ${name}`
     ],
-    tagline: 'Emergency support for {name}'
+    tagline: 'Immediate support when it matters most'
   },
   paperwork: {
     messages: (name, breed) => [
+      `You shouldn't have to think about this`,
       `📄 ${name}'s documents, sorted!`,
       `✅ Keep ${name}'s records organized`,
-      `🏆 ${name}'s certifications & more`,
-      `📋 Hassle-free paperwork for ${name}`,
-      `🎫 ${name}'s official business, handled`
+      `📋 Hassle-free paperwork for ${name}`
     ],
-    tagline: 'Documentation for {name}'
+    tagline: 'Handled quietly, without stress'
   },
   farewell: {
     messages: (name, breed) => [
+      `I'll move at your pace here`,
       `🌈 Honoring ${name}'s beautiful journey`,
       `💕 ${name}'s memory lives forever`,
-      `🕊️ Gentle support for difficult times`,
-      `🌟 Celebrating ${name}'s life`,
-      `💝 ${name} will always be loved`
+      `🕊️ Gentle support for difficult times`
     ],
-    tagline: 'Compassionate support'
+    tagline: 'Support with dignity and care'
   },
   adopt: {
     messages: (name, breed) => [
+      `The right fit matters for everyone`,
       `🐾 Ready to give another pup a home?`,
       `💕 ${name} might love a sibling!`,
-      `🏠 Open your heart to another furry friend`,
-      `🤝 Adoption changes lives`,
-      `🌟 Every dog deserves love like ${name} gets`
+      `🏠 Open your heart to another furry friend`
     ],
-    tagline: 'Find a new family member'
+    tagline: 'Thoughtful matching, not impulse'
   },
   recommended: {
     messages: (name, breed) => [
+      `Based on what I know so far`,
       `✨ Handpicked just for ${name}!`,
       `💕 We know what ${name} loves`,
-      `🎯 Personalized picks for ${name}`,
-      `🌟 ${name}'s favorites, curated`,
-      `💝 Because ${name} deserves the best`
+      `🎯 Personalized picks for ${name}`
     ],
     tagline: 'Curated with love for {name}'
   },
   all: {
     messages: (name, breed) => [
+      `Based on what I know so far`,
       `🛍️ Everything ${name} could ever need`,
       `✨ ${name}'s complete shopping destination`,
-      `💕 Discover more for ${name}`,
-      `🌟 The full collection for ${name}`,
-      `🎁 Browse all for amazing ${name}`
+      `💕 Discover more for ${name}`
     ],
-    tagline: 'Everything for {name}'
+    tagline: 'Thoughtfully curated for how {name} lives and feels'
+  },
+  shop: {
+    messages: (name, breed) => [
+      `Based on what I know so far`,
+      `🛍️ Everything ${name} could ever need`,
+      `✨ ${name}'s complete shopping destination`,
+      `💕 Discover more for ${name}`
+    ],
+    tagline: 'Thoughtfully curated for how {name} lives and feels'
+  },
+  services: {
+    messages: (name, breed) => [
+      `I'll guide you to the right support`,
+      `🤝 Trusted help for ${name}`,
+      `✨ Expert care for ${name}`,
+      `💕 The best service providers for ${name}`
+    ],
+    tagline: 'Trusted help, when needed'
   }
 };
 
