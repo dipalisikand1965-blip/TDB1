@@ -159,6 +159,7 @@ async def get_user_tickets(
     """
     Get all tickets for a user by their email address.
     Returns tickets from service_desk_tickets, tickets, and mira_tickets collections.
+    Sorted by updated_at (most recent activity first).
     """
     if db is None:
         raise HTTPException(status_code=500, detail="Database not connected")
@@ -205,7 +206,18 @@ async def get_user_tickets(
                 "notes": 1,
                 "messages": 1
             }
-        ).sort("created_at", -1).limit(limit).to_list(limit)
+        ).sort("updated_at", -1).limit(limit).to_list(limit)
+        
+        # Add has_new_reply flag - check if last message is from concierge
+        for t in tickets:
+            messages = t.get("messages", [])
+            if messages:
+                last_msg = messages[-1] if messages else None
+                t["has_new_reply"] = last_msg and last_msg.get("sender") in ["concierge", "agent", "admin"]
+                t["last_message_from"] = last_msg.get("sender") if last_msg else None
+            else:
+                t["has_new_reply"] = False
+                t["last_message_from"] = None
         
         all_tickets.extend(tickets)
     except Exception as e:
