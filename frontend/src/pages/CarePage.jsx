@@ -12,17 +12,16 @@ import { createCareRequest, showUnifiedFlowSuccess, showUnifiedFlowError } from 
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { toast } from '../hooks/use-toast';
-import MiraChatWidget from '../components/MiraChatWidget';
 import ProductCard from '../components/ProductCard';
 import AdminQuickEdit from '../components/AdminQuickEdit';
 import MultiPetSelector from '../components/MultiPetSelector';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import BreedAutocomplete from '../components/BreedAutocomplete';
-import SEOHead from '../components/SEOHead';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import ServiceBookingModal from '../components/ServiceBookingModal';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import PersonalizedPicks from '../components/PersonalizedPicks';
+import PillarPageLayout from '../components/PillarPageLayout';
 // NEW: FitPage-style engagement components
 import { FitnessJourneyCounter, RotatingSocialProof } from '../components/SocialProofBadges';
 import ConversationalEntry from '../components/ConversationalEntry';
