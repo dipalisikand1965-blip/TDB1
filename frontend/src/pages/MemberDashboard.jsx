@@ -586,6 +586,8 @@ const MemberDashboard = () => {
         const requests = requestsRes.data.requests || [];
         const bookings = (bookingsRes.data.bookings || []).map(b => ({
           id: b.ticket_id || b.id,
+          ticket_id: b.ticket_id,
+          service_name: b.service_type?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Service',
           description: `${b.service_type?.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Service'} booking${b.date ? ` for ${b.date}` : ''}${b.time ? ` at ${b.time}` : ''}`,
           status: b.status,
           status_display: {
