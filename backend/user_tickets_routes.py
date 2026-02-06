@@ -651,13 +651,6 @@ async def get_request_messages(
 
 # ============== CONCIERGE REPLY WITH NOTIFICATIONS ==============
 
-class ConciergeReply(BaseModel):
-    message: str
-    notify_email: bool = True
-    notify_whatsapp: bool = False
-    is_internal: bool = False
-
-
 @router.post("/ticket/{ticket_id}/concierge-reply")
 async def concierge_reply_to_ticket(
     ticket_id: str,
