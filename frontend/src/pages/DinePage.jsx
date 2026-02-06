@@ -16,14 +16,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../components/
 import { API_URL } from '../utils/api';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import MiraChatWidget from '../components/MiraChatWidget';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import AdminQuickEdit from '../components/AdminQuickEdit';
 import ProductCard from '../components/ProductCard';
 import DiningConciergePicker from '../components/DiningConciergePicker';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import PersonalizedPicks from '../components/PersonalizedPicks';
-import SEOHead from '../components/SEOHead';
+import PillarPageLayout from '../components/PillarPageLayout';
 
 // Get user from AuthContext or localStorage
 const getUser = () => {
