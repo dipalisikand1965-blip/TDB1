@@ -12,7 +12,7 @@ import AutoshipSettings from './AutoshipSettings';
 import {
   Search, Filter, Download, Upload, Edit, Save, Loader2, RefreshCw,
   DollarSign, Percent, Package, Truck, Building2, Calculator, CheckCircle,
-  ArrowUpDown, ChevronDown, X, Plus, Trash2, IndianRupee, FileSpreadsheet, Sparkles, Database
+  ArrowUpDown, ChevronDown, X, Plus, Trash2, Wallet, FileSpreadsheet, Sparkles, Database
 } from 'lucide-react';
 
 const PILLARS = [
