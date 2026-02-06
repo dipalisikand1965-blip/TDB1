@@ -901,28 +901,43 @@ const MemberDashboard = () => {
                 </div>
               </div>
             </div>
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={(e) => { 
-                e.preventDefault();
-                e.stopPropagation();
-                logout(); 
-                navigate('/'); 
-              }}
-              onTouchEnd={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                logout();
-                navigate('/');
-              }}
-              className="text-red-400 hover:text-red-300 hover:bg-red-500/10 border-red-500/30 rounded-xl self-start sm:self-center transition-all hover:scale-105 relative z-[100]"
-              data-testid="signout-btn"
-              style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Sign Out
-            </Button>
+            
+            {/* Header Actions: Notification Bell + Sign Out */}
+            <div className="flex items-center gap-2 self-start sm:self-center">
+              {/* Member Notification Bell */}
+              <MemberNotificationBell 
+                userEmail={user?.email}
+                onNotificationClick={(notification) => {
+                  // Navigate to requests tab when clicking notification
+                  if (notification.ticket_id) {
+                    setActiveTab('requests');
+                  }
+                }}
+              />
+              
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={(e) => { 
+                  e.preventDefault();
+                  e.stopPropagation();
+                  logout(); 
+                  navigate('/'); 
+                }}
+                onTouchEnd={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  logout();
+                  navigate('/');
+                }}
+                className="text-red-400 hover:text-red-300 hover:bg-red-500/10 border-red-500/30 rounded-xl transition-all hover:scale-105 relative z-[100]"
+                data-testid="signout-btn"
+                style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+              >
+                <LogOut className="w-4 h-4 mr-2" />
+                Sign Out
+              </Button>
+            </div>
           </div>
 
         {/* Main Tabs - Wraps everything */}
