@@ -807,41 +807,16 @@ const Navbar = () => {
               </div>
             </Link>
 
-            {/* Search Bar - Desktop */}
-            <div className="flex-1 max-w-xl relative" ref={searchRef}>
-              <form onSubmit={handleSearch}>
-                <div className="flex">
-                  <input
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => {
-                      setSearchQuery(e.target.value);
-                      setShowSearchSuggestions(true);
-                    }}
-                    onFocus={() => setShowSearchSuggestions(true)}
-                    placeholder={primaryPet ? `Search for ${primaryPet.name}...` : "Search everything..."}
-                    className="w-full px-4 py-2 text-sm text-gray-900 bg-white rounded-l-md focus:outline-none focus:ring-2 focus:ring-purple-500"
-                    data-testid="navbar-search-input"
-                  />
-                  <button 
-                    type="button"
-                    onClick={toggleVoiceWizard}
-                    className={`px-3 transition-all ${isListening ? 'bg-red-500 animate-pulse' : 'bg-purple-400 hover:bg-purple-500'}`}
-                    title="Voice Service Wizard"
-                    data-testid="voice-wizard-btn"
-                  >
-                    {isListening ? <MicOff className="w-5 h-5 text-white" /> : <Mic className="w-5 h-5 text-white" />}
-                  </button>
-                  <button 
-                    type="submit"
-                    className="px-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-r-md transition-colors"
-                    data-testid="navbar-search-btn"
-                  >
-                    <Search className="w-5 h-5 text-white" />
-                  </button>
-                </div>
-              </form>
-              
+            {/* Mira-Powered Search Bar - Desktop */}
+            <div className="flex-1 max-w-xl">
+              <MiraSearchPanel 
+                variant="navbar"
+                placeholder={primaryPet ? `Ask Mira anything for ${primaryPet.name}...` : "Ask Mira anything..."}
+              />
+            </div>
+
+            {/* Legacy Voice Wizard Modal - Keep for backward compatibility */}
+            <div className="hidden">
               {/* Voice Wizard Modal */}
               {showVoiceWizard && (
                 <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border border-purple-200 p-6 z-50">
