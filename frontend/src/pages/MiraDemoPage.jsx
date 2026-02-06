@@ -363,9 +363,17 @@ const MiraDemoPage = () => {
                   onClick={() => {
                     setQuery(suggestion);
                     inputRef.current?.focus();
+                    // Auto-submit on mobile for better UX
+                    setTimeout(() => {
+                      if (handleSubmitRef.current) {
+                        handleSubmitRef.current(null, suggestion);
+                      }
+                    }, 100);
                   }}
-                  className="px-4 py-2 bg-white/10 backdrop-blur border border-white/20 rounded-full
-                    text-white/80 text-sm hover:bg-white/20 transition-all"
+                  style={{ touchAction: 'manipulation' }}
+                  className="px-4 py-3 bg-white/10 backdrop-blur border border-white/20 rounded-full
+                    text-white/80 text-sm hover:bg-white/20 transition-all min-h-[44px]
+                    active:scale-95 active:bg-white/30"
                 >
                   {suggestion}
                 </button>
