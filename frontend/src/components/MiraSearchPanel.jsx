@@ -12,7 +12,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Search, Mic, MicOff, Sparkles, ShoppingCart, ArrowRight, MessageCircle, Calendar, HelpCircle, Loader2, X } from 'lucide-react';
 import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
-import { usePillar } from '../context/PillarContext';
+import { usePillarContext } from '../context/PillarContext';
 
 // Intent badges with colors
 const INTENT_STYLES = {
