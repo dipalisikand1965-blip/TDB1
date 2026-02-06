@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '../../ui/card';
 import { Button } from '../../ui/button';
 import { Badge } from '../../ui/badge';
-import { Calendar, RefreshCw, Loader2, MessageCircle, Sparkles, PawPrint, Clock, ChevronDown, ChevronUp, MapPin, Phone, Mail, User, Send, X } from 'lucide-react';
+import { Calendar, RefreshCw, Loader2, MessageCircle, Sparkles, PawPrint, Clock, ChevronDown, ChevronUp, MapPin, Send, X, Paperclip, Image } from 'lucide-react';
 import { toast } from 'sonner';
 
 const API = process.env.REACT_APP_BACKEND_URL;
@@ -19,6 +19,9 @@ const RequestsTab = ({
   const [messageDialog, setMessageDialog] = useState({ open: false, request: null });
   const [messageText, setMessageText] = useState('');
   const [sending, setSending] = useState(false);
+  const [conversationMessages, setConversationMessages] = useState([]);
+  const [loadingMessages, setLoadingMessages] = useState(false);
+  const messagesEndRef = useRef(null);
 
   const toggleRequest = (requestId) => {
     setExpandedRequests(prev => ({
@@ -27,15 +30,43 @@ const RequestsTab = ({
     }));
   };
 
-  const openMessageDialog = (request) => {
+  // Load conversation messages when dialog opens
+  const loadConversationMessages = async (requestId) => {
+    setLoadingMessages(true);
+    try {
+      const response = await fetch(
+        `${API}/api/user/request/${requestId}/messages?email=${encodeURIComponent(userEmail)}`
+      );
+      const data = await response.json();
+      setConversationMessages(data.messages || []);
+    } catch (error) {
+      console.error('Failed to load messages:', error);
+      setConversationMessages([]);
+    } finally {
+      setLoadingMessages(false);
+    }
+  };
+
+  const openMessageDialog = async (request) => {
     setMessageDialog({ open: true, request });
     setMessageText('');
+    // Load existing conversation
+    const requestId = request.ticket_id || request.id;
+    await loadConversationMessages(requestId);
   };
 
   const closeMessageDialog = () => {
     setMessageDialog({ open: false, request: null });
     setMessageText('');
+    setConversationMessages([]);
   };
+
+  // Scroll to bottom when new messages arrive
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [conversationMessages]);
 
   const sendMessageToConcierge = async () => {
     if (!messageText.trim() || !messageDialog.request) return;
