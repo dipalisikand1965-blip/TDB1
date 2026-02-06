@@ -302,7 +302,7 @@ async def search_real_products(
     Returns actual products with images, prices, and personalized "why for pet" reasons.
     """
     db = get_db()
-    if not db:
+    if db is None:
         return []
     
     products = []
