@@ -64,6 +64,12 @@ const CelebratePage = () => {
   // User pets state
   const [userPets, setUserPets] = useState([]);
   const [activePet, setActivePet] = useState(null);
+  const [petSoulData, setPetSoulData] = useState(null);
+  
+  // Search and view mode
+  const [searchQuery, setSearchQuery] = useState('');
+  const [viewMode, setViewMode] = useState('products'); // 'products' | 'services'
+  const [selectedSubcat, setSelectedSubcat] = useState(null);
 
   // Rotating hero images for visual appeal
   const HERO_IMAGES = [
@@ -79,6 +85,37 @@ const CelebratePage = () => {
     }, 5000);
     return () => clearInterval(interval);
   }, [HERO_IMAGES.length]);
+  
+  // Fetch pets and soul data
+  useEffect(() => {
+    const fetchPetData = async () => {
+      if (!token) return;
+      try {
+        const response = await fetch(`${API_URL}/api/pets/my-pets`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          const pets = data.pets || [];
+          setUserPets(pets);
+          if (pets.length > 0) {
+            setActivePet(pets[0]);
+            // Fetch soul data
+            const soulRes = await fetch(`${API_URL}/api/pets/${pets[0].id}/soul`, {
+              headers: { Authorization: `Bearer ${token}` }
+            });
+            if (soulRes.ok) {
+              const soulData = await soulRes.json();
+              setPetSoulData(soulData);
+            }
+          }
+        }
+      } catch (err) {
+        console.debug('Failed to fetch pet data:', err);
+      }
+    };
+    fetchPetData();
+  }, [token]);
   
   // Concierge request form state
   const [conciergeForm, setConciergeForm] = useState({
