@@ -679,115 +679,12 @@ const Navbar = () => {
             </div>
           </div>
           
-          {/* Mobile: Search Bar Row (below main header) */}
-          <div className="sm:hidden pb-3 relative" ref={searchRef}>
-            <form onSubmit={handleSearch} className="flex">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  setShowSearchSuggestions(true);
-                }}
-                onFocus={() => setShowSearchSuggestions(true)}
-                placeholder={primaryPet ? `Search for ${primaryPet.name}...` : "Search products, services..."}
-                className="flex-1 px-4 py-3.5 text-sm text-gray-900 bg-white rounded-l-full focus:outline-none"
-                data-testid="navbar-search-input-mobile"
-              />
-              <button 
-                type="button"
-                onClick={toggleVoiceWizard}
-                className={`px-3.5 ${isListening ? 'bg-red-500' : 'bg-purple-500'}`}
-              >
-                <Mic className="w-4 h-4 text-white" />
-              </button>
-              <button 
-                type="submit"
-                className="px-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-r-full"
-              >
-                <Search className="w-4 h-4 text-white" />
-              </button>
-            </form>
-            
-            {/* Mobile Search Suggestions Dropdown */}
-            {showSearchSuggestions && searchSuggestions.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden z-[9999] max-h-[60vh] overflow-y-auto">
-                {searchSuggestions.map((suggestion, idx) => (
-                  <Link
-                    key={idx}
-                    to={suggestion.url || `/search?q=${encodeURIComponent(suggestion.text || suggestion.name)}`}
-                    onClick={() => {
-                      setShowSearchSuggestions(false);
-                      setSearchQuery('');
-                    }}
-                    className="flex items-center gap-3 px-4 py-3 hover:bg-purple-50 border-b border-gray-100 last:border-0"
-                  >
-                    {/* Type Icon or Image */}
-                    {suggestion.type === 'page' || suggestion.type === 'pillar' ? (
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
-                        suggestion.type === 'pillar' ? 'bg-purple-100 text-purple-600' : 'bg-blue-100 text-blue-600'
-                      }`}>
-                        {suggestion.icon === 'cake' && <span className="text-lg">🎂</span>}
-                        {suggestion.icon === 'bell' && <span className="text-lg">🔔</span>}
-                        {suggestion.icon === 'ticket' && <span className="text-lg">🎫</span>}
-                        {suggestion.icon === 'inbox' && <span className="text-lg">📥</span>}
-                        {suggestion.icon === 'paw' && <span className="text-lg">🐾</span>}
-                        {suggestion.icon === 'heart' && <span className="text-lg">❤️</span>}
-                        {suggestion.icon === 'home' && <span className="text-lg">🏠</span>}
-                        {suggestion.icon === 'shopping' && <span className="text-lg">🛒</span>}
-                        {suggestion.icon === 'calendar' && <span className="text-lg">📅</span>}
-                        {suggestion.icon === 'settings' && <span className="text-lg">⚙️</span>}
-                        {suggestion.icon === 'utensils' && <span className="text-lg">🍽️</span>}
-                        {suggestion.icon === 'plane' && <span className="text-lg">✈️</span>}
-                        {suggestion.icon === 'star' && <span className="text-lg">⭐</span>}
-                        {suggestion.icon === 'activity' && <span className="text-lg">🏃</span>}
-                        {suggestion.icon === 'book' && <span className="text-lg">📚</span>}
-                        {suggestion.icon === 'file' && <span className="text-lg">📄</span>}
-                        {suggestion.icon === 'lightbulb' && <span className="text-lg">💡</span>}
-                        {suggestion.icon === 'alert' && <span className="text-lg">🚨</span>}
-                        {suggestion.icon === 'shield' && <span className="text-lg">🛡️</span>}
-                        {suggestion.icon === 'scissors' && <span className="text-lg">✂️</span>}
-                        {suggestion.icon === 'stethoscope' && <span className="text-lg">🩺</span>}
-                        {suggestion.icon === 'award' && <span className="text-lg">🏆</span>}
-                        {!suggestion.icon && <Search className="w-5 h-5" />}
-                      </div>
-                    ) : suggestion.image ? (
-                      <img src={suggestion.image} alt="" className="w-10 h-10 rounded-lg object-cover" />
-                    ) : (
-                      <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
-                        <Package className="w-5 h-5 text-gray-400" />
-                      </div>
-                    )}
-                    
-                    {/* Text Content */}
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-gray-900 text-sm truncate">{suggestion.name || suggestion.text}</p>
-                      {suggestion.description && (
-                        <p className="text-xs text-gray-500 truncate">{suggestion.description}</p>
-                      )}
-                      {suggestion.price && (
-                        <p className="text-xs font-bold text-purple-600">₹{suggestion.price}</p>
-                      )}
-                    </div>
-                    
-                    {/* Type Badge */}
-                    <span className={`text-[10px] px-2 py-0.5 rounded-full ${
-                      suggestion.type === 'page' ? 'bg-blue-100 text-blue-700' :
-                      suggestion.type === 'pillar' ? 'bg-purple-100 text-purple-700' :
-                      suggestion.type === 'product' ? 'bg-pink-100 text-pink-700' :
-                      suggestion.type === 'service' ? 'bg-green-100 text-green-700' :
-                      'bg-gray-100 text-gray-700'
-                    }`}>
-                      {suggestion.type === 'page' ? 'Page' :
-                       suggestion.type === 'pillar' ? 'Pillar' :
-                       suggestion.type === 'product' ? 'Product' :
-                       suggestion.type === 'service' ? 'Service' :
-                       suggestion.type}
-                    </span>
-                  </Link>
-                ))}
-              </div>
-            )}
+          {/* Mobile: Mira Search Bar Row (below main header) */}
+          <div className="sm:hidden pb-3">
+            <MiraSearchPanel 
+              variant="hero"
+              placeholder={primaryPet ? `Ask Mira for ${primaryPet.name}...` : "Ask Mira anything..."}
+            />
           </div>
           
           {/* Desktop Layout: Logo | Search | Icons */}
