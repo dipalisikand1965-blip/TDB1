@@ -18,6 +18,7 @@ import MiraPicksCarousel from '../components/MiraPicksCarousel';
 import PetJourneyRecommendations from '../components/PetJourneyRecommendations';
 import PersonalizedPicks from '../components/PersonalizedPicks';
 import { getPetPhotoUrl } from '../utils/petAvatar';
+import PillarPageLayout from '../components/PillarPageLayout';
 // FitPage-style engagement components
 import { FitnessJourneyCounter, RotatingSocialProof } from '../components/SocialProofBadges';
 import TransformationStories from '../components/TransformationStories';
