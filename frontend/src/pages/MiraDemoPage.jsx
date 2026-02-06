@@ -279,7 +279,8 @@ const MiraDemoPage = () => {
                 <button
                   type="button"
                   onClick={toggleVoice}
-                  className={`p-2 rounded-full transition-all ${
+                  style={{ touchAction: 'manipulation' }}
+                  className={`p-3 rounded-full transition-all min-w-[44px] min-h-[44px] flex items-center justify-center ${
                     isListening 
                       ? 'bg-red-500 text-white animate-pulse' 
                       : 'bg-white/10 text-white/70 hover:bg-white/20'
@@ -290,9 +291,10 @@ const MiraDemoPage = () => {
                 <button
                   type="submit"
                   disabled={isProcessing || !query.trim()}
-                  className="p-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white
+                  style={{ touchAction: 'manipulation' }}
+                  className="p-3 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white
                     disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-purple-500/25
-                    transition-all"
+                    transition-all min-w-[44px] min-h-[44px] flex items-center justify-center"
                 >
                   {isProcessing ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
