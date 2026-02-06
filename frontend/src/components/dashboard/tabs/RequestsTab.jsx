@@ -137,8 +137,11 @@ const RequestsTab = ({
     <div className="animate-in fade-in-50 duration-300" data-testid="requests-tab">
       {/* Message/Conversation Dialog */}
       {messageDialog.open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-gradient-to-br from-slate-800/95 to-purple-900/40 border border-white/10 rounded-2xl max-w-lg w-full shadow-2xl flex flex-col max-h-[85vh]">
+        <div 
+          className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+          data-testid="message-dialog-overlay"
+        >
+          <div className="bg-gradient-to-br from-slate-800/95 to-purple-900/40 border border-white/10 rounded-2xl max-w-lg w-full shadow-2xl flex flex-col max-h-[85vh]" data-testid="message-dialog-content">
             {/* Header */}
             <div className="p-4 border-b border-white/10 flex items-center justify-between flex-shrink-0">
               <div>
