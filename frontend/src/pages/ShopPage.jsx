@@ -415,7 +415,124 @@ const PillarFilters = ({ selected, onSelect, selectedSubcat, onSelectSubcat }) =
 };
 
 // =============================================================================
-// PRODUCT CARD - With Mira Whisper
+// BREED-SPECIFIC WHISPER GENERATOR - "Why for [PetName]"
+// =============================================================================
+const getBreedWhisper = (product, petName, breed) => {
+  if (!petName || !breed) {
+    // Generic whispers for non-logged-in users
+    const genericWhispers = [
+      'Quality they deserve',
+      'Pet parent favorite',
+      'Tail-wagging approved',
+      'Vet recommended choice'
+    ];
+    const hash = (product.id || '').toString().split('').reduce((a, b) => a + b.charCodeAt(0), 0);
+    return genericWhispers[hash % genericWhispers.length];
+  }
+  
+  const breedLower = breed.toLowerCase();
+  const productName = (product.title || product.name || '').toLowerCase();
+  const productTags = (product.tags || []).join(' ').toLowerCase();
+  const combined = `${productName} ${productTags}`;
+  
+  // BREED-SPECIFIC "Why for [PetName]" messages
+  // Format: "[Breed]s, like [PetName], [reason]"
+  
+  // Shih Tzu specific
+  if (breedLower.includes('shih')) {
+    if (combined.includes('groom') || combined.includes('brush') || combined.includes('coat')) {
+      return `Shih Tzus, like ${petName}, need gentle coat care`;
+    }
+    if (combined.includes('treat') || combined.includes('snack')) {
+      return `Shih Tzus, like ${petName}, love small bite treats`;
+    }
+    if (combined.includes('toy') || combined.includes('play')) {
+      return `Perfect size for Shih Tzus like ${petName}`;
+    }
+    if (combined.includes('bed') || combined.includes('comfort')) {
+      return `Shih Tzus, like ${petName}, love cozy spots`;
+    }
+    return `Made for royal companions like ${petName}`;
+  }
+  
+  // Golden Retriever specific
+  if (breedLower.includes('retriever') || breedLower.includes('golden')) {
+    if (combined.includes('toy') || combined.includes('fetch') || combined.includes('ball')) {
+      return `Retrievers, like ${petName}, never tire of fetch!`;
+    }
+    if (combined.includes('treat') || combined.includes('food')) {
+      return `Retrievers, like ${petName}, are always hungry`;
+    }
+    if (combined.includes('swim') || combined.includes('water')) {
+      return `Retrievers, like ${petName}, love water activities`;
+    }
+    if (combined.includes('joint') || combined.includes('hip')) {
+      return `Important for active Retrievers like ${petName}`;
+    }
+    return `Perfect for energetic pups like ${petName}`;
+  }
+  
+  // Labrador specific
+  if (breedLower.includes('lab')) {
+    if (combined.includes('chew') || combined.includes('durable')) {
+      return `Labs, like ${petName}, need tough toys`;
+    }
+    if (combined.includes('training') || combined.includes('treat')) {
+      return `Labs, like ${petName}, are super food motivated`;
+    }
+    return `Great for friendly Labs like ${petName}`;
+  }
+  
+  // Pug specific
+  if (breedLower.includes('pug')) {
+    if (combined.includes('breathing') || combined.includes('cool')) {
+      return `Pugs, like ${petName}, need extra care`;
+    }
+    if (combined.includes('harness')) {
+      return `Pugs, like ${petName}, do better with harnesses`;
+    }
+    return `Sized right for Pugs like ${petName}`;
+  }
+  
+  // German Shepherd specific
+  if (breedLower.includes('german') || breedLower.includes('shepherd')) {
+    if (combined.includes('training') || combined.includes('smart')) {
+      return `German Shepherds, like ${petName}, love mental challenges`;
+    }
+    if (combined.includes('large') || combined.includes('big')) {
+      return `Right size for big dogs like ${petName}`;
+    }
+    return `For intelligent breeds like ${petName}`;
+  }
+  
+  // Beagle specific
+  if (breedLower.includes('beagle')) {
+    if (combined.includes('scent') || combined.includes('sniff')) {
+      return `Beagles, like ${petName}, follow their nose!`;
+    }
+    if (combined.includes('puzzle') || combined.includes('treat')) {
+      return `Keeps curious Beagles like ${petName} busy`;
+    }
+    return `Great for active Beagles like ${petName}`;
+  }
+  
+  // Poodle specific
+  if (breedLower.includes('poodle')) {
+    if (combined.includes('groom') || combined.includes('coat')) {
+      return `Poodles, like ${petName}, need regular grooming`;
+    }
+    if (combined.includes('smart') || combined.includes('puzzle')) {
+      return `Smart Poodles like ${petName} love this`;
+    }
+    return `Elegant choice for ${petName}`;
+  }
+  
+  // Default breed-specific message
+  return `${breed}s, like ${petName}, will love this`;
+};
+
+// =============================================================================
+// PRODUCT CARD - With "Why for [PetName]" Breed Whisper
 // =============================================================================
 const ProductCard = ({ product, petName, breed, isPetPick, index }) => {
   const [isWishlisted, setIsWishlisted] = useState(false);
@@ -428,8 +545,8 @@ const ProductCard = ({ product, petName, breed, isPetPick, index }) => {
   const image = product.image || product.image_url || product.images?.[0];
   const discount = comparePrice ? Math.round((1 - price / comparePrice) * 100) : 0;
   
-  // Mira whisper for this product
-  const miraWhisper = getMiraWhisper(product, breed);
+  // Breed-specific "Why for [PetName]" whisper
+  const breedWhisper = getBreedWhisper(product, petName, breed);
 
   return (
     <div 
@@ -477,17 +594,19 @@ const ProductCard = ({ product, petName, breed, isPetPick, index }) => {
         </button>
       </div>
       
-      {/* Content - Enhanced padding and text sizes */}
+      {/* Content */}
       <div className="p-3 sm:p-4 lg:p-5">
         <h3 className="font-semibold text-gray-900 text-sm sm:text-base lg:text-lg mb-1.5 sm:mb-2 line-clamp-2 leading-snug group-hover:text-orange-600 transition-colors">
           {title}
         </h3>
         
-        {/* Mira Whisper - Why this product */}
-        <p className="text-xs sm:text-sm text-gray-500 mb-2 sm:mb-3 flex items-center gap-1.5 line-clamp-1">
-          <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-purple-500 flex-shrink-0" />
-          <span className="truncate">{miraWhisper}</span>
-        </p>
+        {/* "Why for [PetName]" - Breed-specific whisper */}
+        <div className="mb-2 sm:mb-3 p-2 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border border-purple-100">
+          <p className="text-xs sm:text-sm text-purple-700 flex items-start gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-purple-500 flex-shrink-0 mt-0.5" />
+            <span className="line-clamp-2 font-medium">{breedWhisper}</span>
+          </p>
+        </div>
         
         {/* Price */}
         <div className="flex items-center gap-2">
