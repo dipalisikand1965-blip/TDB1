@@ -158,6 +158,159 @@ const CATEGORY_HERO_CONTENT = {
     highlight: 'With Your Pet 🎉',
     subtitle: 'Cakes, treats, and celebration essentials for your furry family',
     color: 'from-purple-600 via-pink-500 to-rose-500'
+  },
+  // ENJOY PILLAR
+  toys: {
+    badge: 'Playtime Joy',
+    title: 'Toys for',
+    highlight: 'Fun & Play 🎾',
+    subtitle: 'Interactive toys to keep your furry friend entertained for hours',
+    color: 'from-blue-600 via-cyan-500 to-teal-500'
+  },
+  chews: {
+    badge: 'Long-Lasting',
+    title: 'Chews &',
+    highlight: 'Bones 🦴',
+    subtitle: 'Healthy, durable chews for dental health and mental stimulation',
+    color: 'from-amber-600 via-orange-500 to-red-500'
+  },
+  games: {
+    badge: 'Brain Games',
+    title: 'Interactive',
+    highlight: 'Games 🎮',
+    subtitle: 'Challenge your pet with puzzles and mental stimulation games',
+    color: 'from-purple-600 via-indigo-500 to-blue-500'
+  },
+  puzzles: {
+    badge: 'Mental Workout',
+    title: 'Puzzle',
+    highlight: 'Toys 🧩',
+    subtitle: 'Keep your pet\'s mind sharp with engaging puzzle toys',
+    color: 'from-green-600 via-emerald-500 to-teal-500'
+  },
+  // CARE PILLAR
+  grooming: {
+    badge: 'Premium Care',
+    title: 'Grooming',
+    highlight: 'Essentials ✨',
+    subtitle: 'Everything for a healthy, shiny coat and happy pet',
+    color: 'from-pink-600 via-rose-500 to-purple-500'
+  },
+  health: {
+    badge: 'Wellness First',
+    title: 'Health',
+    highlight: 'Products ❤️',
+    subtitle: 'Support your pet\'s health with quality supplements and care',
+    color: 'from-red-600 via-rose-500 to-pink-500'
+  },
+  supplements: {
+    badge: 'Nutrition Plus',
+    title: 'Health',
+    highlight: 'Supplements 💊',
+    subtitle: 'Vitamins and supplements for optimal pet health',
+    color: 'from-green-600 via-teal-500 to-cyan-500'
+  },
+  spa: {
+    badge: 'Pamper Time',
+    title: 'Spa &',
+    highlight: 'Relaxation 🛁',
+    subtitle: 'Luxurious spa treatments for your precious pet',
+    color: 'from-violet-600 via-purple-500 to-pink-500'
+  },
+  // STAY PILLAR
+  beds: {
+    badge: 'Sweet Dreams',
+    title: 'Cozy',
+    highlight: 'Beds 🛏️',
+    subtitle: 'Comfortable beds for the best sleep your pet deserves',
+    color: 'from-indigo-600 via-purple-500 to-violet-500'
+  },
+  mats: {
+    badge: 'Comfort Zone',
+    title: 'Comfy',
+    highlight: 'Mats 🧺',
+    subtitle: 'Soft mats for relaxation and comfort anywhere',
+    color: 'from-teal-600 via-cyan-500 to-blue-500'
+  },
+  kennels: {
+    badge: 'Safe Haven',
+    title: 'Kennels &',
+    highlight: 'Crates 🏠',
+    subtitle: 'Secure, comfortable spaces for your pet',
+    color: 'from-slate-600 via-gray-500 to-zinc-500'
+  },
+  bowls: {
+    badge: 'Mealtime Joy',
+    title: 'Bowls &',
+    highlight: 'Feeders 🥣',
+    subtitle: 'Stylish and practical feeding solutions',
+    color: 'from-orange-600 via-amber-500 to-yellow-500'
+  },
+  // TRAVEL PILLAR
+  carriers: {
+    badge: 'Safe Travels',
+    title: 'Pet',
+    highlight: 'Carriers 🎒',
+    subtitle: 'Comfortable carriers for adventures with your pet',
+    color: 'from-blue-600 via-indigo-500 to-purple-500'
+  },
+  'car-accessories': {
+    badge: 'Road Ready',
+    title: 'Car',
+    highlight: 'Accessories 🚗',
+    subtitle: 'Keep your pet safe and comfy on every car ride',
+    color: 'from-gray-600 via-slate-500 to-zinc-500'
+  },
+  outdoor: {
+    badge: 'Adventure Gear',
+    title: 'Outdoor',
+    highlight: 'Equipment ⛺',
+    subtitle: 'Everything for outdoor adventures with your pet',
+    color: 'from-green-600 via-emerald-500 to-teal-500'
+  },
+  // FIT PILLAR
+  leashes: {
+    badge: 'Walk Time',
+    title: 'Premium',
+    highlight: 'Leashes 🦮',
+    subtitle: 'Quality leashes for safe and enjoyable walks',
+    color: 'from-blue-600 via-cyan-500 to-teal-500'
+  },
+  harnesses: {
+    badge: 'Comfort Walk',
+    title: 'Harnesses &',
+    highlight: 'Vests 🎽',
+    subtitle: 'Comfortable harnesses for better control and safety',
+    color: 'from-orange-600 via-red-500 to-rose-500'
+  },
+  collars: {
+    badge: 'Style & Safety',
+    title: 'Designer',
+    highlight: 'Collars 📿',
+    subtitle: 'Stylish collars that make your pet stand out',
+    color: 'from-purple-600 via-pink-500 to-rose-500'
+  },
+  apparel: {
+    badge: 'Fashion Forward',
+    title: 'Pet',
+    highlight: 'Apparel 👕',
+    subtitle: 'Cute and practical clothing for every occasion',
+    color: 'from-pink-600 via-rose-500 to-red-500'
+  },
+  // LEARN PILLAR
+  training: {
+    badge: 'Train Smart',
+    title: 'Training',
+    highlight: 'Aids 🎓',
+    subtitle: 'Tools and treats for effective training sessions',
+    color: 'from-green-600 via-emerald-500 to-teal-500'
+  },
+  books: {
+    badge: 'Pet Knowledge',
+    title: 'Books &',
+    highlight: 'Guides 📚',
+    subtitle: 'Expert advice on pet care and training',
+    color: 'from-amber-600 via-yellow-500 to-orange-500'
   }
 };
 
