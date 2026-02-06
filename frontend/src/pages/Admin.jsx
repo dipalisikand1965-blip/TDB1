@@ -2000,17 +2000,7 @@ const Admin = () => {
                 </div>
               </div>
               
-              {/* Universal Seed Button */}
-              <button
-                onClick={() => { seedAllPillars(); setSidebarCollapsed(true); }}
-                disabled={seedingAll}
-                className="w-full p-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:from-purple-700 hover:to-pink-700 disabled:opacity-50"
-              >
-                {seedingAll ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-                {seedingAll ? 'Seeding...' : 'Universal Seed + Tags'}
-              </button>
-              
-              {/* 🚀 MASTER SYNC - One button for everything */}
+              {/* 🚀 MASTER SYNC - ONE Button for Everything */}
               <button
                 onClick={() => { syncAllData(); setSidebarCollapsed(true); }}
                 disabled={syncingShopify}
