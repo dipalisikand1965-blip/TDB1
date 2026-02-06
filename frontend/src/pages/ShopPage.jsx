@@ -864,7 +864,7 @@ const ShopPage = () => {
                `${PILLARS.find(p => p.id === selectedPillar)?.label || ''}`}
             </h2>
             {filteredProducts.length > 0 && (
-              <span className="text-xs sm:text-sm text-gray-500">{filteredProducts.length} products</span>
+              <span className="text-xs sm:text-sm text-gray-400">Curated for you</span>
             )}
           </div>
           
