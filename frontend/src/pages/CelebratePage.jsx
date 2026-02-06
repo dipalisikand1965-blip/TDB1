@@ -606,9 +606,6 @@ const CelebratePage = () => {
         maxServices={8}
       />
       
-      {/* Mira Floating Chat Widget */}
-      <MiraChatWidget pillar="celebrate" />
-      
       {/* Occasion Box Builder Modal */}
       <OccasionBoxBuilder
         isOpen={showBoxBuilder}
