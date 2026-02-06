@@ -10,6 +10,40 @@ Transform the application into a highly personalized, "guided care" experience f
 - **AI Assistant:** Mira (Pet Concierge) with voice capabilities
 - **Communication Backbone:** Multi-channel messaging (in-app, email, WhatsApp)
 
+## Recent Updates (Feb 6, 2025 - Session 2)
+
+### ✅ Pillar-Wise Personalized Picks - NEW
+- **Problem:** "Picks for [PetName]" were not showing pillar-wise (Nourish, Play, Groom, etc.)
+- **Solution:** Created new `PillarWisePicks.jsx` component that:
+  - Fetches recommendations for each pillar separately
+  - Displays tabs: Nourish (dine), Play (enjoy), Groom (care), Fitness (fit), Celebrate
+  - Shows 4 products per pillar with "For [PetName]" badges
+  - Each tab shows pillar-specific products from `/api/products/recommendations/for-pet/{pet_id}?pillar={pillar}`
+- **Files:**
+  - `/app/frontend/src/components/PillarWisePicks.jsx` - NEW component
+  - `/app/frontend/src/components/dashboard/tabs/OverviewTab.jsx` - Uses PillarWisePicks
+
+### ✅ UI/UX Improvements - Shop & Services Cards
+- **Problem:** Mobile text too small, desktop cards not looking good
+- **Solution:**
+  - Increased text sizes from `text-[10px]` to `text-xs/text-sm`
+  - Enhanced card styling: `rounded-2xl/3xl`, `shadow-md`, `hover:shadow-2xl`
+  - Better padding and spacing: `p-3 sm:p-4 lg:p-5`
+  - More prominent hover effects: `hover:-translate-y-1`
+  - Improved grid layout: `gap-3 sm:gap-4 lg:gap-6`
+- **Files:**
+  - `/app/frontend/src/pages/ShopPage.jsx` - ProductCard component
+  - `/app/frontend/src/pages/ServicesPage.jsx` - ServiceCard component + X icon fix
+
+### ✅ Mobile Dashboard Tab Navigation Fix
+- **Problem:** Tab navigation was broken on mobile
+- **Solution:**
+  - Added `touch-manipulation` class to each tab trigger
+  - Added `touch-pan-x` to TabsList for better scrolling
+  - Added `flex-shrink-0` to prevent tab squishing
+  - Added `data-testid` attributes for testing
+- **File:** `/app/frontend/src/pages/MemberDashboard.jsx`
+
 ## Recent Updates (Feb 6, 2025)
 
 ### Fix: User Requests Query Bug ✅ (Just Fixed)
