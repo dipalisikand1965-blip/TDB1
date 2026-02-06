@@ -407,6 +407,12 @@ async def send_user_message_to_ticket(
     
     now = datetime.now(timezone.utc).isoformat()
     
+    # Get customer name from user profile
+    user_profile = await db.users.find_one({"email": email})
+    customer_name = "Guest"
+    if user_profile:
+        customer_name = user_profile.get("name") or user_profile.get("first_name", "Guest")
+    
     # Find ticket with ownership verification
     query = {
         "ticket_id": ticket_id,
