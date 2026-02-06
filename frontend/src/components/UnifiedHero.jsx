@@ -350,12 +350,30 @@ const UnifiedHero = ({
               className="flex-1 px-4 py-4 text-base bg-transparent focus:outline-none text-gray-900 placeholder-gray-400"
               data-testid="hero-search-input"
             />
-            <button className="flex-shrink-0 p-2 m-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl text-white hover:opacity-90 transition-opacity">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-              </svg>
-            </button>
+            {voiceSupported && (
+              <button 
+                onClick={toggleVoice}
+                className={`flex-shrink-0 p-2 m-2 rounded-xl text-white transition-all ${
+                  isListening 
+                    ? 'bg-red-500 animate-pulse' 
+                    : 'bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90'
+                }`}
+                data-testid="voice-search-btn"
+                aria-label={isListening ? 'Stop listening' : 'Start voice search'}
+              >
+                {isListening ? (
+                  <Mic className="w-5 h-5 animate-pulse" />
+                ) : (
+                  <Mic className="w-5 h-5" />
+                )}
+              </button>
+            )}
           </div>
+          {isListening && (
+            <p className="text-center text-white/70 text-sm mt-2 animate-pulse">
+              Listening... speak now
+            </p>
+          )}
         </div>
       </div>
       
