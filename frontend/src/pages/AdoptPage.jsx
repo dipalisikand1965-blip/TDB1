@@ -10,8 +10,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { toast } from '../hooks/use-toast';
+import MiraChatWidget from '../components/MiraChatWidget';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
-import PillarPageLayout from '../components/PillarPageLayout';
+import SEOHead from '../components/SEOHead';
 import {
   Heart, PawPrint, Home, Calendar, MapPin, Phone, Mail, Users,
   ChevronRight, Sparkles, Search, Filter, Clock, CheckCircle,
@@ -411,11 +412,240 @@ const AdoptPage = () => {
   };
 
   return (
-    <PillarPageLayout
-      pillar="adopt"
-      title="Finding the Right Companion"
-      description="Thoughtful matching, not impulse"
-    >
+    <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-pink-50">
+      {/* SEO Meta Tags */}
+      <SEOHead page="adopt" path="/adopt" />
+
+      {/* Hero Section */}
+      <section className="relative py-16 px-4 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-purple-600/90 to-pink-600/90" />
+        <div 
+          className="absolute inset-0 opacity-20"
+          style={{
+            backgroundImage: `url(${HERO_IMAGES[0]})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center'
+          }}
+        />
+        
+        <div className="relative max-w-7xl mx-auto text-center text-white">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <Heart className="w-8 h-8 animate-pulse" />
+            <span className="text-sm font-medium bg-white/20 px-3 py-1 rounded-full">
+              Give a Pet a Forever Home
+            </span>
+          </div>
+          
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">
+            Adopt, Don&apos;t Shop
+          </h1>
+          <p className="text-lg md:text-xl opacity-90 max-w-2xl mx-auto mb-8">
+            Every pet deserves a loving home. Find your perfect companion from our network of rescues and shelters.
+          </p>
+          
+          {/* Stats */}
+          {stats && (
+            <div className="flex flex-wrap justify-center gap-6 mb-8">
+              <div className="bg-white/20 backdrop-blur-sm rounded-lg px-6 py-3">
+                <p className="text-3xl font-bold">{stats.available_pets || 0}</p>
+                <p className="text-sm opacity-80">Pets Available</p>
+              </div>
+              <div className="bg-white/20 backdrop-blur-sm rounded-lg px-6 py-3">
+                <p className="text-3xl font-bold">{stats.total_adopted || 0}</p>
+                <p className="text-sm opacity-80">Happy Adoptions</p>
+              </div>
+              <div className="bg-white/20 backdrop-blur-sm rounded-lg px-6 py-3">
+                <p className="text-3xl font-bold">{stats.partner_shelters || 0}</p>
+                <p className="text-sm opacity-80">Partner Shelters</p>
+              </div>
+            </div>
+          )}
+          
+          <div className="flex flex-wrap justify-center gap-4">
+            <Button
+              size="lg"
+              className="bg-white text-purple-600 hover:bg-gray-100"
+              onClick={() => document.getElementById('pets-section')?.scrollIntoView({ behavior: 'smooth' })}
+            >
+              <PawPrint className="w-5 h-5 mr-2" />
+              Meet Adoptable Pets
+            </Button>
+            <Button
+              size="lg"
+              variant="outline"
+              className="border-white text-white hover:bg-white/20"
+              onClick={() => setShowFosterModal(true)}
+            >
+              <Heart className="w-5 h-5 mr-2" />
+              Become a Foster
+            </Button>
+          </div>
+        </div>
+      </section>
+      
+      {/* Categories */}
+      <section className="py-12 px-4">
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-2xl font-bold text-gray-900 text-center mb-8">How Would You Like to Help?</h2>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
+            {Object.values(ADOPT_CATEGORIES).map(category => {
+              const Icon = category.icon;
+              return (
+                <Card
+                  key={category.id}
+                  className={`p-6 cursor-pointer hover:shadow-lg transition-all ${
+                    selectedCategory === category.id ? 'ring-2 ring-purple-500' : ''
+                  }`}
+                  onClick={() => setSelectedCategory(category.id === selectedCategory ? null : category.id)}
+                >
+                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${category.color} flex items-center justify-center mb-4`}>
+                    <Icon className="w-6 h-6 text-white" />
+                  </div>
+                  <h3 className="font-semibold text-gray-900 mb-2">{category.name}</h3>
+                  <p className="text-sm text-gray-600">{category.description}</p>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+      
+      {/* Adoptable Pets Section */}
+      <section id="pets-section" className="py-12 px-4 bg-white">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">Meet Our Adoptable Pets</h2>
+              <p className="text-gray-600">Find your perfect furry companion</p>
+            </div>
+            
+            {/* Filters */}
+            <div className="flex flex-wrap gap-2">
+              <Select value={filters.species} onValueChange={v => setFilters({...filters, species: v})}>
+                <SelectTrigger className="w-32">
+                  <SelectValue placeholder="Species" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All</SelectItem>
+                  <SelectItem value="dog">Dogs</SelectItem>
+                  <SelectItem value="cat">Cats</SelectItem>
+                </SelectContent>
+              </Select>
+              
+              <Select value={filters.size} onValueChange={v => setFilters({...filters, size: v})}>
+                <SelectTrigger className="w-32">
+                  <SelectValue placeholder="Size" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Sizes</SelectItem>
+                  <SelectItem value="small">Small</SelectItem>
+                  <SelectItem value="medium">Medium</SelectItem>
+                  <SelectItem value="large">Large</SelectItem>
+                </SelectContent>
+              </Select>
+              
+              <Select value={filters.age} onValueChange={v => setFilters({...filters, age: v})}>
+                <SelectTrigger className="w-32">
+                  <SelectValue placeholder="Age" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Ages</SelectItem>
+                  <SelectItem value="puppy">Puppy/Kitten</SelectItem>
+                  <SelectItem value="young">Young</SelectItem>
+                  <SelectItem value="adult">Adult</SelectItem>
+                  <SelectItem value="senior">Senior</SelectItem>
+                </SelectContent>
+              </Select>
+              
+              <Button variant="outline" onClick={fetchFilteredPets}>
+                <Filter className="w-4 h-4 mr-2" /> Filter
+              </Button>
+            </div>
+          </div>
+          
+          {loading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
+            </div>
+          ) : pets.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
+              {pets.map(pet => (
+                <AdoptablePetCard key={pet.pet_id} pet={pet} onApply={handleApply} />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12">
+              <PawPrint className="w-12 h-12 text-gray-300 mx-auto mb-4" />
+              <p className="text-gray-500">No pets found matching your criteria</p>
+              <Button variant="outline" className="mt-4" onClick={() => {
+                setFilters({ species: '', breed: '', age: '', size: '', gender: '' });
+                fetchData();
+              }}>
+                Clear Filters
+              </Button>
+            </div>
+          )}
+        </div>
+      </section>
+      
+      {/* Events Section */}
+      {events.length > 0 && (
+        <section className="py-12 px-4">
+          <div className="max-w-7xl mx-auto">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+              <Calendar className="w-6 h-6 inline mr-2 text-green-600" />
+              Upcoming Adoption Events
+            </h2>
+            
+            <div className="space-y-4">
+              {events.map(event => (
+                <EventCard key={event.event_id} event={event} onRegister={handleEventRegister} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+      
+      {/* Shelters Section */}
+      {shelters.length > 0 && (
+        <section className="py-12 px-4 bg-gray-50">
+          <div className="max-w-7xl mx-auto">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">
+              <Building2 className="w-6 h-6 inline mr-2 text-blue-600" />
+              Our Partner Shelters
+            </h2>
+            
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+              {shelters.map(shelter => (
+                <Card key={shelter.shelter_id} className="p-4">
+                  <h3 className="font-semibold text-gray-900">{shelter.name}</h3>
+                  <p className="text-sm text-gray-600 flex items-center mt-1">
+                    <MapPin className="w-4 h-4 mr-1" /> {shelter.city}
+                  </p>
+                  {shelter.phone && (
+                    <p className="text-sm text-gray-600 flex items-center mt-1">
+                      <Phone className="w-4 h-4 mr-1" /> {shelter.phone}
+                    </p>
+                  )}
+                </Card>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+      
+      {/* === SERVICE CATALOG WITH PRICING === */}
+      <ServiceCatalogSection 
+        pillar="adopt"
+        title="Adopt, Personalised"
+        subtitle="See your personalized price based on your city, pet size, and requirements"
+        maxServices={8}
+      />
+      
+      {/* Mira Floating Chat Widget */}
+      <MiraChatWidget pillar="adopt" />
+      
       {/* Adoption Application Modal */}
       <Dialog open={showApplicationModal} onOpenChange={setShowApplicationModal}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
@@ -647,7 +877,7 @@ const AdoptPage = () => {
           </form>
         </DialogContent>
       </Dialog>
-    </PillarPageLayout>
+    </div>
   );
 };
 
