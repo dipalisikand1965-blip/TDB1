@@ -1394,9 +1394,6 @@ const CarePage = () => {
         </DialogContent>
       </Dialog>
       
-      {/* Mira Floating Chat Widget */}
-      <MiraChatWidget pillar="care" />
-      
       {/* Service Booking Modal */}
       <ServiceBookingModal
         isOpen={showBookingModal}
