@@ -9,6 +9,37 @@ Transform the application into a highly personalized, "guided care" experience f
 - **Database:** MongoDB
 - **AI Assistant:** Mira (Pet Concierge) with voice capabilities
 
+## Recent Updates (Feb 6, 2025)
+
+### Two-Way Concierge Messaging - NEW ✅
+A complete helpdesk-style messaging system like Zoho for user-concierge communication:
+
+**User Features:**
+- "Message Concierge" button on any booking/request
+- Creates service desk tickets automatically (TKT-YYYYMMDD-XXX format)
+- Real-time conversation history view
+- Messages show "you" vs "concierge" labels
+- Auto-scroll to newest messages
+
+**Concierge Features:**
+- Reply to tickets via admin panel
+- Internal notes (hidden from users)
+- Email notification on reply (optional)
+- WhatsApp link generation for quick outreach
+- Admin notifications on new user messages
+
+**API Endpoints:**
+- `POST /api/user/request/{request_id}/message` - User sends message
+- `GET /api/user/request/{request_id}/messages` - Get conversation history
+- `POST /api/user/ticket/{ticket_id}/concierge-reply` - Concierge replies
+- `GET /api/user/ticket/{ticket_id}/whatsapp-link` - Generate WhatsApp link
+- `POST /api/tickets/{ticket_id}/reply` - Legacy admin reply endpoint
+
+**Files:**
+- `/app/backend/user_tickets_routes.py` - All messaging endpoints
+- `/app/frontend/src/components/dashboard/tabs/RequestsTab.jsx` - Frontend UI
+- `/app/backend/tests/test_two_way_messaging.py` - Test suite (19 tests, 100% pass)
+
 ## Recent Updates (Feb 5, 2025)
 
 ### Pet Photo Upload - NEW ✅
