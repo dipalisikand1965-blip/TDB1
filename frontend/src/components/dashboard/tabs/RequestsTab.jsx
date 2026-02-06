@@ -85,7 +85,7 @@ const RequestsTab = ({
       {/* Message Dialog */}
       {messageDialog.open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-          <div className="bg-slate-900 border border-white/10 rounded-2xl p-6 max-w-md w-full shadow-2xl">
+          <div className="bg-gradient-to-br from-slate-800/90 to-purple-900/30 border border-white/10 rounded-2xl p-6 max-w-md w-full shadow-2xl">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-white flex items-center gap-2">
                 <MessageCircle className="w-5 h-5 text-purple-400" />
