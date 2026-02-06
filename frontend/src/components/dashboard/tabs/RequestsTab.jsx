@@ -100,6 +100,10 @@ const RequestsTab = ({
   };
 
   const openMessageDialog = async (request) => {
+    console.log('=== Opening message dialog ===');
+    console.log('Request:', request);
+    console.log('User email:', userEmail);
+    
     if (!userEmail) {
       toast.error('Please log in to message the concierge');
       return;
@@ -108,6 +112,7 @@ const RequestsTab = ({
     setMessageDialog({ open: true, request });
     setMessageText('');
     const requestId = request.ticket_id || request.id;
+    console.log('Loading messages for requestId:', requestId);
     await loadConversationMessages(requestId);
     
     // Mark as read
