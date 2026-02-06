@@ -1,12 +1,15 @@
 """
 User-facing ticket and booking endpoints
 Allows logged-in users to view their tickets, bookings, and service requests
+Supports two-way messaging with email and WhatsApp notifications
 """
 
-from fastapi import APIRouter, HTTPException, Query, Header
+from fastapi import APIRouter, HTTPException, Query, Header, BackgroundTasks
 from typing import Optional, List
 from datetime import datetime, timezone
 import logging
+import os
+import urllib.parse
 
 logger = logging.getLogger(__name__)
 
@@ -15,9 +18,137 @@ router = APIRouter(prefix="/api/user", tags=["user-tickets"])
 # Database reference
 db = None
 
+# Email and notification configuration
+SENDER_EMAIL = os.environ.get("SENDER_EMAIL", "woof@thedoggycompany.in")
+WHATSAPP_NUMBER = os.environ.get("WHATSAPP_NUMBER", "919663185747")
+
 def set_db(database):
     global db
     db = database
+
+
+# ============== EMAIL NOTIFICATION HELPERS ==============
+
+def get_resend_client():
+    """Get Resend email client if configured"""
+    try:
+        import resend
+        api_key = os.environ.get("RESEND_API_KEY")
+        if api_key:
+            resend.api_key = api_key
+            return resend
+    except ImportError:
+        pass
+    return None
+
+
+async def send_ticket_update_email(
+    to_email: str,
+    customer_name: str,
+    ticket_id: str,
+    message: str,
+    subject_line: str = None
+):
+    """Send email notification about ticket update to customer"""
+    resend = get_resend_client()
+    if not resend or not to_email:
+        logger.info(f"Email notification skipped (no resend or email): {ticket_id}")
+        return False
+    
+    try:
+        subject = subject_line or f"Update on your request (#{ticket_id[-6:]})"
+        
+        html_content = f"""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <style>
+                body {{ font-family: 'Segoe UI', Tahoma, sans-serif; line-height: 1.6; color: #333; }}
+                .container {{ max-width: 600px; margin: 0 auto; }}
+                .header {{ background: linear-gradient(135deg, #9333ea 0%, #ec4899 100%); color: white; padding: 25px; border-radius: 12px 12px 0 0; }}
+                .content {{ background: #fff; padding: 25px; border: 1px solid #e5e7eb; }}
+                .message-box {{ background: #f8fafc; padding: 15px; border-radius: 8px; border-left: 4px solid #9333ea; margin: 15px 0; }}
+                .cta-button {{ display: inline-block; background: linear-gradient(135deg, #9333ea, #ec4899); color: white; padding: 12px 24px; text-decoration: none; border-radius: 25px; font-weight: bold; margin: 15px 0; }}
+                .footer {{ background: #1f2937; padding: 20px; border-radius: 0 0 12px 12px; text-align: center; color: #9ca3af; font-size: 12px; }}
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1 style="margin: 0; font-size: 24px;">🐾 The Doggy Company</h1>
+                    <p style="margin: 5px 0 0; opacity: 0.9;">Your Pet Concierge Team</p>
+                </div>
+                <div class="content">
+                    <p>Hi {customer_name or 'there'},</p>
+                    
+                    <p>We have an update on your request (Ticket #{ticket_id[-6:]}):</p>
+                    
+                    <div class="message-box">
+                        {message.replace(chr(10), '<br>')}
+                    </div>
+                    
+                    <p>
+                        <a href="https://thedoggycompany.in/member" class="cta-button">
+                            View Full Conversation →
+                        </a>
+                    </p>
+                    
+                    <p>Simply reply to this email to continue the conversation, or log in to your dashboard.</p>
+                    
+                    <p>Warm regards,<br><strong>The Doggy Company Concierge® Team</strong></p>
+                </div>
+                <div class="footer">
+                    <p>The Doggy Company | Your Pet's Life Operating System</p>
+                    <p>📞 +91 96631 85747 | 📧 woof@thedoggycompany.in</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        
+        result = resend.Emails.send({
+            "from": f"The Doggy Company <{SENDER_EMAIL}>",
+            "to": to_email,
+            "subject": subject,
+            "html": html_content,
+            "reply_to": f"ticket+{ticket_id}@replies.thedoggycompany.in",
+            "headers": {
+                "X-Ticket-ID": ticket_id,
+                "References": f"<{ticket_id}@thedoggycompany.in>"
+            }
+        })
+        
+        logger.info(f"Email notification sent to {to_email} for ticket {ticket_id}")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to send email notification: {e}")
+        return False
+
+
+def generate_whatsapp_link(
+    phone: str,
+    ticket_id: str,
+    message: str,
+    customer_name: str = None
+) -> str:
+    """Generate WhatsApp click-to-chat link with ticket context"""
+    # Clean phone number
+    phone = ''.join(c for c in phone if c.isdigit())
+    if not phone.startswith('91') and len(phone) == 10:
+        phone = '91' + phone
+    
+    wa_message = f"""🎫 *Ticket #{ticket_id[-6:]}*
+
+Hi {customer_name or 'there'}! 👋
+
+{message}
+
+---
+_The Doggy Company Concierge®_
+Reply to continue the conversation."""
+    
+    encoded_message = urllib.parse.quote(wa_message)
+    return f"https://wa.me/{phone}?text={encoded_message}"
 
 @router.get("/tickets")
 async def get_user_tickets(
