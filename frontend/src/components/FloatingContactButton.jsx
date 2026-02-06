@@ -74,7 +74,7 @@ const FloatingContactButton = ({ user, isLoggedIn }) => {
     
     setSending(true);
     try {
-      const API = process.env.REACT_APP_BACKEND_URL;
+      const API = API_URL;
       
       // Start a conversation and send message
       const startRes = await fetch(
