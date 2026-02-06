@@ -2429,35 +2429,13 @@ const Admin = () => {
               <Button
                 variant="outline"
                 size="sm"
-                className="bg-gradient-to-r from-green-600 to-emerald-600 text-white border-0 text-xs font-bold shadow-md"
+                className="bg-gradient-to-r from-green-600 via-emerald-600 to-teal-600 text-white border-0 text-sm font-bold shadow-lg px-4"
                 onClick={syncAllData}
                 disabled={syncingShopify}
-                data-testid="sync-all-data-btn"
+                data-testid="master-sync-btn"
               >
-                {syncingShopify ? <RefreshCw className="w-3 h-3 mr-1 animate-spin" /> : <ShoppingBag className="w-3 h-3 mr-1" />}
-                {syncingShopify ? 'Syncing...' : '🚀 SYNC ALL'}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="bg-gradient-to-r from-purple-600 to-pink-600 text-white border-0 text-xs font-bold"
-                onClick={seedAllPillars}
-                disabled={seedingAll}
-                data-testid="universal-seed-btn"
-              >
-                {seedingAll ? <RefreshCw className="w-3 h-3 mr-1 animate-spin" /> : <Sparkles className="w-3 h-3 mr-1" />}
-                {seedingAll ? 'Seeding...' : 'Universal Seed'}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                className="bg-slate-700 text-white border-0 text-xs"
-                onClick={seedProductionData}
-                disabled={seedingProduction}
-                data-testid="seed-production-btn"
-              >
-                {seedingProduction ? <RefreshCw className="w-3 h-3 mr-1 animate-spin" /> : <Database className="w-3 h-3 mr-1" />}
-                Seed Production
+                {syncingShopify ? <RefreshCw className="w-4 h-4 mr-2 animate-spin" /> : <Sparkles className="w-4 h-4 mr-2" />}
+                {syncingShopify ? 'Syncing Everything...' : '🚀 MASTER SYNC'}
               </Button>
             </div>
           </div>
