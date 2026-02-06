@@ -1869,7 +1869,7 @@ const Admin = () => {
                     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
                     { id: 'servicedesk', label: 'Service Desk', icon: Ticket },
                     { id: 'orders', label: 'Orders', icon: Package },
-                    { id: 'finance', label: 'Finance', icon: Wallet },
+                    { id: 'finance', label: 'Finance', icon: DollarSign },
                     { id: 'inbox', label: 'Inbox', icon: Inbox },
                   ].map(tab => (
                     <button
@@ -2049,7 +2049,7 @@ const Admin = () => {
                         { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
                         { id: 'servicedesk', label: 'Service Desk', icon: Ticket },
                         { id: 'inbox', label: 'Unified Inbox', icon: Inbox },
-                        { id: 'finance', label: 'Finance', icon: Wallet },
+                        { id: 'finance', label: 'Finance', icon: DollarSign },
                         { id: 'pillar-queues', label: 'Pillar Queues', icon: Package },
                       ].map(tab => (
                         <button
@@ -2175,7 +2175,7 @@ const Admin = () => {
               { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
               { id: 'servicedesk', label: 'Service Desk', icon: Ticket },
               { id: 'inbox', label: 'Unified Inbox', icon: Inbox },
-              { id: 'finance', label: 'Finance', icon: Wallet },
+              { id: 'finance', label: 'Finance', icon: DollarSign },
               { id: 'pillar-queues', label: 'Pillar Queues', icon: Package },
             ].map((tab) => (
               <Button
