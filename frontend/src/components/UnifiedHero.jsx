@@ -169,7 +169,9 @@ const UnifiedHero = ({
 }) => {
   const petName = pet?.name || 'Your Pet';
   const petBreed = pet?.breed || '';
-  const petPhoto = pet?.photo_url || pet?.image_url || pet?.image || pet?.photo;
+  // Check multiple possible field names for pet photo
+  const petPhoto = pet?.photo_url || pet?.profile_image || pet?.image_url || pet?.image || pet?.photo || 
+    (pet?.name ? `https://api.dicebear.com/7.x/lorelei/svg?seed=${encodeURIComponent(pet.name)}&backgroundColor=ffdfbf` : null);
   
   // Voice search state
   const [isListening, setIsListening] = useState(false);
