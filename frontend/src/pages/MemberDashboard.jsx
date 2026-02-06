@@ -921,6 +921,45 @@ const MemberDashboard = () => {
             </Button>
           </div>
 
+          {/* 🐾 PET SELECTOR - Right at the top after header */}
+          {pets.length > 1 && (
+            <div className="mb-6 p-4 bg-slate-900/60 backdrop-blur-xl rounded-xl border border-white/10">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-xs text-purple-400 font-medium tracking-wider">VIEWING DASHBOARD FOR</p>
+                {currentPet && (
+                  <Button 
+                    variant="ghost" 
+                    size="sm"
+                    onClick={() => navigate(`/pet/${currentPet.id}`)}
+                    className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/10 text-xs h-7"
+                    data-testid="header-go-to-pet-soul-btn"
+                  >
+                    <Sparkles className="w-3 h-3 mr-1" />
+                    Go to {currentPet.name}'s Soul Journey →
+                  </Button>
+                )}
+              </div>
+              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-purple-500/50">
+                {pets.map((pet) => (
+                  <button
+                    key={pet.id}
+                    onClick={() => setSelectedPetId(pet.id)}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap transition-all ${
+                      selectedPetId === pet.id || (!selectedPetId && pet.id === pets[0]?.id)
+                        ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/30' 
+                        : 'bg-slate-800/50 border border-white/10 text-slate-300 hover:border-purple-500/50'
+                    }`}
+                    data-testid={`header-pet-selector-${pet.name?.toLowerCase()}`}
+                  >
+                    <span className="text-lg">{pet.species === 'cat' ? '🐱' : '🐕'}</span>
+                    <span className="font-medium">{pet.name}</span>
+                    {pet.overall_score >= 80 && <span className="text-xs">⭐</span>}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/* 2️⃣ ALL PETS SOUL SCORE GRID - Select a pet to see details */}
           {pets.length > 0 && (
             <Card className="mb-8 overflow-hidden bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 text-white border-none shadow-2xl shadow-purple-500/30 rounded-2xl md:rounded-3xl">
