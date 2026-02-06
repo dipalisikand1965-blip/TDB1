@@ -74,6 +74,18 @@ const ServiceDeskWorkspace = ({ authHeaders }) => {
   
   // Conversation ref for auto-scroll
   const conversationEndRef = useRef(null);
+  
+  // Check for ticket ID in URL (from notification click)
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const ticketId = urlParams.get('ticket');
+    if (ticketId) {
+      // Auto-load this ticket
+      fetchTicketDetails(ticketId);
+      // Clear the URL parameter
+      window.history.replaceState({}, document.title, window.location.pathname + '?tab=service-desk');
+    }
+  }, []);
 
   // Fetch tickets
   const fetchTickets = useCallback(async () => {
