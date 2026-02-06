@@ -388,8 +388,9 @@ async def search_real_products(
         # Score and filter products based on pet context
         pet_name = pet_context.get("name", "your pet")
         pet_breed = pet_context.get("breed", "")
-        sensitivities = pet_context.get("sensitivities", [])
-        favorites = pet_context.get("favorites", [])
+        # Safely convert sensitivities and favorites to string lists
+        sensitivities = safe_string_list(pet_context.get("sensitivities", []))
+        favorites = safe_string_list(pet_context.get("favorites", []))
         
         scored_products = []
         for product in all_products:
@@ -397,18 +398,18 @@ async def search_real_products(
             why_reasons = []
             skip = False
             
-            product_name = product.get("name", "").lower()
-            product_desc = product.get("description", "").lower()
-            product_tags = [t.lower() for t in product.get("tags", [])]
-            product_flavors = [f.lower() for f in product.get("flavors", [])]
+            # Safely extract product fields
+            product_name = safe_lower(product.get("name", ""))
+            product_desc = safe_lower(product.get("description", ""))
+            product_tags = safe_string_list(product.get("tags", []))
+            product_flavors = safe_string_list(product.get("flavors", []))
             
             # Check sensitivities (negative filter)
-            for sensitivity in sensitivities:
-                sens_lower = sensitivity.lower()
-                if sens_lower in product_name or sens_lower in product_desc or sens_lower in product_flavors:
+            for sens_lower in sensitivities:
+                if sens_lower in product_name or sens_lower in product_desc or any(sens_lower in f for f in product_flavors):
                     if "allergy" in sens_lower or "chicken" in sens_lower:
                         # Skip chicken products for chicken allergy
-                        if "chicken" in product_name or "chicken" in product_flavors:
+                        if "chicken" in product_name or any("chicken" in f for f in product_flavors):
                             skip = True
                             break
             
@@ -416,22 +417,19 @@ async def search_real_products(
                 continue
             
             # Check favorites (positive score)
-            for favorite in favorites:
-                fav_lower = favorite.lower()
-                if fav_lower in product_name or fav_lower in product_desc or fav_lower in product_flavors:
+            for fav_lower in favorites:
+                if fav_lower in product_name or fav_lower in product_desc or any(fav_lower in f for f in product_flavors):
                     score += 10
-                    why_reasons.append(f"{pet_name} loves {favorite}")
+                    why_reasons.append(f"{pet_name} loves {fav_lower}")
             
-            # Check attributes match
-            for attr in attributes:
-                attr_lower = attr.lower()
+            # Check attributes match (attributes already normalized)
+            for attr_lower in attributes:
                 if attr_lower in product_name or attr_lower in product_desc or attr_lower in product_tags:
                     score += 5
-                    why_reasons.append(f"Matches '{attr}' preference")
+                    why_reasons.append(f"Matches '{attr_lower}' preference")
             
-            # Check constraints
-            for constraint in constraints:
-                const_lower = constraint.lower()
+            # Check constraints (constraints already normalized)
+            for const_lower in constraints:
                 if const_lower in product_name or const_lower in product_desc or const_lower in product_tags:
                     score += 3
             
