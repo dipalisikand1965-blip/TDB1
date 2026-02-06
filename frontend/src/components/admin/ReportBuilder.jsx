@@ -24,8 +24,7 @@ import {
   ChevronDown, CheckCircle, AlertCircle
 } from 'lucide-react';
 import { useToast } from '../../hooks/use-toast';
-
-const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+import { API_URL } from '../../utils/api';
 
 // Report Types
 const REPORT_TYPES = [
