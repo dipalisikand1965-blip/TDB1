@@ -2,8 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Bell, BellDot, X, MessageCircle, Check, CheckCheck, Calendar, ChevronRight } from 'lucide-react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
+import { API_URL } from '../utils/api';
 
-const API = process.env.REACT_APP_BACKEND_URL;
+const API = API_URL;
 
 const MemberNotificationBell = ({ userEmail, onNotificationClick }) => {
   const [notifications, setNotifications] = useState([]);
