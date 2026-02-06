@@ -925,12 +925,9 @@ const PaperworkPage = () => {
         maxServices={8}
       />
       
-      {/* Mira Floating Chat Widget */}
-      <MiraChatWidget pillar="paperwork" />
-      
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="paperwork" position="bottom-left" />
-    </div>
+    </PillarPageLayout>
   );
 };
 
