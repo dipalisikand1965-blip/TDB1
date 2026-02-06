@@ -805,7 +805,10 @@ const FarewellPage = () => {
           )}
         </DialogContent>
       </Dialog>
-    </div>
+      
+      {/* Admin Quick Edit */}
+      <AdminQuickEdit pillar="farewell" position="bottom-left" />
+    </PillarPageLayout>
   );
 };
 
