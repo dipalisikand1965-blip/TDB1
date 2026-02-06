@@ -249,19 +249,31 @@ const MiraSearchPanel = ({
   return (
     <div ref={panelRef} className={`relative ${className}`}>
       {/* Search Input */}
-      <form onSubmit={handleSubmit} className="flex" style={{ touchAction: 'manipulation' }}>
+      <form 
+        onSubmit={handleSubmit} 
+        className="flex"
+        style={{ touchAction: 'manipulation', WebkitTouchCallout: 'none' }}
+      >
         <div className="relative flex-1">
           <input
             ref={inputRef}
             type="text"
+            inputMode="search"
+            enterKeyHint="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onFocus={() => miraResponse && setShowResults(true)}
+            onTouchStart={(e) => e.currentTarget.focus()}
             placeholder={selectedPet ? `Ask Mira anything for ${selectedPet.name}...` : placeholder}
-            className={`w-full px-4 py-3 text-base text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-[48px] ${
+            className={`w-full px-4 py-3 text-base text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-purple-500 min-h-[48px] appearance-none ${
               variant === 'hero' ? 'rounded-l-full pl-5' : 'rounded-l-md'
             }`}
-            style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+            style={{ 
+              touchAction: 'manipulation', 
+              WebkitTapHighlightColor: 'transparent',
+              WebkitAppearance: 'none',
+              fontSize: '16px'  /* Prevents iOS zoom on focus */
+            }}
             data-testid="mira-search-input"
             autoComplete="off"
             autoCorrect="off"
