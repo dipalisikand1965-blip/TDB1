@@ -734,29 +734,30 @@ const ShopPage = () => {
           </div>
           
           {loading ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
               {[...Array(8)].map((_, i) => (
-                <div key={i} className="animate-pulse bg-gray-100 rounded-xl overflow-hidden">
+                <div key={i} className="animate-pulse bg-gray-100 rounded-2xl overflow-hidden">
                   <div className="aspect-square bg-gray-200"></div>
-                  <div className="p-3 space-y-2">
-                    <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+                  <div className="p-4 space-y-3">
+                    <div className="h-4 bg-gray-200 rounded w-3/4"></div>
                     <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                    <div className="h-5 bg-gray-200 rounded w-1/3"></div>
                   </div>
                 </div>
               ))}
             </div>
           ) : displayedProducts.length === 0 ? (
             <div className="text-center py-12 px-4">
-              <Package className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No products found</h3>
+              <Package className="w-16 h-16 mx-auto mb-4 text-gray-300" />
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">No products found</h3>
               <Button onClick={() => { setSelectedPillar('all'); setSelectedSubcat(null); setSearchQuery(''); }} 
-                className="bg-gradient-to-r from-orange-500 to-pink-500 text-white">
+                className="bg-gradient-to-r from-orange-500 to-pink-500 text-white text-base px-6 py-3 rounded-xl">
                 View All
               </Button>
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
                 {displayedProducts.map((product, idx) => (
                   <ProductCard 
                     key={product.id} 
@@ -770,13 +771,13 @@ const ShopPage = () => {
               </div>
               
               {hasMore && (
-                <div className="text-center mt-6">
+                <div className="text-center mt-8">
                   <Button
                     onClick={() => setDisplayCount(prev => prev + 24)}
-                    className="px-6 py-2.5 bg-gray-900 text-white hover:bg-gray-800 rounded-xl text-sm"
+                    className="px-8 py-3 bg-gray-900 text-white hover:bg-gray-800 rounded-xl text-base font-medium"
                     data-testid="load-more-btn"
                   >
-                    <ChevronDown className="w-4 h-4 mr-2" />
+                    <ChevronDown className="w-5 h-5 mr-2" />
                     Load More
                   </Button>
                 </div>
