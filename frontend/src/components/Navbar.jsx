@@ -584,7 +584,8 @@ const Navbar = () => {
   };
 
   const openMiraAI = () => {
-    window.dispatchEvent(new CustomEvent('openMiraAI'));
+    // Navigate to Mira OS sandbox for full experience
+    window.location.href = '/mira-demo';
   };
 
   const handleMouseEnter = (pillarId) => {
