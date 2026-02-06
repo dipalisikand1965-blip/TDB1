@@ -137,6 +137,64 @@ const UnifiedHero = ({
   const petBreed = pet?.breed || '';
   const petPhoto = pet?.photo_url || pet?.image_url || pet?.image || pet?.photo;
   
+  // Voice search state
+  const [isListening, setIsListening] = useState(false);
+  const [voiceSupported, setVoiceSupported] = useState(false);
+  const recognitionRef = useRef(null);
+  
+  // Check for voice support and setup
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (SpeechRecognition) {
+        setVoiceSupported(true);
+        recognitionRef.current = new SpeechRecognition();
+        recognitionRef.current.continuous = false;
+        recognitionRef.current.interimResults = true;
+        recognitionRef.current.lang = 'en-US';
+        
+        recognitionRef.current.onresult = (event) => {
+          const transcript = Array.from(event.results)
+            .map(result => result[0].transcript)
+            .join('');
+          onSearchChange?.(transcript);
+        };
+        
+        recognitionRef.current.onend = () => {
+          setIsListening(false);
+        };
+        
+        recognitionRef.current.onerror = (event) => {
+          console.error('Speech recognition error:', event.error);
+          setIsListening(false);
+        };
+      }
+    }
+    
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.abort();
+      }
+    };
+  }, [onSearchChange]);
+  
+  // Toggle voice listening
+  const toggleVoice = () => {
+    if (!voiceSupported || !recognitionRef.current) return;
+    
+    if (isListening) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+    } else {
+      try {
+        recognitionRef.current.start();
+        setIsListening(true);
+      } catch (err) {
+        console.error('Failed to start voice recognition:', err);
+      }
+    }
+  };
+  
   // Get pillar-specific content
   const gradient = PILLAR_GRADIENTS[pillar] || PILLAR_GRADIENTS.recommended;
   const title = (PILLAR_TITLES[pillar] || PILLAR_TITLES.all).replace('{name}', petName);
