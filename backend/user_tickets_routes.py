@@ -579,6 +579,7 @@ async def send_message_about_request(
             "description": body.message,
             "member_email": email,
             "customer_email": email,
+            "member_name": customer_name,
             "source": "member_inquiry",
             "source_reference": request_id,
             "request_id": request_id,
@@ -588,6 +589,8 @@ async def send_message_about_request(
             "pillar": "care",
             "created_at": now,
             "updated_at": now,
+            "has_new_member_message": True,
+            "last_member_message_at": now,
             "messages": [{
                 "id": str(uuid.uuid4()),
                 "type": "initial",
