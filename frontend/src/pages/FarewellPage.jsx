@@ -19,6 +19,7 @@ import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
 import PillarPageLayout from '../components/PillarPageLayout';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
+import AdminQuickEdit from '../components/AdminQuickEdit';
 import { useNavigate } from 'react-router-dom';
 import {
   Heart, Rainbow, Flower2, Star, Calendar, Phone, Mail, MapPin,
