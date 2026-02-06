@@ -12,32 +12,39 @@ Transform the application into a highly personalized, "guided care" experience f
 
 ## Recent Updates (Feb 6, 2025 - Session 2)
 
-### ✅ MAGICAL PERSONALIZED EXPERIENCE - NEW
+### ✅ MAGICAL PERSONALIZED EXPERIENCE - ENHANCED (Feb 6, 2025)
 - **Problem:** Shop and Services pages lacked emotional connection, felt generic
-- **Solution:** Created two new components for magical personalization:
+- **Solution:** Complete overhaul with breed-specific personalization:
 
-**1. PetAuraAvatar.jsx** - Glowing avatar showing pet's soul/personality
-- Animated glow ring based on pet personality (energetic, calm, loving, playful, royal, wise)
-- Sparkle animations around avatar
-- Personality icon badge (lightning for energetic, heart for loving, crown for royal, etc.)
-- Dynamic gradient colors per personality type
+**1. PersonalizedHero.jsx** - Real pet photo with glow (not avatar)
+- Shows actual pet photo (pet.photo_url, pet.image_url, etc.)
+- Animated glow ring based on breed energy (energetic = orange, royal = pink, etc.)
+- Mobile: Compact horizontal layout - products visible immediately
+- Desktop: Large pet photo with sparkle animations around it
+- Time-based greetings: "Good morning, Max!"
+- Breed-specific taglines: "Golden Retrievers, like Max, deserve the best"
+- Search with "What does Max need today?"
+- Quick suggestions: "Popular for Golden Retrievers: Treats, Toys"
 
-**2. PersonalizedHero.jsx** - Emotionally-connected hero section
-- Floating paw print animations in background
-- Sparkle effects when pet is logged in
-- Time-based greetings: "Good morning, Max!", "Good evening, Max!"
-- Soul traits pills: "Good boy/girl", "Loved unconditionally", "Family member"
-- Personalized titles: "Shop for Max", "Services for Max"
-- Breed-specific taglines: "Curated with love for Max the Golden Retriever"
-- Integrated search: "What does Max need today?"
-- Quick suggestions contextual to page type
-- Voice button integration
+**2. ProductCard with "Why for [PetName]"**
+- Every product shows breed-specific reasoning
+- Examples:
+  - "Shih Tzus, like Meister, need gentle coat care"
+  - "Retrievers, like Max, never tire of fetch!"
+  - "Golden Retrievers, like Max, love water activities"
+- Purple gradient box for visibility
+
+**3. ServiceCard with "Why for [PetName]"**
+- Every service shows breed-specific reasoning
+- Examples:
+  - "Shih Tzus, like Meister, need regular grooming for their long coats"
+  - "Essential for Retrievers like Max - they shed a lot"
+  - "German Shepherds, like Rex, love mental challenges"
 
 **Files:**
-- `/app/frontend/src/components/PetAuraAvatar.jsx` - NEW
-- `/app/frontend/src/components/PersonalizedHero.jsx` - NEW
-- `/app/frontend/src/pages/ShopPage.jsx` - Updated to use PersonalizedHero
-- `/app/frontend/src/pages/ServicesPage.jsx` - Updated to use PersonalizedHero
+- `/app/frontend/src/components/PersonalizedHero.jsx` - Real pet photo, mobile-first
+- `/app/frontend/src/pages/ShopPage.jsx` - getBreedWhisper() + ProductCard
+- `/app/frontend/src/pages/ServicesPage.jsx` - getServiceBreedWhisper() + ServiceCard
 
 ### ✅ Pillar-Wise Personalized Picks - NEW
 - **Problem:** "Picks for [PetName]" were not showing pillar-wise (Nourish, Play, Groom, etc.)
