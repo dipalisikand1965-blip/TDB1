@@ -518,6 +518,7 @@ const ShopPage = () => {
   const [selectedPet, setSelectedPet] = useState(null);
   const [petSoulData, setPetSoulData] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [miraChatOpen, setMiraChatOpen] = useState(false);
   
   // Fetch products
   useEffect(() => {
