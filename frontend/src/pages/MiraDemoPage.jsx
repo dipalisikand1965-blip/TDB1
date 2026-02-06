@@ -257,13 +257,22 @@ const MiraDemoPage = () => {
               <input
                 ref={inputRef}
                 type="text"
+                inputMode="search"
+                enterKeyHint="search"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
+                onTouchStart={(e) => e.currentTarget.focus()}
                 placeholder={`Ask Mira anything for ${pet.name}...`}
                 className="w-full bg-white/10 backdrop-blur border border-white/20 rounded-2xl 
                   pl-12 pr-24 py-4 text-white placeholder-white/40
                   focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50
-                  transition-all text-lg"
+                  transition-all text-lg appearance-none"
+                style={{
+                  WebkitAppearance: 'none',
+                  touchAction: 'manipulation',
+                  WebkitTapHighlightColor: 'transparent',
+                  fontSize: '16px'
+                }}
                 disabled={isProcessing}
               />
               <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
