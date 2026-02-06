@@ -639,17 +639,33 @@ async def get_request_messages(
     if db is None:
         raise HTTPException(status_code=500, detail="Database not connected")
     
-    # Find ticket by request_id
+    # Find ticket by request_id - check all possible email fields
     ticket = await db.service_desk_tickets.find_one({
         "$or": [
             {"ticket_id": request_id, "member_email": email},
             {"ticket_id": request_id, "customer_email": email},
+            {"ticket_id": request_id, "member.email": email},
+            {"ticket_id": request_id, "customer.email": email},
+            {"ticket_id": request_id, "user_email": email},
             {"source_reference": request_id, "member_email": email},
             {"source_reference": request_id, "customer_email": email},
+            {"source_reference": request_id, "member.email": email},
             {"request_id": request_id, "member_email": email},
-            {"request_id": request_id, "customer_email": email}
+            {"request_id": request_id, "customer_email": email},
+            {"request_id": request_id, "member.email": email}
         ]
     })
+    
+    if not ticket:
+        # Also try tickets collection
+        ticket = await db.tickets.find_one({
+            "$or": [
+                {"ticket_id": request_id, "member_email": email},
+                {"ticket_id": request_id, "customer_email": email},
+                {"ticket_id": request_id, "member.email": email},
+                {"ticket_id": request_id, "customer.email": email}
+            ]
+        })
     
     if not ticket:
         return {"messages": [], "ticket_id": None}
@@ -660,7 +676,7 @@ async def get_request_messages(
         {
             "id": m.get("id"),
             "content": m.get("content"),
-            "sender": "you" if m.get("sender") == "member" else "concierge",
+            "sender": "you" if m.get("sender") in ["member", "you", "user"] else "concierge",
             "timestamp": m.get("timestamp"),
             "attachments": m.get("attachments", [])
         }
