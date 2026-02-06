@@ -140,7 +140,8 @@ const MiraDemoPage = () => {
     setConversationHistory(prev => [...prev, userMessage]);
     
     try {
-      const response = await fetch(`${API_URL}/api/mira/os/understand`, {
+      // Use the enhanced endpoint with real products
+      const response = await fetch(`${API_URL}/api/mira/os/understand-with-products`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
