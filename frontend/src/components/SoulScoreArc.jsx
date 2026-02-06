@@ -147,12 +147,20 @@ const SoulScoreArc = ({
 
         {/* Center Content */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <Brain className={`w-4 h-4 ${colors.text} mb-0.5 ${isGlowing ? 'animate-bounce' : ''}`} />
-          <span className={`${config.fontSize} font-bold ${colors.text}`}>
-            {Math.round(animatedScore)}%
-          </span>
-          {size !== 'sm' && (
-            <span className={`${config.labelSize} text-gray-500 font-medium`}>Soul</span>
+          {children ? (
+            // If children provided, render them (wrapper pattern)
+            children
+          ) : (
+            // Default center content
+            <>
+              <Brain className={`w-4 h-4 ${colors.text} mb-0.5 ${isGlowing ? 'animate-bounce' : ''}`} />
+              <span className={`${config.fontSize} font-bold ${colors.text}`}>
+                {Math.round(animatedScore)}%
+              </span>
+              {size !== 'sm' && (
+                <span className={`${config.labelSize} text-gray-500 font-medium`}>Soul</span>
+              )}
+            </>
           )}
         </div>
       </div>
