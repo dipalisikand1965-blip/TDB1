@@ -285,8 +285,16 @@ const UnifiedHero = ({
               <div className="absolute inset-0 bg-gradient-to-br from-purple-500/30 to-pink-500/30 rounded-full blur-xl scale-125" />
               
               {/* Soul Score Arc */}
-              <div className="relative">
-                <SoulScoreArc score={soulScore} size={140} strokeWidth={6}>
+              <div className="relative cursor-pointer" onClick={() => pet?.id && window.location.assign(`/pet-soul/${pet.id}`)}>
+                <SoulScoreArc 
+                  score={soulScore} 
+                  size={140} 
+                  strokeWidth={6}
+                  petId={pet?.id}
+                  petName={petName}
+                  showLabel={false}
+                  showCTA={false}
+                >
                   {/* Pet Photo */}
                   <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-white/20 shadow-2xl">
                     {petPhoto ? (
