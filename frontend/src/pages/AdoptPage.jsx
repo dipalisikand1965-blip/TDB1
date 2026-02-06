@@ -880,7 +880,10 @@ const AdoptPage = () => {
           </form>
         </DialogContent>
       </Dialog>
-    </div>
+      
+      {/* Admin Quick Edit */}
+      <AdminQuickEdit pillar="adopt" position="bottom-left" />
+    </PillarPageLayout>
   );
 };
 
