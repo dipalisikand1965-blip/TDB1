@@ -300,13 +300,11 @@ const CelebratePage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-pink-50 to-white pb-20 md:pb-0">
-      {/* SEO Meta Tags */}
-      <SEOHead 
-        title="Celebrate - Pet Birthday Cakes & Parties | The Doggy Company"
-        description="Make your pet's special day unforgettable with custom cakes, treats, and party planning services."
-        path="/celebrate"
-      />
+    <PillarPageLayout
+      pillar="celebrate"
+      title="Celebrations for Your Pet"
+      description="Mark the moments that matter to your furry friend"
+    >
       
       {/* Hero Section - Matching Shop/Services Design! */}
       <div className="relative bg-gradient-to-br from-[#4A1942] via-[#2D1B4E] to-[#1E3A5F] text-white overflow-hidden">
