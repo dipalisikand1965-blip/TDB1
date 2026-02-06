@@ -46,9 +46,10 @@ const MiraSearchPanel = ({
   const inputRef = useRef(null);
   const recognitionRef = useRef(null);
   const panelRef = useRef(null);
+  const handleMiraSearchRef = useRef(null);
   
-  // Default pet context if no pet selected
-  const petContext = selectedPet ? {
+  // Default pet context if no pet selected - memoized
+  const petContext = React.useMemo(() => selectedPet ? {
     name: selectedPet.name,
     breed: selectedPet.breed,
     age: selectedPet.age,
@@ -59,9 +60,56 @@ const MiraSearchPanel = ({
     name: "your pet",
     breed: "Dog",
     age: "adult"
-  };
+  }, [selectedPet]);
+  
+  // Main Mira search function - defined before useEffect that uses it
+  const handleMiraSearch = useCallback(async (searchQuery = null) => {
+    const inputQuery = searchQuery || query;
+    if (!inputQuery.trim()) return;
+    
+    setIsProcessing(true);
+    setShowResults(true);
+    setMiraResponse(null);
+    
+    try {
+      const response = await fetch(`${API_URL}/api/mira/os/understand-with-products`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` })
+        },
+        body: JSON.stringify({
+          input: inputQuery,
+          pet_id: selectedPet?.id,
+          pet_context: petContext,
+          page_context: window.location.pathname
+        })
+      });
+      
+      const data = await response.json();
+      setMiraResponse(data);
+      
+    } catch (error) {
+      console.error('Mira search error:', error);
+      setMiraResponse({
+        success: false,
+        error: true,
+        response: {
+          message: "I'll connect you with your pet concierge to help with this."
+        }
+      });
+    }
+    
+    setIsProcessing(false);
+  }, [query, token, selectedPet, petContext]);
+  
+  // Keep ref updated with latest function
+  useEffect(() => {
+    handleMiraSearchRef.current = handleMiraSearch;
+  }, [handleMiraSearch]);
   
   // Voice recognition setup
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -73,8 +121,10 @@ const MiraSearchPanel = ({
         const transcript = event.results[0][0].transcript;
         setQuery(transcript);
         setIsListening(false);
-        // Auto-submit voice query
-        handleMiraSearch(transcript);
+        // Auto-submit voice query using ref
+        if (handleMiraSearchRef.current) {
+          handleMiraSearchRef.current(transcript);
+        }
       };
       
       recognitionRef.current.onerror = () => setIsListening(false);
