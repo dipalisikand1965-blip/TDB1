@@ -7,8 +7,7 @@ import {
   Cake, Stethoscope, PawPrint, Star, Gift, Plane,
   ChevronDown, ChevronUp, Clock, Brain, Sparkles
 } from 'lucide-react';
-
-const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+import { API_URL } from '../utils/api';
 
 // Memory type icons and colors
 const MEMORY_CONFIG = {
