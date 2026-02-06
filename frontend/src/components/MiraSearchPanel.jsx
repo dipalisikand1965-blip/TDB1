@@ -249,7 +249,7 @@ const MiraSearchPanel = ({
   return (
     <div ref={panelRef} className={`relative ${className}`}>
       {/* Search Input */}
-      <form onSubmit={handleSubmit} className="flex">
+      <form onSubmit={handleSubmit} className="flex" style={{ touchAction: 'manipulation' }}>
         <div className="relative flex-1">
           <input
             ref={inputRef}
@@ -261,7 +261,12 @@ const MiraSearchPanel = ({
             className={`w-full px-4 py-2.5 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-purple-500 ${
               variant === 'hero' ? 'rounded-l-full pl-5' : 'rounded-l-md'
             }`}
+            style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
             data-testid="mira-search-input"
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
+            spellCheck="false"
           />
           {isProcessing && (
             <div className="absolute right-3 top-1/2 -translate-y-1/2">
