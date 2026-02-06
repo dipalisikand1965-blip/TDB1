@@ -4,8 +4,8 @@
  * Pillar-specific messaging, seamless journey, world's best concierge feel
  */
 
-import React, { useState, useMemo } from 'react';
-import { Sparkles, Heart, Crown, PawPrint } from 'lucide-react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
+import { Sparkles, Heart, Crown, PawPrint, Mic, MicOff, Loader2 } from 'lucide-react';
 import SoulScoreArc from './SoulScoreArc';
 import MiraLoveNote from './MiraLoveNote';
 import { getPillarMessage, getPillarTagline } from '../context/PillarContext';
