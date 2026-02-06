@@ -19,6 +19,7 @@ import {
 import { Button } from './ui/button';
 import { Card } from './ui/card';
 import { Badge } from './ui/badge';
+import { API_URL } from '../utils/api';
 
 // Product narration templates - Mira explains why each item is in the kit
 // Personalized with pet info when available (name, breed, size, favorites, allergies)
