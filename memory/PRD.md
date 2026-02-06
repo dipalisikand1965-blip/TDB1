@@ -80,32 +80,33 @@ Added routes and hero content for all sub-pages:
 - `PillarContext.jsx` - Central config for all pillar soul colors and messaging
 - All pillar pages refactored to use PillarPageLayout
 
-### Testing Status (Latest: iteration_253)
+### Testing Status (Latest: iteration_254)
 - All 15 main pillar pages: ✅ PASS
-- All sub-pages: ✅ PASS
+- All sub-pages: ✅ PASS (dine/treats, care/grooming, stay/beds, fit/leashes, etc.)
 - Voice search button present: ✅ PASS
-- Products/Services toggle: ✅ PASS
+- Products/Services toggle: ✅ REMOVED (too clinical)
+- Subcategory pills navigation: ✅ PASS
+- "Shopping for another dog?" link: ✅ PASS
 - Soul colors rendered correctly: ✅ PASS
+- Mobile wobble fix: ✅ PASS (no horizontal scroll on 375px)
+- Pet images with fallback: ✅ PASS
 - No JavaScript errors: ✅ PASS
 - Success rate: 100%
 
-### Refactored Pages (February 6, 2026)
-- `/app/frontend/src/pages/EmergencyPage.jsx`
-- `/app/frontend/src/pages/PaperworkPage.jsx`
-- `/app/frontend/src/pages/FitPage.jsx`
-- `/app/frontend/src/pages/LearnPage.jsx`
-- `/app/frontend/src/pages/FarewellPage.jsx`
-- `/app/frontend/src/pages/AdoptPage.jsx`
+### Completed in This Session (February 6, 2026)
+1. ✅ Removed "Products/Services" toggle (was clinical, not emotionally resonant)
+2. ✅ Fixed mobile wobbling issue (comprehensive overflow control in index.css)
+3. ✅ Verified all sub-pillar routes work with category-specific hero content
+4. ✅ Confirmed pet images load with DiceBear fallback
+5. ✅ Subcategory pills now primary navigation with "Shopping for another dog?" on right
 
 ### Remaining/Future Tasks
 1. **P1** - Make voice search functional (connect to backend search)
-2. **P2** - Remove product/service counts from all pages
-3. **P2** - Finalize comprehensive page audit document
-4. **P3** - Relocate "All Breeds" selector with "Shopping for another dog?" label
-5. **P3** - Contextual pillar messaging (birthday awareness, festivals)
-6. **P3** - Time-of-day aware greetings (e.g., "Good morning, planning breakfast for Mojo?")
-7. **P3** - Add subtle animations for "magical" feel
-8. **P3** - Improve AI logic for "Why for [PetName]" whispers
+2. **P2** - Finalize comprehensive page audit document
+3. **P3** - Contextual pillar messaging (birthday awareness, festivals)
+4. **P3** - Time-of-day aware greetings (e.g., "Good morning, planning breakfast for Mojo?")
+5. **P3** - Add subtle animations for "magical" feel
+6. **P3** - Improve AI logic for "Why for [PetName]" whispers
 
 ## Architecture
 
