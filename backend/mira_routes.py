@@ -5152,19 +5152,23 @@ async def get_my_requests(
     ).sort("created_at", -1).limit(limit).to_list(limit)
     
     for booking in quick_bookings:
-        requests.append({
-            "id": booking.get("id"),
-            "type": "quick_book",
-            "service_type": booking.get("service_type"),
-            "pillar": booking.get("service_type") if booking.get("service_type") in ["grooming", "vet", "boarding", "training"] else "care",
-            "status": booking.get("status", "pending"),
-            "status_display": get_status_display(booking.get("status", "pending")),
-            "description": f"{booking.get('service_type', '').replace('_', ' ').title()} - {booking.get('date')} at {booking.get('time')}",
-            "created_at": booking.get("created_at"),
-            "updated_at": booking.get("updated_at"),
-            "pet_name": booking.get("pet_name"),
-            "source": "quick_book"
-        })
+        bid = booking.get("ticket_id") or booking.get("id")
+        if bid and bid not in seen_ids:
+            seen_ids.add(bid)
+            requests.append({
+                "id": bid,
+                "ticket_id": bid,
+                "type": "quick_book",
+                "service_type": booking.get("service_type"),
+                "pillar": booking.get("service_type") if booking.get("service_type") in ["grooming", "vet", "boarding", "training"] else "care",
+                "status": booking.get("status", "pending"),
+                "status_display": get_status_display(booking.get("status", "pending")),
+                "description": f"{booking.get('service_type', '').replace('_', ' ').title()} - {booking.get('date')} at {booking.get('time')}",
+                "created_at": booking.get("created_at"),
+                "updated_at": booking.get("updated_at"),
+                "pet_name": booking.get("pet_name"),
+                "source": "quick_book"
+            })
     
     # Sort by created_at descending - handle mixed types
     def get_sort_key(x):
