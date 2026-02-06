@@ -583,7 +583,7 @@ async def send_message_about_request(
         
         await db.service_desk_tickets.insert_one(new_ticket)
     
-    # Create admin notification
+    # Create admin notification with direct link to service desk
     admin_notification = {
         "id": str(uuid.uuid4()),
         "type": "new_inquiry",
@@ -591,7 +591,8 @@ async def send_message_about_request(
         "message": f"Customer inquiry: {body.message[:100]}{'...' if len(body.message) > 100 else ''}",
         "ticket_id": ticket_id,
         "request_id": request_id,
-        "severity": "medium",
+        "link_to": f"/dashboard?tab=service-desk&ticket={ticket_id}",
+        "severity": "high",
         "created_at": now,
         "read": False,
         "metadata": {
