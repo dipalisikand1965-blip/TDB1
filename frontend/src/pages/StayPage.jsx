@@ -1301,9 +1301,6 @@ const StayPage = () => {
         subtitle="See your personalized price based on your city, pet size, and requirements"
         maxServices={8}
       />
-      
-      {/* Mira Floating Chat Widget - Works on all screen sizes */}
-      <MiraChatWidget pillar="stay" />
     </div>
   );
 };
