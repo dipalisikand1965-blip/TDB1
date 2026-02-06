@@ -160,24 +160,24 @@ const PillarPageLayout = ({
     fetchPets();
   }, [token, contextPets, currentPet, setCurrentPet]);
   
-  // Fetch soul data when pet changes
+  // Fetch soul data when pet changes (only if context doesn't have it)
   useEffect(() => {
     const fetchSoulData = async () => {
-      if (!activePet?.id || !token) return;
+      if (!activePet?.id || !token || contextSoulData) return;
       try {
         const response = await fetch(`${API_URL}/api/soul-drip/completeness/${activePet.id}`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (response.ok) {
           const data = await response.json();
-          setPetSoulData(data);
+          setLocalSoulData(data);
         }
       } catch (err) {
         console.debug('Failed to fetch soul data:', err);
       }
     };
     fetchSoulData();
-  }, [activePet?.id, token]);
+  }, [activePet?.id, token, contextSoulData]);
   
   // Handle view mode change
   const handleViewModeChange = (mode) => {
