@@ -295,9 +295,8 @@ const UnifiedHero = ({
             
             {/* Main Title - Pillar specific */}
             <h1 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-white leading-tight mb-2">
-              {pageType} {pillar !== 'recommended' && pillar !== 'all' && 'for'}{' '}
               <span className="bg-gradient-to-r from-amber-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
-                {pillar === 'recommended' || pillar === 'all' ? petName : title.split(' ').slice(-1)[0]}
+                {title}
               </span>
             </h1>
             
