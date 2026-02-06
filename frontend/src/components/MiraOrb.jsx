@@ -1,17 +1,29 @@
 /**
- * MiraOrb - ALIVE with motion
+ * MiraOrb - A Living, Breathing AI Entity
  * 
- * Organic blob shape (not circular).
- * Black void center.
- * Magenta glow escaping from behind - UNEVEN.
- * VISIBLE breathing animation.
+ * NOT a black void. NOT a button.
+ * A GLOWING, ETHEREAL ORB of light.
+ * 
+ * Layered Light approach:
+ * - Ambient bloom (back)
+ * - Main glowing orb body
+ * - Specular highlight
+ * - Soft paw print icon
  */
 
 import React from 'react';
 import { motion } from 'framer-motion';
 
-// Organic asymmetric blob path
-const BLOB_PATH = "M50,10 C75,10 90,30 90,50 C90,75 70,90 50,90 C25,90 10,70 10,50 C10,25 30,10 50,10";
+// Paw Print SVG - soft, ethereal
+const PawIcon = () => (
+  <svg 
+    viewBox="0 0 24 24" 
+    fill="currentColor"
+    className="w-8 h-8 text-white/80 drop-shadow-[0_0_8px_rgba(255,255,255,0.9)]"
+  >
+    <path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-4 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm8 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-4 6c-1.7 0-3 1.3-3 3v1h6v-1c0-1.7-1.3-3-3-3z"/>
+  </svg>
+);
 
 const MiraOrb = ({ 
   onClick,
@@ -19,100 +31,124 @@ const MiraOrb = ({
   className = '',
 }) => {
   const sizes = {
-    sm: { container: 80, core: 48 },
-    md: { container: 100, core: 60 },
-    lg: { container: 120, core: 72 },
+    sm: { orb: 64 },
+    md: { orb: 80 },
+    lg: { orb: 96 },
   };
   
   const config = sizes[size];
 
   return (
-    <div 
-      className={`relative flex items-center justify-center ${className}`}
-      style={{
-        width: config.container,
-        height: config.container,
+    <motion.button
+      onClick={(e) => {
+        if (navigator.vibrate) navigator.vibrate(20);
+        onClick?.(e);
       }}
+      className={`relative cursor-pointer focus:outline-none ${className}`}
+      style={{
+        width: config.orb,
+        height: config.orb,
+      }}
+      whileHover={{ scale: 1.1 }}
+      whileTap={{ scale: 0.95 }}
+      data-testid="mira-orb"
     >
-      {/* GLOW - Animated magenta blob escaping from behind */}
+      {/* Layer 1: Ambient Bloom - Large, diffuse purple glow */}
       <motion.div
-        className="absolute"
+        className="absolute rounded-full"
         style={{
-          width: config.core + 36,
-          height: config.core + 36,
-          transform: 'translate(-6px, -4px)', // Offset for asymmetric glow escape
+          width: config.orb * 1.8,
+          height: config.orb * 1.8,
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          background: 'radial-gradient(circle, rgba(124,58,237,0.5) 0%, rgba(76,29,149,0.3) 50%, transparent 70%)',
+          filter: 'blur(20px)',
         }}
         animate={{
-          scale: [1, 1.12, 1],
-          opacity: [0.75, 1, 0.75],
+          scale: [1, 1.2, 1],
+          opacity: [0.6, 0.9, 0.6],
+        }}
+        transition={{
+          duration: 5,
+          repeat: Infinity,
+          ease: "easeInOut",
+        }}
+      />
+
+      {/* Layer 2: Main Orb Body - Glowing magenta/pink gradient */}
+      <motion.div
+        className="absolute rounded-full"
+        style={{
+          width: config.orb,
+          height: config.orb,
+          top: 0,
+          left: 0,
+          background: 'radial-gradient(circle at 35% 35%, #F0ABFC 0%, #D946EF 40%, #A855F7 70%, #7C3AED 100%)',
+          boxShadow: '0 0 40px rgba(217,70,239,0.7), 0 0 80px rgba(168,85,247,0.4), inset 0 0 30px rgba(255,255,255,0.3)',
+        }}
+        animate={{
+          scale: [1, 1.08, 1],
+          opacity: [0.85, 1, 0.85],
         }}
         transition={{
           duration: 4,
           repeat: Infinity,
           ease: "easeInOut",
         }}
-      >
-        <svg viewBox="0 0 100 100" className="w-full h-full" style={{ filter: 'blur(14px)' }}>
-          <defs>
-            <radialGradient id="glowGrad" cx="30%" cy="30%" r="70%">
-              <stop offset="0%" stopColor="#ff66ff" />
-              <stop offset="50%" stopColor="#cc00cc" />
-              <stop offset="100%" stopColor="#660066" stopOpacity="0" />
-            </radialGradient>
-          </defs>
-          <path d={BLOB_PATH} fill="url(#glowGrad)" />
-        </svg>
-      </motion.div>
+      />
 
-      {/* Second glow layer - brighter, offset more */}
+      {/* Layer 3: Inner Glow - Hot white/pink center */}
       <motion.div
-        className="absolute"
+        className="absolute rounded-full"
         style={{
-          width: config.core + 24,
-          height: config.core + 24,
-          transform: 'translate(-10px, -6px)',
+          width: config.orb * 0.7,
+          height: config.orb * 0.7,
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          background: 'radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(240,171,252,0.6) 50%, transparent 70%)',
+          filter: 'blur(8px)',
         }}
         animate={{
-          scale: [1.05, 0.95, 1.05],
-          opacity: [0.9, 0.6, 0.9],
+          scale: [1, 1.15, 1],
+          opacity: [0.7, 1, 0.7],
         }}
         transition={{
-          duration: 3.5,
+          duration: 3,
           repeat: Infinity,
           ease: "easeInOut",
-          delay: 0.3,
+          delay: 0.5,
         }}
-      >
-        <svg viewBox="0 0 100 100" className="w-full h-full" style={{ filter: 'blur(8px)' }}>
-          <path d={BLOB_PATH} fill="#ff44ff" />
-        </svg>
-      </motion.div>
+      />
 
-      {/* BLACK VOID - Sits on top */}
-      <motion.button
-        onClick={(e) => {
-          if (navigator.vibrate) navigator.vibrate(20);
-          onClick?.(e);
-        }}
-        className="relative z-10 cursor-pointer focus:outline-none"
+      {/* Layer 4: Specular Highlight - Top-left glass shine */}
+      <div
+        className="absolute rounded-full"
         style={{
-          width: config.core,
-          height: config.core,
+          width: config.orb * 0.35,
+          height: config.orb * 0.25,
+          top: '15%',
+          left: '20%',
+          background: 'linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 100%)',
+          filter: 'blur(4px)',
+          borderRadius: '50%',
         }}
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        data-testid="mira-orb"
+      />
+
+      {/* Layer 5: Paw Icon - Soft, centered */}
+      <div
+        className="absolute flex items-center justify-center"
+        style={{
+          width: config.orb,
+          height: config.orb,
+          top: 0,
+          left: 0,
+        }}
       >
-        {/* Edge softening */}
-        <svg viewBox="0 0 100 100" className="absolute w-full h-full" style={{ filter: 'blur(2px)', transform: 'scale(1.02)' }}>
-          <path d={BLOB_PATH} fill="#0a0a0a" />
-        </svg>
-        {/* Core - true black */}
-        <svg viewBox="0 0 100 100" className="relative w-full h-full z-10">
-          <path d={BLOB_PATH} fill="#000000" />
-        </svg>
-      </motion.button>
-    </div>
+        <PawIcon />
+      </div>
+    </motion.button>
   );
 };
 
