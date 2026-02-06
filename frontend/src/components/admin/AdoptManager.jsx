@@ -43,7 +43,7 @@ const AdoptManager = ({ authHeaders }) => {
     
     setSeeding(true);
     try {
-      const res = await fetch(`${getApiUrl()}/api/adopt/admin/seed`, {
+      const res = await fetch(`${API_URL}/api/adopt/admin/seed`, {
         method: 'POST',
         headers: authHeaders
       });
@@ -141,7 +141,7 @@ const AdoptManager = ({ authHeaders }) => {
 
   const fetchStats = async () => {
     try {
-      const res = await fetch(`${getApiUrl()}/api/adopt/stats`, { headers: authHeaders });
+      const res = await fetch(`${API_URL}/api/adopt/stats`, { headers: authHeaders });
       if (res.ok) setStats(await res.json());
     } catch (err) {
       console.error('Error fetching stats:', err);
@@ -155,7 +155,7 @@ const AdoptManager = ({ authHeaders }) => {
       if (petFilter.status && petFilter.status !== 'all') params.append('status', petFilter.status);
       params.append('limit', '100');
       
-      const res = await fetch(`${getApiUrl()}/api/adopt/pets?${params}`, { headers: authHeaders });
+      const res = await fetch(`${API_URL}/api/adopt/pets?${params}`, { headers: authHeaders });
       if (res.ok) {
         const data = await res.json();
         setPets(data.pets || []);
@@ -173,7 +173,7 @@ const AdoptManager = ({ authHeaders }) => {
       if (appFilter.status && appFilter.status !== 'all') params.append('status', appFilter.status);
       params.append('limit', '100');
       
-      const res = await fetch(`${getApiUrl()}/api/adopt/applications?${params}`, { headers: authHeaders });
+      const res = await fetch(`${API_URL}/api/adopt/applications?${params}`, { headers: authHeaders });
       if (res.ok) {
         const data = await res.json();
         setApplications(data.applications || []);
@@ -185,7 +185,7 @@ const AdoptManager = ({ authHeaders }) => {
 
   const fetchFosterApplications = async () => {
     try {
-      const res = await fetch(`${getApiUrl()}/api/adopt/foster/applications?limit=100`, { headers: authHeaders });
+      const res = await fetch(`${API_URL}/api/adopt/foster/applications?limit=100`, { headers: authHeaders });
       if (res.ok) {
         const data = await res.json();
         setFosterApplications(data.applications || []);
@@ -197,7 +197,7 @@ const AdoptManager = ({ authHeaders }) => {
 
   const fetchEvents = async () => {
     try {
-      const res = await fetch(`${getApiUrl()}/api/adopt/events?upcoming=false&limit=50`, { headers: authHeaders });
+      const res = await fetch(`${API_URL}/api/adopt/events?upcoming=false&limit=50`, { headers: authHeaders });
       if (res.ok) {
         const data = await res.json();
         setEvents(data.events || []);
@@ -209,7 +209,7 @@ const AdoptManager = ({ authHeaders }) => {
 
   const fetchShelters = async () => {
     try {
-      const res = await fetch(`${getApiUrl()}/api/adopt/shelters?limit=50`, { headers: authHeaders });
+      const res = await fetch(`${API_URL}/api/adopt/shelters?limit=50`, { headers: authHeaders });
       if (res.ok) {
         const data = await res.json();
         setShelters(data.shelters || []);
@@ -223,8 +223,8 @@ const AdoptManager = ({ authHeaders }) => {
   const savePet = async () => {
     try {
       const url = editingPet 
-        ? `${getApiUrl()}/api/adopt/pets/${editingPet.pet_id}`
-        : `${getApiUrl()}/api/adopt/pets`;
+        ? `${API_URL}/api/adopt/pets/${editingPet.pet_id}`
+        : `${API_URL}/api/adopt/pets`;
       
       const method = editingPet ? 'PUT' : 'POST';
       
@@ -254,7 +254,7 @@ const AdoptManager = ({ authHeaders }) => {
     if (!confirm('Are you sure you want to remove this pet?')) return;
     
     try {
-      const res = await fetch(`${getApiUrl()}/api/adopt/pets/${petId}`, {
+      const res = await fetch(`${API_URL}/api/adopt/pets/${petId}`, {
         method: 'DELETE',
         headers: authHeaders
       });
@@ -271,7 +271,7 @@ const AdoptManager = ({ authHeaders }) => {
 
   const updateApplicationStatus = async (appId, status) => {
     try {
-      const res = await fetch(`${getApiUrl()}/api/adopt/applications/${appId}/status?status=${status}`, {
+      const res = await fetch(`${API_URL}/api/adopt/applications/${appId}/status?status=${status}`, {
         method: 'PUT',
         headers: authHeaders
       });
@@ -288,7 +288,7 @@ const AdoptManager = ({ authHeaders }) => {
 
   const saveEvent = async () => {
     try {
-      const res = await fetch(`${getApiUrl()}/api/adopt/events`, {
+      const res = await fetch(`${API_URL}/api/adopt/events`, {
         method: 'POST',
         headers: { ...authHeaders, 'Content-Type': 'application/json' },
         body: JSON.stringify(eventForm)
@@ -308,7 +308,7 @@ const AdoptManager = ({ authHeaders }) => {
   const saveShelter = async () => {
     try {
       const params = new URLSearchParams(shelterForm);
-      const res = await fetch(`${getApiUrl()}/api/adopt/shelters?${params}`, {
+      const res = await fetch(`${API_URL}/api/adopt/shelters?${params}`, {
         method: 'POST',
         headers: authHeaders
       });
