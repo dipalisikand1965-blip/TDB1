@@ -277,18 +277,7 @@ const RequestsTab = ({
                           variant="outline" 
                           size="sm"
                           className="flex-1 bg-gradient-to-r from-purple-600/20 to-pink-600/20 border-purple-500/30 text-purple-300 hover:from-purple-600/30 hover:to-pink-600/30"
-                          onClick={() => {
-                            // Navigate to care page where Mira chat is available
-                            // Store context in sessionStorage so Mira knows what to discuss
-                            sessionStorage.setItem('miraContext', JSON.stringify({
-                              type: 'booking_inquiry',
-                              requestId: request.id,
-                              service: request.service_name,
-                              status: request.status,
-                              message: `I have a question about my ${request.service_name} booking (Request #${request.id?.slice(-6)})`
-                            }));
-                            navigate('/care');
-                          }}
+                          onClick={() => openMessageDialog(request)}
                         >
                           <MessageCircle className="w-4 h-4 mr-1.5" /> Message Concierge
                         </Button>
