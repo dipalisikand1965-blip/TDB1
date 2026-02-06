@@ -25,6 +25,9 @@ import re
 from dotenv import load_dotenv
 from pillar_resolver import get_resolver, PillarResolver
 
+# Import breed knowledge base
+from breed_knowledge import get_breed_knowledge, format_breed_context_for_llm
+
 # Import push notification for ticket updates
 try:
     from push_notification_routes import notify_ticket_update
