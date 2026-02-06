@@ -5068,13 +5068,22 @@ async def get_my_requests(
     user_email = user.get("email")
     
     # Fetch tickets from both mira_tickets and service_desk_tickets
+    # Query supports both nested (member.email) and flat (member_email) structures
     mira_tickets = await db.mira_tickets.find(
-        {"member.email": user_email},
+        {"$or": [
+            {"member.email": user_email},
+            {"member_email": user_email},
+            {"customer_email": user_email}
+        ]},
         {"_id": 0}
     ).sort("created_at", -1).limit(limit).to_list(limit)
     
     service_tickets = await db.service_desk_tickets.find(
-        {"member.email": user_email},
+        {"$or": [
+            {"member.email": user_email},
+            {"member_email": user_email},
+            {"customer_email": user_email}
+        ]},
         {"_id": 0}
     ).sort("created_at", -1).limit(limit).to_list(limit)
     
