@@ -743,8 +743,10 @@ async def list_tickets(
         logger.warning(f"Error fetching from tickets collection: {e}")
     
     # 2. From service_desk_tickets collection (new auto-created tickets)
+    # Filter to only include tickets with valid ticket_ids (skip conversational_entry noise)
     try:
-        cursor2 = db.service_desk_tickets.find(query).sort(sort_by, sort_direction).skip(offset).limit(limit)
+        sdt_query = {**query, "ticket_id": {"$exists": True, "$ne": None, "$regex": "^(TKT|QBK|ADV|ORD|SVC)-"}}
+        cursor2 = db.service_desk_tickets.find(sdt_query).sort(sort_by, sort_direction).skip(offset).limit(limit)
         tickets2 = await cursor2.to_list(length=limit)
         for t in tickets2:
             t["source_collection"] = "service_desk_tickets"
@@ -752,7 +754,7 @@ async def list_tickets(
         # Add only if not duplicate (by ticket_id)
         existing_ids = {t.get("ticket_id") for t in all_tickets}
         for t in tickets2:
-            if t.get("ticket_id") not in existing_ids:
+            if t.get("ticket_id") and t.get("ticket_id") not in existing_ids:
                 all_tickets.append(t)
     except Exception as e:
         logger.warning(f"Error fetching from service_desk_tickets collection: {e}")
