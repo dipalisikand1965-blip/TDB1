@@ -229,9 +229,11 @@ function App() {
       <HelmetProvider>
         <AuthProvider>
           <CartProvider>
-            <BrowserRouter>
-              <AppRouter />
-            </BrowserRouter>
+            <PillarProvider>
+              <BrowserRouter>
+                <AppRouter />
+              </BrowserRouter>
+            </PillarProvider>
           </CartProvider>
         </AuthProvider>
       </HelmetProvider>
