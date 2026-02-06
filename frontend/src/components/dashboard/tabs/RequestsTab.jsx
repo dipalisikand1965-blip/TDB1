@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '../../ui/card';
 import { Button } from '../../ui/button';
 import { Badge } from '../../ui/badge';
-import { Calendar, RefreshCw, Loader2, MessageCircle, Sparkles, PawPrint, Clock, ChevronDown, ChevronUp, MapPin, Send, X, Paperclip, Image } from 'lucide-react';
+import { Input } from '../../ui/input';
+import { Calendar, RefreshCw, Loader2, MessageCircle, PawPrint, Clock, ChevronDown, ChevronUp, MapPin, Send, X, Paperclip, Search, Bell, BellDot, Archive, Eye } from 'lucide-react';
 import { toast } from 'sonner';
 
 const API = process.env.REACT_APP_BACKEND_URL;
@@ -23,13 +24,63 @@ const RequestsTab = ({
   const [conversationMessages, setConversationMessages] = useState([]);
   const [loadingMessages, setLoadingMessages] = useState(false);
   const messagesEndRef = useRef(null);
+  
+  // New state for improved UX
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showAllTickets, setShowAllTickets] = useState(false);
+  const [unreadTickets, setUnreadTickets] = useState(new Set());
 
   const toggleRequest = (requestId) => {
     setExpandedRequests(prev => ({
       ...prev,
       [requestId]: !prev[requestId]
     }));
+    // Mark as read when expanded
+    setUnreadTickets(prev => {
+      const next = new Set(prev);
+      next.delete(requestId);
+      return next;
+    });
   };
+
+  // Sort and filter requests
+  const processedRequests = useMemo(() => {
+    let filtered = [...myRequests];
+    
+    // Sort by updated_at (most recent activity first)
+    filtered.sort((a, b) => {
+      const dateA = new Date(a.updated_at || a.created_at);
+      const dateB = new Date(b.updated_at || b.created_at);
+      return dateB - dateA;
+    });
+    
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase();
+      filtered = filtered.filter(r => 
+        r.id?.toLowerCase().includes(query) ||
+        r.ticket_id?.toLowerCase().includes(query) ||
+        r.description?.toLowerCase().includes(query) ||
+        r.service_name?.toLowerCase().includes(query) ||
+        r.pet_name?.toLowerCase().includes(query)
+      );
+    }
+    
+    return filtered;
+  }, [myRequests, searchQuery]);
+
+  // Split into open and closed
+  const openRequests = processedRequests.filter(r => 
+    !['resolved', 'closed', 'completed', 'cancelled'].includes(r.status?.toLowerCase())
+  );
+  const closedRequests = processedRequests.filter(r => 
+    ['resolved', 'closed', 'completed', 'cancelled'].includes(r.status?.toLowerCase())
+  );
+
+  // Determine what to display
+  const displayRequests = showAllTickets ? processedRequests : openRequests.slice(0, 5);
+  const hasMoreOpen = openRequests.length > 5;
+  const totalUnread = unreadTickets.size;
 
   // Load conversation messages when dialog opens
   const loadConversationMessages = async (requestId) => {
@@ -49,9 +100,6 @@ const RequestsTab = ({
   };
 
   const openMessageDialog = async (request) => {
-    console.log('Opening message dialog for request:', request);
-    console.log('User email:', userEmail);
-    
     if (!userEmail) {
       toast.error('Please log in to message the concierge');
       return;
@@ -59,10 +107,15 @@ const RequestsTab = ({
     
     setMessageDialog({ open: true, request });
     setMessageText('');
-    // Load existing conversation
     const requestId = request.ticket_id || request.id;
-    console.log('Loading messages for requestId:', requestId);
     await loadConversationMessages(requestId);
+    
+    // Mark as read
+    setUnreadTickets(prev => {
+      const next = new Set(prev);
+      next.delete(request.id);
+      return next;
+    });
   };
 
   const closeMessageDialog = () => {
@@ -83,7 +136,6 @@ const RequestsTab = ({
     
     setSending(true);
     try {
-      // Use ticket_id if available, otherwise use id
       const requestId = messageDialog.request.ticket_id || messageDialog.request.id;
       const response = await fetch(
         `${API}/api/user/request/${requestId}/message?email=${encodeURIComponent(userEmail)}`,
@@ -101,7 +153,6 @@ const RequestsTab = ({
           description: 'Our concierge team will respond shortly.'
         });
         setMessageText('');
-        // Reload conversation to show new message
         await loadConversationMessages(requestId);
       } else {
         toast.error('Failed to send message', { description: data.detail });
@@ -113,7 +164,6 @@ const RequestsTab = ({
     }
   };
 
-  // Format timestamp for messages
   const formatMessageTime = (timestamp) => {
     if (!timestamp) return '';
     const date = new Date(timestamp);
@@ -131,17 +181,32 @@ const RequestsTab = ({
     });
   };
 
-  // Get status color classes for dark theme
   const getStatusColors = (color) => {
     switch (color) {
       case 'green': return 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
       case 'yellow': return 'bg-amber-500/20 text-amber-400 border-amber-500/30';
       case 'blue': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+      case 'purple': return 'bg-purple-500/20 text-purple-400 border-purple-500/30';
       case 'red': return 'bg-red-500/20 text-red-400 border-red-500/30';
       case 'orange': return 'bg-orange-500/20 text-orange-400 border-orange-500/30';
       default: return 'bg-slate-500/20 text-slate-400 border-slate-500/30';
     }
   };
+
+  // Check for unread messages (tickets with recent concierge replies)
+  useEffect(() => {
+    const checkUnread = () => {
+      const newUnread = new Set();
+      myRequests.forEach(r => {
+        // If has_new_reply flag or last message was from concierge
+        if (r.has_new_reply || r.last_message_from === 'concierge') {
+          newUnread.add(r.id);
+        }
+      });
+      setUnreadTickets(newUnread);
+    };
+    checkUnread();
+  }, [myRequests]);
 
   // Dialog rendered via portal
   const dialogContent = messageDialog.open ? createPortal(
@@ -169,6 +234,9 @@ const RequestsTab = ({
               {messageDialog.request?.pet_name && (
                 <span className="ml-1 text-purple-300">for {messageDialog.request.pet_name}</span>
               )}
+            </p>
+            <p className="text-xs text-slate-500 mt-1 font-mono">
+              #{messageDialog.request?.ticket_id || messageDialog.request?.id}
             </p>
           </div>
           <button 
@@ -274,40 +342,68 @@ const RequestsTab = ({
       {dialogContent}
 
       <Card className="p-4 sm:p-6 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl shadow-xl">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-          <h3 className="text-lg sm:text-xl font-bold flex items-center gap-2 text-white">
-            <Calendar className="w-5 h-5 text-purple-400" />
-            My Bookings & Requests
-            {myRequests.length > 0 && (
-              <Badge className="ml-2 bg-purple-500/20 text-purple-400 border-purple-500/30">{myRequests.length}</Badge>
-            )}
-          </h3>
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={onRefresh}
-            disabled={requestsLoading}
-            className="bg-slate-800/50 border-white/10 text-white hover:bg-slate-700/50 hover:border-purple-500/30"
-          >
-            <RefreshCw className={`w-4 h-4 mr-1.5 ${requestsLoading ? 'animate-spin' : ''}`} />
-            Refresh
-          </Button>
+        {/* Header with Search */}
+        <div className="flex flex-col gap-4 mb-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <h3 className="text-lg sm:text-xl font-bold flex items-center gap-2 text-white">
+              <Calendar className="w-5 h-5 text-purple-400" />
+              My Bookings & Requests
+              {openRequests.length > 0 && (
+                <Badge className="ml-2 bg-purple-500/20 text-purple-400 border-purple-500/30">
+                  {openRequests.length} open
+                </Badge>
+              )}
+              {totalUnread > 0 && (
+                <Badge className="bg-pink-500 text-white border-0 animate-pulse">
+                  <BellDot className="w-3 h-3 mr-1" />
+                  {totalUnread} new
+                </Badge>
+              )}
+            </h3>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={onRefresh}
+              disabled={requestsLoading}
+              className="bg-slate-800/50 border-white/10 text-white hover:bg-slate-700/50 hover:border-purple-500/30"
+            >
+              <RefreshCw className={`w-4 h-4 mr-1.5 ${requestsLoading ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
+          </div>
+          
+          {/* Search Bar */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Input
+              placeholder="Search by ticket #, description, pet name..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 bg-slate-800/50 border-white/10 text-white placeholder-slate-500 focus:border-purple-500/50"
+              data-testid="request-search"
+            />
+          </div>
         </div>
         
         {requestsLoading ? (
           <div className="flex items-center justify-center py-12">
             <Loader2 className="w-8 h-8 animate-spin text-purple-400" />
           </div>
-        ) : myRequests.length > 0 ? (
+        ) : displayRequests.length > 0 ? (
           <div className="space-y-3">
-            {myRequests.map((request) => {
+            {displayRequests.map((request) => {
               const isExpanded = expandedRequests[request.id];
+              const isUnread = unreadTickets.has(request.id);
+              const ticketId = request.ticket_id || request.id;
               
               return (
                 <div 
                   key={request.id} 
-                  className="bg-slate-800/50 border border-white/5 rounded-xl overflow-hidden hover:border-purple-500/30 transition-all"
+                  className={`bg-slate-800/50 border rounded-xl overflow-hidden transition-all ${
+                    isUnread 
+                      ? 'border-pink-500/50 ring-1 ring-pink-500/20' 
+                      : 'border-white/5 hover:border-purple-500/30'
+                  }`}
                 >
                   {/* Request Header - Clickable */}
                   <button 
@@ -315,8 +411,14 @@ const RequestsTab = ({
                     className="w-full p-4 flex justify-between items-center gap-3 text-left hover:bg-slate-800/70 transition-colors"
                   >
                     <div className="flex items-center gap-3 flex-1 min-w-0">
-                      <div className="w-10 h-10 bg-purple-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                        <Calendar className="w-5 h-5 text-purple-400" />
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                        isUnread ? 'bg-pink-500/20' : 'bg-purple-500/10'
+                      }`}>
+                        {isUnread ? (
+                          <BellDot className="w-5 h-5 text-pink-400" />
+                        ) : (
+                          <Calendar className="w-5 h-5 text-purple-400" />
+                        )}
                       </div>
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-2 mb-1">
@@ -329,13 +431,16 @@ const RequestsTab = ({
                           <Badge variant="outline" className="bg-purple-500/10 text-purple-300 border-purple-500/20 text-xs">
                             {request.pillar}
                           </Badge>
+                          {isUnread && (
+                            <Badge className="bg-pink-500 text-white text-[10px] border-0">NEW</Badge>
+                          )}
                         </div>
                         <p className="text-sm text-white truncate">{request.description?.slice(0, 60) || 'Service Request'}...</p>
                       </div>
                     </div>
                     
                     <div className="flex items-center gap-2 flex-shrink-0">
-                      <span className="text-xs text-slate-500 hidden sm:inline">#{request.id?.slice(0, 8)}</span>
+                      <span className="text-xs text-slate-500 hidden sm:inline font-mono">#{ticketId?.slice(-8)}</span>
                       {isExpanded ? (
                         <ChevronUp className="w-5 h-5 text-slate-400" />
                       ) : (
@@ -404,7 +509,7 @@ const RequestsTab = ({
                         
                         {/* Request ID */}
                         <div className="text-xs text-slate-500 font-mono">
-                          Request ID: {request.id}
+                          Request ID: {ticketId}
                         </div>
                       </div>
                       
@@ -421,7 +526,8 @@ const RequestsTab = ({
                           }}
                           data-testid="message-concierge-btn"
                         >
-                          <MessageCircle className="w-4 h-4 mr-1.5" /> Message Concierge
+                          <MessageCircle className="w-4 h-4 mr-1.5" /> 
+                          {isUnread ? 'View New Message' : 'Message Concierge'}
                         </Button>
                       </div>
                     </div>
@@ -429,23 +535,40 @@ const RequestsTab = ({
                 </div>
               );
             })}
+            
+            {/* Show More / Show Less */}
+            {(hasMoreOpen || showAllTickets) && !searchQuery && (
+              <div className="pt-4 border-t border-white/5">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowAllTickets(!showAllTickets)}
+                  className="w-full bg-slate-800/30 border-white/10 text-slate-300 hover:bg-slate-700/50"
+                >
+                  {showAllTickets ? (
+                    <>
+                      <ChevronUp className="w-4 h-4 mr-2" />
+                      Show Less
+                    </>
+                  ) : (
+                    <>
+                      <Archive className="w-4 h-4 mr-2" />
+                      View All ({processedRequests.length} total, {closedRequests.length} closed)
+                    </>
+                  )}
+                </Button>
+              </div>
+            )}
           </div>
         ) : (
-          <div className="text-center py-12">
-            <div className="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mx-auto mb-4">
-              <MessageCircle className="w-8 h-8 text-slate-500" />
-            </div>
-            <p className="text-white font-medium mb-2">No active requests</p>
-            <p className="text-sm text-slate-400 max-w-xs mx-auto">
-              Chat with Mira to create booking requests, grooming appointments, and more!
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <Calendar className="w-12 h-12 text-slate-600 mb-3" />
+            <p className="text-slate-400 mb-2">
+              {searchQuery ? 'No matching requests found' : 'No active requests yet'}
             </p>
-            <Button 
-              className="mt-6 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white"
-              onClick={() => navigate('/care')}
-            >
-              <Sparkles className="w-4 h-4 mr-2" />
-              Talk to Mira
-            </Button>
+            <p className="text-xs text-slate-500">
+              {searchQuery ? 'Try a different search term' : 'Your bookings and service requests will appear here'}
+            </p>
           </div>
         )}
       </Card>
