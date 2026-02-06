@@ -558,26 +558,24 @@ const FitPage = () => {
   
   if (loading) {
     return (
-    <PillarPageLayout
-      pillar="fit"
-      title="Movement & Energy for Your Pet"
-      description="Activity that matches your pet's rhythm"
-    >
-      {/* SEO Meta Tags */}
-      <SEOHead page="fit" path="/fit" />
-
-        <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
-      </div>
+      <PillarPageLayout
+        pillar="fit"
+        title="Fit - Movement & Energy | The Doggy Company"
+        description="Activity that matches your pet's rhythm. Expert fitness programmes, weight management, and activity tracking."
+      >
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="w-8 h-8 animate-spin text-teal-600" />
+        </div>
+      </PillarPageLayout>
     );
   }
   
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      
-      {/* ==================== HERO SECTION ==================== */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-teal-900 via-emerald-800 to-green-900 text-white">
-        {/* Mobile Back Button */}
-        <button 
+    <PillarPageLayout
+      pillar="fit"
+      title="Fit - Movement & Energy | The Doggy Company"
+      description="Activity that matches your pet's rhythm. Expert fitness programmes, weight management, and activity tracking."
+    > 
           onClick={() => navigate(-1)}
           className="sm:hidden absolute top-4 left-4 z-10 p-2 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-colors"
           aria-label="Go back"
