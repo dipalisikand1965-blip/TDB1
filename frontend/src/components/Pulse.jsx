@@ -21,6 +21,7 @@ import {
   ShoppingCart, Calendar, Heart, HelpCircle, Loader2,
   Stethoscope, Gift, PawPrint, MessageCircle, Send, Activity
 } from 'lucide-react';
+import { API_URL } from '../utils/api';
 
 // Pulse voice settings - quick, responsive
 const PULSE_VOICE_CONFIG = {
