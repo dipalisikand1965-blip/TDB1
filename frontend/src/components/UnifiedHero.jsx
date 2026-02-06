@@ -10,24 +10,58 @@ import SoulScoreArc from './SoulScoreArc';
 import MiraLoveNote from './MiraLoveNote';
 import { getPillarMessage, getPillarTagline } from '../context/PillarContext';
 
-// Pillar-specific gradients
+/**
+ * DOG SOUL COLORS - How a dog FEELS in each moment
+ * These gradients reflect the emotional essence of each pillar from a dog's perspective
+ * Mira sees and knows these feelings - this is the Pet Operating System soul
+ */
 const PILLAR_GRADIENTS = {
-  recommended: 'from-[#2D1B4E] via-[#1E3A5F] to-[#0D2137]',
-  celebrate: 'from-[#4A1942] via-[#2D1B4E] to-[#1E3A5F]',
-  dine: 'from-[#3D2B1F] via-[#2D1B4E] to-[#1E3A5F]',
-  care: 'from-[#3D1F3D] via-[#2D1B4E] to-[#1E3A5F]',
-  enjoy: 'from-[#2D1B4E] via-[#3D1F5F] to-[#1E3A5F]',
-  travel: 'from-[#1E3A5F] via-[#2D1B4E] to-[#0D2137]',
-  stay: 'from-[#1F3D3D] via-[#1E3A5F] to-[#0D2137]',
-  fit: 'from-[#3D1F1F] via-[#2D1B4E] to-[#1E3A5F]',
-  learn: 'from-[#1F3D2D] via-[#1E3A5F] to-[#0D2137]',
-  advisory: 'from-[#1F2D3D] via-[#1E3A5F] to-[#0D2137]',
-  emergency: 'from-[#3D1F1F] via-[#4A1F1F] to-[#2D1B4E]',
-  paperwork: 'from-[#2D2D3D] via-[#1E3A5F] to-[#0D2137]',
-  farewell: 'from-[#2D1B4E] via-[#3D2D4E] to-[#1E3A5F]',
-  adopt: 'from-[#3D3D1F] via-[#2D1B4E] to-[#1E3A5F]',
-  all: 'from-[#2D1B4E] via-[#1E3A5F] to-[#0D2137]',
-  shop: 'from-[#2D1B4E] via-[#1E3A5F] to-[#0D2137]',
+  // RECOMMENDED - The default Mira purple, omniscient and knowing
+  recommended: 'from-[#4A1942] via-[#2D1B4E] to-[#1E3A5F]',
+  
+  // CELEBRATE - Pure joy, tail wagging, party excitement! Golden warmth meets playful pink
+  celebrate: 'from-[#D4458B] via-[#9B4DCA] to-[#4A1942]',
+  
+  // DINE - Warm, satisfied belly, the comfort of a good meal. Warm amber to cozy brown
+  dine: 'from-[#D97706] via-[#92400E] to-[#451A03]',
+  
+  // CARE - Gentle touch, being groomed, feeling loved. Soft rose to nurturing purple
+  care: 'from-[#EC4899] via-[#A855F7] to-[#4A1942]',
+  
+  // ENJOY - Playful energy! Chasing balls, pure happiness. Bright blue to energetic cyan
+  enjoy: 'from-[#0EA5E9] via-[#6366F1] to-[#1E1B4B]',
+  
+  // TRAVEL - Adventure calling! Open roads, new smells. Deep blue to explorer teal
+  travel: 'from-[#0D9488] via-[#1E40AF] to-[#0C1929]',
+  
+  // STAY - Safe, cozy, home. The warm feeling of belonging. Forest green to earthy brown
+  stay: 'from-[#059669] via-[#065F46] to-[#1F2937]',
+  
+  // FIT - Active, alive, running free! Vibrant green to energetic lime
+  fit: 'from-[#22C55E] via-[#14532D] to-[#0A0F0D]',
+  
+  // LEARN - Focused, curious, tail-wagging attention. Wise blue to growth green
+  learn: 'from-[#3B82F6] via-[#1D4ED8] to-[#1E1B4B]',
+  
+  // ADVISORY - Trust, wisdom, guidance. Calming indigo to reassuring purple
+  advisory: 'from-[#6366F1] via-[#4338CA] to-[#1E1B4B]',
+  
+  // EMERGENCY - Alert but cared for. Urgent red tempered with calming blue
+  emergency: 'from-[#DC2626] via-[#991B1B] to-[#450A0A]',
+  
+  // PAPERWORK - Calm, simple, handled. Neutral slate with hints of organization
+  paperwork: 'from-[#475569] via-[#334155] to-[#0F172A]',
+  
+  // FAREWELL - Gentle, peaceful, rainbow bridge. Soft violet to serene twilight
+  farewell: 'from-[#8B5CF6] via-[#5B21B6] to-[#2E1065]',
+  
+  // ADOPT - Hope, new beginnings, love waiting. Warm orange to hopeful gold
+  adopt: 'from-[#F59E0B] via-[#D97706] to-[#451A03]',
+  
+  // SHOP/ALL/SERVICES - The full Mira spectrum
+  all: 'from-[#4A1942] via-[#2D1B4E] to-[#1E3A5F]',
+  shop: 'from-[#4A1942] via-[#2D1B4E] to-[#1E3A5F]',
+  services: 'from-[#6366F1] via-[#4338CA] to-[#1E1B4B]',
 };
 
 // Pillar titles - Main heading with pet name
