@@ -342,13 +342,34 @@ const CATEGORY_TO_PILLAR = {
   // Extended pillar mappings
   'enjoy': 'enjoy',
   'adventure': 'enjoy',
+  'toys': 'enjoy',
+  'chews': 'enjoy',
+  'games': 'enjoy',
+  'puzzles': 'enjoy',
   'travel': 'travel',
   'carriers': 'travel',
+  'car-accessories': 'travel',
+  'car': 'travel',
+  'outdoor': 'travel',
   'care': 'care',
   'health': 'care',
   'supplements': 'care',
+  'grooming': 'care',
+  'spa': 'care',
   'fit': 'fit',
-  'wellness': 'fit'
+  'wellness': 'fit',
+  'leashes': 'fit',
+  'harnesses': 'fit',
+  'collars': 'fit',
+  'apparel': 'fit',
+  'stay': 'stay',
+  'beds': 'stay',
+  'mats': 'stay',
+  'kennels': 'stay',
+  'bowls': 'stay',
+  'learn': 'learn',
+  'training': 'learn',
+  'books': 'learn'
 };
 
 // ============================================
