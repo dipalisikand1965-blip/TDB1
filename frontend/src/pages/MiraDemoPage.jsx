@@ -11,7 +11,7 @@
  * - Concierge handoff for complex queries
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { 
   Search, Mic, MicOff, Send, MessageCircle, Package, Calendar, 
   AlertCircle, Heart, Sparkles, ChevronRight, Loader2, User,
