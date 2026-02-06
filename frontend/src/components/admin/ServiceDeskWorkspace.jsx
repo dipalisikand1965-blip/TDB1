@@ -243,7 +243,7 @@ const ServiceDeskWorkspace = ({ authHeaders }) => {
         break;
       case 'today':
         const today = new Date().toISOString().split('T')[0];
-        filtered = tickets.filter(t => t.created_at?.startsWith(today));
+        filtered = tickets.filter(t => t.created_at?.startsWith(today) || t.updated_at?.startsWith(today));
         break;
       case 'inquiries':
         // Show member inquiries and messages from users
@@ -252,6 +252,10 @@ const ServiceDeskWorkspace = ({ authHeaders }) => {
           t.source === 'member_message' ||
           t.ticket_id?.startsWith('TKT-')
         );
+        break;
+      case 'new_messages':
+        // Show only tickets with new member messages (unread)
+        filtered = tickets.filter(t => t.has_new_member_message === true);
         break;
       default:
         break;
