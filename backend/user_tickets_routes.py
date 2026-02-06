@@ -640,3 +640,138 @@ async def get_request_messages(
         "subject": ticket.get("subject")
     }
 
+
+
+# ============== CONCIERGE REPLY WITH NOTIFICATIONS ==============
+
+class ConciergeReply(BaseModel):
+    message: str
+    notify_email: bool = True
+    notify_whatsapp: bool = False
+    is_internal: bool = False
+
+
+@router.post("/ticket/{ticket_id}/concierge-reply")
+async def concierge_reply_to_ticket(
+    ticket_id: str,
+    reply: ConciergeReply,
+    background_tasks: BackgroundTasks,
+    admin_email: str = Query(None, description="Admin/agent email")
+):
+    """
+    Concierge sends a reply to a user's ticket.
+    Optionally sends email and/or WhatsApp notification to customer.
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not connected")
+    
+    import uuid
+    
+    now = datetime.now(timezone.utc).isoformat()
+    
+    # Find ticket
+    ticket = await db.service_desk_tickets.find_one({"ticket_id": ticket_id})
+    
+    if not ticket:
+        ticket = await db.tickets.find_one({"ticket_id": ticket_id})
+        
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    
+    # Create message
+    message_obj = {
+        "id": str(uuid.uuid4()),
+        "type": "internal_note" if reply.is_internal else "reply",
+        "content": reply.message,
+        "sender": "concierge",
+        "sender_email": admin_email,
+        "channel": "in_app",
+        "timestamp": now,
+        "is_internal": reply.is_internal
+    }
+    
+    # Add to ticket
+    await db.service_desk_tickets.update_one(
+        {"ticket_id": ticket_id},
+        {
+            "$push": {"messages": message_obj},
+            "$set": {
+                "updated_at": now,
+                "status": "waiting_on_member" if not reply.is_internal else ticket.get("status")
+            }
+        }
+    )
+    
+    # Get customer info
+    customer_email = ticket.get("member_email") or ticket.get("customer_email")
+    customer_name = ticket.get("member_name") or ticket.get("customer_name") or "Pet Parent"
+    customer_phone = ticket.get("member_phone") or ticket.get("customer_phone")
+    
+    result = {
+        "success": True,
+        "message_id": message_obj["id"],
+        "ticket_id": ticket_id
+    }
+    
+    # Send notifications (non-internal messages only)
+    if not reply.is_internal:
+        # Email notification
+        if reply.notify_email and customer_email:
+            background_tasks.add_task(
+                send_ticket_update_email,
+                customer_email,
+                customer_name,
+                ticket_id,
+                reply.message
+            )
+            result["email_sent"] = True
+        
+        # WhatsApp link (for manual sending)
+        if reply.notify_whatsapp and customer_phone:
+            result["whatsapp_link"] = generate_whatsapp_link(
+                customer_phone,
+                ticket_id,
+                reply.message,
+                customer_name
+            )
+    
+    logger.info(f"Concierge reply added to ticket {ticket_id}")
+    
+    return result
+
+
+@router.get("/ticket/{ticket_id}/whatsapp-link")
+async def get_whatsapp_link_for_ticket(
+    ticket_id: str,
+    message: str = Query(None, description="Optional custom message")
+):
+    """
+    Generate WhatsApp click-to-chat link for a ticket's customer.
+    Used by concierge to quickly message customers on WhatsApp.
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not connected")
+    
+    # Find ticket
+    ticket = await db.service_desk_tickets.find_one({"ticket_id": ticket_id})
+    
+    if not ticket:
+        ticket = await db.tickets.find_one({"ticket_id": ticket_id})
+        
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found")
+    
+    customer_phone = ticket.get("member_phone") or ticket.get("customer_phone")
+    
+    if not customer_phone:
+        raise HTTPException(status_code=400, detail="No phone number for this customer")
+    
+    customer_name = ticket.get("member_name") or ticket.get("customer_name") or "there"
+    
+    default_message = message or f"Hi! This is regarding your request (#{ticket_id[-6:]}). How can we help you today?"
+    
+    return {
+        "whatsapp_link": generate_whatsapp_link(customer_phone, ticket_id, default_message, customer_name),
+        "phone": customer_phone,
+        "ticket_id": ticket_id
+    }
