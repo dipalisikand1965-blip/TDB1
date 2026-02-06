@@ -1302,9 +1302,9 @@ const StayPage = () => {
         maxServices={8}
       />
       
-      {/* Mira Floating Chat Widget - Works on all screen sizes */}
-      <MiraChatWidget pillar="stay" />
-    </div>
+      {/* Admin Quick Edit */}
+      <AdminQuickEdit pillar="stay" position="bottom-left" />
+    </PillarPageLayout>
   );
 };
 
