@@ -16,7 +16,7 @@ import requests
 import time
 
 # Configuration
-API_BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://mobile-dashboard-20.preview.emergentagent.com")
+API_BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://meister-hero.preview.emergentagent.com")
 OUTPUT_DIR = "/app/frontend/public/videos/brand_story/audio"
 
 # Voiceover scripts for each clip (matching BRAND_STORY_CLIPS in Home.jsx)
