@@ -14,7 +14,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://meister-hero.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://unified-pet-pages.preview.emergentagent.com')
 
 # Test credentials
 TEST_EMAIL = "demo@doggy.com"
