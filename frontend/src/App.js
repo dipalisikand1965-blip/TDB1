@@ -36,6 +36,8 @@ function ScrollToTop() {
 // ConditionalFloatingButton - Hide on pages that have their own contact buttons
 function ConditionalFloatingButton() {
   const { pathname } = useLocation();
+  const { user, isAuthenticated } = useAuth();
+  
   // Hide on /mira, /admin, and ALL pillar pages (they have their own Ask Concierge buttons)
   const hiddenPaths = [
     '/mira', '/admin',
@@ -47,7 +49,7 @@ function ConditionalFloatingButton() {
   if (hiddenPaths.some(path => pathname === path || pathname.startsWith(path + '/'))) {
     return null;
   }
-  return <FloatingContactButton />;
+  return <FloatingContactButton user={user} isLoggedIn={isAuthenticated} />;
 }
 
 // ConditionalMobileNav - Show mobile nav bar only on appropriate pages
