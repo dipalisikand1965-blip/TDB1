@@ -185,13 +185,53 @@ export const PillarProvider = ({ children }) => {
   const { user, token } = useAuth();
   
   // State
-  const [currentPet, setCurrentPet] = useState(null);
+  const [currentPet, setCurrentPetState] = useState(null);
   const [pets, setPets] = useState([]);
   const [currentPillar, setCurrentPillar] = useState('recommended');
   const [viewMode, setViewMode] = useState('products'); // 'products' | 'services'
   const [shoppingForOther, setShoppingForOther] = useState(false);
   const [otherBreed, setOtherBreed] = useState(null);
   const [soulData, setSoulData] = useState(null);
+  
+  // Wrapper for setCurrentPet that also saves to localStorage for global sync
+  const setCurrentPet = (pet) => {
+    setCurrentPetState(pet);
+    if (pet?.id) {
+      localStorage.setItem('selectedPetId', pet.id);
+      localStorage.setItem('selectedPetName', pet?.name || '');
+      localStorage.setItem('selectedPetBreed', pet?.breed || '');
+      // Dispatch event for Navbar and other components to know pet changed
+      window.dispatchEvent(new CustomEvent('petChanged', { detail: pet }));
+    }
+  };
+  
+  // Listen for pet changes from Navbar (localStorage)
+  useEffect(() => {
+    const handleStorageChange = (e) => {
+      if (e.key === 'selectedPetId' && pets.length > 0) {
+        const newPetId = e.newValue;
+        const newPet = pets.find(p => p?.id === newPetId);
+        if (newPet && newPet.id !== currentPet?.id) {
+          setCurrentPetState(newPet);
+        }
+      }
+    };
+    
+    // Also listen for custom event from Navbar
+    const handlePetChanged = (e) => {
+      if (e.detail?.id !== currentPet?.id) {
+        setCurrentPetState(e.detail);
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('petChanged', handlePetChanged);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('petChanged', handlePetChanged);
+    };
+  }, [pets, currentPet?.id]);
   
   // Fetch pets
   useEffect(() => {
@@ -208,8 +248,21 @@ export const PillarProvider = ({ children }) => {
           const petList = data.pets || [];
           setPets(petList);
           
-          if (petList.length > 0 && !currentPet) {
-            setCurrentPet(petList[0]);
+          if (petList.length > 0) {
+            // Check localStorage for previously selected pet
+            const savedPetId = localStorage.getItem('selectedPetId');
+            const savedPet = savedPetId ? petList.find(p => p?.id === savedPetId) : null;
+            const selectedPet = savedPet || petList[0];
+            
+            if (selectedPet && (!currentPet || currentPet.id !== selectedPet.id)) {
+              setCurrentPetState(selectedPet);
+              // Save to localStorage if not already there
+              if (!savedPetId) {
+                localStorage.setItem('selectedPetId', selectedPet.id);
+                localStorage.setItem('selectedPetName', selectedPet?.name || '');
+                localStorage.setItem('selectedPetBreed', selectedPet?.breed || '');
+              }
+            }
           }
         }
       } catch (err) {
