@@ -544,7 +544,12 @@ async def send_message_about_request(
             {"ticket_id": ticket_id},
             {
                 "$push": {"messages": message_obj},
-                "$set": {"updated_at": now, "status": "in_progress"}
+                "$set": {
+                    "updated_at": now, 
+                    "status": "in_progress",
+                    "has_new_member_message": True,
+                    "last_member_message_at": now
+                }
             }
         )
     else:
