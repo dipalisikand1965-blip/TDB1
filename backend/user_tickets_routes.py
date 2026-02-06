@@ -452,14 +452,15 @@ async def send_user_message_to_ticket(
         }
     )
     
-    # Create admin notification
+    # Create admin notification with direct link to service desk
     admin_notification = {
         "id": str(uuid.uuid4()),
         "type": "ticket_message",
-        "title": f"New message on Ticket #{ticket_id[-6:]}",
+        "title": f"💬 New message on #{ticket_id[-6:]}",
         "message": f"Customer sent a message: {body.message[:100]}{'...' if len(body.message) > 100 else ''}",
         "ticket_id": ticket_id,
-        "severity": "info",
+        "link_to": f"/dashboard?tab=service-desk&ticket={ticket_id}",
+        "severity": "high",
         "created_at": now,
         "read": False,
         "metadata": {
