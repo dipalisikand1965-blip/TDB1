@@ -378,18 +378,21 @@ const ServiceDeskWorkspace = ({ authHeaders }) => {
             {/* Quick Filters */}
             <div className="flex gap-1 flex-wrap">
               {[
-                { id: 'all', label: 'All', icon: '📋' },
-                { id: 'inquiries', label: '💬 Messages', icon: '' },
-                { id: 'unassigned', label: 'Unassigned', icon: '📭' },
-                { id: 'critical', label: 'Critical', icon: '🔴' },
-                { id: 'today', label: 'Today', icon: '📅' }
+                { id: 'all', label: 'All', icon: '📋', source: '' },
+                { id: 'inquiries', label: '💬 Messages', icon: '', source: 'member_inquiry' },
+                { id: 'unassigned', label: 'Unassigned', icon: '📭', source: '' },
+                { id: 'critical', label: 'Critical', icon: '🔴', source: '' },
+                { id: 'today', label: 'Today', icon: '📅', source: '' }
               ].map(f => (
                 <Button
                   key={f.id}
                   variant={quickFilter === f.id ? 'default' : 'outline'}
                   size="sm"
-                  className={`text-xs h-7 px-2 ${f.id === 'inquiries' ? 'bg-purple-100 hover:bg-purple-200 text-purple-700 border-purple-300' : ''}`}
-                  onClick={() => setQuickFilter(f.id)}
+                  className={`text-xs h-7 px-2 ${f.id === 'inquiries' && quickFilter === 'inquiries' ? 'bg-purple-600 hover:bg-purple-700 text-white' : f.id === 'inquiries' ? 'bg-purple-100 hover:bg-purple-200 text-purple-700 border-purple-300' : ''}`}
+                  onClick={() => {
+                    setQuickFilter(f.id);
+                    setFilters(prev => ({ ...prev, source: f.source }));
+                  }}
                 >
                   {f.icon} {f.label}
                 </Button>
