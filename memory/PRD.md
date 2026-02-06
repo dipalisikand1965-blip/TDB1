@@ -12,6 +12,13 @@ Transform the application into a highly personalized, "guided care" experience f
 
 ## Recent Updates (Feb 6, 2025)
 
+### Fix: User Requests Query Bug ✅ (Just Fixed)
+- **Problem:** `/api/mira/my-requests` was querying `member.email` but tickets store `member_email`
+- **Solution:** Updated query to use `$or` for both field formats
+- **Result:** Users can now see all their tickets in the Requests tab
+- **Added:** `ticket_id` field to responses for proper frontend handling
+- **Added:** Deduplication to prevent duplicate ticket entries
+
 ### Unified Communication Backbone - NEW ✅
 A Zendesk/Freshdesk-style multi-channel communication system:
 
