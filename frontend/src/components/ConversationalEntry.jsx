@@ -153,7 +153,7 @@ const ConversationalEntry = ({
     // User Action → Service Desk Ticket → Admin Notification → Member Notification
     try {
       const token = localStorage.getItem('token');
-      const API_URL = process.env.REACT_APP_BACKEND_URL;
+      
       
       // Create the pillar request via unified flow
       const response = await fetch(`${API_URL}/api/concierge/pillar-request`, {
@@ -186,7 +186,7 @@ const ConversationalEntry = ({
       // Fallback: Still try to record the interaction
       try {
         const token = localStorage.getItem('token');
-        await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/engagement/goal-interaction`, {
+        await fetch(`${API_URL}/api/engagement/goal-interaction`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
