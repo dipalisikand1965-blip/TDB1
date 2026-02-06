@@ -161,6 +161,7 @@ const MiraDemoPage = () => {
   }, [handleSubmit]);
   
   // Voice recognition setup
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
