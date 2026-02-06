@@ -59,7 +59,6 @@ textarea {
     user-select: text;
   }
 }
-}
 
 /* Root container must not overflow */
 #root {
