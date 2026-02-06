@@ -80,16 +80,19 @@ Added routes and hero content for all sub-pages:
 - `PillarContext.jsx` - Central config for all pillar soul colors and messaging
 - All pillar pages refactored to use PillarPageLayout
 
-### Testing Status (Latest: iteration_254)
+### Testing Status (Latest: iteration_255)
 - All 15 main pillar pages: ✅ PASS
-- All sub-pages: ✅ PASS (dine/treats, care/grooming, stay/beds, fit/leashes, etc.)
+- All sub-pages: ✅ PASS
 - Voice search button present: ✅ PASS
 - Products/Services toggle: ✅ REMOVED (too clinical)
 - Subcategory pills navigation: ✅ PASS
 - "Shopping for another dog?" link: ✅ PASS
 - Soul colors rendered correctly: ✅ PASS
-- Mobile wobble fix: ✅ PASS (no horizontal scroll on 375px)
+- Mobile wobble fix: ✅ PASS
 - Pet images with fallback: ✅ PASS
+- Soul Journey clickable: ✅ FIXED (pet photo navigates to /pet-soul/{petId})
+- Global pet switching: ✅ FIXED (PillarPageLayout uses PillarContext)
+- PillarProvider in App.js: ✅ FIXED
 - No JavaScript errors: ✅ PASS
 - Success rate: 100%
 
@@ -99,6 +102,10 @@ Added routes and hero content for all sub-pages:
 3. ✅ Verified all sub-pillar routes work with category-specific hero content
 4. ✅ Confirmed pet images load with DiceBear fallback
 5. ✅ Subcategory pills now primary navigation with "Shopping for another dog?" on right
+6. ✅ **Fixed Soul Journey clickability** - Pet photo in hero now navigates to /pet-soul/{petId}
+7. ✅ **Fixed pet switching** - PillarPageLayout now uses global currentPet from PillarContext
+8. ✅ **Fixed PillarProvider** - Added PillarProvider to App.js provider hierarchy
+9. ✅ **Fixed SoulScoreArc** - Now accepts children prop for wrapper pattern and strokeWidth prop
 
 ### Remaining/Future Tasks
 1. **P1** - Make voice search functional (connect to backend search)
