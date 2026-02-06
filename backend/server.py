@@ -15386,6 +15386,10 @@ set_memory_routes_db(db)  # Initialize Memory with database
 app.include_router(user_tickets_router)  # User tickets at /api/user/*
 set_user_tickets_db(db)  # Initialize User Tickets with database
 
+# Conversation Routes (Unified Communication Backbone)
+app.include_router(conversation_router)  # Conversations at /api/conversations/*
+set_conversation_db(db)  # Initialize Conversations with database
+
 # Membership Payment Routes
 app.include_router(membership_router)  # Membership payment create/verify at /api/membership/*
 
