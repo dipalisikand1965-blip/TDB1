@@ -64,51 +64,135 @@ const PILLARS = [
 // =============================================================================
 // MIRA WHISPERS FOR SERVICES - Uses API breed_whispers or fallback
 // =============================================================================
-const getMiraServiceWhisper = (service, breed) => {
-  const breedLower = (breed || '').toLowerCase().replace(/\s+/g, '_');
-  
-  // First check if service has breed_whispers from API
-  if (service.breed_whispers) {
-    // Try to find breed-specific whisper
-    for (const [key, whisper] of Object.entries(service.breed_whispers)) {
-      if (breedLower.includes(key.replace(/\s+/g, '_'))) {
-        return whisper;
-      }
+// =============================================================================
+// BREED-SPECIFIC SERVICE WHISPER - "Why for [PetName]"
+// =============================================================================
+const getServiceBreedWhisper = (service, petName, breed) => {
+  if (!petName || !breed) {
+    // Generic whispers for non-logged-in users
+    const serviceName = (service.name || '').toLowerCase();
+    const fallbacks = {
+      'grooming': 'Professional grooming for a healthy, beautiful coat',
+      'training': 'Expert training to build confidence',
+      'boarding': 'A safe, loving home away from home',
+      'daycare': 'Supervised play and socialization',
+      'walking': 'Daily exercise and mental stimulation',
+      'vet': 'Professional health care',
+      'spa': 'Relaxation they deserve',
+    };
+    
+    for (const [keyword, whisper] of Object.entries(fallbacks)) {
+      if (serviceName.includes(keyword)) return whisper;
     }
-    // Fall back to default whisper
-    if (service.breed_whispers.default) {
-      return service.breed_whispers.default;
-    }
+    return 'Curated for your companion';
   }
   
-  // Use mira_whisper field if available
-  if (service.mira_whisper) {
-    return service.mira_whisper;
-  }
-  
-  // Fallback to generic based on service category
+  const breedLower = breed.toLowerCase();
   const serviceName = (service.name || '').toLowerCase();
-  const fallbacks = {
-    'grooming': 'Professional grooming for a healthy, beautiful coat',
-    'training': 'Expert training to build confidence and good behavior',
-    'boarding': 'A safe, loving home away from home',
-    'daycare': 'Supervised play and socialization',
-    'walking': 'Daily exercise and mental stimulation',
-    'vet': 'Professional health care and prevention',
-    'spa': 'Relaxation and pampering they deserve',
-    'swimming': 'Low-impact exercise that dogs love',
-    'travel': 'Stress-free journeys for your companion',
-    'emergency': 'Expert help when you need it most',
-    'adoption': 'Find your perfect companion match',
-  };
+  const serviceDesc = (service.description || '').toLowerCase();
+  const combined = `${serviceName} ${serviceDesc}`;
   
-  for (const [keyword, whisper] of Object.entries(fallbacks)) {
-    if (serviceName.includes(keyword)) {
-      return whisper;
+  // BREED-SPECIFIC "Why for [PetName]" messages
+  
+  // Shih Tzu specific
+  if (breedLower.includes('shih')) {
+    if (combined.includes('groom')) {
+      return `Shih Tzus, like ${petName}, need regular grooming for their long coats`;
     }
+    if (combined.includes('spa') || combined.includes('relax')) {
+      return `Shih Tzus, like ${petName}, love being pampered`;
+    }
+    if (combined.includes('train')) {
+      return `Gentle training perfect for ${petName}'s temperament`;
+    }
+    if (combined.includes('dental') || combined.includes('teeth')) {
+      return `Important for Shih Tzus like ${petName} - prone to dental issues`;
+    }
+    return `Made for royal companions like ${petName}`;
   }
   
-  return service.description?.slice(0, 80) || 'Curated for your companion\'s needs';
+  // Golden Retriever specific
+  if (breedLower.includes('retriever') || breedLower.includes('golden')) {
+    if (combined.includes('swim')) {
+      return `Retrievers, like ${petName}, are natural swimmers!`;
+    }
+    if (combined.includes('groom') || combined.includes('deshed')) {
+      return `Essential for Retrievers like ${petName} - they shed a lot`;
+    }
+    if (combined.includes('joint') || combined.includes('physio')) {
+      return `Important for active Retrievers like ${petName}`;
+    }
+    if (combined.includes('train')) {
+      return `Retrievers, like ${petName}, excel at training`;
+    }
+    return `Perfect for energetic pups like ${petName}`;
+  }
+  
+  // Labrador specific
+  if (breedLower.includes('lab')) {
+    if (combined.includes('weight') || combined.includes('diet')) {
+      return `Labs, like ${petName}, can gain weight easily`;
+    }
+    if (combined.includes('swim') || combined.includes('hydro')) {
+      return `Labs, like ${petName}, love water activities!`;
+    }
+    return `Great for friendly Labs like ${petName}`;
+  }
+  
+  // Pug specific
+  if (breedLower.includes('pug')) {
+    if (combined.includes('breath') || combined.includes('cool')) {
+      return `Pugs, like ${petName}, need special breathing care`;
+    }
+    if (combined.includes('skin') || combined.includes('wrinkle')) {
+      return `Pugs, like ${petName}, need wrinkle cleaning`;
+    }
+    if (combined.includes('weight')) {
+      return `Important for Pugs like ${petName} - watch their weight`;
+    }
+    return `Designed with Pugs like ${petName} in mind`;
+  }
+  
+  // German Shepherd specific
+  if (breedLower.includes('german') || breedLower.includes('shepherd')) {
+    if (combined.includes('train') || combined.includes('obedience')) {
+      return `German Shepherds, like ${petName}, love mental challenges`;
+    }
+    if (combined.includes('hip') || combined.includes('joint')) {
+      return `Important for German Shepherds like ${petName}`;
+    }
+    return `For intelligent breeds like ${petName}`;
+  }
+  
+  // Beagle specific
+  if (breedLower.includes('beagle')) {
+    if (combined.includes('scent') || combined.includes('nose')) {
+      return `Beagles, like ${petName}, follow their nose everywhere!`;
+    }
+    if (combined.includes('train')) {
+      return `Keeps curious Beagles like ${petName} focused`;
+    }
+    return `Great for active Beagles like ${petName}`;
+  }
+  
+  // Poodle specific
+  if (breedLower.includes('poodle')) {
+    if (combined.includes('groom') || combined.includes('coat')) {
+      return `Poodles, like ${petName}, need regular professional grooming`;
+    }
+    if (combined.includes('smart') || combined.includes('agility')) {
+      return `Smart Poodles like ${petName} excel at this`;
+    }
+    return `Elegant choice for ${petName}`;
+  }
+  
+  // Default breed-specific message
+  return `${breed}s, like ${petName}, will benefit from this`;
+};
+
+// Legacy function for backward compatibility
+const getMiraServiceWhisper = (service, breed) => {
+  return getServiceBreedWhisper(service, null, breed);
 };
 
 // =============================================================================
