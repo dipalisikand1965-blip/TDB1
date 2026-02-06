@@ -17,7 +17,9 @@ import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
+import MiraChatWidget from '../components/MiraChatWidget';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
+import SEOHead from '../components/SEOHead';
 import { useNavigate } from 'react-router-dom';
 import {
   Heart, Rainbow, Flower2, Star, Calendar, Phone, Mail, MapPin,
@@ -313,7 +315,7 @@ const FarewellPage = () => {
       <SEOHead page="farewell" path="/farewell" />
 
       {/* Hero Section - Soft and Compassionate */}
-      <section className="relative py-12 sm:py-16 md:py-20 px-4 sm:px-6 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white overflow-hidden">
+      <section className="relative py-20 px-4 bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 text-white overflow-hidden">
         {/* Mobile Back Button */}
         <button 
           onClick={() => navigate(-1)}
@@ -334,25 +336,25 @@ const FarewellPage = () => {
             <span className="font-medium">Farewell with Love</span>
           </div>
           
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">
             Honouring the Bond 🌈
           </h1>
-          <p className="text-base sm:text-lg md:text-xl text-white/90 max-w-2xl mx-auto mb-6 sm:mb-8 px-2">
+          <p className="text-xl text-white/90 max-w-2xl mx-auto mb-8">
             Compassionate end-of-life services to celebrate the beautiful life your pet lived and the love you shared.
           </p>
           
-          <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4">
+          <div className="flex flex-wrap justify-center gap-4">
             <Button 
               onClick={() => setShowServiceModal(true)}
-              className="bg-white text-purple-700 hover:bg-white/90 px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base w-full sm:w-auto"
+              className="bg-white text-purple-700 hover:bg-white/90 px-8 py-3"
               data-testid="farewell-get-support-btn"
             >
-              <Heart className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+              <Heart className="w-5 h-5 mr-2" />
               Get Support Now
             </Button>
             <Button 
               variant="outline"
-              className="border-white/50 text-white hover:bg-white/10 px-6 sm:px-8 py-2.5 sm:py-3 text-sm sm:text-base w-full sm:w-auto"
+              className="border-white/50 text-white hover:bg-white/10 px-8 py-3"
               onClick={() => document.getElementById('packages').scrollIntoView({ behavior: 'smooth' })}
             >
               View Services
@@ -369,24 +371,24 @@ const FarewellPage = () => {
       </section>
 
       {/* Service Categories - 2x2 on mobile, 4 cols on desktop */}
-      <section className="py-8 sm:py-12 px-4 sm:px-6 -mt-6 sm:-mt-8 relative z-10">
+      <section className="py-12 px-4 -mt-8 relative z-10">
         <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             {Object.values(SERVICE_CATEGORIES).map((cat) => {
               const Icon = cat.icon;
               return (
                 <Card 
                   key={cat.id}
-                  className={`p-3 sm:p-4 md:p-6 cursor-pointer transition-all hover:shadow-lg ${
+                  className={`p-6 cursor-pointer transition-all hover:shadow-lg ${
                     selectedCategory === cat.id ? 'ring-2 ring-purple-500 shadow-lg' : ''
                   }`}
                   onClick={() => setSelectedCategory(cat.id === selectedCategory ? 'all' : cat.id)}
                 >
-                  <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-r ${cat.color} flex items-center justify-center mb-2 sm:mb-4`}>
-                    <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-r ${cat.color} flex items-center justify-center mb-4`}>
+                    <Icon className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="font-bold text-gray-900 mb-1 text-sm sm:text-base">{cat.name}</h3>
-                  <p className="text-xs sm:text-sm text-gray-600 hidden sm:block">{cat.description}</p>
+                  <h3 className="font-bold text-gray-900 mb-1">{cat.name}</h3>
+                  <p className="text-sm text-gray-600">{cat.description}</p>
                 </Card>
               );
             })}
@@ -395,19 +397,19 @@ const FarewellPage = () => {
       </section>
 
       {/* Service Packages */}
-      <section id="packages" className="py-10 sm:py-12 md:py-16 px-4 sm:px-6">
+      <section id="packages" className="py-16 px-4">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-8 sm:mb-12">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">
-              <Flower2 className="w-6 h-6 sm:w-8 sm:h-8 inline mr-2 text-purple-600" />
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              <Flower2 className="w-8 h-8 inline mr-2 text-purple-600" />
               Memorial Service Packages
             </h2>
-            <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto px-2">
+            <p className="text-gray-600 max-w-2xl mx-auto">
               Each package is designed with love and respect to honour your beloved companion.
             </p>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
             {SERVICE_PACKAGES.map((pkg) => (
               <Card 
                 key={pkg.id} 
@@ -416,23 +418,23 @@ const FarewellPage = () => {
                 }`}
               >
                 {pkg.popular && (
-                  <div className="absolute top-0 right-0 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold px-3 sm:px-4 py-1 rounded-bl-lg">
+                  <div className="absolute top-0 right-0 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold px-4 py-1 rounded-bl-lg">
                     Most Chosen
                   </div>
                 )}
                 
-                <div className="p-4 sm:p-6">
-                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">{pkg.name}</h3>
-                  <p className="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4">{pkg.description}</p>
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">{pkg.name}</h3>
+                  <p className="text-gray-600 text-sm mb-4">{pkg.description}</p>
                   
-                  <div className="mb-4 sm:mb-6">
-                    <span className="text-2xl sm:text-3xl font-bold text-purple-600">₹{pkg.price.toLocaleString()}</span>
+                  <div className="mb-6">
+                    <span className="text-3xl font-bold text-purple-600">₹{pkg.price.toLocaleString()}</span>
                   </div>
                   
-                  <ul className="space-y-2 sm:space-y-3 mb-4 sm:mb-6">
+                  <ul className="space-y-3 mb-6">
                     {pkg.features.map((feature, idx) => (
-                      <li key={idx} className="flex items-start gap-2 text-xs sm:text-sm">
-                        <CheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-500 flex-shrink-0 mt-0.5" />
+                      <li key={idx} className="flex items-start gap-2 text-sm">
+                        <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
                         <span className="text-gray-700">{feature}</span>
                       </li>
                     ))}
@@ -458,26 +460,26 @@ const FarewellPage = () => {
       </section>
 
       {/* Memorial Products */}
-      <section className="py-10 sm:py-12 md:py-16 px-4 sm:px-6 bg-gradient-to-b from-white to-purple-50">
+      <section className="py-16 px-4 bg-gradient-to-b from-white to-purple-50">
         <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-8 sm:mb-12">
-            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 sm:mb-4">
-              <Star className="w-6 h-6 sm:w-8 sm:h-8 inline mr-2 text-amber-500" />
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              <Star className="w-8 h-8 inline mr-2 text-amber-500" />
               Memorial Keepsakes
             </h2>
-            <p className="text-sm sm:text-base text-gray-600 max-w-2xl mx-auto px-2">
+            <p className="text-gray-600 max-w-2xl mx-auto">
               Beautiful ways to preserve the memory of your beloved companion.
             </p>
           </div>
           
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-4 md:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
             {MEMORIAL_PRODUCTS.map((product) => (
               <Card 
                 key={product.id}
                 className="overflow-hidden hover:shadow-lg transition-all group"
               >
                 <div 
-                  className="relative h-28 sm:h-36 md:h-40 overflow-hidden bg-gray-100 cursor-pointer"
+                  className="relative h-40 overflow-hidden bg-gray-100 cursor-pointer"
                   onClick={() => {
                     setSelectedProduct(product);
                     setShowProductModal(true);
@@ -489,14 +491,13 @@ const FarewellPage = () => {
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                   />
                 </div>
-                <div className="p-2 sm:p-3 md:p-4">
-                  <h3 className="font-semibold text-gray-900 mb-1 text-xs sm:text-sm md:text-base line-clamp-1">{product.name}</h3>
-                  <p className="text-xs sm:text-sm text-gray-600 mb-2 line-clamp-2 hidden sm:block">{product.description}</p>
+                <div className="p-4">
+                  <h3 className="font-semibold text-gray-900 mb-1">{product.name}</h3>
+                  <p className="text-sm text-gray-600 mb-2 line-clamp-2">{product.description}</p>
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-purple-600 text-sm sm:text-base">₹{product.price.toLocaleString()}</span>
+                    <span className="font-bold text-purple-600">₹{product.price.toLocaleString()}</span>
                     <Button 
                       size="sm" 
-                      className="h-7 sm:h-8 px-2 sm:px-3 text-xs sm:text-sm" 
                       className="bg-purple-600 hover:bg-purple-700 text-white"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -584,6 +585,10 @@ const FarewellPage = () => {
         subtitle="Compassionate services with transparent pricing"
         maxServices={8}
       />
+
+      {/* Mira Floating Chat Widget */}
+      <MiraChatWidget pillar="farewell" />
+
       {/* Service Request Modal */}
       <Dialog open={showServiceModal} onOpenChange={setShowServiceModal}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">

@@ -11,10 +11,12 @@ import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
+import MiraChatWidget from '../components/MiraChatWidget';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import AdminQuickEdit from '../components/AdminQuickEdit';
 import ProductCard from '../components/ProductCard';
 import { getPetPhotoUrl } from '../utils/petAvatar';
+import SEOHead from '../components/SEOHead';
 import {
   AlertTriangle, Search, Heart, Phone, MapPin, Clock, Ambulance,
   ChevronRight, Sparkles, Star, Loader2, Send, ArrowRight, Play,
@@ -250,79 +252,79 @@ const EmergencyPage = () => {
         {/* Animated Emergency Stripes */}
         <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-yellow-400 via-red-500 to-yellow-400 animate-pulse"></div>
         
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-10 sm:py-16 md:py-24">
+        <div className="relative max-w-7xl mx-auto px-4 py-16 md:py-24">
           <div className="max-w-3xl">
-            <Badge className="bg-yellow-400 text-red-800 border-0 mb-3 sm:mb-4 animate-pulse text-xs sm:text-sm">
+            <Badge className="bg-yellow-400 text-red-800 border-0 mb-4 animate-pulse">
               <Siren className="w-3 h-3 mr-1" /> 24/7 Emergency Support
             </Badge>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4">
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
               Pet Emergency? We're Here 24/7
             </h1>
-            <p className="text-sm sm:text-base md:text-lg lg:text-xl opacity-90 mb-6 sm:mb-8">
+            <p className="text-lg md:text-xl opacity-90 mb-8">
               Lost pet? Medical emergency? Accident? Get immediate help. 
               Our team and partner network are ready to respond.
             </p>
-            <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4">
+            <div className="flex flex-wrap gap-4">
               <Button 
                 size="lg" 
-                className="bg-white text-red-600 hover:bg-red-50 animate-pulse w-full sm:w-auto text-sm sm:text-base"
+                className="bg-white text-red-600 hover:bg-red-50 animate-pulse"
                 onClick={() => handleEmergencyRequest()}
                 data-testid="report-emergency-btn"
               >
-                <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5 mr-2" /> Report Emergency
+                <AlertTriangle className="w-5 h-5 mr-2" /> Report Emergency
               </Button>
-              <a href={`tel:${config.hotline || '+919663185747'}`} className="w-full sm:w-auto">
+              <a href={`tel:${config.hotline || '+919663185747'}`}>
                 <Button 
                   size="lg" 
                   variant="outline" 
-                  className="border-white text-white hover:bg-white/10 w-full text-sm sm:text-base"
+                  className="border-white text-white hover:bg-white/10"
                 >
-                  <PhoneCall className="w-4 h-4 sm:w-5 sm:h-5 mr-2" /> Call Hotline
+                  <PhoneCall className="w-5 h-5 mr-2" /> Call Hotline
                 </Button>
               </a>
             </div>
             
             {/* Emergency Hotline Banner */}
-            <div className="mt-6 sm:mt-8 p-3 sm:p-4 bg-white/10 rounded-xl backdrop-blur-sm border border-white/20">
-              <div className="flex items-center gap-3 sm:gap-4">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-yellow-400 flex items-center justify-center animate-pulse flex-shrink-0">
-                  <Phone className="w-5 h-5 sm:w-6 sm:h-6 text-red-800" />
+            <div className="mt-8 p-4 bg-white/10 rounded-xl backdrop-blur-sm border border-white/20">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-yellow-400 flex items-center justify-center animate-pulse">
+                  <Phone className="w-6 h-6 text-red-800" />
                 </div>
                 <div>
-                  <p className="text-xs sm:text-sm opacity-80">24/7 Emergency Hotline</p>
-                  <p className="text-lg sm:text-xl md:text-2xl font-bold">{config.hotline || '+91 96631 85747'}</p>
+                  <p className="text-sm opacity-80">24/7 Emergency Hotline</p>
+                  <p className="text-2xl font-bold">{config.hotline || '+91 96631 85747'}</p>
                 </div>
               </div>
             </div>
           </div>
           
           {/* Quick Stats */}
-          <div className="mt-8 sm:mt-12 grid grid-cols-3 gap-2 sm:gap-4 max-w-2xl">
-            <div className="text-center p-2 sm:p-4 bg-white/10 rounded-xl backdrop-blur-sm">
-              <p className="text-lg sm:text-xl md:text-2xl font-bold">&lt;15min</p>
-              <p className="text-xs sm:text-sm opacity-80">Response</p>
+          <div className="mt-12 grid grid-cols-3 gap-4 max-w-2xl">
+            <div className="text-center p-4 bg-white/10 rounded-xl backdrop-blur-sm">
+              <p className="text-2xl font-bold">&lt;15min</p>
+              <p className="text-sm opacity-80">Response Time</p>
             </div>
-            <div className="text-center p-2 sm:p-4 bg-white/10 rounded-xl backdrop-blur-sm">
-              <p className="text-lg sm:text-xl md:text-2xl font-bold">{partners.length}+</p>
-              <p className="text-xs sm:text-sm opacity-80">Partners</p>
+            <div className="text-center p-4 bg-white/10 rounded-xl backdrop-blur-sm">
+              <p className="text-2xl font-bold">{partners.length}+</p>
+              <p className="text-sm opacity-80">Emergency Partners</p>
             </div>
-            <div className="text-center p-2 sm:p-4 bg-white/10 rounded-xl backdrop-blur-sm">
-              <p className="text-lg sm:text-xl md:text-2xl font-bold">24/7</p>
-              <p className="text-xs sm:text-sm opacity-80">Available</p>
+            <div className="text-center p-4 bg-white/10 rounded-xl backdrop-blur-sm">
+              <p className="text-2xl font-bold">24/7</p>
+              <p className="text-sm opacity-80">Always Available</p>
             </div>
           </div>
         </div>
       </section>
 
       {/* Emergency Types Grid */}
-      <section id="emergency-services" className="py-8 sm:py-12 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-6 sm:mb-8">
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-2">What's Your Emergency?</h2>
-            <p className="text-sm sm:text-base text-gray-600">Select the type to get started quickly</p>
+      <section id="emergency-services" className="py-12 bg-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">What's Your Emergency?</h2>
+            <p className="text-gray-600">Select the type to get started quickly</p>
           </div>
           
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {Object.entries(EMERGENCY_TYPES).map(([key, type]) => {
               const Icon = type.icon;
               const isSelected = selectedType === key;
@@ -333,19 +335,19 @@ const EmergencyPage = () => {
                     setSelectedType(isSelected ? null : key);
                     handleEmergencyRequest(key);
                   }}
-                  className={`p-3 sm:p-4 rounded-xl text-center transition-all ${
+                  className={`p-4 rounded-xl text-center transition-all ${
                     isSelected 
                       ? `bg-gradient-to-br ${type.color} text-white shadow-lg scale-105` 
                       : `${type.bgColor} hover:shadow-md hover:scale-102 border-2 border-transparent hover:border-red-200`
                   }`}
                   data-testid={`emergency-type-${key}`}
                 >
-                  <div className={`w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 mx-auto rounded-full flex items-center justify-center mb-2 ${
+                  <div className={`w-14 h-14 mx-auto rounded-full flex items-center justify-center mb-2 ${
                     isSelected ? 'bg-white/20' : 'bg-white shadow-sm'
                   }`}>
-                    <Icon className={`w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 ${isSelected ? 'text-white' : type.textColor}`} />
+                    <Icon className={`w-7 h-7 ${isSelected ? 'text-white' : type.textColor}`} />
                   </div>
-                  <p className={`text-xs sm:text-sm font-medium ${isSelected ? 'text-white' : 'text-gray-700'}`}>
+                  <p className={`text-sm font-medium ${isSelected ? 'text-white' : 'text-gray-700'}`}>
                     {type.name}
                   </p>
                 </button>
@@ -764,6 +766,11 @@ const EmergencyPage = () => {
         subtitle="24x7 emergency services with transparent pricing"
         maxServices={8}
       />
+      
+      {/* Mira Floating Chat Widget */}
+      <MiraChatWidget pillar="emergency" />
+      
+      {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="emergency" position="bottom-left" />
     </div>
   );

@@ -11,11 +11,12 @@ import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
+import MiraChatWidget from '../components/MiraChatWidget';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import ProductCard from '../components/ProductCard';
 import AdminQuickEdit from '../components/AdminQuickEdit';
 import { getPetPhotoUrl } from '../utils/petAvatar';
-import PillarPageLayout from '../components/PillarPageLayout';
+import SEOHead from '../components/SEOHead';
 import {
   Brain, Heart, Apple, Home, Stethoscope, GraduationCap,
   CheckCircle, ChevronRight, Sparkles, Star, Loader2, Send,
@@ -259,11 +260,75 @@ const AdvisoryPage = () => {
     : advisors;
 
   return (
-    <PillarPageLayout
-      pillar="advisory"
-      title="Advisory - Pet Expert Advice | The Doggy Company"
-      description="Expert guidance for all your pet care questions."
-    >
+    <div className="min-h-screen bg-gradient-to-b from-violet-50 via-white to-purple-50" data-testid="advisory-page">
+      {/* SEO Meta Tags */}
+      <SEOHead page="advisory" path="/advisory" />
+
+      {/* Hero Section */}
+      <section className="relative overflow-hidden bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-700 text-white">
+        <div className="absolute inset-0 opacity-20">
+          <img 
+            src={HERO_IMAGES[heroIndex]} 
+            alt="Advisory" 
+            className="w-full h-full object-cover transition-opacity duration-1000"
+          />
+        </div>
+        <div className="relative max-w-7xl mx-auto px-4 py-16 md:py-24">
+          <div className="max-w-3xl">
+            <Badge className="bg-white/20 text-white border-0 mb-4">
+              <Brain className="w-3 h-3 mr-1" /> Expert Pet Advisory
+            </Badge>
+            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+              Expert Guidance for Your Pet's Wellbeing
+            </h1>
+            <p className="text-lg md:text-xl opacity-90 mb-8">
+              Connect with certified pet behaviourists, nutritionists, and specialists. 
+              Get personalized advice for behaviour, health, nutrition, and more.
+            </p>
+            <div className="flex flex-wrap gap-4">
+              <Button 
+                size="lg" 
+                className="bg-white text-violet-600 hover:bg-violet-50"
+                onClick={() => handleConsultationRequest()}
+                data-testid="request-consultation-btn"
+              >
+                <Play className="w-5 h-5 mr-2" /> Request Consultation
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="border-white text-white hover:bg-white/10"
+                onClick={() => document.getElementById('advisory-services')?.scrollIntoView({ behavior: 'smooth' })}
+              >
+                <ChevronDown className="w-5 h-5 mr-2" /> Explore Services
+              </Button>
+            </div>
+          </div>
+          
+          {/* Stats Bar */}
+          <div className="mt-12 grid grid-cols-3 gap-4 max-w-2xl">
+            <div className="text-center p-4 bg-white/10 rounded-xl backdrop-blur-sm">
+              <p className="text-2xl font-bold">{advisors.length}+</p>
+              <p className="text-sm opacity-80">Expert Advisors</p>
+            </div>
+            <div className="text-center p-4 bg-white/10 rounded-xl backdrop-blur-sm">
+              <p className="text-2xl font-bold">24hr</p>
+              <p className="text-sm opacity-80">Response Time</p>
+            </div>
+            <div className="text-center p-4 bg-white/10 rounded-xl backdrop-blur-sm">
+              <p className="text-2xl font-bold">4.9</p>
+              <p className="text-sm opacity-80">Avg Rating</p>
+            </div>
+          </div>
+
+          {/* Trust Indicators */}
+          <div className="mt-8 flex flex-wrap items-center gap-6 text-sm opacity-80">
+            <span className="flex items-center gap-1"><Shield className="w-4 h-4" /> Certified Experts</span>
+            <span className="flex items-center gap-1"><Clock className="w-4 h-4" /> Flexible Scheduling</span>
+            <span className="flex items-center gap-1"><PawPrint className="w-4 h-4" /> Earn Paw Points</span>
+          </div>
+        </div>
+      </section>
 
       {/* Advisory Types Grid */}
       <section id="advisory-services" className="py-12 bg-white">
@@ -687,9 +752,13 @@ const AdvisoryPage = () => {
         subtitle="Expert consultation services with transparent pricing"
         maxServices={8}
       />
+      
+      {/* Mira Floating Chat Widget */}
+      <MiraChatWidget pillar="advisory" />
+      
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="advisory" position="bottom-left" />
-    </PillarPageLayout>
+    </div>
   );
 };
 

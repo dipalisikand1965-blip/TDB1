@@ -10,7 +10,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { toast } from '../hooks/use-toast';
+import MiraChatWidget from '../components/MiraChatWidget';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
+import SEOHead from '../components/SEOHead';
 import {
   Heart, PawPrint, Home, Calendar, MapPin, Phone, Mail, Users,
   ChevronRight, Sparkles, Search, Filter, Clock, CheckCircle,
@@ -68,31 +70,31 @@ const HERO_IMAGES = [
 const AdoptablePetCard = ({ pet, onApply }) => {
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 group cursor-pointer">
-      <div className="relative h-36 sm:h-44 md:h-48 overflow-hidden">
+      <div className="relative h-48 overflow-hidden">
         <img
           src={pet.photos?.[0] || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&q=80'}
           alt={pet.name}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
         <div className="absolute top-2 right-2">
-          <Badge className={`${pet.status === 'available' ? 'bg-green-500' : 'bg-amber-500'} text-white text-xs`}>
+          <Badge className={`${pet.status === 'available' ? 'bg-green-500' : 'bg-amber-500'} text-white`}>
             {pet.status === 'available' ? 'Available' : 'Pending'}
           </Badge>
         </div>
         {pet.special_needs && (
           <div className="absolute bottom-2 left-2">
-            <Badge variant="outline" className="bg-white/90 text-purple-600 text-xs">
+            <Badge variant="outline" className="bg-white/90 text-purple-600">
               <Heart className="w-3 h-3 mr-1" /> Special Needs
             </Badge>
           </div>
         )}
       </div>
       
-      <div className="p-3 sm:p-4">
+      <div className="p-4">
         <div className="flex items-center justify-between mb-2">
-          <h3 className="font-semibold text-base sm:text-lg text-gray-900 truncate">{pet.name}</h3>
+          <h3 className="font-semibold text-lg text-gray-900">{pet.name}</h3>
           {pet.gender && (
-            <span className={`text-xs sm:text-sm ${pet.gender === 'male' ? 'text-blue-500' : 'text-pink-500'}`}>
+            <span className={`text-sm ${pet.gender === 'male' ? 'text-blue-500' : 'text-pink-500'}`}>
               {pet.gender === 'male' ? '♂' : '♀'} {pet.gender}
             </span>
           )}
@@ -415,7 +417,7 @@ const AdoptPage = () => {
       <SEOHead page="adopt" path="/adopt" />
 
       {/* Hero Section */}
-      <section className="relative py-10 sm:py-12 md:py-16 px-4 sm:px-6 overflow-hidden">
+      <section className="relative py-16 px-4 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-purple-600/90 to-pink-600/90" />
         <div 
           className="absolute inset-0 opacity-20"
@@ -427,25 +429,25 @@ const AdoptPage = () => {
         />
         
         <div className="relative max-w-7xl mx-auto text-center text-white">
-          <div className="flex items-center justify-center gap-2 mb-3 sm:mb-4">
-            <Heart className="w-6 h-6 sm:w-8 sm:h-8 animate-pulse" />
-            <span className="text-xs sm:text-sm font-medium bg-white/20 px-2 sm:px-3 py-1 rounded-full">
+          <div className="flex items-center justify-center gap-2 mb-4">
+            <Heart className="w-8 h-8 animate-pulse" />
+            <span className="text-sm font-medium bg-white/20 px-3 py-1 rounded-full">
               Give a Pet a Forever Home
             </span>
           </div>
           
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">
             Adopt, Don&apos;t Shop
           </h1>
-          <p className="text-base sm:text-lg md:text-xl opacity-90 max-w-2xl mx-auto mb-6 sm:mb-8 px-2">
+          <p className="text-lg md:text-xl opacity-90 max-w-2xl mx-auto mb-8">
             Every pet deserves a loving home. Find your perfect companion from our network of rescues and shelters.
           </p>
           
           {/* Stats */}
           {stats && (
-            <div className="flex flex-wrap justify-center gap-3 sm:gap-4 md:gap-6 mb-6 sm:mb-8">
-              <div className="bg-white/20 backdrop-blur-sm rounded-lg px-3 sm:px-4 md:px-6 py-2 sm:py-3">
-                <p className="text-xl sm:text-2xl md:text-3xl font-bold">{stats.available_pets || 0}</p>
+            <div className="flex flex-wrap justify-center gap-6 mb-8">
+              <div className="bg-white/20 backdrop-blur-sm rounded-lg px-6 py-3">
+                <p className="text-3xl font-bold">{stats.available_pets || 0}</p>
                 <p className="text-sm opacity-80">Pets Available</p>
               </div>
               <div className="bg-white/20 backdrop-blur-sm rounded-lg px-6 py-3">
@@ -459,22 +461,22 @@ const AdoptPage = () => {
             </div>
           )}
           
-          <div className="flex flex-col sm:flex-row flex-wrap justify-center gap-3 sm:gap-4">
+          <div className="flex flex-wrap justify-center gap-4">
             <Button
               size="lg"
-              className="bg-white text-purple-600 hover:bg-gray-100 w-full sm:w-auto text-sm sm:text-base"
+              className="bg-white text-purple-600 hover:bg-gray-100"
               onClick={() => document.getElementById('pets-section')?.scrollIntoView({ behavior: 'smooth' })}
             >
-              <PawPrint className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+              <PawPrint className="w-5 h-5 mr-2" />
               Meet Adoptable Pets
             </Button>
             <Button
               size="lg"
               variant="outline"
-              className="border-white text-white hover:bg-white/20 w-full sm:w-auto text-sm sm:text-base"
+              className="border-white text-white hover:bg-white/20"
               onClick={() => setShowFosterModal(true)}
             >
-              <Heart className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+              <Heart className="w-5 h-5 mr-2" />
               Become a Foster
             </Button>
           </div>
@@ -482,26 +484,26 @@ const AdoptPage = () => {
       </section>
       
       {/* Categories */}
-      <section className="py-8 sm:py-12 px-4 sm:px-6">
+      <section className="py-12 px-4">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 text-center mb-6 sm:mb-8">How Would You Like to Help?</h2>
+          <h2 className="text-2xl font-bold text-gray-900 text-center mb-8">How Would You Like to Help?</h2>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 md:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
             {Object.values(ADOPT_CATEGORIES).map(category => {
               const Icon = category.icon;
               return (
                 <Card
                   key={category.id}
-                  className={`p-3 sm:p-4 md:p-6 cursor-pointer hover:shadow-lg transition-all ${
+                  className={`p-6 cursor-pointer hover:shadow-lg transition-all ${
                     selectedCategory === category.id ? 'ring-2 ring-purple-500' : ''
                   }`}
                   onClick={() => setSelectedCategory(category.id === selectedCategory ? null : category.id)}
                 >
-                  <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br ${category.color} flex items-center justify-center mb-2 sm:mb-4`}>
-                    <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${category.color} flex items-center justify-center mb-4`}>
+                    <Icon className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="font-semibold text-gray-900 mb-1 sm:mb-2 text-sm sm:text-base">{category.name}</h3>
-                  <p className="text-xs sm:text-sm text-gray-600 hidden sm:block">{category.description}</p>
+                  <h3 className="font-semibold text-gray-900 mb-2">{category.name}</h3>
+                  <p className="text-sm text-gray-600">{category.description}</p>
                 </Card>
               );
             })}
@@ -510,18 +512,18 @@ const AdoptPage = () => {
       </section>
       
       {/* Adoptable Pets Section */}
-      <section id="pets-section" className="py-8 sm:py-12 px-4 sm:px-6 bg-white">
+      <section id="pets-section" className="py-12 px-4 bg-white">
         <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4 mb-6 sm:mb-8">
-            <div className="text-center md:text-left">
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Meet Our Adoptable Pets</h2>
-              <p className="text-sm sm:text-base text-gray-600">Find your perfect furry companion</p>
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">Meet Our Adoptable Pets</h2>
+              <p className="text-gray-600">Find your perfect furry companion</p>
             </div>
             
             {/* Filters */}
-            <div className="flex flex-wrap justify-center md:justify-end gap-2">
+            <div className="flex flex-wrap gap-2">
               <Select value={filters.species} onValueChange={v => setFilters({...filters, species: v})}>
-                <SelectTrigger className="w-28 sm:w-32 text-xs sm:text-sm">
+                <SelectTrigger className="w-32">
                   <SelectValue placeholder="Species" />
                 </SelectTrigger>
                 <SelectContent>
@@ -532,7 +534,7 @@ const AdoptPage = () => {
               </Select>
               
               <Select value={filters.size} onValueChange={v => setFilters({...filters, size: v})}>
-                <SelectTrigger className="w-28 sm:w-32 text-xs sm:text-sm">
+                <SelectTrigger className="w-32">
                   <SelectValue placeholder="Size" />
                 </SelectTrigger>
                 <SelectContent>
@@ -544,7 +546,7 @@ const AdoptPage = () => {
               </Select>
               
               <Select value={filters.age} onValueChange={v => setFilters({...filters, age: v})}>
-                <SelectTrigger className="w-28 sm:w-32 text-xs sm:text-sm">
+                <SelectTrigger className="w-32">
                   <SelectValue placeholder="Age" />
                 </SelectTrigger>
                 <SelectContent>
@@ -640,6 +642,10 @@ const AdoptPage = () => {
         subtitle="See your personalized price based on your city, pet size, and requirements"
         maxServices={8}
       />
+      
+      {/* Mira Floating Chat Widget */}
+      <MiraChatWidget pillar="adopt" />
+      
       {/* Adoption Application Modal */}
       <Dialog open={showApplicationModal} onOpenChange={setShowApplicationModal}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
