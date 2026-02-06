@@ -208,8 +208,8 @@ const DinePage = () => {
       {/* SEO Meta Tags */}
       <SEOHead page="dine" path="/dine" />
       
-      {/* Hero Section - Enhanced with rotating dog images */}
-      <div className="relative h-[400px] sm:h-[500px] overflow-hidden">
+      {/* Hero Section - Personalized for Pet! */}
+      <div className="relative overflow-hidden">
         {/* Mobile Back Button */}
         <button 
           onClick={() => navigate(-1)}
@@ -224,39 +224,99 @@ const DinePage = () => {
           <img 
             src={HERO_IMAGES[heroIndex]}
             alt="Pet Dining"
-            className="w-full h-full object-cover opacity-30 transition-opacity duration-1000"
+            className="w-full h-full object-cover opacity-20 transition-opacity duration-1000"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-orange-800/90 via-orange-700/85 to-red-700/80" />
         </div>
         
-        <div className="relative max-w-6xl mx-auto px-4 h-full flex items-center z-10">
-          <div className="max-w-2xl animate-fade-in-up">
-            <Badge className="mb-4 bg-orange-500/30 text-orange-100 border-orange-400/40 backdrop-blur-sm">
-              <UtensilsCrossed className="w-4 h-4 mr-1" /> Fresh Meals & Pet-Friendly Dining
-            </Badge>
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 drop-shadow-lg">
-              Nourish Your Pet with
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-300 to-yellow-300"> Love & Care</span>
-            </h1>
-            <p className="text-lg text-white mb-6 drop-shadow-md">
-              Discover nutritious fresh meals and pet-friendly restaurants near you!
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <Button 
-                size="lg" 
-                className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 shadow-lg hover:shadow-xl transition-all hover:scale-105"
-                onClick={() => document.getElementById('meals')?.scrollIntoView({ behavior: 'smooth' })}
-              >
-                <Utensils className="w-5 h-5 mr-2" /> Shop Fresh Meals
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="border-white/40 text-white hover:bg-white/20 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all hover:scale-105"
-                onClick={() => document.getElementById('restaurants')?.scrollIntoView({ behavior: 'smooth' })}
-              >
-                <MapPin className="w-5 h-5 mr-2" /> Find Restaurants
-              </Button>
+        <div className="relative max-w-6xl mx-auto px-4 py-8 sm:py-12 lg:py-16 z-10">
+          <div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-10">
+            
+            {/* Pet Photo Section - PET IS THE HERO! */}
+            {activePet && (
+              <div className="relative flex-shrink-0">
+                {/* Glow effect */}
+                <div className="absolute inset-0 bg-gradient-to-br from-orange-400/40 to-red-400/40 rounded-full blur-xl scale-125 animate-pulse" />
+                
+                {/* Pet Photo */}
+                <div className="relative w-28 h-28 sm:w-36 sm:h-36 rounded-full overflow-hidden border-4 border-white/30 shadow-2xl">
+                  {activePet.photo_url || activePet.image ? (
+                    <img 
+                      src={activePet.photo_url || activePet.image}
+                      alt={activePet.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-orange-200 to-red-200 flex items-center justify-center">
+                      <Dog className="w-14 h-14 text-orange-400" />
+                    </div>
+                  )}
+                </div>
+                
+                {/* Food decoration */}
+                <div className="absolute -top-2 -right-2 text-2xl">🍖</div>
+              </div>
+            )}
+            
+            {/* Content */}
+            <div className={`flex-1 ${activePet ? 'text-center lg:text-left' : 'text-center lg:text-left'}`}>
+              <Badge className="mb-4 bg-orange-500/30 text-orange-100 border-orange-400/40 backdrop-blur-sm">
+                <UtensilsCrossed className="w-4 h-4 mr-1" /> 
+                {activePet ? `🍽️ Yummy time for ${activePet.name}!` : 'Fresh Meals & Pet-Friendly Dining'}
+              </Badge>
+              
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-3 sm:mb-4 drop-shadow-lg">
+                {activePet ? (
+                  <>Dine with <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-300 to-yellow-300">{activePet.name}</span></>
+                ) : (
+                  <>Nourish Your Pet with <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-300 to-yellow-300">Love & Care</span></>
+                )}
+              </h1>
+              
+              <p className="text-base sm:text-lg text-white/90 mb-4 sm:mb-5 drop-shadow-md max-w-xl">
+                {activePet 
+                  ? `Fresh meals, treats & pet-friendly restaurants curated for ${activePet.name}`
+                  : 'Discover nutritious fresh meals and pet-friendly restaurants near you!'
+                }
+              </p>
+              
+              {/* Mira's emotional message */}
+              {activePet && (
+                <div className="flex items-start gap-3 mb-5 justify-center lg:justify-start animate-fade-in-up">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                    <Sparkles className="w-4 h-4 text-white" />
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-md rounded-2xl rounded-tl-sm px-4 py-2.5 max-w-md">
+                    <p className="text-sm text-white/90 font-medium">
+                      &ldquo;{activePet.name}&apos;s tummy is ready for something delicious! Let&apos;s find the perfect meal 🍖&rdquo;
+                    </p>
+                    <p className="text-xs text-white/50 mt-1 flex items-center gap-1">
+                      <Heart className="w-3 h-3 fill-orange-300 text-orange-300" />
+                      Mira knows {activePet.name}
+                    </p>
+                  </div>
+                </div>
+              )}
+              
+              {/* Action buttons */}
+              <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-3">
+                <Button 
+                  size="lg" 
+                  className="w-full sm:w-auto bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 shadow-lg hover:shadow-xl transition-all hover:scale-105"
+                  onClick={() => document.getElementById('meals')?.scrollIntoView({ behavior: 'smooth' })}
+                >
+                  <Utensils className="w-5 h-5 mr-2" /> 
+                  {activePet ? `Shop for ${activePet.name}` : 'Shop Fresh Meals'}
+                </Button>
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="w-full sm:w-auto border-white/40 text-white hover:bg-white/20 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all hover:scale-105"
+                  onClick={() => document.getElementById('restaurants')?.scrollIntoView({ behavior: 'smooth' })}
+                >
+                  <MapPin className="w-5 h-5 mr-2" /> Find Restaurants
+                </Button>
+              </div>
             </div>
           </div>
         </div>
