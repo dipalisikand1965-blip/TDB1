@@ -19,7 +19,6 @@ import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import { useNavigate } from 'react-router-dom';
-import PillarPageLayout from '../components/PillarPageLayout';
 import {
   Heart, Rainbow, Flower2, Star, Calendar, Phone, Mail, MapPin,
   Clock, ChevronRight, ChevronLeft, Sparkles, Home, CheckCircle, Users,

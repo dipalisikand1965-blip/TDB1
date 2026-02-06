@@ -16,7 +16,6 @@ import { toast } from '../hooks/use-toast';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import ProductCard from '../components/ProductCard';
 import AdminQuickEdit from '../components/AdminQuickEdit';
-import PillarPageLayout from '../components/PillarPageLayout';
 import {
   Shield, Heart, Plane, FileText, Sparkles, Scale, Upload, Download,
   Folder, FolderOpen, File, Eye, Trash2, Bell, Calendar, Clock,
@@ -952,7 +951,7 @@ const PaperworkPage = () => {
       />
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="paperwork" position="bottom-left" />
-    </PillarPageLayout>
+    </div>
   );
 };
 

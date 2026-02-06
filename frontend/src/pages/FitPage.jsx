@@ -32,7 +32,6 @@ import { FitnessJourneyCounter, RotatingSocialProof } from '../components/Social
 import TransformationStories from '../components/TransformationStories';
 import ConversationalEntry from '../components/ConversationalEntry';
 import QuickWinTip from '../components/QuickWinTip';
-import PillarPageLayout from '../components/PillarPageLayout';
 import {
   Dumbbell, Heart, TrendingUp, Scale, Activity, Trophy,
   CheckCircle, ChevronRight, ChevronLeft, Sparkles, Star, Loader2, Send,
@@ -1184,7 +1183,7 @@ const FitPage = () => {
       </Dialog>
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="fit" position="bottom-left" />
-    </PillarPageLayout>
+    </div>
   );
 };
 

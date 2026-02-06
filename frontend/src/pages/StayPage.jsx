@@ -23,7 +23,6 @@ import { FitnessJourneyCounter, RotatingSocialProof } from '../components/Social
 import TransformationStories from '../components/TransformationStories';
 import ConversationalEntry from '../components/ConversationalEntry';
 import QuickWinTip from '../components/QuickWinTip';
-import PillarPageLayout from '../components/PillarPageLayout';
 import {
   Search, Filter, MapPin, Star, Heart, Dog, Calendar, Phone, Globe, 
   ChevronRight, Sparkles, Shield, TreePine, Sun, Waves, Mountain,
@@ -2845,7 +2844,7 @@ const SocialDetailsModal = ({ social, onClose }) => {
       
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="stay" position="bottom-left" />
-    </PillarPageLayout>
+    </div>
   );
 };
 

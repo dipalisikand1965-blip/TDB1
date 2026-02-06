@@ -21,7 +21,6 @@ import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import ConversationalEntry from '../components/ConversationalEntry';
 import QuickWinTip from '../components/QuickWinTip';
 import { useNavigate } from 'react-router-dom';
-import PillarPageLayout from '../components/PillarPageLayout';
 import {
   GraduationCap, BookOpen, Brain, Star, Award, Trophy,
   CheckCircle, ChevronRight, Sparkles, Loader2, Send,
@@ -1300,7 +1299,7 @@ const LearnPage = () => {
       
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="learn" position="bottom-left" />
-    </PillarPageLayout>
+    </div>
   );
 };
 
