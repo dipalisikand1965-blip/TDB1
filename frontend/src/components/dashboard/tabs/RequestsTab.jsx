@@ -283,7 +283,17 @@ const RequestsTab = ({
                     {msg.sender !== 'you' && (
                       <p className="text-xs text-purple-400 font-medium mb-1">Concierge</p>
                     )}
-                    <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                    {/* Render HTML content safely for concierge messages, plain text for user messages */}
+                    {msg.sender === 'you' ? (
+                      <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                    ) : (
+                      <div 
+                        className="text-sm prose prose-sm prose-invert max-w-none"
+                        dangerouslySetInnerHTML={{ 
+                          __html: msg.content?.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') || ''
+                        }} 
+                      />
+                    )}
                     {msg.attachments && msg.attachments.length > 0 && (
                       <div className="mt-2 flex flex-wrap gap-2">
                         {msg.attachments.map((att, i) => (
