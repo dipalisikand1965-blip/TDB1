@@ -207,7 +207,8 @@ const MiraEmbed = lazy(() => import("./pages/MiraEmbed"));
 const MiraLandingEmbed = lazy(() => import("./pages/MiraLandingEmbed"));
 const MiraPage = lazy(() => import("./pages/MiraPage"));
 const MiraConciergeEmbed = lazy(() => import("./pages/MiraConciergeEmbed"));
-const MiraDemoPage = lazy(() => import("./pages/MiraDemoPage")); // Mira OS Sandbox
+// MiraDemoPage - Direct import to avoid lazy loading issues
+import MiraDemoPage from "./pages/MiraDemoPage";
 const AuthCallback = lazy(() => import("./pages/AuthCallback"));
 const CollectionPage = lazy(() => import("./pages/CollectionPage"));
 const PartnerOnboarding = lazy(() => import("./pages/PartnerOnboarding"));
