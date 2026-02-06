@@ -8,6 +8,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Lightbulb, RefreshCw, ArrowRight } from 'lucide-react';
+import { API_URL } from '../utils/api';
 
 // Tips database - Now organized by pillar
 const TIPS_DATABASE = {
