@@ -1620,7 +1620,7 @@ const CarePage = () => {
       
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="care" position="bottom-left" />
-    </div>
+    </PillarPageLayout>
   );
 };
 
