@@ -462,8 +462,8 @@ async def send_user_message_to_ticket(
     admin_notification = {
         "id": str(uuid.uuid4()),
         "type": "ticket_message",
-        "title": f"💬 New message on #{ticket_id[-6:]}",
-        "message": f"Customer sent a message: {body.message[:100]}{'...' if len(body.message) > 100 else ''}",
+        "title": f"💬 {customer_name}: Reply on #{ticket_id[-6:]}",
+        "message": f"{body.message[:100]}{'...' if len(body.message) > 100 else ''}",
         "ticket_id": ticket_id,
         "link_to": f"/dashboard?tab=service-desk&ticket={ticket_id}",
         "severity": "high",
@@ -471,6 +471,7 @@ async def send_user_message_to_ticket(
         "read": False,
         "metadata": {
             "customer_email": email,
+            "customer_name": customer_name,
             "service": ticket.get("service_name") or ticket.get("subject"),
             "request_id": body.request_id
         }
@@ -478,7 +479,7 @@ async def send_user_message_to_ticket(
     
     await db.admin_notifications.insert_one(admin_notification)
     
-    logger.info(f"User message added to ticket {ticket_id}, admin notified")
+    logger.info(f"Message from {customer_name} added to ticket {ticket_id}, admin notified")
     
     return {
         "success": True,
