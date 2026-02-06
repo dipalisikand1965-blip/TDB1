@@ -399,76 +399,12 @@ const StayPage = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-white">
-      {/* SEO Meta Tags */}
-      <SEOHead page="stay" path="/stay" />
-      
-      {/* ==================== ELEGANT HERO - FitPage Style ==================== */}
-      <div className="relative min-h-[70vh] md:min-h-[80vh] overflow-hidden">
-        {/* Animated Background */}
-        <div className="absolute inset-0">
-          {HERO_IMAGES.map((img, idx) => (
-            <div
-              key={idx}
-              className={`absolute inset-0 transition-opacity duration-1000 ${
-                idx === heroIndex ? 'opacity-100' : 'opacity-0'
-              }`}
-            >
-              <img src={img} alt="" className="w-full h-full object-cover" />
-            </div>
-          ))}
-          <div className="absolute inset-0 bg-gradient-to-r from-emerald-900 via-emerald-800/95 to-teal-900/90" />
-        </div>
-        
-        <div className="relative max-w-7xl mx-auto px-4 py-20 md:py-28">
-          <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
-              <Building className="w-4 h-4 text-emerald-300" />
-              <span className="text-sm font-medium text-white">Pet-Friendly Stays & Boarding</span>
-            </div>
-            
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight text-white">
-              Your Dog&apos;s
-              <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-teal-200">
-                Second Home
-              </span>
-            </h1>
-            
-            <p className="text-lg md:text-xl text-white/80 mb-8 max-w-lg">
-              Discover India&apos;s most trusted pet-friendly stays. From luxury resorts to cozy homestays, we&apos;ve vetted every property for genuine pet hospitality.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button 
-                onClick={() => setShowTripPlanner(true)}
-                size="lg"
-                className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-semibold px-8 py-6 text-lg rounded-full shadow-2xl shadow-emerald-500/30 transition-all hover:scale-105"
-                data-testid="trip-planner-btn"
-              >
-                <Sparkles className="w-5 h-5 mr-2" />
-                Plan Your Pawcation
-              </Button>
-              <Button 
-                onClick={() => document.getElementById('stays-grid')?.scrollIntoView({ behavior: 'smooth' })}
-                variant="outline"
-                size="lg"
-                className="border-white/30 text-white hover:bg-white/10 px-8 py-6 text-lg rounded-full"
-              >
-                <Building className="w-5 h-5 mr-2" />
-                Browse Stays
-              </Button>
-            </div>
-            
-            <div className="flex flex-wrap gap-6 mt-12">
-              <div className="flex items-center gap-2 text-white/70">
-                <Shield className="w-5 h-5 text-emerald-400" />
-                <span className="text-sm">Verified Pet-Friendly</span>
-              </div>
-              <div className="flex items-center gap-2 text-white/70">
-                <Trophy className="w-5 h-5 text-amber-400" />
-                <span className="text-sm">Trusted by 10,000+ Pets</span>
-              </div>
+    <PillarPageLayout
+      pillar="stay"
+      title="Places {name} Feels at Home"
+      description="Stays where your pet is welcome and comfortable"
+    >
+      {/* ==================== SOCIAL PROOF BANNER ==================== */}
               <div className="flex items-center gap-2 text-white/70">
                 <PawPrint className="w-5 h-5 text-teal-400" />
                 <span className="text-sm">Earn Paw Points</span>
