@@ -19,10 +19,9 @@ import {
   Plus, Edit, Trash2, Search, Filter, Eye, CheckCircle, XCircle,
   Building2, Clock, RefreshCw, FileText, Loader2, Download, Sparkles
 } from 'lucide-react';
+import { API_URL } from '../../utils/api';
 
-const getApiUrl = () => {
-  return process.env.REACT_APP_BACKEND_URL || '';
-};
+// Removed getApiUrl function - use imported API_URL instead
 
 const AdoptManager = ({ authHeaders }) => {
   // State
