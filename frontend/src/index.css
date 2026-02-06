@@ -30,6 +30,37 @@ body {
   padding: 0;
 }
 
+/* ============================================
+   iOS SAFARI INPUT FIX
+   ============================================ */
+input[type="text"],
+input[type="search"],
+input[type="email"],
+input[type="tel"],
+textarea {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border-radius: 0;
+  font-size: 16px; /* Prevents iOS zoom */
+}
+
+/* Make inputs more tappable on mobile */
+@media (max-width: 640px) {
+  input, button, select, textarea {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Ensure search inputs are fully tappable */
+  [data-testid="mira-search-input"] {
+    cursor: text;
+    -webkit-user-select: text;
+    user-select: text;
+  }
+}
+}
+
 /* Root container must not overflow */
 #root {
   overflow-x: hidden;
