@@ -593,8 +593,8 @@ async def send_message_about_request(
     admin_notification = {
         "id": str(uuid.uuid4()),
         "type": "new_inquiry",
-        "title": f"💬 New message: {service_name}",
-        "message": f"Customer inquiry: {body.message[:100]}{'...' if len(body.message) > 100 else ''}",
+        "title": f"💬 {customer_name}: {service_name[:30]}",
+        "message": f"{body.message[:100]}{'...' if len(body.message) > 100 else ''}",
         "ticket_id": ticket_id,
         "request_id": request_id,
         "link_to": f"/dashboard?tab=service-desk&ticket={ticket_id}",
@@ -603,13 +603,14 @@ async def send_message_about_request(
         "read": False,
         "metadata": {
             "customer_email": email,
+            "customer_name": customer_name,
             "service": service_name
         }
     }
     
     await db.admin_notifications.insert_one(admin_notification)
     
-    logger.info(f"Message sent, ticket {ticket_id}, admin notified")
+    logger.info(f"Message from {customer_name} ({email}), ticket {ticket_id}, admin notified")
     
     return {
         "success": True,
