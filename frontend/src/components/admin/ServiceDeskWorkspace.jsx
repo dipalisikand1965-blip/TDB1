@@ -279,35 +279,44 @@ const ServiceDeskWorkspace = ({ authHeaders }) => {
   };
 
   // Render ticket list item
-  const TicketListItem = ({ ticket, isSelected }) => (
-    <div
-      onClick={() => handleSelectTicket(ticket)}
-      className={`p-3 border-b cursor-pointer transition-all hover:bg-gray-50 ${
-        isSelected ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
-      }`}
-      data-testid={`ticket-item-${ticket.ticket_id}`}
-    >
-      <div className="flex items-start justify-between gap-2">
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-lg">{CATEGORY_ICONS[ticket.category] || '📋'}</span>
-            <span className="font-medium text-sm truncate">{ticket.member?.name || 'Unknown'}</span>
-            <Badge className={`text-xs ${URGENCY_COLORS[ticket.urgency] || ''}`}>
-              {ticket.urgency}
-            </Badge>
+  const TicketListItem = ({ ticket, isSelected }) => {
+    const hasNewMessage = ticket.has_new_member_message;
+    
+    return (
+      <div
+        onClick={() => handleSelectTicket(ticket)}
+        className={`p-3 border-b cursor-pointer transition-all hover:bg-gray-50 ${
+          isSelected ? 'bg-blue-50 border-l-4 border-l-blue-500' : ''
+        } ${hasNewMessage && !isSelected ? 'bg-pink-50 border-l-4 border-l-pink-500 animate-pulse' : ''}`}
+        data-testid={`ticket-item-${ticket.ticket_id}`}
+      >
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="text-lg">{CATEGORY_ICONS[ticket.category] || '📋'}</span>
+              <span className="font-medium text-sm truncate">{ticket.member?.name || ticket.member_name || 'Unknown'}</span>
+              {hasNewMessage && (
+                <Badge className="bg-pink-500 text-white text-[10px] animate-bounce">
+                  💬 NEW
+                </Badge>
+              )}
+              <Badge className={`text-xs ${URGENCY_COLORS[ticket.urgency] || ''}`}>
+                {ticket.urgency}
+              </Badge>
+            </div>
+            <p className="text-sm text-gray-600 line-clamp-2">{ticket.description || ticket.subject}</p>
+            <div className="flex items-center gap-2 mt-1">
+              <Badge className={`text-xs px-1.5 py-0.5 ${STATUS_COLORS[ticket.status] || 'bg-gray-100'}`}>
+                {ticket.status?.replace(/_/g, ' ')}
+              </Badge>
+              <span className="text-xs text-gray-400">{formatTime(ticket.updated_at || ticket.created_at)}</span>
+            </div>
           </div>
-          <p className="text-sm text-gray-600 line-clamp-2">{ticket.description || ticket.subject}</p>
-          <div className="flex items-center gap-2 mt-1">
-            <Badge className={`text-xs px-1.5 py-0.5 ${STATUS_COLORS[ticket.status] || 'bg-gray-100'}`}>
-              {ticket.status?.replace(/_/g, ' ')}
-            </Badge>
-            <span className="text-xs text-gray-400">{formatTime(ticket.created_at)}</span>
-          </div>
+          <ChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0 mt-1" />
         </div>
-        <ChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0 mt-1" />
       </div>
-    </div>
-  );
+    );
+  };
 
   // Render conversation message
   const ConversationMessage = ({ msg, index }) => {
