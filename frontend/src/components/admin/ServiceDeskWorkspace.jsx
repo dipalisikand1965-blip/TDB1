@@ -374,6 +374,7 @@ const ServiceDeskWorkspace = ({ authHeaders }) => {
             <div className="flex gap-1 flex-wrap">
               {[
                 { id: 'all', label: 'All', icon: '📋' },
+                { id: 'inquiries', label: '💬 Messages', icon: '' },
                 { id: 'unassigned', label: 'Unassigned', icon: '📭' },
                 { id: 'critical', label: 'Critical', icon: '🔴' },
                 { id: 'today', label: 'Today', icon: '📅' }
@@ -382,7 +383,7 @@ const ServiceDeskWorkspace = ({ authHeaders }) => {
                   key={f.id}
                   variant={quickFilter === f.id ? 'default' : 'outline'}
                   size="sm"
-                  className="text-xs h-7 px-2"
+                  className={`text-xs h-7 px-2 ${f.id === 'inquiries' ? 'bg-purple-100 hover:bg-purple-200 text-purple-700 border-purple-300' : ''}`}
                   onClick={() => setQuickFilter(f.id)}
                 >
                   {f.icon} {f.label}
