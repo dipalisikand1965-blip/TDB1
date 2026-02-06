@@ -670,7 +670,7 @@ const Pulse = ({
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
   
-  const API_URL = process.env.REACT_APP_BACKEND_URL;
+  
   
   // Fetch relevant memories when Pulse opens
   useEffect(() => {
