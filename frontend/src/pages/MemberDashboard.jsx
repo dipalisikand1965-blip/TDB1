@@ -1040,7 +1040,7 @@ const MemberDashboard = () => {
                     data-testid="header-go-to-pet-soul-btn"
                   >
                     <Sparkles className="w-3 h-3 mr-1" />
-                    Go to {currentPet.name}'s Soul Journey →
+                    Go to {currentPet.name}&apos;s Soul Journey →
                   </Button>
                 )}
               </div>
