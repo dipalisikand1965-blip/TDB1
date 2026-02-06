@@ -18,7 +18,7 @@ import {
   PawPrint, Sparkles, ChevronDown, Clock, MapPin, Star,
   Dumbbell, Package, Mic, ChevronRight, Shield, Users,
   Scissors, Bath, Syringe, Car, Camera, BookOpen, Brain,
-  Phone, Award, CheckCircle2, TrendingUp, Crown
+  Phone, Award, CheckCircle2, TrendingUp, Crown, X
 } from 'lucide-react';
 import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
