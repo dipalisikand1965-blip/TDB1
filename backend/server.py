@@ -6025,6 +6025,8 @@ async def get_public_products(
 async def get_services(
     pillar: Optional[str] = None,
     category: Optional[str] = None,
+    breed: Optional[str] = None,  # NEW: Filter by breed
+    page: int = 1,  # NEW: Pagination
     limit: int = 50
 ):
     """Get Concierge® services - can filter by pillar"""
@@ -6036,10 +6038,33 @@ async def get_services(
     if category:
         query["category"] = category
     
-    # Sort by created_at descending to show newest items first
-    services = await db.services_master.find(query, {"_id": 0}).sort("created_at", -1).limit(limit).to_list(limit)
+    if breed:
+        breed_lower = breed.lower()
+        query["$or"] = [
+            {"breed_tags": {"$regex": breed_lower, "$options": "i"}},
+            {"tags": {"$regex": breed_lower, "$options": "i"}}
+        ]
     
-    return {"services": services, "total": len(services)}
+    # Get total count for pagination
+    total_count = await db.services.count_documents(query)
+    
+    # Calculate skip for pagination
+    skip = (page - 1) * limit
+    
+    # Query with pagination
+    services = await db.services.find(
+        query, 
+        {"_id": 0}
+    ).sort("created_at", -1).skip(skip).limit(limit).to_list(limit)
+    
+    return {
+        "services": services, 
+        "total": total_count,
+        "page": page,
+        "limit": limit,
+        "pages": (total_count + limit - 1) // limit,
+        "has_more": skip + len(services) < total_count
+    }
 
 
 @api_router.get("/services/{service_id}")
