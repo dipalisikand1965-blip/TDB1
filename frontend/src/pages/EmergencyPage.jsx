@@ -765,9 +765,8 @@ const EmergencyPage = () => {
         subtitle="24x7 emergency services with transparent pricing"
         maxServices={8}
       />
-      {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="emergency" position="bottom-left" />
-    </PillarPageLayout>
+    </div>
   );
 };
 
