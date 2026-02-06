@@ -1,6 +1,6 @@
 # 🐕 The Doggy Company - Feature Status Report
 **Generated:** January 18, 2026
-**Preview URL:** https://furry-friend-guide.preview.emergentagent.com
+**Preview URL:** https://dashboard-repair-54.preview.emergentagent.com
 
 ---
 

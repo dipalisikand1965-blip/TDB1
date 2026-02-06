@@ -14,7 +14,7 @@ import requests
 import os
 from datetime import datetime, timezone
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://furry-friend-guide.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://dashboard-repair-54.preview.emergentagent.com').rstrip('/')
 ADMIN_USERNAME = "aditya"
 ADMIN_PASSWORD = "doggy2026"
 
