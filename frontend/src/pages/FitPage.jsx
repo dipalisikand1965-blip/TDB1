@@ -18,11 +18,13 @@ import { createFitRequest, showUnifiedFlowSuccess, showUnifiedFlowError } from '
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
+import MiraChatWidget from '../components/MiraChatWidget';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import AdminQuickEdit from '../components/AdminQuickEdit';
 import ProductCard from '../components/ProductCard';
 import MultiPetSelector from '../components/MultiPetSelector';
 import { getPetPhotoUrl } from '../utils/petAvatar';
+import SEOHead from '../components/SEOHead';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import PillarServicesGrid from '../components/PillarServicesGrid';
 import MiraPicksCarousel from '../components/MiraPicksCarousel';
@@ -569,48 +571,6 @@ const FitPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       
-      {/* Staggered Animation Styles */}
-      <style>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        @keyframes scaleIn {
-          from {
-            opacity: 0;
-            transform: scale(0.95);
-          }
-          to {
-            opacity: 1;
-            transform: scale(1);
-          }
-        }
-        
-        .animate-fade-in-up {
-          animation: fadeInUp 0.6s ease-out forwards;
-          opacity: 0;
-        }
-        
-        .animate-scale-in {
-          animation: scaleIn 0.5s ease-out forwards;
-          opacity: 0;
-        }
-        
-        .stagger-1 { animation-delay: 0.05s; }
-        .stagger-2 { animation-delay: 0.1s; }
-        .stagger-3 { animation-delay: 0.15s; }
-        .stagger-4 { animation-delay: 0.2s; }
-        .stagger-5 { animation-delay: 0.25s; }
-        .stagger-6 { animation-delay: 0.3s; }
-      `}</style>
-      
       {/* ==================== HERO SECTION ==================== */}
       <div className="relative overflow-hidden bg-gradient-to-br from-teal-900 via-emerald-800 to-green-900 text-white">
         {/* Mobile Back Button */}
@@ -631,14 +591,14 @@ const FitPage = () => {
           <div className="absolute inset-0 bg-gradient-to-r from-teal-900/90 via-emerald-800/80 to-transparent" />
         </div>
         
-        <div className="relative max-w-7xl mx-auto px-4 py-16 sm:py-20 md:py-28">
+        <div className="relative max-w-7xl mx-auto px-4 py-20 md:py-28">
           <div className="max-w-2xl">
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-full mb-4 sm:mb-6">
-              <Dumbbell className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-lime-400" />
-              <span className="text-xs sm:text-sm font-medium">Pet Fitness & Wellness</span>
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
+              <Dumbbell className="w-4 h-4 text-lime-400" />
+              <span className="text-sm font-medium">Pet Fitness & Wellness</span>
             </div>
             
-            <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-4 sm:mb-6 leading-tight">
+            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
               Fit Paws,
               <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-lime-300 to-emerald-200">
@@ -646,50 +606,50 @@ const FitPage = () => {
               </span>
             </h1>
             
-            <p className="text-base sm:text-lg md:text-xl text-white/80 mb-6 sm:mb-8 max-w-lg">
+            <p className="text-lg md:text-xl text-white/80 mb-8 max-w-lg">
               Expert fitness programmes, weight management, and activity tracking. Build a healthier, happier life together with your furry athlete.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+            <div className="flex flex-col sm:flex-row gap-4">
               <Button 
                 onClick={() => document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' })}
                 size="lg"
-                className="bg-gradient-to-r from-lime-500 to-emerald-500 hover:from-lime-600 hover:to-emerald-600 text-emerald-950 font-semibold px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg rounded-full shadow-2xl shadow-emerald-500/30 transition-all hover:scale-105"
+                className="bg-gradient-to-r from-lime-500 to-emerald-500 hover:from-lime-600 hover:to-emerald-600 text-emerald-950 font-semibold px-8 py-6 text-lg rounded-full shadow-2xl shadow-emerald-500/30 transition-all hover:scale-105"
                 data-testid="get-fit-btn"
               >
-                <Play className="w-4 h-4 sm:w-5 sm:h-5 mr-2 fill-current" />
+                <Play className="w-5 h-5 mr-2 fill-current" />
                 Explore Services
               </Button>
               <Button 
                 onClick={() => document.getElementById('products')?.scrollIntoView({ behavior: 'smooth' })}
                 variant="outline"
                 size="lg"
-                className="border-white/30 text-white hover:bg-white/10 px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg rounded-full"
+                className="border-white/30 text-white hover:bg-white/10 px-8 py-6 text-lg rounded-full"
               >
-                <Package className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                <Package className="w-5 h-5 mr-2" />
                 Shop Fitness Gear
               </Button>
             </div>
             
-            <div className="flex flex-wrap gap-4 sm:gap-6 mt-8 sm:mt-12">
+            <div className="flex flex-wrap gap-6 mt-12">
               <div className="flex items-center gap-2 text-white/70">
-                <Trophy className="w-4 h-4 sm:w-5 sm:h-5 text-lime-400" />
-                <span className="text-xs sm:text-sm">Certified Trainers</span>
+                <Trophy className="w-5 h-5 text-lime-400" />
+                <span className="text-sm">Certified Trainers</span>
               </div>
               <div className="flex items-center gap-2 text-white/70">
-                <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-400" />
-                <span className="text-xs sm:text-sm">Progress Tracking</span>
+                <TrendingUp className="w-5 h-5 text-emerald-400" />
+                <span className="text-sm">Progress Tracking</span>
               </div>
               <div className="flex items-center gap-2 text-white/70">
-                <PawPrint className="w-4 h-4 sm:w-5 sm:h-5 text-teal-400" />
-                <span className="text-xs sm:text-sm">Earn Paw Points</span>
+                <PawPrint className="w-5 h-5 text-teal-400" />
+                <span className="text-sm">Earn Paw Points</span>
               </div>
             </div>
           </div>
         </div>
         
-        <div className="absolute bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 animate-bounce">
-          <ChevronDown className="w-5 h-5 sm:w-6 sm:h-6 text-white/50" />
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce">
+          <ChevronDown className="w-6 h-6 text-white/50" />
         </div>
       </div>
 
@@ -710,16 +670,19 @@ const FitPage = () => {
       </div>
 
       {/* ==================== CONVERSATIONAL ENTRY + QUICK WIN ==================== */}
-      <div className="py-8 sm:py-10 bg-gradient-to-b from-gray-50/50 to-white">
+      <div className="py-10 bg-gradient-to-b from-gray-50/50 to-white">
         <div className="max-w-6xl mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-4 sm:gap-6 items-stretch">
-            {/* Conversational Entry - Creates service tickets, not Mira navigation */}
+          <div className="grid lg:grid-cols-2 gap-6 items-stretch">
+            {/* Conversational Entry - Component has its own styling now */}
             <ConversationalEntry 
               pillar="fit"
               petName={userPets[0]?.name}
+              onGoalSelect={(goal, message) => {
+                navigate(`/mira?context=fit_${goal.id}&preset=${encodeURIComponent(message)}`);
+              }}
             />
             
-            {/* Quick Win Tip */}
+            {/* Quick Win Tip - Component has its own styling now */}
             <QuickWinTip
               pillar="fit"
               petName={userPets[0]?.name}
@@ -728,8 +691,10 @@ const FitPage = () => {
               onActionClick={(tip) => {
                 if (tip?.actionType === 'navigate' && tip?.actionUrl) {
                   navigate(tip.actionUrl);
+                } else if (tip?.actionType === 'checklist') {
+                  toast({ title: tip.action, description: 'Fitness checklist coming soon!' });
                 } else {
-                  toast({ title: tip?.action || 'Coming soon!', description: 'This feature will be available soon.' });
+                  toast({ title: tip.action, description: 'Coming soon!' });
                 }
               }}
             />
@@ -752,43 +717,42 @@ const FitPage = () => {
       </div>
 
       {/* ==================== CONCIERGE® FIT EXPERIENCES - COMPACT ==================== */}
-      <div className="py-8 sm:py-10 bg-gradient-to-b from-white to-teal-50/30">
+      <div className="py-10 bg-gradient-to-b from-white to-teal-50/30">
         <div className="max-w-7xl mx-auto px-4">
           {/* Elegant Header */}
-          <div className="flex items-center justify-between mb-4 sm:mb-6">
+          <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-lg sm:text-xl md:text-2xl font-semibold text-gray-900">
+              <h2 className="text-xl md:text-2xl font-semibold text-gray-900">
                 Fit <span className="text-teal-600">Concierge®</span> Experiences
               </h2>
-              <p className="text-xs sm:text-sm text-gray-500 mt-1">
+              <p className="text-sm text-gray-500 mt-1">
                 Personalized wellness journeys, not just programs
               </p>
             </div>
             <Button 
               variant="ghost" 
-              className="text-teal-600 hover:text-teal-700 text-xs sm:text-sm hidden sm:flex"
+              className="text-teal-600 hover:text-teal-700 text-sm hidden sm:flex"
               onClick={() => setShowBookingModal(true)}
             >
               Not sure? Tell us about your pet <ChevronRight className="w-4 h-4 ml-1" />
             </Button>
           </div>
           
-          {/* Compact Experience Cards - Use compact prop with staggered animations */}
+          {/* Compact Experience Cards - Use compact prop */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
             {FIT_EXPERIENCES.map((exp, idx) => (
-              <div key={idx} className={`animate-fade-in-up stagger-${idx + 1}`}>
-                <ConciergeExperienceCard
-                  pillar="fit"
-                  title={exp.title}
-                  description={exp.description}
-                  icon={exp.icon}
-                  gradient={exp.gradient}
+              <ConciergeExperienceCard
+                key={idx}
+                pillar="fit"
+                title={exp.title}
+                description={exp.description}
+                icon={exp.icon}
+                gradient={exp.gradient}
                 badge={exp.badge}
                 badgeColor={exp.badgeColor}
                 highlights={exp.highlights}
                 compact={true}
               />
-              </div>
             ))}
           </div>
         </div>
@@ -820,18 +784,18 @@ const FitPage = () => {
       </section>
       
       {/* ==================== CONCIERGE® SERVICES SECTION ==================== */}
-      <section id="services" className="py-10 sm:py-12 md:py-16 bg-gradient-to-b from-teal-50/30 to-white">
+      <section id="services" className="py-12 md:py-16 bg-gradient-to-b from-teal-50/30 to-white">
         <div className="max-w-7xl mx-auto px-4">
           {/* Section Header */}
-          <div className="mb-6 sm:mb-8">
+          <div className="mb-8">
             <div className="flex items-center gap-2 mb-2">
-              <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-teal-600" />
-              <span className="text-xs sm:text-sm font-medium text-teal-600 uppercase tracking-wider">Concierge® Services</span>
+              <Sparkles className="w-5 h-5 text-teal-600" />
+              <span className="text-sm font-medium text-teal-600 uppercase tracking-wider">Concierge® Services</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
               Premium Fitness Services
             </h2>
-            <p className="text-gray-500 mt-2 max-w-xl text-sm sm:text-base">
+            <p className="text-gray-500 mt-2 max-w-xl">
               Tap any service for details. Our Concierge® team handles all coordination.
             </p>
           </div>
@@ -884,15 +848,15 @@ const FitPage = () => {
       />
       
       {/* ==================== PRODUCTS SECTION ==================== */}
-      <section id="products" className="py-10 sm:py-12 md:py-16 bg-white">
+      <section id="products" className="py-12 md:py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-between mb-6 sm:mb-8">
+          <div className="flex items-center justify-between mb-8">
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <ShoppingBag className="w-4 h-4 sm:w-5 sm:h-5 text-teal-600" />
-                <span className="text-xs sm:text-sm font-medium text-teal-600 uppercase tracking-wider">Shop</span>
+                <ShoppingBag className="w-5 h-5 text-teal-600" />
+                <span className="text-sm font-medium text-teal-600 uppercase tracking-wider">Shop</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Fitness Gear & Bundles</h2>
+              <h2 className="text-3xl font-bold text-gray-900">Fitness Gear & Bundles</h2>
             </div>
             <Button 
               variant="outline" 
@@ -905,34 +869,34 @@ const FitPage = () => {
           
           {/* Bundles */}
           {bundles.length > 0 && (
-            <div className="mb-8 sm:mb-10">
-              <h3 className="text-base sm:text-lg font-semibold text-gray-700 mb-3 sm:mb-4 flex items-center gap-2">
-                <Target className="w-4 h-4 sm:w-5 sm:h-5 text-teal-500" />
+            <div className="mb-10">
+              <h3 className="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                <Target className="w-5 h-5 text-teal-500" />
                 Value Bundles
               </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-                {bundles.map((bundle, idx) => (
-                  <Card key={bundle.id} className={`animate-scale-in stagger-${Math.min(idx + 1, 3)} p-3 sm:p-4 border-2 border-teal-200 bg-gradient-to-br from-teal-50 to-emerald-50 hover:shadow-lg transition-shadow`}>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {bundles.map((bundle) => (
+                  <Card key={bundle.id} className="p-4 border-2 border-teal-200 bg-gradient-to-br from-teal-50 to-emerald-50 hover:shadow-lg transition-shadow">
                     <div className="flex items-start justify-between mb-2">
-                      <h4 className="font-semibold text-gray-900 text-sm sm:text-base">{bundle.name}</h4>
+                      <h4 className="font-semibold text-gray-900">{bundle.name}</h4>
                       {bundle.is_recommended && (
-                        <Badge className="bg-teal-600 text-white text-xs">Recommended</Badge>
+                        <Badge className="bg-teal-600 text-white">Recommended</Badge>
                       )}
                     </div>
-                    <p className="text-xs sm:text-sm text-gray-600 mb-3 line-clamp-2">{bundle.description}</p>
-                    <div className="flex items-center gap-2 mb-3 flex-wrap">
-                      <span className="text-lg sm:text-xl font-bold text-teal-600">₹{bundle.price?.toLocaleString()}</span>
+                    <p className="text-sm text-gray-600 mb-3">{bundle.description}</p>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-xl font-bold text-teal-600">₹{bundle.price?.toLocaleString()}</span>
                       {bundle.original_price && (
                         <>
-                          <span className="text-xs sm:text-sm text-gray-400 line-through">₹{bundle.original_price?.toLocaleString()}</span>
-                          <Badge variant="outline" className="text-teal-600 border-teal-300 text-xs">
+                          <span className="text-sm text-gray-400 line-through">₹{bundle.original_price?.toLocaleString()}</span>
+                          <Badge variant="outline" className="text-teal-600 border-teal-300">
                             Save ₹{(bundle.original_price - bundle.price)?.toLocaleString()}
                           </Badge>
                         </>
                       )}
                     </div>
                     <Button 
-                      className="w-full bg-teal-600 hover:bg-teal-700 text-sm"
+                      className="w-full bg-teal-600 hover:bg-teal-700"
                       onClick={() => {
                         addToCart({
                           id: bundle.id,
@@ -958,21 +922,19 @@ const FitPage = () => {
           {/* Products Grid with Load More */}
           {products.length > 0 ? (
             <>
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
-                {products.slice(0, productsToShow).map((product, idx) => (
-                  <div key={product.id} className={`animate-scale-in stagger-${Math.min((idx % 5) + 1, 5)}`}>
-                    <ProductCard product={product} pillar="fit" />
-                  </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+                {products.slice(0, productsToShow).map((product) => (
+                  <ProductCard key={product.id} product={product} pillar="fit" />
                 ))}
               </div>
               
               {/* Load More Button */}
               {products.length > productsToShow && (
-                <div className="text-center mt-6 sm:mt-8">
+                <div className="text-center mt-8">
                   <Button 
                     variant="outline" 
                     onClick={() => setProductsToShow(prev => prev + 10)}
-                    className="px-6 sm:px-8 py-2.5 sm:py-3 rounded-full border-2 border-teal-300 text-teal-600 hover:bg-teal-50 text-sm sm:text-base"
+                    className="px-8 py-3 rounded-full border-2 border-teal-300 text-teal-600 hover:bg-teal-50"
                   >
                     Load More Products
                     <ChevronDown className="w-4 h-4 ml-2" />
@@ -984,10 +946,10 @@ const FitPage = () => {
               )}
             </>
           ) : (
-            <Card className="p-8 sm:p-12 text-center border-gray-100">
-              <ShoppingBag className="w-12 h-12 sm:w-16 sm:h-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">Products Coming Soon</h3>
-              <Button onClick={() => navigate('/shop')} variant="outline" className="rounded-full text-sm">
+            <Card className="p-12 text-center border-gray-100">
+              <ShoppingBag className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-900 mb-2">Products Coming Soon</h3>
+              <Button onClick={() => navigate('/shop')} variant="outline" className="rounded-full">
                 Browse All Products
               </Button>
             </Card>
@@ -996,28 +958,28 @@ const FitPage = () => {
       </section>
       
       {/* ==================== CTA SECTION ==================== */}
-      <section className="py-12 sm:py-16 bg-gradient-to-br from-teal-600 to-emerald-700">
+      <section className="py-16 bg-gradient-to-br from-teal-600 to-emerald-700">
         <div className="max-w-4xl mx-auto px-4 text-center text-white">
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
             Ready to Transform Your Pet&apos;s Fitness?
           </h2>
-          <p className="text-base sm:text-lg text-white/80 mb-6 sm:mb-8 max-w-2xl mx-auto">
+          <p className="text-lg text-white/80 mb-8 max-w-2xl mx-auto">
             Start with a free consultation. Our Concierge® team will help you find the perfect programme.
           </p>
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button 
               size="lg"
               onClick={() => handleQuickBook(services[0] || { id: 'consultation', name: 'Free Consultation', price: 0 })}
-              className="bg-white text-teal-700 hover:bg-gray-100 font-semibold px-6 sm:px-10 py-5 sm:py-6 text-base sm:text-lg rounded-full shadow-2xl transition-all hover:scale-105"
+              className="bg-white text-teal-700 hover:bg-gray-100 font-semibold px-10 py-6 text-lg rounded-full shadow-2xl transition-all hover:scale-105"
             >
-              <Phone className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+              <Phone className="w-5 h-5 mr-2" />
               Book Free Consultation
             </Button>
             <Button 
               size="lg"
               variant="outline"
               onClick={() => navigate('/mira?context=fit')}
-              className="border-2 border-white/50 text-white hover:bg-white/10 font-semibold px-6 sm:px-10 py-5 sm:py-6 text-base sm:text-lg rounded-full"
+              className="border-2 border-white/50 text-white hover:bg-white/10 font-semibold px-10 py-6 text-lg rounded-full"
             >
               <MessageCircle className="w-5 h-5 mr-2" />
               Ask Mira
@@ -1181,6 +1143,10 @@ const FitPage = () => {
           </div>
         </DialogContent>
       </Dialog>
+      
+      {/* Mira Floating Chat Widget */}
+      <MiraChatWidget pillar="fit" />
+      
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="fit" position="bottom-left" />
     </div>
