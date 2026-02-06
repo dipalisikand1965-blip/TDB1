@@ -819,30 +819,39 @@ const ShopPage = () => {
   const hasMore = displayCount < filteredProducts.length;
   const petName = selectedPet?.name || '';
   const petBreed = selectedPet?.breed || '';
+  
+  // State for shopping for other dog
+  const [shoppingForOther, setShoppingForOther] = useState(false);
+  const [showBreedModal, setShowBreedModal] = useState(false);
 
   return (
     <div className="min-h-screen bg-gray-50 pb-24 md:pb-0" data-testid="shop-page">
       <SEOHead page="shop" path="/shop" />
       
-      {/* Hero - Restored the beautiful dark gradient version with soul traits */}
-      <PetHero 
-        pet={selectedPet} 
+      {/* Unified Hero - Meister is the HERO! */}
+      <UnifiedHero 
+        pet={selectedPet}
         soulData={petSoulData}
-        onPetSwitch={handlePetSwitch}
-        pets={pets}
+        pillar={selectedPillar}
+        viewMode="products"
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        shoppingForOther={shoppingForOther}
       />
       
-      {/* Search */}
-      <SearchBar value={searchQuery} onChange={setSearchQuery} petName={petName} products={allProducts} />
-      
-      <div className="h-3 sm:h-4"></div>
-      
-      {/* Pillar Filters */}
-      <PillarFilters 
-        selected={selectedPillar}
-        onSelect={(p) => { setSelectedPillar(p); setDisplayCount(24); }}
-        selectedSubcat={selectedSubcat}
-        onSelectSubcat={setSelectedSubcat}
+      {/* Pillar Navigation with Product/Service toggle */}
+      <PillarNav
+        selectedPillar={selectedPillar}
+        onSelectPillar={(p) => { setSelectedPillar(p); setDisplayCount(24); }}
+        viewMode="products"
+        onViewModeChange={(mode) => {
+          if (mode === 'services') {
+            window.location.href = '/services';
+          }
+        }}
+        petName={petName}
+        shoppingForOther={shoppingForOther}
+        onShoppingForOtherClick={() => setShoppingForOther(!shoppingForOther)}
       />
       
       {/* Products Section */}
