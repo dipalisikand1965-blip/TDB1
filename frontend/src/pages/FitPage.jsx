@@ -1147,12 +1147,9 @@ const FitPage = () => {
         </DialogContent>
       </Dialog>
       
-      {/* Mira Floating Chat Widget */}
-      <MiraChatWidget pillar="fit" />
-      
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="fit" position="bottom-left" />
-    </div>
+    </PillarPageLayout>
   );
 };
 
