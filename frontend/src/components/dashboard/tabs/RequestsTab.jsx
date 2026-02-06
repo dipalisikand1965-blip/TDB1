@@ -87,10 +87,12 @@ const RequestsTab = ({
       const data = await response.json();
       
       if (response.ok) {
-        toast.success('Message sent to concierge!', {
-          description: `Ticket #${data.ticket_id?.slice(-6) || 'created'} - We'll respond shortly.`
+        toast.success('Message sent!', {
+          description: 'Our concierge team will respond shortly.'
         });
-        closeMessageDialog();
+        setMessageText('');
+        // Reload conversation to show new message
+        await loadConversationMessages(requestId);
       } else {
         toast.error('Failed to send message', { description: data.detail });
       }
@@ -99,6 +101,24 @@ const RequestsTab = ({
     } finally {
       setSending(false);
     }
+  };
+
+  // Format timestamp for messages
+  const formatMessageTime = (timestamp) => {
+    if (!timestamp) return '';
+    const date = new Date(timestamp);
+    const now = new Date();
+    const isToday = date.toDateString() === now.toDateString();
+    
+    if (isToday) {
+      return date.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
+    }
+    return date.toLocaleDateString('en-IN', { 
+      day: 'numeric', 
+      month: 'short',
+      hour: '2-digit', 
+      minute: '2-digit' 
+    });
   };
 
   // Get status color classes for dark theme
