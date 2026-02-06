@@ -725,12 +725,13 @@ const ServicesPage = () => {
   const [loading, setLoading] = useState(true);
   const [selectedPillar, setSelectedPillar] = useState(searchParams.get('pillar') || 'recommended');
   const [selectedSubcat, setSelectedSubcat] = useState(null);
-  const [selectedBreedFilter, setSelectedBreedFilter] = useState('all'); // NEW: Breed filter
+  const [selectedBreedFilter, setSelectedBreedFilter] = useState('all');
   const [selectedPet, setSelectedPet] = useState(null);
   const [petSoulData, setPetSoulData] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [displayCount, setDisplayCount] = useState(24);
   const [miraChatOpen, setMiraChatOpen] = useState(false);
+  const [shoppingForOther, setShoppingForOther] = useState(false);
   
   // Fetch services
   useEffect(() => {
