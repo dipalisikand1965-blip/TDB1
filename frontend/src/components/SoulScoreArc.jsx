@@ -20,7 +20,8 @@ const SoulScoreArc = ({
   score = 0, 
   petId, 
   petName = 'Pet',
-  size = 'md', // 'sm', 'md', 'lg', 'xl'
+  size = 'md', // 'sm', 'md', 'lg', 'xl' or numeric value
+  strokeWidth, // Optional stroke width for numeric size
   showLabel = true,
   showCTA = true,
   animated = true,
