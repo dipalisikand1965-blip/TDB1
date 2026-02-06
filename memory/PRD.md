@@ -161,17 +161,25 @@ A complete helpdesk-style messaging system like Zoho for user-concierge communic
 
 ## Pending Issues
 
-### P0 - Critical (Resolved)
-- ~~**Cart API 404:** `/api/cart` endpoint blocking checkout~~ ✅ FIXED
+### P0 - Critical
+- ~~**Message Concierge not working:** Creating tickets now functional~~ ✅ FIXED
+- **Dashboard Tab Navigation:** Tabs not switching content on mobile - needs debugging
 - **Emergency Page:** Needs calming redesign
 - **Farewell Page:** Needs compassionate redesign
 - **Adopt Page:** Needs personality matching
 
 ### P1 - High Priority
+- **UI Warmth Overhaul:** Pages too dark, need warmer more human feel
+- **Logged-in Dashboard:** Create personalized dashboard for authenticated users
 - Paperwork Page refresh
 - Advisory Page AI integration
 - Travel Page personalization
 - UI/UX Audit Implementation from `/app/memory/UI_UX_AUDIT.md`
+
+### P2 - Medium Priority
+- WhatsApp integration (send notifications via WhatsApp API)
+- Email templates customization
+- "Why we picked this" Tooltips on recommended items
 
 ## Key API Endpoints
 - `/api/product-box/products` - All products
