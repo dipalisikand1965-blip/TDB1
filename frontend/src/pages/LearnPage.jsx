@@ -1213,7 +1213,7 @@ const LearnPage = () => {
       
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="learn" position="bottom-left" />
-    </div>
+    </PillarPageLayout>
   );
 };
 
