@@ -1,338 +1,104 @@
-# The Doggy Company - Product Requirements Document
+# Pet Operating System - PRD
 
 ## Original Problem Statement
-Transform the application into a highly personalized, "guided care" experience for pet owners. The core philosophy shifts from "What do you want to buy?" to "What does your dog need right now?".
+Transform a standard e-commerce site into a "Personal Pet Operating System" that is deeply magical, personalized, and emotionally resonant for the pet parent. The user wants:
+1. **"Meister as the Hero":** The entire UX should revolve around the user's pet
+2. **Emotional Connection:** Magical UI elements that create an emotional bond
+3. **Unified & Seamless Design:** All pages share consistent, personalized header design
+4. **Seamless Navigation:** Product/Service toggle and pillar navigation
+5. **Hyper-Personalized Content:** Breed-specific and unique messaging
+6. **De-emphasize E-commerce:** Focus on "caring" not "shopping"
 
-## Core Architecture
-- **Frontend:** React with Tailwind CSS, Shadcn UI components
-- **Backend:** Python FastAPI
-- **Database:** MongoDB
-- **AI Assistant:** Mira (Pet Concierge) with voice capabilities
-- **Communication Backbone:** Multi-channel messaging (in-app, email, WhatsApp)
+## Current Status: WORKING
 
-## Recent Updates (Feb 6, 2025 - Session 2)
+### Completed Features (February 6, 2025)
 
-### ✅ MAGICAL PERSONALIZED EXPERIENCE - ENHANCED (Feb 6, 2025)
-- **Problem:** Shop and Services pages lacked emotional connection, felt generic
-- **Solution:** Complete overhaul with breed-specific personalization:
+#### 1. Header Copy Updated (Per User's Table)
+| Pillar | Main Heading | Tagline |
+|--------|-------------|---------|
+| Celebrate | Celebrations for {name} | Mark the moments that matter |
+| Dine | Food & Treats for {name} | Chosen around taste, energy, and needs |
+| Care | Everyday Care for {name} | Support for health, comfort, and routine |
+| Enjoy | Joyful Experiences for {name} | Play, enrichment, and little delights |
+| Travel | Travel with {name} | Thought through so the journey feels easy |
+| Stay | Places {name} Feels at Home | Stays where welcome and comfortable |
+| Fit | Movement & Energy for {name} | Activity that matches rhythm |
+| Learn | Learning with {name} | Training and guidance that respects personality |
+| Advisory | Guidance for {name} | When clarity helps before deciding |
+| Emergency | If Something Feels Urgent | Immediate support when it matters most |
+| Paperwork | Paperwork for {name} | Handled quietly, without stress |
+| Farewell | Honouring {name} | Support with dignity and care |
+| Adopt | Finding the Right Companion | Thoughtful matching, not impulse |
+| Shop | Products for {name} | Thoughtfully curated for how {name} lives |
+| Services | Services for {name} | Trusted help, when needed |
 
-**1. PersonalizedHero.jsx** - Real pet photo with glow (not avatar)
-- Shows actual pet photo (pet.photo_url, pet.image_url, etc.)
-- Animated glow ring based on breed energy (energetic = orange, royal = pink, etc.)
-- Mobile: Compact horizontal layout - products visible immediately
-- Desktop: Large pet photo with sparkle animations around it
-- Time-based greetings: "Good morning, Max!"
-- Breed-specific taglines: "Golden Retrievers, like Max, deserve the best"
-- Search with "What does Max need today?"
-- Quick suggestions: "Popular for Golden Retrievers: Treats, Toys"
+#### 2. Voice Search Functionality
+- Added Web Speech API integration to UnifiedHero.jsx
+- Microphone button in search bar starts/stops voice recognition
+- Shows "Listening..." indicator when active
 
-**2. ProductCard with "Why for [PetName]"**
-- Every product shows breed-specific reasoning
-- Examples:
-  - "Shih Tzus, like Meister, need gentle coat care"
-  - "Retrievers, like Max, never tire of fetch!"
-  - "Golden Retrievers, like Max, love water activities"
-- Purple gradient box for visibility
+#### 3. All Pillar Pages Working
+- /celebrate, /dine, /care, /enjoy, /travel, /stay, /fit, /learn
+- /advisory, /emergency, /paperwork, /farewell, /adopt
+- /shop, /services
 
-**3. ServiceCard with "Why for [PetName]"**
-- Every service shows breed-specific reasoning
-- Examples:
-  - "Shih Tzus, like Meister, need regular grooming for their long coats"
-  - "Essential for Retrievers like Max - they shed a lot"
-  - "German Shepherds, like Rex, love mental challenges"
+#### 4. Sub-Pages with Category-Specific Heroes
+Added routes and hero content for all sub-pages:
+- /dine/fresh-meals, /dine/treats, /dine/desi-treats, /dine/frozen, /dine/supplements
+- /care/grooming, /care/health, /care/supplements, /care/spa
+- /enjoy/toys, /enjoy/chews, /enjoy/games, /enjoy/puzzles
+- /travel/carriers, /travel/car, /travel/outdoor
+- /stay/beds, /stay/mats, /stay/kennels, /stay/bowls
+- /fit/leashes, /fit/harnesses, /fit/collars, /fit/apparel
+- /learn/training, /learn/puzzles, /learn/books
 
-**Files:**
-- `/app/frontend/src/components/PersonalizedHero.jsx` - Real pet photo, mobile-first
-- `/app/frontend/src/pages/ShopPage.jsx` - getBreedWhisper() + ProductCard
-- `/app/frontend/src/pages/ServicesPage.jsx` - getServiceBreedWhisper() + ServiceCard
+#### 5. Components Created/Updated
+- `PillarPageLayout.jsx` - Reusable layout component
+- `UnifiedHero.jsx` - Updated with voice search & new copy
+- `PillarContext.jsx` - Updated with Mira whispers per pillar
+- `ProductListing.jsx` - Added category-specific hero content
 
-### ✅ Pillar-Wise Personalized Picks - NEW
-- **Problem:** "Picks for [PetName]" were not showing pillar-wise (Nourish, Play, Groom, etc.)
-- **Solution:** Created new `PillarWisePicks.jsx` component that:
-  - Fetches recommendations for each pillar separately
-  - Displays tabs: Nourish (dine), Play (enjoy), Groom (care), Fitness (fit), Celebrate
-  - Shows 4 products per pillar with "For [PetName]" badges
-  - Each tab shows pillar-specific products from `/api/products/recommendations/for-pet/{pet_id}?pillar={pillar}`
-- **Files:**
-  - `/app/frontend/src/components/PillarWisePicks.jsx` - NEW component
-  - `/app/frontend/src/components/dashboard/tabs/OverviewTab.jsx` - Uses PillarWisePicks
+### Testing Status
+- All 15 main pillar pages: PASS
+- All 6 tested sub-pages: PASS
+- Voice search button: PASS
+- Products/Services toggle: PASS
+- Success rate: 100%
 
-### ✅ UI/UX Improvements - Shop & Services Cards
-- **Problem:** Mobile text too small, desktop cards not looking good
-- **Solution:**
-  - Increased text sizes from `text-[10px]` to `text-xs/text-sm`
-  - Enhanced card styling: `rounded-2xl/3xl`, `shadow-md`, `hover:shadow-2xl`
-  - Better padding and spacing: `p-3 sm:p-4 lg:p-5`
-  - More prominent hover effects: `hover:-translate-y-1`
-  - Improved grid layout: `gap-3 sm:gap-4 lg:gap-6`
-- **Files:**
-  - `/app/frontend/src/pages/ShopPage.jsx` - ProductCard component
-  - `/app/frontend/src/pages/ServicesPage.jsx` - ServiceCard component + X icon fix
+### Files Modified
+- /app/frontend/src/components/UnifiedHero.jsx
+- /app/frontend/src/components/PillarPageLayout.jsx
+- /app/frontend/src/context/PillarContext.jsx
+- /app/frontend/src/pages/ProductListing.jsx
+- /app/frontend/src/pages/DinePage.jsx
+- /app/frontend/src/pages/CarePage.jsx
+- /app/frontend/src/pages/EnjoyPage.jsx
+- /app/frontend/src/pages/TravelPage.jsx
+- /app/frontend/src/pages/AdvisoryPage.jsx
+- /app/frontend/src/App.js (added sub-page routes)
 
-### ✅ Mobile Dashboard Tab Navigation Fix
-- **Problem:** Tab navigation was broken on mobile
-- **Solution:**
-  - Added `touch-manipulation` class to each tab trigger
-  - Added `touch-pan-x` to TabsList for better scrolling
-  - Added `flex-shrink-0` to prevent tab squishing
-  - Added `data-testid` attributes for testing
-- **File:** `/app/frontend/src/pages/MemberDashboard.jsx`
+### Remaining/Future Tasks
+1. **P2** - Update remaining pillar pages (Stay, Fit, Learn, etc.) to use unified `PillarPageLayout`
+2. **P2** - Remove product/service counts from all pages
+3. **P3** - Relocate "All Breeds" selector with "Shopping for another dog?" label
+4. **P3** - Contextual pillar messaging (birthday awareness, festivals)
+5. **P3** - Add subtle animations for "magical" feel
+6. **P3** - Improve AI logic for "Why for [PetName]" whispers
 
-## Recent Updates (Feb 6, 2025)
+## Architecture
 
-### Fix: User Requests Query Bug ✅ (Just Fixed)
-- **Problem:** `/api/mira/my-requests` was querying `member.email` but tickets store `member_email`
-- **Solution:** Updated query to use `$or` for both field formats
-- **Result:** Users can now see all their tickets in the Requests tab
-- **Added:** `ticket_id` field to responses for proper frontend handling
-- **Added:** Deduplication to prevent duplicate ticket entries
+### Frontend
+- React (Vite)
+- Tailwind CSS
+- Shadcn UI
+- React Router
 
-### Unified Communication Backbone - NEW ✅
-A Zendesk/Freshdesk-style multi-channel communication system:
+### Backend
+- Python FastAPI
+- MongoDB
 
-**Architecture:**
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    MEMBER CHANNELS                          │
-├─────────────────┬─────────────────┬─────────────────────────┤
-│    📱 In-App    │    📧 Email     │    💬 WhatsApp         │
-│  (RequestsTab)  │  (Coming Soon)  │   (Coming Soon)        │
-└────────┬────────┴────────┬────────┴───────────┬────────────┘
-         │                 │                     │
-         └─────────────────┼─────────────────────┘
-                           ▼
-              ┌────────────────────────┐
-              │   Unified Inbox        │
-              │   (Service Desk)       │
-              │   - Auto-detect channel│
-              │   - Reply same channel │
-              │   - Track all messages │
-              └────────────────────────┘
-                           │
-                           ▼
-              ┌────────────────────────┐
-              │   Concierge Response   │
-              │   → Same channel back  │
-              │   → Member notified    │
-              └────────────────────────┘
-```
-
-**Key Features:**
-- **Channel Tracking:** Every message records its source channel (in_app, email, whatsapp)
-- **Auto-Reply Channel:** Concierge replies go back via same channel customer used
-- **Unified Inbox:** All channels funnel into Service Desk
-- **Member Notifications:** Bell icon shows new concierge replies
-- **Agent Indicators:** "💬 NEW" badge on tickets needing response
-
-**API Endpoints (Conversation Backbone):**
-- `POST /api/conversations/start` - Start new conversation
-- `POST /api/conversations/{id}/message` - Member sends message
-- `POST /api/conversations/{id}/reply` - Concierge replies (auto-detects channel)
-- `GET /api/conversations/{id}` - Get full conversation
-- `GET /api/conversations` - List all conversations (for Service Desk)
-
-**Legacy Endpoints (Still Working):**
-- `POST /api/user/request/{id}/message` - User sends message
-- `GET /api/user/request/{id}/messages` - Get conversation history
-- `POST /api/tickets/{id}/reply` - Admin reply
-
-**Files:**
-- `/app/backend/conversation_routes.py` - NEW: Unified communication backbone
-- `/app/backend/user_tickets_routes.py` - Legacy messaging endpoints
-- `/app/frontend/src/components/dashboard/tabs/RequestsTab.jsx` - Member conversation UI
-- `/app/frontend/src/components/MemberNotificationBell.jsx` - NEW: Member notifications
-- `/app/frontend/src/components/admin/ServiceDeskWorkspace.jsx` - Agent inbox
-
-### Two-Way Concierge Messaging ✅
-A complete helpdesk-style messaging system like Zoho for user-concierge communication:
-
-**User Features:**
-- "Message Concierge" button on any booking/request
-- Creates service desk tickets automatically (TKT-YYYYMMDD-XXX format)
-- Real-time conversation history view
-- Messages show "you" vs "concierge" labels
-- Auto-scroll to newest messages
-
-**Concierge Features:**
-- Reply to tickets via admin panel
-- Internal notes (hidden from users)
-- Email notification on reply (optional)
-- WhatsApp link generation for quick outreach
-- Admin notifications on new user messages
-
-**API Endpoints:**
-- `POST /api/user/request/{request_id}/message` - User sends message
-- `GET /api/user/request/{request_id}/messages` - Get conversation history
-- `POST /api/user/ticket/{ticket_id}/concierge-reply` - Concierge replies
-- `GET /api/user/ticket/{ticket_id}/whatsapp-link` - Generate WhatsApp link
-- `POST /api/tickets/{ticket_id}/reply` - Legacy admin reply endpoint
-
-**Files:**
-- `/app/backend/user_tickets_routes.py` - All messaging endpoints
-- `/app/frontend/src/components/dashboard/tabs/RequestsTab.jsx` - Frontend UI
-- `/app/backend/tests/test_two_way_messaging.py` - Test suite (19 tests, 100% pass)
-
-## Recent Updates (Feb 5, 2025)
-
-### Pet Photo Upload - NEW ✅
-- "Upload from Phone" button in pet registration form
-- Opens camera/gallery on mobile
-- Preview before submit
-- Stores in MongoDB as base64 (persists across deployments)
-- Fallback URL option available
-
-### Breed Filter on Services - NEW ✅
-- Dropdown filter: Golden Retriever, Lab, Shih Tzu, Pug, Indie, etc.
-- "Looking for a friend's pet?" link
-- Prioritizes services with breed-specific content
-
-### "Why We Picked This" Tooltips - NEW ✅
-- Golden sparkle badge on recommended items
-- Hover shows personalized reason
-- Examples: "Great for active Golden Retrievers", "Perfect for Shih Tzu coat care"
-
-### Admin Notifications for Pet Updates - NEW ✅
-- Notification when users update pet profiles
-- Shows owner name, pet name, what was changed
-- Visible in admin bell icon
-
-### Data Sync Button - NEW ✅
-- "🚀 SYNC ALL DATA" button in admin
-- Syncs: Shopify products + Pillar products + Breed services + Mira whispers
-
-## Completed Features (Feb 2025)
-
-### Shop Page ✅ (Score: 92/100)
-- Pet Soul integration (photo, traits, Soul Score Arc)
-- Mira whispers on every product card
-- All 16 pillars visible
-- Voice mic button integration
-- Fully mobile responsive
-
-### Services Page ✅ (Score: 90/100)
-- Pet personalization with Soul traits
-- Breed-specific Mira whispers
-- All 13 pillars visible + Breed Filter
-- Card navigation to detail pages
-- Fully mobile responsive
-
-### Service Detail Page ✅ (Score: 88/100)
-- Hero image with gradient overlay
-- Pet selector for multi-pet households
-- Mira's breed-specific insight box
-- What's included section
-- Book Now / Ask Mira CTAs
-- Related services section
-- Floating mobile book button
-
-### Mira Chat Widget ✅
-- Opens via voice/mic buttons
-- Pillar-specific quick prompts
-- Pet context awareness
-
-## UI/UX Audit Results
-
-### High Performers (75+)
-- Shop: 92/100
-- Services: 90/100
-- Service Detail: 88/100
-- Celebrate: 82/100
-- Dine: 80/100
-- Care: 80/100
-- Stay: 78/100
-
-### Medium Performers (60-74)
-- Learn: 72/100
-- Travel: 72/100
-- Enjoy: 70/100
-- Fit: 70/100
-- Advisory: 68/100
-
-### Low Performers (<60) - NEED WORK
-- Adopt: 58/100
-- Paperwork: 55/100
-- Emergency: 55/100
-- Farewell: 52/100
-
-**Full audit document:** `/app/memory/UI_UX_AUDIT.md`
-
-## Recent Fixes (Feb 5, 2025)
-
-### ✅ Cart API - FIXED
-- Added full cart management endpoints: GET, POST, DELETE
-- `/api/cart` - Get user/session cart
-- `/api/cart/add` - Add item to cart
-- `/api/cart/item` - Remove specific item
-- `/api/cart` DELETE - Clear cart
-- All 19 backend tests passed (100%)
-
-### ✅ Mira Whispers Update - COMPLETED
-- Executed `/api/service-box/update-all-whispers`
-- 653 services updated, 42 already had whispers
-- Total: 695 services with 100% whisper coverage
-
-### ✅ Added Shopify Sync Button to Admin Panel
-- New green "🛒 Sync Shopify Products" button added
-- Cleans up mock products and syncs real Shopify data
-- Location: Admin sidebar (below Universal Seed button)
-- **USE THIS BUTTON ON PRODUCTION** to fix product data
-
-### ✅ Backend Testing - ALL PASS
-- Cart endpoints: GET/POST/DELETE working
-- Service whispers: 100% coverage verified
-- Authentication: Token auth working
-- Pet personalization: Returns user pets correctly
-- Test report: `/app/test_reports/iteration_239.json`
-
-## Admin Button Guide
-| Button | What it does | When to use |
-|--------|--------------|-------------|
-| **Universal Seed** | Creates 146 placeholder products | Demo/testing only - NOT for production |
-| **Seed Production** | Seeds FAQs, Collections, Tickets | Safe anytime |
-| **🛒 Sync Shopify Products** | Pulls 2000+ real products from Shopify | **USE ON PRODUCTION** |
-
-## Pending Issues
-
-### P0 - Critical
-- ~~**Message Concierge not working:** Creating tickets now functional~~ ✅ FIXED
-- **Dashboard Tab Navigation:** Tabs not switching content on mobile - needs debugging
-- **Emergency Page:** Needs calming redesign
-- **Farewell Page:** Needs compassionate redesign
-- **Adopt Page:** Needs personality matching
-
-### P1 - High Priority
-- **UI Warmth Overhaul:** Pages too dark, need warmer more human feel
-- **Logged-in Dashboard:** Create personalized dashboard for authenticated users
-- Paperwork Page refresh
-- Advisory Page AI integration
-- Travel Page personalization
-- UI/UX Audit Implementation from `/app/memory/UI_UX_AUDIT.md`
-
-### P2 - Medium Priority
-- WhatsApp integration (send notifications via WhatsApp API)
-- Email templates customization
-- "Why we picked this" Tooltips on recommended items
-
-## Key API Endpoints
-- `/api/product-box/products` - All products
-- `/api/service-box/services` - All services
-- `/api/service-box/services/:id` - Service detail
-- `/api/pets/my-pets` - User's pets
-- `/api/soul-drip/completeness/:petId` - Soul score
-
-## Test Credentials
-- Email: testuser@test.com
-- Password: test123
-
-## Files of Reference
-- `/app/frontend/src/pages/ShopPage.jsx`
-- `/app/frontend/src/pages/ServicesPage.jsx`
-- `/app/frontend/src/pages/ServiceDetailPage.jsx` (NEW)
-- `/app/frontend/src/components/MiraChatWidget.jsx`
-- `/app/memory/UI_UX_AUDIT.md` (NEW)
-
-## Design System
-- **Dark Hero:** #2D1B4E → #1E3A5F → #0D2137
-- **Soul Traits:** White/10 backdrop blur pills
-- **Mira Whispers:** Purple sparkle + text
-- **Cards:** White, rounded-xl, hover lift
+### Key Files
+- `/app/frontend/src/App.js` - Main router
+- `/app/frontend/src/components/` - Reusable components
+- `/app/frontend/src/pages/` - Page components
+- `/app/frontend/src/context/` - React contexts
