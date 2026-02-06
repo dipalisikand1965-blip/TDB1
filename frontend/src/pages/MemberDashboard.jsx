@@ -996,30 +996,30 @@ const MemberDashboard = () => {
             
             {/* Tablet/Mobile Tab Navigation - Scrollable */}
             <div className="lg:hidden">
-              <TabsList className="backdrop-blur-xl bg-slate-900/80 border border-white/10 shadow-xl p-1.5 rounded-xl flex overflow-x-auto gap-1 scrollbar-hide">
-                <TabsTrigger value="overview" className="rounded-lg flex items-center gap-1 py-2 px-3 text-xs font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white hover:bg-white/5 hover:text-white transition-all">
+              <TabsList className="backdrop-blur-xl bg-slate-900/80 border border-white/10 shadow-xl p-1.5 rounded-xl flex overflow-x-auto gap-1 scrollbar-hide touch-pan-x">
+                <TabsTrigger value="overview" data-testid="mobile-tab-overview" className="flex-shrink-0 rounded-lg flex items-center gap-1 py-2 px-3 text-xs font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white hover:bg-white/5 hover:text-white transition-all touch-manipulation">
                   <Home className="w-3.5 h-3.5" /> Home
                 </TabsTrigger>
-                <TabsTrigger value="services" className="rounded-lg flex items-center gap-1 py-2 px-3 text-xs font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white hover:bg-white/5 hover:text-white transition-all">
+                <TabsTrigger value="services" data-testid="mobile-tab-services" className="flex-shrink-0 rounded-lg flex items-center gap-1 py-2 px-3 text-xs font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white hover:bg-white/5 hover:text-white transition-all touch-manipulation">
                   <Crown className="w-3.5 h-3.5" /> Services
                 </TabsTrigger>
-                <TabsTrigger value="rewards" className="rounded-lg flex items-center gap-1 py-2 px-3 text-xs font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white hover:bg-white/5 hover:text-white transition-all">
+                <TabsTrigger value="rewards" data-testid="mobile-tab-rewards" className="flex-shrink-0 rounded-lg flex items-center gap-1 py-2 px-3 text-xs font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white hover:bg-white/5 hover:text-white transition-all touch-manipulation">
                   <Gift className="w-3.5 h-3.5" /> Paw Points
                 </TabsTrigger>
-                <TabsTrigger value="mira" className="rounded-lg flex items-center gap-1 py-2 px-3 text-xs font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white hover:bg-white/5 hover:text-white transition-all">
+                <TabsTrigger value="mira" data-testid="mobile-tab-mira" className="flex-shrink-0 rounded-lg flex items-center gap-1 py-2 px-3 text-xs font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white hover:bg-white/5 hover:text-white transition-all touch-manipulation">
                   <Sparkles className="w-3.5 h-3.5" /> Mira AI
                 </TabsTrigger>
-                <TabsTrigger value="requests" className="rounded-lg flex items-center gap-1 py-2 px-3 text-xs font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white hover:bg-white/5 hover:text-white transition-all">
+                <TabsTrigger value="requests" data-testid="mobile-tab-requests" className="flex-shrink-0 rounded-lg flex items-center gap-1 py-2 px-3 text-xs font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white hover:bg-white/5 hover:text-white transition-all touch-manipulation">
                   <Calendar className="w-3.5 h-3.5" /> Bookings
                   {myRequests.length > 0 && <Badge variant="secondary" className="ml-1 h-4 px-1 text-[10px] bg-purple-500/30 text-purple-200">{myRequests.length}</Badge>}
                 </TabsTrigger>
-                <TabsTrigger value="orders" className="rounded-lg flex items-center gap-1 py-2 px-3 text-xs font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white hover:bg-white/5 hover:text-white transition-all">
+                <TabsTrigger value="orders" data-testid="mobile-tab-orders" className="flex-shrink-0 rounded-lg flex items-center gap-1 py-2 px-3 text-xs font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white hover:bg-white/5 hover:text-white transition-all touch-manipulation">
                   <Package className="w-3.5 h-3.5" /> Orders
                 </TabsTrigger>
-                <TabsTrigger value="pets" className="rounded-lg flex items-center gap-1 py-2 px-3 text-xs font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white hover:bg-white/5 hover:text-white transition-all">
+                <TabsTrigger value="pets" data-testid="mobile-tab-pets" className="flex-shrink-0 rounded-lg flex items-center gap-1 py-2 px-3 text-xs font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white hover:bg-white/5 hover:text-white transition-all touch-manipulation">
                   <PawPrint className="w-3.5 h-3.5" /> Pets
                 </TabsTrigger>
-                <TabsTrigger value="settings" className="rounded-lg flex items-center gap-1 py-2 px-3 text-xs font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white hover:bg-white/5 hover:text-white transition-all">
+                <TabsTrigger value="settings" data-testid="mobile-tab-settings" className="flex-shrink-0 rounded-lg flex items-center gap-1 py-2 px-3 text-xs font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white hover:bg-white/5 hover:text-white transition-all touch-manipulation">
                   <Settings className="w-3.5 h-3.5" /> Settings
                 </TabsTrigger>
               </TabsList>
