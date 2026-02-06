@@ -18,13 +18,11 @@ import { createFitRequest, showUnifiedFlowSuccess, showUnifiedFlowError } from '
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
-import MiraChatWidget from '../components/MiraChatWidget';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import AdminQuickEdit from '../components/AdminQuickEdit';
 import ProductCard from '../components/ProductCard';
 import MultiPetSelector from '../components/MultiPetSelector';
 import { getPetPhotoUrl } from '../utils/petAvatar';
-import SEOHead from '../components/SEOHead';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import PillarServicesGrid from '../components/PillarServicesGrid';
 import MiraPicksCarousel from '../components/MiraPicksCarousel';
@@ -34,6 +32,7 @@ import { FitnessJourneyCounter, RotatingSocialProof } from '../components/Social
 import TransformationStories from '../components/TransformationStories';
 import ConversationalEntry from '../components/ConversationalEntry';
 import QuickWinTip from '../components/QuickWinTip';
+import PillarPageLayout from '../components/PillarPageLayout';
 import {
   Dumbbell, Heart, TrendingUp, Scale, Activity, Trophy,
   CheckCircle, ChevronRight, ChevronLeft, Sparkles, Star, Loader2, Send,
@@ -1183,13 +1182,9 @@ const FitPage = () => {
           </div>
         </DialogContent>
       </Dialog>
-      
-      {/* Mira Floating Chat Widget */}
-      <MiraChatWidget pillar="fit" />
-      
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="fit" position="bottom-left" />
-    </div>
+    </PillarPageLayout>
   );
 };
 

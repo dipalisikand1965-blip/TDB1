@@ -11,12 +11,11 @@ import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
-import MiraChatWidget from '../components/MiraChatWidget';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import ProductCard from '../components/ProductCard';
 import AdminQuickEdit from '../components/AdminQuickEdit';
 import { getPetPhotoUrl } from '../utils/petAvatar';
-import SEOHead from '../components/SEOHead';
+import PillarPageLayout from '../components/PillarPageLayout';
 import {
   Brain, Heart, Apple, Home, Stethoscope, GraduationCap,
   CheckCircle, ChevronRight, Sparkles, Star, Loader2, Send,
@@ -752,13 +751,9 @@ const AdvisoryPage = () => {
         subtitle="Expert consultation services with transparent pricing"
         maxServices={8}
       />
-      
-      {/* Mira Floating Chat Widget */}
-      <MiraChatWidget pillar="advisory" />
-      
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="advisory" position="bottom-left" />
-    </div>
+    </PillarPageLayout>
   );
 };
 

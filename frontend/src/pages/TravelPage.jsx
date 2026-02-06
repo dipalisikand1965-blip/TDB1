@@ -12,17 +12,16 @@ import { createTravelRequest, showUnifiedFlowSuccess, showUnifiedFlowError } fro
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { toast } from '../hooks/use-toast';
-import MiraChatWidget from '../components/MiraChatWidget';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import ProductCard from '../components/ProductCard';
 import AdminQuickEdit from '../components/AdminQuickEdit';
 import { getPetPhotoUrl } from '../utils/petAvatar';
 import BreedAutocomplete from '../components/BreedAutocomplete';
-import SEOHead from '../components/SEOHead';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import MultiPetSelector from '../components/MultiPetSelector';
 import MiraPicksCarousel from '../components/MiraPicksCarousel';
 import PersonalizedPicks from '../components/PersonalizedPicks';
+import PillarPageLayout from '../components/PillarPageLayout';
 import {
   Car, Train, Plane, Truck, MapPin, Calendar, Clock, PawPrint,
   Shield, Heart, CheckCircle, AlertTriangle, MessageCircle, Phone,
@@ -1290,13 +1289,9 @@ const TravelPage = () => {
           )}
         </DialogContent>
       </Dialog>
-      
-      {/* Mira Floating Chat Widget */}
-      <MiraChatWidget pillar="travel" />
-      
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="travel" position="bottom-left" />
-    </div>
+    </PillarPageLayout>
   );
 };
 

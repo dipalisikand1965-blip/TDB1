@@ -10,11 +10,9 @@ import { API_URL } from '../utils/api';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { toast } from '../hooks/use-toast';
-import MiraChatWidget from '../components/MiraChatWidget';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import AdminQuickEdit from '../components/AdminQuickEdit';
 import ProductCard from '../components/ProductCard';
-import SEOHead from '../components/SEOHead';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import MiraPicksCarousel from '../components/MiraPicksCarousel';
 import PetJourneyRecommendations from '../components/PetJourneyRecommendations';
@@ -25,6 +23,7 @@ import { FitnessJourneyCounter, RotatingSocialProof } from '../components/Social
 import TransformationStories from '../components/TransformationStories';
 import ConversationalEntry from '../components/ConversationalEntry';
 import QuickWinTip from '../components/QuickWinTip';
+import PillarPageLayout from '../components/PillarPageLayout';
 import {
   Search, Filter, MapPin, Star, Heart, Dog, Calendar, Phone, Globe, 
   ChevronRight, Sparkles, Shield, TreePine, Sun, Waves, Mountain,
@@ -2846,7 +2845,7 @@ const SocialDetailsModal = ({ social, onClose }) => {
       
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="stay" position="bottom-left" />
-    </div>
+    </PillarPageLayout>
   );
 };
 

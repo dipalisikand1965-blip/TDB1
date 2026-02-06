@@ -17,10 +17,9 @@ import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
-import MiraChatWidget from '../components/MiraChatWidget';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
-import SEOHead from '../components/SEOHead';
 import { useNavigate } from 'react-router-dom';
+import PillarPageLayout from '../components/PillarPageLayout';
 import {
   Heart, Rainbow, Flower2, Star, Calendar, Phone, Mail, MapPin,
   Clock, ChevronRight, ChevronLeft, Sparkles, Home, CheckCircle, Users,
@@ -586,10 +585,6 @@ const FarewellPage = () => {
         subtitle="Compassionate services with transparent pricing"
         maxServices={8}
       />
-
-      {/* Mira Floating Chat Widget */}
-      <MiraChatWidget pillar="farewell" />
-
       {/* Service Request Modal */}
       <Dialog open={showServiceModal} onOpenChange={setShowServiceModal}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">

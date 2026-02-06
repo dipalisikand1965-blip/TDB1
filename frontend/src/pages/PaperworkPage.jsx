@@ -13,11 +13,10 @@ import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
-import MiraChatWidget from '../components/MiraChatWidget';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import ProductCard from '../components/ProductCard';
 import AdminQuickEdit from '../components/AdminQuickEdit';
-import SEOHead from '../components/SEOHead';
+import PillarPageLayout from '../components/PillarPageLayout';
 import {
   Shield, Heart, Plane, FileText, Sparkles, Scale, Upload, Download,
   Folder, FolderOpen, File, Eye, Trash2, Bell, Calendar, Clock,
@@ -951,13 +950,9 @@ const PaperworkPage = () => {
         subtitle="Documentation services with transparent pricing"
         maxServices={8}
       />
-      
-      {/* Mira Floating Chat Widget */}
-      <MiraChatWidget pillar="paperwork" />
-      
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="paperwork" position="bottom-left" />
-    </div>
+    </PillarPageLayout>
   );
 };
 

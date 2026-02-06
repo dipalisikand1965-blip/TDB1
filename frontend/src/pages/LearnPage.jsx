@@ -12,17 +12,16 @@ import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
-import MiraChatWidget from '../components/MiraChatWidget';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import AdminQuickEdit from '../components/AdminQuickEdit';
 import ProductCard from '../components/ProductCard';
 import PersonalizedPicks from '../components/PersonalizedPicks';
 import { getPetPhotoUrl } from '../utils/petAvatar';
-import SEOHead from '../components/SEOHead';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import ConversationalEntry from '../components/ConversationalEntry';
 import QuickWinTip from '../components/QuickWinTip';
 import { useNavigate } from 'react-router-dom';
+import PillarPageLayout from '../components/PillarPageLayout';
 import {
   GraduationCap, BookOpen, Brain, Star, Award, Trophy,
   CheckCircle, ChevronRight, Sparkles, Loader2, Send,
@@ -398,9 +397,6 @@ const LearnPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white" data-testid="learn-page">
-      {/* Mira Floating Chat Widget */}
-      <MiraChatWidget pillar="learn" />
-      
       {/* Staggered Animation Styles */}
       <style>{`
         @keyframes fadeInUp {
@@ -1304,7 +1300,7 @@ const LearnPage = () => {
       
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="learn" position="bottom-left" />
-    </div>
+    </PillarPageLayout>
   );
 };
 

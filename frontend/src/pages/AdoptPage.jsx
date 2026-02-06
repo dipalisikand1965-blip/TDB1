@@ -10,9 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { toast } from '../hooks/use-toast';
-import MiraChatWidget from '../components/MiraChatWidget';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
-import SEOHead from '../components/SEOHead';
+import PillarPageLayout from '../components/PillarPageLayout';
 import {
   Heart, PawPrint, Home, Calendar, MapPin, Phone, Mail, Users,
   ChevronRight, Sparkles, Search, Filter, Clock, CheckCircle,
@@ -642,10 +641,6 @@ const AdoptPage = () => {
         subtitle="See your personalized price based on your city, pet size, and requirements"
         maxServices={8}
       />
-      
-      {/* Mira Floating Chat Widget */}
-      <MiraChatWidget pillar="adopt" />
-      
       {/* Adoption Application Modal */}
       <Dialog open={showApplicationModal} onOpenChange={setShowApplicationModal}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
