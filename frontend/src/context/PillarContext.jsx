@@ -217,7 +217,15 @@ export const PillarProvider = ({ children }) => {
       }
     };
     
-    // Also listen for custom event from Navbar
+    // Listen for Navbar's petSelectionChanged event
+    const handlePetSelectionChanged = (e) => {
+      const newPet = e.detail?.pet;
+      if (newPet && newPet.id !== currentPet?.id) {
+        setCurrentPetState(newPet);
+      }
+    };
+    
+    // Also listen for our own custom event
     const handlePetChanged = (e) => {
       if (e.detail?.id !== currentPet?.id) {
         setCurrentPetState(e.detail);
@@ -225,10 +233,12 @@ export const PillarProvider = ({ children }) => {
     };
     
     window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('petSelectionChanged', handlePetSelectionChanged);
     window.addEventListener('petChanged', handlePetChanged);
     
     return () => {
       window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('petSelectionChanged', handlePetSelectionChanged);
       window.removeEventListener('petChanged', handlePetChanged);
     };
   }, [pets, currentPet?.id]);
