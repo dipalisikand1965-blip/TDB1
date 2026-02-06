@@ -3,21 +3,69 @@ import { useNavigate } from 'react-router-dom';
 import { Card } from '../../ui/card';
 import { Button } from '../../ui/button';
 import { Badge } from '../../ui/badge';
-import { Calendar, RefreshCw, Loader2, MessageCircle, Sparkles, PawPrint, Clock, ChevronDown, ChevronUp, MapPin, Phone, Mail, User } from 'lucide-react';
+import { Calendar, RefreshCw, Loader2, MessageCircle, Sparkles, PawPrint, Clock, ChevronDown, ChevronUp, MapPin, Phone, Mail, User, Send, X } from 'lucide-react';
+import { toast } from 'sonner';
+
+const API = process.env.REACT_APP_BACKEND_URL;
 
 const RequestsTab = ({ 
   myRequests, 
   requestsLoading, 
-  onRefresh 
+  onRefresh,
+  userEmail
 }) => {
   const navigate = useNavigate();
   const [expandedRequests, setExpandedRequests] = useState({});
+  const [messageDialog, setMessageDialog] = useState({ open: false, request: null });
+  const [messageText, setMessageText] = useState('');
+  const [sending, setSending] = useState(false);
 
   const toggleRequest = (requestId) => {
     setExpandedRequests(prev => ({
       ...prev,
       [requestId]: !prev[requestId]
     }));
+  };
+
+  const openMessageDialog = (request) => {
+    setMessageDialog({ open: true, request });
+    setMessageText('');
+  };
+
+  const closeMessageDialog = () => {
+    setMessageDialog({ open: false, request: null });
+    setMessageText('');
+  };
+
+  const sendMessageToConcierge = async () => {
+    if (!messageText.trim() || !messageDialog.request) return;
+    
+    setSending(true);
+    try {
+      const response = await fetch(
+        `${API}/api/user/request/${messageDialog.request.id}/message?email=${encodeURIComponent(userEmail)}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: messageText.trim() })
+        }
+      );
+      
+      const data = await response.json();
+      
+      if (response.ok) {
+        toast.success('Message sent to concierge!', {
+          description: `Ticket #${data.ticket_id?.slice(-6) || 'created'} - We'll respond shortly.`
+        });
+        closeMessageDialog();
+      } else {
+        toast.error('Failed to send message', { description: data.detail });
+      }
+    } catch (error) {
+      toast.error('Error sending message', { description: 'Please try again.' });
+    } finally {
+      setSending(false);
+    }
   };
 
   // Get status color classes for dark theme
@@ -34,6 +82,60 @@ const RequestsTab = ({
 
   return (
     <div className="animate-in fade-in-50 duration-300" data-testid="requests-tab">
+      {/* Message Dialog */}
+      {messageDialog.open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-slate-900 border border-white/10 rounded-2xl p-6 max-w-md w-full shadow-2xl">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                <MessageCircle className="w-5 h-5 text-purple-400" />
+                Message Concierge
+              </h3>
+              <button onClick={closeMessageDialog} className="p-1 hover:bg-white/10 rounded-lg">
+                <X className="w-5 h-5 text-slate-400" />
+              </button>
+            </div>
+            
+            <p className="text-sm text-slate-400 mb-4">
+              About: <span className="text-purple-300">{messageDialog.request?.service_name}</span>
+              {messageDialog.request?.pet_name && (
+                <span className="ml-2">for {messageDialog.request.pet_name}</span>
+              )}
+            </p>
+            
+            <textarea
+              value={messageText}
+              onChange={(e) => setMessageText(e.target.value)}
+              placeholder="Type your message... (e.g., 'I need to reschedule' or 'Can I add another pet?')"
+              className="w-full h-32 p-3 bg-slate-800 border border-white/10 rounded-xl text-white placeholder-slate-500 resize-none focus:outline-none focus:border-purple-500/50"
+              autoFocus
+            />
+            
+            <div className="flex gap-3 mt-4">
+              <Button
+                variant="outline"
+                onClick={closeMessageDialog}
+                className="flex-1 border-white/10 text-slate-300"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={sendMessageToConcierge}
+                disabled={!messageText.trim() || sending}
+                className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white"
+              >
+                {sending ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <Send className="w-4 h-4 mr-2" />
+                )}
+                Send Message
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Card className="p-4 sm:p-6 bg-slate-900/60 backdrop-blur-xl border border-white/10 rounded-2xl">
         {/* Header */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
