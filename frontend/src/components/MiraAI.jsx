@@ -1256,16 +1256,17 @@ const MiraAI = () => {
     return 'idle';
   };
 
-  // Always show the orb (except on admin/login pages)
+  // Show the orb ONLY on non-pillar pages
+  // Pillar pages have MiraChatWidget which handles its own orb
+  const isOnPillarPage = pillarPaths.some(path => 
+    location.pathname === path || location.pathname.startsWith(path + '/')
+  );
+  
   if (!isOpen) {
-    // Map activity state to orb context
-    const getOrbContext = () => {
-      if (isListening) return 'listening';
-      if (currentPillar === 'emergency') return 'emergency';
-      if (currentPillar === 'celebrate') return 'celebrate';
-      if (currentPillar) return currentPillar; // Pass pillar as context
-      return 'default';
-    };
+    // On pillar pages, MiraChatWidget handles the orb - don't render duplicate
+    if (isOnPillarPage) {
+      return null;
+    }
     
     return (
       <div 
@@ -1273,7 +1274,6 @@ const MiraAI = () => {
         data-testid="mira-orb-container"
       >
         <MiraOrb 
-          context={getOrbContext()}
           onClick={() => setIsOpen(true)}
           size="md"
         />
