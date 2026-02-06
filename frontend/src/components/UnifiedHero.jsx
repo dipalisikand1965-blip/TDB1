@@ -30,24 +30,25 @@ const PILLAR_GRADIENTS = {
   shop: 'from-[#2D1B4E] via-[#1E3A5F] to-[#0D2137]',
 };
 
-// Pillar titles
+// Pillar titles - Main heading with pet name
 const PILLAR_TITLES = {
   recommended: 'For {name}',
-  celebrate: 'Celebrate {name}',
-  dine: 'Dine with {name}',
-  care: 'Care for {name}',
-  enjoy: 'Play with {name}',
+  celebrate: 'Celebrations for {name}',
+  dine: 'Food & Treats for {name}',
+  care: 'Everyday Care for {name}',
+  enjoy: 'Joyful Experiences for {name}',
   travel: 'Travel with {name}',
-  stay: 'Home for {name}',
-  fit: 'Fit {name}',
-  learn: 'Train {name}',
-  advisory: 'Advice for {name}',
-  emergency: 'Emergency for {name}',
-  paperwork: 'Documents for {name}',
-  farewell: 'Remember {name}',
-  adopt: 'Expand the Family',
+  stay: 'Places {name} Feels at Home',
+  fit: 'Movement & Energy for {name}',
+  learn: 'Learning with {name}',
+  advisory: 'Guidance for {name}',
+  emergency: 'If Something Feels Urgent',
+  paperwork: 'Paperwork for {name}',
+  farewell: 'Honouring {name}',
+  adopt: 'Finding the Right Companion',
   all: 'Everything for {name}',
-  shop: 'Shop for {name}',
+  shop: 'Products for {name}',
+  services: 'Services for {name}',
 };
 
 // Soul traits display
