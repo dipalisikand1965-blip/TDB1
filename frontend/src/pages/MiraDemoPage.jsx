@@ -55,6 +55,7 @@ const MiraDemoPage = () => {
   // Refs
   const inputRef = useRef(null);
   const recognitionRef = useRef(null);
+  const handleSubmitRef = useRef(null);
   
   // Fetch user's pet if logged in
   useEffect(() => {
