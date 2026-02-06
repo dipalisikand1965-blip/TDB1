@@ -400,6 +400,69 @@ async def send_message_about_request(
     if not request:
         raise HTTPException(status_code=404, detail="Request not found or access denied")
     
+    # Extract common fields from request (handle different structures)
+    service_name = (
+        request.get("service_name") or 
+        request.get("subject") or 
+        request.get("service_type", "").replace("_", " ").title() or
+        "Service"
+    )
+    pet_name = (
+        request.get("pet_name") or 
+        request.get("pet", {}).get("name") if isinstance(request.get("pet"), dict) else None
+    )
+    service_type = request.get("service_type") or request.get("pillar")
+    
+    # If the request IS already a ticket, just add a message to it
+    if request_collection == "service_desk_tickets":
+        ticket_id = request.get("ticket_id") or request_id
+        message_obj = {
+            "id": str(uuid.uuid4()),
+            "type": "member_message",
+            "content": body.message,
+            "sender": "member",
+            "sender_email": email,
+            "timestamp": now,
+            "is_internal": False
+        }
+        
+        await db.service_desk_tickets.update_one(
+            {"ticket_id": ticket_id},
+            {
+                "$push": {"messages": message_obj},
+                "$set": {"updated_at": now, "status": "in_progress"}
+            }
+        )
+        
+        # Create admin notification
+        admin_notification = {
+            "id": str(uuid.uuid4()),
+            "type": "new_inquiry",
+            "title": f"💬 New message on {service_name}",
+            "message": f"Customer inquiry: {body.message[:100]}{'...' if len(body.message) > 100 else ''}",
+            "ticket_id": ticket_id,
+            "request_id": request_id,
+            "severity": "medium",
+            "created_at": now,
+            "read": False,
+            "metadata": {
+                "customer_email": email,
+                "service": service_name,
+                "pet_name": pet_name
+            }
+        }
+        
+        await db.admin_notifications.insert_one(admin_notification)
+        
+        logger.info(f"Message added to existing ticket {ticket_id}")
+        
+        return {
+            "success": True,
+            "message": "Message sent to concierge team",
+            "ticket_id": ticket_id,
+            "request_id": request_id
+        }
+    
     # Check if there's an existing ticket for this request
     ticket = await db.service_desk_tickets.find_one({
         "$or": [
@@ -438,16 +501,16 @@ async def send_message_about_request(
         
         new_ticket = {
             "ticket_id": ticket_id,
-            "subject": f"Inquiry about {request.get('service_name', 'Service')} booking",
+            "subject": f"Inquiry about {service_name}",
             "description": body.message,
             "member_email": email,
             "customer_email": email,
             "source": "member_inquiry",
             "source_reference": request_id,
             "request_id": request_id,
-            "service_name": request.get("service_name"),
-            "service_type": request.get("service_type"),
-            "pet_name": request.get("pet_name"),
+            "service_name": service_name,
+            "service_type": service_type,
+            "pet_name": pet_name,
             "status": "new",
             "priority": 2,
             "pillar": "care",
