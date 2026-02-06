@@ -318,7 +318,7 @@ const PillarPageLayout = ({
               selectedSubcategory,
               subcategories,
               shoppingForOther,
-              setActivePet,
+              setActivePet: setCurrentPet,
               setShoppingForOther,
               setSelectedSubcategory
             })
