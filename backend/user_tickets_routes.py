@@ -429,7 +429,7 @@ async def send_user_message_to_ticket(
     }
     
     # Add message to ticket
-    update_result = await db[collection].update_one(
+    await db[collection].update_one(
         {"ticket_id": ticket_id},
         {
             "$push": {"messages": message_obj},
