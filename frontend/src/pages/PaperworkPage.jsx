@@ -300,76 +300,50 @@ const PaperworkPage = () => {
   const selectedSubcategories = categories[uploadForm.category]?.subcategories || [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-blue-900 to-slate-900" data-testid="paperwork-page">
-      {/* SEO Meta Tags */}
-      <SEOHead page="paperwork" path="/paperwork" />
-
-      {/* Hero Section */}
-      <section className="relative overflow-hidden text-white">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=1200')] bg-cover bg-center opacity-10"></div>
-        <div className="relative max-w-7xl mx-auto px-4 py-16 md:py-20">
-          <div className="max-w-3xl">
-            <Badge className="bg-blue-500/20 text-blue-200 border-blue-400/30 mb-4">
-              <Lock className="w-3 h-3 mr-1" /> Secure Pet Document Vault
-            </Badge>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
-              Your Dog's Complete Life File
-            </h1>
-            <p className="text-lg md:text-xl text-blue-100 mb-8">
-              Identity, medical records, travel papers, insurance — neatly organized, 
-              securely stored, instantly accessible when you need them.
-            </p>
-            <div className="flex flex-wrap gap-4">
+    <PillarPageLayout
+      pillar="paperwork"
+      title="Paperwork - Document Vault | The Doggy Company"
+      description="Secure pet document storage. Identity, medical records, travel papers, insurance — neatly organized, securely stored, instantly accessible."
+    >
+      {/* Quick Action Banner - Below Hero */}
+      <div className="bg-gradient-to-r from-slate-700 to-slate-800 text-white py-4">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <Lock className="w-5 h-5 text-blue-300" />
+              <span className="text-sm text-slate-200">Secure Document Vault</span>
+            </div>
+            <div className="flex gap-3">
               {user ? (
                 <Button 
-                  size="lg" 
-                  className="bg-white text-blue-900 hover:bg-blue-50"
+                  size="sm" 
+                  className="bg-white text-slate-900 hover:bg-slate-100"
                   onClick={() => setShowUploadModal(true)}
                   data-testid="upload-document-btn"
                 >
-                  <Upload className="w-5 h-5 mr-2" /> Upload Document
+                  <Upload className="w-4 h-4 mr-1" /> Upload Document
                 </Button>
               ) : (
                 <Button 
-                  size="lg" 
-                  className="bg-white text-blue-900 hover:bg-blue-50"
+                  size="sm" 
+                  className="bg-white text-slate-900 hover:bg-slate-100"
                   onClick={() => setShowUploadModal(true)}
                 >
-                  <FileText className="w-5 h-5 mr-2" /> Access Document Vault
+                  <FileText className="w-4 h-4 mr-1" /> Access Vault
                 </Button>
               )}
               <Button 
-                size="lg" 
+                size="sm" 
                 variant="outline" 
                 className="border-white/30 text-white hover:bg-white/10"
                 onClick={() => document.getElementById('paperwork-products')?.scrollIntoView({ behavior: 'smooth' })}
               >
-                <FileText className="w-5 h-5 mr-2" /> Shop Document Kits
+                Shop Kits
               </Button>
             </div>
           </div>
-          
-          {/* Trust Indicators */}
-          <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl">
-            <div className="text-center p-4 bg-white/5 rounded-xl backdrop-blur-sm border border-white/10">
-              <Shield className="w-6 h-6 mx-auto mb-2 text-blue-300" />
-              <p className="text-sm text-blue-200">Secure Storage</p>
-            </div>
-            <div className="text-center p-4 bg-white/5 rounded-xl backdrop-blur-sm border border-white/10">
-              <Bell className="w-6 h-6 mx-auto mb-2 text-blue-300" />
-              <p className="text-sm text-blue-200">Smart Reminders</p>
-            </div>
-            <div className="text-center p-4 bg-white/5 rounded-xl backdrop-blur-sm border border-white/10">
-              <Plane className="w-6 h-6 mx-auto mb-2 text-blue-300" />
-              <p className="text-sm text-blue-200">Travel Ready</p>
-            </div>
-            <div className="text-center p-4 bg-white/5 rounded-xl backdrop-blur-sm border border-white/10">
-              <PawPrint className="w-6 h-6 mx-auto mb-2 text-blue-300" />
-              <p className="text-sm text-blue-200">Earn Paw Points</p>
-            </div>
-          </div>
         </div>
-      </section>
+      </div>
 
       {/* Document Vault Section (for logged in users) */}
       {user && (
