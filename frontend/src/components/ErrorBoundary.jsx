@@ -69,6 +69,17 @@ class ErrorBoundary extends React.Component {
                 </pre>
               </details>
             )}
+            {/* Production error details - collapsed by default */}
+            {process.env.NODE_ENV === 'production' && this.state.error && (
+              <details className="mt-6 text-left">
+                <summary className="cursor-pointer text-xs text-gray-400 hover:text-gray-600">
+                  Show error details for support
+                </summary>
+                <pre className="mt-2 p-3 bg-gray-100 rounded-lg text-xs text-red-600 overflow-auto max-h-32">
+                  {this.state.error?.message || 'Unknown error'}
+                </pre>
+              </details>
+            )}
           </div>
         </div>
       );
