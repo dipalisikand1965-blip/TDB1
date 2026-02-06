@@ -91,7 +91,7 @@ const MiraFloatingButton = () => {
       if (petMatch) {
         const petId = petMatch[1];
         try {
-          const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/pets/${petId}`);
+          const res = await fetch(`${API_URL}/api/pets/${petId}`);
           if (res.ok) {
             const pet = await res.json();
             if (pet && pet.name) {
@@ -114,7 +114,7 @@ const MiraFloatingButton = () => {
       // Fall back to fetching user's pets if logged in
       if (!token) return;
       try {
-        const res = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/pets/my-pets`, {
+        const res = await fetch(`${API_URL}/api/pets/my-pets`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         if (res.ok) {
