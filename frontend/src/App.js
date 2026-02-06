@@ -409,12 +409,53 @@ function MainLayout() {
         {/* Service Pillars - Open for browsing */}
         <Route path="/dine" element={<DinePage />} />
         <Route path="/dine/meals" element={<MealsPage />} />
+        <Route path="/dine/fresh-meals" element={<ProductListing category="fresh-meals" pillar="dine" />} />
+        <Route path="/dine/treats" element={<ProductListing category="treats" pillar="dine" />} />
+        <Route path="/dine/desi-treats" element={<ProductListing category="desi-treats" pillar="dine" />} />
+        <Route path="/dine/frozen" element={<ProductListing category="frozen" pillar="dine" />} />
+        <Route path="/dine/supplements" element={<ProductListing category="supplements" pillar="dine" />} />
+        <Route path="/dine/:category" element={<ProductListing pillar="dine" />} />
+        
         <Route path="/stay" element={<StayPage />} />
+        <Route path="/stay/beds" element={<ProductListing category="beds" pillar="stay" />} />
+        <Route path="/stay/mats" element={<ProductListing category="mats" pillar="stay" />} />
+        <Route path="/stay/kennels" element={<ProductListing category="kennels" pillar="stay" />} />
+        <Route path="/stay/bowls" element={<ProductListing category="bowls" pillar="stay" />} />
+        <Route path="/stay/:category" element={<ProductListing pillar="stay" />} />
+        
         <Route path="/travel" element={<TravelPage />} />
+        <Route path="/travel/carriers" element={<ProductListing category="carriers" pillar="travel" />} />
+        <Route path="/travel/car" element={<ProductListing category="car-accessories" pillar="travel" />} />
+        <Route path="/travel/outdoor" element={<ProductListing category="outdoor" pillar="travel" />} />
+        <Route path="/travel/:category" element={<ProductListing pillar="travel" />} />
+        
         <Route path="/care" element={<CarePage />} />
+        <Route path="/care/grooming" element={<ProductListing category="grooming" pillar="care" />} />
+        <Route path="/care/health" element={<ProductListing category="health" pillar="care" />} />
+        <Route path="/care/supplements" element={<ProductListing category="supplements" pillar="care" />} />
+        <Route path="/care/spa" element={<ProductListing category="spa" pillar="care" />} />
+        <Route path="/care/:category" element={<ProductListing pillar="care" />} />
+        
         <Route path="/enjoy" element={<EnjoyPage />} />
+        <Route path="/enjoy/toys" element={<ProductListing category="toys" pillar="enjoy" />} />
+        <Route path="/enjoy/chews" element={<ProductListing category="chews" pillar="enjoy" />} />
+        <Route path="/enjoy/games" element={<ProductListing category="games" pillar="enjoy" />} />
+        <Route path="/enjoy/puzzles" element={<ProductListing category="puzzles" pillar="enjoy" />} />
+        <Route path="/enjoy/:category" element={<ProductListing pillar="enjoy" />} />
+        
         <Route path="/fit" element={<FitPage />} />
+        <Route path="/fit/leashes" element={<ProductListing category="leashes" pillar="fit" />} />
+        <Route path="/fit/harnesses" element={<ProductListing category="harnesses" pillar="fit" />} />
+        <Route path="/fit/collars" element={<ProductListing category="collars" pillar="fit" />} />
+        <Route path="/fit/apparel" element={<ProductListing category="apparel" pillar="fit" />} />
+        <Route path="/fit/:category" element={<ProductListing pillar="fit" />} />
+        
         <Route path="/learn" element={<LearnPage />} />
+        <Route path="/learn/training" element={<ProductListing category="training" pillar="learn" />} />
+        <Route path="/learn/puzzles" element={<ProductListing category="puzzles" pillar="learn" />} />
+        <Route path="/learn/books" element={<ProductListing category="books" pillar="learn" />} />
+        <Route path="/learn/:category" element={<ProductListing pillar="learn" />} />
+        
         <Route path="/advisory" element={<AdvisoryPage />} />
         <Route path="/paperwork" element={<PaperworkPage />} />
         <Route path="/emergency" element={<EmergencyPage />} />
