@@ -2045,6 +2045,30 @@ async def add_reply(ticket_id: str, reply: TicketReply):
         }
     )
     
+    # Create member notification if not internal message
+    if not reply.is_internal:
+        member_email = ticket.get("member_email") or ticket.get("customer_email") or ticket.get("member", {}).get("email")
+        member_name = ticket.get("member", {}).get("name") or ticket.get("member_name") or "Pet Parent"
+        
+        if member_email:
+            try:
+                member_notif = {
+                    "id": f"MNOTIF-{uuid.uuid4().hex[:8].upper()}",
+                    "user_email": member_email,
+                    "type": "concierge_reply",
+                    "title": "💬 Concierge Reply",
+                    "message": f"{reply.message[:100]}{'...' if len(reply.message) > 100 else ''}",
+                    "ticket_id": ticket_id,
+                    "link": f"/member?tab=requests",
+                    "read": False,
+                    "created_at": now,
+                    "timestamp": now
+                }
+                await db.member_notifications.insert_one(member_notif)
+                logger.info(f"Created member notification for {member_email} on ticket {ticket_id}")
+            except Exception as e:
+                logger.error(f"Failed to create member notification: {e}")
+    
     return {"success": True, "message": message}
 
 
