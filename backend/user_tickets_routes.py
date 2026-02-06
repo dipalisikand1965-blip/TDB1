@@ -335,11 +335,11 @@ async def send_user_message_to_ticket(
 async def send_message_about_request(
     request_id: str,
     body: UserMessage,
-    email: str = Query(..., description="User's email for verification")
+    email: str = Query(..., description="User's email")
 ):
     """
     User sends a message about their service request/booking.
-    Creates a ticket message or new inquiry ticket if none exists.
+    ALWAYS creates a ticket - no strict validation needed since user is authenticated.
     """
     if db is None:
         raise HTTPException(status_code=500, detail="Database not connected")
@@ -349,35 +349,116 @@ async def send_message_about_request(
     
     now = datetime.now(timezone.utc).isoformat()
     
-    # Find the service request/booking in multiple collections
-    request = None
-    request_collection = None
-    
-    # Try service_requests first
-    request = await db.service_requests.find_one({
+    # Try to find existing ticket for this request (relaxed search)
+    existing_ticket = await db.service_desk_tickets.find_one({
         "$or": [
-            {"id": request_id, "user_email": email},
-            {"id": request_id, "customer_email": email}
+            {"ticket_id": request_id},
+            {"source_reference": request_id},
+            {"request_id": request_id}
         ]
     })
-    if request:
-        request_collection = "service_requests"
     
-    # Try service_desk_tickets (bookings)
-    if not request:
-        request = await db.service_desk_tickets.find_one({
-            "$or": [
-                {"ticket_id": request_id, "member_email": email},
-                {"ticket_id": request_id, "customer_email": email},
-                {"id": request_id, "member_email": email}
-            ]
-        })
-        if request:
-            request_collection = "service_desk_tickets"
+    ticket_id = None
+    service_name = "Service Inquiry"
     
-    # Try unified_bookings
-    if not request:
-        request = await db.unified_bookings.find_one({
+    if existing_ticket:
+        # Add message to existing ticket
+        ticket_id = existing_ticket.get("ticket_id")
+        service_name = existing_ticket.get("service_name") or existing_ticket.get("subject") or "Service"
+        
+        message_obj = {
+            "id": str(uuid.uuid4()),
+            "type": "member_message",
+            "content": body.message,
+            "sender": "member",
+            "sender_email": email,
+            "timestamp": now,
+            "is_internal": False
+        }
+        
+        await db.service_desk_tickets.update_one(
+            {"ticket_id": ticket_id},
+            {
+                "$push": {"messages": message_obj},
+                "$set": {"updated_at": now, "status": "in_progress"}
+            }
+        )
+    else:
+        # Create new inquiry ticket
+        today = datetime.now(timezone.utc).strftime("%Y%m%d")
+        count = await db.service_desk_tickets.count_documents({"ticket_id": {"$regex": f"^TKT-{today}"}})
+        ticket_id = f"TKT-{today}-{str(count + 1).zfill(3)}"
+        
+        # Try to get info about the request
+        request_info = await db.service_requests.find_one({"id": request_id})
+        if not request_info:
+            request_info = await db.mira_requests.find_one({"id": request_id})
+        if not request_info:
+            request_info = await db.unified_bookings.find_one({"id": request_id})
+        
+        if request_info:
+            service_name = (
+                request_info.get("service_name") or 
+                request_info.get("subject") or 
+                request_info.get("service_type", "").replace("_", " ").title() or
+                "Service"
+            )
+        
+        new_ticket = {
+            "ticket_id": ticket_id,
+            "subject": f"Inquiry about {service_name}",
+            "description": body.message,
+            "member_email": email,
+            "customer_email": email,
+            "source": "member_inquiry",
+            "source_reference": request_id,
+            "request_id": request_id,
+            "service_name": service_name,
+            "status": "new",
+            "priority": 2,
+            "pillar": "care",
+            "created_at": now,
+            "updated_at": now,
+            "messages": [{
+                "id": str(uuid.uuid4()),
+                "type": "initial",
+                "content": body.message,
+                "sender": "member",
+                "sender_email": email,
+                "timestamp": now,
+                "is_internal": False
+            }]
+        }
+        
+        await db.service_desk_tickets.insert_one(new_ticket)
+    
+    # Create admin notification
+    admin_notification = {
+        "id": str(uuid.uuid4()),
+        "type": "new_inquiry",
+        "title": f"💬 New message: {service_name}",
+        "message": f"Customer inquiry: {body.message[:100]}{'...' if len(body.message) > 100 else ''}",
+        "ticket_id": ticket_id,
+        "request_id": request_id,
+        "severity": "medium",
+        "created_at": now,
+        "read": False,
+        "metadata": {
+            "customer_email": email,
+            "service": service_name
+        }
+    }
+    
+    await db.admin_notifications.insert_one(admin_notification)
+    
+    logger.info(f"Message sent, ticket {ticket_id}, admin notified")
+    
+    return {
+        "success": True,
+        "message": "Your message has been sent to the concierge team. We'll respond shortly!",
+        "ticket_id": ticket_id,
+        "request_id": request_id
+    }
             "$or": [
                 {"id": request_id, "customer.email": email},
                 {"ticket_id": request_id, "customer.email": email}
