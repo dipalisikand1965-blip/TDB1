@@ -48,10 +48,12 @@ const RequestsTab = ({
   };
 
   const openMessageDialog = async (request) => {
+    console.log('Opening message dialog for request:', request);
     setMessageDialog({ open: true, request });
     setMessageText('');
     // Load existing conversation
     const requestId = request.ticket_id || request.id;
+    console.log('Loading messages for requestId:', requestId);
     await loadConversationMessages(requestId);
   };
 
