@@ -1,12 +1,12 @@
 /**
- * MiraOrb - A Premium, Ethereal AI Presence
+ * MiraOrb - "The Soul Pearl"
  * 
- * Not a button. An entity.
- * Deep, intelligent, calm.
- * Internal moving light - the intelligence within.
+ * A jewel, not a void. Uses the brand's Soul Gradient 
+ * (Purple → Pink → Amber) to harmonize with the entire site.
  * 
- * Inspired by: Apple, Nothing, Vercel, Linear
- * Designed to hit the soul.
+ * Designed to work on BOTH dark and light backgrounds:
+ * - Light purple highlight (top-left) for dark backgrounds
+ * - Deep obsidian shadow (bottom-right) for light backgrounds
  */
 
 import React from 'react';
@@ -14,9 +14,9 @@ import { motion } from 'framer-motion';
 
 const MiraOrb = ({ onClick, size = 'md', className = '' }) => {
   const sizes = {
-    sm: 64,
-    md: 80,
-    lg: 96,
+    sm: 56,
+    md: 72,
+    lg: 88,
   };
   
   const orbSize = sizes[size];
@@ -29,11 +29,11 @@ const MiraOrb = ({ onClick, size = 'md', className = '' }) => {
         if (navigator.vibrate) navigator.vibrate(15);
         onClick?.(e);
       }}
-      whileHover={{ scale: 1.08 }}
+      whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.95 }}
       data-testid="mira-orb"
     >
-      {/* Outer Ambient Glow - The 'Aura' */}
+      {/* Outer Glow - Soul Gradient (Purple → Pink) */}
       <motion.div
         className="absolute rounded-full pointer-events-none"
         style={{
@@ -42,62 +42,67 @@ const MiraOrb = ({ onClick, size = 'md', className = '' }) => {
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
-          background: 'radial-gradient(circle, rgba(124,58,237,0.5) 0%, rgba(76,29,149,0.25) 40%, transparent 70%)',
-          filter: 'blur(20px)',
+          background: 'radial-gradient(circle, rgba(147,51,234,0.4) 0%, rgba(236,72,153,0.2) 40%, transparent 70%)',
+          filter: 'blur(16px)',
         }}
         animate={{
-          scale: [1, 1.15, 1],
-          opacity: [0.4, 0.7, 0.4],
+          scale: [1, 1.2, 1],
+          opacity: [0.5, 0.8, 0.5],
         }}
         transition={{
-          duration: 6,
+          duration: 5,
           repeat: Infinity,
           ease: "easeInOut",
         }}
       />
 
-      {/* Secondary Glow - Cyan accent */}
+      {/* Secondary Glow - Amber accent for warmth */}
       <motion.div
         className="absolute rounded-full pointer-events-none"
         style={{
-          width: orbSize * 1.4,
-          height: orbSize * 1.4,
+          width: orbSize * 1.3,
+          height: orbSize * 1.3,
           top: '50%',
           left: '50%',
-          transform: 'translate(-50%, -50%)',
-          background: 'radial-gradient(circle at 70% 70%, rgba(34,211,238,0.3) 0%, transparent 50%)',
-          filter: 'blur(12px)',
+          transform: 'translate(-50%, -50%) translate(10%, 10%)',
+          background: 'radial-gradient(circle, rgba(245,158,11,0.25) 0%, transparent 60%)',
+          filter: 'blur(10px)',
         }}
         animate={{
-          opacity: [0.2, 0.4, 0.2],
+          opacity: [0.3, 0.5, 0.3],
         }}
         transition={{
           duration: 4,
           repeat: Infinity,
           ease: "easeInOut",
-          delay: 1,
+          delay: 0.5,
         }}
       />
 
-      {/* The Core Entity */}
+      {/* The Core - Soul Pearl */}
       <div 
-        className="relative rounded-full overflow-hidden shadow-2xl"
+        className="relative rounded-full overflow-hidden"
         style={{
           width: orbSize,
           height: orbSize,
-          boxShadow: '0 0 40px rgba(124,58,237,0.3), 0 0 80px rgba(76,29,149,0.2), inset 0 0 30px rgba(0,0,0,0.8)',
-          border: '1px solid rgba(255,255,255,0.08)',
+          boxShadow: `
+            0 0 30px rgba(147,51,234,0.4),
+            0 0 60px rgba(236,72,153,0.2),
+            0 8px 32px rgba(0,0,0,0.3),
+            inset 0 0 20px rgba(0,0,0,0.5)
+          `,
+          border: '1px solid rgba(255,255,255,0.1)',
         }}
       >
-        {/* Deep Space Background */}
+        {/* Deep Purple Core - The Jewel */}
         <div 
           className="absolute inset-0"
           style={{
-            background: 'radial-gradient(circle at 30% 30%, #1a1a2e 0%, #0a0a12 50%, #050508 100%)',
+            background: 'radial-gradient(circle at 30% 30%, #581c87 0%, #2e1065 40%, #020617 100%)',
           }}
         />
 
-        {/* Moving Internal Light - The 'Intelligence' */}
+        {/* Rotating Inner Light - Soul Gradient flowing inside */}
         <motion.div
           className="absolute pointer-events-none"
           style={{
@@ -106,9 +111,9 @@ const MiraOrb = ({ onClick, size = 'md', className = '' }) => {
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
-            background: 'conic-gradient(from 0deg, transparent 0%, rgba(139,92,246,0.6) 15%, transparent 30%, rgba(56,189,248,0.4) 50%, transparent 65%, rgba(167,139,250,0.5) 80%, transparent 100%)',
-            filter: 'blur(15px)',
-            opacity: 0.8,
+            background: 'conic-gradient(from 0deg, transparent 0%, rgba(245,158,11,0.5) 15%, transparent 30%, rgba(236,72,153,0.5) 50%, transparent 65%, rgba(147,51,234,0.5) 80%, transparent 100%)',
+            filter: 'blur(12px)',
+            opacity: 0.7,
           }}
           animate={{
             rotate: 360,
@@ -120,30 +125,36 @@ const MiraOrb = ({ onClick, size = 'md', className = '' }) => {
           }}
         />
 
-        {/* Inner Core Highlight - Glass reflection */}
+        {/* Top-left Highlight - Glass reflection for dark backgrounds */}
         <div
-          className="absolute inset-0 rounded-full pointer-events-none"
+          className="absolute rounded-full pointer-events-none"
           style={{
-            background: 'radial-gradient(circle at 25% 25%, rgba(255,255,255,0.2) 0%, transparent 50%)',
+            width: orbSize * 0.4,
+            height: orbSize * 0.3,
+            top: '12%',
+            left: '15%',
+            background: 'linear-gradient(135deg, rgba(255,255,255,0.3) 0%, transparent 100%)',
+            filter: 'blur(4px)',
+            borderRadius: '50%',
           }}
         />
 
-        {/* Second reflection - bottom */}
+        {/* Pink shimmer - brand accent */}
         <div
           className="absolute inset-0 rounded-full pointer-events-none"
           style={{
-            background: 'radial-gradient(circle at 70% 80%, rgba(124,58,237,0.15) 0%, transparent 40%)',
+            background: 'radial-gradient(circle at 70% 60%, rgba(236,72,153,0.2) 0%, transparent 40%)',
           }}
         />
-        
-        {/* Subtle Pulse Overlay - The heartbeat */}
+
+        {/* Pulse - The heartbeat */}
         <motion.div
           className="absolute inset-0 rounded-full pointer-events-none"
           style={{
-            background: 'radial-gradient(circle, rgba(139,92,246,0.3) 0%, transparent 70%)',
+            background: 'radial-gradient(circle, rgba(147,51,234,0.4) 0%, transparent 60%)',
           }}
           animate={{ 
-            opacity: [0, 0.3, 0],
+            opacity: [0, 0.4, 0],
             scale: [0.8, 1, 0.8],
           }}
           transition={{ 
