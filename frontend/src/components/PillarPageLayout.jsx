@@ -17,6 +17,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Package, Wrench, PawPrint } from 'lucide-react';
 import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
+import { usePillarContext } from '../context/PillarContext';
 import UnifiedHero from './UnifiedHero';
 import PillarNav from './PillarNav';
 import SEOHead from './SEOHead';
