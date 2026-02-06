@@ -19,13 +19,27 @@ export const getApiUrl = (path = '') => {
   return (process.env.REACT_APP_BACKEND_URL || '') + path;
 };
 
-// API_URL - evaluated at runtime in the browser
-export const API_URL = (() => {
+// API_URL - Use getter to ensure runtime evaluation in browser
+// This ensures the hostname check happens at runtime, not build time
+let _cachedApiUrl = null;
+export const API_URL = '';  // Default empty for production
+
+// Get the actual API URL at runtime
+export const getRuntimeApiUrl = () => {
+  if (_cachedApiUrl !== null) return _cachedApiUrl;
+  
   if (typeof window !== 'undefined') {
-    return getApiUrl();
+    const hostname = window.location.hostname;
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      _cachedApiUrl = process.env.REACT_APP_BACKEND_URL || '';
+    } else {
+      _cachedApiUrl = '';  // Use relative paths in production
+    }
+  } else {
+    _cachedApiUrl = process.env.REACT_APP_BACKEND_URL || '';
   }
-  return process.env.REACT_APP_BACKEND_URL || '';
-})();
+  return _cachedApiUrl;
+};
 
 // Get auth headers for admin API calls
 // Reads credentials from localStorage (set during admin login)
