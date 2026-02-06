@@ -5089,33 +5089,61 @@ async def get_my_requests(
     
     # Format for frontend
     requests = []
+    seen_ids = set()  # Track seen ticket IDs to avoid duplicates
+    
     for ticket in mira_tickets:
-        requests.append({
-            "id": ticket.get("ticket_id"),
-            "type": ticket.get("ticket_type", "advisory"),
-            "pillar": ticket.get("pillar"),
-            "status": ticket.get("status"),
-            "status_display": get_status_display(ticket.get("status")),
-            "description": ticket.get("description", "")[:100],
-            "created_at": ticket.get("created_at"),
-            "updated_at": ticket.get("updated_at"),
-            "pet_name": ticket.get("pet", {}).get("name") if ticket.get("pet") else None,
-            "source": "mira"
-        })
+        tid = ticket.get("ticket_id")
+        if tid and tid not in seen_ids:
+            seen_ids.add(tid)
+            requests.append({
+                "id": tid,
+                "ticket_id": tid,
+                "type": ticket.get("ticket_type", "advisory"),
+                "pillar": ticket.get("pillar"),
+                "status": ticket.get("status"),
+                "status_display": get_status_display(ticket.get("status")),
+                "description": ticket.get("description", "")[:100],
+                "created_at": ticket.get("created_at"),
+                "updated_at": ticket.get("updated_at"),
+                "pet_name": ticket.get("pet", {}).get("name") if ticket.get("pet") else None,
+                "source": "mira"
+            })
     
     for ticket in service_tickets:
-        requests.append({
-            "id": ticket.get("ticket_id"),
-            "type": ticket.get("action_type", "request"),
-            "pillar": ticket.get("pillar"),
-            "status": ticket.get("status"),
-            "status_display": get_status_display(ticket.get("status")),
-            "description": ticket.get("original_request", "")[:100],
-            "created_at": ticket.get("created_at"),
-            "updated_at": ticket.get("updated_at"),
-            "pet_names": [p.get("name") for p in ticket.get("pets", []) if p.get("name")],
-            "source": "service_desk"
-        })
+        tid = ticket.get("ticket_id")
+        if tid and tid not in seen_ids:
+            seen_ids.add(tid)
+            # Handle description from various fields
+            description = (
+                ticket.get("description") or 
+                ticket.get("original_request") or 
+                ticket.get("subject") or 
+                ""
+            )[:100]
+            # Handle pet name from various structures
+            pet_name = ticket.get("pet_name")
+            if not pet_name:
+                pets = ticket.get("pets", [])
+                if pets and isinstance(pets, list):
+                    pet_name = ", ".join([p.get("name", "") for p in pets if p.get("name")])
+            
+            requests.append({
+                "id": tid,
+                "ticket_id": tid,
+                "type": ticket.get("action_type", "request"),
+                "pillar": ticket.get("pillar") or ticket.get("category") or "General",
+                "status": ticket.get("status"),
+                "status_display": get_status_display(ticket.get("status")),
+                "description": description,
+                "service_name": ticket.get("service_name") or ticket.get("subject"),
+                "created_at": ticket.get("created_at"),
+                "updated_at": ticket.get("updated_at"),
+                "pet_name": pet_name,
+                "pet_names": [p.get("name") for p in ticket.get("pets", []) if p.get("name")],
+                "source": "service_desk",
+                "messages": ticket.get("messages", []),
+                "has_new_reply": ticket.get("has_new_member_message", False)
+            })
     
     # Also fetch quick_bookings
     quick_bookings = await db.quick_bookings.find(
