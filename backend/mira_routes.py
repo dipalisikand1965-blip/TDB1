@@ -147,9 +147,17 @@ async def understand_with_llm(
             "concierge_reason": "API key not configured"
         }
     
-    # Build pet context string
+    # Build pet context string with breed intelligence
     pet_info = ""
+    breed_context = ""
+    
     if pet_context:
+        breed_name = pet_context.get('breed', '')
+        
+        # Get breed-specific knowledge
+        if breed_name:
+            breed_context = format_breed_context_for_llm(breed_name)
+        
         pet_info = f"""
 PET CONTEXT:
 - Name: {pet_context.get('name', 'Your pet')}
@@ -158,6 +166,8 @@ PET CONTEXT:
 - Traits: {', '.join(pet_context.get('traits', []) or ['Not specified'])}
 - Sensitivities: {', '.join(pet_context.get('sensitivities', []) or ['None known'])}
 - Favorites: {', '.join(pet_context.get('favorites', []) or ['Not specified'])}
+
+{breed_context}
 """
     
     # Time context
@@ -184,6 +194,7 @@ CURRENT CONTEXT:
 USER INPUT: "{user_input}"
 
 Analyze this input and respond with valid JSON following the format specified.
+Use the BREED INTELLIGENCE above to provide breed-specific advice. Reference health concerns, dietary needs, climate considerations, and special tips relevant to this breed.
 """
         
         user_message = UserMessage(text=user_message_text)
