@@ -229,3 +229,226 @@ async def get_ticket_detail(ticket_id: str, email: str = Query(...)):
         raise HTTPException(status_code=404, detail="Ticket not found or access denied")
     
     return ticket
+
+
+# ============== USER MESSAGE TO TICKET ==============
+
+from pydantic import BaseModel
+
+class UserMessage(BaseModel):
+    message: str
+    request_id: Optional[str] = None  # For service requests/bookings
+
+@router.post("/ticket/{ticket_id}/message")
+async def send_user_message_to_ticket(
+    ticket_id: str, 
+    body: UserMessage,
+    email: str = Query(..., description="User's email for verification")
+):
+    """
+    User sends a message to their ticket.
+    Creates admin notification and adds to ticket conversation.
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not connected")
+    
+    from datetime import datetime, timezone
+    import uuid
+    
+    now = datetime.now(timezone.utc).isoformat()
+    
+    # Find ticket with ownership verification
+    query = {
+        "ticket_id": ticket_id,
+        "$or": [
+            {"member_email": email},
+            {"customer_email": email},
+            {"member.email": email},
+            {"customer.email": email},
+            {"user_email": email}
+        ]
+    }
+    
+    ticket = await db.service_desk_tickets.find_one(query)
+    collection = "service_desk_tickets"
+    
+    if not ticket:
+        ticket = await db.tickets.find_one(query)
+        collection = "tickets"
+    
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found or access denied")
+    
+    # Create message object
+    message_obj = {
+        "id": str(uuid.uuid4()),
+        "type": "member_message",
+        "content": body.message,
+        "sender": "member",
+        "sender_email": email,
+        "timestamp": now,
+        "is_internal": False
+    }
+    
+    # Add message to ticket
+    update_result = await db[collection].update_one(
+        {"ticket_id": ticket_id},
+        {
+            "$push": {"messages": message_obj},
+            "$set": {
+                "updated_at": now,
+                "status": "in_progress" if ticket.get("status") in ["waiting_on_member", "new"] else ticket.get("status")
+            }
+        }
+    )
+    
+    # Create admin notification
+    admin_notification = {
+        "id": str(uuid.uuid4()),
+        "type": "ticket_message",
+        "title": f"New message on Ticket #{ticket_id[-6:]}",
+        "message": f"Customer sent a message: {body.message[:100]}{'...' if len(body.message) > 100 else ''}",
+        "ticket_id": ticket_id,
+        "severity": "info",
+        "created_at": now,
+        "read": False,
+        "metadata": {
+            "customer_email": email,
+            "service": ticket.get("service_name") or ticket.get("subject"),
+            "request_id": body.request_id
+        }
+    }
+    
+    await db.admin_notifications.insert_one(admin_notification)
+    
+    logger.info(f"User message added to ticket {ticket_id}, admin notified")
+    
+    return {
+        "success": True,
+        "message": "Message sent to concierge",
+        "ticket_id": ticket_id,
+        "message_id": message_obj["id"]
+    }
+
+
+@router.post("/request/{request_id}/message")
+async def send_message_about_request(
+    request_id: str,
+    body: UserMessage,
+    email: str = Query(..., description="User's email for verification")
+):
+    """
+    User sends a message about their service request/booking.
+    Creates a ticket message or new inquiry ticket if none exists.
+    """
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not connected")
+    
+    from datetime import datetime, timezone
+    import uuid
+    
+    now = datetime.now(timezone.utc).isoformat()
+    
+    # Find the service request
+    request = await db.service_requests.find_one({
+        "id": request_id,
+        "user_email": email
+    })
+    
+    if not request:
+        raise HTTPException(status_code=404, detail="Request not found or access denied")
+    
+    # Check if there's an existing ticket for this request
+    ticket = await db.service_desk_tickets.find_one({
+        "$or": [
+            {"source_reference": request_id},
+            {"request_id": request_id}
+        ]
+    })
+    
+    ticket_id = None
+    
+    if ticket:
+        # Add message to existing ticket
+        ticket_id = ticket.get("ticket_id")
+        message_obj = {
+            "id": str(uuid.uuid4()),
+            "type": "member_message",
+            "content": body.message,
+            "sender": "member",
+            "sender_email": email,
+            "timestamp": now,
+            "is_internal": False
+        }
+        
+        await db.service_desk_tickets.update_one(
+            {"ticket_id": ticket_id},
+            {
+                "$push": {"messages": message_obj},
+                "$set": {"updated_at": now, "status": "in_progress"}
+            }
+        )
+    else:
+        # Create new ticket for this inquiry
+        today = datetime.now(timezone.utc).strftime("%Y%m%d")
+        count = await db.service_desk_tickets.count_documents({"ticket_id": {"$regex": f"^TKT-{today}"}})
+        ticket_id = f"TKT-{today}-{str(count + 1).zfill(3)}"
+        
+        new_ticket = {
+            "ticket_id": ticket_id,
+            "subject": f"Inquiry about {request.get('service_name', 'Service')} booking",
+            "description": body.message,
+            "member_email": email,
+            "customer_email": email,
+            "source": "member_inquiry",
+            "source_reference": request_id,
+            "request_id": request_id,
+            "service_name": request.get("service_name"),
+            "service_type": request.get("service_type"),
+            "pet_name": request.get("pet_name"),
+            "status": "new",
+            "priority": 2,
+            "pillar": "care",
+            "created_at": now,
+            "updated_at": now,
+            "messages": [{
+                "id": str(uuid.uuid4()),
+                "type": "initial",
+                "content": body.message,
+                "sender": "member",
+                "sender_email": email,
+                "timestamp": now,
+                "is_internal": False
+            }]
+        }
+        
+        await db.service_desk_tickets.insert_one(new_ticket)
+    
+    # Create admin notification
+    admin_notification = {
+        "id": str(uuid.uuid4()),
+        "type": "new_inquiry",
+        "title": f"🎫 New message for {request.get('service_name', 'booking')}",
+        "message": f"Customer inquiry: {body.message[:100]}{'...' if len(body.message) > 100 else ''}",
+        "ticket_id": ticket_id,
+        "request_id": request_id,
+        "severity": "medium",
+        "created_at": now,
+        "read": False,
+        "metadata": {
+            "customer_email": email,
+            "service": request.get("service_name"),
+            "pet_name": request.get("pet_name")
+        }
+    }
+    
+    await db.admin_notifications.insert_one(admin_notification)
+    
+    logger.info(f"Message created for request {request_id}, ticket {ticket_id}")
+    
+    return {
+        "success": True,
+        "message": "Message sent to concierge team",
+        "ticket_id": ticket_id,
+        "request_id": request_id
+    }
