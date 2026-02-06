@@ -62,8 +62,8 @@ const PersonalizedHero = ({
   const soulEnergy = useMemo(() => getSoulEnergy(pet), [pet]);
   const soulScore = pet?.soul_score || 0;
   
-  // Real pet photo URL
-  const petPhoto = pet?.image || pet?.photo || pet?.avatar;
+  // Real pet photo URL - check all possible property names
+  const petPhoto = pet?.photo_url || pet?.image_url || pet?.image || pet?.photo || pet?.avatar;
   const hasPetPhoto = !!petPhoto;
   
   // Breed display name
