@@ -15,8 +15,7 @@
  */
 
 import { toast } from '../hooks/use-toast';
-
-const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+import { API_URL } from './api';
 
 /**
  * HARD GUARD: Validate unified flow response
