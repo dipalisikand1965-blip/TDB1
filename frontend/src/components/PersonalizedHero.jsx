@@ -112,8 +112,8 @@ const PersonalizedHero = ({
             key={`sparkle-${i}`}
             className="absolute text-amber-300/40 animate-twinkle"
             style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
+              left: `${(i * 12.5) + 5}%`,
+              top: `${((i * 37) % 100) + 5}%`,
               width: '16px',
               height: '16px',
               animationDelay: `${i * 0.3}s`
