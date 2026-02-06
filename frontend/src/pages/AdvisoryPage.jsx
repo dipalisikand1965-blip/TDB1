@@ -259,25 +259,12 @@ const AdvisoryPage = () => {
     : advisors;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-violet-50 via-white to-purple-50" data-testid="advisory-page">
-      {/* SEO Meta Tags */}
-      <SEOHead page="advisory" path="/advisory" />
-
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-700 text-white">
-        <div className="absolute inset-0 opacity-20">
-          <img 
-            src={HERO_IMAGES[heroIndex]} 
-            alt="Advisory" 
-            className="w-full h-full object-cover transition-opacity duration-1000"
-          />
-        </div>
-        <div className="relative max-w-7xl mx-auto px-4 py-16 md:py-24">
-          <div className="max-w-3xl">
-            <Badge className="bg-white/20 text-white border-0 mb-4">
-              <Brain className="w-3 h-3 mr-1" /> Expert Pet Advisory
-            </Badge>
-            <h1 className="text-4xl md:text-5xl font-bold mb-4">
+    <PillarPageLayout
+      pillar="advisory"
+      title="Guidance for Your Pet"
+      description="When clarity helps before deciding"
+    >
+      {/* Advisory Types Grid */}
               Expert Guidance for Your Pet's Wellbeing
             </h1>
             <p className="text-lg md:text-xl opacity-90 mb-8">
