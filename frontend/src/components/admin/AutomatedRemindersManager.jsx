@@ -8,8 +8,7 @@ import {
   Syringe, Scissors, Cake, Heart, Mail, MessageCircle,
   Play, Pause, History, Settings, AlertCircle, Send
 } from 'lucide-react';
-
-const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+import { API_URL } from '../../utils/api';
 
 // Reminder types configuration
 const REMINDER_TYPES = {

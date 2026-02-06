@@ -9,8 +9,7 @@ import {
   MessageSquare, CheckCircle, XCircle, Clock, Eye, Edit, Trash2,
   ThumbsUp, ThumbsDown, Minus, Download, Filter
 } from 'lucide-react';
-
-const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+import { API_URL } from '../../utils/api';
 
 const NPSManager = ({ getAuthHeader }) => {
   const [activeTab, setActiveTab] = useState('overview');

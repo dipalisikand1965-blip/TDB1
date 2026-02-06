@@ -9,8 +9,7 @@ import {
   Flag, EyeOff, Trash2, Search, Plus, RefreshCw,
   AlertCircle, Clock, User, PawPrint
 } from 'lucide-react';
-
-const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+import { API_URL } from '../../utils/api';
 
 const MEMORY_TYPES = {
   event: { name: 'Events & Milestones', icon: Calendar, color: 'blue' },
