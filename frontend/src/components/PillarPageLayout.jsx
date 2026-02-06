@@ -209,7 +209,7 @@ const PillarPageLayout = ({
   const bgGradient = PILLAR_BG[pillar] || 'from-gray-50';
   
   return (
-    <div className={`min-h-screen bg-gradient-to-b ${bgGradient} to-white pb-20 md:pb-0`} data-testid={`${pillar}-page`}>
+    <div className={`min-h-screen bg-gradient-to-b ${bgGradient} to-white pb-20 md:pb-0 overflow-x-hidden w-full max-w-full`} data-testid={`${pillar}-page`}>
       {/* SEO */}
       <SEOHead 
         title={title}
