@@ -3,6 +3,7 @@
  * 
  * The Celebrate pillar - Birthday celebrations, parties, and special moments for pets.
  * Features Elevated Concierge® Experiences for curated celebrations.
+ * NOW with the same beautiful personalized design as Shop/Services!
  */
 
 import React, { useState, useEffect, lazy, Suspense } from 'react';
@@ -10,7 +11,8 @@ import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { 
   PartyPopper, Cake, Gift, Crown, Sparkles, Camera, Users, 
   Calendar, MapPin, ChevronRight, Star, Heart, Music,
-  Palette, ShoppingBag, Package, X, Phone, Mail, Dog, Send, ChevronLeft, Loader2
+  Palette, ShoppingBag, Package, X, Phone, Mail, Dog, Send, ChevronLeft, Loader2,
+  PawPrint, Search, Mic, Wrench
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
@@ -26,6 +28,7 @@ import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import OccasionBoxBuilder from '../components/OccasionBoxBuilder';
 import PartyPlanningWizard from '../components/PartyPlanningWizard';
 import PawmeterDisplay, { PawmeterBadge } from '../components/PawmeterDisplay';
+import SoulScoreArc from '../components/SoulScoreArc';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { toast } from 'sonner';
