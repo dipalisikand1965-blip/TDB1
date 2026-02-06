@@ -383,76 +383,24 @@ const LearnPage = () => {
 
   if (loading) {
     return (
-    <PillarPageLayout
-      pillar="learn"
-      title="Learning with Your Pet"
-      description="Training and guidance that respects personality"
-    >
-      {/* SEO Meta Tags */}
-      <SEOHead page="learn" path="/learn" />
-
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-      </div>
+      <PillarPageLayout
+        pillar="learn"
+        title="Learn - Training & Education | The Doggy Company"
+        description="Training and guidance that respects personality. Expert-led training programs for dogs of all ages."
+      >
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+        </div>
+      </PillarPageLayout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white" data-testid="learn-page">
-      {/* Mira Floating Chat Widget */}
-      <MiraChatWidget pillar="learn" />
-
-      {/* Hero Section */}
-      <div className="relative h-[500px] overflow-hidden">
-        {/* Mobile Back Button */}
-        <button 
-          onClick={() => navigate(-1)}
-          className="sm:hidden absolute top-4 left-4 z-10 p-2 bg-white/20 backdrop-blur-sm rounded-full hover:bg-white/30 transition-colors"
-          aria-label="Go back"
-        >
-          <ChevronLeft className="w-6 h-6 text-white" />
-        </button>
-        
-        <div 
-          className="absolute inset-0 bg-cover bg-center transition-all duration-1000"
-          style={{ backgroundImage: `url(${HERO_IMAGES[heroIndex]})` }}
-        >
-          <div className="absolute inset-0 bg-gradient-to-r from-blue-900/90 via-indigo-900/80 to-purple-900/70" />
-        </div>
-        
-        <div className="relative max-w-7xl mx-auto px-4 h-full flex items-center">
-          <div className="max-w-2xl">
-            <Badge className="mb-4 bg-blue-500/20 text-blue-200 border-blue-400/30">
-              <GraduationCap className="w-4 h-4 mr-1" /> Pet Training & Education
-            </Badge>
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              Unlock Your Pet's
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400"> Full Potential</span>
-            </h1>
-            <p className="text-lg text-gray-300 mb-6">
-              Expert-led training programs, personalized behavior modification, and skill-building courses for dogs of all ages.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <Button 
-                size="lg" 
-                className="bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700"
-                onClick={() => setShowRequestModal(true)}
-                data-testid="request-training-btn"
-              >
-                <GraduationCap className="w-5 h-5 mr-2" /> Request Training
-              </Button>
-              <Button 
-                size="lg" 
-                variant="outline" 
-                className="border-white/30 text-white hover:bg-white/10"
-                onClick={() => document.getElementById('programs')?.scrollIntoView({ behavior: 'smooth' })}
-              >
-                <BookOpen className="w-5 h-5 mr-2" /> Browse Programs
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-
+    <PillarPageLayout
+      pillar="learn"
+      title="Learn - Training & Education | The Doggy Company"
+      description="Training and guidance that respects personality. Expert-led training programs for dogs of all ages."
+    >
       {/* Training Types Quick Access */}
       <div className="py-12 bg-white border-b">
         <div className="max-w-7xl mx-auto px-4">
