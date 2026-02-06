@@ -34,12 +34,259 @@ except ImportError:
     async def notify_ticket_update(*args, **kwargs):
         return {"success": False, "reason": "push_not_available"}
 
+# Import LLM integration for Mira OS
+try:
+    from emergentintegrations.llm.chat import LlmChat, UserMessage
+    LLM_AVAILABLE = True
+except ImportError:
+    LLM_AVAILABLE = False
+
 load_dotenv()
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/mira", tags=["mira"])
 security_bearer = HTTPBearer(auto_error=False)
+
+# ============================================
+# MIRA OS - UNDERSTANDING LAYER
+# ============================================
+
+MIRA_OS_SYSTEM_PROMPT = """You are Mira, the intelligent interface for a Pet Life Operating System. You help pet parents discover, decide, and act for their dogs.
+
+CRITICAL RULES:
+1. You ALWAYS respond in valid JSON format
+2. You NEVER say "I can't help" - you either execute or hand off to concierge
+3. You personalize every response to the specific pet
+4. You explain WHY something is right for this pet
+
+INTENT CLASSIFICATION (pick exactly ONE):
+- FIND: User wants to discover products/services (show, find, get, need, want)
+- PLAN: User wants to organize something (plan, arrange, organise, prepare, birthday, trip)
+- COMPARE: User wants to evaluate options (compare, vs, difference, which is better)
+- REMEMBER: User wants to save a preference (save, remember, note, likes, hates)
+- ORDER: User wants to purchase (order, buy, reorder, usual, cart)
+- EXPLORE: User wants to learn (what, why, how, tell me, explain)
+
+EXECUTION DECISION:
+Mark as "INSTANT" only if ALL are true:
+- Solution exists in our product/service catalog
+- No external coordination needed
+- No ambiguity that needs clarification
+- Not emotionally sensitive (memorial, anxiety, loss)
+- Not a multi-step journey requiring planning
+
+Mark as "CONCIERGE" if ANY of these are true:
+- Words like: plan, arrange, custom, special, surprise, worried, anxious
+- Multiple items needing coordination
+- External vendors/timing involved
+- User explicitly uncertain ("help me decide", "not sure")
+- Emotional moments (birthday, memorial, first time)
+
+RESPONSE FORMAT (strict JSON):
+{
+  "intent": "FIND|PLAN|COMPARE|REMEMBER|ORDER|EXPLORE",
+  "confidence": 0.0-1.0,
+  "execution_type": "INSTANT|CONCIERGE",
+  "entities": {
+    "product_type": "treats|food|toys|etc or null",
+    "attributes": ["soft", "evening", "etc"],
+    "constraints": ["dental-friendly", "etc"]
+  },
+  "pet_relevance": "Why this matters for this specific pet",
+  "message": "Your friendly response to the user",
+  "products": [
+    {
+      "suggestion": "Product/service name",
+      "why_for_pet": "Specific reason for this pet",
+      "category": "treats|food|toys|etc"
+    }
+  ],
+  "next_action": "What user should do next",
+  "concierge_reason": "If CONCIERGE, explain why (otherwise null)"
+}"""
+
+class MiraOSUnderstandRequest(BaseModel):
+    input: str
+    pet_id: Optional[str] = None
+    pet_context: Optional[Dict[str, Any]] = None
+    page_context: Optional[str] = None
+
+class MiraOSUnderstandResponse(BaseModel):
+    success: bool
+    understanding: Dict[str, Any]
+    response: Dict[str, Any]
+    execution_type: str
+
+async def understand_with_llm(
+    user_input: str,
+    pet_context: Dict[str, Any],
+    page_context: str = None
+) -> Dict[str, Any]:
+    """Use LLM to understand user intent and generate response"""
+    
+    if not LLM_AVAILABLE:
+        return {
+            "intent": "EXPLORE",
+            "confidence": 0.5,
+            "execution_type": "CONCIERGE",
+            "message": "Let me connect you with your pet concierge to help with this.",
+            "concierge_reason": "LLM not available"
+        }
+    
+    api_key = os.environ.get("EMERGENT_LLM_KEY")
+    if not api_key:
+        return {
+            "intent": "EXPLORE",
+            "confidence": 0.5,
+            "execution_type": "CONCIERGE",
+            "message": "I'll get your pet concierge to help with this.",
+            "concierge_reason": "API key not configured"
+        }
+    
+    # Build pet context string
+    pet_info = ""
+    if pet_context:
+        pet_info = f"""
+PET CONTEXT:
+- Name: {pet_context.get('name', 'Your pet')}
+- Breed: {pet_context.get('breed', 'Unknown')}
+- Age: {pet_context.get('age', 'Unknown')}
+- Traits: {', '.join(pet_context.get('traits', []) or ['Not specified'])}
+- Sensitivities: {', '.join(pet_context.get('sensitivities', []) or ['None known'])}
+- Favorites: {', '.join(pet_context.get('favorites', []) or ['Not specified'])}
+"""
+    
+    # Time context
+    current_time = datetime.now()
+    time_of_day = "morning" if current_time.hour < 12 else "afternoon" if current_time.hour < 17 else "evening"
+    
+    context_info = f"""
+CURRENT CONTEXT:
+- Time: {time_of_day} ({current_time.strftime('%H:%M')})
+- Page: {page_context or 'home'}
+"""
+    
+    try:
+        chat = LlmChat(
+            api_key=api_key,
+            session_id=f"mira-os-{datetime.now().timestamp()}",
+            system_message=MIRA_OS_SYSTEM_PROMPT
+        ).with_model("openai", "gpt-4o")
+        
+        user_message_text = f"""
+{pet_info}
+{context_info}
+
+USER INPUT: "{user_input}"
+
+Analyze this input and respond with valid JSON following the format specified.
+"""
+        
+        user_message = UserMessage(text=user_message_text)
+        response = await chat.send_message(user_message)
+        
+        # Parse JSON from response
+        json_match = re.search(r'\{[\s\S]*\}', response)
+        if json_match:
+            parsed = json.loads(json_match.group())
+            return parsed
+        else:
+            return {
+                "intent": "EXPLORE",
+                "confidence": 0.5,
+                "execution_type": "CONCIERGE",
+                "message": response,
+                "concierge_reason": "Could not parse structured response"
+            }
+    except Exception as e:
+        logger.error(f"Mira OS LLM error: {e}")
+        return {
+            "intent": "EXPLORE",
+            "confidence": 0.5,
+            "execution_type": "CONCIERGE",
+            "message": "I'll connect you with your pet concierge to help with this.",
+            "concierge_reason": f"System processing: {str(e)[:100]}"
+        }
+
+@router.post("/os/understand")
+async def mira_os_understand(request: MiraOSUnderstandRequest):
+    """
+    MIRA OS - Main understanding endpoint.
+    Takes user input and returns structured understanding + response.
+    This is the brain of the Pet Operating System.
+    """
+    try:
+        understanding = await understand_with_llm(
+            user_input=request.input,
+            pet_context=request.pet_context or {},
+            page_context=request.page_context
+        )
+        
+        return {
+            "success": True,
+            "understanding": {
+                "intent": understanding.get("intent", "EXPLORE"),
+                "confidence": understanding.get("confidence", 0.8),
+                "entities": understanding.get("entities", {}),
+                "pet_relevance": understanding.get("pet_relevance", "")
+            },
+            "response": {
+                "message": understanding.get("message", ""),
+                "products": understanding.get("products", []),
+                "next_action": understanding.get("next_action", ""),
+                "concierge_reason": understanding.get("concierge_reason")
+            },
+            "execution_type": understanding.get("execution_type", "INSTANT")
+        }
+    except Exception as e:
+        logger.error(f"Mira OS understand error: {e}")
+        return {
+            "success": True,
+            "understanding": {
+                "intent": "EXPLORE",
+                "confidence": 0.5,
+                "entities": {},
+                "pet_relevance": ""
+            },
+            "response": {
+                "message": "I'll connect you with your pet concierge to help with this.",
+                "products": [],
+                "next_action": "Your concierge will reach out shortly.",
+                "concierge_reason": str(e)
+            },
+            "execution_type": "CONCIERGE"
+        }
+
+@router.post("/os/handoff")
+async def mira_os_handoff(
+    request_summary: str,
+    original_input: str,
+    pet_context: Dict[str, Any],
+    urgency: str = "normal"
+):
+    """Create a concierge task from Mira handoff."""
+    db = get_db()
+    
+    task = {
+        "id": f"CNC-{datetime.now().strftime('%Y%m%d-%H%M%S')}-{uuid.uuid4().hex[:6]}",
+        "created_at": datetime.now(timezone.utc),
+        "status": "pending",
+        "urgency": urgency,
+        "request_summary": request_summary,
+        "original_input": original_input,
+        "pet_context": pet_context,
+        "source": "mira_os"
+    }
+    
+    if db:
+        await db.concierge_tasks.insert_one(task)
+    
+    return {
+        "success": True,
+        "task_id": task["id"],
+        "message": "Your pet concierge will take it from here. They'll reach out within the hour."
+    }
 
 # ============================================
 # ADMIN-MANAGED KIT TEMPLATES INTEGRATION
