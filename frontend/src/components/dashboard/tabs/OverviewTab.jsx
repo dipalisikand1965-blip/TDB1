@@ -229,17 +229,15 @@ const OverviewTab = ({
         </button>
       </div>
       
-      {/* MIRA'S PICKS */}
-      {user?.id && (
+      {/* PILLAR-WISE PICKS FOR PET */}
+      {user?.id && currentPet && (
         <div className="mb-8">
           <React.Suspense fallback={<div className="h-40 bg-gray-100 animate-pulse rounded-xl" />}>
-            <MiraPicksCard 
-              userId={user.id}
-              petId={currentPet?.id}
-              title="Mira's Picks"
-              subtitle={currentPet ? `Personalized for ${currentPet.name}` : "Discover products for your pet"}
-              maxItems={4}
-              showInsights={true}
+            <PillarWisePicks 
+              petId={currentPet.id}
+              petName={currentPet.name}
+              petBreed={currentPet.breed}
+              maxItemsPerPillar={4}
             />
           </React.Suspense>
         </div>
