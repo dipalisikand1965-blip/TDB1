@@ -14,90 +14,85 @@ const PillarContext = createContext(null);
 const PILLAR_MESSAGES = {
   celebrate: {
     messages: (name, breed) => [
+      `Mira plans this the way ${name} would enjoy it`,
       `🎂 Is it almost ${name}'s birthday? Let's make it special!`,
       `🎉 Every day with ${name} is worth celebrating!`,
-      `🎁 ${name} deserves the most pawsome party!`,
-      `🪔 Festival time? ${name} wants treats too!`,
-      `🎈 Celebration mode: activated for ${name}!`
+      `🎁 ${name} deserves the most pawsome party!`
     ],
-    tagline: 'Make every moment with {name} unforgettable'
+    tagline: 'Mark the moments that matter to {name}'
   },
   dine: {
     messages: (name, breed) => [
+      `I'll refine this as I learn what suits ${name}`,
       `🍖 ${name}'s tummy is ready for yummy!`,
       `🦴 We know ${name}'s favorite treats by heart`,
-      `🥩 Premium nutrition for your precious ${name}`,
-      `🍳 Mealtime is ${name}'s favorite time!`,
-      `🥕 Healthy & delicious - just how ${name} likes it`
+      `🥩 Premium nutrition for your precious ${name}`
     ],
-    tagline: 'Nourishment crafted for {name}'
+    tagline: 'Chosen around {name}\'s taste, energy, and needs'
   },
   care: {
     messages: (name, breed) => [
+      `Small details help ${name} feel at ease`,
       `✨ ${name}'s coat deserves the royal treatment`,
       `🛁 Spa day for ${name}? We're ready!`,
-      `💅 Keep ${name} looking absolutely gorgeous`,
-      `🪥 ${name}'s health is our priority`,
       `💕 Gentle care for your gentle ${name}`
     ],
-    tagline: 'Premium grooming & care for {name}'
+    tagline: 'Support for health, comfort, and routine'
   },
   enjoy: {
     messages: (name, breed) => [
+      `I notice what brings out ${name}'s spark`,
       `🎾 Playtime is ${name}'s favorite word!`,
       `🧸 New toys? ${name}'s tail is already wagging!`,
-      `🎮 Let's find ${name}'s new favorite toy`,
-      `⚡ Burn that ${name} energy with the best toys`,
-      `🎯 Mental stimulation for smart ${name}`
+      `⚡ Burn that ${name} energy with the best toys`
     ],
-    tagline: 'Joy & entertainment for {name}'
+    tagline: 'Play, enrichment, and little delights'
   },
   travel: {
     messages: (name, breed) => [
+      `I'll flag what's worth planning ahead`,
       `✈️ Adventure awaits ${name}!`,
       `🚗 Road trip with ${name}? We've got you covered`,
-      `🏖️ ${name}'s vacation essentials are here`,
-      `🎒 Travel-ready gear for ${name}`,
-      `🗺️ Explore the world with ${name} by your side`
+      `🏖️ ${name}'s vacation essentials are here`
     ],
-    tagline: 'Travel essentials for {name}\'s adventures'
+    tagline: 'Thought through so the journey feels easy'
   },
   stay: {
     messages: (name, breed) => [
+      `Calm spaces make a big difference`,
       `🏠 ${name}'s cozy corner awaits`,
       `🛏️ Sweet dreams for sweet ${name}`,
-      `🏡 Make home perfect for ${name}`,
-      `☁️ Comfort fit for royalty like ${name}`,
-      `🧺 ${name}'s happy place starts here`
+      `☁️ Comfort fit for royalty like ${name}`
     ],
-    tagline: 'Home comforts designed for {name}'
+    tagline: 'Stays where {name} is welcome and comfortable'
   },
   fit: {
     messages: (name, breed) => [
+      `Balance matters more than intensity`,
       `💪 Keep ${name} healthy & active!`,
       `🏃 Exercise time for energetic ${name}`,
-      `❤️ ${name}'s wellness journey starts here`,
-      `🌟 A healthy ${name} is a happy ${name}`,
-      `🎯 Fitness goals for fabulous ${name}`
+      `❤️ ${name}'s wellness journey starts here`
     ],
-    tagline: 'Health & wellness for {name}'
+    tagline: 'Activity that matches {name}\'s rhythm'
   },
   learn: {
     messages: (name, breed) => [
+      `I adapt this to how ${name} responds`,
       `🎓 ${name} is ready to learn!`,
       `🧠 Smart ${name} deserves smart training`,
-      `📚 Every dog can learn - especially ${name}!`,
-      `🌟 Watch ${name} grow & shine`,
-      `🎯 Training that ${name} will actually enjoy`
+      `📚 Every dog can learn - especially ${name}!`
     ],
-    tagline: 'Training & education for {name}'
+    tagline: 'Training and guidance that respects personality'
   },
   advisory: {
     messages: (name, breed) => [
+      `I'll help you choose, not overwhelm you`,
       `💬 Expert advice for ${name}'s needs`,
       `🩺 ${name}'s health questions answered`,
-      `📋 Personalized guidance for ${name}`,
-      `🤝 We're here for you & ${name}`,
+      `📋 Personalized guidance for ${name}`
+    ],
+    tagline: 'When clarity helps before deciding'
+  },
       `💡 Smart decisions for ${name}'s wellbeing`
     ],
     tagline: 'Expert guidance for {name}'
