@@ -49,6 +49,13 @@ const RequestsTab = ({
 
   const openMessageDialog = async (request) => {
     console.log('Opening message dialog for request:', request);
+    console.log('User email:', userEmail);
+    
+    if (!userEmail) {
+      toast.error('Please log in to message the concierge');
+      return;
+    }
+    
     setMessageDialog({ open: true, request });
     setMessageText('');
     // Load existing conversation
