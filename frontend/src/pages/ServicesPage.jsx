@@ -992,7 +992,7 @@ const ServicesPage = () => {
               </h2>
             </div>
             {filteredServices.length > 0 && (
-              <span className="text-xs sm:text-sm text-gray-500">{filteredServices.length} services</span>
+              <span className="text-xs sm:text-sm text-gray-400">Curated for you</span>
             )}
           </div>
           
