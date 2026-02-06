@@ -119,7 +119,7 @@ const PillarPageLayout = ({
   const navigate = useNavigate();
   
   // Use global pet from PillarContext - ensures consistency when pet is switched elsewhere
-  const { currentPet, setCurrentPet, pets: contextPets, petSoulData: contextSoulData } = usePillarContext();
+  const { currentPet, setCurrentPet, pets: contextPets, soulData: contextSoulData } = usePillarContext();
   
   // Pet state - fallback to local fetch if context not available
   const [localPets, setLocalPets] = useState([]);
