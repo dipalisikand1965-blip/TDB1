@@ -405,20 +405,6 @@ const StayPage = () => {
       description="Stays where your pet is welcome and comfortable"
     >
       {/* ==================== SOCIAL PROOF BANNER ==================== */}
-              <div className="flex items-center gap-2 text-white/70">
-                <PawPrint className="w-5 h-5 text-teal-400" />
-                <span className="text-sm">Earn Paw Points</span>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce">
-          <ChevronDown className="w-6 h-6 text-white/50" />
-        </div>
-      </div>
-
-      {/* ==================== SOCIAL PROOF BANNER ==================== */}
       <div className="bg-white border-b border-gray-100 py-3">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6">
           <FitnessJourneyCounter />
