@@ -12,6 +12,7 @@ import { Input } from '../components/ui/input';
 import MiraChatWidget from '../components/MiraChatWidget';
 import SEOHead from '../components/SEOHead';
 import SoulScoreArc from '../components/SoulScoreArc';
+import PersonalizedHero from '../components/PersonalizedHero';
 import { 
   Search, Heart, Stethoscope, GraduationCap, Home, Plane, 
   PartyPopper, Lightbulb, AlertTriangle, FileText, Sunrise,
