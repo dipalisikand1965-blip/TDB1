@@ -85,56 +85,112 @@ const PILLAR_TITLES = {
   services: 'Services for {name}',
 };
 
-// Soul traits display
+// Breed-specific trait pools for variety
+const BREED_TRAIT_POOLS = {
+  'shih tzu': [
+    ['👑 Royal charm', '🛋️ Cuddle expert', '💕 Heart-melter'],
+    ['✨ Glamorous soul', '🎀 Elegant paws', '💖 Devoted friend'],
+    ['🌸 Gentle spirit', '😴 Nap enthusiast', '🥰 Affectionate'],
+  ],
+  'golden retriever': [
+    ['🎾 Ball obsessed', '💛 Heart of gold', '🏃 Boundless energy'],
+    ['🌊 Water lover', '🤗 Everyone\'s friend', '☀️ Sunshine soul'],
+    ['🦮 Adventure ready', '🍖 Treat motivated', '😊 Pure joy'],
+  ],
+  'labrador': [
+    ['🎾 Fetch champion', '🍖 Food lover', '💙 Loyal to the core'],
+    ['🏊 Swimming star', '🤗 Greeting expert', '⚡ Unstoppable'],
+    ['🐕 Best buddy', '👃 Super sniffer', '💪 Strong & gentle'],
+  ],
+  'beagle': [
+    ['👃 Scent detective', '🎵 Vocal soul', '🌳 Trail explorer'],
+    ['🔍 Curious mind', '🍖 Treat seeker', '💕 Pack lover'],
+    ['🐾 Adventure paws', '😋 Food enthusiast', '🎯 Focused hunter'],
+  ],
+  'pug': [
+    ['😴 Snore symphony', '🛋️ Couch royalty', '😂 Comic relief'],
+    ['👀 Expressive eyes', '🤗 Shadow friend', '💕 Lap champion'],
+    ['🥺 Puppy eyes pro', '😋 Foodie soul', '🎭 Drama king/queen'],
+  ],
+  'german shepherd': [
+    ['🦸 Guardian spirit', '🧠 Sharp mind', '💪 Brave heart'],
+    ['👮 Protector soul', '🎓 Quick learner', '⚡ Agile athlete'],
+    ['🔒 Loyal defender', '🏃 Work ethic', '💕 Family first'],
+  ],
+  default: [
+    ['💕 Loving heart', '🐾 Loyal companion', '✨ Unique soul'],
+    ['🌟 Special spirit', '💖 Pure love', '🎯 One of a kind'],
+    ['😊 Joy bringer', '🤗 Cuddle buddy', '💫 Magical friend'],
+  ]
+};
+
+// Get unique traits based on pet name hash for consistency
+const getUniqueTraitsForPet = (pet) => {
+  if (!pet?.name) return BREED_TRAIT_POOLS.default[0];
+  
+  // Create a simple hash from pet name + id for variety
+  const hash = (pet.name + (pet.id || '')).split('').reduce((a, b) => {
+    a = ((a << 5) - a) + b.charCodeAt(0);
+    return a & a;
+  }, 0);
+  
+  const breed = (pet.breed || '').toLowerCase();
+  let traitPool = BREED_TRAIT_POOLS.default;
+  
+  // Find matching breed pool
+  for (const [key, pool] of Object.entries(BREED_TRAIT_POOLS)) {
+    if (key !== 'default' && breed.includes(key.split(' ')[0])) {
+      traitPool = pool;
+      break;
+    }
+  }
+  
+  // Select consistent but unique set based on hash
+  const poolIndex = Math.abs(hash) % traitPool.length;
+  return traitPool[poolIndex];
+};
+
+// Soul traits display - with glass effect and animation
 const SoulTraits = ({ pet, soulData }) => {
+  const [isVisible, setIsVisible] = useState(false);
+  
+  useEffect(() => {
+    // Stagger animation on mount
+    const timer = setTimeout(() => setIsVisible(true), 300);
+    return () => clearTimeout(timer);
+  }, []);
+  
   const traits = useMemo(() => {
     if (!pet) return [];
     
     const traitList = [];
     const answers = pet.doggy_soul_answers || soulData?.answers || {};
     
-    // Get personality traits
+    // Get personality traits from soul data
     if (answers.describe_3_words) {
       const words = Array.isArray(answers.describe_3_words) 
         ? answers.describe_3_words 
         : [answers.describe_3_words];
-      traitList.push({ emoji: '✨', text: words.slice(0, 3).join(', ') });
+      words.slice(0, 3).forEach(word => {
+        traitList.push({ emoji: '✨', text: word });
+      });
     }
     
     // Get favorite treats
-    if (answers.favorite_treats) {
+    if (answers.favorite_treats && traitList.length < 3) {
       const treats = Array.isArray(answers.favorite_treats)
-        ? answers.favorite_treats.slice(0, 2).join(', ')
+        ? answers.favorite_treats[0]
         : answers.favorite_treats;
       traitList.push({ emoji: '🍖', text: `Loves ${treats}` });
     }
     
-    // Get active time
-    if (answers.energetic_time) {
-      traitList.push({ emoji: '⚡', text: `Active: ${answers.energetic_time}` });
-    }
-    
-    // Default traits based on breed if no soul data
-    if (traitList.length === 0 && pet.breed) {
-      const breed = pet.breed.toLowerCase();
-      if (breed.includes('shih')) {
-        traitList.push(
-          { emoji: '👑', text: 'Royal companion' },
-          { emoji: '🛋️', text: 'Lap dog' },
-          { emoji: '💕', text: 'Affectionate' }
-        );
-      } else if (breed.includes('retriever')) {
-        traitList.push(
-          { emoji: '🎾', text: 'Playful' },
-          { emoji: '💛', text: 'Friendly' },
-          { emoji: '🏃', text: 'Energetic' }
-        );
-      } else {
-        traitList.push(
-          { emoji: '💕', text: 'Loving companion' },
-          { emoji: '🐾', text: 'Loyal friend' }
-        );
-      }
+    // Default: Use unique breed-based traits
+    if (traitList.length === 0) {
+      const uniqueTraits = getUniqueTraitsForPet(pet);
+      uniqueTraits.forEach(trait => {
+        const [emoji, ...textParts] = trait.split(' ');
+        traitList.push({ emoji, text: textParts.join(' ') });
+      });
     }
     
     return traitList.slice(0, 3);
@@ -147,12 +203,35 @@ const SoulTraits = ({ pet, soulData }) => {
       {traits.map((trait, idx) => (
         <div
           key={idx}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-white/10 backdrop-blur-sm rounded-full text-white/90 text-xs sm:text-sm"
+          className={`
+            flex items-center gap-1.5 px-3 py-1.5 
+            bg-white/5 backdrop-blur-md border border-white/10
+            rounded-full text-white/80 text-xs sm:text-sm
+            shadow-lg shadow-black/5
+            transition-all duration-500 ease-out
+            hover:bg-white/15 hover:scale-105
+            ${isVisible 
+              ? 'opacity-100 translate-y-0' 
+              : 'opacity-0 translate-y-2'
+            }
+          `}
+          style={{ 
+            transitionDelay: `${idx * 100}ms`,
+            animation: isVisible ? `float-gentle 3s ease-in-out ${idx * 0.5}s infinite` : 'none'
+          }}
         >
-          <span>{trait.emoji}</span>
-          <span className="truncate max-w-[120px] sm:max-w-none">{trait.text}</span>
+          <span className="text-sm">{trait.emoji}</span>
+          <span className="truncate max-w-[100px] sm:max-w-none font-light">{trait.text}</span>
         </div>
       ))}
+      
+      {/* CSS for gentle floating animation */}
+      <style>{`
+        @keyframes float-gentle {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-3px); }
+        }
+      `}</style>
     </div>
   );
 };
