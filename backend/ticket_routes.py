@@ -681,10 +681,10 @@ async def list_tickets(
     member_email: Optional[str] = None,
     limit: int = Query(50, le=200),
     offset: int = 0,
-    sort_by: str = "created_at",
+    sort_by: str = "updated_at",
     sort_order: str = "desc"
 ):
-    """List tickets with filters - reads from both tickets and service_desk_tickets collections"""
+    """List tickets with filters - reads from both tickets and service_desk_tickets collections. Sorted by updated_at (most recent activity) by default."""
     db = get_db()
     
     query = {}
