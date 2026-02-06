@@ -2364,7 +2364,8 @@ def get_breed_knowledge(breed_name: str) -> dict:
         "caravan hound": "mudhol hound",
         "pashmi hound": "mudhol hound",
         "kombai": "kombai",
-        "combai": "kombai"
+        "combai": "kombai",
+        "shnoodle": "schnoodle"
     }
     
     if breed_lower in variations:
