@@ -680,7 +680,7 @@ const Navbar = () => {
           </div>
           
           {/* Mobile: Mira Search Bar Row (below main header) */}
-          <div className="sm:hidden pb-3">
+          <div className="sm:hidden pb-3 relative z-[100]">
             <MiraSearchPanel 
               variant="hero"
               placeholder={primaryPet ? `Ask Mira for ${primaryPet.name}...` : "Ask Mira anything..."}
