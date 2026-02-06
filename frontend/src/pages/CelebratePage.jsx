@@ -269,19 +269,19 @@ const CelebratePage = () => {
         path="/celebrate"
       />
       
-      {/* Hero Section - Enhanced with rotating dog images */}
-      <div className="relative bg-gradient-to-r from-pink-600 via-rose-600 to-purple-600 text-white py-12 sm:py-20 px-4 overflow-hidden">
+      {/* Hero Section - Personalized for Meister! */}
+      <div className="relative bg-gradient-to-r from-pink-600 via-rose-600 to-purple-600 text-white py-8 sm:py-16 px-4 overflow-hidden">
         {/* Rotating background images */}
         <div className="absolute inset-0">
           <img 
             src={HERO_IMAGES[heroIndex]}
             alt="Pet Celebration"
-            className="w-full h-full object-cover opacity-30 transition-opacity duration-1000"
+            className="w-full h-full object-cover opacity-20 transition-opacity duration-1000"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-pink-600/90 via-rose-600/80 to-purple-600/70" />
         </div>
         
-        {/* Floating decorations - repositioned for mobile */}
+        {/* Floating decorations */}
         <div className="absolute top-6 sm:top-10 left-4 sm:left-10 text-3xl sm:text-4xl animate-bounce opacity-50">🎈</div>
         <div className="absolute top-12 sm:top-20 right-4 sm:right-20 text-2xl sm:text-3xl animate-pulse opacity-50">🎉</div>
         <div className="absolute bottom-6 sm:bottom-10 left-1/4 text-xl sm:text-2xl animate-bounce opacity-50" style={{animationDelay: '0.5s'}}>🎂</div>
@@ -295,45 +295,105 @@ const CelebratePage = () => {
           <ChevronLeft className="w-6 h-6 text-white" />
         </button>
         
-        <div className="relative max-w-6xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-white/20 backdrop-blur-sm rounded-full mb-4 sm:mb-6 animate-fade-in-up">
-            <PartyPopper className="w-4 sm:w-5 h-4 sm:h-5" />
-            <span className="font-medium text-sm sm:text-base">Every Paw Deserves a Party</span>
-          </div>
-          
-          <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold mb-3 sm:mb-4 animate-fade-in-up" style={{animationDelay: '0.1s'}}>
-            Celebrate
-          </h1>
-          <p className="text-base sm:text-xl md:text-2xl text-pink-100 max-w-2xl mx-auto mb-6 sm:mb-8 px-2 animate-fade-in-up" style={{animationDelay: '0.2s'}}>
-            Custom cakes, treats & unforgettable celebrations for your furry family members
-          </p>
-          
-          {/* Mobile: Stack buttons, Desktop: Side by side */}
-          <div className="flex flex-col sm:flex-row justify-center gap-3 sm:gap-4 px-4 sm:px-0 animate-fade-in-up" style={{animationDelay: '0.3s'}}>
-            <Button 
-              size="lg" 
-              onClick={() => setShowPartyWizard(true)}
-              className="w-full sm:w-auto bg-white text-pink-600 hover:bg-pink-50 gap-2 h-12 sm:h-11 text-base font-semibold shadow-lg active:scale-95 transition-transform"
-              data-testid="party-planning-wizard-btn"
-            >
-              <Sparkles className="w-5 h-5" />
-              🎉 Plan My Party
-            </Button>
-            <Button 
-              size="lg" 
-              onClick={() => handleBuildBox('birthday')}
-              className="w-full sm:w-auto bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 border border-white/40 gap-2 h-12 sm:h-11 text-base font-semibold active:scale-95 transition-transform"
-              data-testid="build-birthday-box-btn"
-            >
-              <Package className="w-5 h-5" />
-              Build Birthday Box
-            </Button>
-            <Link to="/celebrate/birthday-cakes" className="w-full sm:w-auto">
-              <Button size="lg" variant="outline" className="w-full sm:w-auto border-white text-white hover:bg-white/20 gap-2 h-12 sm:h-11 text-base active:scale-95 transition-transform">
-                <Cake className="w-5 h-5" />
-                Shop Cakes
-              </Button>
-            </Link>
+        <div className="relative max-w-6xl mx-auto">
+          <div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-10">
+            
+            {/* Pet Photo Section - MEISTER IS THE HERO! */}
+            {activePet && (
+              <div className="relative flex-shrink-0">
+                {/* Glow effect */}
+                <div className="absolute inset-0 bg-gradient-to-br from-pink-400/40 to-purple-400/40 rounded-full blur-xl scale-125 animate-pulse" />
+                
+                {/* Pet Photo */}
+                <div className="relative w-28 h-28 sm:w-36 sm:h-36 rounded-full overflow-hidden border-4 border-white/30 shadow-2xl">
+                  {activePet.photo_url || activePet.image ? (
+                    <img 
+                      src={activePet.photo_url || activePet.image}
+                      alt={activePet.name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-pink-200 to-purple-200 flex items-center justify-center">
+                      <Dog className="w-14 h-14 text-pink-400" />
+                    </div>
+                  )}
+                </div>
+                
+                {/* Party hat decoration */}
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 text-3xl">🎂</div>
+              </div>
+            )}
+            
+            {/* Content */}
+            <div className={`flex-1 ${activePet ? 'text-center lg:text-left' : 'text-center'}`}>
+              <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-white/20 backdrop-blur-sm rounded-full mb-4 sm:mb-5 animate-fade-in-up">
+                <PartyPopper className="w-4 sm:w-5 h-4 sm:h-5" />
+                <span className="font-medium text-sm sm:text-base">
+                  {activePet ? `🎉 Party time for ${activePet.name}!` : 'Every Paw Deserves a Party'}
+                </span>
+              </div>
+              
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 animate-fade-in-up" style={{animationDelay: '0.1s'}}>
+                {activePet ? (
+                  <>Celebrate <span className="text-pink-200">{activePet.name}</span></>
+                ) : (
+                  'Celebrate'
+                )}
+              </h1>
+              
+              <p className="text-base sm:text-lg md:text-xl text-pink-100 max-w-2xl mb-4 sm:mb-5 px-2 lg:px-0 animate-fade-in-up" style={{animationDelay: '0.2s'}}>
+                {activePet 
+                  ? `Custom cakes, treats & unforgettable celebrations for ${activePet.name}`
+                  : 'Custom cakes, treats & unforgettable celebrations for your furry family members'
+                }
+              </p>
+              
+              {/* Mira's emotional message for the pet */}
+              {activePet && (
+                <div className="flex items-start gap-3 mb-5 justify-center lg:justify-start animate-fade-in-up" style={{animationDelay: '0.25s'}}>
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                    <Sparkles className="w-4 h-4 text-white" />
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-md rounded-2xl rounded-tl-sm px-4 py-2.5 max-w-md">
+                    <p className="text-sm text-white/90 font-medium">
+                      &ldquo;{activePet.name}&apos;s birthday is the most important day of the year! Let&apos;s make it unforgettable 🎂&rdquo;
+                    </p>
+                    <p className="text-xs text-white/50 mt-1 flex items-center gap-1">
+                      <Heart className="w-3 h-3 fill-pink-300 text-pink-300" />
+                      Mira loves {activePet.name}
+                    </p>
+                  </div>
+                </div>
+              )}
+              
+              {/* Action buttons */}
+              <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-3 sm:gap-4 px-4 sm:px-0 animate-fade-in-up" style={{animationDelay: '0.3s'}}>
+                <Button 
+                  size="lg" 
+                  onClick={() => setShowPartyWizard(true)}
+                  className="w-full sm:w-auto bg-white text-pink-600 hover:bg-pink-50 gap-2 h-12 sm:h-11 text-base font-semibold shadow-lg active:scale-95 transition-transform"
+                  data-testid="party-planning-wizard-btn"
+                >
+                  <Sparkles className="w-5 h-5" />
+                  {activePet ? `🎉 Plan ${activePet.name}'s Party` : '🎉 Plan My Party'}
+                </Button>
+                <Button 
+                  size="lg" 
+                  onClick={() => handleBuildBox('birthday')}
+                  className="w-full sm:w-auto bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 border border-white/40 gap-2 h-12 sm:h-11 text-base font-semibold active:scale-95 transition-transform"
+                  data-testid="build-birthday-box-btn"
+                >
+                  <Package className="w-5 h-5" />
+                  Build Birthday Box
+                </Button>
+                <Link to="/celebrate/birthday-cakes" className="w-full sm:w-auto">
+                  <Button size="lg" variant="outline" className="w-full sm:w-auto border-white text-white hover:bg-white/20 gap-2 h-12 sm:h-11 text-base active:scale-95 transition-transform">
+                    <Cake className="w-5 h-5" />
+                    Shop Cakes
+                  </Button>
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </div>
