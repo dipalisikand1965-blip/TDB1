@@ -505,31 +505,62 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
                 limit=6
             )
         
-        # Step 3: If CONCIERGE, create ticket and notifications
+        # Step 3: If CONCIERGE, create ticket and notifications (UNIFIED SERVICE FLOW)
         ticket_id = None
         if execution_type == "CONCIERGE":
             try:
+                import uuid
+                
                 # Determine ticket type based on intent
                 ticket_type = "concierge"
-                if intent == "PLAN":
-                    ticket_type = "concierge"
-                elif understanding.get("concierge_reason") and "health" in understanding.get("concierge_reason", "").lower():
+                if understanding.get("concierge_reason") and "health" in understanding.get("concierge_reason", "").lower():
                     ticket_type = "advisory"
                 
-                # Create the ticket
-                ticket_result = await create_mira_ticket(
-                    user_input=request.input,
+                # Determine pillar from entities or page context
+                pillar = "concierge"  # default
+                if request.page_context:
+                    # Extract pillar from page context (e.g., "/celebrate" -> "celebrate")
+                    page_path = request.page_context.strip("/").split("/")[0]
+                    if page_path in ["celebrate", "dine", "stay", "travel", "care", "enjoy", "fit", "learn", "paperwork", "advisory", "farewell", "adopt", "emergency", "shop"]:
+                        pillar = page_path
+                
+                # Determine urgency
+                urgency = "normal"
+                if intent in ["ORDER", "EXPLORE"] and understanding.get("entities", {}).get("constraints"):
+                    if any(word in str(understanding.get("entities", {}).get("constraints", [])).lower() for word in ["urgent", "emergency", "asap", "now"]):
+                        urgency = "high"
+                
+                # Build description from user input and Mira's understanding
+                description = f"""User Query: {request.input}
+
+Mira Understanding:
+- Intent: {intent}
+- Pet Relevance: {understanding.get('pet_relevance', 'N/A')}
+- Concierge Reason: {understanding.get('concierge_reason', 'N/A')}
+
+Mira's Response: {understanding.get('message', '')}
+
+Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products[:3] if real_products else [])])}"""
+                
+                # Generate session ID
+                session_id = f"mira-{uuid.uuid4().hex[:12]}"
+                
+                # Create the ticket using unified flow
+                ticket_id = await create_mira_ticket(
+                    session_id=session_id,
                     ticket_type=ticket_type,
-                    pet_id=request.pet_id,
-                    pet_context=request.pet_context or {},
-                    understanding=understanding,
-                    products=real_products[:3] if real_products else [],
-                    page_context=request.page_context
+                    pillar=pillar,
+                    urgency=urgency,
+                    description=description,
+                    user=None,  # TODO: Get from auth token if available
+                    pet=request.pet_context,
+                    source="mira_search"
                 )
-                ticket_id = ticket_result.get("ticket_id") if ticket_result else None
-                logger.info(f"Created Mira ticket {ticket_id} for CONCIERGE handoff")
+                logger.info(f"[UNIFIED FLOW] Created Mira ticket {ticket_id} for CONCIERGE handoff")
             except Exception as ticket_error:
                 logger.error(f"Failed to create ticket for CONCIERGE: {ticket_error}")
+                import traceback
+                logger.error(traceback.format_exc())
         
         # Step 4: Build response
         return {
