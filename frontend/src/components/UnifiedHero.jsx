@@ -408,12 +408,28 @@ const UnifiedHero = ({
           
           {/* Content */}
           <div className="flex-1 text-center lg:text-left">
-            {/* Soul badge */}
+            {/* Soul badge - Glass container with contextual messaging */}
             {pet && !shoppingForOther && (
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 backdrop-blur rounded-full text-white/90 text-xs sm:text-sm mb-3">
-                <Crown className="w-4 h-4 text-amber-400" />
-                <span>Pet Soul™ {soulScore}% Complete</span>
-              </div>
+              <a 
+                href={`/pet-soul/${pet.id}`}
+                className="inline-flex items-center gap-2 px-4 py-2 
+                  bg-white/5 backdrop-blur-lg border border-white/10
+                  rounded-full text-white/80 text-xs sm:text-sm mb-3
+                  shadow-lg shadow-black/5
+                  hover:bg-white/10 hover:border-white/20 hover:scale-105
+                  transition-all duration-300 cursor-pointer group"
+              >
+                <Crown className="w-4 h-4 text-amber-400 group-hover:rotate-12 transition-transform" />
+                {soulScore >= 100 ? (
+                  <span>{petName}'s soul shines bright ✨</span>
+                ) : soulScore > 50 ? (
+                  <span>{petName}'s soul is {soulScore}% discovered — keep going!</span>
+                ) : soulScore > 0 ? (
+                  <span>Continue {petName}'s soul journey ({soulScore}%)</span>
+                ) : (
+                  <span>Start {petName}'s soul journey</span>
+                )}
+              </a>
             )}
             
             {/* Main Title - Pillar specific */}
