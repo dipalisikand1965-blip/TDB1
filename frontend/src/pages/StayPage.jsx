@@ -2767,7 +2767,7 @@ const SocialDetailsModal = ({ social, onClose }) => {
       
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="stay" position="bottom-left" />
-    </div>
+    </PillarPageLayout>
   );
 };
 
