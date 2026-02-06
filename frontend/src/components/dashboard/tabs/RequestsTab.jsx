@@ -7,8 +7,9 @@ import { Badge } from '../../ui/badge';
 import { Input } from '../../ui/input';
 import { Calendar, RefreshCw, Loader2, MessageCircle, PawPrint, Clock, ChevronDown, ChevronUp, MapPin, Send, X, Paperclip, Search, Bell, BellDot, Archive, Eye } from 'lucide-react';
 import { toast } from 'sonner';
+import { API_URL } from '../../../utils/api';
 
-const API = process.env.REACT_APP_BACKEND_URL;
+const API = API_URL;
 
 const RequestsTab = ({ 
   myRequests, 
