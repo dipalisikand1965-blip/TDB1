@@ -749,23 +749,17 @@ async def list_tickets(
     # Skip tickets without valid ticket_ids (conversational_entry noise)
     try:
         sdt_query = {**query, "ticket_id": {"$exists": True, "$ne": None, "$nin": ["", None]}}
-        logger.info(f"service_desk_tickets query: {sdt_query}")
-        
         cursor2 = db.service_desk_tickets.find(sdt_query).sort(sort_by, sort_direction).skip(offset).limit(fetch_limit)
         tickets2 = await cursor2.to_list(length=fetch_limit)
-        logger.info(f"service_desk_tickets returned: {len(tickets2)} tickets. First 3 IDs: {[t.get('ticket_id') for t in tickets2[:3]]}")
         
         for t in tickets2:
             t["source_collection"] = "service_desk_tickets"
         
         # Add only if not duplicate (by ticket_id)
         existing_ids = {t.get("ticket_id") for t in all_tickets}
-        added_count = 0
         for t in tickets2:
             if t.get("ticket_id") and t.get("ticket_id") not in existing_ids:
                 all_tickets.append(t)
-                added_count += 1
-        logger.info(f"Added {added_count} non-duplicate tickets from service_desk_tickets")
     except Exception as e:
         logger.warning(f"Error fetching from service_desk_tickets collection: {e}")
     
