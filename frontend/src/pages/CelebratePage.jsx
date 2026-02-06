@@ -437,24 +437,78 @@ const CelebratePage = () => {
           </div>
         </div>
       </div>
-
-      {/* Quick Categories - 2x2 grid on mobile, 6 cols on desktop */}
-      <div className="max-w-6xl mx-auto px-4 -mt-6 sm:-mt-8 relative z-10">
-        {/* 2x2 grid on mobile, 6 cols on desktop */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
-          {celebrateCategories.map((cat) => {
-            const Icon = cat.icon;
-            return (
-              <Link key={cat.id} to={cat.path}>
-                <Card className="p-3 sm:p-4 text-center hover:shadow-lg transition-all active:scale-95 cursor-pointer bg-white">
-                  <div className={`w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-3 rounded-xl flex items-center justify-center ${cat.color}`}>
-                    <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
-                  </div>
-                  <h3 className="font-medium text-gray-900 text-xs sm:text-sm leading-tight">{cat.name}</h3>
-                </Card>
-              </Link>
-            );
-          })}
+      
+      {/* Navigation Bar - Product/Service Toggle + Subcategories */}
+      <div className="bg-white border-b border-gray-100 sticky top-0 z-40">
+        <div className="max-w-6xl mx-auto">
+          {/* Top Row: Product/Service Toggle + "Buying for someone else?" */}
+          <div className="flex items-center justify-between px-4 py-2 border-b border-gray-50">
+            {/* Product/Service Toggle */}
+            <div className="flex items-center gap-1 p-1 bg-gray-100 rounded-full">
+              <button
+                onClick={() => setViewMode('products')}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                  viewMode === 'products'
+                    ? 'bg-white text-gray-900 shadow-md'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                <Package className="w-4 h-4" />
+                <span>Products</span>
+              </button>
+              <button
+                onClick={() => setViewMode('services')}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                  viewMode === 'services'
+                    ? 'bg-white text-gray-900 shadow-md'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                <Wrench className="w-4 h-4" />
+                <span>Services</span>
+              </button>
+            </div>
+            
+            {/* Shopping for other dog link */}
+            <button className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-400 hover:text-gray-600 transition-all">
+              <PawPrint className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Buying for someone else?</span>
+              <span className="sm:hidden">Other?</span>
+            </button>
+          </div>
+          
+          {/* Subcategories Row */}
+          <div className="flex gap-2 px-4 py-3 overflow-x-auto scrollbar-hide">
+            <button
+              onClick={() => setSelectedSubcat(null)}
+              className={`flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-2xl font-medium text-sm transition-all ${
+                !selectedSubcat
+                  ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-lg'
+                  : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+              }`}
+            >
+              <span>✨</span>
+              <span>All Celebrate</span>
+            </button>
+            {celebrateCategories.map((cat) => {
+              const Icon = cat.icon;
+              const isSelected = selectedSubcat === cat.id;
+              return (
+                <Link
+                  key={cat.id}
+                  to={cat.path}
+                  className={`flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-2xl font-medium text-sm transition-all ${
+                    isSelected
+                      ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-lg'
+                      : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  <Icon className="w-4 h-4" />
+                  <span className="whitespace-nowrap">{cat.name}</span>
+                </Link>
+              );
+            })}
+          </div>
         </div>
       </div>
 
