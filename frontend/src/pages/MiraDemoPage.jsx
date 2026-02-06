@@ -87,43 +87,8 @@ const MiraDemoPage = () => {
     fetchPet();
   }, [token]);
   
-  // Voice recognition setup
-  useEffect(() => {
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      recognitionRef.current = new SpeechRecognition();
-      recognitionRef.current.continuous = false;
-      recognitionRef.current.interimResults = false;
-      
-      recognitionRef.current.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        setQuery(transcript);
-        setIsListening(false);
-        // Auto-submit voice query
-        handleSubmit(null, transcript);
-      };
-      
-      recognitionRef.current.onerror = () => {
-        setIsListening(false);
-      };
-      
-      recognitionRef.current.onend = () => {
-        setIsListening(false);
-      };
-    }
-  }, []);
-  
-  const toggleVoice = () => {
-    if (isListening) {
-      recognitionRef.current?.stop();
-      setIsListening(false);
-    } else {
-      recognitionRef.current?.start();
-      setIsListening(true);
-    }
-  };
-  
-  const handleSubmit = async (e, voiceQuery = null) => {
+  // handleSubmit function - defined before voice recognition useEffect
+  const handleSubmit = useCallback(async (e, voiceQuery = null) => {
     if (e) e.preventDefault();
     
     const inputQuery = voiceQuery || query;
@@ -188,6 +153,49 @@ const MiraDemoPage = () => {
     
     setIsProcessing(false);
     setQuery('');
+  }, [query, token, pet]);
+  
+  // Keep ref updated with latest handleSubmit
+  useEffect(() => {
+    handleSubmitRef.current = handleSubmit;
+  }, [handleSubmit]);
+  
+  // Voice recognition setup
+  useEffect(() => {
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = false;
+      
+      recognitionRef.current.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        setQuery(transcript);
+        setIsListening(false);
+        // Auto-submit voice query using ref to get latest function
+        if (handleSubmitRef.current) {
+          handleSubmitRef.current(null, transcript);
+        }
+      };
+      
+      recognitionRef.current.onerror = () => {
+        setIsListening(false);
+      };
+      
+      recognitionRef.current.onend = () => {
+        setIsListening(false);
+      };
+    }
+  }, []);
+  
+  const toggleVoice = () => {
+    if (isListening) {
+      recognitionRef.current?.stop();
+      setIsListening(false);
+    } else {
+      recognitionRef.current?.start();
+      setIsListening(true);
+    }
   };
   
   const getIntentColor = (intent) => {
