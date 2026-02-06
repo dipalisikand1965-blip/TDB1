@@ -143,7 +143,7 @@ const QuickWinTip = ({
   useEffect(() => {
     const fetchApiTips = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/engagement/tips?pillar=${pillar}`);
+        const response = await fetch(`${API_URL}/api/engagement/tips?pillar=${pillar}`);
         if (response.ok) {
           const data = await response.json();
           if (data.tips && data.tips.length > 0) {
