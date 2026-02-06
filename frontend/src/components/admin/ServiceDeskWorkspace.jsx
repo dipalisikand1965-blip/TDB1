@@ -228,6 +228,14 @@ const ServiceDeskWorkspace = ({ authHeaders }) => {
         const today = new Date().toISOString().split('T')[0];
         filtered = tickets.filter(t => t.created_at?.startsWith(today));
         break;
+      case 'inquiries':
+        // Show member inquiries and messages from users
+        filtered = tickets.filter(t => 
+          t.source === 'member_inquiry' || 
+          t.source === 'member_message' ||
+          t.ticket_id?.startsWith('TKT-')
+        );
+        break;
       default:
         break;
     }
