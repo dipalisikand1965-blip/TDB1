@@ -400,7 +400,8 @@ const ServiceDeskWorkspace = ({ authHeaders }) => {
             <div className="flex gap-1 flex-wrap">
               {[
                 { id: 'all', label: 'All', icon: '📋', source: '' },
-                { id: 'inquiries', label: '💬 Messages', icon: '', source: 'member_inquiry' },
+                { id: 'new_messages', label: '💬 New Messages', icon: '', source: '', filter: 'new_messages' },
+                { id: 'inquiries', label: 'Inquiries', icon: '💬', source: 'member_inquiry' },
                 { id: 'unassigned', label: 'Unassigned', icon: '📭', source: '' },
                 { id: 'critical', label: 'Critical', icon: '🔴', source: '' },
                 { id: 'today', label: 'Today', icon: '📅', source: '' }
@@ -409,7 +410,17 @@ const ServiceDeskWorkspace = ({ authHeaders }) => {
                   key={f.id}
                   variant={quickFilter === f.id ? 'default' : 'outline'}
                   size="sm"
-                  className={`text-xs h-7 px-2 ${f.id === 'inquiries' && quickFilter === 'inquiries' ? 'bg-purple-600 hover:bg-purple-700 text-white' : f.id === 'inquiries' ? 'bg-purple-100 hover:bg-purple-200 text-purple-700 border-purple-300' : ''}`}
+                  className={`text-xs h-7 px-2 ${
+                    f.id === 'new_messages' && quickFilter === 'new_messages' 
+                      ? 'bg-pink-600 hover:bg-pink-700 text-white' 
+                      : f.id === 'new_messages' 
+                        ? 'bg-pink-100 hover:bg-pink-200 text-pink-700 border-pink-300' 
+                        : f.id === 'inquiries' && quickFilter === 'inquiries' 
+                          ? 'bg-purple-600 hover:bg-purple-700 text-white' 
+                          : f.id === 'inquiries' 
+                            ? 'bg-purple-100 hover:bg-purple-200 text-purple-700 border-purple-300' 
+                            : ''
+                  }`}
                   onClick={() => {
                     setQuickFilter(f.id);
                     setFilters(prev => ({ ...prev, source: f.source }));
