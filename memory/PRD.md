@@ -154,12 +154,17 @@ Added routes and hero content for all sub-pages:
 14. ✅ **Farewell empathy** - Gentle, empathetic messaging in PillarContext
 
 ### Remaining/Future Tasks
-1. **P1** - Make voice search functional (connect to backend search)
-2. **P2** - Finalize comprehensive page audit document
-3. **P3** - Contextual pillar messaging (birthday awareness, festivals)
-4. **P3** - Time-of-day aware greetings (e.g., "Good morning, planning breakfast for Mojo?")
-5. **P3** - Add subtle animations for "magical" feel
-6. **P3** - Improve AI logic for "Why for [PetName]" whispers
+1. **P0** - User verification of Mira OS `/mira-demo` page
+2. **P1** - Add Mira to Main Site Header (replace existing search)
+3. **P1** - Make voice search functional (connect to backend/Mira)
+4. **P2** - Build Thin Dock Navigation
+5. **P2** - Finalize comprehensive page audit document
+6. **P3** - Contextual pillar messaging (birthday awareness, festivals)
+7. **P3** - Time-of-day aware greetings
+8. **P3** - Add subtle animations for "magical" feel
+9. **P3** - Improve AI logic for "Why for [PetName]" whispers
+10. **BACKLOG** - Fix missing pet photos (data issue - Mojo)
+11. **BACKLOG** - Fix duplicate names (data issue - "Lola Lola")
 
 ## Architecture
 
