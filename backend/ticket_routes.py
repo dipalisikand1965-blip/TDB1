@@ -785,7 +785,13 @@ async def list_tickets(
                 return datetime.min.replace(tzinfo=timezone.utc) if sort_order == "desc" else datetime.max.replace(tzinfo=timezone.utc)
         return datetime.min.replace(tzinfo=timezone.utc) if sort_order == "desc" else datetime.max.replace(tzinfo=timezone.utc)
     
+    # Debug logging
+    logger.info(f"Before sort: {len(all_tickets)} tickets. First 3: {[t.get('ticket_id') for t in all_tickets[:3]]}")
+    
     all_tickets.sort(key=get_sort_key, reverse=(sort_order == "desc"))
+    
+    # Debug logging
+    logger.info(f"After sort: First 3: {[t.get('ticket_id') for t in all_tickets[:3]]}")
     
     # Apply limit
     all_tickets = all_tickets[:limit]
