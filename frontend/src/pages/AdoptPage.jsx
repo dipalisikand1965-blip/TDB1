@@ -619,9 +619,6 @@ const AdoptPage = () => {
         maxServices={8}
       />
       
-      {/* Mira Floating Chat Widget */}
-      <MiraChatWidget pillar="adopt" />
-      
       {/* Adoption Application Modal */}
       <Dialog open={showApplicationModal} onOpenChange={setShowApplicationModal}>
         <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto">
