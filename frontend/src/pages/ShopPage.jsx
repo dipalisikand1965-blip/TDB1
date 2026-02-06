@@ -432,7 +432,7 @@ const ProductCard = ({ product, petName, breed, isPetPick, index }) => {
 
   return (
     <div 
-      className="group relative bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:-translate-y-0.5"
+      className="group relative bg-white rounded-2xl lg:rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 cursor-pointer transform hover:-translate-y-1 border border-gray-100"
       onClick={() => navigate(`/product/${product.handle || product.id}`)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -443,14 +443,14 @@ const ProductCard = ({ product, petName, breed, isPetPick, index }) => {
         <img
           src={image || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400'}
           alt={title}
-          className={`w-full h-full object-cover transition-transform duration-500 ${isHovered ? 'scale-105' : 'scale-100'}`}
+          className={`w-full h-full object-cover transition-transform duration-500 ${isHovered ? 'scale-110' : 'scale-100'}`}
         />
         
         {/* Pet Pick Badge */}
         {isPetPick && petName && (
-          <div className="absolute top-2 left-2">
-            <span className="flex items-center gap-1 bg-gradient-to-r from-orange-500 to-pink-500 text-white text-[9px] sm:text-[10px] font-semibold px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-full shadow-lg">
-              <Star className="w-2.5 h-2.5" fill="currentColor" />
+          <div className="absolute top-2 sm:top-3 left-2 sm:left-3">
+            <span className="flex items-center gap-1 bg-gradient-to-r from-orange-500 to-pink-500 text-white text-xs sm:text-sm font-semibold px-2 sm:px-3 py-1 sm:py-1.5 rounded-full shadow-lg">
+              <Star className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="currentColor" />
               {petName}&apos;s Pick
             </span>
           </div>
@@ -458,8 +458,8 @@ const ProductCard = ({ product, petName, breed, isPetPick, index }) => {
         
         {/* Discount Badge */}
         {discount > 0 && (
-          <div className="absolute top-2 right-2">
-            <span className="bg-red-500 text-white text-[9px] sm:text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+          <div className="absolute top-2 sm:top-3 right-2 sm:right-3">
+            <span className="bg-red-500 text-white text-xs sm:text-sm font-bold px-2 py-1 rounded-full shadow-md">
               -{discount}%
             </span>
           </div>
@@ -468,31 +468,31 @@ const ProductCard = ({ product, petName, breed, isPetPick, index }) => {
         {/* Wishlist */}
         <button
           onClick={(e) => { e.stopPropagation(); setIsWishlisted(!isWishlisted); }}
-          className={`absolute top-2 right-2 p-1.5 bg-white rounded-full shadow-lg transition-all ${
+          className={`absolute top-2 sm:top-3 right-2 sm:right-3 p-2 bg-white rounded-full shadow-lg transition-all hover:scale-110 ${
             isWishlisted ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-          } ${discount > 0 ? 'top-8' : ''}`}
+          } ${discount > 0 ? 'top-10 sm:top-12' : ''}`}
         >
-          <Heart className={`w-3.5 h-3.5 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
+          <Heart className={`w-4 h-4 sm:w-5 sm:h-5 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
         </button>
       </div>
       
-      {/* Content */}
-      <div className="p-2.5 sm:p-3">
-        <h3 className="font-medium text-gray-900 text-xs sm:text-sm mb-1 line-clamp-2 leading-snug group-hover:text-orange-600 transition-colors">
+      {/* Content - Enhanced padding and text sizes */}
+      <div className="p-3 sm:p-4 lg:p-5">
+        <h3 className="font-semibold text-gray-900 text-sm sm:text-base lg:text-lg mb-1.5 sm:mb-2 line-clamp-2 leading-snug group-hover:text-orange-600 transition-colors">
           {title}
         </h3>
         
         {/* Mira Whisper - Why this product */}
-        <p className="text-[10px] sm:text-xs text-gray-500 mb-1.5 flex items-center gap-1">
-          <Sparkles className="w-2.5 h-2.5 text-purple-500 flex-shrink-0" />
+        <p className="text-xs sm:text-sm text-gray-500 mb-2 sm:mb-3 flex items-center gap-1.5 line-clamp-1">
+          <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-purple-500 flex-shrink-0" />
           <span className="truncate">{miraWhisper}</span>
         </p>
         
         {/* Price */}
-        <div className="flex items-center gap-1.5">
-          <span className="text-sm sm:text-base font-bold text-gray-900">₹{price.toLocaleString()}</span>
+        <div className="flex items-center gap-2">
+          <span className="text-base sm:text-lg lg:text-xl font-bold text-gray-900">₹{price.toLocaleString()}</span>
           {comparePrice && (
-            <span className="text-[10px] sm:text-xs text-gray-400 line-through">₹{comparePrice.toLocaleString()}</span>
+            <span className="text-xs sm:text-sm text-gray-400 line-through">₹{comparePrice.toLocaleString()}</span>
           )}
         </div>
       </div>
