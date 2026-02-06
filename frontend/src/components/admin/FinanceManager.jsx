@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  CreditCard, IndianRupee, Receipt, RefreshCw, Download, Search,
+  CreditCard, Receipt, RefreshCw, Download, Search,
   Filter, CheckCircle, XCircle, Clock, AlertTriangle, Eye,
   ChevronDown, ChevronUp, Calendar, User, Package, Sparkles,
   Gift, Tag, TrendingUp, TrendingDown, FileText, MessageSquare,
