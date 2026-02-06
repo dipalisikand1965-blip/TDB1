@@ -364,15 +364,15 @@ async def get_ticket_detail(ticket_id: str, email: str = Query(...)):
 
 # ============== USER MESSAGE TO TICKET ==============
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 class UserMessage(BaseModel):
-    message: str
+    message: str = Field(..., min_length=1, max_length=5000, description="Message content")
     request_id: Optional[str] = None  # For service requests/bookings
 
 
 class ConciergeReply(BaseModel):
-    message: str
+    message: str = Field(..., min_length=1, max_length=5000, description="Reply message")
     notify_email: bool = True
     notify_whatsapp: bool = False
     is_internal: bool = False
