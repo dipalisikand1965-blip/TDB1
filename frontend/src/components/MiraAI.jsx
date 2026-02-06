@@ -1268,9 +1268,10 @@ const MiraAI = () => {
       return null;
     }
     
+    // HIDE on mobile - MobileNavBar FAB handles Mira on mobile
     return (
       <div 
-        className="fixed bottom-24 right-4 sm:bottom-8 sm:right-8 z-[9998]" 
+        className="hidden sm:block fixed bottom-8 right-8 z-[9998]" 
         data-testid="mira-orb-container"
       >
         <MiraOrb 
