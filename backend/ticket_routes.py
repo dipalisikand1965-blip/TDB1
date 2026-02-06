@@ -732,10 +732,13 @@ async def list_tickets(
     # Fetch from BOTH collections and merge
     all_tickets = []
     
+    # Fetch double the limit from each collection to ensure proper sorting after merge
+    fetch_limit = limit * 2
+    
     # 1. From tickets collection (legacy)
     try:
-        cursor1 = db.tickets.find(query).sort(sort_by, sort_direction).skip(offset).limit(limit)
-        tickets1 = await cursor1.to_list(length=limit)
+        cursor1 = db.tickets.find(query).sort(sort_by, sort_direction).skip(offset).limit(fetch_limit)
+        tickets1 = await cursor1.to_list(length=fetch_limit)
         for t in tickets1:
             t["source_collection"] = "tickets"
         all_tickets.extend(tickets1)
@@ -746,8 +749,8 @@ async def list_tickets(
     # Filter to only include tickets with valid ticket_ids (skip conversational_entry noise)
     try:
         sdt_query = {**query, "ticket_id": {"$exists": True, "$ne": None, "$regex": "^(TKT|QBK|ADV|ORD|SVC)-"}}
-        cursor2 = db.service_desk_tickets.find(sdt_query).sort(sort_by, sort_direction).skip(offset).limit(limit)
-        tickets2 = await cursor2.to_list(length=limit)
+        cursor2 = db.service_desk_tickets.find(sdt_query).sort(sort_by, sort_direction).skip(offset).limit(fetch_limit)
+        tickets2 = await cursor2.to_list(length=fetch_limit)
         for t in tickets2:
             t["source_collection"] = "service_desk_tickets"
         
