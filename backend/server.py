@@ -6019,6 +6019,20 @@ async def get_public_products(
     }
 
 
+@api_router.get("/products/all")
+async def get_all_public_products():
+    """Get ALL products without pagination - for shop page initial load"""
+    products = await db.products_master.find(
+        {},
+        {"_id": 0}
+    ).to_list(5000)
+    
+    return {
+        "products": products,
+        "total": len(products)
+    }
+
+
 # ==================== SERVICES API (Concierge® Services) ====================
 
 @api_router.get("/services")
