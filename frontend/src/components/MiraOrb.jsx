@@ -1,16 +1,15 @@
 /**
- * MiraOrb - Silent Presence
+ * MiraOrb - Like Fantasy.co but with pink glow
  * 
- * THIN, SHARP glow hugging the edge.
- * White-hot at the boundary, pink corona, then darkness.
- * Like a neon outline. Like an eclipse.
+ * Simple. Clean. Not over-engineered.
+ * Pink/white glow behind a black void.
  */
 
 import React from 'react';
 import { motion } from 'framer-motion';
 
-// More interesting organic shape - like the reference with curves
-const BLOB_PATH = "M 50 8 Q 70 2 78 20 Q 88 35 82 50 Q 90 70 75 82 Q 60 95 50 92 Q 40 95 25 82 Q 10 70 18 50 Q 12 35 22 20 Q 30 2 50 8 Z";
+// Simple organic blob - like Fantasy's logo shape
+const BLOB_PATH = "M 50 10 C 70 10 85 25 85 45 C 85 55 80 65 75 75 C 65 90 50 90 50 90 C 50 90 35 90 25 75 C 20 65 15 55 15 45 C 15 25 30 10 50 10 Z";
 
 const MiraOrb = ({ 
   onClick,
@@ -18,9 +17,9 @@ const MiraOrb = ({
   className = '',
 }) => {
   const sizes = {
-    sm: { container: 80, orb: 44 },
-    md: { container: 96, orb: 54 },
-    lg: { container: 112, orb: 64 },
+    sm: { container: 64, orb: 40 },
+    md: { container: 80, orb: 50 },
+    lg: { container: 96, orb: 60 },
   };
   
   const config = sizes[size];
@@ -33,77 +32,54 @@ const MiraOrb = ({
         height: config.container,
       }}
     >
-      {/* The glowing SVG */}
+      {/* THE GLOW - simple pink/white shape with CSS blur */}
+      {/* This is the light source - sits behind the black void */}
       <motion.div
-        className="absolute inset-0 flex items-center justify-center"
+        className="absolute"
+        style={{
+          width: config.orb + 8,
+          height: config.orb + 8,
+          filter: 'blur(8px)',
+        }}
         animate={{
-          scale: [1, 1.02, 1],
+          scale: [1, 1.05, 1],
+          opacity: [0.9, 1, 0.9],
         }}
         transition={{
-          duration: 6,
+          duration: 4,
           repeat: Infinity,
           ease: "easeInOut",
         }}
       >
-        <svg 
-          viewBox="0 0 100 100" 
-          style={{ 
-            width: config.container, 
-            height: config.container,
-            overflow: 'visible',
-          }}
-        >
-          <defs>
-            {/* THIN, SHARP glow - tight blur, bright edge */}
-            <filter id="mira-thin-glow" x="-50%" y="-50%" width="200%" height="200%">
-              {/* Layer 1: White-hot edge - very tight */}
-              <feGaussianBlur in="SourceGraphic" stdDeviation="1" result="blur1"/>
-              <feFlood floodColor="#ffffff" floodOpacity="0.9" result="white"/>
-              <feComposite in="white" in2="blur1" operator="in" result="whiteGlow"/>
-              
-              {/* Layer 2: Hot pink - slightly wider */}
-              <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur2"/>
-              <feFlood floodColor="#ff1493" floodOpacity="1" result="hotPink"/>
-              <feComposite in="hotPink" in2="blur2" operator="in" result="pinkGlow"/>
-              
-              {/* Layer 3: Magenta corona - thin spread */}
-              <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="blur3"/>
-              <feFlood floodColor="#ec4899" floodOpacity="0.8" result="magenta"/>
-              <feComposite in="magenta" in2="blur3" operator="in" result="magentaGlow"/>
-              
-              {/* Layer 4: Soft outer - quick falloff */}
-              <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur4"/>
-              <feFlood floodColor="#be185d" floodOpacity="0.4" result="outer"/>
-              <feComposite in="outer" in2="blur4" operator="in" result="outerGlow"/>
-              
-              {/* Stack: outer -> magenta -> pink -> white (white on top = brightest) */}
-              <feMerge>
-                <feMergeNode in="outerGlow"/>
-                <feMergeNode in="magentaGlow"/>
-                <feMergeNode in="pinkGlow"/>
-                <feMergeNode in="whiteGlow"/>
-              </feMerge>
-            </filter>
-          </defs>
-          
-          {/* The GLOW - thin, sharp, animated */}
-          <motion.path
-            d={BLOB_PATH}
-            fill="#ec4899"
-            filter="url(#mira-thin-glow)"
-            animate={{
-              opacity: [0.85, 1, 0.85],
-            }}
-            transition={{
-              duration: 4,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          />
+        <svg viewBox="0 0 100 100" className="w-full h-full">
+          <path d={BLOB_PATH} fill="#f472b6" />
         </svg>
       </motion.div>
 
-      {/* The BLACK CORE - true void */}
+      {/* Inner brighter glow - white/pink core */}
+      <motion.div
+        className="absolute"
+        style={{
+          width: config.orb + 4,
+          height: config.orb + 4,
+          filter: 'blur(4px)',
+        }}
+        animate={{
+          opacity: [0.85, 1, 0.85],
+        }}
+        transition={{
+          duration: 3,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 0.5,
+        }}
+      >
+        <svg viewBox="0 0 100 100" className="w-full h-full">
+          <path d={BLOB_PATH} fill="#fbcfe8" />
+        </svg>
+      </motion.div>
+
+      {/* THE BLACK VOID - sits on top */}
       <motion.button
         onClick={(e) => {
           if (navigator.vibrate) navigator.vibrate(20);
