@@ -5,10 +5,11 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { intelligentSearch } from '../utils/unifiedApi';
 import { API_URL } from '../utils/api';
+import MiraSearchPanel from './MiraSearchPanel';
 
 /**
  * Clean Navbar with all 14 Pillars
- * No icons in nav row for cleaner look
+ * Search now routes through Mira OS for intelligent understanding
  */
 
 const PILLARS = [
