@@ -511,83 +511,132 @@ const CarePage = () => {
         .stagger-6 { animation-delay: 0.6s; }
       `}</style>
       
-      {/* === HERO SECTION - Pet Care Theme === */}
+      {/* === HERO SECTION - Personalized for Pet! === */}
       <div className="relative overflow-hidden bg-gradient-to-br from-rose-900 via-pink-800 to-red-900 text-white">
         {/* Background Image */}
         <div className="absolute inset-0">
           <img 
             src={HERO_IMAGES[heroIndex]} 
             alt="Pet Care" 
-            className="w-full h-full object-cover opacity-30 transition-opacity duration-1000"
+            className="w-full h-full object-cover opacity-20 transition-opacity duration-1000"
           />
           <div className="absolute inset-0 bg-gradient-to-r from-rose-900/90 via-pink-800/80 to-transparent" />
         </div>
         
         {/* Content */}
-        <div className="relative max-w-7xl mx-auto px-4 py-20 md:py-28">
-          <div className="max-w-2xl">
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-6">
-              <Heart className="w-4 h-4 text-pink-300 fill-current" />
-              <span className="text-sm font-medium">Profile-First Pet Care</span>
-            </div>
+        <div className="relative max-w-7xl mx-auto px-4 py-12 md:py-20">
+          <div className="flex flex-col lg:flex-row items-center gap-8 lg:gap-12">
             
-            {/* Main Headline */}
-            <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-              Care That
-              <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-300 to-yellow-300">
-                Knows Your Pet
-              </span>
-            </h1>
-            
-            <p className="text-lg md:text-xl text-white/80 mb-8 max-w-lg">
-              From grooming to training, walks to wellness — we understand your pet&apos;s unique needs and connect you with the right care, every time.
-            </p>
-            
-            {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button 
-                onClick={handleStartCare}
-                size="lg"
-                className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-8 py-6 text-lg rounded-full shadow-2xl shadow-pink-500/30 transition-all hover:scale-105"
-                data-testid="get-care-btn"
-              >
-                <Sparkles className="w-5 h-5 mr-2" />
-                Get Care Now
-              </Button>
-              <Button 
-                onClick={scrollToProducts}
-                variant="outline"
-                size="lg"
-                className="border-white/30 text-white hover:bg-white/10 px-8 py-6 text-lg rounded-full"
-                data-testid="shop-care-kits-btn"
-              >
-                <Package className="w-5 h-5 mr-2" />
-                Shop Care Essentials
-              </Button>
-            </div>
-            
-            {/* Trust Indicators */}
-            <div className="flex flex-wrap gap-6 mt-12">
-              <div className="flex items-center gap-2 text-white/70">
-                <Shield className="w-5 h-5 text-green-400" />
-                <span className="text-sm">Certified Groomers</span>
+            {/* Pet Photo Section - PET IS THE HERO! */}
+            {userPets[0] && (
+              <div className="relative flex-shrink-0">
+                {/* Glow effect */}
+                <div className="absolute inset-0 bg-gradient-to-br from-pink-400/40 to-rose-400/40 rounded-full blur-xl scale-125 animate-pulse" />
+                
+                {/* Pet Photo */}
+                <div className="relative w-32 h-32 sm:w-40 sm:h-40 rounded-full overflow-hidden border-4 border-white/30 shadow-2xl">
+                  {userPets[0].photo_url || userPets[0].image ? (
+                    <img 
+                      src={userPets[0].photo_url || userPets[0].image}
+                      alt={userPets[0].name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-pink-200 to-rose-200 flex items-center justify-center">
+                      <Scissors className="w-16 h-16 text-pink-400" />
+                    </div>
+                  )}
+                </div>
+                
+                {/* Sparkle decoration */}
+                <div className="absolute -top-2 -right-2 text-2xl">✨</div>
               </div>
-              <div className="flex items-center gap-2 text-white/70">
-                <Trophy className="w-5 h-5 text-amber-400" />
-                <span className="text-sm">10,000+ Spa Sessions</span>
+            )}
+            
+            {/* Content */}
+            <div className={`flex-1 ${userPets[0] ? 'text-center lg:text-left' : ''}`}>
+              {/* Badge */}
+              <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full mb-5">
+                <Heart className="w-4 h-4 text-pink-300 fill-current" />
+                <span className="text-sm font-medium">
+                  {userPets[0] ? `💕 Pamper time for ${userPets[0].name}!` : 'Profile-First Pet Care'}
+                </span>
               </div>
-              <div className="flex items-center gap-2 text-white/70">
-                <Heart className="w-5 h-5 text-pink-400" />
-                <span className="text-sm">Vet-Approved Products</span>
+              
+              {/* Main Headline */}
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 leading-tight">
+                {userPets[0] ? (
+                  <>Care for <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-300 to-yellow-300">{userPets[0].name}</span></>
+                ) : (
+                  <>Care That <span className="text-transparent bg-clip-text bg-gradient-to-r from-pink-300 to-yellow-300">Knows Your Pet</span></>
+                )}
+              </h1>
+              
+              <p className="text-base md:text-lg text-white/80 mb-5 max-w-lg">
+                {userPets[0] 
+                  ? `Grooming, wellness & spa services curated for ${userPets[0].name}'s unique needs`
+                  : 'From grooming to training, walks to wellness — we understand your pet\'s unique needs'
+                }
+              </p>
+              
+              {/* Mira's emotional message */}
+              {userPets[0] && (
+                <div className="flex items-start gap-3 mb-6 justify-center lg:justify-start animate-fade-in-up">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                    <Sparkles className="w-4 h-4 text-white" />
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-md rounded-2xl rounded-tl-sm px-4 py-2.5 max-w-md">
+                    <p className="text-sm text-white/90 font-medium">
+                      &ldquo;{userPets[0].name}&apos;s coat deserves the royal treatment! Let&apos;s find the perfect groomer ✨&rdquo;
+                    </p>
+                    <p className="text-xs text-white/50 mt-1 flex items-center gap-1">
+                      <Heart className="w-3 h-3 fill-pink-300 text-pink-300" />
+                      Mira knows {userPets[0].name}
+                    </p>
+                  </div>
+                </div>
+              )}
+              
+              {/* CTA Buttons */}
+              <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-3">
+                <Button 
+                  onClick={handleStartCare}
+                  size="lg"
+                  className="bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white px-6 py-5 text-base rounded-full shadow-2xl shadow-pink-500/30 transition-all hover:scale-105"
+                  data-testid="get-care-btn"
+                >
+                  <Sparkles className="w-5 h-5 mr-2" />
+                  {userPets[0] ? `Get Care for ${userPets[0].name}` : 'Get Care Now'}
+                </Button>
+                <Button 
+                  onClick={scrollToProducts}
+                  variant="outline"
+                  size="lg"
+                  className="border-white/30 text-white hover:bg-white/10 px-6 py-5 text-base rounded-full"
+                  data-testid="shop-care-kits-btn"
+                >
+                  <Package className="w-5 h-5 mr-2" />
+                  Shop Care Essentials
+                </Button>
+              </div>
+              
+              {/* Trust Indicators */}
+              <div className="flex flex-wrap justify-center lg:justify-start gap-4 mt-8">
+                <div className="flex items-center gap-2 text-white/70">
+                  <Shield className="w-4 h-4 text-green-400" />
+                  <span className="text-xs sm:text-sm">Certified Groomers</span>
+                </div>
+                <div className="flex items-center gap-2 text-white/70">
+                  <Trophy className="w-5 h-5 text-amber-400" />
+                  <span className="text-xs sm:text-sm">10,000+ Spa Sessions</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
         
         {/* Scroll Indicator */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 animate-bounce">
+        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 animate-bounce">
           <ChevronDown className="w-6 h-6 text-white/50" />
         </div>
       </div>
