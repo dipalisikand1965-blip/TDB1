@@ -802,11 +802,12 @@ const MemberDashboard = () => {
     );
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200">
-      {/* Soul Orb Background Effects */}
+    <div className="min-h-screen bg-gradient-to-b from-slate-900 via-slate-900 to-purple-950/30 text-slate-100">
+      {/* Warm Soul Orb Background Effects */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 -left-32 w-96 h-96 bg-gradient-to-tr from-purple-500 to-pink-600 rounded-full blur-[150px] opacity-15" />
-        <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-gradient-to-tr from-pink-500 to-indigo-600 rounded-full blur-[120px] opacity-10" />
+        <div className="absolute top-1/4 -left-32 w-96 h-96 bg-gradient-to-tr from-purple-400/30 to-pink-500/30 rounded-full blur-[150px]" />
+        <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-gradient-to-tr from-pink-400/20 to-amber-500/20 rounded-full blur-[120px]" />
+        <div className="absolute top-1/2 right-0 w-64 h-64 bg-gradient-to-tr from-amber-400/10 to-rose-400/10 rounded-full blur-[100px]" />
       </div>
       
       {/* Pull to Refresh Indicator */}
