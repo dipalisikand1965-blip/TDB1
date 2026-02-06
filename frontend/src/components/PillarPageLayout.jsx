@@ -13,7 +13,8 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { Package, Wrench, PawPrint } from 'lucide-react';
 import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import UnifiedHero from './UnifiedHero';
@@ -24,51 +25,75 @@ import MiraChatWidget from './MiraChatWidget';
 // Pillar subcategories configuration
 const PILLAR_SUBCATEGORIES = {
   celebrate: [
-    { id: 'cakes', name: 'Birthday Cakes' },
-    { id: 'mini-cakes', name: 'Mini Cakes' },
-    { id: 'dognuts', name: 'Dognuts' },
-    { id: 'hampers', name: 'Hampers' },
-    { id: 'accessories', name: 'Party Accessories' }
+    { id: 'cakes', name: 'Birthday Cakes', path: '/celebrate/cakes', emoji: '🎂' },
+    { id: 'breed-cakes', name: 'Breed Cakes', path: '/celebrate/breed-cakes', emoji: '❤️' },
+    { id: 'pupcakes', name: 'Pupcakes & Dognuts', path: '/celebrate/pupcakes', emoji: '✨' },
+    { id: 'treats', name: 'Treats', path: '/celebrate/treats', emoji: '🎁' },
+    { id: 'hampers', name: 'Gift Hampers', path: '/celebrate/hampers', emoji: '🛍️' },
+    { id: 'accessories', name: 'Party Accessories', path: '/celebrate/accessories', emoji: '🎉' }
   ],
   dine: [
-    { id: 'fresh-meals', name: 'Fresh Meals' },
-    { id: 'treats', name: 'Treats' },
-    { id: 'desi-treats', name: 'Desi Treats' },
-    { id: 'frozen', name: 'Frozen' }
+    { id: 'fresh-meals', name: 'Fresh Meals', path: '/dine/fresh-meals', emoji: '🥩' },
+    { id: 'treats', name: 'Treats', path: '/dine/treats', emoji: '🦴' },
+    { id: 'desi-treats', name: 'Desi Treats', path: '/dine/desi-treats', emoji: '🍖' },
+    { id: 'frozen', name: 'Frozen', path: '/dine/frozen', emoji: '🧊' },
+    { id: 'supplements', name: 'Supplements', path: '/dine/supplements', emoji: '💊' }
   ],
   care: [
-    { id: 'grooming', name: 'Grooming' },
-    { id: 'health', name: 'Health' },
-    { id: 'supplements', name: 'Supplements' }
+    { id: 'grooming', name: 'Grooming', path: '/care/grooming', emoji: '✨' },
+    { id: 'health', name: 'Health', path: '/care/health', emoji: '❤️' },
+    { id: 'supplements', name: 'Supplements', path: '/care/supplements', emoji: '💊' },
+    { id: 'spa', name: 'Spa', path: '/care/spa', emoji: '🛁' }
   ],
   enjoy: [
-    { id: 'toys', name: 'Toys' },
-    { id: 'chews', name: 'Chews' },
-    { id: 'games', name: 'Games' }
+    { id: 'toys', name: 'Toys', path: '/enjoy/toys', emoji: '🎾' },
+    { id: 'chews', name: 'Chews', path: '/enjoy/chews', emoji: '🦴' },
+    { id: 'games', name: 'Games', path: '/enjoy/games', emoji: '🎮' },
+    { id: 'puzzles', name: 'Puzzles', path: '/enjoy/puzzles', emoji: '🧩' }
   ],
   travel: [
-    { id: 'carriers', name: 'Carriers' },
-    { id: 'car-accessories', name: 'Car Accessories' }
+    { id: 'carriers', name: 'Carriers', path: '/travel/carriers', emoji: '🎒' },
+    { id: 'car', name: 'Car Accessories', path: '/travel/car', emoji: '🚗' },
+    { id: 'outdoor', name: 'Outdoor Gear', path: '/travel/outdoor', emoji: '⛺' }
   ],
   stay: [
-    { id: 'beds', name: 'Beds' },
-    { id: 'mats', name: 'Mats' },
-    { id: 'kennels', name: 'Kennels' }
+    { id: 'beds', name: 'Beds', path: '/stay/beds', emoji: '🛏️' },
+    { id: 'mats', name: 'Mats', path: '/stay/mats', emoji: '🧺' },
+    { id: 'kennels', name: 'Kennels', path: '/stay/kennels', emoji: '🏠' },
+    { id: 'bowls', name: 'Bowls', path: '/stay/bowls', emoji: '🥣' }
   ],
   fit: [
-    { id: 'leashes', name: 'Leashes' },
-    { id: 'harnesses', name: 'Harnesses' },
-    { id: 'collars', name: 'Collars' }
+    { id: 'leashes', name: 'Leashes', path: '/fit/leashes', emoji: '🦮' },
+    { id: 'harnesses', name: 'Harnesses', path: '/fit/harnesses', emoji: '🎽' },
+    { id: 'collars', name: 'Collars', path: '/fit/collars', emoji: '📿' },
+    { id: 'apparel', name: 'Apparel', path: '/fit/apparel', emoji: '👕' }
   ],
   learn: [
-    { id: 'training-aids', name: 'Training Aids' },
-    { id: 'puzzles', name: 'Puzzles' }
+    { id: 'training', name: 'Training Aids', path: '/learn/training', emoji: '🎓' },
+    { id: 'puzzles', name: 'Puzzles', path: '/learn/puzzles', emoji: '🧩' },
+    { id: 'books', name: 'Books', path: '/learn/books', emoji: '📚' }
   ],
-  advisory: [],
-  emergency: [],
-  paperwork: [],
-  farewell: [],
-  adopt: []
+  advisory: [
+    { id: 'nutrition', name: 'Nutrition', path: '/advisory/nutrition', emoji: '🥗' },
+    { id: 'behavior', name: 'Behavior', path: '/advisory/behavior', emoji: '🧠' },
+    { id: 'health', name: 'Health', path: '/advisory/health', emoji: '❤️' }
+  ],
+  emergency: [
+    { id: 'first-aid', name: 'First Aid', path: '/emergency/first-aid', emoji: '🩹' },
+    { id: 'hospitals', name: 'Hospitals', path: '/emergency/hospitals', emoji: '🏥' }
+  ],
+  paperwork: [
+    { id: 'registration', name: 'Registration', path: '/paperwork/registration', emoji: '📋' },
+    { id: 'insurance', name: 'Insurance', path: '/paperwork/insurance', emoji: '🛡️' }
+  ],
+  farewell: [
+    { id: 'memorial', name: 'Memorial', path: '/farewell/memorial', emoji: '🌈' },
+    { id: 'support', name: 'Support', path: '/farewell/support', emoji: '💕' }
+  ],
+  adopt: [
+    { id: 'rescue', name: 'Rescue', path: '/adopt/rescue', emoji: '🏠' },
+    { id: 'shelters', name: 'Shelters', path: '/adopt/shelters', emoji: '🐾' }
+  ]
 };
 
 /**
@@ -77,12 +102,9 @@ const PILLAR_SUBCATEGORIES = {
  * @param {string} pillar - The pillar identifier (celebrate, dine, care, etc.)
  * @param {string} title - SEO title for the page
  * @param {string} description - SEO description
- * @param {React.ReactNode} children - The pillar-specific content
+ * @param {React.ReactNode} children - The pillar-specific content (can be a render prop)
  * @param {string} defaultViewMode - 'products' or 'services' (default: 'products')
- * @param {Function} onViewModeChange - Callback when view mode changes
- * @param {Function} onSearchChange - Callback when search changes
- * @param {Function} onSubcategoryChange - Callback when subcategory changes
- * @param {boolean} showNav - Whether to show PillarNav (default: true)
+ * @param {boolean} showSubcategories - Whether to show subcategory pills (default: true)
  */
 const PillarPageLayout = ({
   pillar,
@@ -90,10 +112,7 @@ const PillarPageLayout = ({
   description,
   children,
   defaultViewMode = 'products',
-  onViewModeChange,
-  onSearchChange,
-  onSubcategoryChange,
-  showNav = true
+  showSubcategories = true
 }) => {
   const { user, token } = useAuth();
   const navigate = useNavigate();
@@ -154,9 +173,6 @@ const PillarPageLayout = ({
   // Handle view mode change
   const handleViewModeChange = (mode) => {
     setViewMode(mode);
-    if (onViewModeChange) {
-      onViewModeChange(mode);
-    }
     // Navigate to appropriate page
     if (mode === 'products') {
       navigate('/shop');
@@ -168,24 +184,32 @@ const PillarPageLayout = ({
   // Handle search change
   const handleSearchChange = (query) => {
     setSearchQuery(query);
-    if (onSearchChange) {
-      onSearchChange(query);
-    }
-  };
-  
-  // Handle subcategory change
-  const handleSubcategoryChange = (subcat) => {
-    setSelectedSubcategory(subcat);
-    if (onSubcategoryChange) {
-      onSubcategoryChange(subcat);
-    }
   };
   
   // Get subcategories for current pillar
   const subcategories = PILLAR_SUBCATEGORIES[pillar] || [];
   
+  // Get pillar-specific gradient for bottom section
+  const PILLAR_BG = {
+    celebrate: 'from-pink-50',
+    dine: 'from-amber-50',
+    care: 'from-purple-50',
+    enjoy: 'from-blue-50',
+    travel: 'from-sky-50',
+    stay: 'from-green-50',
+    fit: 'from-red-50',
+    learn: 'from-emerald-50',
+    advisory: 'from-indigo-50',
+    emergency: 'from-rose-50',
+    paperwork: 'from-slate-50',
+    farewell: 'from-violet-50',
+    adopt: 'from-orange-50'
+  };
+  
+  const bgGradient = PILLAR_BG[pillar] || 'from-gray-50';
+  
   return (
-    <div className="min-h-screen bg-gray-50 pb-20 md:pb-0" data-testid={`${pillar}-page`}>
+    <div className={`min-h-screen bg-gradient-to-b ${bgGradient} to-white pb-20 md:pb-0`} data-testid={`${pillar}-page`}>
       {/* SEO */}
       <SEOHead 
         title={title}
@@ -204,27 +228,86 @@ const PillarPageLayout = ({
         shoppingForOther={shoppingForOther}
       />
       
-      {/* Pillar Navigation */}
-      {showNav && (
-        <PillarNav
-          selectedPillar={pillar}
-          onSelectPillar={(p) => {
-            if (p !== pillar) {
-              // Navigate to the selected pillar
-              if (p === 'recommended' || p === 'all' || p === 'shop') {
-                navigate(viewMode === 'products' ? '/shop' : '/services');
-              } else {
-                navigate(`/${p}`);
-              }
-            }
-          }}
-          viewMode={viewMode}
-          onViewModeChange={handleViewModeChange}
-          petName={activePet?.name || 'Your Pet'}
-          shoppingForOther={shoppingForOther}
-          onShoppingForOtherClick={() => setShoppingForOther(!shoppingForOther)}
-        />
-      )}
+      {/* Navigation Bar - Product/Service Toggle + Subcategories */}
+      <div className="bg-white border-b border-gray-100 sticky top-0 z-40">
+        <div className="max-w-6xl mx-auto">
+          {/* Top Row: Product/Service Toggle + "Buying for someone else?" */}
+          <div className="flex items-center justify-between px-4 py-2 border-b border-gray-50">
+            {/* Product/Service Toggle */}
+            <div className="flex items-center gap-1 p-1 bg-gray-100 rounded-full">
+              <button
+                onClick={() => setViewMode('products')}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                  viewMode === 'products'
+                    ? 'bg-white text-gray-900 shadow-md'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+                data-testid="products-toggle"
+              >
+                <Package className="w-4 h-4" />
+                <span>Products</span>
+              </button>
+              <button
+                onClick={() => setViewMode('services')}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                  viewMode === 'services'
+                    ? 'bg-white text-gray-900 shadow-md'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+                data-testid="services-toggle"
+              >
+                <Wrench className="w-4 h-4" />
+                <span>Services</span>
+              </button>
+            </div>
+            
+            {/* Shopping for other dog link */}
+            <button 
+              onClick={() => setShoppingForOther(!shoppingForOther)}
+              className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-400 hover:text-gray-600 transition-all"
+              data-testid="shopping-for-other"
+            >
+              <PawPrint className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Shopping for another dog?</span>
+              <span className="sm:hidden">Other?</span>
+            </button>
+          </div>
+          
+          {/* Subcategories Row */}
+          {showSubcategories && subcategories.length > 0 && (
+            <div className="flex gap-2 px-4 py-3 overflow-x-auto scrollbar-hide">
+              <button
+                onClick={() => setSelectedSubcategory(null)}
+                className={`flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-2xl font-medium text-sm transition-all ${
+                  !selectedSubcategory
+                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
+                    : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                }`}
+                data-testid="all-subcategories"
+              >
+                <span>✨</span>
+                <span>All {pillar.charAt(0).toUpperCase() + pillar.slice(1)}</span>
+              </button>
+              {subcategories.map((subcat) => (
+                <Link
+                  key={subcat.id}
+                  to={subcat.path}
+                  onClick={() => setSelectedSubcategory(subcat.id)}
+                  className={`flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-2xl font-medium text-sm transition-all ${
+                    selectedSubcategory === subcat.id
+                      ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
+                      : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                  }`}
+                  data-testid={`subcat-${subcat.id}`}
+                >
+                  <span>{subcat.emoji}</span>
+                  <span className="whitespace-nowrap">{subcat.name}</span>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
       
       {/* Pillar-specific content */}
       <main>
@@ -241,7 +324,7 @@ const PillarPageLayout = ({
               shoppingForOther,
               setActivePet,
               setShoppingForOther,
-              onSubcategoryChange: handleSubcategoryChange
+              setSelectedSubcategory
             })
           : children}
       </main>
