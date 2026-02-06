@@ -279,7 +279,7 @@ async def mira_os_handoff(
         "source": "mira_os"
     }
     
-    if db:
+    if db is not None:
         await db.concierge_tasks.insert_one(task)
     
     return {
