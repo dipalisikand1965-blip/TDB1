@@ -10,16 +10,15 @@ import { API_URL } from '../utils/api';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { toast } from '../hooks/use-toast';
-import MiraChatWidget from '../components/MiraChatWidget';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import AdminQuickEdit from '../components/AdminQuickEdit';
 import ProductCard from '../components/ProductCard';
-import SEOHead from '../components/SEOHead';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import MiraPicksCarousel from '../components/MiraPicksCarousel';
 import PetJourneyRecommendations from '../components/PetJourneyRecommendations';
 import PersonalizedPicks from '../components/PersonalizedPicks';
 import { getPetPhotoUrl } from '../utils/petAvatar';
+import PillarPageLayout from '../components/PillarPageLayout';
 // FitPage-style engagement components
 import { FitnessJourneyCounter, RotatingSocialProof } from '../components/SocialProofBadges';
 import TransformationStories from '../components/TransformationStories';
