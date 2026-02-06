@@ -2,19 +2,49 @@
 @tailwind components;
 @tailwind utilities;
 
-/* iOS Wobble/Bounce Prevention */
-html, body {
-  overscroll-behavior: none;
-  -webkit-overflow-scrolling: touch;
+/* ============================================
+   MOBILE WOBBLE/BOUNCE FIX - CRITICAL
+   ============================================ */
+
+/* Prevent ALL horizontal scrolling and wobble */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
   overflow-x: hidden;
   width: 100%;
   max-width: 100vw;
+  overscroll-behavior-x: none;
+  -webkit-text-size-adjust: 100%;
 }
 
-/* Prevent horizontal scroll on all pages */
+body {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+  position: relative;
+  overscroll-behavior: none;
+  -webkit-overflow-scrolling: touch;
+  margin: 0;
+  padding: 0;
+}
+
+/* Root container must not overflow */
 #root {
   overflow-x: hidden;
-  max-width: 100%;
+  width: 100%;
+  max-width: 100vw;
+  position: relative;
+}
+
+/* Scrollbar hide utility */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }
 
 /* Google Fonts for Pet Life OS */
