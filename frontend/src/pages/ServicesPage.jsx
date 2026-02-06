@@ -541,7 +541,7 @@ const ServiceCard = ({ service, pet, index, showWhyPicked = false }) => {
   
   return (
     <div 
-      className="group relative bg-white rounded-xl sm:rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer transform hover:-translate-y-0.5"
+      className="group relative bg-white rounded-2xl lg:rounded-3xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-300 cursor-pointer transform hover:-translate-y-1 border border-gray-100"
       onClick={handleClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -550,15 +550,15 @@ const ServiceCard = ({ service, pet, index, showWhyPicked = false }) => {
       {/* "Why we picked this" badge */}
       {whyPicked && (
         <div 
-          className="absolute top-2 right-2 z-20"
+          className="absolute top-2 sm:top-3 right-2 sm:right-3 z-20"
           onMouseEnter={() => setShowTooltip(true)}
           onMouseLeave={() => setShowTooltip(false)}
         >
-          <div className="p-1 bg-amber-400 rounded-full shadow-md cursor-help">
-            <Sparkles className="w-3 h-3 text-amber-900" />
+          <div className="p-1.5 sm:p-2 bg-amber-400 rounded-full shadow-md cursor-help">
+            <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-amber-900" />
           </div>
           {showTooltip && (
-            <div className="absolute right-0 top-full mt-1 w-40 p-2 bg-gray-900 text-white text-[10px] rounded-lg shadow-xl z-30">
+            <div className="absolute right-0 top-full mt-1 w-44 p-2.5 bg-gray-900 text-white text-xs rounded-xl shadow-xl z-30">
               <p className="font-medium mb-1">Why for {petName}?</p>
               <p className="text-gray-300">{whyPicked}</p>
             </div>
@@ -567,7 +567,7 @@ const ServiceCard = ({ service, pet, index, showWhyPicked = false }) => {
       )}
       
       {/* Image Header */}
-      <div className={`relative h-24 sm:h-32 bg-gradient-to-br ${visuals.color} overflow-hidden`}>
+      <div className={`relative h-28 sm:h-36 lg:h-40 bg-gradient-to-br ${visuals.color} overflow-hidden`}>
         <img 
           src={visuals.image} 
           alt={service.name}
@@ -577,39 +577,39 @@ const ServiceCard = ({ service, pet, index, showWhyPicked = false }) => {
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
         
         {/* Icon Badge */}
-        <div className="absolute top-2 left-2 p-1.5 sm:p-2 bg-white/20 backdrop-blur-sm rounded-lg">
-          <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+        <div className="absolute top-2 sm:top-3 left-2 sm:left-3 p-2 sm:p-2.5 bg-white/20 backdrop-blur-sm rounded-xl">
+          <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
         </div>
         
         {/* Service Name on Image */}
-        <div className="absolute bottom-2 left-2 right-2">
-          <h3 className="text-sm sm:text-base font-bold text-white leading-tight drop-shadow-lg line-clamp-1">
+        <div className="absolute bottom-2 sm:bottom-3 left-2 sm:left-3 right-2 sm:right-3">
+          <h3 className="text-base sm:text-lg lg:text-xl font-bold text-white leading-tight drop-shadow-lg line-clamp-2">
             {service.name}
           </h3>
         </div>
       </div>
       
-      {/* Content */}
-      <div className="p-2.5 sm:p-3 space-y-2">
+      {/* Content - Enhanced padding and text sizes */}
+      <div className="p-3 sm:p-4 lg:p-5 space-y-2 sm:space-y-3">
         {/* Mira Whisper - Why this service for this breed */}
-        <p className="text-[10px] sm:text-xs text-gray-600 leading-relaxed line-clamp-2 flex items-start gap-1">
-          <Sparkles className="w-3 h-3 text-purple-500 flex-shrink-0 mt-0.5" />
+        <p className="text-xs sm:text-sm text-gray-600 leading-relaxed line-clamp-2 flex items-start gap-1.5">
+          <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-purple-500 flex-shrink-0 mt-0.5" />
           <span>{miraWhisper}</span>
         </p>
         
         {/* Price and duration */}
-        <div className="flex items-center justify-between pt-1 border-t border-gray-100">
-          <span className="font-semibold text-gray-900 text-sm">
+        <div className="flex items-center justify-between pt-2 sm:pt-3 border-t border-gray-100">
+          <span className="font-bold text-gray-900 text-base sm:text-lg">
             {service.base_price ? `₹${service.base_price.toLocaleString()}` : 'Get Quote'}
           </span>
-          <div className="flex items-center gap-1.5 text-[10px] text-gray-500">
+          <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-500">
             {service.duration && (
-              <span className="flex items-center gap-0.5">
-                <Clock className="w-3 h-3" />
+              <span className="flex items-center gap-1">
+                <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 {service.duration}
               </span>
             )}
-            <ChevronRight className={`w-3.5 h-3.5 text-gray-400 transition-transform ${isHovered ? 'translate-x-0.5' : ''}`} />
+            <ChevronRight className={`w-4 h-4 sm:w-5 sm:h-5 text-gray-400 transition-transform ${isHovered ? 'translate-x-1' : ''}`} />
           </div>
         </div>
       </div>
