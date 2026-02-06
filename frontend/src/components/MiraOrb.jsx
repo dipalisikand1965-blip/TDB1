@@ -1,19 +1,13 @@
 /**
- * MiraOrb - Eclipse Effect
+ * MiraOrb - ALIVE with motion
  * 
- * TWO shapes creating an eclipse:
- * 1. Glowing magenta blob (light source) - behind
- * 2. Black void blob - offset on top, blocking most light
- * 
- * Light escapes on one side. Like a solar eclipse.
- * Breathing animation. 6-8 second cycle. Barely perceptible.
+ * Black void center.
+ * Magenta glow escaping from behind.
+ * VISIBLE breathing animation.
  */
 
 import React from 'react';
 import { motion } from 'framer-motion';
-
-// Organic asymmetrical blob - no symmetry, soft contours
-const BLOB_PATH = "M 50 12 Q 72 8 80 28 Q 90 48 82 68 Q 72 88 52 90 Q 32 92 22 72 Q 12 52 20 32 Q 28 12 50 12 Z";
 
 const MiraOrb = ({ 
   onClick,
@@ -21,9 +15,9 @@ const MiraOrb = ({
   className = '',
 }) => {
   const sizes = {
-    sm: { container: 72, blob: 48 },
-    md: { container: 88, blob: 58 },
-    lg: { container: 104, blob: 68 },
+    sm: { container: 80, core: 44 },
+    md: { container: 100, core: 56 },
+    lg: { container: 120, core: 68 },
   };
   
   const config = sizes[size];
@@ -36,93 +30,67 @@ const MiraOrb = ({
         height: config.container,
       }}
     >
-      {/* THE GLOW - magenta blob, the light source */}
-      {/* Positioned slightly offset so light escapes on one side */}
+      {/* GLOW LAYER - Magenta light escaping from behind */}
+      {/* This is the ANIMATED part - visible breathing */}
       <motion.div
-        className="absolute"
+        className="absolute rounded-full"
         style={{
-          width: config.blob + 16,
-          height: config.blob + 16,
-          left: -8,  // Offset to create asymmetric glow escape
-          top: -4,
+          width: config.core + 40,
+          height: config.core + 40,
+          background: 'radial-gradient(circle at 30% 30%, #ff00ff 0%, #cc00cc 30%, #990099 60%, transparent 80%)',
+          filter: 'blur(12px)',
         }}
         animate={{
-          opacity: [0.92, 1, 0.92],
-          scale: [1, 1.02, 1],
+          scale: [1, 1.15, 1],
+          opacity: [0.7, 1, 0.7],
         }}
         transition={{
-          duration: 7,
+          duration: 4,
           repeat: Infinity,
           ease: "easeInOut",
         }}
-      >
-        {/* Outer soft glow */}
-        <div 
-          className="absolute inset-0"
-          style={{ filter: 'blur(16px)' }}
-        >
-          <svg viewBox="0 0 100 100" className="w-full h-full">
-            <path d={BLOB_PATH} fill="#a855f7" />
-          </svg>
-        </div>
-        
-        {/* Mid glow - magenta */}
-        <div 
-          className="absolute inset-0"
-          style={{ filter: 'blur(10px)' }}
-        >
-          <svg viewBox="0 0 100 100" className="w-full h-full">
-            <path d={BLOB_PATH} fill="#c026d3" />
-          </svg>
-        </div>
-        
-        {/* Inner bright glow - pink/white hot */}
-        <div 
-          className="absolute inset-0"
-          style={{ filter: 'blur(5px)' }}
-        >
-          <svg viewBox="0 0 100 100" className="w-full h-full">
-            <path d={BLOB_PATH} fill="#e879f9" />
-          </svg>
-        </div>
-      </motion.div>
+      />
+      
+      {/* Second glow layer - offset for asymmetry */}
+      <motion.div
+        className="absolute rounded-full"
+        style={{
+          width: config.core + 30,
+          height: config.core + 30,
+          left: -10,
+          top: -5,
+          background: 'radial-gradient(circle, #ff44ff 0%, #cc00cc 50%, transparent 80%)',
+          filter: 'blur(8px)',
+        }}
+        animate={{
+          scale: [1.1, 1, 1.1],
+          opacity: [0.8, 0.5, 0.8],
+        }}
+        transition={{
+          duration: 3,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 0.5,
+        }}
+      />
 
-      {/* THE BLACK VOID - sits on top, offset to block most light */}
-      {/* Creates the eclipse effect */}
+      {/* BLACK VOID - Center */}
       <motion.button
         onClick={(e) => {
           if (navigator.vibrate) navigator.vibrate(20);
           onClick?.(e);
         }}
-        className="absolute cursor-pointer focus:outline-none z-10"
+        className="relative z-10 cursor-pointer focus:outline-none rounded-full"
         style={{
-          width: config.blob,
-          height: config.blob,
-          right: 8,  // Offset right so glow escapes on left
-          top: 8,
+          width: config.core,
+          height: config.core,
+          background: '#000000',
+          boxShadow: '0 0 20px 5px rgba(0,0,0,0.8)',
         }}
-        whileHover={{ scale: 1.03 }}
-        whileTap={{ scale: 0.97 }}
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
         data-testid="mira-orb"
-      >
-        {/* Soft edge feather */}
-        <div 
-          className="absolute inset-0"
-          style={{ 
-            filter: 'blur(2px)',
-            transform: 'scale(1.03)',
-          }}
-        >
-          <svg viewBox="0 0 100 100" className="w-full h-full">
-            <path d={BLOB_PATH} fill="#0a0a0a" />
-          </svg>
-        </div>
-        
-        {/* Core - true black, matte */}
-        <svg viewBox="0 0 100 100" className="w-full h-full relative z-10">
-          <path d={BLOB_PATH} fill="#000000" />
-        </svg>
-      </motion.button>
+      />
     </div>
   );
 };
