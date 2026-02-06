@@ -279,11 +279,12 @@ const MiraSearchPanel = ({
         <button
           type="button"
           onClick={toggleVoice}
-          className={`px-3 transition-all ${
+          className={`px-4 min-h-[48px] transition-all ${
             isListening 
               ? 'bg-red-500 animate-pulse' 
               : 'bg-purple-400 hover:bg-purple-500'
           }`}
+          style={{ touchAction: 'manipulation' }}
           data-testid="mira-voice-btn"
           aria-label={isListening ? 'Stop listening' : 'Start voice search'}
         >
@@ -298,9 +299,10 @@ const MiraSearchPanel = ({
         <button
           type="submit"
           disabled={isProcessing}
-          className={`px-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-colors ${
+          className={`px-5 min-h-[48px] bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 transition-colors ${
             variant === 'hero' ? 'rounded-r-full' : 'rounded-r-md'
           }`}
+          style={{ touchAction: 'manipulation' }}
           data-testid="mira-search-btn"
         >
           <Search className="w-5 h-5 text-white" />
