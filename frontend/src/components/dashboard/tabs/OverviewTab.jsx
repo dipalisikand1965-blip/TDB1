@@ -16,6 +16,7 @@ const MembershipCardTiers = React.lazy(() => import('../../MembershipCardTiers')
 const SocialShareReward = React.lazy(() => import('../../SocialShareReward'));
 const BreedTipsEngine = React.lazy(() => import('../../BreedTipsEngine'));
 const PawmoterScore = React.lazy(() => import('../../PawmoterScore'));
+const PillarWisePicks = React.lazy(() => import('../../PillarWisePicks'));
 
 // Components from dashboard folder
 import { GamificationBanner } from '../GamificationBanner';
