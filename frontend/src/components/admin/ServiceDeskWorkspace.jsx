@@ -54,7 +54,8 @@ const ServiceDeskWorkspace = ({ authHeaders }) => {
   const [filters, setFilters] = useState({
     status: '',
     category: '',
-    search: ''
+    search: '',
+    source: ''
   });
   const [quickFilter, setQuickFilter] = useState('all');
   
