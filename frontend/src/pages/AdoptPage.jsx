@@ -647,7 +647,7 @@ const AdoptPage = () => {
           </form>
         </DialogContent>
       </Dialog>
-    </div>
+    </PillarPageLayout>
   );
 };
 
