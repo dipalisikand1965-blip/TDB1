@@ -550,12 +550,11 @@ const PillarFilters = ({ selected, onSelect, selectedSubcat, onSelectSubcat, sel
 };
 
 // =============================================================================
-// SERVICE CARD - With Mira Whisper
+// SERVICE CARD - With "Why for [PetName]" Breed Whisper
 // =============================================================================
 const ServiceCard = ({ service, pet, index, showWhyPicked = false }) => {
   const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
-  const [showTooltip, setShowTooltip] = useState(false);
   
   const getVisuals = () => {
     const name = (service.name || '').toLowerCase();
@@ -571,54 +570,10 @@ const ServiceCard = ({ service, pet, index, showWhyPicked = false }) => {
   const breed = pet?.breed || '';
   const petName = pet?.name || '';
   
-  // Mira whisper for this service
-  const miraWhisper = getMiraServiceWhisper(service, breed);
-  
-  // Generate "Why we picked this" reason
-  const getWhyPicked = () => {
-    if (!pet || !service._relevanceScore) return null;
-    const reasons = [];
-    const sName = (service.name || '').toLowerCase();
-    const sDesc = (service.description || '').toLowerCase();
-    const combined = `${sName} ${sDesc}`;
-    const breedLower = breed.toLowerCase();
-    
-    // Check breed match
-    if (service.breed_whispers && Object.keys(service.breed_whispers).some(k => breedLower.includes(k.replace(/_/g, ' ')))) {
-      reasons.push(`Has special tips for ${breed}s`);
-    }
-    
-    // Check breed keywords
-    if (breedLower.includes('retriever') && (combined.includes('swim') || combined.includes('active') || combined.includes('joint'))) {
-      reasons.push(`Great for active ${breed}s`);
-    }
-    if (breedLower.includes('shih') && (combined.includes('grooming') || combined.includes('coat'))) {
-      reasons.push(`Perfect for ${breed} coat care`);
-    }
-    if (breedLower.includes('pug') && (combined.includes('breathing') || combined.includes('flat'))) {
-      reasons.push(`Designed for flat-faced breeds`);
-    }
-    
-    // Age match
-    if (pet.age_years < 1 && combined.includes('puppy')) {
-      reasons.push(`Ideal for puppies like ${petName}`);
-    }
-    if (pet.age_years > 7 && combined.includes('senior')) {
-      reasons.push(`Tailored for senior dogs`);
-    }
-    
-    // Default reason
-    if (reasons.length === 0 && service._relevanceScore > 0) {
-      reasons.push(`Recommended for ${breed}s`);
-    }
-    
-    return reasons[0];
-  };
-  
-  const whyPicked = showWhyPicked ? getWhyPicked() : null;
+  // Breed-specific "Why for [PetName]" whisper
+  const breedWhisper = getServiceBreedWhisper(service, petName, breed);
   
   const handleClick = () => {
-    // Navigate to service detail page
     const serviceId = service.id || service._id;
     const pillar = service.pillar || service.pillars?.[0] || 'care';
     navigate(`/services/${pillar}/${serviceId}`);
@@ -632,25 +587,6 @@ const ServiceCard = ({ service, pet, index, showWhyPicked = false }) => {
       onMouseLeave={() => setIsHovered(false)}
       data-testid={`service-card-${service.id}`}
     >
-      {/* "Why we picked this" badge */}
-      {whyPicked && (
-        <div 
-          className="absolute top-2 sm:top-3 right-2 sm:right-3 z-20"
-          onMouseEnter={() => setShowTooltip(true)}
-          onMouseLeave={() => setShowTooltip(false)}
-        >
-          <div className="p-1.5 sm:p-2 bg-amber-400 rounded-full shadow-md cursor-help">
-            <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-amber-900" />
-          </div>
-          {showTooltip && (
-            <div className="absolute right-0 top-full mt-1 w-44 p-2.5 bg-gray-900 text-white text-xs rounded-xl shadow-xl z-30">
-              <p className="font-medium mb-1">Why for {petName}?</p>
-              <p className="text-gray-300">{whyPicked}</p>
-            </div>
-          )}
-        </div>
-      )}
-      
       {/* Image Header */}
       <div className={`relative h-28 sm:h-36 lg:h-40 bg-gradient-to-br ${visuals.color} overflow-hidden`}>
         <img 
@@ -674,13 +610,15 @@ const ServiceCard = ({ service, pet, index, showWhyPicked = false }) => {
         </div>
       </div>
       
-      {/* Content - Enhanced padding and text sizes */}
+      {/* Content */}
       <div className="p-3 sm:p-4 lg:p-5 space-y-2 sm:space-y-3">
-        {/* Mira Whisper - Why this service for this breed */}
-        <p className="text-xs sm:text-sm text-gray-600 leading-relaxed line-clamp-2 flex items-start gap-1.5">
-          <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-purple-500 flex-shrink-0 mt-0.5" />
-          <span>{miraWhisper}</span>
-        </p>
+        {/* "Why for [PetName]" - Breed-specific whisper */}
+        <div className="p-2 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border border-purple-100">
+          <p className="text-xs sm:text-sm text-purple-700 flex items-start gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-purple-500 flex-shrink-0 mt-0.5" />
+            <span className="line-clamp-2 font-medium">{breedWhisper}</span>
+          </p>
+        </div>
         
         {/* Price and duration */}
         <div className="flex items-center justify-between pt-2 sm:pt-3 border-t border-gray-100">
