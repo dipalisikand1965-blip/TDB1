@@ -2,7 +2,7 @@
  * ServicesPage.jsx
  * 
  * World-class, emotionally resonant services experience.
- * "What does my dog need?" not "What do you want to book?"
+ * Meister is the HERO - this is their personal Pet Operating System!
  * 100/100 on all criteria.
  */
 import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
@@ -13,6 +13,8 @@ import MiraChatWidget from '../components/MiraChatWidget';
 import SEOHead from '../components/SEOHead';
 import SoulScoreArc from '../components/SoulScoreArc';
 import MiraLoveNote from '../components/MiraLoveNote';
+import UnifiedHero from '../components/UnifiedHero';
+import PillarNav from '../components/PillarNav';
 import { 
   Search, Heart, Stethoscope, GraduationCap, Home, Plane, 
   PartyPopper, Lightbulb, AlertTriangle, FileText, Sunrise,
