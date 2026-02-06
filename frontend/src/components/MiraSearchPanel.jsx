@@ -161,47 +161,6 @@ const MiraSearchPanel = ({
     }
   };
   
-  // Main Mira search function
-  const handleMiraSearch = useCallback(async (searchQuery = null) => {
-    const inputQuery = searchQuery || query;
-    if (!inputQuery.trim()) return;
-    
-    setIsProcessing(true);
-    setShowResults(true);
-    setMiraResponse(null);
-    
-    try {
-      const response = await fetch(`${API_URL}/api/mira/os/understand-with-products`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { Authorization: `Bearer ${token}` })
-        },
-        body: JSON.stringify({
-          input: inputQuery,
-          pet_id: selectedPet?.id,
-          pet_context: petContext,
-          page_context: window.location.pathname
-        })
-      });
-      
-      const data = await response.json();
-      setMiraResponse(data);
-      
-    } catch (error) {
-      console.error('Mira search error:', error);
-      setMiraResponse({
-        success: false,
-        error: true,
-        response: {
-          message: "I'll connect you with your pet concierge to help with this."
-        }
-      });
-    }
-    
-    setIsProcessing(false);
-  }, [query, token, selectedPet, petContext]);
-  
   // Handle form submit
   const handleSubmit = (e) => {
     e.preventDefault();
