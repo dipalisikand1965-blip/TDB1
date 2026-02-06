@@ -93,10 +93,6 @@ const PILLAR_MESSAGES = {
     ],
     tagline: 'When clarity helps before deciding'
   },
-      `💡 Smart decisions for ${name}'s wellbeing`
-    ],
-    tagline: 'Expert guidance for {name}'
-  },
   emergency: {
     messages: (name, breed) => [
       `I'll focus on what needs attention now`,
