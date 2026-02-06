@@ -687,12 +687,9 @@ const AdvisoryPage = () => {
         maxServices={8}
       />
       
-      {/* Mira Floating Chat Widget */}
-      <MiraChatWidget pillar="advisory" />
-      
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="advisory" position="bottom-left" />
-    </div>
+    </PillarPageLayout>
   );
 };
 
