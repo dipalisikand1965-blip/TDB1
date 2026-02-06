@@ -1,142 +1,84 @@
 {
-  "project_name": "Pet Life OS - Shop Redesign",
-  "design_philosophy": {
-    "identity": "E1: The Anti-AI Designer",
-    "core_principles": [
-      "Fusion over Imitation: Aesop's Trust + Apple's Clarity + Airbnb's Guidance",
-      "Emotion First: Every pixel conveys 'Care' and 'Premium Utility'",
-      "Content is King: Products are heroes, text is the guide",
-      "Negative Space: Luxurious padding (2x-3x standard)",
-      "Zoom In: Intimate close-ups of textures and expressions"
-    ],
-    "anti_patterns": [
-      "No generic 'Shopify' grids (equal squares everywhere)",
-      "No 'Inter' for headings",
-      "No full-width gradients",
-      "No bright purple/teal CTAs (Use deep forest or warm amber)"
-    ]
-  },
   "typography": {
-    "headings": {
-      "family": "Syne, sans-serif",
-      "usage": "Hero titles, Section headers, Emotional taglines",
-      "weights": ["700", "800"],
-      "tracking": "tight"
+    "font_family": {
+      "display": "Manrope, sans-serif",
+      "body": "Inter, sans-serif",
+      "special": "Syne, sans-serif"
     },
-    "subheadings": {
-      "family": "Manrope, sans-serif",
-      "usage": "Card titles, Navigation, Filters",
-      "weights": ["600", "700"],
-      "tracking": "normal"
-    },
-    "body": {
-      "family": "Inter, sans-serif",
-      "usage": "Product descriptions, Reviews, Legal text",
-      "weights": ["400", "500"],
-      "tracking": "wide"
+    "scale": {
+      "h1": "text-4xl md:text-5xl font-bold tracking-tight",
+      "h2": "text-3xl md:text-4xl font-bold tracking-tight",
+      "h3": "text-2xl md:text-3xl font-semibold",
+      "body": "text-base md:text-lg leading-relaxed"
     }
   },
   "colors": {
-    "palette_name": "Organic Trust",
-    "primary": "#0F766E",
-    "primary_foreground": "#FFFFFF",
-    "secondary": "#FAFAF9",
-    "accent_warm": "#D97706",
-    "accent_cool": "#E0F2F1",
-    "text_main": "#1C1917",
-    "text_muted": "#57534E",
-    "background": "#FAFAF9",
-    "surface": "#FFFFFF",
-    "border": "rgba(28, 25, 23, 0.08)"
-  },
-  "layout_strategy": {
-    "grid_system": "The Bento-Tetris Hybrid",
-    "spacing": {
-      "container_padding": "p-6 md:p-12",
-      "section_gap": "gap-12 md:gap-24",
-      "item_gap": "gap-6"
+    "primary": {
+      "DEFAULT": "#9333EA",
+      "light": "#A855F7",
+      "dark": "#7C3AED",
+      "glow": "#d946ef"
     },
-    "modes": {
-      "marketing": "Asymmetrical, large hero elements, overlapping text",
-      "listing": "Dense but breathable grid (3 columns on desktop, 1 on mobile)"
+    "secondary": {
+      "DEFAULT": "#D97706",
+      "light": "#F59E0B"
+    },
+    "background": {
+      "dark": "#0a0a0a",
+      "card": "rgba(255, 255, 255, 0.05)"
+    },
+    "orb": {
+      "core": "#FFFFFF",
+      "inner": "#F0ABFC",
+      "mid": "#D946EF",
+      "outer": "#7C3AED",
+      "ambient": "#4C1D95"
     }
   },
-  "components": {
-    "hero_section": {
-      "type": "Immersive Sanctuary",
-      "layout": "Full-width image with 'Glass' overlay for text",
-      "content": "Personalized greeting ('Good morning, [Pet Name]') + Key Value Prop",
-      "image_style": "Warm, studio-quality, emotional connection"
-    },
-    "tabs_navigation": {
-      "style": "Floating Pill",
-      "animation": "Slide highlight",
-      "items": ["Products (638)", "Services (706)"]
-    },
-    "product_card": {
-      "style": "Minimal Aesop",
-      "elements": [
-        "High-res image (aspect-square)",
-        "Title (Manrope, Bold)",
-        "Price (Clean)",
-        "Match Score (Ring indicator, e.g., '98% Match for Bruno')",
-        "Quick Add (Hover reveal)"
+  "visual_enhancers": {
+    "glassmorphism": "backdrop-blur-xl bg-white/10 border border-white/20 shadow-xl",
+    "neon_glow": "shadow-[0_0_20px_rgba(147,51,234,0.5)]",
+    "orb_glow": "shadow-[0_0_60px_rgba(217,70,239,0.6)]"
+  },
+  "component_instructions": {
+    "MiraOrb": {
+      "path": "/app/frontend/src/components/MiraOrb.jsx",
+      "description": "A living, breathing AI entity. NOT a button. NOT a black void.",
+      "requirements": [
+        "REMOVE the black fill/void completely. The center must be LIGHT.",
+        "Use layered <div>s with Framer Motion for the glow effect.",
+        "Layer 1 (Back): Large, diffuse ambient bloom (Purple/Violet).",
+        "Layer 2 (Body): The main orb shape. Gradient from Magenta to Pink. Rotating slowly.",
+        "Layer 3 (Highlight): A top-left specular highlight to give it volume (Glassy look).",
+        "Layer 4 (Icon): A white, soft-blurred Paw Print icon in the center. Opacity ~0.8.",
+        "Animation: 'Breathing' cycle (4-6s). Scale 1 -> 1.1 -> 1. Opacity 0.8 -> 1 -> 0.8.",
+        "Position: Fixed bottom-right (bottom-6 right-6) with high z-index.",
+        "Interaction: On hover, scale up slightly and brighten. On click, ripple effect."
       ],
-      "hover_effect": "Lift + Shadow Glow"
-    },
-    "personal_picks": {
-      "layout": "Horizontal Scroll (Soul Journey)",
-      "vibe": "Curated, thoughtful, specific to pet needs"
-    },
-    "filters": {
-      "style": "Pillar Pills",
-      "location": "Horizontal scrollable bar or Drawer on mobile",
-      "interaction": "Instant filter with 'fade-in-up' animation"
+      "technical_implementation": {
+        "wrapper": "fixed bottom-6 right-6 z-50 cursor-pointer group",
+        "core_orb": "relative w-24 h-24 rounded-full bg-gradient-to-br from-fuchsia-400 to-purple-600 blur-sm mix-blend-screen",
+        "inner_glow": "absolute inset-0 rounded-full bg-white/30 blur-md",
+        "paw_icon": "absolute inset-0 m-auto w-10 h-10 text-white/90 drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]"
+      }
     }
   },
-  "assets": {
-    "images": {
-      "hero_bg": "https://images.unsplash.com/photo-1699686160376-940e512f65f8?crop=entropy&cs=srgb&fm=jpg&q=85",
-      "product_placeholder": "https://images.unsplash.com/photo-1684882726821-2999db517441?crop=entropy&cs=srgb&fm=jpg&q=85",
-      "service_placeholder": "https://images.unsplash.com/photo-1647002380358-fc70ed2f04e0?crop=entropy&cs=srgb&fm=jpg&q=85",
-      "grooming_service": "https://images.unsplash.com/photo-1727510190155-51abda425a82?crop=entropy&cs=srgb&fm=jpg&q=85",
-      "treats_category": "https://images.unsplash.com/photo-1709810024789-4519a14f05ae?crop=entropy&cs=srgb&fm=jpg&q=85"
-    },
-    "icons": "Lucide React (Feather icons) - stroke-width: 1.5px (Fine lines for premium feel)"
-  },
-  "motion": {
-    "entrance": "stagger-children delay-100",
-    "hover": "transform scale-102 transition-all duration-300",
-    "interaction": "micro-bounce on click",
-    "scroll": "smooth-scroll behavior"
-  },
-  "accessibility": {
-    "contrast": "WCAG AA compliant colors",
-    "focus_states": "Visible focus ring (Warm Amber)",
-    "semantic_html": "Use <section>, <article>, <nav> correctly"
-  },
+  "image_urls": {},
   "instructions_to_main_agent": [
-    "1. USE EXISTING SHADCN COMPONENTS: Do not reinvent the wheel. Use /components/ui/tabs, /card, /button, /badge.",
-    "2. CUSTOMIZE VIA TAILWIND: Add the 'Aesop' feel by using the design tokens (Syne font, deep teal, warm stone bg).",
-    "3. PERSONALIZATION IS KEY: The 'Personal Picks' section must be the first thing the user sees after the Hero. It should feel like a 'For You' page.",
-    "4. PRODUCTS & SERVICES TABS: Implement a clean toggle that switches the grid content without full page reload if possible (client-side state).",
-    "5. SEARCH & FILTERS: Make search prominent (Apple style). Use 'Pills' for category filtering.",
-    "6. MOBILE FIRST: Ensure the grid collapses to 1 column on mobile and images don't overflow.",
-    "7. IMAGE ASPECT RATIO: Use aspect-square for products, but allow aspect-video for services to differentiate.",
-    "8. MOCK DATA: If API fails, fallback to elegant mock data.",
-    "9. DATA-TESTID: Add data-testid to all interactive elements (buttons, inputs, tabs)."
+    "Rewrite /app/frontend/src/components/MiraOrb.jsx completely.",
+    "Do not use the old SVG path with the black fill.",
+    "Implement the 'Layered Light' approach described in component_instructions.",
+    "Ensure the component is positioned fixed at the bottom-right of the screen.",
+    "Use Framer Motion for the continuous breathing animation.",
+    "Add the 'paw print' SVG icon as an inline SVG within the component.",
+    "Ensure the orb looks 'alive' and 'ethereal' against dark backgrounds."
   ],
-  "universal_guidelines": [
-    "Avoid generic 'AI slop' aesthetics.",
-    "Dark colors look good when used independently without gradients.",
-    "Don't make generic centered layouts.",
-    "Create depth through layered design elements.",
-    "Use glass-morphism effects with backdrop filters.",
-    "NO 'transition: all'.",
-    "NO center aligning the App container.",
+  "UNIVERSAL_GUIDELINES_FOR_MAIN_AGENT": [
+    "Avoid 'AI slop' aesthetics (generic gradients, centered layouts).",
+    "Use 2-3x more spacing than typical.",
     "Every interaction needs micro-animations.",
-    "Use 2-3x more spacing than feels comfortable.",
-    "Subtle grain textures/noise overlays are encouraged.",
-    "NEVER use AI assistant Emoji characters."
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients.",
+    "Use glass-morphism effects with backdrop filters (12-24px blur).",
+    "All interactive elements MUST include data-testid attribute."
   ]
 }
