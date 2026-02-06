@@ -983,7 +983,7 @@ const ServicesPage = () => {
         </div>
       </section>
       
-      <MiraChatWidget pillar="services" />
+      <MiraChatWidget pillar="services" isOpen={miraChatOpen} onClose={() => setMiraChatOpen(false)} />
       
       <style>{`
         .scrollbar-hide::-webkit-scrollbar { display: none; }
