@@ -921,7 +921,93 @@ const MemberDashboard = () => {
             </Button>
           </div>
 
-          {/* 🐾 PET SELECTOR - Right at the top after header */}
+        {/* Main Tabs - Wraps everything */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          
+          {/* 📌 NAVIGATION TABS - Top Right after header */}
+          <div className="mb-6">
+            {/* Desktop Tab Navigation */}
+            <div className="hidden lg:flex justify-end">
+              <TabsList className="backdrop-blur-xl bg-slate-900/80 border border-white/10 shadow-xl p-1.5 rounded-xl !inline-flex !h-auto flex-wrap justify-end gap-1">
+                <TabsTrigger value="overview" className="rounded-lg px-3 py-2 text-xs font-medium text-slate-400 whitespace-nowrap transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white">
+                  <Home className="w-3.5 h-3.5 mr-1 inline" /> Home
+                </TabsTrigger>
+                <TabsTrigger value="services" className="rounded-lg px-3 py-2 text-xs font-medium text-slate-400 whitespace-nowrap transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white">
+                  <Crown className="w-3.5 h-3.5 mr-1 inline" /> Services
+                </TabsTrigger>
+                <TabsTrigger value="rewards" className="rounded-lg px-3 py-2 text-xs font-medium text-slate-400 whitespace-nowrap transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white">
+                  <Gift className="w-3.5 h-3.5 mr-1 inline" /> Paw Points
+                </TabsTrigger>
+                <TabsTrigger value="mira" className="rounded-lg px-3 py-2 text-xs font-medium text-slate-400 whitespace-nowrap transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white">
+                  <Sparkles className="w-3.5 h-3.5 mr-1 inline" /> Mira AI
+                </TabsTrigger>
+                <TabsTrigger value="requests" className="rounded-lg px-3 py-2 text-xs font-medium text-slate-400 whitespace-nowrap transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white">
+                  <Calendar className="w-3.5 h-3.5 mr-1 inline" /> Bookings
+                  {myRequests.length > 0 && <Badge variant="secondary" className="ml-1 h-4 px-1 text-[10px] bg-purple-500/30 text-purple-200">{myRequests.length}</Badge>}
+                </TabsTrigger>
+                <TabsTrigger value="orders" className="rounded-lg px-3 py-2 text-xs font-medium text-slate-400 whitespace-nowrap transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white">
+                  <Package className="w-3.5 h-3.5 mr-1 inline" /> Orders
+                </TabsTrigger>
+                <TabsTrigger value="quotes" className="rounded-lg px-3 py-2 text-xs font-medium text-slate-400 whitespace-nowrap transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white">
+                  <FileText className="w-3.5 h-3.5 mr-1 inline" /> Quotes
+                </TabsTrigger>
+                <TabsTrigger value="documents" className="rounded-lg px-3 py-2 text-xs font-medium text-slate-400 whitespace-nowrap transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white">
+                  <Shield className="w-3.5 h-3.5 mr-1 inline" /> Documents
+                </TabsTrigger>
+                <TabsTrigger value="autoship" className="rounded-lg px-3 py-2 text-xs font-medium text-slate-400 whitespace-nowrap transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white">
+                  <RefreshCw className="w-3.5 h-3.5 mr-1 inline" /> Autoship
+                </TabsTrigger>
+                <TabsTrigger value="reviews" className="rounded-lg px-3 py-2 text-xs font-medium text-slate-400 whitespace-nowrap transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white">
+                  <MessageSquare className="w-3.5 h-3.5 mr-1 inline" /> Reviews
+                </TabsTrigger>
+                <TabsTrigger value="pets" className="rounded-lg px-3 py-2 text-xs font-medium text-slate-400 whitespace-nowrap transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white">
+                  <PawPrint className="w-3.5 h-3.5 mr-1 inline" /> Pets
+                </TabsTrigger>
+                <TabsTrigger value="addresses" className="rounded-lg px-3 py-2 text-xs font-medium text-slate-400 whitespace-nowrap transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white">
+                  <MapPin className="w-3.5 h-3.5 mr-1 inline" /> Addresses
+                </TabsTrigger>
+                <TabsTrigger value="settings" className="rounded-lg px-3 py-2 text-xs font-medium text-slate-400 whitespace-nowrap transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white">
+                  <Settings className="w-3.5 h-3.5 mr-1 inline" /> Settings
+                </TabsTrigger>
+                <TabsTrigger value="membership" className="rounded-lg px-3 py-2 text-xs font-medium text-slate-400 whitespace-nowrap transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white">
+                  <Crown className="w-3.5 h-3.5 mr-1 inline" /> Plan
+                </TabsTrigger>
+              </TabsList>
+            </div>
+            
+            {/* Tablet/Mobile Tab Navigation - Scrollable */}
+            <div className="lg:hidden">
+              <TabsList className="backdrop-blur-xl bg-slate-900/80 border border-white/10 shadow-xl p-1.5 rounded-xl flex overflow-x-auto gap-1 scrollbar-hide">
+                <TabsTrigger value="overview" className="rounded-lg flex items-center gap-1 py-2 px-3 text-xs font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white hover:bg-white/5 hover:text-white transition-all">
+                  <Home className="w-3.5 h-3.5" /> Home
+                </TabsTrigger>
+                <TabsTrigger value="services" className="rounded-lg flex items-center gap-1 py-2 px-3 text-xs font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white hover:bg-white/5 hover:text-white transition-all">
+                  <Crown className="w-3.5 h-3.5" /> Services
+                </TabsTrigger>
+                <TabsTrigger value="rewards" className="rounded-lg flex items-center gap-1 py-2 px-3 text-xs font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white hover:bg-white/5 hover:text-white transition-all">
+                  <Gift className="w-3.5 h-3.5" /> Paw Points
+                </TabsTrigger>
+                <TabsTrigger value="mira" className="rounded-lg flex items-center gap-1 py-2 px-3 text-xs font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white hover:bg-white/5 hover:text-white transition-all">
+                  <Sparkles className="w-3.5 h-3.5" /> Mira AI
+                </TabsTrigger>
+                <TabsTrigger value="requests" className="rounded-lg flex items-center gap-1 py-2 px-3 text-xs font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white hover:bg-white/5 hover:text-white transition-all">
+                  <Calendar className="w-3.5 h-3.5" /> Bookings
+                  {myRequests.length > 0 && <Badge variant="secondary" className="ml-1 h-4 px-1 text-[10px] bg-purple-500/30 text-purple-200">{myRequests.length}</Badge>}
+                </TabsTrigger>
+                <TabsTrigger value="orders" className="rounded-lg flex items-center gap-1 py-2 px-3 text-xs font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white hover:bg-white/5 hover:text-white transition-all">
+                  <Package className="w-3.5 h-3.5" /> Orders
+                </TabsTrigger>
+                <TabsTrigger value="pets" className="rounded-lg flex items-center gap-1 py-2 px-3 text-xs font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white hover:bg-white/5 hover:text-white transition-all">
+                  <PawPrint className="w-3.5 h-3.5" /> Pets
+                </TabsTrigger>
+                <TabsTrigger value="settings" className="rounded-lg flex items-center gap-1 py-2 px-3 text-xs font-medium text-slate-400 whitespace-nowrap data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white hover:bg-white/5 hover:text-white transition-all">
+                  <Settings className="w-3.5 h-3.5" /> Settings
+                </TabsTrigger>
+              </TabsList>
+            </div>
+          </div>
+
+          {/* 🐾 PET SELECTOR - Below nav tabs */}
           {pets.length > 1 && (
             <div className="mb-6 p-4 bg-slate-900/60 backdrop-blur-xl rounded-xl border border-white/10">
               <div className="flex items-center justify-between mb-3">
