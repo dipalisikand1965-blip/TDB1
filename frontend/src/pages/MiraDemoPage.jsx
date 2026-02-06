@@ -410,25 +410,81 @@ const MiraDemoPage = () => {
                         </div>
                       )}
                       
-                      {/* Product Suggestions */}
+                      {/* Product Suggestions - Now with REAL products */}
                       {msg.data?.response?.products && msg.data.response.products.length > 0 && (
                         <div className="space-y-3 mb-4">
-                          <p className="text-white/70 text-sm font-medium">Suggestions:</p>
-                          {msg.data.response.products.map((product, pIdx) => (
-                            <div key={pIdx} className="flex items-start gap-3 bg-white/5 rounded-xl p-4
-                              hover:bg-white/10 transition-all cursor-pointer group">
-                              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 
-                                flex items-center justify-center flex-shrink-0">
-                                <ShoppingBag className="w-6 h-6 text-white" />
+                          <div className="flex items-center justify-between">
+                            <p className="text-white/70 text-sm font-medium">
+                              {msg.data.response.has_real_products ? '🛍️ Products for you:' : 'Suggestions:'}
+                            </p>
+                            {msg.data.response.has_real_products && (
+                              <span className="text-xs text-green-400 bg-green-400/10 px-2 py-1 rounded-full">
+                                Real Products
+                              </span>
+                            )}
+                          </div>
+                          
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            {msg.data.response.products.map((product, pIdx) => (
+                              <div key={pIdx} className="flex items-start gap-3 bg-white/5 rounded-xl p-4
+                                hover:bg-white/10 transition-all cursor-pointer group border border-white/5
+                                hover:border-white/20">
+                                
+                                {/* Product Image or Placeholder */}
+                                {product.image ? (
+                                  <img 
+                                    src={product.image} 
+                                    alt={product.name || product.suggestion}
+                                    className="w-16 h-16 rounded-xl object-cover flex-shrink-0"
+                                    onError={(e) => {
+                                      e.target.onerror = null;
+                                      e.target.src = 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=100';
+                                    }}
+                                  />
+                                ) : (
+                                  <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 
+                                    flex items-center justify-center flex-shrink-0">
+                                    <ShoppingBag className="w-7 h-7 text-white" />
+                                  </div>
+                                )}
+                                
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-white font-medium truncate">
+                                    {product.name || product.suggestion}
+                                  </p>
+                                  
+                                  {/* Price */}
+                                  {product.price && (
+                                    <div className="flex items-center gap-2 mt-1">
+                                      <span className="text-green-400 font-bold">₹{product.price}</span>
+                                      {product.originalPrice && product.originalPrice > product.price && (
+                                        <span className="text-white/40 text-sm line-through">
+                                          ₹{product.originalPrice}
+                                        </span>
+                                      )}
+                                    </div>
+                                  )}
+                                  
+                                  {/* Why for pet */}
+                                  <p className="text-white/50 text-xs mt-1 line-clamp-2">
+                                    {product.why_for_pet}
+                                  </p>
+                                </div>
+                                
+                                {/* Add to Cart button */}
+                                <button className="flex-shrink-0 p-2 bg-purple-500/20 rounded-lg 
+                                  group-hover:bg-purple-500 transition-all"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    // Add to cart logic here
+                                    alert(`Added ${product.name || product.suggestion} to cart!`);
+                                  }}
+                                >
+                                  <ShoppingBag className="w-4 h-4 text-purple-300 group-hover:text-white" />
+                                </button>
                               </div>
-                              <div className="flex-1">
-                                <p className="text-white font-medium">{product.suggestion}</p>
-                                <p className="text-white/60 text-sm">{product.why_for_pet}</p>
-                              </div>
-                              <ArrowRight className="w-5 h-5 text-white/30 group-hover:text-white/70 
-                                group-hover:translate-x-1 transition-all" />
-                            </div>
-                          ))}
+                            ))}
+                          </div>
                         </div>
                       )}
                       
