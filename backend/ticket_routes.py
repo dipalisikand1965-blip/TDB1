@@ -746,10 +746,9 @@ async def list_tickets(
         logger.warning(f"Error fetching from tickets collection: {e}")
     
     # 2. From service_desk_tickets collection (new auto-created tickets)
-    # Filter to only include tickets with valid ticket_ids (skip conversational_entry noise)
+    # Skip tickets without valid ticket_ids (conversational_entry noise)
     try:
-        # Match any ticket ID that starts with common prefixes
-        sdt_query = {**query, "ticket_id": {"$exists": True, "$ne": None, "$regex": "^(TKT|QBK|ADV|ORD|SVC|MIRA|ENG)"}}
+        sdt_query = {**query, "ticket_id": {"$exists": True, "$ne": None, "$nin": ["", None]}}
         logger.info(f"service_desk_tickets query: {sdt_query}")
         
         cursor2 = db.service_desk_tickets.find(sdt_query).sort(sort_by, sort_direction).skip(offset).limit(fetch_limit)
