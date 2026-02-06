@@ -349,11 +349,53 @@ async def send_message_about_request(
     
     now = datetime.now(timezone.utc).isoformat()
     
-    # Find the service request
+    # Find the service request/booking in multiple collections
+    request = None
+    request_collection = None
+    
+    # Try service_requests first
     request = await db.service_requests.find_one({
-        "id": request_id,
-        "user_email": email
+        "$or": [
+            {"id": request_id, "user_email": email},
+            {"id": request_id, "customer_email": email}
+        ]
     })
+    if request:
+        request_collection = "service_requests"
+    
+    # Try service_desk_tickets (bookings)
+    if not request:
+        request = await db.service_desk_tickets.find_one({
+            "$or": [
+                {"ticket_id": request_id, "member_email": email},
+                {"ticket_id": request_id, "customer_email": email},
+                {"id": request_id, "member_email": email}
+            ]
+        })
+        if request:
+            request_collection = "service_desk_tickets"
+    
+    # Try unified_bookings
+    if not request:
+        request = await db.unified_bookings.find_one({
+            "$or": [
+                {"id": request_id, "customer.email": email},
+                {"ticket_id": request_id, "customer.email": email}
+            ]
+        })
+        if request:
+            request_collection = "unified_bookings"
+    
+    # Try mira_requests
+    if not request:
+        request = await db.mira_requests.find_one({
+            "$or": [
+                {"id": request_id, "user_email": email},
+                {"request_id": request_id, "user_email": email}
+            ]
+        })
+        if request:
+            request_collection = "mira_requests"
     
     if not request:
         raise HTTPException(status_code=404, detail="Request not found or access denied")
