@@ -880,11 +880,11 @@ const ServicesPage = () => {
       />
       
       {/* Services Grid */}
-      <section className="py-4 sm:py-6 bg-white pb-24 sm:pb-6">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6">
-          <div className="flex items-center justify-between mb-3 sm:mb-4">
+      <section className="py-6 sm:py-8 bg-white pb-24 sm:pb-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="flex items-center justify-between mb-4 sm:mb-6">
             <div>
-              <h2 className="text-base sm:text-lg font-bold text-gray-900">
+              <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">
                 {selectedBreedFilter && selectedBreedFilter !== 'all' 
                   ? `Services for ${BREED_FILTERS.find(b => b.id === selectedBreedFilter)?.label || selectedBreedFilter}`
                   : selectedPillar === 'recommended' ? `For ${petName || 'You'}` 
@@ -899,15 +899,15 @@ const ServicesPage = () => {
                     const breedBtn = document.querySelector('[data-testid="breed-filter-btn"]');
                     if (breedBtn) breedBtn.click();
                   }}
-                  className="text-[10px] sm:text-xs text-purple-600 hover:text-purple-700 hover:underline mt-0.5 flex items-center gap-1"
+                  className="text-xs sm:text-sm text-purple-600 hover:text-purple-700 hover:underline mt-1 flex items-center gap-1.5"
                 >
-                  <PawPrint className="w-3 h-3" />
+                  <PawPrint className="w-3.5 h-3.5" />
                   Looking for a friend's pet? Filter by breed →
                 </button>
               )}
             </div>
             {filteredServices.length > 0 && (
-              <span className="text-[10px] sm:text-xs text-gray-500">{filteredServices.length} services</span>
+              <span className="text-xs sm:text-sm text-gray-500">{filteredServices.length} services</span>
             )}
           </div>
           
