@@ -228,82 +228,69 @@ const PillarPageLayout = ({
         shoppingForOther={shoppingForOther}
       />
       
-      {/* Navigation Bar - Product/Service Toggle + Subcategories */}
-      <div className="bg-white border-b border-gray-100 sticky top-0 z-40">
-        <div className="max-w-6xl mx-auto">
-          {/* Top Row: Product/Service Toggle + "Buying for someone else?" */}
-          <div className="flex items-center justify-between px-4 py-2 border-b border-gray-50">
-            {/* Product/Service Toggle */}
-            <div className="flex items-center gap-1 p-1 bg-gray-100 rounded-full">
-              <button
-                onClick={() => setViewMode('products')}
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                  viewMode === 'products'
-                    ? 'bg-white text-gray-900 shadow-md'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-                data-testid="products-toggle"
-              >
-                <Package className="w-4 h-4" />
-                <span>Products</span>
-              </button>
-              <button
-                onClick={() => setViewMode('services')}
-                className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                  viewMode === 'services'
-                    ? 'bg-white text-gray-900 shadow-md'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-                data-testid="services-toggle"
-              >
-                <Wrench className="w-4 h-4" />
-                <span>Services</span>
-              </button>
-            </div>
-            
-            {/* Shopping for other dog link */}
-            <button 
-              onClick={() => setShoppingForOther(!shoppingForOther)}
-              className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-400 hover:text-gray-600 transition-all"
-              data-testid="shopping-for-other"
-            >
-              <PawPrint className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Shopping for another dog?</span>
-              <span className="sm:hidden">Other?</span>
-            </button>
-          </div>
-          
-          {/* Subcategories Row */}
+      {/* Navigation Bar - Subcategories Only (Removed clinical Products/Services toggle) */}
+      <div className="bg-white border-b border-gray-100 sticky top-0 z-40 overflow-hidden">
+        <div className="max-w-6xl mx-auto overflow-hidden">
+          {/* Subcategories Row - Now the primary navigation */}
           {showSubcategories && subcategories.length > 0 && (
-            <div className="flex gap-2 px-4 py-3 overflow-x-auto scrollbar-hide">
-              <button
-                onClick={() => setSelectedSubcategory(null)}
-                className={`flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-2xl font-medium text-sm transition-all ${
-                  !selectedSubcategory
-                    ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
-                    : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
-                }`}
-                data-testid="all-subcategories"
-              >
-                <span>✨</span>
-                <span>All {pillar.charAt(0).toUpperCase() + pillar.slice(1)}</span>
-              </button>
-              {subcategories.map((subcat) => (
-                <Link
-                  key={subcat.id}
-                  to={subcat.path}
-                  onClick={() => setSelectedSubcategory(subcat.id)}
+            <div className="flex items-center justify-between px-4 py-3">
+              {/* Subcategory Pills - Scrollable on mobile */}
+              <div className="flex gap-2 overflow-x-auto scrollbar-hide flex-1 pr-4">
+                <button
+                  onClick={() => setSelectedSubcategory(null)}
                   className={`flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-2xl font-medium text-sm transition-all ${
-                    selectedSubcategory === subcat.id
+                    !selectedSubcategory
                       ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
                       : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
                   }`}
-                  data-testid={`subcat-${subcat.id}`}
+                  data-testid="all-subcategories"
                 >
-                  <span>{subcat.emoji}</span>
-                  <span className="whitespace-nowrap">{subcat.name}</span>
-                </Link>
-              ))}
+                  <span>✨</span>
+                  <span>All {pillar.charAt(0).toUpperCase() + pillar.slice(1)}</span>
+                </button>
+                {subcategories.map((subcat) => (
+                  <Link
+                    key={subcat.id}
+                    to={subcat.path}
+                    onClick={() => setSelectedSubcategory(subcat.id)}
+                    className={`flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-2xl font-medium text-sm transition-all ${
+                      selectedSubcategory === subcat.id
+                        ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
+                        : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                    }`}
+                    data-testid={`subcat-${subcat.id}`}
+                  >
+                    <span>{subcat.emoji}</span>
+                    <span className="whitespace-nowrap">{subcat.name}</span>
+                  </Link>
+                ))}
+              </div>
+              
+              {/* Shopping for other dog link - Right aligned */}
+              <button 
+                onClick={() => setShoppingForOther(!shoppingForOther)}
+                className="flex-shrink-0 flex items-center gap-1.5 text-xs sm:text-sm text-gray-400 hover:text-gray-600 transition-all ml-2"
+                data-testid="shopping-for-other"
+              >
+                <PawPrint className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Shopping for another dog?</span>
+                <span className="sm:hidden">🐕</span>
+              </button>
+            </div>
+          )}
+          
+          {/* If no subcategories, just show the "shopping for other" link */}
+          {(!showSubcategories || subcategories.length === 0) && (
+            <div className="flex items-center justify-end px-4 py-3">
+              <button 
+                onClick={() => setShoppingForOther(!shoppingForOther)}
+                className="flex items-center gap-1.5 text-xs sm:text-sm text-gray-400 hover:text-gray-600 transition-all"
+                data-testid="shopping-for-other"
+              >
+                <PawPrint className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Shopping for another dog?</span>
+                <span className="sm:hidden">🐕</span>
+              </button>
             </div>
           )}
         </div>
