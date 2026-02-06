@@ -14,6 +14,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageCircle, Phone, Mail, X, Send, Loader2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { API_URL } from '../utils/api';
 
 const WHATSAPP_NUMBER = process.env.REACT_APP_WHATSAPP_NUMBER || '919663185747';
 const BUSINESS_EMAIL = process.env.REACT_APP_BUSINESS_EMAIL || 'woof@thedoggybakery.in';
