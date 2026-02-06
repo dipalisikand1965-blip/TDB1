@@ -81,6 +81,10 @@ const ServiceDeskWorkspace = ({ authHeaders }) => {
       if (filters.status) params.append('status', filters.status);
       if (filters.category) params.append('category', filters.category);
       if (filters.search) params.append('search', filters.search);
+      if (filters.source) params.append('source', filters.source);
+      
+      // Increase limit to get more tickets
+      params.append('limit', '100');
       
       const res = await fetch(`${getApiUrl()}/api/tickets/?${params}`, { headers: authHeaders });
       const data = await res.json();
