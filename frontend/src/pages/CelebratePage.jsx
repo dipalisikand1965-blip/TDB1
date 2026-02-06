@@ -305,49 +305,13 @@ const CelebratePage = () => {
       title="Celebrations for Your Pet"
       description="Mark the moments that matter to your furry friend"
     >
-      
-      {/* Hero Section - Matching Shop/Services Design! */}
-      <div className="relative bg-gradient-to-br from-[#4A1942] via-[#2D1B4E] to-[#1E3A5F] text-white overflow-hidden">
-        {/* Decorative elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-10 right-10 w-64 h-64 bg-pink-500/20 rounded-full blur-3xl" />
-          <div className="absolute bottom-10 left-10 w-48 h-48 bg-purple-500/20 rounded-full blur-3xl" />
-          {/* Floating paw prints */}
-          {[...Array(4)].map((_, i) => (
-            <PawPrint
-              key={i}
-              className="absolute text-white/5"
-              style={{
-                left: `${20 + i * 20}%`,
-                top: `${30 + (i % 2) * 40}%`,
-                width: `${40 + i * 10}px`,
-                height: `${40 + i * 10}px`,
-                transform: `rotate(${i * 15}deg)`
-              }}
-            />
-          ))}
-          {/* Floating party decorations */}
-          <div className="absolute top-6 sm:top-10 left-4 sm:left-10 text-3xl sm:text-4xl animate-bounce opacity-30">🎈</div>
-          <div className="absolute top-12 sm:top-20 right-4 sm:right-20 text-2xl sm:text-3xl animate-pulse opacity-30">🎉</div>
-        </div>
-        
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 lg:py-10 relative z-10">
-          <div className="flex flex-col lg:flex-row items-center gap-6 lg:gap-10">
-            
-            {/* Pet Avatar with Soul Score Arc */}
-            {activePet && (
-              <div className="relative flex-shrink-0">
-                {/* Glow effect */}
-                <div className="absolute inset-0 bg-gradient-to-br from-pink-500/30 to-purple-500/30 rounded-full blur-xl scale-125 animate-pulse" />
-                
-                {/* Soul Score Arc */}
-                <div className="relative">
-                  <SoulScoreArc score={petSoulData?.overall_score || activePet?.soul_score || 0} size={140} strokeWidth={6}>
-                    {/* Pet Photo */}
-                    <div className="w-28 h-28 rounded-full overflow-hidden border-4 border-white/20 shadow-2xl">
-                      {activePet.photo_url || activePet.image ? (
-                        <img 
-                          src={activePet.photo_url || activePet.image}
+
+      {/* Personalized Picks for User's Pet */}
+      <div className="max-w-6xl mx-auto px-4 pt-6">
+        <PersonalizedPicks pillar="celebrate" maxProducts={6} />
+      </div>
+
+      {/* Elevated Concierge® Experiences */}
                           alt={activePet.name}
                           className="w-full h-full object-cover"
                         />
