@@ -546,7 +546,7 @@ const FinanceManager = () => {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-            <IndianRupee className="w-7 h-7 text-emerald-400" />
+            <Wallet className="w-7 h-7 text-emerald-400" />
             Finance & Reconciliation
           </h2>
           <p className="text-slate-400 text-sm mt-1">Track payments, refunds, discounts & reconcile accounts</p>
