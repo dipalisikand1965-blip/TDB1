@@ -1058,7 +1058,7 @@ const CelebratePage = () => {
           />
         </Suspense>
       )}
-    </div>
+    </PillarPageLayout>
   );
 };
 
