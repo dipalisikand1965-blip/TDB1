@@ -637,6 +637,7 @@ const ServicesPage = () => {
   const [petSoulData, setPetSoulData] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [displayCount, setDisplayCount] = useState(24);
+  const [miraChatOpen, setMiraChatOpen] = useState(false);
   
   // Fetch services
   useEffect(() => {
