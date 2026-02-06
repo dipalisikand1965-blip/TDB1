@@ -12,13 +12,12 @@ import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
-import MiraChatWidget from '../components/MiraChatWidget';
+import PillarPageLayout from '../components/PillarPageLayout';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import AdminQuickEdit from '../components/AdminQuickEdit';
 import ProductCard from '../components/ProductCard';
 import PersonalizedPicks from '../components/PersonalizedPicks';
 import { getPetPhotoUrl } from '../utils/petAvatar';
-import SEOHead from '../components/SEOHead';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -384,7 +383,11 @@ const LearnPage = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+    <PillarPageLayout
+      pillar="learn"
+      title="Learning with Your Pet"
+      description="Training and guidance that respects personality"
+    >
       {/* SEO Meta Tags */}
       <SEOHead page="learn" path="/learn" />
 

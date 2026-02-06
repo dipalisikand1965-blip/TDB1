@@ -10,9 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { toast } from '../hooks/use-toast';
-import MiraChatWidget from '../components/MiraChatWidget';
+import PillarPageLayout from '../components/PillarPageLayout';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
-import SEOHead from '../components/SEOHead';
 import {
   Heart, PawPrint, Home, Calendar, MapPin, Phone, Mail, Users,
   ChevronRight, Sparkles, Search, Filter, Clock, CheckCircle,
@@ -412,7 +411,11 @@ const AdoptPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-50 via-white to-pink-50">
+    <PillarPageLayout
+      pillar="adopt"
+      title="Finding the Right Companion"
+      description="Thoughtful matching, not impulse"
+    >
       {/* SEO Meta Tags */}
       <SEOHead page="adopt" path="/adopt" />
 

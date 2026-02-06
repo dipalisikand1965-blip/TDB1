@@ -18,13 +18,12 @@ import { createFitRequest, showUnifiedFlowSuccess, showUnifiedFlowError } from '
 import { useAuth } from '../context/AuthContext';
 import { useCart } from '../context/CartContext';
 import { toast } from '../hooks/use-toast';
-import MiraChatWidget from '../components/MiraChatWidget';
+import PillarPageLayout from '../components/PillarPageLayout';
 import ServiceCatalogSection from '../components/ServiceCatalogSection';
 import AdminQuickEdit from '../components/AdminQuickEdit';
 import ProductCard from '../components/ProductCard';
 import MultiPetSelector from '../components/MultiPetSelector';
 import { getPetPhotoUrl } from '../utils/petAvatar';
-import SEOHead from '../components/SEOHead';
 import ConciergeExperienceCard from '../components/ConciergeExperienceCard';
 import PillarServicesGrid from '../components/PillarServicesGrid';
 import MiraPicksCarousel from '../components/MiraPicksCarousel';
@@ -559,7 +558,11 @@ const FitPage = () => {
   
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-teal-50 to-white">
+    <PillarPageLayout
+      pillar="fit"
+      title="Movement & Energy for Your Pet"
+      description="Activity that matches your pet's rhythm"
+    >
       {/* SEO Meta Tags */}
       <SEOHead page="fit" path="/fit" />
 
