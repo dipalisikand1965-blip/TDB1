@@ -1258,14 +1258,22 @@ const MiraAI = () => {
 
   // Always show the orb (except on admin/login pages)
   if (!isOpen) {
+    // Map activity state to orb context
+    const getOrbContext = () => {
+      if (isListening) return 'listening';
+      if (currentPillar === 'emergency') return 'emergency';
+      if (currentPillar === 'celebrate') return 'celebrate';
+      if (currentPillar) return currentPillar; // Pass pillar as context
+      return 'default';
+    };
+    
     return (
       <div 
         className="fixed bottom-24 right-4 sm:bottom-8 sm:right-8 z-[9998]" 
         data-testid="mira-orb-container"
       >
         <MiraOrb 
-          state={getOrbState()}
-          pillar={currentPillar}
+          context={getOrbContext()}
           onClick={() => setIsOpen(true)}
           size="md"
         />
