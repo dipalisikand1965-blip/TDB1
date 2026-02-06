@@ -24,7 +24,8 @@ const SoulScoreArc = ({
   showLabel = true,
   showCTA = true,
   animated = true,
-  className = ''
+  className = '',
+  children // Allow children for wrapper pattern
 }) => {
   const navigate = useNavigate();
   const [animatedScore, setAnimatedScore] = useState(0);
