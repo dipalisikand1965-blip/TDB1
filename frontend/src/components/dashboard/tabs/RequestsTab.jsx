@@ -84,12 +84,19 @@ const RequestsTab = ({
 
   // Load conversation messages when dialog opens
   const loadConversationMessages = async (requestId) => {
+    console.log('=== Loading conversation messages ===');
+    console.log('Request ID:', requestId);
+    console.log('User email:', userEmail);
+    
     setLoadingMessages(true);
     try {
-      const response = await fetch(
-        `${API}/api/user/request/${requestId}/messages?email=${encodeURIComponent(userEmail)}`
-      );
+      const url = `${API}/api/user/request/${requestId}/messages?email=${encodeURIComponent(userEmail)}`;
+      console.log('Fetching from:', url);
+      
+      const response = await fetch(url);
       const data = await response.json();
+      
+      console.log('Response:', data);
       setConversationMessages(data.messages || []);
     } catch (error) {
       console.error('Failed to load messages:', error);
