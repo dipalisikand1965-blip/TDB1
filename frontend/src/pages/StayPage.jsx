@@ -1301,7 +1301,10 @@ const StayPage = () => {
         subtitle="See your personalized price based on your city, pet size, and requirements"
         maxServices={8}
       />
-    </div>
+      
+      {/* Admin Quick Edit */}
+      <AdminQuickEdit pillar="stay" position="bottom-left" />
+    </PillarPageLayout>
   );
 };
 
