@@ -495,9 +495,10 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
         intent = understanding.get("intent", "EXPLORE")
         entities = understanding.get("entities", {})
         
-        # Step 2: For FIND/ORDER intents, get real products
+        # Step 2: For FIND/ORDER/COMPARE intents, get real products
+        # Even for CONCIERGE, show relevant products as "while you wait" suggestions
         real_products = []
-        if intent in ["FIND", "ORDER", "COMPARE"] and execution_type == "INSTANT":
+        if intent in ["FIND", "ORDER", "COMPARE", "PLAN", "EXPLORE"]:
             real_products = await search_real_products(
                 entities=entities,
                 pet_context=request.pet_context or {},
