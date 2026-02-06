@@ -1094,6 +1094,1177 @@ BREED_KNOWLEDGE = {
             "Need mental challenges as much as physical exercise",
             "Great family protectors when properly trained and socialized"
         ]
+    },
+    
+    # ============================================
+    # ADDITIONAL BREEDS - BATCH 2
+    # ============================================
+    
+    "maltese": {
+        "size": "toy",
+        "weight_range": "3-4 kg",
+        "life_expectancy": "12-15 years",
+        "energy_level": "moderate",
+        "exercise_needs": "30 minutes daily",
+        "temperament": ["gentle", "playful", "charming", "affectionate", "fearless"],
+        "good_with": ["apartments", "seniors", "singles", "families"],
+        "health_concerns": [
+            "dental problems",
+            "luxating patella",
+            "white dog shaker syndrome",
+            "tear staining",
+            "collapsed trachea",
+            "liver shunt",
+            "hypoglycemia"
+        ],
+        "dietary_needs": {
+            "protein": "high (26-30%)",
+            "fat": "moderate",
+            "common_allergies": ["chicken", "beef", "grains"],
+            "special_considerations": "small frequent meals, dental-friendly kibble",
+            "recommended_foods": ["toy breed formulas", "dental health varieties"]
+        },
+        "grooming": {
+            "coat_type": "long, silky, single coat (no undercoat)",
+            "shedding": "minimal",
+            "brushing": "daily to prevent mats",
+            "bathing": "every 1-2 weeks",
+            "special_care": "tear stain cleaning daily, topknot to protect eyes"
+        },
+        "climate_suitability": {
+            "hot_weather": "moderate - no undercoat helps",
+            "cold_weather": "poor - needs sweaters",
+            "monsoon": "coat tangles easily, keep dry"
+        },
+        "training": {
+            "intelligence_rank": 59,
+            "trainability": "good but can be stubborn",
+            "best_approach": "positive, gentle, patient",
+            "common_issues": ["housetraining", "barking", "separation anxiety"]
+        },
+        "mira_tips": [
+            "Tear staining is cosmetic but needs daily attention",
+            "Despite small size, they think they're big dogs",
+            "Dental care from puppyhood prevents expensive problems",
+            "White coat shows dirt easily - frequent grooming needed",
+            "Great for allergy sufferers - minimal shedding"
+        ]
+    },
+    
+    "jack russell terrier": {
+        "size": "small",
+        "weight_range": "6-8 kg",
+        "life_expectancy": "13-16 years",
+        "energy_level": "EXTREMELY HIGH",
+        "exercise_needs": "60-90 minutes of INTENSE activity",
+        "temperament": ["energetic", "fearless", "intelligent", "athletic", "vocal"],
+        "good_with": ["active owners", "experienced handlers", "homes with yards"],
+        "not_ideal_for": ["apartments", "sedentary owners", "first-time owners", "small pets"],
+        "health_concerns": [
+            "luxating patella",
+            "lens luxation",
+            "deafness",
+            "Legg-Calve-Perthes disease",
+            "allergies"
+        ],
+        "dietary_needs": {
+            "protein": "high (28-32%)",
+            "fat": "moderate to high for energy",
+            "common_allergies": ["chicken", "grains"],
+            "special_considerations": "high metabolism burns calories fast",
+            "recommended_foods": ["active/sport dog formulas", "high protein"]
+        },
+        "grooming": {
+            "coat_type": "smooth, rough, or broken coat",
+            "shedding": "moderate",
+            "brushing": "weekly",
+            "bathing": "every 4-6 weeks",
+            "special_care": "hand-stripping for wire coats"
+        },
+        "climate_suitability": {
+            "hot_weather": "good tolerance",
+            "cold_weather": "moderate - short coat",
+            "monsoon": "manageable"
+        },
+        "training": {
+            "intelligence_rank": "highly intelligent but independent",
+            "trainability": "challenging - very independent thinkers",
+            "best_approach": "firm, consistent, varied, channel their energy",
+            "common_issues": ["digging", "escaping", "chasing small animals", "excessive barking"]
+        },
+        "mira_tips": [
+            "NOT a lap dog - they need serious exercise and mental challenges",
+            "Small size is deceiving - they're athletes in tiny bodies",
+            "Prey drive is intense - not safe with small pets",
+            "They WILL dig and WILL escape if bored",
+            "Best suited for active owners who want an adventure buddy"
+        ]
+    },
+    
+    "english bulldog": {
+        "size": "medium",
+        "weight_range": "18-25 kg",
+        "life_expectancy": "8-10 years",
+        "energy_level": "low",
+        "exercise_needs": "20-30 minutes daily (heat sensitive)",
+        "temperament": ["docile", "friendly", "willful", "gregarious", "loyal"],
+        "good_with": ["apartments", "families", "other pets", "first-time owners"],
+        "health_concerns": [
+            "brachycephalic syndrome (SEVERE)",
+            "hip dysplasia",
+            "cherry eye",
+            "skin fold infections",
+            "allergies (very common)",
+            "heart problems",
+            "heat stroke",
+            "spinal issues",
+            "difficult births (C-section often required)"
+        ],
+        "dietary_needs": {
+            "protein": "moderate (22-26%)",
+            "fat": "low - obesity worsens breathing",
+            "common_allergies": ["chicken", "beef", "soy", "wheat", "dairy"],
+            "special_considerations": "allergies extremely common, weight control critical",
+            "recommended_foods": ["limited ingredient", "hydrolyzed protein", "weight management"]
+        },
+        "grooming": {
+            "coat_type": "short, smooth",
+            "shedding": "moderate",
+            "brushing": "weekly",
+            "bathing": "every 4-6 weeks",
+            "special_care": "facial folds MUST be cleaned daily, tail pocket cleaning"
+        },
+        "climate_suitability": {
+            "hot_weather": "EXTREMELY POOR - AC is life-saving, not optional",
+            "cold_weather": "poor - no undercoat",
+            "monsoon": "skin fold infections increase"
+        },
+        "training": {
+            "intelligence_rank": 77,
+            "trainability": "moderate - stubborn but wants to please",
+            "best_approach": "patient, positive, short sessions (they overheat)",
+            "common_issues": ["stubbornness", "food guarding", "flatulence"]
+        },
+        "mira_tips": [
+            "CRITICAL: Cannot survive Indian summers without 24/7 AC",
+            "One of the unhealthiest breeds - budget for significant vet bills",
+            "Fold cleaning is DAILY non-negotiable task",
+            "Never exercise in heat - they can die within minutes",
+            "Sweet, loving companions but high-maintenance health-wise"
+        ]
+    },
+    
+    "yorkshire terrier": {
+        "size": "toy",
+        "weight_range": "2-3 kg",
+        "life_expectancy": "13-16 years",
+        "energy_level": "moderate to high",
+        "exercise_needs": "30-45 minutes daily",
+        "temperament": ["bold", "confident", "courageous", "affectionate", "sprightly"],
+        "good_with": ["apartments", "singles", "seniors", "adults"],
+        "not_ideal_for": ["families with small children", "rough play"],
+        "health_concerns": [
+            "dental problems",
+            "luxating patella",
+            "tracheal collapse",
+            "hypoglycemia",
+            "liver shunt",
+            "Legg-Calve-Perthes disease",
+            "eye problems"
+        ],
+        "dietary_needs": {
+            "protein": "high (28-32%)",
+            "fat": "moderate",
+            "common_allergies": ["chicken", "grains", "dairy"],
+            "special_considerations": "tiny stomachs need small frequent meals, hypoglycemia risk",
+            "recommended_foods": ["toy breed formulas", "dental health", "high-quality protein"]
+        },
+        "grooming": {
+            "coat_type": "long, silky, human-like hair",
+            "shedding": "minimal (hair not fur)",
+            "brushing": "daily if kept long",
+            "bathing": "weekly",
+            "special_care": "professional grooming recommended, topknot care"
+        },
+        "climate_suitability": {
+            "hot_weather": "moderate - can be kept in shorter cuts",
+            "cold_weather": "poor - needs sweaters",
+            "monsoon": "keep coat dry, prone to tangles"
+        },
+        "training": {
+            "intelligence_rank": 27,
+            "trainability": "good but terrier stubbornness",
+            "best_approach": "consistent, positive, don't baby them",
+            "common_issues": ["barking", "housetraining", "small dog syndrome"]
+        },
+        "mira_tips": [
+            "They're terriers - don't let small size fool you into spoiling",
+            "Dental issues are almost guaranteed - start brushing early",
+            "Hypoglycemia in puppies is serious - keep sugar source handy",
+            "Grooming commitment is significant if coat kept long",
+            "Great travel companions due to small size"
+        ]
+    },
+    
+    "american bully": {
+        "size": "medium to large",
+        "weight_range": "25-50 kg (varies by type)",
+        "life_expectancy": "10-13 years",
+        "energy_level": "moderate",
+        "exercise_needs": "45-60 minutes daily",
+        "temperament": ["confident", "loyal", "friendly", "gentle", "outgoing"],
+        "good_with": ["families", "children", "experienced owners"],
+        "health_concerns": [
+            "hip dysplasia",
+            "elbow dysplasia",
+            "heart disease",
+            "skin allergies",
+            "cherry eye",
+            "brachycephalic issues (in some lines)",
+            "joint problems"
+        ],
+        "dietary_needs": {
+            "protein": "high (28-32%)",
+            "fat": "moderate",
+            "common_allergies": ["chicken", "grains", "soy"],
+            "special_considerations": "high-quality protein for muscle, joint support",
+            "recommended_foods": ["large breed formulas", "muscle building", "joint support"]
+        },
+        "grooming": {
+            "coat_type": "short, smooth",
+            "shedding": "moderate",
+            "brushing": "weekly",
+            "bathing": "every 4-6 weeks",
+            "special_care": "skin fold cleaning if present"
+        },
+        "climate_suitability": {
+            "hot_weather": "moderate - muscular dogs overheat, some lines brachycephalic",
+            "cold_weather": "poor - short coat",
+            "monsoon": "manageable"
+        },
+        "training": {
+            "intelligence_rank": "intelligent and eager to please",
+            "trainability": "very good with consistent training",
+            "best_approach": "positive reinforcement, firm but fair, early socialization",
+            "common_issues": ["can be dog-selective", "needs strong leadership"]
+        },
+        "mira_tips": [
+            "Despite intimidating look, bred to be family companions",
+            "Early socialization is crucial for well-adjusted adult",
+            "Different types (Standard, XL, Pocket) have different needs",
+            "Research breeder carefully - health varies significantly",
+            "Need experienced owner who can provide calm leadership"
+        ]
+    },
+    
+    "cavalier king charles spaniel": {
+        "size": "small",
+        "weight_range": "5-8 kg",
+        "life_expectancy": "9-14 years",
+        "energy_level": "moderate",
+        "exercise_needs": "30-45 minutes daily",
+        "temperament": ["affectionate", "gentle", "graceful", "fearless", "patient"],
+        "good_with": ["everyone", "children", "seniors", "other pets", "first-time owners"],
+        "health_concerns": [
+            "mitral valve disease (VERY COMMON - major concern)",
+            "syringomyelia (brain/spine condition)",
+            "hip dysplasia",
+            "luxating patella",
+            "eye problems",
+            "ear infections"
+        ],
+        "dietary_needs": {
+            "protein": "moderate (22-26%)",
+            "fat": "moderate - watch weight for heart health",
+            "common_allergies": ["chicken", "grains"],
+            "special_considerations": "heart-healthy diet important, omega fatty acids beneficial",
+            "recommended_foods": ["small breed formulas", "cardiac support", "omega-rich"]
+        },
+        "grooming": {
+            "coat_type": "medium length, silky, wavy",
+            "shedding": "moderate",
+            "brushing": "3-4 times weekly",
+            "bathing": "every 2-4 weeks",
+            "special_care": "ear cleaning weekly, feathering needs attention"
+        },
+        "climate_suitability": {
+            "hot_weather": "moderate tolerance",
+            "cold_weather": "moderate",
+            "monsoon": "ears prone to infection, keep dry"
+        },
+        "training": {
+            "intelligence_rank": 44,
+            "trainability": "excellent - eager to please",
+            "best_approach": "gentle, positive, they're sensitive souls",
+            "common_issues": ["separation anxiety", "can be timid if not socialized"]
+        },
+        "mira_tips": [
+            "Heart disease affects MOST Cavaliers - annual cardiac screening essential",
+            "The 'love sponge' of dog breeds - they live to cuddle",
+            "Syringomyelia is painful - watch for scratching at air near ears",
+            "Perfect apartment dogs and therapy dogs",
+            "Research breeder's heart testing protocols carefully"
+        ]
+    },
+    
+    "dalmatian": {
+        "size": "medium to large",
+        "weight_range": "23-32 kg",
+        "life_expectancy": "11-13 years",
+        "energy_level": "very high",
+        "exercise_needs": "90-120 minutes daily",
+        "temperament": ["outgoing", "friendly", "intelligent", "active", "sensitive"],
+        "good_with": ["active families", "runners", "experienced owners"],
+        "not_ideal_for": ["sedentary owners", "apartments", "first-time owners"],
+        "health_concerns": [
+            "deafness (common - 10-12% born deaf)",
+            "urinary stones (unique metabolism)",
+            "skin allergies",
+            "hip dysplasia",
+            "iris sphincter dysplasia"
+        ],
+        "dietary_needs": {
+            "protein": "moderate (NOT high) - unique purine metabolism",
+            "fat": "moderate",
+            "common_allergies": ["chicken", "beef"],
+            "special_considerations": "CRITICAL: Low-purine diet essential to prevent urinary stones",
+            "recommended_foods": ["low-purine formulas", "NO organ meats", "high water intake"]
+        },
+        "grooming": {
+            "coat_type": "short, dense",
+            "shedding": "heavy year-round (white hairs everywhere!)",
+            "brushing": "2-3 times weekly",
+            "bathing": "every 4-6 weeks",
+            "special_care": "lint rollers will become your best friend"
+        },
+        "climate_suitability": {
+            "hot_weather": "moderate tolerance",
+            "cold_weather": "moderate - short coat",
+            "monsoon": "manageable"
+        },
+        "training": {
+            "intelligence_rank": 39,
+            "trainability": "good but needs patience",
+            "best_approach": "consistent, positive, plenty of exercise first",
+            "common_issues": ["hyperactivity if under-exercised", "can be stubborn", "sensitive to harsh correction"]
+        },
+        "mira_tips": [
+            "UNIQUE DIET NEEDS - regular dog food can cause bladder stones",
+            "Deafness testing (BAER) essential for puppies",
+            "101 Dalmatians caused overbreeding - health varies by breeder",
+            "They shed white hairs constantly - on everything",
+            "Originally coach dogs - they're built to RUN alongside horses"
+        ]
+    },
+    
+    "poodle": {
+        "size": "standard: large, miniature: medium, toy: small",
+        "weight_range": "standard: 20-32 kg, miniature: 5-9 kg, toy: 2-4 kg",
+        "life_expectancy": "12-15 years",
+        "energy_level": "high",
+        "exercise_needs": "60-90 minutes daily (standard), 45-60 (mini/toy)",
+        "temperament": ["intelligent", "active", "alert", "faithful", "trainable"],
+        "good_with": ["families", "active owners", "allergy sufferers", "dog sports"],
+        "health_concerns": [
+            "hip dysplasia (standard)",
+            "eye problems (PRA, cataracts)",
+            "Addison's disease",
+            "bloat (standard)",
+            "epilepsy",
+            "luxating patella (mini/toy)",
+            "von Willebrand's disease"
+        ],
+        "dietary_needs": {
+            "protein": "high (26-30%)",
+            "fat": "moderate",
+            "common_allergies": ["chicken", "grains"],
+            "special_considerations": "size-appropriate formula, coat health needs omega fatty acids",
+            "recommended_foods": ["size-appropriate formulas", "skin and coat support"]
+        },
+        "grooming": {
+            "coat_type": "curly, dense, non-shedding",
+            "shedding": "minimal to none (hypoallergenic)",
+            "brushing": "daily to prevent mats",
+            "bathing": "every 2-4 weeks",
+            "special_care": "professional grooming every 4-6 weeks, ear hair removal"
+        },
+        "climate_suitability": {
+            "hot_weather": "good - coat can be clipped short",
+            "cold_weather": "good with full coat",
+            "monsoon": "coat mats quickly, needs extra maintenance"
+        },
+        "training": {
+            "intelligence_rank": 2,
+            "trainability": "exceptional - second smartest breed",
+            "best_approach": "challenging tasks, variety, mental stimulation",
+            "common_issues": ["boredom if not stimulated", "can be neurotic"]
+        },
+        "mira_tips": [
+            "Don't let fancy haircuts fool you - they're athletes and hunters",
+            "Second most intelligent breed - they need mental challenges",
+            "Hypoallergenic coat still needs significant maintenance",
+            "Standard poodles are NOT prissy - they're working dogs",
+            "Great for dog sports: agility, obedience, dock diving"
+        ]
+    },
+    
+    "toy poodle": {
+        "size": "toy",
+        "weight_range": "2-4 kg",
+        "life_expectancy": "14-18 years",
+        "energy_level": "moderate to high",
+        "exercise_needs": "30-45 minutes daily",
+        "temperament": ["intelligent", "alert", "active", "faithful", "trainable"],
+        "good_with": ["apartments", "seniors", "singles", "allergy sufferers"],
+        "health_concerns": [
+            "luxating patella",
+            "dental problems",
+            "eye problems (PRA, cataracts)",
+            "Legg-Calve-Perthes disease",
+            "hypoglycemia",
+            "epilepsy",
+            "tracheal collapse"
+        ],
+        "dietary_needs": {
+            "protein": "high (28-32%)",
+            "fat": "moderate",
+            "common_allergies": ["chicken", "grains"],
+            "special_considerations": "tiny portions, dental-friendly, hypoglycemia prevention",
+            "recommended_foods": ["toy breed formulas", "dental health"]
+        },
+        "grooming": {
+            "coat_type": "curly, dense, non-shedding",
+            "shedding": "minimal to none",
+            "brushing": "daily",
+            "bathing": "every 2-3 weeks",
+            "special_care": "professional grooming monthly, ear care, tear staining"
+        },
+        "climate_suitability": {
+            "hot_weather": "good with short clips",
+            "cold_weather": "needs sweaters",
+            "monsoon": "coat mats in humidity"
+        },
+        "training": {
+            "intelligence_rank": 2,
+            "trainability": "exceptional",
+            "best_approach": "positive, challenging, they love to learn",
+            "common_issues": ["can be yappy", "small dog syndrome if spoiled"]
+        },
+        "mira_tips": [
+            "Same intelligence as standard - don't underestimate them",
+            "Longest-living poodle variety - 18+ years possible",
+            "Dental care is crucial - small mouths crowd teeth",
+            "Hypoallergenic but HIGH grooming needs",
+            "Great trick dogs - they love showing off"
+        ]
+    },
+    
+    "chow chow": {
+        "size": "medium to large",
+        "weight_range": "20-32 kg",
+        "life_expectancy": "9-15 years",
+        "energy_level": "low to moderate",
+        "exercise_needs": "45-60 minutes daily",
+        "temperament": ["dignified", "loyal", "aloof", "independent", "quiet"],
+        "good_with": ["experienced owners", "single-pet households"],
+        "not_ideal_for": ["first-time owners", "hot climates", "families with small children"],
+        "health_concerns": [
+            "hip dysplasia",
+            "elbow dysplasia",
+            "entropion (eyelids)",
+            "thyroid problems",
+            "bloat",
+            "skin issues",
+            "heat sensitivity (extreme)"
+        ],
+        "dietary_needs": {
+            "protein": "moderate to high (24-28%)",
+            "fat": "moderate",
+            "common_allergies": ["chicken", "beef", "soy"],
+            "special_considerations": "prone to obesity, skin health needs attention",
+            "recommended_foods": ["skin and coat formulas", "weight management"]
+        },
+        "grooming": {
+            "coat_type": "thick double coat, lion-like mane",
+            "shedding": "heavy, especially seasonal",
+            "brushing": "3-4 times weekly, daily when shedding",
+            "bathing": "every 4-6 weeks (major project)",
+            "special_care": "NEVER shave - coat regulates temperature"
+        },
+        "climate_suitability": {
+            "hot_weather": "EXTREMELY POOR - bred for cold climates, needs AC",
+            "cold_weather": "excellent",
+            "monsoon": "coat issues, skin problems in humidity"
+        },
+        "training": {
+            "intelligence_rank": 76,
+            "trainability": "challenging - very independent",
+            "best_approach": "patient, consistent, respect their dignity",
+            "common_issues": ["aloofness", "can be aggressive with strangers/other dogs", "dominant"]
+        },
+        "mira_tips": [
+            "NOT A CUDDLY BREED - they're dignified and aloof",
+            "Indian climate is very challenging for them - AC essential",
+            "Early, extensive socialization is critical",
+            "They're one-person or one-family dogs",
+            "That blue-black tongue is normal and distinctive"
+        ]
+    },
+    
+    "italian greyhound": {
+        "size": "small",
+        "weight_range": "3-5 kg",
+        "life_expectancy": "14-15 years",
+        "energy_level": "moderate to high (bursts of energy)",
+        "exercise_needs": "45-60 minutes daily",
+        "temperament": ["playful", "affectionate", "sensitive", "alert", "athletic"],
+        "good_with": ["apartments", "singles", "seniors", "gentle families"],
+        "not_ideal_for": ["homes with small children", "rough play", "cold climates"],
+        "health_concerns": [
+            "dental problems",
+            "leg fractures (fragile bones)",
+            "epilepsy",
+            "PRA (eye disease)",
+            "hypothyroidism",
+            "color dilution alopecia",
+            "luxating patella"
+        ],
+        "dietary_needs": {
+            "protein": "high (26-30%)",
+            "fat": "moderate to high - thin dogs with fast metabolism",
+            "common_allergies": ["chicken", "grains"],
+            "special_considerations": "may need more calories than expected for size",
+            "recommended_foods": ["small breed high-energy", "dental formulas"]
+        },
+        "grooming": {
+            "coat_type": "short, fine, satiny",
+            "shedding": "minimal",
+            "brushing": "weekly with soft brush",
+            "bathing": "every 2-4 weeks",
+            "special_care": "dental care crucial, sensitive skin"
+        },
+        "climate_suitability": {
+            "hot_weather": "good tolerance - thin coat",
+            "cold_weather": "POOR - needs sweaters and jackets",
+            "monsoon": "keep dry, they hate being wet"
+        },
+        "training": {
+            "intelligence_rank": 60,
+            "trainability": "moderate - sensitive and can be stubborn",
+            "best_approach": "gentle, positive, patience with housetraining",
+            "common_issues": ["difficult housetraining", "timidity", "separation anxiety"]
+        },
+        "mira_tips": [
+            "FRAGILE LEGS - no jumping from heights, can break easily",
+            "Housetraining is notoriously difficult - patience essential",
+            "They're sprinters - sudden bursts of 'zoomies'",
+            "Need protection from cold - sweaters aren't optional",
+            "Velcro dogs - they want to be with you always"
+        ]
+    },
+    
+    "schnoodle": {
+        "size": "varies: toy, mini, standard",
+        "weight_range": "3-35 kg depending on size",
+        "life_expectancy": "12-16 years",
+        "energy_level": "moderate to high",
+        "exercise_needs": "45-60 minutes daily",
+        "temperament": ["intelligent", "playful", "loyal", "alert", "affectionate"],
+        "good_with": ["families", "allergy sufferers", "first-time owners"],
+        "health_concerns": [
+            "hip dysplasia (larger sizes)",
+            "luxating patella (smaller sizes)",
+            "eye problems",
+            "epilepsy",
+            "skin allergies",
+            "ear infections"
+        ],
+        "dietary_needs": {
+            "protein": "moderate to high (24-28%)",
+            "fat": "moderate",
+            "common_allergies": ["chicken", "grains"],
+            "special_considerations": "size-appropriate formula",
+            "recommended_foods": ["appropriate size formula", "skin and coat support"]
+        },
+        "grooming": {
+            "coat_type": "wavy to curly, varies by genetics",
+            "shedding": "low to minimal",
+            "brushing": "daily to every other day",
+            "bathing": "every 3-4 weeks",
+            "special_care": "professional grooming every 6-8 weeks, ear cleaning"
+        },
+        "climate_suitability": {
+            "hot_weather": "good with appropriate coat clip",
+            "cold_weather": "good with full coat",
+            "monsoon": "coat needs extra maintenance"
+        },
+        "training": {
+            "intelligence_rank": "very intelligent (both parent breeds smart)",
+            "trainability": "excellent",
+            "best_approach": "positive, consistent, mental challenges",
+            "common_issues": ["can be barky (schnauzer trait)", "may be stubborn"]
+        },
+        "mira_tips": [
+            "Designer breed - health and traits vary by generation",
+            "F1 generation usually healthiest (first cross)",
+            "Coat type varies - some shed more than others",
+            "Combines poodle smarts with schnauzer spunk",
+            "Great choice for allergy sufferers wanting a companion"
+        ]
+    },
+    
+    "scottish terrier": {
+        "size": "small",
+        "weight_range": "8-10 kg",
+        "life_expectancy": "12-14 years",
+        "energy_level": "moderate",
+        "exercise_needs": "45-60 minutes daily",
+        "temperament": ["independent", "confident", "spirited", "dignified", "feisty"],
+        "good_with": ["adults", "experienced owners", "singles"],
+        "not_ideal_for": ["first-time owners", "families with small children", "homes with small pets"],
+        "health_concerns": [
+            "Scottish Terrier cramp",
+            "von Willebrand's disease",
+            "bladder cancer (higher risk than most breeds)",
+            "Cushing's disease",
+            "hypothyroidism",
+            "luxating patella"
+        ],
+        "dietary_needs": {
+            "protein": "moderate to high (24-28%)",
+            "fat": "moderate",
+            "common_allergies": ["chicken", "grains"],
+            "special_considerations": "prone to bladder issues - hydration important",
+            "recommended_foods": ["small breed formulas", "urinary health support"]
+        },
+        "grooming": {
+            "coat_type": "wiry, dense double coat",
+            "shedding": "low",
+            "brushing": "2-3 times weekly",
+            "bathing": "every 4-6 weeks",
+            "special_care": "hand-stripping preferred, beard needs daily cleaning"
+        },
+        "climate_suitability": {
+            "hot_weather": "moderate - darker dogs overheat faster",
+            "cold_weather": "excellent",
+            "monsoon": "beard gets messy, needs extra cleaning"
+        },
+        "training": {
+            "intelligence_rank": 65,
+            "trainability": "challenging - independent thinkers",
+            "best_approach": "patient, consistent, don't expect blind obedience",
+            "common_issues": ["stubbornness", "dog aggression", "prey drive", "digging"]
+        },
+        "mira_tips": [
+            "The 'Diehard' nickname earned - they're tough little dogs",
+            "NOT a lap dog - they have opinions and independence",
+            "Higher cancer risk than most breeds - regular vet checks",
+            "They can be dog-aggressive - careful introductions",
+            "Loyal to their family but aloof with strangers"
+        ]
+    },
+    
+    "irish setter": {
+        "size": "large",
+        "weight_range": "27-32 kg",
+        "life_expectancy": "12-15 years",
+        "energy_level": "very high",
+        "exercise_needs": "90-120 minutes daily",
+        "temperament": ["playful", "affectionate", "energetic", "friendly", "mischievous"],
+        "good_with": ["active families", "children", "other dogs", "experienced owners"],
+        "not_ideal_for": ["apartments", "sedentary owners", "people wanting a guard dog"],
+        "health_concerns": [
+            "hip dysplasia",
+            "bloat (GDV)",
+            "epilepsy",
+            "hypothyroidism",
+            "PRA (eye disease)",
+            "canine leukocyte adhesion deficiency"
+        ],
+        "dietary_needs": {
+            "protein": "high (26-30%)",
+            "fat": "moderate to high for energy",
+            "common_allergies": ["chicken", "wheat"],
+            "special_considerations": "bloat prevention - multiple smaller meals, no exercise after eating",
+            "recommended_foods": ["large breed active formulas", "bloat prevention considerations"]
+        },
+        "grooming": {
+            "coat_type": "long, silky, feathered",
+            "shedding": "moderate",
+            "brushing": "3-4 times weekly",
+            "bathing": "every 4-6 weeks",
+            "special_care": "feathering on ears, legs, chest needs attention, ear cleaning"
+        },
+        "climate_suitability": {
+            "hot_weather": "moderate - exercise in cool hours",
+            "cold_weather": "good",
+            "monsoon": "coat tangles easily, needs extra care"
+        },
+        "training": {
+            "intelligence_rank": 35,
+            "trainability": "good but slow to mature",
+            "best_approach": "patient, positive, consistent - they're late bloomers",
+            "common_issues": ["slow maturity", "distractibility", "counter surfing", "jumping"]
+        },
+        "mira_tips": [
+            "The 'Peter Pan' of dogs - puppyish until 3-4 years old",
+            "That gorgeous coat requires commitment",
+            "They're lovers not fighters - terrible guard dogs",
+            "NEED space to run - not apartment dogs",
+            "Goofy, fun-loving, and eternally optimistic"
+        ]
+    },
+    
+    "shiba inu": {
+        "size": "medium",
+        "weight_range": "8-11 kg",
+        "life_expectancy": "13-16 years",
+        "energy_level": "moderate to high",
+        "exercise_needs": "45-60 minutes daily",
+        "temperament": ["alert", "loyal", "independent", "confident", "fastidious"],
+        "good_with": ["experienced owners", "quiet households"],
+        "not_ideal_for": ["first-time owners", "off-leash activities", "homes with small pets"],
+        "health_concerns": [
+            "allergies (common)",
+            "luxating patella",
+            "hip dysplasia",
+            "eye problems",
+            "hypothyroidism"
+        ],
+        "dietary_needs": {
+            "protein": "moderate to high (24-28%)",
+            "fat": "moderate",
+            "common_allergies": ["chicken", "grains", "beef"],
+            "special_considerations": "allergies common - may need limited ingredient diet",
+            "recommended_foods": ["limited ingredient", "novel proteins", "Japanese-style fish-based"]
+        },
+        "grooming": {
+            "coat_type": "double coat, plush",
+            "shedding": "heavy twice yearly (blow coat)",
+            "brushing": "weekly normally, daily during shedding",
+            "bathing": "every 2-3 months (naturally clean)",
+            "special_care": "they're cat-like in cleanliness"
+        },
+        "climate_suitability": {
+            "hot_weather": "moderate - double coat insulates",
+            "cold_weather": "excellent",
+            "monsoon": "manageable"
+        },
+        "training": {
+            "intelligence_rank": 49,
+            "trainability": "challenging - very independent",
+            "best_approach": "patient, consistent, make it worth their while",
+            "common_issues": ["the 'Shiba scream'", "escape artists", "resource guarding", "can't be off-leash"]
+        },
+        "mira_tips": [
+            "Famous for the 'Shiba scream' - a dramatic vocalization",
+            "They're like cats in dog form - independent and clean",
+            "NEVER off-leash in unfenced areas - they will run",
+            "Resource guarding is common - train early",
+            "The internet's favorite dog (doge) but NOT for beginners"
+        ]
+    },
+    
+    "akita": {
+        "size": "large",
+        "weight_range": "32-45 kg",
+        "life_expectancy": "10-13 years",
+        "energy_level": "moderate",
+        "exercise_needs": "60-90 minutes daily",
+        "temperament": ["dignified", "loyal", "courageous", "reserved", "protective"],
+        "good_with": ["experienced owners", "single-dog households"],
+        "not_ideal_for": ["first-time owners", "multi-dog homes", "dog parks"],
+        "health_concerns": [
+            "hip dysplasia",
+            "bloat (GDV)",
+            "autoimmune diseases",
+            "hypothyroidism",
+            "progressive retinal atrophy",
+            "sebaceous adenitis"
+        ],
+        "dietary_needs": {
+            "protein": "high (26-30%)",
+            "fat": "moderate",
+            "common_allergies": ["chicken", "beef", "grains"],
+            "special_considerations": "Japanese Akitas often do well on fish-based diet",
+            "recommended_foods": ["large breed formulas", "fish-based proteins"]
+        },
+        "grooming": {
+            "coat_type": "thick double coat",
+            "shedding": "heavy twice yearly",
+            "brushing": "weekly, daily during shedding",
+            "bathing": "every 2-3 months",
+            "special_care": "NEVER shave - coat regulates temperature"
+        },
+        "climate_suitability": {
+            "hot_weather": "poor - bred for cold Japanese mountains",
+            "cold_weather": "excellent",
+            "monsoon": "coat stays damp, needs thorough drying"
+        },
+        "training": {
+            "intelligence_rank": 54,
+            "trainability": "challenging - dominant and independent",
+            "best_approach": "firm, consistent, experienced handler needed",
+            "common_issues": ["dog aggression", "same-sex aggression", "aloofness with strangers"]
+        },
+        "mira_tips": [
+            "Hachiko was an Akita - famous for loyalty",
+            "Same-sex aggression is common - often best as only dog",
+            "Early socialization is critical but doesn't guarantee dog-friendliness",
+            "They're not for everyone - research extensively first",
+            "Indian climate is challenging - AC recommended"
+        ]
+    },
+    
+    "cane corso": {
+        "size": "large to giant",
+        "weight_range": "40-50 kg",
+        "life_expectancy": "10-12 years",
+        "energy_level": "moderate to high",
+        "exercise_needs": "60-90 minutes daily",
+        "temperament": ["intelligent", "loyal", "protective", "trainable", "assertive"],
+        "good_with": ["experienced owners", "families with older children"],
+        "not_ideal_for": ["first-time owners", "apartments", "inactive owners"],
+        "health_concerns": [
+            "hip dysplasia",
+            "bloat (GDV)",
+            "cherry eye",
+            "entropion/ectropion",
+            "heart conditions",
+            "joint problems"
+        ],
+        "dietary_needs": {
+            "protein": "high (26-30%)",
+            "fat": "moderate",
+            "common_allergies": ["chicken", "grains"],
+            "special_considerations": "giant breed growth formula for puppies, joint support",
+            "recommended_foods": ["large/giant breed formulas", "joint support"]
+        },
+        "grooming": {
+            "coat_type": "short, dense, double coat",
+            "shedding": "moderate, heavy seasonally",
+            "brushing": "weekly",
+            "bathing": "every 6-8 weeks",
+            "special_care": "facial wrinkle cleaning if present, drool management"
+        },
+        "climate_suitability": {
+            "hot_weather": "moderate - black dogs overheat faster",
+            "cold_weather": "moderate - short coat",
+            "monsoon": "manageable"
+        },
+        "training": {
+            "intelligence_rank": "highly intelligent",
+            "trainability": "excellent with experienced handler",
+            "best_approach": "confident leadership, early socialization, consistent",
+            "common_issues": ["territorial behavior", "dog aggression if not socialized", "pulling on leash"]
+        },
+        "mira_tips": [
+            "Ancient Italian guard dog - protective instincts are strong",
+            "Need confident, experienced owner who can lead",
+            "Early socialization is NON-NEGOTIABLE",
+            "They're working dogs - need a job or purpose",
+            "Banned or restricted in some areas - check local laws"
+        ]
+    },
+    
+    "bichon frise": {
+        "size": "small",
+        "weight_range": "5-8 kg",
+        "life_expectancy": "14-15 years",
+        "energy_level": "moderate to high",
+        "exercise_needs": "30-45 minutes daily",
+        "temperament": ["playful", "cheerful", "gentle", "affectionate", "sensitive"],
+        "good_with": ["everyone", "children", "seniors", "other pets", "allergy sufferers"],
+        "health_concerns": [
+            "allergies (skin)",
+            "bladder stones",
+            "luxating patella",
+            "dental problems",
+            "cataracts",
+            "ear infections"
+        ],
+        "dietary_needs": {
+            "protein": "moderate (22-26%)",
+            "fat": "moderate",
+            "common_allergies": ["chicken", "beef", "corn", "wheat"],
+            "special_considerations": "prone to allergies - limited ingredient may help",
+            "recommended_foods": ["limited ingredient", "small breed formulas"]
+        },
+        "grooming": {
+            "coat_type": "curly, powder-puff appearance",
+            "shedding": "minimal (hypoallergenic)",
+            "brushing": "daily to prevent mats",
+            "bathing": "every 2-3 weeks",
+            "special_care": "professional grooming monthly, tear stain management"
+        },
+        "climate_suitability": {
+            "hot_weather": "moderate - white coat reflects heat",
+            "cold_weather": "moderate",
+            "monsoon": "coat tangles easily in humidity"
+        },
+        "training": {
+            "intelligence_rank": 45,
+            "trainability": "good - eager to please",
+            "best_approach": "positive, gentle, consistent",
+            "common_issues": ["separation anxiety", "housetraining can be slow"]
+        },
+        "mira_tips": [
+            "The 'powder puff' dog - grooming is non-negotiable",
+            "Great for allergy sufferers but needs regular grooming",
+            "Tear staining is common - needs daily attention",
+            "Perfect apartment and therapy dogs",
+            "Cheerful, happy dogs that love everyone"
+        ]
+    },
+    
+    "miniature schnauzer": {
+        "size": "small",
+        "weight_range": "5-8 kg",
+        "life_expectancy": "12-15 years",
+        "energy_level": "high",
+        "exercise_needs": "45-60 minutes daily",
+        "temperament": ["friendly", "smart", "obedient", "alert", "spirited"],
+        "good_with": ["families", "children", "other pets", "apartments"],
+        "health_concerns": [
+            "pancreatitis",
+            "hyperlipidemia (high blood fat)",
+            "diabetes",
+            "urinary stones",
+            "eye problems (cataracts)",
+            "liver shunt"
+        ],
+        "dietary_needs": {
+            "protein": "moderate (22-26%)",
+            "fat": "LOW - prone to pancreatitis and hyperlipidemia",
+            "common_allergies": ["chicken"],
+            "special_considerations": "LOW FAT diet is critical - pancreatitis risk is high",
+            "recommended_foods": ["low-fat formulas", "avoid fatty treats"]
+        },
+        "grooming": {
+            "coat_type": "wiry double coat",
+            "shedding": "minimal",
+            "brushing": "2-3 times weekly",
+            "bathing": "every 4-6 weeks",
+            "special_care": "hand-stripping or clipping, beard cleaning daily"
+        },
+        "climate_suitability": {
+            "hot_weather": "moderate tolerance",
+            "cold_weather": "good",
+            "monsoon": "beard gets messy, needs frequent cleaning"
+        },
+        "training": {
+            "intelligence_rank": 12,
+            "trainability": "excellent - very smart and eager",
+            "best_approach": "positive, consistent, they love to learn",
+            "common_issues": ["barking", "can be stubborn", "alerting to everything"]
+        },
+        "mira_tips": [
+            "CRITICAL: Low-fat diet essential - pancreatitis is common and serious",
+            "No fatty table scraps or high-fat treats EVER",
+            "Great apartment dogs but will alert-bark",
+            "Smart and trainable - excel in obedience",
+            "That distinctive beard needs daily cleaning after meals"
+        ]
+    },
+    
+    "bull terrier": {
+        "size": "medium",
+        "weight_range": "22-32 kg",
+        "life_expectancy": "11-14 years",
+        "energy_level": "high",
+        "exercise_needs": "60-90 minutes daily",
+        "temperament": ["playful", "charming", "mischievous", "stubborn", "loving"],
+        "good_with": ["active families", "experienced owners"],
+        "not_ideal_for": ["first-time owners", "multi-pet homes", "sedentary owners"],
+        "health_concerns": [
+            "heart disease",
+            "kidney problems",
+            "deafness (especially white dogs)",
+            "skin allergies",
+            "luxating patella",
+            "OCD (obsessive behaviors)"
+        ],
+        "dietary_needs": {
+            "protein": "high (26-30%)",
+            "fat": "moderate",
+            "common_allergies": ["chicken", "beef", "grains"],
+            "special_considerations": "allergies common - limited ingredient often needed",
+            "recommended_foods": ["limited ingredient", "novel proteins"]
+        },
+        "grooming": {
+            "coat_type": "short, flat, harsh",
+            "shedding": "moderate",
+            "brushing": "weekly",
+            "bathing": "every 4-6 weeks",
+            "special_care": "minimal grooming needs"
+        },
+        "climate_suitability": {
+            "hot_weather": "moderate - white dogs sunburn easily",
+            "cold_weather": "poor - short coat",
+            "monsoon": "manageable"
+        },
+        "training": {
+            "intelligence_rank": 66,
+            "trainability": "challenging - stubborn and strong-willed",
+            "best_approach": "firm, consistent, patient, never harsh",
+            "common_issues": ["OCD behaviors (tail chasing, shadow chasing)", "stubbornness", "prey drive"]
+        },
+        "mira_tips": [
+            "The 'egg head' or 'clown prince' of dogs - unique appearance",
+            "OCD behaviors are common - redirect don't punish",
+            "They're comedians - expect mischief and laughter",
+            "Strong prey drive - not safe with small pets",
+            "Need experienced owner who appreciates their quirky nature"
+        ]
+    },
+    
+    # ============================================
+    # INDIAN NATIVE BREEDS
+    # ============================================
+    
+    "rajapalayam": {
+        "size": "large",
+        "weight_range": "22-25 kg",
+        "life_expectancy": "10-12 years",
+        "energy_level": "high",
+        "exercise_needs": "60-90 minutes daily",
+        "temperament": ["loyal", "devoted", "protective", "aloof with strangers", "intelligent"],
+        "good_with": ["experienced owners", "single-pet households", "rural or semi-rural homes"],
+        "not_ideal_for": ["apartments", "first-time owners", "homes with small pets"],
+        "health_concerns": [
+            "deafness (common in white dogs)",
+            "skin sensitivity",
+            "hip dysplasia (rare)",
+            "generally very healthy breed"
+        ],
+        "dietary_needs": {
+            "protein": "high (26-30%)",
+            "fat": "moderate",
+            "common_allergies": "fewer allergies than foreign breeds",
+            "special_considerations": "thrives on traditional Indian diet additions",
+            "recommended_foods": ["high-protein formulas", "home-cooked additions work well"]
+        },
+        "grooming": {
+            "coat_type": "short, fine",
+            "shedding": "low",
+            "brushing": "weekly",
+            "bathing": "every 6-8 weeks",
+            "special_care": "minimal grooming needs, check for sunburn"
+        },
+        "climate_suitability": {
+            "hot_weather": "EXCELLENT - bred for South Indian climate",
+            "cold_weather": "moderate",
+            "monsoon": "excellent adaptation"
+        },
+        "training": {
+            "intelligence_rank": "highly intelligent but independent",
+            "trainability": "good with experienced handler",
+            "best_approach": "firm, consistent, relationship-based",
+            "common_issues": ["strong guarding instinct", "aloof with strangers"]
+        },
+        "mira_tips": [
+            "Ancient South Indian sighthound - bred for hunting boar",
+            "Deafness testing important due to white coat",
+            "One-family dog - deeply loyal to their people",
+            "Perfect for Indian climate - no AC dependency",
+            "Rare breed - help preserve by supporting ethical breeders"
+        ]
+    },
+    
+    "mudhol hound": {
+        "size": "large",
+        "weight_range": "22-28 kg",
+        "life_expectancy": "12-15 years",
+        "energy_level": "very high",
+        "exercise_needs": "90+ minutes daily",
+        "temperament": ["loyal", "courageous", "graceful", "independent", "athletic"],
+        "good_with": ["active owners", "experienced handlers", "rural environments"],
+        "not_ideal_for": ["apartments", "sedentary owners", "cold climates"],
+        "health_concerns": [
+            "generally very healthy",
+            "sensitive to anesthesia (sighthound trait)",
+            "skin injuries during running"
+        ],
+        "dietary_needs": {
+            "protein": "high (26-30%)",
+            "fat": "moderate to high for energy",
+            "common_allergies": "hardy digestive system",
+            "special_considerations": "high metabolism needs quality fuel",
+            "recommended_foods": ["active/performance formulas", "traditional Indian diet supplements"]
+        },
+        "grooming": {
+            "coat_type": "short, smooth",
+            "shedding": "low",
+            "brushing": "weekly",
+            "bathing": "as needed",
+            "special_care": "minimal maintenance"
+        },
+        "climate_suitability": {
+            "hot_weather": "EXCELLENT - native to Deccan plateau",
+            "cold_weather": "poor - thin coat, lean body",
+            "monsoon": "adaptable"
+        },
+        "training": {
+            "intelligence_rank": "highly intelligent",
+            "trainability": "moderate - independent sighthound nature",
+            "best_approach": "patient, positive, respect their independence",
+            "common_issues": ["high prey drive", "can't be off-leash in open areas"]
+        },
+        "mira_tips": [
+            "Karnataka's pride - also called Caravan Hound",
+            "Built for speed - can reach 60+ km/h",
+            "Anesthesia sensitivity - inform vet before any procedure",
+            "Perfect for Indian climate without AC",
+            "Great for lure coursing and running sports"
+        ]
+    },
+    
+    "kombai": {
+        "size": "medium to large",
+        "weight_range": "25-30 kg",
+        "life_expectancy": "12-15 years",
+        "energy_level": "high",
+        "exercise_needs": "60-90 minutes daily",
+        "temperament": ["loyal", "protective", "intelligent", "alert", "reserved with strangers"],
+        "good_with": ["experienced owners", "families", "as guard dogs"],
+        "not_ideal_for": ["first-time owners", "apartments", "multi-dog homes"],
+        "health_concerns": [
+            "generally very healthy - robust native breed",
+            "minimal known genetic issues",
+            "may be sensitive to some modern medications"
+        ],
+        "dietary_needs": {
+            "protein": "high (26-30%)",
+            "fat": "moderate",
+            "common_allergies": "hardy, few allergies",
+            "special_considerations": "thrives on traditional diet",
+            "recommended_foods": ["high-protein formulas", "home-cooked supplements"]
+        },
+        "grooming": {
+            "coat_type": "short, dense",
+            "shedding": "low to moderate",
+            "brushing": "weekly",
+            "bathing": "as needed",
+            "special_care": "minimal maintenance required"
+        },
+        "climate_suitability": {
+            "hot_weather": "EXCELLENT - Tamil Nadu native breed",
+            "cold_weather": "moderate",
+            "monsoon": "excellent adaptation"
+        },
+        "training": {
+            "intelligence_rank": "highly intelligent",
+            "trainability": "good with firm, consistent training",
+            "best_approach": "confident leadership, early socialization",
+            "common_issues": ["strong guarding instincts", "can be dog-aggressive"]
+        },
+        "mira_tips": [
+            "Ancient Tamil Nadu breed - bred for hunting and guarding",
+            "Fiercely loyal to family - excellent watchdog",
+            "Early socialization crucial for well-adjusted adult",
+            "Perfect for Indian conditions - robust and hardy",
+            "Rare breed - consider adopting to preserve heritage"
+        ]
     }
 }
 
