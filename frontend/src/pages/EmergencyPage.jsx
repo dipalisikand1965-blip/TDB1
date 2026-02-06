@@ -722,12 +722,9 @@ const EmergencyPage = () => {
         maxServices={8}
       />
       
-      {/* Mira Floating Chat Widget */}
-      <MiraChatWidget pillar="emergency" />
-      
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="emergency" position="bottom-left" />
-    </div>
+    </PillarPageLayout>
   );
 };
 
