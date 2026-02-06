@@ -500,6 +500,12 @@ async def send_message_about_request(
     
     now = datetime.now(timezone.utc).isoformat()
     
+    # Get customer info from user profile
+    user_profile = await db.users.find_one({"email": email})
+    customer_name = "Guest"
+    if user_profile:
+        customer_name = user_profile.get("name") or user_profile.get("first_name", "Guest")
+    
     # Try to find existing ticket for this request (relaxed search)
     existing_ticket = await db.service_desk_tickets.find_one({
         "$or": [
