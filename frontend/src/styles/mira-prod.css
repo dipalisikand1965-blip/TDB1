@@ -1852,3 +1852,38 @@ button.mp-welcome-chip,
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
+
+/* Why for {Pet} - Personalized Reason */
+.mp-why-for-pet {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  padding: 8px 10px;
+  background: rgba(245, 158, 11, 0.1);
+  border-left: 3px solid #f59e0b;
+  border-radius: 0 8px 8px 0;
+  margin: 8px 0;
+}
+
+.mp-why-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.mp-why-text {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.4;
+  font-style: italic;
+}
+
+/* Mobile: Smaller why box */
+@media (max-width: 768px) {
+  .mp-why-for-pet {
+    padding: 6px 8px;
+  }
+  
+  .mp-why-text {
+    font-size: 11px;
+  }
+}
