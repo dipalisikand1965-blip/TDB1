@@ -578,6 +578,21 @@ const MiraDemoPage = () => {
     return completedSteps.includes(stepId);
   }, [completedSteps]);
   
+  // Check if user's response is asking for more info (NOT answering the question)
+  // These should NOT complete the current step - Mira should explain and repeat the question
+  const isAskingForMoreInfo = useCallback((inputQuery) => {
+    const lowerInput = inputQuery.toLowerCase();
+    
+    const moreInfoPhrases = [
+      'tell me more', 'can you explain', 'what do you mean',
+      'more info', 'more information', 'explain more',
+      'not sure yet', 'i\'m not sure', 'help me understand',
+      'what\'s the difference', 'what are the options'
+    ];
+    
+    return moreInfoPhrases.some(phrase => lowerInput.includes(phrase));
+  }, []);
+  
   // Check if user is explicitly asking for products/suggestions
   // This should only return true AFTER initial clarifying questions
   // Covers ALL flows: Treats, Grooming tools, Birthday cakes, Travel gear
