@@ -2096,7 +2096,7 @@ const MiraDemoPage = () => {
           pet_id: pet.id,
           pillar: pillar,
           intent_primary: service.label.toUpperCase().replace(/\s+/g, '_'),
-          intent_secondary: service.isExperience ? 'EXPERIENCE' : 'SERVICE',
+          intent_secondary: [service.isExperience ? 'EXPERIENCE' : 'SERVICE'],
           life_state: formData.urgency === 'urgent' ? 'URGENT' : 'PLANNING',
           channel: 'mira_os_demo',
           initial_message: {
