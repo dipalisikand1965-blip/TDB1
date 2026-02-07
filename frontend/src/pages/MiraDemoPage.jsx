@@ -2223,6 +2223,15 @@ const MiraDemoPage = () => {
             />
             <button
               type="button"
+              onClick={toggleVoiceOutput}
+              className={`mp-btn-voice ${voiceEnabled ? 'active' : ''} ${isSpeaking ? 'speaking' : ''}`}
+              data-testid="voice-output-btn"
+              title={voiceEnabled ? 'Mira voice ON' : 'Mira voice OFF'}
+            >
+              {voiceEnabled ? <Volume2 /> : <VolumeX />}
+            </button>
+            <button
+              type="button"
               onClick={toggleVoice}
               className={`mp-btn-mic ${isListening ? 'recording' : ''}`}
               data-testid="mic-btn"
