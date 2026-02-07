@@ -109,10 +109,6 @@ const TEST_SCENARIOS = [
     query: "Buddy pulls on the leash a lot, any training tips?",
     description: 'Tests advisory + potential trainer referral'
   },
-]; 
-    query: "Buddy needs a haircut, can you help?",
-    description: 'Tests service coordination'
-  },
 ];
 
 // Sample pet for demo (when not logged in)
