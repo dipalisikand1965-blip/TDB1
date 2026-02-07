@@ -744,7 +744,9 @@ const MiraDemoPage = () => {
           label: lifeState,
           chips_offered: quickReplies.map(r => r.text),
           product_suggestions: shouldShowProducts ? 
-            data.response?.products?.slice(0, 5).map(p => ({ sku: p.id, name: p.name })) : []
+            data.response?.products?.slice(0, 5).map(p => ({ sku: p.id, name: p.name })) : [],
+          step_id: miraStepId,
+          is_clarifying_question: isNewClarifyingQuestion
         });
       }
       
@@ -766,7 +768,8 @@ const MiraDemoPage = () => {
     
     setIsProcessing(false);
   }, [query, token, user, pet, extractQuickReplies, currentTicket, syncToServiceDesk, 
-      conversationStage, userHasOptedInForProducts, isProductOptIn]);
+      conversationStage, userHasOptedInForProducts, isProductOptIn, completedSteps, 
+      stepHistory, currentStep, completeStep]);
   
   useEffect(() => {
     handleSubmitRef.current = handleSubmit;
