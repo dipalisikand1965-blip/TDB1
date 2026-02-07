@@ -701,9 +701,11 @@
 }
 
 .mp-concierge-text {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--mira-text-secondary);
-  margin: 0 0 var(--space-sm);
+  margin: 0 0 var(--space-xs);
+  font-style: italic;
+  opacity: 0.9;
 }
 
 .mp-concierge-btns {
