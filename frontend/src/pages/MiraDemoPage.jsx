@@ -466,13 +466,23 @@ const MiraDemoPage = () => {
     }
     
     setIsProcessing(false);
-    setQuery('');
-  }, [query, token, pet]);
+  }, [query, token, pet, createOrAttachTicket, extractQuickReplies]);
   
   // Keep ref updated with latest handleSubmit
   useEffect(() => {
     handleSubmitRef.current = handleSubmit;
   }, [handleSubmit]);
+  
+  // Handle quick reply click
+  const handleQuickReply = useCallback((replyValue) => {
+    setQuery(replyValue);
+    // Submit immediately
+    setTimeout(() => {
+      if (handleSubmitRef.current) {
+        handleSubmitRef.current(null, replyValue);
+      }
+    }, 50);
+  }, []);
   
   // Voice recognition setup
   // eslint-disable-next-line react-hooks/exhaustive-deps
