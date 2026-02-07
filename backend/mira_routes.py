@@ -844,6 +844,7 @@ async def understand_with_llm(
     page_context: str = None,
     completed_steps: List[str] = None,
     step_history: List[Dict[str, Any]] = None,
+    conversation_history: List[Dict[str, str]] = None,
     user_asking_for_more_info: bool = False,
     current_step: str = None
 ) -> Dict[str, Any]:
