@@ -2624,6 +2624,14 @@ const MiraDemoPage = () => {
                           {msg.showProducts && msg.data?.response?.products?.length > 0 && (
                             <div className="mp-products">
                               <div className="mp-products-header">
+                                {/* E017: Pet Photo in Recommendations */}
+                                {pet.photo && (
+                                  <img 
+                                    src={pet.photo} 
+                                    alt={pet.name}
+                                    className="mp-products-pet-photo"
+                                  />
+                                )}
                                 <p className="mp-products-title">
                                   Recommended for <span className="pet-name">{pet.name}</span>
                                 </p>
