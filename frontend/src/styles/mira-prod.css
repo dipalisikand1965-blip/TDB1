@@ -868,6 +868,42 @@
 }
 
 /* ========================================
+   WELCOME CHIPS - Centered Quick Actions
+   ======================================== */
+.mp-welcome-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-md);
+  margin-top: var(--space-xl);
+}
+
+.mp-welcome-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: var(--space-md) var(--space-xl);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--radius-full);
+  color: white;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mp-welcome-chip:hover {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: var(--mira-pink);
+  transform: translateY(-2px);
+}
+
+.mp-welcome-chip span {
+  font-size: 18px;
+}
+
+/* ========================================
    LOADING
    ======================================== */
 .mp-loading {
