@@ -1863,6 +1863,49 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
             },
             "execution_type": execution_type
         }
+        
+        # ============================================
+        # SESSION PERSISTENCE - Save conversation to database
+        # ============================================
+        try:
+            from mira_session_persistence import add_message_to_session, update_session_state
+            session_id = request.session_id
+            
+            if session_id:
+                # Save user message
+                await add_message_to_session(
+                    session_id=session_id,
+                    role="user",
+                    content=request.input,
+                    intent=intent,
+                    step_id=request.current_step
+                )
+                
+                # Save assistant message
+                await add_message_to_session(
+                    session_id=session_id,
+                    role="assistant",
+                    content=understanding.get("message", ""),
+                    intent=intent,
+                    execution_type=execution_type,
+                    products=final_products[:3] if final_products else None,  # Save top 3 products
+                    step_id=understanding.get("step_id")
+                )
+                
+                # Update session state
+                await update_session_state(
+                    session_id=session_id,
+                    current_intent=intent,
+                    products_shown=len(final_products) > 0,
+                    concierge_engaged=(execution_type == "CONCIERGE"),
+                    completed_step=understanding.get("step_id")
+                )
+                
+                logger.info(f"[SESSION PERSIST] Saved conversation turn to session {session_id}")
+        except Exception as persist_err:
+            logger.warning(f"[SESSION PERSIST] Failed to save conversation: {persist_err}")
+        
+        return response_data
     except Exception as e:
         logger.error(f"Mira OS understand-with-products error: {e}")
         return {
