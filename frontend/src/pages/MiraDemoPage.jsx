@@ -2588,15 +2588,13 @@ const MiraDemoPage = () => {
                           {msg.showServices && msg.detectedServices?.length > 0 && (
                             <div className="mp-service-cards">
                               <p className="mp-service-intro">
-                                You can book this directly, or let your Concierge® handle it:
+                                Request this directly—your Concierge® will take care of everything:
                               </p>
                               <div className="mp-service-grid">
                                 {msg.detectedServices.map((service, sIdx) => (
-                                  <a
+                                  <button
                                     key={sIdx}
-                                    href={`https://thedoggycompany.in${service.wizardUrl}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
+                                    onClick={() => openServiceRequest(service, false)}
                                     className="mp-service-card"
                                     style={{ '--service-color': service.color }}
                                     data-testid={`service-${service.id}`}
@@ -2606,7 +2604,7 @@ const MiraDemoPage = () => {
                                       <span className="mp-service-label">{service.label}</span>
                                       <span className="mp-service-desc">{service.description}</span>
                                     </div>
-                                  </a>
+                                  </button>
                                 ))}
                               </div>
                             </div>
@@ -2621,11 +2619,9 @@ const MiraDemoPage = () => {
                               </p>
                               <div className="mp-experience-grid">
                                 {msg.detectedExperiences.map((exp, eIdx) => (
-                                  <a
+                                  <button
                                     key={eIdx}
-                                    href={`https://thedoggycompany.in${exp.wizardUrl}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
+                                    onClick={() => openServiceRequest(exp, true)}
                                     className="mp-experience-card"
                                     style={{ '--experience-color': exp.color }}
                                     data-testid={`experience-${exp.id}`}
@@ -2636,7 +2632,7 @@ const MiraDemoPage = () => {
                                       <span className="mp-experience-desc">{exp.description}</span>
                                     </div>
                                     <span className="mp-experience-badge">Experience</span>
-                                  </a>
+                                  </button>
                                 ))}
                               </div>
                             </div>
