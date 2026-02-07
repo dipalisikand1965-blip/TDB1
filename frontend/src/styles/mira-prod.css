@@ -671,6 +671,85 @@
 }
 
 /* ========================================
+   SERVICE CARDS - Self-service wizard options
+   ======================================== */
+.mp-service-cards {
+  margin-top: var(--space-md);
+  padding: var(--space-md);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-lg);
+}
+
+.mp-service-intro {
+  font-size: 14px;
+  color: var(--mira-text-secondary);
+  margin: 0 0 var(--space-md);
+}
+
+.mp-service-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--space-sm);
+}
+
+.mp-service-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-md);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.mp-service-card:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--service-color, var(--mira-pink));
+  transform: translateY(-2px);
+}
+
+.mp-service-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-md);
+  background: var(--service-color, var(--mira-pink));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.mp-service-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mp-service-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+}
+
+.mp-service-desc {
+  font-size: 12px;
+  color: var(--mira-text-muted);
+  line-height: 1.3;
+}
+
+/* Mobile: Stack service cards */
+@media (max-width: 480px) {
+  .mp-service-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ========================================
    CONCIERGE STRIP
    ======================================== */
 .mp-concierge-strip {
