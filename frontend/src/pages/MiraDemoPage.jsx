@@ -494,6 +494,48 @@ const MiraDemoPage = () => {
     }
   }, [token]);
   
+  // Complete a step when user answers a clarifying question
+  // This is the KEY anti-loop mechanism
+  const completeStep = useCallback(async (ticketId, stepId, userAnswer) => {
+    if (!ticketId || !stepId) return;
+    
+    try {
+      const response = await fetch(`${API_URL}/api/service_desk/complete_step`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` })
+        },
+        body: JSON.stringify({
+          ticket_id: ticketId,
+          step_id: stepId,
+          user_answer: userAnswer
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success && !data.already_completed) {
+        // Update local state
+        setCompletedSteps(prev => [...prev, stepId]);
+        setCurrentStep(null);
+        setStepHistory(prev => [...prev, { step_id: stepId, answer: userAnswer }]);
+        console.log('[STEP] Completed step:', stepId, '-> Answer:', userAnswer);
+      } else if (data.already_completed) {
+        console.log('[STEP] Step already completed:', stepId);
+      }
+      
+      return data;
+    } catch (error) {
+      console.error('[STEP] Failed to complete step:', error);
+    }
+  }, [token]);
+  
+  // Check if a step has already been completed (to prevent re-asking)
+  const isStepCompleted = useCallback((stepId) => {
+    return completedSteps.includes(stepId);
+  }, [completedSteps]);
+  
   // Check if user is explicitly asking for products/suggestions
   // This should only return true AFTER initial clarifying questions
   const isProductOptIn = useCallback((inputQuery) => {
@@ -514,7 +556,7 @@ const MiraDemoPage = () => {
     return optInPhrases.some(phrase => lowerInput.includes(phrase));
   }, []);
   
-  // Handle submit - NEW CANONICAL FLOW
+  // Handle submit - NEW CANONICAL FLOW WITH STEP TRACKING
   const handleSubmit = useCallback(async (e, voiceQuery = null) => {
     if (e) e.preventDefault();
     
