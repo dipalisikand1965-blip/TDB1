@@ -33,51 +33,83 @@ const DOCK_ITEMS = [
 
 // Test Scenarios for Role-Playing Mira's responses
 const TEST_SCENARIOS = [
+  // === PRODUCT DISCOVERY ===
+  { 
+    id: 'treats', 
+    label: '🦴 Treats', 
+    query: "Show me some treats for Buddy",
+    description: 'Tests simple product discovery - SHOULD show products'
+  },
   { 
     id: 'birthday', 
     label: '🎂 Birthday', 
     query: "I want to plan Buddy's birthday",
-    description: 'Tests emotional acknowledgment and alignment question'
+    description: 'Tests emotional acknowledgment + alignment question'
   },
-  { 
-    id: 'health', 
-    label: '🏥 Health Concern', 
-    query: "I'm worried, Buddy has been coughing a lot lately",
-    description: 'Tests presence before performance with health anxiety'
-  },
-  { 
-    id: 'treats', 
-    label: '🦴 Find Treats', 
-    query: "Show me some treats for Buddy",
-    description: 'Tests simple product discovery flow'
-  },
+  // === PLANNING / SERVICE (no products) ===
   { 
     id: 'travel', 
     label: '✈️ Travel', 
     query: "We're planning a trip with Buddy next month",
-    description: 'Tests remember → confirm → act sequence'
+    description: 'Tests clarifying questions - NO products until asked'
+  },
+  { 
+    id: 'grooming', 
+    label: '✂️ Grooming', 
+    query: "Buddy needs a haircut, can you help?",
+    description: 'Tests service coordination - NO products'
+  },
+  { 
+    id: 'food', 
+    label: '🍽️ Food', 
+    query: "What food would be best for Buddy?",
+    description: 'Tests FOOD_MAIN - NO treat boxes, ask questions first'
+  },
+  // === EMOTIONAL / SENSITIVE ===
+  { 
+    id: 'health', 
+    label: '🏥 Health', 
+    query: "I'm worried, Buddy has been coughing a lot lately",
+    description: 'Tests presence + boundary + vet guidance'
   },
   { 
     id: 'anxious', 
     label: '😰 Anxiety', 
     query: "Buddy seems anxious during thunderstorms, what can I do?",
-    description: 'Tests emotional support response'
-  },
-  { 
-    id: 'food', 
-    label: '🍽️ Food Choice', 
-    query: "What food would be best for Buddy?",
-    description: 'Tests asking before recommending'
+    description: 'Tests tips first, products only if asked'
   },
   { 
     id: 'memorial', 
     label: '🌈 Farewell', 
     query: "I lost my dog last week and I'm not ready to talk about it yet",
-    description: 'Tests pure presence, no performance'
+    description: 'Tests HOLD state - NO actions, NO feedback, just presence'
+  },
+  // === EDGE CASES ===
+  { 
+    id: 'compare', 
+    label: '⚖️ Compare', 
+    query: "What's the difference between grain-free and regular food?",
+    description: 'Tests informational query handling'
   },
   { 
-    id: 'grooming', 
-    label: '✂️ Grooming', 
+    id: 'reorder', 
+    label: '🔄 Reorder', 
+    query: "I need to reorder Buddy's usual treats",
+    description: 'Tests ORDER intent with memory recall'
+  },
+  { 
+    id: 'boarding', 
+    label: '🏠 Boarding', 
+    query: "I need someone to watch Buddy while I'm away next week",
+    description: 'Tests service intent - NO products, Concierge® help'
+  },
+  { 
+    id: 'training', 
+    label: '🎓 Training', 
+    query: "Buddy pulls on the leash a lot, any training tips?",
+    description: 'Tests advisory + potential trainer referral'
+  },
+]; 
     query: "Buddy needs a haircut, can you help?",
     description: 'Tests service coordination'
   },
