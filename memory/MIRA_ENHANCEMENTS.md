@@ -44,6 +44,9 @@
 | E010 | Premium Dark Glass Product Cards | D | ✅ DONE | Feb 7, 2026 |
 | E011 | Allergy-aware product filtering | E | ✅ DONE | Feb 6, 2026 |
 | E012 | Concierge availability hours display | F | ✅ DONE | Feb 6, 2026 |
+| E013 | Remembered Service Providers | B | ✅ DONE | Feb 7, 2026 |
+| E014 | Services from Database | F | ✅ DONE | Feb 7, 2026 |
+| E017 | Pet Photo in Recommendations | D | ✅ DONE | Feb 7, 2026 |
 
 ---
 
