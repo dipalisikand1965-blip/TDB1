@@ -1685,8 +1685,19 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
         
         # Determine search keywords based on intent
         search_keywords = None
-        if is_travel_request:
-            search_keywords = "travel carrier crate harness"
+        
+        # Check conversation history for context - is this a travel conversation?
+        is_travel_conversation = is_travel_request
+        if not is_travel_conversation and request.conversation_history:
+            for msg in request.conversation_history:
+                content = safe_lower(msg.get('content', ''))
+                if any(word in content for word in ['travel', 'ooty', 'goa', 'trip', 'holiday', 'vacation', 'carrier', 'road trip']):
+                    is_travel_conversation = True
+                    break
+        
+        if is_travel_request or is_travel_conversation:
+            search_keywords = "travel carrier crate harness bowl"
+            is_treat_request = False  # Override - don't show treats in travel context
         elif is_treat_request:
             search_keywords = None  # Will use entities
         elif is_groom_tools:
