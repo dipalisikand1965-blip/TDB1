@@ -188,10 +188,9 @@ const MiraDemoPage = () => {
   });
   const [sessionRecovered, setSessionRecovered] = useState(false);
   
-  // Conversation stage tracking for product opt-in
-  // Stage: 'initial' | 'clarifying' | 'opted_in_products' | 'concierge_engaged'
+  // Conversation stage tracking
+  // Stage: 'initial' | 'clarifying' | 'concierge_engaged'
   const [conversationStage, setConversationStage] = useState('initial');
-  const [userHasOptedInForProducts, setUserHasOptedInForProducts] = useState(false);
   
   // Step tracking - ANTI-LOOP SYSTEM
   // Tracks which steps (questions) have been asked and answered
