@@ -431,15 +431,20 @@ const MiraDemoPage = () => {
       
       const data = await response.json();
       
-      const pillar = data.understanding?.entities?.pillar || 'general';
+      // Extract intent and pillar for ticket routing
       const intent = data.understanding?.intent || 'GENERAL';
-      await createOrAttachTicket(inputQuery, intent, pillar);
+      const pillar = data.understanding?.entities?.pillar || null;
+      const miraResponseText = data.response?.message || "I'm here to help!";
       
+      // Create/attach to service ticket with full conversation
+      await createOrAttachTicket(inputQuery, intent, pillar, miraResponseText);
+      
+      // Extract contextual quick replies based on Mira's question
       const quickReplies = extractQuickReplies(data);
       
       const miraMessage = {
         type: 'mira',
-        content: data.response?.message || "I'm here to help!",
+        content: miraResponseText,
         data: data,
         quickReplies: quickReplies,
         timestamp: new Date()
