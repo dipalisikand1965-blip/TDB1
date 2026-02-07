@@ -1930,10 +1930,15 @@ const MiraDemoPage = () => {
       
     } catch (error) {
       console.error('Mira error:', error);
+      // Instead of just handing to Concierge®, show a more helpful error
       const errorMessage = {
         type: 'mira',
-        content: "I'll connect you with your pet Concierge® to help with this.",
+        content: "I'm having a moment - let me try that again. If this keeps happening, your pet Concierge® is always here to help.",
         error: true,
+        quickReplies: [
+          { text: 'Try again', value: query },
+          { text: 'Connect to Concierge®', value: 'Yes, connect me to my Concierge®.' }
+        ],
         timestamp: new Date()
       };
       setConversationHistory(prev => [...prev, errorMessage]);
