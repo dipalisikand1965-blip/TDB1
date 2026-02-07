@@ -934,6 +934,11 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                 logger.error(traceback.format_exc())
         
         # Step 4: Build response
+        # For SERVICE intents, ensure NO products even if LLM suggested some
+        final_products = []
+        if should_show_products:
+            final_products = real_products if real_products else understanding.get("products", [])
+        
         return {
             "success": True,
             "understanding": {
@@ -944,10 +949,14 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
             },
             "response": {
                 "message": understanding.get("message", ""),
-                "products": real_products if real_products else understanding.get("products", []),
+                "products": final_products,
                 "next_action": understanding.get("next_action", ""),
                 "concierge_reason": understanding.get("concierge_reason"),
-                "has_real_products": len(real_products) > 0,
+                "concierge_framing": understanding.get("concierge_framing"),
+                "products_framing": understanding.get("products_framing"),
+                "alignment_question": understanding.get("alignment_question"),
+                "safety_tips": understanding.get("safety_tips", []),
+                "has_real_products": len(final_products) > 0,
                 "ticket_id": ticket_id
             },
             "execution_type": execution_type
