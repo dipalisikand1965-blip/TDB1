@@ -1292,8 +1292,10 @@ const MiraDemoPage = () => {
                           </div>
                         )}
                         
-                        {/* Feedback */}
-                        {!msg.data?.response?.hide_feedback && msg.data?.execution_type !== 'HOLD' && (
+                        {/* Feedback - ONLY show when there's NO pending clarifying question */}
+                        {!msg.data?.response?.hide_feedback && 
+                         msg.data?.execution_type !== 'HOLD' && 
+                         !msg.isClarifyingQuestion && (
                           <div className="mt-3 pt-3 border-t border-white/10 flex items-center justify-between">
                             <span className="text-white/40 text-xs">Was this helpful?</span>
                             <div className="flex items-center gap-1.5">
