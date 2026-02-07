@@ -1645,6 +1645,11 @@ const MiraDemoPage = () => {
       const detectedServices = detectServiceIntent(query);
       const hasServiceIntent = detectedServices.length > 0;
       
+      // MIRA DOCTRINE: Detect experience intent for premium curated experiences
+      // Experiences are special wizard-driven offerings like Chef's Table, Pawcation
+      const detectedExperiences = detectExperienceIntent(query);
+      const hasExperienceIntent = detectedExperiences.length > 0;
+      
       // MIRA DOCTRINE: Concierge is premium service, not failure
       // Show concierge option subtly when:
       // 1. Backend explicitly suggests it (AI decided it's needed)
