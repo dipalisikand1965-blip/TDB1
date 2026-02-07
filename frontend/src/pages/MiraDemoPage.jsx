@@ -16,8 +16,8 @@ import { useNavigate } from 'react-router-dom';
 import { 
   Mic, MicOff, Send, MessageCircle, Package, Calendar, 
   HelpCircle, Heart, Sparkles, ChevronDown, ChevronUp,
-  ShoppingBag, PawPrint, Bot, History, Plus, Check,
-  ThumbsUp, ThumbsDown, X, Phone, Mail, MessageSquare
+  ShoppingBag, PawPrint, Bot, History, Plus, Check, Search,
+  ThumbsUp, ThumbsDown, X, Phone, Mail, MessageSquare, AlertCircle
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { API_URL } from '../utils/api';
