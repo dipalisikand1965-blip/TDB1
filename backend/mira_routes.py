@@ -1813,7 +1813,8 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
             search_keywords = "travel carrier crate harness bowl"
             is_treat_request = False  # Override - don't show treats in travel context
         elif is_birthday_conversation:
-            search_keywords = "birthday cake celebration pupcake dognut hamper box party"
+            # MIRA FIX: Use specific birthday/celebration keywords, avoid Halloween items
+            search_keywords = "birthday cake celebration hamper party pup love"
             logger.info("[PRODUCT FILTER] Birthday/cake conversation detected, using birthday keywords")
         elif is_treat_request:
             search_keywords = None  # Will use entities
