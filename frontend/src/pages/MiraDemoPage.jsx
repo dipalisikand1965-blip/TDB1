@@ -642,34 +642,35 @@ const MiraDemoPage = () => {
   const isProductOptIn = useCallback((inputQuery) => {
     const lowerInput = inputQuery.toLowerCase();
     
-    // Explicit product request phrases that happen AFTER clarifying
+    // Explicit product request phrases - BE MORE GENEROUS
     const optInPhrases = [
-      // General suggest phrases
-      'suggest a few', 'suggest some', 'suggest 3', 'suggest 5',
-      'help me pick', 'help me choose', 'show me options',
-      'what should i buy', 'what products', 'yes please',
-      'both please', 'both, please', 'all of it',
+      // Direct affirmatives
+      'yes', 'yes please', 'yes do', 'you do', 'please do', 'go ahead',
+      'sure', 'ok', 'okay', 'definitely', 'absolutely',
+      
+      // Suggest phrases - various forms
+      'suggest', 'can you suggest', 'show me', 'show photographs',
+      'help me pick', 'help me choose', 'what should i',
+      'what products', 'recommend', 'options',
       
       // Treats specific
-      'suggest treats', 'suggest a few treats', 'show me treats',
-      'what treats', 'recommend treats',
+      'treats', 'show me treats',
+      
+      // Cake/Birthday specific  
+      'cake', 'cakes', 'birthday cake', 'show me cake',
+      'party', 'birthday', 'celebration',
       
       // Grooming specific  
-      'suggest tools', 'suggest a minimal set', 'what tools',
-      'suggest products', 'grooming tools', 'need tools',
-      
-      // Birthday specific
-      'suggest cakes', 'show me cakes', 'cake options',
-      'suggest toys', 'birthday treats', 'party supplies',
+      'tools', 'grooming', 'shampoo', 'brush',
       
       // Travel specific
-      'checklist + travel tools', 'checklist and tools',
-      'travel tools', 'packing list', 'what to pack',
-      'suggest travel', 'travel gear'
+      'checklist', 'travel', 'packing', 'pack',
+      
+      // Toys
+      'toy', 'toys', 'play'
     ];
     
-    // Only count as opt-in if it's a clear product request
-    // NOT on initial queries like "show me treats for Buddy"
+    // Check if user is explicitly opting in
     return optInPhrases.some(phrase => lowerInput.includes(phrase));
   }, []);
   
