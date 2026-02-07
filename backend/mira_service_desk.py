@@ -489,9 +489,56 @@ async def append_message(request: AppendMessageRequest):
     - label: EXPLORE, PLAN, etc.
     - chips_offered: List of quick reply chips shown
     - product_suggestions: List of products shown
+    - step_id: Unique identifier for this step (for anti-loop)
+    - is_clarifying_question: True if waiting for user answer
     """
     db = get_db()
     if db is None:
+        raise HTTPException(status_code=500, detail="Database not available")
+    
+    now = datetime.now(timezone.utc)
+    
+    message_entry = {
+        "sender": request.sender,
+        "source": request.source,
+        "text": request.text,
+        "timestamp": now.isoformat()
+    }
+    
+    if request.meta:
+        message_entry["meta"] = request.meta
+    
+    # Add step tracking info if provided
+    if request.step_id:
+        message_entry["step_id"] = request.step_id
+    if request.is_clarifying_question:
+        message_entry["is_clarifying_question"] = request.is_clarifying_question
+    
+    update_ops = {
+        "$push": {"conversation": message_entry},
+        "$set": {"updated_at": now.isoformat()}
+    }
+    
+    # If this is a Mira message with a clarifying question, set it as current_step
+    if request.sender == "mira" and request.step_id and request.is_clarifying_question:
+        update_ops["$set"]["current_step"] = {
+            "step_id": request.step_id,
+            "question": request.text,
+            "timestamp": now.isoformat()
+        }
+        logger.info(f"[STEP] Set current step: {request.step_id}")
+    
+    result = await db.mira_conversations.update_one(
+        {"ticket_id": request.ticket_id},
+        update_ops
+    )
+    
+    if result.matched_count == 0:
+        raise HTTPException(status_code=404, detail=f"Ticket {request.ticket_id} not found")
+    
+    logger.info(f"[SERVICE_DESK] Appended {request.sender} message to ticket: {request.ticket_id}")
+    
+    return {"success": True, "ticket_id": request.ticket_id}
         raise HTTPException(status_code=500, detail="Database not available")
     
     now = datetime.now(timezone.utc)
