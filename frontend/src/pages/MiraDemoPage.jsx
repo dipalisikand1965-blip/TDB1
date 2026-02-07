@@ -1180,25 +1180,26 @@ const MiraDemoPage = () => {
                           </div>
                         )}
                         
-                        {/* Concierge Option */}
+                        {/* Concierge Option - Small, secondary CTA */}
                         {msg.data?.execution_type === 'CONCIERGE' && !msg.data?.response?.hide_concierge && (
                           <div className="mt-3 pt-3 border-t border-white/10">
                             <div className="flex items-center gap-2 mb-2">
-                              <div className="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center">
-                                <User className="w-3.5 h-3.5 text-white/60" />
+                              <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center">
+                                <User className="w-3 h-3 text-white/50" />
                               </div>
-                              <p className="flex-1 text-white/50 text-xs">
-                                {msg.data.response?.concierge_framing || "Your pet Concierge® can help."}
+                              <p className="flex-1 text-white/40 text-xs">
+                                {msg.data.response?.concierge_framing || "Your pet Concierge® can help with this."}
                               </p>
                             </div>
                             <button 
-                              onClick={() => engageConcierge(msg.data?.understanding?.intent)}
-                              className="w-full px-3 py-2 bg-white/10 hover:bg-white/20
-                                text-white/80 rounded-lg text-xs font-medium min-h-[40px]
-                                active:scale-[0.98] flex items-center justify-center gap-2"
+                              onClick={handleConciergeHandoff}
+                              disabled={isProcessing || conversationStage === 'concierge_engaged'}
+                              className="text-purple-300 hover:text-purple-200 text-xs 
+                                underline underline-offset-2 flex items-center gap-1 transition-colors
+                                disabled:opacity-50 disabled:cursor-not-allowed"
                               data-testid="chat-concierge-btn"
                             >
-                              <MessageCircle className="w-3.5 h-3.5" />
+                              <MessageCircle className="w-3 h-3" />
                               Have my Concierge® help
                             </button>
                           </div>
