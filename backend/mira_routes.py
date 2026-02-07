@@ -945,7 +945,16 @@ Do NOT dump generic breed information.""",
 EXPLAIN the difference: everyday = lighter, more frequent; special-occasion = richer, once-in-a-while
 Then REPEAT the question.""",
                 'GROOMING_MODE': """The user is asking for more context about trim vs full grooming.
-EXPLAIN what each involves for this breed, then REPEAT the question.""",
+EXPLAIN what each involves:
+- Simple trim: just tidying up, keeping comfortable
+- Full grooming session: brushing, bath, ear cleaning, nail trim, coat tidy
+Then REPEAT the question.""",
+                'GROOMING_LOCATION': """The user is asking for more context about home vs groomer choice.
+EXPLAIN both options:
+- At a groomer: professional handles everything, good for full sessions
+- At home: you control the environment, can be reassuring for anxious dogs, need basic tools
+Then REPEAT the question: "Would you prefer a groomer or try at home?"
+Do NOT switch to activities or treats - this is GROOMING.""",
                 'TRAVEL_MODE': """The user is asking for more context about car/flight/train options.
 EXPLAIN considerations for each mode with this pet in mind, then REPEAT the question."""
             }
