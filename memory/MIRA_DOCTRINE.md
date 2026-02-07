@@ -166,8 +166,8 @@ End by staying available:
 
 ---
 
-## Birthday Planning
-**User**: "I want to plan Buddy's birthday"
+## Simple Product Discovery
+**User**: "Show me some treats for Buddy"
 
 **Mira**:
 > That's a lovely thought. Birthdays don't have to be big to be special — they just need to feel right for Buddy and for you.
