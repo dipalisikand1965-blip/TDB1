@@ -1951,153 +1951,108 @@ const MiraDemoPage = () => {
           )}
         </div>
       </div>
-                                  {chip.text}
-                                </button>
-                              ))}
-                            </div>
-                          )}
-                          
-                          {/* Products (if opted in) */}
-                          {msg.showProducts && msg.data?.response?.products?.length > 0 && (
-                            <div className="mp-products">
-                              <div className="mp-products-header">
-                                <p className="mp-products-title">
-                                  Recommended for <span className="pet-name">{pet.name}</span>
-                                </p>
-                              </div>
-                              <div className="mp-products-list">
-                                {msg.data.response.products.slice(0, 4).map((product, pIdx) => (
-                                  <div key={pIdx} className="mp-product">
-                                    {product.image && (
-                                      <img src={product.image} alt={product.name} className="mp-product-img" />
-                                    )}
-                                    <div className="mp-product-info">
-                                      <p className="mp-product-name">{product.name || product.suggestion}</p>
-                                      {product.price && <p className="mp-product-price">₹{product.price}</p>}
-                                    </div>
-                                    <button 
-                                      className="mp-product-add"
-                                      onClick={() => alert(`Added ${product.name} to cart!`)}
-                                      data-testid={`add-product-${pIdx}`}
-                                    >
-                                      <ShoppingBag />
-                                    </button>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                          
-                          {/* Important to Watch For - Collapsible */}
-                          {msg.data?.response?.tips && msg.data.response.tips.length > 0 && (
-                            <div className={`mp-watchfor ${collapsedSections[`tips-${idx}`] !== false ? '' : 'collapsed'}`}>
-                              <button 
-                                className="mp-watchfor-toggle"
-                                onClick={() => setCollapsedSections(prev => ({
-                                  ...prev,
-                                  [`tips-${idx}`]: prev[`tips-${idx}`] === false ? true : false
-                                }))}
-                              >
-                                <span className="mp-watchfor-label">
-                                  <AlertCircle /> Important to Watch For
-                                </span>
-                                <ChevronUp className={`mp-watchfor-chevron ${collapsedSections[`tips-${idx}`] !== false ? 'open' : ''}`} />
-                              </button>
-                              {collapsedSections[`tips-${idx}`] !== false && (
-                                <div className="mp-watchfor-content">
-                                  <ul className="mp-watchfor-list">
-                                    {msg.data.response.tips.map((tip, tIdx) => (
-                                      <li key={tIdx}>{tip}</li>
-                                    ))}
-                                  </ul>
-                                </div>
-                              )}
-                            </div>
-                          )}
-                          
-                          {/* Concierge Strip */}
-                          {msg.data?.response?.suggest_concierge && (
-                            <div className="mp-concierge-strip">
-                              <div className="mp-concierge-icon"><Bot /></div>
-                              <div className="mp-concierge-content">
-                                <p className="mp-concierge-text">
-                                  If you'd like, your pet Concierge® can help find options that match {pet.name}'s needs.
-                                </p>
-                                <button onClick={handleConciergeHandoff} className="mp-concierge-btn">
-                                  <MessageSquare /> Have my Concierge® help
-                                </button>
-                              </div>
-                            </div>
-                          )}
-                          
-                          {/* Feedback Row */}
-                          {!msg.isClarifyingQuestion && msg.data?.execution_type !== 'HOLD' && (
-                            <div className="mp-feedback">
-                              <span className="mp-feedback-label">Was this helpful?</span>
-                              <div className="mp-feedback-btns">
-                                {msg.feedbackGiven ? (
-                                  <span className={`mp-feedback-btn ${msg.feedbackGiven}`}>
-                                    {msg.feedbackGiven === 'positive' ? <ThumbsUp /> : <ThumbsDown />}
-                                  </span>
-                                ) : (
-                                  <>
-                                    <button onClick={() => handleFeedback(idx, true)} className="mp-feedback-btn" data-testid={`feedback-up-${idx}`}>
-                                      <ThumbsUp />
-                                    </button>
-                                    <button onClick={() => handleFeedback(idx, false)} className="mp-feedback-btn" data-testid={`feedback-down-${idx}`}>
-                                      <ThumbsDown />
-                                    </button>
-                                  </>
-                                )}
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </React.Fragment>
-              ))}
-              
-              {/* Loading Indicator */}
-              {isProcessing && (
-                <div className="mp-msg-mira">
-                  <div className="mp-loading">
-                    <div className="mp-mira-avatar"><Sparkles /></div>
-                    <div className="mp-loading-dots">
-                      <div className="mp-loading-dot"></div>
-                      <div className="mp-loading-dot"></div>
-                      <div className="mp-loading-dot"></div>
-                    </div>
-                  </div>
-                </div>
-              )}
-              
-              <div ref={messagesEndRef} />
-            </div>
-          )}
-        </div>
-      </div>
       
       {/* Scroll to Bottom Button */}
       {hasNewMessages && !isAtBottom && (
         <button onClick={() => scrollToBottom()} style={{
-          position: 'fixed', bottom: '100px', left: '50%', transform: 'translateX(-50%)',
-          padding: '8px 16px', background: 'white', border: '1px solid #e5e7eb',
-          borderRadius: '20px', boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+          position: 'fixed', bottom: '120px', left: '50%', transform: 'translateX(-50%)',
+          padding: '8px 16px', background: 'rgba(168, 85, 247, 0.9)', border: 'none',
+          borderRadius: '20px', boxShadow: '0 4px 20px rgba(168, 85, 247, 0.3)',
           fontSize: '13px', fontWeight: '500', cursor: 'pointer', zIndex: 100,
-          display: 'flex', alignItems: 'center', gap: '6px'
+          display: 'flex', alignItems: 'center', gap: '6px', color: 'white'
         }}>
           <ChevronDown /> New messages
         </button>
       )}
       
-      {/* Input Composer */}
-      <div className="mp-composer">
-        <div className="mp-composer-inner">
-          <form onSubmit={handleSubmit} className="mp-input-row">
+      {/* Input Composer - Premium */}
+      <div className="m10-composer">
+        <div className="m10-composer-inner">
+          <form onSubmit={handleSubmit} className="m10-input-row">
             <input
               ref={inputRef}
+              type="text"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder={`Type your reply to Mira...`}
+              className="m10-input"
+              disabled={isProcessing}
+              data-testid="mira-input"
+            />
+            <button
+              type="button"
+              onClick={toggleVoice}
+              className={`m10-btn-mic ${isListening ? 'recording' : ''}`}
+              data-testid="mic-btn"
+            >
+              {isListening ? <MicOff /> : <Mic />}
+            </button>
+            <button
+              type="submit"
+              disabled={isProcessing || !query.trim()}
+              className="m10-btn-send"
+              data-testid="send-btn"
+            >
+              <Send />
+            </button>
+          </form>
+        </div>
+      </div>
+      
+      {/* Sandbox Footer */}
+      <div className="m10-sandbox-footer">
+        🧪 Sandbox Mode — Mira OS 10/10 Premium Experience
+      </div>
+      
+      {/* Help Modal */}
+      {showHelpModal && (
+        <div style={{
+          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000
+        }} onClick={() => setShowHelpModal(false)}>
+          <div style={{
+            background: 'white', borderRadius: '20px', maxWidth: '400px', width: '90%', overflow: 'hidden'
+          }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ padding: '16px', borderBottom: '1px solid #e5e7eb', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <h3 style={{ margin: 0, fontWeight: 600, fontSize: 18 }}>How can we help?</h3>
+              <button onClick={() => setShowHelpModal(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 8 }}>
+                <X />
+              </button>
+            </div>
+            <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <button onClick={() => { setShowHelpModal(false); handleQuickReply('I need help with my order'); }} style={{
+                display: 'flex', alignItems: 'center', gap: '14px', padding: '14px',
+                border: '1px solid #e5e7eb', borderRadius: '12px', background: 'white', cursor: 'pointer', textAlign: 'left'
+              }}>
+                <div style={{ width: 40, height: 40, borderRadius: 10, background: '#ede9fe', color: '#8b5cf6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Package />
+                </div>
+                <div>
+                  <p style={{ margin: 0, fontWeight: 500, color: '#1f2937' }}>Order & Delivery</p>
+                  <p style={{ margin: 0, fontSize: 13, color: '#6b7280' }}>Track, modify or report issues</p>
+                </div>
+              </button>
+              <button onClick={() => { setShowHelpModal(false); handleConciergeHandoff(); }} style={{
+                display: 'flex', alignItems: 'center', gap: '14px', padding: '14px',
+                border: '1px solid #e5e7eb', borderRadius: '12px', background: 'white', cursor: 'pointer', textAlign: 'left'
+              }}>
+                <div style={{ width: 40, height: 40, borderRadius: 10, background: '#ede9fe', color: '#8b5cf6', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <MessageSquare />
+                </div>
+                <div>
+                  <p style={{ margin: 0, fontWeight: 500, color: '#1f2937' }}>Chat with Concierge®</p>
+                  <p style={{ margin: 0, fontSize: 13, color: '#6b7280' }}>Personal assistance</p>
+                </div>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default MiraDemoPage;
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
