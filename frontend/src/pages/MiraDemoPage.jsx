@@ -654,10 +654,17 @@ const MiraDemoPage = () => {
       let lifeState = currentTicket?.lifeState || 'EXPLORE';
       let ticketId = currentTicket?.id;
       
-      // ANTI-LOOP: If there's a current step waiting for answer, complete it first
-      if (currentStep && currentTicket?.id) {
+      // Check if user is asking for more info (NOT answering the question)
+      // In this case, DON'T complete the step - Mira should explain and repeat the question
+      const askingForMoreInfo = isAskingForMoreInfo(inputQuery);
+      
+      // ANTI-LOOP: If there's a current step waiting for answer, complete it
+      // UNLESS the user is just asking for more info
+      if (currentStep && currentTicket?.id && !askingForMoreInfo) {
         await completeStep(currentTicket.id, currentStep.step_id, inputQuery);
         console.log('[STEP] Answered pending step:', currentStep.step_id, '-> Answer:', inputQuery);
+      } else if (askingForMoreInfo) {
+        console.log('[STEP] User asking for more info, NOT completing step:', currentStep?.step_id);
       }
       
       if (!currentTicket) {
