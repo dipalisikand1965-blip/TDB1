@@ -1696,7 +1696,21 @@ const MiraDemoPage = () => {
                   </div>
                   <div style={{ flex: 1 }}>
                     <span style={{ display: 'block', color: 'white', fontWeight: 600, fontSize: 14 }}>{p.name}</span>
-                    <span style={{ display: 'block', color: 'rgba(255,255,255,0.5)', fontSize: 12 }}>{p.breed}</span>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'rgba(255,255,255,0.5)', fontSize: 12 }}>
+                      {p.breed}
+                      {p.soulScore > 0 && (
+                        <span style={{ 
+                          background: 'linear-gradient(135deg, #f59e0b, #d97706)', 
+                          padding: '2px 6px', 
+                          borderRadius: '8px', 
+                          fontSize: '10px',
+                          fontWeight: '700',
+                          color: 'white'
+                        }}>
+                          {p.soulScore}%
+                        </span>
+                      )}
+                    </span>
                   </div>
                   {p.id === pet.id && <Check style={{ color: '#a855f7' }} />}
                 </button>
