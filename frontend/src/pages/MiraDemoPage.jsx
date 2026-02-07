@@ -1785,21 +1785,38 @@ const MiraDemoPage = () => {
       
       // MIRA DOCTRINE: Show products when AI decides they're relevant
       // No gates - Mira's intelligence determines when products are helpful
-      const shouldShowProducts = data.response?.products?.length > 0;
+      let shouldShowProducts = data.response?.products?.length > 0;
+      
+      // MIRA DOCTRINE: COMFORT MODE - Be the Great Mother, not a salesman
+      // In emotional moments (anxiety, fear, grief, health concerns), suppress products
+      // Show presence, tips, empathy - NOT irrelevant product recommendations
+      const inComfortMode = isComfortMode(query);
+      
+      if (inComfortMode) {
+        console.log('[COMFORT_MODE] Detected emotional moment - suppressing products, being present');
+        shouldShowProducts = false; // Don't push products during emotional moments
+      }
       
       // MIRA DOCTRINE: Detect service intent for self-service wizard cards
-      // When service intent is detected, offer BOTH self-service AND concierge
-      const detectedServices = detectServiceIntent(query);
+      // In comfort mode, only show relevant services (training for anxiety, vet for health)
+      let detectedServices = [];
+      if (inComfortMode) {
+        detectedServices = getComfortModeServices(query);
+      } else {
+        detectedServices = detectServiceIntent(query);
+      }
       const hasServiceIntent = detectedServices.length > 0;
       
       // MIRA DOCTRINE: Detect experience intent for premium curated experiences
-      // Experiences are special wizard-driven offerings like Chef's Table, Pawcation
-      const detectedExperiences = detectExperienceIntent(query);
+      // Suppress experiences in comfort mode - not the time
+      let detectedExperiences = [];
+      if (!inComfortMode) {
+        detectedExperiences = detectExperienceIntent(query);
+      }
       const hasExperienceIntent = detectedExperiences.length > 0;
       
       // MIRA DOCTRINE: CONCIERGE CAN DO ANYTHING (legal, moral, no medical)
-      // If no products/services/experiences found, generate a dynamic Concierge request
-      // NEVER say "no products found" - always offer a path forward
+      // In comfort mode, concierge is even more important - human touch for emotional moments
       const hasNoDirectMatch = !shouldShowProducts && !hasServiceIntent && !hasExperienceIntent;
       const dynamicConciergeRequest = hasNoDirectMatch ? generateConciergeRequest(query, pet.name) : null;
       
