@@ -1664,7 +1664,8 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
         is_service_intent = any(word in user_input_lower for word in [
             "haircut", "grooming", "groom", "trim", "bath", "nail", 
             "vet", "doctor", "cough", "sick", "worried", "health", "pain", "limp",
-            "boarding", "sitter", "kennel", "daycare",
+            "boarding", "sitter", "kennel", "daycare", "pet sitting", "watch while", "while i'm away", "away for",
+            "someone to watch", "take care of", "look after",
             "training", "trainer", "behavio",
             # REMOVED "trip", "travel", "vacation", "holiday" - these should show travel PRODUCTS
             "anxious", "anxiety", "scared", "fear", "thunder", "storm", "firework", "noise",
