@@ -904,8 +904,11 @@ const MiraDemoPage = () => {
                                 </div>
                                 
                                 {/* Add to Cart button */}
-                                <button className="flex-shrink-0 p-2 bg-purple-500/20 rounded-lg 
-                                  group-hover:bg-purple-500 transition-all"
+                                <button 
+                                  className="flex-shrink-0 p-2.5 bg-purple-500/20 rounded-lg 
+                                    group-hover:bg-purple-500 transition-all min-w-[44px] min-h-[44px]
+                                    flex items-center justify-center active:scale-95 active:bg-purple-600"
+                                  style={{ touchAction: 'manipulation', userSelect: 'none' }}
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     // Add to cart logic here
