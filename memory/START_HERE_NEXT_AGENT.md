@@ -4,27 +4,31 @@
 
 ---
 
-# PART 0: CRITICAL NEW FEATURE - CONCIERGE CAN DO ANYTHING
+# PART 0: CRITICAL NEW FEATURES
 
-## The Concierge Operating Hours
-- **Live:** 6:30 AM to 11:30 PM
-- **After Hours:** Mira says "We've noted your request and will be back at 6:30 AM"
-
-## The Concierge Promise
-- Concierge can do **ANYTHING** (legal, moral, no medical)
-- **NEVER** say "no products found"
-- **NEVER** say "we can't help with that"
+## A. Concierge Can Do ANYTHING
+- **Live Hours:** 6:30 AM to 11:30 PM
+- **After Hours:** "We've noted your request, back at 6:30 AM"
+- **NEVER** say "no products found" or "we can't help"
 - **ALWAYS** offer a path forward
 
-## Dynamic Request Detection
-When user asks for something without direct product/service match:
-- Mira generates a **dynamic Concierge request card**
-- Card has icon, label, description based on detected intent
-- Detected categories: Food, Health, Travel, Celebration, Grooming, Boarding, Training, Walking, Shopping, Photography, Adoption, Paperwork, Emergency
+## B. IN-MIRA SERVICE REQUESTS (NEW!)
+Service/Experience cards now **stay in Mira OS** instead of linking externally.
 
-## Functions Added:
-- `isConciergeLive()` - Checks if within operating hours
-- `generateConciergeRequest(query, petName)` - Creates dynamic request card
+**The Flow:**
+1. User clicks service card (e.g., Grooming)
+2. → Opens modal **inside Mira** (not external page)
+3. → User fills brief form (notes, date, urgency)
+4. → Submits → Creates ticket via `/api/service_desk/attach_or_create_ticket`
+5. → Admin notified via existing notification system
+6. → Member sees confirmation in chat
+7. → Soul Score increments (+1.5 points)
+
+**Key Functions:**
+- `openServiceRequest(service, isExperience)` - Opens modal
+- `submitServiceRequest()` - Creates ticket
+- `closeServiceRequest()` - Closes modal
+- `isConciergeLive()` - Checks operating hours (6:30 AM - 11:30 PM)
 
 ---
 
