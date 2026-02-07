@@ -488,7 +488,21 @@ const MiraDemoPage = () => {
     }
   }, [token]);
   
-  // Handle submit
+  // Check if user is explicitly asking for products/suggestions
+  const isProductOptIn = useCallback((inputQuery) => {
+    const lowerInput = inputQuery.toLowerCase();
+    const optInPhrases = [
+      'suggest', 'show me', 'recommend', 'what should i', 'products',
+      'options', 'choices', 'help me pick', 'help me choose',
+      'suggest a few', 'suggest some', 'suggest 3', 'suggest 5',
+      'what treats', 'what food', 'what tools', 'what cake',
+      'checklist + travel tools', 'checklist and tools',
+      'both please', 'both, please'
+    ];
+    return optInPhrases.some(phrase => lowerInput.includes(phrase));
+  }, []);
+  
+  // Handle submit - NEW CANONICAL FLOW
   const handleSubmit = useCallback(async (e, voiceQuery = null) => {
     if (e) e.preventDefault();
     
@@ -506,6 +520,90 @@ const MiraDemoPage = () => {
     setConversationHistory(prev => [...prev, userMessage]);
     
     try {
+      // STEP 1: Route intent (first call for first message)
+      let pillar = currentTicket?.pillar || 'General';
+      let intent = currentTicket?.intent || 'GENERAL_HELP';
+      let lifeState = currentTicket?.lifeState || 'EXPLORE';
+      let ticketId = currentTicket?.id;
+      
+      if (!currentTicket) {
+        // First message - route intent and create ticket
+        const routeResponse = await fetch(`${API_URL}/api/mira/route_intent`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token && { Authorization: `Bearer ${token}` })
+          },
+          body: JSON.stringify({
+            parent_id: user?.id || 'DEMO-PARENT',
+            pet_id: pet.id,
+            utterance: inputQuery,
+            source_event: 'search',
+            device: 'web',
+            pet_context: {
+              name: pet.name,
+              breed: pet.breed,
+              age_years: pet.age,
+              allergies: pet.sensitivities || [],
+              notes: pet.traits || []
+            }
+          })
+        });
+        
+        const intentData = await routeResponse.json();
+        pillar = intentData.pillar;
+        intent = intentData.intent_primary;
+        lifeState = intentData.life_state;
+        
+        // STEP 2: Create/attach ticket
+        const ticketResponse = await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            ...(token && { Authorization: `Bearer ${token}` })
+          },
+          body: JSON.stringify({
+            parent_id: user?.id || 'DEMO-PARENT',
+            pet_id: pet.id,
+            pillar: pillar,
+            intent_primary: intent,
+            intent_secondary: intentData.intent_secondary || [],
+            life_state: lifeState,
+            channel: 'Mira_OS',
+            initial_message: {
+              sender: 'parent',
+              source: 'Mira_OS',
+              text: inputQuery
+            }
+          })
+        });
+        
+        const ticketData = await ticketResponse.json();
+        ticketId = ticketData.ticket_id;
+        
+        setCurrentTicket({
+          id: ticketId,
+          status: ticketData.status,
+          pillar: pillar,
+          intent: intent,
+          lifeState: lifeState
+        });
+        
+        console.log('[TICKET] Created/attached:', ticketId, 'Pillar:', pillar);
+      } else {
+        // Not the first message - just sync the user message
+        await syncToServiceDesk(currentTicket.id, userMessage);
+      }
+      
+      // Check if user is opting in for products
+      const isOptingIn = isProductOptIn(inputQuery);
+      if (isOptingIn && !userHasOptedInForProducts) {
+        setUserHasOptedInForProducts(true);
+        setConversationStage('opted_in_products');
+        console.log('[FLOW] User opted in for products');
+      }
+      
+      // STEP 3: Get Mira's response
       const response = await fetch(`${API_URL}/api/mira/os/understand-with-products`, {
         method: 'POST',
         headers: {
@@ -523,35 +621,52 @@ const MiraDemoPage = () => {
             sensitivities: pet.sensitivities,
             favorites: pet.favorites
           },
-          page_context: 'mira-demo'
+          page_context: 'mira-demo',
+          // Tell backend whether to include products
+          include_products: userHasOptedInForProducts || isOptingIn,
+          pillar: pillar,
+          conversation_stage: conversationStage,
+          ticket_id: ticketId
         })
       });
       
       const data = await response.json();
       
-      // Extract intent and pillar for ticket routing
-      const intent = data.understanding?.intent || 'GENERAL';
-      const pillar = data.understanding?.entities?.pillar || null;
       const miraResponseText = data.response?.message || "I'm here to help!";
-      
-      // Create/attach to service ticket with full conversation
-      await createOrAttachTicket(inputQuery, intent, pillar, miraResponseText);
       
       // Extract contextual quick replies based on Mira's question
       const quickReplies = extractQuickReplies(data);
       
+      // Determine if products should be shown (ONLY if opted in)
+      const shouldShowProducts = (userHasOptedInForProducts || isOptingIn) && 
+                                 data.response?.products?.length > 0;
+      
       const miraMessage = {
         type: 'mira',
         content: miraResponseText,
-        data: data,
+        data: shouldShowProducts ? data : { ...data, response: { ...data.response, products: [] } },
         quickReplies: quickReplies,
+        showProducts: shouldShowProducts,
         timestamp: new Date()
       };
       setConversationHistory(prev => [...prev, miraMessage]);
       
-      // Sync transcript to service desk in real-time
-      if (currentTicket?.id) {
-        await syncToServiceDesk(currentTicket.id, [userMessage, miraMessage]);
+      // Sync Mira's response to service desk
+      if (ticketId || currentTicket?.id) {
+        await syncToServiceDesk(ticketId || currentTicket.id, {
+          type: 'mira',
+          content: miraResponseText
+        }, {
+          label: lifeState,
+          chips_offered: quickReplies.map(r => r.text),
+          product_suggestions: shouldShowProducts ? 
+            data.response?.products?.slice(0, 5).map(p => ({ sku: p.id, name: p.name })) : []
+        });
+      }
+      
+      // Update conversation stage
+      if (conversationStage === 'initial') {
+        setConversationStage('clarifying');
       }
       
     } catch (error) {
@@ -566,7 +681,8 @@ const MiraDemoPage = () => {
     }
     
     setIsProcessing(false);
-  }, [query, token, pet, createOrAttachTicket, extractQuickReplies, currentTicket, syncToServiceDesk]);
+  }, [query, token, user, pet, extractQuickReplies, currentTicket, syncToServiceDesk, 
+      conversationStage, userHasOptedInForProducts, isProductOptIn]);
   
   useEffect(() => {
     handleSubmitRef.current = handleSubmit;
