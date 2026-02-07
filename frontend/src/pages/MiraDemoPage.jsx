@@ -105,7 +105,7 @@ const MiraDemoPage = () => {
   const [allPets, setAllPets] = useState(ALL_PETS);
   const [activeScenario, setActiveScenario] = useState(null);
   const [showScenarios, setShowScenarios] = useState(true);
-  const [showTestScenarios, setShowTestScenarios] = useState(false);
+  const [showTestScenarios, setShowTestScenarios] = useState(true);
   const [collapsedSections, setCollapsedSections] = useState({});
   const [currentTicket, setCurrentTicket] = useState(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
