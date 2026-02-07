@@ -1821,6 +1821,13 @@ from smart_routes import router as smart_router
 
 # Import Mira AI Concierge System
 from mira_routes import router as mira_router, set_mira_db
+
+# Import Mira Service Desk (Canonical Conversational Flow)
+from mira_service_desk import (
+    mira_router as mira_service_desk_router,
+    service_desk_router,
+    set_db as set_mira_service_desk_db
+)
 from mira_intelligence import router as mira_intelligence_router, set_intelligence_db
 
 # Import Mira Relationship Memory System
