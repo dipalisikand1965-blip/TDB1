@@ -1783,6 +1783,13 @@ PILLARS = {
     }
 }
 
+# Emergency keywords that trigger immediate escalation
+EMERGENCY_KEYWORDS = [
+    "emergency", "urgent", "help now", "immediately", "lost pet", "missing",
+    "accident", "injured", "bleeding", "poison", "choking", "not breathing",
+    "collapsed", "seizure", "hit by car", "bite", "attacked"
+]
+
 
 # ============================================
 # TRANSCRIPT SYNC - REAL-TIME SERVICE DESK
