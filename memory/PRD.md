@@ -16,6 +16,7 @@ Transform a standard e-commerce site into a "Personal Pet Operating System" that
 > **ALL AGENTS MUST READ THESE FILES BEFORE ANY MIRA-RELATED WORK:**
 > 1. `/app/memory/MIRA_DOCTRINE.md` - Core persona, voice, and governing principles
 > 2. `/app/memory/GROOMING_OS.md` - Complete grooming intelligence (intents, flows, boundaries)
+> 3. `/app/memory/FOOD_NUTRITION_OS.md` - Complete food & nutrition intelligence
 
 ### Mira Doctrine Key Principles:
 1. **Presence before performance** - Acknowledge feelings before giving information
@@ -28,12 +29,43 @@ Transform a standard e-commerce site into a "Personal Pet Operating System" that
 
 ---
 
-## Current Status: GROOMING OS COMPLETE - Dec 2025
+## Current Status: FOOD & NUTRITION OS COMPLETE - Dec 2025
 
 ### MIRA OS - The Pet Life Operating System
 **Vision**: "Mira is not a chatbot. Mira is the operating system for dog life."
 
 **The One Sentence**: "Knowledge is remembered. Execution is invited."
+
+---
+
+## FOOD & NUTRITION OS - COMPLETE (Dec 2025)
+
+### ✅ Comprehensive Food Intelligence
+10 distinct food intent types with specific handling:
+
+| Intent | Triggers | Products? | Action |
+|--------|----------|-----------|--------|
+| FOOD_MAIN | "what should he eat", everyday diet | After clarification | Ask questions first |
+| FOOD_PORTION | "how much?", amounts | NO | Guidance + vet referral |
+| FOOD_ROUTINE | schedules, multi-dog feeding | NO | Structure advice |
+| FOOD_TREAT | treats, snacks, training rewards | YES | Show treat products |
+| FOOD_RULES | "can my dog eat X?" | NO | Safety guidance only |
+| FOOD_WEIGHT | overweight/underweight | NO | VET COORDINATION |
+| FOOD_HEALTH_ADJACENT | vomiting, diarrhea, itching | NO | VET IMMEDIATELY |
+| FOOD_PREFERENCE | picky eater, not eating | Depends | Behaviour vs medical |
+| FOOD_TRAVEL | food for trips/boarding | After plan | Travel food guidance |
+| FOOD_ORDERING | "order this", "subscription" | N/A | Concierge® execution |
+
+### ✅ Medical Boundaries Enforced
+- Vomiting/diarrhea → VET immediately, NO products
+- Weight concerns → VET coordination, NO diet plans
+- Toxic foods → Immediate warning, emergency guidance
+- Mira never prescribes diets or diagnoses
+
+### ✅ New Test Scenarios in Sandbox
+Food scenarios added to `/mira-demo`:
+- 🍽️ Food, ⚖️ Portion, 🕐 Schedule, 🍎 Can Eat?
+- 📈 Weight (vet), 😒 Picky, 🤢 Vomiting (vet)
 
 ---
 
@@ -52,19 +84,9 @@ Transform a standard e-commerce site into a "Personal Pet Operating System" that
 | GROOM_LIFESTAGE | puppy first groom, senior dog | NO | Gentle guidance + Concierge® |
 | GROOM_BOOKING | "book groomer", "schedule" | NO | Concierge® orchestration |
 
-### ✅ Medical Boundaries Enforced
-- Bleeding/wounds → VET immediately, NO products
-- Scratching/rash → VET, NO DIY remedies
-- Mira never diagnoses or prescribes
-
-### ✅ 19 Test Scenarios in Sandbox
-New grooming scenarios added to `/mira-demo`:
-- ✂️ Haircut, 🛁 Bath, 🐕 Shedding, 💅 Nails
-- 🧴 Tools (products allowed), 😟 Groom Fear
-- 🩹 Accident (vet), 😣 Post-Groom (vet), 📅 Book
-
-### ✅ Updated System Prompt
-`mira_routes.py` now includes complete Grooming OS rules in `MIRA_OS_SYSTEM_PROMPT`
+### ✅ Grooming Test Scenarios
+- ✂️ Haircut, 🛁 Bath, 🧴 Tools (products allowed)
+- 🩹 Accident (vet), 📅 Book (Concierge®)
 
 ---
 
@@ -74,12 +96,10 @@ New grooming scenarios added to `/mira-demo`:
 **The Transformation**: Mira went from a "smart recommendation engine" to a "trusted companion"
 
 ### ✅ Test Scenarios Panel
-19 scenarios for role-playing Mira's responses at `/mira-demo`:
-- 🦴 Treats, 🎂 Birthday, ✈️ Travel, 🍽️ Food
-- ✂️ Haircut, 🛁 Bath, 🐕 Shedding, 💅 Nails, 🧴 Tools, 😟 Groom Fear
-- 🩹 Accident, 😣 Post-Groom, 📅 Book
-- 🏥 Health, 😰 Anxiety, 🌈 Farewell
-- ⚖️ Compare, 🏠 Boarding, 🎓 Training
+22+ scenarios for role-playing Mira's responses at `/mira-demo`:
+- **Food**: 🍽️ Food, ⚖️ Portion, 🕐 Schedule, 🍎 Can Eat?, 📈 Weight, 😒 Picky, 🤢 Vomiting
+- **Grooming**: ✂️ Haircut, 🛁 Bath, 🧴 Tools, 🩹 Accident, 📅 Book
+- **Other**: 🦴 Treats, 🎂 Birthday, ✈️ Travel, 🏥 Health, 😰 Anxiety, 🌈 Farewell, ⚖️ Compare, 🏠 Boarding, 🎓 Training
 
 ### ✅ Feedback System (P1)
 - 👍/👎 buttons on every Mira response
@@ -102,9 +122,10 @@ All 5 dock items functional:
 ---
 
 ## Key Files Modified This Session
-- `/app/backend/mira_routes.py` - Rich concierge prompts, feedback/remember endpoints
-- `/app/frontend/src/pages/MiraDemoPage.jsx` - Dock navigation, feedback buttons, help modal
-- `/app/memory/MIRA_ANALYSIS_REPORT.md` - Comprehensive vision vs reality analysis
+- `/app/backend/mira_routes.py` - Grooming OS + Food OS in system prompt
+- `/app/frontend/src/pages/MiraDemoPage.jsx` - 22+ test scenarios
+- `/app/memory/GROOMING_OS.md` - Complete grooming intelligence
+- `/app/memory/FOOD_NUTRITION_OS.md` - Complete food intelligence
 
 ---
 
