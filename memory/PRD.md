@@ -29,7 +29,40 @@ Transform a standard e-commerce site into a "Personal Pet Operating System" that
 
 ---
 
-## Current Status: FOOD & NUTRITION OS COMPLETE - Dec 2025
+## Current Status: CANONICAL CONVERSATIONAL FLOWS IMPLEMENTED - Feb 2026
+
+### MIRA SERVICE DESK - COMPLETE (Feb 2026)
+
+#### ✅ Canonical Conversational Flow Implementation
+**Key Rule**: Products shown ONLY after explicit user opt-in (never on first message)
+
+**Flow Structure**:
+1. **Turn 1**: User sends initial message → Mira responds with empathy + memory + clarifying question (NO PRODUCTS)
+2. **Turn 2**: User answers clarifier → Mira continues conversation (NO PRODUCTS)  
+3. **Turn 3+**: User explicitly asks for suggestions → NOW products appear
+
+**Service Desk APIs Implemented**:
+| Endpoint | Purpose |
+|----------|---------|
+| `POST /api/mira/route_intent` | Classify user utterance into pillar and intent |
+| `POST /api/service_desk/attach_or_create_ticket` | Create or attach to existing ticket |
+| `POST /api/service_desk/append_message` | Real-time transcript logging |
+| `POST /api/service_desk/handoff_to_concierge` | Flip ticket status, assign to queue |
+
+**Ticket Flow**:
+- Every conversation creates a ticket (TCK-2026-XXXXXX)
+- Status: `open_mira_only` → `open_concierge` on handoff
+- All messages (parent, mira, concierge) logged to conversation array
+- Same ticket used for entire thread (72-hour window)
+
+**UI Components**:
+- Quick reply chips under Mira's questions
+- Clarifying questions highlighted in amber box
+- Products in horizontal carousel with "why for pet" lines
+- Small Concierge® CTA (link-style, not banner)
+- Composer always pinned at bottom
+
+---
 
 ### MIRA OS - The Pet Life Operating System
 **Vision**: "Mira is not a chatbot. Mira is the operating system for dog life."
