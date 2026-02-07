@@ -1656,7 +1656,7 @@ const MiraDemoPage = () => {
       // 2. Backend provides concierge_framing (soft invitation)
       // 3. User explicitly asks for concierge help
       // 4. Execution type is CONCIERGE (complex/bespoke request)
-      // 5. Service intent detected (offer choice: self-service OR concierge)
+      // 5. Service or Experience intent detected (offer choice: self-service OR concierge)
       const userWantsConcierge = query.toLowerCase().includes('concierge') || 
                                   query.toLowerCase().includes('help me') ||
                                   query.toLowerCase().includes('can you handle') ||
@@ -1666,6 +1666,7 @@ const MiraDemoPage = () => {
                                       data.execution_type === 'CONCIERGE' ||
                                       hasConciergeFraming ||
                                       hasServiceIntent ||
+                                      hasExperienceIntent ||
                                       userWantsConcierge;
       
       const miraMessage = {
@@ -1677,14 +1678,17 @@ const MiraDemoPage = () => {
             ...data.response,
             products: shouldShowProducts ? data.response?.products : [],
             suggest_concierge: shouldSuggestConcierge,
-            detected_services: detectedServices  // NEW: Service cards for self-service
+            detected_services: detectedServices,
+            detected_experiences: detectedExperiences
           }
         },
         quickReplies: quickReplies,
         showProducts: shouldShowProducts,
-        showServices: hasServiceIntent,  // NEW: Flag to show service cards
-        detectedServices: detectedServices,  // NEW: The matched services
-        stepId: miraStepId,  // Track which step this message is for
+        showServices: hasServiceIntent,
+        showExperiences: hasExperienceIntent,
+        detectedServices: detectedServices,
+        detectedExperiences: detectedExperiences,
+        stepId: miraStepId,
         isClarifyingQuestion: isNewClarifyingQuestion,
         timestamp: new Date()
       };
