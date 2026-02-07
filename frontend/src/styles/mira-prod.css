@@ -1723,21 +1723,24 @@ button.mp-welcome-chip,
   50% { transform: scale(1.2) rotate(10deg); opacity: 0.8; }
 }
 
-/* Quick Chips */
+/* Quick Chips - Perfectly Centered */
 .quick-chips {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 10px;
+  align-items: center;
+  gap: 12px;
   margin-top: 32px;
   width: 100%;
+  padding: 0 16px;
 }
 
 .quick-chip {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
-  padding: 12px 18px;
+  padding: 12px 20px;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 9999px;
@@ -1747,6 +1750,8 @@ button.mp-welcome-chip,
   cursor: pointer;
   transition: all 0.2s ease;
   -webkit-tap-highlight-color: transparent;
+  white-space: nowrap;
+  min-height: 44px; /* iOS touch target */
 }
 
 .quick-chip:hover,
