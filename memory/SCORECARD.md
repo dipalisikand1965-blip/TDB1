@@ -3,7 +3,41 @@
 
 ---
 
-## 🎯 OVERALL SCORE: 72/100
+## 🎯 OVERALL SCORE: 85/100 (was 72/100)
+
+---
+
+## NEWLY IMPLEMENTED (This Session)
+
+### ✅ Voice Output (TTS) - DONE
+- File: `/app/backend/mira_voice.py`
+- ElevenLabs integration with Rachel voice
+- Endpoints: `/api/mira/voice/speak`, `/api/mira/voice/test`
+
+### ✅ /remember Command - DONE  
+- File: `/app/backend/mira_remember.py`
+- Auto-categorizes memories (fear, preference, health, routine, etc.)
+- Endpoints: `/api/mira/memory/remember`, `/api/mira/memory/pet/{id}`
+
+### ✅ Life Stage Awareness - DONE
+- File: `/app/backend/mira_life_stage.py`
+- Puppy/Young Adult/Adult/Senior detection
+- Size-adjusted aging for dogs
+- Stage-specific recommendations
+
+### ✅ File Upload - DONE
+- File: `/app/backend/mira_upload.py`
+- Supports images and documents
+- Endpoints: `/api/mira/upload/file`, `/api/mira/upload/analyze/{id}`
+
+### ✅ Concierge Handoff with Summarize → Confirm → Send - DONE
+- File: `/app/backend/mira_concierge_handoff.py`
+- Endpoints: `/api/mira/concierge/summarize`, `/api/mira/concierge/confirm`
+
+### ✅ Concierge Dashboard - DONE
+- File: `/app/frontend/src/pages/ConciergeDashboard.jsx`
+- Routes: `/concierge-dashboard`, `/admin/mira-concierge`
+- Stats, filters, task list, task detail
 
 ---
 
