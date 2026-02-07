@@ -37,6 +37,93 @@ const DOCK_ITEMS = [
   { id: 'soul', label: 'Soul', icon: Heart, path: '/pet-soul' },
 ];
 
+// CONCIERGE OPERATING HOURS
+// The Concierge works from 6:30 AM to 11:30 PM
+// After hours, Mira takes requests and promises follow-up
+const CONCIERGE_HOURS = {
+  start: { hour: 6, minute: 30 },
+  end: { hour: 23, minute: 30 }
+};
+
+const isConciergeLive = () => {
+  const now = new Date();
+  const currentHour = now.getHours();
+  const currentMinute = now.getMinutes();
+  const currentTime = currentHour * 60 + currentMinute;
+  const startTime = CONCIERGE_HOURS.start.hour * 60 + CONCIERGE_HOURS.start.minute;
+  const endTime = CONCIERGE_HOURS.end.hour * 60 + CONCIERGE_HOURS.end.minute;
+  return currentTime >= startTime && currentTime <= endTime;
+};
+
+// Generate dynamic Concierge request card for ANY request
+// MIRA DOCTRINE: Concierge can do ANYTHING (legal, moral, no medical)
+const generateConciergeRequest = (query, petName) => {
+  const lowerQuery = query.toLowerCase();
+  
+  // Detect the type of request and generate appropriate card
+  let requestType = {
+    icon: '✨',
+    label: 'Custom Request',
+    description: `Let us handle this for ${petName}`,
+    color: '#8B5CF6'
+  };
+  
+  // Food/Dining related
+  if (lowerQuery.includes('food') || lowerQuery.includes('eat') || lowerQuery.includes('meal') || lowerQuery.includes('diet')) {
+    requestType = { icon: '🍽️', label: 'Food & Nutrition', description: 'Custom meal planning and dietary support', color: '#F97316' };
+  }
+  // Health related (route to vet, not diagnose)
+  else if (lowerQuery.includes('sick') || lowerQuery.includes('health') || lowerQuery.includes('vet') || lowerQuery.includes('doctor')) {
+    requestType = { icon: '🏥', label: 'Health Support', description: 'Vet coordination and health record management', color: '#EF4444' };
+  }
+  // Travel related
+  else if (lowerQuery.includes('travel') || lowerQuery.includes('trip') || lowerQuery.includes('flight') || lowerQuery.includes('vacation')) {
+    requestType = { icon: '✈️', label: 'Travel Planning', description: 'Pet-friendly travel coordination', color: '#3B82F6' };
+  }
+  // Celebration related
+  else if (lowerQuery.includes('birthday') || lowerQuery.includes('party') || lowerQuery.includes('celebrate')) {
+    requestType = { icon: '🎂', label: 'Celebration Planning', description: 'Party planning and special occasions', color: '#EC4899' };
+  }
+  // Grooming related
+  else if (lowerQuery.includes('groom') || lowerQuery.includes('haircut') || lowerQuery.includes('bath') || lowerQuery.includes('nail')) {
+    requestType = { icon: '✂️', label: 'Grooming', description: 'Professional grooming services', color: '#10B981' };
+  }
+  // Boarding/Stay related
+  else if (lowerQuery.includes('board') || lowerQuery.includes('stay') || lowerQuery.includes('hotel') || lowerQuery.includes('kennel')) {
+    requestType = { icon: '🏠', label: 'Boarding & Stay', description: 'Trusted pet care while you\'re away', color: '#F59E0B' };
+  }
+  // Training related
+  else if (lowerQuery.includes('train') || lowerQuery.includes('behavior') || lowerQuery.includes('obedience')) {
+    requestType = { icon: '🎓', label: 'Training', description: 'Behavior training and obedience', color: '#6366F1' };
+  }
+  // Walking/Exercise related
+  else if (lowerQuery.includes('walk') || lowerQuery.includes('exercise') || lowerQuery.includes('run')) {
+    requestType = { icon: '🐕', label: 'Walking & Exercise', description: 'Daily walks and fitness activities', color: '#22C55E' };
+  }
+  // Shopping related
+  else if (lowerQuery.includes('buy') || lowerQuery.includes('shop') || lowerQuery.includes('order') || lowerQuery.includes('product')) {
+    requestType = { icon: '🛒', label: 'Shopping', description: 'Find and order pet supplies', color: '#8B5CF6' };
+  }
+  // Photography related
+  else if (lowerQuery.includes('photo') || lowerQuery.includes('picture') || lowerQuery.includes('shoot')) {
+    requestType = { icon: '📸', label: 'Pet Photography', description: 'Professional photo sessions', color: '#F43F5E' };
+  }
+  // Adoption related
+  else if (lowerQuery.includes('adopt') || lowerQuery.includes('rescue') || lowerQuery.includes('new pet')) {
+    requestType = { icon: '🐾', label: 'Adoption Support', description: 'Help with pet adoption process', color: '#A855F7' };
+  }
+  // Paperwork related
+  else if (lowerQuery.includes('document') || lowerQuery.includes('vaccine') || lowerQuery.includes('registration') || lowerQuery.includes('license')) {
+    requestType = { icon: '📄', label: 'Paperwork & Documents', description: 'Pet documentation and records', color: '#64748B' };
+  }
+  // Emergency (route appropriately)
+  else if (lowerQuery.includes('emergency') || lowerQuery.includes('urgent') || lowerQuery.includes('accident')) {
+    requestType = { icon: '🚨', label: 'Emergency Support', description: 'Urgent care coordination', color: '#DC2626' };
+  }
+  
+  return requestType;
+};
+
 // Test Scenarios
 const TEST_SCENARIOS = [
   { id: 'treats', label: '🦴 Treats', query: "Show me some treats for Buddy" },
