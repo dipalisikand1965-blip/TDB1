@@ -1543,6 +1543,72 @@
 }
 
 /* ========================================
+   Important to Watch For - Expandable
+   ======================================== */
+.mira-watchfor {
+  margin-top: var(--mira-space-md);
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: var(--mira-radius-md);
+  overflow: hidden;
+}
+
+.mira-watchfor-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--mira-space-sm) var(--mira-space-md);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.mira-watchfor-header:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.mira-watchfor-title {
+  display: flex;
+  align-items: center;
+  gap: var(--mira-space-sm);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: var(--mira-font-size-sm);
+  font-weight: 500;
+}
+
+.mira-watchfor-icon {
+  color: #fbbf24;
+}
+
+.mira-watchfor-chevron {
+  color: rgba(255, 255, 255, 0.4);
+  transition: transform 0.2s;
+}
+
+.mira-watchfor.expanded .mira-watchfor-chevron {
+  transform: rotate(180deg);
+}
+
+.mira-watchfor-content {
+  padding: 0 var(--mira-space-md) var(--mira-space-md);
+  display: none;
+}
+
+.mira-watchfor.expanded .mira-watchfor-content {
+  display: block;
+}
+
+.mira-watchfor-list {
+  margin: 0;
+  padding-left: 20px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: var(--mira-font-size-sm);
+  line-height: 1.6;
+}
+
+.mira-watchfor-list li {
+  margin-bottom: var(--mira-space-xs);
+}
+
+/* ========================================
    System Messages
    ======================================== */
 .mira-message-system {
