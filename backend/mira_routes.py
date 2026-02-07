@@ -770,15 +770,35 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
         intent = understanding.get("intent", "EXPLORE")
         entities = understanding.get("entities", {})
         
-        # Step 2: For FIND/ORDER/COMPARE intents, get real products
-        # Even for CONCIERGE, show relevant products as "while you wait" suggestions
+        # Determine if this is a SERVICE intent (no products) vs PRODUCT intent
+        # SERVICE intents: grooming, vet, health, travel planning, boarding, training
+        user_input_lower = request.input.lower() if request.input else ""
+        is_service_intent = any(word in user_input_lower for word in [
+            "haircut", "grooming", "groom", "trim", "bath", "nail", 
+            "vet", "doctor", "cough", "sick", "worried", "health", "pain", "limp",
+            "boarding", "sitter", "kennel", "daycare",
+            "training", "trainer", "behavio",
+            "lost", "passed", "died", "memorial", "farewell"
+        ])
+        
+        # Also check if it's a planning request without product keywords
+        is_pure_planning = intent == "PLAN" and not any(word in user_input_lower for word in [
+            "treat", "food", "toy", "cake", "birthday", "gift", "buy", "order"
+        ])
+        
+        # Step 2: For PRODUCT intents, get real products
+        # For SERVICE intents, skip products entirely
         real_products = []
-        if intent in ["FIND", "ORDER", "COMPARE", "PLAN", "EXPLORE"]:
+        should_show_products = not is_service_intent and not is_pure_planning
+        
+        if should_show_products and intent in ["FIND", "ORDER", "COMPARE", "EXPLORE"]:
             real_products = await search_real_products(
                 entities=entities,
                 pet_context=request.pet_context or {},
                 limit=6
             )
+        
+        logger.info(f"[PRODUCT FILTER] intent={intent}, is_service={is_service_intent}, is_pure_planning={is_pure_planning}, showing_products={should_show_products}")
         
         # Step 3: If CONCIERGE, create ticket and notifications (UNIFIED SERVICE FLOW)
         ticket_id = None
