@@ -1842,6 +1842,7 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
             final_products = real_products if real_products else understanding.get("products", [])
         
         return {
+        response_data = {
             "success": True,
             "understanding": {
                 "intent": intent,
