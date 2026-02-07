@@ -799,15 +799,22 @@ const MiraDemoPage = () => {
                                 text-white/80 rounded-lg text-sm transition-all"
                                 data-testid="chat-concierge-btn"
                               >
-                                Chat with Concierge
+                                Have my concierge help
                               </button>
-                            </div>
                           </div>
                         </div>
                       )}
                       
-                      {/* Next Action */}
-                      {msg.data?.response?.next_action && (
+                      {/* Next Step (invitation, not instruction) */}
+                      {msg.data?.response?.next_step && (
+                        <div className="flex items-center gap-2 text-white/50 text-sm mt-4">
+                          <ArrowRight className="w-4 h-4" />
+                          <span>{msg.data.response.next_step}</span>
+                        </div>
+                      )}
+                      
+                      {/* Legacy Next Action */}
+                      {!msg.data?.response?.next_step && msg.data?.response?.next_action && (
                         <div className="flex items-center gap-2 text-white/50 text-sm mt-4">
                           <ChevronRight className="w-4 h-4" />
                           <span>{msg.data.response.next_action}</span>
