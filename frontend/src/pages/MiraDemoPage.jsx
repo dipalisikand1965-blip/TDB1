@@ -1267,8 +1267,8 @@ const MiraDemoPage = () => {
           page_context: 'mira-demo',
           // SESSION PERSISTENCE - Pass session_id for conversation tracking
           session_id: sessionId,
-          // Tell backend whether to include products
-          include_products: canShowProducts,
+          // MIRA DOCTRINE: Always let AI decide when products are relevant
+          include_products: true,
           pillar: pillar,
           conversation_stage: conversationStage,
           ticket_id: ticketId,
