@@ -1843,9 +1843,10 @@ const MiraDemoPage = () => {
                     )}
                   </div>
                   
-                  {/* Pet name badge (mobile) */}
-                  <div className="avatar-name-badge">
-                    <span>{pet.name}</span>
+                  {/* Soul Score Badge */}
+                  <div className="soul-score-badge">
+                    <span className="soul-percent">{pet.soulScore || 87}%</span>
+                    <span className="soul-label">SOUL<br/>KNOWN</span>
                   </div>
                 </div>
                 
