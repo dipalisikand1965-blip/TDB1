@@ -431,21 +431,36 @@ That's the difference between a recommendation engine and a companion.
 `/app/backend/mira_routes.py` - `MIRA_OS_SYSTEM_PROMPT`
 
 ## Test Scenarios
-Available at `/mira-demo` with 8 test scenarios:
+Available at `/mira-demo` with 12 test scenarios:
 1. 🎂 Birthday - Tests emotional acknowledgment and alignment question
 2. 🏥 Health Concern - Tests presence before performance with health anxiety
 3. 🦴 Find Treats - Tests simple product discovery flow
 4. ✈️ Travel - Tests remember → confirm → act sequence
 5. 😰 Anxiety - Tests emotional support response
 6. 🍽️ Food Choice - Tests asking before recommending
-7. 🌈 Farewell - Tests pure presence, no performance
-8. ✂️ Grooming - Tests service coordination
+7. 🌈 Farewell - Tests pure presence, no performance (HOLD state)
+8. ✂️ Grooming - Tests service coordination (NO products)
+9. ⚖️ Compare - Tests informational query handling
+10. 🔄 Reorder - Tests ORDER intent with memory recall
+11. 🏠 Boarding - Tests service intent (NO products, Concierge®)
+12. 🎓 Training - Tests advisory + potential trainer referral
 
 ## Key Files
 - `/app/backend/mira_routes.py` - Core Mira OS logic and prompts
 - `/app/backend/breed_knowledge.py` - Breed intelligence (44+ breeds)
 - `/app/frontend/src/pages/MiraDemoPage.jsx` - Sandbox for testing
 - `/app/frontend/src/components/MiraSearchPanel.jsx` - Site integration
+- `/app/memory/GROOMING_OS.md` - **Complete Grooming Intelligence Guide**
+
+---
+
+# RELATED DOCUMENTS
+
+| Document | Purpose |
+|----------|---------|
+| `/app/memory/MIRA_DOCTRINE.md` | Core persona, voice, and governing principles |
+| `/app/memory/GROOMING_OS.md` | Complete grooming intelligence (intents, flows, boundaries) |
+| `/app/memory/PRD.md` | Product requirements and roadmap |
 
 ---
 
@@ -453,6 +468,7 @@ Available at `/mira-demo` with 8 test scenarios:
 
 | Date | Change |
 |------|--------|
+| Dec 2025 | Added comprehensive Grooming OS with 7 intent types and complete flows |
 | Feb 7, 2026 | Created Mira Doctrine v1.0 with complete governing principles |
 | Feb 7, 2026 | Implemented presence before performance in system prompt |
 | Feb 7, 2026 | Added test scenarios for role-playing |
@@ -463,4 +479,4 @@ Available at `/mira-demo` with 8 test scenarios:
 
 *"Mira is not a chatbot. Mira is the operating system for pet life."*
 
-*Last Updated: February 7, 2026*
+*Last Updated: December 2025*
