@@ -572,15 +572,15 @@ async def complete_step(request: CompleteStepRequest):
             "step_id": request.step_id
         }
     
-    # Get the current step info
-    current_step = ticket.get("current_step", {})
+    # Get the current step info (may be None)
+    current_step = ticket.get("current_step") or {}
     
     # Build step history entry
     step_entry = {
         "step_id": request.step_id,
-        "question": current_step.get("question", ""),
+        "question": current_step.get("question", "") if current_step else "",
         "answer": request.user_answer,
-        "timestamp_asked": current_step.get("timestamp", now.isoformat()),
+        "timestamp_asked": current_step.get("timestamp", now.isoformat()) if current_step else now.isoformat(),
         "timestamp_answered": now.isoformat()
     }
     
