@@ -2002,6 +2002,15 @@ const MiraDemoPage = () => {
                                     <div className="mp-product-content">
                                       <p className="mp-product-name">{product.name || product.suggestion}</p>
                                       {product.price && <p className="mp-product-price">₹{product.price}</p>}
+                                      
+                                      {/* Why for {Pet} - Personalized Reason */}
+                                      <div className="mp-why-for-pet">
+                                        <span className="mp-why-icon">💡</span>
+                                        <span className="mp-why-text">
+                                          {product.why_for_pet || generateWhyForPet(product, pet)}
+                                        </span>
+                                      </div>
+                                      
                                       <button 
                                         className="mp-product-add"
                                         onClick={() => alert(`Added ${product.name} to cart!`)}
