@@ -1470,8 +1470,29 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
     3. Returns personalized results with actual products
     
     ANTI-LOOP: Uses completed_steps and step_history to prevent repeating questions.
+    SESSION PERSISTENCE: Loads full conversation from database if session_id provided.
     """
     try:
+        # ============================================
+        # SESSION PERSISTENCE - Load conversation from database
+        # ============================================
+        conversation_history = request.conversation_history or []
+        
+        if request.session_id:
+            try:
+                from mira_session_persistence import get_session_messages
+                stored_messages = await get_session_messages(request.session_id, limit=15)
+                
+                if stored_messages and len(stored_messages) > len(conversation_history):
+                    # Database has more messages than frontend sent - use database as source of truth
+                    conversation_history = [
+                        {"role": msg.get("role", "user"), "content": msg.get("content", "")}
+                        for msg in stored_messages
+                    ]
+                    logger.info(f"[SESSION] Loaded {len(stored_messages)} messages from database for session {request.session_id}")
+            except Exception as session_err:
+                logger.warning(f"[SESSION] Failed to load session: {session_err}")
+        
         # Step 1: Get LLM understanding - pass completed_steps for anti-loop
         understanding = await understand_with_llm(
             user_input=request.input,
@@ -1479,7 +1500,7 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
             page_context=request.page_context,
             completed_steps=request.completed_steps or [],
             step_history=request.step_history or [],
-            conversation_history=request.conversation_history or [],
+            conversation_history=conversation_history,
             user_asking_for_more_info=request.user_asking_for_more_info or False,
             current_step=request.current_step
         )
