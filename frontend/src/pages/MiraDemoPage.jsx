@@ -818,8 +818,8 @@ const MiraDemoPage = () => {
             favorites: pet.favorites
           },
           page_context: 'mira-demo',
-          // Tell backend whether to include products - ONLY after opt-in
-          include_products: canShowProducts || isOptingIn,
+          // Tell backend whether to include products
+          include_products: canShowProducts,
           pillar: pillar,
           conversation_stage: conversationStage,
           ticket_id: ticketId,
