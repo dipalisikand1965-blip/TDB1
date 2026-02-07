@@ -551,6 +551,15 @@ const MiraDemoPage = () => {
   const extractQuickReplies = useCallback((miraData) => {
     if (!miraData) return [];
     
+    // First, check if backend provided quick_replies
+    const backendReplies = miraData.response?.quick_replies;
+    if (backendReplies && backendReplies.length > 0) {
+      return backendReplies.map(r => ({
+        text: r,
+        value: r
+      }));
+    }
+    
     const message = miraData.response?.message || '';
     const intent = miraData.understanding?.intent || '';
     const messageLower = message.toLowerCase();
@@ -559,6 +568,16 @@ const MiraDemoPage = () => {
     if (!message.includes('?')) return [];
     
     const quickReplies = [];
+    
+    // === CONCIERGE FLOW ===
+    // If user asks for concierge help
+    if (messageLower.includes('concierge') || messageLower.includes('would you like the')) {
+      return [
+        { text: 'Yes, connect me to Concierge', value: 'Yes, connect me to my Concierge.' },
+        { text: 'Tell me more first', value: 'Tell me more first.' },
+        { text: 'Maybe later', value: 'Maybe later.' }
+      ];
+    }
     
     // === GROOMING FLOWS ===
     // "Are you thinking of a simple trim... or a fuller grooming session?"
