@@ -1337,18 +1337,18 @@
 .mira-products {
   margin-top: var(--mira-space-lg);
   padding-top: var(--mira-space-md);
-  border-top: 1px solid var(--mira-border-subtle);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .mira-products-title {
   font-size: var(--mira-font-size-sm);
   font-weight: 500;
-  color: var(--mira-text-secondary);
+  color: rgba(255, 255, 255, 0.7);
   margin: 0 0 var(--mira-space-md);
 }
 
 .mira-products-title .highlight {
-  color: var(--mira-accent);
+  color: #f9a8d4;
 }
 
 .mira-products-scroll {
@@ -1369,17 +1369,18 @@
   flex-shrink: 0;
   width: 160px;
   scroll-snap-align: start;
-  background: var(--mira-bg-primary);
-  border: 1px solid var(--mira-border-light);
+  background: rgba(255, 255, 255, 0.95);
+  border: none;
   border-radius: var(--mira-radius-md);
   padding: var(--mira-space-md);
   cursor: pointer;
   transition: all var(--mira-transition-fast);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .mira-product-card:hover {
-  border-color: var(--mira-accent);
-  box-shadow: var(--mira-shadow-md);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
 .mira-product-image {
@@ -1388,13 +1389,13 @@
   object-fit: cover;
   border-radius: var(--mira-radius-sm);
   margin-bottom: var(--mira-space-sm);
-  background: var(--mira-border-light);
+  background: #f3f4f6;
 }
 
 .mira-product-name {
   font-size: var(--mira-font-size-sm);
   font-weight: 500;
-  color: var(--mira-text-primary);
+  color: #1f2937;
   margin: 0 0 var(--mira-space-xs);
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -1405,13 +1406,13 @@
 .mira-product-price {
   font-size: var(--mira-font-size-base);
   font-weight: 600;
-  color: var(--mira-accent);
+  color: #8b5cf6;
   margin: 0 0 var(--mira-space-xs);
 }
 
 .mira-product-reason {
   font-size: var(--mira-font-size-xs);
-  color: var(--mira-text-tertiary);
+  color: #6b7280;
   font-style: italic;
   margin: 0;
   display: -webkit-box;
@@ -1426,9 +1427,9 @@
   padding: var(--mira-space-sm);
   min-height: 36px;
   border-radius: var(--mira-radius-sm);
-  border: 1px solid var(--mira-accent);
+  border: 1px solid #8b5cf6;
   background: transparent;
-  color: var(--mira-accent);
+  color: #8b5cf6;
   font-size: var(--mira-font-size-sm);
   font-weight: 500;
   cursor: pointer;
@@ -1440,7 +1441,7 @@
 }
 
 .mira-product-add:hover {
-  background: var(--mira-accent);
+  background: #8b5cf6;
   color: white;
 }
 
