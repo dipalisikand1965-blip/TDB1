@@ -1164,22 +1164,27 @@
   animation: messageSlideIn 0.2s ease-out;
 }
 
+/* ========================================
+   MIRA CARD - Dark Premium Design
+   ======================================== */
 .mira-card {
   max-width: 100%;
-  background: white;
+  background: linear-gradient(135deg, rgba(88, 28, 135, 0.95) 0%, rgba(139, 92, 246, 0.9) 100%);
+  backdrop-filter: blur(12px);
   border-radius: var(--mira-radius-lg);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 24px rgba(139, 92, 246, 0.3);
   overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Mira Card Header - Simplified */
+/* Mira Card Header - Dark with Pink Accent */
 .mira-card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: var(--mira-space-sm) var(--mira-space-md);
-  border-bottom: 1px solid var(--mira-border-subtle);
-  background: var(--mira-bg-primary);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .mira-card-header-left {
