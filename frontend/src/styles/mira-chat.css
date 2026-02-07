@@ -271,12 +271,13 @@
 }
 
 /* ========================================
-   Test Scenarios Panel
+   Test Scenarios Panel - Semi-transparent
    ======================================== */
 .mira-scenarios {
-  background: var(--mira-bg-secondary);
-  border: 1px solid var(--mira-border-light);
-  border-radius: var(--mira-radius-md);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--mira-radius-lg);
   padding: var(--mira-space-md);
   margin-bottom: var(--mira-space-lg);
 }
@@ -291,10 +292,14 @@
 .mira-scenarios-title {
   font-size: var(--mira-font-size-sm);
   font-weight: 600;
-  color: var(--mira-text-primary);
+  color: white;
   display: flex;
   align-items: center;
   gap: var(--mira-space-sm);
+}
+
+.mira-scenarios-title svg {
+  color: #FBBF24;
 }
 
 .mira-scenarios-close {
@@ -307,13 +312,13 @@
   background: transparent;
   border: none;
   cursor: pointer;
-  color: var(--mira-text-tertiary);
+  color: rgba(255, 255, 255, 0.7);
   transition: all var(--mira-transition-fast);
 }
 
 .mira-scenarios-close:hover {
-  background: var(--mira-bg-primary);
-  color: var(--mira-text-primary);
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
 }
 
 .mira-scenarios-grid {
@@ -326,9 +331,9 @@
   padding: var(--mira-space-sm) var(--mira-space-md);
   min-height: 36px;
   border-radius: var(--mira-radius-full);
-  border: 1px solid var(--mira-border-light);
-  background: var(--mira-bg-secondary);
-  color: var(--mira-text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
   font-size: var(--mira-font-size-sm);
   font-weight: 500;
   cursor: pointer;
@@ -336,9 +341,7 @@
 }
 
 .mira-scenario-chip:hover {
-  border-color: var(--mira-accent);
-  color: var(--mira-accent);
-  background: var(--mira-accent-soft);
+  background: rgba(255, 255, 255, 0.4);
 }
 
 .mira-scenario-chip:active {
@@ -346,9 +349,8 @@
 }
 
 .mira-scenario-chip.active {
-  background: var(--mira-accent);
-  border-color: var(--mira-accent);
-  color: white;
+  background: linear-gradient(135deg, #A855F7 0%, #EC4899 100%);
+  border-color: transparent;
 }
 
 /* ========================================
