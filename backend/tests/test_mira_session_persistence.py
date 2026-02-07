@@ -80,15 +80,19 @@ class TestSessionRetrieval:
     @pytest.fixture
     def session_id(self):
         """Create a session for testing"""
+        import time
         response = requests.post(f"{BASE_URL}/api/mira/session/create", json={
             "pet_id": "TEST_PET",
             "pet_name": "TestDog",
             "source": "test-suite"
         })
+        time.sleep(0.5)  # Allow time for DB write
         return response.json().get("session_id")
     
     def test_get_session_by_id(self, session_id):
         """Test retrieving a session by ID"""
+        import time
+        time.sleep(0.3)  # Allow time for DB consistency
         response = requests.get(f"{BASE_URL}/api/mira/session/{session_id}")
         
         assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
