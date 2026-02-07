@@ -1611,65 +1611,51 @@ const MiraDemoPage = () => {
         </div>
       )}
 
-      {/* Breed Info Strip - Always visible contextual info */}
-      <div className="mira-breed-strip" data-testid="breed-info-strip">
-        <PawPrint className="w-4 h-4" />
-        <span>Like other {pet.breed}s, {pet.name} may enjoy interactive play, regular grooming, and balanced nutrition tailored to their energy levels.</span>
-      </div>
-
-      {/* Main Chat Area - ChatGPT Style */}
+      {/* Main Chat Area */}
       <div 
         ref={messagesContainerRef}
         onScroll={handleScroll}
-        className="mira-messages-container"
+        className="mp-messages"
       >
-        <div className="mira-messages-inner">
-          {/* Welcome/Empty State - Mira Intro at TOP */}
+        <div className="mp-messages-inner">
+          {/* Welcome State */}
           {conversationHistory.length === 0 && !isProcessing && (
-            <div className="mira-welcome-chatgpt">
-              <div className="mira-welcome-icon">
-                <Bot />
+            <div className="mp-welcome">
+              <div className="mp-welcome-icon">
+                <Sparkles />
               </div>
-              <h2 className="mira-welcome-heading">How can I help with {pet.name} today?</h2>
-              <p className="mira-welcome-subtext">
-                I know {pet.name} is a {pet.breed} with {pet.sensitivities?.join(', ') || 'no known sensitivities'}. 
-                Just type anything below - treats, grooming, birthday, travel, health questions...
+              <h2 className="mp-welcome-title">How can I help with {pet.name} today?</h2>
+              <p className="mp-welcome-subtitle">
+                I know {pet.name} is a {pet.breed}{pet.sensitivities?.length > 0 ? ` with ${pet.sensitivities.join(', ')}` : ''}. 
+                Ask me anything about treats, grooming, travel, birthdays, health...
               </p>
               
-              {/* Quick Suggestions - Horizontal Pills */}
-              <div className="mira-quick-suggestions">
+              {/* Quick Suggestions */}
+              <div className="mp-welcome-chips">
                 {[
                   { text: `Treats for ${pet.name}`, icon: '🦴' },
-                  { text: `Grooming help`, icon: '✂️' },
-                  { text: `Plan a birthday`, icon: '🎂' },
-                  { text: `Travel tips`, icon: '✈️' }
+                  { text: 'Grooming help', icon: '✂️' },
+                  { text: 'Plan a birthday', icon: '🎂' },
+                  { text: 'Travel tips', icon: '✈️' }
                 ].map((s, i) => (
-                  <button
-                    key={i}
-                    onClick={() => handleQuickReply(s.text)}
-                    className="mira-suggestion-pill"
-                  >
+                  <button key={i} onClick={() => handleQuickReply(s.text)} className="mp-welcome-chip">
                     <span>{s.icon}</span> {s.text}
                   </button>
                 ))}
               </div>
               
-              {/* Test Scenarios - Collapsible */}
-              <details className="mira-test-panel">
-                <summary className="mira-test-toggle">
-                  <Sparkles className="w-4 h-4" />
-                  Test Scenarios (for demo)
+              {/* Test Scenarios */}
+              <details className="mp-test-panel">
+                <summary className="mp-test-toggle">
+                  <Sparkles /> Test Scenarios (demo)
                 </summary>
-                <div className="mira-test-grid">
+                <div className="mp-test-grid">
                   {TEST_SCENARIOS.map((scenario) => (
                     <button
                       key={scenario.id}
-                      onClick={() => {
-                        setActiveScenario(scenario.id);
-                        handleQuickReply(scenario.query);
-                      }}
+                      onClick={() => { setActiveScenario(scenario.id); handleQuickReply(scenario.query); }}
                       data-testid={`scenario-${scenario.id}`}
-                      className={`mira-test-chip ${activeScenario === scenario.id ? 'active' : ''}`}
+                      className={`mp-test-chip ${activeScenario === scenario.id ? 'active' : ''}`}
                     >
                       {scenario.label}
                     </button>
@@ -1679,157 +1665,149 @@ const MiraDemoPage = () => {
             </div>
           )}
           
-          {/* Conversation */}
+          {/* Conversation Messages */}
           {conversationHistory.length > 0 && (
-            <div className="mira-messages-list">
+            <div className="mp-messages-list">
               {conversationHistory.map((msg, idx) => (
                 <React.Fragment key={idx}>
                   {msg.type === 'user' ? (
                     /* User Message */
-                    <div className="mira-message-user">
-                      <div className="mira-bubble-user">
-                        <p>{msg.content}</p>
-                      </div>
+                    <div className="mp-msg-user">
+                      <div className="mp-bubble-user">{msg.content}</div>
                     </div>
                   ) : msg.type === 'system' ? (
                     /* System Message */
-                    <div className="mira-message-system">
-                      <span className="mira-system-text">{msg.content}</span>
+                    <div style={{ textAlign: 'center', padding: '8px' }}>
+                      <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', background: 'rgba(255,255,255,0.1)', padding: '4px 12px', borderRadius: '12px' }}>
+                        {msg.content}
+                      </span>
                     </div>
                   ) : (
-                    /* Mira Message */
-                    <div className="mira-message-mira">
-                      <div className="mira-card">
-                        {/* Card Header - Shows Intent + Execution Type */}
-                        <div className="mira-card-header">
-                          <div className="mira-card-header-left">
-                            <div className="mira-card-avatar">
-                              <Sparkles />
-                            </div>
-                            <span className="mira-card-name">Mira</span>
-                            {/* Intent Badge - FIND/PLAN/COMPARE/REMEMBER/ORDER/EXPLORE */}
-                            {msg.data?.understanding?.intent && (
-                              <span className={`mira-intent-badge intent-${msg.data.understanding.intent?.toLowerCase()}`}>
-                                {msg.data.understanding.intent}
-                              </span>
-                            )}
-                          </div>
-                          {/* Execution Type - Instant vs Concierge */}
-                          {msg.data?.execution_type && (
-                            <span className={`mira-execution-badge ${msg.data.execution_type?.toLowerCase()}`}>
-                              {msg.data.execution_type === 'INSTANT' ? '⚡ Instant' : 
-                               msg.data.execution_type === 'CONCIERGE' ? '💜 With Concierge®' : 
-                               msg.data.execution_type === 'HOLD' ? '💭 Thinking' : msg.data.execution_type}
-                            </span>
-                          )}
+                    /* Mira Message Card */
+                    <div className="mp-msg-mira">
+                      <div className="mp-card">
+                        {/* Card Header */}
+                        <div className="mp-card-header">
+                          <div className="mp-mira-avatar"><Sparkles /></div>
+                          <span className="mp-mira-name">Mira</span>
                         </div>
                         
                         {/* Card Body */}
-                        <div className="mira-card-body">
-                          {/* Split message to highlight question */}
+                        <div className="mp-card-body">
+                          {/* Message Text */}
                           {(() => {
                             const { mainText, questionText } = splitMessageWithQuestion(msg.content);
                             return (
                               <>
-                                {mainText && (
-                                  <p className="mira-card-text">{mainText}</p>
-                                )}
+                                {mainText && <p className="mp-card-text">{mainText}</p>}
                                 {questionText && (
-                                  <div className="mira-question-strip">
-                                    <p className="mira-question-text">{questionText}</p>
+                                  <div className="mp-question">
+                                    <p className="mp-question-text">{questionText}</p>
                                   </div>
                                 )}
                               </>
                             );
                           })()}
                           
-                          {/* Quick Reply Chips - REMOVED for natural conversation flow */}
-                          {/* User feedback: chips distract from natural conversation */}
-                          {/* The AI should understand context without guided options */}
+                          {/* Quick Reply Chips (Amber) */}
+                          {msg.quickReplies && msg.quickReplies.length > 0 && (
+                            <div className="mp-chips">
+                              {msg.quickReplies.map((chip, cIdx) => (
+                                <button key={cIdx} onClick={() => handleQuickReply(chip.value)} className="mp-chip">
+                                  {chip.text}
+                                </button>
+                              ))}
+                            </div>
+                          )}
                           
-                          {/* Products - ONLY SHOWN WHEN USER HAS OPTED IN */}
-                          {msg.showProducts && msg.data?.response?.products && msg.data.response.products.length > 0 && (
-                            <div className="mira-products">
-                              <p className="mira-products-title">
-                                {msg.data.response.product_title || `Suggested for ${pet.name}`}
-                                {pet.sensitivities?.length > 0 && (
-                                  <span className="highlight"> ({pet.sensitivities.map(s => `${s}-free`).join(', ')})</span>
-                                )}
-                              </p>
-                              
-                              <div className="mira-products-scroll">
-                                {msg.data.response.products.slice(0, 5).map((product, pIdx) => (
-                                  <div key={pIdx} className="mira-product-card">
+                          {/* Products (if opted in) */}
+                          {msg.showProducts && msg.data?.response?.products?.length > 0 && (
+                            <div className="mp-products">
+                              <div className="mp-products-header">
+                                <p className="mp-products-title">
+                                  Recommended for <span className="pet-name">{pet.name}</span>
+                                </p>
+                              </div>
+                              <div className="mp-products-list">
+                                {msg.data.response.products.slice(0, 4).map((product, pIdx) => (
+                                  <div key={pIdx} className="mp-product">
                                     {product.image && (
-                                      <img 
-                                        src={product.image} 
-                                        alt={product.name}
-                                        className="mira-product-image" 
-                                      />
+                                      <img src={product.image} alt={product.name} className="mp-product-img" />
                                     )}
-                                    <p className="mira-product-name">
-                                      {product.name || product.suggestion}
-                                    </p>
-                                    {product.price && (
-                                      <p className="mira-product-price">₹{product.price}</p>
-                                    )}
-                                    {product.reason && (
-                                      <p className="mira-product-reason">"{product.reason}"</p>
-                                    )}
+                                    <div className="mp-product-info">
+                                      <p className="mp-product-name">{product.name || product.suggestion}</p>
+                                      {product.price && <p className="mp-product-price">₹{product.price}</p>}
+                                    </div>
                                     <button 
-                                      className="mira-product-add"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        alert(`Added ${product.name || product.suggestion} to cart!`);
-                                      }}
+                                      className="mp-product-add"
+                                      onClick={() => alert(`Added ${product.name} to cart!`)}
+                                      data-testid={`add-product-${pIdx}`}
                                     >
                                       <ShoppingBag />
-                                      Add
                                     </button>
                                   </div>
                                 ))}
                               </div>
-                              
-                              {/* Concierge hint */}
-                              <div className="mira-concierge-hint">
-                                <button 
-                                  onClick={handleConciergeHandoff}
-                                  disabled={isProcessing}
-                                  className="mira-concierge-link"
-                                >
-                                  Need help choosing? Ask your pet Concierge®
+                            </div>
+                          )}
+                          
+                          {/* Important to Watch For - Collapsible */}
+                          {msg.data?.response?.tips && msg.data.response.tips.length > 0 && (
+                            <div className={`mp-watchfor ${collapsedSections[`tips-${idx}`] !== false ? '' : 'collapsed'}`}>
+                              <button 
+                                className="mp-watchfor-toggle"
+                                onClick={() => setCollapsedSections(prev => ({
+                                  ...prev,
+                                  [`tips-${idx}`]: prev[`tips-${idx}`] === false ? true : false
+                                }))}
+                              >
+                                <span className="mp-watchfor-label">
+                                  <AlertCircle /> Important to Watch For
+                                </span>
+                                <ChevronUp className={`mp-watchfor-chevron ${collapsedSections[`tips-${idx}`] !== false ? 'open' : ''}`} />
+                              </button>
+                              {collapsedSections[`tips-${idx}`] !== false && (
+                                <div className="mp-watchfor-content">
+                                  <ul className="mp-watchfor-list">
+                                    {msg.data.response.tips.map((tip, tIdx) => (
+                                      <li key={tIdx}>{tip}</li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                          
+                          {/* Concierge Strip */}
+                          {msg.data?.response?.suggest_concierge && (
+                            <div className="mp-concierge-strip">
+                              <div className="mp-concierge-icon"><Bot /></div>
+                              <div className="mp-concierge-content">
+                                <p className="mp-concierge-text">
+                                  If you'd like, your pet Concierge® can help find options that match {pet.name}'s needs.
+                                </p>
+                                <button onClick={handleConciergeHandoff} className="mp-concierge-btn">
+                                  <MessageSquare /> Have my Concierge® help
                                 </button>
                               </div>
                             </div>
                           )}
                           
-                          {/* Feedback - ONLY show when there's NO pending clarifying question */}
-                          {!msg.data?.response?.hide_feedback && 
-                           msg.data?.execution_type !== 'HOLD' && 
-                           !msg.isClarifyingQuestion && (
-                            <div className="mira-feedback">
-                              <span style={{ fontSize: '12px', color: 'var(--mira-text-tertiary)' }}>
-                                Was this helpful?
-                              </span>
-                              <div style={{ marginLeft: 'auto', display: 'flex', gap: '4px' }}>
+                          {/* Feedback Row */}
+                          {!msg.isClarifyingQuestion && msg.data?.execution_type !== 'HOLD' && (
+                            <div className="mp-feedback">
+                              <span className="mp-feedback-label">Was this helpful?</span>
+                              <div className="mp-feedback-btns">
                                 {msg.feedbackGiven ? (
-                                  <span className={`mira-feedback-btn ${msg.feedbackGiven}`}>
+                                  <span className={`mp-feedback-btn ${msg.feedbackGiven}`}>
                                     {msg.feedbackGiven === 'positive' ? <ThumbsUp /> : <ThumbsDown />}
                                   </span>
                                 ) : (
                                   <>
-                                    <button
-                                      onClick={() => handleFeedback(idx, true)}
-                                      className="mira-feedback-btn"
-                                      data-testid={`feedback-up-${idx}`}
-                                    >
+                                    <button onClick={() => handleFeedback(idx, true)} className="mp-feedback-btn" data-testid={`feedback-up-${idx}`}>
                                       <ThumbsUp />
                                     </button>
-                                    <button
-                                      onClick={() => handleFeedback(idx, false)}
-                                      className="mira-feedback-btn"
-                                      data-testid={`feedback-down-${idx}`}
-                                    >
+                                    <button onClick={() => handleFeedback(idx, false)} className="mp-feedback-btn" data-testid={`feedback-down-${idx}`}>
                                       <ThumbsDown />
                                     </button>
                                   </>
@@ -1844,17 +1822,15 @@ const MiraDemoPage = () => {
                 </React.Fragment>
               ))}
               
-              {/* Processing Indicator */}
+              {/* Loading Indicator */}
               {isProcessing && (
-                <div className="mira-message-mira">
-                  <div className="mira-loading">
-                    <div className="mira-card-avatar">
-                      <Sparkles />
-                    </div>
-                    <div className="mira-loading-dots">
-                      <div className="mira-loading-dot"></div>
-                      <div className="mira-loading-dot"></div>
-                      <div className="mira-loading-dot"></div>
+                <div className="mp-msg-mira">
+                  <div className="mp-loading">
+                    <div className="mp-mira-avatar"><Sparkles /></div>
+                    <div className="mp-loading-dots">
+                      <div className="mp-loading-dot"></div>
+                      <div className="mp-loading-dot"></div>
+                      <div className="mp-loading-dot"></div>
                     </div>
                   </div>
                 </div>
