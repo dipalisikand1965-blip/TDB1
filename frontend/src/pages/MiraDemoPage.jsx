@@ -1543,28 +1543,40 @@ const MiraDemoPage = () => {
         </button>
       )}
       
-      {/* Concierge Bar - ALWAYS visible, persistent in chat */}
+      {/* Concierge Bar - ALWAYS visible, links to WhatsApp */}
       <div className="mira-concierge-bar" data-testid="concierge-bar">
         <div className="mira-concierge-bar-inner">
           <div className="mira-concierge-bar-left">
             <MessageCircle className="w-4 h-4" />
             <span>Need personal help with {pet.name}?</span>
           </div>
-          <button 
-            onClick={handleConciergeHandoff}
-            disabled={isProcessing}
+          <a 
+            href={`https://wa.me/919663185747?text=${encodeURIComponent(`Hi, I need help with my pet ${pet.name} (${pet.breed}). Can you assist?`)}`}
+            target="_blank"
+            rel="noopener noreferrer"
             className="mira-concierge-bar-btn"
-            data-testid="concierge-bar-btn"
+            data-testid="concierge-whatsapp-btn"
           >
             <Phone className="w-3 h-3" />
-            Talk to Concierge®
-          </button>
+            WhatsApp Concierge®
+          </a>
         </div>
       </div>
 
       {/* Reply Composer - ALWAYS PINNED AT BOTTOM */}
       <div className="mira-composer">
         <div className="mira-composer-inner">
+          {/* Prominent Voice Button */}
+          <button
+            type="button"
+            onClick={toggleVoice}
+            className={`mira-voice-talk-btn ${isListening ? 'listening' : ''}`}
+            data-testid="voice-talk-btn"
+          >
+            {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+            <span>{isListening ? 'Listening...' : 'Talk to Mira'}</span>
+          </button>
+          
           <form onSubmit={handleSubmit} className="mira-composer-form">
             <input
               ref={inputRef}
@@ -1575,20 +1587,11 @@ const MiraDemoPage = () => {
               autoCorrect="off"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder={`Ask me anything about ${pet.name}... treats, grooming, birthday, travel...`}
+              placeholder={`Type or tap 'Talk to Mira' to speak...`}
               className="mira-composer-input"
               disabled={isProcessing}
               data-testid="mira-input"
             />
-            
-            <button
-              type="button"
-              onClick={toggleVoice}
-              className={`mira-composer-btn mira-composer-mic ${isListening ? 'listening' : ''}`}
-              data-testid="voice-btn"
-            >
-              {isListening ? <MicOff /> : <Mic />}
-            </button>
             
             <button
               type="submit"
@@ -1601,9 +1604,10 @@ const MiraDemoPage = () => {
           </form>
           
           {isListening && (
-            <p style={{ textAlign: 'center', color: 'var(--mira-accent)', fontSize: '12px', marginTop: '8px' }}>
-              Listening... speak now
-            </p>
+            <div className="mira-listening-indicator">
+              <div className="mira-listening-pulse"></div>
+              <span>Speak now - I'm listening...</span>
+            </div>
           )}
         </div>
       </div>
