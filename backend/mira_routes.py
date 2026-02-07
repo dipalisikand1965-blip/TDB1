@@ -845,7 +845,7 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
         entities = understanding.get("entities", {})
         
         # Determine if this is a SERVICE intent (no products) vs PRODUCT intent
-        # SERVICE intents: grooming, vet, health, travel planning, boarding, training
+        # SERVICE intents: grooming, vet, health, travel planning, boarding, training, anxiety
         user_input_lower = request.input.lower() if request.input else ""
         is_service_intent = any(word in user_input_lower for word in [
             "haircut", "grooming", "groom", "trim", "bath", "nail", 
@@ -853,7 +853,8 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
             "boarding", "sitter", "kennel", "daycare",
             "training", "trainer", "behavio",
             "lost", "passed", "died", "memorial", "farewell",
-            "trip", "travel", "vacation", "holiday"
+            "trip", "travel", "vacation", "holiday",
+            "anxious", "anxiety", "scared", "fear", "thunder", "storm", "firework", "noise"
         ])
         
         # Check if it's a product-related planning request (birthday, treats, food)
