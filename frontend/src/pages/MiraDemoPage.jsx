@@ -1836,9 +1836,9 @@ const MiraDemoPage = () => {
       // In comfort mode, only show relevant services (training for anxiety, vet for health)
       let detectedServices = [];
       if (inComfortMode) {
-        detectedServices = getComfortModeServices(query);
+        detectedServices = getComfortModeServices(inputQuery);
       } else {
-        detectedServices = detectServiceIntent(query);
+        detectedServices = detectServiceIntent(inputQuery);
       }
       const hasServiceIntent = detectedServices.length > 0;
       
