@@ -6759,3 +6759,144 @@ async def reorder_saved_kit(
         "message": f"Ready to add {len(kit.get('products', []))} items to your cart!"
     }
 
+
+
+# ============================================
+# MIRA FEEDBACK SYSTEM
+# ============================================
+
+class MiraFeedbackRequest(BaseModel):
+    query: str
+    response: str
+    is_positive: bool
+    intent: Optional[str] = None
+    execution_type: Optional[str] = None
+    pet_id: Optional[str] = None
+    timestamp: Optional[str] = None
+
+@router.post("/feedback")
+async def submit_mira_feedback(
+    request: MiraFeedbackRequest,
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Log user feedback on Mira responses for future improvement.
+    This data helps train and improve Mira's understanding.
+    """
+    db = get_db()
+    
+    user = await get_user_from_token(authorization)
+    
+    feedback_doc = {
+        "id": f"FB-{uuid.uuid4().hex[:12]}",
+        "query": request.query,
+        "response": request.response[:500],  # Truncate long responses
+        "is_positive": request.is_positive,
+        "intent": request.intent,
+        "execution_type": request.execution_type,
+        "pet_id": request.pet_id,
+        "user_id": user.get("id") if user else None,
+        "user_email": user.get("email") if user else None,
+        "timestamp": request.timestamp or datetime.now(timezone.utc).isoformat(),
+        "created_at": datetime.now(timezone.utc)
+    }
+    
+    await db.mira_feedback.insert_one(feedback_doc)
+    
+    logger.info(f"[MIRA FEEDBACK] {'👍' if request.is_positive else '👎'} for intent={request.intent}, execution={request.execution_type}")
+    
+    return {
+        "success": True,
+        "feedback_id": feedback_doc["id"],
+        "message": "Thank you for your feedback!"
+    }
+
+
+# ============================================
+# MIRA REMEMBER COMMAND
+# ============================================
+
+class MiraRememberRequest(BaseModel):
+    fact: str
+    pet_id: str
+    category: Optional[str] = "general"  # general, health, preference, behavior
+
+@router.post("/remember")
+async def mira_remember(
+    request: MiraRememberRequest,
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Save a fact about a pet to their profile for future context.
+    Example: "Remember Buddy hates car rides"
+    """
+    db = get_db()
+    
+    user = await get_user_from_token(authorization)
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    memory_doc = {
+        "id": f"MEM-{uuid.uuid4().hex[:12]}",
+        "pet_id": request.pet_id,
+        "fact": request.fact,
+        "category": request.category,
+        "source": "user_stated",
+        "confidence": "high",
+        "created_by": user.get("email"),
+        "created_at": datetime.now(timezone.utc),
+        "active": True
+    }
+    
+    # Store in mira_memories collection
+    await db.mira_memories.insert_one(memory_doc)
+    
+    # Also update the pet's profile with this memory
+    await db.pets.update_one(
+        {"id": request.pet_id},
+        {
+            "$push": {
+                "mira_memories": {
+                    "fact": request.fact,
+                    "category": request.category,
+                    "created_at": datetime.now(timezone.utc).isoformat()
+                }
+            }
+        }
+    )
+    
+    logger.info(f"[MIRA REMEMBER] Saved fact for pet {request.pet_id}: {request.fact[:50]}...")
+    
+    return {
+        "success": True,
+        "memory_id": memory_doc["id"],
+        "message": f"Got it! I've noted that for future reference."
+    }
+
+
+@router.get("/memories/{pet_id}")
+async def get_pet_memories(
+    pet_id: str,
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Get all memories Mira has stored for a pet.
+    """
+    db = get_db()
+    
+    user = await get_user_from_token(authorization)
+    if not user:
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    memories = await db.mira_memories.find(
+        {"pet_id": pet_id, "active": True},
+        {"_id": 0}
+    ).sort("created_at", -1).to_list(50)
+    
+    return {
+        "success": True,
+        "pet_id": pet_id,
+        "memories": memories,
+        "count": len(memories)
+    }
+
