@@ -1750,34 +1750,6 @@ const MiraDemoPage = () => {
           </div>
         </div>
       )}
-        </div>
-      </header>
-      
-      {/* SOUL TRAITS BAR - Like Travel Page */}
-      {pet.soulTraits && pet.soulTraits.length > 0 && (
-        <div className="mp-soul-bar">
-          {pet.soulTraits.map((trait, i) => (
-            <span key={i} className="mp-soul-trait">
-              <span className="mp-soul-trait-icon">{trait.icon}</span>
-              {trait.label}
-            </span>
-          ))}
-        </div>
-      )}
-      
-      {/* NAVIGATION DOCK - Floating Island */}
-      <nav className="mp-dock">
-        <button onClick={() => inputRef.current?.focus()} className="mp-dock-btn active" data-testid="dock-concierge">
-          <MessageCircle /> <span>Concierge®</span>
-        </button>
-        <button onClick={() => navigate('/orders')} className="mp-dock-btn" data-testid="dock-orders">
-          <Package /> <span>Orders</span>
-        </button>
-        <button onClick={() => navigate('/family-dashboard')} className="mp-dock-btn" data-testid="dock-plan">
-          <Calendar /> <span>Plan</span>
-        </button>
-        <button onClick={() => setShowHelpModal(true)} className="mp-dock-btn" data-testid="dock-help">
-          <HelpCircle /> <span>Help</span>
         </button>
         <button onClick={() => navigate('/pet-soul')} className="mp-dock-btn" data-testid="dock-soul">
           <Heart /> <span>Soul</span>
