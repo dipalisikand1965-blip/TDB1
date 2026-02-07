@@ -669,6 +669,7 @@ const MiraDemoPage = () => {
       }
       
       // STEP 3: Get Mira's response
+      // IMPORTANT: Pass completed_steps and step_history so LLM knows what's already been asked
       const response = await fetch(`${API_URL}/api/mira/os/understand-with-products`, {
         method: 'POST',
         headers: {
@@ -691,7 +692,10 @@ const MiraDemoPage = () => {
           include_products: canShowProducts || isOptingIn,
           pillar: pillar,
           conversation_stage: conversationStage,
-          ticket_id: ticketId
+          ticket_id: ticketId,
+          // ANTI-LOOP: Pass completed steps so LLM knows what's already been asked
+          completed_steps: completedSteps,
+          step_history: stepHistory.map(s => ({ step_id: s.step_id, answer: s.answer }))
         })
       });
       
@@ -701,6 +705,19 @@ const MiraDemoPage = () => {
       
       // Extract contextual quick replies based on Mira's question
       const quickReplies = extractQuickReplies(data);
+      
+      // Check if Mira's response has a new clarifying question (step_id)
+      const miraStepId = data.response?.step_id;
+      const isNewClarifyingQuestion = miraStepId && !completedSteps.includes(miraStepId);
+      
+      if (isNewClarifyingQuestion) {
+        // Set this as the current step waiting for answer
+        setCurrentStep({
+          step_id: miraStepId,
+          question: miraResponseText
+        });
+        console.log('[STEP] New clarifying question, step_id:', miraStepId);
+      }
       
       // Determine if products should be shown (ONLY after explicit opt-in, never on first message)
       const shouldShowProducts = (canShowProducts || isOptingIn) && 
@@ -712,6 +729,8 @@ const MiraDemoPage = () => {
         data: shouldShowProducts ? data : { ...data, response: { ...data.response, products: [] } },
         quickReplies: quickReplies,
         showProducts: shouldShowProducts,
+        stepId: miraStepId,  // Track which step this message is for
+        isClarifyingQuestion: isNewClarifyingQuestion,
         timestamp: new Date()
       };
       setConversationHistory(prev => [...prev, miraMessage]);
