@@ -463,11 +463,12 @@ const MiraDemoPage = () => {
   }, []);
   
   // Transcript sync - send messages to service desk in real-time
-  const syncToServiceDesk = useCallback(async (ticketId, messages) => {
+  // Uses new /api/service_desk/append_message API
+  const syncToServiceDesk = useCallback(async (ticketId, message, meta = null) => {
     if (!ticketId) return;
     
     try {
-      await fetch(`${API_URL}/api/mira/tickets/sync`, {
+      await fetch(`${API_URL}/api/service_desk/append_message`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -475,9 +476,16 @@ const MiraDemoPage = () => {
         },
         body: JSON.stringify({
           ticket_id: ticketId,
-          messages: messages.map(msg => ({
-            sender: msg.type === 'user' ? 'parent' : msg.type,
-            text: msg.content,
+          sender: message.type === 'user' ? 'parent' : message.type,
+          source: 'Mira_OS',
+          text: message.content,
+          meta: meta
+        })
+      });
+    } catch (error) {
+      console.error('Failed to sync to service desk:', error);
+    }
+  }, [token]);
             timestamp: msg.timestamp?.toISOString() || new Date().toISOString(),
             source: 'Mira_OS'
           }))
