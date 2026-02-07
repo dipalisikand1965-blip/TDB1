@@ -29,38 +29,61 @@ Transform a standard e-commerce site into a "Personal Pet Operating System" that
 
 ---
 
-## Current Status: CANONICAL CONVERSATIONAL FLOWS IMPLEMENTED - Feb 2026
+## Current Status: ALL CANONICAL FLOWS COMPLETE - Feb 2026
 
-### MIRA SERVICE DESK - COMPLETE (Feb 2026)
+### ✅ MIRA SERVICE DESK - FULLY IMPLEMENTED
 
-#### ✅ Canonical Conversational Flow Implementation
+#### Canonical Conversational Flows (ALL 4 PILLARS)
 **Key Rule**: Products shown ONLY after explicit user opt-in (never on first message)
 
-**Flow Structure**:
-1. **Turn 1**: User sends initial message → Mira responds with empathy + memory + clarifying question (NO PRODUCTS)
-2. **Turn 2**: User answers clarifier → Mira continues conversation (NO PRODUCTS)  
-3. **Turn 3+**: User explicitly asks for suggestions → NOW products appear
+| Pillar | First Question | Step IDs Tracked |
+|--------|----------------|------------------|
+| **Treats** | Everyday vs Special-occasion? | TREATS_TYPE, TREATS_SUGGEST_OR_ROUTINE |
+| **Grooming** | Simple trim vs Full session? At home vs Groomer? | GROOMING_MODE, GROOMING_LOCATION, GROOMING_SCHEDULE, GROOMING_TOOLS |
+| **Birthday** | Active/playful vs Simpler/cosy? Food vs Play vs Ritual? | BIRTHDAY_SHAPE, BIRTHDAY_FOCUS, BIRTHDAY_FOOD_TYPE, BIRTHDAY_PARTY_DETAILS |
+| **Travel** | Car vs Flight vs Train? Route? Pet-friendly stays? | TRAVEL_MODE, TRAVEL_ROUTE, TRAVEL_STAY, TRAVEL_DATES, TRAVEL_PACKING |
 
-**Service Desk APIs Implemented**:
+#### Anti-Loop Step Tracking System
+- **Internal only** - No visible progress UI to pet parents
+- **Auto-detects step_id** from question patterns
+- **Marks steps complete** when user answers
+- **Never repeats** a question that's already been answered
+- Natural language progression ("To start...", "Next, let's...")
+
+#### Service Desk APIs
 | Endpoint | Purpose |
 |----------|---------|
-| `POST /api/mira/route_intent` | Classify user utterance into pillar and intent |
-| `POST /api/service_desk/attach_or_create_ticket` | Create or attach to existing ticket |
+| `POST /api/mira/route_intent` | Classify utterance into pillar/intent |
+| `POST /api/service_desk/attach_or_create_ticket` | Create/attach ticket (72hr window) |
 | `POST /api/service_desk/append_message` | Real-time transcript logging |
-| `POST /api/service_desk/handoff_to_concierge` | Flip ticket status, assign to queue |
+| `POST /api/service_desk/complete_step` | Mark step as answered |
+| `GET /api/service_desk/completed_steps/{ticket_id}` | Get all completed steps |
+| `POST /api/service_desk/handoff_to_concierge` | Flip status, assign queue |
 
-**Ticket Flow**:
-- Every conversation creates a ticket (TCK-2026-XXXXXX)
-- Status: `open_mira_only` → `open_concierge` on handoff
-- All messages (parent, mira, concierge) logged to conversation array
-- Same ticket used for entire thread (72-hour window)
+#### Ticket Structure
+```
+{
+  ticket_id: "TCK-2026-000XXX",
+  status: "open_mira_only" | "open_concierge",
+  completed_steps: ["TREATS_TYPE", "TREATS_SUGGEST"],
+  current_step: null,
+  step_history: [{ step_id, question, answer, timestamps }],
+  conversation: [{ sender, text, timestamp, meta }]
+}
+```
 
-**UI Components**:
-- Quick reply chips under Mira's questions
-- Clarifying questions highlighted in amber box
-- Products in horizontal carousel with "why for pet" lines
-- Small Concierge® CTA (link-style, not banner)
-- Composer always pinned at bottom
+#### Concierge® Handoff
+- Closing line: *"I've shared everything we've discussed with your pet Concierge®. They'll take it forward from here and get back to you in this chat."*
+- Same ticket used (no new ticket created)
+- Status flips to `open_concierge`
+
+#### UI Components
+- **Quick reply chips** - Contextual, matching the specific question options
+- **Clarifying question** - Highlighted in amber box
+- **Products** - Horizontal carousel with "why for pet" lines (ONLY after opt-in)
+- **Concierge® CTA** - Small link-style, not banner
+- **Composer** - Always pinned at bottom
+- **No progress indicators** - Conversational feel preserved
 
 ---
 
