@@ -1836,6 +1836,18 @@ from mira_memory_routes import router as mira_memory_router, set_memory_routes_d
 # Import Mira Session Persistence
 from mira_session_persistence import router as mira_session_router, set_session_db
 
+# Import Mira Voice Output (TTS)
+from mira_voice import router as mira_voice_router
+
+# Import Mira Remember Command (Pet Memories)
+from mira_remember import router as mira_remember_router
+
+# Import Mira File Upload
+from mira_upload import router as mira_upload_router
+
+# Import Mira Concierge Handoff
+from mira_concierge_handoff import router as mira_concierge_handoff_router
+
 # Import Concierge Command Center routes
 from concierge_routes import router as concierge_command_router, set_concierge_db as set_command_center_db
 
