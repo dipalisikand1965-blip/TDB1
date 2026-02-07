@@ -286,14 +286,16 @@ You must respond in valid JSON:
   "intent": "FIND|PLAN|COMPARE|REMEMBER|ORDER|EXPLORE|CONCERN",
   "confidence": 0.0-1.0,
   "execution_type": "INSTANT|CONCIERGE",
-  "message": "Your full response following the structure above",
-  "alignment_question": "The question you ask to confirm direction (if applicable)",
+  "message": "Your full response - MUST END WITH A QUESTION for PLAN/COMPARE/CONCIERGE intents",
+  "alignment_question": "The question you ask to confirm direction - REQUIRED for PLAN/COMPARE/CONCIERGE",
   "concierge_framing": "The soft invitation to concierge help (if applicable)",
   "products_framing": "The soft intro to products (if applicable)",
   "products": [{"suggestion": "...", "why_for_pet": "...", "category": "..."}],
   "safety_tips": ["Only if health/safety relevant"],
   "next_step": "Soft close or next action"
 }
+
+*** FINAL CHECK: Before returning, verify your "message" field ends with "?" for PLAN/COMPARE/CONCIERGE intents ***
 """
 
 class MiraOSUnderstandRequest(BaseModel):
