@@ -1353,12 +1353,14 @@ async def search_real_products(
         }
         
         # SPECIAL: Birthday/Cake context - use strict category filter to avoid bandanas
-        is_birthday_context = search_override and any(word in safe_lower(str(search_override)) for word in ['birthday', 'cake', 'celebration', 'pupcake', 'dognut'])
+        is_birthday_context = search_override and any(word in safe_lower(str(search_override)) for word in ['birthday', 'cake', 'celebration', 'party', 'love'])
         
         if is_birthday_context:
-            # Strict filter: ONLY cakes, pupcakes, dognuts - NOT accessories/bandanas
-            query["category"] = {"$in": ["cakes", "breed-cakes", "pupcakes", "dognuts", "celebration", "hampers", "mini-cakes"]}
-            logger.info("[PRODUCT FILTER] Birthday/cake context: Using strict category filter")
+            # Strict filter: ONLY cakes and hampers - exclude dognuts (often Halloween themed)
+            # Also exclude Halloween keywords
+            query["category"] = {"$in": ["cakes", "breed-cakes", "celebration", "hampers", "mini-cakes"]}
+            query["name"] = {"$not": {"$regex": "halloween|ghost|creepy|spooky|jack o|googly|ghoul|skeleton|witch|pumpkin|crawly", "$options": "i"}}
+            logger.info("[PRODUCT FILTER] Birthday/cake context: Using strict category filter, excluding Halloween")
             cursor = db.products_master.find(query, {"_id": 0}).limit(limit * 2)
             all_products = await cursor.to_list(length=limit * 2)
         elif product_type:
