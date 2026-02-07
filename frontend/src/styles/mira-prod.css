@@ -270,11 +270,12 @@
    TEST SCENARIOS PANEL - Dark Card
    ======================================== */
 .mp-test-panel {
-  margin: var(--space-lg) var(--space-xl);
+  margin: var(--space-lg) auto;
   background: var(--mira-card-bg);
   border: 1px solid var(--mira-card-border);
   border-radius: var(--radius-lg);
   padding: var(--space-lg);
+  max-width: 900px;
 }
 
 .mp-test-header {
