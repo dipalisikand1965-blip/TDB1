@@ -831,13 +831,13 @@
 }
 
 /* ========================================
-   Input Composer - Semi-transparent at Bottom
+   Input Composer - Semi-transparent at Bottom (Dark Theme)
    ======================================== */
 .mira-composer {
   flex-shrink: 0;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(16px);
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding: var(--mira-space-md) var(--mira-space-lg);
   padding-bottom: calc(var(--mira-space-md) + env(safe-area-inset-bottom, 0px));
 }
@@ -851,15 +851,14 @@
   display: flex;
   align-items: center;
   gap: var(--mira-space-sm);
-  background: white;
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: var(--mira-radius-xl);
   padding: var(--mira-space-xs);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 .mira-composer-form:focus-within {
-  border-color: var(--mira-accent);
+  border-color: rgba(168, 85, 247, 0.6);
   box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2);
 }
 
@@ -870,12 +869,12 @@
   padding: var(--mira-space-md);
   font-size: var(--mira-font-size-base);
   font-family: var(--mira-font-family);
-  color: var(--mira-text-primary);
+  color: white;
   outline: none;
 }
 
 .mira-composer-input::placeholder {
-  color: var(--mira-text-tertiary);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .mira-composer-btn {
