@@ -53,6 +53,56 @@ const TEST_SCENARIOS = [
   { id: 'boarding', label: '🏠 Boarding', query: "I need someone to watch Buddy while I'm away" },
 ];
 
+// Helper: Generate "Why for {Pet}" personalized reasons
+const generateWhyForPet = (product, pet) => {
+  const productName = (product.name || '').toLowerCase();
+  const petName = pet.name;
+  const breed = (pet.breed || '').toLowerCase();
+  const sensitivities = pet.sensitivities || [];
+  
+  // Check for allergies/sensitivities
+  if (sensitivities.some(s => s.toLowerCase().includes('chicken')) && 
+      !productName.includes('chicken')) {
+    return `Chicken-free option for ${petName}'s sensitivity`;
+  }
+  
+  // Check for breed-specific
+  if (breed.includes('golden') || breed.includes('retriever')) {
+    if (productName.includes('hip') || productName.includes('joint')) {
+      return `Great for ${petName}'s breed joint health`;
+    }
+  }
+  
+  if (breed.includes('shih tzu') || breed.includes('maltese')) {
+    if (productName.includes('eye') || productName.includes('tear')) {
+      return `Perfect for ${petName}'s eye care needs`;
+    }
+  }
+  
+  // Check for treats
+  if (productName.includes('treat') || productName.includes('snack')) {
+    return `A tasty reward ${petName} will love`;
+  }
+  
+  // Check for grooming
+  if (productName.includes('shampoo') || productName.includes('brush') || productName.includes('groom')) {
+    return `Keeps ${petName} looking beautiful`;
+  }
+  
+  // Check for food
+  if (productName.includes('food') || productName.includes('kibble')) {
+    return `Nutrition tailored for ${petName}'s needs`;
+  }
+  
+  // Check for toys
+  if (productName.includes('toy') || productName.includes('ball') || productName.includes('chew')) {
+    return `Perfect for ${petName}'s playtime`;
+  }
+  
+  // Default personalized message
+  return `Selected for ${petName}'s profile`;
+};
+
 // Sample pet for demo - with Soul Score traits
 const DEMO_PET = {
   id: 'demo-pet',
