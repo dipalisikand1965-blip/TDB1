@@ -215,15 +215,15 @@
 }
 
 /* ========================================
-   Navigation Dock - Subtle & Functional
+   Navigation Dock - Semi-transparent on Purple
    ======================================== */
 .mira-dock {
   display: flex;
   align-items: center;
   gap: var(--mira-space-sm);
-  padding: var(--mira-space-sm) 0;
-  margin-top: var(--mira-space-sm);
-  border-top: 1px solid var(--mira-border-subtle);
+  padding: var(--mira-space-sm) var(--mira-space-lg);
+  max-width: 800px;
+  margin: 0 auto;
   overflow-x: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -240,19 +240,19 @@
   padding: var(--mira-space-sm) var(--mira-space-md);
   min-height: var(--mira-touch-target);
   border-radius: var(--mira-radius-sm);
-  border: 1px solid transparent;
-  background: transparent;
-  color: var(--mira-text-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--mira-text-primary);
   font-size: var(--mira-font-size-sm);
   font-weight: 500;
   white-space: nowrap;
   cursor: pointer;
   transition: all var(--mira-transition-fast);
+  backdrop-filter: blur(8px);
 }
 
 .mira-dock-item:hover {
-  background: var(--mira-bg-primary);
-  color: var(--mira-text-primary);
+  background: rgba(255, 255, 255, 0.4);
 }
 
 .mira-dock-item:active {
@@ -260,9 +260,9 @@
 }
 
 .mira-dock-item.active {
-  background: var(--mira-accent-light);
-  color: var(--mira-accent);
-  border-color: var(--mira-accent);
+  background: linear-gradient(135deg, #A855F7 0%, #EC4899 100%);
+  color: white;
+  border-color: transparent;
 }
 
 .mira-dock-item svg {
