@@ -127,6 +127,100 @@ const detectServiceIntent = (query) => {
   return matchedServices;
 };
 
+// EXPERIENCE CATEGORIES - Premium curated experiences on main site
+// These are special wizard-driven experiences for each pillar
+const EXPERIENCE_CATEGORIES = {
+  // Celebrate Pillar
+  partyPlanning: {
+    id: 'party-planning',
+    pillar: 'celebrate',
+    label: 'Party Planning Wizard',
+    icon: '🎂',
+    description: 'Plan a full celebration for your pet',
+    color: '#F97316',
+    wizardUrl: '/celebrate/cakes',
+    keywords: ['birthday', 'party', 'celebrate', 'celebration', 'gotcha', 'anniversary']
+  },
+  // Dine Pillar
+  chefsTable: {
+    id: 'chefs-table',
+    pillar: 'dine',
+    label: "Chef's Table",
+    icon: '👨‍🍳',
+    description: 'Private chef experience at pet-friendly restaurants',
+    color: '#EF4444',
+    wizardUrl: '/dine',
+    keywords: ['chef', 'restaurant', 'dine', 'dining', 'eat out', 'dinner']
+  },
+  homeDining: {
+    id: 'home-dining',
+    pillar: 'dine',
+    label: 'Private Home Dining',
+    icon: '🏠',
+    description: 'Chef comes to your home with pet-safe menu',
+    color: '#22C55E',
+    wizardUrl: '/dine',
+    keywords: ['home', 'cook', 'chef at home', 'private', 'meal']
+  },
+  mealSubscription: {
+    id: 'meal-subscription',
+    pillar: 'dine',
+    label: 'Meal Subscription',
+    icon: '📦',
+    description: 'Fresh pet meals delivered regularly',
+    color: '#8B5CF6',
+    wizardUrl: '/dine',
+    keywords: ['subscription', 'deliver', 'fresh food', 'regular', 'meal plan']
+  },
+  // Stay Pillar
+  pawcation: {
+    id: 'pawcation',
+    pillar: 'stay',
+    label: 'Pawcation Curator®',
+    icon: '🏝️',
+    description: 'Curated pet-inclusive vacations with genuine pet love',
+    color: '#06B6D4',
+    wizardUrl: '/stay',
+    keywords: ['vacation', 'pawcation', 'holiday', 'getaway', 'trip', 'hotel']
+  },
+  multiPetTravel: {
+    id: 'multi-pet-travel',
+    pillar: 'stay',
+    label: 'Multi-Pet Travel Suite®',
+    icon: '🐾',
+    description: 'Coordinated stays for your entire fur family',
+    color: '#A855F7',
+    wizardUrl: '/stay',
+    keywords: ['multiple pets', 'two dogs', 'all pets', 'family', 'together']
+  },
+  // Travel Pillar
+  travelPlanning: {
+    id: 'travel-planning',
+    pillar: 'travel',
+    label: 'Travel Planning',
+    icon: '✈️',
+    description: 'Pet-friendly flights, carriers, and travel essentials',
+    color: '#3B82F6',
+    wizardUrl: '/travel',
+    keywords: ['travel', 'flight', 'fly', 'airport', 'carrier', 'plane']
+  }
+};
+
+// Detect which experiences are relevant based on query
+const detectExperienceIntent = (query) => {
+  const lowerQuery = query.toLowerCase();
+  const matchedExperiences = [];
+  
+  Object.values(EXPERIENCE_CATEGORIES).forEach(exp => {
+    const hasMatch = exp.keywords.some(keyword => lowerQuery.includes(keyword));
+    if (hasMatch) {
+      matchedExperiences.push(exp);
+    }
+  });
+  
+  return matchedExperiences;
+};
+
 // Helper: Generate "Why for {Pet}" personalized reasons
 const generateWhyForPet = (product, pet) => {
   const productName = (product.name || '').toLowerCase();
