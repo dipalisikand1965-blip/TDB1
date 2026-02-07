@@ -1031,6 +1031,7 @@ Stay focused on food/treats. Progress through the flow without looping.
 {context_info}
 {completed_steps_context}
 {step_history_context}
+{conversation_context}
 {intent_anchor}
 
 USER INPUT: "{user_input}"
@@ -1042,6 +1043,8 @@ IMPORTANT:
 1. If the user's input is an answer to a clarifying question, acknowledge the answer and move to the NEXT appropriate step.
 2. Do NOT repeat the same question they just answered.
 3. STAY ANCHORED to the original intent. "Help me try at home" in a GROOMING context means HOME GROOMING, not activities/toys.
+4. If user types something brief like "cake" or makes a typo - understand from conversation context what they mean.
+5. If we were discussing BIRTHDAY and they mention "cake", they want a birthday cake. Don't ask if it's for birthday again!
 """
         
         user_message = UserMessage(text=user_message_text)
