@@ -1213,7 +1213,7 @@ const MiraDemoPage = () => {
 
   return (
     <div className="mira-chat-container">
-      {/* Header - Purple Gradient with White Elements */}
+      {/* Header - Compact, Clean */}
       <header className="mira-header">
         <div className="mira-header-inner">
           <div className="mira-header-left">
@@ -1222,7 +1222,7 @@ const MiraDemoPage = () => {
             </div>
             <div>
               <h1 className="mira-header-title">Mira</h1>
-              <p className="mira-header-subtitle">Your Pet Companion</p>
+              <p className="mira-header-subtitle">Pet Life OS for {pet.name}</p>
             </div>
           </div>
           <div className="mira-pet-badge">
@@ -1239,79 +1239,69 @@ const MiraDemoPage = () => {
             </div>
           </div>
         </div>
-        
-        {/* Navigation Dock */}
-        <nav className="mira-dock">
-          {DOCK_ITEMS.map((item) => {
-            const Icon = item.icon;
-            return (
-              <button
-                key={item.id}
-                onClick={() => handleDockClick(item)}
-                data-testid={`dock-${item.id}`}
-                className={`mira-dock-item ${activeDockItem === item.id ? 'active' : ''}`}
-              >
-                <Icon />
-                <span>{item.label}</span>
-              </button>
-            );
-          })}
-        </nav>
       </header>
 
-      {/* Messages Area */}
+      {/* Main Chat Area - ChatGPT Style */}
       <div 
         ref={messagesContainerRef}
         onScroll={handleScroll}
         className="mira-messages-container"
       >
         <div className="mira-messages-inner">
-          {/* Test Scenarios */}
-          {/* Test Scenarios - ALWAYS VISIBLE */}
-          <div className="mira-scenarios">
-            <div className="mira-scenarios-header">
-              <h3 className="mira-scenarios-title">
-                <Sparkles />
-                Test Scenarios
-              </h3>
-            </div>
-            <div className="mira-scenarios-grid">
-              {TEST_SCENARIOS.map((scenario) => (
-                <button
-                  key={scenario.id}
-                  onClick={() => {
-                    setActiveScenario(scenario.id);
-                    handleQuickReply(scenario.query);
-                  }}
-                  data-testid={`scenario-${scenario.id}`}
-                  className={`mira-scenario-chip ${activeScenario === scenario.id ? 'active' : ''}`}
-                >
-                  {scenario.label}
-                </button>
-              ))}
-            </div>
-          </div>
-          
-          {/* Welcome State - Encourages FREE TYPING */}
+          {/* Welcome/Empty State - Mira Intro at TOP */}
           {conversationHistory.length === 0 && !isProcessing && (
-            <div className="mira-welcome">
-              <div className="mira-welcome-avatar">
+            <div className="mira-welcome-chatgpt">
+              <div className="mira-welcome-icon">
                 <Bot />
               </div>
-              <h2 className="mira-welcome-title">Hi! I&apos;m Mira</h2>
-              <p className="mira-welcome-subtitle">
-                I&apos;m here to help with everything for {pet.name}. 
-                <strong style={{ display: 'block', marginTop: '8px', color: 'white' }}>
-                  Just type anything below or try these:
-                </strong>
+              <h2 className="mira-welcome-heading">How can I help with {pet.name} today?</h2>
+              <p className="mira-welcome-subtext">
+                I know {pet.name} is a {pet.breed} with {pet.sensitivities?.join(', ') || 'no known sensitivities'}. 
+                Just type anything below - treats, grooming, birthday, travel, health questions...
               </p>
-              <div className="mira-welcome-suggestions">
-                {[`Treats for ${pet.name}`, `Grooming help`, `Food advice`].map((s, i) => (
+              
+              {/* Quick Suggestions - Horizontal Pills */}
+              <div className="mira-quick-suggestions">
+                {[
+                  { text: `Treats for ${pet.name}`, icon: '🦴' },
+                  { text: `Grooming help`, icon: '✂️' },
+                  { text: `Plan a birthday`, icon: '🎂' },
+                  { text: `Travel tips`, icon: '✈️' }
+                ].map((s, i) => (
                   <button
                     key={i}
-                    onClick={() => handleQuickReply(s)}
-                    className="mira-welcome-chip"
-                    data-testid={`welcome-chip-${i}`}
+                    onClick={() => handleQuickReply(s.text)}
+                    className="mira-suggestion-pill"
+                  >
+                    <span>{s.icon}</span> {s.text}
+                  </button>
+                ))}
+              </div>
+              
+              {/* Test Scenarios - Collapsible */}
+              <details className="mira-test-panel">
+                <summary className="mira-test-toggle">
+                  <Sparkles className="w-4 h-4" />
+                  Test Scenarios (for demo)
+                </summary>
+                <div className="mira-test-grid">
+                  {TEST_SCENARIOS.map((scenario) => (
+                    <button
+                      key={scenario.id}
+                      onClick={() => {
+                        setActiveScenario(scenario.id);
+                        handleQuickReply(scenario.query);
+                      }}
+                      data-testid={`scenario-${scenario.id}`}
+                      className={`mira-test-chip ${activeScenario === scenario.id ? 'active' : ''}`}
+                    >
+                      {scenario.label}
+                    </button>
+                  ))}
+                </div>
+              </details>
+            </div>
+          )}
                   >
                     {s}
                   </button>
