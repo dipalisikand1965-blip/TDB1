@@ -1121,10 +1121,8 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
         # GROOM_BOOKING: book groomer, schedule appointment, fix slot
         
         is_groom_accident = any(phrase in user_input_lower for phrase in [
-            "cut", "nick", "bleeding", "blood", "injured", "injury", "accident",
-            "nail too short", "cut too deep", "hurt him", "hurt her"
-        ]) and any(word in user_input_lower for word in [
-            "groom", "trim", "nail", "clipper", "scissor", "cut"
+            "accidentally cut", "cut too", "nick", "bleeding", "blood", "injured", "injury",
+            "nail too short", "cut too deep", "hurt him", "hurt her", "nicked his", "nicked her"
         ])
         
         is_groom_post = any(phrase in user_input_lower for phrase in [
