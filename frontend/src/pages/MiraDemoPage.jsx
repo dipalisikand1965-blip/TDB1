@@ -322,7 +322,8 @@ const MiraDemoPage = () => {
               return (
                 <button
                   key={item.id}
-                  onClick={() => setActiveDockItem(item.id)}
+                  onClick={() => handleDockClick(item)}
+                  data-testid={`dock-${item.id}`}
                   className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
                     activeDockItem === item.id
                       ? `bg-gradient-to-r ${item.color} text-white shadow-lg`
@@ -337,6 +338,46 @@ const MiraDemoPage = () => {
           </div>
         </div>
       </div>
+      
+      {/* Help Modal */}
+      {showHelpModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-slate-800 border border-white/20 rounded-2xl max-w-md w-full p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold text-white">How can we help?</h3>
+              <button onClick={() => setShowHelpModal(false)} className="p-1 hover:bg-white/10 rounded-lg">
+                <X className="w-5 h-5 text-white/70" />
+              </button>
+            </div>
+            <div className="space-y-3">
+              <button 
+                onClick={() => { setShowHelpModal(false); setQuery('I need help with my order'); inputRef.current?.focus(); }}
+                className="w-full text-left p-3 bg-white/5 hover:bg-white/10 rounded-xl text-white/80 transition-all"
+              >
+                📦 Order & Delivery Help
+              </button>
+              <button 
+                onClick={() => { setShowHelpModal(false); setQuery('I have a health concern about my pet'); inputRef.current?.focus(); }}
+                className="w-full text-left p-3 bg-white/5 hover:bg-white/10 rounded-xl text-white/80 transition-all"
+              >
+                🏥 Health & Advisory
+              </button>
+              <button 
+                onClick={() => { setShowHelpModal(false); setQuery('I need to return or exchange a product'); inputRef.current?.focus(); }}
+                className="w-full text-left p-3 bg-white/5 hover:bg-white/10 rounded-xl text-white/80 transition-all"
+              >
+                🔄 Returns & Exchanges
+              </button>
+              <button 
+                onClick={() => { setShowHelpModal(false); window.dispatchEvent(new CustomEvent('openMiraAI')); }}
+                className="w-full text-left p-3 bg-gradient-to-r from-purple-500/20 to-pink-500/20 hover:from-purple-500/30 hover:to-pink-500/30 rounded-xl text-white transition-all border border-purple-400/30"
+              >
+                💬 Chat with Concierge
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-4 py-8">
