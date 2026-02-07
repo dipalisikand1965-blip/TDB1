@@ -637,40 +637,46 @@ const MiraDemoPage = () => {
   }, []);
   
   // Check if user is explicitly asking for products/suggestions
-  // This should only return true AFTER initial clarifying questions
-  // Covers ALL flows: Treats, Grooming tools, Birthday cakes, Travel gear
+  // This should only return true when user EXPLICITLY asks for products
+  // NOT when they're just stating an intent (travel, birthday, etc.)
   const isProductOptIn = useCallback((inputQuery) => {
     const lowerInput = inputQuery.toLowerCase();
     
-    // Explicit product request phrases - BE MORE GENEROUS
+    // ONLY explicit product request phrases - NOT intent declarations
     const optInPhrases = [
-      // Direct affirmatives
+      // Direct affirmatives after Mira asks
       'yes', 'yes please', 'yes do', 'you do', 'please do', 'go ahead',
       'sure', 'ok', 'okay', 'definitely', 'absolutely',
       
-      // Suggest phrases - various forms
-      'suggest', 'can you suggest', 'show me', 'show photographs',
-      'help me pick', 'help me choose', 'what should i',
-      'what products', 'recommend', 'options',
+      // Explicit "show me products" phrases
+      'show me products', 'show products', 'what products',
+      'show me options', 'show options', 'what are my options',
+      'suggest products', 'recommend products',
+      'what do i need', 'what should i buy', 'what should i get',
+      'show me what i need', 'help me buy',
       
-      // Treats specific
-      'treats', 'show me treats',
-      
-      // Cake/Birthday specific  
-      'cake', 'cakes', 'birthday cake', 'show me cake',
-      'party', 'birthday', 'celebration',
-      
-      // Grooming specific  
-      'tools', 'grooming', 'shampoo', 'brush',
-      
-      // Travel specific
-      'checklist', 'travel', 'packing', 'pack',
-      
-      // Toys
-      'toy', 'toys', 'play'
+      // After clarification - explicit opt-in
+      'show me treats', 'suggest treats', 'show treats',
+      'show me cakes', 'suggest cakes', 'show cakes',
+      'show me carriers', 'suggest carriers', 'show carriers',
+      'show me tools', 'suggest tools', 'show tools'
     ];
     
-    // Check if user is explicitly opting in
+    // EXCLUDE these - these are intent declarations, not product requests
+    // "I want to travel" ≠ "Show me travel products"
+    // "Plan a birthday" ≠ "Show me birthday products"
+    const intentDeclarations = [
+      'travel to', 'traveling to', 'going to', 'trip to',
+      'plan a', 'planning a', 'want to plan',
+      'need help with', 'worried about'
+    ];
+    
+    // If it's an intent declaration, don't show products
+    if (intentDeclarations.some(phrase => lowerInput.includes(phrase))) {
+      return false;
+    }
+    
+    // Check if user is explicitly opting in for products
     return optInPhrases.some(phrase => lowerInput.includes(phrase));
   }, []);
   
