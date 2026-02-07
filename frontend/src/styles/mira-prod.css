@@ -2724,3 +2724,425 @@ button.mp-experience-card {
 .mp-mira-message:not([data-show-products="true"]) .mp-product-grid {
   display: none;
 }
+
+/* ════════════════════════════════════════════════════════════════════════════
+   COMPREHENSIVE MOBILE RESPONSIVENESS
+   Design Specs for World-Class Mobile Experience
+   
+   BREAKPOINTS:
+   - Mobile S (320px): iPhone SE, small Android
+   - Mobile M (375px): iPhone 12 mini, standard phones
+   - Mobile L (414px): iPhone Plus, large Android
+   - Tablet (768px): iPad Mini, tablets
+   - Desktop (1024px+): Laptops, desktops
+   
+   TYPOGRAPHY SCALE (Mobile → Desktop):
+   - H1: 24px → 32px
+   - H2: 18px → 24px
+   - Body: 14px → 16px
+   - Small: 12px → 13px
+   - Micro: 10px → 11px
+   
+   SPACING SCALE:
+   - xs: 4px
+   - sm: 8px
+   - md: 12px
+   - lg: 16px
+   - xl: 24px
+   - 2xl: 32px
+   
+   iOS SPECIFIC:
+   - Safe area insets for notch
+   - -webkit-overflow-scrolling: touch
+   - Prevent zoom on input focus (min 16px font)
+   - Tap highlight disable
+   ════════════════════════════════════════════════════════════════════════════ */
+
+/* ========================================
+   BASE MOBILE STYLES (Mobile First)
+   ======================================== */
+
+/* Prevent iOS zoom on form inputs */
+input, select, textarea {
+  font-size: 16px !important;
+}
+
+/* Smooth scrolling for iOS */
+.mira-prod,
+.mp-conversation {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Disable tap highlight */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* ========================================
+   MOBILE S (320px) - iPhone SE
+   ======================================== */
+@media (max-width: 359px) {
+  :root {
+    --space-md: 8px;
+    --space-lg: 12px;
+    --space-xl: 16px;
+  }
+  
+  .mp-header {
+    padding: 12px 12px;
+  }
+  
+  .mp-header-title {
+    font-size: 16px;
+  }
+  
+  .mp-pet-selector-btn span {
+    display: none; /* Hide pet name, show only avatar */
+  }
+  
+  .mp-conversation {
+    padding: 12px;
+    padding-bottom: calc(80px + env(safe-area-inset-bottom, 20px));
+  }
+  
+  .mp-mira-message,
+  .mp-user-message {
+    max-width: 95%;
+  }
+  
+  .mp-msg-content {
+    padding: 12px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+  
+  .mp-highlight {
+    padding: 10px;
+    font-size: 12px;
+  }
+  
+  .mp-products-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .mp-product-name {
+    font-size: 13px;
+  }
+  
+  .mp-product-price {
+    font-size: 14px;
+  }
+  
+  .mp-service-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  
+  .mp-service-card {
+    padding: 12px;
+  }
+  
+  .mp-service-label {
+    font-size: 13px;
+  }
+  
+  .mp-quick-reply {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+  
+  .mp-input-wrapper {
+    padding: 10px 12px;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom, 10px));
+  }
+  
+  .mp-input-container input {
+    font-size: 14px;
+    padding: 10px 12px;
+  }
+}
+
+/* ========================================
+   MOBILE M (360px - 413px) - Standard Phones
+   ======================================== */
+@media (min-width: 360px) and (max-width: 413px) {
+  .mp-conversation {
+    padding: 14px;
+    padding-bottom: calc(85px + env(safe-area-inset-bottom, 20px));
+  }
+  
+  .mp-mira-message,
+  .mp-user-message {
+    max-width: 92%;
+  }
+  
+  .mp-msg-content {
+    padding: 14px;
+    font-size: 14px;
+  }
+  
+  .mp-products-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  
+  .mp-service-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+/* ========================================
+   MOBILE L (414px - 767px) - Large Phones
+   ======================================== */
+@media (min-width: 414px) and (max-width: 767px) {
+  .mp-conversation {
+    padding: 16px;
+    padding-bottom: calc(90px + env(safe-area-inset-bottom, 20px));
+  }
+  
+  .mp-mira-message,
+  .mp-user-message {
+    max-width: 88%;
+  }
+  
+  .mp-msg-content {
+    padding: 16px;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  
+  .mp-products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  
+  .mp-product-img {
+    height: 100px;
+  }
+  
+  .mp-service-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  
+  .mp-service-card {
+    padding: 14px;
+  }
+}
+
+/* ========================================
+   TABLET (768px - 1023px)
+   ======================================== */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .mp-conversation {
+    padding: 20px 24px;
+    padding-bottom: 100px;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  
+  .mp-mira-message,
+  .mp-user-message {
+    max-width: 85%;
+  }
+  
+  .mp-msg-content {
+    padding: 18px 20px;
+    font-size: 15px;
+  }
+  
+  .mp-products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  
+  .mp-product-img {
+    height: 110px;
+  }
+  
+  .mp-service-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+}
+
+/* ========================================
+   DESKTOP (1024px+)
+   ======================================== */
+@media (min-width: 1024px) {
+  .mp-conversation {
+    padding: 24px 32px;
+    padding-bottom: 110px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .mp-mira-message,
+  .mp-user-message {
+    max-width: 80%;
+  }
+  
+  .mp-msg-content {
+    padding: 20px 24px;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  
+  .mp-products-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+  }
+  
+  .mp-product-img {
+    height: 120px;
+  }
+  
+  .mp-service-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+}
+
+/* ========================================
+   iOS SAFE AREA SUPPORT
+   ======================================== */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .mp-input-wrapper {
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+  }
+  
+  .mp-conversation {
+    padding-bottom: calc(90px + env(safe-area-inset-bottom));
+  }
+  
+  .mp-service-modal {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
+/* ========================================
+   TOUCH DEVICE OPTIMIZATIONS
+   ======================================== */
+@media (hover: none) and (pointer: coarse) {
+  /* Larger touch targets */
+  .mp-quick-reply {
+    min-height: 44px;
+    padding: 12px 16px;
+  }
+  
+  .mp-service-card {
+    min-height: 60px;
+  }
+  
+  .mp-product-add {
+    min-height: 44px;
+  }
+  
+  .mp-voice-btn,
+  .mp-send-btn {
+    min-width: 44px;
+    min-height: 44px;
+  }
+  
+  /* Remove hover effects on touch */
+  .mp-product-tile:hover {
+    transform: none;
+  }
+  
+  .mp-service-card:hover {
+    transform: none;
+  }
+  
+  /* Active states instead */
+  .mp-product-tile:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
+  
+  .mp-service-card:active {
+    transform: scale(0.98);
+    opacity: 0.9;
+  }
+  
+  .mp-quick-reply:active {
+    transform: scale(0.95);
+  }
+}
+
+/* ========================================
+   LANDSCAPE MODE
+   ======================================== */
+@media (max-height: 500px) and (orientation: landscape) {
+  .mp-header {
+    padding: 8px 16px;
+  }
+  
+  .mp-conversation {
+    padding-bottom: 70px;
+  }
+  
+  .mp-input-wrapper {
+    padding: 8px 16px;
+  }
+  
+  .mp-pet-hero {
+    display: none; /* Hide hero in landscape */
+  }
+}
+
+/* ========================================
+   DARK MODE SYSTEM PREFERENCE
+   ======================================== */
+@media (prefers-color-scheme: dark) {
+  /* Already dark theme, but enhance contrast */
+  .mp-msg-content {
+    --mira-text-secondary: rgba(255, 255, 255, 0.8);
+  }
+}
+
+/* ========================================
+   REDUCED MOTION PREFERENCE
+   ======================================== */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ========================================
+   HIGH CONTRAST MODE
+   ======================================== */
+@media (prefers-contrast: high) {
+  .mp-mira-message {
+    border: 2px solid var(--mira-pink);
+  }
+  
+  .mp-user-message {
+    border: 2px solid var(--mira-purple);
+  }
+  
+  .mp-quick-reply {
+    border: 2px solid var(--mira-purple);
+  }
+}
+
+/* ========================================
+   PRINT STYLES
+   ======================================== */
+@media print {
+  .mp-input-wrapper,
+  .mp-voice-btn,
+  .mp-send-btn {
+    display: none;
+  }
+  
+  .mp-conversation {
+    padding-bottom: 0;
+  }
+}
