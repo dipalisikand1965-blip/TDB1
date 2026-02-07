@@ -1547,9 +1547,15 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
             "vet", "doctor", "cough", "sick", "worried", "health", "pain", "limp",
             "boarding", "sitter", "kennel", "daycare",
             "training", "trainer", "behavio",
-            "trip", "travel", "vacation", "holiday",
+            # REMOVED "trip", "travel", "vacation", "holiday" - these should show travel PRODUCTS
             "anxious", "anxiety", "scared", "fear", "thunder", "storm", "firework", "noise",
             "shedding", "brushing", "ears", "paws"
+        ])
+        
+        # Check if it's a TRAVEL intent - needs travel products
+        is_travel_request = any(word in user_input_lower for word in [
+            "travel", "trip", "vacation", "holiday", "ooty", "goa", "mumbai", "bangalore", "delhi",
+            "flight", "drive", "car", "road trip", "journey", "carrier", "crate", "harness"
         ])
         
         # Check if it's a product-related planning request (birthday, treats, food)
