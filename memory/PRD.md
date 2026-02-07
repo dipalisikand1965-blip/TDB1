@@ -11,45 +11,41 @@ Transform a standard e-commerce site into a "Personal Pet Operating System" that
 
 ---
 
-## LATEST UPDATE: UI/UX OVERHAUL COMPLETE - Feb 7, 2026
+## LATEST UPDATE: ChatGPT-Style Layout - Feb 7, 2026
 
-### ✅ PREMIUM CHAT UI REDESIGN
-**Design Benchmarks**: Apple iMessage (clarity, spacing), WhatsApp (simplicity), Slack (structure), ChatGPT (AI readability)
+### ✅ UI REDESIGN - ChatGPT Style as Requested
+**User Request**: "Mira should come top... make it broader... so I can keep typing like I am to you"
 
-**What Changed:**
-- **Purple gradient background RESTORED** - User loved the purple, only the chat cards needed to be clean
-- Background: Linear gradient from #E8D5F9 → #D4B8F0 → #C9A8E9 (soft lavender)
-- Message cards: Clean white with subtle shadows
-- Question strips: Amber highlight (#FFFBEB) with clear visual hierarchy
-- Semi-transparent dock and scenario panel with backdrop blur
-- Typography: System fonts with proper line heights and spacing
-- Touch targets: 44px minimum (Apple HIG standard)
-- Animations: Smooth message slide-in, loading dots
-- **Buddy's photo + breed** shown in header badge
+**What's Now in Place:**
+1. **"How can I help with Buddy today?"** - Clear heading at TOP (like ChatGPT)
+2. **Context shown** - "I know Buddy is a Golden Retriever with Chicken allergy"
+3. **Wide input at bottom** - "Ask me anything about Buddy..." - ready for free typing
+4. **Quick suggestions** - 🦴 Treats, ✂️ Grooming, 🎂 Birthday, ✈️ Travel
+5. **Test Scenarios** - Collapsible panel (click to expand for demo)
+6. **Compact header** - Mira | Pet Life OS for Buddy | Buddy's photo
+7. **Deep purple gradient** - Original aesthetic preserved
+8. **Clean white chat cards** - With amber question strips
 
-**Conversation Flow Fixes:**
-- Added full `conversation_history` to backend API calls for context
-- LLM now understands "cake" means birthday cake when in birthday flow
-- Handles typos intelligently based on conversation context
-- Test scenarios panel closes after selection to prevent accidental multi-selection
-
-**Files Created/Updated:**
-- `/app/frontend/src/styles/mira-chat.css` - Complete CSS design system with purple gradient
-- `/app/frontend/src/pages/MiraDemoPage.jsx` - Refactored UI + context passing
-- `/app/backend/mira_routes.py` - Added conversation_history parameter
-- `/app/memory/DESIGN_BENCHMARKS.md` - Design reference documentation
+### ✅ DOCTRINE COMPLIANCE VERIFIED
+| Principle | Status |
+|-----------|--------|
+| Presence Before Performance | ✅ "That's a lovely thought" before planning |
+| Knowledge Remembered | ✅ "From what I know about Buddy..." |
+| Remember → Confirm → Act | ✅ Context → Question → Then products |
+| Products After Alignment | ✅ Only after explicit opt-in |
+| Concierge® (with ®) | ✅ Proper trademark usage |
+| Never a Dead End | ✅ Always a next step |
+| Ends with Question | ✅ Clarifying questions always |
 
 ### ✅ QUICK-REPLY CHIPS FIXED
 All four canonical flows now show contextual chips matching the question:
 
 | Flow | Question | Chips |
 |------|----------|-------|
-| Birthday | "Active and playful... or simpler, cosy?" | Active and playful, Simpler and cosy, I'm not sure yet, I know I want a cake too |
+| Birthday | "Active and playful... or simpler, cosy?" | Active and playful, Simpler and cosy, I'm not sure yet, I'd like a cake as well |
 | Grooming | "Simple trim... or fuller grooming session?" | Simple trim, Full grooming session, I'm not sure, tell me more |
 | Treats | "Everyday light treats... or special-occasion?" | Everyday light treats, Special-occasion treats, I'm not sure yet |
 | Travel | "Are you driving or flying?" | Car, Flight, Train, Not sure yet |
-
-**Testing Status:** 100% pass rate on all flows (iteration_103.json)
 
 ---
 
