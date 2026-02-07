@@ -1853,17 +1853,17 @@ const MiraDemoPage = () => {
       // MIRA DOCTRINE: CONCIERGE CAN DO ANYTHING (legal, moral, no medical)
       // In comfort mode, concierge is even more important - human touch for emotional moments
       const hasNoDirectMatch = !shouldShowProducts && !hasServiceIntent && !hasExperienceIntent;
-      const dynamicConciergeRequest = hasNoDirectMatch ? generateConciergeRequest(query, pet.name) : null;
+      const dynamicConciergeRequest = hasNoDirectMatch ? generateConciergeRequest(inputQuery, pet.name) : null;
       
       // Check if Concierge is live (6:30 AM - 11:30 PM)
       const conciergeIsLive = isConciergeLive();
       
       // MIRA DOCTRINE: Concierge is premium service, not failure
       // ALWAYS show concierge - they can do ANYTHING
-      const userWantsConcierge = query.toLowerCase().includes('concierge') || 
-                                  query.toLowerCase().includes('help me') ||
-                                  query.toLowerCase().includes('can you handle') ||
-                                  query.toLowerCase().includes('plan');
+      const userWantsConcierge = inputQuery.toLowerCase().includes('concierge') || 
+                                  inputQuery.toLowerCase().includes('help me') ||
+                                  inputQuery.toLowerCase().includes('can you handle') ||
+                                  inputQuery.toLowerCase().includes('plan');
       const hasConciergeFraming = data.response?.concierge_framing && data.response.concierge_framing.length > 0;
       // ALWAYS suggest concierge - they can handle any request
       const shouldSuggestConcierge = true; // Concierge can do ANYTHING
