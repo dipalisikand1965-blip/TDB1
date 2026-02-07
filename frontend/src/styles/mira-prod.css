@@ -1375,3 +1375,411 @@ button.mp-welcome-chip,
     justify-content: center;
   }
 }
+
+/* ==========================================
+   MIRA HERO WELCOME - Matches UnifiedHero from Pillar Pages
+   100% Mobile Optimized for iOS Safari & Android
+   ========================================== */
+.mira-hero-welcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px 16px;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* Soul Journey Button */
+.soul-journey-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-bottom: 24px;
+}
+
+.soul-journey-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: scale(1.02);
+}
+
+.soul-journey-btn svg {
+  color: #fbbf24;
+}
+
+/* Hero Layout - Mobile First */
+.hero-layout {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+  max-width: 800px;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .hero-layout {
+    flex-direction: row;
+    text-align: left;
+    gap: 40px;
+  }
+}
+
+/* Avatar Container with Multiple Rings */
+.hero-avatar-container {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+  .hero-avatar-container {
+    width: 180px;
+    height: 180px;
+  }
+}
+
+/* Glow Effect */
+.avatar-glow {
+  position: absolute;
+  inset: -20px;
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.3), rgba(236, 72, 153, 0.3));
+  border-radius: 50%;
+  filter: blur(30px);
+  animation: pulse-glow 3s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+/* Multiple Concentric Rings */
+.avatar-ring {
+  position: absolute;
+  border-radius: 50%;
+  border-style: solid;
+  animation: ring-rotate 12s linear infinite;
+}
+
+.avatar-ring.ring-1 {
+  inset: -16px;
+  border-width: 3px;
+  border-color: rgba(168, 85, 247, 0.5) transparent rgba(168, 85, 247, 0.5) transparent;
+}
+
+.avatar-ring.ring-2 {
+  inset: -8px;
+  border-width: 2px;
+  border-color: transparent rgba(236, 72, 153, 0.4) transparent rgba(236, 72, 153, 0.4);
+  animation-direction: reverse;
+  animation-duration: 8s;
+}
+
+.avatar-ring.ring-3 {
+  inset: 0;
+  border-width: 4px;
+  border-color: rgba(255, 255, 255, 0.2);
+  animation: none;
+}
+
+@keyframes ring-rotate {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Pet Photo */
+.avatar-photo {
+  position: absolute;
+  inset: 8px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  z-index: 1;
+}
+
+.avatar-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.avatar-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #fde68a, #fbbf24);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #92400e;
+}
+
+/* Pet Name Badge (Mobile) */
+.avatar-name-badge {
+  display: block;
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 16px;
+  background: white;
+  border-radius: 9999px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  z-index: 2;
+}
+
+@media (min-width: 768px) {
+  .avatar-name-badge {
+    display: none;
+  }
+}
+
+.avatar-name-badge span {
+  font-size: 14px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #9333ea, #ec4899);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Hero Content */
+.hero-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@media (min-width: 768px) {
+  .hero-content {
+    align-items: flex-start;
+  }
+}
+
+/* Title - "For Mystique" style */
+.hero-title {
+  font-size: 32px;
+  font-weight: 800;
+  font-style: italic;
+  color: white;
+  margin: 0 0 8px;
+  letter-spacing: -1px;
+}
+
+@media (min-width: 768px) {
+  .hero-title {
+    font-size: 48px;
+  }
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #f472b6, #fbbf24);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Subtitle */
+.hero-subtitle {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0 0 20px;
+}
+
+@media (min-width: 768px) {
+  .hero-subtitle {
+    font-size: 17px;
+  }
+}
+
+/* Soul Traits */
+.soul-traits {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+@media (min-width: 768px) {
+  .soul-traits {
+    justify-content: flex-start;
+  }
+}
+
+.trait-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.trait-icon {
+  font-size: 16px;
+}
+
+.trait-label {
+  color: white;
+}
+
+/* Mira Love Card - "Personalized picks" */
+.mira-love-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px 20px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  border-top-left-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  max-width: 100%;
+}
+
+.mira-love-card:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
+}
+
+.love-card-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #9333ea, #ec4899);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: white;
+  box-shadow: 0 4px 12px rgba(147, 51, 234, 0.4);
+}
+
+.love-card-content {
+  flex: 1;
+}
+
+.love-card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: white;
+  margin: 0 0 6px;
+}
+
+.love-card-subtitle {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.love-card-subtitle svg {
+  color: #f472b6;
+  fill: #f472b6;
+}
+
+.love-card-sparkle {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 24px;
+  height: 24px;
+  color: #fbbf24;
+  animation: sparkle-pulse 2s ease-in-out infinite;
+}
+
+@keyframes sparkle-pulse {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  50% { transform: scale(1.2) rotate(10deg); opacity: 0.8; }
+}
+
+/* Quick Chips */
+.quick-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 32px;
+  width: 100%;
+}
+
+.quick-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 18px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+  color: white !important;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.quick-chip:hover,
+.quick-chip:active {
+  background: rgba(255, 255, 255, 0.18);
+  border-color: #ec4899;
+  transform: translateY(-2px);
+}
+
+.chip-icon {
+  font-size: 18px;
+}
+
+.chip-text {
+  color: white !important;
+}
+
+/* iOS Safari Fixes */
+@supports (-webkit-touch-callout: none) {
+  .mira-hero-welcome {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .soul-journey-btn,
+  .trait-chip,
+  .mira-love-card,
+  .quick-chip {
+    -webkit-transform: translateZ(0);
+  }
+}
+
+/* Safe Area Support for iPhone X+ */
+@supports (padding: max(0px)) {
+  .mira-hero-welcome {
+    padding-left: max(16px, env(safe-area-inset-left));
+    padding-right: max(16px, env(safe-area-inset-right));
+  }
+}
