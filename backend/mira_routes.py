@@ -1900,6 +1900,8 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
             "response": {
                 "message": understanding.get("message", ""),
                 "products": final_products,
+                "tips": understanding.get("tips", []),
+                "quick_replies": understanding.get("quick_replies", []),
                 "next_action": understanding.get("next_action", ""),
                 "concierge_reason": understanding.get("concierge_reason"),
                 "concierge_framing": understanding.get("concierge_framing"),
@@ -1907,7 +1909,8 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                 "alignment_question": understanding.get("alignment_question"),
                 "safety_tips": understanding.get("safety_tips", []),
                 "has_real_products": len(final_products) > 0,
-                "ticket_id": ticket_id
+                "ticket_id": ticket_id,
+                "suggest_concierge": understanding.get("suggest_concierge", False) or execution_type == "CONCIERGE"
             },
             "execution_type": execution_type
         }
