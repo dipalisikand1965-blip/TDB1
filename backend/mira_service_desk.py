@@ -539,34 +539,139 @@ async def append_message(request: AppendMessageRequest):
     logger.info(f"[SERVICE_DESK] Appended {request.sender} message to ticket: {request.ticket_id}")
     
     return {"success": True, "ticket_id": request.ticket_id}
+
+
+@service_desk_router.post("/complete_step")
+async def complete_step(request: CompleteStepRequest):
+    """
+    Mark a step as completed when user answers a clarifying question.
+    
+    This is the KEY to preventing the loop:
+    - Once a step is completed, it should NEVER be asked again
+    - The backend must check completed_steps before re-asking any question
+    """
+    db = get_db()
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not available")
     
     now = datetime.now(timezone.utc)
     
-    message_entry = {
-        "sender": request.sender,
-        "source": request.source,
-        "text": request.text,
-        "timestamp": now.isoformat()
+    # Get the ticket to check current state
+    ticket = await db.mira_conversations.find_one({"ticket_id": request.ticket_id})
+    if not ticket:
+        raise HTTPException(status_code=404, detail=f"Ticket {request.ticket_id} not found")
+    
+    # Check if this step is already completed
+    completed_steps = ticket.get("completed_steps", [])
+    if request.step_id in completed_steps:
+        logger.warning(f"[STEP] Step {request.step_id} already completed for ticket {request.ticket_id}")
+        return {
+            "success": True,
+            "already_completed": True,
+            "ticket_id": request.ticket_id,
+            "step_id": request.step_id
+        }
+    
+    # Get the current step info
+    current_step = ticket.get("current_step", {})
+    
+    # Build step history entry
+    step_entry = {
+        "step_id": request.step_id,
+        "question": current_step.get("question", ""),
+        "answer": request.user_answer,
+        "timestamp_asked": current_step.get("timestamp", now.isoformat()),
+        "timestamp_answered": now.isoformat()
     }
     
-    if request.meta:
-        message_entry["meta"] = request.meta
-    
+    # Update ticket: add to completed_steps, clear current_step, add to history
     result = await db.mira_conversations.update_one(
         {"ticket_id": request.ticket_id},
         {
-            "$push": {"conversation": message_entry},
-            "$set": {"updated_at": now.isoformat()}
+            "$addToSet": {"completed_steps": request.step_id},
+            "$push": {"step_history": step_entry},
+            "$set": {
+                "current_step": None,
+                "updated_at": now.isoformat()
+            }
         }
     )
     
-    if result.matched_count == 0:
-        raise HTTPException(status_code=404, detail=f"Ticket {request.ticket_id} not found")
+    logger.info(f"[STEP] Completed step {request.step_id} for ticket {request.ticket_id} with answer: {request.user_answer}")
     
-    logger.info(f"[SERVICE_DESK] Appended {request.sender} message to ticket: {request.ticket_id}")
+    return {
+        "success": True,
+        "already_completed": False,
+        "ticket_id": request.ticket_id,
+        "step_id": request.step_id
+    }
+
+
+@service_desk_router.get("/check_step/{ticket_id}/{step_id}")
+async def check_step_status(ticket_id: str, step_id: str):
+    """
+    Check if a specific step has already been completed for this ticket.
     
-    return {"success": True, "ticket_id": request.ticket_id}
+    This should be called by the frontend/LLM BEFORE asking a clarifying question
+    to prevent the loop.
+    """
+    db = get_db()
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not available")
+    
+    ticket = await db.mira_conversations.find_one(
+        {"ticket_id": ticket_id},
+        {"completed_steps": 1, "step_history": 1, "current_step": 1}
+    )
+    
+    if not ticket:
+        raise HTTPException(status_code=404, detail=f"Ticket {ticket_id} not found")
+    
+    completed_steps = ticket.get("completed_steps", [])
+    is_completed = step_id in completed_steps
+    
+    # Get the answer if completed
+    answer = None
+    if is_completed:
+        for step in ticket.get("step_history", []):
+            if step.get("step_id") == step_id:
+                answer = step.get("answer")
+                break
+    
+    return {
+        "ticket_id": ticket_id,
+        "step_id": step_id,
+        "is_completed": is_completed,
+        "answer": answer,
+        "current_step": ticket.get("current_step")
+    }
+
+
+@service_desk_router.get("/completed_steps/{ticket_id}")
+async def get_completed_steps(ticket_id: str):
+    """
+    Get all completed steps for a ticket.
+    
+    Useful for the frontend/LLM to know what has already been asked and answered.
+    """
+    db = get_db()
+    if db is None:
+        raise HTTPException(status_code=500, detail="Database not available")
+    
+    ticket = await db.mira_conversations.find_one(
+        {"ticket_id": ticket_id},
+        {"completed_steps": 1, "step_history": 1, "current_step": 1, "_id": 0}
+    )
+    
+    if not ticket:
+        raise HTTPException(status_code=404, detail=f"Ticket {ticket_id} not found")
+    
+    return {
+        "ticket_id": ticket_id,
+        "completed_steps": ticket.get("completed_steps", []),
+        "step_history": ticket.get("step_history", []),
+        "current_step": ticket.get("current_step")
+    }
 
 
 @service_desk_router.post("/handoff_to_concierge")
