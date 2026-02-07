@@ -9,39 +9,65 @@ Transform a standard e-commerce site into a "Personal Pet Operating System" that
 5. **Hyper-Personalized Content:** Breed-specific and unique messaging
 6. **De-emphasize E-commerce:** Focus on "caring" not "shopping"
 
-## Current Status: MIRA OS PHASE 2 COMPLETE
+---
 
-### MIRA OS - The Pet Life Operating System
-**Vision**: "Mira is not a chatbot. Mira is the operating system for dog life." - Transform from e-commerce to AI-first conversational interface where Mira understands user intent, context (pet's needs, history), and decides whether to execute instantly or hand off to human Concierge.
+## CRITICAL REFERENCE: MIRA DOCTRINE
 
-**Core Principle**: "Mira is NEVER allowed to be a dead end." - Even when handing off to Concierge, Mira provides immediate value.
+> **ALL AGENTS MUST READ `/app/memory/MIRA_DOCTRINE.md` BEFORE ANY MIRA-RELATED WORK**
+
+This file contains the canonical guide to Mira's voice, tone, and behavior. Key principles:
+
+1. **Presence before performance** - Acknowledge feelings before giving information
+2. **Knowledge is remembered. Execution is invited.** - Never bulldoze with a plan
+3. **Remember → Confirm → Act** - Always ask before deciding
+4. **Products after alignment** - Suggestions are secondary, optional
+5. **Concierge as quiet option** - Never "escalation" or "ticketing"
+6. **Never a dead end** - Always provide a next step
+7. **Boundary rules** - Medical/legal/ethical handled with care
 
 ---
 
-## PHASE 2 COMPLETE - Feb 7, 2026
+## Current Status: MIRA OS PHASE 3 IN PROGRESS
 
-### ✅ Rich Concierge Responses (P0 Fix)
-**Problem Solved**: Mira was giving sparse "I'll connect you" responses during concierge handoffs.
+### MIRA OS - The Pet Life Operating System
+**Vision**: "Mira is not a chatbot. Mira is the operating system for dog life."
 
-**Now Mira Says** (for "plan Buddy's birthday"):
-> "Let's make Buddy's birthday unforgettable! 🎉 Golden Retrievers like Buddy thrive in energetic settings, so planning a party with activities like fetch games or a small splash pool can be ideal. Since we need to avoid his chicken allergy and consider treats that won't lead to weight gain, we'll ensure snacks are both safe and enticing. Your concierge will help organize the perfect venue, cake, and guest lineup. They'll reach out within 1 hour."
+**The One Sentence**: "Knowledge is remembered. Execution is invited."
 
-**Files Modified**:
-- `/app/backend/mira_routes.py` - Enhanced MIRA_OS_SYSTEM_PROMPT (lines 58-130)
+---
+
+## PHASE 3 COMPLETE - Feb 7, 2026
+
+### ✅ Mira Doctrine Implemented
+**The Transformation**: Mira went from a "smart recommendation engine" to a "trusted companion"
+
+**Before** (Wrong):
+> "Since Buddy is a Golden Retriever, I've planned a pool party with fetch games..."
+
+**After** (Correct):
+> "I'm really glad you told me. When a cough keeps showing up, it's natural to feel worried, especially with a dog like Buddy who's usually full of energy. I can't assess medical conditions myself, but a persistent cough is something a veterinarian should look at so you're not left guessing. If you'd like, I can help you find a trusted vet nearby, so you can focus on Buddy."
+
+### ✅ Test Scenarios Panel
+8 scenarios for role-playing Mira's responses at `/mira-demo`:
+- 🎂 Birthday - Tests emotional acknowledgment and alignment question
+- 🏥 Health Concern - Tests presence before performance
+- 🦴 Find Treats - Tests simple product discovery
+- ✈️ Travel - Tests remember → confirm → act
+- 😰 Anxiety - Tests emotional support
+- 🍽️ Food Choice - Tests asking before recommending
+- 🌈 Farewell - Tests pure presence, no performance
+- ✂️ Grooming - Tests service coordination
 
 ### ✅ Feedback System (P1)
-- Added 👍/👎 buttons on every Mira response
-- New endpoint: `POST /api/mira/feedback`
-- Stores in `mira_feedback` collection for future training
+- 👍/👎 buttons on every Mira response
+- Endpoint: `POST /api/mira/feedback`
 
 ### ✅ Remember Command (P1)
-- New endpoint: `POST /api/mira/remember`
-- Stores facts about pets: "Buddy hates car rides"
-- Saves to `mira_memories` collection and pet profile
-- Requires authentication
+- Endpoint: `POST /api/mira/remember`
+- Stores pet facts for future context
 
 ### ✅ Dock Navigation (P1)
-All 5 dock items now functional:
+All 5 dock items functional:
 | Item | Action |
 |------|--------|
 | Concierge | Opens Mira AI chat widget |
