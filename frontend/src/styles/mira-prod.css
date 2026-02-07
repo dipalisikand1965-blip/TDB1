@@ -2793,7 +2793,7 @@ input, select, textarea {
   }
   
   .mp-header-title {
-    font-size: 16px;
+    font-size: 18px;
   }
   
   .mp-pet-selector-btn span {
@@ -2811,14 +2811,15 @@ input, select, textarea {
   }
   
   .mp-msg-content {
-    padding: 12px;
-    font-size: 13px;
-    line-height: 1.5;
+    padding: 14px;
+    font-size: 15px;
+    line-height: 1.6;
   }
   
   .mp-highlight {
-    padding: 10px;
-    font-size: 12px;
+    padding: 12px;
+    font-size: 14px;
+    line-height: 1.5;
   }
   
   .mp-products-grid {
@@ -2827,11 +2828,11 @@ input, select, textarea {
   }
   
   .mp-product-name {
-    font-size: 13px;
+    font-size: 15px;
   }
   
   .mp-product-price {
-    font-size: 14px;
+    font-size: 16px;
   }
   
   .mp-service-grid {
@@ -2840,16 +2841,20 @@ input, select, textarea {
   }
   
   .mp-service-card {
-    padding: 12px;
+    padding: 14px;
   }
   
   .mp-service-label {
+    font-size: 15px;
+  }
+  
+  .mp-service-desc {
     font-size: 13px;
   }
   
   .mp-quick-reply {
-    padding: 8px 12px;
-    font-size: 12px;
+    padding: 10px 14px;
+    font-size: 14px;
   }
   
   .mp-input-wrapper {
@@ -2858,8 +2863,26 @@ input, select, textarea {
   }
   
   .mp-input-container input {
+    font-size: 16px;
+    padding: 12px 14px;
+  }
+  
+  .mp-watchfor-content {
     font-size: 14px;
-    padding: 10px 12px;
+    line-height: 1.6;
+  }
+  
+  .mp-watchfor-toggle {
+    font-size: 14px;
+  }
+  
+  .mp-dynamic-intro,
+  .mp-service-intro {
+    font-size: 14px;
+  }
+  
+  .mp-concierge-strip p {
+    font-size: 13px;
   }
 }
 
