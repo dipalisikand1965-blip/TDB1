@@ -597,11 +597,45 @@
 
 .mira-intent-badge {
   font-size: var(--mira-font-size-xs);
-  font-weight: 500;
-  padding: 2px 8px;
+  font-weight: 600;
+  padding: 2px 10px;
   border-radius: var(--mira-radius-full);
-  background: var(--mira-accent-light);
-  color: var(--mira-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Intent-specific colors */
+.mira-intent-badge.intent-find { background: #DBEAFE; color: #1E40AF; }
+.mira-intent-badge.intent-plan { background: #F3E8FF; color: #7C3AED; }
+.mira-intent-badge.intent-compare { background: #FEF3C7; color: #B45309; }
+.mira-intent-badge.intent-remember { background: #D1FAE5; color: #047857; }
+.mira-intent-badge.intent-order { background: #FCE7F3; color: #BE185D; }
+.mira-intent-badge.intent-explore { background: #E0E7FF; color: #4338CA; }
+.mira-intent-badge.intent-groom_plan { background: #CCFBF1; color: #0F766E; }
+.mira-intent-badge.intent-concern { background: #FEE2E2; color: #B91C1C; }
+.mira-intent-badge.intent-hold { background: #F3F4F6; color: #6B7280; }
+
+/* Execution badge - shows Instant vs Concierge */
+.mira-execution-badge {
+  font-size: var(--mira-font-size-xs);
+  font-weight: 500;
+  padding: 2px 10px;
+  border-radius: var(--mira-radius-full);
+}
+
+.mira-execution-badge.instant {
+  background: rgba(16, 185, 129, 0.2);
+  color: #059669;
+}
+
+.mira-execution-badge.concierge {
+  background: rgba(139, 92, 246, 0.2);
+  color: #7C3AED;
+}
+
+.mira-execution-badge.hold {
+  background: rgba(107, 114, 128, 0.2);
+  color: #6B7280;
 }
 
 /* Mira Card Body */
