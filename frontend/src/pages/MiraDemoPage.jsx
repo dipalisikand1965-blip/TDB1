@@ -1241,23 +1241,9 @@ const MiraDemoPage = () => {
         await syncToServiceDesk(currentTicket.id, userMessage);
       }
       
-      // Count conversation turns to track when products can be shown
-      const userMessageCount = conversationHistory.filter(m => m.type === 'user').length + 1;
-      
-      // Check if user is EXPLICITLY asking for products (show me, suggest, recommend, etc.)
-      const isExplicitProductRequest = isProductOptIn(inputQuery);
-      
-      // Products can be shown if:
-      // 1. User explicitly asks (even on turn 1) - "show me cakes", "suggest treats"
-      // 2. OR user has opted in during conversation
-      const canShowProducts = isExplicitProductRequest || userHasOptedInForProducts;
-      
-      // Track opt-in for future turns
-      if (isExplicitProductRequest && !userHasOptedInForProducts) {
-        setUserHasOptedInForProducts(true);
-        setConversationStage('opted_in_products');
-        console.log('[FLOW] User explicitly requested products (turn:', userMessageCount, ')');
-      }
+      // MIRA DOCTRINE: Let Mira show products when her intelligence decides it's relevant
+      // No restrictive gates - Mira understands, judges, reasons, then shows options
+      // Products are shown based on AI decision, not explicit user phrases
       
       // STEP 3: Get Mira's response
       // IMPORTANT: Pass completed_steps and step_history so LLM knows what's already been asked
