@@ -2,24 +2,77 @@
 ## The World's First Pet Life Operating System
 
 **Last Updated:** February 7, 2026
-**Status:** Mira's Spirit Restored - Products Now Showing
+**Status:** Mira's Spirit Restored + Voice Added
+
+---
+
+## THE MIRA DOCTRINE (NEVER FORGET)
+
+> "Mira is not a chatbot. She is a trusted presence in a pet parent's journey."
+
+- **Mira = Brain** (understands, judges, reasons, remembers)
+- **Concierge = Hands** (executes, serves)
+- **User = Never worries about how**
+
+**What Mira IS:**
+- A Pet Life OS that knows each pet deeply and keeps that memory forever
+- A thinking layer over products, services, information, and human concierge
+- A companion for the parent's life-state – celebrating, worrying, planning, coping
+- A router: the right answer to "what should happen next?"
+- The brain, with Concierge® as the hands
+
+**What Mira is NOT:**
+- A "pet Google" that dumps links and products
+- A generic AI that answers anything about anything
+- A loud salesperson pushing SKUs
+- A vet, a lawyer, or a replacement for real professionals
+- A place that ever says "I don't know, good luck"
 
 ---
 
 ## WHAT WAS FIXED TODAY (Feb 7, 2026)
 
-### The Problem: "The Flow That Restrained Mira"
-Someone added a restrictive `isProductOptIn` function that **blocked products** unless the user explicitly said "show me products" or "yes please". This was 100% against the Mira Doctrine.
+### Fix 1: Mira's Spirit Restored
+- **Problem:** The `isProductOptIn` function was BLOCKING products unless user explicitly said "show me products"
+- **Fix:** Removed the restrictive gate. Mira now shows products when her AI intelligence decides it's relevant
 
-### The Fix: Mira's Spirit Restored
-1. **Removed the restrictive product gate** - Mira now shows products when her AI intelligence decides it's relevant
-2. **Made concierge subtle** - Only shows when AI suggests it or for complex requests (not on every message)
-3. **Removed "Was this helpful?" clutter** - Clean, uncluttered UI
-4. **Let Mira be Mira** - She understands, judges, reasons → then shows products OR hands off to concierge
+### Fix 2: Concierge Made Subtle
+- **Problem:** Concierge strip showed on EVERY message, making UI cluttered
+- **Fix:** Now only shows when AI suggests it or for complex requests (as per doctrine: "continuation, not escalation")
+
+### Fix 3: "Was This Helpful?" Removed
+- Cleaned up excessive feedback buttons for professional UI
+
+### Fix 4: Voice Output Added (ElevenLabs)
+- Added Volume/Mute button in input area
+- When voice is ON, Mira speaks her responses using ElevenLabs "Elise" voice
+- Voice input (mic) for speech-to-text was already working
 
 ---
 
-## CURRENT DATABASE STATUS
+## THE 15 PILLARS OF PET LIFE
+
+| Pillar | Status | Description |
+|--------|--------|-------------|
+| 🎉 Celebrate | 🟡 Partial | Birthday, adoption day, milestones |
+| 🍖 Dine | ✅ Working | Food, treats, nutrition |
+| 🏨 Stay | 🟡 Partial | Boarding, daycare |
+| ✈️ Travel | 🟡 Partial | Pet-friendly travel |
+| 💊 Care | 🟡 Partial | Health, vet prep |
+| 🎾 Enjoy | 🟡 Partial | Toys, play, enrichment |
+| 🏃 Fit | ⬜ Planned | Exercise, weight management |
+| 📚 Learn | ⬜ Planned | Training, behavior |
+| 📋 Paperwork | ⬜ Planned | Vaccines, documents |
+| 💡 Advisory | 🟡 Partial | Breed-specific guidance |
+| 🚨 Emergency | ⬜ Planned | Urgent care routing |
+| 🌈 Farewell | ⬜ Planned | End-of-life support |
+| 🐕 Adopt | ⬜ Planned | Adoption guidance |
+| 🛍️ Shop | ✅ Working | 2,151 products |
+| 🔧 Services | 🟡 Partial | 2,406 services |
+
+---
+
+## DATABASE STATUS
 
 | Collection | Count | Status |
 |------------|-------|--------|
@@ -33,69 +86,69 @@ Someone added a restrictive `isProductOptIn` function that **blocked products** 
 
 ## ✅ COMPLETED FEATURES
 
-### Core Intelligence (Working)
+### Intelligence Layer
 - ✅ Soul Score - Dynamic, grows with interactions (capped at 100%)
+- ✅ Intent Understanding via LLM
+- ✅ Life-state detection
+- ✅ Pet Soul graph (breed + personal history + preferences)
+- ✅ Safe action routing (Instant vs Concierge)
+
+### Execution Layer  
 - ✅ Product Recommendations - 2,151 products with "Why for Pet" reasons
 - ✅ Breed Intelligence - 64 breeds with knowledge
-- ✅ Multi-pet switching with soul scores
 - ✅ Concierge handoff (WhatsApp, Chat, Email) - NOW SUBTLE
-- ✅ Intent Classification via LLM
 - ✅ Session Persistence
 
-### UI/UX (Working)
+### Interface Layer
 - ✅ Premium "For Pet" welcome UI with avatar rings
 - ✅ Soul Score badge (e.g., "87% SOUL KNOWN")
 - ✅ Soul traits display (Playful spirit, Gentle paws, Loyal friend)
 - ✅ "Mira knows {pet}" personalized picks card
 - ✅ Quick suggestion chips
-- ✅ Test Scenarios panel (centered)
+- ✅ Test Scenarios panel (12 pillars)
 - ✅ Mobile-responsive design
-- ✅ Clean message bubbles without clutter
-
-### Today's Fixes
-- ✅ Products now show when relevant (no more blocking)
-- ✅ Concierge strip only appears when AI suggests it
-- ✅ Removed excessive "Was this helpful?" feedback
-- ✅ Cleaner, more professional UI
+- ✅ Voice INPUT (mic) - speech-to-text
+- ✅ Voice OUTPUT (ElevenLabs) - Mira speaks back
 
 ---
 
-## ⚠️ NEEDS VERIFICATION (After Push to Production)
+## KNOWLEDGE SOURCES (External References)
 
-1. **iOS Safari** - Do products show for "treats for Luna"?
-2. **Android** - User reported "Google not coming" (still unclear what this means)
-3. **Overall responsiveness** - Does it work smoothly on mobile?
+Priority by topic:
+1. **Breed / exercise** → AKC
+2. **Everyday care / lifestyle / routines** → Spruce Pets
+3. **Health / symptoms / toxic foods** → PetMD + ASPCA
+4. **Ethics / training kindness / welfare** → Humane-type orgs
+
+When in doubt, Mira summarises + adds context from the pet's profile, then:
+- If mild → gives home-care tips with guardrails
+- If moderate / worrying → "This needs a vet's eyes; I can help you prepare / find one" and hands over to concierge
 
 ---
 
 ## 🔮 ROADMAP TO 100%
 
-### Phase 1: Foundation (Current - 80% Complete)
+### Phase 1: Foundation (80% Complete)
 - ✅ Soul Score System
 - ✅ Product Recommendations  
 - ✅ Multi-Pet Support
-- ⚠️ Mobile verification pending
-- ⬜ Voice input integration
+- ✅ Voice INPUT + OUTPUT
+- ⬜ Mobile verification pending
+- ⬜ Service recommendations integration
 
-### Phase 2: Pillar Intelligence (Next)
-- ⬜ Mira understands all 15 pillars (Celebrate, Dine, Stay, Travel, Care, Enjoy, Fit, Learn, Paperwork, Advisory, Emergency, Farewell, Adopt, Shop, Services)
+### Phase 2: Pillar Intelligence
+- ⬜ Mira understands all 15 pillars
 - ⬜ Pillar-specific recommendations
+- ⬜ Life-state detection improvements
 
-### Phase 3: Service Intelligence
-- ⬜ Products + Services recommendations together
-- ⬜ Service booking integration
-
-### Phase 4: Proactive Intelligence
-- ⬜ Birthday reminders
-- ⬜ Vaccination alerts
-- ⬜ Weather-based suggestions
-
-### Phase 5: Deep Personalization
+### Phase 3: Deep Personalization
 - ⬜ Every recommendation perfect for THIS pet
 - ⬜ Learning from interactions
+- ⬜ Birthday/vaccination proactive reminders
 
-### Phase 6: Ecosystem Complete
+### Phase 4: Ecosystem Complete
 - ⬜ 100% across all 15 pillars
+- ⬜ External integrations (vets, trainers, shops)
 
 ---
 
@@ -110,24 +163,24 @@ Someone added a restrictive `isProductOptIn` function that **blocked products** 
 ## 📁 KEY FILES
 
 ```
-/app/frontend/src/pages/MiraDemoPage.jsx  # Main UI (2200+ lines)
-/app/frontend/src/styles/mira-prod.css     # Styling (1950+ lines)
-/app/backend/mira_routes.py                # API (8700+ lines)
+/app/frontend/src/pages/MiraDemoPage.jsx  # Main UI
+/app/frontend/src/styles/mira-prod.css     # Styling
+/app/backend/mira_routes.py                # Core API
+/app/backend/tts_routes.py                 # Voice (ElevenLabs)
 /app/memory/MIRA_DOCTRINE.md               # THE BIBLE
-/app/memory/ROADMAP_TO_100.md              # Full roadmap
 ```
 
 ---
 
-## THE MIRA DOCTRINE (Never Forget)
+## CORE PROMISE
 
-> "Mira is not a chatbot. She is a trusted presence in a pet parent's journey."
+> "Mira keeps track of your dog's life so you don't have to."
 
-- **Mira = Brain** (understands, judges, reasons)
-- **Concierge = Hands** (executes, serves)
-- **User = Never worries about how**
-
-**Mira is NEVER a dead end.** If she can't execute instantly → she hands off to Concierge gracefully.
+More specifically:
+- I remember your pet the way you wish everyone did.
+- I turn your one sentence into the next right step.
+- I never leave you at a dead end.
+- I never push you into something you didn't ask for.
 
 ---
 
