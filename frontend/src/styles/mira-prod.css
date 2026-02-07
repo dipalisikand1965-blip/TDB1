@@ -1783,3 +1783,34 @@ button.mp-welcome-chip,
     padding-right: max(16px, env(safe-area-inset-right));
   }
 }
+
+/* Soul Score Badge - Amber/Gold Badge on Avatar */
+.soul-score-badge {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  padding: 8px 14px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 16px rgba(245, 158, 11, 0.5);
+  z-index: 10;
+}
+
+.soul-percent {
+  font-size: 18px;
+  font-weight: 800;
+  color: white;
+}
+
+.soul-label {
+  font-size: 8px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.1;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
