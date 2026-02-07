@@ -17,17 +17,26 @@ Transform a standard e-commerce site into a "Personal Pet Operating System" that
 **Design Benchmarks**: Apple iMessage (clarity, spacing), WhatsApp (simplicity), Slack (structure), ChatGPT (AI readability)
 
 **What Changed:**
-- Replaced chaotic dark purple gradients with calm, clean light theme
-- Background: #F7F7F8 (light gray) instead of dark purple
-- Message cards: White with subtle shadows
+- **Purple gradient background RESTORED** - User loved the purple, only the chat cards needed to be clean
+- Background: Linear gradient from #E8D5F9 → #D4B8F0 → #C9A8E9 (soft lavender)
+- Message cards: Clean white with subtle shadows
 - Question strips: Amber highlight (#FFFBEB) with clear visual hierarchy
+- Semi-transparent dock and scenario panel with backdrop blur
 - Typography: System fonts with proper line heights and spacing
 - Touch targets: 44px minimum (Apple HIG standard)
 - Animations: Smooth message slide-in, loading dots
+- **Buddy's photo + breed** shown in header badge
+
+**Conversation Flow Fixes:**
+- Added full `conversation_history` to backend API calls for context
+- LLM now understands "cake" means birthday cake when in birthday flow
+- Handles typos intelligently based on conversation context
+- Test scenarios panel closes after selection to prevent accidental multi-selection
 
 **Files Created/Updated:**
-- `/app/frontend/src/styles/mira-chat.css` - Complete CSS design system with CSS variables
-- `/app/frontend/src/pages/MiraDemoPage.jsx` - Refactored to use new CSS classes
+- `/app/frontend/src/styles/mira-chat.css` - Complete CSS design system with purple gradient
+- `/app/frontend/src/pages/MiraDemoPage.jsx` - Refactored UI + context passing
+- `/app/backend/mira_routes.py` - Added conversation_history parameter
 - `/app/memory/DESIGN_BENCHMARKS.md` - Design reference documentation
 
 ### ✅ QUICK-REPLY CHIPS FIXED
