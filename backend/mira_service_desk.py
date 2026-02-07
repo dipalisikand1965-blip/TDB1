@@ -680,17 +680,26 @@ async def handoff_to_concierge(request: HandoffToConciergeRequest):
     Handoff the ticket to a human Concierge.
     
     This does NOT create a new ticket. It:
-    1. Flips status from 'open_mira_only' to 'open_concierge'
-    2. Sets handoff_to_concierge = true
-    3. Assigns to the appropriate queue (FOOD, GROOMING, CELEBRATE, TRAVEL)
-    4. Adds a system message with the handoff summary
-    5. Emits a notification event
+    1. Checks there's no pending clarifying question (if so, warns)
+    2. Flips status from 'open_mira_only' to 'open_concierge'
+    3. Sets handoff_to_concierge = true
+    4. Assigns to the appropriate queue (FOOD, GROOMING, CELEBRATE, TRAVEL)
+    5. Adds system message + Mira's closing line
+    6. Emits a notification event
     """
     db = get_db()
     if db is None:
         raise HTTPException(status_code=500, detail="Database not available")
     
     now = datetime.now(timezone.utc)
+    
+    # Check if there's a pending step that hasn't been answered
+    ticket = await db.mira_conversations.find_one({"ticket_id": request.ticket_id})
+    if ticket and ticket.get("current_step"):
+        logger.warning(f"[HANDOFF] Warning: Handoff requested but there's an unanswered step: {ticket.get('current_step')}")
+    
+    # The proper closing line Mira should say
+    mira_closing_line = "I've shared everything we've discussed with your pet Concierge®. They'll take it forward from here and get back to you in this chat."
     
     # Update the ticket
     result = await db.mira_conversations.update_one(
@@ -702,19 +711,34 @@ async def handoff_to_concierge(request: HandoffToConciergeRequest):
                 "concierge_queue": request.concierge_queue,
                 "handoff_time": now.isoformat(),
                 "latest_mira_summary": request.latest_mira_summary,
+                "current_step": None,  # Clear any pending step on handoff
                 "updated_at": now.isoformat()
             },
             "$push": {
                 "conversation": {
-                    "sender": "system",
-                    "source": "Mira_OS",
-                    "text": f"Handoff to pet Concierge® – queue {request.concierge_queue}.",
-                    "timestamp": now.isoformat(),
-                    "meta": {
-                        "type": "handoff",
-                        "queue": request.concierge_queue,
-                        "summary": request.latest_mira_summary
-                    }
+                    "$each": [
+                        {
+                            "sender": "system",
+                            "source": "Mira_OS",
+                            "text": f"Handoff to pet Concierge® – queue {request.concierge_queue}.",
+                            "timestamp": now.isoformat(),
+                            "meta": {
+                                "type": "handoff",
+                                "queue": request.concierge_queue,
+                                "summary": request.latest_mira_summary
+                            }
+                        },
+                        {
+                            "sender": "mira",
+                            "source": "Mira_OS",
+                            "text": mira_closing_line,
+                            "timestamp": now.isoformat(),
+                            "meta": {
+                                "type": "handoff_closure",
+                                "is_clarifying_question": False  # Important: no question here
+                            }
+                        }
+                    ]
                 }
             }
         }
