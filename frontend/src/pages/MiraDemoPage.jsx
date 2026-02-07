@@ -1640,24 +1640,6 @@ const MiraDemoPage = () => {
           </div>
         </div>
       )}
-      
-      {/* Concierge® Bottom Bar - ALWAYS VISIBLE */}
-      <div className="mira-concierge-bar" data-testid="concierge-bar">
-        <div className="mira-concierge-bar-inner">
-          <span className="mira-concierge-bar-text">
-            Need personal help with {pet.name}?
-          </span>
-          <button 
-            onClick={handleConciergeHandoff}
-            disabled={isProcessing || conversationStage === 'concierge_engaged'}
-            className="mira-concierge-bar-btn"
-            data-testid="concierge-btn"
-          >
-            <MessageCircle />
-            Talk to Concierge®
-          </button>
-        </div>
-      </div>
     </div>
   );
 };
