@@ -2,31 +2,28 @@
  * MiraDemoPage.jsx
  * 
  * MIRA OS - The Pet Life Operating System
+ * Premium Chat UI - Inspired by iMessage, WhatsApp, Slack, ChatGPT
  * 
  * CANONICAL CONVERSATIONAL FLOWS:
  * - Products shown ONLY after explicit opt-in (user asks for suggestions)
  * - Every conversation creates/attaches to a service desk ticket
  * - Real-time transcript logging to backend
  * - Concierge handoff flips ticket status, doesn't create new ticket
- * 
- * Features:
- * - Persistent reply composer (ALWAYS at bottom)
- * - Quick reply chips directly under Mira's question
- * - Clarifying question highlighted in amber strip
- * - Products in compact carousel with "why for pet" lines
- * - Small Concierge® CTA (link-style, not huge banner)
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  Search, Mic, MicOff, Send, MessageCircle, Package, Calendar, 
-  AlertCircle, Heart, Sparkles, ChevronRight, Loader2, User,
-  ShoppingBag, Clock, Star, PawPrint, Crown, Bot, ArrowRight,
-  ThumbsUp, ThumbsDown, X, ChevronDown
+  Mic, MicOff, Send, MessageCircle, Package, Calendar, 
+  HelpCircle, Heart, Sparkles, ChevronDown,
+  ShoppingBag, PawPrint, Bot,
+  ThumbsUp, ThumbsDown, X, Phone, Mail, MessageSquare
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { API_URL } from '../utils/api';
+
+// Import the new premium CSS
+import '../styles/mira-chat.css';
 
 // Thin Dock Items
 const DOCK_ITEMS = [
