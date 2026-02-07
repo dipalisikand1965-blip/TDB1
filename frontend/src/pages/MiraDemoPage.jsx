@@ -983,7 +983,7 @@ const MiraDemoPage = () => {
                           <span className="text-white/40 text-xs">Was this helpful?</span>
                           <div className="flex items-center gap-2">
                             {msg.feedbackGiven ? (
-                              <span className={`text-xs px-3 py-1 rounded-full ${
+                              <span className={`text-xs px-3 py-1.5 rounded-full ${
                                 msg.feedbackGiven === 'positive' 
                                   ? 'bg-green-500/20 text-green-300' 
                                   : 'bg-red-500/20 text-red-300'
@@ -994,17 +994,23 @@ const MiraDemoPage = () => {
                               <>
                                 <button
                                   onClick={() => handleFeedback(idx, true)}
-                                  className="p-2 bg-white/5 hover:bg-green-500/20 rounded-lg transition-all group"
+                                  style={{ touchAction: 'manipulation', userSelect: 'none' }}
+                                  className="p-2.5 bg-white/5 hover:bg-green-500/20 active:bg-green-500/30 
+                                    rounded-lg transition-all group min-w-[44px] min-h-[44px]
+                                    flex items-center justify-center active:scale-95 select-none"
                                   data-testid={`feedback-up-${idx}`}
                                 >
-                                  <ThumbsUp className="w-4 h-4 text-white/50 group-hover:text-green-400" />
+                                  <ThumbsUp className="w-5 h-5 text-white/50 group-hover:text-green-400" />
                                 </button>
                                 <button
                                   onClick={() => handleFeedback(idx, false)}
-                                  className="p-2 bg-white/5 hover:bg-red-500/20 rounded-lg transition-all group"
+                                  style={{ touchAction: 'manipulation', userSelect: 'none' }}
+                                  className="p-2.5 bg-white/5 hover:bg-red-500/20 active:bg-red-500/30 
+                                    rounded-lg transition-all group min-w-[44px] min-h-[44px]
+                                    flex items-center justify-center active:scale-95 select-none"
                                   data-testid={`feedback-down-${idx}`}
                                 >
-                                  <ThumbsDown className="w-4 h-4 text-white/50 group-hover:text-red-400" />
+                                  <ThumbsDown className="w-5 h-5 text-white/50 group-hover:text-red-400" />
                                 </button>
                               </>
                             )}
