@@ -1288,6 +1288,7 @@ const MiraDemoPage = () => {
                     key={scenario.id}
                     onClick={() => {
                       setActiveScenario(scenario.id);
+                      setShowScenarios(false); // Close panel after selection to avoid confusion
                       handleQuickReply(scenario.query);
                     }}
                     data-testid={`scenario-${scenario.id}`}
