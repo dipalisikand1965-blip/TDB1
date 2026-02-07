@@ -580,6 +580,12 @@ const MiraDemoPage = () => {
       let lifeState = currentTicket?.lifeState || 'EXPLORE';
       let ticketId = currentTicket?.id;
       
+      // ANTI-LOOP: If there's a current step waiting for answer, complete it first
+      if (currentStep && currentTicket?.id) {
+        await completeStep(currentTicket.id, currentStep.step_id, inputQuery);
+        console.log('[STEP] Answered pending step:', currentStep.step_id, '-> Answer:', inputQuery);
+      }
+      
       if (!currentTicket) {
         // First message - route intent and create ticket
         const routeResponse = await fetch(`${API_URL}/api/mira/route_intent`, {
