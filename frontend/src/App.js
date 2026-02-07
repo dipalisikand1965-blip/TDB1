@@ -276,6 +276,10 @@ function AppRouter() {
         {/* Full-Screen Concierge® Dashboard - NO navbar/footer */}
         <Route path="/admin/concierge" element={<ConciergeRequestsDashboard />} />
         
+        {/* NEW: Mira Concierge Dashboard - Handoff tickets management */}
+        <Route path="/admin/mira-concierge" element={<ConciergeDashboard />} />
+        <Route path="/concierge-dashboard" element={<ConciergeDashboard />} />
+        
         {/* Full-Screen Mira Pages - NO navbar/footer for immersive experience */}
         <Route path="/mira" element={<MiraPage />} />
         <Route path="/ask-mira" element={<MiraPage />} />
