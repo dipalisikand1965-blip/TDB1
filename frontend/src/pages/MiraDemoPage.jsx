@@ -1825,7 +1825,7 @@ const MiraDemoPage = () => {
       // In emotional moments (anxiety, fear, grief, health concerns), suppress products
       // Show presence, tips, empathy - NOT irrelevant product recommendations
       // Pass conversation history to maintain context (e.g., "thank you" after grief)
-      const inComfortMode = isComfortMode(query, conversationHistory);
+      const inComfortMode = isComfortMode(inputQuery, conversationHistory);
       
       if (inComfortMode) {
         console.log('[COMFORT_MODE] Detected emotional moment - suppressing products, being present');
