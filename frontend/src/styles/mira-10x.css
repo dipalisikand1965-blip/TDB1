@@ -1,0 +1,1141 @@
+/**
+ * MIRA 10/10 - World-Class Premium Pet Chat Interface
+ * Apple iMessage quality + Deep Pet Personalization + Soul Score
+ */
+
+/* ========================================
+   FONTS - Premium Typography (Manrope + Syne)
+   ======================================== */
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Syne:wght@400;500;600;700;800&display=swap');
+
+:root {
+  /* Premium Color Palette */
+  --mira-bg-deep: #0f0a1f;
+  --mira-bg-mid: #1e1b4b;
+  --mira-bg-purple: #312e81;
+  --mira-bg-violet: #4c1d95;
+  
+  /* Glass Effects */
+  --mira-glass: rgba(255, 255, 255, 0.08);
+  --mira-glass-hover: rgba(255, 255, 255, 0.15);
+  --mira-glass-heavy: rgba(15, 23, 42, 0.6);
+  
+  /* Accent Colors */
+  --mira-pink: #ec4899;
+  --mira-purple: #a855f7;
+  --mira-amber: #f59e0b;
+  --mira-teal: #2dd4bf;
+  
+  /* User Bubble - Pale Lilac (as requested) */
+  --mira-user-lilac: rgba(167, 139, 250, 0.15);
+  --mira-user-lilac-border: rgba(167, 139, 250, 0.3);
+  
+  /* Text */
+  --mira-text-white: #ffffff;
+  --mira-text-secondary: rgba(255, 255, 255, 0.7);
+  --mira-text-muted: rgba(255, 255, 255, 0.5);
+  --mira-text-subtle: rgba(255, 255, 255, 0.35);
+  
+  /* Shadows & Glows */
+  --mira-glow-purple: 0 0 30px rgba(168, 85, 247, 0.4);
+  --mira-glow-amber: 0 0 20px rgba(245, 158, 11, 0.3);
+  --mira-glow-pink: 0 0 25px rgba(236, 72, 153, 0.35);
+  
+  /* Apple iMessage-like Spacing */
+  --mira-space-xs: 8px;
+  --mira-space-sm: 12px;
+  --mira-space-md: 16px;
+  --mira-space-lg: 24px;
+  --mira-space-xl: 32px;
+  --mira-space-2xl: 48px;
+  --mira-space-3xl: 64px;
+  
+  /* Border Radius */
+  --mira-radius-sm: 12px;
+  --mira-radius-md: 16px;
+  --mira-radius-lg: 20px;
+  --mira-radius-xl: 24px;
+  --mira-radius-full: 9999px;
+}
+
+/* ========================================
+   MAIN CONTAINER - Premium Background
+   ======================================== */
+.mira-10x {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  max-height: 100vh;
+  background: linear-gradient(180deg, 
+    var(--mira-bg-deep) 0%, 
+    var(--mira-bg-mid) 30%, 
+    var(--mira-bg-purple) 60%,
+    var(--mira-bg-violet) 100%
+  );
+  overflow: hidden;
+  font-family: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/* ========================================
+   HEADER - Glassmorphism Crystal
+   ======================================== */
+.m10-header {
+  flex-shrink: 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: var(--mira-space-md) var(--mira-space-lg);
+  background: rgba(15, 10, 31, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.m10-header-inner {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Logo */
+.m10-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--mira-space-sm);
+}
+
+.m10-logo-icon {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(135deg, var(--mira-pink), #f97316);
+  border-radius: var(--mira-radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: var(--mira-glow-pink);
+}
+
+.m10-logo-icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.m10-logo-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.m10-logo-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--mira-pink);
+  letter-spacing: -0.02em;
+}
+
+.m10-logo-subtitle {
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--mira-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+/* Pet Badge - Premium with Avatar Ring */
+.m10-pet-badge {
+  display: flex;
+  align-items: center;
+  gap: var(--mira-space-sm);
+  padding: 6px 16px 6px 6px;
+  background: var(--mira-glass);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--mira-radius-full);
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.m10-pet-badge:hover {
+  background: var(--mira-glass-hover);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-1px);
+}
+
+/* Pet Avatar with Concentric Rings (like Travel page) */
+.m10-pet-avatar-wrap {
+  position: relative;
+  width: 40px;
+  height: 40px;
+}
+
+.m10-pet-avatar-ring {
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 2px solid rgba(168, 85, 247, 0.4);
+  animation: m10-ring-pulse 3s ease-in-out infinite;
+}
+
+.m10-pet-avatar-ring-inner {
+  position: absolute;
+  inset: -1px;
+  border-radius: 50%;
+  border: 1px solid rgba(236, 72, 153, 0.3);
+}
+
+@keyframes m10-ring-pulse {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+.m10-pet-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--mira-purple), var(--mira-pink));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+.m10-pet-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.m10-pet-avatar svg {
+  width: 18px;
+  height: 18px;
+  color: white;
+}
+
+.m10-pet-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.m10-pet-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: white;
+  line-height: 1.2;
+}
+
+.m10-pet-soul {
+  font-size: 10px;
+  color: var(--mira-amber);
+  font-weight: 500;
+}
+
+/* Pet Dropdown */
+.m10-pet-dropdown {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: var(--mira-space-lg);
+  background: rgba(15, 10, 31, 0.95);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--mira-radius-lg);
+  min-width: 240px;
+  overflow: hidden;
+  z-index: 1000;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  animation: m10-dropdown-in 0.2s ease-out;
+}
+
+@keyframes m10-dropdown-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.m10-pet-option {
+  display: flex;
+  align-items: center;
+  gap: var(--mira-space-sm);
+  width: 100%;
+  padding: var(--mira-space-md);
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.15s;
+  text-align: left;
+}
+
+.m10-pet-option:hover {
+  background: var(--mira-glass);
+}
+
+.m10-pet-option.active {
+  background: rgba(168, 85, 247, 0.15);
+}
+
+/* ========================================
+   SOUL TRAITS BAR (New - From Travel Page)
+   ======================================== */
+.m10-soul-bar {
+  flex-shrink: 0;
+  padding: var(--mira-space-md) var(--mira-space-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--mira-space-sm);
+  flex-wrap: wrap;
+  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.m10-soul-trait {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--mira-radius-full);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--mira-text-secondary);
+  transition: all 0.2s;
+}
+
+.m10-soul-trait:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
+}
+
+.m10-soul-trait-icon {
+  font-size: 14px;
+}
+
+/* ========================================
+   NAVIGATION DOCK - Floating Island
+   ======================================== */
+.m10-dock {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: var(--mira-space-sm);
+  background: var(--mira-glass-heavy);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--mira-radius-full);
+  margin: var(--mira-space-md) auto;
+  width: fit-content;
+  max-width: calc(100% - 32px);
+  overflow-x: auto;
+}
+
+.m10-dock::-webkit-scrollbar {
+  display: none;
+}
+
+.m10-dock-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: var(--mira-space-sm) var(--mira-space-md);
+  min-width: 60px;
+  border: none;
+  border-radius: var(--mira-radius-lg);
+  background: transparent;
+  color: var(--mira-text-muted);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.m10-dock-btn:hover {
+  background: var(--mira-glass);
+  color: white;
+}
+
+.m10-dock-btn.active {
+  background: linear-gradient(135deg, var(--mira-purple), var(--mira-pink));
+  color: white;
+  box-shadow: var(--mira-glow-purple);
+}
+
+.m10-dock-btn svg {
+  width: 20px;
+  height: 20px;
+  transition: transform 0.2s;
+}
+
+.m10-dock-btn:hover svg {
+  transform: scale(1.1);
+}
+
+.m10-dock-btn span {
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ========================================
+   CHAT AREA - Apple iMessage Spacing
+   ======================================== */
+.m10-messages {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: var(--mira-space-xl);
+  -webkit-overflow-scrolling: touch;
+}
+
+.m10-messages-inner {
+  max-width: 700px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--mira-space-xl); /* Much more spacing between messages */
+}
+
+/* ========================================
+   USER MESSAGE - Pale Lilac (As Requested)
+   ======================================== */
+.m10-msg-user {
+  display: flex;
+  justify-content: flex-end;
+  padding-left: 20%;
+}
+
+.m10-bubble-user {
+  background: var(--mira-user-lilac);
+  border: 1px solid var(--mira-user-lilac-border);
+  color: white;
+  padding: var(--mira-space-md) var(--mira-space-lg);
+  border-radius: var(--mira-radius-xl) var(--mira-radius-xl) 6px var(--mira-radius-xl);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.6;
+  backdrop-filter: blur(10px);
+}
+
+/* ========================================
+   MIRA MESSAGE CARD - Glass Panel
+   ======================================== */
+.m10-msg-mira {
+  display: flex;
+  justify-content: flex-start;
+  padding-right: 10%;
+}
+
+.m10-card {
+  width: 100%;
+  background: var(--mira-glass);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--mira-radius-xl);
+  overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+/* Card Header */
+.m10-card-header {
+  display: flex;
+  align-items: center;
+  padding: var(--mira-space-md) var(--mira-space-lg);
+  background: rgba(0, 0, 0, 0.15);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.m10-mira-avatar {
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, var(--mira-pink), #f97316);
+  border-radius: var(--mira-radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  margin-right: var(--mira-space-sm);
+}
+
+.m10-mira-avatar svg {
+  width: 16px;
+  height: 16px;
+}
+
+.m10-mira-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+}
+
+/* Card Body */
+.m10-card-body {
+  padding: var(--mira-space-lg);
+}
+
+.m10-card-text {
+  font-size: 15px;
+  line-height: 1.7;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+}
+
+/* ========================================
+   QUESTION HIGHLIGHT - Amber Strip
+   ======================================== */
+.m10-question {
+  margin-top: var(--mira-space-lg);
+  padding: var(--mira-space-md) var(--mira-space-lg);
+  background: linear-gradient(90deg, rgba(245, 158, 11, 0.15) 0%, rgba(245, 158, 11, 0.05) 100%);
+  border-left: 3px solid var(--mira-amber);
+  border-radius: 0 var(--mira-radius-md) var(--mira-radius-md) 0;
+}
+
+.m10-question-text {
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.6;
+  color: #fef3c7;
+  margin: 0;
+}
+
+/* ========================================
+   QUICK REPLY CHIPS - Premium Pills
+   ======================================== */
+.m10-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--mira-space-sm);
+  margin-top: var(--mira-space-lg);
+}
+
+.m10-chip {
+  padding: var(--mira-space-sm) var(--mira-space-lg);
+  border-radius: var(--mira-radius-full);
+  background: rgba(245, 158, 11, 0.15);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #fef3c7;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.m10-chip:hover {
+  background: rgba(245, 158, 11, 0.25);
+  border-color: var(--mira-amber);
+  transform: translateY(-2px);
+  box-shadow: var(--mira-glow-amber);
+}
+
+/* ========================================
+   PRODUCT GRID - 2x2 Tiles (As Requested)
+   ======================================== */
+.m10-products {
+  margin-top: var(--mira-space-xl);
+  padding-top: var(--mira-space-lg);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.m10-products-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--mira-space-md);
+}
+
+.m10-products-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mira-text-secondary);
+  margin: 0;
+}
+
+.m10-products-title .pet-name {
+  color: var(--mira-pink);
+  font-weight: 700;
+}
+
+/* 2x2 Grid Layout */
+.m10-products-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--mira-space-md);
+}
+
+/* Product Tile */
+.m10-product-tile {
+  background: white;
+  border-radius: var(--mira-radius-lg);
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+}
+
+.m10-product-tile:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+.m10-product-img {
+  width: 100%;
+  height: 120px;
+  object-fit: cover;
+  background: #f3f4f6;
+}
+
+.m10-product-content {
+  padding: var(--mira-space-sm);
+}
+
+.m10-product-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1f2937;
+  margin: 0 0 4px;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.m10-product-price {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--mira-purple);
+  margin: 0 0 8px;
+}
+
+.m10-product-add {
+  width: 100%;
+  padding: 8px;
+  border: none;
+  border-radius: var(--mira-radius-sm);
+  background: #1f2937;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: background 0.2s;
+}
+
+.m10-product-add:hover {
+  background: black;
+}
+
+.m10-product-add svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ========================================
+   IMPORTANT TO WATCH FOR - Collapsible
+   ======================================== */
+.m10-watchfor {
+  margin-top: var(--mira-space-lg);
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: var(--mira-radius-md);
+  overflow: hidden;
+}
+
+.m10-watchfor-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: var(--mira-space-md);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.m10-watchfor-toggle:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.m10-watchfor-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--mira-text-secondary);
+}
+
+.m10-watchfor-label svg {
+  width: 16px;
+  height: 16px;
+  color: var(--mira-amber);
+}
+
+.m10-watchfor-content {
+  padding: 0 var(--mira-space-md) var(--mira-space-md);
+}
+
+.m10-watchfor-list {
+  margin: 0;
+  padding-left: 20px;
+  color: var(--mira-text-secondary);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.m10-watchfor-list li {
+  margin-bottom: 6px;
+}
+
+/* ========================================
+   CONCIERGE STRIP
+   ======================================== */
+.m10-concierge-strip {
+  margin-top: var(--mira-space-lg);
+  padding: var(--mira-space-md);
+  background: rgba(168, 85, 247, 0.1);
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  border-radius: var(--mira-radius-md);
+  display: flex;
+  align-items: flex-start;
+  gap: var(--mira-space-sm);
+}
+
+.m10-concierge-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(168, 85, 247, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--mira-text-secondary);
+  flex-shrink: 0;
+}
+
+.m10-concierge-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.m10-concierge-content {
+  flex: 1;
+}
+
+.m10-concierge-text {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--mira-text-secondary);
+  margin: 0 0 var(--mira-space-sm);
+}
+
+.m10-concierge-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: var(--mira-space-sm) var(--mira-space-lg);
+  background: var(--mira-purple);
+  border: none;
+  border-radius: var(--mira-radius-full);
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.m10-concierge-btn:hover {
+  background: #9333ea;
+  transform: translateY(-1px);
+  box-shadow: var(--mira-glow-purple);
+}
+
+/* ========================================
+   FEEDBACK ROW
+   ======================================== */
+.m10-feedback {
+  display: flex;
+  align-items: center;
+  gap: var(--mira-space-sm);
+  margin-top: var(--mira-space-lg);
+  padding-top: var(--mira-space-md);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.m10-feedback-label {
+  font-size: 13px;
+  color: var(--mira-text-subtle);
+}
+
+.m10-feedback-btns {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.m10-feedback-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--mira-radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--mira-glass);
+  color: var(--mira-text-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.m10-feedback-btn:hover {
+  background: var(--mira-glass-hover);
+  color: white;
+}
+
+.m10-feedback-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ========================================
+   WELCOME STATE - Premium
+   ======================================== */
+.m10-welcome {
+  text-align: center;
+  padding: var(--mira-space-2xl) var(--mira-space-lg);
+}
+
+.m10-welcome-avatar {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  margin: 0 auto var(--mira-space-xl);
+}
+
+.m10-welcome-avatar-ring {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 2px solid rgba(168, 85, 247, 0.3);
+  animation: m10-ring-pulse 3s ease-in-out infinite;
+}
+
+.m10-welcome-avatar-ring-2 {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 1px solid rgba(236, 72, 153, 0.2);
+  animation: m10-ring-pulse 3s ease-in-out infinite 0.5s;
+}
+
+.m10-welcome-avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--mira-purple), var(--mira-pink));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+  box-shadow: var(--mira-glow-purple);
+}
+
+.m10-welcome-avatar-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.m10-welcome-avatar-img svg {
+  width: 40px;
+  height: 40px;
+  color: white;
+}
+
+.m10-welcome-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: white;
+  margin: 0 0 var(--mira-space-sm);
+  line-height: 1.3;
+}
+
+.m10-welcome-title .pet-name {
+  color: var(--mira-pink);
+}
+
+.m10-welcome-subtitle {
+  font-size: 15px;
+  color: var(--mira-text-secondary);
+  margin: 0 0 var(--mira-space-xl);
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.6;
+}
+
+/* Welcome Chips */
+.m10-welcome-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--mira-space-sm);
+}
+
+.m10-welcome-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: var(--mira-space-sm) var(--mira-space-lg);
+  background: var(--mira-glass);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--mira-radius-full);
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s;
+}
+
+.m10-welcome-chip:hover {
+  background: var(--mira-glass-hover);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+/* ========================================
+   INPUT COMPOSER - Premium
+   ======================================== */
+.m10-composer {
+  flex-shrink: 0;
+  padding: var(--mira-space-md) var(--mira-space-lg) var(--mira-space-xl);
+  background: linear-gradient(180deg, transparent 0%, rgba(15, 10, 31, 0.95) 30%);
+}
+
+.m10-composer-inner {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.m10-input-row {
+  display: flex;
+  align-items: center;
+  gap: var(--mira-space-sm);
+  background: var(--mira-glass);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--mira-radius-xl);
+  padding: 6px 6px 6px var(--mira-space-lg);
+  transition: all 0.2s;
+}
+
+.m10-input-row:focus-within {
+  border-color: rgba(168, 85, 247, 0.5);
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
+}
+
+.m10-input {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: var(--mira-space-sm);
+  font-size: 15px;
+  font-family: 'Manrope', sans-serif;
+  color: white;
+  outline: none;
+}
+
+.m10-input::placeholder {
+  color: var(--mira-text-subtle);
+}
+
+.m10-btn-mic,
+.m10-btn-send {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--mira-radius-md);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.m10-btn-mic {
+  background: transparent;
+  color: var(--mira-text-muted);
+}
+
+.m10-btn-mic:hover {
+  background: var(--mira-glass);
+  color: white;
+}
+
+.m10-btn-send {
+  background: linear-gradient(135deg, var(--mira-pink), var(--mira-purple));
+  color: white;
+}
+
+.m10-btn-send:hover {
+  transform: scale(1.05);
+  box-shadow: var(--mira-glow-pink);
+}
+
+.m10-btn-send:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.m10-btn-mic svg,
+.m10-btn-send svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ========================================
+   SANDBOX FOOTER
+   ======================================== */
+.m10-sandbox-footer {
+  flex-shrink: 0;
+  padding: var(--mira-space-sm) var(--mira-space-lg);
+  text-align: center;
+  font-size: 11px;
+  color: var(--mira-text-subtle);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* ========================================
+   LOADING STATE
+   ======================================== */
+.m10-loading {
+  display: flex;
+  align-items: center;
+  gap: var(--mira-space-sm);
+  padding: var(--mira-space-md);
+}
+
+.m10-loading-dots {
+  display: flex;
+  gap: 4px;
+}
+
+.m10-loading-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--mira-purple);
+  animation: m10-dot-pulse 1.4s infinite ease-in-out both;
+}
+
+.m10-loading-dot:nth-child(1) { animation-delay: -0.32s; }
+.m10-loading-dot:nth-child(2) { animation-delay: -0.16s; }
+.m10-loading-dot:nth-child(3) { animation-delay: 0; }
+
+@keyframes m10-dot-pulse {
+  0%, 80%, 100% { transform: scale(0); }
+  40% { transform: scale(1); }
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+@media (max-width: 768px) {
+  .m10-header {
+    padding: var(--mira-space-sm) var(--mira-space-md);
+  }
+  
+  .m10-logo-text {
+    display: none;
+  }
+  
+  .m10-pet-info {
+    display: none;
+  }
+  
+  .m10-soul-bar {
+    padding: var(--mira-space-sm);
+  }
+  
+  .m10-soul-trait {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+  
+  .m10-dock-btn span {
+    display: none;
+  }
+  
+  .m10-dock-btn {
+    min-width: 48px;
+    padding: var(--mira-space-sm);
+  }
+  
+  .m10-messages {
+    padding: var(--mira-space-md);
+  }
+  
+  .m10-messages-inner {
+    gap: var(--mira-space-lg);
+  }
+  
+  .m10-msg-user {
+    padding-left: 10%;
+  }
+  
+  .m10-msg-mira {
+    padding-right: 5%;
+  }
+  
+  .m10-products-grid {
+    gap: var(--mira-space-sm);
+  }
+  
+  .m10-product-img {
+    height: 100px;
+  }
+  
+  .m10-welcome-title {
+    font-size: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .m10-pet-badge {
+    padding: 4px;
+  }
+  
+  .m10-pet-avatar-wrap {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .m10-pet-avatar {
+    width: 36px;
+    height: 36px;
+  }
+  
+  .m10-chip {
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+}
+
+/* iOS Safe Areas */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .m10-composer {
+    padding-bottom: calc(var(--mira-space-xl) + env(safe-area-inset-bottom));
+  }
+}
