@@ -1205,77 +1205,45 @@
 
 
 /* ========================================
-   Concierge® Bottom Bar - Always Visible
+   Concierge® CTA - Prominent Text Link Style
    ======================================== */
-.mira-concierge-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(12px);
-  border-top: 1px solid rgba(168, 85, 247, 0.2);
-  padding: var(--mira-space-sm) var(--mira-space-lg);
-  padding-bottom: calc(var(--mira-space-sm) + env(safe-area-inset-bottom, 0px));
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.mira-concierge-cta {
+  text-align: center;
+  padding: var(--mira-space-xl) var(--mira-space-lg);
+  margin-top: var(--mira-space-lg);
+  border-top: 1px solid var(--mira-border-light);
 }
 
-.mira-concierge-bar-inner {
-  max-width: 800px;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--mira-space-md);
-}
-
-.mira-concierge-bar-text {
-  font-size: var(--mira-font-size-sm);
+.mira-concierge-cta-text {
+  font-size: var(--mira-font-size-base);
   color: var(--mira-text-secondary);
-  flex: 1;
-}
-
-.mira-concierge-bar-btn {
-  display: flex;
-  align-items: center;
-  gap: var(--mira-space-sm);
-  padding: var(--mira-space-sm) var(--mira-space-lg);
-  min-height: var(--mira-touch-target);
-  background: linear-gradient(135deg, #A855F7 0%, #EC4899 100%);
-  border: none;
-  border-radius: var(--mira-radius-full);
-  color: white;
-  font-size: var(--mira-font-size-sm);
-  font-weight: 600;
   cursor: pointer;
-  transition: all var(--mira-transition-fast);
+  transition: color var(--mira-transition-fast);
+  display: inline-block;
 }
 
-.mira-concierge-bar-btn:hover {
-  transform: scale(1.02);
-  box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
+.mira-concierge-cta-text:hover {
+  color: var(--mira-accent);
 }
 
-.mira-concierge-bar-btn svg {
-  width: 18px;
-  height: 18px;
+.mira-concierge-cta-highlight {
+  color: var(--mira-accent);
+  font-weight: 500;
 }
 
-/* Adjust composer to account for concierge bar */
+/* Remove the bottom bar - using inline CTA instead */
+.mira-concierge-bar {
+  display: none;
+}
+
+/* Restore composer margin */
 .mira-composer {
-  margin-bottom: 60px;
+  margin-bottom: 0;
 }
 
 @media (max-width: 640px) {
-  .mira-concierge-bar-text {
-    display: none;
-  }
-  
   .mira-composer {
-    margin-bottom: 56px;
+    margin-bottom: 0;
   }
 }
 
