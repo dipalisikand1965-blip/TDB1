@@ -834,6 +834,78 @@
   padding: var(--space-2xl) var(--space-lg);
 }
 
+/* Pet Avatar with Animated Rings */
+.mp-welcome-avatar {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  margin: 0 auto var(--space-xl);
+}
+
+.mp-welcome-avatar-ring {
+  position: absolute;
+  inset: -12px;
+  border-radius: 50%;
+  border: 2px solid rgba(168, 85, 247, 0.4);
+  animation: mp-ring-pulse 3s ease-in-out infinite;
+}
+
+.mp-welcome-avatar-ring-2 {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  border: 1px solid rgba(236, 72, 153, 0.3);
+  animation: mp-ring-pulse 3s ease-in-out infinite 0.5s;
+}
+
+@keyframes mp-ring-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.02); opacity: 1; }
+}
+
+.mp-welcome-avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--mira-purple), var(--mira-pink));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 0 30px rgba(168, 85, 247, 0.4);
+}
+
+.mp-welcome-avatar-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mp-welcome-avatar-img svg {
+  width: 50px;
+  height: 50px;
+  color: white;
+}
+
+/* Soul Score Badge (on avatar) */
+.mp-soul-badge {
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  z-index: 2;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+}
+
 .mp-welcome-icon {
   width: 80px;
   height: 80px;
