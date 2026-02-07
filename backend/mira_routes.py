@@ -980,18 +980,49 @@ USER INPUT: "{user_input}"
 The user is asking for clarification about the current choice. EXPLAIN the options with specific examples for this pet, then REPEAT the same clarifying question. Do NOT introduce new topics or dump generic breed info.
 """
         else:
+            # Build intent anchor from step history
+            intent_anchor = ""
+            if step_history and len(step_history) > 0:
+                # Detect the original intent from step history
+                first_step = step_history[0].get('step_id', '') if step_history else ''
+                if 'GROOM' in first_step:
+                    intent_anchor = """
+ORIGINAL INTENT: GROOMING (haircut/bath/trim)
+You MUST stay on grooming. Do NOT switch to activities, toys, treats, or general "things to do at home".
+If user says "help me try at home" in grooming context = they want to groom at home, NOT play at home.
+"""
+                elif 'BIRTHDAY' in first_step or 'CELEBRATE' in first_step:
+                    intent_anchor = """
+ORIGINAL INTENT: BIRTHDAY PLANNING
+Stay focused on planning the celebration. Do NOT dump generic breed info.
+"""
+                elif 'TRAVEL' in first_step:
+                    intent_anchor = """
+ORIGINAL INTENT: TRAVEL PLANNING
+Stay focused on the trip. Do NOT switch to general pet care topics.
+"""
+                elif 'TREAT' in first_step or 'FOOD' in first_step:
+                    intent_anchor = """
+ORIGINAL INTENT: TREATS/FOOD
+Stay focused on food/treats. Progress through the flow without looping.
+"""
+            
             user_message_text = f"""
 {pet_info}
 {context_info}
 {completed_steps_context}
 {step_history_context}
+{intent_anchor}
 
 USER INPUT: "{user_input}"
 
 Analyze this input and respond with valid JSON following the format specified.
 Use the BREED INTELLIGENCE above to provide breed-specific advice. Reference health concerns, dietary needs, climate considerations, and special tips relevant to this breed.
 
-IMPORTANT: If the user's input is an answer to a clarifying question, acknowledge the answer and move to the NEXT appropriate step. Do NOT repeat the same question they just answered.
+IMPORTANT: 
+1. If the user's input is an answer to a clarifying question, acknowledge the answer and move to the NEXT appropriate step.
+2. Do NOT repeat the same question they just answered.
+3. STAY ANCHORED to the original intent. "Help me try at home" in a GROOMING context means HOME GROOMING, not activities/toys.
 """
         
         user_message = UserMessage(text=user_message_text)
