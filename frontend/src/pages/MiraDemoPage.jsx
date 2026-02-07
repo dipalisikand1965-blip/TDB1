@@ -88,6 +88,12 @@ const MiraDemoPage = () => {
   const [conversationStage, setConversationStage] = useState('initial');
   const [userHasOptedInForProducts, setUserHasOptedInForProducts] = useState(false);
   
+  // Step tracking - ANTI-LOOP SYSTEM
+  // Tracks which steps (questions) have been asked and answered
+  const [completedSteps, setCompletedSteps] = useState([]);  // List of step_ids that are done
+  const [currentStep, setCurrentStep] = useState(null);  // Currently open step waiting for answer
+  const [stepHistory, setStepHistory] = useState([]);  // Full history of Q&A
+  
   // Refs
   const inputRef = useRef(null);
   const recognitionRef = useRef(null);
