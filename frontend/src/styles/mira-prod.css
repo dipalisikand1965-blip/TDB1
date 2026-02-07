@@ -1892,3 +1892,56 @@ button.mp-welcome-chip,
     font-size: 11px;
   }
 }
+
+/* ========================================
+   FIX: All Icons White on Dark Background
+   ======================================== */
+.mp-mira-avatar {
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, var(--mira-pink), var(--mira-magenta));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mp-mira-avatar svg {
+  width: 18px;
+  height: 18px;
+  color: white !important;
+}
+
+/* All SVGs in dark areas should be white */
+.mira-prod svg {
+  color: currentColor;
+}
+
+.mp-logo-icon svg,
+.mp-test-title svg,
+.soul-journey-btn svg,
+.love-card-icon svg,
+.trait-chip svg,
+.quick-chip svg,
+.mp-chip svg,
+.mp-card svg,
+.mp-bubble svg {
+  color: white !important;
+}
+
+/* Sparkle icons specifically */
+.love-card-sparkle {
+  color: #fbbf24 !important;
+}
+
+/* Loading dots color */
+.mp-loading svg {
+  color: var(--mira-pink) !important;
+}
+
+/* Card icons white */
+.mp-card-header svg,
+.mp-concierge-strip svg {
+  color: white !important;
+}
