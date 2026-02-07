@@ -674,14 +674,18 @@
    CONCIERGE STRIP
    ======================================== */
 .mp-concierge-strip {
-  margin-top: var(--space-lg);
-  padding: var(--space-md);
-  background: rgba(139, 92, 246, 0.1);
-  border: 1px solid rgba(139, 92, 246, 0.2);
+  margin-top: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  background: rgba(139, 92, 246, 0.08);
+  border: 1px solid rgba(139, 92, 246, 0.15);
   border-radius: var(--radius-md);
   display: flex;
   align-items: flex-start;
-  gap: var(--space-md);
+  gap: var(--space-sm);
+}
+
+.mp-concierge-content {
+  flex: 1;
 }
 
 .mp-concierge-icon {
