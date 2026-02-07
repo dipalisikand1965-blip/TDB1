@@ -1277,6 +1277,12 @@ const MiraDemoPage = () => {
         </div>
       </header>
 
+      {/* Breed Info Strip - Always visible contextual info */}
+      <div className="mira-breed-strip" data-testid="breed-info-strip">
+        <PawPrint className="w-4 h-4" />
+        <span>Like other {pet.breed}s, {pet.name} may enjoy interactive play, regular grooming, and balanced nutrition tailored to their energy levels.</span>
+      </div>
+
       {/* Main Chat Area - ChatGPT Style */}
       <div 
         ref={messagesContainerRef}
@@ -1549,6 +1555,25 @@ const MiraDemoPage = () => {
         </button>
       )}
       
+      {/* Concierge Bar - ALWAYS visible, persistent in chat */}
+      <div className="mira-concierge-bar" data-testid="concierge-bar">
+        <div className="mira-concierge-bar-inner">
+          <div className="mira-concierge-bar-left">
+            <MessageCircle className="w-4 h-4" />
+            <span>Need personal help with {pet.name}?</span>
+          </div>
+          <button 
+            onClick={handleConciergeHandoff}
+            disabled={isProcessing}
+            className="mira-concierge-bar-btn"
+            data-testid="concierge-bar-btn"
+          >
+            <Phone className="w-3 h-3" />
+            Talk to Concierge®
+          </button>
+        </div>
+      </div>
+
       {/* Reply Composer - ALWAYS PINNED AT BOTTOM */}
       <div className="mira-composer">
         <div className="mira-composer-inner">
@@ -1562,7 +1587,7 @@ const MiraDemoPage = () => {
               autoCorrect="off"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Ask me anything about Buddy... treats, grooming, birthday, travel..."
+              placeholder={`Ask me anything about ${pet.name}... treats, grooming, birthday, travel...`}
               className="mira-composer-input"
               disabled={isProcessing}
               data-testid="mira-input"
