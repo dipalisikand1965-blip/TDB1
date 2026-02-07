@@ -2887,7 +2887,7 @@ input, select, textarea {
 }
 
 /* ========================================
-   MOBILE M (360px - 413px) - Standard Phones
+   MOBILE M (360px - 413px) - Standard Phones (iPhone 12/13/14)
    ======================================== */
 @media (min-width: 360px) and (max-width: 413px) {
   .mp-conversation {
@@ -2901,8 +2901,15 @@ input, select, textarea {
   }
   
   .mp-msg-content {
+    padding: 16px;
+    font-size: 16px;
+    line-height: 1.65;
+  }
+  
+  .mp-highlight {
     padding: 14px;
-    font-size: 14px;
+    font-size: 15px;
+    line-height: 1.5;
   }
   
   .mp-products-grid {
@@ -2910,9 +2917,65 @@ input, select, textarea {
     gap: 14px;
   }
   
+  .mp-product-name {
+    font-size: 16px;
+  }
+  
+  .mp-product-price {
+    font-size: 17px;
+  }
+  
+  .mp-why-text {
+    font-size: 13px;
+  }
+  
   .mp-service-grid {
     grid-template-columns: 1fr;
     gap: 12px;
+  }
+  
+  .mp-service-card {
+    padding: 16px;
+  }
+  
+  .mp-service-label {
+    font-size: 16px;
+  }
+  
+  .mp-service-desc {
+    font-size: 14px;
+  }
+  
+  .mp-service-price {
+    font-size: 13px;
+  }
+  
+  .mp-quick-reply {
+    padding: 12px 16px;
+    font-size: 15px;
+  }
+  
+  .mp-watchfor-content {
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  
+  .mp-watchfor-toggle {
+    font-size: 15px;
+  }
+  
+  .mp-dynamic-intro,
+  .mp-service-intro {
+    font-size: 15px;
+  }
+  
+  .mp-concierge-strip p {
+    font-size: 14px;
+  }
+  
+  .mp-input-container input {
+    font-size: 16px;
+    padding: 14px 16px;
   }
 }
 
