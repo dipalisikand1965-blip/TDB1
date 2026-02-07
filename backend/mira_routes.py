@@ -3390,7 +3390,60 @@ async def save_pet_soul_enrichment(pet_id: str, enrichment: Dict, source: str = 
                 "$push": {"enrichment_history": enrichment_record}
             }
         )
-        logger.info(f"Pet Soul enriched: {pet_id} | Field: {field}")
+        
+        # INCREMENT SOUL SCORE - The Pet Soul grows as Mira learns!
+        # Each enrichment adds to the soul score (max 100)
+        soul_increment = {
+            "user-stated": 2.0,  # Direct info from user is most valuable
+            "inferred": 0.5,    # Inferred data is less certain
+            "mira-observed": 1.0  # Things Mira notices from interactions
+        }.get(source, 0.5)
+        
+        await db.pets.update_one(
+            {"id": pet_id, "overall_score": {"$lt": 100}},  # Cap at 100
+            {"$inc": {"overall_score": soul_increment}}
+        )
+        logger.info(f"Pet Soul enriched: {pet_id} | Field: {field} | Score +{soul_increment}")
+        return True
+    
+    return False
+
+async def increment_soul_score_on_interaction(pet_id: str, interaction_type: str = "conversation"):
+    """Increment soul score when meaningful interactions happen - The Pet Soul grows!"""
+    db = get_db()
+    
+    if not pet_id:
+        return False
+    
+    # Different interactions contribute differently to soul growth
+    score_increments = {
+        "conversation": 0.1,       # Basic chat
+        "preference_learned": 1.5, # Learning what pet likes/dislikes
+        "health_info": 2.0,        # Health data is critical
+        "milestone": 3.0,          # Birthday, adoption day, etc.
+        "purchase": 0.5,           # User bought something for pet
+        "service_booked": 1.0,     # Grooming, vet, etc.
+        "soul_journey": 5.0        # Completing soul questionnaire
+    }
+    
+    increment = score_increments.get(interaction_type, 0.1)
+    
+    result = await db.pets.update_one(
+        {"id": pet_id, "overall_score": {"$lt": 100}},  # Cap at 100%
+        {
+            "$inc": {"overall_score": increment},
+            "$push": {
+                "soul_growth_log": {
+                    "type": interaction_type,
+                    "increment": increment,
+                    "timestamp": datetime.now(timezone.utc).isoformat()
+                }
+            }
+        }
+    )
+    
+    if result.modified_count > 0:
+        logger.info(f"Soul Score grew! Pet: {pet_id} | Type: {interaction_type} | +{increment}%")
         return True
     
     return False
