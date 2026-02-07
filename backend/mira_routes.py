@@ -716,7 +716,9 @@ class MiraOSUnderstandResponse(BaseModel):
 async def understand_with_llm(
     user_input: str,
     pet_context: Dict[str, Any],
-    page_context: str = None
+    page_context: str = None,
+    completed_steps: List[str] = None,
+    step_history: List[Dict[str, Any]] = None
 ) -> Dict[str, Any]:
     """Use LLM to understand user intent and generate response"""
     
@@ -771,6 +773,28 @@ CURRENT CONTEXT:
 - Time: {time_of_day} ({current_time.strftime('%H:%M')})
 - Page: {page_context or 'home'}
 """
+
+    # ANTI-LOOP: Build completed steps context
+    completed_steps_context = ""
+    if completed_steps and len(completed_steps) > 0:
+        completed_steps_context = f"""
+ALREADY ANSWERED QUESTIONS (DO NOT REPEAT THESE):
+{', '.join(completed_steps)}
+
+"""
+    
+    step_history_context = ""
+    if step_history and len(step_history) > 0:
+        history_lines = []
+        for step in step_history:
+            history_lines.append(f"- Q ({step.get('step_id', 'unknown')}): answered with '{step.get('answer', '')}'")
+        step_history_context = f"""
+PREVIOUS Q&A IN THIS CONVERSATION:
+{chr(10).join(history_lines)}
+
+CRITICAL RULE: Never repeat a clarifying question that has already been answered above.
+If a question like "everyday vs special-occasion treats" was already answered, move forward to the next step.
+"""
     
     try:
         chat = LlmChat(
@@ -782,11 +806,15 @@ CURRENT CONTEXT:
         user_message_text = f"""
 {pet_info}
 {context_info}
+{completed_steps_context}
+{step_history_context}
 
 USER INPUT: "{user_input}"
 
 Analyze this input and respond with valid JSON following the format specified.
 Use the BREED INTELLIGENCE above to provide breed-specific advice. Reference health concerns, dietary needs, climate considerations, and special tips relevant to this breed.
+
+IMPORTANT: If the user's input is an answer to a clarifying question, acknowledge the answer and move to the NEXT appropriate step. Do NOT repeat the same question they just answered.
 """
         
         user_message = UserMessage(text=user_message_text)
