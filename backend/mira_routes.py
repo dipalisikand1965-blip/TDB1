@@ -1674,9 +1674,25 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
         if is_food_portion or is_food_routine:
             should_show_products = False
         
-        # For TRAVEL requests, ALWAYS show travel products
+        # For TRAVEL requests - DON'T show products immediately, ASK first
+        # Products only after clarifying questions answered
         if is_travel_request:
-            should_show_products = True
+            # Check if this is the FIRST travel message or a follow-up
+            travel_clarification_done = False
+            if request.conversation_history:
+                for msg in request.conversation_history:
+                    content = safe_lower(msg.get('content', ''))
+                    # If user has already answered travel questions, show products
+                    if any(word in content for word in ['driving', 'flying', 'car', 'flight', 'road', 'train', 'days', 'nights', 'week']):
+                        travel_clarification_done = True
+                        break
+            
+            if not travel_clarification_done:
+                # First travel message - ASK, don't show products
+                should_show_products = False
+            else:
+                # Follow-up - now show products
+                should_show_products = True
         
         # For GRIEF_HOLD, override everything - NO products, NO actions
         if is_grief_hold:
