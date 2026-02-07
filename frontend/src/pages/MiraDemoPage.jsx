@@ -1534,7 +1534,7 @@ const MiraDemoPage = () => {
               autoCorrect="off"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Type your reply to Mira..."
+              placeholder="Ask me anything about Buddy... treats, grooming, birthday, travel..."
               className="mira-composer-input"
               disabled={isProcessing}
               data-testid="mira-input"
