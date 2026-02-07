@@ -460,6 +460,7 @@ Available at `/mira-demo` with 12 test scenarios:
 |----------|---------|
 | `/app/memory/MIRA_DOCTRINE.md` | Core persona, voice, and governing principles |
 | `/app/memory/GROOMING_OS.md` | Complete grooming intelligence (intents, flows, boundaries) |
+| `/app/memory/FOOD_NUTRITION_OS.md` | Complete food & nutrition intelligence (intents, flows, boundaries) |
 | `/app/memory/PRD.md` | Product requirements and roadmap |
 
 ---
@@ -468,6 +469,7 @@ Available at `/mira-demo` with 12 test scenarios:
 
 | Date | Change |
 |------|--------|
+| Dec 2025 | Added comprehensive Food & Nutrition OS with 10 intent types |
 | Dec 2025 | Added comprehensive Grooming OS with 7 intent types and complete flows |
 | Feb 7, 2026 | Created Mira Doctrine v1.0 with complete governing principles |
 | Feb 7, 2026 | Implemented presence before performance in system prompt |
