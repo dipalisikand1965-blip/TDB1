@@ -1202,3 +1202,80 @@
     transform: translateY(0);
   }
 }
+
+
+/* ========================================
+   Concierge® Bottom Bar - Always Visible
+   ======================================== */
+.mira-concierge-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border-top: 1px solid rgba(168, 85, 247, 0.2);
+  padding: var(--mira-space-sm) var(--mira-space-lg);
+  padding-bottom: calc(var(--mira-space-sm) + env(safe-area-inset-bottom, 0px));
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mira-concierge-bar-inner {
+  max-width: 800px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mira-space-md);
+}
+
+.mira-concierge-bar-text {
+  font-size: var(--mira-font-size-sm);
+  color: var(--mira-text-secondary);
+  flex: 1;
+}
+
+.mira-concierge-bar-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--mira-space-sm);
+  padding: var(--mira-space-sm) var(--mira-space-lg);
+  min-height: var(--mira-touch-target);
+  background: linear-gradient(135deg, #A855F7 0%, #EC4899 100%);
+  border: none;
+  border-radius: var(--mira-radius-full);
+  color: white;
+  font-size: var(--mira-font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--mira-transition-fast);
+}
+
+.mira-concierge-bar-btn:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
+}
+
+.mira-concierge-bar-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Adjust composer to account for concierge bar */
+.mira-composer {
+  margin-bottom: 60px;
+}
+
+@media (max-width: 640px) {
+  .mira-concierge-bar-text {
+    display: none;
+  }
+  
+  .mira-composer {
+    margin-bottom: 56px;
+  }
+}
+
