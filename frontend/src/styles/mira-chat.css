@@ -401,34 +401,40 @@
   background: linear-gradient(135deg, #ec4899, #8b5cf6);
   color: white;
 }
-  height: 100dvh;
-  max-height: 100dvh;
-  background: linear-gradient(135deg, 
-    var(--mira-bg-gradient-start) 0%, 
-    var(--mira-bg-gradient-mid) 50%, 
-    var(--mira-bg-gradient-end) 100%);
-  font-family: var(--mira-font-family);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  overscroll-behavior: none;
+
+/* ========================================
+   CHAT MESSAGES AREA - Scrollable
+   ======================================== */
+.mira-messages-container {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 16px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mira-messages-inner {
+  max-width: 700px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 /* ========================================
-   Breed Info Strip - Gentle subtle context
+   BREED INFO STRIP - Personalization
    ======================================== */
 .mira-breed-strip {
   flex-shrink: 0;
   background: transparent;
-  padding: var(--mira-space-sm) var(--mira-space-lg);
+  padding: 8px 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--mira-space-sm);
+  gap: 8px;
   color: rgba(255, 255, 255, 0.5);
-  font-size: 11px;
+  font-size: 12px;
   font-style: italic;
-  max-width: 600px;
-  margin: 0 auto;
   text-align: center;
 }
 
@@ -440,12 +446,12 @@
 }
 
 /* ========================================
-   Concierge Bar - Subtle, not a strip
+   CONCIERGE BAR - Below input
    ======================================== */
 .mira-concierge-bar {
   flex-shrink: 0;
   background: transparent;
-  padding: var(--mira-space-xs) var(--mira-space-lg);
+  padding: 8px 16px;
 }
 
 .mira-concierge-bar-inner {
@@ -454,13 +460,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: var(--mira-space-md);
+  gap: 16px;
 }
 
 .mira-concierge-bar-left {
   display: flex;
   align-items: center;
-  gap: var(--mira-space-xs);
+  gap: 6px;
   color: rgba(255, 255, 255, 0.5);
   font-size: 12px;
 }
@@ -474,16 +480,16 @@
 .mira-concierge-bar-btn {
   display: inline-flex;
   align-items: center;
-  gap: var(--mira-space-xs);
+  gap: 6px;
   padding: 6px 14px;
   background: rgba(139, 92, 246, 0.2);
   border: 1px solid rgba(139, 92, 246, 0.3);
-  border-radius: var(--mira-radius-full);
+  border-radius: 20px;
   color: rgba(255, 255, 255, 0.8);
   font-size: 11px;
   font-weight: 500;
   cursor: pointer;
-  transition: all var(--mira-transition-fast);
+  transition: all 0.2s;
   white-space: nowrap;
   text-decoration: none;
 }
@@ -493,9 +499,172 @@
   color: white;
 }
 
+/* ========================================
+   INPUT COMPOSER - Bottom fixed
+   ======================================== */
+.mira-composer {
+  flex-shrink: 0;
+  padding: 12px 16px 24px;
+  background: linear-gradient(180deg, transparent 0%, rgba(30, 27, 75, 0.9) 30%);
+}
+
+.mira-composer-inner {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Voice Button */
+.mira-voice-btn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  margin-bottom: 8px;
+  background: rgba(139, 92, 246, 0.2);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 12px;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mira-voice-btn:hover {
+  background: rgba(139, 92, 246, 0.3);
+}
+
+.mira-voice-btn.recording {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: rgba(239, 68, 68, 0.4);
+  animation: pulse 1.5s infinite;
+}
+
+/* Text Input */
+.mira-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  border-radius: 16px;
+  padding: 4px 4px 4px 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.mira-input-wrapper input {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 12px 8px;
+  font-size: 15px;
+  background: transparent;
+  color: #1f2937;
+}
+
+.mira-input-wrapper input::placeholder {
+  color: #9ca3af;
+}
+
+.mira-input-submit {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #ec4899, #8b5cf6);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.mira-input-submit:hover {
+  transform: scale(1.05);
+}
+
+.mira-input-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ========================================
+   SANDBOX MODE FOOTER
+   ======================================== */
+.mira-sandbox-footer {
+  flex-shrink: 0;
+  padding: 8px 16px;
+  text-align: center;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.3);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* ========================================
+   MOBILE RESPONSIVE
+   ======================================== */
+@media (max-width: 768px) {
+  .mira-os-header-inner {
+    padding: 0 8px;
+  }
+  
+  .mira-os-logo-text {
+    display: none;
+  }
+  
+  .mira-os-pet-breed {
+    display: none;
+  }
+  
+  .mira-os-dock {
+    justify-content: flex-start;
+    padding: 8px 12px;
+  }
+  
+  .mira-os-dock .dock-btn {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+  
+  .mira-universal-search-wrapper {
+    padding: 8px 12px;
+  }
+  
+  .mira-messages-container {
+    padding: 12px;
+  }
+  
+  .mira-messages-inner {
+    gap: 12px;
+  }
+}
+
 @media (max-width: 480px) {
+  .mira-os-dock .dock-btn span {
+    display: none;
+  }
+  
+  .mira-os-dock .dock-btn {
+    padding: 8px;
+  }
+  
   .mira-concierge-bar-left span {
     display: none;
+  }
+}
+
+/* iOS Safe Areas */
+@supports (padding-top: env(safe-area-inset-top)) {
+  .mira-chat-container {
+    padding-top: env(safe-area-inset-top);
+  }
+  
+  .mira-composer {
+    padding-bottom: calc(24px + env(safe-area-inset-bottom));
   }
 }
 
