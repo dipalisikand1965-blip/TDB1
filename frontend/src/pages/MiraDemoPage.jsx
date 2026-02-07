@@ -172,6 +172,7 @@ const MiraDemoPage = () => {
   const startNewSession = () => {
     const newSession = `mira-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
     localStorage.setItem('mira_session_id', newSession);
+    localStorage.setItem('mira_session_pet_id', pet.id); // Track which pet this session is for
     setSessionId(newSession);
     setConversationHistory([]);
     setCompletedSteps([]);
@@ -180,7 +181,187 @@ const MiraDemoPage = () => {
     setConversationStage('initial');
     setUserHasOptedInForProducts(false);
     setSessionRecovered(true);
-    console.log('[SESSION] Started new session:', newSession);
+    setShowPastChats(false);
+    console.log('[SESSION] Started new session:', newSession, 'for pet:', pet.name);
+  };
+  
+  // MULTI-PET: Fetch all user's pets
+  useEffect(() => {
+    const fetchAllPets = async () => {
+      if (!token) return;
+      try {
+        const response = await fetch(`${API_URL}/api/pets/my-pets`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (response.ok) {
+          const data = await response.json();
+          if (data.pets && data.pets.length > 0) {
+            const formattedPets = data.pets.map(p => ({
+              id: p.id,
+              name: p.name,
+              breed: p.breed,
+              age: p.age || 'Unknown',
+              traits: p.doggy_soul_answers?.describe_3_words || ['Loving'],
+              sensitivities: p.doggy_soul_answers?.health_conditions || [],
+              favorites: p.doggy_soul_answers?.favorite_treats || [],
+              photo: p.photo || null
+            }));
+            setAllPets(formattedPets);
+            // Set first pet as active if no pet selected
+            if (!pet || pet.id === 'demo-pet') {
+              setPet(formattedPets[0]);
+            }
+          }
+        }
+      } catch (err) {
+        console.debug('Could not fetch pets, using demo pet');
+      }
+    };
+    fetchAllPets();
+  }, [token]);
+  
+  // MULTI-PET: Switch to a different pet
+  const switchPet = async (newPet) => {
+    if (newPet.id === pet.id) {
+      setShowPetSelector(false);
+      return;
+    }
+    
+    console.log('[PET SWITCH] Switching to:', newPet.name);
+    setPet(newPet);
+    setShowPetSelector(false);
+    
+    // Try to load this pet's latest session
+    try {
+      const response = await fetch(`${API_URL}/api/mira/session/switch-pet?pet_id=${newPet.id}&pet_name=${encodeURIComponent(newPet.name)}&pet_breed=${encodeURIComponent(newPet.breed || '')}&member_id=${user?.id || 'demo'}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` })
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        const newSessionId = data.session_id;
+        
+        localStorage.setItem('mira_session_id', newSessionId);
+        localStorage.setItem('mira_session_pet_id', newPet.id);
+        setSessionId(newSessionId);
+        
+        if (data.is_new) {
+          // New session for this pet
+          setConversationHistory([]);
+          console.log('[PET SWITCH] Created new session for', newPet.name);
+        } else {
+          // Existing session - load messages
+          const recoveredHistory = (data.messages || []).map(msg => ({
+            type: msg.role === 'user' ? 'user' : 'mira',
+            content: msg.content,
+            timestamp: msg.timestamp,
+            intent: msg.intent,
+            executionType: msg.execution_type,
+            products: msg.products || []
+          }));
+          setConversationHistory(recoveredHistory);
+          console.log('[PET SWITCH] Loaded', recoveredHistory.length, 'messages for', newPet.name);
+        }
+        
+        // Reset conversation state
+        setCompletedSteps([]);
+        setCurrentStep(null);
+        setStepHistory([]);
+        setConversationStage('initial');
+        setUserHasOptedInForProducts(false);
+        setCurrentTicket(null);
+      }
+    } catch (err) {
+      console.error('[PET SWITCH] Error:', err);
+      // Fallback: just start fresh
+      startNewSession();
+    }
+  };
+  
+  // MULTI-SESSION: Load past chats
+  const loadPastChats = async () => {
+    if (loadingPastChats) return;
+    setLoadingPastChats(true);
+    
+    try {
+      const memberId = user?.id || user?.email || 'demo';
+      const response = await fetch(`${API_URL}/api/mira/session/list/by-member/${encodeURIComponent(memberId)}?limit=10`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {}
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setPastSessions(data.sessions || []);
+        console.log('[PAST CHATS] Loaded', data.sessions?.length || 0, 'sessions');
+      }
+    } catch (err) {
+      console.error('[PAST CHATS] Error loading:', err);
+    }
+    
+    setLoadingPastChats(false);
+  };
+  
+  // MULTI-SESSION: Load a specific past session
+  const loadSession = async (session) => {
+    console.log('[LOAD SESSION]', session.session_id);
+    
+    try {
+      const response = await fetch(`${API_URL}/api/mira/session/${session.session_id}/messages?limit=50`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Update session ID
+        localStorage.setItem('mira_session_id', session.session_id);
+        setSessionId(session.session_id);
+        
+        // Load messages
+        const recoveredHistory = (data.messages || []).map(msg => ({
+          type: msg.role === 'user' ? 'user' : 'mira',
+          content: msg.content,
+          timestamp: msg.timestamp,
+          intent: msg.intent,
+          executionType: msg.execution_type,
+          products: msg.products || []
+        }));
+        setConversationHistory(recoveredHistory);
+        
+        // If this session was for a different pet, switch to that pet
+        if (session.pet_id && session.pet_id !== pet.id) {
+          const sessionPet = allPets.find(p => p.id === session.pet_id);
+          if (sessionPet) {
+            setPet(sessionPet);
+          }
+        }
+        
+        // Reset state
+        setCompletedSteps([]);
+        setCurrentStep(null);
+        setStepHistory([]);
+        setShowPastChats(false);
+        
+        console.log('[LOAD SESSION] Loaded', recoveredHistory.length, 'messages');
+      }
+    } catch (err) {
+      console.error('[LOAD SESSION] Error:', err);
+    }
+  };
+  
+  // Format date for past chats display
+  const formatSessionDate = (dateString) => {
+    if (!dateString) return 'Unknown';
+    const date = new Date(dateString);
+    const now = new Date();
+    const diffDays = Math.floor((now - date) / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 0) return 'Today';
+    if (diffDays === 1) return 'Yesterday';
+    if (diffDays < 7) return `${diffDays} days ago`;
+    return date.toLocaleDateString();
   };
   
   // Fetch user's pet if logged in
