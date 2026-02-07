@@ -1320,6 +1320,7 @@ async def search_real_products(
                 # Process products with pet context
                 pet_name = pet_context.get("name", "your pet")
                 pet_sensitivities = pet_context.get("sensitivities", [])
+                pet_breed = pet_context.get("breed", "")
                 
                 for p in all_products[:limit]:
                     # Filter out products with allergens
@@ -1333,6 +1334,16 @@ async def search_real_products(
                         if skip:
                             continue
                     
+                    # Generate context-appropriate "why_for_pet" message
+                    if is_birthday_search:
+                        why_reason = f"Perfect for {pet_name}'s celebration"
+                    elif "travel" in search_override.lower():
+                        why_reason = f"Perfect for {pet_name}'s travel needs"
+                    elif "groom" in search_override.lower():
+                        why_reason = f"Gentle grooming for {pet_name}"
+                    else:
+                        why_reason = f"Popular choice for {pet_breed or 'dogs'}"
+                    
                     products.append({
                         "name": p.get("name", "Product"),
                         "price": p.get("base_price") or p.get("price") or 0,
@@ -1340,7 +1351,7 @@ async def search_real_products(
                         "images": p.get("images", []),
                         "description": p.get("description", ""),
                         "category": p.get("category", ""),
-                        "why_for_pet": f"Perfect for {pet_name}'s travel needs"
+                        "why_for_pet": why_reason
                     })
                 
                 if products:
