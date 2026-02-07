@@ -226,14 +226,48 @@ const COMFORT_KEYWORDS = [
   'emergency', 'urgent', 'help', 'worried', 'concerning',
   // Grief & Loss
   'passed away', 'died', 'dying', 'lost', 'grief', 'mourning', 'farewell', 'goodbye', 'miss',
-  'put down', 'euthanasia', 'rainbow bridge',
+  'put down', 'euthanasia', 'rainbow bridge', 'lost my dog', 'lost my pet',
   // Behavior issues (need comfort, not products)
   'aggressive', 'biting', 'attacking', 'destroying', 'won\'t stop', 'keeps'
 ];
 
-const isComfortMode = (query) => {
-  const lowerQuery = query.toLowerCase();
-  return COMFORT_KEYWORDS.some(keyword => lowerQuery.includes(keyword));
+// Simple acknowledgment phrases that should NOT trigger products
+// If the conversation has emotional context, these maintain that context
+const ACKNOWLEDGMENT_PHRASES = [
+  'thank you', 'thanks', 'ok', 'okay', 'i see', 'i understand', 'got it', 
+  'alright', 'yes', 'no', 'hmm', 'i appreciate', 'that helps'
+];
+
+const isComfortMode = (query, conversationHistory = []) => {
+  const lowerQuery = query.toLowerCase().trim();
+  
+  // Direct comfort keyword match
+  if (COMFORT_KEYWORDS.some(keyword => lowerQuery.includes(keyword))) {
+    return true;
+  }
+  
+  // Check if this is a simple acknowledgment after a comfort conversation
+  // If so, stay in comfort mode
+  const isSimpleAcknowledgment = ACKNOWLEDGMENT_PHRASES.some(phrase => 
+    lowerQuery === phrase || lowerQuery.startsWith(phrase)
+  ) || lowerQuery.length < 20; // Short replies after emotional messages
+  
+  if (isSimpleAcknowledgment && conversationHistory.length > 0) {
+    // Check last few messages for comfort context
+    const recentMessages = conversationHistory.slice(-4);
+    const hasRecentComfortContext = recentMessages.some(msg => {
+      if (msg.inComfortMode) return true;
+      const content = (msg.content || '').toLowerCase();
+      return COMFORT_KEYWORDS.some(keyword => content.includes(keyword));
+    });
+    
+    if (hasRecentComfortContext) {
+      console.log('[COMFORT_MODE] Maintaining comfort context for acknowledgment');
+      return true;
+    }
+  }
+  
+  return false;
 };
 
 // When in comfort mode, only show relevant services (like Training for anxiety)
