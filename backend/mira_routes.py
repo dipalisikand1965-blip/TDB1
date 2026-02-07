@@ -1353,7 +1353,7 @@ async def search_real_products(
         }
         
         # SPECIAL: Birthday/Cake context - use strict category filter to avoid bandanas
-        is_birthday_context = any(word in safe_lower(str(search_keywords)) for word in ['birthday', 'cake', 'celebration', 'pupcake', 'dognut']) if search_keywords else False
+        is_birthday_context = search_override and any(word in safe_lower(str(search_override)) for word in ['birthday', 'cake', 'celebration', 'pupcake', 'dognut'])
         
         if is_birthday_context:
             # Strict filter: ONLY cakes, pupcakes, dognuts - NOT accessories/bandanas
