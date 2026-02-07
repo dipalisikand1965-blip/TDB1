@@ -251,6 +251,18 @@
   backdrop-filter: blur(8px);
 }
 
+/* Concierge dock item - more prominent */
+.mira-dock-item[data-testid="dock-concierge"] {
+  background: linear-gradient(135deg, #A855F7 0%, #EC4899 100%);
+  border-color: transparent;
+  color: white;
+}
+
+.mira-dock-item[data-testid="dock-concierge"]:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
+}
+
 .mira-dock-item:hover {
   background: rgba(255, 255, 255, 0.2);
   color: white;
