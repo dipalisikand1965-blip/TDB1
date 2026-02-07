@@ -1488,24 +1488,30 @@
 }
 
 /* ========================================
-   Feedback Buttons
+   Feedback Buttons - Dark Theme
    ======================================== */
 .mira-feedback {
   display: flex;
   align-items: center;
-  gap: var(--mira-space-xs);
+  gap: var(--mira-space-sm);
   margin-top: var(--mira-space-md);
   padding-top: var(--mira-space-md);
-  border-top: 1px solid var(--mira-border-subtle);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mira-feedback-label {
+  font-size: var(--mira-font-size-sm);
+  color: rgba(255, 255, 255, 0.5);
+  margin-right: var(--mira-space-sm);
 }
 
 .mira-feedback-btn {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border-radius: var(--mira-radius-sm);
-  border: 1px solid var(--mira-border-light);
-  background: var(--mira-bg-secondary);
-  color: var(--mira-text-tertiary);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.5);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -1514,20 +1520,21 @@
 }
 
 .mira-feedback-btn:hover {
-  border-color: var(--mira-accent);
-  color: var(--mira-accent);
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
 }
 
 .mira-feedback-btn.positive {
   border-color: #10B981;
-  background: #D1FAE5;
-  color: #059669;
+  background: rgba(16, 185, 129, 0.2);
+  color: #6ee7b7;
 }
 
 .mira-feedback-btn.negative {
   border-color: #EF4444;
-  background: #FEE2E2;
-  color: #DC2626;
+  background: rgba(239, 68, 68, 0.2);
+  color: #fca5a5;
 }
 
 .mira-feedback-btn svg {
