@@ -552,6 +552,7 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: var(--space-md);
+  margin-top: var(--space-md);
 }
 
 .mp-product-tile {
@@ -559,6 +560,7 @@
   border-radius: var(--radius-md);
   overflow: hidden;
   transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .mp-product-tile:hover {
