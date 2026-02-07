@@ -1880,14 +1880,19 @@ const MiraDemoPage = () => {
             products: shouldShowProducts ? data.response?.products : [],
             suggest_concierge: shouldSuggestConcierge,
             detected_services: detectedServices,
-            detected_experiences: detectedExperiences
+            detected_experiences: detectedExperiences,
+            services_from_db: data.response?.services || []  // E014: Services from API
           }
         },
         quickReplies: quickReplies,
         showProducts: shouldShowProducts,
-        showServices: hasServiceIntent,
+        // E014: Use services from API if available, else use frontend detection
+        showServices: (data.response?.services?.length > 0) || hasServiceIntent,
         showExperiences: hasExperienceIntent,
-        detectedServices: detectedServices,
+        // E014: Prefer API services over frontend detection
+        detectedServices: (data.response?.services?.length > 0) 
+          ? data.response.services 
+          : detectedServices,
         detectedExperiences: detectedExperiences,
         dynamicConciergeRequest: dynamicConciergeRequest,
         conciergeIsLive: conciergeIsLive,
