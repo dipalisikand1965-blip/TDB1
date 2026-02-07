@@ -711,42 +711,129 @@ const MiraDemoPage = () => {
       let miraStepId = data.response?.step_id;
       
       // Fallback: detect step_id from question patterns if not provided
+      // This covers ALL canonical flows: Treats, Grooming, Birthday, Travel
       if (!miraStepId && miraResponseText.includes('?')) {
         const lowerText = miraResponseText.toLowerCase();
         
-        // Birthday-related steps
-        if (lowerText.includes('active') && lowerText.includes('playful') || 
-            lowerText.includes('simpler') && lowerText.includes('cosy')) {
-          miraStepId = 'BIRTHDAY_SHAPE';
-        } else if (lowerText.includes('food') && (lowerText.includes('play') || lowerText.includes('ritual'))) {
-          miraStepId = 'BIRTHDAY_FOCUS';
-        } else if (lowerText.includes('cake') || (lowerText.includes('treats') && lowerText.includes('birthday'))) {
-          miraStepId = 'BIRTHDAY_FOOD_TYPE';
-        }
-        
-        // Treats-related steps
-        else if (lowerText.includes('everyday') && lowerText.includes('special-occasion') ||
-                 lowerText.includes('light treats') && lowerText.includes('special')) {
+        // ═══════════════════════════════════════════════════════════════
+        // TREATS / FOOD FLOW STEPS
+        // ═══════════════════════════════════════════════════════════════
+        if ((lowerText.includes('everyday') && lowerText.includes('special')) ||
+            (lowerText.includes('light treats') && lowerText.includes('special-occasion')) ||
+            (lowerText.includes('everyday light') && lowerText.includes('special'))) {
           miraStepId = 'TREATS_TYPE';
-        } else if (lowerText.includes('suggest') && lowerText.includes('treats')) {
-          miraStepId = 'TREATS_SUGGEST';
+        } 
+        else if ((lowerText.includes('suggest') && lowerText.includes('treats')) ||
+                 (lowerText.includes('specific treats') && lowerText.includes('fit')) ||
+                 lowerText.includes('would you like me to suggest')) {
+          miraStepId = 'TREATS_SUGGEST_OR_ROUTINE';
+        }
+        else if (lowerText.includes('training') && (lowerText.includes('snack') || lowerText.includes('reward'))) {
+          miraStepId = 'TREATS_PURPOSE';
         }
         
-        // Grooming-related steps
-        else if (lowerText.includes('simple trim') || lowerText.includes('full grooming')) {
+        // ═══════════════════════════════════════════════════════════════
+        // GROOMING FLOW STEPS
+        // ═══════════════════════════════════════════════════════════════
+        else if ((lowerText.includes('simple trim') && lowerText.includes('full grooming')) ||
+                 (lowerText.includes('trim') && lowerText.includes('bath')) ||
+                 (lowerText.includes('tidy') && lowerText.includes('session'))) {
           miraStepId = 'GROOMING_MODE';
-        } else if (lowerText.includes('at home') && lowerText.includes('groomer')) {
+        }
+        else if ((lowerText.includes('at home') && lowerText.includes('groomer')) ||
+                 (lowerText.includes('home') && lowerText.includes('salon')) ||
+                 lowerText.includes('try at home') || lowerText.includes('professional groomer')) {
           miraStepId = 'GROOMING_LOCATION';
         }
-        
-        // Travel-related steps
-        else if (lowerText.includes('car') || lowerText.includes('flight') || lowerText.includes('train')) {
-          miraStepId = 'TRAVEL_MODE';
-        } else if (lowerText.includes('pet-friendly') && lowerText.includes('stay')) {
-          miraStepId = 'TRAVEL_STAY';
+        else if ((lowerText.includes('area') && lowerText.includes('weekday')) ||
+                 (lowerText.includes('location') && lowerText.includes('prefer')) ||
+                 lowerText.includes('which area') || lowerText.includes('when would')) {
+          miraStepId = 'GROOMING_SCHEDULE';
+        }
+        else if ((lowerText.includes('basic tools') && lowerText.includes('suggestions')) ||
+                 (lowerText.includes('brush') && lowerText.includes('comb')) ||
+                 lowerText.includes('minimal set') || lowerText.includes('what tools')) {
+          miraStepId = 'GROOMING_TOOLS';
         }
         
-        console.log('[STEP] Auto-detected step_id:', miraStepId);
+        // ═══════════════════════════════════════════════════════════════
+        // BIRTHDAY / CELEBRATE FLOW STEPS
+        // ═══════════════════════════════════════════════════════════════
+        else if ((lowerText.includes('active') && lowerText.includes('playful')) || 
+                 (lowerText.includes('simpler') && lowerText.includes('cosy')) ||
+                 (lowerText.includes('small') && lowerText.includes('celebration')) ||
+                 (lowerText.includes('party') && lowerText.includes('others'))) {
+          miraStepId = 'BIRTHDAY_SHAPE';
+        } 
+        else if ((lowerText.includes('food') && (lowerText.includes('play') || lowerText.includes('ritual'))) ||
+                 (lowerText.includes('cake') && lowerText.includes('toy')) ||
+                 (lowerText.includes('important') && lowerText.includes('year'))) {
+          miraStepId = 'BIRTHDAY_FOCUS';
+        } 
+        else if ((lowerText.includes('dog cake') && lowerText.includes('smaller treats')) ||
+                 (lowerText.includes('proper cake') || lowerText.includes('birthday cake')) ||
+                 (lowerText.includes('centrepiece') && lowerText.includes('treat'))) {
+          miraStepId = 'BIRTHDAY_FOOD_TYPE';
+        }
+        else if ((lowerText.includes('dogs') && lowerText.includes('humans')) ||
+                 (lowerText.includes('pet-friendly') && lowerText.includes('venue')) ||
+                 lowerText.includes('how many guests')) {
+          miraStepId = 'BIRTHDAY_PARTY_DETAILS';
+        }
+        
+        // ═══════════════════════════════════════════════════════════════
+        // TRAVEL FLOW STEPS
+        // ═══════════════════════════════════════════════════════════════
+        else if ((lowerText.includes('car') && lowerText.includes('flight')) ||
+                 (lowerText.includes('car') && lowerText.includes('train')) ||
+                 (lowerText.includes('travel') && lowerText.includes('how'))) {
+          miraStepId = 'TRAVEL_MODE';
+        }
+        else if ((lowerText.includes('where') && lowerText.includes('driving')) ||
+                 (lowerText.includes('route') || lowerText.includes('destination')) ||
+                 lowerText.includes('from and to')) {
+          miraStepId = 'TRAVEL_ROUTE';
+        }
+        else if ((lowerText.includes('pet-friendly') && lowerText.includes('stay')) ||
+                 (lowerText.includes('hotel') && lowerText.includes('homestay')) ||
+                 lowerText.includes('where to stay')) {
+          miraStepId = 'TRAVEL_STAY';
+        }
+        else if ((lowerText.includes('dates') && lowerText.includes('budget')) ||
+                 (lowerText.includes('when') && lowerText.includes('flexible')) ||
+                 lowerText.includes('dates in mind')) {
+          miraStepId = 'TRAVEL_DATES';
+        }
+        else if ((lowerText.includes('pack') && lowerText.includes('trip')) ||
+                 (lowerText.includes('checklist') && lowerText.includes('tools')) ||
+                 lowerText.includes('what should i pack')) {
+          miraStepId = 'TRAVEL_PACKING';
+        }
+        else if ((lowerText.includes('within india') && lowerText.includes('international')) ||
+                 lowerText.includes('domestic') && lowerText.includes('international')) {
+          miraStepId = 'TRAVEL_FLIGHT_TYPE';
+        }
+        else if ((lowerText.includes('boarding') && lowerText.includes('homestay')) ||
+                 lowerText.includes('leave him') || lowerText.includes('pet sitter')) {
+          miraStepId = 'TRAVEL_BOARDING';
+        }
+        
+        // ═══════════════════════════════════════════════════════════════
+        // GENERIC FALLBACK - If question detected but no specific pattern
+        // ═══════════════════════════════════════════════════════════════
+        if (!miraStepId && lowerText.includes('?')) {
+          // Generate a unique step ID based on first few words of question
+          const questionMatch = miraResponseText.match(/([^.!?]*\?)/);
+          if (questionMatch) {
+            const questionText = questionMatch[1].toLowerCase();
+            const words = questionText.split(' ').slice(0, 4).join('_').replace(/[^a-z_]/g, '');
+            miraStepId = `STEP_${words.toUpperCase()}`;
+          }
+        }
+        
+        if (miraStepId) {
+          console.log('[STEP] Auto-detected step_id:', miraStepId);
+        }
       }
       
       // Check if this step has already been completed (anti-loop)
