@@ -1852,8 +1852,9 @@ const MiraDemoPage = () => {
         showExperiences: hasExperienceIntent,
         detectedServices: detectedServices,
         detectedExperiences: detectedExperiences,
-        dynamicConciergeRequest: dynamicConciergeRequest, // NEW: For requests with no direct match
-        conciergeIsLive: conciergeIsLive, // NEW: Operating hours check
+        dynamicConciergeRequest: dynamicConciergeRequest,
+        conciergeIsLive: conciergeIsLive,
+        inComfortMode: inComfortMode, // NEW: Emotional support mode
         stepId: miraStepId,
         isClarifyingQuestion: isNewClarifyingQuestion,
         timestamp: new Date()
