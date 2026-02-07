@@ -797,6 +797,11 @@ const MiraDemoPage = () => {
           // ANTI-LOOP: Pass completed steps so LLM knows what's already been asked
           completed_steps: completedSteps,
           step_history: stepHistory.map(s => ({ step_id: s.step_id, answer: s.answer })),
+          // FULL CONVERSATION HISTORY for context (last 10 messages)
+          conversation_history: conversationHistory.slice(-10).map(m => ({
+            role: m.type === 'user' ? 'user' : 'assistant',
+            content: m.content
+          })),
           // Tell LLM if user is asking for more info (should explain options, not complete step)
           user_asking_for_more_info: askingForMoreInfo,
           // Pass the current pending step so LLM knows what question to explain
