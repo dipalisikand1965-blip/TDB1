@@ -235,6 +235,162 @@ const MiraDemoPage = () => {
     fetchPet();
   }, [token]);
   
+  // Auto-scroll to bottom when new messages arrive
+  const scrollToBottom = useCallback((behavior = 'smooth') => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior, block: 'end' });
+    }
+    setHasNewMessages(false);
+  }, []);
+  
+  // Track scroll position
+  const handleScroll = useCallback(() => {
+    if (!messagesContainerRef.current) return;
+    const { scrollTop, scrollHeight, clientHeight } = messagesContainerRef.current;
+    const atBottom = scrollHeight - scrollTop - clientHeight < 100;
+    setIsAtBottom(atBottom);
+    if (atBottom) setHasNewMessages(false);
+  }, []);
+  
+  // Scroll to bottom when conversation changes (if user was at bottom)
+  useEffect(() => {
+    if (isAtBottom) {
+      scrollToBottom();
+    } else if (conversationHistory.length > 0) {
+      setHasNewMessages(true);
+    }
+  }, [conversationHistory, isAtBottom, scrollToBottom]);
+  
+  // Silent ticket creation for service desk
+  const createOrAttachTicket = useCallback(async (message, intent, pillar) => {
+    // In production, this would call your service desk API
+    const ticketData = {
+      parent_id: user?.id || 'demo-parent',
+      pet_id: pet.id,
+      pet_name: pet.name,
+      pillar: pillar || 'general',
+      primary_intent: intent || 'GENERAL',
+      channel: 'Mira OS',
+      status: 'open_mira_only',
+      first_message: message,
+      created_at: new Date().toISOString()
+    };
+    
+    // Check if we have an existing open ticket for this pet + pillar
+    if (currentTicket && currentTicket.pillar === pillar && currentTicket.status !== 'closed') {
+      // Attach to existing ticket
+      console.log('[TICKET] Attaching to existing ticket:', currentTicket.id);
+      return currentTicket;
+    }
+    
+    // Create new ticket (mock for demo)
+    const newTicket = {
+      id: `ticket_${Date.now()}`,
+      ...ticketData
+    };
+    setCurrentTicket(newTicket);
+    console.log('[TICKET] Created new service ticket:', newTicket.id);
+    return newTicket;
+  }, [currentTicket, pet, user]);
+  
+  // Engage Concierge (flip ticket status)
+  const engageConcierge = useCallback(async (reason) => {
+    if (!currentTicket) return;
+    
+    const updatedTicket = {
+      ...currentTicket,
+      status: 'open_concierge_engaged',
+      handoff_time: new Date().toISOString(),
+      handoff_reason: reason
+    };
+    setCurrentTicket(updatedTicket);
+    console.log('[TICKET] Concierge engaged for ticket:', updatedTicket.id);
+    
+    // Add system message to conversation
+    const systemMessage = {
+      type: 'system',
+      content: 'Your pet Concierge® is joining this chat...',
+      timestamp: new Date()
+    };
+    setConversationHistory(prev => [...prev, systemMessage]);
+  }, [currentTicket]);
+  
+  // Extract quick reply options from Mira's response
+  const extractQuickReplies = useCallback((miraData) => {
+    if (!miraData) return [];
+    
+    const intent = miraData.understanding?.intent;
+    const message = miraData.response?.message || '';
+    
+    // Check if message contains a clarifying question
+    const hasQuestion = message.includes('?') && (
+      message.toLowerCase().includes('are you thinking') ||
+      message.toLowerCase().includes('would you prefer') ||
+      message.toLowerCase().includes('are you hoping') ||
+      message.toLowerCase().includes('do you prefer') ||
+      message.toLowerCase().includes('would you like')
+    );
+    
+    if (!hasQuestion) return [];
+    
+    // Generate contextual quick replies based on intent
+    const quickReplies = [];
+    
+    if (intent === 'PLAN' || intent === 'EXPLORE') {
+      // Grooming-related
+      if (message.toLowerCase().includes('trim') || message.toLowerCase().includes('grooming')) {
+        quickReplies.push(
+          { text: 'Simple trim', value: 'I want a simple trim to keep him comfortable' },
+          { text: 'Full grooming session', value: 'I want a full grooming session with bath, ear cleaning, and nail care' },
+          { text: 'Tell me more', value: 'I\'m not sure, can you tell me more about each option?' }
+        );
+      }
+      // Bath-related
+      else if (message.toLowerCase().includes('bath') || message.toLowerCase().includes('smell')) {
+        quickReplies.push(
+          { text: 'Bath at home', value: 'I\'d like to bathe him at home' },
+          { text: 'Take to groomer', value: 'I\'d prefer to take him to a groomer' },
+          { text: 'What\'s easier?', value: 'What would you recommend as easier?' }
+        );
+      }
+      // Food-related
+      else if (message.toLowerCase().includes('food') || message.toLowerCase().includes('diet')) {
+        quickReplies.push(
+          { text: 'Dry food (kibble)', value: 'I prefer dry food' },
+          { text: 'Wet food', value: 'I prefer wet food' },
+          { text: 'Show me options', value: 'Can you show me some options?' }
+        );
+      }
+      // Travel-related
+      else if (message.toLowerCase().includes('trip') || message.toLowerCase().includes('travel')) {
+        quickReplies.push(
+          { text: 'By car', value: 'We\'re traveling by car' },
+          { text: 'By flight', value: 'We\'re flying' },
+          { text: 'Need boarding', value: 'I actually need boarding while I\'m away' }
+        );
+      }
+      // Generic planning
+      else {
+        quickReplies.push(
+          { text: 'Yes, let\'s do it', value: 'Yes, that sounds good!' },
+          { text: 'Tell me more', value: 'Can you tell me more?' },
+          { text: 'Maybe later', value: 'I\'ll think about it and come back' }
+        );
+      }
+    }
+    
+    // Treats/products
+    if (message.toLowerCase().includes('everyday') && message.toLowerCase().includes('special')) {
+      quickReplies.push(
+        { text: 'Everyday treats', value: 'I want everyday treats for training and rewards' },
+        { text: 'Something special', value: 'I want something special for a particular occasion' },
+        { text: 'Both', value: 'Show me both options' }
+      );
+    }
+    
+    return quickReplies;
+  }, []);
+  
   // handleSubmit function - defined before voice recognition useEffect
   const handleSubmit = useCallback(async (e, voiceQuery = null) => {
     if (e) e.preventDefault();
@@ -252,6 +408,7 @@ const MiraDemoPage = () => {
       timestamp: new Date()
     };
     setConversationHistory(prev => [...prev, userMessage]);
+    setQuery(''); // Clear input immediately for better UX
     
     try {
       // Use the enhanced endpoint with real products
@@ -279,11 +436,20 @@ const MiraDemoPage = () => {
       const data = await response.json();
       setMiraResponse(data);
       
+      // Silent ticket creation - every conversation is a ticket
+      const pillar = data.understanding?.entities?.pillar || 'general';
+      const intent = data.understanding?.intent || 'GENERAL';
+      await createOrAttachTicket(inputQuery, intent, pillar);
+      
+      // Extract quick replies from the response
+      const quickReplies = extractQuickReplies(data);
+      
       // Add Mira's response to conversation
       const miraMessage = {
         type: 'mira',
         content: data.response?.message || "I'm here to help!",
         data: data,
+        quickReplies: quickReplies,
         timestamp: new Date()
       };
       setConversationHistory(prev => [...prev, miraMessage]);
