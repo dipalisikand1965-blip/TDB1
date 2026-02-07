@@ -1290,11 +1290,86 @@ async def search_real_products(
         # Build search query based on entities
         query = {"available": {"$ne": False}}
         
+        # ═══════════════════════════════════════════════════════════════════
+        # SEASONAL PRODUCT FILTERING - World Class Enhancement
+        # Show seasonal items only during their appropriate time
+        # ═══════════════════════════════════════════════════════════════════
+        from datetime import datetime
+        current_month = datetime.now().month
+        current_day = datetime.now().day
+        
+        # Define seasonal exclusion patterns (when NOT to show)
+        SEASONAL_EXCLUSIONS = {
+            # Halloween: Only show in October (month 10)
+            "halloween": {
+                "keywords": "halloween|ghost|creepy|spooky|jack o|googly|ghoul|skeleton|witch|pumpkin|crawly|🎃|👻|🕸️|trick|treat|haunted|scary|boo",
+                "show_months": [10],  # October only
+                "show_days": None
+            },
+            # Christmas/Winter: Nov 15 - Jan 5
+            "christmas": {
+                "keywords": "christmas|xmas|santa|reindeer|snowflake|jingle|rudolph|festive|holiday|🎄|🎅|❄️|winter wonderland|ho ho",
+                "show_months": [11, 12, 1],  # Nov, Dec, Jan
+                "show_days": {"11": (15, 30), "1": (1, 5)}  # Nov 15+, Jan 1-5
+            },
+            # Valentine's: Feb 1-20
+            "valentine": {
+                "keywords": "valentine|heart|love|cupid|romantic|sweetheart|💕|💖|💗|❤️|be mine",
+                "show_months": [2],  # February
+                "show_days": {"2": (1, 20)}
+            },
+            # Easter: March 15 - April 20
+            "easter": {
+                "keywords": "easter|bunny|egg hunt|spring|pastel|🐰|🥚|🐣",
+                "show_months": [3, 4],
+                "show_days": {"3": (15, 31), "4": (1, 20)}
+            },
+            # Diwali: October 15 - November 15
+            "diwali": {
+                "keywords": "diwali|deepavali|diya|rangoli|🪔|sparkler|cracker free",
+                "show_months": [10, 11],
+                "show_days": {"10": (15, 31), "11": (1, 15)}
+            },
+            # Holi: February 25 - March 20
+            "holi": {
+                "keywords": "holi|colors|gulal|rang|thandai",
+                "show_months": [2, 3],
+                "show_days": {"2": (25, 29), "3": (1, 20)}
+            }
+        }
+        
+        # Build exclusion regex for items NOT in season
+        seasonal_exclusions = []
+        for season, config in SEASONAL_EXCLUSIONS.items():
+            show_months = config["show_months"]
+            show_days = config.get("show_days")
+            
+            # Check if we're in the show window
+            in_season = False
+            if current_month in show_months:
+                if show_days and str(current_month) in show_days:
+                    day_range = show_days[str(current_month)]
+                    in_season = day_range[0] <= current_day <= day_range[1]
+                else:
+                    in_season = True
+            
+            # If NOT in season, add to exclusions
+            if not in_season:
+                seasonal_exclusions.append(config["keywords"])
+                
+        # Apply seasonal exclusions to query
+        if seasonal_exclusions:
+            exclusion_pattern = "|".join(seasonal_exclusions)
+            query["name"] = {"$not": {"$regex": exclusion_pattern, "$options": "i"}}
+            logger.info(f"[SEASONAL FILTER] Month {current_month}, Day {current_day} - Excluding: {list(SEASONAL_EXCLUSIONS.keys())}")
+        
+        # ═══════════════════════════════════════════════════════════════════
+        
         # If we have a search override (e.g., "travel carrier"), use that first
         if search_override:
             search_terms = search_override.split()
             
-            # MIRA FIX: For birthday/party context, exclude Halloween-themed products
+            # MIRA FIX: For birthday/party context, additional category restrictions
             is_birthday_search = any(word in safe_lower(search_override) for word in ['birthday', 'cake', 'celebration', 'party', 'love'])
             
             query["$or"] = [
@@ -1305,12 +1380,10 @@ async def search_real_products(
                 {"pillar": {"$regex": "|".join(search_terms), "$options": "i"}}
             ]
             
-            # For birthday context, exclude Halloween items and restrict categories
+            # For birthday context, restrict to cake categories
             if is_birthday_search:
-                query["name"] = {"$not": {"$regex": "halloween|ghost|creepy|spooky|jack o|googly|ghoul|skeleton|witch|pumpkin|crawly|🎃|👻|🕸️", "$options": "i"}}
-                # Prioritize cakes category
                 query["category"] = {"$in": ["cakes", "breed-cakes", "hampers", "celebration", "mini-cakes", "other"]}
-                logger.info("[PRODUCT SEARCH] Birthday context: Excluding Halloween, prioritizing cakes")
+                logger.info("[PRODUCT SEARCH] Birthday context: Prioritizing cakes")
             
             cursor = db.products_master.find(query, {"_id": 0}).limit(limit * 2)
             all_products = await cursor.to_list(length=limit * 2)
