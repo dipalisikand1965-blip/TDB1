@@ -190,18 +190,22 @@ MEMORY:
 ### P0 - Immediate ✅ COMPLETED
 1. ~~Fix In-Mira Service Request Flow~~ ✅ DONE
 2. ~~Add "Let Concierge Handle It" tile~~ ✅ DONE
+3. ~~Fix product relevance (Halloween filtering)~~ ✅ DONE
+4. ~~Premium product card UI~~ ✅ DONE
+5. ~~Seasonal product filtering~~ ✅ DONE (Feb 7, 2026)
 
 ### P1 - This Week
-1. Backend Service Integration: Modify `/api/mira/os/understand-with-products` to query services collection
-2. Push to GitHub
-3. Test on production (thedoggycompany.in/mira-demo)
-4. Verify iOS/Android work
+1. Backend Service Integration: Query `services` collection
+2. Remembered Service Providers (E013)
+3. Push to GitHub and test on production
 
-### P2 - Future
-1. Proactive Mira (birthday reminders)
-2. MasterSync from admin
-3. Full 100% pillar coverage
-4. External integrations
+### P2 - This Month
+4. Birthday/Anniversary Reminders (E018)
+5. Pet Photo in Recommendations (E017)
+6. Breed-Specific Product Boost (E016)
+
+### P3 - Future
+See `/app/memory/MIRA_ENHANCEMENTS.md` for full roadmap (40+ enhancements planned)
 
 ---
 
