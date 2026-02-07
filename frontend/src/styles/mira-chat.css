@@ -9,12 +9,18 @@
 
 /* ========================================
    CSS Variables - The Soul of the Design
+   Purple Gradient Background + Clean White Cards
    ======================================== */
 :root {
-  /* Background Layers */
-  --mira-bg-primary: #F7F7F8;
+  /* Background - Beautiful Purple Gradient */
+  --mira-bg-gradient-start: #E8D5F9;
+  --mira-bg-gradient-mid: #D4B8F0;
+  --mira-bg-gradient-end: #C9A8E9;
+  
+  /* Card Backgrounds - Clean White */
+  --mira-bg-primary: #FFFFFF;
   --mira-bg-secondary: #FFFFFF;
-  --mira-bg-chat: #FAFAFA;
+  --mira-bg-chat: transparent;
   
   /* Text Colors */
   --mira-text-primary: #1A1A1A;
