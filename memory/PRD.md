@@ -11,12 +11,46 @@ Transform a standard e-commerce site into a "Personal Pet Operating System" that
 
 ---
 
+## LATEST UPDATE: UI/UX OVERHAUL COMPLETE - Feb 7, 2026
+
+### ✅ PREMIUM CHAT UI REDESIGN
+**Design Benchmarks**: Apple iMessage (clarity, spacing), WhatsApp (simplicity), Slack (structure), ChatGPT (AI readability)
+
+**What Changed:**
+- Replaced chaotic dark purple gradients with calm, clean light theme
+- Background: #F7F7F8 (light gray) instead of dark purple
+- Message cards: White with subtle shadows
+- Question strips: Amber highlight (#FFFBEB) with clear visual hierarchy
+- Typography: System fonts with proper line heights and spacing
+- Touch targets: 44px minimum (Apple HIG standard)
+- Animations: Smooth message slide-in, loading dots
+
+**Files Created/Updated:**
+- `/app/frontend/src/styles/mira-chat.css` - Complete CSS design system with CSS variables
+- `/app/frontend/src/pages/MiraDemoPage.jsx` - Refactored to use new CSS classes
+- `/app/memory/DESIGN_BENCHMARKS.md` - Design reference documentation
+
+### ✅ QUICK-REPLY CHIPS FIXED
+All four canonical flows now show contextual chips matching the question:
+
+| Flow | Question | Chips |
+|------|----------|-------|
+| Birthday | "Active and playful... or simpler, cosy?" | Active and playful, Simpler and cosy, I'm not sure yet, I know I want a cake too |
+| Grooming | "Simple trim... or fuller grooming session?" | Simple trim, Full grooming session, I'm not sure, tell me more |
+| Treats | "Everyday light treats... or special-occasion?" | Everyday light treats, Special-occasion treats, I'm not sure yet |
+| Travel | "Are you driving or flying?" | Car, Flight, Train, Not sure yet |
+
+**Testing Status:** 100% pass rate on all flows (iteration_103.json)
+
+---
+
 ## CRITICAL REFERENCES
 
 > **ALL AGENTS MUST READ THESE FILES BEFORE ANY MIRA-RELATED WORK:**
 > 1. `/app/memory/MIRA_DOCTRINE.md` - Core persona, voice, and governing principles
 > 2. `/app/memory/GROOMING_OS.md` - Complete grooming intelligence (intents, flows, boundaries)
 > 3. `/app/memory/FOOD_NUTRITION_OS.md` - Complete food & nutrition intelligence
+> 4. `/app/memory/DESIGN_BENCHMARKS.md` - UI/UX design reference
 
 ### Mira Doctrine Key Principles:
 1. **Presence before performance** - Acknowledge feelings before giving information
@@ -77,12 +111,12 @@ Transform a standard e-commerce site into a "Personal Pet Operating System" that
 - Same ticket used (no new ticket created)
 - Status flips to `open_concierge`
 
-#### UI Components
-- **Quick reply chips** - Contextual, matching the specific question options
-- **Clarifying question** - Highlighted in amber box
+#### UI Components (Updated Feb 7, 2026)
+- **Quick reply chips** - Contextual, matching the specific question options (amber-colored)
+- **Clarifying question** - Highlighted in amber strip with border-left accent
 - **Products** - Horizontal carousel with "why for pet" lines (ONLY after opt-in)
 - **Concierge® CTA** - Small link-style, not banner
-- **Composer** - Always pinned at bottom
+- **Composer** - Always pinned at bottom with voice and send buttons
 - **No progress indicators** - Conversational feel preserved
 
 ---
