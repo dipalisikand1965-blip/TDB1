@@ -84,6 +84,15 @@ const MiraDemoPage = () => {
   const [currentPillar, setPillar] = useState('celebrate');
   const [lastShownProducts, setLastShownProducts] = useState([]);
   
+  // MULTI-PET SUPPORT - Switch between pets
+  const [allPets, setAllPets] = useState([DEMO_PET]); // All user's pets
+  const [showPetSelector, setShowPetSelector] = useState(false);
+  
+  // MULTI-SESSION MANAGEMENT - Past chats
+  const [pastSessions, setPastSessions] = useState([]);
+  const [showPastChats, setShowPastChats] = useState(false);
+  const [loadingPastChats, setLoadingPastChats] = useState(false);
+  
   // SESSION PERSISTENCE - The memory that never forgets
   const [sessionId, setSessionId] = useState(() => {
     // Try to recover session from localStorage first
