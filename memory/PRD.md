@@ -1,557 +1,95 @@
 # Pet Operating System - PRD
 
 ## Original Problem Statement
-Transform a standard e-commerce site into a "Personal Pet Operating System" that is deeply magical, personalized, and emotionally resonant for the pet parent. The user wants:
-1. **"Meister as the Hero":** The entire UX should revolve around the user's pet
-2. **Emotional Connection:** Magical UI elements that create an emotional bond
-3. **Unified & Seamless Design:** All pages share consistent, personalized header design
-4. **Seamless Navigation:** Product/Service toggle and pillar navigation
-5. **Hyper-Personalized Content:** Breed-specific and unique messaging
-6. **De-emphasize E-commerce:** Focus on "caring" not "shopping"
-
----
-
-## LATEST UPDATE: Feb 7, 2026 - 10/10 PREMIUM UI OVERHAUL
-
-### ✅ NEW: 10/10 Premium Experience Implemented
-
-#### UI Score: 7.5/10 → Up from 5.5/10 (Major improvement!)
-
-**What Changed:**
-1. **Premium Typography** - Manrope + Syne fonts (Google Fonts)
-2. **Soul Traits Bar** - "Playful spirit ⭐", "Gentle paws 🎀", "Loyal friend ❤️" pills
-3. **Pet Avatar with Rings** - Concentric circle animation (like Travel page)
-4. **Soul Score Display** - "Soul Score 87" in amber below pet name
-5. **Apple iMessage Spacing** - 24-32px gaps between messages
-6. **Pale Lilac User Bubbles** - rgba(167, 139, 250, 0.15) background
-7. **2x2 Product Grid** - Pinterest/Instagram-style tile layout
-8. **Glass Panels** - backdrop-filter: blur(16px) on all cards
-9. **Floating Navigation Dock** - Rounded island with icons + labels
-10. **Premium Input Composer** - Clean glass design with mic + gradient send button
-
-**New CSS File:** `/app/frontend/src/styles/mira-10x.css`
-
-#### Files Modified:
-- `/app/frontend/src/pages/MiraDemoPage.jsx` - Complete UI overhaul with new class names
-- `/app/frontend/src/styles/mira-10x.css` - New premium design system
-- `/app/backend/mira_routes.py` - Added suggest_concierge, tips, quick_replies
-- `/app/backend/mira_os.py` - Updated system prompt with new fields
-
----
-
-### 🎯 REMAINING TO REACH 10/10
-
-| Gap | What's Needed | Priority | Status |
-|-----|---------------|----------|--------|
-| Soul Score Integration | Pull from real member API | P0 | ✅ DONE |
-| Multi-Pet Support | Load real pets from logged-in user | P0 | ✅ DONE |
-| Product Intelligence | Show RELEVANT products per context | P0 | ✅ DONE |
-| Concierge Buttons | WhatsApp, Chat, Email on every card | P0 | ✅ DONE |
-| Test Scenarios | Always visible 3-column grid | P0 | ✅ DONE |
-| Consistent Pet Header | Same header across all pillar pages | P1 | PENDING |
-| Micro-animations | Slide-in cards, hover effects | P2 | PENDING |
-
-### ✅ COMPLETED THIS SESSION
-
-1. **10/10 Premium UI** - New CSS with Apple iMessage quality
-2. **Soul Traits Bar** - Shows pet personality traits
-3. **Pet Avatar with Rings** - Concentric circle animation
-4. **2x2 Product Grid** - Pinterest-style tiles
-5. **Real Member Integration** - 
-   - User: dipali@clubconcierge.in / test123
-   - Pets: Mojo, Lola, Mystique
-6. **Product Intelligence Fixed**:
-   - Birthday/cake requests → Pupcakes, Dognuts, Celebration boxes
-   - Treats requests → Treat boxes, not travel crates
-7. **Prominent Concierge Buttons**:
-   - WhatsApp (green) → Direct WhatsApp link
-   - Chat (purple) → Service desk handoff
-   - Email → mailto link to concierge@thedoggycompany.in
-8. **Test Scenarios Always Visible** - 3-column grid, no collapsible
-
----
-
-### ✅ EXISTING FEATURES (Still Working)
-
-#### 1. Voice Output (TTS) - ElevenLabs
-- **File**: `/app/backend/mira_voice.py`
-- **Voice**: Rachel (warm, friendly female)
-- **Endpoints**: `/api/mira/voice/speak`, `/api/mira/voice/test`
-- **Status**: ✅ WORKING
-
-#### 2. /remember Command - Pet Memories
-- **File**: `/app/backend/mira_remember.py`
-- **Usage**: "Remember Buddy is scared of thunder"
-- **Auto-categorizes**: fear, preference, health, routine, behavior, food, social
-- **Endpoints**: `/api/mira/memory/remember`, `/api/mira/memory/pet/{id}`
-- **Status**: ✅ WORKING
-
-#### 3. Life Stage Awareness
-- **File**: `/app/backend/mira_life_stage.py`
-- **Stages**: Puppy → Young Adult → Adult → Senior
-- **Features**: Size-adjusted aging for dogs, stage-specific recommendations
-- **Status**: ✅ WORKING
-
-#### 4. File Upload to Mira
-- **File**: `/app/backend/mira_upload.py`
-- **Supports**: Images (jpg, png, gif, webp), Documents (pdf, doc, docx)
-- **Endpoints**: `/api/mira/upload/file`, `/api/mira/upload/analyze/{id}`
-- **Status**: ✅ WORKING
-
-#### 5. Concierge Handoff (Summarize → Confirm → Send)
-- **File**: `/app/backend/mira_concierge_handoff.py`
-- **Flow**: Conversation → Summary → User Confirms → Ticket Created
-- **Endpoints**: `/api/mira/concierge/summarize`, `/api/mira/concierge/confirm`
-- **Status**: ✅ WORKING
-
-#### 6. Concierge Dashboard
-- **File**: `/app/frontend/src/pages/ConciergeDashboard.jsx`
-- **Routes**: `/concierge-dashboard`, `/admin/mira-concierge`
-- **Features**: Stats cards, filters, task list, task detail panel, status updates
-- **Status**: ✅ WORKING
-
-#### 7. Universal Search Bar
-- **Location**: Top of MiraDemoPage
-- **Text**: "Ask Mira anything for Buddy..."
-- **Features**: Voice input, search button, multi-pet dropdown
-- **Status**: ✅ WORKING
-
-#### 8. Multi-Pet Support
-- **Selector**: "MY PETS 🐕 Buddy" with dropdown
-- **Session**: Each pet has separate conversation history
-- **API**: `/api/mira/session/switch-pet`
-- **Status**: ✅ WORKING
-
-#### 9. Boarding/Pet-Sitting Intelligence Fix
-- **Issue**: Was showing treat boxes for boarding requests
-- **Fix**: Added boarding keywords detection, explicit `is_boarding_request` flag
-- **Status**: ✅ WORKING - No products shown for boarding
-
----
-
-### ✅ DATA SYNC STATUS
-| Data Type | Count | Status |
-|-----------|-------|--------|
-| Products | 2,151 | ✅ Synced |
-| Services | 2,406 | ✅ Synced |
-| Breeds | 62 | ✅ Intelligence loaded |
-
----
-
-## OVERALL SCORE: 85/100
-
-| Phase | Score | Status |
-|-------|-------|--------|
-| Phase 1: Foundation | 100% | ✅ COMPLETE |
-| Phase 2: Core Intelligence | 65% | ⚠️ IN PROGRESS |
-| Phase 3: Concierge Excellence | 60% | ⚠️ IN PROGRESS |
-| Phase 4: Memory & Learning | 50% | ⚠️ IN PROGRESS |
-| Phase 5: Proactive Mode | 10% | 🔴 STARTED |
-| Phase 6: Commerce | 45% | ⚠️ IN PROGRESS |
-| Phase 7: Voice & Multimodal | 60% | ⚠️ IN PROGRESS |
-| Phase 8: Ecosystem | 15% | 🔴 EARLY |
-
----
-|-----------|--------|
-| Presence Before Performance | ✅ "That's a lovely thought" before planning |
-| Knowledge Remembered | ✅ "From what I know about Buddy..." |
-| Remember → Confirm → Act | ✅ Context → Question → Then products |
-| Products After Alignment | ✅ Only after explicit opt-in |
-| Concierge® (with ®) | ✅ Proper trademark usage |
-| Never a Dead End | ✅ Always a next step |
-| Ends with Question | ✅ Clarifying questions always |
-
-### ✅ QUICK-REPLY CHIPS FIXED
-All four canonical flows now show contextual chips matching the question:
-
-| Flow | Question | Chips |
-|------|----------|-------|
-| Birthday | "Active and playful... or simpler, cosy?" | Active and playful, Simpler and cosy, I'm not sure yet, I'd like a cake as well |
-| Grooming | "Simple trim... or fuller grooming session?" | Simple trim, Full grooming session, I'm not sure, tell me more |
-| Treats | "Everyday light treats... or special-occasion?" | Everyday light treats, Special-occasion treats, I'm not sure yet |
-| Travel | "Are you driving or flying?" | Car, Flight, Train, Not sure yet |
-
----
-
-## CRITICAL REFERENCES
-
-> **ALL AGENTS MUST READ THESE FILES BEFORE ANY MIRA-RELATED WORK:**
-> 1. `/app/memory/MIRA_DOCTRINE.md` - Core persona, voice, and governing principles
-> 2. `/app/memory/GROOMING_OS.md` - Complete grooming intelligence (intents, flows, boundaries)
-> 3. `/app/memory/FOOD_NUTRITION_OS.md` - Complete food & nutrition intelligence
-> 4. `/app/memory/DESIGN_BENCHMARKS.md` - UI/UX design reference
-
-### Mira Doctrine Key Principles:
-1. **Presence before performance** - Acknowledge feelings before giving information
-2. **Knowledge is remembered. Execution is invited.** - Never bulldoze with a plan
-3. **Remember → Confirm → Act** - Always ask before deciding
-4. **Products after alignment** - Suggestions are secondary, optional
-5. **Concierge® as quiet option** - Never "escalation" or "ticketing"
-6. **Never a dead end** - Always provide a next step
-7. **Boundary rules** - Medical/legal/ethical handled with care
-
----
-
-## Current Status: ALL CANONICAL FLOWS COMPLETE - Feb 2026
-
-### ✅ MIRA SERVICE DESK - FULLY IMPLEMENTED
-
-#### Canonical Conversational Flows (ALL 4 PILLARS)
-**Key Rule**: Products shown ONLY after explicit user opt-in (never on first message)
-
-| Pillar | First Question | Step IDs Tracked |
-|--------|----------------|------------------|
-| **Treats** | Everyday vs Special-occasion? | TREATS_TYPE, TREATS_SUGGEST_OR_ROUTINE |
-| **Grooming** | Simple trim vs Full session? At home vs Groomer? | GROOMING_MODE, GROOMING_LOCATION, GROOMING_SCHEDULE, GROOMING_TOOLS |
-| **Birthday** | Active/playful vs Simpler/cosy? Food vs Play vs Ritual? | BIRTHDAY_SHAPE, BIRTHDAY_FOCUS, BIRTHDAY_FOOD_TYPE, BIRTHDAY_PARTY_DETAILS |
-| **Travel** | Car vs Flight vs Train? Route? Pet-friendly stays? | TRAVEL_MODE, TRAVEL_ROUTE, TRAVEL_STAY, TRAVEL_DATES, TRAVEL_PACKING |
-
-#### Anti-Loop Step Tracking System
-- **Internal only** - No visible progress UI to pet parents
-- **Auto-detects step_id** from question patterns
-- **Marks steps complete** when user answers
-- **Never repeats** a question that's already been answered
-- Natural language progression ("To start...", "Next, let's...")
-
-#### Service Desk APIs
-| Endpoint | Purpose |
-|----------|---------|
-| `POST /api/mira/route_intent` | Classify utterance into pillar/intent |
-| `POST /api/service_desk/attach_or_create_ticket` | Create/attach ticket (72hr window) |
-| `POST /api/service_desk/append_message` | Real-time transcript logging |
-| `POST /api/service_desk/complete_step` | Mark step as answered |
-| `GET /api/service_desk/completed_steps/{ticket_id}` | Get all completed steps |
-| `POST /api/service_desk/handoff_to_concierge` | Flip status, assign queue |
-
-#### Ticket Structure
-```
-{
-  ticket_id: "TCK-2026-000XXX",
-  status: "open_mira_only" | "open_concierge",
-  completed_steps: ["TREATS_TYPE", "TREATS_SUGGEST"],
-  current_step: null,
-  step_history: [{ step_id, question, answer, timestamps }],
-  conversation: [{ sender, text, timestamp, meta }]
-}
-```
-
-#### Concierge® Handoff
-- Closing line: *"I've shared everything we've discussed with your pet Concierge®. They'll take it forward from here and get back to you in this chat."*
-- Same ticket used (no new ticket created)
-- Status flips to `open_concierge`
-
-#### UI Components (Updated Feb 7, 2026)
-- **Quick reply chips** - Contextual, matching the specific question options (amber-colored)
-- **Clarifying question** - Highlighted in amber strip with border-left accent
-- **Products** - Horizontal carousel with "why for pet" lines (ONLY after opt-in)
-- **Concierge® CTA** - Small link-style, not banner
-- **Composer** - Always pinned at bottom with voice and send buttons
-- **No progress indicators** - Conversational feel preserved
-
----
-
-### MIRA OS - The Pet Life Operating System
-**Vision**: "Mira is not a chatbot. Mira is the operating system for dog life."
-
-**The One Sentence**: "Knowledge is remembered. Execution is invited."
-
----
-
-## FOOD & NUTRITION OS - COMPLETE (Dec 2025)
-
-### ✅ Comprehensive Food Intelligence
-10 distinct food intent types with specific handling:
-
-| Intent | Triggers | Products? | Action |
-|--------|----------|-----------|--------|
-| FOOD_MAIN | "what should he eat", everyday diet | After clarification | Ask questions first |
-| FOOD_PORTION | "how much?", amounts | NO | Guidance + vet referral |
-| FOOD_ROUTINE | schedules, multi-dog feeding | NO | Structure advice |
-| FOOD_TREAT | treats, snacks, training rewards | YES | Show treat products |
-| FOOD_RULES | "can my dog eat X?" | NO | Safety guidance only |
-| FOOD_WEIGHT | overweight/underweight | NO | VET COORDINATION |
-| FOOD_HEALTH_ADJACENT | vomiting, diarrhea, itching | NO | VET IMMEDIATELY |
-| FOOD_PREFERENCE | picky eater, not eating | Depends | Behaviour vs medical |
-| FOOD_TRAVEL | food for trips/boarding | After plan | Travel food guidance |
-| FOOD_ORDERING | "order this", "subscription" | N/A | Concierge® execution |
-
-### ✅ Medical Boundaries Enforced
-- Vomiting/diarrhea → VET immediately, NO products
-- Weight concerns → VET coordination, NO diet plans
-- Toxic foods → Immediate warning, emergency guidance
-- Mira never prescribes diets or diagnoses
-
-### ✅ New Test Scenarios in Sandbox
-Food scenarios added to `/mira-demo`:
-- 🍽️ Food, ⚖️ Portion, 🕐 Schedule, 🍎 Can Eat?
-- 📈 Weight (vet), 😒 Picky, 🤢 Vomiting (vet)
-
----
-
-## GROOMING OS - COMPLETE (Dec 2025)
-
-### ✅ Comprehensive Grooming Intelligence
-7 distinct grooming intent types with specific handling:
-
-| Intent | Triggers | Products? | Action |
-|--------|----------|-----------|--------|
-| GROOM_PLAN | haircut, bath, trim, shedding | NO | Guidance + clarifying questions |
-| GROOM_TOOLS | shampoo, brush, "what do I need" | YES | May show grooming products |
-| GROOM_CONCERN | hates grooming, nervous | NO | Tips + trainer referral |
-| GROOM_ACCIDENT | cut, nick, bleeding | NO | VET IMMEDIATELY |
-| GROOM_POST | scratching after grooming | NO | VET, NO products |
-| GROOM_LIFESTAGE | puppy first groom, senior dog | NO | Gentle guidance + Concierge® |
-| GROOM_BOOKING | "book groomer", "schedule" | NO | Concierge® orchestration |
-
-### ✅ Grooming Test Scenarios
-- ✂️ Haircut, 🛁 Bath, 🧴 Tools (products allowed)
-- 🩹 Accident (vet), 📅 Book (Concierge®)
-
----
-
-## PHASE 3 COMPLETE - Feb 7, 2026
-
-### ✅ Mira Doctrine Implemented
-**The Transformation**: Mira went from a "smart recommendation engine" to a "trusted companion"
-
-### ✅ Test Scenarios Panel
-22+ scenarios for role-playing Mira's responses at `/mira-demo`:
-- **Food**: 🍽️ Food, ⚖️ Portion, 🕐 Schedule, 🍎 Can Eat?, 📈 Weight, 😒 Picky, 🤢 Vomiting
-- **Grooming**: ✂️ Haircut, 🛁 Bath, 🧴 Tools, 🩹 Accident, 📅 Book
-- **Other**: 🦴 Treats, 🎂 Birthday, ✈️ Travel, 🏥 Health, 😰 Anxiety, 🌈 Farewell, ⚖️ Compare, 🏠 Boarding, 🎓 Training
-
-### ✅ Feedback System (P1)
-- 👍/👎 buttons on every Mira response
-- Endpoint: `POST /api/mira/feedback`
-
-### ✅ Remember Command (P1)
-- Endpoint: `POST /api/mira/remember`
-- Stores pet facts for future context
-
-### ✅ Dock Navigation (P1)
-All 5 dock items functional:
-| Item | Action |
-|------|--------|
-| Concierge® | Opens Mira AI chat widget |
-| Orders | Navigates to /orders |
-| Plan | Navigates to /family-dashboard?tab=calendar |
-| Help | Opens help modal with options |
-| Soul | Navigates to /pet-soul/{petId} |
-
----
-
-## Key Files Modified This Session
-- `/app/backend/mira_routes.py` - Grooming OS + Food OS in system prompt
-- `/app/frontend/src/pages/MiraDemoPage.jsx` - 22+ test scenarios
-- `/app/memory/GROOMING_OS.md` - Complete grooming intelligence
-- `/app/memory/FOOD_NUTRITION_OS.md` - Complete food intelligence
-
----
-
-## LATEST UPDATE: Feb 7, 2026 - Multi-Pet + Multi-Session COMPLETE ✅
-
-### ✅ SESSION PERSISTENCE - FULLY WORKING
-**Tested End-to-End:**
-1. **Backend Routes**: `/api/mira/session/*` routes registered in server.py
-2. **Session Creation**: Creates sessions in MongoDB `mira_sessions` collection
-3. **Message Persistence**: Both user and assistant messages saved on each turn
-4. **Session Recovery**: Frontend recovers history from localStorage session_id → backend fetch
-5. **Context Maintained**: Multi-turn conversations preserve pet context (allergies, preferences)
-
-### ✅ MULTI-SESSION MANAGEMENT (NEW)
-**"Past Chats" Feature:**
-- **History Button**: Added to dock navigation 
-- **Past Chats Sidebar**: Shows all previous conversations
-- **Session Loading**: Click any past session to load it
-- **New Chat Button**: Start fresh conversation anytime
-- **Date Display**: "Today", "Yesterday", "X days ago"
-
-**New Backend Endpoints:**
-- `GET /api/mira/session/list/by-member/{member_id}` - List all user's sessions
-- `GET /api/mira/session/list/by-pet/{pet_id}` - List sessions for a specific pet
-- `GET /api/mira/session/latest/by-pet/{pet_id}` - Get most recent session for a pet
-- `POST /api/mira/session/switch-pet` - Switch to different pet (load/create session)
-
-### ✅ MULTI-PET SUPPORT (NEW)
-**Pet Switching Feature:**
-- **Pet Selector Dropdown**: Click on pet badge to see all pets
-- **Switch Pet**: Select different pet → loads their latest session or creates new
-- **Session Isolation**: Each pet has their own conversation history
-- **Context Switching**: Breed info strip updates for selected pet
-
-**Files Modified:**
-- `/app/backend/mira_session_persistence.py` - Added multi-session and multi-pet endpoints
-- `/app/frontend/src/pages/MiraDemoPage.jsx` - Added History sidebar, pet selector dropdown
-
----
-
-## NEXT PRIORITIES
-
-### P1 - Intelligent Context Understanding
-- Fix "what is in this?" queries
-- Better handling of product detail requests
-
-### P1 - Seamless Concierge® Handoff
-- Structured task creation (vs WhatsApp link)
-- Full service desk integration
-
-### P2 - Add to Cart Integration
-- Connect product cards in Mira responses to actual cart
-- Currently shows `alert()` - needs real cart API
-
-### P2 - Proactive Mode
-- Birthday approaching alerts
-- Reorder suggestions
-- Weather-based tips
-
-### P2 - Voice Output
-- Text-to-speech for Mira responses
-- ElevenLabs "Eloise" voice integration
-
-### P3 - Thin Dock UI
-- Per thedoggycompany.in design
-- Floating widget, pet selector
-
----
-
-## REFERENCE DOCUMENTS
-- `/app/memory/MIRA_OPERATING_SPEC.md` - Full specification
-- `/app/memory/MIRA_MASTERPLAN.md` - Feature roadmap
-- `/app/memory/MIRA_ANALYSIS_REPORT.md` - Vision vs reality analysis
-
-### Completed Features (Earlier Sessions)
-
-#### 1. ✅ UNIFIED PILLAR PAGE DESIGN - COMPLETE
-All 15 pillar pages now use the unified `PillarPageLayout` with emotionally-driven "dog soul colors":
-
-| Pillar | Soul Colors | Emotional Feel |
-|--------|-------------|----------------|
-| Celebrate | Pink/Rose gradient | Joy, festivity |
-| Dine | Orange/Amber gradient | Warmth, nourishment |
-| Care | Blue/Teal gradient | Trust, comfort |
-| Enjoy | Yellow/Orange gradient | Playfulness, happiness |
-| Travel | Blue/Sky gradient | Freedom, adventure |
-| Stay | Green/Forest gradient | Security, coziness |
-| Fit | Teal/Cyan gradient | Energy, vitality |
-| Learn | Blue/Indigo gradient | Growth, intelligence |
-| Advisory | Slate/Gray gradient | Wisdom, clarity |
-| Emergency | Red/Orange gradient | Urgency, alertness |
-| Paperwork | Blue/Slate gradient | Trust, security |
-| Farewell | Purple/Violet gradient | Peace, remembrance |
-| Adopt | Pink/Purple gradient | Love, new beginnings |
-| Shop | Indigo/Purple gradient | Discovery |
-| Services | Teal/Green gradient | Care, professionalism |
-
-#### 2. Header Copy (Per User's Table)
-| Pillar | Main Heading | Tagline |
-|--------|-------------|---------|
-| Celebrate | Celebrations for {name} | Mark the moments that matter |
-| Dine | Food & Treats for {name} | Chosen around taste, energy, and needs |
-| Care | Everyday Care for {name} | Support for health, comfort, and routine |
-| Enjoy | Joyful Experiences for {name} | Play, enrichment, and little delights |
-| Travel | Travel with {name} | Thought through so the journey feels easy |
-| Stay | Places {name} Feels at Home | Stays where welcome and comfortable |
-| Fit | Movement & Energy for {name} | Activity that matches rhythm |
-| Learn | Learning with {name} | Training and guidance that respects personality |
-| Advisory | Guidance for {name} | When clarity helps before deciding |
-| Emergency | If Something Feels Urgent | Immediate support when it matters most |
-| Paperwork | Paperwork for {name} | Handled quietly, without stress |
-| Farewell | Honouring {name} | Support with dignity and care |
-| Adopt | Finding the Right Companion | Thoughtful matching, not impulse |
-| Shop | Products for {name} | Thoughtfully curated for how {name} lives |
-| Services | Services for {name} | Trusted help, when needed |
-
-#### 3. Voice Search Functionality
-- Added Web Speech API integration to UnifiedHero.jsx
-- Microphone button in search bar starts/stops voice recognition
-- Shows "Listening..." indicator when active
-- **Status**: UI implemented, needs backend integration for search
-
-#### 4. All Pillar Pages Working with Unified Design
-- ✅ /celebrate, /dine, /care, /enjoy, /travel, /stay
-- ✅ /fit, /learn, /advisory, /emergency, /paperwork
-- ✅ /farewell, /adopt, /shop, /services
-
-#### 5. Sub-Pages with Category-Specific Heroes
-Added routes and hero content for all sub-pages:
-- /dine/fresh-meals, /dine/treats, /dine/desi-treats, /dine/frozen, /dine/supplements
-- /care/grooming, /care/health, /care/supplements, /care/spa
-- /enjoy/toys, /enjoy/chews, /enjoy/games, /enjoy/puzzles
-- /travel/carriers, /travel/car, /travel/outdoor
-- /stay/beds, /stay/mats, /stay/kennels, /stay/bowls
-- /fit/leashes, /fit/harnesses, /fit/collars, /fit/apparel
-- /learn/training, /learn/puzzles, /learn/books
-
-#### 6. Components Created/Updated
-- `PillarPageLayout.jsx` - Reusable layout component with UnifiedHero
-- `UnifiedHero.jsx` - Hero with voice search & pillar-specific soul colors
-- `PillarContext.jsx` - Central config for all pillar soul colors and messaging
-- All pillar pages refactored to use PillarPageLayout
-
-### Testing Status (Latest: iteration_257)
-- All 15 main pillar pages: ✅ PASS
-- All sub-pages: ✅ PASS
-- Voice search button present: ✅ PASS
-- Products/Services toggle: ✅ REMOVED (too clinical)
-- Subcategory pills navigation: ✅ PASS
-- "Shopping for another dog?" link: ✅ PASS
-- Soul colors rendered correctly: ✅ PASS
-- Mobile wobble fix: ✅ PASS
-- Pet images with fallback: ✅ PASS
-- Soul Journey clickable: ✅ PASS (navigates to /pet-soul/{petId})
-- Soul badge glass effect: ✅ PASS (backdrop-blur-lg)
-- Soul badge contextual messaging: ✅ PASS (Start/Continue/Complete)
-- Trait badges animation: ✅ PASS (float-gentle keyframes)
-- Multi-pet unique traits: ✅ PASS (breed-based + hash for variety)
-- Pet switching across pages: ✅ PASS (petSelectionChanged event)
-- Farewell empathy messaging: ✅ PASS
-- Global pet switching: ✅ PASS (PillarContext syncs with localStorage)
-- No JavaScript errors: ✅ PASS
-- Success rate: 100%
-
-### Completed in This Session (February 6, 2026)
-1. ✅ Removed "Products/Services" toggle (was clinical, not emotionally resonant)
-2. ✅ Fixed mobile wobbling issue (comprehensive overflow control in index.css)
-3. ✅ Verified all sub-pillar routes work with category-specific hero content
-4. ✅ Confirmed pet images load with DiceBear fallback
-5. ✅ Subcategory pills now primary navigation with "Shopping for another dog?" on right
-6. ✅ **Fixed Soul Journey clickability** - Links to specific pet's soul page
-7. ✅ **Fixed pet switching** - PillarContext syncs with localStorage + petSelectionChanged event
-8. ✅ **Fixed PillarProvider** - Added PillarProvider to App.js provider hierarchy
-9. ✅ **Fixed SoulScoreArc** - Accepts children prop for wrapper pattern
-10. ✅ **Soul badge glass effect** - Subtle backdrop-blur-lg with border-white/10
-11. ✅ **Contextual soul journey messaging** - "Start/Continue/shines bright" based on progress
-12. ✅ **Animated trait badges** - Float-gentle animation with staggered delays
-13. ✅ **Multi-pet unique traits** - 6 breed pools + hash function for variety
-14. ✅ **Farewell empathy** - Gentle, empathetic messaging in PillarContext
-
-### Remaining/Future Tasks
-1. **P0** - User verification of Mira OS `/mira-demo` page
-2. **P1** - Add Mira to Main Site Header (replace existing search)
-3. **P1** - Make voice search functional (connect to backend/Mira)
-4. **P2** - Build Thin Dock Navigation
-5. **P2** - Finalize comprehensive page audit document
-6. **P3** - Contextual pillar messaging (birthday awareness, festivals)
-7. **P3** - Time-of-day aware greetings
-8. **P3** - Add subtle animations for "magical" feel
-9. **P3** - Improve AI logic for "Why for [PetName]" whispers
-10. **BACKLOG** - Fix missing pet photos (data issue - Mojo)
-11. **BACKLOG** - Fix duplicate names (data issue - "Lola Lola")
+Build a world-class premium Mira AI chat interface for The Doggy Company that provides a "10/10" experience with:
+- Deep pet personalization using logged-in member data
+- Soul Score and soul traits integration
+- Premium "For Buddy" welcome experience
+- Concierge® handoff with WhatsApp, Chat, Email buttons
+- Product recommendations from 2000+ products
+- Test Scenarios panel for AI intelligence testing
+
+## Current Status (February 7, 2026)
+
+### ✅ COMPLETED
+1. **Premium "For Buddy" Welcome UI** - Rebuilt with:
+   - Pet avatar with animated concentric rings
+   - Soul Score badge (87% SOUL KNOWN)
+   - "Start [Pet]'s soul journey" button
+   - "For [Pet]" title (pink gradient, italic)
+   - "Curated with love for [Pet]" subtitle
+   - Soul traits chips (Playful spirit, Gentle paws, Loyal friend)
+   - "Personalized picks for [Pet]" button with sparkle animation
+   - Quick suggestion chips (Treats, Grooming, Birthday, Travel)
+
+2. **Concierge Integration** - WhatsApp, Chat, Email buttons in Mira responses
+
+3. **Test Scenarios Panel** - Visible by default with all test chips
+
+4. **Navigation Dock** - Concierge®, Orders, Plan, Help, Soul buttons
+
+5. **Chat Response Styling** - Pink top border, clarifying questions, quick reply chips
+
+6. **MIRA_DOCTRINE.md** - Comprehensive 485-line doctrine document
+
+### 🔧 TECHNICAL CHANGES MADE THIS SESSION
+- `/app/frontend/src/pages/MiraDemoPage.jsx` - Added premium welcome section (lines 1805-1873)
+- `/app/frontend/src/styles/mira-prod.css` - Added 200+ lines of premium welcome CSS
+- Added `Gift` icon import from lucide-react
+
+### ⚠️ KNOWN ISSUES
+1. **Preview Proxy Loading** - The preview URL shows a "Frontend Preview Only" loading screen that doesn't properly navigate to `/mira-demo`. The actual React app works locally.
+
+2. **Quick Chips Visibility** - The faded quick chips appearing between Test Scenarios and input may need additional CSS targeting.
+
+### 🎯 NEXT PRIORITIES
+1. Resolve preview proxy loading issue
+2. Add multi-pet switching UI (backend API ready at `/api/mira/user-pets`)
+3. Mobile responsiveness verification
+4. Full testing with `testing_agent_v3_fork`
 
 ## Architecture
 
-### Frontend
-- React (Vite)
-- Tailwind CSS
-- Shadcn UI
-- React Router
+```
+/app
+├── backend/
+│   ├── mira_routes.py           # Main Mira API endpoints
+│   ├── auth_routes.py           # User authentication
+│   └── server.py                # FastAPI app
+└── frontend/
+    └── src/
+        ├── pages/
+        │   └── MiraDemoPage.jsx # Main Mira chat component (2200+ lines)
+        ├── styles/
+        │   └── mira-prod.css    # Production styling (1400+ lines)
+        └── context/
+            └── AuthContext.jsx
+```
 
-### Backend
-- Python FastAPI
-- MongoDB
+## Key Files
+- `MiraDemoPage.jsx` - Main chat UI component
+- `mira-prod.css` - Production styling matching thedoggycompany.in
+- `/app/memory/MIRA_DOCTRINE.md` - Voice, tone, and behavior guidelines
 
-### Key Files
-- `/app/frontend/src/App.js` - Main router
-- `/app/frontend/src/components/` - Reusable components
-- `/app/frontend/src/pages/` - Page components
-- `/app/frontend/src/context/` - React contexts
+## Credentials for Testing
+- Email: `dipali@clubconcierge.in`
+- Password: `test123`
+- Database: `test_database` (not `doggy_company`)
+
+## API Endpoints
+- `POST /api/auth/login` - User authentication
+- `POST /api/mira/os/understand-with-products` - Main Mira chat
+- `GET /api/mira/user-pets` - Get logged-in user's pets
+
+## The Mira Doctrine
+See `/app/memory/MIRA_DOCTRINE.md` for complete guidelines including:
+- Core persona (trusted presence, not chatbot)
+- Governing principles (Presence Before Performance, Remember→Confirm→Act)
+- Tone guidelines (warm, grounded, human)
+- Boundary rules (Medical, Legal, Ethical)
+- Canonical response examples
+
+## Session Log
+- 2026-02-07: Restored premium "For Buddy" welcome UI
+- 2026-02-07: Added comprehensive CSS for hero section
+- 2026-02-07: Fixed import for Gift icon
