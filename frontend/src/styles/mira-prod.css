@@ -535,75 +535,163 @@
 /* ========================================
    PRODUCTS - 2x2 Grid
    ======================================== */
+/* ========================================
+   PRODUCT RECOMMENDATIONS - Premium Bento Style
+   ======================================== */
 .mp-products {
   margin-top: var(--space-lg);
   padding-top: var(--space-lg);
-  border-top: 1px solid var(--mira-card-border);
+}
+
+.mp-products-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
 }
 
 .mp-products-title {
   font-size: 13px;
   font-weight: 600;
   color: var(--mira-text-secondary);
-  margin: 0 0 var(--space-md);
+  margin: 0;
+  letter-spacing: 0.02em;
 }
 
 .mp-products-title .pet-name {
   color: var(--mira-pink);
+  font-weight: 700;
 }
 
 .mp-products-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-md);
+  gap: 16px;
   margin-top: var(--space-md);
 }
 
+/* Premium Product Tile - Dark Glass Style */
 .mp-product-tile {
-  background: white;
-  border-radius: var(--radius-md);
+  background: linear-gradient(145deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 16px;
   overflow: hidden;
-  transition: all 0.2s;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(8px);
+  position: relative;
+}
+
+.mp-product-tile::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(168,85,247,0.1) 0%, transparent 50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
 }
 
 .mp-product-tile:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  transform: translateY(-4px) scale(1.02);
+  border-color: rgba(168,85,247,0.4);
+  box-shadow: 
+    0 20px 40px rgba(0,0,0,0.3),
+    0 0 30px rgba(168,85,247,0.15);
 }
 
+.mp-product-tile:hover::before {
+  opacity: 1;
+}
+
+/* Product Image */
 .mp-product-img {
   width: 100%;
-  height: 100px;
+  height: 120px;
   object-fit: cover;
-  background: #f3f4f6;
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+  transition: transform 0.4s ease;
 }
 
+.mp-product-tile:hover .mp-product-img {
+  transform: scale(1.05);
+}
+
+.mp-product-img-wrapper {
+  overflow: hidden;
+  position: relative;
+}
+
+.mp-product-img-wrapper::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  background: linear-gradient(to top, rgba(30,27,75,0.9) 0%, transparent 100%);
+}
+
+/* Product Content */
 .mp-product-content {
-  padding: var(--space-sm);
+  padding: 12px 14px 14px;
+  position: relative;
 }
 
 .mp-product-name {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
-  color: #1f2937;
-  margin: 0 0 4px;
-  line-height: 1.3;
+  color: white;
+  margin: 0 0 6px;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .mp-product-price {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
-  color: var(--mira-purple);
-  margin: 0 0 var(--space-sm);
+  background: linear-gradient(90deg, var(--mira-pink), var(--mira-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 10px;
 }
 
+/* Why For Pet - Personalized Insight */
+.mp-why-for-pet {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 10px;
+  background: linear-gradient(90deg, rgba(245,158,11,0.12) 0%, rgba(245,158,11,0.05) 100%);
+  border-radius: 8px;
+  margin-bottom: 12px;
+  border-left: 2px solid rgba(245,158,11,0.6);
+}
+
+.mp-why-icon {
+  font-size: 12px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.mp-why-text {
+  font-size: 11px;
+  color: rgba(255,255,255,0.85);
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+/* Add Button - Premium Style */
 .mp-product-add {
   width: 100%;
-  padding: var(--space-sm);
+  padding: 10px 14px;
   border: none;
-  border-radius: var(--radius-sm);
-  background: #1f2937;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.06) 100%);
+  border: 1px solid rgba(255,255,255,0.15);
   color: white;
   font-size: 12px;
   font-weight: 600;
@@ -611,11 +699,33 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
+  gap: 8px;
+  transition: all 0.2s ease;
+  letter-spacing: 0.02em;
 }
 
 .mp-product-add:hover {
-  background: black;
+  background: linear-gradient(135deg, var(--mira-purple) 0%, var(--mira-pink) 100%);
+  border-color: transparent;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(168,85,247,0.3);
+}
+
+.mp-product-add svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+  .mp-products-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .mp-product-img {
+    height: 140px;
+  }
 }
 
 /* ========================================
