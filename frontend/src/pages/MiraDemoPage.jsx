@@ -1192,62 +1192,44 @@ const MiraDemoPage = () => {
   };
 
   return (
-    <div 
-      className="flex flex-col bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900"
-      style={{
-        height: '100dvh',
-        maxHeight: '100dvh',
-        overscrollBehavior: 'none'
-      }}
-    >
-      {/* Header */}
-      <header className="flex-shrink-0 bg-black/20 backdrop-blur-lg border-b border-white/10">
-        <div className="max-w-3xl mx-auto px-4 py-2.5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                <Sparkles className="w-4 h-4 text-white" />
-              </div>
-              <div>
-                <h1 className="text-white font-bold text-base">Mira</h1>
-                <p className="text-white/50 text-xs">Your Pet Companion</p>
-              </div>
+    <div className="mira-chat-container">
+      {/* Header - Clean & Minimal */}
+      <header className="mira-header">
+        <div className="mira-header-inner">
+          <div className="mira-header-left">
+            <div className="mira-avatar mira-avatar-brand">
+              <Sparkles />
             </div>
-            <div className="flex items-center gap-2 bg-white/10 rounded-full px-3 py-1.5">
-              <div className="w-6 h-6 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
-                <PawPrint className="w-3 h-3 text-white" />
-              </div>
-              <span className="text-white font-medium text-sm">{pet.name}</span>
+            <div>
+              <h1 className="mira-header-title">Mira</h1>
+              <p className="mira-header-subtitle">Your Pet Companion</p>
             </div>
+          </div>
+          <div className="mira-pet-badge">
+            <div className="mira-avatar mira-avatar-pet mira-pet-badge-avatar">
+              <PawPrint />
+            </div>
+            <span className="mira-pet-badge-name">{pet.name}</span>
           </div>
         </div>
         
-        {/* Mini Dock */}
-        <div className="border-t border-white/5">
-          <div className="max-w-3xl mx-auto px-4">
-            <div className="flex items-center gap-1.5 py-2 overflow-x-auto scrollbar-hide">
-              {DOCK_ITEMS.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => handleDockClick(item)}
-                    data-testid={`dock-${item.id}`}
-                    className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg transition-all
-                      whitespace-nowrap text-xs font-medium min-h-[32px] active:scale-95 ${
-                      activeDockItem === item.id
-                        ? `bg-gradient-to-r ${item.color} text-white`
-                        : 'bg-white/5 text-white/60 hover:bg-white/10'
-                    }`}
-                  >
-                    <Icon className="w-3.5 h-3.5" />
-                    <span>{item.label}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </div>
+        {/* Navigation Dock */}
+        <nav className="mira-dock">
+          {DOCK_ITEMS.map((item) => {
+            const Icon = item.icon;
+            return (
+              <button
+                key={item.id}
+                onClick={() => handleDockClick(item)}
+                data-testid={`dock-${item.id}`}
+                className={`mira-dock-item ${activeDockItem === item.id ? 'active' : ''}`}
+              >
+                <Icon />
+                <span>{item.label}</span>
+              </button>
+            );
+          })}
+        </nav>
       </header>
 
       {/* Messages Area */}
