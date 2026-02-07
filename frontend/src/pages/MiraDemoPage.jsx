@@ -38,7 +38,7 @@ const TEST_SCENARIOS = [
     id: 'treats', 
     label: '🦴 Treats', 
     query: "Show me some treats for Buddy",
-    description: 'Tests simple product discovery - SHOULD show products'
+    description: 'FOOD_TREAT - SHOULD show products'
   },
   { 
     id: 'birthday', 
@@ -46,18 +46,48 @@ const TEST_SCENARIOS = [
     query: "I want to plan Buddy's birthday",
     description: 'Tests emotional acknowledgment + alignment question'
   },
-  // === PLANNING / SERVICE (no products) ===
-  { 
-    id: 'travel', 
-    label: '✈️ Travel', 
-    query: "We're planning a trip with Buddy next month",
-    description: 'Tests clarifying questions - NO products until asked'
-  },
+  // === FOOD & NUTRITION OS ===
   { 
     id: 'food', 
     label: '🍽️ Food', 
     query: "What food would be best for Buddy?",
-    description: 'Tests FOOD_MAIN - NO treat boxes, ask questions first'
+    description: 'FOOD_MAIN - Ask questions first, NO products'
+  },
+  { 
+    id: 'food-portion', 
+    label: '⚖️ Portion', 
+    query: "How much should I feed Buddy?",
+    description: 'FOOD_PORTION - Guidance + vet referral, NO products'
+  },
+  { 
+    id: 'food-schedule', 
+    label: '🕐 Schedule', 
+    query: "What's the best feeding schedule for Buddy?",
+    description: 'FOOD_ROUTINE - Structure advice, NO products'
+  },
+  { 
+    id: 'food-human', 
+    label: '🍎 Can Eat?', 
+    query: "Can Buddy eat apples?",
+    description: 'FOOD_RULES - Safety guidance only, NO products'
+  },
+  { 
+    id: 'food-weight', 
+    label: '📈 Weight', 
+    query: "I think Buddy is putting on weight",
+    description: 'FOOD_WEIGHT - VET coordination, NO products'
+  },
+  { 
+    id: 'food-picky', 
+    label: '😒 Picky', 
+    query: "Buddy is a very picky eater, what can I do?",
+    description: 'FOOD_PREFERENCE - Behaviour vs medical'
+  },
+  { 
+    id: 'food-vomit', 
+    label: '🤢 Vomiting', 
+    query: "Buddy has been vomiting after eating",
+    description: 'FOOD_HEALTH_ADJACENT - VET IMMEDIATELY'
   },
   // === GROOMING OS SCENARIOS ===
   { 
@@ -73,28 +103,10 @@ const TEST_SCENARIOS = [
     description: 'GROOM_PLAN - Home vs groomer question'
   },
   { 
-    id: 'groom-shed', 
-    label: '🐕 Shedding', 
-    query: "Buddy is shedding a lot, what should I do?",
-    description: 'GROOM_PLAN - Brushing guidance'
-  },
-  { 
-    id: 'groom-nails', 
-    label: '💅 Nails', 
-    query: "Buddy's nails are getting long, what should I do?",
-    description: 'GROOM_PLAN - Home vs professional'
-  },
-  { 
     id: 'groom-tools', 
     label: '🧴 Tools', 
     query: "What shampoo should I use for Buddy?",
     description: 'GROOM_TOOLS - MAY show grooming products'
-  },
-  { 
-    id: 'groom-anxiety', 
-    label: '😟 Groom Fear', 
-    query: "Buddy hates being brushed, what can I do?",
-    description: 'GROOM_CONCERN - Desensitization tips'
   },
   { 
     id: 'groom-accident', 
@@ -103,16 +115,17 @@ const TEST_SCENARIOS = [
     description: 'GROOM_ACCIDENT - VET IMMEDIATELY, NO products'
   },
   { 
-    id: 'groom-post', 
-    label: '😣 Post-Groom', 
-    query: "Buddy is scratching a lot after his grooming session",
-    description: 'GROOM_POST - VET, NO products'
-  },
-  { 
     id: 'groom-book', 
     label: '📅 Book', 
     query: "Book me a groomer for Buddy",
     description: 'GROOM_BOOKING - Concierge® orchestration'
+  },
+  // === SERVICE / PLANNING ===
+  { 
+    id: 'travel', 
+    label: '✈️ Travel', 
+    query: "We're planning a trip with Buddy next month",
+    description: 'Tests clarifying questions - NO products until asked'
   },
   // === EMOTIONAL / SENSITIVE ===
   { 
