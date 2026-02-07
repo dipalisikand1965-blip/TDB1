@@ -2217,14 +2217,45 @@ const MiraDemoPage = () => {
                             </div>
                           )}
                           
+                          {/* SERVICE CARDS - Self-service wizard options */}
+                          {/* MIRA DOCTRINE: Mira is a router - offer choice between self-service and concierge */}
+                          {msg.showServices && msg.detectedServices?.length > 0 && (
+                            <div className="mp-service-cards">
+                              <p className="mp-service-intro">
+                                You can book this directly, or let your Concierge® handle it:
+                              </p>
+                              <div className="mp-service-grid">
+                                {msg.detectedServices.map((service, sIdx) => (
+                                  <a
+                                    key={sIdx}
+                                    href={`https://thedoggycompany.in${service.wizardUrl}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="mp-service-card"
+                                    style={{ '--service-color': service.color }}
+                                    data-testid={`service-${service.id}`}
+                                  >
+                                    <span className="mp-service-icon">{service.icon}</span>
+                                    <div className="mp-service-info">
+                                      <span className="mp-service-label">{service.label}</span>
+                                      <span className="mp-service-desc">{service.description}</span>
+                                    </div>
+                                  </a>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          
                           {/* MIRA DOCTRINE: Concierge is premium service, shown subtly when relevant */}
                           {/* Only show when AI suggests it or execution type is CONCIERGE */}
                           {msg.data?.response?.suggest_concierge && (
                             <div className="mp-concierge-strip">
                               <div className="mp-concierge-content">
                                 <p className="mp-concierge-text">
-                                  {msg.data?.response?.concierge_framing || 
-                                   `If you'd like, your pet Concierge® can help coordinate this for ${pet.name}.`}
+                                  {msg.showServices 
+                                    ? `Or, if you'd prefer, your pet Concierge® can handle this end-to-end for ${pet.name}.`
+                                    : (msg.data?.response?.concierge_framing || 
+                                       `If you'd like, your pet Concierge® can help coordinate this for ${pet.name}.`)}
                                 </p>
                                 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                                   <a 
