@@ -93,14 +93,17 @@
 }
 
 /* ========================================
-   Base Container
+   Base Container - Purple Gradient Background
    ======================================== */
 .mira-chat-container {
   display: flex;
   flex-direction: column;
   height: 100dvh;
   max-height: 100dvh;
-  background: var(--mira-bg-primary);
+  background: linear-gradient(180deg, 
+    var(--mira-bg-gradient-start) 0%, 
+    var(--mira-bg-gradient-mid) 50%, 
+    var(--mira-bg-gradient-end) 100%);
   font-family: var(--mira-font-family);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
