@@ -1409,21 +1409,9 @@ const MiraDemoPage = () => {
                             );
                           })()}
                           
-                          {/* Quick Reply Chips */}
-                          {msg.quickReplies && msg.quickReplies.length > 0 && (
-                            <div className="mira-chips-container">
-                              {msg.quickReplies.map((reply, replyIdx) => (
-                                <button
-                                  key={replyIdx}
-                                  onClick={() => handleQuickReply(reply.value)}
-                                  className="mira-chip mira-chip-amber"
-                                  data-testid={`quick-reply-${replyIdx}`}
-                                >
-                                  {reply.text}
-                                </button>
-                              ))}
-                            </div>
-                          )}
+                          {/* Quick Reply Chips - REMOVED for natural conversation flow */}
+                          {/* User feedback: chips distract from natural conversation */}
+                          {/* The AI should understand context without guided options */}
                           
                           {/* Products - ONLY SHOWN WHEN USER HAS OPTED IN */}
                           {msg.showProducts && msg.data?.response?.products && msg.data.response.products.length > 0 && (
