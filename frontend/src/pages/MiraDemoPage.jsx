@@ -1755,10 +1755,10 @@ const MiraDemoPage = () => {
       
       {/* SOUL TRAITS BAR - Like Travel Page */}
       {pet.soulTraits && pet.soulTraits.length > 0 && (
-        <div className="m10-soul-bar">
+        <div className="mp-soul-bar">
           {pet.soulTraits.map((trait, i) => (
-            <span key={i} className="m10-soul-trait">
-              <span className="m10-soul-trait-icon">{trait.icon}</span>
+            <span key={i} className="mp-soul-trait">
+              <span className="mp-soul-trait-icon">{trait.icon}</span>
               {trait.label}
             </span>
           ))}
@@ -1766,20 +1766,20 @@ const MiraDemoPage = () => {
       )}
       
       {/* NAVIGATION DOCK - Floating Island */}
-      <nav className="m10-dock">
-        <button onClick={() => inputRef.current?.focus()} className="m10-dock-btn active" data-testid="dock-concierge">
+      <nav className="mp-dock">
+        <button onClick={() => inputRef.current?.focus()} className="mp-dock-btn active" data-testid="dock-concierge">
           <MessageCircle /> <span>Concierge®</span>
         </button>
-        <button onClick={() => navigate('/orders')} className="m10-dock-btn" data-testid="dock-orders">
+        <button onClick={() => navigate('/orders')} className="mp-dock-btn" data-testid="dock-orders">
           <Package /> <span>Orders</span>
         </button>
-        <button onClick={() => navigate('/family-dashboard')} className="m10-dock-btn" data-testid="dock-plan">
+        <button onClick={() => navigate('/family-dashboard')} className="mp-dock-btn" data-testid="dock-plan">
           <Calendar /> <span>Plan</span>
         </button>
-        <button onClick={() => setShowHelpModal(true)} className="m10-dock-btn" data-testid="dock-help">
+        <button onClick={() => setShowHelpModal(true)} className="mp-dock-btn" data-testid="dock-help">
           <HelpCircle /> <span>Help</span>
         </button>
-        <button onClick={() => navigate('/pet-soul')} className="m10-dock-btn" data-testid="dock-soul">
+        <button onClick={() => navigate('/pet-soul')} className="mp-dock-btn" data-testid="dock-soul">
           <Heart /> <span>Soul</span>
         </button>
       </nav>
@@ -1819,7 +1819,7 @@ const MiraDemoPage = () => {
           </div>
           
           <div className="mp-past-chats-footer">
-            <button onClick={() => { startNewSession(); setShowPastChats(false); }} className="m10-concierge-btn">
+            <button onClick={() => { startNewSession(); setShowPastChats(false); }} className="mp-concierge-btn">
               <Plus /> Start New Chat
             </button>
           </div>
@@ -1830,38 +1830,38 @@ const MiraDemoPage = () => {
       <div 
         ref={messagesContainerRef}
         onScroll={handleScroll}
-        className="m10-messages"
+        className="mp-messages"
       >
-        <div className="m10-messages-inner">
+        <div className="mp-messages-inner">
           {/* Welcome State - Premium */}
           {conversationHistory.length === 0 && !isProcessing && (
-            <div className="m10-welcome">
+            <div className="mp-welcome">
               {/* Pet Avatar with Rings */}
-              <div className="m10-welcome-avatar">
-                <div className="m10-welcome-avatar-ring"></div>
-                <div className="m10-welcome-avatar-ring-2"></div>
-                <div className="m10-welcome-avatar-img">
+              <div className="mp-welcome-avatar">
+                <div className="mp-welcome-avatar-ring"></div>
+                <div className="mp-welcome-avatar-ring-2"></div>
+                <div className="mp-welcome-avatar-img">
                   {pet.photo ? <img src={pet.photo} alt={pet.name} /> : <PawPrint />}
                 </div>
               </div>
               
-              <h2 className="m10-welcome-title">
+              <h2 className="mp-welcome-title">
                 How can I help with <span className="pet-name">{pet.name}</span> today?
               </h2>
-              <p className="m10-welcome-subtitle">
+              <p className="mp-welcome-subtitle">
                 I know {pet.name} is a {pet.breed}{pet.sensitivities?.length > 0 ? ` with ${pet.sensitivities.join(', ')}` : ''}. 
                 Ask me anything about treats, grooming, travel, birthdays, health...
               </p>
               
               {/* Quick Suggestions */}
-              <div className="m10-welcome-chips">
+              <div className="mp-welcome-chips">
                 {[
                   { text: `Treats for ${pet.name}`, icon: '🦴' },
                   { text: 'Grooming help', icon: '✂️' },
                   { text: 'Plan a birthday', icon: '🎂' },
                   { text: 'Travel tips', icon: '✈️' }
                 ].map((s, i) => (
-                  <button key={i} onClick={() => handleQuickReply(s.text)} className="m10-welcome-chip">
+                  <button key={i} onClick={() => handleQuickReply(s.text)} className="mp-welcome-chip">
                     <span>{s.icon}</span> {s.text}
                   </button>
                 ))}
@@ -1914,8 +1914,8 @@ const MiraDemoPage = () => {
                 <React.Fragment key={idx}>
                   {msg.type === 'user' ? (
                     /* User Message - Pale Lilac */
-                    <div className="m10-msg-user">
-                      <div className="m10-bubble-user">{msg.content}</div>
+                    <div className="mp-msg-user">
+                      <div className="mp-bubble-user">{msg.content}</div>
                     </div>
                   ) : msg.type === 'system' ? (
                     /* System Message */
@@ -1926,25 +1926,25 @@ const MiraDemoPage = () => {
                     </div>
                   ) : (
                     /* Mira Message Card - Glass Panel */
-                    <div className="m10-msg-mira">
-                      <div className="m10-card">
+                    <div className="mp-msg-mira">
+                      <div className="mp-card">
                         {/* Card Header */}
-                        <div className="m10-card-header">
-                          <div className="m10-mira-avatar"><Sparkles /></div>
-                          <span className="m10-mira-name">Mira</span>
+                        <div className="mp-card-header">
+                          <div className="mp-mira-avatar"><Sparkles /></div>
+                          <span className="mp-mira-name">Mira</span>
                         </div>
                         
                         {/* Card Body */}
-                        <div className="m10-card-body">
+                        <div className="mp-card-body">
                           {/* Message Text */}
                           {(() => {
                             const { mainText, questionText } = splitMessageWithQuestion(msg.content);
                             return (
                               <>
-                                {mainText && <p className="m10-card-text">{mainText}</p>}
+                                {mainText && <p className="mp-card-text">{mainText}</p>}
                                 {questionText && (
-                                  <div className="m10-question">
-                                    <p className="m10-question-text">{questionText}</p>
+                                  <div className="mp-question">
+                                    <p className="mp-question-text">{questionText}</p>
                                   </div>
                                 )}
                               </>
@@ -1953,9 +1953,9 @@ const MiraDemoPage = () => {
                           
                           {/* Quick Reply Chips */}
                           {msg.quickReplies && msg.quickReplies.length > 0 && (
-                            <div className="m10-chips">
+                            <div className="mp-chips">
                               {msg.quickReplies.map((chip, cIdx) => (
-                                <button key={cIdx} onClick={() => handleQuickReply(chip.value)} className="m10-chip">
+                                <button key={cIdx} onClick={() => handleQuickReply(chip.value)} className="mp-chip">
                                   {chip.text}
                                 </button>
                               ))}
@@ -1964,25 +1964,25 @@ const MiraDemoPage = () => {
                           
                           {/* Products - 2x2 GRID TILES */}
                           {msg.showProducts && msg.data?.response?.products?.length > 0 && (
-                            <div className="m10-products">
-                              <div className="m10-products-header">
-                                <p className="m10-products-title">
+                            <div className="mp-products">
+                              <div className="mp-products-header">
+                                <p className="mp-products-title">
                                   Recommended for <span className="pet-name">{pet.name}</span>
                                 </p>
                               </div>
-                              <div className="m10-products-grid">
+                              <div className="mp-products-grid">
                                 {msg.data.response.products.slice(0, 4).map((product, pIdx) => (
-                                  <div key={pIdx} className="m10-product-tile">
+                                  <div key={pIdx} className="mp-product-tile">
                                     <img 
                                       src={product.image || `https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop`} 
                                       alt={product.name} 
-                                      className="m10-product-img" 
+                                      className="mp-product-img" 
                                     />
-                                    <div className="m10-product-content">
-                                      <p className="m10-product-name">{product.name || product.suggestion}</p>
-                                      {product.price && <p className="m10-product-price">₹{product.price}</p>}
+                                    <div className="mp-product-content">
+                                      <p className="mp-product-name">{product.name || product.suggestion}</p>
+                                      {product.price && <p className="mp-product-price">₹{product.price}</p>}
                                       <button 
-                                        className="m10-product-add"
+                                        className="mp-product-add"
                                         onClick={() => alert(`Added ${product.name} to cart!`)}
                                         data-testid={`add-product-${pIdx}`}
                                       >
@@ -1997,15 +1997,15 @@ const MiraDemoPage = () => {
                           
                           {/* Important to Watch For - Collapsible */}
                           {msg.data?.response?.tips && msg.data.response.tips.length > 0 && (
-                            <div className="m10-watchfor">
+                            <div className="mp-watchfor">
                               <button 
-                                className="m10-watchfor-toggle"
+                                className="mp-watchfor-toggle"
                                 onClick={() => setCollapsedSections(prev => ({
                                   ...prev,
                                   [`tips-${idx}`]: prev[`tips-${idx}`] === false ? true : false
                                 }))}
                               >
-                                <span className="m10-watchfor-label">
+                                <span className="mp-watchfor-label">
                                   <AlertCircle /> Important to Watch For
                                 </span>
                                 <ChevronUp style={{ 
@@ -2015,8 +2015,8 @@ const MiraDemoPage = () => {
                                 }} />
                               </button>
                               {collapsedSections[`tips-${idx}`] !== false && (
-                                <div className="m10-watchfor-content">
-                                  <ul className="m10-watchfor-list">
+                                <div className="mp-watchfor-content">
+                                  <ul className="mp-watchfor-list">
                                     {msg.data.response.tips.map((tip, tIdx) => (
                                       <li key={tIdx}>{tip}</li>
                                     ))}
@@ -2027,10 +2027,10 @@ const MiraDemoPage = () => {
                           )}
                           
                           {/* Concierge Strip - ALWAYS SHOW */}
-                          <div className="m10-concierge-strip">
-                            <div className="m10-concierge-icon"><Bot /></div>
-                            <div className="m10-concierge-content">
-                              <p className="m10-concierge-text">
+                          <div className="mp-concierge-strip">
+                            <div className="mp-concierge-icon"><Bot /></div>
+                            <div className="mp-concierge-content">
+                              <p className="mp-concierge-text">
                                 Your pet Concierge® can help find options that match {pet.name}'s needs.
                               </p>
                               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
@@ -2038,17 +2038,17 @@ const MiraDemoPage = () => {
                                   href={`https://wa.me/919663185747?text=${encodeURIComponent(`Hi, I need help with ${pet.name} (${pet.breed}). ${msg.content?.slice(0, 100)}...`)}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="m10-concierge-btn"
+                                  className="mp-concierge-btn"
                                   style={{ background: '#25D366', textDecoration: 'none' }}
                                 >
                                   <Phone style={{ width: 14, height: 14 }} /> WhatsApp
                                 </a>
-                                <button onClick={handleConciergeHandoff} className="m10-concierge-btn">
+                                <button onClick={handleConciergeHandoff} className="mp-concierge-btn">
                                   <MessageSquare /> Chat
                                 </button>
                                 <a 
                                   href={`mailto:concierge@thedoggycompany.in?subject=Help with ${pet.name}&body=${encodeURIComponent(`Hi, I need help with ${pet.name}.\n\nContext: ${msg.content?.slice(0, 200)}...`)}`}
-                                  className="m10-concierge-btn"
+                                  className="mp-concierge-btn"
                                   style={{ background: 'rgba(139, 92, 246, 0.3)', textDecoration: 'none' }}
                                 >
                                   <Mail style={{ width: 14, height: 14 }} /> Email
@@ -2059,21 +2059,21 @@ const MiraDemoPage = () => {
                           
                           {/* Feedback Row */}
                           {!msg.isClarifyingQuestion && msg.data?.execution_type !== 'HOLD' && (
-                            <div className="m10-feedback">
-                              <span className="m10-feedback-label">Was this helpful?</span>
-                              <div className="m10-feedback-btns">
+                            <div className="mp-feedback">
+                              <span className="mp-feedback-label">Was this helpful?</span>
+                              <div className="mp-feedback-btns">
                                 {msg.feedbackGiven ? (
-                                  <span className={`m10-feedback-btn ${msg.feedbackGiven}`} style={{
+                                  <span className={`mp-feedback-btn ${msg.feedbackGiven}`} style={{
                                     background: msg.feedbackGiven === 'positive' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)'
                                   }}>
                                     {msg.feedbackGiven === 'positive' ? <ThumbsUp /> : <ThumbsDown />}
                                   </span>
                                 ) : (
                                   <>
-                                    <button onClick={() => handleFeedback(idx, true)} className="m10-feedback-btn" data-testid={`feedback-up-${idx}`}>
+                                    <button onClick={() => handleFeedback(idx, true)} className="mp-feedback-btn" data-testid={`feedback-up-${idx}`}>
                                       <ThumbsUp />
                                     </button>
-                                    <button onClick={() => handleFeedback(idx, false)} className="m10-feedback-btn" data-testid={`feedback-down-${idx}`}>
+                                    <button onClick={() => handleFeedback(idx, false)} className="mp-feedback-btn" data-testid={`feedback-down-${idx}`}>
                                       <ThumbsDown />
                                     </button>
                                   </>
@@ -2090,13 +2090,13 @@ const MiraDemoPage = () => {
               
               {/* Loading Indicator */}
               {isProcessing && (
-                <div className="m10-msg-mira">
-                  <div className="m10-loading">
-                    <div className="m10-mira-avatar"><Sparkles /></div>
-                    <div className="m10-loading-dots">
-                      <div className="m10-loading-dot"></div>
-                      <div className="m10-loading-dot"></div>
-                      <div className="m10-loading-dot"></div>
+                <div className="mp-msg-mira">
+                  <div className="mp-loading">
+                    <div className="mp-mira-avatar"><Sparkles /></div>
+                    <div className="mp-loading-dots">
+                      <div className="mp-loading-dot"></div>
+                      <div className="mp-loading-dot"></div>
+                      <div className="mp-loading-dot"></div>
                     </div>
                   </div>
                 </div>
@@ -2122,23 +2122,23 @@ const MiraDemoPage = () => {
       )}
       
       {/* Input Composer - Premium */}
-      <div className="m10-composer">
-        <div className="m10-composer-inner">
-          <form onSubmit={handleSubmit} className="m10-input-row">
+      <div className="mp-composer">
+        <div className="mp-composer-inner">
+          <form onSubmit={handleSubmit} className="mp-input-row">
             <input
               ref={inputRef}
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder={`Type your reply to Mira...`}
-              className="m10-input"
+              className="mp-input"
               disabled={isProcessing}
               data-testid="mira-input"
             />
             <button
               type="button"
               onClick={toggleVoice}
-              className={`m10-btn-mic ${isListening ? 'recording' : ''}`}
+              className={`mp-btn-mic ${isListening ? 'recording' : ''}`}
               data-testid="mic-btn"
             >
               {isListening ? <MicOff /> : <Mic />}
@@ -2146,7 +2146,7 @@ const MiraDemoPage = () => {
             <button
               type="submit"
               disabled={isProcessing || !query.trim()}
-              className="m10-btn-send"
+              className="mp-btn-send"
               data-testid="send-btn"
             >
               <Send />
@@ -2156,7 +2156,7 @@ const MiraDemoPage = () => {
       </div>
       
       {/* Sandbox Footer */}
-      <div className="m10-sandbox-footer">
+      <div className="mp-sandbox-footer">
         🧪 Sandbox Mode — Mira OS 10/10 Premium Experience
       </div>
       
