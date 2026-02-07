@@ -218,24 +218,44 @@ const MiraDemoPage = () => {
     return newTicket;
   }, [currentTicket, pet, user]);
   
-  // Engage Concierge
-  const engageConcierge = useCallback(async (reason) => {
+  // Engage Concierge - Flip ticket status, NOT create new ticket
+  const engageConcierge = useCallback(async (reason, latestMiraSummary = '') => {
     if (!currentTicket) return;
     
+    const now = new Date();
+    
+    // Flip status, don't create new ticket
     const updatedTicket = {
       ...currentTicket,
       status: 'open_concierge_engaged',
-      handoff_time: new Date().toISOString(),
-      handoff_reason: reason
+      handoff_to_concierge: true,
+      concierge_queue: currentTicket.pillar?.toUpperCase() || 'GENERAL',
+      handoff_time: now.toISOString(),
+      handoff_reason: reason,
+      latest_mira_summary: latestMiraSummary || 'Parent requested Concierge assistance.',
+      updated_at: now.toISOString(),
+      conversation: [
+        ...(currentTicket.conversation || []),
+        { 
+          sender: 'system', 
+          text: 'Ticket handed off to Concierge®',
+          timestamp: now.toISOString()
+        }
+      ]
     };
-    setCurrentTicket(updatedTicket);
     
+    setCurrentTicket(updatedTicket);
+    console.log('[TICKET] Concierge engaged for:', updatedTicket.id, 'Queue:', updatedTicket.concierge_queue);
+    
+    // Add visual message to conversation
     const systemMessage = {
       type: 'system',
       content: 'Your pet Concierge® is joining this chat...',
-      timestamp: new Date()
+      timestamp: now
     };
     setConversationHistory(prev => [...prev, systemMessage]);
+    
+    // In production: POST to /api/tickets/{id}/handoff
   }, [currentTicket]);
   
   // Extract quick reply options from Mira's response
