@@ -1295,10 +1295,27 @@ const MiraDemoPage = () => {
       const shouldShowProducts = canShowProducts && 
                                  data.response?.products?.length > 0;
       
+      // Determine if concierge should be suggested
+      // Show concierge strip if:
+      // 1. Backend explicitly suggests it
+      // 2. User mentioned "concierge" in their message
+      // 3. Execution type is CONCIERGE
+      const userWantsConcierge = userQuery.toLowerCase().includes('concierge');
+      const shouldSuggestConcierge = data.response?.suggest_concierge || 
+                                      data.execution_type === 'CONCIERGE' ||
+                                      userWantsConcierge;
+      
       const miraMessage = {
         type: 'mira',
         content: miraResponseText,
-        data: shouldShowProducts ? data : { ...data, response: { ...data.response, products: [] } },
+        data: {
+          ...data,
+          response: {
+            ...data.response,
+            products: shouldShowProducts ? data.response?.products : [],
+            suggest_concierge: shouldSuggestConcierge
+          }
+        },
         quickReplies: quickReplies,
         showProducts: shouldShowProducts,
         stepId: miraStepId,  // Track which step this message is for
