@@ -2707,10 +2707,44 @@ const MiraDemoPage = () => {
                           {/* SERVICE CARDS - Self-service wizard options */}
                           {/* MIRA DOCTRINE: Mira is a router - offer choice between self-service and concierge */}
                           {/* E014: Services now come from database API */}
+                          
+                          {/* E013: REMEMBERED PROVIDERS - Show past providers first */}
+                          {msg.data?.response?.remembered_providers?.length > 0 && (
+                            <div className="mp-remembered-providers">
+                              <p className="mp-remembered-intro">
+                                🕐 Based on {pet.name}'s history:
+                              </p>
+                              <div className="mp-remembered-list">
+                                {msg.data.response.remembered_providers.map((provider, pIdx) => (
+                                  <button
+                                    key={pIdx}
+                                    onClick={() => openServiceRequest({
+                                      id: `remembered-${provider.provider_name}`,
+                                      label: `Book ${provider.provider_name} again`,
+                                      icon: '⭐',
+                                      description: provider.notes || `Previously used for ${provider.service_type}`,
+                                      color: '#F59E0B'
+                                    }, false)}
+                                    className="mp-remembered-card"
+                                    data-testid={`remembered-provider-${pIdx}`}
+                                  >
+                                    <span className="mp-remembered-icon">⭐</span>
+                                    <div className="mp-remembered-info">
+                                      <span className="mp-remembered-name">{provider.provider_name}</span>
+                                      <span className="mp-remembered-suggestion">{provider.suggested_message}</span>
+                                    </div>
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          
                           {msg.showServices && msg.detectedServices?.length > 0 && (
                             <div className="mp-service-cards">
                               <p className="mp-service-intro">
-                                Choose how you'd like to proceed:
+                                {msg.data?.response?.remembered_providers?.length > 0 
+                                  ? 'Or explore other options:' 
+                                  : 'Choose how you\'d like to proceed:'}
                               </p>
                               <div className="mp-service-grid">
                                 {msg.detectedServices.map((service, sIdx) => (
