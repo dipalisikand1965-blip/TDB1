@@ -111,22 +111,73 @@
 }
 
 /* ========================================
-   Header - Compact, Clean (ChatGPT Style)
+   Header - Compact with Thin Dock
    ======================================== */
 .mira-header {
   flex-shrink: 0;
-  background: rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   padding: var(--mira-space-md) var(--mira-space-lg);
 }
 
 .mira-header-inner {
-  max-width: 900px;
+  max-width: 1200px;
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: var(--mira-space-lg);
+}
+
+/* THIN DOCK - Per Gospel */
+.mira-thin-dock {
+  display: flex;
+  align-items: center;
+  gap: var(--mira-space-xs);
+  flex: 1;
+  justify-content: center;
+}
+
+.mira-dock-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--mira-space-xs);
+  padding: var(--mira-space-sm) var(--mira-space-md);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--mira-radius-full);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: var(--mira-font-size-xs);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--mira-transition-fast);
+  white-space: nowrap;
+}
+
+.mira-dock-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.mira-dock-btn.primary {
+  background: linear-gradient(135deg, #A855F7 0%, #EC4899 100%);
+  border-color: transparent;
+  color: white;
+}
+
+.mira-dock-btn.primary:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
+}
+
+@media (max-width: 768px) {
+  .mira-thin-dock span {
+    display: none;
+  }
+  .mira-dock-btn {
+    padding: var(--mira-space-sm);
+  }
 }
 
 .mira-header-left {
