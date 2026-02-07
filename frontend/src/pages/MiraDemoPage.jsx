@@ -799,7 +799,7 @@ const MiraDemoPage = () => {
                                 text-white/80 rounded-lg text-sm transition-all"
                                 data-testid="chat-concierge-btn"
                               >
-                                Have my concierge help
+                                Have my Concierge® help
                               </button>
                           </div>
                         </div>
