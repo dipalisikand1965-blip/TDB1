@@ -447,6 +447,10 @@ async def attach_or_create_ticket(request: AttachOrCreateTicketRequest):
         "status": "open_mira_only",
         "handoff_to_concierge": False,
         "concierge_queue": None,
+        # New: Step tracking for anti-loop
+        "completed_steps": [],  # List of step_ids that have been answered
+        "current_step": None,  # Currently open step_id waiting for answer
+        "step_history": [],  # Full history of steps with questions and answers
         "conversation": [
             {
                 "sender": request.initial_message.sender,
