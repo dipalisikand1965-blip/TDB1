@@ -707,8 +707,55 @@ const MiraDemoPage = () => {
       const quickReplies = extractQuickReplies(data);
       
       // Check if Mira's response has a new clarifying question (step_id)
-      const miraStepId = data.response?.step_id;
-      const isNewClarifyingQuestion = miraStepId && !completedSteps.includes(miraStepId);
+      // If LLM didn't return step_id, detect it from the question content
+      let miraStepId = data.response?.step_id;
+      
+      // Fallback: detect step_id from question patterns if not provided
+      if (!miraStepId && miraResponseText.includes('?')) {
+        const lowerText = miraResponseText.toLowerCase();
+        
+        // Birthday-related steps
+        if (lowerText.includes('active') && lowerText.includes('playful') || 
+            lowerText.includes('simpler') && lowerText.includes('cosy')) {
+          miraStepId = 'BIRTHDAY_SHAPE';
+        } else if (lowerText.includes('food') && (lowerText.includes('play') || lowerText.includes('ritual'))) {
+          miraStepId = 'BIRTHDAY_FOCUS';
+        } else if (lowerText.includes('cake') || (lowerText.includes('treats') && lowerText.includes('birthday'))) {
+          miraStepId = 'BIRTHDAY_FOOD_TYPE';
+        }
+        
+        // Treats-related steps
+        else if (lowerText.includes('everyday') && lowerText.includes('special-occasion') ||
+                 lowerText.includes('light treats') && lowerText.includes('special')) {
+          miraStepId = 'TREATS_TYPE';
+        } else if (lowerText.includes('suggest') && lowerText.includes('treats')) {
+          miraStepId = 'TREATS_SUGGEST';
+        }
+        
+        // Grooming-related steps
+        else if (lowerText.includes('simple trim') || lowerText.includes('full grooming')) {
+          miraStepId = 'GROOMING_MODE';
+        } else if (lowerText.includes('at home') && lowerText.includes('groomer')) {
+          miraStepId = 'GROOMING_LOCATION';
+        }
+        
+        // Travel-related steps
+        else if (lowerText.includes('car') || lowerText.includes('flight') || lowerText.includes('train')) {
+          miraStepId = 'TRAVEL_MODE';
+        } else if (lowerText.includes('pet-friendly') && lowerText.includes('stay')) {
+          miraStepId = 'TRAVEL_STAY';
+        }
+        
+        console.log('[STEP] Auto-detected step_id:', miraStepId);
+      }
+      
+      // Check if this step has already been completed (anti-loop)
+      const isAlreadyCompleted = miraStepId && completedSteps.includes(miraStepId);
+      const isNewClarifyingQuestion = miraStepId && !isAlreadyCompleted;
+      
+      if (isAlreadyCompleted) {
+        console.log('[ANTI-LOOP] Step already completed, should not show:', miraStepId);
+      }
       
       if (isNewClarifyingQuestion) {
         // Set this as the current step waiting for answer
