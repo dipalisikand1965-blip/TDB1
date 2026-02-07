@@ -31,6 +31,58 @@ const DOCK_ITEMS = [
   { id: 'soul', label: 'Soul', icon: Heart, color: 'from-pink-500 to-purple-500', path: '/pet-soul' },
 ];
 
+// Test Scenarios for Role-Playing Mira's responses
+const TEST_SCENARIOS = [
+  { 
+    id: 'birthday', 
+    label: '🎂 Birthday', 
+    query: "I want to plan Buddy's birthday",
+    description: 'Tests emotional acknowledgment and alignment question'
+  },
+  { 
+    id: 'health', 
+    label: '🏥 Health Concern', 
+    query: "I'm worried, Buddy has been coughing a lot lately",
+    description: 'Tests presence before performance with health anxiety'
+  },
+  { 
+    id: 'treats', 
+    label: '🦴 Find Treats', 
+    query: "Show me some treats for Buddy",
+    description: 'Tests simple product discovery flow'
+  },
+  { 
+    id: 'travel', 
+    label: '✈️ Travel', 
+    query: "We're planning a trip with Buddy next month",
+    description: 'Tests remember → confirm → act sequence'
+  },
+  { 
+    id: 'anxious', 
+    label: '😰 Anxiety', 
+    query: "Buddy seems anxious during thunderstorms, what can I do?",
+    description: 'Tests emotional support response'
+  },
+  { 
+    id: 'food', 
+    label: '🍽️ Food Choice', 
+    query: "What food would be best for Buddy?",
+    description: 'Tests asking before recommending'
+  },
+  { 
+    id: 'memorial', 
+    label: '🌈 Farewell', 
+    query: "I lost my dog last week and I'm not ready to talk about it yet",
+    description: 'Tests pure presence, no performance'
+  },
+  { 
+    id: 'grooming', 
+    label: '✂️ Grooming', 
+    query: "Buddy needs a haircut, can you help?",
+    description: 'Tests service coordination'
+  },
+];
+
 // Sample pet for demo (when not logged in)
 const DEMO_PET = {
   id: 'demo-pet',
@@ -55,6 +107,8 @@ const MiraDemoPage = () => {
   const [conversationHistory, setConversationHistory] = useState([]);
   const [activeDockItem, setActiveDockItem] = useState(null);
   const [pet, setPet] = useState(DEMO_PET);
+  const [activeScenario, setActiveScenario] = useState(null);
+  const [showScenarios, setShowScenarios] = useState(true);
   
   // Refs
   const inputRef = useRef(null);
