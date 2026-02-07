@@ -223,12 +223,14 @@ const COMFORT_KEYWORDS = [
   'thunderstorm', 'firework', 'loud noise', 'afraid',
   // Health Concerns (not shopping moments)
   'sick', 'vomiting', 'diarrhea', 'bleeding', 'limping', 'not eating', 'won\'t eat', 'lethargic',
-  'emergency', 'urgent', 'help', 'worried', 'concerning',
+  'emergency', 'urgent', 'worried', 'concerning',
   // Grief & Loss
   'passed away', 'died', 'dying', 'lost', 'grief', 'mourning', 'farewell', 'goodbye', 'miss',
   'put down', 'euthanasia', 'rainbow bridge', 'lost my dog', 'lost my pet',
   // Behavior issues (need comfort, not products)
-  'aggressive', 'biting', 'attacking', 'destroying', 'won\'t stop', 'keeps'
+  'aggressive', 'biting', 'attacking', 'destroying', 'won\'t stop', 'keeps',
+  // Explicit help requests for emotional support (more specific)
+  'need help with', 'i need help', 'please help', 'help me cope'
 ];
 
 // Simple acknowledgment phrases that should NOT trigger products
