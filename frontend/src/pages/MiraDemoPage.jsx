@@ -83,6 +83,11 @@ const MiraDemoPage = () => {
   const [isAtBottom, setIsAtBottom] = useState(true);
   const [hasNewMessages, setHasNewMessages] = useState(false);
   
+  // Conversation stage tracking for product opt-in
+  // Stage: 'initial' | 'clarifying' | 'opted_in_products' | 'concierge_engaged'
+  const [conversationStage, setConversationStage] = useState('initial');
+  const [userHasOptedInForProducts, setUserHasOptedInForProducts] = useState(false);
+  
   // Refs
   const inputRef = useRef(null);
   const recognitionRef = useRef(null);
