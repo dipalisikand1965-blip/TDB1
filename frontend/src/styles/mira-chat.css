@@ -1019,54 +1019,55 @@
 }
 
 /* ========================================
-   Input Composer - ChatGPT Style (Wide, Prominent)
+   Input Composer - Narrow, gentle, centered
    ======================================== */
 .mira-composer {
   flex-shrink: 0;
-  background: linear-gradient(to top, rgba(30, 27, 75, 0.95) 0%, transparent 100%);
-  padding: var(--mira-space-lg) var(--mira-space-xl);
-  padding-bottom: calc(var(--mira-space-xl) + env(safe-area-inset-bottom, 0px));
+  background: transparent;
+  padding: var(--mira-space-md) var(--mira-space-xl);
+  padding-bottom: calc(var(--mira-space-lg) + env(safe-area-inset-bottom, 0px));
 }
 
 .mira-composer-inner {
-  max-width: 900px;
+  max-width: 600px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: var(--mira-space-md);
+  gap: var(--mira-space-sm);
 }
 
-/* Prominent Voice Button - "Talk to Mira" */
+/* Gentle Voice Button - "Talk to Mira" */
 .mira-voice-talk-btn {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: var(--mira-space-sm);
-  padding: var(--mira-space-md) var(--mira-space-xl);
-  background: linear-gradient(135deg, #A855F7 0%, #7C3AED 100%);
-  border: none;
+  padding: var(--mira-space-sm) var(--mira-space-lg);
+  background: rgba(139, 92, 246, 0.15);
+  border: 1px solid rgba(139, 92, 246, 0.25);
   border-radius: var(--mira-radius-full);
-  color: white;
-  font-size: var(--mira-font-size-base);
-  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: var(--mira-font-size-sm);
+  font-weight: 500;
   cursor: pointer;
   transition: all var(--mira-transition-normal);
-  box-shadow: 0 4px 15px rgba(168, 85, 247, 0.4);
 }
 
 .mira-voice-talk-btn:hover {
-  transform: scale(1.02);
-  box-shadow: 0 6px 20px rgba(168, 85, 247, 0.5);
+  background: rgba(139, 92, 246, 0.25);
+  color: white;
 }
 
 .mira-voice-talk-btn.listening {
-  background: linear-gradient(135deg, #EC4899 0%, #F43F5E 100%);
-  animation: pulse-glow 1.5s ease-in-out infinite;
+  background: rgba(236, 72, 153, 0.2);
+  border-color: rgba(236, 72, 153, 0.4);
+  color: #F472B6;
+  animation: gentle-pulse 2s ease-in-out infinite;
 }
 
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 4px 15px rgba(236, 72, 153, 0.4); }
-  50% { box-shadow: 0 4px 30px rgba(236, 72, 153, 0.7); }
+@keyframes gentle-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
 }
 
 /* Listening Indicator */
@@ -1075,32 +1076,32 @@
   align-items: center;
   justify-content: center;
   gap: var(--mira-space-sm);
-  color: #EC4899;
-  font-size: var(--mira-font-size-sm);
+  color: #F472B6;
+  font-size: var(--mira-font-size-xs);
   font-weight: 500;
 }
 
 .mira-listening-pulse {
-  width: 12px;
-  height: 12px;
-  background: #EC4899;
+  width: 8px;
+  height: 8px;
+  background: #F472B6;
   border-radius: 50%;
   animation: listening-pulse 1s ease-in-out infinite;
 }
 
 @keyframes listening-pulse {
   0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.3); opacity: 0.7; }
+  50% { transform: scale(1.2); opacity: 0.6; }
 }
 
 .mira-composer-form {
   display: flex;
   align-items: center;
-  gap: var(--mira-space-md);
-  background: rgba(255, 255, 255, 0.1);
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  border-radius: 24px;
-  padding: var(--mira-space-sm) var(--mira-space-md);
+  gap: var(--mira-space-sm);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  padding: var(--mira-space-xs) var(--mira-space-md);
   transition: all var(--mira-transition-fast);
 }
 
