@@ -76,10 +76,29 @@ const MiraDemoPage = () => {
   const [pet, setPet] = useState(DEMO_PET);
   const [activeScenario, setActiveScenario] = useState(null);
   const [showScenarios, setShowScenarios] = useState(true);
+  const [showTestScenarios, setShowTestScenarios] = useState(false);
   const [collapsedSections, setCollapsedSections] = useState({});
   const [currentTicket, setCurrentTicket] = useState(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
   const [hasNewMessages, setHasNewMessages] = useState(false);
+  const [currentPillar, setPillar] = useState('celebrate');
+  const [lastShownProducts, setLastShownProducts] = useState([]);
+  
+  // SESSION PERSISTENCE - The memory that never forgets
+  const [sessionId, setSessionId] = useState(() => {
+    // Try to recover session from localStorage first
+    const savedSession = localStorage.getItem('mira_session_id');
+    if (savedSession) {
+      console.log('[SESSION] Recovered session:', savedSession);
+      return savedSession;
+    }
+    // Generate new session if none exists
+    const newSession = `mira-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    localStorage.setItem('mira_session_id', newSession);
+    console.log('[SESSION] Created new session:', newSession);
+    return newSession;
+  });
+  const [sessionRecovered, setSessionRecovered] = useState(false);
   
   // Conversation stage tracking for product opt-in
   // Stage: 'initial' | 'clarifying' | 'opted_in_products' | 'concierge_engaged'
