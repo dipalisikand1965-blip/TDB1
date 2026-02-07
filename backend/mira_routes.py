@@ -785,6 +785,9 @@ class MiraOSUnderstandRequest(BaseModel):
     ticket_id: Optional[str] = None
     completed_steps: Optional[List[str]] = []  # Steps already answered - DO NOT repeat
     step_history: Optional[List[Dict[str, Any]]] = []  # Full Q&A history
+    # Tell me more handling
+    user_asking_for_more_info: Optional[bool] = False  # User wants options explained
+    current_step: Optional[str] = None  # Current pending step being explained
 
 class MiraOSUnderstandResponse(BaseModel):
     success: bool
@@ -797,7 +800,9 @@ async def understand_with_llm(
     pet_context: Dict[str, Any],
     page_context: str = None,
     completed_steps: List[str] = None,
-    step_history: List[Dict[str, Any]] = None
+    step_history: List[Dict[str, Any]] = None,
+    user_asking_for_more_info: bool = False,
+    current_step: str = None
 ) -> Dict[str, Any]:
     """Use LLM to understand user intent and generate response"""
     
