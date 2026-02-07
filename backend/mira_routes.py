@@ -1253,7 +1253,9 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
             pet_context=request.pet_context or {},
             page_context=request.page_context,
             completed_steps=request.completed_steps or [],
-            step_history=request.step_history or []
+            step_history=request.step_history or [],
+            user_asking_for_more_info=request.user_asking_for_more_info or False,
+            current_step=request.current_step
         )
         
         execution_type = understanding.get("execution_type", "INSTANT")
