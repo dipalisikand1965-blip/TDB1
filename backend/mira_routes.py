@@ -924,6 +924,22 @@ CRITICAL RULE: Never repeat a clarifying question that has already been answered
 If a question like "everyday vs special-occasion treats" was already answered, move forward to the next step.
 """
     
+    # Full conversation history for context understanding
+    conversation_context = ""
+    if conversation_history and len(conversation_history) > 0:
+        conv_lines = []
+        for msg in conversation_history[-8:]:  # Last 8 messages
+            role = "Parent" if msg.get('role') == 'user' else "Mira"
+            conv_lines.append(f"{role}: {msg.get('content', '')[:500]}")  # Truncate long messages
+        conversation_context = f"""
+RECENT CONVERSATION (for context):
+{chr(10).join(conv_lines)}
+
+CRITICAL: Use this context to understand the parent's current needs. If they mention "cake" or make typos, 
+understand what they mean based on the conversation flow. If we were discussing birthday planning, 
+"cake" means birthday cake. Stay anchored to the original topic.
+"""
+    
     try:
         chat = LlmChat(
             api_key=api_key,
