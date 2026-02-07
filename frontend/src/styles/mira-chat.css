@@ -111,16 +111,18 @@
 }
 
 /* ========================================
-   Header - Clean White on Purple
+   Header - Compact, Clean (ChatGPT Style)
    ======================================== */
 .mira-header {
   flex-shrink: 0;
-  background: transparent;
-  padding: var(--mira-space-lg) var(--mira-space-lg);
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: var(--mira-space-md) var(--mira-space-lg);
 }
 
 .mira-header-inner {
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
   display: flex;
   align-items: center;
