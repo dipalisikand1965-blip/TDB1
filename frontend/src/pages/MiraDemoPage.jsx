@@ -24,7 +24,7 @@ import { API_URL } from '../utils/api';
 
 // Thin Dock Items with navigation paths
 const DOCK_ITEMS = [
-  { id: 'concierge', label: 'Concierge', icon: MessageCircle, color: 'from-purple-500 to-pink-500', path: '/concierge', action: 'openChat' },
+  { id: 'concierge', label: 'Concierge®', icon: MessageCircle, color: 'from-purple-500 to-pink-500', path: '/concierge', action: 'openChat' },
   { id: 'orders', label: 'Orders', icon: Package, color: 'from-blue-500 to-cyan-500', path: '/orders' },
   { id: 'plan', label: 'Plan', icon: Calendar, color: 'from-amber-500 to-orange-500', path: '/family-dashboard', tab: 'calendar' },
   { id: 'help', label: 'Help', icon: AlertCircle, color: 'from-red-500 to-rose-500', action: 'openHelp' },
