@@ -1361,7 +1361,7 @@ async def search_real_products(
             logger.info("[PRODUCT FILTER] Birthday/cake context: Using strict category filter")
             cursor = db.products_master.find(query, {"_id": 0}).limit(limit * 2)
             all_products = await cursor.to_list(length=limit * 2)
-        elif product_type:
+                elif product_type:
             categories = category_map.get(product_type, [product_type])
             query["$or"] = [
                 {"category": {"$in": categories}},
@@ -1369,10 +1369,12 @@ async def search_real_products(
                 {"name": {"$regex": product_type, "$options": "i"}},
                 {"description": {"$regex": product_type, "$options": "i"}}
             ]
-        
-        # Search products
-        cursor = db.products_master.find(query, {"_id": 0}).limit(limit * 2)
-        all_products = await cursor.to_list(length=limit * 2)
+            cursor = db.products_master.find(query, {"_id": 0}).limit(limit * 2)
+            all_products = await cursor.to_list(length=limit * 2)
+        else:
+            # General search
+            cursor = db.products_master.find(query, {"_id": 0}).limit(limit * 2)
+            all_products = await cursor.to_list(length=limit * 2)
         
         # If no results with filter, try broader search
         if not all_products and product_type:
