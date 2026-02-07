@@ -2691,7 +2691,7 @@ const MiraDemoPage = () => {
                           {msg.showServices && msg.detectedServices?.length > 0 && (
                             <div className="mp-service-cards">
                               <p className="mp-service-intro">
-                                Request this directly—your Concierge® will take care of everything:
+                                Choose how you'd like to proceed:
                               </p>
                               <div className="mp-service-grid">
                                 {msg.detectedServices.map((service, sIdx) => (
@@ -2709,6 +2709,25 @@ const MiraDemoPage = () => {
                                     </div>
                                   </button>
                                 ))}
+                                {/* CONCIERGE TILE - Always offer human handoff option */}
+                                <button
+                                  onClick={() => openServiceRequest({
+                                    id: 'concierge-direct',
+                                    label: 'Let Concierge Handle It',
+                                    icon: '💜',
+                                    description: 'We\'ll take care of everything for you',
+                                    color: '#8B5CF6'
+                                  }, false)}
+                                  className="mp-service-card mp-concierge-card"
+                                  style={{ '--service-color': '#8B5CF6' }}
+                                  data-testid="service-concierge"
+                                >
+                                  <span className="mp-service-icon">💜</span>
+                                  <div className="mp-service-info">
+                                    <span className="mp-service-label">Let Concierge Handle It</span>
+                                    <span className="mp-service-desc">We'll take care of everything for you</span>
+                                  </div>
+                                </button>
                               </div>
                             </div>
                           )}
