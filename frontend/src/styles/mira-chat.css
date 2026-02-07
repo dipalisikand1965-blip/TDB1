@@ -896,12 +896,12 @@
 
 .mira-composer-mic {
   background: transparent;
-  color: var(--mira-text-tertiary);
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .mira-composer-mic:hover {
-  background: var(--mira-accent-light);
-  color: var(--mira-accent);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
 }
 
 .mira-composer-mic.listening {
