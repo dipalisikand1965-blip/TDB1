@@ -1558,6 +1558,13 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
             "feeding together", "separate bowls"
         ])
         
+        # PRODUCT_DETAILS - User asking about product contents/ingredients
+        is_product_details_query = any(phrase in user_input_lower for phrase in [
+            "what is in", "what's in", "whats in", "what are the", "ingredients",
+            "contents", "contain", "made of", "what does it have", "tell me about",
+            "details", "more about"
+        ])
+        
         # FOOD_PREFERENCE - Picky eating
         is_food_preference = any(phrase in user_input_lower for phrase in [
             "picky eater", "fussy eater", "won't eat his food", "won't eat her food",
