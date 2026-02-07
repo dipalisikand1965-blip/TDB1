@@ -1454,13 +1454,17 @@ const MiraDemoPage = () => {
       // MIRA DOCTRINE: Concierge is premium service, not failure
       // Show concierge option subtly when:
       // 1. Backend explicitly suggests it (AI decided it's needed)
-      // 2. User explicitly asks for concierge help
-      // 3. Execution type is CONCIERGE (complex/bespoke request)
+      // 2. Backend provides concierge_framing (soft invitation)
+      // 3. User explicitly asks for concierge help
+      // 4. Execution type is CONCIERGE (complex/bespoke request)
       const userWantsConcierge = query.toLowerCase().includes('concierge') || 
                                   query.toLowerCase().includes('help me') ||
-                                  query.toLowerCase().includes('can you handle');
+                                  query.toLowerCase().includes('can you handle') ||
+                                  query.toLowerCase().includes('plan');
+      const hasConciergeFraming = data.response?.concierge_framing && data.response.concierge_framing.length > 0;
       const shouldSuggestConcierge = data.response?.suggest_concierge || 
                                       data.execution_type === 'CONCIERGE' ||
+                                      hasConciergeFraming ||
                                       userWantsConcierge;
       
       const miraMessage = {
