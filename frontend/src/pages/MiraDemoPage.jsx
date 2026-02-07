@@ -424,6 +424,16 @@ const MiraDemoPage = () => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const audioRef = useRef(null);
   
+  // IN-MIRA SERVICE REQUEST - Everything stays in the OS
+  // When user clicks a service card, show form here instead of external link
+  const [serviceRequestModal, setServiceRequestModal] = useState({
+    isOpen: false,
+    service: null,  // The service/experience being requested
+    formData: {},   // User's input
+    isSubmitting: false,
+    submitted: false
+  });
+  
   // MULTI-PET SUPPORT - Switch between pets
   const [showPetSelector, setShowPetSelector] = useState(false);
   
