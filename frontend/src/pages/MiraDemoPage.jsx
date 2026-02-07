@@ -450,11 +450,11 @@ const MiraDemoPage = () => {
         </div>
       </header>
       
-      {/* Thin Dock */}
-      <div className="bg-black/30 backdrop-blur-lg border-b border-white/10">
+      {/* Thin Dock - flex-shrink-0 */}
+      <div className="flex-shrink-0 bg-black/30 backdrop-blur-lg border-b border-white/10">
         <div className="max-w-6xl mx-auto px-4">
           {/* Universal Search Bar */}
-          <form onSubmit={handleSubmit} className="py-4">
+          <form onSubmit={handleSubmit} className="py-3 sm:py-4">
             <div className="relative">
               <div className="absolute left-4 top-1/2 -translate-y-1/2">
                 <Search className="w-5 h-5 text-white/50" />
@@ -464,31 +464,45 @@ const MiraDemoPage = () => {
                 type="text"
                 inputMode="search"
                 enterKeyHint="search"
+                autoComplete="off"
+                autoCorrect="off"
+                autoCapitalize="off"
+                spellCheck={false}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
                 onTouchStart={(e) => e.currentTarget.focus()}
+                onPointerDown={(e) => e.currentTarget.focus()}
                 placeholder={`Ask Mira anything for ${pet.name}...`}
                 className="w-full bg-white/10 backdrop-blur border border-white/20 rounded-2xl 
-                  pl-12 pr-24 py-4 text-white placeholder-white/40
+                  pl-12 pr-28 py-3.5 sm:py-4 text-white placeholder-white/40
                   focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50
-                  transition-all text-lg appearance-none"
+                  transition-all appearance-none"
                 style={{
                   WebkitAppearance: 'none',
+                  MozAppearance: 'none',
+                  appearance: 'none',
                   touchAction: 'manipulation',
                   WebkitTapHighlightColor: 'transparent',
-                  fontSize: '16px'
+                  fontSize: '16px', /* Prevents iOS zoom */
+                  lineHeight: '1.5'
                 }}
                 disabled={isProcessing}
               />
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1.5 sm:gap-2">
                 <button
                   type="button"
                   onClick={toggleVoice}
-                  style={{ touchAction: 'manipulation' }}
-                  className={`p-3 rounded-full transition-all min-w-[44px] min-h-[44px] flex items-center justify-center ${
+                  onPointerDown={(e) => e.stopPropagation()}
+                  style={{ 
+                    touchAction: 'manipulation',
+                    WebkitTapHighlightColor: 'transparent',
+                    userSelect: 'none'
+                  }}
+                  className={`p-2.5 sm:p-3 rounded-full transition-all min-w-[44px] min-h-[44px] flex items-center justify-center
+                    active:scale-95 select-none ${
                     isListening 
                       ? 'bg-red-500 text-white animate-pulse' 
-                      : 'bg-white/10 text-white/70 hover:bg-white/20'
+                      : 'bg-white/10 text-white/70 hover:bg-white/20 active:bg-white/30'
                   }`}
                 >
                   {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
@@ -496,10 +510,16 @@ const MiraDemoPage = () => {
                 <button
                   type="submit"
                   disabled={isProcessing || !query.trim()}
-                  style={{ touchAction: 'manipulation' }}
-                  className="p-3 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white
+                  onPointerDown={(e) => e.stopPropagation()}
+                  style={{ 
+                    touchAction: 'manipulation',
+                    WebkitTapHighlightColor: 'transparent',
+                    userSelect: 'none'
+                  }}
+                  className="p-2.5 sm:p-3 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white
                     disabled:opacity-50 disabled:cursor-not-allowed hover:shadow-lg hover:shadow-purple-500/25
-                    transition-all min-w-[44px] min-h-[44px] flex items-center justify-center"
+                    transition-all min-w-[44px] min-h-[44px] flex items-center justify-center
+                    active:scale-95 select-none"
                 >
                   {isProcessing ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
@@ -516,19 +536,33 @@ const MiraDemoPage = () => {
             )}
           </form>
           
-          {/* Dock Navigation */}
-          <div className="flex items-center justify-center gap-2 pb-3">
+          {/* Dock Navigation - Scrollable on mobile */}
+          <div className="flex items-center gap-2 pb-3 overflow-x-auto scrollbar-hide"
+            style={{
+              WebkitOverflowScrolling: 'touch',
+              scrollbarWidth: 'none',
+              msOverflowStyle: 'none'
+            }}
+          >
+            <div className="flex items-center gap-2 mx-auto">
             {DOCK_ITEMS.map((item) => {
               const Icon = item.icon;
               return (
                 <button
                   key={item.id}
                   onClick={() => handleDockClick(item)}
+                  onPointerDown={(e) => e.stopPropagation()}
                   data-testid={`dock-${item.id}`}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
+                  style={{ 
+                    touchAction: 'manipulation',
+                    WebkitTapHighlightColor: 'transparent',
+                    userSelect: 'none'
+                  }}
+                  className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2.5 rounded-xl transition-all
+                    min-h-[44px] whitespace-nowrap select-none active:scale-95 ${
                     activeDockItem === item.id
                       ? `bg-gradient-to-r ${item.color} text-white shadow-lg`
-                      : 'bg-white/5 text-white/70 hover:bg-white/10'
+                      : 'bg-white/5 text-white/70 hover:bg-white/10 active:bg-white/20'
                   }`}
                 >
                   <Icon className="w-4 h-4" />
@@ -536,6 +570,7 @@ const MiraDemoPage = () => {
                 </button>
               );
             })}
+            </div>
           </div>
         </div>
       </div>
