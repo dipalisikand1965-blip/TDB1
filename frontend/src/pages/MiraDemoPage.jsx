@@ -1538,23 +1538,227 @@ const MiraDemoPage = () => {
               <Heart className="w-4 h-4" />
               <span>Soul</span>
             </button>
+            {/* Past Chats Button */}
+            <button 
+              onClick={() => { setShowPastChats(!showPastChats); if (!showPastChats) loadPastChats(); }} 
+              className={`mira-dock-btn ${showPastChats ? 'active' : ''}`} 
+              data-testid="dock-history"
+            >
+              <History className="w-4 h-4" />
+              <span>History</span>
+            </button>
           </nav>
           
-          <div className="mira-pet-badge">
-            <div className="mira-avatar mira-avatar-pet mira-pet-badge-avatar">
-              {pet.photo ? (
-                <img src={pet.photo} alt={pet.name} />
-              ) : (
-                <PawPrint />
+          {/* Pet Selector with Dropdown */}
+          <div className="mira-pet-badge-container" style={{ position: 'relative' }}>
+            <button 
+              onClick={() => setShowPetSelector(!showPetSelector)}
+              className="mira-pet-badge"
+              data-testid="pet-selector-btn"
+              style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+            >
+              <div className="mira-avatar mira-avatar-pet mira-pet-badge-avatar">
+                {pet.photo ? (
+                  <img src={pet.photo} alt={pet.name} />
+                ) : (
+                  <PawPrint />
+                )}
+              </div>
+              <div className="mira-pet-badge-info">
+                <span className="mira-pet-badge-name">{pet.name}</span>
+                <span className="mira-pet-badge-breed">{pet.breed}</span>
+              </div>
+              {allPets.length > 1 && (
+                <ChevronDown className={`w-4 h-4 transition-transform ${showPetSelector ? 'rotate-180' : ''}`} style={{ color: 'rgba(255,255,255,0.6)' }} />
               )}
-            </div>
-            <div className="mira-pet-badge-info">
-              <span className="mira-pet-badge-name">{pet.name}</span>
-              <span className="mira-pet-badge-breed">{pet.breed}</span>
-            </div>
+            </button>
+            
+            {/* Pet Selector Dropdown */}
+            {showPetSelector && allPets.length > 1 && (
+              <div 
+                className="mira-pet-dropdown"
+                style={{
+                  position: 'absolute',
+                  top: '100%',
+                  right: 0,
+                  marginTop: '8px',
+                  background: 'rgba(30, 20, 50, 0.95)',
+                  backdropFilter: 'blur(12px)',
+                  borderRadius: '12px',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  padding: '8px',
+                  minWidth: '200px',
+                  zIndex: 1000,
+                  boxShadow: '0 8px 32px rgba(0,0,0,0.3)'
+                }}
+              >
+                <div style={{ padding: '8px 12px', fontSize: '12px', color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: '0.5px' }}>
+                  Switch Pet
+                </div>
+                {allPets.map((p) => (
+                  <button
+                    key={p.id}
+                    onClick={() => switchPet(p)}
+                    data-testid={`pet-option-${p.id}`}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      width: '100%',
+                      padding: '10px 12px',
+                      background: p.id === pet.id ? 'rgba(139, 92, 246, 0.2)' : 'transparent',
+                      border: 'none',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      transition: 'background 0.2s',
+                      textAlign: 'left'
+                    }}
+                    onMouseEnter={(e) => e.target.style.background = 'rgba(139, 92, 246, 0.15)'}
+                    onMouseLeave={(e) => e.target.style.background = p.id === pet.id ? 'rgba(139, 92, 246, 0.2)' : 'transparent'}
+                  >
+                    <div style={{ width: '32px', height: '32px', borderRadius: '50%', overflow: 'hidden', background: 'rgba(139, 92, 246, 0.3)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      {p.photo ? (
+                        <img src={p.photo} alt={p.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                      ) : (
+                        <PawPrint className="w-4 h-4" style={{ color: 'rgba(255,255,255,0.6)' }} />
+                      )}
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ color: 'white', fontWeight: 500, fontSize: '14px' }}>{p.name}</div>
+                      <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px' }}>{p.breed}</div>
+                    </div>
+                    {p.id === pet.id && (
+                      <Check className="w-4 h-4" style={{ color: '#8b5cf6' }} />
+                    )}
+                  </button>
+                ))}
+                {/* New Chat Button */}
+                <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', marginTop: '8px', paddingTop: '8px' }}>
+                  <button
+                    onClick={() => { startNewSession(); setShowPetSelector(false); }}
+                    data-testid="new-chat-btn"
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '12px',
+                      width: '100%',
+                      padding: '10px 12px',
+                      background: 'transparent',
+                      border: 'none',
+                      borderRadius: '8px',
+                      cursor: 'pointer',
+                      transition: 'background 0.2s',
+                      color: '#8b5cf6'
+                    }}
+                    onMouseEnter={(e) => e.target.style.background = 'rgba(139, 92, 246, 0.1)'}
+                    onMouseLeave={(e) => e.target.style.background = 'transparent'}
+                  >
+                    <Plus className="w-4 h-4" />
+                    <span style={{ fontWeight: 500 }}>New Chat</span>
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </header>
+      
+      {/* Past Chats Sidebar */}
+      {showPastChats && (
+        <div 
+          className="mira-past-chats-sidebar"
+          style={{
+            position: 'fixed',
+            top: '70px',
+            right: '16px',
+            width: '320px',
+            maxHeight: 'calc(100vh - 100px)',
+            background: 'rgba(30, 20, 50, 0.95)',
+            backdropFilter: 'blur(12px)',
+            borderRadius: '16px',
+            border: '1px solid rgba(255,255,255,0.1)',
+            zIndex: 999,
+            boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
+            overflow: 'hidden'
+          }}
+        >
+          <div style={{ padding: '16px', borderBottom: '1px solid rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h3 style={{ color: 'white', fontWeight: 600, fontSize: '16px', margin: 0 }}>Past Chats</h3>
+            <button onClick={() => setShowPastChats(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}>
+              <X className="w-4 h-4" style={{ color: 'rgba(255,255,255,0.5)' }} />
+            </button>
+          </div>
+          
+          <div style={{ maxHeight: '400px', overflowY: 'auto', padding: '8px' }}>
+            {loadingPastChats ? (
+              <div style={{ padding: '20px', textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>
+                Loading...
+              </div>
+            ) : pastSessions.length === 0 ? (
+              <div style={{ padding: '20px', textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>
+                No past conversations yet
+              </div>
+            ) : (
+              pastSessions.map((session) => (
+                <button
+                  key={session.session_id}
+                  onClick={() => loadSession(session)}
+                  data-testid={`session-${session.session_id}`}
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    padding: '12px',
+                    background: session.session_id === sessionId ? 'rgba(139, 92, 246, 0.2)' : 'transparent',
+                    border: 'none',
+                    borderRadius: '10px',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    marginBottom: '4px',
+                    transition: 'background 0.2s'
+                  }}
+                  onMouseEnter={(e) => e.target.style.background = 'rgba(139, 92, 246, 0.15)'}
+                  onMouseLeave={(e) => e.target.style.background = session.session_id === sessionId ? 'rgba(139, 92, 246, 0.2)' : 'transparent'}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                    <PawPrint className="w-3 h-3" style={{ color: '#8b5cf6' }} />
+                    <span style={{ color: 'white', fontWeight: 500, fontSize: '14px' }}>{session.pet_name}</span>
+                    <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px', marginLeft: 'auto' }}>
+                      {formatSessionDate(session.updated_at)}
+                    </span>
+                  </div>
+                  <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {session.preview || 'Empty conversation'}
+                  </p>
+                </button>
+              ))
+            )}
+          </div>
+          
+          {/* New Chat Button in Sidebar */}
+          <div style={{ padding: '12px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+            <button
+              onClick={() => { startNewSession(); setShowPastChats(false); }}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '8px',
+                width: '100%',
+                padding: '12px',
+                background: 'linear-gradient(135deg, #8b5cf6, #6366f1)',
+                border: 'none',
+                borderRadius: '10px',
+                cursor: 'pointer',
+                color: 'white',
+                fontWeight: 500
+              }}
+            >
+              <Plus className="w-4 h-4" />
+              Start New Chat
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Breed Info Strip - Always visible contextual info */}
       <div className="mira-breed-strip" data-testid="breed-info-strip">
