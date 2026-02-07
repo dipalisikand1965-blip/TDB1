@@ -698,17 +698,6 @@ const MiraDemoPage = () => {
                           <p className="text-amber-100 font-medium text-base">
                             {msg.data.response.alignment_question}
                           </p>
-                          <div className="flex gap-2 mt-3">
-                            <button className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm text-white/80 transition-all">
-                              Option A
-                            </button>
-                            <button className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm text-white/80 transition-all">
-                              Option B
-                            </button>
-                            <button className="px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm text-white/50 transition-all">
-                              Tell me more
-                            </button>
-                          </div>
                         </div>
                       )}
                       
