@@ -622,7 +622,7 @@ const MiraDemoPage = () => {
                         </div>
                         <div>
                           <p className="text-white font-medium">Mira</p>
-                          <p className="text-white/50 text-xs">Pet Concierge AI</p>
+                          <p className="text-white/50 text-xs">Your Pet Companion</p>
                         </div>
                         
                         {/* Intent & Execution Badges */}
@@ -636,38 +636,71 @@ const MiraDemoPage = () => {
                             <span className={`px-2 py-1 rounded-full text-xs font-medium border ${
                               getExecutionColor(msg.data.execution_type)
                             }`}>
-                              {msg.data.execution_type === 'INSTANT' ? '⚡ Instant' : '👤 Concierge'}
+                              {msg.data.execution_type === 'INSTANT' ? '⚡ Instant' : '💜 With You'}
                             </span>
                           </div>
                         )}
                       </div>
                       
-                      {/* Message Content */}
-                      <p className="text-white/90 text-lg mb-4">{msg.content}</p>
+                      {/* Emotional Acknowledgment (if present) */}
+                      {msg.data?.response?.emotional_acknowledgment && (
+                        <p className="text-white/90 text-lg mb-3 italic border-l-2 border-purple-400/50 pl-3">
+                          {msg.data.response.emotional_acknowledgment}
+                        </p>
+                      )}
                       
-                      {/* Pet Relevance */}
-                      {msg.data?.understanding?.pet_relevance && (
-                        <div className="bg-purple-500/20 rounded-xl px-4 py-3 mb-4">
+                      {/* Pet Memory Section */}
+                      {msg.data?.response?.pet_memory && (
+                        <div className="bg-purple-500/10 rounded-xl px-4 py-3 mb-4 border border-purple-400/20">
                           <p className="text-purple-200 text-sm">
-                            <Crown className="w-4 h-4 inline mr-2" />
-                            <strong>Why for {pet.name}:</strong> {msg.data.understanding.pet_relevance}
+                            <Heart className="w-4 h-4 inline mr-2 text-pink-400" />
+                            <span className="text-purple-300/70">What I remember: </span>
+                            {msg.data.response.pet_memory}
                           </p>
                         </div>
                       )}
                       
-                      {/* Product Suggestions - Now with REAL products */}
-                      {msg.data?.response?.products && msg.data.response.products.length > 0 && (
-                        <div className="space-y-3 mb-4">
-                          <div className="flex items-center justify-between">
-                            <p className="text-white/70 text-sm font-medium">
-                              {msg.data.response.has_real_products ? '🛍️ Products for you:' : 'Suggestions:'}
-                            </p>
-                            {msg.data.response.has_real_products && (
-                              <span className="text-xs text-green-400 bg-green-400/10 px-2 py-1 rounded-full">
-                                Real Products
-                              </span>
-                            )}
+                      {/* Main Message Content */}
+                      <p className="text-white/90 text-lg mb-4">{msg.content}</p>
+                      
+                      {/* Alignment Question (the invitation to participate) */}
+                      {msg.data?.response?.alignment_question && (
+                        <div className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border border-amber-400/20 
+                          rounded-xl px-4 py-4 mb-4">
+                          <p className="text-amber-100 font-medium text-base">
+                            {msg.data.response.alignment_question}
+                          </p>
+                          <div className="flex gap-2 mt-3">
+                            <button className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm text-white/80 transition-all">
+                              Option A
+                            </button>
+                            <button className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg text-sm text-white/80 transition-all">
+                              Option B
+                            </button>
+                            <button className="px-4 py-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm text-white/50 transition-all">
+                              Tell me more
+                            </button>
                           </div>
+                        </div>
+                      )}
+                      
+                      {/* Legacy Pet Relevance (fallback) */}
+                      {!msg.data?.response?.pet_memory && msg.data?.understanding?.pet_relevance && (
+                        <div className="bg-purple-500/20 rounded-xl px-4 py-3 mb-4">
+                          <p className="text-purple-200 text-sm">
+                            <Crown className="w-4 h-4 inline mr-2" />
+                            <strong>For {pet.name}:</strong> {msg.data.understanding.pet_relevance}
+                          </p>
+                        </div>
+                      )}
+                      
+                      {/* Product Suggestions - With Soft Framing */}
+                      {msg.data?.response?.products && msg.data.response.products.length > 0 && (
+                        <div className="space-y-3 mb-4 border-t border-white/10 pt-4 mt-4">
+                          {/* Soft product intro */}
+                          <p className="text-white/50 text-sm">
+                            {msg.data.response.products_framing || "If you'd like to explore some options..."}
+                          </p>
                           
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             {msg.data.response.products.map((product, pIdx) => (
