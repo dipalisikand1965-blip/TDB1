@@ -615,27 +615,37 @@ const MiraDemoPage = () => {
         </div>
       )}
       
-      {/* Main Content */}
-      <main className="max-w-6xl mx-auto px-4 py-8">
+      {/* Main Content - flex:1 with overflow-auto */}
+      <main 
+        className="flex-1 overflow-y-auto"
+        style={{
+          WebkitOverflowScrolling: 'touch',
+          overscrollBehavior: 'contain',
+          paddingBottom: 'calc(60px + env(safe-area-inset-bottom, 0px))'
+        }}
+      >
+        <div className="max-w-6xl mx-auto px-4 py-4 sm:py-8">
         {/* Test Scenarios Panel */}
         {showScenarios && (
-          <div className="mb-8 bg-slate-800/50 backdrop-blur border border-white/10 rounded-2xl p-4">
-            <div className="flex items-center justify-between mb-4">
+          <div className="mb-4 sm:mb-8 bg-slate-800/50 backdrop-blur border border-white/10 rounded-2xl p-3 sm:p-4">
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
               <div>
-                <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-amber-400" />
+                <h3 className="text-base sm:text-lg font-semibold text-white flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-amber-400" />
                   Test Scenarios
                 </h3>
-                <p className="text-white/50 text-sm">Role-play different situations to refine Mira's tone</p>
+                <p className="text-white/50 text-xs sm:text-sm">Role-play different situations to refine Mira&apos;s tone</p>
               </div>
               <button 
                 onClick={() => setShowScenarios(false)}
-                className="p-2 hover:bg-white/10 rounded-lg transition-all"
+                style={{ touchAction: 'manipulation', userSelect: 'none' }}
+                className="p-2 hover:bg-white/10 active:bg-white/20 rounded-lg transition-all min-w-[44px] min-h-[44px]
+                  flex items-center justify-center active:scale-95"
               >
                 <X className="w-4 h-4 text-white/50" />
               </button>
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5 sm:gap-2">
               {TEST_SCENARIOS.map((scenario) => (
                 <button
                   key={scenario.id}
@@ -650,10 +660,16 @@ const MiraDemoPage = () => {
                     }, 100);
                   }}
                   data-testid={`scenario-${scenario.id}`}
-                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                  style={{ 
+                    touchAction: 'manipulation',
+                    WebkitTapHighlightColor: 'transparent',
+                    userSelect: 'none'
+                  }}
+                  className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all
+                    min-h-[40px] sm:min-h-[44px] active:scale-95 select-none ${
                     activeScenario === scenario.id
                       ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
-                      : 'bg-white/10 text-white/70 hover:bg-white/20 hover:text-white'
+                      : 'bg-white/10 text-white/70 hover:bg-white/20 hover:text-white active:bg-white/30'
                   }`}
                   title={scenario.description}
                 >
@@ -662,7 +678,7 @@ const MiraDemoPage = () => {
               ))}
             </div>
             {activeScenario && (
-              <p className="mt-3 text-xs text-white/40 italic">
+              <p className="mt-2 sm:mt-3 text-xs text-white/40 italic">
                 Testing: {TEST_SCENARIOS.find(s => s.id === activeScenario)?.description}
               </p>
             )}
