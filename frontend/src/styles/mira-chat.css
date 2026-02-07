@@ -830,13 +830,15 @@
 }
 
 /* ========================================
-   Input Composer - Always at Bottom
+   Input Composer - Semi-transparent at Bottom
    ======================================== */
 .mira-composer {
   flex-shrink: 0;
-  background: var(--mira-bg-secondary);
-  border-top: 1px solid var(--mira-border-light);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
   padding: var(--mira-space-md) var(--mira-space-lg);
+  padding-bottom: calc(var(--mira-space-md) + env(safe-area-inset-bottom, 0px));
 }
 
 .mira-composer-inner {
@@ -848,16 +850,16 @@
   display: flex;
   align-items: center;
   gap: var(--mira-space-sm);
-  background: var(--mira-bg-primary);
-  border: 1px solid var(--mira-border-light);
+  background: white;
+  border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: var(--mira-radius-xl);
   padding: var(--mira-space-xs);
-  transition: border-color var(--mira-transition-fast);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
 
 .mira-composer-form:focus-within {
   border-color: var(--mira-accent);
-  box-shadow: 0 0 0 3px var(--mira-accent-soft);
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.2);
 }
 
 .mira-composer-input {
@@ -898,8 +900,8 @@
 }
 
 .mira-composer-mic:hover {
-  background: var(--mira-bg-primary);
-  color: var(--mira-text-primary);
+  background: var(--mira-accent-light);
+  color: var(--mira-accent);
 }
 
 .mira-composer-mic.listening {
@@ -909,18 +911,20 @@
 }
 
 .mira-composer-send {
-  background: var(--mira-accent);
+  background: linear-gradient(135deg, #A855F7 0%, #EC4899 100%);
   color: white;
 }
 
 .mira-composer-send:hover {
-  background: #6D28D9;
+  opacity: 0.9;
+  transform: scale(1.05);
 }
 
 .mira-composer-send:disabled {
   background: var(--mira-border-light);
   color: var(--mira-text-tertiary);
   cursor: not-allowed;
+  transform: none;
 }
 
 /* ========================================
