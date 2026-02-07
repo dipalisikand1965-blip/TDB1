@@ -1095,6 +1095,67 @@ const MiraDemoPage = () => {
     return moreInfoPhrases.some(phrase => lowerInput.includes(phrase));
   }, []);
   
+  // VOICE OUTPUT - ElevenLabs TTS for Mira's voice (must be before handleSubmit)
+  const speakWithMira = useCallback(async (text) => {
+    if (!voiceEnabled || !text) return;
+    
+    try {
+      setIsSpeaking(true);
+      console.log('[Mira Voice] Speaking with ElevenLabs...');
+      
+      // Clean text for natural speech
+      const cleanText = text
+        .replace(/[🎉🐕✨🦴💜🎂🏥☀️🌤️🌙🌟🐾🎒📅📋😊💝🎁🎤💡]/g, '')
+        .replace(/\*\*/g, '')
+        .replace(/[*#_~`]/g, '')
+        .replace(/\[.*?\]/g, '')
+        .replace(/\n/g, ' ')
+        .replace(/®/g, '')
+        .substring(0, 500);
+      
+      const response = await fetch(`${API_URL}/api/tts/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: cleanText })
+      });
+      
+      if (!response.ok) {
+        throw new Error('TTS request failed');
+      }
+      
+      const data = await response.json();
+      
+      // Create and play audio
+      const audio = new Audio();
+      audio.preload = 'auto';
+      audio.volume = 1.0;
+      
+      audio.onended = () => {
+        console.log('[Mira Voice] Finished speaking');
+        setIsSpeaking(false);
+      };
+      
+      audio.onerror = () => {
+        setIsSpeaking(false);
+      };
+      
+      audio.oncanplaythrough = () => {
+        audio.play().catch((e) => {
+          console.log('[Mira Voice] Playback blocked:', e.message);
+          setIsSpeaking(false);
+        });
+      };
+      
+      audio.src = `data:audio/mpeg;base64,${data.audio_base64}`;
+      audio.load();
+      audioRef.current = audio;
+      
+    } catch (error) {
+      console.log('[Mira Voice] Error:', error.message);
+      setIsSpeaking(false);
+    }
+  }, [voiceEnabled]);
+  
   // Handle submit - MIRA DOCTRINE: Let Mira's intelligence decide what to show
   const handleSubmit = useCallback(async (e, voiceQuery = null) => {
     if (e) e.preventDefault();
