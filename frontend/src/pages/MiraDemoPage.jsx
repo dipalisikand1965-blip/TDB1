@@ -825,21 +825,39 @@ const MiraDemoPage = () => {
                       
                       {/* Message content */}
                       <div className="px-4 py-3">
-                        <p className="text-white/90 text-sm whitespace-pre-wrap leading-relaxed">
-                          {msg.content}
-                        </p>
+                        {/* Split message to highlight question */}
+                        {(() => {
+                          const { mainText, questionText } = splitMessageWithQuestion(msg.content);
+                          return (
+                            <>
+                              {mainText && (
+                                <p className="text-white/90 text-sm whitespace-pre-wrap leading-relaxed">
+                                  {mainText}
+                                </p>
+                              )}
+                              {questionText && (
+                                <div className="mt-3 p-3 bg-gradient-to-r from-amber-500/20 to-orange-500/20 
+                                  border border-amber-400/30 rounded-xl">
+                                  <p className="text-amber-100 text-sm font-medium leading-relaxed">
+                                    {questionText}
+                                  </p>
+                                </div>
+                              )}
+                            </>
+                          );
+                        })()}
                         
-                        {/* Quick Reply Chips */}
+                        {/* Quick Reply Chips - directly under the highlighted question */}
                         {msg.quickReplies && msg.quickReplies.length > 0 && (
-                          <div className="mt-3 pt-3 border-t border-white/10">
+                          <div className="mt-3">
                             <div className="flex flex-wrap gap-2">
                               {msg.quickReplies.map((reply, replyIdx) => (
                                 <button
                                   key={replyIdx}
                                   onClick={() => handleQuickReply(reply.value)}
-                                  className="px-3 py-2 bg-purple-500/20 border border-purple-400/30 rounded-full
-                                    text-purple-200 text-xs font-medium hover:bg-purple-500/30 
-                                    min-h-[36px] active:scale-95"
+                                  className="px-3 py-2 bg-amber-500/20 border border-amber-400/40 rounded-full
+                                    text-amber-100 text-xs font-medium hover:bg-amber-500/30 
+                                    min-h-[36px] active:scale-95 transition-all"
                                   data-testid={`quick-reply-${replyIdx}`}
                                 >
                                   {reply.text}
