@@ -293,10 +293,6 @@ All 5 dock items functional:
 
 ## NEXT PRIORITIES
 
-### P0 - Add to Cart Integration
-- Connect product cards in Mira responses to actual cart
-- Currently shows `alert()` - needs real cart API
-
 ### P1 - Intelligent Context Understanding
 - Fix "what is in this?" queries
 - Better handling of product detail requests
@@ -304,6 +300,10 @@ All 5 dock items functional:
 ### P1 - Seamless Concierge® Handoff
 - Structured task creation (vs WhatsApp link)
 - Full service desk integration
+
+### P2 - Add to Cart Integration
+- Connect product cards in Mira responses to actual cart
+- Currently shows `alert()` - needs real cart API
 
 ### P2 - Proactive Mode
 - Birthday approaching alerts
