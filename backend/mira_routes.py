@@ -1697,7 +1697,7 @@ async def search_services_from_db(
         if services:
             services.append({
                 "id": "concierge",
-                "label": "Let Concierge Handle It",
+                "label": "Let Concierge® Handle It",
                 "icon": "💜",
                 "description": f"We'll take care of everything for {pet_name}",
                 "color": "#A855F7",
