@@ -877,14 +877,25 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
         # Determine if this is a SERVICE intent (no products) vs PRODUCT intent
         # SERVICE intents: grooming, vet, health, travel planning, boarding, training, anxiety
         # FOOD_MAIN: asking about daily diet should NOT show treats
+        # GRIEF_HOLD: loss + not ready = NO actions, NO routing, just presence
         user_input_lower = request.input.lower() if request.input else ""
+        
+        # GRIEF/LOSS DETECTION - highest priority
+        is_grief_context = any(word in user_input_lower for word in [
+            "lost", "passed", "died", "death", "memorial", "farewell", "goodbye",
+            "put down", "put to sleep", "rainbow bridge", "no longer", "miss him", "miss her"
+        ])
+        is_not_ready = any(phrase in user_input_lower for phrase in [
+            "not ready", "can't talk", "too raw", "too soon", "too hard",
+            "don't want to", "can't discuss", "not yet"
+        ])
+        is_grief_hold = is_grief_context and is_not_ready
         
         is_service_intent = any(word in user_input_lower for word in [
             "haircut", "grooming", "groom", "trim", "bath", "nail", 
             "vet", "doctor", "cough", "sick", "worried", "health", "pain", "limp",
             "boarding", "sitter", "kennel", "daycare",
             "training", "trainer", "behavio",
-            "lost", "passed", "died", "memorial", "farewell",
             "trip", "travel", "vacation", "holiday",
             "anxious", "anxiety", "scared", "fear", "thunder", "storm", "firework", "noise"
         ])
