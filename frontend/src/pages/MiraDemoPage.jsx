@@ -331,6 +331,17 @@ const MiraDemoPage = () => {
       ];
     }
     
+    // === TOY FLOWS ===
+    // "Would you like me to suggest some toy options?"
+    if (messageLower.includes('toy') && (messageLower.includes('suggest') || messageLower.includes('options'))) {
+      return [
+        { text: 'Suggest 3-5 toys', value: 'Yes, suggest some toys that fit him.' },
+        { text: 'Interactive toys', value: 'Show me interactive toys.' },
+        { text: 'Chew toys', value: 'Show me chew toys.' },
+        { text: 'Something else', value: 'Something else.' }
+      ];
+    }
+    
     // === FOOD FLOWS ===
     // "Are you thinking of everyday light treats, or something more special-occasion?"
     if (messageLower.includes('everyday') && (messageLower.includes('special') || messageLower.includes('occasion'))) {
@@ -350,8 +361,8 @@ const MiraDemoPage = () => {
       ];
     }
     
-    // "Suggest 3-5 treats" or "treat routine"
-    if (messageLower.includes('suggest') && messageLower.includes('treat')) {
+    // "Suggest treats" - but NOT if asking about toys
+    if (messageLower.includes('suggest') && messageLower.includes('treat') && !messageLower.includes('toy')) {
       return [
         { text: 'Suggest 3-5 treats', value: 'Suggest 3-5 treats that fit.' },
         { text: 'Help with a treat routine', value: 'Help me with a treat routine.' },
