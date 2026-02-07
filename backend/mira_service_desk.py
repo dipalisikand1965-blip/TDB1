@@ -124,11 +124,31 @@ class AppendMessageRequest(BaseModel):
     source: str = "Mira_OS"
     text: str
     meta: Optional[Dict[str, Any]] = None
+    # New: Step tracking for anti-loop
+    step_id: Optional[str] = None  # e.g., "BIRTHDAY_SHAPE", "BIRTHDAY_TREATS_TYPE"
+    step_status: Optional[str] = None  # "open" (waiting for answer) or "completed"
+    is_clarifying_question: Optional[bool] = False  # True if this message expects user answer
 
 class HandoffToConciergeRequest(BaseModel):
     ticket_id: str
     concierge_queue: str  # "FOOD", "GROOMING", "CELEBRATE", "TRAVEL", etc.
     latest_mira_summary: str
+
+# New: Step completion tracking
+class CompleteStepRequest(BaseModel):
+    ticket_id: str
+    step_id: str
+    user_answer: str  # The answer user provided
+
+class ConversationStep(BaseModel):
+    """Tracks a single step in the conversation flow"""
+    step_id: str
+    pillar: str
+    question_asked: str
+    status: str = "open"  # "open" or "completed"
+    user_answer: Optional[str] = None
+    timestamp_asked: Optional[str] = None
+    timestamp_answered: Optional[str] = None
 
 
 # ============================================
