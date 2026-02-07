@@ -253,8 +253,11 @@ async def mira_understand(request: MiraUnderstandRequest):
             response={
                 "message": understanding.get("message", ""),
                 "products": understanding.get("products", []),
+                "tips": understanding.get("tips", []),
+                "quick_replies": understanding.get("quick_replies", []),
                 "next_action": understanding.get("next_action", ""),
-                "concierge_reason": understanding.get("concierge_reason")
+                "concierge_reason": understanding.get("concierge_reason"),
+                "suggest_concierge": understanding.get("suggest_concierge", False) or understanding.get("execution_type") == "CONCIERGE"
             },
             execution_type=understanding.get("execution_type", "INSTANT")
         )
