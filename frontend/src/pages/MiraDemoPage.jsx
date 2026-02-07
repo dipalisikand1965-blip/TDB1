@@ -1800,72 +1800,113 @@ const MiraDemoPage = () => {
         className="mp-messages"
       >
         <div className="mp-messages-inner">
-          {/* Welcome State - Premium "For Buddy" Experience */}
+          {/* Welcome State - Premium "For Pet" Experience - Matches UnifiedHero from Pillar Pages */}
           {conversationHistory.length === 0 && !isProcessing && (
-            <div className="mp-premium-welcome">
-              {/* Start Soul Journey Button */}
-              <button className="mp-soul-journey-btn" onClick={() => navigate('/pet-soul')}>
-                <Gift className="w-4 h-4" />
+            <div className="mira-hero-welcome">
+              {/* Soul Journey Button */}
+              <button 
+                className="soul-journey-btn" 
+                onClick={() => navigate(`/pet-soul/${pet.id || ''}`)}
+                data-testid="soul-journey-btn"
+              >
+                <Crown className="w-4 h-4" />
                 <span>Start {pet.name}'s soul journey</span>
               </button>
               
-              {/* Main Content Row */}
-              <div className="mp-welcome-hero">
-                {/* Pet Avatar with Animated Rings */}
-                <div className="mp-hero-avatar">
-                  <div className="mp-avatar-ring mp-avatar-ring-outer"></div>
-                  <div className="mp-avatar-ring mp-avatar-ring-inner"></div>
-                  <div className="mp-avatar-img">
-                    {pet.photo ? <img src={pet.photo} alt={pet.name} /> : <PawPrint className="w-12 h-12 text-white" />}
+              {/* Hero Layout - Avatar Left, Content Right */}
+              <div className="hero-layout">
+                {/* Pet Avatar with Multiple Animated Rings */}
+                <div className="hero-avatar-container">
+                  {/* Glow effect */}
+                  <div className="avatar-glow"></div>
+                  
+                  {/* Multiple concentric rings */}
+                  <div className="avatar-ring ring-1"></div>
+                  <div className="avatar-ring ring-2"></div>
+                  <div className="avatar-ring ring-3"></div>
+                  
+                  {/* Pet Photo */}
+                  <div className="avatar-photo">
+                    {pet.photo ? (
+                      <img 
+                        src={pet.photo} 
+                        alt={pet.name}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = `https://api.dicebear.com/7.x/lorelei/svg?seed=${pet.name}&backgroundColor=ffdfbf`;
+                        }}
+                      />
+                    ) : (
+                      <div className="avatar-placeholder">
+                        <PawPrint className="w-12 h-12" />
+                      </div>
+                    )}
                   </div>
-                  {/* Soul Score Badge */}
-                  <div className="mp-soul-score-badge">
-                    <span className="mp-soul-percent">{pet.soulScore || 87}%</span>
-                    <span className="mp-soul-label">SOUL<br/>KNOWN</span>
+                  
+                  {/* Pet name badge (mobile) */}
+                  <div className="avatar-name-badge">
+                    <span>{pet.name}</span>
                   </div>
                 </div>
                 
-                {/* Hero Text Content */}
-                <div className="mp-hero-content">
-                  <h1 className="mp-hero-title">For <span className="mp-pink-gradient">{pet.name}</span></h1>
-                  <p className="mp-hero-subtitle">Curated with love for {pet.name}</p>
+                {/* Content Side */}
+                <div className="hero-content">
+                  {/* Title */}
+                  <h1 className="hero-title">
+                    For <span className="gradient-text">{pet.name}</span>
+                  </h1>
+                  
+                  {/* Subtitle */}
+                  <p className="hero-subtitle">Curated with love for {pet.name}</p>
                   
                   {/* Soul Traits */}
-                  <div className="mp-soul-traits">
+                  <div className="soul-traits">
                     {(pet.soulTraits || [
-                      { label: 'Playful spirit', icon: '⭐', color: '#f59e0b' },
-                      { label: 'Gentle paws', icon: '🐾', color: '#ec4899' },
-                      { label: 'Loyal friend', icon: '❤️', color: '#ef4444' }
+                      { label: 'Glamorous soul', icon: '✨' },
+                      { label: 'Elegant paws', icon: '🎀' },
+                      { label: 'Devoted friend', icon: '💖' }
                     ]).map((trait, i) => (
-                      <div key={i} className="mp-trait-chip">
-                        <span className="mp-trait-icon">{trait.icon}</span>
-                        <span className="mp-trait-label">{trait.label}</span>
+                      <div key={i} className="trait-chip">
+                        <span className="trait-icon">{trait.icon}</span>
+                        <span className="trait-label">{trait.label}</span>
                       </div>
                     ))}
                   </div>
                   
-                  {/* Personalized Picks Button */}
-                  <button className="mp-personalized-btn" onClick={() => handleQuickReply(`Show me personalized picks for ${pet.name}`)}>
-                    <div className="mp-btn-icon">
-                      <Sparkles className="w-4 h-4" />
+                  {/* Personalized Picks Card - "Mira knows" style */}
+                  <div className="mira-love-card" onClick={() => handleQuickReply(`Show me personalized picks for ${pet.name}`)}>
+                    <div className="love-card-icon">
+                      <Sparkles className="w-5 h-5" />
                     </div>
-                    <span>" Personalized picks for {pet.name}"</span>
-                    <Sparkles className="mp-btn-sparkle" />
-                  </button>
+                    <div className="love-card-content">
+                      <p className="love-card-title">
+                        "💕 Personalized picks for {pet.name}"
+                      </p>
+                      <p className="love-card-subtitle">
+                        <Heart className="w-3 h-3" /> Mira knows {pet.name}
+                      </p>
+                    </div>
+                    <Sparkles className="love-card-sparkle" />
+                  </div>
                 </div>
               </div>
               
-              {/* Quick Suggestion Chips - Centered Below */}
-              <div className="mp-quick-chips">
+              {/* Quick Suggestion Chips */}
+              <div className="quick-chips">
                 {[
                   { text: `Treats for ${pet.name}`, icon: '🦴' },
                   { text: 'Grooming help', icon: '✂️' },
                   { text: 'Plan a birthday', icon: '🎂' },
                   { text: 'Travel tips', icon: '✈️' }
                 ].map((s, i) => (
-                  <button key={i} onClick={() => handleQuickReply(s.text)} className="mp-quick-chip">
-                    <span className="mp-chip-icon">{s.icon}</span>
-                    <span className="mp-chip-text">{s.text}</span>
+                  <button 
+                    key={i} 
+                    onClick={() => handleQuickReply(s.text)} 
+                    className="quick-chip"
+                    data-testid={`quick-chip-${i}`}
+                  >
+                    <span className="chip-icon">{s.icon}</span>
+                    <span className="chip-text">{s.text}</span>
                   </button>
                 ))}
               </div>
