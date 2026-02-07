@@ -577,36 +577,52 @@ const MiraDemoPage = () => {
       
       {/* Help Modal */}
       {showHelpModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-800 border border-white/20 rounded-2xl max-w-md w-full p-6">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          style={{ touchAction: 'none' }}
+        >
+          <div className="bg-slate-800 border border-white/20 rounded-2xl max-w-md w-full p-5 sm:p-6 mx-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold text-white">How can we help?</h3>
-              <button onClick={() => setShowHelpModal(false)} className="p-1 hover:bg-white/10 rounded-lg">
+              <h3 className="text-lg sm:text-xl font-bold text-white">How can we help?</h3>
+              <button 
+                onClick={() => setShowHelpModal(false)} 
+                style={{ touchAction: 'manipulation', userSelect: 'none' }}
+                className="p-2 hover:bg-white/10 active:bg-white/20 rounded-lg min-w-[44px] min-h-[44px]
+                  flex items-center justify-center active:scale-95"
+              >
                 <X className="w-5 h-5 text-white/70" />
               </button>
             </div>
-            <div className="space-y-3">
+            <div className="space-y-2 sm:space-y-3">
               <button 
                 onClick={() => { setShowHelpModal(false); setQuery('I need help with my order'); inputRef.current?.focus(); }}
-                className="w-full text-left p-3 bg-white/5 hover:bg-white/10 rounded-xl text-white/80 transition-all"
+                style={{ touchAction: 'manipulation', userSelect: 'none' }}
+                className="w-full text-left p-3 sm:p-4 bg-white/5 hover:bg-white/10 active:bg-white/20 
+                  rounded-xl text-white/80 transition-all min-h-[48px] active:scale-[0.98]"
               >
                 📦 Order & Delivery Help
               </button>
               <button 
                 onClick={() => { setShowHelpModal(false); setQuery('I have a health concern about my pet'); inputRef.current?.focus(); }}
-                className="w-full text-left p-3 bg-white/5 hover:bg-white/10 rounded-xl text-white/80 transition-all"
+                style={{ touchAction: 'manipulation', userSelect: 'none' }}
+                className="w-full text-left p-3 sm:p-4 bg-white/5 hover:bg-white/10 active:bg-white/20 
+                  rounded-xl text-white/80 transition-all min-h-[48px] active:scale-[0.98]"
               >
                 🏥 Health & Advisory
               </button>
               <button 
                 onClick={() => { setShowHelpModal(false); setQuery('I need to return or exchange a product'); inputRef.current?.focus(); }}
-                className="w-full text-left p-3 bg-white/5 hover:bg-white/10 rounded-xl text-white/80 transition-all"
+                style={{ touchAction: 'manipulation', userSelect: 'none' }}
+                className="w-full text-left p-3 sm:p-4 bg-white/5 hover:bg-white/10 active:bg-white/20 
+                  rounded-xl text-white/80 transition-all min-h-[48px] active:scale-[0.98]"
               >
                 🔄 Returns & Exchanges
               </button>
               <button 
                 onClick={() => { setShowHelpModal(false); window.dispatchEvent(new CustomEvent('openMiraAI')); }}
-                className="w-full text-left p-3 bg-gradient-to-r from-purple-500/20 to-pink-500/20 hover:from-purple-500/30 hover:to-pink-500/30 rounded-xl text-white transition-all border border-purple-400/30"
+                style={{ touchAction: 'manipulation', userSelect: 'none' }}
+                className="w-full text-left p-3 sm:p-4 bg-gradient-to-r from-purple-500/20 to-pink-500/20 
+                  hover:from-purple-500/30 hover:to-pink-500/30 active:from-purple-500/40 active:to-pink-500/40
+                  rounded-xl text-white transition-all border border-purple-400/30 min-h-[48px] active:scale-[0.98]"
               >
                 💬 Chat with Concierge
               </button>
