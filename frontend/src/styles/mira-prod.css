@@ -546,8 +546,18 @@
 .mp-products-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 12px;
   margin-bottom: var(--space-md);
+}
+
+/* E017: Pet Photo in Recommendations */
+.mp-products-pet-photo {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--mira-pink);
+  box-shadow: 0 0 10px rgba(236, 72, 153, 0.3);
 }
 
 .mp-products-title {
