@@ -1923,6 +1923,170 @@ const MiraDemoPage = () => {
     }, 50);
   }, []);
   
+  // IN-MIRA SERVICE REQUEST HANDLERS
+  // Open service request modal when clicking a service/experience card
+  const openServiceRequest = useCallback((service, isExperience = false) => {
+    setServiceRequestModal({
+      isOpen: true,
+      service: { ...service, isExperience },
+      formData: {
+        notes: '',
+        preferredDate: '',
+        urgency: 'normal'
+      },
+      isSubmitting: false,
+      submitted: false
+    });
+    console.log('[SERVICE_REQUEST] Opened modal for:', service.label);
+  }, []);
+  
+  // Update form data in service request modal
+  const updateServiceFormData = useCallback((field, value) => {
+    setServiceRequestModal(prev => ({
+      ...prev,
+      formData: { ...prev.formData, [field]: value }
+    }));
+  }, []);
+  
+  // Submit service request - creates ticket, notifies admin, updates soul
+  const submitServiceRequest = useCallback(async () => {
+    if (!serviceRequestModal.service) return;
+    
+    setServiceRequestModal(prev => ({ ...prev, isSubmitting: true }));
+    
+    try {
+      const service = serviceRequestModal.service;
+      const formData = serviceRequestModal.formData;
+      
+      // Map service to pillar
+      const pillarMap = {
+        'grooming': 'Care',
+        'walks': 'Care',
+        'training': 'Learn',
+        'vet': 'Care',
+        'boarding': 'Stay',
+        'photography': 'Celebrate',
+        'party-planning': 'Celebrate',
+        'chefs-table': 'Dine',
+        'home-dining': 'Dine',
+        'meal-subscription': 'Dine',
+        'pawcation': 'Stay',
+        'multi-pet-travel': 'Travel',
+        'travel-planning': 'Travel'
+      };
+      const pillar = pillarMap[service.id] || 'General';
+      
+      // Create the service request message
+      const requestMessage = `I'd like to request ${service.label} for ${pet.name}. ${formData.notes ? `Additional notes: ${formData.notes}` : ''} ${formData.preferredDate ? `Preferred date: ${formData.preferredDate}` : ''} Urgency: ${formData.urgency}`;
+      
+      // Create/attach ticket via existing API
+      const ticketResponse = await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': token ? `Bearer ${token}` : ''
+        },
+        body: JSON.stringify({
+          parent_id: user?.id || 'demo-user',
+          pet_id: pet.id,
+          pillar: pillar,
+          intent_primary: service.label.toUpperCase().replace(/\s+/g, '_'),
+          intent_secondary: service.isExperience ? 'EXPERIENCE' : 'SERVICE',
+          life_state: formData.urgency === 'urgent' ? 'URGENT' : 'PLANNING',
+          channel: 'mira_os_demo',
+          initial_message: {
+            sender: 'parent',
+            source: 'mira_os',
+            text: requestMessage
+          }
+        })
+      });
+      
+      const ticketData = await ticketResponse.json();
+      
+      if (ticketResponse.ok) {
+        console.log('[SERVICE_REQUEST] Ticket created:', ticketData.ticket_id);
+        
+        // Add confirmation message to chat
+        const confirmationMessage = {
+          type: 'mira',
+          content: `I've submitted your ${service.label} request for ${pet.name}. Your request ID is **${ticketData.ticket_id}**. ${isConciergeLive() ? 'Your pet Concierge® has been notified and will reach out shortly!' : 'Our team will follow up first thing at 6:30 AM.'}`,
+          isConfirmation: true,
+          serviceRequest: {
+            id: ticketData.ticket_id,
+            service: service.label,
+            status: 'submitted'
+          },
+          timestamp: new Date()
+        };
+        setConversationHistory(prev => [...prev, confirmationMessage]);
+        
+        // Update soul score for the interaction
+        try {
+          await fetch(`${API_URL}/api/mira/increment-soul-score`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': token ? `Bearer ${token}` : ''
+            },
+            body: JSON.stringify({
+              pet_id: pet.id,
+              interaction_type: 'service_request',
+              points: 1.5  // Service requests grow the soul
+            })
+          });
+          console.log('[SOUL] Soul score incremented for service request');
+        } catch (err) {
+          console.log('[SOUL] Could not increment soul score:', err);
+        }
+        
+        setServiceRequestModal(prev => ({
+          ...prev,
+          isSubmitting: false,
+          submitted: true
+        }));
+        
+        // Close modal after showing success briefly
+        setTimeout(() => {
+          setServiceRequestModal({
+            isOpen: false,
+            service: null,
+            formData: {},
+            isSubmitting: false,
+            submitted: false
+          });
+        }, 2500);
+        
+      } else {
+        throw new Error(ticketData.detail || 'Failed to create request');
+      }
+      
+    } catch (error) {
+      console.error('[SERVICE_REQUEST] Error:', error);
+      setServiceRequestModal(prev => ({ ...prev, isSubmitting: false }));
+      
+      // Add error message to chat
+      const errorMessage = {
+        type: 'mira',
+        content: `I couldn't submit that request right now, but don't worry—you can reach your Concierge® directly via WhatsApp and they'll take care of it.`,
+        error: true,
+        timestamp: new Date()
+      };
+      setConversationHistory(prev => [...prev, errorMessage]);
+    }
+  }, [serviceRequestModal, pet, token, user]);
+  
+  // Close service request modal
+  const closeServiceRequest = useCallback(() => {
+    setServiceRequestModal({
+      isOpen: false,
+      service: null,
+      formData: {},
+      isSubmitting: false,
+      submitted: false
+    });
+  }, []);
+  
   // Voice recognition
   useEffect(() => {
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
