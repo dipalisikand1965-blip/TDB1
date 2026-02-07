@@ -2516,3 +2516,22 @@ button.mp-experience-card {
   cursor: pointer;
   font-family: inherit;
 }
+
+/* ========================================
+   COMFORT MODE - The Great Mother
+   Mira is present, not a salesman
+   ======================================== */
+.mp-comfort-mode {
+  background: rgba(139, 92, 246, 0.1);
+  border-color: rgba(139, 92, 246, 0.25);
+}
+
+.mp-comfort-mode .mp-concierge-text {
+  font-style: italic;
+  color: #D8B4FE;
+}
+
+/* Hide product recommendations completely when not showing */
+.mp-mira-message:not([data-show-products="true"]) .mp-product-grid {
+  display: none;
+}
