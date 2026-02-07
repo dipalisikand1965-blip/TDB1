@@ -2531,20 +2531,22 @@ const MiraDemoPage = () => {
                                         style={{ background: '#25D366', textDecoration: 'none' }}
                                         data-testid="concierge-whatsapp"
                                       >
-                                    <Phone style={{ width: 14, height: 14 }} /> WhatsApp
-                                  </a>
-                                  <button onClick={handleConciergeHandoff} className="mp-concierge-btn" data-testid="concierge-chat">
-                                    <MessageSquare /> Chat
-                                  </button>
-                                  <a 
-                                    href={`mailto:concierge@thedoggycompany.in?subject=Help with ${pet.name}&body=${encodeURIComponent(`Hi, I need help with ${pet.name}.\n\nContext: ${msg.content?.slice(0, 200)}...`)}`}
-                                    className="mp-concierge-btn"
-                                    style={{ background: 'rgba(139, 92, 246, 0.3)', textDecoration: 'none' }}
-                                    data-testid="concierge-email"
-                                  >
-                                    <Mail style={{ width: 14, height: 14 }} /> Email
-                                  </a>
-                                </div>
+                                        <Phone style={{ width: 14, height: 14 }} /> WhatsApp
+                                      </a>
+                                      <button onClick={handleConciergeHandoff} className="mp-concierge-btn" data-testid="concierge-chat">
+                                        <MessageSquare /> Chat
+                                      </button>
+                                      <a 
+                                        href={`mailto:concierge@thedoggycompany.in?subject=Help with ${pet.name}&body=${encodeURIComponent(`Hi, I need help with ${pet.name}.\n\nContext: ${msg.content?.slice(0, 200)}...`)}`}
+                                        className="mp-concierge-btn"
+                                        style={{ background: 'rgba(139, 92, 246, 0.3)', textDecoration: 'none' }}
+                                        data-testid="concierge-email"
+                                      >
+                                        <Mail style={{ width: 14, height: 14 }} /> Email
+                                      </a>
+                                    </div>
+                                  </>
+                                )}
                               </div>
                             </div>
                           )}
