@@ -58,7 +58,8 @@ const DEMO_PET = {
   age: '3 years',
   traits: ['Playful', 'Friendly', 'Energetic'],
   sensitivities: ['Chicken allergy'],
-  favorites: ['Tennis balls', 'Peanut butter treats']
+  favorites: ['Tennis balls', 'Peanut butter treats'],
+  photo: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=200&h=200&fit=crop&crop=face'
 };
 
 const MiraDemoPage = () => {
