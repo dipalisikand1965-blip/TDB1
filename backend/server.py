@@ -1833,6 +1833,9 @@ from mira_intelligence import router as mira_intelligence_router, set_intelligen
 # Import Mira Relationship Memory System
 from mira_memory_routes import router as mira_memory_router, set_memory_routes_db
 
+# Import Mira Session Persistence
+from mira_session_persistence import router as mira_session_router, set_session_db
+
 # Import Concierge Command Center routes
 from concierge_routes import router as concierge_command_router, set_concierge_db as set_command_center_db
 
