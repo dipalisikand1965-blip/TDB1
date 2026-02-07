@@ -1196,7 +1196,7 @@ const MiraDemoPage = () => {
 
   return (
     <div className="mira-chat-container">
-      {/* Header - Clean & Minimal */}
+      {/* Header - Purple Gradient with White Elements */}
       <header className="mira-header">
         <div className="mira-header-inner">
           <div className="mira-header-left">
@@ -1210,9 +1210,16 @@ const MiraDemoPage = () => {
           </div>
           <div className="mira-pet-badge">
             <div className="mira-avatar mira-avatar-pet mira-pet-badge-avatar">
-              <PawPrint />
+              {pet.photo ? (
+                <img src={pet.photo} alt={pet.name} />
+              ) : (
+                <PawPrint />
+              )}
             </div>
-            <span className="mira-pet-badge-name">{pet.name}</span>
+            <div className="mira-pet-badge-info">
+              <span className="mira-pet-badge-name">{pet.name}</span>
+              <span className="mira-pet-badge-breed">{pet.breed}</span>
+            </div>
           </div>
         </div>
         
