@@ -2349,13 +2349,43 @@ const MiraDemoPage = () => {
                             </div>
                           )}
                           
+                          {/* EXPERIENCE CARDS - Premium curated experiences */}
+                          {/* MIRA DOCTRINE: Experiences are special wizard-driven offerings */}
+                          {msg.showExperiences && msg.detectedExperiences?.length > 0 && (
+                            <div className="mp-experience-cards">
+                              <p className="mp-experience-intro">
+                                ✨ Curated experiences for {pet.name}:
+                              </p>
+                              <div className="mp-experience-grid">
+                                {msg.detectedExperiences.map((exp, eIdx) => (
+                                  <a
+                                    key={eIdx}
+                                    href={`https://thedoggycompany.in${exp.wizardUrl}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="mp-experience-card"
+                                    style={{ '--experience-color': exp.color }}
+                                    data-testid={`experience-${exp.id}`}
+                                  >
+                                    <span className="mp-experience-icon">{exp.icon}</span>
+                                    <div className="mp-experience-info">
+                                      <span className="mp-experience-label">{exp.label}</span>
+                                      <span className="mp-experience-desc">{exp.description}</span>
+                                    </div>
+                                    <span className="mp-experience-badge">Experience</span>
+                                  </a>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          
                           {/* MIRA DOCTRINE: Concierge is premium service, shown subtly when relevant */}
                           {/* Only show when AI suggests it or execution type is CONCIERGE */}
                           {msg.data?.response?.suggest_concierge && (
                             <div className="mp-concierge-strip">
                               <div className="mp-concierge-content">
                                 <p className="mp-concierge-text">
-                                  {msg.showServices 
+                                  {(msg.showServices || msg.showExperiences)
                                     ? `Or, if you'd prefer, your pet Concierge® can handle this end-to-end for ${pet.name}.`
                                     : (msg.data?.response?.concierge_framing || 
                                        `If you'd like, your pet Concierge® can help coordinate this for ${pet.name}.`)}
