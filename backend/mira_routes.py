@@ -1597,16 +1597,30 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
         if is_food_portion or is_food_routine:
             should_show_products = False
         
+        # For TRAVEL requests, ALWAYS show travel products
+        if is_travel_request:
+            should_show_products = True
+        
         # For GRIEF_HOLD, override everything - NO products, NO actions
         if is_grief_hold:
             should_show_products = False
             execution_type = "HOLD"  # Special state for grief
         
+        # Determine search keywords based on intent
+        search_keywords = None
+        if is_travel_request:
+            search_keywords = "travel carrier crate harness"
+        elif is_treat_request:
+            search_keywords = None  # Will use entities
+        elif is_groom_tools:
+            search_keywords = "grooming brush shampoo"
+        
         if should_show_products and intent in ["FIND", "ORDER", "COMPARE", "EXPLORE", "PLAN"]:
             real_products = await search_real_products(
                 entities=entities,
                 pet_context=request.pet_context or {},
-                limit=6
+                limit=6,
+                search_override=search_keywords  # Use context-specific search
             )
         
         logger.info(f"[PRODUCT FILTER] intent={intent}, is_service={is_service_intent}, is_food_main={is_food_main_intent}, is_treat={is_treat_request}, is_grief_hold={is_grief_hold}, is_groom_tools={is_groom_tools}, is_groom_medical={is_groom_medical_boundary}, is_food_medical={is_food_medical_boundary}, showing_products={should_show_products}")
