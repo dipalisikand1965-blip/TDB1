@@ -66,22 +66,22 @@ class PetContext(BaseModel):
     allergies: Optional[List[str]] = []
     notes: Optional[List[str]] = []
     
+    class Config:
+        # Allow extra fields to be ignored
+        extra = 'ignore'
+        
     # Handle age_years being passed as string
-    @classmethod
-    def __get_validators__(cls):
-        yield cls.validate
-    
-    @classmethod
-    def validate(cls, v):
-        if isinstance(v, dict):
-            # Convert age_years to int if it's a string
-            if 'age_years' in v and isinstance(v['age_years'], str):
-                try:
-                    v['age_years'] = int(''.join(filter(str.isdigit, v['age_years']))) or None
-                except:
-                    v['age_years'] = None
-            return cls(**v)
-        return v
+    @validator('age_years', pre=True, always=True)
+    def parse_age(cls, v):
+        if v is None:
+            return None
+        if isinstance(v, int):
+            return v
+        if isinstance(v, str):
+            # Extract digits from strings like "3 years"
+            digits = ''.join(filter(str.isdigit, v))
+            return int(digits) if digits else None
+        return None
 
 class RouteIntentRequest(BaseModel):
     parent_id: str
