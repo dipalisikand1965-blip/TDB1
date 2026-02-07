@@ -1778,6 +1778,303 @@ PILLARS = {
     "adopt": {
         "name": "Adopt",
         "icon": "🐾",
+
+
+# ============================================
+# TRANSCRIPT SYNC - REAL-TIME SERVICE DESK
+# ============================================
+
+class TranscriptMessage(BaseModel):
+    """Single message in the transcript"""
+    sender: str  # "parent" | "mira" | "concierge" | "system"
+    text: str
+    timestamp: str
+    source: str = "Mira_OS"  # Channel: Mira_OS, WhatsApp, Email, Phone
+
+class TicketCreateRequest(BaseModel):
+    """Request to create/attach to a ticket"""
+    parent_id: str
+    pet_id: str
+    pet_name: str
+    pillar: str  # Grooming, Food, Travel, Celebrate, Care, General
+    intent_primary: str
+    channel: str = "Mira_OS"
+    life_state: str = "PLAN"  # PLAN, CONCERN, CELEBRATE, EMERGENCY
+    first_message: str
+    first_mira_response: Optional[str] = None
+    session_id: Optional[str] = None
+
+class TranscriptSyncRequest(BaseModel):
+    """Request to sync messages to a ticket"""
+    ticket_id: str
+    messages: List[TranscriptMessage]
+
+class ConciergeHandoffRequest(BaseModel):
+    """Request to hand off to Concierge®"""
+    ticket_id: str
+    handoff_reason: str
+    latest_mira_summary: Optional[str] = None
+    collected_info: Optional[Dict[str, Any]] = None  # e.g., {"trim_type": "simple", "area": "Koramangala"}
+
+
+@router.post("/tickets/create")
+async def create_service_ticket(
+    request: TicketCreateRequest,
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Create a new service ticket or attach to existing open ticket.
+    
+    Rule: One active ticket per (parent_id, pet_id, pillar) within 72 hours.
+    If existing open ticket found, return its ID for attaching.
+    """
+    db = get_db()
+    if db is None:
+        logger.warning("[TICKET] No database, returning mock ticket")
+        return {
+            "success": True,
+            "ticket_id": f"TCK-MOCK-{uuid.uuid4().hex[:8]}",
+            "is_new": True,
+            "status": "open_mira_only"
+        }
+    
+    # Check for existing open ticket (within 72 hours)
+    from datetime import timedelta
+    cutoff = datetime.now(timezone.utc) - timedelta(hours=72)
+    
+    existing = await db.mira_tickets.find_one({
+        "parent_id": request.parent_id,
+        "pet_id": request.pet_id,
+        "pillar": request.pillar,
+        "status": {"$in": ["open_mira_only", "open_concierge_engaged"]},
+        "created_at": {"$gte": cutoff.isoformat()}
+    })
+    
+    if existing:
+        logger.info(f"[TICKET] Attaching to existing ticket: {existing['ticket_id']}")
+        return {
+            "success": True,
+            "ticket_id": existing["ticket_id"],
+            "is_new": False,
+            "status": existing["status"]
+        }
+    
+    # Create new ticket
+    now = datetime.now(timezone.utc)
+    ticket_id = f"TCK-{now.year}-{uuid.uuid4().hex[:6].upper()}"
+    
+    ticket_doc = {
+        "ticket_id": ticket_id,
+        "parent_id": request.parent_id,
+        "pet_id": request.pet_id,
+        "pet_name": request.pet_name,
+        "pillar": request.pillar,
+        "intent_primary": request.intent_primary,
+        "channel": request.channel,
+        "status": "open_mira_only",
+        "life_state": request.life_state,
+        "concierge_queue": request.pillar.upper(),
+        "tags": ["mira", request.pillar.lower()],
+        "session_id": request.session_id,
+        "created_at": now.isoformat(),
+        "updated_at": now.isoformat(),
+        "conversation": [
+            {
+                "sender": "parent",
+                "text": request.first_message,
+                "timestamp": now.isoformat(),
+                "source": request.channel
+            }
+        ]
+    }
+    
+    if request.first_mira_response:
+        ticket_doc["conversation"].append({
+            "sender": "mira",
+            "text": request.first_mira_response,
+            "timestamp": now.isoformat(),
+            "source": request.channel
+        })
+    
+    await db.mira_tickets.insert_one(ticket_doc)
+    logger.info(f"[TICKET] Created new ticket: {ticket_id} | Pillar: {request.pillar} | Pet: {request.pet_name}")
+    
+    return {
+        "success": True,
+        "ticket_id": ticket_id,
+        "is_new": True,
+        "status": "open_mira_only"
+    }
+
+
+@router.post("/tickets/sync")
+async def sync_transcript(
+    request: TranscriptSyncRequest,
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Sync messages to a ticket's conversation in real-time.
+    No batching - each message is appended immediately.
+    """
+    db = get_db()
+    if db is None:
+        return {"success": True, "synced": len(request.messages), "mock": True}
+    
+    # Find the ticket
+    ticket = await db.mira_tickets.find_one({"ticket_id": request.ticket_id})
+    if not ticket:
+        raise HTTPException(status_code=404, detail=f"Ticket {request.ticket_id} not found")
+    
+    # Append messages to conversation
+    messages_to_add = [msg.dict() for msg in request.messages]
+    
+    await db.mira_tickets.update_one(
+        {"ticket_id": request.ticket_id},
+        {
+            "$push": {"conversation": {"$each": messages_to_add}},
+            "$set": {"updated_at": datetime.now(timezone.utc).isoformat()}
+        }
+    )
+    
+    logger.info(f"[TRANSCRIPT] Synced {len(messages_to_add)} messages to ticket {request.ticket_id}")
+    
+    return {
+        "success": True,
+        "ticket_id": request.ticket_id,
+        "synced": len(messages_to_add)
+    }
+
+
+@router.post("/tickets/handoff")
+async def handoff_to_concierge(
+    request: ConciergeHandoffRequest,
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Hand off a ticket from Mira to Concierge®.
+    
+    This does NOT create a new ticket - it flips the status of the existing ticket.
+    """
+    db = get_db()
+    if db is None:
+        return {
+            "success": True,
+            "ticket_id": request.ticket_id,
+            "status": "open_concierge_engaged",
+            "mock": True
+        }
+    
+    # Find the ticket
+    ticket = await db.mira_tickets.find_one({"ticket_id": request.ticket_id})
+    if not ticket:
+        raise HTTPException(status_code=404, detail=f"Ticket {request.ticket_id} not found")
+    
+    now = datetime.now(timezone.utc)
+    
+    # Update ticket status
+    update_data = {
+        "status": "open_concierge_engaged",
+        "handoff_to_concierge": True,
+        "handoff_time": now.isoformat(),
+        "handoff_reason": request.handoff_reason,
+        "latest_mira_summary": request.latest_mira_summary,
+        "updated_at": now.isoformat()
+    }
+    
+    if request.collected_info:
+        update_data["collected_info"] = request.collected_info
+    
+    # Add system message to conversation
+    handoff_message = {
+        "sender": "system",
+        "text": f"Ticket handed off to Concierge® | Reason: {request.handoff_reason}",
+        "timestamp": now.isoformat(),
+        "source": "system"
+    }
+    
+    await db.mira_tickets.update_one(
+        {"ticket_id": request.ticket_id},
+        {
+            "$set": update_data,
+            "$push": {"conversation": handoff_message}
+        }
+    )
+    
+    logger.info(f"[HANDOFF] Ticket {request.ticket_id} handed to Concierge® | Reason: {request.handoff_reason}")
+    
+    # Notify Concierge® team (if push available)
+    if PUSH_AVAILABLE:
+        await notify_ticket_update(
+            ticket_id=request.ticket_id,
+            update_type="concierge_handoff",
+            data={
+                "pillar": ticket.get("pillar"),
+                "pet_name": ticket.get("pet_name"),
+                "reason": request.handoff_reason
+            }
+        )
+    
+    return {
+        "success": True,
+        "ticket_id": request.ticket_id,
+        "status": "open_concierge_engaged",
+        "concierge_queue": ticket.get("concierge_queue", ticket.get("pillar", "GENERAL").upper())
+    }
+
+
+@router.get("/tickets/{ticket_id}")
+async def get_ticket(
+    ticket_id: str,
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Get a ticket with its full conversation transcript.
+    Used by service desk to view the complete Mira-parent conversation.
+    """
+    db = get_db()
+    if db is None:
+        return {"success": False, "error": "Database not available"}
+    
+    ticket = await db.mira_tickets.find_one(
+        {"ticket_id": ticket_id},
+        {"_id": 0}
+    )
+    
+    if not ticket:
+        raise HTTPException(status_code=404, detail=f"Ticket {ticket_id} not found")
+    
+    return {
+        "success": True,
+        "ticket": ticket
+    }
+
+
+@router.get("/tickets/active/{pet_id}")
+async def get_active_tickets(
+    pet_id: str,
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Get all active (non-closed) tickets for a pet.
+    """
+    db = get_db()
+    if db is None:
+        return {"success": True, "tickets": [], "count": 0}
+    
+    tickets = await db.mira_tickets.find(
+        {
+            "pet_id": pet_id,
+            "status": {"$in": ["open_mira_only", "open_concierge_engaged"]}
+        },
+        {"_id": 0, "conversation": 0}  # Exclude full conversation for list view
+    ).sort("updated_at", -1).to_list(20)
+    
+    return {
+        "success": True,
+        "tickets": tickets,
+        "count": len(tickets)
+    }
+
         "keywords": ["adopt", "adoption", "rescue", "shelter", "foster", "rehome"],
         "urgency_default": "medium"
     },
