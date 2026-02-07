@@ -322,7 +322,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-sm);
-  justify-content: flex-start;
+  justify-content: center;
 }
 
 .mp-test-chip {
