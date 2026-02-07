@@ -887,6 +887,48 @@ If a question like "everyday vs special-occasion treats" was already answered, m
             system_message=MIRA_OS_SYSTEM_PROMPT
         ).with_model("openai", "gpt-4o")
         
+    # "Tell me more" handling - user wants options explained
+    tell_me_more_context = ""
+    if user_asking_for_more_info and current_step:
+        step_explanations = {
+            'BIRTHDAY_SHAPE': """The user is asking for more context about the active vs cosy choice.
+EXPLAIN both options with specific examples for this pet:
+- Active & playful: longer play sessions, games they love, nose-work/puzzles
+- Simpler & cosy: favourite walk, one-on-one time, special treat without fuss
+Then REPEAT the same question: "Given that, does active and playful sound more like them, or a quieter, cosy one?"
+Do NOT introduce new axes like "indoor vs outdoor" - stay on the current question.""",
+            'BIRTHDAY_FOCUS': """The user is asking for more context about the food/play/ritual choice.
+EXPLAIN each option with specific examples for this pet, then REPEAT the question.
+Do NOT dump generic breed information.""",
+            'TREATS_TYPE': """The user is asking for more context about everyday vs special-occasion treats.
+EXPLAIN the difference: everyday = lighter, more frequent; special-occasion = richer, once-in-a-while
+Then REPEAT the question.""",
+            'GROOMING_MODE': """The user is asking for more context about trim vs full grooming.
+EXPLAIN what each involves for this breed, then REPEAT the question.""",
+            'TRAVEL_MODE': """The user is asking for more context about car/flight/train options.
+EXPLAIN considerations for each mode with this pet in mind, then REPEAT the question."""
+        }
+        
+        explanation = step_explanations.get(current_step, "Explain the options clearly, then repeat the question.")
+        tell_me_more_context = f"""
+USER IS ASKING FOR MORE INFO ABOUT THE CURRENT CHOICE:
+{explanation}
+
+CRITICAL: Do NOT dump generic breed/profile information. Only explain the specific options in the current question.
+"""
+    
+        user_message_text = f"""
+{pet_info}
+{context_info}
+{completed_steps_context}
+{step_history_context}
+{tell_me_more_context}
+
+USER INPUT: "{user_input}"
+
+The user is asking for clarification about the current choice. EXPLAIN the options with specific examples for this pet, then REPEAT the same clarifying question. Do NOT introduce new topics or dump generic breed info.
+"""
+    else:
         user_message_text = f"""
 {pet_info}
 {context_info}
