@@ -1571,96 +1571,41 @@ const MiraDemoPage = () => {
       
       {/* Past Chats Sidebar */}
       {showPastChats && (
-        <div 
-          className="mira-past-chats-sidebar"
-          style={{
-            position: 'fixed',
-            top: '70px',
-            right: '16px',
-            width: '320px',
-            maxHeight: 'calc(100vh - 100px)',
-            background: 'rgba(30, 20, 50, 0.95)',
-            backdropFilter: 'blur(12px)',
-            borderRadius: '16px',
-            border: '1px solid rgba(255,255,255,0.1)',
-            zIndex: 999,
-            boxShadow: '0 8px 32px rgba(0,0,0,0.3)',
-            overflow: 'hidden'
-          }}
-        >
-          <div style={{ padding: '16px', borderBottom: '1px solid rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 style={{ color: 'white', fontWeight: 600, fontSize: '16px', margin: 0 }}>Past Chats</h3>
-            <button onClick={() => setShowPastChats(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px' }}>
-              <X className="w-4 h-4" style={{ color: 'rgba(255,255,255,0.5)' }} />
+        <div className="mp-past-chats">
+          <div className="mp-past-chats-header">
+            <h3 className="mp-past-chats-title">Past Chats</h3>
+            <button onClick={() => setShowPastChats(false)} className="mp-past-chats-close">
+              <X />
             </button>
           </div>
           
-          <div style={{ maxHeight: '400px', overflowY: 'auto', padding: '8px' }}>
+          <div className="mp-past-chats-list">
             {loadingPastChats ? (
-              <div style={{ padding: '20px', textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>
-                Loading...
-              </div>
+              <div style={{ padding: '20px', textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>Loading...</div>
             ) : pastSessions.length === 0 ? (
-              <div style={{ padding: '20px', textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>
-                No past conversations yet
-              </div>
+              <div style={{ padding: '20px', textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>No past conversations</div>
             ) : (
               pastSessions.map((session) => (
                 <button
                   key={session.session_id}
                   onClick={() => loadSession(session)}
+                  className={`mp-session-btn ${session.session_id === sessionId ? 'active' : ''}`}
                   data-testid={`session-${session.session_id}`}
-                  style={{
-                    display: 'block',
-                    width: '100%',
-                    padding: '12px',
-                    background: session.session_id === sessionId ? 'rgba(139, 92, 246, 0.2)' : 'transparent',
-                    border: 'none',
-                    borderRadius: '10px',
-                    cursor: 'pointer',
-                    textAlign: 'left',
-                    marginBottom: '4px',
-                    transition: 'background 0.2s'
-                  }}
-                  onMouseEnter={(e) => e.target.style.background = 'rgba(139, 92, 246, 0.15)'}
-                  onMouseLeave={(e) => e.target.style.background = session.session_id === sessionId ? 'rgba(139, 92, 246, 0.2)' : 'transparent'}
                 >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-                    <PawPrint className="w-3 h-3" style={{ color: '#8b5cf6' }} />
-                    <span style={{ color: 'white', fontWeight: 500, fontSize: '14px' }}>{session.pet_name}</span>
-                    <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '12px', marginLeft: 'auto' }}>
-                      {formatSessionDate(session.updated_at)}
-                    </span>
+                  <div className="mp-session-meta">
+                    <PawPrint />
+                    <span className="mp-session-pet">{session.pet_name}</span>
+                    <span className="mp-session-date">{formatSessionDate(session.updated_at)}</span>
                   </div>
-                  <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '13px', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {session.preview || 'Empty conversation'}
-                  </p>
+                  <p className="mp-session-preview">{session.preview || 'Empty conversation'}</p>
                 </button>
               ))
             )}
           </div>
           
-          {/* New Chat Button in Sidebar */}
-          <div style={{ padding: '12px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-            <button
-              onClick={() => { startNewSession(); setShowPastChats(false); }}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                width: '100%',
-                padding: '12px',
-                background: 'linear-gradient(135deg, #8b5cf6, #6366f1)',
-                border: 'none',
-                borderRadius: '10px',
-                cursor: 'pointer',
-                color: 'white',
-                fontWeight: 500
-              }}
-            >
-              <Plus className="w-4 h-4" />
-              Start New Chat
+          <div className="mp-past-chats-footer">
+            <button onClick={() => { startNewSession(); setShowPastChats(false); }} className="mp-new-chat-btn">
+              <Plus /> Start New Chat
             </button>
           </div>
         </div>
