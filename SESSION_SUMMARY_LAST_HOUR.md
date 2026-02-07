@@ -140,7 +140,7 @@ A comprehensive behavioral and knowledge framework was implemented for the AI as
 - Email: `dipali@clubconcierge.in`
 - Password: `test123`
 
-**Preview URL:** https://mira-sandbox.preview.emergentagent.com
+**Preview URL:** https://pet-concierge-4.preview.emergentagent.com
 
 ---
 
