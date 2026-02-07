@@ -160,15 +160,22 @@
 /* Pet Dropdown */
 .mp-pet-dropdown {
   position: absolute;
-  top: 70px;
-  right: var(--space-xl);
+  top: 60px;
+  right: 0;
   background: var(--mira-bg-purple);
   border: 1px solid var(--mira-card-border);
   border-radius: var(--radius-lg);
-  min-width: 220px;
+  min-width: 240px;
+  max-width: 90vw;
   overflow: hidden;
   z-index: 1000;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  animation: dropdown-fade 0.2s ease;
+}
+
+@keyframes dropdown-fade {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .mp-pet-option {
@@ -182,6 +189,7 @@
   cursor: pointer;
   text-align: left;
   transition: background 0.15s;
+  min-height: 56px;
 }
 
 .mp-pet-option:hover {
@@ -190,6 +198,26 @@
 
 .mp-pet-option.active {
   background: rgba(139, 92, 246, 0.2);
+}
+
+.mp-pet-option .mp-pet-avatar {
+  width: 40px;
+  height: 40px;
+}
+
+/* Mobile: Full width dropdown */
+@media (max-width: 768px) {
+  .mp-pet-dropdown {
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-width: 100%;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    max-height: 60vh;
+    overflow-y: auto;
+  }
 }
 
 /* ========================================
