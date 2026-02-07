@@ -678,26 +678,31 @@
   transition: all 0.2s;
   text-decoration: none;
   border: none;
+  color: white !important;
+  background: var(--mira-purple);
 }
 
-.mp-concierge-btn.whatsapp {
-  background: #25D366;
-  color: white;
+.mp-concierge-btn.whatsapp,
+.mp-concierge-btn[style*="#25D366"] {
+  background: #25D366 !important;
+  color: white !important;
 }
 
 .mp-concierge-btn.chat {
   background: var(--mira-purple);
-  color: white;
+  color: white !important;
 }
 
-.mp-concierge-btn.email {
-  background: rgba(139, 92, 246, 0.2);
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  color: white;
+.mp-concierge-btn.email,
+.mp-concierge-btn[style*="rgba(139"] {
+  background: rgba(139, 92, 246, 0.3) !important;
+  border: 1px solid rgba(139, 92, 246, 0.4);
+  color: white !important;
 }
 
 .mp-concierge-btn:hover {
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 /* ========================================
