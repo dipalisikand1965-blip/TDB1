@@ -1302,13 +1302,6 @@ const MiraDemoPage = () => {
               </details>
             </div>
           )}
-                  >
-                    {s}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
           
           {/* Conversation */}
           {conversationHistory.length > 0 && (
