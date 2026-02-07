@@ -489,6 +489,69 @@ const MiraDemoPage = () => {
       
       {/* Main Content */}
       <main className="max-w-6xl mx-auto px-4 py-8">
+        {/* Test Scenarios Panel */}
+        {showScenarios && (
+          <div className="mb-8 bg-slate-800/50 backdrop-blur border border-white/10 rounded-2xl p-4">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-amber-400" />
+                  Test Scenarios
+                </h3>
+                <p className="text-white/50 text-sm">Role-play different situations to refine Mira's tone</p>
+              </div>
+              <button 
+                onClick={() => setShowScenarios(false)}
+                className="p-2 hover:bg-white/10 rounded-lg transition-all"
+              >
+                <X className="w-4 h-4 text-white/50" />
+              </button>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {TEST_SCENARIOS.map((scenario) => (
+                <button
+                  key={scenario.id}
+                  onClick={() => {
+                    setActiveScenario(scenario.id);
+                    setQuery(scenario.query);
+                    // Auto-submit after a brief delay
+                    setTimeout(() => {
+                      if (handleSubmitRef.current) {
+                        handleSubmitRef.current(null, scenario.query);
+                      }
+                    }, 100);
+                  }}
+                  data-testid={`scenario-${scenario.id}`}
+                  className={`px-4 py-2 rounded-xl text-sm font-medium transition-all ${
+                    activeScenario === scenario.id
+                      ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg'
+                      : 'bg-white/10 text-white/70 hover:bg-white/20 hover:text-white'
+                  }`}
+                  title={scenario.description}
+                >
+                  {scenario.label}
+                </button>
+              ))}
+            </div>
+            {activeScenario && (
+              <p className="mt-3 text-xs text-white/40 italic">
+                Testing: {TEST_SCENARIOS.find(s => s.id === activeScenario)?.description}
+              </p>
+            )}
+          </div>
+        )}
+        
+        {/* Show Scenarios Toggle (when hidden) */}
+        {!showScenarios && (
+          <button
+            onClick={() => setShowScenarios(true)}
+            className="mb-4 px-4 py-2 bg-white/5 hover:bg-white/10 rounded-xl text-white/50 text-sm transition-all"
+          >
+            <Sparkles className="w-4 h-4 inline mr-2" />
+            Show Test Scenarios
+          </button>
+        )}
+        
         {/* Welcome State (no conversation yet) */}
         {conversationHistory.length === 0 && !isProcessing && (
           <div className="text-center py-16">
