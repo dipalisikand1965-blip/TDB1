@@ -1212,7 +1212,7 @@
 .mira-card-name {
   font-size: var(--mira-font-size-sm);
   font-weight: 600;
-  color: var(--mira-text-primary);
+  color: white;
 }
 
 .mira-intent-badge {
@@ -1224,16 +1224,16 @@
   letter-spacing: 0.5px;
 }
 
-/* Intent-specific colors */
-.mira-intent-badge.intent-find { background: #DBEAFE; color: #1E40AF; }
-.mira-intent-badge.intent-plan { background: #F3E8FF; color: #7C3AED; }
-.mira-intent-badge.intent-compare { background: #FEF3C7; color: #B45309; }
-.mira-intent-badge.intent-remember { background: #D1FAE5; color: #047857; }
-.mira-intent-badge.intent-order { background: #FCE7F3; color: #BE185D; }
-.mira-intent-badge.intent-explore { background: #E0E7FF; color: #4338CA; }
-.mira-intent-badge.intent-groom_plan { background: #CCFBF1; color: #0F766E; }
-.mira-intent-badge.intent-concern { background: #FEE2E2; color: #B91C1C; }
-.mira-intent-badge.intent-hold { background: #F3F4F6; color: #6B7280; }
+/* Intent-specific colors - Updated for dark card */
+.mira-intent-badge.intent-find { background: rgba(59, 130, 246, 0.3); color: #93c5fd; }
+.mira-intent-badge.intent-plan { background: rgba(236, 72, 153, 0.3); color: #f9a8d4; }
+.mira-intent-badge.intent-compare { background: rgba(251, 191, 36, 0.3); color: #fde047; }
+.mira-intent-badge.intent-remember { background: rgba(52, 211, 153, 0.3); color: #6ee7b7; }
+.mira-intent-badge.intent-order { background: rgba(236, 72, 153, 0.3); color: #f9a8d4; }
+.mira-intent-badge.intent-explore { background: rgba(99, 102, 241, 0.3); color: #a5b4fc; }
+.mira-intent-badge.intent-groom_plan { background: rgba(20, 184, 166, 0.3); color: #5eead4; }
+.mira-intent-badge.intent-concern { background: rgba(239, 68, 68, 0.3); color: #fca5a5; }
+.mira-intent-badge.intent-hold { background: rgba(156, 163, 175, 0.3); color: #d1d5db; }
 
 /* Execution badge - shows Instant vs Concierge */
 .mira-execution-badge {
@@ -1244,21 +1244,21 @@
 }
 
 .mira-execution-badge.instant {
-  background: rgba(16, 185, 129, 0.2);
-  color: #059669;
+  background: rgba(16, 185, 129, 0.3);
+  color: #6ee7b7;
 }
 
 .mira-execution-badge.concierge {
-  background: rgba(139, 92, 246, 0.2);
-  color: #7C3AED;
+  background: rgba(236, 72, 153, 0.3);
+  color: #f9a8d4;
 }
 
 .mira-execution-badge.hold {
-  background: rgba(107, 114, 128, 0.2);
-  color: #6B7280;
+  background: rgba(107, 114, 128, 0.3);
+  color: #d1d5db;
 }
 
-/* Mira Card Body */
+/* Mira Card Body - White text on dark */
 .mira-card-body {
   padding: var(--mira-space-lg);
 }
@@ -1267,17 +1267,17 @@
   margin: 0;
   font-size: var(--mira-font-size-base);
   line-height: 1.6;
-  color: var(--mira-text-primary);
+  color: rgba(255, 255, 255, 0.95);
 }
 
-/* Clarifying Question - Highlighted Strip */
+/* Clarifying Question - Amber/Gold Strip */
 .mira-question-strip {
   margin-top: var(--mira-space-md);
   padding: var(--mira-space-md);
-  background: var(--mira-question-bg);
-  border: 1px solid var(--mira-question-border);
+  background: rgba(251, 191, 36, 0.15);
+  border: 1px solid rgba(251, 191, 36, 0.3);
   border-radius: var(--mira-radius-md);
-  border-left-width: 3px;
+  border-left: 3px solid #fbbf24;
 }
 
 .mira-question-text {
@@ -1285,10 +1285,10 @@
   font-size: var(--mira-font-size-base);
   font-weight: 500;
   line-height: 1.5;
-  color: var(--mira-question-text);
+  color: #fef3c7;
 }
 
-/* Quick Reply Chips */
+/* Quick Reply Chips - Updated for dark theme */
 .mira-chips-container {
   margin-top: var(--mira-space-md);
   display: flex;
@@ -1300,9 +1300,9 @@
   padding: var(--mira-space-sm) var(--mira-space-md);
   min-height: 36px;
   border-radius: var(--mira-radius-full);
-  border: 1px solid var(--mira-chip-border);
-  background: var(--mira-chip-bg);
-  color: var(--mira-chip-text);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
   font-size: var(--mira-font-size-sm);
   font-weight: 500;
   cursor: pointer;
@@ -1310,9 +1310,9 @@
 }
 
 .mira-chip:hover {
-  background: var(--mira-chip-bg-hover);
-  border-color: var(--mira-accent);
-  color: var(--mira-accent);
+  background: rgba(236, 72, 153, 0.3);
+  border-color: #ec4899;
+  color: white;
 }
 
 .mira-chip:active {
@@ -1321,8 +1321,8 @@
 
 /* Amber variant for question-related chips */
 .mira-chip-amber {
-  background: #FEF3C7;
-  border-color: #FCD34D;
+  background: rgba(251, 191, 36, 0.2);
+  border-color: rgba(251, 191, 36, 0.4);
   color: #92400E;
 }
 
