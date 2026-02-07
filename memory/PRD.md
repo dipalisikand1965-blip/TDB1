@@ -2,7 +2,38 @@
 ## The World's First Pet Life Operating System
 
 **Last Updated:** February 7, 2026
-**Status:** 95% Complete - Products + Services + Experiences Working!
+**Status:** 97% Complete - In-Mira Service Flow Fixed!
+
+---
+
+## LATEST SESSION - February 7, 2026
+
+### P0 FIX: In-Mira Service Request Flow ✅ COMPLETED
+**Problem:** Service and Experience cards were linking externally instead of opening the in-Mira modal.
+
+**Root Cause Found:** Two bugs:
+1. Service detection was using cleared React state (`query`) instead of current input (`inputQuery`)
+2. Generic "help" keyword in COMFORT_KEYWORDS was triggering comfort mode for normal queries like "Grooming help"
+
+**Fixes Applied:**
+- Changed all `detectServiceIntent(query)` → `detectServiceIntent(inputQuery)` 
+- Changed all `detectExperienceIntent(query)` → `detectExperienceIntent(inputQuery)`
+- Changed `isComfortMode(query, ...)` → `isComfortMode(inputQuery, ...)`
+- Removed generic "help" from COMFORT_KEYWORDS, replaced with specific phrases
+- Fixed `intent_secondary` to be array instead of string for API compatibility
+
+**Result:** Service/Experience cards now correctly open the in-Mira service request modal with:
+- Service name and description
+- Additional Details textarea
+- Preferred Date picker
+- Urgency dropdown (Flexible/Normal/Soon/Urgent)
+- Cancel and Submit Request buttons
+- Ticket creation in service desk on submit
+
+### P1 FIX: "Let Concierge Handle It" Tile ✅ COMPLETED
+- Dedicated Concierge tile now appears alongside service cards
+- Purple heart icon (💜) with "We'll take care of everything for you" description
+- Clicking opens the same in-Mira modal for request submission
 
 ---
 
