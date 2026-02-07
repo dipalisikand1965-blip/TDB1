@@ -35,6 +35,19 @@
 - Purple heart icon (💜) with "We'll take care of everything for you" description
 - Clicking opens the same in-Mira modal for request submission
 
+### BUG FIX: Product Recommendations Not Relevant ✅ COMPLETED
+**Problem:** Birthday/party queries were showing Halloween-themed products (Jack O' Lick Pupcakes, Creepy Crawly Dognuts) instead of actual celebration cakes.
+
+**Root Cause:** The `search_override` branch in `search_real_products()` wasn't filtering out seasonal/Halloween items, and included "dognut" as a birthday keyword.
+
+**Fixes Applied (mira_routes.py):**
+- Added `is_birthday_search` flag to detect birthday/party/celebration context
+- Added regex exclusion filter for Halloween keywords: `halloween|ghost|creepy|spooky|jack o|googly|ghoul|skeleton|witch|pumpkin|crawly|🎃|👻|🕸️`
+- Restricted categories to cakes only for birthday: `cakes|breed-cakes|hampers|celebration|mini-cakes`
+- Made "why_for_pet" message contextual: "Perfect for Buddy's celebration" instead of "travel needs"
+
+**Result:** Birthday queries now show appropriate cakes (Mutt Munch, Mini Mutt Munch) instead of Halloween items.
+
 ---
 
 ## WHAT WAS BUILT IN THIS SESSION
