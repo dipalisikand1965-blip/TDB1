@@ -1737,6 +1737,24 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
                 # Follow-up - now show products
                 should_show_products = True
         
+        # BOARDING/PET-SITTING: NEVER show products - this is a SERVICE
+        is_boarding_request = any(word in user_input_lower for word in [
+            "boarding", "sitter", "pet sitting", "kennel", "daycare", "watch while", "while i'm away",
+            "someone to watch", "take care of while", "look after while", "care for while"
+        ])
+        # Also check conversation history for boarding context
+        if not is_boarding_request and request.conversation_history:
+            for msg in request.conversation_history:
+                content = safe_lower(msg.get('content', ''))
+                if any(word in content for word in ['boarding', 'watch', 'sitter', 'while i\'m away', 'away for', 'someone to watch']):
+                    is_boarding_request = True
+                    break
+        
+        if is_boarding_request:
+            should_show_products = False  # NEVER show products for boarding
+            is_treat_request = False  # Override - don't show treats
+            logger.info(f"[BOARDING] Detected boarding/pet-sitting request - NO products")
+        
         # For GRIEF_HOLD, override everything - NO products, NO actions
         if is_grief_hold:
             should_show_products = False
