@@ -452,7 +452,7 @@
    Message Bubbles - The Heart of Chat UI
    ======================================== */
 
-/* User Message - Right aligned, branded color */
+/* User Message - Right aligned, purple gradient */
 .mira-message-user {
   display: flex;
   justify-content: flex-end;
@@ -461,12 +461,12 @@
 
 .mira-bubble-user {
   max-width: 75%;
-  background: var(--mira-bubble-user);
-  color: var(--mira-bubble-user-text);
+  background: linear-gradient(135deg, #A855F7 0%, #EC4899 100%);
+  color: white;
   padding: var(--mira-space-md) var(--mira-space-lg);
   border-radius: var(--mira-radius-lg);
   border-bottom-right-radius: var(--mira-space-xs);
-  box-shadow: var(--mira-shadow-sm);
+  box-shadow: var(--mira-shadow-md);
 }
 
 .mira-bubble-user p {
@@ -475,7 +475,7 @@
   line-height: var(--mira-line-height);
 }
 
-/* Mira Message - Left aligned, card style */
+/* Mira Message - Left aligned, white card with shadow */
 .mira-message-mira {
   display: flex;
   justify-content: flex-start;
@@ -484,11 +484,10 @@
 
 .mira-card {
   max-width: 85%;
-  background: var(--mira-bubble-mira);
-  border: 1px solid var(--mira-border-light);
+  background: white;
   border-radius: var(--mira-radius-lg);
   border-bottom-left-radius: var(--mira-space-xs);
-  box-shadow: var(--mira-shadow-md);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   overflow: hidden;
 }
 
