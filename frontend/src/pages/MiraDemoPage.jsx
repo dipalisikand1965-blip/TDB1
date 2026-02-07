@@ -1857,10 +1857,6 @@ const MiraDemoPage = () => {
       const hasNoDirectMatch = !shouldShowProducts && !hasServiceIntent && !hasExperienceIntent;
       const dynamicConciergeRequest = hasNoDirectMatch ? generateConciergeRequest(inputQuery, pet.name) : null;
       
-      console.log('[SERVICE_DEBUG] shouldShowProducts:', shouldShowProducts);
-      console.log('[SERVICE_DEBUG] hasNoDirectMatch:', hasNoDirectMatch);
-      console.log('[SERVICE_DEBUG] dynamicConciergeRequest:', dynamicConciergeRequest);
-      
       // Check if Concierge is live (6:30 AM - 11:30 PM)
       const conciergeIsLive = isConciergeLive();
       
