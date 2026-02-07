@@ -164,6 +164,11 @@ const MiraDemoPage = () => {
   const [lastShownProducts, setLastShownProducts] = useState([]);
   const [isRecording, setIsRecording] = useState(false); // For universal search voice
   
+  // VOICE OUTPUT - Mira speaks back with ElevenLabs
+  const [voiceEnabled, setVoiceEnabled] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const audioRef = useRef(null);
+  
   // MULTI-PET SUPPORT - Switch between pets
   const [showPetSelector, setShowPetSelector] = useState(false);
   
