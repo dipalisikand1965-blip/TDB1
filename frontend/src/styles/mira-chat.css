@@ -516,7 +516,7 @@
 }
 
 .mira-messages-inner {
-  max-width: 800px;
+  max-width: 600px;
   margin: 0 auto;
   padding: var(--mira-space-lg);
 }
