@@ -9,13 +9,13 @@
 
 /* ========================================
    CSS Variables - The Soul of the Design
-   DARK Purple Gradient Background + Clean White Cards
+   ORIGINAL Lavender Purple Gradient + Clean White Cards
    ======================================== */
 :root {
-  /* Background - DARK Purple Gradient (Original) */
-  --mira-bg-gradient-start: #1e1b4b;
-  --mira-bg-gradient-mid: #312e81;
-  --mira-bg-gradient-end: #4c1d95;
+  /* Background - ORIGINAL Lavender Purple Gradient */
+  --mira-bg-gradient-start: #E8D5F9;
+  --mira-bg-gradient-mid: #D4B8F0;
+  --mira-bg-gradient-end: #C9A8E9;
   
   /* Card Backgrounds - Clean White */
   --mira-bg-primary: #FFFFFF;
