@@ -414,9 +414,18 @@ const MiraDemoPage = () => {
   };
   
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      {/* Header */}
-      <header className="bg-black/20 backdrop-blur-lg border-b border-white/10">
+    <div 
+      className="flex flex-col bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900"
+      style={{
+        minHeight: '100dvh',
+        minHeight: '100svh', /* fallback */
+        overscrollBehavior: 'none',
+        touchAction: 'pan-y',
+        WebkitTapHighlightColor: 'transparent'
+      }}
+    >
+      {/* Header - flex-shrink-0 */}
+      <header className="flex-shrink-0 bg-black/20 backdrop-blur-lg border-b border-white/10 safe-area-top">
         <div className="max-w-6xl mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -430,12 +439,12 @@ const MiraDemoPage = () => {
             </div>
             
             {/* Pet Badge */}
-            <div className="flex items-center gap-2 bg-white/10 backdrop-blur rounded-full px-4 py-2">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
-                <PawPrint className="w-4 h-4 text-white" />
+            <div className="flex items-center gap-2 bg-white/10 backdrop-blur rounded-full px-3 sm:px-4 py-2">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+                <PawPrint className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white" />
               </div>
-              <span className="text-white font-medium">{pet.name}</span>
-              <span className="text-white/50 text-sm">• {pet.breed}</span>
+              <span className="text-white font-medium text-sm sm:text-base">{pet.name}</span>
+              <span className="text-white/50 text-xs sm:text-sm hidden sm:inline">• {pet.breed}</span>
             </div>
           </div>
         </div>
