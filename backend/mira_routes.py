@@ -894,6 +894,8 @@ class MiraOSUnderstandRequest(BaseModel):
     pet_id: Optional[str] = None
     pet_context: Optional[Dict[str, Any]] = None
     page_context: Optional[str] = None
+    # SESSION PERSISTENCE - Track conversation across requests
+    session_id: Optional[str] = None
     # Anti-loop: track conversation state
     include_products: Optional[bool] = False
     pillar: Optional[str] = None
