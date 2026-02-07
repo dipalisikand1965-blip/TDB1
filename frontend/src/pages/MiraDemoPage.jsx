@@ -54,16 +54,65 @@ const TEST_SCENARIOS = [
     description: 'Tests clarifying questions - NO products until asked'
   },
   { 
-    id: 'grooming', 
-    label: '✂️ Grooming', 
-    query: "Buddy needs a haircut, can you help?",
-    description: 'Tests service coordination - NO products'
-  },
-  { 
     id: 'food', 
     label: '🍽️ Food', 
     query: "What food would be best for Buddy?",
     description: 'Tests FOOD_MAIN - NO treat boxes, ask questions first'
+  },
+  // === GROOMING OS SCENARIOS ===
+  { 
+    id: 'grooming', 
+    label: '✂️ Haircut', 
+    query: "Buddy needs a haircut, can you help?",
+    description: 'GROOM_PLAN - NO products, alignment question'
+  },
+  { 
+    id: 'groom-bath', 
+    label: '🛁 Bath', 
+    query: "Buddy smells and really needs a bath, can you help?",
+    description: 'GROOM_PLAN - Home vs groomer question'
+  },
+  { 
+    id: 'groom-shed', 
+    label: '🐕 Shedding', 
+    query: "Buddy is shedding a lot, what should I do?",
+    description: 'GROOM_PLAN - Brushing guidance'
+  },
+  { 
+    id: 'groom-nails', 
+    label: '💅 Nails', 
+    query: "Buddy's nails are getting long, what should I do?",
+    description: 'GROOM_PLAN - Home vs professional'
+  },
+  { 
+    id: 'groom-tools', 
+    label: '🧴 Tools', 
+    query: "What shampoo should I use for Buddy?",
+    description: 'GROOM_TOOLS - MAY show grooming products'
+  },
+  { 
+    id: 'groom-anxiety', 
+    label: '😟 Groom Fear', 
+    query: "Buddy hates being brushed, what can I do?",
+    description: 'GROOM_CONCERN - Desensitization tips'
+  },
+  { 
+    id: 'groom-accident', 
+    label: '🩹 Accident', 
+    query: "I accidentally cut Buddy's nail too short and it's bleeding",
+    description: 'GROOM_ACCIDENT - VET IMMEDIATELY, NO products'
+  },
+  { 
+    id: 'groom-post', 
+    label: '😣 Post-Groom', 
+    query: "Buddy is scratching a lot after his grooming session",
+    description: 'GROOM_POST - VET, NO products'
+  },
+  { 
+    id: 'groom-book', 
+    label: '📅 Book', 
+    query: "Book me a groomer for Buddy",
+    description: 'GROOM_BOOKING - Concierge® orchestration'
   },
   // === EMOTIONAL / SENSITIVE ===
   { 
@@ -90,12 +139,6 @@ const TEST_SCENARIOS = [
     label: '⚖️ Compare', 
     query: "What's the difference between grain-free and regular food?",
     description: 'Tests informational query handling'
-  },
-  { 
-    id: 'reorder', 
-    label: '🔄 Reorder', 
-    query: "I need to reorder Buddy's usual treats",
-    description: 'Tests ORDER intent with memory recall'
   },
   { 
     id: 'boarding', 
