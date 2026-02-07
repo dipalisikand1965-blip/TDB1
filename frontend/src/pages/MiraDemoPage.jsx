@@ -781,8 +781,8 @@ const MiraDemoPage = () => {
                         </div>
                       )}
                       
-                      {/* Concierge Option - Quiet, Not Loud */}
-                      {msg.data?.execution_type === 'CONCIERGE' && (
+                      {/* Concierge Option - Quiet, Not Loud (but NOT for HOLD/grief) */}
+                      {msg.data?.execution_type === 'CONCIERGE' && !msg.data?.response?.hide_concierge && (
                         <div className="border-t border-white/10 pt-4 mt-4">
                           <div className="flex items-center gap-3">
                             <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
@@ -805,16 +805,16 @@ const MiraDemoPage = () => {
                         </div>
                       )}
                       
-                      {/* Next Step (invitation, not instruction) */}
-                      {msg.data?.response?.next_step && (
+                      {/* Next Step (invitation, not instruction) - NOT for HOLD */}
+                      {msg.data?.response?.next_step && msg.data?.execution_type !== 'HOLD' && (
                         <div className="flex items-center gap-2 text-white/50 text-sm mt-4">
                           <ArrowRight className="w-4 h-4" />
                           <span>{msg.data.response.next_step}</span>
                         </div>
                       )}
                       
-                      {/* Legacy Next Action */}
-                      {!msg.data?.response?.next_step && msg.data?.response?.next_action && (
+                      {/* Legacy Next Action - NOT for HOLD */}
+                      {!msg.data?.response?.next_step && msg.data?.response?.next_action && msg.data?.execution_type !== 'HOLD' && (
                         <div className="flex items-center gap-2 text-white/50 text-sm mt-4">
                           <ChevronRight className="w-4 h-4" />
                           <span>{msg.data.response.next_action}</span>
