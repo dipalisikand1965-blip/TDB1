@@ -2094,58 +2094,38 @@ const MiraDemoPage = () => {
                             </div>
                           )}
                           
-                          {/* Concierge Strip - ALWAYS SHOW */}
-                          <div className="mp-concierge-strip">
-                            <div className="mp-concierge-icon"><Bot /></div>
-                            <div className="mp-concierge-content">
-                              <p className="mp-concierge-text">
-                                Your pet Concierge® can help find options that match {pet.name}'s needs.
-                              </p>
-                              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                                <a 
-                                  href={`https://wa.me/919663185747?text=${encodeURIComponent(`Hi, I need help with ${pet.name} (${pet.breed}). ${msg.content?.slice(0, 100)}...`)}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="mp-concierge-btn"
-                                  style={{ background: '#25D366', textDecoration: 'none' }}
-                                >
-                                  <Phone style={{ width: 14, height: 14 }} /> WhatsApp
-                                </a>
-                                <button onClick={handleConciergeHandoff} className="mp-concierge-btn">
-                                  <MessageSquare /> Chat
-                                </button>
-                                <a 
-                                  href={`mailto:concierge@thedoggycompany.in?subject=Help with ${pet.name}&body=${encodeURIComponent(`Hi, I need help with ${pet.name}.\n\nContext: ${msg.content?.slice(0, 200)}...`)}`}
-                                  className="mp-concierge-btn"
-                                  style={{ background: 'rgba(139, 92, 246, 0.3)', textDecoration: 'none' }}
-                                >
-                                  <Mail style={{ width: 14, height: 14 }} /> Email
-                                </a>
-                              </div>
-                            </div>
-                          </div>
-                          
-                          {/* Feedback Row */}
-                          {!msg.isClarifyingQuestion && msg.data?.execution_type !== 'HOLD' && (
-                            <div className="mp-feedback">
-                              <span className="mp-feedback-label">Was this helpful?</span>
-                              <div className="mp-feedback-btns">
-                                {msg.feedbackGiven ? (
-                                  <span className={`mp-feedback-btn ${msg.feedbackGiven}`} style={{
-                                    background: msg.feedbackGiven === 'positive' ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)'
-                                  }}>
-                                    {msg.feedbackGiven === 'positive' ? <ThumbsUp /> : <ThumbsDown />}
-                                  </span>
-                                ) : (
-                                  <>
-                                    <button onClick={() => handleFeedback(idx, true)} className="mp-feedback-btn" data-testid={`feedback-up-${idx}`}>
-                                      <ThumbsUp />
-                                    </button>
-                                    <button onClick={() => handleFeedback(idx, false)} className="mp-feedback-btn" data-testid={`feedback-down-${idx}`}>
-                                      <ThumbsDown />
-                                    </button>
-                                  </>
-                                )}
+                          {/* MIRA DOCTRINE: Concierge is premium service, shown subtly when relevant */}
+                          {/* Only show when AI suggests it or execution type is CONCIERGE */}
+                          {msg.data?.response?.suggest_concierge && (
+                            <div className="mp-concierge-strip">
+                              <div className="mp-concierge-content">
+                                <p className="mp-concierge-text">
+                                  {msg.data?.response?.concierge_framing || 
+                                   `If you'd like, your pet Concierge® can help coordinate this for ${pet.name}.`}
+                                </p>
+                                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                  <a 
+                                    href={`https://wa.me/919663185747?text=${encodeURIComponent(`Hi, I need help with ${pet.name} (${pet.breed}). ${msg.content?.slice(0, 100)}...`)}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="mp-concierge-btn"
+                                    style={{ background: '#25D366', textDecoration: 'none' }}
+                                    data-testid="concierge-whatsapp"
+                                  >
+                                    <Phone style={{ width: 14, height: 14 }} /> WhatsApp
+                                  </a>
+                                  <button onClick={handleConciergeHandoff} className="mp-concierge-btn" data-testid="concierge-chat">
+                                    <MessageSquare /> Chat
+                                  </button>
+                                  <a 
+                                    href={`mailto:concierge@thedoggycompany.in?subject=Help with ${pet.name}&body=${encodeURIComponent(`Hi, I need help with ${pet.name}.\n\nContext: ${msg.content?.slice(0, 200)}...`)}`}
+                                    className="mp-concierge-btn"
+                                    style={{ background: 'rgba(139, 92, 246, 0.3)', textDecoration: 'none' }}
+                                    data-testid="concierge-email"
+                                  >
+                                    <Mail style={{ width: 14, height: 14 }} /> Email
+                                  </a>
+                                </div>
                               </div>
                             </div>
                           )}
