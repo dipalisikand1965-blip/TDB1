@@ -1092,14 +1092,24 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
         ])
         
         # Step 2: For PRODUCT intents, get real products
-        # For SERVICE intents, skip products entirely
+        # For SERVICE intents, skip products entirely (except GROOM_TOOLS)
         # For FOOD_MAIN, skip products (need clarification first)
+        # For GROOM_ACCIDENT and GROOM_POST, NEVER show products (medical boundary)
         real_products = []
         should_show_products = not is_service_intent and not is_food_main_intent
         
         # For treat requests, show products
         if is_treat_request:
             should_show_products = True
+        
+        # GROOM_TOOLS explicitly allows products (shampoo, brush, etc.)
+        if is_groom_tools:
+            should_show_products = True
+        
+        # GROOM_ACCIDENT and GROOM_POST: NEVER show products (medical boundary)
+        if is_groom_medical_boundary:
+            should_show_products = False
+            execution_type = "CONCIERGE"  # Route to vet via Concierge®
         
         # For GRIEF_HOLD, override everything - NO products, NO actions
         if is_grief_hold:
@@ -1113,7 +1123,7 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
                 limit=6
             )
         
-        logger.info(f"[PRODUCT FILTER] intent={intent}, is_service={is_service_intent}, is_food_main={is_food_main_intent}, is_treat={is_treat_request}, is_grief_hold={is_grief_hold}, showing_products={should_show_products}")
+        logger.info(f"[PRODUCT FILTER] intent={intent}, is_service={is_service_intent}, is_food_main={is_food_main_intent}, is_treat={is_treat_request}, is_grief_hold={is_grief_hold}, is_groom_tools={is_groom_tools}, is_groom_medical={is_groom_medical_boundary}, showing_products={should_show_products}")
         
         # GRIEF_HOLD: Return pure presence response, no actions
         if is_grief_hold:
