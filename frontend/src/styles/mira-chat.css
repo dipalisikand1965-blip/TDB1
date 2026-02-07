@@ -240,9 +240,9 @@
   padding: var(--mira-space-sm) var(--mira-space-md);
   min-height: var(--mira-touch-target);
   border-radius: var(--mira-radius-sm);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  background: rgba(255, 255, 255, 0.2);
-  color: var(--mira-text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.8);
   font-size: var(--mira-font-size-sm);
   font-weight: 500;
   white-space: nowrap;
@@ -252,7 +252,8 @@
 }
 
 .mira-dock-item:hover {
-  background: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
 }
 
 .mira-dock-item:active {
