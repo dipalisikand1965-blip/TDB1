@@ -1080,37 +1080,75 @@ const MiraDemoPage = () => {
                           </div>
                         )}
                         
-                        {/* Products */}
-                        {msg.data?.response?.products && msg.data.response.products.length > 0 && (
+                        {/* Products - ONLY SHOWN WHEN USER HAS OPTED IN */}
+                        {msg.showProducts && msg.data?.response?.products && msg.data.response.products.length > 0 && (
                           <div className="mt-4 pt-3 border-t border-white/10">
-                            <p className="text-white/50 text-xs mb-2">Recommended for {pet.name}:</p>
-                            <div className="grid grid-cols-1 gap-2">
-                              {msg.data.response.products.slice(0, 3).map((product, pIdx) => (
-                                <div key={pIdx} className="flex items-center gap-3 p-2 bg-white/5 rounded-lg
-                                  hover:bg-white/10 transition-all group cursor-pointer">
+                            {/* Product section title with context */}
+                            <p className="text-white/70 text-xs mb-3 font-medium">
+                              {msg.data.response.product_title || `Suggested for ${pet.name}`}
+                              {pet.sensitivities?.length > 0 && (
+                                <span className="text-purple-300 ml-1">
+                                  ({pet.sensitivities.map(s => `${s}-free`).join(', ')})
+                                </span>
+                              )}
+                            </p>
+                            
+                            {/* Horizontal scroll carousel on mobile, grid on desktop */}
+                            <div className="flex overflow-x-auto gap-3 pb-2 -mx-1 px-1 snap-x snap-mandatory
+                              md:grid md:grid-cols-2 md:overflow-visible">
+                              {msg.data.response.products.slice(0, 5).map((product, pIdx) => (
+                                <div key={pIdx} 
+                                  className="flex-shrink-0 w-[160px] md:w-auto snap-start
+                                    p-3 bg-white/5 rounded-xl border border-white/10
+                                    hover:bg-white/10 hover:border-purple-400/30 transition-all group cursor-pointer">
                                   {product.image && (
                                     <img src={product.image} alt={product.name}
-                                      className="w-12 h-12 object-cover rounded-lg flex-shrink-0" />
+                                      className="w-full h-24 object-cover rounded-lg mb-2" />
                                   )}
-                                  <div className="flex-1 min-w-0">
-                                    <p className="text-white text-xs font-medium truncate">
+                                  <div className="space-y-1">
+                                    <p className="text-white text-xs font-medium line-clamp-2">
                                       {product.name || product.suggestion}
                                     </p>
-                                    {product.price && <p className="text-purple-300 text-xs">₹{product.price}</p>}
+                                    {product.price && (
+                                      <p className="text-purple-300 text-sm font-semibold">₹{product.price}</p>
+                                    )}
+                                    {/* "Why for pet" line */}
+                                    {product.reason && (
+                                      <p className="text-white/50 text-[10px] line-clamp-2 italic">
+                                        "{product.reason}"
+                                      </p>
+                                    )}
                                   </div>
                                   <button 
-                                    className="p-2 bg-purple-500/20 rounded-lg group-hover:bg-purple-500 
-                                      min-w-[36px] min-h-[36px] flex items-center justify-center"
+                                    className="w-full mt-2 py-1.5 bg-purple-500/20 rounded-lg 
+                                      group-hover:bg-purple-500 transition-colors
+                                      text-purple-300 group-hover:text-white text-xs
+                                      flex items-center justify-center gap-1"
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       alert(`Added ${product.name || product.suggestion} to cart!`);
                                     }}
                                   >
-                                    <ShoppingBag className="w-4 h-4 text-purple-300 group-hover:text-white" />
+                                    <ShoppingBag className="w-3 h-3" />
+                                    Add
                                   </button>
                                 </div>
                               ))}
                             </div>
+                            
+                            {/* Small Concierge® hint under products */}
+                            <p className="text-white/40 text-[10px] mt-3 text-center">
+                              If you'd like, your pet Concierge® can help choose between these or check ingredients more carefully for {pet.name}.
+                            </p>
+                            <button 
+                              onClick={handleConciergeHandoff}
+                              disabled={isProcessing}
+                              className="mx-auto mt-2 text-purple-300 hover:text-purple-200 text-xs 
+                                underline underline-offset-2 flex items-center gap-1 transition-colors"
+                            >
+                              Ask my Concierge® about these
+                              <ArrowRight className="w-3 h-3" />
+                            </button>
                           </div>
                         )}
                         
