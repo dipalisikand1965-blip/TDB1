@@ -1041,7 +1041,7 @@ const MiraDemoPage = () => {
         body: JSON.stringify({
           ticket_id: currentTicket.id,
           handoff_reason: reason,
-          latest_mira_summary: latestMiraSummary || 'Parent requested Concierge assistance.'
+          latest_mira_summary: latestMiraSummary || 'Parent requested Concierge® assistance.'
         })
       });
       console.log('[HANDOFF] Ticket handed to Concierge:', currentTicket.id);
@@ -1098,7 +1098,7 @@ const MiraDemoPage = () => {
     // If user asks for concierge help
     if (messageLower.includes('concierge') || messageLower.includes('would you like the')) {
       return [
-        { text: 'Yes, connect me to Concierge', value: 'Yes, connect me to my Concierge.' },
+        { text: 'Yes, connect me to Concierge®', value: 'Yes, connect me to my Concierge®.' },
         { text: 'Tell me more first', value: 'Tell me more first.' },
         { text: 'Maybe later', value: 'Maybe later.' }
       ];
@@ -2813,7 +2813,7 @@ const MiraDemoPage = () => {
                                   <span className="mp-dynamic-label">{msg.dynamicConciergeRequest.label}</span>
                                   <span className="mp-dynamic-desc">{msg.dynamicConciergeRequest.description}</span>
                                 </div>
-                                <span className="mp-dynamic-badge">Concierge Request</span>
+                                <span className="mp-dynamic-badge">Concierge® Request</span>
                               </div>
                             </div>
                           )}
