@@ -25,13 +25,13 @@ import { API_URL } from '../utils/api';
 // Import the new premium CSS
 import '../styles/mira-chat.css';
 
-// Thin Dock Items
+// Dock Items - Clean and minimal
 const DOCK_ITEMS = [
-  { id: 'concierge', label: 'Concierge®', icon: MessageCircle, color: 'from-purple-500 to-pink-500', action: 'openChat' },
-  { id: 'orders', label: 'Orders', icon: Package, color: 'from-blue-500 to-cyan-500', path: '/orders' },
-  { id: 'plan', label: 'Plan', icon: Calendar, color: 'from-amber-500 to-orange-500', path: '/family-dashboard', tab: 'calendar' },
-  { id: 'help', label: 'Help', icon: AlertCircle, color: 'from-red-500 to-rose-500', action: 'openHelp' },
-  { id: 'soul', label: 'Soul', icon: Heart, color: 'from-pink-500 to-purple-500', path: '/pet-soul' },
+  { id: 'concierge', label: 'Concierge®', icon: MessageCircle, action: 'openChat' },
+  { id: 'orders', label: 'Orders', icon: Package, path: '/orders' },
+  { id: 'plan', label: 'Plan', icon: Calendar, path: '/family-dashboard', tab: 'calendar' },
+  { id: 'help', label: 'Help', icon: HelpCircle, action: 'openHelp' },
+  { id: 'soul', label: 'Soul', icon: Heart, path: '/pet-soul' },
 ];
 
 // Test Scenarios
