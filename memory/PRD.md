@@ -162,19 +162,21 @@ MEMORY:
 
 ## NEXT PRIORITIES
 
-### P0 - Immediate
-1. Push to GitHub
-2. Test on production (thedoggycompany.in/mira-demo)
-3. Verify iOS/Android work
+### P0 - Immediate ✅ COMPLETED
+1. ~~Fix In-Mira Service Request Flow~~ ✅ DONE
+2. ~~Add "Let Concierge Handle It" tile~~ ✅ DONE
 
 ### P1 - This Week
-1. Add more experiences as wizards are built
-2. Proactive Mira (birthday reminders)
+1. Backend Service Integration: Modify `/api/mira/os/understand-with-products` to query services collection
+2. Push to GitHub
+3. Test on production (thedoggycompany.in/mira-demo)
+4. Verify iOS/Android work
 
 ### P2 - Future
-1. MasterSync from admin
-2. Full 100% pillar coverage
-3. External integrations
+1. Proactive Mira (birthday reminders)
+2. MasterSync from admin
+3. Full 100% pillar coverage
+4. External integrations
 
 ---
 
