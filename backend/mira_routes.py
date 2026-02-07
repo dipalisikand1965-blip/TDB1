@@ -699,6 +699,13 @@ class MiraOSUnderstandRequest(BaseModel):
     pet_id: Optional[str] = None
     pet_context: Optional[Dict[str, Any]] = None
     page_context: Optional[str] = None
+    # Anti-loop: track conversation state
+    include_products: Optional[bool] = False
+    pillar: Optional[str] = None
+    conversation_stage: Optional[str] = "initial"
+    ticket_id: Optional[str] = None
+    completed_steps: Optional[List[str]] = []  # Steps already answered - DO NOT repeat
+    step_history: Optional[List[Dict[str, Any]]] = []  # Full Q&A history
 
 class MiraOSUnderstandResponse(BaseModel):
     success: bool
