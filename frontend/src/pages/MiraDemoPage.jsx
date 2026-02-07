@@ -1292,7 +1292,7 @@ const MiraDemoPage = () => {
             </div>
           </div>
           
-          {/* Welcome State */}
+          {/* Welcome State - Encourages FREE TYPING */}
           {conversationHistory.length === 0 && !isProcessing && (
             <div className="mira-welcome">
               <div className="mira-welcome-avatar">
@@ -1300,7 +1300,10 @@ const MiraDemoPage = () => {
               </div>
               <h2 className="mira-welcome-title">Hi! I&apos;m Mira</h2>
               <p className="mira-welcome-subtitle">
-                I&apos;m here to help with everything for {pet.name}. Just ask me anything!
+                I&apos;m here to help with everything for {pet.name}. 
+                <strong style={{ display: 'block', marginTop: '8px', color: 'white' }}>
+                  Just type anything below or try these:
+                </strong>
               </p>
               <div className="mira-welcome-suggestions">
                 {[`Treats for ${pet.name}`, `Grooming help`, `Food advice`].map((s, i) => (
