@@ -2079,25 +2079,6 @@ async def get_active_tickets(
         "count": len(tickets)
     }
 
-        "keywords": ["adopt", "adoption", "rescue", "shelter", "foster", "rehome"],
-        "urgency_default": "medium"
-    },
-    "shop": {
-        "name": "Shop",
-        "icon": "🛒",
-        "keywords": ["buy", "purchase", "order", "product", "shop", "price", "cost", "delivery"],
-        "urgency_default": "medium"
-    }
-}
-
-# Emergency keywords that trigger immediate escalation
-EMERGENCY_KEYWORDS = [
-    "emergency", "urgent", "help now", "immediately", "lost pet", "missing",
-    "accident", "injured", "bleeding", "poison", "choking", "not breathing",
-    "collapsed", "seizure", "hit by car", "bite", "attacked"
-]
-
-# Ticket types
 TICKET_TYPES = {
     "advisory": "Advisory (Exploring)",
     "concierge": "Concierge® Request",
