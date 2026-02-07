@@ -1167,6 +1167,7 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
         # For SERVICE intents, skip products entirely (except GROOM_TOOLS)
         # For FOOD_MAIN, skip products (need clarification first)
         # For GROOM_ACCIDENT and GROOM_POST, NEVER show products (medical boundary)
+        # For FOOD_HEALTH_ADJACENT and FOOD_WEIGHT, NEVER show products (medical boundary)
         real_products = []
         should_show_products = not is_service_intent and not is_food_main_intent
         
@@ -1183,6 +1184,19 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
             should_show_products = False
             execution_type = "CONCIERGE"  # Route to vet via Concierge®
         
+        # FOOD_HEALTH_ADJACENT and FOOD_WEIGHT: NEVER show products (medical boundary)
+        if is_food_medical_boundary:
+            should_show_products = False
+            execution_type = "CONCIERGE"  # Route to vet via Concierge®
+        
+        # FOOD_RULES (can my dog eat X?): NO products, safety guidance only
+        if is_food_rules:
+            should_show_products = False
+        
+        # FOOD_PORTION and FOOD_ROUTINE: NO products, guidance only
+        if is_food_portion or is_food_routine:
+            should_show_products = False
+        
         # For GRIEF_HOLD, override everything - NO products, NO actions
         if is_grief_hold:
             should_show_products = False
@@ -1195,7 +1209,7 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
                 limit=6
             )
         
-        logger.info(f"[PRODUCT FILTER] intent={intent}, is_service={is_service_intent}, is_food_main={is_food_main_intent}, is_treat={is_treat_request}, is_grief_hold={is_grief_hold}, is_groom_tools={is_groom_tools}, is_groom_medical={is_groom_medical_boundary}, showing_products={should_show_products}")
+        logger.info(f"[PRODUCT FILTER] intent={intent}, is_service={is_service_intent}, is_food_main={is_food_main_intent}, is_treat={is_treat_request}, is_grief_hold={is_grief_hold}, is_groom_tools={is_groom_tools}, is_groom_medical={is_groom_medical_boundary}, is_food_medical={is_food_medical_boundary}, showing_products={should_show_products}")
         
         # GRIEF_HOLD: Return pure presence response, no actions
         if is_grief_hold:
