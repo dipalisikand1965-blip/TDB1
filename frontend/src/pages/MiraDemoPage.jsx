@@ -3,12 +3,18 @@
  * 
  * MIRA OS - The Pet Life Operating System
  * 
+ * CANONICAL CONVERSATIONAL FLOWS:
+ * - Products shown ONLY after explicit opt-in (user asks for suggestions)
+ * - Every conversation creates/attaches to a service desk ticket
+ * - Real-time transcript logging to backend
+ * - Concierge handoff flips ticket status, doesn't create new ticket
+ * 
  * Features:
  * - Persistent reply composer (ALWAYS at bottom)
- * - Quick reply chips for branching questions
- * - Auto-scroll to latest message
- * - Silent ticket creation for service desk
- * - Collapsible info blocks on mobile
+ * - Quick reply chips directly under Mira's question
+ * - Clarifying question highlighted in amber strip
+ * - Products in compact carousel with "why for pet" lines
+ * - Small Concierge® CTA (link-style, not huge banner)
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
