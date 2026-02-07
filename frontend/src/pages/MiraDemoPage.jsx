@@ -840,6 +840,12 @@ const MiraDemoPage = () => {
                  lowerText.includes('minimal set') || lowerText.includes('what tools')) {
           miraStepId = 'GROOMING_TOOLS';
         }
+        // Home grooming session structure
+        else if ((lowerText.includes('step-by-step') && lowerText.includes('guide')) ||
+                 (lowerText.includes('checklist') && lowerText.includes('grooming')) ||
+                 (lowerText.includes('broken into') && lowerText.includes('brush'))) {
+          miraStepId = 'GROOMING_HOME_GUIDE';
+        }
         
         // ═══════════════════════════════════════════════════════════════
         // BIRTHDAY / CELEBRATE FLOW STEPS
