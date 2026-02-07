@@ -2698,6 +2698,7 @@ const MiraDemoPage = () => {
                           
                           {/* SERVICE CARDS - Self-service wizard options */}
                           {/* MIRA DOCTRINE: Mira is a router - offer choice between self-service and concierge */}
+                          {/* E014: Services now come from database API */}
                           {msg.showServices && msg.detectedServices?.length > 0 && (
                             <div className="mp-service-cards">
                               <p className="mp-service-intro">
@@ -2708,36 +2709,20 @@ const MiraDemoPage = () => {
                                   <button
                                     key={sIdx}
                                     onClick={() => openServiceRequest(service, false)}
-                                    className="mp-service-card"
-                                    style={{ '--service-color': service.color }}
+                                    className={`mp-service-card ${service.isConcierge ? 'mp-concierge-card' : ''}`}
+                                    style={{ '--service-color': service.color || '#A855F7' }}
                                     data-testid={`service-${service.id}`}
                                   >
                                     <span className="mp-service-icon">{service.icon}</span>
                                     <div className="mp-service-info">
                                       <span className="mp-service-label">{service.label}</span>
                                       <span className="mp-service-desc">{service.description}</span>
+                                      {service.price && (
+                                        <span className="mp-service-price">From ₹{service.price}</span>
+                                      )}
                                     </div>
                                   </button>
                                 ))}
-                                {/* CONCIERGE TILE - Always offer human handoff option */}
-                                <button
-                                  onClick={() => openServiceRequest({
-                                    id: 'concierge-direct',
-                                    label: 'Let Concierge Handle It',
-                                    icon: '💜',
-                                    description: 'We\'ll take care of everything for you',
-                                    color: '#8B5CF6'
-                                  }, false)}
-                                  className="mp-service-card mp-concierge-card"
-                                  style={{ '--service-color': '#8B5CF6' }}
-                                  data-testid="service-concierge"
-                                >
-                                  <span className="mp-service-icon">💜</span>
-                                  <div className="mp-service-info">
-                                    <span className="mp-service-label">Let Concierge Handle It</span>
-                                    <span className="mp-service-desc">We'll take care of everything for you</span>
-                                  </div>
-                                </button>
                               </div>
                             </div>
                           )}
