@@ -1737,24 +1737,24 @@ const MiraDemoPage = () => {
       const detectedExperiences = detectExperienceIntent(query);
       const hasExperienceIntent = detectedExperiences.length > 0;
       
+      // MIRA DOCTRINE: CONCIERGE CAN DO ANYTHING (legal, moral, no medical)
+      // If no products/services/experiences found, generate a dynamic Concierge request
+      // NEVER say "no products found" - always offer a path forward
+      const hasNoDirectMatch = !shouldShowProducts && !hasServiceIntent && !hasExperienceIntent;
+      const dynamicConciergeRequest = hasNoDirectMatch ? generateConciergeRequest(query, pet.name) : null;
+      
+      // Check if Concierge is live (6:30 AM - 11:30 PM)
+      const conciergeIsLive = isConciergeLive();
+      
       // MIRA DOCTRINE: Concierge is premium service, not failure
-      // Show concierge option subtly when:
-      // 1. Backend explicitly suggests it (AI decided it's needed)
-      // 2. Backend provides concierge_framing (soft invitation)
-      // 3. User explicitly asks for concierge help
-      // 4. Execution type is CONCIERGE (complex/bespoke request)
-      // 5. Service or Experience intent detected (offer choice: self-service OR concierge)
+      // ALWAYS show concierge - they can do ANYTHING
       const userWantsConcierge = query.toLowerCase().includes('concierge') || 
                                   query.toLowerCase().includes('help me') ||
                                   query.toLowerCase().includes('can you handle') ||
                                   query.toLowerCase().includes('plan');
       const hasConciergeFraming = data.response?.concierge_framing && data.response.concierge_framing.length > 0;
-      const shouldSuggestConcierge = data.response?.suggest_concierge || 
-                                      data.execution_type === 'CONCIERGE' ||
-                                      hasConciergeFraming ||
-                                      hasServiceIntent ||
-                                      hasExperienceIntent ||
-                                      userWantsConcierge;
+      // ALWAYS suggest concierge - they can handle any request
+      const shouldSuggestConcierge = true; // Concierge can do ANYTHING
       
       const miraMessage = {
         type: 'mira',
@@ -1775,6 +1775,8 @@ const MiraDemoPage = () => {
         showExperiences: hasExperienceIntent,
         detectedServices: detectedServices,
         detectedExperiences: detectedExperiences,
+        dynamicConciergeRequest: dynamicConciergeRequest, // NEW: For requests with no direct match
+        conciergeIsLive: conciergeIsLive, // NEW: Operating hours check
         stepId: miraStepId,
         isClarifyingQuestion: isNewClarifyingQuestion,
         timestamp: new Date()
