@@ -391,35 +391,45 @@ const MiraDemoPage = () => {
       ];
     }
     
-    // === BIRTHDAY / CELEBRATE FLOWS ===
-    // "Would you like this to be active and playful... or simpler, cosy?"
-    if ((messageLower.includes('active') && messageLower.includes('playful')) && 
-        (messageLower.includes('simpler') || messageLower.includes('cosy') || messageLower.includes('cozy'))) {
+    // ═══════════════════════════════════════════════════════════════
+    // BIRTHDAY / CELEBRATE FLOWS - CHIPS MUST MATCH THE QUESTION
+    // ═══════════════════════════════════════════════════════════════
+    
+    // FIRST BIRTHDAY QUESTION: "active and playful... or simpler, cosy?"
+    // This MUST have chips that answer the question, NOT generic Yes/No
+    if ((messageLower.includes('active') && messageLower.includes('playful')) || 
+        (messageLower.includes('simpler') && (messageLower.includes('cosy') || messageLower.includes('cozy'))) ||
+        (messageLower.includes('celebration') && messageLower.includes('year'))) {
       return [
-        { text: 'Active and playful', value: 'Something active and playful.' },
+        { text: 'Active and playful', value: 'Active and playful.' },
         { text: 'Simpler and cosy', value: 'Simpler and cosy.' },
-        { text: 'Not sure yet', value: "I'm not sure yet." }
+        { text: "I'm not sure yet", value: "I'm not sure yet." },
+        { text: 'I know I want a cake too', value: 'I know I want a cake too.' }
       ];
     }
     
-    // "What feels most important - food, play, or ritual?"
-    if (messageLower.includes('food') && messageLower.includes('play') && 
-        (messageLower.includes('ritual') || messageLower.includes('marking the moment'))) {
+    // SECOND BIRTHDAY QUESTION: "food vs play vs ritual?"
+    // "What would you like us to focus on - the food, the play, or marking the moment?"
+    if ((messageLower.includes('focus') && (messageLower.includes('food') || messageLower.includes('play'))) ||
+        (messageLower.includes('food') && messageLower.includes('play') && 
+        (messageLower.includes('ritual') || messageLower.includes('marking')))) {
       return [
-        { text: 'Food / cake', value: 'Food / cake.' },
-        { text: 'Play / toys', value: 'Play / toys.' },
-        { text: 'Quiet ritual', value: 'Mostly a quiet ritual.' },
+        { text: 'Food / cake / treats', value: 'Food / cake / treats.' },
+        { text: 'Play / games', value: 'Play / games.' },
+        { text: 'Marking the moment', value: 'Mostly marking the moment.' },
         { text: 'All of it', value: 'All of it.' }
       ];
     }
     
-    // "dog cake... or smaller birthday treats?"
-    if ((messageLower.includes('cake') && messageLower.includes('treat')) ||
+    // THIRD BIRTHDAY QUESTION: "everyday treats vs special cake?"
+    if ((messageLower.includes('everyday') && messageLower.includes('special')) ||
+        (messageLower.includes('cake') && messageLower.includes('treat')) ||
         (messageLower.includes('proper cake') || messageLower.includes('dog cake'))) {
       return [
-        { text: 'Dog cake', value: 'Dog cake.' },
-        { text: 'Smaller treats', value: 'Smaller birthday treats.' },
-        { text: 'Both', value: 'Both.' }
+        { text: 'Everyday light treats', value: 'Everyday light treats.' },
+        { text: 'Special-occasion cake', value: 'Special-occasion cake.' },
+        { text: 'Both', value: 'Both.' },
+        { text: 'Show me cake ideas', value: 'Show me some cake ideas.' }
       ];
     }
     
@@ -433,10 +443,20 @@ const MiraDemoPage = () => {
       ];
     }
     
-    // === GENERIC QUESTION PATTERNS ===
-    // "Would you like to...?" or "Would you prefer...?"
+    // ═══════════════════════════════════════════════════════════════
+    // GENERIC PATTERNS - FALLBACK ONLY
+    // These should only match if NO specific pattern above matched
+    // ═══════════════════════════════════════════════════════════════
+    
+    // "Would you like to...?" or "Would you prefer...?" - GENERIC FALLBACK
     if (messageLower.includes('would you like') || messageLower.includes('would you prefer')) {
-      // Generic yes/no/more info
+      // Check if this is actually asking about specific options
+      // If so, don't use generic chips
+      if (messageLower.includes(' or ')) {
+        // There's an "or" in the question - try to extract the options
+        // Return null to let the UI show no chips rather than wrong chips
+        return [];
+      }
       return [
         { text: 'Yes, please', value: 'Yes, please.' },
         { text: 'Tell me more', value: 'Can you tell me more first?' },
