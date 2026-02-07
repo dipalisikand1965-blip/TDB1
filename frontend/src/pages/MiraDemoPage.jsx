@@ -1503,46 +1503,46 @@ const MiraDemoPage = () => {
   };
 
   return (
-    <div className="mira-chat-container">
-      {/* HEADER: Mira OS Branding + Pet Badge */}
-      <header className="mira-os-header">
-        <div className="mira-os-header-inner">
-          {/* Left: Mira OS Logo */}
-          <div className="mira-os-logo">
-            <div className="mira-os-logo-icon">
-              <Sparkles className="w-5 h-5" />
+    <div className="mira-premium">
+      {/* HEADER: Mira Logo + Pet Badge (Orange paw) */}
+      <header className="mp-header">
+        <div className="mp-header-inner">
+          {/* Left: Mira Logo */}
+          <div className="mp-logo">
+            <div className="mp-logo-icon">
+              <Sparkles />
             </div>
-            <div className="mira-os-logo-text">
-              <span className="mira-os-title">Mira OS</span>
-              <span className="mira-os-subtitle">Pet Life Operating System</span>
+            <div className="mp-logo-text">
+              <span className="mp-logo-title">Mira</span>
+              <span className="mp-logo-subtitle">Your Pet Companion</span>
             </div>
           </div>
           
-          {/* Right: Pet Badge */}
+          {/* Right: Pet Badge (Orange) */}
           <button 
-            className="mira-os-pet-badge"
+            className="mp-pet-badge"
             onClick={() => setShowPetSelector(!showPetSelector)}
             data-testid="pet-selector-btn"
           >
-            <div className="mira-os-pet-avatar">
-              {pet.photo ? <img src={pet.photo} alt={pet.name} /> : <PawPrint className="w-4 h-4" />}
+            <div className="mp-pet-avatar">
+              {pet.photo ? <img src={pet.photo} alt={pet.name} /> : <PawPrint />}
             </div>
-            <span className="mira-os-pet-name">{pet.name}</span>
-            <span className="mira-os-pet-breed">• {pet.breed}</span>
-            <ChevronDown className={`w-3 h-3 mira-os-chevron ${showPetSelector ? 'open' : ''}`} />
+            <span className="mp-pet-name">{pet.name}</span>
           </button>
           
           {/* Pet Dropdown */}
           {showPetSelector && (
-            <div className="mira-os-pet-dropdown">
+            <div className="mp-pet-dropdown">
               {allPets.map((p) => (
-                <button key={p.id} onClick={() => switchPet(p)} className={`mira-os-pet-option ${p.id === pet.id ? 'active' : ''}`}>
-                  <PawPrint className="w-4 h-4" />
-                  <div className="mira-os-pet-option-info">
-                    <span className="name">{p.name}</span>
-                    <span className="breed">{p.breed}</span>
+                <button key={p.id} onClick={() => switchPet(p)} className={`mp-pet-option ${p.id === pet.id ? 'active' : ''}`}>
+                  <div className="mp-pet-option-icon">
+                    {p.photo ? <img src={p.photo} alt={p.name} /> : <PawPrint />}
                   </div>
-                  {p.id === pet.id && <Check className="w-4 h-4 check" />}
+                  <div className="mp-pet-option-info">
+                    <span className="mp-pet-option-name">{p.name}</span>
+                    <span className="mp-pet-option-breed">{p.breed}</span>
+                  </div>
+                  {p.id === pet.id && <Check className="check" />}
                 </button>
               ))}
             </div>
@@ -1550,43 +1550,22 @@ const MiraDemoPage = () => {
         </div>
       </header>
       
-      {/* UNIVERSAL SEARCH BAR */}
-      <div className="mira-universal-search-wrapper">
-        <div className="mira-universal-search-bar">
-          <Search className="w-4 h-4 search-icon" />
-          <input
-            type="text"
-            placeholder={`Ask Mira anything for ${pet.name}...`}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSubmit()}
-            data-testid="universal-search-input"
-          />
-          <button className={`mic-btn ${isRecording ? 'recording' : ''}`} onClick={() => setIsRecording(!isRecording)}>
-            {isRecording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-          </button>
-          <button className="send-btn" onClick={handleSubmit} disabled={isProcessing || !query.trim()} data-testid="universal-search-submit">
-            <Send className="w-4 h-4" />
-          </button>
-        </div>
-      </div>
-      
-      {/* THIN DOCK: Concierge, Orders, Plan, Help, Soul */}
-      <nav className="mira-os-dock">
-        <button onClick={() => handleConciergeHandoff()} className="dock-btn active" data-testid="dock-concierge">
-          <MessageCircle className="w-4 h-4" /> Concierge®
+      {/* NAVIGATION DOCK: Pill Tabs */}
+      <nav className="mp-dock">
+        <button onClick={() => inputRef.current?.focus()} className="mp-dock-btn active" data-testid="dock-concierge">
+          <MessageCircle /> <span>Concierge®</span>
         </button>
-        <button onClick={() => navigate('/orders')} className="dock-btn" data-testid="dock-orders">
-          <Package className="w-4 h-4" /> Orders
+        <button onClick={() => navigate('/orders')} className="mp-dock-btn" data-testid="dock-orders">
+          <Package /> <span>Orders</span>
         </button>
-        <button onClick={() => navigate('/family-dashboard')} className="dock-btn" data-testid="dock-plan">
-          <Calendar className="w-4 h-4" /> Plan
+        <button onClick={() => navigate('/family-dashboard')} className="mp-dock-btn" data-testid="dock-plan">
+          <Calendar /> <span>Plan</span>
         </button>
-        <button onClick={() => setShowHelpModal(true)} className="dock-btn" data-testid="dock-help">
-          <HelpCircle className="w-4 h-4" /> Help
+        <button onClick={() => setShowHelpModal(true)} className="mp-dock-btn" data-testid="dock-help">
+          <HelpCircle /> <span>Help</span>
         </button>
-        <button onClick={() => navigate('/pet-soul')} className="dock-btn" data-testid="dock-soul">
-          <Heart className="w-4 h-4" /> Soul
+        <button onClick={() => navigate('/pet-soul')} className="mp-dock-btn" data-testid="dock-soul">
+          <Heart /> <span>Soul</span>
         </button>
       </nav>
       
