@@ -1659,46 +1659,39 @@ const MiraDemoPage = () => {
   };
 
   return (
-    <div className="mira-10x">
-      {/* HEADER - Glassmorphism Crystal */}
-      <header className="m10-header">
-        <div className="m10-header-inner">
-          {/* Left: Mira Logo */}
-          <div className="m10-logo">
-            <div className="m10-logo-icon">
+    <div className="mira-prod">
+      {/* HEADER */}
+      <header className="mp-header">
+        <div className="mp-header-inner">
+          {/* Left: Mira Logo - Pink circle */}
+          <div className="mp-logo">
+            <div className="mp-logo-icon">
               <Sparkles />
             </div>
-            <div className="m10-logo-text">
-              <span className="m10-logo-title">Mira</span>
-              <span className="m10-logo-subtitle">Your Pet Companion</span>
+            <div className="mp-logo-text">
+              <span className="mp-logo-title">Mira</span>
+              <span className="mp-logo-subtitle">Your Pet Companion</span>
             </div>
           </div>
           
-          {/* Right: Pet Badge with Avatar Rings */}
+          {/* Right: Pet Badge - Orange */}
           <button 
-            className="m10-pet-badge"
+            className="mp-pet-badge"
             onClick={() => setShowPetSelector(!showPetSelector)}
             data-testid="pet-selector-btn"
           >
-            <div className="m10-pet-avatar-wrap">
-              <div className="m10-pet-avatar-ring"></div>
-              <div className="m10-pet-avatar-ring-inner"></div>
-              <div className="m10-pet-avatar">
-                {pet.photo ? <img src={pet.photo} alt={pet.name} /> : <PawPrint />}
-              </div>
+            <div className="mp-pet-avatar">
+              {pet.photo ? <img src={pet.photo} alt={pet.name} /> : <PawPrint />}
             </div>
-            <div className="m10-pet-info">
-              <span className="m10-pet-name">{pet.name}</span>
-              <span className="m10-pet-soul">{pet.soulScore ? `Soul Score ${pet.soulScore}` : pet.breed}</span>
-            </div>
+            <span className="mp-pet-name">{pet.name}</span>
           </button>
           
           {/* Pet Dropdown */}
           {showPetSelector && (
-            <div className="m10-pet-dropdown">
+            <div className="mp-pet-dropdown">
               {allPets.map((p) => (
-                <button key={p.id} onClick={() => switchPet(p)} className={`m10-pet-option ${p.id === pet.id ? 'active' : ''}`}>
-                  <div className="m10-pet-avatar" style={{ width: 36, height: 36 }}>
+                <button key={p.id} onClick={() => switchPet(p)} className={`mp-pet-option ${p.id === pet.id ? 'active' : ''}`}>
+                  <div className="mp-pet-avatar">
                     {p.photo ? <img src={p.photo} alt={p.name} /> : <PawPrint />}
                   </div>
                   <div style={{ flex: 1 }}>
@@ -1710,6 +1703,53 @@ const MiraDemoPage = () => {
               ))}
             </div>
           )}
+        </div>
+      </header>
+      
+      {/* NAVIGATION DOCK - Horizontal Pills */}
+      <nav className="mp-dock">
+        <button onClick={() => inputRef.current?.focus()} className="mp-dock-btn" data-testid="dock-concierge">
+          <MessageCircle /> <span>Concierge®</span>
+        </button>
+        <button onClick={() => navigate('/orders')} className="mp-dock-btn" data-testid="dock-orders">
+          <Package /> <span>Orders</span>
+        </button>
+        <button onClick={() => navigate('/family-dashboard')} className="mp-dock-btn" data-testid="dock-plan">
+          <Calendar /> <span>Plan</span>
+        </button>
+        <button onClick={() => setShowHelpModal(true)} className="mp-dock-btn" data-testid="dock-help">
+          <HelpCircle /> <span>Help</span>
+        </button>
+        <button onClick={() => navigate('/pet-soul')} className="mp-dock-btn" data-testid="dock-soul">
+          <Heart /> <span>Soul</span>
+        </button>
+      </nav>
+      
+      {/* TEST SCENARIOS PANEL - Dark Card (like production) */}
+      {showTestScenarios && (
+        <div className="mp-test-panel">
+          <div className="mp-test-header">
+            <span className="mp-test-title">
+              <Sparkles /> Test Scenarios
+            </span>
+            <button className="mp-test-close" onClick={() => setShowTestScenarios(false)}>
+              <X />
+            </button>
+          </div>
+          <div className="mp-test-grid">
+            {TEST_SCENARIOS.map((scenario) => (
+              <button
+                key={scenario.id}
+                onClick={() => { setActiveScenario(scenario.id); handleQuickReply(scenario.query); }}
+                data-testid={`scenario-${scenario.id}`}
+                className={`mp-test-chip ${activeScenario === scenario.id ? 'active' : ''}`}
+              >
+                {scenario.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
         </div>
       </header>
       
