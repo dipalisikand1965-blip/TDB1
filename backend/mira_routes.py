@@ -918,7 +918,7 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
                 limit=6
             )
         
-        logger.info(f"[PRODUCT FILTER] intent={intent}, is_service={is_service_intent}, is_product_planning={is_product_planning}, showing_products={should_show_products}")
+        logger.info(f"[PRODUCT FILTER] intent={intent}, is_service={is_service_intent}, is_food_main={is_food_main_intent}, is_treat={is_treat_request}, showing_products={should_show_products}")
         
         # Step 3: If CONCIERGE, create ticket and notifications (UNIFIED SERVICE FLOW)
         ticket_id = None
