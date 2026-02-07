@@ -168,14 +168,14 @@
 .mira-header-title {
   font-size: var(--mira-font-size-lg);
   font-weight: 600;
-  color: var(--mira-text-primary);
+  color: white;
   margin: 0;
   line-height: 1.2;
 }
 
 .mira-header-subtitle {
   font-size: var(--mira-font-size-xs);
-  color: var(--mira-text-secondary);
+  color: rgba(255, 255, 255, 0.7);
   margin: 0;
 }
 
