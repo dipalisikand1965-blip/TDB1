@@ -1546,12 +1546,18 @@ const MiraDemoPage = () => {
       // No gates - Mira's intelligence determines when products are helpful
       const shouldShowProducts = data.response?.products?.length > 0;
       
+      // MIRA DOCTRINE: Detect service intent for self-service wizard cards
+      // When service intent is detected, offer BOTH self-service AND concierge
+      const detectedServices = detectServiceIntent(query);
+      const hasServiceIntent = detectedServices.length > 0;
+      
       // MIRA DOCTRINE: Concierge is premium service, not failure
       // Show concierge option subtly when:
       // 1. Backend explicitly suggests it (AI decided it's needed)
       // 2. Backend provides concierge_framing (soft invitation)
       // 3. User explicitly asks for concierge help
       // 4. Execution type is CONCIERGE (complex/bespoke request)
+      // 5. Service intent detected (offer choice: self-service OR concierge)
       const userWantsConcierge = query.toLowerCase().includes('concierge') || 
                                   query.toLowerCase().includes('help me') ||
                                   query.toLowerCase().includes('can you handle') ||
@@ -1560,6 +1566,7 @@ const MiraDemoPage = () => {
       const shouldSuggestConcierge = data.response?.suggest_concierge || 
                                       data.execution_type === 'CONCIERGE' ||
                                       hasConciergeFraming ||
+                                      hasServiceIntent ||
                                       userWantsConcierge;
       
       const miraMessage = {
@@ -1570,11 +1577,14 @@ const MiraDemoPage = () => {
           response: {
             ...data.response,
             products: shouldShowProducts ? data.response?.products : [],
-            suggest_concierge: shouldSuggestConcierge
+            suggest_concierge: shouldSuggestConcierge,
+            detected_services: detectedServices  // NEW: Service cards for self-service
           }
         },
         quickReplies: quickReplies,
         showProducts: shouldShowProducts,
+        showServices: hasServiceIntent,  // NEW: Flag to show service cards
+        detectedServices: detectedServices,  // NEW: The matched services
         stepId: miraStepId,  // Track which step this message is for
         isClarifyingQuestion: isNewClarifyingQuestion,
         timestamp: new Date()
