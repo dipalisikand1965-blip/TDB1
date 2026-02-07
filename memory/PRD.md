@@ -254,21 +254,40 @@ All 5 dock items functional:
 
 ---
 
-## LATEST UPDATE: Feb 7, 2026 - Session Persistence VERIFIED ✅
+## LATEST UPDATE: Feb 7, 2026 - Multi-Pet + Multi-Session COMPLETE ✅
 
 ### ✅ SESSION PERSISTENCE - FULLY WORKING
 **Tested End-to-End:**
-1. **Backend Routes**: `/api/mira/session/*` routes registered in server.py (lines 1837, 15456)
+1. **Backend Routes**: `/api/mira/session/*` routes registered in server.py
 2. **Session Creation**: Creates sessions in MongoDB `mira_sessions` collection
 3. **Message Persistence**: Both user and assistant messages saved on each turn
 4. **Session Recovery**: Frontend recovers history from localStorage session_id → backend fetch
 5. **Context Maintained**: Multi-turn conversations preserve pet context (allergies, preferences)
 
-**Test Results:**
-- Session ID: `mira-1770447762875-ars0pjli6`
-- Messages persisted: 4 (2 user, 2 assistant)
-- Page refresh: History restored correctly
-- Context continuity: Mira remembers Buddy's chicken allergy across turns
+### ✅ MULTI-SESSION MANAGEMENT (NEW)
+**"Past Chats" Feature:**
+- **History Button**: Added to dock navigation 
+- **Past Chats Sidebar**: Shows all previous conversations
+- **Session Loading**: Click any past session to load it
+- **New Chat Button**: Start fresh conversation anytime
+- **Date Display**: "Today", "Yesterday", "X days ago"
+
+**New Backend Endpoints:**
+- `GET /api/mira/session/list/by-member/{member_id}` - List all user's sessions
+- `GET /api/mira/session/list/by-pet/{pet_id}` - List sessions for a specific pet
+- `GET /api/mira/session/latest/by-pet/{pet_id}` - Get most recent session for a pet
+- `POST /api/mira/session/switch-pet` - Switch to different pet (load/create session)
+
+### ✅ MULTI-PET SUPPORT (NEW)
+**Pet Switching Feature:**
+- **Pet Selector Dropdown**: Click on pet badge to see all pets
+- **Switch Pet**: Select different pet → loads their latest session or creates new
+- **Session Isolation**: Each pet has their own conversation history
+- **Context Switching**: Breed info strip updates for selected pet
+
+**Files Modified:**
+- `/app/backend/mira_session_persistence.py` - Added multi-session and multi-pet endpoints
+- `/app/frontend/src/pages/MiraDemoPage.jsx` - Added History sidebar, pet selector dropdown
 
 ---
 
