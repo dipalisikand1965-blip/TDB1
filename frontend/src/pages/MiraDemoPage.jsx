@@ -12,21 +12,23 @@
  */
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   Search, Mic, MicOff, Send, MessageCircle, Package, Calendar, 
   AlertCircle, Heart, Sparkles, ChevronRight, Loader2, User,
-  ShoppingBag, Clock, Star, PawPrint, Crown, Bot, ArrowRight
+  ShoppingBag, Clock, Star, PawPrint, Crown, Bot, ArrowRight,
+  ThumbsUp, ThumbsDown, X
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { API_URL } from '../utils/api';
 
-// Thin Dock Items
+// Thin Dock Items with navigation paths
 const DOCK_ITEMS = [
-  { id: 'concierge', label: 'Concierge', icon: MessageCircle, color: 'from-purple-500 to-pink-500' },
-  { id: 'orders', label: 'Orders', icon: Package, color: 'from-blue-500 to-cyan-500' },
-  { id: 'plan', label: 'Plan', icon: Calendar, color: 'from-amber-500 to-orange-500' },
-  { id: 'help', label: 'Help', icon: AlertCircle, color: 'from-red-500 to-rose-500' },
-  { id: 'soul', label: 'Soul', icon: Heart, color: 'from-pink-500 to-purple-500' },
+  { id: 'concierge', label: 'Concierge', icon: MessageCircle, color: 'from-purple-500 to-pink-500', path: '/concierge', action: 'openChat' },
+  { id: 'orders', label: 'Orders', icon: Package, color: 'from-blue-500 to-cyan-500', path: '/orders' },
+  { id: 'plan', label: 'Plan', icon: Calendar, color: 'from-amber-500 to-orange-500', path: '/family-dashboard', tab: 'calendar' },
+  { id: 'help', label: 'Help', icon: AlertCircle, color: 'from-red-500 to-rose-500', action: 'openHelp' },
+  { id: 'soul', label: 'Soul', icon: Heart, color: 'from-pink-500 to-purple-500', path: '/pet-soul' },
 ];
 
 // Sample pet for demo (when not logged in)
@@ -42,12 +44,14 @@ const DEMO_PET = {
 
 const MiraDemoPage = () => {
   const { user, token } = useAuth();
+  const navigate = useNavigate();
   
   // State
   const [query, setQuery] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [miraResponse, setMiraResponse] = useState(null);
+  const [showHelpModal, setShowHelpModal] = useState(false);
   const [conversationHistory, setConversationHistory] = useState([]);
   const [activeDockItem, setActiveDockItem] = useState(null);
   const [pet, setPet] = useState(DEMO_PET);
