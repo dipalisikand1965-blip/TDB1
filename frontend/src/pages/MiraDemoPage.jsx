@@ -15,8 +15,8 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Mic, MicOff, Send, MessageCircle, Package, Calendar, 
-  HelpCircle, Heart, Sparkles, ChevronDown,
-  ShoppingBag, PawPrint, Bot,
+  HelpCircle, Heart, Sparkles, ChevronDown, ChevronUp,
+  ShoppingBag, PawPrint, Bot, History, Plus, Check,
   ThumbsUp, ThumbsDown, X, Phone, Mail, MessageSquare
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
