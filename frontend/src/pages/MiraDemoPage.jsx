@@ -601,12 +601,17 @@ const MiraDemoPage = () => {
         await syncToServiceDesk(currentTicket.id, userMessage);
       }
       
-      // Check if user is opting in for products
-      const isOptingIn = isProductOptIn(inputQuery);
+      // Count conversation turns to track when products can be shown
+      // Products should ONLY appear after at least 2 user turns (initial + answer to clarifier)
+      const userMessageCount = conversationHistory.filter(m => m.type === 'user').length + 1;
+      const canShowProducts = userMessageCount >= 2 && userHasOptedInForProducts;
+      
+      // Check if user is opting in for products (only valid after first clarifier)
+      const isOptingIn = userMessageCount >= 2 && isProductOptIn(inputQuery);
       if (isOptingIn && !userHasOptedInForProducts) {
         setUserHasOptedInForProducts(true);
         setConversationStage('opted_in_products');
-        console.log('[FLOW] User opted in for products');
+        console.log('[FLOW] User opted in for products (turn:', userMessageCount, ')');
       }
       
       // STEP 3: Get Mira's response
@@ -628,8 +633,8 @@ const MiraDemoPage = () => {
             favorites: pet.favorites
           },
           page_context: 'mira-demo',
-          // Tell backend whether to include products
-          include_products: userHasOptedInForProducts || isOptingIn,
+          // Tell backend whether to include products - ONLY after opt-in
+          include_products: canShowProducts || isOptingIn,
           pillar: pillar,
           conversation_stage: conversationStage,
           ticket_id: ticketId
@@ -643,8 +648,8 @@ const MiraDemoPage = () => {
       // Extract contextual quick replies based on Mira's question
       const quickReplies = extractQuickReplies(data);
       
-      // Determine if products should be shown (ONLY if opted in)
-      const shouldShowProducts = (userHasOptedInForProducts || isOptingIn) && 
+      // Determine if products should be shown (ONLY after explicit opt-in, never on first message)
+      const shouldShowProducts = (canShowProducts || isOptingIn) && 
                                  data.response?.products?.length > 0;
       
       const miraMessage = {
