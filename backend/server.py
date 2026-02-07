@@ -15453,12 +15453,14 @@ set_breed_catalogue_db(db)  # Initialize Breed Catalogue with database
 app.include_router(mira_router)  # Mira AI routes at /api/mira/*
 app.include_router(mira_intelligence_router)  # Mira Intelligence at /api/mira/intelligence/*
 app.include_router(mira_memory_router)  # Mira Relationship Memory at /api/mira/memory/*
+app.include_router(mira_session_router)  # Mira Session Persistence at /api/mira/session/*
 app.include_router(mira_service_desk_router)  # Mira Service Desk at /api/mira/route_intent
 app.include_router(service_desk_router)  # Service Desk at /api/service_desk/*
 app.include_router(tts_router, prefix="/api")  # TTS at /api/tts/*
 set_mira_db(db)  # Initialize Mira with database
 set_intelligence_db(db)  # Initialize Intelligence with database
 set_memory_routes_db(db)  # Initialize Memory with database
+set_session_db(db)  # Initialize Session Persistence with database
 set_mira_service_desk_db(db)  # Initialize Mira Service Desk with database
 
 # User Tickets (user-facing ticket view)
