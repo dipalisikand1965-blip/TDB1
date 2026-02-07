@@ -156,6 +156,98 @@ const MiraDemoPage = () => {
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
   
+  // LOAD REAL PET DATA when user is logged in
+  useEffect(() => {
+    const loadUserPets = async () => {
+      if (!token) return;
+      
+      try {
+        console.log('[PETS] Loading user pets...');
+        const response = await fetch(`${API_URL}/api/pets`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.pets && data.pets.length > 0) {
+            console.log('[PETS] Loaded', data.pets.length, 'pets');
+            
+            // Transform pets to include soul traits
+            const transformedPets = data.pets.map(p => {
+              // Generate soul traits from doggy_soul_answers
+              const soulAnswers = p.doggy_soul_answers || {};
+              const soulTraits = [];
+              
+              if (soulAnswers.general_nature) {
+                soulTraits.push({ 
+                  label: `${soulAnswers.general_nature} soul`, 
+                  icon: '⭐', 
+                  color: '#f59e0b' 
+                });
+              }
+              if (soulAnswers.describe_3_words) {
+                const words = soulAnswers.describe_3_words.split(',')[0]?.trim();
+                if (words) {
+                  soulTraits.push({ 
+                    label: words, 
+                    icon: '🎀', 
+                    color: '#ec4899' 
+                  });
+                }
+              }
+              if (p.soul?.love_language) {
+                soulTraits.push({ 
+                  label: `${p.soul.love_language} lover`, 
+                  icon: '❤️', 
+                  color: '#ef4444' 
+                });
+              }
+              
+              // Get sensitivities/allergies
+              const sensitivities = [];
+              if (p.preferences?.allergies) {
+                if (Array.isArray(p.preferences.allergies)) {
+                  sensitivities.push(...p.preferences.allergies.map(a => `${a} allergy`));
+                } else if (typeof p.preferences.allergies === 'string' && p.preferences.allergies !== 'None') {
+                  sensitivities.push(`${p.preferences.allergies} allergy`);
+                }
+              }
+              if (p.health_vault?.allergies) {
+                p.health_vault.allergies.forEach(a => {
+                  sensitivities.push(`${a.allergen} allergy`);
+                });
+              }
+              
+              return {
+                id: p.id,
+                name: p.name,
+                breed: p.breed,
+                age: p.age_years ? `${p.age_years} years` : '',
+                photo: p.photo_url ? `${API_URL}${p.photo_url}` : null,
+                soulScore: Math.round(p.overall_score || 0),
+                soulTraits: soulTraits.length > 0 ? soulTraits : [
+                  { label: 'Unique soul', icon: '⭐', color: '#f59e0b' }
+                ],
+                sensitivities: sensitivities,
+                favorites: p.preferences?.favorite_flavors || [],
+                personality: p.soul?.persona || 'friendly'
+              };
+            });
+            
+            setAllPets(transformedPets);
+            if (transformedPets.length > 0) {
+              setPet(transformedPets[0]);
+            }
+          }
+        }
+      } catch (err) {
+        console.warn('[PETS] Failed to load pets:', err);
+      }
+    };
+    
+    loadUserPets();
+  }, [token]);
+  
   // SESSION RECOVERY - Load conversation from backend on page load
   useEffect(() => {
     const recoverSession = async () => {
