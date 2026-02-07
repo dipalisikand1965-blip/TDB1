@@ -922,6 +922,11 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
         if is_treat_request:
             should_show_products = True
         
+        # For GRIEF_HOLD, override everything - NO products, NO actions
+        if is_grief_hold:
+            should_show_products = False
+            execution_type = "HOLD"  # Special state for grief
+        
         if should_show_products and intent in ["FIND", "ORDER", "COMPARE", "EXPLORE", "PLAN"]:
             real_products = await search_real_products(
                 entities=entities,
@@ -929,7 +934,37 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
                 limit=6
             )
         
-        logger.info(f"[PRODUCT FILTER] intent={intent}, is_service={is_service_intent}, is_food_main={is_food_main_intent}, is_treat={is_treat_request}, showing_products={should_show_products}")
+        logger.info(f"[PRODUCT FILTER] intent={intent}, is_service={is_service_intent}, is_food_main={is_food_main_intent}, is_treat={is_treat_request}, is_grief_hold={is_grief_hold}, showing_products={should_show_products}")
+        
+        # GRIEF_HOLD: Return pure presence response, no actions
+        if is_grief_hold:
+            grief_message = """Thank you for telling me. I'm so sorry you're going through this. Losing a dog hurts in a way everyday words don't really cover.
+
+We don't have to talk about it at all right now. I won't ask you questions or suggest anything unless you tell me you're ready.
+
+If, at some point, you just want to say their name, write down a memory, or ask for practical help, you can do that in your own time. I'll be here when you are."""
+            
+            return {
+                "success": True,
+                "understanding": {
+                    "intent": "HOLD",
+                    "confidence": 1.0,
+                    "entities": {},
+                    "pet_relevance": ""
+                },
+                "response": {
+                    "message": grief_message,
+                    "products": [],
+                    "next_action": None,
+                    "concierge_reason": None,
+                    "concierge_framing": None,
+                    "has_real_products": False,
+                    "is_grief_hold": True,
+                    "hide_feedback": True,  # Don't show "Was this helpful?"
+                    "hide_concierge": True  # Don't show Concierge button
+                },
+                "execution_type": "HOLD"
+            }
         
         # Step 3: If CONCIERGE, create ticket and notifications (UNIFIED SERVICE FLOW)
         ticket_id = None
