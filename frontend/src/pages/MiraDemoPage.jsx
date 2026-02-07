@@ -185,58 +185,132 @@ const MiraDemoPage = () => {
   }, [currentTicket]);
   
   // Extract quick reply options from Mira's response
+  // Parses the actual question to generate contextual chips
   const extractQuickReplies = useCallback((miraData) => {
     if (!miraData) return [];
     
     const message = miraData.response?.message || '';
-    const hasQuestion = message.includes('?') && (
-      message.toLowerCase().includes('are you thinking') ||
-      message.toLowerCase().includes('would you prefer') ||
-      message.toLowerCase().includes('are you hoping') ||
-      message.toLowerCase().includes('do you prefer') ||
-      message.toLowerCase().includes('would you like')
-    );
+    const intent = miraData.understanding?.intent || '';
+    const messageLower = message.toLowerCase();
     
-    if (!hasQuestion) return [];
+    // Only show chips if there's a question being asked
+    if (!message.includes('?')) return [];
     
     const quickReplies = [];
     
-    if (message.toLowerCase().includes('trim') || message.toLowerCase().includes('grooming')) {
-      quickReplies.push(
-        { text: 'Simple trim', value: 'I want a simple trim to keep him comfortable' },
-        { text: 'Full grooming session', value: 'I want a full grooming session with bath, ear cleaning, and nail care' },
-        { text: 'Tell me more', value: "I'm not sure, can you tell me more?" }
-      );
-    } else if (message.toLowerCase().includes('bath')) {
-      quickReplies.push(
-        { text: 'Bath at home', value: "I'd like to bathe him at home" },
-        { text: 'Take to groomer', value: "I'd prefer to take him to a groomer" },
-        { text: "What's easier?", value: 'What would you recommend?' }
-      );
-    } else if (message.toLowerCase().includes('food') || message.toLowerCase().includes('diet')) {
-      quickReplies.push(
-        { text: 'Dry food', value: 'I prefer dry food (kibble)' },
-        { text: 'Wet food', value: 'I prefer wet food' },
-        { text: 'Show me options', value: 'Can you show me some options?' }
-      );
-    } else if (message.toLowerCase().includes('trip') || message.toLowerCase().includes('travel')) {
-      quickReplies.push(
-        { text: 'By car', value: "We're traveling by car" },
-        { text: 'By flight', value: "We're flying" },
-        { text: 'Need boarding', value: 'I need boarding while away' }
-      );
-    } else if (message.toLowerCase().includes('everyday') && message.toLowerCase().includes('special')) {
-      quickReplies.push(
-        { text: 'Everyday treats', value: 'Everyday treats for training' },
-        { text: 'Something special', value: 'Something special for an occasion' },
-        { text: 'Both', value: 'Show me both options' }
-      );
-    } else {
-      quickReplies.push(
-        { text: 'Yes, let\'s do it', value: 'Yes, that sounds good!' },
-        { text: 'Tell me more', value: 'Can you tell me more?' },
-        { text: 'Maybe later', value: "I'll think about it" }
-      );
+    // === GROOMING FLOWS ===
+    // "Are you thinking of a simple trim... or a fuller grooming session?"
+    if (messageLower.includes('simple trim') && messageLower.includes('grooming session')) {
+      return [
+        { text: 'Simple trim', value: 'Simple trim.' },
+        { text: 'Full grooming session', value: 'Full grooming session.' },
+        { text: "I'm not sure, tell me more", value: "I'm not sure, tell me more about each option." }
+      ];
+    }
+    
+    // "Would you like to do this at home... or prefer a professional groomer?"
+    if (messageLower.includes('at home') && messageLower.includes('groomer')) {
+      return [
+        { text: 'I want a groomer', value: 'I want a groomer.' },
+        { text: 'Help me try at home', value: 'Help me try at home.' },
+        { text: 'Not sure yet', value: "I'm not sure yet." }
+      ];
+    }
+    
+    // Bath: "bathing at home... or taking to a groomer?"
+    if (messageLower.includes('bath') && (messageLower.includes('at home') || messageLower.includes('groomer'))) {
+      return [
+        { text: 'Bath at home', value: 'I want to bathe him at home.' },
+        { text: 'Take to groomer', value: 'Take him to a groomer.' },
+        { text: "What's easier?", value: "What would you recommend as easier?" }
+      ];
+    }
+    
+    // === FOOD FLOWS ===
+    // "Are you thinking of everyday light treats, or something more special-occasion?"
+    if (messageLower.includes('everyday') && (messageLower.includes('special') || messageLower.includes('occasion'))) {
+      return [
+        { text: 'Everyday light treats', value: 'Everyday light treats.' },
+        { text: 'Special-occasion treats', value: 'Something special-occasion.' },
+        { text: "I'm not sure yet", value: "I'm not sure yet." }
+      ];
+    }
+    
+    // Food type: "dry food, wet food, or open to either?"
+    if (messageLower.includes('dry food') || messageLower.includes('wet food') || messageLower.includes('kibble')) {
+      return [
+        { text: 'Dry food (kibble)', value: 'I prefer dry food.' },
+        { text: 'Wet food', value: 'I prefer wet food.' },
+        { text: 'Open to either', value: 'I\'m open to either.' }
+      ];
+    }
+    
+    // "Suggest 3-5 treats" or "treat routine"
+    if (messageLower.includes('suggest') && messageLower.includes('treat')) {
+      return [
+        { text: 'Suggest 3-5 treats', value: 'Suggest 3-5 treats that fit.' },
+        { text: 'Help with a treat routine', value: 'Help me with a treat routine.' },
+        { text: 'Something else', value: 'Something else.' }
+      ];
+    }
+    
+    // === TRAVEL FLOWS ===
+    // "Are you planning to travel by car, flight, or train?"
+    if (messageLower.includes('car') && (messageLower.includes('flight') || messageLower.includes('train'))) {
+      return [
+        { text: 'Car', value: 'Car.' },
+        { text: 'Flight', value: 'Flight.' },
+        { text: 'Train', value: 'Train.' },
+        { text: 'Not sure yet', value: 'Not sure yet.' }
+      ];
+    }
+    
+    // "Pet-friendly stays... packing list... both?"
+    if (messageLower.includes('pet-friendly') || messageLower.includes('packing list')) {
+      return [
+        { text: 'Pet-friendly stays', value: 'Pet-friendly stays.' },
+        { text: 'Packing list & routine', value: 'Packing list and routine.' },
+        { text: 'Both', value: 'Both.' }
+      ];
+    }
+    
+    // === HEALTH FLOWS ===
+    // "Would you like me to help find a vet?"
+    if (messageLower.includes('vet') && messageLower.includes('find')) {
+      return [
+        { text: 'Yes, find a vet', value: 'Yes, please help me find a vet.' },
+        { text: 'I have a vet already', value: 'I already have a vet.' },
+        { text: 'Tell me more first', value: 'Tell me more about what to watch for first.' }
+      ];
+    }
+    
+    // === GENERIC QUESTION PATTERNS ===
+    // "Would you like to...?" or "Would you prefer...?"
+    if (messageLower.includes('would you like') || messageLower.includes('would you prefer')) {
+      // Generic yes/no/more info
+      return [
+        { text: 'Yes, please', value: 'Yes, please.' },
+        { text: 'Tell me more', value: 'Can you tell me more first?' },
+        { text: 'Maybe later', value: 'Maybe later.' }
+      ];
+    }
+    
+    // "Are you thinking of...?" pattern
+    if (messageLower.includes('are you thinking')) {
+      return [
+        { text: 'Yes', value: 'Yes, that\'s what I\'m thinking.' },
+        { text: 'Not quite', value: 'Not quite, let me explain.' },
+        { text: 'Tell me more', value: 'Tell me more about my options.' }
+      ];
+    }
+    
+    // Default: If there's a question but no specific pattern matched
+    if (message.includes('?')) {
+      return [
+        { text: 'Yes', value: 'Yes.' },
+        { text: 'No', value: 'No.' },
+        { text: 'Tell me more', value: 'Can you tell me more?' }
+      ];
     }
     
     return quickReplies;
