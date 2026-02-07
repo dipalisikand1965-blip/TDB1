@@ -115,7 +115,6 @@ const MiraDemoPage = () => {
   const [isRecording, setIsRecording] = useState(false); // For universal search voice
   
   // MULTI-PET SUPPORT - Switch between pets
-  const [allPets, setAllPets] = useState([DEMO_PET]); // All user's pets
   const [showPetSelector, setShowPetSelector] = useState(false);
   
   // MULTI-SESSION MANAGEMENT - Past chats
