@@ -1236,26 +1236,26 @@ const MiraDemoPage = () => {
       <div 
         ref={messagesContainerRef}
         onScroll={handleScroll}
-        className="flex-1 overflow-y-auto"
-        style={{ WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain' }}
+        className="mira-messages-container"
       >
-        <div className="max-w-3xl mx-auto px-4 py-4">
+        <div className="mira-messages-inner">
           {/* Test Scenarios */}
           {showScenarios && (
-            <div className="mb-4 bg-slate-800/50 border border-white/10 rounded-xl p-3">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-sm font-semibold text-white flex items-center gap-1.5">
-                  <Sparkles className="w-4 h-4 text-amber-400" />
+            <div className="mira-scenarios">
+              <div className="mira-scenarios-header">
+                <h3 className="mira-scenarios-title">
+                  <Sparkles />
                   Test Scenarios
                 </h3>
                 <button 
                   onClick={() => setShowScenarios(false)}
-                  className="p-1.5 hover:bg-white/10 rounded-lg min-w-[32px] min-h-[32px] flex items-center justify-center"
+                  className="mira-scenarios-close"
+                  data-testid="close-scenarios"
                 >
-                  <X className="w-4 h-4 text-white/50" />
+                  <X />
                 </button>
               </div>
-              <div className="flex flex-wrap gap-1.5">
+              <div className="mira-scenarios-grid">
                 {TEST_SCENARIOS.map((scenario) => (
                   <button
                     key={scenario.id}
@@ -1264,11 +1264,7 @@ const MiraDemoPage = () => {
                       handleQuickReply(scenario.query);
                     }}
                     data-testid={`scenario-${scenario.id}`}
-                    className={`px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all min-h-[32px] active:scale-95 ${
-                      activeScenario === scenario.id
-                        ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white'
-                        : 'bg-white/10 text-white/70 hover:bg-white/20'
-                    }`}
+                    className={`mira-scenario-chip ${activeScenario === scenario.id ? 'active' : ''}`}
                   >
                     {scenario.label}
                   </button>
@@ -1279,22 +1275,21 @@ const MiraDemoPage = () => {
           
           {/* Welcome State */}
           {conversationHistory.length === 0 && !isProcessing && (
-            <div className="text-center py-8">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 
-                flex items-center justify-center shadow-xl">
-                <Bot className="w-8 h-8 text-white" />
+            <div className="mira-welcome">
+              <div className="mira-welcome-avatar">
+                <Bot />
               </div>
-              <h2 className="text-xl font-bold text-white mb-2">Hi! I&apos;m Mira</h2>
-              <p className="text-white/60 text-sm mb-6 max-w-xs mx-auto">
+              <h2 className="mira-welcome-title">Hi! I&apos;m Mira</h2>
+              <p className="mira-welcome-subtitle">
                 I&apos;m here to help with everything for {pet.name}. Just ask me anything!
               </p>
-              <div className="flex flex-wrap justify-center gap-2 max-w-md mx-auto">
+              <div className="mira-welcome-suggestions">
                 {[`Treats for ${pet.name}`, `Grooming help`, `Food advice`].map((s, i) => (
                   <button
                     key={i}
                     onClick={() => handleQuickReply(s)}
-                    className="px-3 py-2 bg-white/10 border border-white/20 rounded-full
-                      text-white/80 text-xs hover:bg-white/20 min-h-[36px] active:scale-95"
+                    className="mira-welcome-chip"
+                    data-testid={`welcome-chip-${i}`}
                   >
                     {s}
                   </button>
@@ -1305,274 +1300,183 @@ const MiraDemoPage = () => {
           
           {/* Conversation */}
           {conversationHistory.length > 0 && (
-            <div className="space-y-4">
+            <div className="mira-messages-list">
               {conversationHistory.map((msg, idx) => (
-                <div key={idx} className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}>
+                <React.Fragment key={idx}>
                   {msg.type === 'user' ? (
-                    <div className="max-w-[85%] bg-gradient-to-r from-purple-500 to-pink-500 
-                      rounded-2xl rounded-br-sm px-4 py-3 shadow-lg">
-                      <p className="text-white text-sm">{msg.content}</p>
+                    /* User Message */
+                    <div className="mira-message-user">
+                      <div className="mira-bubble-user">
+                        <p>{msg.content}</p>
+                      </div>
                     </div>
                   ) : msg.type === 'system' ? (
-                    <div className="w-full text-center py-2">
-                      <span className="text-white/50 text-xs bg-white/5 px-3 py-1 rounded-full">
-                        {msg.content}
-                      </span>
+                    /* System Message */
+                    <div className="mira-message-system">
+                      <span className="mira-system-text">{msg.content}</span>
                     </div>
                   ) : (
-                    <div className="max-w-[90%] bg-white/10 backdrop-blur border border-white/20 
-                      rounded-2xl rounded-bl-sm overflow-hidden">
-                      {/* Mira header */}
-                      <div className="px-4 py-3 border-b border-white/10 flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 
-                            flex items-center justify-center">
-                            <Sparkles className="w-4 h-4 text-white" />
+                    /* Mira Message */
+                    <div className="mira-message-mira">
+                      <div className="mira-card">
+                        {/* Card Header */}
+                        <div className="mira-card-header">
+                          <div className="mira-card-header-left">
+                            <div className="mira-card-avatar">
+                              <Sparkles />
+                            </div>
+                            <span className="mira-card-name">Mira</span>
+                            {msg.data?.understanding?.intent && (
+                              <span className="mira-intent-badge">
+                                {msg.data.understanding.intent}
+                              </span>
+                            )}
                           </div>
-                          <span className="text-white font-medium text-sm">Mira</span>
-                          {msg.data?.understanding?.intent && (
-                            <span className={`text-xs px-2 py-0.5 rounded-full ${getIntentColor(msg.data.understanding.intent)}`}>
-                              {msg.data.understanding.intent}
-                            </span>
-                          )}
                         </div>
-                        {msg.data?.execution_type && (
-                          <span className={`text-xs px-2 py-0.5 rounded-full ${
-                            msg.data.execution_type === 'HOLD' || msg.data.execution_type === 'CONCIERGE'
-                              ? 'bg-purple-500/30 text-purple-200' 
-                              : 'bg-green-500/30 text-green-200'
-                          }`}>
-                            {msg.data.execution_type === 'INSTANT' ? '⚡ Instant' : '💜 With You'}
-                          </span>
-                        )}
-                      </div>
-                      
-                      {/* Message content */}
-                      <div className="px-4 py-3">
-                        {/* Split message to highlight question */}
-                        {(() => {
-                          const { mainText, questionText } = splitMessageWithQuestion(msg.content);
-                          return (
-                            <>
-                              {mainText && (
-                                <p className="text-white/90 text-sm whitespace-pre-wrap leading-relaxed">
-                                  {mainText}
-                                </p>
-                              )}
-                              {questionText && (
-                                <div className="mt-3 p-3 bg-gradient-to-r from-amber-500/20 to-orange-500/20 
-                                  border border-amber-400/30 rounded-xl">
-                                  <p className="text-amber-100 text-sm font-medium leading-relaxed">
-                                    {questionText}
-                                  </p>
-                                </div>
-                              )}
-                            </>
-                          );
-                        })()}
                         
-                        {/* Quick Reply Chips - directly under the highlighted question */}
-                        {msg.quickReplies && msg.quickReplies.length > 0 && (
-                          <div className="mt-3">
-                            <div className="flex flex-wrap gap-2">
+                        {/* Card Body */}
+                        <div className="mira-card-body">
+                          {/* Split message to highlight question */}
+                          {(() => {
+                            const { mainText, questionText } = splitMessageWithQuestion(msg.content);
+                            return (
+                              <>
+                                {mainText && (
+                                  <p className="mira-card-text">{mainText}</p>
+                                )}
+                                {questionText && (
+                                  <div className="mira-question-strip">
+                                    <p className="mira-question-text">{questionText}</p>
+                                  </div>
+                                )}
+                              </>
+                            );
+                          })()}
+                          
+                          {/* Quick Reply Chips */}
+                          {msg.quickReplies && msg.quickReplies.length > 0 && (
+                            <div className="mira-chips-container">
                               {msg.quickReplies.map((reply, replyIdx) => (
                                 <button
                                   key={replyIdx}
                                   onClick={() => handleQuickReply(reply.value)}
-                                  className="px-3 py-2 bg-amber-500/20 border border-amber-400/40 rounded-full
-                                    text-amber-100 text-xs font-medium hover:bg-amber-500/30 
-                                    min-h-[36px] active:scale-95 transition-all"
+                                  className="mira-chip mira-chip-amber"
                                   data-testid={`quick-reply-${replyIdx}`}
                                 >
                                   {reply.text}
                                 </button>
                               ))}
                             </div>
-                          </div>
-                        )}
-                        
-                        {/* Products - ONLY SHOWN WHEN USER HAS OPTED IN */}
-                        {msg.showProducts && msg.data?.response?.products && msg.data.response.products.length > 0 && (
-                          <div className="mt-4 pt-3 border-t border-white/10">
-                            {/* Product section title with context */}
-                            <p className="text-white/70 text-xs mb-3 font-medium">
-                              {msg.data.response.product_title || `Suggested for ${pet.name}`}
-                              {pet.sensitivities?.length > 0 && (
-                                <span className="text-purple-300 ml-1">
-                                  ({pet.sensitivities.map(s => `${s}-free`).join(', ')})
-                                </span>
-                              )}
-                            </p>
-                            
-                            {/* Horizontal scroll carousel on mobile, grid on desktop */}
-                            <div className="flex overflow-x-auto gap-3 pb-2 -mx-1 px-1 snap-x snap-mandatory
-                              md:grid md:grid-cols-2 md:overflow-visible">
-                              {msg.data.response.products.slice(0, 5).map((product, pIdx) => (
-                                <div key={pIdx} 
-                                  className="flex-shrink-0 w-[160px] md:w-auto snap-start
-                                    p-3 bg-white/5 rounded-xl border border-white/10
-                                    hover:bg-white/10 hover:border-purple-400/30 transition-all group cursor-pointer">
-                                  {product.image && (
-                                    <img src={product.image} alt={product.name}
-                                      className="w-full h-24 object-cover rounded-lg mb-2" />
-                                  )}
-                                  <div className="space-y-1">
-                                    <p className="text-white text-xs font-medium line-clamp-2">
+                          )}
+                          
+                          {/* Products - ONLY SHOWN WHEN USER HAS OPTED IN */}
+                          {msg.showProducts && msg.data?.response?.products && msg.data.response.products.length > 0 && (
+                            <div className="mira-products">
+                              <p className="mira-products-title">
+                                {msg.data.response.product_title || `Suggested for ${pet.name}`}
+                                {pet.sensitivities?.length > 0 && (
+                                  <span className="highlight"> ({pet.sensitivities.map(s => `${s}-free`).join(', ')})</span>
+                                )}
+                              </p>
+                              
+                              <div className="mira-products-scroll">
+                                {msg.data.response.products.slice(0, 5).map((product, pIdx) => (
+                                  <div key={pIdx} className="mira-product-card">
+                                    {product.image && (
+                                      <img 
+                                        src={product.image} 
+                                        alt={product.name}
+                                        className="mira-product-image" 
+                                      />
+                                    )}
+                                    <p className="mira-product-name">
                                       {product.name || product.suggestion}
                                     </p>
                                     {product.price && (
-                                      <p className="text-purple-300 text-sm font-semibold">₹{product.price}</p>
+                                      <p className="mira-product-price">₹{product.price}</p>
                                     )}
-                                    {/* "Why for pet" line */}
                                     {product.reason && (
-                                      <p className="text-white/50 text-[10px] line-clamp-2 italic">
-                                        "{product.reason}"
-                                      </p>
+                                      <p className="mira-product-reason">"{product.reason}"</p>
                                     )}
+                                    <button 
+                                      className="mira-product-add"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        alert(`Added ${product.name || product.suggestion} to cart!`);
+                                      }}
+                                    >
+                                      <ShoppingBag />
+                                      Add
+                                    </button>
                                   </div>
-                                  <button 
-                                    className="w-full mt-2 py-1.5 bg-purple-500/20 rounded-lg 
-                                      group-hover:bg-purple-500 transition-colors
-                                      text-purple-300 group-hover:text-white text-xs
-                                      flex items-center justify-center gap-1"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      alert(`Added ${product.name || product.suggestion} to cart!`);
-                                    }}
-                                  >
-                                    <ShoppingBag className="w-3 h-3" />
-                                    Add
-                                  </button>
-                                </div>
-                              ))}
-                            </div>
-                            
-                            {/* Small Concierge® hint under products */}
-                            <p className="text-white/40 text-[10px] mt-3 text-center">
-                              If you'd like, your pet Concierge® can help choose between these or check ingredients more carefully for {pet.name}.
-                            </p>
-                            <button 
-                              onClick={handleConciergeHandoff}
-                              disabled={isProcessing}
-                              className="mx-auto mt-2 text-purple-300 hover:text-purple-200 text-xs 
-                                underline underline-offset-2 flex items-center gap-1 transition-colors"
-                            >
-                              Ask my Concierge® about these
-                              <ArrowRight className="w-3 h-3" />
-                            </button>
-                          </div>
-                        )}
-                        
-                        {/* Collapsible Safety Tips */}
-                        {msg.data?.response?.safety_tips && msg.data.response.safety_tips.length > 0 && (
-                          <div className="mt-3">
-                            <button
-                              onClick={() => setCollapsedSections(prev => ({
-                                ...prev, [`safety-${idx}`]: !prev[`safety-${idx}`]
-                              }))}
-                              className="w-full flex items-center justify-between p-2 bg-red-500/10 
-                                border border-red-400/20 rounded-lg text-red-200 text-xs font-medium min-h-[36px]"
-                            >
-                              <span className="flex items-center gap-1.5">
-                                <AlertCircle className="w-3.5 h-3.5" />
-                                Important to Watch For
-                              </span>
-                              <ChevronDown className={`w-3.5 h-3.5 transition-transform ${
-                                !collapsedSections[`safety-${idx}`] ? 'rotate-180' : ''
-                              }`} />
-                            </button>
-                            {!collapsedSections[`safety-${idx}`] && (
-                              <ul className="mt-2 text-red-100/80 text-xs space-y-1 pl-4">
-                                {msg.data.response.safety_tips.map((tip, tipIdx) => (
-                                  <li key={tipIdx} className="list-disc ml-2">{tip}</li>
                                 ))}
-                              </ul>
-                            )}
-                          </div>
-                        )}
-                        
-                        {/* Concierge Option - Small, secondary CTA */}
-                        {msg.data?.execution_type === 'CONCIERGE' && !msg.data?.response?.hide_concierge && (
-                          <div className="mt-3 pt-3 border-t border-white/10">
-                            <div className="flex items-center gap-2 mb-2">
-                              <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center">
-                                <User className="w-3 h-3 text-white/50" />
                               </div>
-                              <p className="flex-1 text-white/40 text-xs">
-                                {msg.data.response?.concierge_framing || "Your pet Concierge® can help with this."}
-                              </p>
+                              
+                              {/* Concierge hint */}
+                              <div className="mira-concierge-hint">
+                                <button 
+                                  onClick={handleConciergeHandoff}
+                                  disabled={isProcessing}
+                                  className="mira-concierge-link"
+                                >
+                                  Need help choosing? Ask your pet Concierge®
+                                </button>
+                              </div>
                             </div>
-                            <button 
-                              onClick={handleConciergeHandoff}
-                              disabled={isProcessing || conversationStage === 'concierge_engaged'}
-                              className="text-purple-300 hover:text-purple-200 text-xs 
-                                underline underline-offset-2 flex items-center gap-1 transition-colors
-                                disabled:opacity-50 disabled:cursor-not-allowed"
-                              data-testid="chat-concierge-btn"
-                            >
-                              <MessageCircle className="w-3 h-3" />
-                              Have my Concierge® help
-                            </button>
-                          </div>
-                        )}
-                        
-                        {/* Feedback - ONLY show when there's NO pending clarifying question */}
-                        {!msg.data?.response?.hide_feedback && 
-                         msg.data?.execution_type !== 'HOLD' && 
-                         !msg.isClarifyingQuestion && (
-                          <div className="mt-3 pt-3 border-t border-white/10 flex items-center justify-between">
-                            <span className="text-white/40 text-xs">Was this helpful?</span>
-                            <div className="flex items-center gap-1.5">
-                              {msg.feedbackGiven ? (
-                                <span className={`text-xs px-2.5 py-1 rounded-full ${
-                                  msg.feedbackGiven === 'positive' 
-                                    ? 'bg-green-500/20 text-green-300' 
-                                    : 'bg-red-500/20 text-red-300'
-                                }`}>
-                                  {msg.feedbackGiven === 'positive' ? '👍 Thanks!' : '👎 Noted'}
-                                </span>
-                              ) : (
-                                <>
-                                  <button
-                                    onClick={() => handleFeedback(idx, true)}
-                                    className="p-2 bg-white/5 hover:bg-green-500/20 rounded-lg 
-                                      min-w-[36px] min-h-[36px] flex items-center justify-center active:scale-95"
-                                    data-testid={`feedback-up-${idx}`}
-                                  >
-                                    <ThumbsUp className="w-4 h-4 text-white/50 hover:text-green-400" />
-                                  </button>
-                                  <button
-                                    onClick={() => handleFeedback(idx, false)}
-                                    className="p-2 bg-white/5 hover:bg-red-500/20 rounded-lg 
-                                      min-w-[36px] min-h-[36px] flex items-center justify-center active:scale-95"
-                                    data-testid={`feedback-down-${idx}`}
-                                  >
-                                    <ThumbsDown className="w-4 h-4 text-white/50 hover:text-red-400" />
-                                  </button>
-                                </>
-                              )}
+                          )}
+                          
+                          {/* Feedback - ONLY show when there's NO pending clarifying question */}
+                          {!msg.data?.response?.hide_feedback && 
+                           msg.data?.execution_type !== 'HOLD' && 
+                           !msg.isClarifyingQuestion && (
+                            <div className="mira-feedback">
+                              <span style={{ fontSize: '12px', color: 'var(--mira-text-tertiary)' }}>
+                                Was this helpful?
+                              </span>
+                              <div style={{ marginLeft: 'auto', display: 'flex', gap: '4px' }}>
+                                {msg.feedbackGiven ? (
+                                  <span className={`mira-feedback-btn ${msg.feedbackGiven}`}>
+                                    {msg.feedbackGiven === 'positive' ? <ThumbsUp /> : <ThumbsDown />}
+                                  </span>
+                                ) : (
+                                  <>
+                                    <button
+                                      onClick={() => handleFeedback(idx, true)}
+                                      className="mira-feedback-btn"
+                                      data-testid={`feedback-up-${idx}`}
+                                    >
+                                      <ThumbsUp />
+                                    </button>
+                                    <button
+                                      onClick={() => handleFeedback(idx, false)}
+                                      className="mira-feedback-btn"
+                                      data-testid={`feedback-down-${idx}`}
+                                    >
+                                      <ThumbsDown />
+                                    </button>
+                                  </>
+                                )}
+                              </div>
                             </div>
-                          </div>
-                        )}
+                          )}
+                        </div>
                       </div>
                     </div>
                   )}
-                </div>
+                </React.Fragment>
               ))}
               
               {/* Processing Indicator */}
               {isProcessing && (
-                <div className="flex justify-start">
-                  <div className="bg-white/10 backdrop-blur border border-white/20 rounded-2xl px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 
-                        flex items-center justify-center animate-pulse">
-                        <Sparkles className="w-4 h-4 text-white" />
-                      </div>
-                      <div className="flex items-center gap-2 text-white/70 text-sm">
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        <span>Mira is thinking...</span>
-                      </div>
+                <div className="mira-message-mira">
+                  <div className="mira-loading">
+                    <div className="mira-card-avatar">
+                      <Sparkles />
+                    </div>
+                    <div className="mira-loading-dots">
+                      <div className="mira-loading-dot"></div>
+                      <div className="mira-loading-dot"></div>
+                      <div className="mira-loading-dot"></div>
                     </div>
                   </div>
                 </div>
