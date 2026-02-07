@@ -899,6 +899,8 @@ const MiraDemoPage = () => {
             favorites: pet.favorites
           },
           page_context: 'mira-demo',
+          // SESSION PERSISTENCE - Pass session_id for conversation tracking
+          session_id: sessionId,
           // Tell backend whether to include products
           include_products: canShowProducts,
           pillar: pillar,
