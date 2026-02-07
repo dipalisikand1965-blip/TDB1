@@ -1267,39 +1267,30 @@ const MiraDemoPage = () => {
       >
         <div className="mira-messages-inner">
           {/* Test Scenarios */}
-          {showScenarios && (
-            <div className="mira-scenarios">
-              <div className="mira-scenarios-header">
-                <h3 className="mira-scenarios-title">
-                  <Sparkles />
-                  Test Scenarios
-                </h3>
-                <button 
-                  onClick={() => setShowScenarios(false)}
-                  className="mira-scenarios-close"
-                  data-testid="close-scenarios"
-                >
-                  <X />
-                </button>
-              </div>
-              <div className="mira-scenarios-grid">
-                {TEST_SCENARIOS.map((scenario) => (
-                  <button
-                    key={scenario.id}
-                    onClick={() => {
-                      setActiveScenario(scenario.id);
-                      setShowScenarios(false); // Close panel after selection to avoid confusion
-                      handleQuickReply(scenario.query);
-                    }}
-                    data-testid={`scenario-${scenario.id}`}
-                    className={`mira-scenario-chip ${activeScenario === scenario.id ? 'active' : ''}`}
-                  >
-                    {scenario.label}
-                  </button>
-                ))}
-              </div>
+          {/* Test Scenarios - ALWAYS VISIBLE */}
+          <div className="mira-scenarios">
+            <div className="mira-scenarios-header">
+              <h3 className="mira-scenarios-title">
+                <Sparkles />
+                Test Scenarios
+              </h3>
             </div>
-          )}
+            <div className="mira-scenarios-grid">
+              {TEST_SCENARIOS.map((scenario) => (
+                <button
+                  key={scenario.id}
+                  onClick={() => {
+                    setActiveScenario(scenario.id);
+                    handleQuickReply(scenario.query);
+                  }}
+                  data-testid={`scenario-${scenario.id}`}
+                  className={`mira-scenario-chip ${activeScenario === scenario.id ? 'active' : ''}`}
+                >
+                  {scenario.label}
+                </button>
+              ))}
+            </div>
+          </div>
           
           {/* Welcome State */}
           {conversationHistory.length === 0 && !isProcessing && (
