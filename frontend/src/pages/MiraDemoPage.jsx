@@ -1446,6 +1446,11 @@ const MiraDemoPage = () => {
       };
       setConversationHistory(prev => [...prev, miraMessage]);
       
+      // VOICE OUTPUT - Speak Mira's response if voice is enabled
+      if (voiceEnabled && miraResponseText) {
+        speakWithMira(miraResponseText);
+      }
+      
       // Sync Mira's response to service desk
       if (ticketId || currentTicket?.id) {
         await syncToServiceDesk(ticketId || currentTicket.id, {
