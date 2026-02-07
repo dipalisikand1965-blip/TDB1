@@ -224,7 +224,26 @@ const MiraDemoPage = () => {
     
     const now = new Date();
     
-    // Flip status, don't create new ticket
+    // Call the handoff API
+    try {
+      await fetch(`${API_URL}/api/mira/tickets/handoff`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` })
+        },
+        body: JSON.stringify({
+          ticket_id: currentTicket.id,
+          handoff_reason: reason,
+          latest_mira_summary: latestMiraSummary || 'Parent requested Concierge assistance.'
+        })
+      });
+      console.log('[HANDOFF] Ticket handed to Concierge:', currentTicket.id);
+    } catch (error) {
+      console.error('[HANDOFF] API error:', error);
+    }
+    
+    // Update local state
     const updatedTicket = {
       ...currentTicket,
       status: 'open_concierge_engaged',
@@ -232,20 +251,10 @@ const MiraDemoPage = () => {
       concierge_queue: currentTicket.pillar?.toUpperCase() || 'GENERAL',
       handoff_time: now.toISOString(),
       handoff_reason: reason,
-      latest_mira_summary: latestMiraSummary || 'Parent requested Concierge assistance.',
-      updated_at: now.toISOString(),
-      conversation: [
-        ...(currentTicket.conversation || []),
-        { 
-          sender: 'system', 
-          text: 'Ticket handed off to Concierge®',
-          timestamp: now.toISOString()
-        }
-      ]
+      updated_at: now.toISOString()
     };
     
     setCurrentTicket(updatedTicket);
-    console.log('[TICKET] Concierge engaged for:', updatedTicket.id, 'Queue:', updatedTicket.concierge_queue);
     
     // Add visual message to conversation
     const systemMessage = {
@@ -254,9 +263,7 @@ const MiraDemoPage = () => {
       timestamp: now
     };
     setConversationHistory(prev => [...prev, systemMessage]);
-    
-    // In production: POST to /api/tickets/{id}/handoff
-  }, [currentTicket]);
+  }, [currentTicket, token]);
   
   // Extract quick reply options from Mira's response
   // Parses the actual question to generate contextual chips
