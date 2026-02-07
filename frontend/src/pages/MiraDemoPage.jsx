@@ -203,6 +203,60 @@ const MiraDemoPage = () => {
     }
   };
   
+  // Handle dock item clicks - navigate or trigger actions
+  const handleDockClick = (item) => {
+    setActiveDockItem(item.id);
+    
+    if (item.action === 'openChat') {
+      // Open Mira chat widget
+      window.dispatchEvent(new CustomEvent('openMiraAI'));
+    } else if (item.action === 'openHelp') {
+      // Show help modal
+      setShowHelpModal(true);
+    } else if (item.path) {
+      // Navigate to the path
+      if (item.tab) {
+        navigate(`${item.path}?tab=${item.tab}`);
+      } else if (item.id === 'soul' && pet.id && pet.id !== 'demo-pet') {
+        navigate(`/pet-soul/${pet.id}`);
+      } else {
+        navigate(item.path);
+      }
+    }
+  };
+  
+  // Handle feedback on Mira responses
+  const handleFeedback = async (messageIndex, isPositive) => {
+    const message = conversationHistory[messageIndex];
+    if (!message || message.type !== 'mira') return;
+    
+    try {
+      await fetch(`${API_URL}/api/mira/feedback`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` })
+        },
+        body: JSON.stringify({
+          query: conversationHistory[messageIndex - 1]?.content || '',
+          response: message.content,
+          is_positive: isPositive,
+          intent: message.data?.understanding?.intent,
+          execution_type: message.data?.execution_type,
+          pet_id: pet.id,
+          timestamp: new Date().toISOString()
+        })
+      });
+      
+      // Update UI to show feedback was recorded
+      setConversationHistory(prev => prev.map((msg, idx) => 
+        idx === messageIndex ? { ...msg, feedbackGiven: isPositive ? 'positive' : 'negative' } : msg
+      ));
+    } catch (error) {
+      console.error('Failed to submit feedback:', error);
+    }
+  };
+  
   const getIntentColor = (intent) => {
     const colors = {
       'FIND': 'bg-blue-100 text-blue-700',
