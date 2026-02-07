@@ -388,8 +388,9 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: var(--mira-space-xl);
+  padding: var(--mira-space-lg);
   -webkit-overflow-scrolling: touch;
+  min-height: 200px;
 }
 
 .m10-messages-inner {
@@ -397,7 +398,8 @@
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: var(--mira-space-xl); /* Much more spacing between messages */
+  gap: var(--mira-space-lg);
+  padding-bottom: 20px;
 }
 
 /* ========================================
