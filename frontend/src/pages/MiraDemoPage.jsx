@@ -1538,7 +1538,7 @@ const MiraDemoPage = () => {
           </form>
           
           {isListening && (
-            <p className="text-center text-purple-300 text-xs mt-2 animate-pulse">
+            <p style={{ textAlign: 'center', color: 'var(--mira-accent)', fontSize: '12px', marginTop: '8px' }}>
               Listening... speak now
             </p>
           )}
@@ -1547,45 +1547,67 @@ const MiraDemoPage = () => {
       
       {/* Help Modal */}
       {showHelpModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-800 border border-white/20 rounded-2xl max-w-sm w-full p-5">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-white">How can we help?</h3>
+        <div className="mira-modal-overlay" onClick={() => setShowHelpModal(false)}>
+          <div className="mira-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="mira-modal-header">
+              <h3 className="mira-modal-title">How can we help?</h3>
               <button 
                 onClick={() => setShowHelpModal(false)} 
-                className="p-2 hover:bg-white/10 rounded-lg min-w-[40px] min-h-[40px] flex items-center justify-center"
+                className="mira-modal-close"
               >
-                <X className="w-5 h-5 text-white/70" />
+                <X />
               </button>
             </div>
-            <div className="space-y-2">
-              {[
-                { icon: '📦', label: 'Order & Delivery Help', query: 'I need help with my order' },
-                { icon: '🏥', label: 'Health & Advisory', query: 'I have a health concern about my pet' },
-                { icon: '🔄', label: 'Returns & Exchanges', query: 'I need to return or exchange a product' },
-              ].map((item, i) => (
+            <div className="mira-modal-body">
+              <div className="mira-modal-actions">
                 <button 
-                  key={i}
                   onClick={() => { 
                     setShowHelpModal(false); 
-                    handleQuickReply(item.query);
+                    handleQuickReply('I need help with my order');
                   }}
-                  className="w-full text-left p-3 bg-white/5 hover:bg-white/10 
-                    rounded-xl text-white/80 min-h-[48px] active:scale-[0.98] text-sm"
+                  className="mira-modal-action"
                 >
-                  {item.icon} {item.label}
+                  <div className="mira-modal-action-icon">
+                    <Package />
+                  </div>
+                  <div className="mira-modal-action-text">
+                    <p className="mira-modal-action-title">Order & Delivery</p>
+                    <p className="mira-modal-action-desc">Track, modify or report issues</p>
+                  </div>
                 </button>
-              ))}
-              <button 
-                onClick={() => { 
-                  setShowHelpModal(false); 
-                  engageConcierge('HELP_REQUEST');
-                }}
-                className="w-full text-left p-3 bg-gradient-to-r from-purple-500/20 to-pink-500/20 
-                  rounded-xl text-white border border-purple-400/30 min-h-[48px] active:scale-[0.98] text-sm"
-              >
-                💬 Chat with Concierge®
-              </button>
+                
+                <button 
+                  onClick={() => { 
+                    setShowHelpModal(false); 
+                    handleQuickReply('I have a health concern about my pet');
+                  }}
+                  className="mira-modal-action"
+                >
+                  <div className="mira-modal-action-icon">
+                    <Heart />
+                  </div>
+                  <div className="mira-modal-action-text">
+                    <p className="mira-modal-action-title">Health & Advisory</p>
+                    <p className="mira-modal-action-desc">Get expert guidance</p>
+                  </div>
+                </button>
+                
+                <button 
+                  onClick={() => { 
+                    setShowHelpModal(false); 
+                    engageConcierge('HELP_REQUEST');
+                  }}
+                  className="mira-modal-action"
+                >
+                  <div className="mira-modal-action-icon">
+                    <MessageSquare />
+                  </div>
+                  <div className="mira-modal-action-text">
+                    <p className="mira-modal-action-title">Chat with Concierge®</p>
+                    <p className="mira-modal-action-desc">Personal assistance</p>
+                  </div>
+                </button>
+              </div>
             </div>
           </div>
         </div>
