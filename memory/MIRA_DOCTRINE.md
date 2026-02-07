@@ -444,14 +444,183 @@ You can literally stick this on a wall:
 
 ---
 
-# PART 10: CREDENTIALS
+# PART 10: SEASONAL & CONTEXTUAL AWARENESS
+
+## Seasonal Product Intelligence
+
+Mira is aware of seasons, festivals, and celebrations. Products shown are always contextually appropriate.
+
+### Seasonal Windows (India-Centric)
+
+| Season/Festival | Show Months | Special Notes |
+|-----------------|-------------|---------------|
+| **Halloween** | October only | 🎃 Spooky treats, costumes |
+| **Diwali** | Oct 15 - Nov 15 | 🪔 Light-themed, cracker-free |
+| **Christmas** | Nov 15 - Jan 5 | 🎄 Winter wonderland themes |
+| **Valentine's** | Feb 1-20 | 💕 Heart themes, love boxes |
+| **Holi** | Feb 25 - Mar 20 | 🎨 Color-safe, washable |
+| **Easter** | Mar 15 - Apr 20 | 🐰 Spring themes |
+
+### Implementation Rules
+
+1. **Always exclude out-of-season items** - Never show Halloween in March
+2. **Birthday queries are season-agnostic** - Only show celebration cakes, never seasonal
+3. **Respect cultural context** - Don't show Christmas items to users who celebrate Diwali
+4. **Weather awareness** - Hot weather = cooling products, monsoon = indoor toys
+
+---
+
+# PART 11: TECHNICAL LEARNINGS (BUG PATTERNS TO AVOID)
+
+## Common Mistakes & Fixes
+
+These are actual bugs we've encountered. Future developers must avoid repeating them.
+
+### Bug Pattern 1: React State Timing
+**Problem:** Using `query` state variable after it's been cleared
+**Symptom:** Service/Experience detection always returns empty
+**Fix:** Use `inputQuery` (the captured value) not `query` (the state)
+```javascript
+// ❌ WRONG - query is already cleared by setQuery('')
+detectedServices = detectServiceIntent(query);
+
+// ✅ CORRECT - inputQuery is the captured value
+detectedServices = detectServiceIntent(inputQuery);
+```
+
+### Bug Pattern 2: Overly Generic Keywords
+**Problem:** "help" as a comfort keyword triggers for "grooming help"
+**Symptom:** Normal service requests get emotional responses
+**Fix:** Use specific phrases, not single generic words
+```javascript
+// ❌ WRONG - too generic
+COMFORT_KEYWORDS = ['help', 'worried', 'scared'];
+
+// ✅ CORRECT - specific phrases
+COMFORT_KEYWORDS = ['please help', 'i need help', 'help me cope'];
+```
+
+### Bug Pattern 3: API Field Types
+**Problem:** Backend expects array, frontend sends string
+**Symptom:** Pydantic validation error
+**Fix:** Always check API schema, use arrays for list fields
+```javascript
+// ❌ WRONG
+intent_secondary: 'SERVICE'
+
+// ✅ CORRECT
+intent_secondary: ['SERVICE']
+```
+
+### Bug Pattern 4: Product Fallback
+**Problem:** When no products match, showing random items
+**Symptom:** Halloween items for birthday queries
+**Fix:** Better filtering before fallback, seasonal exclusions
+```python
+# ❌ WRONG - generic fallback
+if not products:
+    products = db.products.find().limit(4)
+
+# ✅ CORRECT - filtered fallback with exclusions
+if not products:
+    products = db.products.find({
+        "name": {"$not": {"$regex": seasonal_exclusion_pattern}}
+    }).limit(4)
+```
+
+---
+
+# PART 12: WORLD-CLASS ENHANCEMENT PRINCIPLES
+
+## The Magic Moment Test
+
+Every feature should create at least one "magic moment" - an interaction that makes the parent think:
+- "Wow, Mira actually remembered that!"
+- "How did Mira know I needed that?"
+- "This is exactly what I was looking for"
+
+## Enhancement Categories
+
+| Category | Focus | Example |
+|----------|-------|---------|
+| **Intelligence** | Make Mira smarter | Seasonal filtering, context awareness |
+| **Personalization** | Make it feel custom | Breed-specific recommendations |
+| **Proactive** | Anticipate needs | Birthday reminders, health alerts |
+| **Delight** | Create joy | Memory lane, milestone celebrations |
+| **Trust** | Build confidence | Comfort mode, medical boundaries |
+| **Execution** | Make things happen | In-Mira modals, service booking |
+
+## The "Would I Tell a Friend?" Test
+
+Before building any enhancement, ask:
+> "If this feature worked perfectly, would a user tell their friend about it?"
+
+If yes → Build it
+If no → Reconsider
+
+## Proactive vs Reactive
+
+| Reactive (Today) | Proactive (Vision) |
+|------------------|-------------------|
+| User asks for grooming | Mira suggests grooming before coat gets matted |
+| User asks about birthday | Mira reminds 2 weeks before birthday |
+| User reports symptoms | Mira notices pattern changes first |
+| User searches for treats | Mira knows when treats are running low |
+
+---
+
+# PART 13: FILE REFERENCE & ARCHITECTURE
+
+## Critical Files
+
+| File | Purpose | Touch With Care |
+|------|---------|-----------------|
+| `MiraDemoPage.jsx` | Main UI (~3000 lines) | ⚠️ Complex state |
+| `mira_routes.py` | AI brain endpoint | ⚠️ Intent logic |
+| `mira-prod.css` | All Mira styling | Safe |
+| `MIRA_DOCTRINE.md` | This file - the soul | 🛑 Sacred |
+| `MIRA_ENHANCEMENTS.md` | Feature roadmap | Update often |
+
+## Key Functions in Frontend
+
+| Function | Purpose |
+|----------|---------|
+| `detectServiceIntent()` | Matches query to services |
+| `detectExperienceIntent()` | Matches query to experiences |
+| `isComfortMode()` | Detects emotional moments |
+| `openServiceRequest()` | Opens in-Mira modal |
+| `generateConciergeRequest()` | Creates fallback request |
+
+## Key Functions in Backend
+
+| Function | Purpose |
+|----------|---------|
+| `search_real_products()` | Product search with filtering |
+| `mira_os_understand_with_products()` | Main AI endpoint |
+| `create_ticket()` | Service desk ticket creation |
+
+---
+
+# PART 14: CREDENTIALS & ACCESS
 
 - **Customer Login:** dipali@clubconcierge.in / test123
 - **Admin:** aditya / lola4304
-- **Database:** test_database
+- **Database:** test_database (MongoDB)
+- **Preview URL:** https://mira-router.preview.emergentagent.com/mira-demo
+- **Production:** https://thedoggycompany.in/mira-demo
+
+---
+
+# PART 15: THE PROMISE (FINAL)
+
+When Mira is complete, every pet parent will say:
+
+> "I don't know how I managed before Mira. She remembers everything about my dog - what he likes, what he's allergic to, when his birthday is, which groomer he prefers, that time he was scared of fireworks. She doesn't just answer my questions; she anticipates what I need. She's not an app. She's family."
 
 ---
 
 *This doctrine is the soul of Mira. Protect it. Build on it. Never betray it.*
+
+*Last updated: February 7, 2026*
 
 **End of Doctrine**
