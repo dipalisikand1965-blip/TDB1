@@ -689,7 +689,9 @@ const MiraDemoPage = () => {
         {!showScenarios && (
           <button
             onClick={() => setShowScenarios(true)}
-            className="mb-4 px-4 py-2 bg-white/5 hover:bg-white/10 rounded-xl text-white/50 text-sm transition-all"
+            style={{ touchAction: 'manipulation', userSelect: 'none' }}
+            className="mb-4 px-4 py-2.5 bg-white/5 hover:bg-white/10 active:bg-white/20 rounded-xl 
+              text-white/50 text-sm transition-all min-h-[44px] active:scale-95 select-none"
           >
             <Sparkles className="w-4 h-4 inline mr-2" />
             Show Test Scenarios
@@ -698,20 +700,20 @@ const MiraDemoPage = () => {
         
         {/* Welcome State (no conversation yet) */}
         {conversationHistory.length === 0 && !isProcessing && (
-          <div className="text-center py-16">
-            <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 
+          <div className="text-center py-8 sm:py-16">
+            <div className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-4 sm:mb-6 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 
               flex items-center justify-center shadow-2xl shadow-purple-500/30">
-              <Bot className="w-12 h-12 text-white" />
+              <Bot className="w-10 h-10 sm:w-12 sm:h-12 text-white" />
             </div>
-            <h2 className="text-3xl font-bold text-white mb-3">
+            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2 sm:mb-3">
               Hi! I&apos;m Mira
             </h2>
-            <p className="text-white/60 text-lg mb-8 max-w-md mx-auto">
+            <p className="text-white/60 text-base sm:text-lg mb-6 sm:mb-8 max-w-md mx-auto px-4">
               I&apos;m here to help with everything for {pet.name}. Just ask me anything!
             </p>
             
             {/* Suggestion Chips */}
-            <div className="flex flex-wrap justify-center gap-3 max-w-2xl mx-auto">
+            <div className="flex flex-wrap justify-center gap-2 sm:gap-3 max-w-2xl mx-auto px-2">
               {[
                 `Soft treats for ${pet.name}'s evening`,
                 `Plan ${pet.name}'s birthday`,
@@ -722,18 +724,21 @@ const MiraDemoPage = () => {
                   key={idx}
                   onClick={() => {
                     setQuery(suggestion);
-                    inputRef.current?.focus();
-                    // Auto-submit on mobile for better UX
+                    // Auto-submit on tap for better mobile UX
                     setTimeout(() => {
                       if (handleSubmitRef.current) {
                         handleSubmitRef.current(null, suggestion);
                       }
                     }, 100);
                   }}
-                  style={{ touchAction: 'manipulation' }}
-                  className="px-4 py-3 bg-white/10 backdrop-blur border border-white/20 rounded-full
-                    text-white/80 text-sm hover:bg-white/20 transition-all min-h-[44px]
-                    active:scale-95 active:bg-white/30"
+                  style={{ 
+                    touchAction: 'manipulation',
+                    WebkitTapHighlightColor: 'transparent',
+                    userSelect: 'none'
+                  }}
+                  className="px-3 sm:px-4 py-2.5 sm:py-3 bg-white/10 backdrop-blur border border-white/20 rounded-full
+                    text-white/80 text-xs sm:text-sm hover:bg-white/20 transition-all min-h-[44px]
+                    active:scale-95 active:bg-white/30 select-none"
                 >
                   {suggestion}
                 </button>
