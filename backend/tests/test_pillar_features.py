@@ -6,7 +6,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://mira-chat-lab.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://mira-sandbox.preview.emergentagent.com').rstrip('/')
 
 class TestFitPillar:
     """Tests for Fit pillar endpoints"""
