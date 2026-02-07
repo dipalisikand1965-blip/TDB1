@@ -1991,18 +1991,18 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
             logger.warning(f"[SESSION PERSIST] Failed to save conversation: {persist_err}")
         
         # INCREMENT SOUL SCORE - Every conversation helps Mira know the pet better!
-        if pet_context and pet_context.get("id"):
+        if request.pet_context and request.pet_context.get("id"):
             try:
                 # Determine interaction type based on what happened
                 interaction_type = "conversation"
                 if understanding.get("pet_preference_learned"):
                     interaction_type = "preference_learned"
-                elif "health" in user_message.lower() or "allergy" in user_message.lower():
+                elif "health" in (request.input or "").lower() or "allergy" in (request.input or "").lower():
                     interaction_type = "health_info"
                 elif execution_type == "CONCIERGE":
                     interaction_type = "service_booked"
                 
-                await increment_soul_score_on_interaction(pet_context.get("id"), interaction_type)
+                await increment_soul_score_on_interaction(request.pet_context.get("id"), interaction_type)
             except Exception as soul_err:
                 logger.warning(f"[SOUL SCORE] Failed to increment: {soul_err}")
         
