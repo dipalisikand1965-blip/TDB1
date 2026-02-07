@@ -22,8 +22,8 @@ import {
 import { useAuth } from '../context/AuthContext';
 import { API_URL } from '../utils/api';
 
-// Import the new premium CSS
-import '../styles/mira-chat.css';
+// Import the premium CSS
+import '../styles/mira-premium.css';
 
 // Dock Items - Clean and minimal
 const DOCK_ITEMS = [
