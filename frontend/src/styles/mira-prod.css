@@ -289,10 +289,11 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-sm);
+  justify-content: flex-start;
 }
 
 .mp-test-chip {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 6px;
   padding: var(--space-sm) var(--space-md);
@@ -304,6 +305,8 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
+  min-height: 40px;
+  white-space: nowrap;
 }
 
 .mp-test-chip:hover {
