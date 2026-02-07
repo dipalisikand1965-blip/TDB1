@@ -635,20 +635,19 @@
 }
 
 .mira-card {
-  max-width: 85%;
+  max-width: 100%;
   background: white;
   border-radius: var(--mira-radius-lg);
-  border-bottom-left-radius: var(--mira-space-xs);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
   overflow: hidden;
 }
 
-/* Mira Card Header */
+/* Mira Card Header - Simplified */
 .mira-card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: var(--mira-space-md) var(--mira-space-lg);
+  padding: var(--mira-space-sm) var(--mira-space-md);
   border-bottom: 1px solid var(--mira-border-subtle);
   background: var(--mira-bg-primary);
 }
