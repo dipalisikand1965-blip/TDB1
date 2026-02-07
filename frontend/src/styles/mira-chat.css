@@ -1222,45 +1222,135 @@
 
 
 /* ========================================
-   Concierge® CTA - Prominent Text Link Style
+   ChatGPT-Style Welcome - Mira at TOP
    ======================================== */
-.mira-concierge-cta {
+.mira-welcome-chatgpt {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: var(--mira-space-2xl) var(--mira-space-lg);
   text-align: center;
-  padding: var(--mira-space-xl) var(--mira-space-lg);
-  margin-top: var(--mira-space-lg);
-  border-top: 1px solid var(--mira-border-light);
 }
 
-.mira-concierge-cta-text {
+.mira-welcome-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto var(--mira-space-lg);
+  background: linear-gradient(135deg, #A855F7 0%, #EC4899 100%);
+  border-radius: var(--mira-radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 32px rgba(168, 85, 247, 0.3);
+}
+
+.mira-welcome-icon svg {
+  width: 28px;
+  height: 28px;
+  color: white;
+}
+
+.mira-welcome-heading {
+  font-size: 28px;
+  font-weight: 600;
+  color: white;
+  margin: 0 0 var(--mira-space-md);
+  line-height: 1.3;
+}
+
+.mira-welcome-subtext {
   font-size: var(--mira-font-size-base);
-  color: var(--mira-text-secondary);
-  cursor: pointer;
-  transition: color var(--mira-transition-fast);
-  display: inline-block;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0 0 var(--mira-space-xl);
+  line-height: 1.6;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.mira-concierge-cta-text:hover {
-  color: var(--mira-accent);
+.mira-quick-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--mira-space-sm);
+  margin-bottom: var(--mira-space-xl);
 }
 
-.mira-concierge-cta-highlight {
-  color: var(--mira-accent);
+.mira-suggestion-pill {
+  display: flex;
+  align-items: center;
+  gap: var(--mira-space-sm);
+  padding: var(--mira-space-md) var(--mira-space-lg);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: var(--mira-radius-full);
+  color: white;
+  font-size: var(--mira-font-size-sm);
   font-weight: 500;
+  cursor: pointer;
+  transition: all var(--mira-transition-fast);
 }
 
-/* Remove the bottom bar - using inline CTA instead */
-.mira-concierge-bar {
+.mira-suggestion-pill:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+/* Test Panel - Collapsible */
+.mira-test-panel {
+  margin-top: var(--mira-space-lg);
+  padding-top: var(--mira-space-lg);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mira-test-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--mira-space-sm);
+  color: rgba(255, 255, 255, 0.5);
+  font-size: var(--mira-font-size-sm);
+  cursor: pointer;
+  padding: var(--mira-space-sm);
+  transition: color var(--mira-transition-fast);
+}
+
+.mira-test-toggle:hover {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.mira-test-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--mira-space-xs);
+  margin-top: var(--mira-space-md);
+}
+
+.mira-test-chip {
+  padding: var(--mira-space-xs) var(--mira-space-md);
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--mira-radius-full);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: var(--mira-font-size-xs);
+  cursor: pointer;
+  transition: all var(--mira-transition-fast);
+}
+
+.mira-test-chip:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.mira-test-chip.active {
+  background: linear-gradient(135deg, #A855F7 0%, #EC4899 100%);
+  border-color: transparent;
+  color: white;
+}
+
+/* Hide old welcome styles */
+.mira-welcome, .mira-scenarios {
   display: none;
-}
-
-/* Restore composer margin */
-.mira-composer {
-  margin-bottom: 0;
-}
-
-@media (max-width: 640px) {
-  .mira-composer {
-    margin-bottom: 0;
-  }
 }
 
