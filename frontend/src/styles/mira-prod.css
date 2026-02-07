@@ -1614,6 +1614,7 @@ button.mp-welcome-chip,
   justify-content: center;
   gap: 10px;
   margin-bottom: 24px;
+  width: 100%;
 }
 
 @media (min-width: 768px) {
@@ -1635,6 +1636,7 @@ button.mp-welcome-chip,
   color: white;
   font-size: 14px;
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .trait-icon {
