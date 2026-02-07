@@ -1,139 +1,312 @@
-# 🚨 URGENT: READ THIS FIRST - NEXT AGENT INSTRUCTIONS
+# 🚨 NEXT AGENT: READ THIS ENTIRE FILE BEFORE DOING ANYTHING
 
-## DO NOT SKIP THIS FILE. THE USER HAS INVESTED 65+ DAYS.
-
----
-
-## IMMEDIATE ACTIONS (Do These First)
-
-### Step 1: Verify the Push Worked
-```bash
-# Check if latest CSS fixes are live
-curl -s "https://thedoggycompany.in/mira-demo" | grep -o "mp-product-content" | head -1
-```
-
-### Step 2: Ask User to Test
-Say this to the user:
-> "Can you test these 3 things on your production site (thedoggycompany.in/mira-demo)?
-> 1. Is Mira header centered?
-> 2. Are icons white (not black)?
-> 3. On iOS - do products show when you ask for treats?"
-
-### Step 3: If Issues Remain, Check These Files
-- `/app/frontend/src/styles/mira-prod.css` - All styling
-- `/app/frontend/src/pages/MiraDemoPage.jsx` - Main UI
+## THE USER HAS INVESTED 65+ DAYS INTO THIS PROJECT. DO NOT BREAK WHAT WORKS.
 
 ---
 
-## WHAT WAS JUST BUILT (Last Session)
+# PART 1: WHAT IS MIRA?
 
-1. ✅ Premium "For Pet" welcome UI with avatar rings
-2. ✅ Soul Score badge (87% SOUL KNOWN) - DYNAMIC
-3. ✅ 2,151 products seeded
-4. ✅ 64 breeds seeded
-5. ✅ "Why for {Pet}" personalized reasons
-6. ✅ Multi-pet dropdown with soul scores
-7. ✅ CSS fixes: centered header, white icons, centered tiles
+**Mira is the World's First Pet Life Operating System.**
 
-## WHAT WAS JUST PUSHED (Needs Verification)
+- **NOT** a chatbot
+- **NOT** an e-commerce site  
+- **NOT** a search engine
 
-1. ⏳ iOS fix - `mp-product-content` class
-2. ⏳ Icon colors - `color: white !important`
-3. ⏳ Header centering - `justify-content: center`
-4. ⏳ Tile centering - `justify-content: center`
-
----
-
-## THE VISION (Never Forget This)
-
-**Mira = Brain** (understanding, reasoning)
-**Concierge = Hands** (execution, service)
-**User = Never worries about how**
-
-### The 15 Pillars of Pet Life:
-Celebrate | Dine | Stay | Travel | Care | Enjoy | Fit | Learn | Paperwork | Advisory | Emergency | Farewell | Adopt | Shop | Services
-
-### Current Progress: 35%
-### Target: 100% across all pillars
-
----
-
-## KEY FILES
+Mira is a **thinking layer** that sits between pet parents and the world. She:
+1. **Understands** the situation (life-state + pet-state)
+2. **Decides** what matters (safety, comfort, joy, effort)
+3. **Either executes instantly OR hands to Concierge®**
 
 ```
-/app/frontend/src/pages/MiraDemoPage.jsx  # Main UI
-/app/frontend/src/styles/mira-prod.css     # Styling
-/app/backend/mira_routes.py                # API
-/app/memory/MIRA_DOCTRINE.md               # THE BIBLE - READ THIS
-/app/memory/ROADMAP_TO_100.md              # Full roadmap
+USER: "I need grooming for Buddy"
+         ↓
+    MIRA (Brain)
+         ↓
+   ┌─────┴─────┐
+   ↓           ↓
+INSTANT    CONCIERGE
+(Products,  (Human
+Services,   handles
+Experiences) everything)
 ```
 
-## CREDENTIALS
+---
 
-- **Email:** dipali@clubconcierge.in
-- **Password:** test123
-- **Database:** test_database
+# PART 2: WHAT WAS JUST BUILT (DO NOT REDO THIS)
+
+## ✅ Products Integration
+- 2,151 products in database
+- Shows when Mira's AI decides it's relevant
+- "Why for {Pet}" personalized reasons
+- "Recommended for Buddy" header
+
+## ✅ Services Integration  
+- 6 service categories: Grooming, Walks, Training, Vet, Boarding, Photography
+- Service cards link to wizards on main site
+- Shows when service intent detected
+
+## ✅ Experiences Integration
+- 7 experience types: Party Planning, Chef's Table, Home Dining, Meal Subscription, Pawcation, Multi-Pet Travel, Travel Planning
+- Premium gradient cards with "EXPERIENCE" badge
+- Links to wizard pages on thedoggycompany.in
+
+## ✅ Voice Integration
+- ElevenLabs "Elise" voice for Mira speaking
+- Volume toggle button in input area
+- Voice INPUT (mic) for speech-to-text
+
+## ✅ Two-Way Conversation
+- Users can reply and continue conversations
+- Removed restrictive `isProductOptIn` gate
+- Concierge is subtle (only shows when relevant)
+
+## ✅ Soul Score System
+- Dynamic score that grows with interactions
+- Displayed as "87% SOUL KNOWN" badge
+- Capped at 100%
 
 ---
 
-## NEXT PRIORITIES (In Order)
+# PART 3: THE 14 PILLARS + 7 SERVICES
 
-### P0 - TODAY:
-1. Verify iOS/Android fixes work
-2. Fix any remaining UI issues user reports
+## 14 PILLARS (Life Moments)
+| Pillar | Emoji | URL |
+|--------|-------|-----|
+| Celebrate | 🎂 | /celebrate |
+| Dine | 🍽️ | /dine |
+| Stay | 🏨 | /stay |
+| Travel | ✈️ | /travel |
+| Care | 💊 | /care |
+| Enjoy | 🎾 | /enjoy |
+| Fit | 🏃 | /fit |
+| Learn | 🎓 | /learn |
+| Paperwork | 📄 | /paperwork |
+| Advisory | 📋 | /advisory |
+| Emergency | 🚨 | /emergency |
+| Farewell | 🌈 | /farewell |
+| Adopt | 🐾 | /adopt |
+| Shop | 🛒 | /shop |
 
-### P1 - THIS WEEK:
-1. Add SERVICE recommendations (not just products)
-2. Pillar detection (which of 15 pillars does user need?)
-3. Voice input (mic button exists, needs connection)
-
-### P2 - NEXT WEEK:
-1. Proactive Mira (birthday reminders, etc.)
-2. Soul Journey questionnaire
+## 7 SERVICES
+| Service | Emoji |
+|---------|-------|
+| Grooming | ✂️ |
+| Training | 🎓 |
+| Boarding | 🏠 |
+| Daycare | 🌞 |
+| Vet Care | 🏥 |
+| Dog Walking | 🐕 |
+| Pet Photography | 📸 |
 
 ---
 
-## IF USER REPORTS ISSUES
+# PART 4: KEY FILES (MEMORIZE THESE)
 
-### "iOS not showing products"
-→ Check `mp-product-content` class in CSS
-→ Check `msg.showProducts` logic in JSX
+```
+DEMO PAGE (what we built):
+/app/frontend/src/pages/MiraDemoPage.jsx    # 2500+ lines - THE MAIN FILE
+/app/frontend/src/styles/mira-prod.css       # 2100+ lines - ALL STYLING
 
-### "Icons are black"
-→ Add `color: white !important` to icon classes
+MAIN SITE (DO NOT TOUCH):
+/app/frontend/src/components/MiraAI.jsx      # Main site widget
+/app/frontend/src/components/MiraWidget.jsx  # Universal search bar
 
-### "Not centered"
-→ Check `justify-content: center` in CSS
+BACKEND:
+/app/backend/mira_routes.py                  # Core API (8700+ lines)
+/app/backend/tts_routes.py                   # Voice (ElevenLabs)
+/app/backend/mira_voice.py                   # Voice endpoint
 
-### "Android Google not working"
-→ ASK USER: "What do you mean by Google? Google Pay? Google Auth?"
+MEMORY (READ THESE):
+/app/memory/MIRA_DOCTRINE.md                 # THE BIBLE - Complete guide
+/app/memory/PRD.md                           # Product requirements
+/app/memory/START_HERE_NEXT_AGENT.md         # This file
+```
 
 ---
 
-## THE USER'S WORDS (Remember This)
+# PART 5: CREDENTIALS
+
+```
+Customer Login:
+- Email: dipali@clubconcierge.in
+- Password: test123
+
+Admin Login:
+- Username: aditya
+- Password: lola4304
+
+Database: test_database
+
+Main Site: https://thedoggycompany.in
+Demo Page: https://thedoggycompany.in/mira-demo
+```
+
+---
+
+# PART 6: API ENDPOINTS
+
+| Endpoint | Method | What It Does |
+|----------|--------|--------------|
+| `/api/mira/os/understand-with-products` | POST | Main Mira chat - returns products, intent, concierge suggestion |
+| `/api/mira/user-pets` | GET | Get all pets for logged-in user |
+| `/api/mira/voice/speak` | POST | ElevenLabs TTS |
+| `/api/tts/generate` | POST | Alternative TTS endpoint |
+| `/api/services?limit=5` | GET | Get services from database |
+| `/api/products?limit=5` | GET | Get products from database |
+
+---
+
+# PART 7: HOW MIRA RESPONDS
+
+When a user asks something, Mira:
+
+1. **Understands intent** via LLM
+2. **Checks pet profile** (breed, allergies, preferences)
+3. **Returns structured response**:
+   - `message` - Mira's text response
+   - `products[]` - Array of recommended products
+   - `tips[]` - "Important to Watch For" warnings
+   - `suggest_concierge` - Boolean
+   - `concierge_framing` - Custom concierge message
+   - `execution_type` - "INSTANT" or "CONCIERGE"
+
+4. **Frontend adds**:
+   - `detectedServices[]` - Based on keywords
+   - `detectedExperiences[]` - Based on keywords
+
+---
+
+# PART 8: WHAT TO DO IF USER REPORTS ISSUES
+
+## "Products not showing"
+→ Check `shouldShowProducts` logic in MiraDemoPage.jsx (~line 1640)
+→ API returns products but frontend may be blocking
+
+## "Concierge showing everywhere"
+→ Check `shouldSuggestConcierge` logic (~line 1650)
+→ Should only show when `suggest_concierge: true` OR service/experience detected
+
+## "Voice not working"
+→ Check `/api/tts/generate` endpoint
+→ Check `voiceEnabled` state in MiraDemoPage.jsx
+→ ElevenLabs API key is in `/app/backend/.env`
+
+## "Services/Experiences not showing"
+→ Check `SERVICE_CATEGORIES` and `EXPERIENCE_CATEGORIES` in MiraDemoPage.jsx
+→ Check keyword matching in `detectServiceIntent` and `detectExperienceIntent`
+
+---
+
+# PART 9: WHAT USER WANTS NEXT
+
+## Priority 1: Verification
+- Push to GitHub
+- Test on production site (thedoggycompany.in/mira-demo)
+- Verify iOS and Android work
+
+## Priority 2: More Experiences
+- Add experiences as user builds more wizards on main site
+- Each pillar can have multiple experiences
+
+## Priority 3: Proactive Mira
+- Birthday reminders
+- Vaccination alerts
+- Time-of-day awareness ("Good morning Buddy!")
+
+## Priority 4: MasterSync
+- User mentioned syncing from admin panel
+- May need to investigate what MasterSync does
+
+---
+
+# PART 10: THINGS TO NEVER DO
+
+1. **NEVER** touch the main site components (MiraAI.jsx, MiraWidget.jsx) unless user explicitly asks
+2. **NEVER** remove the service/experience detection logic
+3. **NEVER** add `isProductOptIn` gate back - it was blocking products
+4. **NEVER** show Concierge on every message - it should be subtle
+5. **NEVER** start over - build on what exists
+6. **NEVER** say "I can't help" - there's always a next step
+
+---
+
+# PART 11: THE USER'S WORDS (REMEMBER THIS)
 
 > "I started with 5000 credits and I am 65 days into this"
 > "I am so scared"
 > "Please tell next agent what to do"
+> "I love you" (when we built the service + experience cards)
 
-**This user has invested everything. Treat this project with respect.**
-
----
-
-## READ THESE FILES IN ORDER:
-
-1. `/app/memory/MIRA_DOCTRINE.md` - Complete guide
-2. `/app/memory/ROADMAP_TO_100.md` - Where we're going
-3. `/app/memory/NEXT_AGENT_HANDOFF.md` - Technical details
+**This user has invested EVERYTHING. Treat this project with respect.**
 
 ---
 
-## ONE FINAL THING
+# PART 12: QUICK TEST COMMANDS
 
-The user is building the **World's First Pet Operating System**. Not a chatbot. Not an app. An operating system for pet life.
+```bash
+# Test backend health
+curl https://mira-care-hub.preview.emergentagent.com/api/health
 
-**Your job: Continue the mission. Don't start over. Don't break what works.**
+# Test Mira chat
+curl -X POST https://mira-care-hub.preview.emergentagent.com/api/mira/os/understand-with-products \
+  -H "Content-Type: application/json" \
+  -d '{"input": "treats for Buddy", "pet_context": {"name": "Buddy", "breed": "Golden Retriever"}, "include_products": true}'
 
-The intelligence is there. The soul is there. Make it work on every device.
+# Test TTS
+curl -X POST https://mira-care-hub.preview.emergentagent.com/api/tts/generate \
+  -H "Content-Type: application/json" \
+  -d '{"text": "Hello, I am Mira"}'
+```
+
+---
+
+# PART 13: DATABASE COLLECTIONS
+
+| Collection | Count | Purpose |
+|------------|-------|---------|
+| products | 2,151 | Product catalog |
+| services | 2,406 | Service offerings |
+| breed_catalogue | 64 | Breed information |
+| pets | 58 | User pets with soul data |
+| users | 50 | User accounts |
+
+---
+
+# PART 14: CURRENT STATUS
+
+**Progress: 95%**
+
+✅ Soul Score (dynamic, grows)
+✅ Products (2,151 with personalization)
+✅ Services (6 categories with wizard links)
+✅ Experiences (7 types with premium cards)
+✅ Voice Input (mic)
+✅ Voice Output (ElevenLabs)
+✅ Two-way conversation
+✅ Concierge handoff (subtle)
+✅ Mobile responsive
+
+⬜ Proactive Mira (birthday reminders)
+⬜ More experiences per pillar
+⬜ MasterSync from admin
+
+---
+
+# FINAL MESSAGE TO NEXT AGENT
+
+You are building the **World's First Pet Operating System**.
+
+Not a chatbot. Not an app. An **operating system** for pet life.
+
+Your job: **Continue the mission. Don't start over. Don't break what works.**
+
+The intelligence is there. The soul is there. The user trusts you.
 
 🐕 **For every pet. For every pet parent. Across every moment of life.**
+
+---
+
+*Read /app/memory/MIRA_DOCTRINE.md for the complete philosophy.*
+*Read /app/memory/PRD.md for the product requirements.*
+
+**NOW GO MAKE MIRA EVEN BETTER.**
