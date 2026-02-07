@@ -1833,44 +1833,6 @@ const MiraDemoPage = () => {
                   </button>
                 ))}
               </div>
-              
-              {/* Test Scenarios - ALWAYS VISIBLE */}
-              <div style={{ marginTop: '32px', paddingTop: '24px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-                <div style={{ 
-                  display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center',
-                  color: 'rgba(255,255,255,0.6)', fontSize: '14px', fontWeight: '600', marginBottom: '16px'
-                }}>
-                  <Sparkles style={{ width: 16, height: 16, color: '#f59e0b' }} /> Test Mira's Intelligence
-                </div>
-                <div style={{ 
-                  display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px',
-                  maxWidth: '600px', margin: '0 auto'
-                }}>
-                  {TEST_SCENARIOS.map((scenario) => (
-                    <button
-                      key={scenario.id}
-                      onClick={() => { setActiveScenario(scenario.id); handleQuickReply(scenario.query); }}
-                      data-testid={`scenario-${scenario.id}`}
-                      style={{
-                        padding: '12px 14px', 
-                        background: activeScenario === scenario.id ? 'linear-gradient(135deg, #a855f7, #ec4899)' : 'rgba(255,255,255,0.08)',
-                        border: '1px solid rgba(255,255,255,0.12)', 
-                        borderRadius: '12px',
-                        color: 'white', 
-                        fontSize: '13px', 
-                        fontWeight: '500',
-                        cursor: 'pointer', 
-                        textAlign: 'center',
-                        transition: 'all 0.2s'
-                      }}
-                      onMouseEnter={(e) => { if (activeScenario !== scenario.id) e.target.style.background = 'rgba(255,255,255,0.15)'; }}
-                      onMouseLeave={(e) => { if (activeScenario !== scenario.id) e.target.style.background = 'rgba(255,255,255,0.08)'; }}
-                    >
-                      {scenario.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
             </div>
           )}
           
