@@ -1018,13 +1018,65 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
         ])
         is_grief_hold = is_grief_context and is_not_ready
         
+        # GROOMING INTENT DETECTION - Comprehensive Grooming OS
+        # GROOM_PLAN: haircut, trim, bath, smell, needs grooming
+        # GROOM_TOOLS: shampoo, brush, wipes, "what do I need at home"
+        # GROOM_CONCERN: hates grooming, nervous, anxiety about grooming
+        # GROOM_ACCIDENT: cut, nick, bleeding, injury during grooming
+        # GROOM_POST: scratching after grooming, rash, irritation
+        # GROOM_LIFESTAGE: senior dog grooming, puppy's first groom
+        # GROOM_BOOKING: book groomer, schedule appointment, fix slot
+        
+        is_groom_accident = any(phrase in user_input_lower for phrase in [
+            "cut", "nick", "bleeding", "blood", "injured", "injury", "accident",
+            "nail too short", "cut too deep", "hurt him", "hurt her"
+        ]) and any(word in user_input_lower for word in [
+            "groom", "trim", "nail", "clipper", "scissor", "cut"
+        ])
+        
+        is_groom_post = any(phrase in user_input_lower for phrase in [
+            "after groom", "after grooming", "since grooming", "after the bath",
+            "scratching a lot", "scratching after", "rash after", "itchy after"
+        ])
+        
+        is_groom_booking = any(phrase in user_input_lower for phrase in [
+            "book groomer", "book a groomer", "book grooming", "schedule grooming",
+            "fix grooming", "grooming appointment", "arrange grooming",
+            "book me a groomer", "fix a slot", "schedule his grooming", "schedule her grooming"
+        ])
+        
+        is_groom_tools = any(phrase in user_input_lower for phrase in [
+            "what shampoo", "which shampoo", "shampoo should", "what brush",
+            "which brush", "grooming tools", "need at home", "home grooming",
+            "groom at home", "tools for shedding", "deshedding"
+        ])
+        
+        is_groom_lifestage = any(phrase in user_input_lower for phrase in [
+            "first groom", "first time grooming", "puppy groom", "senior groom",
+            "older dog groom", "getting older", "first real grooming"
+        ])
+        
+        is_groom_concern = any(phrase in user_input_lower for phrase in [
+            "hates groom", "hates being brushed", "hates bath", "scared of groom",
+            "nervous groom", "anxiety groom", "doesn't like brush", "doesn't like bath"
+        ])
+        
+        is_groom_plan = any(word in user_input_lower for word in [
+            "haircut", "grooming", "groom", "trim", "bath", "nail", "ears", "paws",
+            "shedding", "brushing", "smell", "smells", "dirty", "matted"
+        ]) and not is_groom_accident and not is_groom_post and not is_groom_booking and not is_groom_tools
+        
+        # For GROOM_ACCIDENT and GROOM_POST: NO products, route to vet
+        is_groom_medical_boundary = is_groom_accident or is_groom_post
+        
         is_service_intent = any(word in user_input_lower for word in [
             "haircut", "grooming", "groom", "trim", "bath", "nail", 
             "vet", "doctor", "cough", "sick", "worried", "health", "pain", "limp",
             "boarding", "sitter", "kennel", "daycare",
             "training", "trainer", "behavio",
             "trip", "travel", "vacation", "holiday",
-            "anxious", "anxiety", "scared", "fear", "thunder", "storm", "firework", "noise"
+            "anxious", "anxiety", "scared", "fear", "thunder", "storm", "firework", "noise",
+            "shedding", "brushing", "ears", "paws"
         ])
         
         # FOOD_MAIN intent - asking about daily diet, NOT treats
