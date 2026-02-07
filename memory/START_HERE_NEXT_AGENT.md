@@ -4,6 +4,30 @@
 
 ---
 
+# PART 0: CRITICAL NEW FEATURE - CONCIERGE CAN DO ANYTHING
+
+## The Concierge Operating Hours
+- **Live:** 6:30 AM to 11:30 PM
+- **After Hours:** Mira says "We've noted your request and will be back at 6:30 AM"
+
+## The Concierge Promise
+- Concierge can do **ANYTHING** (legal, moral, no medical)
+- **NEVER** say "no products found"
+- **NEVER** say "we can't help with that"
+- **ALWAYS** offer a path forward
+
+## Dynamic Request Detection
+When user asks for something without direct product/service match:
+- Mira generates a **dynamic Concierge request card**
+- Card has icon, label, description based on detected intent
+- Detected categories: Food, Health, Travel, Celebration, Grooming, Boarding, Training, Walking, Shopping, Photography, Adoption, Paperwork, Emergency
+
+## Functions Added:
+- `isConciergeLive()` - Checks if within operating hours
+- `generateConciergeRequest(query, petName)` - Creates dynamic request card
+
+---
+
 # PART 1: WHAT IS MIRA?
 
 **Mira is the World's First Pet Life Operating System.**
