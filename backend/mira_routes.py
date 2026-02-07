@@ -826,6 +826,8 @@ class MiraOSUnderstandRequest(BaseModel):
     ticket_id: Optional[str] = None
     completed_steps: Optional[List[str]] = []  # Steps already answered - DO NOT repeat
     step_history: Optional[List[Dict[str, Any]]] = []  # Full Q&A history
+    # Full conversation history for context
+    conversation_history: Optional[List[Dict[str, str]]] = []  # [{role: user/assistant, content: ...}]
     # Tell me more handling
     user_asking_for_more_info: Optional[bool] = False  # User wants options explained
     current_step: Optional[str] = None  # Current pending step being explained
