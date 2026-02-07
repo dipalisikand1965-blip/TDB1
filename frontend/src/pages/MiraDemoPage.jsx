@@ -538,21 +538,38 @@ const MiraDemoPage = () => {
   
   // Check if user is explicitly asking for products/suggestions
   // This should only return true AFTER initial clarifying questions
+  // Covers ALL flows: Treats, Grooming tools, Birthday cakes, Travel gear
   const isProductOptIn = useCallback((inputQuery) => {
     const lowerInput = inputQuery.toLowerCase();
     
-    // These are explicit product request phrases that happen AFTER clarifying
+    // Explicit product request phrases that happen AFTER clarifying
     const optInPhrases = [
+      // General suggest phrases
       'suggest a few', 'suggest some', 'suggest 3', 'suggest 5',
-      'suggest treats', 'suggest products', 'suggest tools',
       'help me pick', 'help me choose', 'show me options',
-      'what should i buy', 'what products', 'what treats',
+      'what should i buy', 'what products', 'yes please',
+      'both please', 'both, please', 'all of it',
+      
+      // Treats specific
+      'suggest treats', 'suggest a few treats', 'show me treats',
+      'what treats', 'recommend treats',
+      
+      // Grooming specific  
+      'suggest tools', 'suggest a minimal set', 'what tools',
+      'suggest products', 'grooming tools', 'need tools',
+      
+      // Birthday specific
+      'suggest cakes', 'show me cakes', 'cake options',
+      'suggest toys', 'birthday treats', 'party supplies',
+      
+      // Travel specific
       'checklist + travel tools', 'checklist and tools',
-      'both please', 'both, please', 'yes please'
+      'travel tools', 'packing list', 'what to pack',
+      'suggest travel', 'travel gear'
     ];
     
-    // Only count as opt-in if it's a clear product request response (not initial query)
-    // The initial "show me treats" is NOT an opt-in - it's just starting the conversation
+    // Only count as opt-in if it's a clear product request
+    // NOT on initial queries like "show me treats for Buddy"
     return optInPhrases.some(phrase => lowerInput.includes(phrase));
   }, []);
   
