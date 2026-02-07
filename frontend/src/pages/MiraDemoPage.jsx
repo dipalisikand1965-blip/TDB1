@@ -1824,7 +1824,8 @@ const MiraDemoPage = () => {
       // MIRA DOCTRINE: COMFORT MODE - Be the Great Mother, not a salesman
       // In emotional moments (anxiety, fear, grief, health concerns), suppress products
       // Show presence, tips, empathy - NOT irrelevant product recommendations
-      const inComfortMode = isComfortMode(query);
+      // Pass conversation history to maintain context (e.g., "thank you" after grief)
+      const inComfortMode = isComfortMode(query, conversationHistory);
       
       if (inComfortMode) {
         console.log('[COMFORT_MODE] Detected emotional moment - suppressing products, being present');
