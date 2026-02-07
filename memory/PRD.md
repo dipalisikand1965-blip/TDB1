@@ -195,17 +195,30 @@ MEMORY:
 5. ~~Seasonal product filtering~~ ✅ DONE (Feb 7, 2026)
 
 ### P1 - This Week
-1. Backend Service Integration: Query `services` collection
-2. Remembered Service Providers (E013)
+1. Backend Service Integration: Query `services` collection ✅ DONE (E014)
+2. Remembered Service Providers (E013) ✅ DONE
 3. Push to GitHub and test on production
+4. Mobile Responsiveness ✅ DONE - Full specs in `/app/memory/MOBILE_SPECS.md`
 
 ### P2 - This Month
 4. Birthday/Anniversary Reminders (E018)
-5. Pet Photo in Recommendations (E017)
+5. Pet Photo in Recommendations (E017) ✅ DONE
 6. Breed-Specific Product Boost (E016)
+7. MasterSync admin UI trigger
 
 ### P3 - Future
 See `/app/memory/MIRA_ENHANCEMENTS.md` for full roadmap (40+ enhancements planned)
+
+---
+
+## Data Sync Architecture
+
+Mira reads DIRECTLY from MongoDB - no manual sync needed:
+- `products_master` → Mira product recommendations
+- `services_master` → Mira service cards (E014)
+- Changes in admin are **instantly** available in Mira
+
+See `/app/memory/DATA_SYNC_ARCHITECTURE.md` for full details.
 
 ---
 
