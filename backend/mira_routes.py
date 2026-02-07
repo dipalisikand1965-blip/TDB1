@@ -846,7 +846,9 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
         
         # Determine if this is a SERVICE intent (no products) vs PRODUCT intent
         # SERVICE intents: grooming, vet, health, travel planning, boarding, training, anxiety
+        # FOOD_MAIN: asking about daily diet should NOT show treats
         user_input_lower = request.input.lower() if request.input else ""
+        
         is_service_intent = any(word in user_input_lower for word in [
             "haircut", "grooming", "groom", "trim", "bath", "nail", 
             "vet", "doctor", "cough", "sick", "worried", "health", "pain", "limp",
@@ -857,15 +859,27 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
             "anxious", "anxiety", "scared", "fear", "thunder", "storm", "firework", "noise"
         ])
         
+        # FOOD_MAIN intent - asking about daily diet, NOT treats
+        is_food_main_intent = any(word in user_input_lower for word in [
+            "food", "diet", "kibble", "feed", "feeding", "meal", "nutrition", "eat"
+        ]) and not any(word in user_input_lower for word in [
+            "treat", "snack", "reward", "birthday", "cake", "celebration"
+        ])
+        
         # Check if it's a product-related planning request (birthday, treats, food)
-        is_product_planning = any(word in user_input_lower for word in [
-            "treat", "food", "toy", "cake", "birthday", "gift", "buy", "order", "celebrate"
+        is_treat_request = any(word in user_input_lower for word in [
+            "treat", "snack", "reward", "cake", "birthday", "gift", "celebrate", "donut", "pupcake"
         ])
         
         # Step 2: For PRODUCT intents, get real products
         # For SERVICE intents, skip products entirely
+        # For FOOD_MAIN, skip products (need clarification first)
         real_products = []
-        should_show_products = not is_service_intent or is_product_planning
+        should_show_products = not is_service_intent and not is_food_main_intent
+        
+        # For treat requests, show products
+        if is_treat_request:
+            should_show_products = True
         
         if should_show_products and intent in ["FIND", "ORDER", "COMPARE", "EXPLORE", "PLAN"]:
             real_products = await search_real_products(
