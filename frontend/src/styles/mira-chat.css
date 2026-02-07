@@ -731,21 +731,24 @@
 }
 
 /* ========================================
-   Concierge CTA - Subtle, not pushy
+   Concierge CTA - Prominent Text Link (as shown in image)
    ======================================== */
 .mira-concierge-hint {
-  margin-top: var(--mira-space-md);
+  margin-top: var(--mira-space-xl);
+  padding-top: var(--mira-space-lg);
+  border-top: 1px solid var(--mira-border-light);
   text-align: center;
 }
 
 .mira-concierge-link {
-  font-size: var(--mira-font-size-xs);
-  color: var(--mira-text-tertiary);
+  font-size: var(--mira-font-size-base);
+  color: var(--mira-text-secondary);
   background: none;
   border: none;
   cursor: pointer;
-  padding: var(--mira-space-sm);
+  padding: var(--mira-space-md);
   transition: color var(--mira-transition-fast);
+  font-weight: 400;
 }
 
 .mira-concierge-link:hover {
