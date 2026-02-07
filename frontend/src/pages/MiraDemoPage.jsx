@@ -1977,20 +1977,36 @@ const MiraDemoPage = () => {
                             </div>
                           )}
                           
-                          {/* Concierge Strip */}
-                          {msg.data?.response?.suggest_concierge && (
-                            <div className="m10-concierge-strip">
-                              <div className="m10-concierge-icon"><Bot /></div>
-                              <div className="m10-concierge-content">
-                                <p className="m10-concierge-text">
-                                  If you'd like, your pet Concierge® can help find options that match {pet.name}'s needs.
-                                </p>
+                          {/* Concierge Strip - ALWAYS SHOW */}
+                          <div className="m10-concierge-strip">
+                            <div className="m10-concierge-icon"><Bot /></div>
+                            <div className="m10-concierge-content">
+                              <p className="m10-concierge-text">
+                                Your pet Concierge® can help find options that match {pet.name}'s needs.
+                              </p>
+                              <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                <a 
+                                  href={`https://wa.me/919663185747?text=${encodeURIComponent(`Hi, I need help with ${pet.name} (${pet.breed}). ${msg.content?.slice(0, 100)}...`)}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="m10-concierge-btn"
+                                  style={{ background: '#25D366', textDecoration: 'none' }}
+                                >
+                                  <Phone style={{ width: 14, height: 14 }} /> WhatsApp
+                                </a>
                                 <button onClick={handleConciergeHandoff} className="m10-concierge-btn">
-                                  <MessageSquare /> Have my Concierge® help
+                                  <MessageSquare /> Chat
                                 </button>
+                                <a 
+                                  href={`mailto:concierge@thedoggycompany.in?subject=Help with ${pet.name}&body=${encodeURIComponent(`Hi, I need help with ${pet.name}.\n\nContext: ${msg.content?.slice(0, 200)}...`)}`}
+                                  className="m10-concierge-btn"
+                                  style={{ background: 'rgba(139, 92, 246, 0.3)', textDecoration: 'none' }}
+                                >
+                                  <Mail style={{ width: 14, height: 14 }} /> Email
+                                </a>
                               </div>
                             </div>
-                          )}
+                          </div>
                           
                           {/* Feedback Row */}
                           {!msg.isClarifyingQuestion && msg.data?.execution_type !== 'HOLD' && (
