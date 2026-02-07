@@ -53,7 +53,7 @@ const TEST_SCENARIOS = [
   { id: 'boarding', label: '🏠 Boarding', query: "I need someone to watch Buddy while I'm away" },
 ];
 
-// Sample pet for demo
+// Sample pet for demo - with Soul Score traits
 const DEMO_PET = {
   id: 'demo-pet',
   name: 'Buddy',
@@ -62,8 +62,33 @@ const DEMO_PET = {
   traits: ['Playful', 'Friendly', 'Energetic'],
   sensitivities: ['Chicken allergy'],
   favorites: ['Tennis balls', 'Peanut butter treats'],
-  photo: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=200&h=200&fit=crop&crop=face'
+  photo: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=200&h=200&fit=crop&crop=face',
+  // Soul Score traits from Travel page reference
+  soulTraits: [
+    { label: 'Playful spirit', icon: '⭐', color: '#f59e0b' },
+    { label: 'Gentle paws', icon: '🎀', color: '#ec4899' },
+    { label: 'Loyal friend', icon: '❤️', color: '#ef4444' },
+  ],
+  soulScore: 87 // Overall soul score
 };
+
+// All pets for multi-pet selector
+const ALL_PETS = [
+  DEMO_PET,
+  {
+    id: 'pet-2',
+    name: 'Luna',
+    breed: 'Labrador',
+    age: '5 years',
+    sensitivities: [],
+    photo: null,
+    soulTraits: [
+      { label: 'Calm soul', icon: '🌙', color: '#8b5cf6' },
+      { label: 'Wise eyes', icon: '👁️', color: '#06b6d4' },
+    ],
+    soulScore: 92
+  }
+];
 
 const MiraDemoPage = () => {
   const { user, token } = useAuth();
@@ -77,6 +102,7 @@ const MiraDemoPage = () => {
   const [conversationHistory, setConversationHistory] = useState([]);
   const [activeDockItem, setActiveDockItem] = useState(null);
   const [pet, setPet] = useState(DEMO_PET);
+  const [allPets, setAllPets] = useState(ALL_PETS);
   const [activeScenario, setActiveScenario] = useState(null);
   const [showScenarios, setShowScenarios] = useState(true);
   const [showTestScenarios, setShowTestScenarios] = useState(false);
