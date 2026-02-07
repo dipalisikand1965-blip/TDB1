@@ -2728,9 +2728,9 @@ const MiraDemoPage = () => {
                           )}
                           
                           {/* MIRA DOCTRINE: Concierge is ALWAYS available (6:30 AM - 11:30 PM) */}
-                          {/* After hours: We've taken your request, back at 6:30 AM */}
+                          {/* In COMFORT MODE: Softer, more supportive messaging */}
                           {msg.data?.response?.suggest_concierge && (
-                            <div className="mp-concierge-strip">
+                            <div className={`mp-concierge-strip ${msg.inComfortMode ? 'mp-comfort-mode' : ''}`}>
                               <div className="mp-concierge-content">
                                 {msg.conciergeIsLive === false ? (
                                   <>
@@ -2753,12 +2753,14 @@ const MiraDemoPage = () => {
                                 ) : (
                                   <>
                                     <p className="mp-concierge-text">
-                                      {msg.dynamicConciergeRequest
-                                        ? `Your pet Concierge® is ready to help with anything for ${pet.name}. Just reach out!`
-                                        : (msg.showServices || msg.showExperiences)
-                                          ? `Or, if you'd prefer, your pet Concierge® can handle this end-to-end for ${pet.name}.`
-                                          : (msg.data?.response?.concierge_framing || 
-                                             `If you'd like, your pet Concierge® can help coordinate this for ${pet.name}.`)}
+                                      {msg.inComfortMode
+                                        ? `If you'd like to talk to someone who understands, our Concierge® team is here for you and ${pet.name}.`
+                                        : msg.dynamicConciergeRequest
+                                          ? `Your pet Concierge® is ready to help with anything for ${pet.name}. Just reach out!`
+                                          : (msg.showServices || msg.showExperiences)
+                                            ? `Or, if you'd prefer, your pet Concierge® can handle this end-to-end for ${pet.name}.`
+                                            : (msg.data?.response?.concierge_framing || 
+                                               `If you'd like, your pet Concierge® can help coordinate this for ${pet.name}.`)}
                                     </p>
                                     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                                       <a 
