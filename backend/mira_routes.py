@@ -1116,13 +1116,17 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
     1. Uses LLM to understand intent and extract entities
     2. Queries real product database based on entities
     3. Returns personalized results with actual products
+    
+    ANTI-LOOP: Uses completed_steps and step_history to prevent repeating questions.
     """
     try:
-        # Step 1: Get LLM understanding
+        # Step 1: Get LLM understanding - pass completed_steps for anti-loop
         understanding = await understand_with_llm(
             user_input=request.input,
             pet_context=request.pet_context or {},
-            page_context=request.page_context
+            page_context=request.page_context,
+            completed_steps=request.completed_steps or [],
+            step_history=request.step_history or []
         )
         
         execution_type = understanding.get("execution_type", "INSTANT")
