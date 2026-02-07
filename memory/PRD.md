@@ -11,32 +11,40 @@ Transform a standard e-commerce site into a "Personal Pet Operating System" that
 
 ---
 
-## LATEST UPDATE: Feb 7, 2026 - PREMIUM UI OVERHAUL COMPLETE
+## LATEST UPDATE: Feb 7, 2026 - UI + AI INTELLIGENCE FIXES
 
-### ✅ NEW: Premium UI/UX Redesign (Matches Reference Images)
+### ✅ Bug Fixes (This Session)
 
-#### UI Components Implemented:
+1. **Concierge Strip Not Showing** - FIXED
+   - Added `suggest_concierge` flag to backend response
+   - Fixed frontend variable reference (`userQuery` → `query`)
+   - Concierge strip now shows when user asks for Concierge help
+   
+2. **AI Intelligence Improvements** - FIXED
+   - Updated LLM prompt to include `suggest_concierge`, `tips`, `quick_replies` in JSON format
+   - Backend now properly returns tips and quick_replies from LLM
+   
+3. **JavaScript Error on Message Send** - FIXED
+   - Fixed `userQuery is not defined` error in MiraDemoPage.jsx
+
+### ✅ Premium UI/UX (Completed Earlier)
+
+#### UI Components:
 - **Header**: Mira logo (pink star icon) + "Your Pet Companion" | Pet badge (orange paw + name)
 - **Navigation Dock**: Pill-shaped tabs (Concierge®, Orders, Plan, Help, Soul)
-- **Chat Cards**: Dark purple gradient (rgba(88,28,135,0.95) to rgba(139,92,246,0.85))
+- **Chat Cards**: Dark purple gradient 
 - **Question Highlight**: Amber/gold border accent for clarifying questions
-- **Quick Reply Chips**: Amber/tan colored buttons matching the contextual question
+- **Quick Reply Chips**: Amber/tan colored buttons
 - **Product Cards**: Horizontal row layout with image, name, price (₹), add-to-cart icon
 - **Collapsible "Important to Watch For"**: Expandable tips section
-- **Concierge Strip**: "Have my Concierge® help" button
+- **Concierge Strip**: "Have my Concierge® help" button (NOW WORKING)
 - **Feedback Row**: "Was this helpful?" with thumbs up/down
 - **Input Composer**: "Type your reply to Mira..." with mic + send buttons
 
-#### Files Modified:
-- `/app/frontend/src/pages/MiraDemoPage.jsx` - Complete UI structure rewrite
-- `/app/frontend/src/styles/mira-premium.css` - New premium design system
-
-#### Design Philosophy:
-- Deep purple gradient background (#1e1b4b → #312e81 → #581c87)
-- Dark Mira cards with white text (NOT white cards on purple)
-- Amber/gold (#f59e0b) accents for interactions and questions
-- Pink/purple gradient for user messages and primary actions
-- Responsive on all devices (desktop, tablet, mobile)
+#### Files Modified This Session:
+- `/app/frontend/src/pages/MiraDemoPage.jsx` - Fixed concierge detection
+- `/app/backend/mira_routes.py` - Added suggest_concierge, tips, quick_replies to response
+- `/app/backend/mira_os.py` - Updated system prompt with new fields
 
 ---
 
