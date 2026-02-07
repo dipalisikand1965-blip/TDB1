@@ -791,7 +791,7 @@ const MiraDemoPage = () => {
                             <div className="flex-1">
                               <p className="text-white/60 text-sm">
                                 {msg.data.response?.concierge_framing || 
-                                  "Your pet concierge can help coordinate this when you're ready."}
+                                  "Your pet Concierge® can help coordinate this when you're ready."}
                               </p>
                             </div>
                             <button 
