@@ -1778,6 +1778,10 @@ PILLARS = {
     "adopt": {
         "name": "Adopt",
         "icon": "🐾",
+        "keywords": ["adopt", "adoption", "rescue", "shelter", "foster"],
+        "urgency_default": "low"
+    }
+}
 
 
 # ============================================
