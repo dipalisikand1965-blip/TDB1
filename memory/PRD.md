@@ -11,23 +11,24 @@ Transform a standard e-commerce site into a "Personal Pet Operating System" that
 
 ---
 
-## CRITICAL REFERENCE: MIRA DOCTRINE
+## CRITICAL REFERENCES
 
-> **ALL AGENTS MUST READ `/app/memory/MIRA_DOCTRINE.md` BEFORE ANY MIRA-RELATED WORK**
+> **ALL AGENTS MUST READ THESE FILES BEFORE ANY MIRA-RELATED WORK:**
+> 1. `/app/memory/MIRA_DOCTRINE.md` - Core persona, voice, and governing principles
+> 2. `/app/memory/GROOMING_OS.md` - Complete grooming intelligence (intents, flows, boundaries)
 
-This file contains the canonical guide to Mira's voice, tone, and behavior. Key principles:
-
+### Mira Doctrine Key Principles:
 1. **Presence before performance** - Acknowledge feelings before giving information
 2. **Knowledge is remembered. Execution is invited.** - Never bulldoze with a plan
 3. **Remember → Confirm → Act** - Always ask before deciding
 4. **Products after alignment** - Suggestions are secondary, optional
-5. **Concierge as quiet option** - Never "escalation" or "ticketing"
+5. **Concierge® as quiet option** - Never "escalation" or "ticketing"
 6. **Never a dead end** - Always provide a next step
 7. **Boundary rules** - Medical/legal/ethical handled with care
 
 ---
 
-## Current Status: MIRA OS PHASE 3 IN PROGRESS
+## Current Status: GROOMING OS COMPLETE - Dec 2025
 
 ### MIRA OS - The Pet Life Operating System
 **Vision**: "Mira is not a chatbot. Mira is the operating system for dog life."
@@ -36,27 +37,49 @@ This file contains the canonical guide to Mira's voice, tone, and behavior. Key 
 
 ---
 
+## GROOMING OS - COMPLETE (Dec 2025)
+
+### ✅ Comprehensive Grooming Intelligence
+7 distinct grooming intent types with specific handling:
+
+| Intent | Triggers | Products? | Action |
+|--------|----------|-----------|--------|
+| GROOM_PLAN | haircut, bath, trim, shedding | NO | Guidance + clarifying questions |
+| GROOM_TOOLS | shampoo, brush, "what do I need" | YES | May show grooming products |
+| GROOM_CONCERN | hates grooming, nervous | NO | Tips + trainer referral |
+| GROOM_ACCIDENT | cut, nick, bleeding | NO | VET IMMEDIATELY |
+| GROOM_POST | scratching after grooming | NO | VET, NO products |
+| GROOM_LIFESTAGE | puppy first groom, senior dog | NO | Gentle guidance + Concierge® |
+| GROOM_BOOKING | "book groomer", "schedule" | NO | Concierge® orchestration |
+
+### ✅ Medical Boundaries Enforced
+- Bleeding/wounds → VET immediately, NO products
+- Scratching/rash → VET, NO DIY remedies
+- Mira never diagnoses or prescribes
+
+### ✅ 19 Test Scenarios in Sandbox
+New grooming scenarios added to `/mira-demo`:
+- ✂️ Haircut, 🛁 Bath, 🐕 Shedding, 💅 Nails
+- 🧴 Tools (products allowed), 😟 Groom Fear
+- 🩹 Accident (vet), 😣 Post-Groom (vet), 📅 Book
+
+### ✅ Updated System Prompt
+`mira_routes.py` now includes complete Grooming OS rules in `MIRA_OS_SYSTEM_PROMPT`
+
+---
+
 ## PHASE 3 COMPLETE - Feb 7, 2026
 
 ### ✅ Mira Doctrine Implemented
 **The Transformation**: Mira went from a "smart recommendation engine" to a "trusted companion"
 
-**Before** (Wrong):
-> "Since Buddy is a Golden Retriever, I've planned a pool party with fetch games..."
-
-**After** (Correct):
-> "I'm really glad you told me. When a cough keeps showing up, it's natural to feel worried, especially with a dog like Buddy who's usually full of energy. I can't assess medical conditions myself, but a persistent cough is something a veterinarian should look at so you're not left guessing. If you'd like, I can help you find a trusted vet nearby, so you can focus on Buddy."
-
 ### ✅ Test Scenarios Panel
-8 scenarios for role-playing Mira's responses at `/mira-demo`:
-- 🎂 Birthday - Tests emotional acknowledgment and alignment question
-- 🏥 Health Concern - Tests presence before performance
-- 🦴 Find Treats - Tests simple product discovery
-- ✈️ Travel - Tests remember → confirm → act
-- 😰 Anxiety - Tests emotional support
-- 🍽️ Food Choice - Tests asking before recommending
-- 🌈 Farewell - Tests pure presence, no performance
-- ✂️ Grooming - Tests service coordination
+19 scenarios for role-playing Mira's responses at `/mira-demo`:
+- 🦴 Treats, 🎂 Birthday, ✈️ Travel, 🍽️ Food
+- ✂️ Haircut, 🛁 Bath, 🐕 Shedding, 💅 Nails, 🧴 Tools, 😟 Groom Fear
+- 🩹 Accident, 😣 Post-Groom, 📅 Book
+- 🏥 Health, 😰 Anxiety, 🌈 Farewell
+- ⚖️ Compare, 🏠 Boarding, 🎓 Training
 
 ### ✅ Feedback System (P1)
 - 👍/👎 buttons on every Mira response
@@ -70,30 +93,11 @@ This file contains the canonical guide to Mira's voice, tone, and behavior. Key 
 All 5 dock items functional:
 | Item | Action |
 |------|--------|
-| Concierge | Opens Mira AI chat widget |
+| Concierge® | Opens Mira AI chat widget |
 | Orders | Navigates to /orders |
 | Plan | Navigates to /family-dashboard?tab=calendar |
 | Help | Opens help modal with options |
 | Soul | Navigates to /pet-soul/{petId} |
-
-### ✅ Safety Tips Display
-When health concerns detected, shows red alert box:
-- "Important to Watch For:" section
-- Breed-specific safety information
-- Emergency guidance
-
-### ✅ Enhanced Concierge Handoff UI
-- "Your Pet Concierge is on it" header
-- Estimated response time displayed
-- Gradient styling with user icon
-- "Chat with Concierge" button
-
----
-
-## Test Results (Iteration 100)
-- **Backend**: 11/11 tests passed (100%)
-- **Frontend**: All UI features working (100%)
-- See: `/app/test_reports/iteration_100.json`
 
 ---
 
