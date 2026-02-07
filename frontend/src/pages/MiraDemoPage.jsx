@@ -1300,7 +1300,7 @@ const MiraDemoPage = () => {
       // 1. Backend explicitly suggests it
       // 2. User mentioned "concierge" in their message
       // 3. Execution type is CONCIERGE
-      const userWantsConcierge = userQuery.toLowerCase().includes('concierge');
+      const userWantsConcierge = query.toLowerCase().includes('concierge');
       const shouldSuggestConcierge = data.response?.suggest_concierge || 
                                       data.execution_type === 'CONCIERGE' ||
                                       userWantsConcierge;
