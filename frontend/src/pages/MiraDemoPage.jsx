@@ -2468,26 +2468,69 @@ const MiraDemoPage = () => {
                             </div>
                           )}
                           
-                          {/* MIRA DOCTRINE: Concierge is premium service, shown subtly when relevant */}
-                          {/* Only show when AI suggests it or execution type is CONCIERGE */}
+                          {/* DYNAMIC CONCIERGE REQUEST - For ANY request without direct match */}
+                          {/* MIRA DOCTRINE: Concierge can do ANYTHING (legal, moral, no medical) */}
+                          {msg.dynamicConciergeRequest && (
+                            <div className="mp-dynamic-request">
+                              <p className="mp-dynamic-intro">
+                                Let your pet Concierge® handle this for {pet.name}:
+                              </p>
+                              <div 
+                                className="mp-dynamic-card"
+                                style={{ '--request-color': msg.dynamicConciergeRequest.color }}
+                              >
+                                <span className="mp-dynamic-icon">{msg.dynamicConciergeRequest.icon}</span>
+                                <div className="mp-dynamic-info">
+                                  <span className="mp-dynamic-label">{msg.dynamicConciergeRequest.label}</span>
+                                  <span className="mp-dynamic-desc">{msg.dynamicConciergeRequest.description}</span>
+                                </div>
+                                <span className="mp-dynamic-badge">Concierge Request</span>
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* MIRA DOCTRINE: Concierge is ALWAYS available (6:30 AM - 11:30 PM) */}
+                          {/* After hours: We've taken your request, back at 6:30 AM */}
                           {msg.data?.response?.suggest_concierge && (
                             <div className="mp-concierge-strip">
                               <div className="mp-concierge-content">
-                                <p className="mp-concierge-text">
-                                  {(msg.showServices || msg.showExperiences)
-                                    ? `Or, if you'd prefer, your pet Concierge® can handle this end-to-end for ${pet.name}.`
-                                    : (msg.data?.response?.concierge_framing || 
-                                       `If you'd like, your pet Concierge® can help coordinate this for ${pet.name}.`)}
-                                </p>
-                                <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                                  <a 
-                                    href={`https://wa.me/919663185747?text=${encodeURIComponent(`Hi, I need help with ${pet.name} (${pet.breed}). ${msg.content?.slice(0, 100)}...`)}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="mp-concierge-btn"
-                                    style={{ background: '#25D366', textDecoration: 'none' }}
-                                    data-testid="concierge-whatsapp"
-                                  >
+                                {msg.conciergeIsLive === false ? (
+                                  <>
+                                    <p className="mp-concierge-text mp-after-hours">
+                                      🌙 Our Concierge® team is resting (11:30 PM - 6:30 AM). We've noted your request and will be in touch first thing at 6:30 AM!
+                                    </p>
+                                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                      <a 
+                                        href={`https://wa.me/919663185747?text=${encodeURIComponent(`[After Hours Request] Hi, I need help with ${pet.name} (${pet.breed}). ${msg.content?.slice(0, 100)}...`)}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="mp-concierge-btn"
+                                        style={{ background: '#25D366', textDecoration: 'none' }}
+                                        data-testid="concierge-whatsapp-afterhours"
+                                      >
+                                        <Phone style={{ width: 14, height: 14 }} /> Leave a Message
+                                      </a>
+                                    </div>
+                                  </>
+                                ) : (
+                                  <>
+                                    <p className="mp-concierge-text">
+                                      {msg.dynamicConciergeRequest
+                                        ? `Your pet Concierge® is ready to help with anything for ${pet.name}. Just reach out!`
+                                        : (msg.showServices || msg.showExperiences)
+                                          ? `Or, if you'd prefer, your pet Concierge® can handle this end-to-end for ${pet.name}.`
+                                          : (msg.data?.response?.concierge_framing || 
+                                             `If you'd like, your pet Concierge® can help coordinate this for ${pet.name}.`)}
+                                    </p>
+                                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                      <a 
+                                        href={`https://wa.me/919663185747?text=${encodeURIComponent(`Hi, I need help with ${pet.name} (${pet.breed}). ${msg.content?.slice(0, 100)}...`)}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="mp-concierge-btn"
+                                        style={{ background: '#25D366', textDecoration: 'none' }}
+                                        data-testid="concierge-whatsapp"
+                                      >
                                     <Phone style={{ width: 14, height: 14 }} /> WhatsApp
                                   </a>
                                   <button onClick={handleConciergeHandoff} className="mp-concierge-btn" data-testid="concierge-chat">
