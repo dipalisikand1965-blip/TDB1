@@ -1605,77 +1605,53 @@ const MiraDemoPage = () => {
                     <div style={{ fontWeight: 500, color: '#1f2937' }}>{p.name}</div>
                     <div style={{ fontSize: '12px', color: '#6b7280' }}>{p.breed}</div>
                   </div>
-                  {p.id === pet.id && <Check className="w-4 h-4" style={{ color: '#8b5cf6', marginLeft: 'auto' }} />}
+                  {p.id === pet.id && <Check className="w-4 h-4 check" />}
                 </button>
               ))}
-              <div style={{ borderTop: '1px solid #e5e7eb', padding: '8px' }}>
-                <button
-                  onClick={() => { startNewSession(); setShowPetSelector(false); }}
-                  style={{
-                    display: 'flex', alignItems: 'center', gap: '8px',
-                    width: '100%', padding: '10px 12px',
-                    background: 'transparent', border: 'none', borderRadius: '8px',
-                    cursor: 'pointer', color: '#8b5cf6'
-                  }}
-                >
-                  <Plus className="w-4 h-4" />
-                  <span style={{ fontWeight: 500 }}>New Chat</span>
-                </button>
-              </div>
             </div>
           )}
         </div>
+      </header>
+      
+      {/* UNIVERSAL SEARCH BAR */}
+      <div className="mira-universal-search-wrapper">
+        <div className="mira-universal-search-bar">
+          <Search className="w-4 h-4 search-icon" />
+          <input
+            type="text"
+            placeholder={`Ask Mira anything for ${pet.name}...`}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSubmit()}
+            data-testid="universal-search-input"
+          />
+          <button className={`mic-btn ${isRecording ? 'recording' : ''}`} onClick={() => setIsRecording(!isRecording)}>
+            {isRecording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
+          </button>
+          <button className="send-btn" onClick={handleSubmit} disabled={isProcessing || !query.trim()} data-testid="universal-search-submit">
+            <Send className="w-4 h-4" />
+          </button>
+        </div>
       </div>
       
-      {/* Header - Compact with Thin Dock */}
-      <header className="mira-header">
-        <div className="mira-header-inner">
-          <div className="mira-header-left">
-            <div className="mira-avatar mira-avatar-brand">
-              <Sparkles />
-            </div>
-            <div>
-              <h1 className="mira-header-title">For {pet.name}</h1>
-              <p className="mira-header-subtitle">Curated with love</p>
-            </div>
-          </div>
-          
-          {/* THIN DOCK - Per Gospel: Concierge, Orders, Plan, Help, Soul */}
-          <nav className="mira-thin-dock">
-            <button onClick={() => handleConciergeHandoff()} className="mira-dock-btn primary" data-testid="dock-concierge">
-              <MessageCircle className="w-4 h-4" />
-              <span>Concierge®</span>
-            </button>
-            <button onClick={() => navigate('/orders')} className="mira-dock-btn" data-testid="dock-orders">
-              <Package className="w-4 h-4" />
-              <span>Orders</span>
-            </button>
-            <button onClick={() => navigate('/family-dashboard')} className="mira-dock-btn" data-testid="dock-plan">
-              <Calendar className="w-4 h-4" />
-              <span>Plan</span>
-            </button>
-            <button onClick={() => setShowHelpModal(true)} className="mira-dock-btn" data-testid="dock-help">
-              <HelpCircle className="w-4 h-4" />
-              <span>Help</span>
-            </button>
-            <button onClick={() => navigate('/pet-soul')} className="mira-dock-btn" data-testid="dock-soul">
-              <Heart className="w-4 h-4" />
-              <span>Soul</span>
-            </button>
-            {/* Past Chats Button */}
-            <button 
-              onClick={() => { setShowPastChats(!showPastChats); if (!showPastChats) loadPastChats(); }} 
-              className={`mira-dock-btn ${showPastChats ? 'active' : ''}`} 
-              data-testid="dock-history"
-            >
-              <History className="w-4 h-4" />
-              <span>History</span>
-            </button>
-          </nav>
-          
-          {/* Remove duplicate pet badge - already in universal search bar */}
-        </div>
-      </header>
+      {/* THIN DOCK: Concierge, Orders, Plan, Help, Soul */}
+      <nav className="mira-os-dock">
+        <button onClick={() => handleConciergeHandoff()} className="dock-btn active" data-testid="dock-concierge">
+          <MessageCircle className="w-4 h-4" /> Concierge®
+        </button>
+        <button onClick={() => navigate('/orders')} className="dock-btn" data-testid="dock-orders">
+          <Package className="w-4 h-4" /> Orders
+        </button>
+        <button onClick={() => navigate('/family-dashboard')} className="dock-btn" data-testid="dock-plan">
+          <Calendar className="w-4 h-4" /> Plan
+        </button>
+        <button onClick={() => setShowHelpModal(true)} className="dock-btn" data-testid="dock-help">
+          <HelpCircle className="w-4 h-4" /> Help
+        </button>
+        <button onClick={() => navigate('/pet-soul')} className="dock-btn" data-testid="dock-soul">
+          <Heart className="w-4 h-4" /> Soul
+        </button>
+      </nav>
       
       {/* Past Chats Sidebar */}
       {showPastChats && (
