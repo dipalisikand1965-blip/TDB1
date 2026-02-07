@@ -1069,6 +1069,85 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
         # For GROOM_ACCIDENT and GROOM_POST: NO products, route to vet
         is_groom_medical_boundary = is_groom_accident or is_groom_post
         
+        # ═══════════════════════════════════════════════════════════════
+        # FOOD & NUTRITION OS - INTENT DETECTION
+        # ═══════════════════════════════════════════════════════════════
+        # FOOD_MAIN: everyday diet, "what should he eat"
+        # FOOD_PORTION: "how much?", amounts, quantities
+        # FOOD_ROUTINE: schedules, feeding times, multi-dog feeding
+        # FOOD_TREAT: treats, snacks, training rewards (non-occasion)
+        # FOOD_RULES: "can my dog eat X?" (human foods)
+        # FOOD_WEIGHT: overweight/underweight concerns
+        # FOOD_HEALTH_ADJACENT: vomiting, diarrhea, itching from food
+        # FOOD_PREFERENCE: picky eater, not eating, fussy
+        # FOOD_TRAVEL: what to feed on trips, boarding food
+        # FOOD_ORDERING: "order this", "set up subscription"
+        
+        # FOOD_HEALTH_ADJACENT - Medical boundary, NO products
+        is_food_health_adjacent = any(phrase in user_input_lower for phrase in [
+            "vomiting", "vomit", "diarrhea", "diarrhoea", "blood in stool",
+            "not eating at all", "won't eat anything", "refuses to eat",
+            "stopped eating", "lost weight", "losing weight",
+            "itchy from food", "allergy reaction", "allergic reaction"
+        ])
+        
+        # FOOD_WEIGHT - Vet coordination needed
+        is_food_weight = any(phrase in user_input_lower for phrase in [
+            "putting on weight", "gaining weight", "too heavy", "overweight",
+            "losing weight", "too thin", "underweight", "obesity", "obese",
+            "weight management", "diet plan", "weight loss"
+        ])
+        
+        # FOOD_RULES - "Can my dog eat X?"
+        is_food_rules = any(phrase in user_input_lower for phrase in [
+            "can he eat", "can she eat", "can buddy eat", "can my dog eat",
+            "is it safe to eat", "safe for dogs", "toxic for dogs",
+            "can dogs eat", "should i give him", "should i give her"
+        ])
+        
+        # FOOD_PORTION - How much to feed
+        is_food_portion = any(phrase in user_input_lower for phrase in [
+            "how much should i feed", "how much food", "portion size",
+            "how many times", "how often should i feed", "feeding amount",
+            "cups per day", "grams per day"
+        ])
+        
+        # FOOD_ROUTINE - Schedules and timing
+        is_food_routine = any(phrase in user_input_lower for phrase in [
+            "feeding schedule", "feeding time", "when should i feed",
+            "how many meals", "meal times", "two dogs", "multiple dogs",
+            "feeding together", "separate bowls"
+        ])
+        
+        # FOOD_PREFERENCE - Picky eating
+        is_food_preference = any(phrase in user_input_lower for phrase in [
+            "picky eater", "fussy eater", "won't eat his food", "won't eat her food",
+            "doesn't like food", "refuses food", "bored with food", "not interested in food"
+        ]) and not is_food_health_adjacent
+        
+        # FOOD_TRAVEL - Food for trips/boarding
+        is_food_travel = any(phrase in user_input_lower for phrase in [
+            "food for trip", "food for travel", "food for boarding",
+            "what to feed on trip", "pack food", "food for holiday"
+        ])
+        
+        # FOOD_ORDERING - Execution intent
+        is_food_ordering = any(phrase in user_input_lower for phrase in [
+            "order food", "order his food", "order her food",
+            "food subscription", "regular delivery", "food delivery",
+            "stock up on food", "reorder food"
+        ])
+        
+        # FOOD_MAIN - General everyday diet (not treats, not medical)
+        is_food_main_intent = any(word in user_input_lower for word in [
+            "food", "diet", "kibble", "feed", "feeding", "meal", "nutrition", "eat"
+        ]) and not any(word in user_input_lower for word in [
+            "treat", "snack", "reward", "birthday", "cake", "celebration"
+        ]) and not is_food_health_adjacent and not is_food_weight and not is_food_rules
+        
+        # For FOOD_HEALTH_ADJACENT and FOOD_WEIGHT: NO products, route to vet
+        is_food_medical_boundary = is_food_health_adjacent or is_food_weight
+        
         is_service_intent = any(word in user_input_lower for word in [
             "haircut", "grooming", "groom", "trim", "bath", "nail", 
             "vet", "doctor", "cough", "sick", "worried", "health", "pain", "limp",
@@ -1077,13 +1156,6 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
             "trip", "travel", "vacation", "holiday",
             "anxious", "anxiety", "scared", "fear", "thunder", "storm", "firework", "noise",
             "shedding", "brushing", "ears", "paws"
-        ])
-        
-        # FOOD_MAIN intent - asking about daily diet, NOT treats
-        is_food_main_intent = any(word in user_input_lower for word in [
-            "food", "diet", "kibble", "feed", "feeding", "meal", "nutrition", "eat"
-        ]) and not any(word in user_input_lower for word in [
-            "treat", "snack", "reward", "birthday", "cake", "celebration"
         ])
         
         # Check if it's a product-related planning request (birthday, treats, food)
