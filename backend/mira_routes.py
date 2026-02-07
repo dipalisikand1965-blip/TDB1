@@ -1713,6 +1713,73 @@ async def search_services_from_db(
         return []
 
 
+# ═══════════════════════════════════════════════════════════════════════════
+# E013: REMEMBERED SERVICE PROVIDERS
+# Mira remembers which providers the pet has used before
+# ═══════════════════════════════════════════════════════════════════════════
+
+async def get_remembered_providers(
+    pet_id: str,
+    service_type: str,
+    limit: int = 2
+) -> List[Dict[str, Any]]:
+    """
+    Check if the pet has used a service provider before.
+    Returns remembered providers with their last visit info.
+    """
+    db = get_db()
+    if db is None or not pet_id:
+        return []
+    
+    remembered = []
+    
+    try:
+        # Check service_desk_tickets for past service requests
+        # This serves as a proxy for service history until we have dedicated tracking
+        service_keywords = {
+            "grooming": ["groom", "haircut", "bath", "spa"],
+            "vet": ["vet", "doctor", "checkup", "vaccine"],
+            "training": ["train", "obedience", "behavior"],
+            "boarding": ["board", "daycare", "stay"]
+        }
+        
+        keywords = service_keywords.get(service_type.lower(), [service_type.lower()])
+        
+        # Query tickets where intent or notes mention this service
+        query = {
+            "pet_id": pet_id,
+            "status": {"$in": ["resolved", "completed", "closed"]},
+            "$or": [
+                {"intent_primary": {"$regex": "|".join(keywords), "$options": "i"}},
+                {"pillar": {"$regex": "|".join(keywords), "$options": "i"}}
+            ]
+        }
+        
+        cursor = db.service_desk_tickets.find(query, {"_id": 0}).sort("created_at", -1).limit(limit)
+        past_tickets = await cursor.to_list(length=limit)
+        
+        if past_tickets:
+            for ticket in past_tickets:
+                # Extract provider info if available
+                provider_name = ticket.get("assigned_provider") or ticket.get("vendor_name")
+                if provider_name:
+                    remembered.append({
+                        "provider_name": provider_name,
+                        "service_type": service_type,
+                        "last_visit": ticket.get("resolved_at") or ticket.get("created_at"),
+                        "notes": ticket.get("resolution_notes", ""),
+                        "rating": ticket.get("customer_rating"),
+                        "suggested_message": f"Should I book with {provider_name} again?"
+                    })
+        
+        logger.info(f"[E013] Found {len(remembered)} past providers for {service_type} (pet: {pet_id})")
+        return remembered
+        
+    except Exception as e:
+        logger.error(f"[E013] Error getting remembered providers: {e}")
+        return []
+
+
 @router.post("/os/understand-with-products")
 async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
     """
