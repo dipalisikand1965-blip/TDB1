@@ -93,39 +93,48 @@
 }
 
 /* ========================================
-   NEW HEADER SYSTEM - Matching Live Site
+   MIRA OS - Complete Responsive Layout
+   Desktop & Mobile (including iOS) Optimized
    ======================================== */
 
-/* Announcement Bar - Top Purple Strip */
-.mira-announcement-bar {
-  background: linear-gradient(90deg, #7c3aed, #a855f7);
-  color: white;
-  text-align: center;
-  padding: 8px 16px;
-  font-size: 13px;
-  font-weight: 500;
+/* Reset & Container */
+.mira-chat-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  max-height: 100vh;
+  background: linear-gradient(180deg, #1e1b4b 0%, #312e81 30%, #4c1d95 70%, #581c87 100%);
+  overflow: hidden;
 }
 
-/* Main Header - Dark with Search */
-.mira-main-header {
-  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4c1d95 100%);
-  padding: 12px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-}
-
-.mira-main-header-logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+/* ========================================
+   HEADER: Mira OS Branding
+   ======================================== */
+.mira-os-header {
+  background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%);
+  padding: 12px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
   flex-shrink: 0;
 }
 
-.mira-main-header-logo-icon {
-  width: 40px;
-  height: 40px;
+.mira-os-header-inner {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+.mira-os-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.mira-os-logo-icon {
+  width: 36px;
+  height: 36px;
   background: linear-gradient(135deg, #ec4899, #f97316);
   border-radius: 10px;
   display: flex;
@@ -134,176 +143,95 @@
   color: white;
 }
 
-.mira-main-header-logo-text {
+.mira-os-logo-text {
   display: flex;
   flex-direction: column;
 }
 
-.mira-main-header-logo-text .brand-name {
+.mira-os-title {
   color: #ec4899;
   font-weight: 700;
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1.2;
 }
 
-.mira-main-header-logo-text .brand-tagline {
-  color: rgba(255,255,255,0.6);
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-/* Universal Search Bar */
-.mira-universal-search {
-  flex: 1;
-  max-width: 500px;
-  background: white;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  padding: 0 4px 0 16px;
-  height: 44px;
-}
-
-.mira-universal-search input {
-  flex: 1;
-  border: none;
-  outline: none;
-  font-size: 14px;
-  background: transparent;
-  color: #374151;
-}
-
-.mira-universal-search input::placeholder {
-  color: #9ca3af;
-}
-
-.mira-universal-search-actions {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.mira-universal-search-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 6px;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.mira-universal-search-btn.mic {
-  background: transparent;
-  color: #6b7280;
-}
-
-.mira-universal-search-btn.mic:hover {
-  background: #f3f4f6;
-}
-
-.mira-universal-search-btn.mic.active {
-  background: #fef2f2;
-  color: #ef4444;
-}
-
-.mira-universal-search-btn.search {
-  background: linear-gradient(135deg, #f97316, #ea580c);
-  color: white;
-}
-
-.mira-universal-search-btn.search:hover {
-  background: linear-gradient(135deg, #ea580c, #dc2626);
-}
-
-/* Header Right Section */
-.mira-header-right {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  flex-shrink: 0;
-}
-
-/* User Section */
-.mira-header-user {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: white;
-}
-
-.mira-header-user-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: #6366f1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  font-size: 14px;
-  color: white;
-}
-
-.mira-header-user-name {
-  font-size: 14px;
-  font-weight: 500;
-}
-
-/* My Pets Dropdown */
-.mira-header-pets {
-  position: relative;
-}
-
-.mira-header-pets-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: transparent;
-  border: none;
-  color: white;
-  padding: 8px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.mira-header-pets-btn:hover {
-  background: rgba(255,255,255,0.1);
-}
-
-.mira-header-pets-label {
+.mira-os-subtitle {
+  color: rgba(255,255,255,0.5);
   font-size: 11px;
-  color: rgba(255,255,255,0.6);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
-.mira-header-pets-name {
+/* Pet Badge */
+.mira-os-pet-badge {
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-weight: 500;
-  color: #ec4899;
+  gap: 8px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 8px 14px;
+  border-radius: 24px;
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
-.mira-header-pets-dropdown {
+.mira-os-pet-badge:hover {
+  background: rgba(255,255,255,0.15);
+}
+
+.mira-os-pet-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ec4899, #8b5cf6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  color: white;
+}
+
+.mira-os-pet-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.mira-os-pet-name {
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.mira-os-pet-breed {
+  color: rgba(255,255,255,0.5);
+  font-size: 14px;
+}
+
+.mira-os-chevron {
+  color: rgba(255,255,255,0.4);
+  transition: transform 0.2s;
+}
+
+.mira-os-chevron.open {
+  transform: rotate(180deg);
+}
+
+/* Pet Dropdown */
+.mira-os-pet-dropdown {
   position: absolute;
   top: 100%;
   right: 0;
   margin-top: 8px;
   background: white;
   border-radius: 12px;
-  box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-  min-width: 200px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.25);
+  min-width: 220px;
   overflow: hidden;
   z-index: 1000;
 }
 
-.mira-header-pets-dropdown-item {
+.mira-os-pet-option {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -314,320 +242,165 @@
   text-align: left;
   cursor: pointer;
   transition: background 0.2s;
+  color: #4b5563;
 }
 
-.mira-header-pets-dropdown-item:hover {
+.mira-os-pet-option:hover {
   background: #f3f4f6;
 }
 
-.mira-header-pets-dropdown-item.active {
+.mira-os-pet-option.active {
   background: #ede9fe;
 }
 
-/* Ask Mira Button */
-.mira-header-ask-btn {
-  background: linear-gradient(135deg, #ec4899, #f472b6);
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.mira-header-ask-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(236, 72, 153, 0.4);
-}
-
-/* Cart */
-.mira-header-cart {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  color: white;
-  padding: 8px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.mira-header-cart:hover {
-  background: rgba(255,255,255,0.1);
-}
-
-/* Pillar Navigation */
-.mira-pillar-nav {
-  background: linear-gradient(90deg, #1e1b4b, #312e81);
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 8px 24px;
-  overflow-x: auto;
-  border-top: 1px solid rgba(255,255,255,0.1);
-}
-
-.mira-pillar-nav::-webkit-scrollbar {
-  display: none;
-}
-
-.mira-pillar-nav-item {
-  background: transparent;
-  border: none;
-  color: rgba(255,255,255,0.7);
-  padding: 8px 16px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.mira-pillar-nav-item:hover {
-  background: rgba(255,255,255,0.1);
-  color: white;
-}
-
-.mira-pillar-nav-item.active,
-.mira-pillar-nav-item.shop {
-  color: #f97316;
-}
-
-/* ========================================
-   HERO SECTION - "For Buddy"
-   ======================================== */
-.mira-hero-section {
-  background: linear-gradient(135deg, #4c1d95 0%, #7c3aed 50%, #a855f7 100%);
-  padding: 48px 24px;
-  position: relative;
-  overflow: hidden;
-}
-
-.mira-hero-section::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-  pointer-events: none;
-}
-
-.mira-hero-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  gap: 48px;
-  position: relative;
-  z-index: 1;
-}
-
-/* Pet Photo - Large Circular with Border */
-.mira-hero-pet-photo {
-  flex-shrink: 0;
-  width: 180px;
-  height: 180px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #f472b6, #ec4899, #a855f7);
-  padding: 6px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.2);
-}
-
-.mira-hero-pet-photo-inner {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background: #1e1b4b;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.mira-hero-pet-photo-inner img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.mira-hero-pet-photo-inner svg {
-  width: 64px;
-  height: 64px;
-  color: rgba(255,255,255,0.3);
-}
-
-/* Hero Text Content */
-.mira-hero-text {
+.mira-os-pet-option-info {
   flex: 1;
 }
 
-.mira-hero-soul-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(0,0,0,0.2);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255,255,255,0.2);
-  color: white;
-  padding: 10px 20px;
-  border-radius: 24px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-  margin-bottom: 24px;
-}
-
-.mira-hero-soul-btn:hover {
-  background: rgba(0,0,0,0.3);
-  transform: translateY(-2px);
-}
-
-.mira-hero-title {
-  font-size: 56px;
-  font-weight: 300;
-  color: white;
-  margin: 0 0 8px 0;
-  line-height: 1.1;
-}
-
-.mira-hero-title .pet-name {
-  font-weight: 700;
-  background: linear-gradient(135deg, #f472b6, #ec4899);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.mira-hero-subtitle {
-  font-size: 18px;
-  color: rgba(255,255,255,0.7);
-  margin: 0 0 24px 0;
-  font-weight: 400;
-}
-
-/* Trait Badges */
-.mira-hero-traits {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 24px;
-}
-
-.mira-hero-trait {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(0,0,0,0.2);
-  backdrop-filter: blur(8px);
-  border: 1px solid rgba(255,255,255,0.15);
-  color: white;
-  padding: 8px 16px;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-/* Mira's Love Note */
-.mira-hero-love-note {
-  background: rgba(255,255,255,0.1);
-  backdrop-filter: blur(12px);
-  border-radius: 16px;
-  padding: 16px 20px;
-  max-width: 350px;
-  border: 1px solid rgba(255,255,255,0.1);
-}
-
-.mira-hero-love-note-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 8px;
-}
-
-.mira-hero-love-note-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #ec4899, #a855f7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-}
-
-.mira-hero-love-note-title {
-  color: white;
+.mira-os-pet-option-info .name {
+  display: block;
   font-weight: 600;
-  font-size: 16px;
+  color: #1f2937;
 }
 
-.mira-hero-love-note-subtitle {
-  color: #ec4899;
-  font-size: 13px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
+.mira-os-pet-option-info .breed {
+  display: block;
+  font-size: 12px;
+  color: #6b7280;
 }
 
-/* Hero Search Input */
-.mira-hero-search {
-  background: white;
-  border-radius: 16px;
-  padding: 4px;
-  display: flex;
-  align-items: center;
+.mira-os-pet-option .check {
+  color: #8b5cf6;
+}
+
+/* ========================================
+   UNIVERSAL SEARCH BAR
+   ======================================== */
+.mira-universal-search-wrapper {
+  background: linear-gradient(135deg, #312e81, #4c1d95);
+  padding: 12px 16px;
+  flex-shrink: 0;
+}
+
+.mira-universal-search-bar {
   max-width: 600px;
-  margin-top: 32px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  margin: 0 auto;
+  background: white;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  padding: 4px 4px 4px 16px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-.mira-hero-search input {
+.mira-universal-search-bar .search-icon {
+  color: #9ca3af;
+  flex-shrink: 0;
+}
+
+.mira-universal-search-bar input {
   flex: 1;
   border: none;
   outline: none;
-  padding: 16px 20px;
-  font-size: 16px;
+  padding: 12px 12px;
+  font-size: 15px;
   background: transparent;
-  color: #374151;
+  color: #1f2937;
 }
 
-.mira-hero-search input::placeholder {
+.mira-universal-search-bar input::placeholder {
   color: #9ca3af;
 }
 
-.mira-hero-search-btn {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
+.mira-universal-search-bar .mic-btn,
+.mira-universal-search-bar .send-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
   border: none;
-  background: linear-gradient(135deg, #ec4899, #a855f7);
-  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: all 0.2s;
+  flex-shrink: 0;
 }
 
-.mira-hero-search-btn:hover {
+.mira-universal-search-bar .mic-btn {
+  background: transparent;
+  color: #6b7280;
+}
+
+.mira-universal-search-bar .mic-btn:hover {
+  background: #f3f4f6;
+}
+
+.mira-universal-search-bar .mic-btn.recording {
+  background: #fef2f2;
+  color: #ef4444;
+}
+
+.mira-universal-search-bar .send-btn {
+  background: linear-gradient(135deg, #ec4899, #8b5cf6);
+  color: white;
+  margin-left: 4px;
+}
+
+.mira-universal-search-bar .send-btn:hover {
   transform: scale(1.05);
 }
 
+.mira-universal-search-bar .send-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
 /* ========================================
-   Base Container - DEEP Purple Gradient
+   THIN DOCK: Navigation
    ======================================== */
-.mira-chat-container {
+.mira-os-dock {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 8px 16px;
+  background: rgba(30, 27, 75, 0.8);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  flex-shrink: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mira-os-dock::-webkit-scrollbar {
+  display: none;
+}
+
+.mira-os-dock .dock-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 20px;
+  border: none;
+  background: transparent;
+  color: rgba(255,255,255,0.6);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.mira-os-dock .dock-btn:hover {
+  background: rgba(255,255,255,0.1);
+  color: white;
+}
+
+.mira-os-dock .dock-btn.active {
+  background: linear-gradient(135deg, #ec4899, #8b5cf6);
+  color: white;
+}
   height: 100dvh;
   max-height: 100dvh;
   background: linear-gradient(135deg, 
