@@ -45,8 +45,10 @@ Transform a standard e-commerce site into a "Personal Pet Operating System" that
 |-----|---------------|----------|--------|
 | Soul Score Integration | Pull from real member API | P0 | ✅ DONE |
 | Multi-Pet Support | Load real pets from logged-in user | P0 | ✅ DONE |
+| Product Intelligence | Show RELEVANT products per context | P0 | ✅ DONE |
+| Concierge Buttons | WhatsApp, Chat, Email on every card | P0 | ✅ DONE |
+| Test Scenarios | Always visible 3-column grid | P0 | ✅ DONE |
 | Consistent Pet Header | Same header across all pillar pages | P1 | PENDING |
-| Product Intelligence | Show DIFFERENT products each time | P1 | PENDING |
 | Micro-animations | Slide-in cards, hover effects | P2 | PENDING |
 
 ### ✅ COMPLETED THIS SESSION
@@ -57,9 +59,15 @@ Transform a standard e-commerce site into a "Personal Pet Operating System" that
 4. **2x2 Product Grid** - Pinterest-style tiles
 5. **Real Member Integration** - 
    - User: dipali@clubconcierge.in / test123
-   - Pets loaded: Mojo, Lola, Mystique
-   - Soul scores displayed: 50, 20, 15
-   - Soul personas: mischief_maker, foodie, royal
+   - Pets: Mojo, Lola, Mystique
+6. **Product Intelligence Fixed**:
+   - Birthday/cake requests → Pupcakes, Dognuts, Celebration boxes
+   - Treats requests → Treat boxes, not travel crates
+7. **Prominent Concierge Buttons**:
+   - WhatsApp (green) → Direct WhatsApp link
+   - Chat (purple) → Service desk handoff
+   - Email → mailto link to concierge@thedoggycompany.in
+8. **Test Scenarios Always Visible** - 3-column grid, no collapsible
 
 ---
 
