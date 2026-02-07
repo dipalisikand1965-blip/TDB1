@@ -359,8 +359,10 @@ const MiraDemoPage = () => {
     }
     
     // === TRAVEL FLOWS ===
-    // "Are you planning to travel by car, flight, or train?"
-    if (messageLower.includes('car') && (messageLower.includes('flight') || messageLower.includes('train'))) {
+    // "Are you planning to travel by car, flight, or train?" or "Are you driving or flying?"
+    if ((messageLower.includes('car') && (messageLower.includes('flight') || messageLower.includes('train'))) ||
+        (messageLower.includes('driving') && messageLower.includes('flying')) ||
+        (messageLower.includes('drive') && messageLower.includes('fly'))) {
       return [
         { text: 'Car', value: 'Car.' },
         { text: 'Flight', value: 'Flight.' },
