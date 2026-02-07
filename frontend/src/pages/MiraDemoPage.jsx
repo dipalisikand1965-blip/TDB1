@@ -140,27 +140,81 @@ const MiraDemoPage = () => {
     }
   }, [conversationHistory, isAtBottom, scrollToBottom]);
   
-  // Silent ticket creation
-  const createOrAttachTicket = useCallback(async (message, intent, pillar) => {
-    const ticketData = {
+  // Silent ticket creation - Every conversation = a service ticket
+  // Follows: User Intent → Service Desk Ticket → Admin Notification → Pillar Request
+  const createOrAttachTicket = useCallback(async (message, intent, pillar, miraResponse = null) => {
+    // Determine pillar from intent if not provided
+    const determinedPillar = pillar || (() => {
+      if (intent?.startsWith('GROOM')) return 'Grooming';
+      if (intent?.startsWith('FOOD')) return 'Food';
+      if (intent?.includes('TRAVEL')) return 'Travel';
+      if (intent?.includes('BOARD')) return 'Boarding';
+      if (intent?.includes('HEALTH') || intent === 'CONCERN') return 'Health';
+      if (intent?.includes('CELEBRATE')) return 'Celebrate';
+      return 'General';
+    })();
+    
+    // Check for existing open ticket for same (parent, pet, pillar) within 48-72 hours
+    const ticketWindow = 72 * 60 * 60 * 1000; // 72 hours in ms
+    const now = new Date();
+    
+    if (currentTicket && 
+        currentTicket.pillar === determinedPillar && 
+        currentTicket.status !== 'closed' &&
+        (now - new Date(currentTicket.created_at)) < ticketWindow) {
+      // Attach to existing ticket - append conversation
+      console.log('[TICKET] Attaching to existing ticket:', currentTicket.id);
+      const updatedTicket = {
+        ...currentTicket,
+        updated_at: now.toISOString(),
+        conversation: [
+          ...(currentTicket.conversation || []),
+          { sender: 'parent', text: message, timestamp: now.toISOString() }
+        ]
+      };
+      if (miraResponse) {
+        updatedTicket.conversation.push({
+          sender: 'mira',
+          text: miraResponse,
+          timestamp: now.toISOString()
+        });
+      }
+      setCurrentTicket(updatedTicket);
+      return updatedTicket;
+    }
+    
+    // Create new ticket
+    const newTicket = {
+      id: `TCK-${now.getFullYear()}-${String(Date.now()).slice(-6)}`,
       parent_id: user?.id || 'demo-parent',
       pet_id: pet.id,
       pet_name: pet.name,
-      pillar: pillar || 'general',
-      primary_intent: intent || 'GENERAL',
-      channel: 'Mira OS',
+      pillar: determinedPillar,
+      intent_primary: intent || 'GENERAL',
+      channel: 'Mira_OS',
       status: 'open_mira_only',
-      first_message: message,
-      created_at: new Date().toISOString()
+      life_state: intent === 'CONCERN' ? 'CONCERN' : intent === 'HOLD' ? 'HOLD' : 'PLAN',
+      tags: ['mira', determinedPillar.toLowerCase()],
+      created_at: now.toISOString(),
+      updated_at: now.toISOString(),
+      conversation: [
+        { sender: 'parent', text: message, timestamp: now.toISOString() }
+      ]
     };
     
-    if (currentTicket && currentTicket.pillar === pillar && currentTicket.status !== 'closed') {
-      return currentTicket;
+    if (miraResponse) {
+      newTicket.conversation.push({
+        sender: 'mira',
+        text: miraResponse,
+        timestamp: now.toISOString()
+      });
     }
     
-    const newTicket = { id: `ticket_${Date.now()}`, ...ticketData };
     setCurrentTicket(newTicket);
-    console.log('[TICKET] Created:', newTicket.id);
+    console.log('[TICKET] Created new service ticket:', newTicket.id, 'Pillar:', determinedPillar);
+    
+    // In production: POST to /api/tickets/create
+    // For now, we log it
     return newTicket;
   }, [currentTicket, pet, user]);
   
