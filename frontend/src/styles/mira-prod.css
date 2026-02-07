@@ -1136,6 +1136,40 @@
   border-radius: var(--radius-sm);
 }
 
+/* Mobile: Move badge below label to prevent overlap */
+@media (max-width: 480px) {
+  .mp-dynamic-card {
+    flex-direction: column;
+    text-align: center;
+    padding-top: 45px; /* Space for badge */
+  }
+  
+  .mp-dynamic-icon {
+    width: 56px;
+    height: 56px;
+    font-size: 28px;
+  }
+  
+  .mp-dynamic-info {
+    align-items: center;
+  }
+  
+  .mp-dynamic-label {
+    font-size: 16px;
+  }
+  
+  .mp-dynamic-desc {
+    font-size: 13px;
+  }
+  
+  .mp-dynamic-badge {
+    top: 8px;
+    right: 8px;
+    font-size: 9px;
+    padding: 5px 8px;
+  }
+}
+
 /* After hours styling */
 .mp-after-hours {
   font-style: italic;
