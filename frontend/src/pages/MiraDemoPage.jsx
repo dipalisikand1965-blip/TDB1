@@ -1324,19 +1324,28 @@ const MiraDemoPage = () => {
                     /* Mira Message */
                     <div className="mira-message-mira">
                       <div className="mira-card">
-                        {/* Card Header */}
+                        {/* Card Header - Shows Intent + Execution Type */}
                         <div className="mira-card-header">
                           <div className="mira-card-header-left">
                             <div className="mira-card-avatar">
                               <Sparkles />
                             </div>
                             <span className="mira-card-name">Mira</span>
+                            {/* Intent Badge - FIND/PLAN/COMPARE/REMEMBER/ORDER/EXPLORE */}
                             {msg.data?.understanding?.intent && (
-                              <span className="mira-intent-badge">
+                              <span className={`mira-intent-badge intent-${msg.data.understanding.intent?.toLowerCase()}`}>
                                 {msg.data.understanding.intent}
                               </span>
                             )}
                           </div>
+                          {/* Execution Type - Instant vs Concierge */}
+                          {msg.data?.execution_type && (
+                            <span className={`mira-execution-badge ${msg.data.execution_type?.toLowerCase()}`}>
+                              {msg.data.execution_type === 'INSTANT' ? '⚡ Instant' : 
+                               msg.data.execution_type === 'CONCIERGE' ? '💜 With Concierge®' : 
+                               msg.data.execution_type === 'HOLD' ? '💭 Thinking' : msg.data.execution_type}
+                            </span>
+                          )}
                         </div>
                         
                         {/* Card Body */}
