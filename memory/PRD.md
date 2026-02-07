@@ -2,73 +2,88 @@
 ## The World's First Pet Life Operating System
 
 **Last Updated:** February 7, 2026
-**Status:** Mira's Spirit Restored + Voice Added
+**Status:** Mira's Spirit Restored + Voice Added + Two-Way Conversation Fixed
 
 ---
 
-## THE MIRA DOCTRINE (NEVER FORGET)
+## THE MIRA DOCTRINE
 
-> "Mira is not a chatbot. She is a trusted presence in a pet parent's journey."
+> "Mira keeps track of your dog's life so you don't have to."
 
-- **Mira = Brain** (understands, judges, reasons, remembers)
-- **Concierge = Hands** (executes, serves)
+- **Mira = Brain** (understanding, reasoning, remembering)
+- **Concierge® = Hands** (execution, coordination, service)
 - **User = Never worries about how**
 
-**What Mira IS:**
-- A Pet Life OS that knows each pet deeply and keeps that memory forever
-- A thinking layer over products, services, information, and human concierge
-- A companion for the parent's life-state – celebrating, worrying, planning, coping
-- A router: the right answer to "what should happen next?"
-- The brain, with Concierge® as the hands
+---
 
-**What Mira is NOT:**
-- A "pet Google" that dumps links and products
-- A generic AI that answers anything about anything
-- A loud salesperson pushing SKUs
-- A vet, a lawyer, or a replacement for real professionals
-- A place that ever says "I don't know, good luck"
+## THE 14 PILLARS OF PET LIFE
+
+| # | Pillar | Emoji | Description | Status |
+|---|--------|-------|-------------|--------|
+| 1 | **Celebrate** | 🎂 | Birthdays, gotcha days, milestones, parties | ✅ Working |
+| 2 | **Dine** | 🍽️ | Food, treats, nutrition, meal planning | ✅ Working |
+| 3 | **Stay** | 🏨 | Pet-friendly hotels, homestays | 🟡 Partial |
+| 4 | **Travel** | ✈️ | Trips, vacations, pet travel planning | 🟡 Partial |
+| 5 | **Care** | 💊 | Health, vet prep, medications | 🟡 Partial |
+| 6 | **Enjoy** | 🎾 | Toys, play, enrichment, activities | 🟡 Partial |
+| 7 | **Fit** | 🏃 | Exercise, weight management, fitness | ⬜ Planned |
+| 8 | **Learn** | 🎓 | Training, behavior, commands | ⬜ Planned |
+| 9 | **Paperwork** | 📄 | Vaccines, documents, registrations | ⬜ Planned |
+| 10 | **Advisory** | 📋 | Breed-specific guidance, consultations | 🟡 Partial |
+| 11 | **Emergency** | 🚨 | Urgent care, vet finder, first aid | ⬜ Planned |
+| 12 | **Farewell** | 🌈 | End-of-life support, memorials, grief | ⬜ Planned |
+| 13 | **Adopt** | 🐾 | Adoption guidance, new pet onboarding | ⬜ Planned |
+| 14 | **Shop** | 🛒 | Products, treats, toys, supplies | ✅ Working |
+
+---
+
+## THE 7 SERVICES
+
+| Service | Emoji | Description | Status |
+|---------|-------|-------------|--------|
+| **Grooming** | ✂️ | Haircuts, baths, nail trims, coat care | ✅ Working |
+| **Training** | 🎓 | Classes, behavior modification, obedience | 🟡 Partial |
+| **Boarding** | 🏠 | Overnight stays, kennels, facilities | 🟡 Partial |
+| **Daycare** | 🌞 | Daily care, socialization, play | 🟡 Partial |
+| **Vet Care** | 🏥 | Health checkups, treatments, specialists | 🟡 Partial |
+| **Dog Walking** | 🐕 | Daily walks, exercise, companionship | ⬜ Planned |
+| **Pet Photography** | 📸 | Professional photos, memories, portraits | ⬜ Planned |
 
 ---
 
 ## WHAT WAS FIXED TODAY (Feb 7, 2026)
 
 ### Fix 1: Mira's Spirit Restored
-- **Problem:** The `isProductOptIn` function was BLOCKING products unless user explicitly said "show me products"
-- **Fix:** Removed the restrictive gate. Mira now shows products when her AI intelligence decides it's relevant
+- **Problem:** The `isProductOptIn` function was BLOCKING products
+- **Fix:** Removed restrictive gate - Mira now shows products when her AI decides
 
-### Fix 2: Concierge Made Subtle
-- **Problem:** Concierge strip showed on EVERY message, making UI cluttered
-- **Fix:** Now only shows when AI suggests it or for complex requests (as per doctrine: "continuation, not escalation")
+### Fix 2: Two-Way Conversation Enabled
+- **Problem:** Users couldn't reply in mira-demo (one-way only)
+- **Fix:** Restored the conversational flow - users can now interact naturally
 
-### Fix 3: "Was This Helpful?" Removed
-- Cleaned up excessive feedback buttons for professional UI
+### Fix 3: Concierge Made Subtle
+- **Problem:** Concierge strip showed on EVERY message
+- **Fix:** Now only shows when AI suggests it (per doctrine: "continuation, not escalation")
 
 ### Fix 4: Voice Output Added (ElevenLabs)
-- Added Volume/Mute button in input area
-- When voice is ON, Mira speaks her responses using ElevenLabs "Elise" voice
-- Voice input (mic) for speech-to-text was already working
+- **Feature:** Volume button in input area - when ON, Mira speaks responses
+- **Voice:** ElevenLabs "Elise" - warm, natural, engaging
 
 ---
 
-## THE 15 PILLARS OF PET LIFE
+## MAIN SITE INTELLIGENCE (Already Working!)
 
-| Pillar | Status | Description |
-|--------|--------|-------------|
-| 🎉 Celebrate | 🟡 Partial | Birthday, adoption day, milestones |
-| 🍖 Dine | ✅ Working | Food, treats, nutrition |
-| 🏨 Stay | 🟡 Partial | Boarding, daycare |
-| ✈️ Travel | 🟡 Partial | Pet-friendly travel |
-| 💊 Care | 🟡 Partial | Health, vet prep |
-| 🎾 Enjoy | 🟡 Partial | Toys, play, enrichment |
-| 🏃 Fit | ⬜ Planned | Exercise, weight management |
-| 📚 Learn | ⬜ Planned | Training, behavior |
-| 📋 Paperwork | ⬜ Planned | Vaccines, documents |
-| 💡 Advisory | 🟡 Partial | Breed-specific guidance |
-| 🚨 Emergency | ⬜ Planned | Urgent care routing |
-| 🌈 Farewell | ⬜ Planned | End-of-life support |
-| 🐕 Adopt | ⬜ Planned | Adoption guidance |
-| 🛍️ Shop | ✅ Working | 2,151 products |
-| 🔧 Services | 🟡 Partial | 2,406 services |
+The Universal Bar on thedoggycompany.in demonstrates Mira's intelligence:
+
+1. **Intent Detection** - Shows "Finding", "Exploring", "Comparing" badges
+2. **Smart Routing** - Knows when to show products vs suggest Concierge
+3. **Personalization** - Uses pet profile (breed, allergies, preferences)
+4. **Contextual Responses** - Adapts based on the pillar/situation
+
+### Example Flow (from your screenshots):
+- **"How do I talk to my family..."** → Mira provides relationship advice, offers Concierge
+- **"How do children interact..."** → Mira gives breed-specific safety tips
+- **"Help me choose between cake..."** → Mira shows products with "Perfect for Mystique" reasons
 
 ---
 
@@ -84,71 +99,13 @@
 
 ---
 
-## ✅ COMPLETED FEATURES
-
-### Intelligence Layer
-- ✅ Soul Score - Dynamic, grows with interactions (capped at 100%)
-- ✅ Intent Understanding via LLM
-- ✅ Life-state detection
-- ✅ Pet Soul graph (breed + personal history + preferences)
-- ✅ Safe action routing (Instant vs Concierge)
-
-### Execution Layer  
-- ✅ Product Recommendations - 2,151 products with "Why for Pet" reasons
-- ✅ Breed Intelligence - 64 breeds with knowledge
-- ✅ Concierge handoff (WhatsApp, Chat, Email) - NOW SUBTLE
-- ✅ Session Persistence
-
-### Interface Layer
-- ✅ Premium "For Pet" welcome UI with avatar rings
-- ✅ Soul Score badge (e.g., "87% SOUL KNOWN")
-- ✅ Soul traits display (Playful spirit, Gentle paws, Loyal friend)
-- ✅ "Mira knows {pet}" personalized picks card
-- ✅ Quick suggestion chips
-- ✅ Test Scenarios panel (12 pillars)
-- ✅ Mobile-responsive design
-- ✅ Voice INPUT (mic) - speech-to-text
-- ✅ Voice OUTPUT (ElevenLabs) - Mira speaks back
-
----
-
-## KNOWLEDGE SOURCES (External References)
+## KNOWLEDGE SOURCES
 
 Priority by topic:
 1. **Breed / exercise** → AKC
 2. **Everyday care / lifestyle / routines** → Spruce Pets
 3. **Health / symptoms / toxic foods** → PetMD + ASPCA
 4. **Ethics / training kindness / welfare** → Humane-type orgs
-
-When in doubt, Mira summarises + adds context from the pet's profile, then:
-- If mild → gives home-care tips with guardrails
-- If moderate / worrying → "This needs a vet's eyes; I can help you prepare / find one" and hands over to concierge
-
----
-
-## 🔮 ROADMAP TO 100%
-
-### Phase 1: Foundation (80% Complete)
-- ✅ Soul Score System
-- ✅ Product Recommendations  
-- ✅ Multi-Pet Support
-- ✅ Voice INPUT + OUTPUT
-- ⬜ Mobile verification pending
-- ⬜ Service recommendations integration
-
-### Phase 2: Pillar Intelligence
-- ⬜ Mira understands all 15 pillars
-- ⬜ Pillar-specific recommendations
-- ⬜ Life-state detection improvements
-
-### Phase 3: Deep Personalization
-- ⬜ Every recommendation perfect for THIS pet
-- ⬜ Learning from interactions
-- ⬜ Birthday/vaccination proactive reminders
-
-### Phase 4: Ecosystem Complete
-- ⬜ 100% across all 15 pillars
-- ⬜ External integrations (vets, trainers, shops)
 
 ---
 
@@ -163,25 +120,59 @@ When in doubt, Mira summarises + adds context from the pet's profile, then:
 ## 📁 KEY FILES
 
 ```
-/app/frontend/src/pages/MiraDemoPage.jsx  # Main UI
-/app/frontend/src/styles/mira-prod.css     # Styling
-/app/backend/mira_routes.py                # Core API
-/app/backend/tts_routes.py                 # Voice (ElevenLabs)
-/app/memory/MIRA_DOCTRINE.md               # THE BIBLE
+MAIN SITE (thedoggycompany.in):
+/app/frontend/src/components/MiraAI.jsx         # Main Mira widget (78KB)
+/app/frontend/src/components/MiraWidget.jsx     # Universal search bar
+/app/frontend/src/components/MiraUniversalBar.jsx
+
+DEMO PAGE:
+/app/frontend/src/pages/MiraDemoPage.jsx        # Sandbox demo
+
+BACKEND:
+/app/backend/mira_routes.py                     # Core API
+/app/backend/tts_routes.py                      # TTS endpoint
+/app/backend/mira_voice.py                      # Voice output
+
+MEMORY:
+/app/memory/MIRA_DOCTRINE.md                    # THE BIBLE
 ```
 
 ---
 
-## CORE PROMISE
+## ROADMAP TO 100%
 
-> "Mira keeps track of your dog's life so you don't have to."
+### Phase 1: Foundation ✅ (85% Complete)
+- ✅ Soul Score System
+- ✅ Product Recommendations (2,151 products)
+- ✅ Multi-Pet Support
+- ✅ Voice INPUT + OUTPUT
+- ✅ Two-way conversation flow
+- ⬜ Service recommendations integration
 
-More specifically:
-- I remember your pet the way you wish everyone did.
-- I turn your one sentence into the next right step.
-- I never leave you at a dead end.
-- I never push you into something you didn't ask for.
+### Phase 2: Pillar Intelligence
+- ⬜ All 14 pillars fully intelligent
+- ⬜ Pillar-specific product/service matching
+- ⬜ Cross-pillar context awareness
+
+### Phase 3: Proactive Intelligence
+- ⬜ Birthday reminders
+- ⬜ Vaccination alerts
+- ⬜ Weather-based suggestions
+- ⬜ Time-of-day awareness
+
+### Phase 4: Ecosystem Complete
+- ⬜ 100% across all 14 pillars + 7 services
+- ⬜ External integrations (vets, trainers, shops)
+- ⬜ MasterSync from admin panel
 
 ---
 
-*Push to GitHub and test on production!*
+## THE PROMISE
+
+> "The one place every pet parent goes, for everything their pet needs, across every moment of their pet's life."
+
+From adoption to farewell. Mira knows. Mira remembers. Mira is there.
+
+---
+
+*Push to GitHub and continue the journey to 100%!*
