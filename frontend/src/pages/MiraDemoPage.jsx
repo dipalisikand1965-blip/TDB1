@@ -433,6 +433,18 @@ const MiraDemoPage = () => {
       ];
     }
     
+    // CAKE FOCUS: "focus on sourcing a cake, or other birthday elements?"
+    if ((messageLower.includes('focus on') && messageLower.includes('cake')) ||
+        (messageLower.includes('sourcing') && messageLower.includes('cake')) ||
+        (messageLower.includes('cake') && messageLower.includes('birthday') && messageLower.includes('elements')) ||
+        (messageLower.includes('cake') && messageLower.includes('decorations'))) {
+      return [
+        { text: 'Just the cake', value: 'Just the cake for now.' },
+        { text: 'Cake + activities', value: 'I want help with cake and activities.' },
+        { text: 'Show me cake ideas', value: 'Show me some birthday cake ideas for Buddy.' }
+      ];
+    }
+    
     // "small celebration at home, or party with others?"
     if ((messageLower.includes('at home') && messageLower.includes('party')) ||
         (messageLower.includes('small') && messageLower.includes('celebration'))) {
