@@ -1229,380 +1229,65 @@ const MiraDemoPage = () => {
   };
 
   return (
-    <div className="mira-os-container">
-      {/* UNIVERSAL HEADER - Magenta gradient like thedoggycompany.in */}
-      <header className="mira-os-header">
-        <div className="mira-os-header-gradient">
-          <Sparkles className="w-4 h-4" />
-          <span>The World's First Pet Life Operating System</span>
-        </div>
-        
-        <div className="mira-os-header-main">
-          {/* Logo */}
-          <div className="mira-os-logo">
-            <PawPrint className="w-6 h-6" />
-            <div className="mira-os-logo-text">
-              <span className="logo-the">the</span>
-              <span className="logo-doggy">doggy</span>
-              <span className="logo-company">company</span>
+    <div className="mira-chat-container">
+      {/* Header - Compact with Thin Dock */}
+      <header className="mira-header">
+        <div className="mira-header-inner">
+          <div className="mira-header-left">
+            <div className="mira-avatar mira-avatar-brand">
+              <Sparkles />
             </div>
-            <span className="logo-concierge">PET CONCIERGE®</span>
+            <div>
+              <h1 className="mira-header-title">Mira</h1>
+              <p className="mira-header-subtitle">Pet Life OS for {pet.name}</p>
+            </div>
           </div>
           
-          {/* Universal Search Bar */}
-          <form onSubmit={handleSubmit} className="mira-os-search">
-            <input
-              ref={inputRef}
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder={`Ask Mira anything for ${pet.name}...`}
-              className="mira-os-search-input"
-              disabled={isProcessing}
-              data-testid="mira-input"
-            />
-            <button
-              type="button"
-              onClick={toggleVoice}
-              className={`mira-os-voice-btn ${isListening ? 'listening' : ''}`}
-              data-testid="voice-btn"
-            >
-              {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+          {/* THIN DOCK - Per Gospel: Concierge, Orders, Plan, Help, Soul */}
+          <nav className="mira-thin-dock">
+            <button onClick={() => handleConciergeHandoff()} className="mira-dock-btn primary" data-testid="dock-concierge">
+              <MessageCircle className="w-4 h-4" />
+              <span>Concierge®</span>
             </button>
-            <button type="submit" className="mira-os-search-submit" disabled={isProcessing || !query.trim()}>
-              <Send className="w-5 h-5" />
+            <button onClick={() => navigate('/orders')} className="mira-dock-btn" data-testid="dock-orders">
+              <Package className="w-4 h-4" />
+              <span>Orders</span>
             </button>
-          </form>
+            <button onClick={() => navigate('/family-dashboard')} className="mira-dock-btn" data-testid="dock-plan">
+              <Calendar className="w-4 h-4" />
+              <span>Plan</span>
+            </button>
+            <button onClick={() => setShowHelpModal(true)} className="mira-dock-btn" data-testid="dock-help">
+              <HelpCircle className="w-4 h-4" />
+              <span>Help</span>
+            </button>
+            <button onClick={() => navigate('/pet-soul')} className="mira-dock-btn" data-testid="dock-soul">
+              <Heart className="w-4 h-4" />
+              <span>Soul</span>
+            </button>
+          </nav>
           
-          {/* Pet Avatar & Mira Toggle */}
-          <div className="mira-os-user-area">
-            <button 
-              onClick={() => setShowHelpModal(true)}
-              className="mira-os-mira-toggle"
-              title="Open Mira Widget"
-            >
-              <MessageCircle className="w-5 h-5" />
-            </button>
-            <div className="mira-os-pet-avatar">
+          <div className="mira-pet-badge">
+            <div className="mira-avatar mira-avatar-pet mira-pet-badge-avatar">
               {pet.photo ? (
                 <img src={pet.photo} alt={pet.name} />
               ) : (
-                <PawPrint className="w-5 h-5" />
+                <PawPrint />
               )}
+            </div>
+            <div className="mira-pet-badge-info">
+              <span className="mira-pet-badge-name">{pet.name}</span>
+              <span className="mira-pet-badge-breed">{pet.breed}</span>
             </div>
           </div>
         </div>
-        
-        {/* 14 Pillar Navigation */}
-        <nav className="mira-os-pillars">
-          {[
-            { id: 'celebrate', label: 'Celebrate', color: '#EC4899' },
-            { id: 'dine', label: 'Dine', color: '#F59E0B' },
-            { id: 'stay', label: 'Stay', color: '#10B981' },
-            { id: 'travel', label: 'Travel', color: '#3B82F6' },
-            { id: 'care', label: 'Care', color: '#EF4444' },
-            { id: 'enjoy', label: 'Enjoy', color: '#8B5CF6' },
-            { id: 'fit', label: 'Fit', color: '#06B6D4' },
-            { id: 'learn', label: 'Learn', color: '#6366F1' },
-            { id: 'paperwork', label: 'Paperwork', color: '#64748B' },
-            { id: 'advisory', label: 'Advisory', color: '#0EA5E9' },
-            { id: 'emergency', label: 'Emergency', color: '#DC2626' },
-            { id: 'adopt', label: 'Adopt', color: '#84CC16' },
-            { id: 'farewell', label: 'Farewell', color: '#A855F7' },
-            { id: 'shop', label: 'Shop', color: '#F472B6' },
-          ].map((pillar) => (
-            <button
-              key={pillar.id}
-              onClick={() => setPillar(pillar.id)}
-              className={`mira-os-pillar-btn ${currentPillar === pillar.id ? 'active' : ''}`}
-              style={{ '--pillar-color': pillar.color }}
-            >
-              {pillar.label}
-            </button>
-          ))}
-        </nav>
       </header>
 
-      {/* Main Content Area - 3 Column Layout */}
-      <div className="mira-os-main">
-        {/* LEFT SIDEBAR - Pet Soul Card */}
-        <aside className="mira-os-sidebar-left">
-          <div className="mira-os-pet-soul-card">
-            <div className="mira-os-pet-photo">
-              {pet.photo ? (
-                <img src={pet.photo} alt={pet.name} />
-              ) : (
-                <div className="mira-os-pet-placeholder">
-                  <PawPrint className="w-12 h-12" />
-                </div>
-              )}
-            </div>
-            <h3 className="mira-os-pet-name">{pet.name}</h3>
-            <p className="mira-os-pet-breed">{pet.breed}</p>
-            
-            {/* Soul Percentage */}
-            <div className="mira-os-soul-progress">
-              <div className="mira-os-soul-bar">
-                <div className="mira-os-soul-fill" style={{ width: '70%' }}></div>
-              </div>
-              <span className="mira-os-soul-text">{pet.name}'s soul is 70% discovered — keep going!</span>
-            </div>
-            
-            {/* Pet Traits */}
-            <div className="mira-os-pet-traits">
-              <div className="mira-os-trait">
-                <Heart className="w-4 h-4" />
-                <span>{pet.traits?.join(', ') || 'Playful, Friendly'}</span>
-              </div>
-              <div className="mira-os-trait">
-                <span>🦴</span>
-                <span>Loves {pet.favorites?.treat || 'treats'}</span>
-              </div>
-              {pet.sensitivities?.length > 0 && (
-                <div className="mira-os-trait warning">
-                  <span>⚠️</span>
-                  <span>{pet.sensitivities.join(', ')}</span>
-                </div>
-              )}
-            </div>
-            
-            <p className="mira-os-mira-knows">✨ Mira knows {pet.name}</p>
-          </div>
-          
-          {/* Quick Actions */}
-          <div className="mira-os-quick-actions">
-            <h4>Quick Actions</h4>
-            {[
-              { label: `Treats for ${pet.name}`, query: `Show me treats for ${pet.name}` },
-              { label: 'Plan a Birthday', query: `Plan a birthday for ${pet.name}` },
-              { label: 'Book Grooming', query: `Book grooming for ${pet.name}` },
-              { label: 'Travel Checklist', query: `Travel checklist for ${pet.name}` },
-            ].map((action, idx) => (
-              <button
-                key={idx}
-                onClick={() => setQuery(action.query)}
-                className="mira-os-quick-btn"
-              >
-                {action.label}
-              </button>
-            ))}
-          </div>
-        </aside>
-
-        {/* CENTER - Chat/Conversation Area */}
-        <main className="mira-os-chat">
-          {/* Personalized Products Header */}
-          {lastShownProducts.length > 0 && (
-            <div className="mira-os-products-header">
-              <span className="mira-os-products-title">✨ FOR {pet.name.toUpperCase()}</span>
-              <div className="mira-os-products-carousel">
-                {lastShownProducts.slice(0, 5).map((product, idx) => (
-                  <div key={idx} className="mira-os-product-mini">
-                    <img src={product.image || product.images?.[0] || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=80'} alt={product.name} />
-                    <span className="mira-os-product-price">₹{product.price || product.base_price}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-          
-          {/* Messages */}
-          <div ref={messagesContainerRef} className="mira-os-messages" onScroll={handleScroll}>
-            {/* Welcome State */}
-            {conversationHistory.length === 0 && !isProcessing && (
-              <div className="mira-os-welcome">
-                <div className="mira-os-welcome-avatar">
-                  <Sparkles className="w-8 h-8" />
-                </div>
-                <h2>Hi, I'm Mira!</h2>
-                <p>Your Pet Concierge® for {pet.name}. I know {pet.name} is a {pet.breed} with {pet.sensitivities?.join(', ') || 'unique needs'}. How can I help today?</p>
-                
-                {/* Suggestion Chips */}
-                <div className="mira-os-suggestions">
-                  {[
-                    { icon: '🦴', label: `Treats for ${pet.name}`, query: `Treats for ${pet.name}` },
-                    { icon: '✂️', label: 'Grooming help', query: `Grooming help for ${pet.name}` },
-                    { icon: '🎂', label: 'Plan a birthday', query: `Plan birthday for ${pet.name}` },
-                    { icon: '✈️', label: 'Travel tips', query: `Travel tips for ${pet.name}` },
-                  ].map((chip, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => handleSuggestionClick(chip.query)}
-                      className="mira-os-suggestion-chip"
-                    >
-                      <span>{chip.icon}</span>
-                      <span>{chip.label}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Conversation Messages */}
-            {conversationHistory.map((msg, idx) => (
-              <div key={idx} className={`mira-os-message ${msg.type}`}>
-                {msg.type === 'user' ? (
-                  <div className="mira-os-message-user">
-                    <p>{msg.content}</p>
-                  </div>
-                ) : (
-                  <div className="mira-os-message-mira">
-                    {/* Mira Header with Badges */}
-                    <div className="mira-os-message-header">
-                      <PawPrint className="w-4 h-4" />
-                      <span className="mira-os-message-name">Mira</span>
-                      {msg.intent && (
-                        <span className={`mira-os-badge intent-${msg.intent?.toLowerCase()}`}>
-                          {msg.intent}
-                        </span>
-                      )}
-                      {msg.executionType && (
-                        <span className={`mira-os-badge execution-${msg.executionType?.toLowerCase()}`}>
-                          {msg.executionType === 'INSTANT' ? '⚡ Instant' : '💜 With Concierge®'}
-                        </span>
-                      )}
-                    </div>
-                    
-                    {/* Message Content */}
-                    <div className="mira-os-message-body">
-                      <p>{msg.content}</p>
-                      
-                      {/* Highlighted Question */}
-                      {msg.question && (
-                        <div className="mira-os-highlighted-question">
-                          {msg.question}
-                        </div>
-                      )}
-                    </div>
-                    
-                    {/* Concierge Card */}
-                    {msg.executionType === 'CONCIERGE' && (
-                      <div className="mira-os-concierge-card">
-                        <div className="mira-os-concierge-icon">
-                          <MessageCircle className="w-5 h-5" />
-                        </div>
-                        <div className="mira-os-concierge-text">
-                          <strong>This needs your Pet Concierge</strong>
-                          <p>Personal coordination for {pet.name}</p>
-                        </div>
-                        <a 
-                          href={`https://wa.me/919663185747?text=${encodeURIComponent(`Hi, I need help with ${pet.name} (${pet.breed}). ${msg.content}`)}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="mira-os-concierge-btn"
-                        >
-                          Connect with Concierge
-                        </a>
-                      </div>
-                    )}
-                    
-                    {/* Products */}
-                    {msg.products && msg.products.length > 0 && (
-                      <div className="mira-os-message-products">
-                        <h4>✨ Suggested for {pet.name} {pet.sensitivities?.length > 0 ? `(${pet.sensitivities[0]}-free)` : ''}</h4>
-                        <div className="mira-os-products-grid">
-                          {msg.products.map((product, pidx) => (
-                            <div key={pidx} className="mira-os-product-card">
-                              <img src={product.image || product.images?.[0] || 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=150'} alt={product.name} />
-                              <div className="mira-os-product-info">
-                                <span className="mira-os-product-name">{product.name}</span>
-                                <span className="mira-os-product-price">₹{product.price || product.base_price}</span>
-                              </div>
-                              <button className="mira-os-product-add">
-                                <ShoppingBag className="w-4 h-4" />
-                                Add
-                              </button>
-                            </div>
-                          ))}
-                        </div>
-                        <p className="mira-os-products-help">Need help choosing? <a href={`https://wa.me/919663185747?text=${encodeURIComponent(`Help me choose for ${pet.name}`)}`} target="_blank" rel="noopener noreferrer">Ask your pet Concierge®</a></p>
-                      </div>
-                    )}
-                    
-                    {/* Feedback */}
-                    <div className="mira-os-feedback">
-                      <span>Was this helpful?</span>
-                      <button onClick={() => handleFeedback(idx, 'positive')} className={msg.feedback === 'positive' ? 'active' : ''}>
-                        <ThumbsUp className="w-4 h-4" />
-                      </button>
-                      <button onClick={() => handleFeedback(idx, 'negative')} className={msg.feedback === 'negative' ? 'active' : ''}>
-                        <ThumbsDown className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
-            ))}
-            
-            {/* Loading */}
-            {isProcessing && (
-              <div className="mira-os-message mira">
-                <div className="mira-os-typing">
-                  <span></span><span></span><span></span>
-                </div>
-              </div>
-            )}
-            
-            <div ref={messagesEndRef} />
-          </div>
-        </main>
-
-        {/* RIGHT SIDEBAR - Concierge & Test Panel */}
-        <aside className="mira-os-sidebar-right">
-          {/* Concierge Card */}
-          <div className="mira-os-concierge-panel">
-            <h4><MessageCircle className="w-4 h-4" /> Pet Concierge®</h4>
-            <p>Need personal help with {pet.name}?</p>
-            <a 
-              href={`https://wa.me/919663185747?text=${encodeURIComponent(`Hi, I need help with ${pet.name} (${pet.breed})`)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mira-os-whatsapp-btn"
-            >
-              <Phone className="w-4 h-4" />
-              WhatsApp Concierge®
-            </a>
-          </div>
-          
-          {/* Test Scenarios */}
-          <div className="mira-os-test-panel">
-            <button 
-              onClick={() => setShowTestScenarios(!showTestScenarios)}
-              className="mira-os-test-toggle"
-            >
-              <Bot className="w-4 h-4" />
-              Test Scenarios
-              <ChevronDown className={`w-4 h-4 ${showTestScenarios ? 'rotate-180' : ''}`} />
-            </button>
-            
-            {showTestScenarios && (
-              <div className="mira-os-test-list">
-                {TEST_SCENARIOS.map((scenario) => (
-                  <button
-                    key={scenario.id}
-                    onClick={() => handleSuggestionClick(scenario.query)}
-                    className="mira-os-test-btn"
-                  >
-                    {scenario.label}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        </aside>
+      {/* Breed Info Strip - Always visible contextual info */}
+      <div className="mira-breed-strip" data-testid="breed-info-strip">
+        <PawPrint className="w-4 h-4" />
+        <span>Like other {pet.breed}s, {pet.name} may enjoy interactive play, regular grooming, and balanced nutrition tailored to their energy levels.</span>
       </div>
-
-      {/* Voice Listening Indicator */}
-      {isListening && (
-        <div className="mira-os-listening-overlay">
-          <div className="mira-os-listening-modal">
-            <div className="mira-os-listening-pulse"></div>
-            <Mic className="w-8 h-8" />
-            <span>Listening... speak now</span>
-            <button onClick={() => setIsListening(false)}>Cancel</button>
-          </div>
-        </div>
-      )}
 
       {/* Main Chat Area - ChatGPT Style */}
       <div 
