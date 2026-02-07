@@ -1584,6 +1584,135 @@ async def search_real_products(
         logger.error(f"Product search error: {e}")
         return []
 
+
+# ═══════════════════════════════════════════════════════════════════════════
+# SERVICE SEARCH - Query services from database based on user intent
+# ═══════════════════════════════════════════════════════════════════════════
+
+# Service category keywords for matching
+SERVICE_KEYWORDS = {
+    "grooming": ["groom", "haircut", "bath", "nail", "trim", "shampoo", "brush", "coat", "fur", "wash", "spa"],
+    "walks": ["walk", "walking", "sitter", "sitting", "watch", "overnight", "pet sitting"],
+    "training": ["train", "training", "obedience", "behavior", "behaviour", "command", "puppy", "leash", "barking", "reactive"],
+    "vet": ["vet", "doctor", "health", "sick", "checkup", "vaccine", "vaccination", "medical", "clinic"],
+    "boarding": ["board", "boarding", "daycare", "kennel", "away", "vacation", "stay", "hotel"],
+    "photography": ["photo", "photography", "picture", "portrait", "shoot", "memory", "memories"],
+    "transport": ["transport", "taxi", "cab", "pickup", "drop", "airport", "move"],
+    "nutrition": ["food", "diet", "nutrition", "meal", "feeding", "weight"],
+    "party": ["party", "birthday", "celebrate", "celebration", "event"]
+}
+
+async def search_services_from_db(
+    query: str,
+    pet_context: Dict[str, Any] = None,
+    limit: int = 4
+) -> List[Dict[str, Any]]:
+    """
+    Search services from the database based on query keywords.
+    Returns services with icons, descriptions, and pricing.
+    """
+    db = get_db()
+    if db is None:
+        logger.warning("Database not available for service search")
+        return []
+    
+    services = []
+    query_lower = query.lower()
+    
+    try:
+        # Detect which categories match the query
+        matched_categories = []
+        for category, keywords in SERVICE_KEYWORDS.items():
+            if any(kw in query_lower for kw in keywords):
+                matched_categories.append(category)
+        
+        if not matched_categories:
+            logger.info(f"[SERVICE SEARCH] No category match for: {query}")
+            return []
+        
+        logger.info(f"[SERVICE SEARCH] Matched categories: {matched_categories}")
+        
+        # Query services collection
+        service_query = {
+            "is_active": {"$ne": False},
+            "$or": [
+                {"category": {"$in": matched_categories}},
+                {"pillar": {"$in": matched_categories}},
+                {"name": {"$regex": "|".join(matched_categories), "$options": "i"}}
+            ]
+        }
+        
+        cursor = db.services.find(service_query, {"_id": 0}).limit(limit * 2)
+        raw_services = await cursor.to_list(length=limit * 2)
+        
+        logger.info(f"[SERVICE SEARCH] Found {len(raw_services)} services from DB")
+        
+        # Category icons mapping
+        CATEGORY_ICONS = {
+            "grooming": "✂️",
+            "walks": "🐕",
+            "training": "🎓",
+            "vet": "🏥",
+            "boarding": "🏠",
+            "photography": "📸",
+            "transport": "🚗",
+            "nutrition": "🍽️",
+            "party": "🎉",
+            "care": "💝"
+        }
+        
+        # Category colors mapping
+        CATEGORY_COLORS = {
+            "grooming": "#EC4899",
+            "walks": "#10B981",
+            "training": "#6366F1",
+            "vet": "#8B5CF6",
+            "boarding": "#F59E0B",
+            "photography": "#EF4444",
+            "transport": "#3B82F6",
+            "nutrition": "#14B8A6",
+            "party": "#F97316",
+            "care": "#A855F7"
+        }
+        
+        pet_name = pet_context.get("name", "your pet") if pet_context else "your pet"
+        
+        for svc in raw_services[:limit]:
+            category = svc.get("category", svc.get("pillar", "care")).lower()
+            
+            services.append({
+                "id": svc.get("id", f"svc-{category}"),
+                "label": svc.get("name", category.title()),
+                "icon": CATEGORY_ICONS.get(category, "💼"),
+                "description": svc.get("description", f"Professional {category} services"),
+                "color": CATEGORY_COLORS.get(category, "#A855F7"),
+                "price": svc.get("base_price") or svc.get("price"),
+                "duration": svc.get("duration") or svc.get("duration_minutes"),
+                "image": svc.get("image"),
+                "category": category,
+                "pillar": svc.get("pillar", "care")
+            })
+        
+        # Always add a generic concierge option if we found services
+        if services:
+            services.append({
+                "id": "concierge",
+                "label": "Let Concierge Handle It",
+                "icon": "💜",
+                "description": f"We'll take care of everything for {pet_name}",
+                "color": "#A855F7",
+                "isConcierge": True
+            })
+        
+        return services
+        
+    except Exception as e:
+        logger.error(f"Service search error: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return []
+
+
 @router.post("/os/understand-with-products")
 async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
     """
