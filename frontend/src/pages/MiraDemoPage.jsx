@@ -1844,10 +1844,6 @@ const MiraDemoPage = () => {
       }
       const hasServiceIntent = detectedServices.length > 0;
       
-      console.log('[SERVICE_DEBUG] inputQuery:', inputQuery);
-      console.log('[SERVICE_DEBUG] detectedServices:', detectedServices);
-      console.log('[SERVICE_DEBUG] hasServiceIntent:', hasServiceIntent);
-      
       // MIRA DOCTRINE: Detect experience intent for premium curated experiences
       // Suppress experiences in comfort mode - not the time
       let detectedExperiences = [];
