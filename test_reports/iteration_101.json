@@ -1,0 +1,134 @@
+{
+  "summary": "Verified Mira OS Canonical Conversational Flow - Products shown ONLY after explicit opt-in (turn 3+), service desk ticket creation, real-time transcript logging, and Concierge handoff functionality. All features working correctly.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_results": {
+    "canonical_flow_tests": {
+      "first_message_no_products": {
+        "status": "PASS",
+        "test": "Send 'Show me some treats for Buddy' as first message",
+        "expected": "Clarifying question with NO products",
+        "actual": "Mira responded with clarifying question, highlighted in amber box, with quick reply chips. NO products shown.",
+        "console_log": "[TICKET] Created/attached: TCK-2026-000002 Pillar: Food"
+      },
+      "second_message_no_products": {
+        "status": "PASS",
+        "test": "Click 'Everyday light treats' quick reply as second message",
+        "expected": "Continue conversation with NO products",
+        "actual": "Mira continued conversation with more context. NO products shown.",
+        "console_log": "[SYNC] Message synced to ticket"
+      },
+      "third_message_shows_products": {
+        "status": "PASS",
+        "test": "Send 'Suggest a few treats' as third message (product opt-in)",
+        "expected": "Products should appear after explicit opt-in",
+        "actual": "Products displayed with images, prices (₹), 'Add' buttons, and personalized header 'Suggested for Buddy (Chicken allergy-free)'",
+        "console_log": "[FLOW] User opted in for products (turn: 3)"
+      },
+      "concierge_handoff": {
+        "status": "PASS",
+        "test": "Click 'Ask my Concierge® about these' link",
+        "expected": "Confirmation message and ticket status flip",
+        "actual": "Mira showed 'I've asked your pet Concierge® to help with this. They'll review everything we've discussed about Buddy and get back to you here.'",
+        "console_log": "[HANDOFF] Ticket handed off to Concierge: TCK-2026-000002 -> Queue: FOOD"
+      }
+    },
+    "service_desk_api_tests": {
+      "route_intent": {
+        "status": "PASS",
+        "endpoint": "POST /api/mira/route_intent",
+        "response": {"pillar": "Food", "intent_primary": "FOOD_TREATS", "life_state": "EXPLORE"}
+      },
+      "attach_or_create_ticket": {
+        "status": "PASS",
+        "endpoint": "POST /api/service_desk/attach_or_create_ticket",
+        "response": {"ticket_id": "TCK-2026-000003", "status": "open_mira_only", "is_new": true}
+      },
+      "append_message": {
+        "status": "PASS",
+        "endpoint": "POST /api/service_desk/append_message",
+        "response": {"success": true}
+      },
+      "handoff_to_concierge": {
+        "status": "PASS",
+        "endpoint": "POST /api/service_desk/handoff_to_concierge",
+        "response": {"success": true, "status": "open_concierge", "concierge_queue": "FOOD"}
+      },
+      "get_ticket": {
+        "status": "PASS",
+        "endpoint": "GET /api/service_desk/ticket/{ticket_id}",
+        "verified": ["full_conversation_history", "status_flip_to_open_concierge", "handoff_metadata"]
+      }
+    },
+    "ui_elements": {
+      "quick_reply_chips": {
+        "status": "PASS",
+        "details": "3 contextual chips displayed under Mira's clarifying question"
+      },
+      "highlighted_question": {
+        "status": "PASS",
+        "details": "Question highlighted in amber/orange gradient box"
+      },
+      "product_display": {
+        "status": "PASS",
+        "details": "5 products with images, prices (₹), 'Add' buttons, and personalized reasons"
+      },
+      "composer_pinned": {
+        "status": "PASS",
+        "details": "Composer always visible at bottom, even after scrolling"
+      },
+      "feedback_buttons": {
+        "status": "PASS",
+        "details": "'Was this helpful?' with thumbs up/down buttons"
+      },
+      "safety_tips": {
+        "status": "PASS",
+        "details": "'Important to Watch For' collapsible section with allergy warnings"
+      }
+    },
+    "mobile_viewport": {
+      "status": "PASS",
+      "viewport": "390x844",
+      "verified": ["header", "dock_items", "message_cards", "quick_reply_chips", "composer"]
+    }
+  },
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [],
+  "updated_files": [],
+  "success_rate": {
+    "backend": "100% (5/5 API tests passed)",
+    "frontend": "100% (All UI features working correctly)"
+  },
+  "test_credentials": {},
+  "seed_data_creation": "",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Iteration 101 verified canonical conversational flow: 1) Products ONLY shown after explicit opt-in (turn >= 3 with phrases like 'suggest a few treats'). 2) First/second messages show clarifying questions with NO products. 3) Quick reply chips appear under highlighted question. 4) Service desk APIs working: /api/mira/route_intent, /api/service_desk/attach_or_create_ticket, /api/service_desk/append_message, /api/service_desk/handoff_to_concierge. 5) Ticket status correctly flips from 'open_mira_only' to 'open_concierge' on handoff. 6) Full conversation transcript synced to ticket. 7) Mobile viewport tested and working.",
+  "features_verified": {
+    "canonical_flow": {
+      "status": "WORKING",
+      "key_rule": "Products shown ONLY after explicit user opt-in (not on first message)",
+      "opt_in_phrases": ["suggest a few", "suggest some", "suggest treats", "help me pick", "show me options"]
+    },
+    "service_desk_integration": {
+      "status": "WORKING",
+      "ticket_creation": "Every conversation creates a ticket",
+      "transcript_logging": "All messages synced in real-time",
+      "handoff": "Flips ticket status, doesn't create new ticket"
+    },
+    "ui_components": {
+      "quick_reply_chips": "WORKING",
+      "highlighted_questions": "WORKING",
+      "product_carousel": "WORKING",
+      "concierge_cta": "WORKING"
+    }
+  }
+}
