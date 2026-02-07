@@ -1568,46 +1568,53 @@ const MiraDemoPage = () => {
   };
 
   return (
-    <div className="mira-premium">
-      {/* HEADER: Mira Logo + Pet Badge (Orange paw) */}
-      <header className="mp-header">
-        <div className="mp-header-inner">
+    <div className="mira-10x">
+      {/* HEADER - Glassmorphism Crystal */}
+      <header className="m10-header">
+        <div className="m10-header-inner">
           {/* Left: Mira Logo */}
-          <div className="mp-logo">
-            <div className="mp-logo-icon">
+          <div className="m10-logo">
+            <div className="m10-logo-icon">
               <Sparkles />
             </div>
-            <div className="mp-logo-text">
-              <span className="mp-logo-title">Mira</span>
-              <span className="mp-logo-subtitle">Your Pet Companion</span>
+            <div className="m10-logo-text">
+              <span className="m10-logo-title">Mira</span>
+              <span className="m10-logo-subtitle">Your Pet Companion</span>
             </div>
           </div>
           
-          {/* Right: Pet Badge (Orange) */}
+          {/* Right: Pet Badge with Avatar Rings */}
           <button 
-            className="mp-pet-badge"
+            className="m10-pet-badge"
             onClick={() => setShowPetSelector(!showPetSelector)}
             data-testid="pet-selector-btn"
           >
-            <div className="mp-pet-avatar">
-              {pet.photo ? <img src={pet.photo} alt={pet.name} /> : <PawPrint />}
+            <div className="m10-pet-avatar-wrap">
+              <div className="m10-pet-avatar-ring"></div>
+              <div className="m10-pet-avatar-ring-inner"></div>
+              <div className="m10-pet-avatar">
+                {pet.photo ? <img src={pet.photo} alt={pet.name} /> : <PawPrint />}
+              </div>
             </div>
-            <span className="mp-pet-name">{pet.name}</span>
+            <div className="m10-pet-info">
+              <span className="m10-pet-name">{pet.name}</span>
+              <span className="m10-pet-soul">{pet.soulScore ? `Soul Score ${pet.soulScore}` : pet.breed}</span>
+            </div>
           </button>
           
           {/* Pet Dropdown */}
           {showPetSelector && (
-            <div className="mp-pet-dropdown">
+            <div className="m10-pet-dropdown">
               {allPets.map((p) => (
-                <button key={p.id} onClick={() => switchPet(p)} className={`mp-pet-option ${p.id === pet.id ? 'active' : ''}`}>
-                  <div className="mp-pet-option-icon">
+                <button key={p.id} onClick={() => switchPet(p)} className={`m10-pet-option ${p.id === pet.id ? 'active' : ''}`}>
+                  <div className="m10-pet-avatar" style={{ width: 36, height: 36 }}>
                     {p.photo ? <img src={p.photo} alt={p.name} /> : <PawPrint />}
                   </div>
-                  <div className="mp-pet-option-info">
-                    <span className="mp-pet-option-name">{p.name}</span>
-                    <span className="mp-pet-option-breed">{p.breed}</span>
+                  <div style={{ flex: 1 }}>
+                    <span style={{ display: 'block', color: 'white', fontWeight: 600, fontSize: 14 }}>{p.name}</span>
+                    <span style={{ display: 'block', color: 'rgba(255,255,255,0.5)', fontSize: 12 }}>{p.breed}</span>
                   </div>
-                  {p.id === pet.id && <Check className="check" />}
+                  {p.id === pet.id && <Check style={{ color: '#a855f7' }} />}
                 </button>
               ))}
             </div>
@@ -1615,21 +1622,33 @@ const MiraDemoPage = () => {
         </div>
       </header>
       
-      {/* NAVIGATION DOCK: Pill Tabs */}
-      <nav className="mp-dock">
-        <button onClick={() => inputRef.current?.focus()} className="mp-dock-btn active" data-testid="dock-concierge">
+      {/* SOUL TRAITS BAR - Like Travel Page */}
+      {pet.soulTraits && pet.soulTraits.length > 0 && (
+        <div className="m10-soul-bar">
+          {pet.soulTraits.map((trait, i) => (
+            <span key={i} className="m10-soul-trait">
+              <span className="m10-soul-trait-icon">{trait.icon}</span>
+              {trait.label}
+            </span>
+          ))}
+        </div>
+      )}
+      
+      {/* NAVIGATION DOCK - Floating Island */}
+      <nav className="m10-dock">
+        <button onClick={() => inputRef.current?.focus()} className="m10-dock-btn active" data-testid="dock-concierge">
           <MessageCircle /> <span>Concierge®</span>
         </button>
-        <button onClick={() => navigate('/orders')} className="mp-dock-btn" data-testid="dock-orders">
+        <button onClick={() => navigate('/orders')} className="m10-dock-btn" data-testid="dock-orders">
           <Package /> <span>Orders</span>
         </button>
-        <button onClick={() => navigate('/family-dashboard')} className="mp-dock-btn" data-testid="dock-plan">
+        <button onClick={() => navigate('/family-dashboard')} className="m10-dock-btn" data-testid="dock-plan">
           <Calendar /> <span>Plan</span>
         </button>
-        <button onClick={() => setShowHelpModal(true)} className="mp-dock-btn" data-testid="dock-help">
+        <button onClick={() => setShowHelpModal(true)} className="m10-dock-btn" data-testid="dock-help">
           <HelpCircle /> <span>Help</span>
         </button>
-        <button onClick={() => navigate('/pet-soul')} className="mp-dock-btn" data-testid="dock-soul">
+        <button onClick={() => navigate('/pet-soul')} className="m10-dock-btn" data-testid="dock-soul">
           <Heart /> <span>Soul</span>
         </button>
       </nav>
