@@ -1213,7 +1213,7 @@ const MiraDemoPage = () => {
 
   return (
     <div className="mira-chat-container">
-      {/* Header - Compact, Clean */}
+      {/* Header - Compact with Thin Dock */}
       <header className="mira-header">
         <div className="mira-header-inner">
           <div className="mira-header-left">
@@ -1225,6 +1225,31 @@ const MiraDemoPage = () => {
               <p className="mira-header-subtitle">Pet Life OS for {pet.name}</p>
             </div>
           </div>
+          
+          {/* THIN DOCK - Per Gospel: Concierge, Orders, Plan, Help, Soul */}
+          <nav className="mira-thin-dock">
+            <button onClick={() => handleConciergeHandoff()} className="mira-dock-btn primary" data-testid="dock-concierge">
+              <MessageCircle className="w-4 h-4" />
+              <span>Concierge®</span>
+            </button>
+            <button onClick={() => navigate('/orders')} className="mira-dock-btn" data-testid="dock-orders">
+              <Package className="w-4 h-4" />
+              <span>Orders</span>
+            </button>
+            <button onClick={() => navigate('/family-dashboard')} className="mira-dock-btn" data-testid="dock-plan">
+              <Calendar className="w-4 h-4" />
+              <span>Plan</span>
+            </button>
+            <button onClick={() => setShowHelpModal(true)} className="mira-dock-btn" data-testid="dock-help">
+              <HelpCircle className="w-4 h-4" />
+              <span>Help</span>
+            </button>
+            <button onClick={() => navigate('/pet-soul')} className="mira-dock-btn" data-testid="dock-soul">
+              <Heart className="w-4 h-4" />
+              <span>Soul</span>
+            </button>
+          </nav>
+          
           <div className="mira-pet-badge">
             <div className="mira-avatar mira-avatar-pet mira-pet-badge-avatar">
               {pet.photo ? (
