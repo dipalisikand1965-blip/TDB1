@@ -1846,7 +1846,7 @@ const MiraDemoPage = () => {
       // Suppress experiences in comfort mode - not the time
       let detectedExperiences = [];
       if (!inComfortMode) {
-        detectedExperiences = detectExperienceIntent(query);
+        detectedExperiences = detectExperienceIntent(inputQuery);
       }
       const hasExperienceIntent = detectedExperiences.length > 0;
       
