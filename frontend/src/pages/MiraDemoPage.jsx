@@ -776,7 +776,11 @@ const MiraDemoPage = () => {
           ticket_id: ticketId,
           // ANTI-LOOP: Pass completed steps so LLM knows what's already been asked
           completed_steps: completedSteps,
-          step_history: stepHistory.map(s => ({ step_id: s.step_id, answer: s.answer }))
+          step_history: stepHistory.map(s => ({ step_id: s.step_id, answer: s.answer })),
+          // Tell LLM if user is asking for more info (should explain options, not complete step)
+          user_asking_for_more_info: askingForMoreInfo,
+          // Pass the current pending step so LLM knows what question to explain
+          current_step: currentStep?.step_id || null
         })
       });
       
