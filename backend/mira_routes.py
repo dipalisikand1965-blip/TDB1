@@ -2223,15 +2223,28 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
         # Query real services based on user intent
         # ═══════════════════════════════════════════════════════════════════
         services_from_db = []
+        remembered_providers = []  # E013: Remembered providers
+        detected_service_type = None
+        
         try:
             # Detect if user is asking about a service
-            service_intent_keywords = [
-                'groom', 'bath', 'walk', 'train', 'vet', 'board', 'daycare', 
-                'photo', 'transport', 'taxi', 'sitting', 'sitter'
-            ]
+            service_intent_keywords = {
+                'groom': 'grooming', 'bath': 'grooming', 'haircut': 'grooming', 'spa': 'grooming',
+                'walk': 'walks', 'sitter': 'walks', 'sitting': 'walks',
+                'train': 'training', 'obedience': 'training',
+                'vet': 'vet', 'doctor': 'vet', 'checkup': 'vet', 'vaccine': 'vet',
+                'board': 'boarding', 'daycare': 'boarding', 'kennel': 'boarding',
+                'photo': 'photography', 'transport': 'transport', 'taxi': 'transport'
+            }
             user_input_lower = safe_lower(request.input)
             
-            if any(kw in user_input_lower for kw in service_intent_keywords):
+            # Find matching service type
+            for kw, svc_type in service_intent_keywords.items():
+                if kw in user_input_lower:
+                    detected_service_type = svc_type
+                    break
+            
+            if detected_service_type:
                 services_from_db = await search_services_from_db(
                     query=request.input,
                     pet_context=request.pet_context,
@@ -2239,6 +2252,18 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                 )
                 if services_from_db:
                     logger.info(f"[E014] Found {len(services_from_db)} services from DB for query: {request.input[:50]}")
+                
+                # E013: Check for remembered providers
+                pet_id = request.pet_context.get("id") if request.pet_context else None
+                if pet_id:
+                    remembered_providers = await get_remembered_providers(
+                        pet_id=pet_id,
+                        service_type=detected_service_type,
+                        limit=2
+                    )
+                    if remembered_providers:
+                        logger.info(f"[E013] Found {len(remembered_providers)} remembered providers")
+                        
         except Exception as svc_err:
             logger.error(f"Service search error: {svc_err}")
         
