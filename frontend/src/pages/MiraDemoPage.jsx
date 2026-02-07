@@ -2615,7 +2615,7 @@ const MiraDemoPage = () => {
                             </div>
                           )}
                           
-                          {/* Products - 2x2 GRID TILES */}
+                          {/* Products - Premium Bento Grid */}
                           {msg.showProducts && msg.data?.response?.products?.length > 0 && (
                             <div className="mp-products">
                               <div className="mp-products-header">
@@ -2625,17 +2625,20 @@ const MiraDemoPage = () => {
                               </div>
                               <div className="mp-products-grid">
                                 {msg.data.response.products.slice(0, 4).map((product, pIdx) => (
-                                  <div key={pIdx} className="mp-product-tile">
-                                    <img 
-                                      src={product.image || `https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop`} 
-                                      alt={product.name} 
-                                      className="mp-product-img" 
-                                    />
+                                  <div key={pIdx} className="mp-product-tile" data-testid={`product-tile-${pIdx}`}>
+                                    <div className="mp-product-img-wrapper">
+                                      <img 
+                                        src={product.image || product.images?.[0] || `https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop`} 
+                                        alt={product.name} 
+                                        className="mp-product-img"
+                                        loading="lazy"
+                                      />
+                                    </div>
                                     <div className="mp-product-content">
                                       <p className="mp-product-name">{product.name || product.suggestion}</p>
                                       {product.price && <p className="mp-product-price">₹{product.price}</p>}
                                       
-                                      {/* Why for {Pet} - Personalized Reason */}
+                                      {/* Why for {Pet} - Personalized Insight */}
                                       <div className="mp-why-for-pet">
                                         <span className="mp-why-icon">💡</span>
                                         <span className="mp-why-text">
