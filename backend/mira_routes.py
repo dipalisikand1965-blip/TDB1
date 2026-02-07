@@ -2279,6 +2279,7 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                 "message": understanding.get("message", ""),
                 "products": final_products,
                 "services": services_from_db,  # E014: Services from database
+                "remembered_providers": remembered_providers,  # E013: Past providers
                 "tips": understanding.get("tips", []),
                 "quick_replies": understanding.get("quick_replies", []),
                 "next_action": understanding.get("next_action", ""),
