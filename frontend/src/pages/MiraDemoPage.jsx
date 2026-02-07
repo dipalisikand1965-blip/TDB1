@@ -76,13 +76,10 @@ const MiraDemoPage = () => {
   const [pet, setPet] = useState(DEMO_PET);
   const [activeScenario, setActiveScenario] = useState(null);
   const [showScenarios, setShowScenarios] = useState(true);
-  const [showTestScenarios, setShowTestScenarios] = useState(false);
   const [collapsedSections, setCollapsedSections] = useState({});
   const [currentTicket, setCurrentTicket] = useState(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
   const [hasNewMessages, setHasNewMessages] = useState(false);
-  const [currentPillar, setPillar] = useState('celebrate');
-  const [lastShownProducts, setLastShownProducts] = useState([]);
   
   // Conversation stage tracking for product opt-in
   // Stage: 'initial' | 'clarifying' | 'opted_in_products' | 'concierge_engaged'
