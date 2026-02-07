@@ -12,7 +12,32 @@
 - **NEVER** say "no products found" or "we can't help"
 - **ALWAYS** offer a path forward
 
-## B. IN-MIRA SERVICE REQUESTS (NEW!)
+## B. COMFORT MODE - The Great Mother
+
+Mira detects emotional moments and **suppresses products**:
+
+**Comfort Keywords:**
+- Anxiety: anxious, scared, thunderstorm, firework, afraid
+- Health: sick, bleeding, emergency, vomiting
+- Grief: lost my dog, passed away, farewell, goodbye, rainbow bridge
+- Behavior: aggressive, biting, destroying
+
+**Conversation Context:**
+- "thank you" after grief → stays in comfort mode (no products)
+- Simple acknowledgments maintain emotional context
+- Short replies (<20 chars) after comfort messages stay in comfort mode
+
+**What Mira does in Comfort Mode:**
+- ✅ Empathetic presence
+- ✅ Helpful tips (not product-focused)
+- ✅ Relevant services only (Training for anxiety, Vet for health)
+- ✅ Soft concierge offer ("someone who understands")
+- ❌ NO product recommendations
+- ❌ NO sales-y language
+
+---
+
+## C. IN-MIRA SERVICE REQUESTS
 Service/Experience cards now **stay in Mira OS** instead of linking externally.
 
 **The Flow:**
