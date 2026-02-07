@@ -83,6 +83,7 @@ const MiraDemoPage = () => {
   const [hasNewMessages, setHasNewMessages] = useState(false);
   const [currentPillar, setPillar] = useState('celebrate');
   const [lastShownProducts, setLastShownProducts] = useState([]);
+  const [isRecording, setIsRecording] = useState(false); // For universal search voice
   
   // MULTI-PET SUPPORT - Switch between pets
   const [allPets, setAllPets] = useState([DEMO_PET]); // All user's pets
