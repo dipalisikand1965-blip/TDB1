@@ -1787,9 +1787,24 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
                     is_travel_conversation = True
                     break
         
+        # Check for birthday/cake conversation
+        is_birthday_conversation = False
+        user_input_lower = safe_lower(request.input)
+        if any(word in user_input_lower for word in ['birthday', 'cake', 'celebrate', 'pupcake', 'dognut', 'party']):
+            is_birthday_conversation = True
+        elif request.conversation_history:
+            for msg in request.conversation_history:
+                content = safe_lower(msg.get('content', ''))
+                if any(word in content for word in ['birthday', 'celebrate', 'party', 'cake']):
+                    is_birthday_conversation = True
+                    break
+        
         if is_travel_request or is_travel_conversation:
             search_keywords = "travel carrier crate harness bowl"
             is_treat_request = False  # Override - don't show treats in travel context
+        elif is_birthday_conversation:
+            search_keywords = "birthday cake celebration pupcake dognut hamper box party"
+            logger.info("[PRODUCT FILTER] Birthday/cake conversation detected, using birthday keywords")
         elif is_treat_request:
             search_keywords = None  # Will use entities
         elif is_groom_tools:
