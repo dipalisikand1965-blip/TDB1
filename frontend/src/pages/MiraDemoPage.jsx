@@ -1447,16 +1447,18 @@ const MiraDemoPage = () => {
         console.log('[STEP] New clarifying question, step_id:', miraStepId);
       }
       
-      // Determine if products should be shown
-      const shouldShowProducts = canShowProducts && 
-                                 data.response?.products?.length > 0;
+      // MIRA DOCTRINE: Show products when AI decides they're relevant
+      // No gates - Mira's intelligence determines when products are helpful
+      const shouldShowProducts = data.response?.products?.length > 0;
       
-      // Determine if concierge should be suggested
-      // Show concierge strip if:
-      // 1. Backend explicitly suggests it
-      // 2. User mentioned "concierge" in their message
-      // 3. Execution type is CONCIERGE
-      const userWantsConcierge = query.toLowerCase().includes('concierge');
+      // MIRA DOCTRINE: Concierge is premium service, not failure
+      // Show concierge option subtly when:
+      // 1. Backend explicitly suggests it (AI decided it's needed)
+      // 2. User explicitly asks for concierge help
+      // 3. Execution type is CONCIERGE (complex/bespoke request)
+      const userWantsConcierge = query.toLowerCase().includes('concierge') || 
+                                  query.toLowerCase().includes('help me') ||
+                                  query.toLowerCase().includes('can you handle');
       const shouldSuggestConcierge = data.response?.suggest_concierge || 
                                       data.execution_type === 'CONCIERGE' ||
                                       userWantsConcierge;
