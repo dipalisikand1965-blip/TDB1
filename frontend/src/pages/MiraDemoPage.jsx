@@ -998,8 +998,8 @@ const MiraDemoPage = () => {
         console.log('[STEP] New clarifying question, step_id:', miraStepId);
       }
       
-      // Determine if products should be shown (ONLY after explicit opt-in, never on first message)
-      const shouldShowProducts = (canShowProducts || isOptingIn) && 
+      // Determine if products should be shown
+      const shouldShowProducts = canShowProducts && 
                                  data.response?.products?.length > 0;
       
       const miraMessage = {
