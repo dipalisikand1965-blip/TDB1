@@ -1492,60 +1492,48 @@ const MiraDemoPage = () => {
       {hasNewMessages && !isAtBottom && (
         <button
           onClick={() => scrollToBottom()}
-          className="fixed bottom-24 left-1/2 -translate-x-1/2 px-4 py-2 bg-purple-500 
-            rounded-full text-white text-xs font-medium shadow-lg z-40 active:scale-95"
+          className="mira-scroll-bottom"
         >
-          New messages ↓
+          <ChevronDown />
+          New messages
         </button>
       )}
       
       {/* Reply Composer - ALWAYS PINNED AT BOTTOM */}
-      <div 
-        className="flex-shrink-0 bg-black/40 backdrop-blur-xl border-t border-white/10"
-        style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
-      >
-        <div className="max-w-3xl mx-auto px-4 py-3">
-          <form onSubmit={handleSubmit} className="flex items-center gap-2">
-            <div className="flex-1">
-              <input
-                ref={inputRef}
-                type="text"
-                inputMode="text"
-                enterKeyHint="send"
-                autoComplete="off"
-                autoCorrect="off"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Type your reply to Mira..."
-                className="w-full bg-white/10 border border-white/20 rounded-xl 
-                  px-4 py-3 text-white placeholder-white/40
-                  focus:outline-none focus:ring-2 focus:ring-purple-500/50"
-                style={{ fontSize: '16px', WebkitAppearance: 'none' }}
-                disabled={isProcessing}
-              />
-            </div>
+      <div className="mira-composer">
+        <div className="mira-composer-inner">
+          <form onSubmit={handleSubmit} className="mira-composer-form">
+            <input
+              ref={inputRef}
+              type="text"
+              inputMode="text"
+              enterKeyHint="send"
+              autoComplete="off"
+              autoCorrect="off"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Type your reply to Mira..."
+              className="mira-composer-input"
+              disabled={isProcessing}
+              data-testid="mira-input"
+            />
             
             <button
               type="button"
               onClick={toggleVoice}
-              className={`p-3 rounded-xl min-w-[48px] min-h-[48px] flex items-center justify-center
-                active:scale-95 ${
-                isListening 
-                  ? 'bg-red-500 text-white animate-pulse' 
-                  : 'bg-white/10 text-white/70 hover:bg-white/20'
-              }`}
+              className={`mira-composer-btn mira-composer-mic ${isListening ? 'listening' : ''}`}
+              data-testid="voice-btn"
             >
-              {isListening ? <MicOff className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+              {isListening ? <MicOff /> : <Mic />}
             </button>
             
             <button
               type="submit"
               disabled={isProcessing || !query.trim()}
-              className="p-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white
-                disabled:opacity-50 min-w-[48px] min-h-[48px] flex items-center justify-center
-                active:scale-95"
+              className="mira-composer-btn mira-composer-send"
+              data-testid="send-btn"
             >
-              {isProcessing ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
+              <Send />
             </button>
           </form>
           
