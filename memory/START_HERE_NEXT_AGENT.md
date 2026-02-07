@@ -298,15 +298,15 @@ When a user asks something, Mira:
 
 ```bash
 # Test backend health
-curl https://mira-care-hub.preview.emergentagent.com/api/health
+curl https://mira-router.preview.emergentagent.com/api/health
 
 # Test Mira chat
-curl -X POST https://mira-care-hub.preview.emergentagent.com/api/mira/os/understand-with-products \
+curl -X POST https://mira-router.preview.emergentagent.com/api/mira/os/understand-with-products \
   -H "Content-Type: application/json" \
   -d '{"input": "treats for Buddy", "pet_context": {"name": "Buddy", "breed": "Golden Retriever"}, "include_products": true}'
 
 # Test TTS
-curl -X POST https://mira-care-hub.preview.emergentagent.com/api/tts/generate \
+curl -X POST https://mira-router.preview.emergentagent.com/api/tts/generate \
   -H "Content-Type: application/json" \
   -d '{"text": "Hello, I am Mira"}'
 ```
