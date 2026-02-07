@@ -482,18 +482,9 @@ const MiraDemoPage = () => {
           meta: meta
         })
       });
+      console.log('[SYNC] Message synced to ticket:', ticketId);
     } catch (error) {
-      console.error('Failed to sync to service desk:', error);
-    }
-  }, [token]);
-            timestamp: msg.timestamp?.toISOString() || new Date().toISOString(),
-            source: 'Mira_OS'
-          }))
-        })
-      });
-      console.log('[SYNC] Transcript synced to ticket:', ticketId);
-    } catch (error) {
-      console.error('[SYNC] Failed to sync transcript:', error);
+      console.error('[SYNC] Failed to sync message:', error);
     }
   }, [token]);
   
