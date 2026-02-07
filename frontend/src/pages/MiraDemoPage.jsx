@@ -214,6 +214,56 @@ const detectServiceIntent = (query) => {
   return matchedServices;
 };
 
+// COMFORT MODE DETECTION
+// MIRA DOCTRINE: In emotional moments, Mira is the Great Mother - comfort first, NOT a salesman
+// When user expresses worry, fear, anxiety, grief - suppress products and be present
+const COMFORT_KEYWORDS = [
+  // Anxiety & Fear
+  'anxious', 'anxiety', 'scared', 'fear', 'nervous', 'stressed', 'panic', 'shaking', 'trembling',
+  'thunderstorm', 'firework', 'loud noise', 'afraid',
+  // Health Concerns (not shopping moments)
+  'sick', 'vomiting', 'diarrhea', 'bleeding', 'limping', 'not eating', 'won\'t eat', 'lethargic',
+  'emergency', 'urgent', 'help', 'worried', 'concerning',
+  // Grief & Loss
+  'passed away', 'died', 'dying', 'lost', 'grief', 'mourning', 'farewell', 'goodbye', 'miss',
+  'put down', 'euthanasia', 'rainbow bridge',
+  // Behavior issues (need comfort, not products)
+  'aggressive', 'biting', 'attacking', 'destroying', 'won\'t stop', 'keeps'
+];
+
+const isComfortMode = (query) => {
+  const lowerQuery = query.toLowerCase();
+  return COMFORT_KEYWORDS.some(keyword => lowerQuery.includes(keyword));
+};
+
+// When in comfort mode, only show relevant services (like Training for anxiety)
+// NOT products
+const getComfortModeServices = (query) => {
+  const lowerQuery = query.toLowerCase();
+  const services = [];
+  
+  // Anxiety/fear might benefit from training
+  if (lowerQuery.includes('anxious') || lowerQuery.includes('scared') || 
+      lowerQuery.includes('fear') || lowerQuery.includes('thunder') ||
+      lowerQuery.includes('firework') || lowerQuery.includes('noise')) {
+    services.push({
+      ...SERVICE_CATEGORIES.training,
+      description: 'Anxiety management and behavior support'
+    });
+  }
+  
+  // Health concerns might need vet coordination
+  if (lowerQuery.includes('sick') || lowerQuery.includes('emergency') ||
+      lowerQuery.includes('bleeding') || lowerQuery.includes('vomit')) {
+    services.push({
+      ...SERVICE_CATEGORIES.vet,
+      description: 'Vet coordination and urgent care support'
+    });
+  }
+  
+  return services;
+};
+
 // EXPERIENCE CATEGORIES - Premium curated experiences on main site
 // These are special wizard-driven experiences for each pillar
 const EXPERIENCE_CATEGORIES = {
