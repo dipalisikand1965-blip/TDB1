@@ -778,27 +778,28 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
             "vet", "doctor", "cough", "sick", "worried", "health", "pain", "limp",
             "boarding", "sitter", "kennel", "daycare",
             "training", "trainer", "behavio",
-            "lost", "passed", "died", "memorial", "farewell"
+            "lost", "passed", "died", "memorial", "farewell",
+            "trip", "travel", "vacation", "holiday"
         ])
         
-        # Also check if it's a planning request without product keywords
-        is_pure_planning = intent == "PLAN" and not any(word in user_input_lower for word in [
-            "treat", "food", "toy", "cake", "birthday", "gift", "buy", "order"
+        # Check if it's a product-related planning request (birthday, treats, food)
+        is_product_planning = any(word in user_input_lower for word in [
+            "treat", "food", "toy", "cake", "birthday", "gift", "buy", "order", "celebrate"
         ])
         
         # Step 2: For PRODUCT intents, get real products
         # For SERVICE intents, skip products entirely
         real_products = []
-        should_show_products = not is_service_intent and not is_pure_planning
+        should_show_products = not is_service_intent or is_product_planning
         
-        if should_show_products and intent in ["FIND", "ORDER", "COMPARE", "EXPLORE"]:
+        if should_show_products and intent in ["FIND", "ORDER", "COMPARE", "EXPLORE", "PLAN"]:
             real_products = await search_real_products(
                 entities=entities,
                 pet_context=request.pet_context or {},
                 limit=6
             )
         
-        logger.info(f"[PRODUCT FILTER] intent={intent}, is_service={is_service_intent}, is_pure_planning={is_pure_planning}, showing_products={should_show_products}")
+        logger.info(f"[PRODUCT FILTER] intent={intent}, is_service={is_service_intent}, is_product_planning={is_product_planning}, showing_products={should_show_products}")
         
         # Step 3: If CONCIERGE, create ticket and notifications (UNIFIED SERVICE FLOW)
         ticket_id = None
