@@ -848,52 +848,51 @@
 }
 
 /* ========================================
-   Input Composer - PROMINENT, Always Accessible
+   Input Composer - ChatGPT Style (Wide, Prominent)
    ======================================== */
 .mira-composer {
   flex-shrink: 0;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(16px);
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding: var(--mira-space-lg) var(--mira-space-lg);
-  padding-bottom: calc(var(--mira-space-lg) + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(to top, rgba(30, 27, 75, 0.95) 0%, transparent 100%);
+  padding: var(--mira-space-lg) var(--mira-space-xl);
+  padding-bottom: calc(var(--mira-space-xl) + env(safe-area-inset-bottom, 0px));
 }
 
 .mira-composer-inner {
-  max-width: 800px;
+  max-width: 900px;
   margin: 0 auto;
 }
 
 .mira-composer-form {
   display: flex;
   align-items: center;
-  gap: var(--mira-space-sm);
-  background: rgba(255, 255, 255, 0.15);
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-radius: var(--mira-radius-xl);
-  padding: var(--mira-space-xs);
+  gap: var(--mira-space-md);
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 24px;
+  padding: var(--mira-space-sm) var(--mira-space-md);
   transition: all var(--mira-transition-fast);
 }
 
 .mira-composer-form:focus-within {
-  border-color: rgba(168, 85, 247, 0.8);
-  background: rgba(255, 255, 255, 0.2);
-  box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.2);
+  border-color: rgba(168, 85, 247, 0.6);
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 0 4px rgba(168, 85, 247, 0.15);
 }
 
 .mira-composer-input {
   flex: 1;
   border: none;
   background: transparent;
-  padding: var(--mira-space-md) var(--mira-space-lg);
+  padding: var(--mira-space-md) var(--mira-space-sm);
   font-size: 16px;
   font-family: var(--mira-font-family);
   color: white;
   outline: none;
+  min-height: 24px;
 }
 
 .mira-composer-input::placeholder {
-  color: rgba(255, 255, 255, 0.6);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .mira-composer-btn {
