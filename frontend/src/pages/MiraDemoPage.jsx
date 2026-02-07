@@ -53,6 +53,80 @@ const TEST_SCENARIOS = [
   { id: 'boarding', label: '🏠 Boarding', query: "I need someone to watch Buddy while I'm away" },
 ];
 
+// SERVICE CATEGORIES - Maps to wizard pages on main site
+// When Mira detects service intent, she offers self-service OR concierge
+const SERVICE_CATEGORIES = {
+  grooming: {
+    id: 'grooming',
+    label: 'Grooming',
+    icon: '✂️',
+    description: 'Full groom, bath, nail trim, ear cleaning',
+    color: '#EC4899',
+    wizardUrl: '/care?type=grooming',
+    keywords: ['groom', 'haircut', 'bath', 'nail', 'trim', 'shampoo', 'brush', 'coat', 'fur', 'wash']
+  },
+  walks: {
+    id: 'walks',
+    label: 'Walks & Sitting',
+    icon: '🐕',
+    description: 'Daily walks, pet sitting, overnight care',
+    color: '#10B981',
+    wizardUrl: '/care?type=walks',
+    keywords: ['walk', 'walking', 'sitter', 'sitting', 'watch', 'overnight', 'stay']
+  },
+  training: {
+    id: 'training',
+    label: 'Training & Behaviour',
+    icon: '🎓',
+    description: 'Obedience, anxiety, reactivity, puppy training',
+    color: '#6366F1',
+    wizardUrl: '/care?type=training',
+    keywords: ['train', 'training', 'obedience', 'behavior', 'behaviour', 'command', 'puppy', 'leash', 'barking']
+  },
+  vet: {
+    id: 'vet',
+    label: 'Vet Coordination',
+    icon: '🏥',
+    description: 'Find vets, schedule reminders, health records',
+    color: '#8B5CF6',
+    wizardUrl: '/care?type=vet',
+    keywords: ['vet', 'doctor', 'health', 'sick', 'checkup', 'vaccine', 'vaccination', 'medical']
+  },
+  boarding: {
+    id: 'boarding',
+    label: 'Boarding & Daycare',
+    icon: '🏠',
+    description: 'Overnight stays, daycare, kennels',
+    color: '#F59E0B',
+    wizardUrl: '/care?type=boarding',
+    keywords: ['board', 'boarding', 'daycare', 'kennel', 'away', 'travel', 'vacation', 'stay']
+  },
+  photography: {
+    id: 'photography',
+    label: 'Pet Photography',
+    icon: '📸',
+    description: 'Professional photos, portraits, memories',
+    color: '#EF4444',
+    wizardUrl: '/care?type=photography',
+    keywords: ['photo', 'photography', 'picture', 'portrait', 'shoot', 'memory', 'memories']
+  }
+};
+
+// Detect which services are relevant based on query
+const detectServiceIntent = (query) => {
+  const lowerQuery = query.toLowerCase();
+  const matchedServices = [];
+  
+  Object.values(SERVICE_CATEGORIES).forEach(service => {
+    const hasMatch = service.keywords.some(keyword => lowerQuery.includes(keyword));
+    if (hasMatch) {
+      matchedServices.push(service);
+    }
+  });
+  
+  return matchedServices;
+};
+
 // Helper: Generate "Why for {Pet}" personalized reasons
 const generateWhyForPet = (product, pet) => {
   const productName = (product.name || '').toLowerCase();
