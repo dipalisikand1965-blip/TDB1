@@ -1347,13 +1347,21 @@ async def search_real_products(
             "treats": ["treats", "snacks", "biscuits"],
             "food": ["food", "meals", "fresh-meals"],
             "toys": ["toys", "play"],
-            "cakes": ["cakes", "birthday", "pupcakes", "dognuts"],
+            "cakes": ["cakes", "birthday", "pupcakes", "dognuts", "breed-cakes", "celebration"],
             "grooming": ["grooming", "spa"],
             "accessories": ["accessories", "collars", "leashes"],
         }
         
-        # Add category filter if product type specified
-        if product_type:
+        # SPECIAL: Birthday/Cake context - use strict category filter to avoid bandanas
+        is_birthday_context = any(word in safe_lower(str(search_keywords)) for word in ['birthday', 'cake', 'celebration', 'pupcake', 'dognut']) if search_keywords else False
+        
+        if is_birthday_context:
+            # Strict filter: ONLY cakes, pupcakes, dognuts - NOT accessories/bandanas
+            query["category"] = {"$in": ["cakes", "breed-cakes", "pupcakes", "dognuts", "celebration", "hampers", "mini-cakes"]}
+            logger.info("[PRODUCT FILTER] Birthday/cake context: Using strict category filter")
+            cursor = db.products_master.find(query, {"_id": 0}).limit(limit * 2)
+            all_products = await cursor.to_list(length=limit * 2)
+        elif product_type:
             categories = category_map.get(product_type, [product_type])
             query["$or"] = [
                 {"category": {"$in": categories}},
