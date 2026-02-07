@@ -543,7 +543,7 @@ const MiraDemoPage = () => {
             pet_context: {
               name: pet.name,
               breed: pet.breed,
-              age_years: pet.age,
+              age_years: parseInt(pet.age) || 3,
               allergies: pet.sensitivities || [],
               notes: pet.traits || []
             }
