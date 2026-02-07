@@ -1056,3 +1056,23 @@
   color: var(--mira-text-muted);
   background: rgba(0, 0, 0, 0.3);
 }
+
+/* ========================================
+   GLOBAL FIX: Force White Text on Welcome Chips
+   ======================================== */
+.mp-welcome-chips,
+.mp-welcome-chips *,
+.mp-welcome-chip,
+button.mp-welcome-chip,
+[class*="welcome-chip"] {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
+
+.mira-prod button[class*="chip"],
+.mira-prod [class*="welcome"] button {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+}
+
