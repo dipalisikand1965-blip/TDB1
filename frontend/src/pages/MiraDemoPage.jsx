@@ -193,11 +193,17 @@ const MiraDemoPage = () => {
   const [pet, setPet] = useState(DEMO_PET);
   const [activeScenario, setActiveScenario] = useState(null);
   const [showScenarios, setShowScenarios] = useState(true);
+  const [collapsedSections, setCollapsedSections] = useState({}); // For collapsible safety tips
+  const [currentTicket, setCurrentTicket] = useState(null); // Service ticket tracking
+  const [isAtBottom, setIsAtBottom] = useState(true); // For scroll tracking
+  const [hasNewMessages, setHasNewMessages] = useState(false); // New message indicator
   
   // Refs
   const inputRef = useRef(null);
   const recognitionRef = useRef(null);
   const handleSubmitRef = useRef(null);
+  const messagesEndRef = useRef(null);
+  const messagesContainerRef = useRef(null);
   
   // Fetch user's pet if logged in
   useEffect(() => {
