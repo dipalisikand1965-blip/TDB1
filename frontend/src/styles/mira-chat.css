@@ -93,14 +93,14 @@
 }
 
 /* ========================================
-   Base Container - ORIGINAL Lavender Purple Gradient
+   Base Container - DEEP Purple Gradient
    ======================================== */
 .mira-chat-container {
   display: flex;
   flex-direction: column;
   height: 100dvh;
   max-height: 100dvh;
-  background: linear-gradient(180deg, 
+  background: linear-gradient(135deg, 
     var(--mira-bg-gradient-start) 0%, 
     var(--mira-bg-gradient-mid) 50%, 
     var(--mira-bg-gradient-end) 100%);
