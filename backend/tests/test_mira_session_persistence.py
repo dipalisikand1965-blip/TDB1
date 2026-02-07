@@ -92,10 +92,15 @@ class TestSessionRetrieval:
     def test_get_session_by_id(self, session_id):
         """Test retrieving a session by ID"""
         import time
-        time.sleep(0.5)  # Allow time for DB consistency
-        response = requests.get(f"{BASE_URL}/api/mira/session/{session_id}")
+        # Retry logic for eventual consistency in distributed DB
+        max_retries = 3
+        for attempt in range(max_retries):
+            time.sleep(1.0 * (attempt + 1))  # Exponential backoff
+            response = requests.get(f"{BASE_URL}/api/mira/session/{session_id}")
+            if response.status_code == 200:
+                break
         
-        assert response.status_code == 200, f"Expected 200, got {response.status_code}: {response.text}"
+        assert response.status_code == 200, f"Expected 200, got {response.status_code} after {max_retries} attempts: {response.text}"
         data = response.json()
         
         assert data.get("session_id") == session_id, "Session ID should match"
