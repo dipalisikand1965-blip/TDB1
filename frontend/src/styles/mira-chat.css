@@ -405,13 +405,13 @@
 .mira-welcome-title {
   font-size: var(--mira-font-size-xl);
   font-weight: 600;
-  color: var(--mira-text-primary);
+  color: white;
   margin: 0 0 var(--mira-space-sm);
 }
 
 .mira-welcome-subtitle {
   font-size: var(--mira-font-size-base);
-  color: var(--mira-text-secondary);
+  color: rgba(255, 255, 255, 0.7);
   margin: 0 0 var(--mira-space-xl);
   max-width: 300px;
   margin-left: auto;
@@ -431,10 +431,10 @@
   padding: var(--mira-space-md) var(--mira-space-lg);
   min-height: var(--mira-touch-target);
   border-radius: var(--mira-radius-full);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  background: rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(8px);
-  color: var(--mira-text-primary);
+  color: white;
   font-size: var(--mira-font-size-sm);
   font-weight: 500;
   cursor: pointer;
@@ -442,7 +442,7 @@
 }
 
 .mira-welcome-chip:hover {
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.2);
 }
 
 .mira-welcome-chip:active {
