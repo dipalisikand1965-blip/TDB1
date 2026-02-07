@@ -865,6 +865,95 @@
 }
 
 /* ========================================
+   DYNAMIC CONCIERGE REQUEST CARDS
+   For ANY request - Concierge can do ANYTHING
+   ======================================== */
+.mp-dynamic-request {
+  margin-top: var(--space-md);
+  padding: var(--space-md);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(59, 130, 246, 0.15) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.25);
+  border-radius: var(--radius-lg);
+}
+
+.mp-dynamic-intro {
+  font-size: 14px;
+  color: var(--mira-text-secondary);
+  margin: 0 0 var(--space-md);
+}
+
+.mp-dynamic-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  background: rgba(255, 255, 255, 0.08);
+  border: 2px solid var(--request-color, var(--mira-pink));
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.mp-dynamic-card:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(139, 92, 246, 0.3);
+}
+
+.mp-dynamic-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-lg);
+  background: var(--request-color, var(--mira-pink));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  flex-shrink: 0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.mp-dynamic-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.mp-dynamic-label {
+  font-size: 18px;
+  font-weight: 600;
+  color: white;
+}
+
+.mp-dynamic-desc {
+  font-size: 14px;
+  color: var(--mira-text-secondary);
+  line-height: 1.4;
+}
+
+.mp-dynamic-badge {
+  position: absolute;
+  top: var(--space-sm);
+  right: var(--space-sm);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: white;
+  background: var(--request-color, var(--mira-pink));
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+}
+
+/* After hours styling */
+.mp-after-hours {
+  font-style: italic;
+  color: #A78BFA !important;
+}
+
+/* ========================================
    CONCIERGE STRIP
    ======================================== */
 .mp-concierge-strip {
