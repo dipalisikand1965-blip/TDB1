@@ -6877,9 +6877,9 @@ What would you prefer? 🐾"""
             "end_state": "FAILED_VISIBLE_ERROR"  # Valid end state per Mira doctrine
         }
 
-@router.get("/session/{session_id}")
-async def get_mira_session(session_id: str):
-    """Get full session data including ticket info and messages"""
+@router.get("/ticket-session/{session_id}")
+async def get_mira_ticket_session(session_id: str):
+    """Get full session data from ticket system (mira_tickets collection)"""
     db = get_db()
     
     ticket = await db.mira_tickets.find_one({"mira_session_id": session_id}, {"_id": 0})
