@@ -517,17 +517,54 @@ const MiraDemoPage = () => {
                         </div>
                       )}
                       
-                      {/* Concierge Handoff */}
-                      {msg.data?.execution_type === 'CONCIERGE' && msg.data?.response?.concierge_reason && (
-                        <div className="bg-amber-500/20 border border-amber-400/30 rounded-xl px-4 py-3">
-                          <p className="text-amber-200 text-sm">
-                            <MessageCircle className="w-4 h-4 inline mr-2" />
-                            <strong>Connecting to Concierge:</strong> {msg.data.response.concierge_reason}
+                      {/* Safety Tips (for health/emergency concerns) */}
+                      {msg.data?.response?.safety_tips && msg.data.response.safety_tips.length > 0 && (
+                        <div className="bg-red-500/20 border border-red-400/30 rounded-xl px-4 py-3 mb-4">
+                          <p className="text-red-200 text-sm font-medium mb-2">
+                            <AlertCircle className="w-4 h-4 inline mr-2" />
+                            Important to Watch For:
                           </p>
-                          <button className="mt-3 px-4 py-2 bg-amber-500 text-white rounded-lg text-sm font-medium
-                            hover:bg-amber-600 transition-all">
-                            Chat with Concierge
-                          </button>
+                          <ul className="text-red-100/80 text-sm space-y-1 ml-6">
+                            {msg.data.response.safety_tips.map((tip, tipIdx) => (
+                              <li key={tipIdx} className="list-disc">{tip}</li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      
+                      {/* Concierge Handoff - Enhanced */}
+                      {msg.data?.execution_type === 'CONCIERGE' && (
+                        <div className="bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-400/30 rounded-xl px-4 py-4">
+                          <div className="flex items-start gap-3">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 
+                              flex items-center justify-center flex-shrink-0">
+                              <User className="w-5 h-5 text-white" />
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-amber-100 font-medium">
+                                Your Pet Concierge is on it
+                              </p>
+                              {msg.data.response?.concierge_reason && (
+                                <p className="text-amber-200/70 text-sm mt-1">
+                                  {msg.data.response.concierge_reason}
+                                </p>
+                              )}
+                              {msg.data.response?.estimated_response && (
+                                <p className="text-amber-300 text-xs mt-2 flex items-center gap-1">
+                                  <Clock className="w-3 h-3" />
+                                  Expected response: {msg.data.response.estimated_response}
+                                </p>
+                              )}
+                              <button 
+                                className="mt-3 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-500 
+                                  text-white rounded-lg text-sm font-medium hover:from-amber-600 hover:to-orange-600 
+                                  transition-all shadow-lg shadow-amber-500/25"
+                                data-testid="chat-concierge-btn"
+                              >
+                                Chat with Concierge
+                              </button>
+                            </div>
+                          </div>
                         </div>
                       )}
                       
