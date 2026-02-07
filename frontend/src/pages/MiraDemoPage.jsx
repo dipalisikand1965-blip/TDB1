@@ -202,7 +202,7 @@ const MiraDemoPage = () => {
       console.error('Mira error:', error);
       const errorMessage = {
         type: 'mira',
-        content: "I'll connect you with your pet concierge to help with this.",
+        content: "I'll connect you with your pet Concierge® to help with this.",
         error: true,
         timestamp: new Date()
       };
