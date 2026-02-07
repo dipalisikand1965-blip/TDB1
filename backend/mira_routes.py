@@ -2151,6 +2151,30 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
         if should_show_products:
             final_products = real_products if real_products else understanding.get("products", [])
         
+        # ═══════════════════════════════════════════════════════════════════
+        # SERVICES FROM DATABASE - E014 Enhancement
+        # Query real services based on user intent
+        # ═══════════════════════════════════════════════════════════════════
+        services_from_db = []
+        try:
+            # Detect if user is asking about a service
+            service_intent_keywords = [
+                'groom', 'bath', 'walk', 'train', 'vet', 'board', 'daycare', 
+                'photo', 'transport', 'taxi', 'sitting', 'sitter'
+            ]
+            user_input_lower = safe_lower(request.input)
+            
+            if any(kw in user_input_lower for kw in service_intent_keywords):
+                services_from_db = await search_services_from_db(
+                    query=request.input,
+                    pet_context=request.pet_context,
+                    limit=4
+                )
+                if services_from_db:
+                    logger.info(f"[E014] Found {len(services_from_db)} services from DB for query: {request.input[:50]}")
+        except Exception as svc_err:
+            logger.error(f"Service search error: {svc_err}")
+        
         response_data = {
             "success": True,
             "understanding": {
@@ -2162,6 +2186,7 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
             "response": {
                 "message": understanding.get("message", ""),
                 "products": final_products,
+                "services": services_from_db,  # E014: Services from database
                 "tips": understanding.get("tips", []),
                 "quick_replies": understanding.get("quick_replies", []),
                 "next_action": understanding.get("next_action", ""),
@@ -2171,6 +2196,7 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                 "alignment_question": understanding.get("alignment_question"),
                 "safety_tips": understanding.get("safety_tips", []),
                 "has_real_products": len(final_products) > 0,
+                "has_services": len(services_from_db) > 0,  # E014: Flag for services
                 "ticket_id": ticket_id,
                 "suggest_concierge": understanding.get("suggest_concierge", False) or execution_type == "CONCIERGE"
             },
