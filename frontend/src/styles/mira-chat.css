@@ -376,7 +376,7 @@
 }
 
 /* ========================================
-   Welcome State
+   Welcome State - On Purple Background
    ======================================== */
 .mira-welcome {
   text-align: center;
@@ -387,7 +387,7 @@
   width: 72px;
   height: 72px;
   margin: 0 auto var(--mira-space-lg);
-  background: linear-gradient(135deg, #7C3AED 0%, #A78BFA 100%);
+  background: linear-gradient(135deg, #A855F7 0%, #EC4899 100%);
   border-radius: var(--mira-radius-full);
   display: flex;
   align-items: center;
@@ -430,8 +430,9 @@
   padding: var(--mira-space-md) var(--mira-space-lg);
   min-height: var(--mira-touch-target);
   border-radius: var(--mira-radius-full);
-  border: 1px solid var(--mira-border-light);
-  background: var(--mira-bg-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(8px);
   color: var(--mira-text-primary);
   font-size: var(--mira-font-size-sm);
   font-weight: 500;
@@ -440,8 +441,7 @@
 }
 
 .mira-welcome-chip:hover {
-  border-color: var(--mira-accent);
-  background: var(--mira-accent-soft);
+  background: rgba(255, 255, 255, 0.5);
 }
 
 .mira-welcome-chip:active {
