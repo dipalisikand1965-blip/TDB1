@@ -984,7 +984,7 @@ const MiraDemoPage = () => {
     setIsProcessing(false);
   }, [query, token, user, pet, extractQuickReplies, currentTicket, syncToServiceDesk, 
       conversationStage, userHasOptedInForProducts, isProductOptIn, completedSteps, 
-      stepHistory, currentStep, completeStep]);
+      stepHistory, currentStep, completeStep, isAskingForMoreInfo]);
   
   useEffect(() => {
     handleSubmitRef.current = handleSubmit;
