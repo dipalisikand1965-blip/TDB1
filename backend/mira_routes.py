@@ -1293,6 +1293,10 @@ async def search_real_products(
         # If we have a search override (e.g., "travel carrier"), use that first
         if search_override:
             search_terms = search_override.split()
+            
+            # MIRA FIX: For birthday/party context, exclude Halloween-themed products
+            is_birthday_search = any(word in safe_lower(search_override) for word in ['birthday', 'cake', 'celebration', 'party', 'love'])
+            
             query["$or"] = [
                 {"name": {"$regex": "|".join(search_terms), "$options": "i"}},
                 {"description": {"$regex": "|".join(search_terms), "$options": "i"}},
@@ -1300,6 +1304,14 @@ async def search_real_products(
                 {"category": {"$regex": "|".join(search_terms), "$options": "i"}},
                 {"pillar": {"$regex": "|".join(search_terms), "$options": "i"}}
             ]
+            
+            # For birthday context, exclude Halloween items and restrict categories
+            if is_birthday_search:
+                query["name"] = {"$not": {"$regex": "halloween|ghost|creepy|spooky|jack o|googly|ghoul|skeleton|witch|pumpkin|crawly|🎃|👻|🕸️", "$options": "i"}}
+                # Prioritize cakes category
+                query["category"] = {"$in": ["cakes", "breed-cakes", "hampers", "celebration", "mini-cakes", "other"]}
+                logger.info("[PRODUCT SEARCH] Birthday context: Excluding Halloween, prioritizing cakes")
+            
             cursor = db.products_master.find(query, {"_id": 0}).limit(limit * 2)
             all_products = await cursor.to_list(length=limit * 2)
             
