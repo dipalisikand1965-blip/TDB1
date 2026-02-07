@@ -183,12 +183,12 @@
   display: flex;
   align-items: center;
   gap: var(--mira-space-sm);
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: var(--mira-radius-full);
   padding: var(--mira-space-xs) var(--mira-space-md);
   padding-left: var(--mira-space-xs);
-  box-shadow: var(--mira-shadow-sm);
 }
 
 .mira-pet-badge-avatar {
@@ -204,13 +204,13 @@
 .mira-pet-badge-name {
   font-size: var(--mira-font-size-sm);
   font-weight: 600;
-  color: var(--mira-text-primary);
+  color: white;
   line-height: 1.2;
 }
 
 .mira-pet-badge-breed {
   font-size: var(--mira-font-size-xs);
-  color: var(--mira-accent);
+  color: rgba(255, 255, 255, 0.7);
   line-height: 1.2;
 }
 
