@@ -391,6 +391,48 @@ const MiraDemoPage = () => {
       ];
     }
     
+    // === BIRTHDAY / CELEBRATE FLOWS ===
+    // "Would you like this to be active and playful... or simpler, cosy?"
+    if ((messageLower.includes('active') && messageLower.includes('playful')) && 
+        (messageLower.includes('simpler') || messageLower.includes('cosy') || messageLower.includes('cozy'))) {
+      return [
+        { text: 'Active and playful', value: 'Something active and playful.' },
+        { text: 'Simpler and cosy', value: 'Simpler and cosy.' },
+        { text: 'Not sure yet', value: "I'm not sure yet." }
+      ];
+    }
+    
+    // "What feels most important - food, play, or ritual?"
+    if (messageLower.includes('food') && messageLower.includes('play') && 
+        (messageLower.includes('ritual') || messageLower.includes('marking the moment'))) {
+      return [
+        { text: 'Food / cake', value: 'Food / cake.' },
+        { text: 'Play / toys', value: 'Play / toys.' },
+        { text: 'Quiet ritual', value: 'Mostly a quiet ritual.' },
+        { text: 'All of it', value: 'All of it.' }
+      ];
+    }
+    
+    // "dog cake... or smaller birthday treats?"
+    if ((messageLower.includes('cake') && messageLower.includes('treat')) ||
+        (messageLower.includes('proper cake') || messageLower.includes('dog cake'))) {
+      return [
+        { text: 'Dog cake', value: 'Dog cake.' },
+        { text: 'Smaller treats', value: 'Smaller birthday treats.' },
+        { text: 'Both', value: 'Both.' }
+      ];
+    }
+    
+    // "small celebration at home, or party with others?"
+    if ((messageLower.includes('at home') && messageLower.includes('party')) ||
+        (messageLower.includes('small') && messageLower.includes('celebration'))) {
+      return [
+        { text: 'Small at home', value: 'Small celebration at home.' },
+        { text: 'Party with others', value: 'Party with others.' },
+        { text: 'Not sure yet', value: "I'm not sure yet." }
+      ];
+    }
+    
     // === GENERIC QUESTION PATTERNS ===
     // "Would you like to...?" or "Would you prefer...?"
     if (messageLower.includes('would you like') || messageLower.includes('would you prefer')) {
