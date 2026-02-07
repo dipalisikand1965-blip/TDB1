@@ -688,6 +688,81 @@ const MiraDemoPage = () => {
     handleSubmitRef.current = handleSubmit;
   }, [handleSubmit]);
   
+  // Handle Concierge® handoff - flip ticket status, don't create new ticket
+  const handleConciergeHandoff = useCallback(async () => {
+    if (!currentTicket?.id) {
+      console.warn('[HANDOFF] No active ticket to hand off');
+      return;
+    }
+    
+    setIsProcessing(true);
+    
+    try {
+      // Build summary from conversation history
+      const conversationSummary = conversationHistory
+        .filter(msg => msg.type !== 'user')
+        .slice(-3)
+        .map(msg => msg.content)
+        .join(' ');
+      
+      // Map pillar to queue
+      const queueMap = {
+        'Food': 'FOOD',
+        'Grooming': 'GROOMING',
+        'Celebrate': 'CELEBRATE',
+        'Travel': 'TRAVEL',
+        'Health': 'HEALTH',
+        'General': 'GENERAL'
+      };
+      const conciergeQueue = queueMap[currentTicket.pillar] || 'GENERAL';
+      
+      const response = await fetch(`${API_URL}/api/service_desk/handoff_to_concierge`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` })
+        },
+        body: JSON.stringify({
+          ticket_id: currentTicket.id,
+          concierge_queue: conciergeQueue,
+          latest_mira_summary: `Parent needs help with ${currentTicket.pillar.toLowerCase()} for ${pet.name} (${pet.breed}, ${pet.age}y). ${pet.sensitivities?.length ? `Allergies: ${pet.sensitivities.join(', ')}.` : ''} ${conversationSummary}`
+        })
+      });
+      
+      const data = await response.json();
+      
+      // Update local state
+      setCurrentTicket(prev => ({
+        ...prev,
+        status: 'open_concierge'
+      }));
+      setConversationStage('concierge_engaged');
+      
+      // Add Mira's confirmation message
+      const miraConfirmation = {
+        type: 'mira',
+        content: `I've asked your pet Concierge® to help with this. They'll review everything we've discussed about ${pet.name} and get back to you here.`,
+        isConciergeHandoff: true,
+        timestamp: new Date()
+      };
+      setConversationHistory(prev => [...prev, miraConfirmation]);
+      
+      console.log('[HANDOFF] Ticket handed off to Concierge:', currentTicket.id, '-> Queue:', conciergeQueue);
+      
+    } catch (error) {
+      console.error('[HANDOFF] Failed:', error);
+      const errorMessage = {
+        type: 'mira',
+        content: "I couldn't connect you right now, but I've noted your request. A Concierge® will reach out shortly.",
+        error: true,
+        timestamp: new Date()
+      };
+      setConversationHistory(prev => [...prev, errorMessage]);
+    }
+    
+    setIsProcessing(false);
+  }, [currentTicket, conversationHistory, pet, token]);
+  
   // Handle quick reply
   const handleQuickReply = useCallback((replyValue) => {
     setQuery(replyValue);
