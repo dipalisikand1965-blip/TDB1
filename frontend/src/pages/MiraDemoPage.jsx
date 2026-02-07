@@ -938,23 +938,25 @@ const MiraDemoPage = () => {
                       {/* Concierge Option - Quiet, Not Loud (but NOT for HOLD/grief) */}
                       {msg.data?.execution_type === 'CONCIERGE' && !msg.data?.response?.hide_concierge && (
                         <div className="border-t border-white/10 pt-4 mt-4">
-                          <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-3 flex-wrap sm:flex-nowrap">
                             <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
                               <User className="w-4 h-4 text-white/60" />
                             </div>
-                            <div className="flex-1">
+                            <div className="flex-1 min-w-0">
                               <p className="text-white/60 text-sm">
                                 {msg.data.response?.concierge_framing || 
                                   "Your pet Concierge® can help coordinate this when you're ready."}
                               </p>
                             </div>
                             <button 
-                              className="px-4 py-2 bg-white/10 hover:bg-white/20 
-                                text-white/80 rounded-lg text-sm transition-all"
-                                data-testid="chat-concierge-btn"
-                              >
-                                Have my Concierge® help
-                              </button>
+                              style={{ touchAction: 'manipulation', userSelect: 'none' }}
+                              className="px-4 py-2.5 bg-white/10 hover:bg-white/20 active:bg-white/30
+                                text-white/80 rounded-lg text-sm transition-all min-h-[44px]
+                                active:scale-95 select-none whitespace-nowrap"
+                              data-testid="chat-concierge-btn"
+                            >
+                              Have my Concierge® help
+                            </button>
                           </div>
                         </div>
                       )}
