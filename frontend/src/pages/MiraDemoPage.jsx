@@ -291,6 +291,15 @@ const MiraDemoPage = () => {
       ];
     }
     
+    // "adding a bath as well, or just focusing on the trim?"
+    if (messageLower.includes('bath') && messageLower.includes('trim')) {
+      return [
+        { text: 'Yes, add a bath', value: 'Yes, add a bath as well.' },
+        { text: 'Just the trim', value: 'Just the trim this time.' },
+        { text: 'Tell me more', value: 'Tell me more about what a bath would involve.' }
+      ];
+    }
+    
     // Bath: "bathing at home... or taking to a groomer?"
     if (messageLower.includes('bath') && (messageLower.includes('at home') || messageLower.includes('groomer'))) {
       return [
@@ -389,6 +398,78 @@ const MiraDemoPage = () => {
     
     return quickReplies;
   }, []);
+  
+  // Helper: Split message to highlight the question part
+  // Returns { mainText, questionText } for separate rendering
+  const splitMessageWithQuestion = useCallback((content) => {
+    if (!content || !content.includes('?')) {
+      return { mainText: content, questionText: null };
+    }
+    
+    // Find the last question in the message
+    const sentences = content.split(/(?<=[.!?])\s+/);
+    const questionSentences = [];
+    const mainSentences = [];
+    
+    // Go through sentences from the end to find questions
+    let foundQuestion = false;
+    for (let i = sentences.length - 1; i >= 0; i--) {
+      const sentence = sentences[i].trim();
+      if (sentence.includes('?') && !foundQuestion) {
+        questionSentences.unshift(sentence);
+        // Continue to catch the setup sentence (e.g., "To get this right for him, I'd like to understand...")
+        if (sentence.toLowerCase().includes('are you') || 
+            sentence.toLowerCase().includes('would you') ||
+            sentence.toLowerCase().includes('do you prefer')) {
+          foundQuestion = true;
+        }
+      } else if (questionSentences.length > 0 && !foundQuestion) {
+        // Include preceding context sentence if it leads into the question
+        if (sentence.toLowerCase().includes('understand') || 
+            sentence.toLowerCase().includes('know') ||
+            sentence.toLowerCase().includes('help')) {
+          questionSentences.unshift(sentence);
+        } else {
+          mainSentences.unshift(sentence);
+        }
+        foundQuestion = true;
+      } else {
+        mainSentences.unshift(sentence);
+      }
+    }
+    
+    return {
+      mainText: mainSentences.join(' ').trim(),
+      questionText: questionSentences.join(' ').trim()
+    };
+  }, []);
+  
+  // Transcript sync - send messages to service desk in real-time
+  const syncToServiceDesk = useCallback(async (ticketId, messages) => {
+    if (!ticketId) return;
+    
+    try {
+      await fetch(`${API_URL}/api/mira/tickets/sync`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` })
+        },
+        body: JSON.stringify({
+          ticket_id: ticketId,
+          messages: messages.map(msg => ({
+            sender: msg.type === 'user' ? 'parent' : msg.type,
+            text: msg.content,
+            timestamp: msg.timestamp?.toISOString() || new Date().toISOString(),
+            source: 'Mira_OS'
+          }))
+        })
+      });
+      console.log('[SYNC] Transcript synced to ticket:', ticketId);
+    } catch (error) {
+      console.error('[SYNC] Failed to sync transcript:', error);
+    }
+  }, [token]);
   
   // Handle submit
   const handleSubmit = useCallback(async (e, voiceQuery = null) => {
