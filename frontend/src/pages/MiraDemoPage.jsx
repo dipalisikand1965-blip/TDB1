@@ -404,7 +404,7 @@ const MiraDemoPage = () => {
         { text: 'Active and playful', value: 'Active and playful.' },
         { text: 'Simpler and cosy', value: 'Simpler and cosy.' },
         { text: "I'm not sure yet", value: "I'm not sure yet." },
-        { text: 'I know I want a cake too', value: 'I know I want a cake too.' }
+        { text: "I'd like a cake as well", value: "I'd like a birthday cake for him as well." }
       ];
     }
     
