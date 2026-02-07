@@ -2980,7 +2980,7 @@ input, select, textarea {
 }
 
 /* ========================================
-   MOBILE L (414px - 767px) - Large Phones
+   MOBILE L (414px - 767px) - Large Phones (iPhone Plus/Max)
    ======================================== */
 @media (min-width: 414px) and (max-width: 767px) {
   .mp-conversation {
@@ -2994,9 +2994,15 @@ input, select, textarea {
   }
   
   .mp-msg-content {
+    padding: 18px;
+    font-size: 16px;
+    line-height: 1.7;
+  }
+  
+  .mp-highlight {
     padding: 16px;
-    font-size: 14px;
-    line-height: 1.6;
+    font-size: 15px;
+    line-height: 1.55;
   }
   
   .mp-products-grid {
@@ -3005,7 +3011,15 @@ input, select, textarea {
   }
   
   .mp-product-img {
-    height: 100px;
+    height: 110px;
+  }
+  
+  .mp-product-name {
+    font-size: 15px;
+  }
+  
+  .mp-product-price {
+    font-size: 16px;
   }
   
   .mp-service-grid {
@@ -3014,7 +3028,43 @@ input, select, textarea {
   }
   
   .mp-service-card {
-    padding: 14px;
+    padding: 16px;
+  }
+  
+  .mp-service-label {
+    font-size: 15px;
+  }
+  
+  .mp-service-desc {
+    font-size: 13px;
+  }
+  
+  .mp-quick-reply {
+    padding: 12px 18px;
+    font-size: 15px;
+  }
+  
+  .mp-watchfor-content {
+    font-size: 15px;
+    line-height: 1.65;
+  }
+  
+  .mp-watchfor-toggle {
+    font-size: 15px;
+  }
+  
+  .mp-dynamic-intro,
+  .mp-service-intro {
+    font-size: 15px;
+  }
+  
+  .mp-concierge-strip p {
+    font-size: 14px;
+  }
+  
+  .mp-input-container input {
+    font-size: 16px;
+    padding: 14px 18px;
   }
 }
 
