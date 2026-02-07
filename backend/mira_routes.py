@@ -1357,6 +1357,7 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
             page_context=request.page_context,
             completed_steps=request.completed_steps or [],
             step_history=request.step_history or [],
+            conversation_history=request.conversation_history or [],
             user_asking_for_more_info=request.user_asking_for_more_info or False,
             current_step=request.current_step
         )
