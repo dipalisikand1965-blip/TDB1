@@ -1211,7 +1211,8 @@ def safe_string_list(val):
 async def search_real_products(
     entities: Dict[str, Any],
     pet_context: Dict[str, Any],
-    limit: int = 6
+    limit: int = 6,
+    search_override: str = None  # For context-specific searches like "travel carrier"
 ) -> List[Dict[str, Any]]:
     """
     Search real products from the database based on Mira's understanding.
@@ -1227,6 +1228,50 @@ async def search_real_products(
     try:
         # Build search query based on entities
         query = {"available": {"$ne": False}}
+        
+        # If we have a search override (e.g., "travel carrier"), use that first
+        if search_override:
+            search_terms = search_override.split()
+            query["$or"] = [
+                {"name": {"$regex": "|".join(search_terms), "$options": "i"}},
+                {"description": {"$regex": "|".join(search_terms), "$options": "i"}},
+                {"tags": {"$regex": "|".join(search_terms), "$options": "i"}},
+                {"category": {"$regex": "|".join(search_terms), "$options": "i"}},
+                {"pillar": {"$regex": "|".join(search_terms), "$options": "i"}}
+            ]
+            cursor = db.products_master.find(query, {"_id": 0}).limit(limit * 2)
+            all_products = await cursor.to_list(length=limit * 2)
+            
+            if all_products:
+                logger.info(f"[PRODUCT SEARCH] Found {len(all_products)} products with override: {search_override}")
+                # Process products with pet context
+                pet_name = pet_context.get("name", "your pet")
+                pet_sensitivities = pet_context.get("sensitivities", [])
+                
+                for p in all_products[:limit]:
+                    # Filter out products with allergens
+                    if pet_sensitivities:
+                        product_text = (p.get("name", "") + " " + p.get("description", "")).lower()
+                        skip = False
+                        for sensitivity in pet_sensitivities:
+                            if sensitivity.lower().replace(" allergy", "") in product_text:
+                                skip = True
+                                break
+                        if skip:
+                            continue
+                    
+                    products.append({
+                        "name": p.get("name", "Product"),
+                        "price": p.get("base_price") or p.get("price") or 0,
+                        "image": p.get("images", [None])[0] if p.get("images") else p.get("image"),
+                        "images": p.get("images", []),
+                        "description": p.get("description", ""),
+                        "category": p.get("category", ""),
+                        "why_for_pet": f"Perfect for {pet_name}'s travel needs"
+                    })
+                
+                if products:
+                    return products[:limit]
         
         # Safely extract and normalize product type
         raw_product_type = entities.get("product_type", "")
