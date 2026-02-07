@@ -1750,11 +1750,6 @@ const MiraDemoPage = () => {
           </div>
         </div>
       )}
-        </button>
-        <button onClick={() => navigate('/pet-soul')} className="mp-dock-btn" data-testid="dock-soul">
-          <Heart /> <span>Soul</span>
-        </button>
-      </nav>
       
       {/* Past Chats Sidebar */}
       {showPastChats && (
