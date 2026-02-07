@@ -837,6 +837,7 @@
 }
 
 .mp-btn-mic,
+.mp-btn-voice,
 .mp-btn-send {
   width: 44px;
   height: 44px;
@@ -849,14 +850,36 @@
   transition: all 0.2s;
 }
 
-.mp-btn-mic {
+.mp-btn-mic,
+.mp-btn-voice {
   background: transparent;
   color: var(--mira-text-muted);
 }
 
-.mp-btn-mic:hover {
+.mp-btn-mic:hover,
+.mp-btn-voice:hover {
   background: rgba(255, 255, 255, 0.1);
   color: white;
+}
+
+/* Voice output button states */
+.mp-btn-voice.active {
+  color: var(--mira-pink);
+}
+
+.mp-btn-voice.speaking {
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.mp-btn-mic.recording {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  animation: pulse 1s ease-in-out infinite;
 }
 
 .mp-btn-send {
