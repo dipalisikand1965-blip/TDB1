@@ -1800,36 +1800,72 @@ const MiraDemoPage = () => {
         className="mp-messages"
       >
         <div className="mp-messages-inner">
-          {/* Welcome State - Premium */}
+          {/* Welcome State - Premium "For Buddy" Experience */}
           {conversationHistory.length === 0 && !isProcessing && (
-            <div className="mp-welcome">
-              {/* Pet Avatar with Rings */}
-              <div className="mp-welcome-avatar">
-                <div className="mp-welcome-avatar-ring"></div>
-                <div className="mp-welcome-avatar-ring-2"></div>
-                <div className="mp-welcome-avatar-img">
-                  {pet.photo ? <img src={pet.photo} alt={pet.name} /> : <PawPrint />}
+            <div className="mp-premium-welcome">
+              {/* Start Soul Journey Button */}
+              <button className="mp-soul-journey-btn" onClick={() => navigate('/pet-soul')}>
+                <Gift className="w-4 h-4" />
+                <span>Start {pet.name}'s soul journey</span>
+              </button>
+              
+              {/* Main Content Row */}
+              <div className="mp-welcome-hero">
+                {/* Pet Avatar with Animated Rings */}
+                <div className="mp-hero-avatar">
+                  <div className="mp-avatar-ring mp-avatar-ring-outer"></div>
+                  <div className="mp-avatar-ring mp-avatar-ring-inner"></div>
+                  <div className="mp-avatar-img">
+                    {pet.photo ? <img src={pet.photo} alt={pet.name} /> : <PawPrint className="w-12 h-12 text-white" />}
+                  </div>
+                  {/* Soul Score Badge */}
+                  <div className="mp-soul-score-badge">
+                    <span className="mp-soul-percent">{pet.soulScore || 87}%</span>
+                    <span className="mp-soul-label">SOUL<br/>KNOWN</span>
+                  </div>
+                </div>
+                
+                {/* Hero Text Content */}
+                <div className="mp-hero-content">
+                  <h1 className="mp-hero-title">For <span className="mp-pink-gradient">{pet.name}</span></h1>
+                  <p className="mp-hero-subtitle">Curated with love for {pet.name}</p>
+                  
+                  {/* Soul Traits */}
+                  <div className="mp-soul-traits">
+                    {(pet.soulTraits || [
+                      { label: 'Playful spirit', icon: '⭐', color: '#f59e0b' },
+                      { label: 'Gentle paws', icon: '🐾', color: '#ec4899' },
+                      { label: 'Loyal friend', icon: '❤️', color: '#ef4444' }
+                    ]).map((trait, i) => (
+                      <div key={i} className="mp-trait-chip">
+                        <span className="mp-trait-icon">{trait.icon}</span>
+                        <span className="mp-trait-label">{trait.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {/* Personalized Picks Button */}
+                  <button className="mp-personalized-btn" onClick={() => handleQuickReply(`Show me personalized picks for ${pet.name}`)}>
+                    <div className="mp-btn-icon">
+                      <Sparkles className="w-4 h-4" />
+                    </div>
+                    <span>" Personalized picks for {pet.name}"</span>
+                    <Sparkles className="mp-btn-sparkle" />
+                  </button>
                 </div>
               </div>
               
-              <h2 className="mp-welcome-title">
-                How can I help with <span className="pet-name">{pet.name}</span> today?
-              </h2>
-              <p className="mp-welcome-subtitle">
-                I know {pet.name} is a {pet.breed}{pet.sensitivities?.length > 0 ? ` with ${pet.sensitivities.join(', ')}` : ''}. 
-                Ask me anything about treats, grooming, travel, birthdays, health...
-              </p>
-              
-              {/* Quick Suggestions */}
-              <div className="mp-welcome-chips">
+              {/* Quick Suggestion Chips - Centered Below */}
+              <div className="mp-quick-chips">
                 {[
                   { text: `Treats for ${pet.name}`, icon: '🦴' },
                   { text: 'Grooming help', icon: '✂️' },
                   { text: 'Plan a birthday', icon: '🎂' },
                   { text: 'Travel tips', icon: '✈️' }
                 ].map((s, i) => (
-                  <button key={i} onClick={() => handleQuickReply(s.text)} className="mp-welcome-chip">
-                    <span>{s.icon}</span> {s.text}
+                  <button key={i} onClick={() => handleQuickReply(s.text)} className="mp-quick-chip">
+                    <span className="mp-chip-icon">{s.icon}</span>
+                    <span className="mp-chip-text">{s.text}</span>
                   </button>
                 ))}
               </div>
