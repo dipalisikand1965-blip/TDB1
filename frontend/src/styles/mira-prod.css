@@ -869,6 +869,68 @@
   margin-top: 2px;
 }
 
+/* ========================================
+   E013: REMEMBERED PROVIDERS
+   ======================================== */
+.mp-remembered-providers {
+  margin-bottom: var(--space-md);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.mp-remembered-intro {
+  font-size: 13px;
+  color: #F59E0B;
+  font-weight: 600;
+  margin: 0 0 var(--space-sm);
+}
+
+.mp-remembered-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mp-remembered-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, rgba(245,158,11,0.15) 0%, rgba(245,158,11,0.05) 100%);
+  border: 1px solid rgba(245,158,11,0.3);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+}
+
+.mp-remembered-card:hover {
+  background: linear-gradient(135deg, rgba(245,158,11,0.25) 0%, rgba(245,158,11,0.1) 100%);
+  border-color: rgba(245,158,11,0.5);
+  transform: translateX(4px);
+}
+
+.mp-remembered-icon {
+  font-size: 20px;
+}
+
+.mp-remembered-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mp-remembered-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+}
+
+.mp-remembered-suggestion {
+  font-size: 12px;
+  color: rgba(255,255,255,0.7);
+}
+
 /* Mobile: Stack service cards */
 @media (max-width: 480px) {
   .mp-service-grid {
