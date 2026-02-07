@@ -1504,120 +1504,91 @@ const MiraDemoPage = () => {
 
   return (
     <div className="mira-chat-container">
-      {/* Universal Search Bar - "Ask Mira anything for {pet}..." */}
-      <div style={{
-        background: 'linear-gradient(135deg, #1e1b4b, #312e81)',
-        padding: '12px 24px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: '16px',
-        borderBottom: '1px solid rgba(255,255,255,0.1)'
-      }}>
-        {/* Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexShrink: 0 }}>
-          <div style={{ 
-            width: '36px', height: '36px', 
-            background: 'linear-gradient(135deg, #ec4899, #f97316)', 
-            borderRadius: '10px', 
-            display: 'flex', alignItems: 'center', justifyContent: 'center' 
-          }}>
-            <Sparkles className="w-5 h-5" style={{ color: 'white' }} />
+      {/* HEADER: Mira OS Branding + Pet Badge */}
+      <header className="mira-os-header">
+        <div className="mira-os-header-inner">
+          {/* Left: Mira OS Logo */}
+          <div className="mira-os-logo">
+            <div className="mira-os-logo-icon">
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <div className="mira-os-logo-text">
+              <span className="mira-os-title">Mira OS</span>
+              <span className="mira-os-subtitle">Pet Life Operating System</span>
+            </div>
           </div>
-          <span style={{ color: '#ec4899', fontWeight: 700, fontSize: '16px' }}>Mira</span>
+          
+          {/* Right: Pet Badge */}
+          <button 
+            className="mira-os-pet-badge"
+            onClick={() => setShowPetSelector(!showPetSelector)}
+            data-testid="pet-selector-btn"
+          >
+            <div className="mira-os-pet-avatar">
+              {pet.photo ? <img src={pet.photo} alt={pet.name} /> : <PawPrint className="w-4 h-4" />}
+            </div>
+            <span className="mira-os-pet-name">{pet.name}</span>
+            <span className="mira-os-pet-breed">• {pet.breed}</span>
+            <ChevronDown className={`w-3 h-3 mira-os-chevron ${showPetSelector ? 'open' : ''}`} />
+          </button>
+          
+          {/* Pet Dropdown */}
+          {showPetSelector && (
+            <div className="mira-os-pet-dropdown">
+              {allPets.map((p) => (
+                <button key={p.id} onClick={() => switchPet(p)} className={`mira-os-pet-option ${p.id === pet.id ? 'active' : ''}`}>
+                  <PawPrint className="w-4 h-4" />
+                  <div className="mira-os-pet-option-info">
+                    <span className="name">{p.name}</span>
+                    <span className="breed">{p.breed}</span>
+                  </div>
+                  {p.id === pet.id && <Check className="w-4 h-4 check" />}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
-        
-        {/* Universal Search Input */}
-        <div style={{
-          flex: 1,
-          maxWidth: '500px',
-          background: 'white',
-          borderRadius: '8px',
-          display: 'flex',
-          alignItems: 'center',
-          padding: '0 4px 0 16px',
-          height: '44px'
-        }}>
+      </header>
+      
+      {/* UNIVERSAL SEARCH BAR */}
+      <div className="mira-universal-search-wrapper">
+        <div className="mira-universal-search-bar">
+          <Search className="w-4 h-4 search-icon" />
           <input
             type="text"
             placeholder={`Ask Mira anything for ${pet.name}...`}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSubmit()}
-            style={{
-              flex: 1,
-              border: 'none',
-              outline: 'none',
-              fontSize: '14px',
-              background: 'transparent',
-              color: '#374151'
-            }}
             data-testid="universal-search-input"
           />
-          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-            <button
-              onClick={() => setIsRecording(!isRecording)}
-              style={{
-                width: '36px', height: '36px',
-                borderRadius: '6px',
-                border: 'none',
-                background: isRecording ? '#fef2f2' : 'transparent',
-                color: isRecording ? '#ef4444' : '#6b7280',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                cursor: 'pointer'
-              }}
-              data-testid="universal-search-mic"
-            >
-              {isRecording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
-            </button>
-            <button
-              onClick={handleSubmit}
-              disabled={isProcessing || !query.trim()}
-              style={{
-                width: '36px', height: '36px',
-                borderRadius: '6px',
-                border: 'none',
-                background: 'linear-gradient(135deg, #f97316, #ea580c)',
-                color: 'white',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                cursor: 'pointer',
-                opacity: isProcessing || !query.trim() ? 0.5 : 1
-              }}
-              data-testid="universal-search-submit"
-            >
-              <Send className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-        
-        {/* Multi-Pet Selector */}
-        <div style={{ position: 'relative' }}>
-          <button 
-            onClick={() => setShowPetSelector(!showPetSelector)}
-            style={{
-              display: 'flex', alignItems: 'center', gap: '8px',
-              background: 'transparent', border: 'none',
-              color: 'white', padding: '8px 12px', borderRadius: '8px',
-              cursor: 'pointer'
-            }}
-            data-testid="pet-selector-btn"
-          >
-            <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.6)', textTransform: 'uppercase' }}>My Pets</span>
-            <span style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 500, color: '#ec4899' }}>
-              <PawPrint className="w-4 h-4" />
-              {pet.name}
-            </span>
-            <ChevronDown className={`w-4 h-4 transition-transform ${showPetSelector ? 'rotate-180' : ''}`} style={{ color: 'rgba(255,255,255,0.6)' }} />
+          <button className={`mic-btn ${isRecording ? 'recording' : ''}`} onClick={() => setIsRecording(!isRecording)}>
+            {isRecording ? <MicOff className="w-4 h-4" /> : <Mic className="w-4 h-4" />}
           </button>
-          
-          {/* Pet Dropdown */}
-          {showPetSelector && (
-            <div style={{
-              position: 'absolute', top: '100%', right: 0, marginTop: '8px',
-              background: 'white', borderRadius: '12px',
-              boxShadow: '0 10px 40px rgba(0,0,0,0.2)',
-              minWidth: '200px', overflow: 'hidden', zIndex: 1000
-            }}>
+          <button className="send-btn" onClick={handleSubmit} disabled={isProcessing || !query.trim()} data-testid="universal-search-submit">
+            <Send className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+      
+      {/* THIN DOCK: Concierge, Orders, Plan, Help, Soul */}
+      <nav className="mira-os-dock">
+        <button onClick={() => handleConciergeHandoff()} className="dock-btn active" data-testid="dock-concierge">
+          <MessageCircle className="w-4 h-4" /> Concierge®
+        </button>
+        <button onClick={() => navigate('/orders')} className="dock-btn" data-testid="dock-orders">
+          <Package className="w-4 h-4" /> Orders
+        </button>
+        <button onClick={() => navigate('/family-dashboard')} className="dock-btn" data-testid="dock-plan">
+          <Calendar className="w-4 h-4" /> Plan
+        </button>
+        <button onClick={() => setShowHelpModal(true)} className="dock-btn" data-testid="dock-help">
+          <HelpCircle className="w-4 h-4" /> Help
+        </button>
+        <button onClick={() => navigate('/pet-soul')} className="dock-btn" data-testid="dock-soul">
+          <Heart className="w-4 h-4" /> Soul
+        </button>
+      </nav>
               {allPets.map((p) => (
                 <button
                   key={p.id}
