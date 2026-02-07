@@ -118,6 +118,62 @@ const MiraDemoPage = () => {
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
   
+  // SESSION RECOVERY - Load conversation from backend on page load
+  useEffect(() => {
+    const recoverSession = async () => {
+      if (sessionRecovered || !sessionId) return;
+      
+      try {
+        console.log('[SESSION] Attempting to recover session:', sessionId);
+        const response = await fetch(`${API_URL}/api/mira/session/${sessionId}/messages?limit=50`);
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.messages && data.messages.length > 0) {
+            console.log('[SESSION] Recovered', data.messages.length, 'messages');
+            
+            // Convert backend format to frontend format
+            const recoveredHistory = data.messages.map(msg => ({
+              type: msg.role === 'user' ? 'user' : 'mira',
+              content: msg.content,
+              timestamp: msg.timestamp,
+              intent: msg.intent,
+              executionType: msg.execution_type,
+              products: msg.products || []
+            }));
+            
+            setConversationHistory(recoveredHistory);
+            setSessionRecovered(true);
+          }
+        } else if (response.status === 404) {
+          // Session doesn't exist yet - that's OK, it's a new conversation
+          console.log('[SESSION] New session, no history to recover');
+          setSessionRecovered(true);
+        }
+      } catch (err) {
+        console.warn('[SESSION] Recovery failed:', err);
+        setSessionRecovered(true);
+      }
+    };
+    
+    recoverSession();
+  }, [sessionId, sessionRecovered]);
+  
+  // Clear session function (for "New Chat" button)
+  const startNewSession = () => {
+    const newSession = `mira-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    localStorage.setItem('mira_session_id', newSession);
+    setSessionId(newSession);
+    setConversationHistory([]);
+    setCompletedSteps([]);
+    setCurrentStep(null);
+    setStepHistory([]);
+    setConversationStage('initial');
+    setUserHasOptedInForProducts(false);
+    setSessionRecovered(true);
+    console.log('[SESSION] Started new session:', newSession);
+  };
+  
   // Fetch user's pet if logged in
   useEffect(() => {
     const fetchPet = async () => {
