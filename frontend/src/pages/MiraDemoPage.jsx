@@ -532,6 +532,11 @@ const MiraDemoPage = () => {
       };
       setConversationHistory(prev => [...prev, miraMessage]);
       
+      // Sync transcript to service desk in real-time
+      if (currentTicket?.id) {
+        await syncToServiceDesk(currentTicket.id, [userMessage, miraMessage]);
+      }
+      
     } catch (error) {
       console.error('Mira error:', error);
       const errorMessage = {
@@ -544,7 +549,7 @@ const MiraDemoPage = () => {
     }
     
     setIsProcessing(false);
-  }, [query, token, pet, createOrAttachTicket, extractQuickReplies]);
+  }, [query, token, pet, createOrAttachTicket, extractQuickReplies, currentTicket, syncToServiceDesk]);
   
   useEffect(() => {
     handleSubmitRef.current = handleSubmit;
