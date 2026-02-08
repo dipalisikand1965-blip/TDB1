@@ -99,12 +99,17 @@ async def search_attractions(
         
         # Use freetext search endpoint
         payload = {
-            "searchTerm": search_query,
-            "currency": "INR",
-            "pagination": {
-                "start": 1,
-                "count": limit
-            }
+            "searchTerm": f"{dest_info['name']} {search_query}",
+            "searchTypes": [
+                {
+                    "searchType": "PRODUCTS",
+                    "pagination": {
+                        "start": 1,
+                        "count": limit
+                    }
+                }
+            ],
+            "currency": "INR"
         }
         
         async with httpx.AsyncClient() as client:
