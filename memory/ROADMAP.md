@@ -1,209 +1,105 @@
-# The Doggy Company - Vision & Roadmap Summary
-## "World's First Pet Life Operating System"
+# MIRA OS - ROADMAP
 
-*Last Updated: January 27, 2025*
+## P0 - Critical (Must Do Next)
 
----
+### 1. Soul Score Consistency
+- **Issue**: Lola shows no soul score, Buddy shows 87%
+- **Root Cause**: Need to verify `overall_score` is being fetched correctly
+- **Files**: `/app/frontend/src/pages/MiraDemoPage.jsx` line 793
+- **Fix**: Ensure `/api/pets/my-pets` returns correct `overall_score`
 
-## 🎯 VISION STATEMENT
+### 2. YouTube Training Videos Integration
+- **API Key**: `AIzaSyCEqC2I04NYLTvJmPNU7sWsrfcKLIwOWpU`
+- **Tasks**:
+  - Create `/app/backend/services/youtube_service.py`
+  - Search videos by breed, training topic
+  - Display in Mira chat responses
+  - Add to Learn pillar
 
-To become India's #1 Pet Life Operating System - a comprehensive platform that manages every aspect of a pet's life across 14 pillars, powered by AI concierge (Mira®) and world-class service delivery.
-
----
-
-## ✅ COMPLETED FEATURES
-
-### Core Platform
-- [x] **14 Pillar Architecture**: Celebrate, Dine, Stay, Travel, Care, Enjoy, Fit, Learn, Paperwork, Advisory, Emergency, Farewell, Adopt, Shop
-- [x] **Multi-tenant Service Desk**: Zoho/Salesforce-style ticket management
-- [x] **Mira® AI Concierge**: Context-aware chat with memory system
-- [x] **Product Catalog**: 600+ products synced from Shopify
-- [x] **User Authentication**: JWT-based auth with member profiles
-- [x] **Pet Profiles**: Pet registration with health data, birthdays, memories
-
-### Service Desk (Phase 12)
-- [x] Ticket CRUD with statuses, categories, urgency levels
-- [x] Slide-out drawer UI for ticket details
-- [x] Template management (Email & SMS)
-- [x] Custom status & category creation
-- [x] CSV export functionality
-- [x] Agent collision detection
-- [x] CSAT ratings
-- [x] Ticket tags
-- [x] Smart auto-assignment settings
-- [x] SLA breach alerts & monitoring
-- [x] Voice order processing
-- [x] Bulk actions
-
-### Concierge® Features
-- [x] Celebrate Concierge (Birthday planning)
-- [x] Dining Concierge (Restaurant & chef bookings)
-- [x] Stay Concierge (Boarding facilities)
-- [x] Service booking flow → Ticket creation
-
-### Communication
-- [x] Floating contact button (all pages)
-- [x] Call Now / WhatsApp / Voice Order
-- [x] Callback Request feature
-- [x] Mira "Speak to Us" section
-
-### SEO & Marketing
-- [x] Dynamic meta tags per pillar
-- [x] Sitemap.xml with all pages
-- [x] Canonical URL configuration
-- [x] Open Graph & Twitter Cards
+### 3. Amadeus Pet-Friendly Travel
+- **API Key**: `SO6flvJXlIFxNM7jYQckpOkFJoJAp4Ed`
+- **API Secret**: `M0H1ZYYHkaTMvNkd`
+- **Tasks**:
+  - Create `/app/backend/services/amadeus_service.py`
+  - Search pet-friendly hotels
+  - Add to travel-related chat responses
 
 ---
 
-## 🚧 IN PROGRESS / PARTIALLY COMPLETE
+## P1 - High Priority
 
-### WhatsApp Integration
-- [x] Backend routes created
-- [x] Webhook endpoint ready
-- [ ] **BLOCKED**: Awaiting WhatsApp Business API keys
-- [ ] Message sending functionality
-- [ ] Inbound message → ticket creation
+### 4. Expand Location Data
+- Add more cities: Ahmedabad, Lucknow, Jaipur city area
+- Seed more vet clinics and restaurants
+- Improve Google Places search accuracy
 
-### Email Integration (Resend)
-- [x] Routes prepared
-- [ ] **BLOCKED**: Awaiting RESEND_API_KEY
-- [ ] Auto-acknowledgment emails
-- [ ] Status change notifications
+### 5. Real User Testing
+- Test with `dipali@clubconcierge.in` / `test12`
+- Verify Lola's soul score
+- Test all nearby places features end-to-end
 
----
-
-## 📋 REMAINING FEATURES (PRIORITY ORDER)
-
-### P0 - Critical (Revenue Impact)
-1. **Production Product Options Fix**
-   - Run: `curl -X POST https://thedoggycompany.in/api/admin/universal-seed`
-   - This seeds product variants (Base, Flavour, Size)
-
-2. **Fix Production WebSocket**
-   - Service Desk real-time updates not working on production
-   - Needs infrastructure-level fix (Cloudflare/Ingress)
-
-### P1 - High Priority
-3. **Ticket Merging UI**
-   - Backend ready: `POST /api/tickets/merge`
-   - Need frontend UI for selecting tickets to merge
-
-4. **Agent Performance Dashboard**
-   - Backend ready: `GET /api/tickets/analytics/agent-performance`
-   - Need visualization (charts, graphs)
-
-5. **Excel Export (.xlsx)**
-   - Add styled Excel export alongside CSV
-
-6. **Product Tags Manager**
-   - Seed from Unified Product Box
-   - Admin UI for tag management
-
-### P2 - Medium Priority
-7. **Smart Auto-Assignment Configuration UI**
-   - Add UI in Settings modal for pillar-agent mapping
-   - Enable/disable toggle
-
-8. **SLA Breach Alerts UI**
-   - Visual alerts in Service Desk sidebar
-   - Browser notifications for breaches
-
-9. **Follow-up Reminders UI**
-   - Add reminder UI to ticket detail drawer
-   - Show overdue reminders list
-
-10. **Voice Order Processing Improvements**
-    - Better speech-to-text accuracy
-    - Order confirmation flow
-
-### P3 - Future Enhancements
-11. **Mobile App** (React Native)
-12. **Partner Portal** (for service providers)
-13. **Loyalty/Rewards Program**
-14. **Subscription Box Feature**
-15. **Pet Insurance Integration**
-16. **Telemedicine (Video Vet Calls)**
+### 6. Voice Commands
+- "Navigate to nearest vet" via voice
+- Voice-activated feature showcase
 
 ---
 
-## 💡 ENHANCEMENT SUGGESTIONS
+## P2 - Medium Priority
 
-### Revenue Boosters
-1. **Upsell Engine**: Show related products/services at checkout
-2. **Abandoned Cart Recovery**: Email/WhatsApp reminders
-3. **Membership Tiers**: Gold/Silver/Bronze with benefits
-4. **Referral Program**: Reward pet parents for referrals
-5. **Gift Cards**: Digital gift cards for pet services
+### 7. Code Refactoring
+- Break down `MiraDemoPage.jsx` (4000+ lines) into components:
+  - `ChatHeader.jsx`
+  - `FeatureShowcase.jsx`
+  - `NearbyPlacesCard.jsx`
+  - `WeatherCard.jsx`
+- Break down `mira_routes.py` (12000+ lines) into blueprints
 
-### Engagement Boosters
-1. **Pet Birthday Reminders**: Auto-notification with offers
-2. **Health Milestone Alerts**: Vaccination due, checkup reminders
-3. **Pet Social Feed**: Share pet moments with community
-4. **Achievement Badges**: Gamify pet parent activities
-5. **Photo Contest/Events**: Monthly themed contests
-
-### Operational Excellence
-1. **Inventory Alerts**: Low stock notifications
-2. **Route Optimization**: For delivery planning
-3. **Partner Rating System**: Rate service providers
-4. **Automated Reporting**: Daily/weekly email digests
-5. **Multi-language Support**: Hindi, regional languages
-
-### AI/ML Features
-1. **Pet Health Predictor**: Based on breed, age, history
-2. **Product Recommendations**: ML-based suggestions
-3. **Sentiment Analysis**: On customer feedback
-4. **Demand Forecasting**: For inventory planning
-5. **Chatbot Training**: Improve Mira with feedback
+### 8. Enhanced Search
+- Foursquare integration as backup
+- More semantic tags for products
+- Voice search support
 
 ---
 
-## 🗂️ DOCUMENT LOCATIONS
+## P3 - Future
 
-| Document | Location |
-|----------|----------|
-| PRD | `/app/memory/PRD.md` |
-| Roadmap | `/app/memory/ROADMAP.md` (this file) |
-| Test Reports | `/app/test_reports/` |
-| Sitemap | `/app/frontend/public/sitemap.xml` |
-| Robots.txt | `/app/frontend/public/robots.txt` |
+### 9. E026: Photo Analysis
+- Breed identification from photos
+- Skipped per user request (no medical diagnosis)
 
----
+### 10. E030: Real-time Vet Consultation
+- Video call with vet
+- Requires significant infrastructure
 
-## 🔑 CREDENTIALS (DEV/TEST)
+### 11. E031: Gamified Pet Profile
+- Achievements and badges
+- Pet journey milestones
 
-| Role | Username | Password |
-|------|----------|----------|
-| Admin | aditya | lola4304 |
-| Member | dipali@clubconcierge.in | test123 |
-
----
-
-## 📞 CONTACT INTEGRATION
-
-| Channel | Details |
-|---------|---------|
-| Phone | +91 96631 85747 |
-| WhatsApp | wa.me/919663185747 |
-| Support Email | (Configure with Resend) |
+### 12. E035: Proactive Health Alerts
+- Vaccination reminders
+- Health checkup scheduling
 
 ---
 
-## 🚀 DEPLOYMENT CHECKLIST
+## Integration Status
 
-After every deployment to production:
-
-```bash
-# 1. Run Universal Seed (includes templates, pet parents, product options)
-curl -X POST https://thedoggycompany.in/api/admin/universal-seed
-
-# 2. Verify templates loaded
-curl https://thedoggycompany.in/api/tickets/templates
-
-# 3. Verify product options
-curl "https://thedoggycompany.in/api/products?limit=5"
-```
+| Service | Status | Notes |
+|---------|--------|-------|
+| Google Places | ✅ Working | Vets, parks, stores |
+| OpenWeather | ✅ Working | Pet activity recs |
+| YouTube | 🔲 Pending | Key configured |
+| Amadeus | 🔲 Pending | Keys configured |
+| Foursquare | 🔲 Pending | Key configured |
+| ElevenLabs | ✅ Working | TTS features |
 
 ---
 
-*This document is auto-generated and maintained by the development system.*
+## Data Seeding Status
+
+| Collection | Count | Status |
+|------------|-------|--------|
+| Vet Clinics | 32 | ✅ Seeded |
+| Restaurants | 75+ | ✅ Seeded |
+| Pet Stays | 31+ | ✅ Seeded |
+| Products | 4000+ | ✅ Tagged |
+| Services | 2200+ | ✅ Tagged |
