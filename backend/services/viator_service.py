@@ -143,6 +143,7 @@ async def _search_products_alternative(dest_info: Dict, query: str, limit: int) 
         headers = {
             "exp-api-key": VIATOR_API_KEY,
             "Accept": "application/json;version=2.0",
+            "Accept-Language": "en-US",
             "Content-Type": "application/json"
         }
         
