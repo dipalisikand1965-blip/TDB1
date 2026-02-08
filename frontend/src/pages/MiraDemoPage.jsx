@@ -127,18 +127,26 @@ const generateConciergeRequest = (query, petName) => {
 
 // Test Scenarios
 const TEST_SCENARIOS = [
-  { id: 'treats', label: '🦴 Treats', query: "Show me some treats for Buddy" },
-  { id: 'birthday', label: '🎂 Birthday', query: "I want to plan Buddy's birthday" },
-  { id: 'food', label: '🍽️ Food', query: "What food would be best for Buddy?" },
-  { id: 'grooming', label: '✂️ Haircut', query: "Buddy needs a haircut, can you help?" },
-  { id: 'groom-bath', label: '🛁 Bath', query: "Buddy smells and really needs a bath" },
+  // Core scenarios
+  { id: 'treats', label: '🦴 Treats', query: "Show me some treats" },
+  { id: 'birthday', label: '🎂 Birthday', query: "I want to plan a birthday party" },
+  { id: 'food', label: '🍽️ Food', query: "What food would be best?" },
+  { id: 'grooming', label: '✂️ Haircut', query: "Need a haircut, can you help?" },
+  { id: 'groom-bath', label: '🛁 Bath', query: "Really needs a bath" },
   { id: 'groom-tools', label: '🧴 Tools', query: "What shampoo should I use?" },
-  { id: 'groom-accident', label: '🩹 Accident', query: "I cut Buddy's nail too short and it's bleeding" },
-  { id: 'health', label: '🏥 Health', query: "I'm worried, Buddy has been coughing a lot" },
-  { id: 'anxious', label: '😰 Anxiety', query: "Buddy seems anxious during thunderstorms" },
-  { id: 'memorial', label: '🌈 Farewell', query: "I lost my dog last week and I'm not ready to talk" },
-  { id: 'travel', label: '✈️ Travel', query: "We're planning a trip with Buddy next month" },
-  { id: 'boarding', label: '🏠 Boarding', query: "I need someone to watch Buddy while I'm away" },
+  { id: 'groom-accident', label: '🩹 Accident', query: "I cut the nail too short and it's bleeding" },
+  { id: 'health', label: '🏥 Health', query: "I'm worried about coughing" },
+  { id: 'anxious', label: '😰 Anxiety', query: "Seems anxious during thunderstorms" },
+  { id: 'memorial', label: '🌈 Farewell', query: "I lost my dog last week" },
+  { id: 'travel', label: '✈️ Travel', query: "Planning a trip next month" },
+  { id: 'boarding', label: '🏠 Boarding', query: "Need someone to watch while I'm away" },
+  // E032 Semantic Search tests
+  { id: 'calm', label: '😌 Calm', query: "Something to calm during Diwali fireworks" },
+  { id: 'skin', label: '🐾 Skin', query: "Has dry itchy skin, keeps scratching" },
+  { id: 'joint', label: '🦴 Joints', query: "Senior dog with stiff joints" },
+  // E025 Mood Detection tests
+  { id: 'not-eating', label: '🚫 Not Eating', query: "Not eating and seems tired today" },
+  { id: 'acting-weird', label: '❓ Acting Weird', query: "Has been acting strange lately" },
 ];
 
 // SERVICE CATEGORIES - Maps to wizard pages on main site
