@@ -872,6 +872,31 @@ const MiraDemoPage = () => {
     console.log('[SESSION] Started new session:', newSession, 'for pet:', pet.name);
   };
   
+  // FETCH WEATHER DATA for pet activity recommendations
+  useEffect(() => {
+    const fetchWeather = async () => {
+      try {
+        // Get user's city from pet profile or default to Mumbai
+        const userCity = pet?.location?.city || pet?.city || 'Mumbai';
+        const response = await fetch(`${API_URL}/api/mira/weather/pet-activity?city=${encodeURIComponent(userCity)}`);
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            setCurrentWeather(data);
+            console.log('[WEATHER] Loaded weather for', data.city, ':', data.pet_advisory?.safety_level);
+          }
+        }
+      } catch (error) {
+        console.log('[WEATHER] Could not load weather:', error.message);
+      }
+    };
+    
+    fetchWeather();
+    // Refresh weather every 30 minutes
+    const interval = setInterval(fetchWeather, 30 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, [pet?.city, pet?.location?.city]);
+  
   // MULTI-PET: Fetch all user's pets
   useEffect(() => {
     const fetchAllPets = async () => {
