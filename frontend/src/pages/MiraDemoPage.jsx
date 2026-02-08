@@ -4618,8 +4618,8 @@ const MiraDemoPage = () => {
                 </div>
               )}
               
-              {/* Products Section - Intent-specific with C® fallback */}
-              {miraPicks.products.length > 0 && (
+              {/* Products Section - Generic products (NOT for celebration intents, those are handled above) */}
+              {miraPicks.products.length > 0 && !['party_planning', 'cake_shopping', 'celebration'].includes(miraPicks.subIntent) && (
                 <div className="mp-tray-section">
                   <h4><ShoppingBag size={16} /> {miraPicks.context || `${pet.name}'s Picks`}</h4>
                   <div className="mp-tray-products">
