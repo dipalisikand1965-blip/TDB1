@@ -167,7 +167,9 @@ const ProtectedRoute = ({ children, requireMembership = false }) => {
     const isAdmin = user?.role === 'admin' || user?.email?.includes('clubconcierge');
     const hasActiveMembership = user?.pet_pass_status === 'active' || 
                                 user?.membership_status === 'active' ||
-                                user?.has_paid === true;
+                                user?.has_paid === true ||
+                                user?.membership_tier ||  // Has any membership tier
+                                user?.active_pet_pass;    // Has active pet pass
     
     if (!isAdmin && !hasActiveMembership) {
       return (
