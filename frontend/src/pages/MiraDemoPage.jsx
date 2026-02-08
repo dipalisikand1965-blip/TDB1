@@ -4278,12 +4278,43 @@ const MiraDemoPage = () => {
                 </React.Fragment>
               ))}
               
-              {/* Skeleton Loader - Shows after 800ms */}
+              {/* MIRA MODE INDICATOR - Like ChatGPT's "Thinking" */}
               {showSkeleton && isProcessing && (
                 <div className="mp-msg-mira mp-skeleton-loader">
                   <div className="mp-mira-avatar"><Sparkles className="pulse" /></div>
                   <div className="mp-skeleton-content">
-                    <span className="mp-skeleton-text">Mira is thinking about {pet.name}...</span>
+                    <div className={`mp-mode-badge mp-mode-${miraMode}`}>
+                      {miraMode === 'thinking' && (
+                        <>
+                          <span className="mp-mode-icon">🧠</span>
+                          <span className="mp-mode-label">Mira is thinking...</span>
+                        </>
+                      )}
+                      {miraMode === 'instant' && (
+                        <>
+                          <span className="mp-mode-icon">⚡</span>
+                          <span className="mp-mode-label">Mira /Instant</span>
+                        </>
+                      )}
+                      {miraMode === 'comfort' && (
+                        <>
+                          <span className="mp-mode-icon">💜</span>
+                          <span className="mp-mode-label">Mira /Comfort</span>
+                        </>
+                      )}
+                      {miraMode === 'emergency' && (
+                        <>
+                          <span className="mp-mode-icon">🚨</span>
+                          <span className="mp-mode-label">Mira /Emergency</span>
+                        </>
+                      )}
+                      {(miraMode === 'ready' || !miraMode) && (
+                        <>
+                          <span className="mp-mode-icon">✨</span>
+                          <span className="mp-mode-label">Mira is thinking about {pet.name}...</span>
+                        </>
+                      )}
+                    </div>
                     <div className="mp-skeleton-lines">
                       <div className="mp-skeleton-line"></div>
                       <div className="mp-skeleton-line short"></div>
