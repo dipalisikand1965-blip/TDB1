@@ -748,7 +748,7 @@ const MiraDemoPage = () => {
   // ═══════════════════════════════════════════════════════════════════════════
   // TYPING ANIMATION - Stream text like a real assistant
   // ═══════════════════════════════════════════════════════════════════════════
-  const [isTyping, setIsTyping] = useState(false);
+  // isTyping, typingText already declared above with miraMode
   const [displayedText, setDisplayedText] = useState('');
   const [showSkeleton, setShowSkeleton] = useState(false);
   const typingTimeoutRef = useRef(null);
