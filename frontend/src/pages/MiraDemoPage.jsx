@@ -1674,6 +1674,17 @@ const MiraDemoPage = () => {
       
       const data = await response.json();
       
+      // ═══════════════════════════════════════════════════════════════════
+      // REAL-TIME SOUL SCORE UPDATE - The Pet Soul grows with every conversation!
+      // ═══════════════════════════════════════════════════════════════════
+      if (data.pet_soul_score !== undefined && data.pet_soul_score !== null) {
+        setPet(prev => ({
+          ...prev,
+          soulScore: Math.round(data.pet_soul_score)
+        }));
+        console.log('[SOUL SCORE] Updated to:', data.pet_soul_score);
+      }
+      
       const miraResponseText = data.response?.message || "I'm here to help!";
       
       // Extract contextual quick replies based on Mira's question
