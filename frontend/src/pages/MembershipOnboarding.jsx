@@ -1044,6 +1044,8 @@ const MembershipOnboarding = () => {
                                   updatePetData(idx, 'photo_preview', null);
                                   updatePetData(idx, 'photo_url', '');
                                   updatePetData(idx, 'photo_file', null);
+                                  updatePetData(idx, 'detected_breed', null);
+                                  updatePetData(idx, 'breed_confidence', null);
                                 }}
                                 className="absolute -top-1 -right-1 w-7 h-7 bg-red-500 rounded-full flex items-center justify-center text-white shadow-md hover:bg-red-600"
                               >
@@ -1051,8 +1053,26 @@ const MembershipOnboarding = () => {
                               </button>
                             )}
                           </div>
+                          
+                          {/* AI Breed Detection Status */}
+                          {detectingBreed === idx && (
+                            <div className="flex items-center gap-2 mt-2 p-2 bg-purple-500/20 rounded-lg animate-pulse">
+                              <Loader2 className="w-4 h-4 text-purple-400 animate-spin" />
+                              <span className="text-xs text-purple-300">🧠 AI detecting breed...</span>
+                            </div>
+                          )}
+                          
+                          {/* Detected Breed Display */}
+                          {pet.detected_breed && !detectingBreed && (
+                            <div className="flex items-center gap-2 mt-2 p-2 bg-green-500/20 rounded-lg border border-green-500/30">
+                              <Sparkles className="w-4 h-4 text-green-400" />
+                              <span className="text-xs text-green-300">
+                                AI detected: <strong>{pet.detected_breed}</strong> ({pet.breed_confidence}% confidence)
+                              </span>
+                            </div>
+                          )}
                         </div>
-                        <p className="text-xs text-slate-500 mt-2">A clear photo helps us personalize your experience</p>
+                        <p className="text-xs text-slate-500 mt-2">📸 Upload a photo and AI will detect the breed!</p>
                       </div>
 
                       {/* Pet Name */}
