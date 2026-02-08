@@ -310,17 +310,38 @@ const StayPage = () => {
     }
   };
   
-  // Fetch nearby hotels and attractions from Amadeus + Viator
+  // Fetch nearby hotels and attractions from Google Places + Viator
+  // Google Places is primary (accurate location), Amadeus is fallback (for pricing)
   const fetchNearbyPlaces = async (city) => {
     setNearbyLoading(true);
     setSelectedNearbyCity(city);
     try {
-      // Fetch hotels from Amadeus
-      const hotelsResponse = await fetch(`${API_URL}/api/mira/amadeus/hotels?city=${encodeURIComponent(city)}&max_results=6`);
-      if (hotelsResponse.ok) {
-        const hotelsData = await hotelsResponse.json();
-        setNearbyHotels(hotelsData.hotels || []);
+      // Try Google Places first - accurate for ANY city including small towns like Ooty
+      let hotels = [];
+      try {
+        const googleResponse = await fetch(`${API_URL}/api/mira/google-places/hotels?city=${encodeURIComponent(city)}&max_results=6`);
+        if (googleResponse.ok) {
+          const googleData = await googleResponse.json();
+          if (googleData.success && googleData.hotels?.length > 0) {
+            hotels = googleData.hotels;
+            console.log(`[STAY] Found ${hotels.length} hotels via Google Places for ${city}`);
+          }
+        }
+      } catch (googleErr) {
+        console.log('[STAY] Google Places hotels not available, trying Amadeus');
       }
+      
+      // Fallback to Amadeus if Google Places didn't return results
+      if (hotels.length === 0) {
+        const hotelsResponse = await fetch(`${API_URL}/api/mira/amadeus/hotels?city=${encodeURIComponent(city)}&max_results=6`);
+        if (hotelsResponse.ok) {
+          const hotelsData = await hotelsResponse.json();
+          hotels = hotelsData.hotels || [];
+          console.log(`[STAY] Found ${hotels.length} hotels via Amadeus for ${city}`);
+        }
+      }
+      
+      setNearbyHotels(hotels);
       
       // Fetch attractions from Viator
       const attractionsResponse = await fetch(`${API_URL}/api/mira/viator/pet-friendly?city=${encodeURIComponent(city)}&limit=4`);
