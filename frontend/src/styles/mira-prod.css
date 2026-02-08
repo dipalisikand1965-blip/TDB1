@@ -1956,14 +1956,23 @@ button.mp-welcome-chip,
 /* ==========================================
    MIRA HERO WELCOME - Matches UnifiedHero from Pillar Pages
    100% Mobile Optimized for iOS Safari & Android
+   Desktop: LEFT-ALIGNED and WIDER
    ========================================== */
 .mira-hero-welcome {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: center; /* Mobile: centered */
   padding: 24px 16px;
   max-width: 100%;
   overflow: hidden;
+}
+
+/* Desktop: Left-aligned and wider */
+@media (min-width: 768px) {
+  .mira-hero-welcome {
+    align-items: flex-start;
+    padding: 32px 40px;
+  }
 }
 
 /* Soul Journey Button */
