@@ -6193,7 +6193,56 @@ async def mira_chat(
         if any(extracted_contact.values()):
             await update_ticket_member_info(session_id, extracted_contact)
     
-    # 4. Handle EMERGENCY immediately
+    # 4. Handle FAREWELL/GRIEF with COMFORT mode - before emergency check
+    if pillar == "farewell":
+        # Check if user said they're "not ready"
+        is_not_ready = any(phrase in user_message.lower() for phrase in [
+            "not ready", "can't talk", "too raw", "too soon", "too hard",
+            "don't want to", "can't discuss", "not yet"
+        ])
+        
+        if is_not_ready:
+            grief_response = """I hear you. You don't have to say anything more.
+
+Losing a pet is one of the hardest things to go through. The love you shared was real, and so is this pain.
+
+I'm not going to ask you questions or suggest anything right now. Whenever you're ready - whether that's tomorrow or months from now - I'll be here.
+
+If you ever just want to share their name, a favorite memory, or need practical help, you can come back anytime. No pressure. Just presence. 💜"""
+        else:
+            grief_response = f"""I'm so sorry for your loss. There are no perfect words for moments like this.
+
+What you're feeling is a reflection of the love you shared. That bond was real and meaningful.
+
+I'm here if you want to:
+- Share a memory or their name
+- Talk about what you're going through
+- Get help with practical matters when you're ready
+
+Or we can just sit together quietly. Whatever you need. 💜"""
+        
+        await add_message_to_ticket(session_id, {
+            "type": "mira_response",
+            "content": grief_response,
+            "sender": "mira",
+            "channel": request.source,
+            "is_internal": False,
+            "mode": "comfort"
+        })
+        
+        return {
+            "response": grief_response,
+            "session_id": session_id,
+            "ticket_id": ticket_id,
+            "pillar": pillar,
+            "ticket_type": "advisory",
+            "mode": "comfort",
+            "is_grief": True,
+            "hide_feedback": True,
+            "hide_concierge": True
+        }
+    
+    # 5. Handle EMERGENCY immediately
     if pillar == "emergency":
         emergency_response = """**EMERGENCY DETECTED**
 
