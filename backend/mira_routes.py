@@ -5929,6 +5929,42 @@ I understand this is urgent. Let me help you immediately.
         except Exception as e:
             logger.warning(f"[NEARBY PLACES] Error fetching places: {e}")
     
+    # 4.7 FETCH WEATHER DATA for activity recommendations
+    if is_weather_query and user_city:
+        try:
+            from services.openweather_service import get_pet_activity_recommendation
+            
+            weather_result = await get_pet_activity_recommendation(user_city)
+            
+            if weather_result.get("success"):
+                weather_data = weather_result
+                advisory = weather_result.get("pet_advisory", {})
+                current = weather_result.get("current_weather", {})
+                
+                weather_context = f"""
+CURRENT WEATHER IN {user_city.upper()}:
+- Temperature: {current.get('temperature')}°C (feels like {current.get('feels_like')}°C)
+- Condition: {current.get('description', current.get('condition'))}
+- Humidity: {current.get('humidity')}%
+
+PET SAFETY: {advisory.get('safety_level', 'unknown').upper()}
+{advisory.get('walk_message', '')}
+
+Warnings: {', '.join(advisory.get('warnings', [])) or 'None'}
+
+Recommendations:
+{chr(10).join('• ' + r for r in advisory.get('recommendations', []))}
+
+Suggested activities:
+{chr(10).join(weather_result.get('suggested_activities', [])[:4])}
+
+Use this weather information to advise the user on pet activities. Be specific about timing and precautions.
+"""
+                logger.info(f"[WEATHER] Fetched weather for {user_city}: {advisory.get('safety_level')}")
+        
+        except Exception as e:
+            logger.warning(f"[WEATHER] Error fetching weather: {e}")
+    
     # 5. Check if this needs RESEARCH MODE
     research_context = None
     if needs_research(user_message):
