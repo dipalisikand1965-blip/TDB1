@@ -2887,12 +2887,29 @@ const MiraDemoPage = () => {
       clearTimeout(skeletonTimer);
       setShowSkeleton(false);
       
+      // 🎉 MICRO-DELIGHT: Confetti for celebrations (birthday, party, anniversary)
+      const celebrationKeywords = ['birthday', 'party', 'celebrate', 'celebration', 'anniversary', 'gotcha day', 'pawty'];
+      const isCelebrationQuery = celebrationKeywords.some(kw => inputQuery.toLowerCase().includes(kw));
+      if (isCelebrationQuery && !inComfortMode) {
+        // Slight delay for visual impact
+        setTimeout(() => {
+          triggerCelebrationConfetti();
+        }, 800);
+      }
+      
       // VOICE OUTPUT - Speak Mira's response
-      // Small delay to let text render, then speak
+      // VOICE-TEXT SYNC: Wait for text to appear, then speak
       if (voiceEnabled && miraResponseText) {
+        // Calculate approximate typing time based on text length and speed
+        const typingSpeed = miraMode === 'comfort' ? 25 : 
+                          miraMode === 'emergency' ? 50 :
+                          miraMode === 'instant' ? 60 : 40;
+        const typingTime = (miraResponseText.length / typingSpeed) * 1000;
+        
+        // Wait for text animation to complete, then speak
         setTimeout(() => {
           speakWithMira(miraResponseText);
-        }, 500); // Let text appear first
+        }, Math.min(typingTime + 500, 3000)); // Cap at 3 seconds to avoid too long wait
       }
       
       // Sync Mira's response to service desk
