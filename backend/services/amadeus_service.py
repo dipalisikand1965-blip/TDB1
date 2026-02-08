@@ -273,11 +273,12 @@ async def search_pet_friendly_hotels(
     # Pet-friendly hotel chains (typically allow pets)
     PET_FRIENDLY_CHAINS = ["HI", "IH", "MC", "HY", "WI", "SI", "RT", "RA", "BW"]
     
-    # Mark pet-friendly likelihood
+    # Mark pet-friendly likelihood - Concierge-friendly messaging
     for hotel in hotels:
         chain = hotel.get("chain_code", "")
-        hotel["pet_friendly_likelihood"] = "high" if chain in PET_FRIENDLY_CHAINS else "check_with_hotel"
-        hotel["pet_policy_note"] = "This chain typically accepts pets. Call to confirm specific policies and fees." if chain in PET_FRIENDLY_CHAINS else "Contact hotel directly to inquire about pet policy."
+        hotel["pet_friendly_likelihood"] = "high" if chain in PET_FRIENDLY_CHAINS else "verify"
+        # Remove "contact hotel" - Concierge handles everything
+        hotel["pet_policy_note"] = "Pet Friendly" if chain in PET_FRIENDLY_CHAINS else ""
     
     return {
         "success": True,
@@ -287,7 +288,7 @@ async def search_pet_friendly_hotels(
         "check_out": check_out,
         "hotels": hotels,
         "total": len(hotels),
-        "note": "Pet policies vary by property. Always call ahead to confirm pet acceptance and any fees."
+        "note": "Our Concierge® team will verify pet policies and handle all bookings for you."
     }
 
 
