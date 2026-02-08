@@ -671,6 +671,10 @@ const MiraDemoPage = () => {
   const [isListening, setIsListening] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   
+  // Pet state
+  const [pet, setPet] = useState(DEMO_PET);
+  const [allPets, setAllPets] = useState(ALL_PETS);
+  
   // MIRA ENGINE MODES - Visible to user like ChatGPT's "Thinking"
   // /Instant - Quick, lightweight replies
   // /Thinking - Deep reasoning for PLAN, BOOK, EXECUTE, ADVISE
