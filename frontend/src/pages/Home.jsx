@@ -820,7 +820,7 @@ const Home = () => {
               </div>
               
               <p className="text-white/40 text-sm mt-6">
-                Free to join. No credit card required.
+                Join 10,000+ pet families who chose extraordinary.
               </p>
             </motion.div>
           </div>
