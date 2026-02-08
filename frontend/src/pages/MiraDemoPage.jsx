@@ -659,6 +659,62 @@ const MiraDemoPage = () => {
   const [currentStep, setCurrentStep] = useState(null);  // Currently open step waiting for answer
   const [stepHistory, setStepHistory] = useState([]);  // Full history of Q&A
   
+  // WEATHER & INTERACTIVE FEATURES
+  const [currentWeather, setCurrentWeather] = useState(null);
+  const [showFeatureShowcase, setShowFeatureShowcase] = useState(true);
+  
+  // Feature showcase items - What Mira can do
+  const MIRA_FEATURES = [
+    { 
+      id: 'weather', 
+      icon: '🌤️', 
+      title: 'Weather & Walks', 
+      description: 'Is it safe to walk?',
+      query: `Is it a good day to take ${pet?.name || 'my dog'} for a walk?`,
+      color: '#3B82F6'
+    },
+    { 
+      id: 'vet', 
+      icon: '🏥', 
+      title: 'Find a Vet', 
+      description: 'Nearest clinics',
+      query: `Find me a vet clinic nearby`,
+      color: '#EF4444'
+    },
+    { 
+      id: 'park', 
+      icon: '🌳', 
+      title: 'Dog Parks', 
+      description: 'Places to play',
+      query: `Where can I take ${pet?.name || 'my dog'} to a dog park?`,
+      color: '#22C55E'
+    },
+    { 
+      id: 'food', 
+      icon: '🍽️', 
+      title: 'Pet Cafes', 
+      description: 'Dine with your pet',
+      query: `Recommend a pet-friendly cafe for brunch`,
+      color: '#F97316'
+    },
+    { 
+      id: 'travel', 
+      icon: '✈️', 
+      title: 'Travel', 
+      description: 'Pet-friendly stays',
+      query: `Find pet-friendly hotels for a trip`,
+      color: '#8B5CF6'
+    },
+    { 
+      id: 'shop', 
+      icon: '🛍️', 
+      title: 'Shop', 
+      description: 'Treats & supplies',
+      query: `Show me treats for ${pet?.name || 'my dog'}`,
+      color: '#EC4899'
+    }
+  ];
+  
   // Refs
   const inputRef = useRef(null);
   const recognitionRef = useRef(null);
