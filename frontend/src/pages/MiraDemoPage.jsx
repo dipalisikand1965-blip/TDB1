@@ -3360,7 +3360,10 @@ const MiraDemoPage = () => {
             <span className="mp-test-title">
               <Sparkles /> Test Scenarios
             </span>
-            <button className="mp-test-close" onClick={() => setShowTestScenarios(false)}>
+            <button className="mp-test-close" onClick={() => {
+              localStorage.setItem('mira_test_scenarios_dismissed', 'true');
+              setShowTestScenarios(false);
+            }}>
               <X />
             </button>
           </div>
