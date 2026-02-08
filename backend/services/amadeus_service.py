@@ -215,7 +215,7 @@ CITY_CODES_WITH_COUNTRY = {
 CITY_CODES = {k: v[0] for k, v in CITY_CODES_WITH_COUNTRY.items()}
 
 # Keep backward compatibility
-INDIA_CITY_CODES = {k: v for k, v in CITY_CODES.items() if v in ["BOM", "DEL", "BLR", "MAA", "CCU", "HYD", "PNQ", "GOI", "JAI", "AMD", "COK", "UDR", "JDH", "AGR", "VNS", "SLV", "KUU", "DED", "CBE", "IXE"]}
+INDIA_CITY_CODES = {k: v[0] for k, v in CITY_CODES_WITH_COUNTRY.items() if v[1] == "IN"}
 
 
 def get_city_code(city_name: str) -> Optional[str]:
@@ -232,6 +232,23 @@ def get_city_code(city_name: str) -> Optional[str]:
             return code
     
     # For unknown cities, return None - the caller should handle gracefully
+    return None
+
+
+def get_city_code_and_country(city_name: str) -> tuple:
+    """Get IATA city code and country code from city name."""
+    city_lower = city_name.lower().strip()
+    
+    # Direct lookup
+    if city_lower in CITY_CODES_WITH_COUNTRY:
+        return CITY_CODES_WITH_COUNTRY[city_lower]
+    
+    # Try partial match
+    for city, (code, country) in CITY_CODES_WITH_COUNTRY.items():
+        if city in city_lower or city_lower in city:
+            return (code, country)
+    
+    return (None, None)
     return None
 
 
