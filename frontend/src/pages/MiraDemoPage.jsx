@@ -4147,10 +4147,54 @@ const MiraDemoPage = () => {
             <div className="mp-tray-content">
               
               {/* ═══════════════════════════════════════════════════════════════
-                  CARE ALERTS SECTION - Health Vault, Celebrations, Health Reminders
-                  Shows at top of tray when there are items needing attention
+                  CELEBRATION TOOLS - Only show in Celebration context
+                  Party Planning Wizard and Bundle Maker
               ═══════════════════════════════════════════════════════════════ */}
-              {(healthVault.completeness < 100 || 
+              {miraPicks.context?.includes('Celebration') && (
+                <div className="mp-tray-section mp-celebration-tools">
+                  <h4><Sparkles size={16} /> Plan {pet.name}'s Party</h4>
+                  
+                  <div className="mp-celebration-actions">
+                    <button 
+                      className="mp-party-wizard-btn"
+                      onClick={() => {
+                        setShowMiraTray(false);
+                        handleQuickReply(`Help me plan a birthday party for ${pet.name}! I need everything - cake, decorations, treats, and venue ideas.`);
+                      }}
+                      data-testid="party-wizard-btn"
+                    >
+                      <div className="party-btn-icon">🎉</div>
+                      <div className="party-btn-content">
+                        <span className="party-btn-title">Party Planning Wizard</span>
+                        <span className="party-btn-subtitle">Complete party setup by Concierge®</span>
+                      </div>
+                      <ChevronRight size={16} />
+                    </button>
+                    
+                    <button 
+                      className="mp-bundle-maker-btn"
+                      onClick={() => {
+                        setShowMiraTray(false);
+                        handleQuickReply(`Create a custom celebration bundle for ${pet.name} - I want to pick the cake, treats, and accessories myself.`);
+                      }}
+                      data-testid="bundle-maker-btn"
+                    >
+                      <div className="party-btn-icon">🎁</div>
+                      <div className="party-btn-content">
+                        <span className="party-btn-title">Build Your Bundle</span>
+                        <span className="party-btn-subtitle">Mix & match your perfect party pack</span>
+                      </div>
+                      <ChevronRight size={16} />
+                    </button>
+                  </div>
+                </div>
+              )}
+              
+              {/* ═══════════════════════════════════════════════════════════════
+                  CARE ALERTS SECTION - Health Vault, Celebrations, Health Reminders
+                  Shows at top of tray ONLY when NOT in Celebration context
+              ═══════════════════════════════════════════════════════════════ */}
+              {!miraPicks.context?.includes('Celebration') && (healthVault.completeness < 100 || 
                 proactiveAlerts.healthReminders.some(r => r.needs_attention) || 
                 proactiveAlerts.celebrations.some(c => c.is_upcoming)) && (
                 <div className="mp-tray-section mp-care-section">
