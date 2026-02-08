@@ -3867,7 +3867,7 @@ const MiraDemoPage = () => {
         <div className="mp-past-chats">
           <div className="mp-past-chats-header">
             <h3 className="mp-past-chats-title">Past Chats</h3>
-            <button onClick={() => setShowPastChats(false)} className="mp-past-chats-close">
+            <button onClick={() => { hapticFeedback.modalClose(); setShowPastChats(false); }} className="mp-past-chats-close">
               <X />
             </button>
           </div>
@@ -3881,7 +3881,7 @@ const MiraDemoPage = () => {
               pastSessions.map((session) => (
                 <button
                   key={session.session_id}
-                  onClick={() => loadSession(session)}
+                  onClick={() => { hapticFeedback.cardTap(); loadSession(session); }}
                   className={`mp-session-btn ${session.session_id === sessionId ? 'active' : ''}`}
                   data-testid={`session-${session.session_id}`}
                 >
@@ -3897,7 +3897,7 @@ const MiraDemoPage = () => {
           </div>
           
           <div className="mp-past-chats-footer">
-            <button onClick={() => { startNewSession(); setShowPastChats(false); }} className="mp-concierge-btn">
+            <button onClick={() => { hapticFeedback.buttonTap(); startNewSession(); setShowPastChats(false); }} className="mp-concierge-btn">
               <Plus /> Start New Chat
             </button>
           </div>
