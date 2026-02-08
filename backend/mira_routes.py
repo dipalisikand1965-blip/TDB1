@@ -3458,6 +3458,7 @@ class MiraChatRequest(BaseModel):
     current_page: Optional[str] = None
     current_pillar: Optional[str] = None
     selected_pet_id: Optional[str] = None
+    pet_context: Optional[Dict[str, Any]] = None  # Pet details from frontend
     history: Optional[List[Dict[str, str]]] = []
     start_new_conversation: bool = False  # Flag to start fresh conversation
     previous_pillar: Optional[str] = None  # For cross-pillar context
