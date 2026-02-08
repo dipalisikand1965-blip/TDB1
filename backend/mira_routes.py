@@ -1457,8 +1457,27 @@ async def search_real_products(
             query["category"] = {"$in": ["cakes", "breed-cakes", "celebration", "hampers", "mini-cakes"]}
             query["name"] = {"$not": {"$regex": "halloween|ghost|creepy|spooky|jack o|googly|ghoul|skeleton|witch|pumpkin|crawly", "$options": "i"}}
             logger.info("[PRODUCT FILTER] Birthday/cake context: Using strict category filter, excluding Halloween")
+            
+            # BREED PRIORITIZATION: First get breed-specific cake if pet has a breed
+            breed_specific_products = []
+            pet_breed = pet_context.get("breed", "")
+            if pet_breed:
+                breed_query = {
+                    **query,
+                    "name": {"$regex": pet_breed, "$options": "i"}
+                }
+                breed_cursor = db.products_master.find(breed_query, {"_id": 0}).limit(2)
+                breed_specific_products = await breed_cursor.to_list(length=2)
+                if breed_specific_products:
+                    logger.info(f"[PRODUCT SEARCH] Found {len(breed_specific_products)} breed-specific cakes for {pet_breed}")
+            
+            # Then get general birthday cakes
             cursor = db.products_master.find(query, {"_id": 0}).limit(limit * 2)
-            all_products = await cursor.to_list(length=limit * 2)
+            general_products = await cursor.to_list(length=limit * 2)
+            
+            # Combine: breed-specific first, then general (deduplicated)
+            breed_names = {p.get("name", "").lower() for p in breed_specific_products}
+            all_products = breed_specific_products + [p for p in general_products if p.get("name", "").lower() not in breed_names]
         elif product_type:
             categories = category_map.get(product_type, [product_type])
             query["$or"] = [
