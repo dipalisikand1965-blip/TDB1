@@ -3744,6 +3744,54 @@ const MiraDemoPage = () => {
                             </div>
                           )}
                           
+                          {/* TRAVEL ATTRACTIONS - Viator pet-friendly experiences */}
+                          {msg.data?.travel_attractions?.length > 0 && (
+                            <div className="travel-attractions-section" data-testid="travel-attractions">
+                              <div className="travel-attractions-title">
+                                <span className="attractions-icon">🎯</span>
+                                <span>Pet-Friendly Experiences in {msg.data.travel_city?.charAt(0).toUpperCase() + msg.data.travel_city?.slice(1)}</span>
+                              </div>
+                              {msg.data.travel_attractions.slice(0, 3).map((attr, aIdx) => (
+                                <a 
+                                  key={aIdx} 
+                                  href={attr.booking_url || '#'}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="travel-attraction-card"
+                                  data-testid={`attraction-card-${aIdx}`}
+                                >
+                                  {attr.image_url && (
+                                    <div className="attraction-image">
+                                      <img src={attr.image_url} alt={attr.title} />
+                                    </div>
+                                  )}
+                                  <div className="attraction-info">
+                                    <div className="attraction-title">{attr.title?.substring(0, 50)}{attr.title?.length > 50 ? '...' : ''}</div>
+                                    <div className="attraction-meta">
+                                      {attr.rating && (
+                                        <span className="attraction-rating">
+                                          <Star size={12} fill="#f59e0b" stroke="#f59e0b" /> {attr.rating.toFixed(1)}
+                                        </span>
+                                      )}
+                                      {attr.duration && (
+                                        <span className="attraction-duration">{attr.duration}</span>
+                                      )}
+                                      {attr.price_from && (
+                                        <span className="attraction-price">From ₹{Math.round(attr.price_from)}</span>
+                                      )}
+                                    </div>
+                                    {attr.is_outdoor && (
+                                      <span className="attraction-badge outdoor-badge">🌿 Outdoor Activity</span>
+                                    )}
+                                  </div>
+                                  <div className="attraction-book">
+                                    Book <ArrowRight size={14} />
+                                  </div>
+                                </a>
+                              ))}
+                            </div>
+                          )}
+                          
                           {/* SERVICE CARDS - Self-service wizard options */}
                           {/* MIRA DOCTRINE: Mira is a router - offer choice between self-service and concierge */}
                           {/* E014: Services now come from database API */}
