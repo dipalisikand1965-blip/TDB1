@@ -3535,7 +3535,16 @@ const MiraDemoPage = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
               {conversationHistory.map((msg, idx) => (
                 <React.Fragment key={idx}>
-                  {msg.type === 'user' ? (
+                  {/* Topic Shift Indicator */}
+                  {msg.type === 'topic_shift' ? (
+                    <div className="mp-topic-shift">
+                      <div className="mp-topic-shift-line"></div>
+                      <span className="mp-topic-shift-label">
+                        <RefreshCw size={12} /> New Topic
+                      </span>
+                      <div className="mp-topic-shift-line"></div>
+                    </div>
+                  ) : msg.type === 'user' ? (
                     /* User Message - Pale Lilac */
                     <div className="mp-msg-user">
                       <div className="mp-bubble-user">{msg.content}</div>
