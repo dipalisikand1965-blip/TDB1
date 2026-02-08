@@ -6575,3 +6575,45 @@ input, select, textarea {
   transform: scale(1.05);
   box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   TOPIC SHIFT INDICATOR - Subtle divider when topic changes
+═══════════════════════════════════════════════════════════════ */
+.mp-topic-shift {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 8px 0;
+  margin: 8px 0;
+}
+
+.mp-topic-shift-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(168,85,247,0.3), transparent);
+}
+
+.mp-topic-shift-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: rgba(168,85,247,0.7);
+  background: rgba(168,85,247,0.1);
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.mp-topic-shift-label svg {
+  animation: spin 2s linear infinite;
+  animation-iteration-count: 1;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
