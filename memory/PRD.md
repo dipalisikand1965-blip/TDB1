@@ -70,15 +70,18 @@ Intent categories:
 ```
 /app
 ├── backend/
+│   ├── server.py               # Main server with startup hooks
 │   ├── mira_routes.py          # Main Mira API (10,900+ lines)
 │   ├── tts_routes.py           # Text-to-Speech with voice personalities
 │   ├── scripts/
-│   │   └── tag_products_with_ai.py  # AI product tagging script
+│   │   ├── tag_products_with_ai.py  # AI product tagging script
+│   │   └── auto_populate.py         # Deployment auto-population
 │   └── .env                    # MONGO_URL, DB_NAME
 │
 ├── frontend/
 │   ├── src/pages/
-│   │   └── MiraDemoPage.jsx    # Main page (3,900+ lines)
+│   │   ├── MiraDemoPage.jsx    # Main page (3,900+ lines)
+│   │   └── Admin.jsx           # Admin panel with Master SYNC
 │   ├── src/styles/
 │   │   └── mira-prod.css       # All styles (5,100+ lines)
 │   └── .env                    # REACT_APP_BACKEND_URL
