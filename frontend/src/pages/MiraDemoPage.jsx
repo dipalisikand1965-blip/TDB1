@@ -1650,7 +1650,10 @@ const MiraDemoPage = () => {
     
     try {
       setIsSpeaking(true);
-      console.log('[Mira Voice] Speaking with personality:', voicePersonality);
+      
+      // E024: Auto-detect voice personality from response content
+      const personality = detectVoicePersonality(text);
+      console.log('[Mira Voice] Auto-detected personality:', personality);
       
       // Clean text for natural speech
       const cleanText = text
@@ -1662,13 +1665,13 @@ const MiraDemoPage = () => {
         .replace(/®/g, '')
         .substring(0, 500);
       
-      // E024: Pass voice personality to TTS endpoint
+      // E024: Pass auto-detected voice personality to TTS endpoint
       const response = await fetch(`${API_URL}/api/tts/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
           text: cleanText,
-          personality: voicePersonality 
+          personality: personality 
         })
       });
       
