@@ -74,11 +74,11 @@
 
 ## KNOWN ISSUES
 
-### CSS Build Issue
-- **Problem**: Production build fails due to `/` character in CSS
-- **Location**: `/app/frontend/src/index.css` and other CSS files
-- **Impact**: Only affects `yarn build`, dev server works fine
-- **Workaround**: Use dev server for preview
+### CSS Build Issue - RESOLVED ✅
+- **Problem**: Production build failed due to `/` character in Tailwind CSS arbitrary values
+- **Fix Applied**: Disabled CSS minification in `craco.config.js` to avoid cssnano parsing issues
+- **Location**: `/app/frontend/craco.config.js` - added minimizer filter
+- **Status**: Production builds now succeed
 
 ### Foursquare API
 - **Problem**: API key returns 401
