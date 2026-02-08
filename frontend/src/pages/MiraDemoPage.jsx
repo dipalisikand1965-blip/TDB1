@@ -4175,7 +4175,7 @@ const MiraDemoPage = () => {
                   cursor: 'pointer',
                   transition: 'all 0.2s ease'
                 }}
-                onClick={() => setShowOlderMessages(!showOlderMessages)}
+                onClick={() => { hapticFeedback.historyToggle(); setShowOlderMessages(!showOlderMessages); }}
                 data-testid="toggle-history-btn"
                 >
                   <History size={14} style={{ opacity: 0.7 }} />
