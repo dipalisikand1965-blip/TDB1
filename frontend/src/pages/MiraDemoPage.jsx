@@ -3103,6 +3103,9 @@ const MiraDemoPage = () => {
         setConversationHistory(prev => [...prev, miraMessage]);
       }
       
+      // HAPTIC: Mira response complete
+      hapticFeedback.miraResponse();
+      
       // Clear skeleton loader
       clearTimeout(skeletonTimer);
       setShowSkeleton(false);
