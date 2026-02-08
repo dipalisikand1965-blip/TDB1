@@ -2304,11 +2304,18 @@ const MiraDemoPage = () => {
   const handleSubmit = useCallback(async (e, voiceQuery = null) => {
     if (e) e.preventDefault();
     
-    const inputQuery = voiceQuery || query;
+    let inputQuery = voiceQuery || query;
     if (!inputQuery.trim()) return;
     
     // HAPTIC: Send message feedback
     hapticFeedback.sendMessage();
+    
+    // INTELLIGENT SPELLING CORRECTION
+    const { corrected, corrections, hasCorrections } = correctSpelling(inputQuery);
+    if (hasCorrections) {
+      console.log('[MIRA] Spelling corrected:', corrections);
+      inputQuery = corrected;
+    }
     
     // CRITICAL: Stop any existing voice when user sends new message
     stopSpeaking();
