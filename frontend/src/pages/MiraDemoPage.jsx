@@ -2087,11 +2087,18 @@ const MiraDemoPage = () => {
     return moreInfoPhrases.some(phrase => lowerInput.includes(phrase));
   }, []);
   
-  // VOICE CONTROL - Stop speaking immediately
+  // VOICE CONTROL - Stop speaking immediately and cancel pending voice
   const stopSpeaking = useCallback(() => {
+    // Clear any pending voice timeout to prevent double voice
+    if (voiceTimeoutRef.current) {
+      clearTimeout(voiceTimeoutRef.current);
+      voiceTimeoutRef.current = null;
+    }
+    // Stop current audio
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
+      audioRef.current = null;
     }
     setIsSpeaking(false);
   }, []);
