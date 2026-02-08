@@ -1710,7 +1710,7 @@ const MiraDemoPage = () => {
       console.log('[Mira Voice] Error:', error.message);
       setIsSpeaking(false);
     }
-  }, [voiceEnabled, voicePersonality]);
+  }, [voiceEnabled, detectVoicePersonality]);
   
   // Handle submit - MIRA DOCTRINE: Let Mira's intelligence decide what to show
   const handleSubmit = useCallback(async (e, voiceQuery = null) => {
