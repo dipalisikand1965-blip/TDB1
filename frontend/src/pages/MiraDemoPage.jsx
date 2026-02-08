@@ -2323,6 +2323,31 @@ const MiraDemoPage = () => {
       inputQuery = corrected;
     }
     
+    // CONVERSATION INTELLIGENCE - Detect follow-ups and enrich query
+    const intelligence = conversationIntelligence.enrichQueryWithContext(inputQuery, conversationContext);
+    console.log('[MIRA Intelligence]', {
+      isFollowUp: intelligence.followUp.isFollowUp,
+      followUpType: intelligence.followUp.type,
+      topic: intelligence.topic,
+      contextUsed: intelligence.contextUsed
+    });
+    
+    // If it's a selection follow-up, resolve the reference
+    if (intelligence.followUp.isFollowUp && intelligence.followUp.type === 'select_item') {
+      const resolved = conversationIntelligence.resolveReference(inputQuery, conversationContext.lastResults);
+      if (resolved?.resolved) {
+        console.log('[MIRA] Resolved reference:', resolved.item?.name || resolved.item);
+        // Add resolved item info to query for backend
+        inputQuery = `${inputQuery} [RESOLVED: ${JSON.stringify(resolved.item)}]`;
+      }
+    }
+    
+    // Use enriched query if context was used
+    if (intelligence.contextUsed.length > 0) {
+      console.log('[MIRA] Using enriched query:', intelligence.enrichedQuery);
+      inputQuery = intelligence.enrichedQuery;
+    }
+    
     // CRITICAL: Stop any existing voice when user sends new message
     stopSpeaking();
     
@@ -2348,7 +2373,7 @@ const MiraDemoPage = () => {
     
     const userMessage = {
       type: 'user',
-      content: inputQuery,
+      content: corrected || inputQuery, // Show corrected query to user
       timestamp: new Date()
     };
     setConversationHistory(prev => [...prev, userMessage]);
