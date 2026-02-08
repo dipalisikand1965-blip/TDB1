@@ -780,14 +780,16 @@ const MiraDemoPage = () => {
       if (!pet.id || pet.id === 'demo') return;
       
       try {
-        // Fetch celebrations and health reminders in parallel
-        const [celebResponse, healthResponse] = await Promise.all([
+        // Fetch celebrations, health reminders, and health vault status in parallel
+        const [celebResponse, healthResponse, vaultResponse] = await Promise.all([
           fetch(`${API_URL}/api/mira/celebrations/${pet.id}`),
-          fetch(`${API_URL}/api/mira/health-reminders/${pet.id}`)
+          fetch(`${API_URL}/api/mira/health-reminders/${pet.id}`),
+          fetch(`${API_URL}/api/mira/health-vault/status/${pet.id}`)
         ]);
         
         const celebData = celebResponse.ok ? await celebResponse.json() : { celebrations: [] };
         const healthData = healthResponse.ok ? await healthResponse.json() : { reminders: [] };
+        const vaultData = vaultResponse.ok ? await vaultResponse.json() : { completeness: 100, missing_fields: [] };
         
         setProactiveAlerts({
           celebrations: celebData.celebrations || [],
@@ -795,9 +797,18 @@ const MiraDemoPage = () => {
           hasUrgent: healthData.has_urgent || celebData.celebrations?.some(c => c.is_today)
         });
         
+        // Update health vault status
+        setHealthVault(prev => ({
+          ...prev,
+          completeness: vaultData.completeness || 0,
+          missing_fields: vaultData.missing_fields || [],
+          needsAttention: vaultData.needs_attention
+        }));
+        
         console.log('[PROACTIVE] Alerts loaded:', {
           celebrations: celebData.celebrations?.length || 0,
-          health: healthData.reminders?.length || 0
+          health: healthData.reminders?.length || 0,
+          vaultCompleteness: vaultData.completeness
         });
       } catch (err) {
         console.debug('[PROACTIVE] Could not fetch alerts:', err);
