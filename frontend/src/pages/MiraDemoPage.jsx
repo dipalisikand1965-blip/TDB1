@@ -805,6 +805,44 @@ const MiraDemoPage = () => {
           hasUrgent: healthData.has_urgent || celebData.celebrations?.some(c => c.is_today)
         });
         
+        // Also fetch places and personalization stats for ticker
+        const [placesResponse, statsResponse] = await Promise.all([
+          fetch(`${API_URL}/api/mira/places/${pet.id}?city=Mumbai`),
+          fetch(`${API_URL}/api/mira/personalization-stats/${pet.id}`)
+        ]);
+        
+        const placesData = placesResponse.ok ? await placesResponse.json() : { places: [] };
+        const statsData = statsResponse.ok ? await statsResponse.json() : { stats: [] };
+        
+        // Build ticker items
+        const tickerItems = [];
+        
+        // Add weather
+        if (weatherData.weather) {
+          const temp = weatherData.weather.temp;
+          const icon = temp >= 30 ? '☀️' : temp <= 20 ? '❄️' : '🌤️';
+          tickerItems.push({
+            icon,
+            text: `${temp}°C in Mumbai`,
+            type: 'weather'
+          });
+        }
+        
+        // Add personalization stats
+        statsData.stats?.forEach(s => tickerItems.push(s));
+        
+        // Add places
+        placesData.places?.slice(0, 3).forEach(p => {
+          tickerItems.push({
+            icon: p.icon,
+            text: `${p.name} welcomes ${pet.name}`,
+            type: 'place',
+            placeId: p.id
+          });
+        });
+        
+        setTickerItems(tickerItems);
+        
         // Update health vault status
         setHealthVault(prev => ({
           ...prev,
