@@ -12775,65 +12775,78 @@ async def foursquare_search(
 
 @router.get("/foursquare/pet-cafes")
 async def foursquare_pet_cafes(city: str = "mumbai", limit: int = 5):
-    """Get pet-friendly cafes from Foursquare (with fallback)."""
+    """Get pet-friendly cafes - NOW USING GOOGLE PLACES (worldwide support)."""
     try:
-        from services.foursquare_service import get_pet_friendly_cafes_with_fallback
-        return await get_pet_friendly_cafes_with_fallback(city, limit)
+        from services.google_places_service import search_pet_friendly_restaurants
+        places = await search_pet_friendly_restaurants(city, max_results=limit)
+        return {"success": True, "places": places, "city": city, "source": "google_places"}
     except Exception as e:
-        logger.error(f"Foursquare pet cafes error: {e}")
+        logger.error(f"Google Places pet cafes error: {e}")
         return {"success": False, "error": str(e), "places": []}
 
 
 @router.get("/foursquare/dog-parks")
 async def foursquare_dog_parks(city: str = "mumbai", limit: int = 5):
-    """Get dog parks from Foursquare (with fallback)."""
+    """Get dog parks - NOW USING GOOGLE PLACES (worldwide support)."""
     try:
-        from services.foursquare_service import get_dog_parks_with_fallback
-        return await get_dog_parks_with_fallback(city, limit)
+        from services.google_places_service import search_dog_parks_worldwide
+        places = await search_dog_parks_worldwide(city, max_results=limit)
+        return {"success": True, "places": places, "city": city, "source": "google_places"}
     except Exception as e:
-        logger.error(f"Foursquare dog parks error: {e}")
+        logger.error(f"Google Places dog parks error: {e}")
         return {"success": False, "error": str(e), "places": []}
 
 
 @router.get("/foursquare/pet-stores")
 async def foursquare_pet_stores(city: str = "mumbai", limit: int = 5):
-    """Get pet stores from Foursquare."""
+    """Get pet stores - NOW USING GOOGLE PLACES (worldwide support)."""
     try:
-        from services.foursquare_service import get_pet_stores
-        return await get_pet_stores(city, limit)
+        from services.google_places_service import search_pet_stores_in_city
+        places = await search_pet_stores_in_city(city, max_results=limit)
+        return {"success": True, "places": places, "city": city, "source": "google_places"}
     except Exception as e:
-        logger.error(f"Foursquare pet stores error: {e}")
+        logger.error(f"Google Places pet stores error: {e}")
         return {"success": False, "error": str(e), "places": []}
 
 
 @router.get("/foursquare/groomers")
 async def foursquare_groomers(city: str = "mumbai", limit: int = 5):
-    """Get pet groomers from Foursquare."""
+    """Get pet groomers - NOW USING GOOGLE PLACES (worldwide support)."""
     try:
-        from services.foursquare_service import get_pet_groomers
-        return await get_pet_groomers(city, limit)
+        from services.google_places_service import search_places_by_text
+        places = await search_places_by_text(
+            query=f"pet groomer dog grooming {city}",
+            max_results=limit
+        )
+        return {"success": True, "places": places, "city": city, "source": "google_places"}
     except Exception as e:
-        logger.error(f"Foursquare groomers error: {e}")
+        logger.error(f"Google Places groomers error: {e}")
         return {"success": False, "error": str(e), "places": []}
 
 
 @router.get("/foursquare/enrich")
 async def foursquare_enrich(venue_name: str, city: str = "mumbai"):
-    """Enrich venue data with Foursquare details (photos, ratings, etc.)."""
+    """Enrich venue data - NOW USING GOOGLE PLACES."""
     try:
-        from services.foursquare_service import enrich_venue_data
-        return await enrich_venue_data(venue_name, city)
+        from services.google_places_service import search_places_by_text
+        places = await search_places_by_text(
+            query=f"{venue_name} {city}",
+            max_results=1
+        )
+        if places:
+            return {"success": True, "venue": places[0], "source": "google_places"}
+        return {"success": False, "error": "Venue not found"}
     except Exception as e:
-        logger.error(f"Foursquare enrich error: {e}")
+        logger.error(f"Google Places enrich error: {e}")
         return {"success": False, "error": str(e)}
 
 
 @router.get("/foursquare/test")
 async def test_foursquare_api():
-    """Test if Foursquare API is working."""
+    """Test if Google Places API is working (Foursquare deprecated)."""
     try:
-        from services.foursquare_service import test_foursquare_connection
-        return await test_foursquare_connection()
+        from services.google_places_service import test_google_places_connection
+        return await test_google_places_connection()
     except Exception as e:
         return {"success": False, "error": str(e)}
 
