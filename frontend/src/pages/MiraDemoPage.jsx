@@ -3492,6 +3492,108 @@ const MiraDemoPage = () => {
         </button>
       </nav>
       
+      {/* FLOATING ACTION BAR - Always visible, clean icons for Insight/Concierge/History */}
+      {conversationHistory.length > 0 && (
+        <div className="mp-floating-bar" data-testid="floating-action-bar">
+          {/* Past Chats */}
+          <button 
+            className={`mp-float-btn ${showPastChats ? 'active' : ''}`}
+            onClick={() => { loadPastChats(); setShowPastChats(true); }}
+            data-testid="float-history-btn"
+            title="Past Chats"
+          >
+            <History size={18} />
+          </button>
+          
+          {/* Mira's Insights - Paw icon */}
+          <button 
+            className={`mp-float-btn insight-btn ${showInsightsPanel ? 'active' : ''}`}
+            onClick={() => setShowInsightsPanel(!showInsightsPanel)}
+            data-testid="float-insight-btn"
+            title="Mira's Insights"
+          >
+            <PawPrint size={18} />
+            <Sparkles size={10} className="insight-sparkle" />
+          </button>
+          
+          {/* Concierge Help - C° icon */}
+          <button 
+            className={`mp-float-btn concierge-float-btn ${showConciergePanel ? 'active' : ''}`}
+            onClick={() => setShowConciergePanel(!showConciergePanel)}
+            data-testid="float-concierge-btn"
+            title="Get Help"
+          >
+            <span className="float-c">C</span>
+            <span className="float-degree">°</span>
+          </button>
+          
+          {/* New Chat */}
+          <button 
+            className="mp-float-btn new-chat-btn"
+            onClick={startNewSession}
+            data-testid="float-new-chat-btn"
+            title="New Chat"
+          >
+            <Plus size={18} />
+          </button>
+        </div>
+      )}
+      
+      {/* INSIGHTS PANEL - Slides down when insight icon clicked */}
+      {showInsightsPanel && (
+        <div className="mp-insights-panel" data-testid="insights-panel">
+          <div className="mp-insights-header">
+            <span><PawPrint size={14} /> <Sparkles size={12} /> Mira's Insights for {pet.name}</span>
+            <button onClick={() => setShowInsightsPanel(false)}><X size={16} /></button>
+          </div>
+          <div className="mp-insights-content">
+            {conversationHistory
+              .filter(msg => msg.type === 'mira' && msg.data?.response?.tips?.length > 0)
+              .flatMap(msg => msg.data.response.tips)
+              .slice(-5)
+              .map((tip, idx) => (
+                <div key={idx} className="mp-insight-item">
+                  <span className="insight-bullet">💡</span>
+                  <span>{tip}</span>
+                </div>
+              ))}
+            {conversationHistory.filter(msg => msg.type === 'mira' && msg.data?.response?.tips?.length > 0).length === 0 && (
+              <p className="mp-no-insights">Keep chatting and I'll share helpful insights for {pet.name}!</p>
+            )}
+          </div>
+        </div>
+      )}
+      
+      {/* CONCIERGE PANEL - Quick access to help */}
+      {showConciergePanel && (
+        <div className="mp-concierge-panel" data-testid="concierge-panel">
+          <div className="mp-concierge-panel-header">
+            <span><span className="panel-c">C</span><span className="panel-degree">°</span> Concierge Help</span>
+            <button onClick={() => setShowConciergePanel(false)}><X size={16} /></button>
+          </div>
+          <p className="mp-concierge-panel-desc">Your pet Concierge® can help with anything for {pet.name}.</p>
+          <div className="mp-concierge-panel-options">
+            <a 
+              href={`https://wa.me/919663185747?text=${encodeURIComponent(`Hi, I need help with ${pet.name} (${pet.breed}).`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="concierge-panel-opt whatsapp"
+            >
+              <Phone size={16} /> WhatsApp
+            </a>
+            <button onClick={handleConciergeHandoff} className="concierge-panel-opt chat">
+              <MessageSquare size={16} /> Chat
+            </button>
+            <a 
+              href={`mailto:concierge@thedoggycompany.in?subject=Help with ${pet.name}`}
+              className="concierge-panel-opt email"
+            >
+              <Mail size={16} /> Email
+            </a>
+          </div>
+        </div>
+      )}
+      
       {/* TEST SCENARIOS PANEL - Dark Card (like production) */}
       {showTestScenarios && (
         <div className="mp-test-panel">
