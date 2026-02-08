@@ -273,7 +273,7 @@ async def search_pet_friendly_hotels(
     Returns:
         Dictionary with hotels and pet-friendly info
     """
-    city_code = get_city_code(city)
+    city_code, country_code = get_city_code_and_country(city)
     
     if not city_code:
         logger.info(f"City code not found for '{city}', will try Google Places or Viator instead")
@@ -288,8 +288,13 @@ async def search_pet_friendly_hotels(
         city_code=city_code,
         check_in=check_in,
         check_out=check_out,
-        max_results=max_results
+        max_results=max_results * 3  # Fetch more to filter by country
     )
+    
+    # Filter by country to avoid wrong locations (e.g., Ooty showing US hotels)
+    if country_code:
+        hotels = [h for h in hotels if h.get("country", "").upper() == country_code.upper()][:max_results]
+        logger.info(f"Filtered hotels by country {country_code}: {len(hotels)} results")
     
     # Pet-friendly hotel chains (typically allow pets)
     PET_FRIENDLY_CHAINS = ["HI", "IH", "MC", "HY", "WI", "SI", "RT", "RA", "BW"]
@@ -305,6 +310,7 @@ async def search_pet_friendly_hotels(
         "success": True,
         "city": city,
         "city_code": city_code,
+        "country_code": country_code,
         "check_in": check_in,
         "check_out": check_out,
         "hotels": hotels,
