@@ -798,34 +798,25 @@ const StayPage = () => {
                               size="sm"
                               className="flex-1 text-xs bg-emerald-600 hover:bg-emerald-700 text-white"
                               onClick={() => {
-                                // Engage Concierge for booking
-                                const bookingDetails = {
-                                  hotel_name: hotel.name,
+                                // Transform hotel to property format for BookingRequestModal
+                                const propertyData = {
+                                  id: hotel.hotel_id || hotel.id || `amadeus-${idx}`,
+                                  name: hotel.name,
                                   city: hotel.city || selectedNearbyCity,
-                                  type: 'hotel_booking'
-                                };
-                                // Navigate to Mira with booking context
-                                navigate('/mira-demo', { 
-                                  state: { 
-                                    autoMessage: `I'd like to book ${hotel.name} in ${hotel.city || selectedNearbyCity}. Can you help me with the reservation?`,
-                                    context: 'hotel_booking'
+                                  property_type: 'hotel',
+                                  photos: hotel.photos || [],
+                                  pet_policy: {
+                                    allowed: hotel.pet_friendly_likelihood === 'high',
+                                    pet_fee_per_night: null
                                   }
-                                });
+                                };
+                                setSelectedProperty(propertyData);
+                                setShowBookingModal(true);
                               }}
                               data-testid={`book-hotel-${idx}`}
                             >
                               <Calendar className="w-3 h-3 mr-1" /> Book Now
                             </Button>
-                            {hotel.phone && (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                className="text-xs"
-                                onClick={() => window.open(`tel:${hotel.phone}`, '_blank')}
-                              >
-                                <Phone className="w-3 h-3 mr-1" /> Call
-                              </Button>
-                            )}
                           </div>
                         </div>
                       </Card>
