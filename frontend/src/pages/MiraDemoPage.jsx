@@ -3841,20 +3841,34 @@ const MiraDemoPage = () => {
                 </div>
               )}
               
-              {/* Products Section */}
+              {/* Products Section - Intent-specific with C® fallback */}
               {miraPicks.products.length > 0 && (
                 <div className="mp-tray-section">
-                  <h4><ShoppingBag size={16} /> {pet.name}'s Picks</h4>
+                  <h4><ShoppingBag size={16} /> {miraPicks.context || `${pet.name}'s Picks`}</h4>
                   <div className="mp-tray-products">
                     {miraPicks.products.slice(0, 4).map((product, idx) => (
                       <div key={idx} className="mp-tray-product">
-                        <img 
-                          src={product.image || product.images?.[0] || `https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200`}
-                          alt={product.name}
-                        />
+                        <div className="mp-tray-product-img-wrap">
+                          {product.image || product.images?.[0] ? (
+                            <img 
+                              src={product.image || product.images?.[0]}
+                              alt={product.name}
+                            />
+                          ) : (
+                            <div className="mp-product-placeholder">
+                              <PawPrint size={20} />
+                            </div>
+                          )}
+                          {product.why_for_pet && (
+                            <span className="mp-product-match" title={product.why_for_pet}>✓</span>
+                          )}
+                        </div>
                         <div className="mp-tray-product-info">
                           <span className="mp-tray-product-name">{product.name}</span>
                           {product.price && <span className="mp-tray-product-price">₹{product.price}</span>}
+                          {product.why_for_pet && (
+                            <span className="mp-product-why">{product.why_for_pet}</span>
+                          )}
                         </div>
                         <button 
                           className="mp-tray-add"
@@ -3865,16 +3879,18 @@ const MiraDemoPage = () => {
                       </div>
                     ))}
                   </div>
-                  {miraPicks.products.length > 4 && (
-                    <a 
-                      href={`https://thedoggycompany.in/shop`} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="mp-tray-explore"
-                    >
-                      Explore more for {pet.name} <ExternalLink size={14} />
-                    </a>
-                  )}
+                  
+                  {/* C® Can Source More */}
+                  <button 
+                    className="mp-concierge-source"
+                    onClick={() => {
+                      setShowMiraTray(false);
+                      engageConcierge('product_request', { context: miraPicks.context, pet_name: pet.name });
+                    }}
+                  >
+                    <span className="source-badge"><span>C</span><sup>®</sup></span>
+                    <span className="source-text">Can't find it? We'll source it for you</span>
+                  </button>
                 </div>
               )}
               
