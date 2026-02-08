@@ -63,6 +63,27 @@ VOICE_PERSONALITIES = {
         "description": "Clear and attention-grabbing for urgent matters",
         "stability": 0.6,
         "similarity_boost": 0.85
+    },
+    "adventure": {
+        "voice_id": "EST9Ui6982FZPSi7gCHi",  # Same voice
+        "name": "Mira (Adventurous)",
+        "description": "Upbeat and encouraging for travel and exploration",
+        "stability": 0.55,  # More dynamic
+        "similarity_boost": 0.8
+    },
+    "caring": {
+        "voice_id": "EST9Ui6982FZPSi7gCHi",  # Same voice
+        "name": "Mira (Professional)",
+        "description": "Warm and professional for grooming and care",
+        "stability": 0.75,
+        "similarity_boost": 0.75
+    },
+    "informative": {
+        "voice_id": "EST9Ui6982FZPSi7gCHi",  # Same voice
+        "name": "Mira (Knowledgeable)",
+        "description": "Helpful and clear for food and nutrition guidance",
+        "stability": 0.8,
+        "similarity_boost": 0.7
     }
 }
 
