@@ -106,8 +106,8 @@ async def tag_all_products():
     print("AI Product Tagging - Starting...")
     print("=" * 60)
     
-    # Get all products
-    products = await db.products.find({}).to_list(1000)
+    # Get all products from products_master collection
+    products = await db.products_master.find({}).to_list(1000)
     print(f"Found {len(products)} products to analyze")
     
     updated_count = 0
@@ -136,7 +136,7 @@ async def tag_all_products():
         }
         
         # Update in database
-        result = await db.products.update_one(
+        result = await db.products_master.update_one(
             {"id": product_id} if product.get("id") else {"_id": product["_id"]},
             {"$set": update_data}
         )
