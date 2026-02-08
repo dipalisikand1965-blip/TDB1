@@ -1957,7 +1957,7 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
         is_book_mode = any(phrase in user_input_lower for phrase in [
             "book", "booking", "schedule", "appointment", "reserve",
             "fix a slot", "arrange", "set up"
-        ]) or is_groom_booking
+        ]) or is_groom_booking or is_travel_request or is_travel_conversation
         
         is_execute_mode = any(phrase in user_input_lower for phrase in [
             "handle everything", "take care of everything", "sort out",
