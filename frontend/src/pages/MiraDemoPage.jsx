@@ -3026,6 +3026,11 @@ const MiraDemoPage = () => {
       // VOICE OUTPUT - Speak Mira's response
       // VOICE-TEXT SYNC: Wait for text to appear, then speak
       if (voiceEnabled && miraResponseText) {
+        // CRITICAL: Clear any pending voice timeout to prevent double voice
+        if (voiceTimeoutRef.current) {
+          clearTimeout(voiceTimeoutRef.current);
+        }
+        
         // Calculate approximate typing time based on text length and speed
         const typingSpeed = miraMode === 'comfort' ? 25 : 
                           miraMode === 'emergency' ? 50 :
@@ -3033,8 +3038,9 @@ const MiraDemoPage = () => {
         const typingTime = (miraResponseText.length / typingSpeed) * 1000;
         
         // Wait for text animation to complete, then speak
-        setTimeout(() => {
+        voiceTimeoutRef.current = setTimeout(() => {
           speakWithMira(miraResponseText);
+          voiceTimeoutRef.current = null;
         }, Math.min(typingTime + 500, 3000)); // Cap at 3 seconds to avoid too long wait
       }
       
