@@ -3529,6 +3529,83 @@ const MiraDemoPage = () => {
                 </div>
               )}
               
+              {/* ═══════════════════════════════════════════════════════════════
+                  E027: DAILY DIGEST SECTION
+              ═══════════════════════════════════════════════════════════════ */}
+              {dailyDigest?.digest?.length > 0 && (
+                <div className="mp-tray-section mp-digest-section">
+                  <h4><Calendar size={16} /> {pet.name}'s Day</h4>
+                  <div className="mp-digest-items">
+                    {dailyDigest.digest.slice(0, 4).map((item, i) => (
+                      <div 
+                        key={`digest-${i}`}
+                        className={`mp-digest-item ${item.priority === 'high' ? 'digest-high' : ''}`}
+                        onClick={() => {
+                          if (item.action === 'celebrate') {
+                            setShowMiraTray(false);
+                            handleQuickReply(`Let's celebrate ${pet.name}'s birthday!`);
+                          } else if (item.action === 'vet') {
+                            setShowMiraTray(false);
+                            handleQuickReply(`Schedule a vet checkup for ${pet.name}`);
+                          }
+                        }}
+                      >
+                        <span className="digest-icon">{item.icon}</span>
+                        <div className="digest-content">
+                          <span className="digest-title">{item.title}</span>
+                          <span className="digest-desc">{item.description}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* ═══════════════════════════════════════════════════════════════
+                  E028: MILESTONES SECTION
+              ═══════════════════════════════════════════════════════════════ */}
+              {milestones?.filter(m => m.achieved).length > 0 && (
+                <div className="mp-tray-section mp-milestones-section">
+                  <h4><Award size={16} /> {pet.name}'s Achievements</h4>
+                  <div className="mp-milestones-grid">
+                    {milestones.filter(m => m.achieved).slice(0, 4).map((milestone, i) => (
+                      <div key={`milestone-${i}`} className="mp-milestone-badge">
+                        <span className="milestone-icon">{milestone.icon}</span>
+                        <span className="milestone-title">{milestone.title}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* ═══════════════════════════════════════════════════════════════
+                  E034: SMART REORDER SUGGESTIONS
+              ═══════════════════════════════════════════════════════════════ */}
+              {reorderSuggestions?.length > 0 && (
+                <div className="mp-tray-section mp-reorder-section">
+                  <h4><RefreshCw size={16} /> Running Low</h4>
+                  <div className="mp-reorder-items">
+                    {reorderSuggestions.slice(0, 3).map((item, i) => (
+                      <button 
+                        key={`reorder-${i}`}
+                        className={`mp-reorder-item ${item.urgency === 'high' ? 'reorder-urgent' : ''}`}
+                        onClick={() => {
+                          setShowMiraTray(false);
+                          handleQuickReply(`I need to reorder ${item.name} for ${pet.name}`);
+                        }}
+                      >
+                        <span className="reorder-icon">{item.icon}</span>
+                        <div className="reorder-content">
+                          <span className="reorder-name">{item.name}</span>
+                          <span className="reorder-msg">{item.message}</span>
+                        </div>
+                        <ChevronRight size={16} className="reorder-arrow" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
               {/* Products Section */}
               {miraPicks.products.length > 0 && (
                 <div className="mp-tray-section">
