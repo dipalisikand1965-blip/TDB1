@@ -125,6 +125,25 @@ const generateConciergeRequest = (query, petName) => {
   return requestType;
 };
 
+// Beautiful dog placeholder images (no competitor branding)
+const DOG_PLACEHOLDER_IMAGES = [
+  'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop', // Happy golden
+  'https://images.unsplash.com/photo-1552053831-71594a27632d?w=200&h=200&fit=crop', // White fluffy
+  'https://images.unsplash.com/photo-1561037404-61cd46aa615b?w=200&h=200&fit=crop', // Brown lab
+  'https://images.unsplash.com/photo-1517849845537-4d257902454a?w=200&h=200&fit=crop', // French bulldog
+  'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?w=200&h=200&fit=crop', // Dalmatian
+  'https://images.unsplash.com/photo-1588943211346-0908a1fb0b01?w=200&h=200&fit=crop', // Corgi
+  'https://images.unsplash.com/photo-1537151625747-768eb6cf92b2?w=200&h=200&fit=crop', // Husky
+  'https://images.unsplash.com/photo-1477884213360-7e9d7dcc1e48?w=200&h=200&fit=crop', // Beagle
+];
+
+// Get random placeholder image (consistent per product ID)
+const getPlaceholderImage = (productId) => {
+  const hash = (productId || '').split('').reduce((a, b) => ((a << 5) - a) + b.charCodeAt(0), 0);
+  const index = Math.abs(hash) % DOG_PLACEHOLDER_IMAGES.length;
+  return DOG_PLACEHOLDER_IMAGES[index];
+};
+
 // Test Scenarios
 const TEST_SCENARIOS = [
   // Core scenarios
