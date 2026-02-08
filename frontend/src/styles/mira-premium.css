@@ -1329,3 +1329,71 @@
     padding-bottom: calc(24px + env(safe-area-inset-bottom));
   }
 }
+
+/* ========================================
+   COLLAPSIBLE HISTORY - E042
+   ======================================== */
+.mp-history-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.mp-history-toggle:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.2);
+}
+
+.mp-history-toggle span {
+  font-size: 12px;
+  color: rgba(255,255,255,0.7);
+}
+
+.mp-history-toggle svg {
+  color: rgba(255,255,255,0.6);
+}
+
+/* Older messages - compact style */
+.mp-old-message {
+  opacity: 0.7;
+}
+
+.mp-old-message .mp-card {
+  padding: 10px 12px;
+}
+
+.mp-old-message .mp-card-body {
+  font-size: 13px;
+  padding: 8px 12px;
+}
+
+.mp-old-message .mp-bubble-user {
+  font-size: 13px;
+  padding: 8px 14px;
+}
+
+/* Voice indicator - prevent overflow */
+.mp-voice-indicator {
+  position: fixed;
+  bottom: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  padding: 8px 16px;
+  background: rgba(139, 92, 246, 0.95);
+  border-radius: 20px;
+  color: white;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.4);
+}
+
