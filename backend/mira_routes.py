@@ -1641,7 +1641,8 @@ SERVICE_KEYWORDS = {
     "photography": ["photo", "photography", "picture", "portrait", "shoot", "memory", "memories"],
     "transport": ["transport", "taxi", "cab", "pickup", "drop", "airport", "move"],
     "nutrition": ["food", "diet", "nutrition", "meal", "feeding", "weight"],
-    "party": ["party", "birthday", "celebrate", "celebration", "event"]
+    "party": ["party", "birthday", "celebrate", "celebration", "event", "pawty", "gotcha"],
+    "celebrate": ["party", "birthday", "celebrate", "celebration", "event", "pawty", "gotcha", "bundle", "kit"]
 }
 
 async def search_services_from_db(
