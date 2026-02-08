@@ -2421,15 +2421,41 @@ const MiraDemoPage = () => {
       }
       
       // ═══════════════════════════════════════════════════════════════════
-      // AMADEUS TRAVEL - Detect hotel/travel intents for cities
+      // AMADEUS TRAVEL - Only fetch hotels AFTER conversation flow confirms
+      // Per MIRA DOCTRINE: Ask questions first, then show results
       // ═══════════════════════════════════════════════════════════════════
       let travelHotels = [];
-      const travelKeywords = ['hotel', 'stay', 'trip', 'travel', 'vacation', 'holiday', 'book', 'pet-friendly'];
+      let travelAttractions = [];
       const cityKeywords = ['mumbai', 'delhi', 'bangalore', 'bengaluru', 'chennai', 'kolkata', 'hyderabad', 'pune', 'goa', 'jaipur', 'ahmedabad', 'kochi', 'udaipur', 'shimla', 'manali', 'ooty', 'coorg', 'munnar'];
-      const hasTravelIntent = travelKeywords.some(kw => inputQuery.toLowerCase().includes(kw));
       const detectedCity = cityKeywords.find(city => inputQuery.toLowerCase().includes(city));
       
-      if (hasTravelIntent && detectedCity) {
+      // Check if this is a CONFIRMED travel request (user has answered questions)
+      // Look for signals that user has provided details OR backend triggered hotel fetch
+      const travelConfirmationSignals = [
+        'show me hotels', 'find hotels', 'book hotel', 'suggest hotels',
+        'show accommodations', 'where to stay', 'hotel options', 'hotel recommendations',
+        'yes', 'sounds good', 'go ahead', 'please find', 'help me book'
+      ];
+      const hasConversationHistory = conversationHistory.length >= 2; // At least 1 back-and-forth
+      const hasTravelConfirmation = travelConfirmationSignals.some(signal => 
+        inputQuery.toLowerCase().includes(signal)
+      );
+      
+      // Also check if backend response says to show hotels (MIRA decided it's time)
+      const backendSaysShowHotels = miraResponse?.show_travel_results === true || 
+                                     miraResponse?.response?.toLowerCase().includes('browse these hotels') ||
+                                     miraResponse?.response?.toLowerCase().includes('here are some pet-friendly');
+      
+      // Only fetch hotels if:
+      // 1. User has had conversation (not first message) AND explicitly asked for hotels, OR
+      // 2. Backend said it's time to show hotels
+      const shouldFetchHotels = detectedCity && (
+        (hasConversationHistory && hasTravelConfirmation) || 
+        backendSaysShowHotels
+      );
+      
+      if (shouldFetchHotels) {
+        console.log('[TRAVEL FLOW] Confirmed - fetching hotels for:', detectedCity);
         try {
           const hotelResponse = await fetch(`${API_URL}/api/mira/amadeus/hotels?city=${encodeURIComponent(detectedCity)}&max_results=3`);
           const hotelData = await hotelResponse.json();
@@ -2441,16 +2467,8 @@ const MiraDemoPage = () => {
         } catch (e) {
           console.log('[AMADEUS] Hotel fetch failed:', e.message);
         }
-      }
-      
-      // ═══════════════════════════════════════════════════════════════════
-      // VIATOR ATTRACTIONS - Pet-friendly tours and experiences
-      // ═══════════════════════════════════════════════════════════════════
-      let travelAttractions = [];
-      const attractionKeywords = ['trip', 'travel', 'tour', 'visit', 'explore', 'things to do', 'activities', 'experience', 'adventure', 'sightseeing'];
-      const hasAttractionIntent = attractionKeywords.some(kw => inputQuery.toLowerCase().includes(kw)) || hasTravelIntent;
-      
-      if (hasAttractionIntent && detectedCity) {
+        
+        // Also fetch attractions when showing hotels
         try {
           const attractionResponse = await fetch(`${API_URL}/api/mira/viator/pet-friendly?city=${encodeURIComponent(detectedCity)}&limit=3`);
           const attractionData = await attractionResponse.json();
@@ -2462,6 +2480,8 @@ const MiraDemoPage = () => {
         } catch (e) {
           console.log('[VIATOR] Attraction fetch failed:', e.message);
         }
+      } else if (detectedCity) {
+        console.log('[TRAVEL FLOW] City detected but waiting for confirmation. City:', detectedCity, '| History length:', conversationHistory.length);
       }
       
       // Add YouTube, Amadeus, and Viator data to message
