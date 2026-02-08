@@ -5584,3 +5584,73 @@ input, select, textarea {
   border-radius: 6px;
 }
 
+
+
+/* ========================================
+   WEATHER ADVISORY CARD (in chat)
+   ======================================== */
+.weather-advisory-card {
+  margin-top: 12px;
+  padding: 14px;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 12px;
+}
+
+.weather-advisory-card.weather-good {
+  background: rgba(34, 197, 94, 0.1);
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.weather-advisory-card.weather-caution {
+  background: rgba(249, 115, 22, 0.1);
+  border-color: rgba(249, 115, 22, 0.3);
+}
+
+.weather-advisory-card.weather-warning {
+  background: rgba(234, 179, 8, 0.1);
+  border-color: rgba(234, 179, 8, 0.3);
+}
+
+.weather-advisory-card.weather-danger {
+  background: rgba(239, 68, 68, 0.1);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.weather-advisory-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.weather-advisory-icon {
+  font-size: 18px;
+}
+
+.weather-advisory-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+}
+
+.weather-advisory-message {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 10px;
+}
+
+.weather-activities {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.weather-activity {
+  font-size: 11px;
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
