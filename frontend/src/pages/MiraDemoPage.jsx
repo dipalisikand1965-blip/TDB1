@@ -4067,35 +4067,17 @@ const MiraDemoPage = () => {
                             </div>
                           )}
                           
-                          {/* Mira's Insight - Collapsible (Closed by default) */}
+                          {/* Mira's Insight - Minimal inline hint (full view in floating panel) */}
                           {msg.data?.response?.tips && msg.data.response.tips.length > 0 && (
-                            <div className="mp-watchfor">
-                              <button 
-                                className="mp-watchfor-toggle"
-                                onClick={() => setCollapsedSections(prev => ({
-                                  ...prev,
-                                  [`tips-${idx}`]: !prev[`tips-${idx}`]
-                                }))}
-                              >
-                                <span className="mp-watchfor-label">
-                                  <PawPrint size={14} /> <Sparkles size={12} /> Mira's Insight
-                                </span>
-                                <ChevronDown style={{ 
-                                  color: 'rgba(255,255,255,0.4)', 
-                                  transform: collapsedSections[`tips-${idx}`] ? 'rotate(180deg)' : 'rotate(0)',
-                                  transition: 'transform 0.2s'
-                                }} />
-                              </button>
-                              {collapsedSections[`tips-${idx}`] && (
-                                <div className="mp-watchfor-content">
-                                  <ul className="mp-watchfor-list">
-                                    {msg.data.response.tips.map((tip, tIdx) => (
-                                      <li key={tIdx}>{tip}</li>
-                                    ))}
-                                  </ul>
-                                </div>
-                              )}
-                            </div>
+                            <button 
+                              className="mp-insight-hint"
+                              onClick={() => setShowInsightsPanel(true)}
+                              data-testid={`insight-hint-${idx}`}
+                            >
+                              <PawPrint size={12} /> 
+                              <span>{msg.data.response.tips.length} insight{msg.data.response.tips.length > 1 ? 's' : ''}</span>
+                              <ChevronRight size={12} />
+                            </button>
                           )}
                           
                           {/* NEARBY PLACES CARDS - Vets, Restaurants, Parks with click-to-call */}
