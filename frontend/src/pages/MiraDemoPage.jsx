@@ -725,6 +725,19 @@ const MiraDemoPage = () => {
     }
   }, []);
   
+  // Cleanup voice on unmount to prevent memory leaks and double voice
+  useEffect(() => {
+    return () => {
+      if (voiceTimeoutRef.current) {
+        clearTimeout(voiceTimeoutRef.current);
+      }
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
+  }, []);
+  
   // Typing animation - streams text character by character
   const typeText = useCallback((fullText, onComplete, speed = 35) => {
     if (!fullText) {
