@@ -2458,7 +2458,10 @@ const MiraDemoPage = () => {
             age: pet.age,
             traits: pet.traits,
             sensitivities: pet.sensitivities,
-            favorites: pet.favorites
+            favorites: pet.favorites,
+            // E042: Include user's detected city for local places
+            city: pet?.city || pet?.location?.city || userCity || 'Mumbai',
+            location: { city: pet?.city || pet?.location?.city || userCity || 'Mumbai' }
           },
           page_context: 'mira-demo',
           // SESSION PERSISTENCE - Pass session_id for conversation tracking
