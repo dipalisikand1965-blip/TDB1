@@ -1545,11 +1545,11 @@ async def search_real_products(
             # Generate personalized "why for pet" reason
             if not why_reasons:
                 if "soft" in product_name or "soft" in product_desc:
-                    why_reasons.append(f"Soft texture, easy on teeth")
+                    why_reasons.append("Soft texture, easy on teeth")
                 if "natural" in product_tags or "healthy" in product_tags:
                     why_reasons.append(f"Natural ingredients for {pet_name}")
                 if "training" in product_tags:
-                    why_reasons.append(f"Great for training sessions")
+                    why_reasons.append("Great for training sessions")
                 if not why_reasons:
                     why_reasons.append(f"Popular choice for {pet_breed or 'dogs'}s")
             
@@ -2072,7 +2072,7 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
         if is_boarding_request:
             should_show_products = False  # NEVER show products for boarding
             is_treat_request = False  # Override - don't show treats
-            logger.info(f"[BOARDING] Detected boarding/pet-sitting request - NO products")
+            logger.info("[BOARDING] Detected boarding/pet-sitting request - NO products")
         
         # For GRIEF_HOLD, override everything - NO products, NO actions
         if is_grief_hold:
@@ -6052,7 +6052,7 @@ CRITICAL CONCIERGE DOCTRINE:
         
         # If it's a nutrition query in "dine" pillar, switch to "fit" pillar and don't do restaurant handoff
         if is_nutrition_query and pillar == "dine":
-            logger.info(f"[MIRA] Nutrition query detected in 'dine' pillar - switching to 'fit' pillar for advisory response")
+            logger.info("[MIRA] Nutrition query detected in 'dine' pillar - switching to 'fit' pillar for advisory response")
             pillar = "fit"
             is_listing_pillar = False  # Don't trigger restaurant handoff
         
@@ -6132,7 +6132,7 @@ Our concierge will reach out via WhatsApp/Email with curated options. Is there a
             
             # Generate a recovery response based on context
             if concierge_action.get("is_affirmative_confirmation"):
-                response = f"""Perfect! I'm on it now. Let me help you with that.
+                response = """Perfect! I'm on it now. Let me help you with that.
 
 To make sure I get this exactly right, could you tell me:
 - Which area or location would you prefer?
@@ -6140,13 +6140,13 @@ To make sure I get this exactly right, could you tell me:
 
 Our concierge team is standing by and I'll have details for you shortly! 🐾"""
             elif concierge_action.get("action_needed"):
-                response = f"""Got it! I'm taking care of this for you right now.
+                response = """Got it! I'm taking care of this for you right now.
 
 I'm checking the best options based on what you've told me. Our live concierge will confirm the details shortly.
 
 Is there anything specific you'd like me to prioritize? 🐾"""
             else:
-                response = f"""I'm here to help! Let me know more about what you're looking for.
+                response = """I'm here to help! Let me know more about what you're looking for.
 
 Some things I can help with:
 - Finding pet-friendly places
@@ -6866,7 +6866,7 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                         concierge_item = {
                             "id": f"concierge-{item.replace(' ', '-')}",
                             "name": item.title(),
-                            "description": f"This item will be sourced by our concierge® team",
+                            "description": "This item will be sourced by our concierge® team",
                             "price": None,  # Price TBD
                             "image": None,  # No image
                             "kit_category": item,
@@ -6982,7 +6982,7 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                 
                 # Legacy fallback: if still no products, try the old pillar field (for transition period)
                 if not found_products:
-                    logger.info(f"[PILLAR RESOLVER] No products via new system, falling back to legacy pillar field")
+                    logger.info("[PILLAR RESOLVER] No products via new system, falling back to legacy pillar field")
                     found_products = await db.products_master.find(
                         {"$or": [{"pillar": search_pillar}, {"category": search_pillar}]},
                         {"_id": 0}
@@ -7348,7 +7348,7 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
         
         # ==================== FAIL LOUDLY, NEVER SILENTLY ====================
         # Even on error, Mira MUST respond with something actionable
-        error_response = f"""Let me try that again - I hit a small snag.
+        error_response = """Let me try that again - I hit a small snag.
 
 You can:
 1. Rephrase your question
@@ -8577,13 +8577,13 @@ async def quick_book(
                 "user_id": user.get("id") or str(user.get("_id")),
                 "user_email": user.get("email"),
                 "type": "booking_confirmation",
-                "title": f"Booking Request Submitted",
+                "title": "Booking Request Submitted",
                 "message": f"Your {request.serviceType.replace('_', ' ').title()} request for {request.date} at {request.time} has been received. We'll confirm shortly!",
                 "ticket_id": ticket_id,
                 "booking_id": booking_id,
                 "pillar": pillar,
                 "service_type": request.serviceType,
-                "link": f"/dashboard?tab=requests",
+                "link": "/dashboard?tab=requests",
                 "read": False,
                 "created_at": now.isoformat(),
                 "timestamp": now.isoformat()
@@ -8961,7 +8961,7 @@ async def mira_remember(
     return {
         "success": True,
         "memory_id": memory_doc["id"],
-        "message": f"Got it! I've noted that for future reference."
+        "message": "Got it! I've noted that for future reference."
     }
 
 
@@ -9437,7 +9437,6 @@ async def get_weather_suggestions(pet_id: str, city: str = "Mumbai"):
     E021: Get weather-aware suggestions for a pet.
     Fetches current weather and generates pet-specific recommendations.
     """
-    import httpx
     from datetime import datetime
     
     db = get_db()
@@ -9514,7 +9513,7 @@ async def get_weather_suggestions(pet_id: str, city: str = "Mumbai"):
         suggestions.append({
             "type": "hydration",
             "icon": "💧",
-            "title": f"Warm day ahead",
+            "title": "Warm day ahead",
             "message": f"At {temp}°C, keep {pet_name} cool with plenty of water breaks.",
             "priority": "medium"
         })
@@ -10258,7 +10257,7 @@ async def get_memory_lane(pet_id: str):
                     if years_ago > 0:
                         memories.append({
                             "icon": "🛍️",
-                            "title": f"First Order Anniversary",
+                            "title": "First Order Anniversary",
                             "description": f"Your first order for {pet_name} was {years_ago} year{'s' if years_ago > 1 else ''} ago!",
                             "type": "first_order",
                             "date": first_order.isoformat()
