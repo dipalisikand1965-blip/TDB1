@@ -20,6 +20,9 @@
 3. ✅ **Voice-Text Sync** - Voice waits for text based on mode speed
 4. ✅ **Concierge Whisper** - C° badge with personalized curator notes
 5. ✅ **Micro-delights** - Confetti on birthday/celebration queries
+6. ✅ **Stay Page Book Now** - "Directions" → "Book Now" via Concierge
+7. ✅ **Global City Search** - Removed city restrictions, search any city worldwide
+8. ✅ **Age/Breed Filtering** - Products filtered by pet age (puppy/adult/senior) and breed size
 
 ---
 
@@ -34,6 +37,9 @@
 | **Voice-Text Sync** | ✅ Done | Voice waits for text animation |
 | **Concierge Whisper** | ✅ Done | C° badge with curator notes on products |
 | **Birthday Confetti** | ✅ Done | Micro-delight on celebration queries |
+| **Stay Page Book Now** | ✅ Done | "Directions" replaced with Concierge booking |
+| **Global City Search** | ✅ Done | Any city worldwide (Paris, Tokyo, etc.) |
+| **Age/Breed Filtering** | ✅ Done | Products filtered by puppy/adult/senior + breed size |
 | **Eye Strain Reduction** | ✅ Done | Softer whites, deeper backgrounds |
 | **Markdown Formatting** | ✅ Done | ReactMarkdown with gradient bullets |
 | **Unified Service Flow** | ✅ Done | WhatsApp, Chat, Email options |
