@@ -766,6 +766,39 @@ const MiraDemoPage = () => {
     fetchAllPets();
   }, [token]);
   
+  // E018 & E019: Fetch proactive alerts when pet changes
+  useEffect(() => {
+    const fetchProactiveAlerts = async () => {
+      if (!pet.id || pet.id === 'demo') return;
+      
+      try {
+        // Fetch celebrations and health reminders in parallel
+        const [celebResponse, healthResponse] = await Promise.all([
+          fetch(`${API_URL}/api/mira/celebrations/${pet.id}`),
+          fetch(`${API_URL}/api/mira/health-reminders/${pet.id}`)
+        ]);
+        
+        const celebData = celebResponse.ok ? await celebResponse.json() : { celebrations: [] };
+        const healthData = healthResponse.ok ? await healthResponse.json() : { reminders: [] };
+        
+        setProactiveAlerts({
+          celebrations: celebData.celebrations || [],
+          healthReminders: healthData.reminders || [],
+          hasUrgent: healthData.has_urgent || celebData.celebrations?.some(c => c.is_today)
+        });
+        
+        console.log('[PROACTIVE] Alerts loaded:', {
+          celebrations: celebData.celebrations?.length || 0,
+          health: healthData.reminders?.length || 0
+        });
+      } catch (err) {
+        console.debug('[PROACTIVE] Could not fetch alerts:', err);
+      }
+    };
+    
+    fetchProactiveAlerts();
+  }, [pet.id]);
+  
   // MULTI-PET: Switch to a different pet
   const switchPet = async (newPet) => {
     if (newPet.id === pet.id) {
