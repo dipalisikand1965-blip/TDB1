@@ -3047,6 +3047,156 @@ const MiraDemoPage = () => {
         🧪 Sandbox Mode — Mira OS 10/10 Premium Experience
       </div>
       
+      {/* ═══════════════════════════════════════════════════════════════════
+          MIRA PICKS TRAY - "Ready for [Pet]" 
+          Beautiful bottom sheet with curated picks + Concierge®
+      ═══════════════════════════════════════════════════════════════════ */}
+      {showMiraTray && (
+        <div 
+          className="mp-tray-overlay" 
+          onClick={() => {
+            setShowMiraTray(false);
+            setMiraPicks(prev => ({ ...prev, hasNew: false }));
+          }}
+        >
+          <div className="mp-tray" onClick={(e) => e.stopPropagation()}>
+            {/* Tray Header */}
+            <div className="mp-tray-header">
+              <div className="mp-tray-handle" />
+              <div className="mp-tray-title">
+                <img 
+                  src={pet.photo || `https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=100`} 
+                  alt={pet.name}
+                  className="mp-tray-pet-photo"
+                />
+                <div>
+                  <h3>{miraPicks.context || `Ready for ${pet.name}`}</h3>
+                  <p>Curated with 💜 by Mira</p>
+                </div>
+              </div>
+              <button 
+                className="mp-tray-close" 
+                onClick={() => {
+                  setShowMiraTray(false);
+                  setMiraPicks(prev => ({ ...prev, hasNew: false }));
+                }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+            
+            {/* Tray Content */}
+            <div className="mp-tray-content">
+              {/* Products Section */}
+              {miraPicks.products.length > 0 && (
+                <div className="mp-tray-section">
+                  <h4><ShoppingBag size={16} /> {pet.name}'s Picks</h4>
+                  <div className="mp-tray-products">
+                    {miraPicks.products.slice(0, 4).map((product, idx) => (
+                      <div key={idx} className="mp-tray-product">
+                        <img 
+                          src={product.image || product.images?.[0] || `https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200`}
+                          alt={product.name}
+                        />
+                        <div className="mp-tray-product-info">
+                          <span className="mp-tray-product-name">{product.name}</span>
+                          {product.price && <span className="mp-tray-product-price">₹{product.price}</span>}
+                        </div>
+                        <button 
+                          className="mp-tray-add"
+                          onClick={() => alert(`Added ${product.name} to cart!`)}
+                        >
+                          <Plus size={16} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                  {miraPicks.products.length > 4 && (
+                    <a 
+                      href={`https://thedoggycompany.in/shop`} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="mp-tray-explore"
+                    >
+                      Explore more for {pet.name} <ExternalLink size={14} />
+                    </a>
+                  )}
+                </div>
+              )}
+              
+              {/* Services Section */}
+              {miraPicks.services.length > 0 && (
+                <div className="mp-tray-section">
+                  <h4><Sparkles size={16} /> Services</h4>
+                  <div className="mp-tray-services">
+                    {miraPicks.services.filter(s => !s.isConcierge).slice(0, 3).map((service, idx) => (
+                      <button
+                        key={idx}
+                        className="mp-tray-service"
+                        onClick={() => {
+                          setShowMiraTray(false);
+                          openServiceRequest(service, false);
+                        }}
+                      >
+                        <span className="mp-tray-service-icon">{service.icon}</span>
+                        <div className="mp-tray-service-info">
+                          <span className="mp-tray-service-name">{service.label}</span>
+                          <span className="mp-tray-service-desc">{service.description}</span>
+                          {service.price && <span className="mp-tray-service-price">From ₹{service.price}</span>}
+                        </div>
+                        <ArrowRight size={16} />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* No Picks - Just Concierge® */}
+              {miraPicks.products.length === 0 && miraPicks.services.length === 0 && (
+                <div className="mp-tray-empty">
+                  <Wand2 size={32} />
+                  <p>Mira is listening. Ask anything and she'll find what you need.</p>
+                </div>
+              )}
+            </div>
+            
+            {/* Concierge® - ALWAYS Here */}
+            <div className="mp-tray-concierge">
+              <div className="mp-tray-concierge-header">
+                <Heart size={18} className="mp-tray-heart" />
+                <span>Your Concierge® is by your side</span>
+              </div>
+              <p>For anything, anytime, anywhere — we're here for you and {pet.name}.</p>
+              <div className="mp-tray-concierge-actions">
+                <a 
+                  href={`https://wa.me/919819595095?text=${encodeURIComponent(`Hi! I need help with ${pet.name}.`)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mp-tray-wa"
+                >
+                  <Phone size={16} /> WhatsApp
+                </a>
+                <button 
+                  className="mp-tray-chat"
+                  onClick={() => {
+                    setShowMiraTray(false);
+                    engageConcierge('chat');
+                  }}
+                >
+                  <MessageSquare size={16} /> Chat
+                </button>
+                <a 
+                  href={`mailto:concierge@thedoggycompany.in?subject=Help for ${pet.name}`}
+                  className="mp-tray-email"
+                >
+                  <Mail size={16} /> Email
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      
       {/* Help Modal */}
       {showHelpModal && (
         <div style={{
