@@ -739,11 +739,12 @@ const Home = () => {
                 viewport={{ once: true }}
                 className="relative flex items-center justify-center"
               >
-                {/* Magical bulldog with transparent background */}
+                {/* Bulldog with transparent background - floating animation */}
                 <motion.img 
                   src={BRAND_IMAGES.bulldog} 
                   alt="Happy pet with Concierge care" 
-                  className="relative w-full max-w-md"
+                  className="relative w-full max-w-md drop-shadow-2xl"
+                  style={{ background: 'transparent' }}
                   animate={{ y: [0, -10, 0] }}
                   transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                 />
