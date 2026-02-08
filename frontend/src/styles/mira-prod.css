@@ -1974,7 +1974,7 @@ button.mp-welcome-chip,
   overflow: hidden;
 }
 
-/* Soul Journey Button */
+/* Soul Journey Button - CENTERED */
 .soul-journey-btn {
   display: inline-flex;
   align-items: center;
@@ -1991,12 +1991,6 @@ button.mp-welcome-chip,
   cursor: pointer;
   transition: all 0.3s ease;
   margin-bottom: 24px;
-}
-
-@media (min-width: 768px) {
-  .soul-journey-btn {
-    align-self: flex-start;
-  }
 }
 
 .soul-journey-btn:hover {
