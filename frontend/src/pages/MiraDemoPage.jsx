@@ -511,6 +511,17 @@ const MiraDemoPage = () => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const audioRef = useRef(null);
   
+  // E024: VOICE PERSONALITY SELECTION
+  const [voicePersonality, setVoicePersonality] = useState('default');
+  const [showVoiceMenu, setShowVoiceMenu] = useState(false);
+  const voicePersonalities = {
+    default: { label: 'Mira', icon: '🎙️', desc: 'Warm & caring' },
+    celebration: { label: 'Joyful', icon: '🎉', desc: 'Excited & celebratory' },
+    health: { label: 'Caring', icon: '💜', desc: 'Calm & reassuring' },
+    comfort: { label: 'Gentle', icon: '🤗', desc: 'Soft & empathetic' },
+    urgent: { label: 'Alert', icon: '⚡', desc: 'Clear & attention-grabbing' }
+  };
+  
   // IN-MIRA SERVICE REQUEST - Everything stays in the OS
   // When user clicks a service card, show form here instead of external link
   const [serviceRequestModal, setServiceRequestModal] = useState({
