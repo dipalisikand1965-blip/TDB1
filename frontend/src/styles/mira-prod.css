@@ -1967,6 +1967,17 @@ button.mp-welcome-chip,
   overflow: hidden;
 }
 
+/* Hero Actions Row - Contains Soul Journey and History buttons */
+.hero-actions-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
 /* Soul Journey Button - CENTERED */
 .soul-journey-btn {
   display: inline-flex;
@@ -1983,7 +1994,7 @@ button.mp-welcome-chip,
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-bottom: 24px;
+  margin-bottom: 0;
 }
 
 .soul-journey-btn:hover {
@@ -1994,6 +2005,34 @@ button.mp-welcome-chip,
 
 .soul-journey-btn svg {
   color: #fbbf24;
+}
+
+/* History Button - Matches Soul Journey style */
+.history-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.history-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.history-btn svg {
+  color: rgba(168, 85, 247, 0.8);
 }
 
 /* Hero Layout - CENTERED */
