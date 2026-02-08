@@ -1898,22 +1898,56 @@ const MiraDemoPage = () => {
           }
         },
         quickReplies: quickReplies,
-        showProducts: shouldShowProducts,
-        // E014: Use services from API if available, else use frontend detection
-        showServices: (data.response?.services?.length > 0) || hasServiceIntent,
-        showExperiences: hasExperienceIntent,
-        // E014: Prefer API services over frontend detection
-        detectedServices: (data.response?.services?.length > 0) 
-          ? data.response.services 
-          : detectedServices,
-        detectedExperiences: detectedExperiences,
-        dynamicConciergeRequest: dynamicConciergeRequest,
+        // ═══════════════════════════════════════════════════════════════════
+        // WORLD CLASS UX: Don't auto-show products/services in conversation
+        // Store them in miraPicks tray - customer opens when ready
+        // ═══════════════════════════════════════════════════════════════════
+        showProducts: false, // Never auto-show - use tray instead
+        showServices: false, // Never auto-show - use tray instead  
+        showExperiences: false, // Never auto-show - use tray instead
+        detectedServices: [], // Moved to tray
+        detectedExperiences: [], // Moved to tray
+        dynamicConciergeRequest: null, // Concierge® always in tray
         conciergeIsLive: conciergeIsLive,
         inComfortMode: inComfortMode, // NEW: Emotional support mode
         stepId: miraStepId,
         isClarifyingQuestion: isNewClarifyingQuestion,
         timestamp: new Date()
       };
+      
+      // ═══════════════════════════════════════════════════════════════════
+      // MIRA PICKS TRAY - Store products/services for "Ready for [Pet]"
+      // ═══════════════════════════════════════════════════════════════════
+      const newProducts = shouldShowProducts ? (data.response?.products || []) : [];
+      const newServices = (data.response?.services?.length > 0) 
+        ? data.response.services 
+        : (hasServiceIntent ? detectedServices : []);
+      const newExperiences = hasExperienceIntent ? detectedExperiences : [];
+      
+      // Detect context from intent
+      let pickContext = '';
+      if (inputQuery.toLowerCase().includes('travel') || inputQuery.toLowerCase().includes('trip')) {
+        pickContext = `${pet.name}'s Journey`;
+      } else if (inputQuery.toLowerCase().includes('birthday') || inputQuery.toLowerCase().includes('party')) {
+        pickContext = `${pet.name}'s Celebration`;
+      } else if (inputQuery.toLowerCase().includes('groom')) {
+        pickContext = `Grooming for ${pet.name}`;
+      } else if (inputQuery.toLowerCase().includes('food') || inputQuery.toLowerCase().includes('treat')) {
+        pickContext = `${pet.name}'s Treats & Food`;
+      } else if (newProducts.length > 0 || newServices.length > 0) {
+        pickContext = `Picks for ${pet.name}`;
+      }
+      
+      // Update miraPicks if we have new recommendations
+      if (newProducts.length > 0 || newServices.length > 0 || newExperiences.length > 0) {
+        setMiraPicks({
+          products: newProducts,
+          services: [...newServices, ...newExperiences],
+          context: pickContext,
+          hasNew: true
+        });
+      }
+      
       setConversationHistory(prev => [...prev, miraMessage]);
       
       // VOICE OUTPUT - Speak Mira's response if voice is enabled
