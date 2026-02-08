@@ -820,14 +820,28 @@ const MiraDemoPage = () => {
           hasUrgent: healthData.has_urgent || celebData.celebrations?.some(c => c.is_today)
         });
         
-        // Also fetch places and personalization stats for ticker
-        const [placesResponse, statsResponse] = await Promise.all([
+        // Also fetch places, stats, and new E027-E034 features for ticker
+        const [placesResponse, statsResponse, digestResponse, milestonesResponse, memoryResponse, reorderResponse] = await Promise.all([
           fetch(`${API_URL}/api/mira/places/${pet.id}?city=Mumbai`),
-          fetch(`${API_URL}/api/mira/personalization-stats/${pet.id}`)
+          fetch(`${API_URL}/api/mira/personalization-stats/${pet.id}`),
+          fetch(`${API_URL}/api/mira/daily-digest/${pet.id}`),
+          fetch(`${API_URL}/api/mira/milestones/${pet.id}`),
+          fetch(`${API_URL}/api/mira/memory-lane/${pet.id}`),
+          fetch(`${API_URL}/api/mira/reorder-suggestions/${pet.id}`)
         ]);
         
         const placesData = placesResponse.ok ? await placesResponse.json() : { places: [] };
         const statsData = statsResponse.ok ? await statsResponse.json() : { stats: [] };
+        const digestData = digestResponse.ok ? await digestResponse.json() : { digest: [] };
+        const milestonesData = milestonesResponse.ok ? await milestonesResponse.json() : { milestones: [] };
+        const memoryData = memoryResponse.ok ? await memoryResponse.json() : { memories: [] };
+        const reorderData = reorderResponse.ok ? await reorderResponse.json() : { suggestions: [] };
+        
+        // Store new feature data
+        setDailyDigest(digestData);
+        setMilestones(milestonesData.milestones || []);
+        setMemoryLane(memoryData.memories || []);
+        setReorderSuggestions(reorderData.suggestions || []);
         
         // Build ticker items
         const tickerItems = [];
@@ -845,6 +859,24 @@ const MiraDemoPage = () => {
         
         // Add personalization stats
         statsData.stats?.forEach(s => tickerItems.push(s));
+        
+        // Add milestones to ticker (E028)
+        milestonesData.milestones?.filter(m => m.achieved).slice(0, 2).forEach(m => {
+          tickerItems.push({
+            icon: m.icon,
+            text: m.title,
+            type: 'milestone'
+          });
+        });
+        
+        // Add memory lane moments to ticker (E030)
+        memoryData.memories?.slice(0, 1).forEach(m => {
+          tickerItems.push({
+            icon: m.icon,
+            text: m.title,
+            type: 'memory'
+          });
+        });
         
         // Add places
         placesData.places?.slice(0, 3).forEach(p => {
