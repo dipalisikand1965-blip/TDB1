@@ -2338,6 +2338,7 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
             logger.warning(f"[SESSION PERSIST] Failed to save conversation: {persist_err}")
         
         # INCREMENT SOUL SCORE - Every conversation helps Mira know the pet better!
+        updated_soul_score = None
         if request.pet_context and request.pet_context.get("id"):
             try:
                 # Determine interaction type based on what happened
@@ -2350,8 +2351,16 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                     interaction_type = "service_booked"
                 
                 await increment_soul_score_on_interaction(request.pet_context.get("id"), interaction_type)
+                
+                # Fetch updated soul score for real-time display
+                pet_data = await db.pets.find_one({"id": request.pet_context.get("id")}, {"overall_score": 1, "_id": 0})
+                if pet_data:
+                    updated_soul_score = round(pet_data.get("overall_score", 0), 1)
             except Exception as soul_err:
                 logger.warning(f"[SOUL SCORE] Failed to increment: {soul_err}")
+        
+        # Add soul score to response for real-time UI updates
+        response_data["pet_soul_score"] = updated_soul_score
         
         return response_data
     except Exception as e:
