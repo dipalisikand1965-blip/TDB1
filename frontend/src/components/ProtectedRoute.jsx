@@ -100,22 +100,43 @@ const getPillarFromPath = (path) => {
 };
 
 /**
- * ProtectedRoute - Currently allows all users through (auth gating disabled)
- * TODO: Re-enable authentication check before going live
+ * ProtectedRoute - Guards routes behind authentication and optional membership
+ * @param {boolean} requireMembership - If true, also requires active membership/pet pass
  */
-const ProtectedRoute = ({ children }) => {
-  // AUTH GATING DISABLED - All pages accessible without login
-  // To re-enable: uncomment the authentication check below
-  return children;
-
-  /* 
-  // === AUTHENTICATION CHECK (DISABLED FOR NOW) ===
-  // Uncomment this block before going live to require login
-  
+const ProtectedRoute = ({ children, requireMembership = false }) => {
   const { user, loading } = useAuth();
+  const navigate = useNavigate();
   const location = useLocation();
-  const [showFullBenefits, setShowFullBenefits] = useState(false);
 
+  useEffect(() => {
+    if (!loading) {
+      // Check if user is logged in
+      if (!user) {
+        navigate('/login', { 
+          state: { from: location.pathname, message: 'Please login to continue' },
+          replace: true 
+        });
+        return;
+      }
+      
+      // Check membership if required
+      if (requireMembership) {
+        const isAdmin = user?.role === 'admin' || user?.email?.includes('clubconcierge');
+        const hasActiveMembership = user?.pet_pass_status === 'active' || 
+                                    user?.membership_status === 'active' ||
+                                    user?.has_paid === true;
+        
+        if (!isAdmin && !hasActiveMembership) {
+          navigate('/membership', { 
+            state: { from: location.pathname, message: 'Join Pet Pass to access Mira OS' },
+            replace: true 
+          });
+        }
+      }
+    }
+  }, [user, loading, requireMembership, navigate, location]);
+
+  // Show loading while checking auth
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-pink-50">
@@ -127,14 +148,38 @@ const ProtectedRoute = ({ children }) => {
     );
   }
 
+  // Show loading while redirecting
   if (!user) {
-    const currentPillar = getPillarFromPath(location.pathname);
-    const pillarInfo = currentPillar ? PILLAR_BENEFITS[currentPillar] : null;
-    // ... member benefits gate UI would go here
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-900">
+        <div className="text-center text-white">
+          <div className="animate-spin w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p>Checking access...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Check membership for protected routes
+  if (requireMembership) {
+    const isAdmin = user?.role === 'admin' || user?.email?.includes('clubconcierge');
+    const hasActiveMembership = user?.pet_pass_status === 'active' || 
+                                user?.membership_status === 'active' ||
+                                user?.has_paid === true;
+    
+    if (!isAdmin && !hasActiveMembership) {
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-900">
+          <div className="text-center text-white">
+            <div className="animate-spin w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+            <p>Redirecting to membership...</p>
+          </div>
+        </div>
+      );
+    }
   }
 
   return children;
-  */
 };
 
 export default ProtectedRoute;
