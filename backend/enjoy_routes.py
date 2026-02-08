@@ -18,8 +18,13 @@ from timestamp_utils import get_utc_timestamp
 from bson import ObjectId
 import uuid
 import os
+import httpx
 
 router = APIRouter(prefix="/api/enjoy", tags=["enjoy"])
+
+# Eventbrite API Config
+EVENTBRITE_PRIVATE_TOKEN = os.environ.get("EVENTBRITE_PRIVATE_TOKEN", "")
+EVENTBRITE_API_BASE = "https://www.eventbriteapi.com/v3"
 
 def get_db():
     from server import db
@@ -28,6 +33,125 @@ def get_db():
 def get_logger():
     from server import logger
     return logger
+
+
+# =============================================================================
+# EVENTBRITE INTEGRATION - Pet-Friendly Events Discovery
+# =============================================================================
+
+@router.get("/eventbrite/search")
+async def search_eventbrite_events(
+    city: str = "Mumbai",
+    query: str = "pet dog",
+    page: int = 1,
+    page_size: int = 10
+):
+    """
+    Search Eventbrite for pet-friendly events in a city.
+    Uses keywords like 'pet', 'dog', 'puppy' to find relevant events.
+    """
+    logger = get_logger()
+    
+    if not EVENTBRITE_PRIVATE_TOKEN:
+        logger.warning("[EVENTBRITE] No API token configured")
+        return {"success": False, "error": "Eventbrite API not configured", "events": []}
+    
+    try:
+        # Eventbrite location search with pet keywords
+        search_query = f"{query} {city}"
+        
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            response = await client.get(
+                f"{EVENTBRITE_API_BASE}/events/search/",
+                headers={
+                    "Authorization": f"Bearer {EVENTBRITE_PRIVATE_TOKEN}"
+                },
+                params={
+                    "q": search_query,
+                    "location.address": city,
+                    "location.within": "50km",
+                    "expand": "venue,ticket_availability",
+                    "page": page,
+                    "page_size": page_size
+                }
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                events = data.get("events", [])
+                
+                # Transform to our format
+                formatted_events = []
+                for event in events:
+                    venue = event.get("venue", {})
+                    formatted_events.append({
+                        "id": event.get("id"),
+                        "name": event.get("name", {}).get("text", "Untitled Event"),
+                        "description": event.get("description", {}).get("text", "")[:200] if event.get("description") else "",
+                        "start_date": event.get("start", {}).get("local"),
+                        "end_date": event.get("end", {}).get("local"),
+                        "url": event.get("url"),
+                        "image": event.get("logo", {}).get("url") if event.get("logo") else None,
+                        "venue": {
+                            "name": venue.get("name", ""),
+                            "address": venue.get("address", {}).get("localized_address_display", ""),
+                            "city": venue.get("address", {}).get("city", city)
+                        },
+                        "is_free": event.get("is_free", False),
+                        "is_online": event.get("online_event", False),
+                        "status": event.get("status"),
+                        "source": "eventbrite"
+                    })
+                
+                logger.info(f"[EVENTBRITE] Found {len(formatted_events)} events for '{search_query}'")
+                
+                return {
+                    "success": True,
+                    "city": city,
+                    "query": query,
+                    "events": formatted_events,
+                    "total": data.get("pagination", {}).get("object_count", len(formatted_events)),
+                    "page": page,
+                    "has_more": data.get("pagination", {}).get("has_more_items", False)
+                }
+            else:
+                logger.error(f"[EVENTBRITE] API error: {response.status_code} - {response.text[:200]}")
+                return {"success": False, "error": f"API error: {response.status_code}", "events": []}
+                
+    except Exception as e:
+        logger.error(f"[EVENTBRITE] Search failed: {str(e)}")
+        return {"success": False, "error": str(e), "events": []}
+
+
+@router.get("/eventbrite/pet-events")
+async def get_pet_friendly_events(city: str = "Mumbai", limit: int = 10):
+    """
+    Get curated pet-friendly events using multiple search terms.
+    Searches for: dog events, pet meetups, puppy socials, animal workshops
+    """
+    logger = get_logger()
+    
+    pet_keywords = ["dog", "pet friendly", "puppy", "canine", "pet meetup", "dog walk"]
+    all_events = []
+    seen_ids = set()
+    
+    for keyword in pet_keywords[:3]:  # Limit to 3 searches to avoid rate limits
+        result = await search_eventbrite_events(city=city, query=keyword, page_size=5)
+        if result.get("success") and result.get("events"):
+            for event in result["events"]:
+                if event["id"] not in seen_ids:
+                    seen_ids.add(event["id"])
+                    all_events.append(event)
+    
+    # Sort by date
+    all_events.sort(key=lambda x: x.get("start_date") or "", reverse=False)
+    
+    return {
+        "success": True,
+        "city": city,
+        "events": all_events[:limit],
+        "total": len(all_events)
+    }
 
 
 # Experience Types
