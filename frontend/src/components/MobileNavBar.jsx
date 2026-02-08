@@ -100,10 +100,8 @@ const MobileNavBar = () => {
     e.preventDefault();
     e.stopPropagation();
     
-    // Haptic feedback for all clicks
-    if (navigator.vibrate) {
-      navigator.vibrate(30);
-    }
+    // Haptic feedback for all clicks (iOS + Android)
+    hapticFeedback.navigate(e);
     
     if (item.isMira) {
       // Open Mira AI chat with current pillar context
