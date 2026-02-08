@@ -3080,6 +3080,9 @@ const MiraDemoPage = () => {
         <button onClick={() => navigate('/pet-soul')} className="mp-dock-btn" data-testid="dock-soul">
           <Heart /> <span>Soul</span>
         </button>
+        <button onClick={() => { setShowLearnModal(true); fetchLearnVideos('recommended'); }} className="mp-dock-btn" data-testid="dock-learn">
+          <Play /> <span>Learn</span>
+        </button>
       </nav>
       
       {/* TEST SCENARIOS PANEL - Dark Card (like production) */}
