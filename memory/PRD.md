@@ -168,6 +168,12 @@ https://thedoggycompany.in/mira-demo
 - Frontend: `REACT_APP_BACKEND_URL` (do not modify)
 - Backend: `MONGO_URL`, `DB_NAME` (do not modify)
 
+### Auto-Population on Deployment
+The backend automatically runs AI semantic tagging on startup via:
+1. `run_ai_semantic_tagging_on_startup()` in `server.py` lifespan
+2. Tags products/services missing `semantic_intents`
+3. Manual trigger: Admin Panel > Master SYNC button
+
 ### Critical Rules
 1. Preview MUST always equal Production
 2. Always restart backend after .env changes: `sudo supervisorctl restart backend`
