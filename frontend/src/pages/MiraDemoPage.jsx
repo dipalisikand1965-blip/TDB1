@@ -2683,6 +2683,31 @@ const MiraDemoPage = () => {
                     <Sparkles className="love-card-sparkle" />
                   </div>
                   
+                  {/* HEALTH VAULT PROMPT - When data is incomplete */}
+                  {healthVault.completeness < 100 && healthVault.missing_fields.length > 0 && (
+                    <div 
+                      className="health-vault-prompt"
+                      onClick={() => setHealthVault(prev => ({ ...prev, showWizard: true }))}
+                      data-testid="health-vault-prompt"
+                    >
+                      <div className="vault-icon">
+                        <Shield className="w-5 h-5" />
+                      </div>
+                      <div className="vault-content">
+                        <div className="vault-progress">
+                          <div className="vault-progress-bar" style={{ width: `${healthVault.completeness}%` }} />
+                        </div>
+                        <p className="vault-title">
+                          Complete {pet.name}'s Health Vault
+                        </p>
+                        <p className="vault-subtitle">
+                          {healthVault.completeness}% complete • {healthVault.missing_fields.length} items missing
+                        </p>
+                      </div>
+                      <ChevronRight className="vault-arrow" />
+                    </div>
+                  )}
+                  
                   {/* E018 & E019: Proactive Alerts */}
                   {(proactiveAlerts.celebrations.length > 0 || proactiveAlerts.healthReminders.filter(r => r.needs_attention).length > 0) && (
                     <div className="proactive-alerts">
