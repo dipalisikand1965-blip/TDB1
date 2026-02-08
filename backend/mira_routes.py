@@ -3618,9 +3618,24 @@ def detect_pillar(message: str, current_pillar: str = None) -> str:
     """Detect which pillar the conversation belongs to"""
     message_lower = message.lower()
     
-    # Emergency always takes priority
+    # GRIEF/FAREWELL takes highest priority - must check BEFORE emergency
+    grief_keywords = ["passed away", "died", "death", "memorial", "farewell", "rainbow bridge", 
+                      "put down", "put to sleep", "loss of", "grieving", "grief", "no longer with us",
+                      "lost my dog", "lost my pet", "lost my cat", "lost him", "lost her"]
+    grief_not_missing = any(kw in message_lower for kw in grief_keywords)
+    
+    # "Lost pet" for missing animal vs "lost my dog" for grief - context matters
+    is_missing_pet = ("lost pet" in message_lower or "missing" in message_lower or 
+                      ("lost" in message_lower and any(w in message_lower for w in ["find", "search", "looking for", "seen", "help find"])))
+    
+    if grief_not_missing and not is_missing_pet:
+        return "farewell"
+    
+    # Emergency takes priority (but not for grief)
     if any(kw in message_lower for kw in EMERGENCY_KEYWORDS):
-        return "emergency"
+        # Double-check it's not grief context
+        if not grief_not_missing:
+            return "emergency"
     
     # Check each pillar's keywords
     pillar_scores = {}
