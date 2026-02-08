@@ -2080,14 +2080,14 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
         
         # For TRAVEL requests - DON'T show products immediately, ASK first
         # Products only after clarifying questions answered
-        if is_travel_request:
+        travel_clarification_done = False
+        if is_travel_request or is_travel_conversation:
             # Check if this is the FIRST travel message or a follow-up
-            travel_clarification_done = False
             if request.conversation_history:
                 for msg in request.conversation_history:
                     content = safe_lower(msg.get('content', ''))
                     # If user has already answered travel questions, show products
-                    if any(word in content for word in ['driving', 'flying', 'car', 'flight', 'road', 'train', 'days', 'nights', 'week']):
+                    if any(word in content for word in ['driving', 'flying', 'car', 'flight', 'road', 'train', 'days', 'nights', 'week', 'yes', 'show me', 'find me', 'suggest']):
                         travel_clarification_done = True
                         break
             
