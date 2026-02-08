@@ -554,27 +554,42 @@ const MiraDemoPage = () => {
     const lowerText = (text || '').toLowerCase();
     
     // Celebration context - birthdays, parties, milestones, anniversaries
-    if (/birthday|celebrate|party|anniversary|congrat|milestone|achievement|🎂|🎉|🎁/.test(lowerText)) {
-      return 'celebration';
+    if (/birthday|celebrate|party|anniversary|congrat|milestone|achievement|🎂|🎉|🎁|hamper|pawty|gotcha/.test(lowerText)) {
+      return 'celebration'; // Happy, excited, joyful
     }
     
     // Comfort context - grief, anxiety, loss, emotional support
-    if (/passed away|rainbow bridge|grief|anxious|scared|worried|nervous|miss|lost|sad|crying|comfort|🌈|💔/.test(lowerText)) {
-      return 'comfort';
+    if (/passed away|rainbow bridge|grief|anxious|scared|worried|nervous|miss|lost|sad|crying|comfort|sorry for|🌈|💔/.test(lowerText)) {
+      return 'comfort'; // Soft, slow, empathetic
     }
     
     // Health context - vet, medical, vaccines, checkups
-    if (/vet|vaccine|checkup|health|medical|sick|symptoms|medicine|doctor|hospital|injury|emergency|💉|🏥/.test(lowerText)) {
-      return 'health';
+    if (/vet|vaccine|checkup|health|medical|sick|symptoms|medicine|doctor|hospital|injury|💉|🏥/.test(lowerText)) {
+      return 'health'; // Calm, reassuring, clear
     }
     
     // Urgent context - immediate action needed
     if (/urgent|emergency|immediately|asap|right now|critical|danger|alert|⚠️|🚨/.test(lowerText)) {
-      return 'urgent';
+      return 'urgent'; // Alert but calm
+    }
+    
+    // Travel/Adventure context - trips, hotels, exploring
+    if (/travel|trip|journey|hotel|vacation|holiday|adventure|explore|visit|destination|✈️|🚗|🏨/.test(lowerText)) {
+      return 'adventure'; // Upbeat, helpful, encouraging
+    }
+    
+    // Grooming/Care context - spa, grooming, bath
+    if (/groom|bath|spa|haircut|nail|brush|coat|clean|🛁|✂️/.test(lowerText)) {
+      return 'caring'; // Warm, professional
+    }
+    
+    // Food/Nutrition context - meals, treats, diet
+    if (/food|meal|treat|diet|nutrition|feeding|recipe|🍖|🦴/.test(lowerText)) {
+      return 'informative'; // Helpful, knowledgeable
     }
     
     // Default warm voice
-    return 'default';
+    return 'default'; // Warm, friendly, conversational
   }, []);
   
   // IN-MIRA SERVICE REQUEST - Everything stays in the OS
