@@ -1082,11 +1082,10 @@ code {
     }
 }
 
-/* Hide Emergent badge - more specific selector to avoid hiding API links */
+/* Hide Emergent badge */
 #emergent-badge,
 [id="emergent-badge"],
-a[href*="emergent"][class*="badge"],
-a[href*="emergentagent.com"]:not([href*="\/api\/"]) {
+a[href*="emergent"][class*="badge"] {
   display: none !important;
   visibility: hidden !important;
   opacity: 0 !important;
