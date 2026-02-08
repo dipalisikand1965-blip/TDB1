@@ -6617,3 +6617,94 @@ input, select, textarea {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   SKELETON LOADER - "Mira is thinking about {Pet}..."
+═══════════════════════════════════════════════════════════════ */
+.mp-skeleton-loader {
+  animation: fadeIn 0.3s ease;
+}
+
+.mp-skeleton-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mp-skeleton-text {
+  font-size: 14px;
+  color: rgba(168, 85, 247, 0.9);
+  font-style: italic;
+}
+
+.mp-skeleton-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.mp-skeleton-line {
+  height: 12px;
+  background: linear-gradient(90deg, 
+    rgba(168, 85, 247, 0.1) 25%, 
+    rgba(168, 85, 247, 0.2) 50%, 
+    rgba(168, 85, 247, 0.1) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 6px;
+  width: 280px;
+}
+
+.mp-skeleton-line.short {
+  width: 180px;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.mp-mira-avatar .pulse {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.1); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TYPING ANIMATION - Text streaming effect
+═══════════════════════════════════════════════════════════════ */
+.mp-typing-message {
+  animation: fadeIn 0.2s ease;
+}
+
+.mp-typing-text {
+  white-space: pre-wrap;
+  line-height: 1.6;
+}
+
+.mp-typing-cursor {
+  display: inline-block;
+  color: var(--mira-purple);
+  animation: blink 0.8s step-end infinite;
+  font-weight: 300;
+  margin-left: 2px;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+/* Hide typing cursor when not typing */
+.mp-msg-mira:not(.mp-typing-message) .mp-typing-cursor {
+  display: none;
+}
