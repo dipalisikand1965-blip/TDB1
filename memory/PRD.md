@@ -15,6 +15,20 @@
 - Different stability/similarity settings for emotional context
 - No manual selection needed - Mira intelligently adapts her tone
 
+### E025: PET MOOD DETECTION ✅ COMPLETED
+- **Endpoint:** `POST /api/mira/detect-mood`
+- Detects when user mentions pet behavior changes ("not eating", "scratching", "acting weird")
+- 4 concern levels: high_concern (🚨), medium_concern (💛), low_concern (💚), emotional (💜)
+- Returns contextual response with suggested actions
+- Auto-saves significant concerns to conversation memory
+
+### E033: CONVERSATION MEMORY ✅ COMPLETED
+- **Endpoints:** `/api/mira/conversation-memory/save`, `/recall`, `/{pet_id}`
+- Saves meaningful conversations to pet profile (health, grooming, food, travel topics)
+- Recalls relevant past conversations based on current query
+- Mira references past discussions: "Last time we talked about skin issues..."
+- Stores up to 50 memories per pet
+
 ### E027: DAILY DIGEST ✅ COMPLETED
 - **Endpoint:** `GET /api/mira/daily-digest/{pet_id}`
 - Shows "Mojo's Day" section in tray with walk times, feeding, weather tips
