@@ -2217,14 +2217,7 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
         if is_food_portion or is_food_routine:
             should_show_products = False
         
-        # Check conversation history for context - is this a travel conversation?
-        is_travel_conversation = is_travel_request
-        if not is_travel_conversation and request.conversation_history:
-            for msg in request.conversation_history:
-                content = safe_lower(msg.get('content', ''))
-                if any(word in content for word in ['travel', 'ooty', 'goa', 'trip', 'holiday', 'vacation', 'carrier', 'road trip', 'mumbai', 'delhi', 'bangalore']):
-                    is_travel_conversation = True
-                    break
+        # is_travel_conversation already defined in MODE SYSTEM section above
         
         # For TRAVEL requests - DON'T show products immediately, ASK first
         # Products only after clarifying questions answered
@@ -2247,7 +2240,8 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
                 should_show_products = True
         
         # BOARDING/PET-SITTING: NEVER show products - this is a SERVICE
-        is_boarding_request = any(word in user_input_lower for word in [
+        # is_boarding_request already defined in MODE SYSTEM section above
+        is_boarding_request_for_products = any(word in user_input_lower for word in [
             "boarding", "sitter", "pet sitting", "kennel", "daycare", "watch while", "while i'm away",
             "someone to watch", "take care of while", "look after while", "care for while"
         ])
