@@ -5818,6 +5818,12 @@ I understand this is urgent. Let me help you immediately.
     location_trigger_words = ["near", "nearby", "close", "around", "in my area", "where can", "recommend", "suggest", "find me", "looking for", "need a", "best"]
     is_location_query = any(word in message_lower for word in location_trigger_words)
     
+    # 4.6 WEATHER-BASED ACTIVITY DETECTION
+    weather_context = None
+    weather_data = None
+    WEATHER_KEYWORDS = ["weather", "walk", "outside", "outdoor", "park", "hot", "cold", "rain", "sunny", "good day", "safe to go", "can i take"]
+    is_weather_query = any(kw in message_lower for kw in WEATHER_KEYWORDS)
+    
     # Get user's city from pet profile or detect from message
     user_city = None
     if selected_pet:
