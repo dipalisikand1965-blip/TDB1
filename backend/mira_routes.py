@@ -1976,7 +1976,7 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
             "show me", "find me", "looking for", "what toys",
             "what treats", "options for", "recommend", "suggest some",
             "i want a", "i need a", "get me"
-        ]) and not is_plan_mode and not is_book_mode
+        ]) and not is_plan_mode and not is_book_mode and not is_travel_request and not is_travel_conversation
         
         is_advise_mode = any(phrase in user_input_lower for phrase in [
             "which is better", "should i", "what do you think",
