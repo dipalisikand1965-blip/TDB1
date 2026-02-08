@@ -2133,15 +2133,6 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
         # Determine search keywords based on intent
         search_keywords = None
         
-        # Check conversation history for context - is this a travel conversation?
-        is_travel_conversation = is_travel_request
-        if not is_travel_conversation and request.conversation_history:
-            for msg in request.conversation_history:
-                content = safe_lower(msg.get('content', ''))
-                if any(word in content for word in ['travel', 'ooty', 'goa', 'trip', 'holiday', 'vacation', 'carrier', 'road trip']):
-                    is_travel_conversation = True
-                    break
-        
         # Check for birthday/cake conversation
         is_birthday_conversation = False
         user_input_lower = safe_lower(request.input)
