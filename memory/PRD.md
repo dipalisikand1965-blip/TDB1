@@ -8,72 +8,48 @@
 
 ## EXECUTIVE SUMMARY
 
-Mira OS is a sophisticated AI-powered pet assistant that provides personalized care, product recommendations, and emotional support for pet parents. The system features:
+Mira OS is a sophisticated AI-powered pet assistant with full-featured integrations:
 
-- **AI Chat Interface** with context-aware responses
-- **Semantic Product Search** (E032) - Intent-based recommendations
-- **Conversation Memory** (E033) - Mira remembers past discussions
-- **Pet Mood Detection** (E025) - Detects behavioral concerns
-- **Voice Personalities** (E024) - Auto-adjusts tone based on context
-- **Proactive Nudges** - Health reminders, birthday alerts
-- **AI Auto-Tagging on Deployment** - Semantic intents applied automatically
-- **Nearby Places** - Vet clinics, restaurants, dog parks with click-to-call
-- **Weather Intelligence** - Pet activity recommendations based on weather
-- **Interactive Feature Showcase** - Quick action buttons for common tasks
-- **YouTube Training Videos** - Personalized training content in chat ✅ NEW
-- **Amadeus Travel API** - Pet-friendly hotel search in chat ✅ NEW
+### Core Features
+- AI Chat with context-aware responses
+- Semantic Product Search (E032)
+- Conversation Memory (E033)
+- Pet Mood Detection (E025)
+- Voice Personalities (E024)
 
----
-
-## RECENT UPDATES (February 8, 2026)
-
-### Soul Score Mira Prompt ✅
-- Score ≤ 10%: Shows "Help Mira know [Pet]" purple badge with sparkle
-- Score > 10%: Shows actual percentage with amber/gold badge
-- Clicking badge navigates to `/pet-soul/[pet-id]`
-
-### YouTube Training Videos Integration ✅
-- Detects training keywords in chat (train, teach, learn, bark, potty, etc.)
-- Fetches relevant videos from YouTube Data API
-- Shows video cards with thumbnail, title, channel, play button
-- Links directly to YouTube for viewing
-
-### Amadeus Pet-Friendly Hotels Integration ✅
-- Detects travel intent + city name (Mumbai, Delhi, Goa, etc.)
-- Fetches pet-friendly hotels from Amadeus API
-- Shows hotel cards with pet-friendly badges and policies
-- Directions button links to Google Maps
-
----
-
-## FEATURES IMPLEMENTED
-
-### Core Chat Features
-| Feature | Status | Description |
-|---------|--------|-------------|
-| E024 Voice Auto-Detection | ✅ | Mira adjusts tone based on context |
-| E025 Pet Mood Detection | ✅ | Detects behavioral concerns |
-| E032 Semantic Search | ✅ | AI-powered intent matching |
-| E033 Conversation Memory | ✅ | Recalls past discussions |
-
-### Location & Weather Features
-| Feature | Status | Description |
-|---------|--------|-------------|
-| Vet Clinic Search | ✅ | 32 verified clinics, 18 are 24/7 |
-| Restaurant Search | ✅ | 75+ pet-friendly restaurants |
-| Pet-Friendly Stays | ✅ | 31+ hotels/resorts |
-| Weather Advisory | ✅ | Pet activity recommendations |
-| Click-to-Call | ✅ | Direct call buttons |
-| Get Directions | ✅ | Google Maps navigation |
+### Location & Weather
+- Vet Clinics, Restaurants, Dog Parks
+- Weather-based activity recommendations
+- Click-to-Call & Get Directions
 
 ### New Integrations (Feb 8, 2026)
-| Feature | Status | Description |
-|---------|--------|-------------|
-| Soul Score Mira Prompt | ✅ | Encourages profile completion |
-| YouTube Training Videos | ✅ | Training content in chat |
-| Amadeus Pet Hotels | ✅ | Travel booking in chat |
-| Learn Test Chip | ✅ | Quick training video test |
-| Hotels Test Chip | ✅ | Quick hotel search test |
+- **YouTube Training Videos** ✅ - Training by breed, age, topic
+- **Amadeus Travel** ✅ - Pet-friendly hotels in chat
+- **Foursquare Places** ✅ - Pet cafes, dog parks (with fallback)
+- **Viator Attractions** ✅ - Pet-friendly experiences (with fallback)
+- **Learn Tab** ✅ - Dedicated training video library in dock
+
+---
+
+## RECENT UPDATES
+
+### Learn Tab (NEW)
+- Added to dock navigation
+- Categories: For You, Barking, Potty, Leash, Tricks, Anxiety, Puppy
+- Videos tailored by pet's breed
+- Beautiful modal with video grid
+
+### Foursquare Integration
+- Pet-friendly cafes
+- Dog parks
+- Pet stores & groomers
+- **Note**: Using curated fallback data (API key needs verification)
+
+### Viator Integration  
+- Pet-friendly attractions
+- Nature & outdoor experiences
+- Day trips
+- **Note**: Using curated fallback data (sandbox key needs activation)
 
 ---
 
@@ -83,19 +59,31 @@ Mira OS is a sophisticated AI-powered pet assistant that provides personalized c
 | Endpoint | Description |
 |----------|-------------|
 | `GET /api/mira/youtube/videos` | Search videos by query |
-| `GET /api/mira/youtube/by-breed` | Videos specific to breed |
+| `GET /api/mira/youtube/by-breed` | Videos for specific breed |
 | `GET /api/mira/youtube/by-age` | Videos by life stage |
 | `GET /api/mira/youtube/by-topic` | Videos by training topic |
 | `GET /api/mira/youtube/recommended/{pet_id}` | Personalized for pet |
-| `GET /api/mira/youtube/test` | Test API connection |
 
 ### Amadeus Travel
 | Endpoint | Description |
 |----------|-------------|
-| `GET /api/mira/amadeus/hotels` | Search pet-friendly hotels |
+| `GET /api/mira/amadeus/hotels` | Pet-friendly hotels |
 | `GET /api/mira/amadeus/travel-tips/{pet_id}` | Travel recommendations |
-| `GET /api/mira/amadeus/city-codes` | Supported cities (32) |
-| `GET /api/mira/amadeus/test` | Test API connection |
+
+### Foursquare Places (with fallback)
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/mira/foursquare/pet-cafes` | Pet-friendly cafes |
+| `GET /api/mira/foursquare/dog-parks` | Dog parks |
+| `GET /api/mira/foursquare/pet-stores` | Pet stores |
+| `GET /api/mira/foursquare/groomers` | Pet groomers |
+
+### Viator Attractions (with fallback)
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/mira/viator/pet-friendly` | Pet-friendly attractions |
+| `GET /api/mira/viator/day-trips` | Day trips |
+| `GET /api/mira/viator/nature` | Nature experiences |
 
 ---
 
@@ -104,41 +92,55 @@ Mira OS is a sophisticated AI-powered pet assistant that provides personalized c
 ### Training Keywords (YouTube)
 `train`, `training`, `teach`, `learn`, `how to`, `puppy`, `behavior`, `obedience`, `trick`, `command`, `potty`, `leash`, `bite`, `bark`, `recall`
 
-### City Keywords (Amadeus)
-`mumbai`, `delhi`, `bangalore`, `bengaluru`, `chennai`, `kolkata`, `hyderabad`, `pune`, `goa`, `jaipur`, `ahmedabad`, `kochi`, `udaipur`, `shimla`, `manali`, `ooty`, `coorg`, `munnar`
+### City Keywords (Amadeus/Viator)
+`mumbai`, `delhi`, `bangalore`, `chennai`, `kolkata`, `hyderabad`, `pune`, `goa`, `jaipur`, `ahmedabad`, `kochi`, `udaipur`, `shimla`, `manali`, `ooty`, `coorg`, `munnar`
 
 ---
 
-## TEST SCENARIOS
+## API KEYS STATUS
 
-| Chip | Query | Tests |
-|------|-------|-------|
-| 📺 Learn | "How do I train my dog to stop barking?" | YouTube videos |
-| 🏨 Hotels | "Find pet-friendly hotels in Mumbai" | Amadeus hotels |
-| ✈️ Travel | "Planning a trip to Goa with my dog" | Hotels + Weather |
+| Service | Status | Note |
+|---------|--------|------|
+| YouTube | ✅ Working | Full API access |
+| Amadeus | ✅ Working | Full API access |
+| Foursquare | ⚠️ Fallback | Key needs verification |
+| Viator | ⚠️ Fallback | Sandbox needs activation |
+
+---
+
+## COMPLETED TASKS
+
+1. ✅ Soul Score Mira Prompt - "Help Mira know [Pet]"
+2. ✅ YouTube Backend Integration
+3. ✅ Amadeus Backend Integration  
+4. ✅ YouTube in Chat - Training videos when asking
+5. ✅ Amadeus in Chat - Hotels when mentioning travel
+6. ✅ Learn Tab in Dock - Full training library
+7. ✅ Foursquare Service - With curated fallback
+8. ✅ Viator Service - With curated fallback
 
 ---
 
 ## PENDING TASKS
 
 ### Medium Priority (P1)
-1. 🔲 **Foursquare API Integration** - Additional venue data
-2. 🔲 **Learn Pillar Enhancement** - Dedicated training video section
+1. 🔲 Foursquare API Key Verification
+2. 🔲 Viator Production Key Activation
+3. 🔲 Breed Detector in Learn Tab
 
 ### Low Priority (P2)
-3. 🔲 **Code Refactoring** - Break down MiraDemoPage.jsx (4000+ lines)
-4. 🔲 **Interactive Google Maps** - Embed map component
+4. 🔲 Code Refactoring - MiraDemoPage.jsx
+5. 🔲 Interactive Google Maps
 
 ---
 
 ## TEST CREDENTIALS
 
-- **User Email**: `dipali@clubconcierge.in`
+- **Email**: `dipali@clubconcierge.in`
 - **Password**: `test123`
 
 ---
 
-## PREVIEW URLs
+## PREVIEW URL
 
-- **Preview**: https://nearby-pet-places.preview.emergentagent.com/mira-demo
-- **Admin**: https://nearby-pet-places.preview.emergentagent.com/admin
+https://nearby-pet-places.preview.emergentagent.com/mira-demo
