@@ -374,6 +374,13 @@
   gap: var(--space-lg);
 }
 
+/* Desktop: Full width layout for hero section */
+@media (min-width: 1024px) {
+  .mp-messages-inner {
+    max-width: 1200px;
+  }
+}
+
 /* ========================================
    USER MESSAGE - Pink/Magenta Gradient
    ======================================== */
