@@ -451,6 +451,142 @@ async def search_dog_parks_worldwide(city: str, max_results: int = 10) -> List[D
         )
 
 
+async def search_hotels_in_city(city: str, max_results: int = 10) -> Dict[str, Any]:
+    """
+    Search for hotels in ANY city using Google Places API.
+    Works for small towns like Ooty that don't have airports.
+    
+    Args:
+        city: City name (e.g., "Ooty", "Ooty India")
+        max_results: Maximum results
+        
+    Returns:
+        Dictionary with hotels list
+    """
+    logger.info(f"[GOOGLE PLACES HOTELS] Searching hotels in: {city}")
+    
+    # Geocode the city to get exact coordinates
+    coords = await geocode_city(f"{city}, India" if "india" not in city.lower() else city)
+    
+    if not coords:
+        logger.error(f"Could not geocode city: {city}")
+        return {
+            "success": False,
+            "error": f"Could not find location: {city}",
+            "city": city,
+            "hotels": []
+        }
+    
+    logger.info(f"[GOOGLE PLACES HOTELS] Geocoded {city} to: {coords}")
+    
+    # Search for hotels and lodging
+    try:
+        async with httpx.AsyncClient() as client:
+            request_body = {
+                "includedTypes": ["hotel", "lodging", "resort_hotel", "bed_and_breakfast"],
+                "maxResultCount": min(max_results, 20),
+                "locationRestriction": {
+                    "circle": {
+                        "center": {
+                            "latitude": coords["latitude"],
+                            "longitude": coords["longitude"]
+                        },
+                        "radius": 10000  # 10km radius for hotels
+                    }
+                },
+                "languageCode": "en",
+                "rankPreference": "POPULARITY"
+            }
+            
+            field_mask = ",".join([
+                "places.id",
+                "places.displayName",
+                "places.formattedAddress",
+                "places.nationalPhoneNumber",
+                "places.internationalPhoneNumber",
+                "places.rating",
+                "places.userRatingCount",
+                "places.websiteUri",
+                "places.businessStatus",
+                "places.types",
+                "places.photos",
+                "places.priceLevel"
+            ])
+            
+            response = await client.post(
+                f"{GOOGLE_PLACES_API_URL}/places:searchNearby",
+                headers={
+                    "Content-Type": "application/json",
+                    "X-Goog-Api-Key": GOOGLE_PLACES_API_KEY,
+                    "X-Goog-FieldMask": field_mask
+                },
+                json=request_body,
+                timeout=15.0
+            )
+            
+            if response.status_code != 200:
+                logger.error(f"Google Places API error: {response.status_code} - {response.text}")
+                return {
+                    "success": False,
+                    "error": f"API error: {response.status_code}",
+                    "city": city,
+                    "hotels": []
+                }
+            
+            data = response.json()
+            places = data.get("places", [])
+            
+            hotels = []
+            for place in places:
+                display_name = place.get("displayName", {})
+                hotel = {
+                    "hotel_id": place.get("id"),
+                    "name": display_name.get("text", "Unknown Hotel"),
+                    "address": place.get("formattedAddress", ""),
+                    "city": city,
+                    "country": "IN",
+                    "phone": place.get("nationalPhoneNumber") or place.get("internationalPhoneNumber"),
+                    "website": place.get("websiteUri"),
+                    "rating": place.get("rating"),
+                    "reviews_count": place.get("userRatingCount", 0),
+                    "price_level": place.get("priceLevel"),
+                    "business_status": place.get("businessStatus"),
+                    "types": place.get("types", []),
+                    "pet_friendly_likelihood": "verify",  # Google doesn't have pet data
+                    "pet_policy_note": "",
+                    "source": "google_places"
+                }
+                
+                # Get photo if available
+                photos = place.get("photos", [])
+                if photos:
+                    photo_name = photos[0].get("name", "")
+                    if photo_name:
+                        hotel["photo_url"] = f"https://places.googleapis.com/v1/{photo_name}/media?maxHeightPx=400&maxWidthPx=600&key={GOOGLE_PLACES_API_KEY}"
+                
+                hotels.append(hotel)
+            
+            logger.info(f"[GOOGLE PLACES HOTELS] Found {len(hotels)} hotels in {city}")
+            
+            return {
+                "success": True,
+                "city": city,
+                "coordinates": coords,
+                "hotels": hotels,
+                "total": len(hotels),
+                "source": "google_places",
+                "note": "Our Concierge® team will verify pet policies and handle all bookings for you."
+            }
+            
+    except Exception as e:
+        logger.error(f"Error searching hotels: {e}")
+        return {
+            "success": False,
+            "error": str(e),
+            "city": city,
+            "hotels": []
+        }
+
 
 # Quick test function
 async def test_google_places_connection():
