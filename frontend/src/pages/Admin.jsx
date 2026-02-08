@@ -314,11 +314,11 @@ const Admin = () => {
   // 🚀 MASTER SYNC - Syncs ALL products & services to all pillars
   const syncAllData = async () => {
     setSyncingShopify(true);
-    const results = { shopify: 0, products: 0, services: 0, enhanced: 0 };
+    const results = { shopify: 0, products: 0, services: 0, enhanced: 0, aiTagged: 0 };
     
     try {
       // Step 1: Sync Shopify Products (real products from your store)
-      toast({ title: '🛍️ Step 1/5: Syncing Shopify Products...', description: 'Pulling latest products from your store' });
+      toast({ title: '🛍️ Step 1/6: Syncing Shopify Products...', description: 'Pulling latest products from your store' });
       
       try {
         const shopifyRes = await fetch(`${API_URL}/api/admin/sync-products`, {
@@ -335,7 +335,7 @@ const Admin = () => {
       }
       
       // Step 2: Run Product Intelligence Engine (mira_hints, breed_tags, pillars)
-      toast({ title: '🧠 Step 2/5: Running Product Intelligence...', description: 'Adding mira hints & breed tags' });
+      toast({ title: '🧠 Step 2/6: Running Product Intelligence...', description: 'Adding mira hints & breed tags' });
       
       try {
         const tagRes = await fetch(`${API_URL}/api/admin/enhance-tags`, {
@@ -351,8 +351,25 @@ const Admin = () => {
         console.log('[Master Sync] Tag enhancement error:', e);
       }
       
-      // Step 3: Seed pillar products (products for each pillar)
-      toast({ title: '📦 Step 3/5: Seeding All Pillars...', description: 'Products & services to all 14 pillars' });
+      // Step 3: 🤖 AI SEMANTIC TAGGING (NEW!)
+      toast({ title: '🤖 Step 3/6: Running AI Semantic Tagging...', description: 'Tagging products/services for Mira intelligence' });
+      
+      try {
+        const aiTagRes = await fetch(`${API_URL}/api/mira/admin/run-ai-tagging`, {
+          method: 'POST',
+          headers: getAuthHeaders()
+        });
+        if (aiTagRes.ok) {
+          const data = await aiTagRes.json();
+          results.aiTagged = data.results?.products + data.results?.services || 0;
+          console.log('[Master Sync] AI Tagged:', data.results);
+        }
+      } catch (e) {
+        console.log('[Master Sync] AI Tagging error:', e);
+      }
+      
+      // Step 4: Seed pillar products (products for each pillar)
+      toast({ title: '📦 Step 4/6: Seeding All Pillars...', description: 'Products & services to all 14 pillars' });
       
       try {
         const pillarRes = await fetch(`${API_URL}/api/admin/universal-seed`, {
@@ -368,8 +385,8 @@ const Admin = () => {
         console.log('[Master Sync] Pillar seed error:', e);
       }
       
-      // Step 4: Seed breed-specific services
-      toast({ title: '🐕 Step 4/5: Seeding Breed Services...', description: 'Adding breed-specific services' });
+      // Step 5: Seed breed-specific services
+      toast({ title: '🐕 Step 5/6: Seeding Breed Services...', description: 'Adding breed-specific services' });
       
       try {
         const breedRes = await fetch(`${API_URL}/api/service-box/seed-breed-services`, {
@@ -385,8 +402,8 @@ const Admin = () => {
         console.log('[Master Sync] Breed services error:', e);
       }
       
-      // Step 5: Update all services with Mira whispers
-      toast({ title: '✨ Step 5/5: Adding Mira Whispers...', description: 'Personalizing all services' });
+      // Step 6: Update all services with Mira whispers
+      toast({ title: '✨ Step 6/6: Adding Mira Whispers...', description: 'Personalizing all services' });
       
       try {
         const whisperRes = await fetch(`${API_URL}/api/service-box/update-all-whispers`, {
@@ -401,7 +418,7 @@ const Admin = () => {
         console.log('[Master Sync] Whisper update error:', e);
       }
       
-      // Step 6: Seed production data (FAQs, collections, etc.)
+      // Step 7: Seed production data (FAQs, collections, etc.)
       toast({ title: '📋 Finalizing...', description: 'Setting up FAQs & collections' });
       
       try {
@@ -419,7 +436,7 @@ const Admin = () => {
       // Final toast
       toast({
         title: '✅ MASTER SYNC COMPLETE!',
-        description: `Shopify: ${results.shopify} products | Enhanced: ${results.enhanced} | Services: ${results.services}`,
+        description: `Shopify: ${results.shopify} | Enhanced: ${results.enhanced} | AI Tagged: ${results.aiTagged} | Services: ${results.services}`,
         duration: 10000
       });
       
