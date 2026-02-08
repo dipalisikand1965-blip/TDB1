@@ -147,6 +147,8 @@ const TEST_SCENARIOS = [
   // E025 Mood Detection tests
   { id: 'not-eating', label: '🚫 Not Eating', query: "Not eating and seems tired today" },
   { id: 'acting-weird', label: '❓ Acting Weird', query: "Has been acting strange lately" },
+  // E033 Memory test
+  { id: 'memory', label: '💭 Memory', query: "Remember when we talked about skin issues?" },
 ];
 
 // SERVICE CATEGORIES - Maps to wizard pages on main site
