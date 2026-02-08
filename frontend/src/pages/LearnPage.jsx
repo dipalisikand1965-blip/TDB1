@@ -146,6 +146,11 @@ const LearnPage = () => {
   const [submitting, setSubmitting] = useState(false);
   const [heroIndex, setHeroIndex] = useState(0);
   
+  // YouTube Training Videos
+  const [youtubeVideos, setYoutubeVideos] = useState([]);
+  const [youtubeLoading, setYoutubeLoading] = useState(false);
+  const [videoTopic, setVideoTopic] = useState('basic_training');
+  
   const [requestForm, setRequestForm] = useState({
     learn_type: 'basic_obedience',
     training_goals: [],
