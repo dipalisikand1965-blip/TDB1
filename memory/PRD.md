@@ -204,11 +204,17 @@ MEMORY:
 6. Store/Hide Older Chats ✅ DONE (Feb 8, 2026) - "Past Chats" button added to hero
 7. Real-time Soul Score ✅ DONE (Feb 8, 2026) - Backend returns updated score in API response
 
-### P2 - This Month
-4. Birthday/Anniversary Reminders (E018)
+### P2 - This Month ✅ ALL DONE
+4. Birthday/Anniversary Reminders (E018) ✅ DONE - `/api/mira/celebrations/{pet_id}`
 5. Pet Photo in Recommendations (E017) ✅ DONE
-6. Breed-Specific Product Boost (E016)
+6. Breed-Specific Product Boost (E016) ✅ DONE - `/api/mira/breed-products/{pet_id}`
 7. MasterSync admin UI trigger
+8. E015: Experiences from Database ✅ DONE - `/api/mira/experiences`
+9. E019: Health Check Reminders ✅ DONE - `/api/mira/health-reminders/{pet_id}`
+
+### Frontend Enhancements (Feb 8, 2026)
+- Proactive Alerts UI in welcome screen (birthday/health notifications)
+- Clickable alerts that start relevant conversations
 
 ### P3 - Future
 See `/app/memory/MIRA_ENHANCEMENTS.md` for full roadmap (40+ enhancements planned)
