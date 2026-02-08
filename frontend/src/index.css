@@ -1086,7 +1086,7 @@ code {
 #emergent-badge,
 [id="emergent-badge"],
 a[href*="emergent"][class*="badge"],
-a[href*="emergentagent.com"]:not([href*="/api/"]) {
+a[href*="emergentagent.com"]:not([href*="\/api\/"]) {
   display: none !important;
   visibility: hidden !important;
   opacity: 0 !important;
