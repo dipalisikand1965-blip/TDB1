@@ -164,35 +164,92 @@ const Home = () => {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-20">
             {/* MOBILE HERO - SPECTACULAR WOW DESIGN */}
             <div className="lg:hidden flex flex-col items-center">
-              {/* Full-width dog image as hero background */}
+              {/* Full-width dog image - MIRA'S SOUL EMBRACING YOUR PET */}
               <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 1 }}
                 className="relative w-full max-w-sm mx-auto mb-6"
               >
-                {/* Glowing ring around image */}
-                <div className="absolute -inset-2 bg-gradient-to-r from-purple-500 via-pink-500 to-indigo-500 rounded-full blur-xl opacity-60 animate-pulse" />
+                {/* Outer soul glow - breathing animation */}
+                <motion.div 
+                  className="absolute -inset-4 bg-gradient-to-r from-purple-500 via-pink-400 to-indigo-500 rounded-full blur-2xl opacity-50"
+                  animate={{ 
+                    scale: [1, 1.05, 1],
+                    opacity: [0.4, 0.6, 0.4]
+                  }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                />
                 
-                {/* Dog image - circular, large, prominent */}
-                <div className="relative w-72 h-72 mx-auto rounded-full overflow-hidden border-4 border-purple-500/50 shadow-2xl">
-                  <img 
-                    src={BRAND_IMAGES.goldenRetriever} 
-                    alt="Happy pet" 
-                    className="w-full h-full object-cover"
-                  />
-                  {/* Subtle gradient overlay for depth */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-purple-900/30 to-transparent" />
+                {/* Inner soul glow - counter animation */}
+                <motion.div 
+                  className="absolute -inset-2 bg-gradient-to-r from-pink-400 via-purple-500 to-pink-400 rounded-full blur-xl opacity-60"
+                  animate={{ 
+                    scale: [1.05, 1, 1.05],
+                    opacity: [0.5, 0.7, 0.5]
+                  }}
+                  transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                />
+                
+                {/* Sparkle particles floating around */}
+                <motion.div
+                  className="absolute -top-2 -right-2 text-2xl"
+                  animate={{ 
+                    y: [0, -8, 0],
+                    opacity: [0.5, 1, 0.5],
+                    rotate: [0, 10, 0]
+                  }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  ✨
+                </motion.div>
+                <motion.div
+                  className="absolute top-1/4 -left-4 text-xl"
+                  animate={{ 
+                    y: [0, 6, 0],
+                    opacity: [0.3, 0.8, 0.3]
+                  }}
+                  transition={{ duration: 2.5, repeat: Infinity, delay: 0.5 }}
+                >
+                  ✨
+                </motion.div>
+                <motion.div
+                  className="absolute bottom-1/4 -right-4 text-lg"
+                  animate={{ 
+                    y: [0, -6, 0],
+                    opacity: [0.4, 0.9, 0.4]
+                  }}
+                  transition={{ duration: 3, repeat: Infinity, delay: 1 }}
+                >
+                  ✨
+                </motion.div>
+                
+                {/* Dog image - circular with soul border */}
+                <div className="relative w-72 h-72 mx-auto rounded-full overflow-hidden shadow-2xl">
+                  {/* Animated gradient border */}
+                  <div className="absolute inset-0 rounded-full p-1 bg-gradient-to-r from-purple-500 via-pink-500 to-indigo-500">
+                    <div className="w-full h-full rounded-full overflow-hidden bg-[#0f0720]">
+                      <img 
+                        src={BRAND_IMAGES.goldenRetriever} 
+                        alt="Your beloved pet" 
+                        className="w-full h-full object-cover"
+                      />
+                      {/* Subtle soul overlay on the image */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-purple-900/40 via-transparent to-pink-500/10" />
+                    </div>
+                  </div>
                 </div>
                 
-                {/* Badge - NOT "Meet Mira" - this is about YOUR PET */}
+                {/* Badge - YOUR PET with soul sparkle */}
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5 }}
-                  className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-2 rounded-full shadow-lg"
+                  className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-600 via-pink-500 to-purple-600 px-6 py-2.5 rounded-full shadow-lg shadow-purple-500/30"
                 >
-                  <span className="text-white font-bold text-sm">This is YOUR pet ❤️</span>
+                  <span className="text-white font-bold text-sm flex items-center gap-1">
+                    ✨ This is YOUR pet ❤️
+                  </span>
                 </motion.div>
               </motion.div>
               
