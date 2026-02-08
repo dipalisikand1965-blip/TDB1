@@ -1917,8 +1917,11 @@ const MiraDemoPage = () => {
       
       // ═══════════════════════════════════════════════════════════════════
       // MIRA PICKS TRAY - Store products/services for "Ready for [Pet]"
+      // IMPORTANT: Always store products in tray regardless of shouldShowProducts
+      // The tray is "on-demand" - user opens when ready
+      // Only suppress products in COMFORT MODE (grief/emotional moments)
       // ═══════════════════════════════════════════════════════════════════
-      const newProducts = shouldShowProducts ? (data.response?.products || []) : [];
+      const newProducts = !inComfortMode ? (data.response?.products || []) : [];
       const newServices = (data.response?.services?.length > 0) 
         ? data.response.services 
         : (hasServiceIntent ? detectedServices : []);
