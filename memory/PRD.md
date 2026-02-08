@@ -292,3 +292,39 @@ https://local-paws.preview.emergentagent.com
 ---
 
 *Document generated: February 8, 2026*
+
+---
+
+## Session 6 - Intelligence Improvements (Continued)
+
+### Emotional Undertone Detection
+Added `detect_emotional_undertone()` function that identifies:
+- **Worry** → Reassurance first ("You're being a thoughtful pet parent")
+- **Guilt** → No judgment ("You clearly care deeply")
+- **Overwhelm** → Simplify to 2-3 options
+- **Grief** → Comfort mode
+- **Excitement** → Match energy
+- **Frustration** → Validate then help
+
+### Overwhelm Handling
+Special responses for overwhelmed pet parents:
+- **Food overwhelm** → 3 simple tiers (budget, mid, premium)
+- **Toy overwhelm** → 3 toy types (chew, fetch, puzzle)
+- **Grooming overwhelm** → Simple schedule + breed-specific advice
+- **Generic overwhelm** → Step-by-step breakdown
+
+### Emergency Detection Improvements
+Added toxic ingestion keywords:
+- "ate chocolate", "ate xylitol", "ate grapes"
+- "poison", "swallowed", "ingested"
+- "medication", "antifreeze", "rat poison"
+
+### Grief vs Missing Pet
+Fixed detection to differentiate:
+- "I lost my dog last week" → FAREWELL (comfort mode)
+- "My dog is lost! Help find him" → EMERGENCY
+
+### Files Modified
+- `/app/backend/mira_routes.py` - Added emotional undertone detection, overwhelm handling, improved emergency keywords
+- `/app/memory/MIRA_QUESTION_BANK.md` - Training data for Mira responses
+
