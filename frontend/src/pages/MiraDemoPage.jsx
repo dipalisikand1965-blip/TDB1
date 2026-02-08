@@ -4202,17 +4202,6 @@ const MiraDemoPage = () => {
                 </div>
               )}
               
-              {/* Typing Animation Display */}
-              {isTyping && displayedText && (
-                <div className="mp-msg-mira mp-typing-message">
-                  <div className="mp-mira-avatar"><Sparkles /></div>
-                  <div className="mp-msg-content">
-                    <span className="mp-typing-text">{displayedText}</span>
-                    <span className="mp-typing-cursor">|</span>
-                  </div>
-                </div>
-              )}
-              
               <div ref={messagesEndRef} />
             </div>
           )}
