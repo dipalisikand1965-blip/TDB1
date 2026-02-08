@@ -897,7 +897,7 @@ const DinePage = () => {
         <RestaurantBookingModal
           restaurant={selectedRestaurant}
           onClose={() => { setShowBookingModal(false); setSelectedRestaurant(null); }}
-          user={user}
+          user={authUser}
           activePet={activePet}
         />
       )}
