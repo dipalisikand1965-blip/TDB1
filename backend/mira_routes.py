@@ -2519,7 +2519,8 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                 "vet": ["vet", "veterinary", "clinic", "doctor", "hospital", "sick", "unwell", "not eating", "vomiting", "injury", "checkup", "vaccine", "vaccination"],
                 "restaurant": ["restaurant", "cafe", "brunch", "lunch", "dinner", "eat out", "dine", "dining", "food place", "pet cafe"],
                 "stay": ["hotel", "resort", "stay", "accommodation", "vacation", "trip", "book room", "pet friendly hotel"],
-                "park": ["dog park", "park", "off leash", "play area"]
+                "park": ["dog park", "park", "off leash", "play area"],
+                "pet_store": ["pet store", "pet shop", "buy food", "pet supplies", "dog food store", "pet boutique"]
             }
             
             detected_place_type = None
