@@ -6240,6 +6240,29 @@ input, select, textarea {
   transform: scale(1.05);
 }
 
+/* Hotel Book Button - Primary CTA */
+.hotel-book-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 14px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.hotel-book-btn:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
 
 /* ========================================
    UNIFIED C® GET HELP BUTTON (Inline in chat)
