@@ -3090,11 +3090,22 @@ const MiraDemoPage = () => {
                     )}
                   </div>
                   
-                  {/* Soul Score Badge */}
-                  <div className="soul-score-badge">
-                    <span className="soul-percent">{pet.soulScore !== undefined ? pet.soulScore : 0}%</span>
-                    <span className="soul-label">SOUL<br/>KNOWN</span>
-                  </div>
+                  {/* Soul Score Badge - Mira prompt when incomplete */}
+                  {pet.soulScore > 10 ? (
+                    <div className="soul-score-badge" onClick={() => navigate(`/pet-soul/${pet.id || ''}`)}>
+                      <span className="soul-percent">{pet.soulScore}%</span>
+                      <span className="soul-label">SOUL<br/>KNOWN</span>
+                    </div>
+                  ) : (
+                    <div 
+                      className="soul-score-badge soul-incomplete" 
+                      onClick={() => navigate(`/pet-soul/${pet.id || ''}`)}
+                      data-testid="soul-incomplete-prompt"
+                    >
+                      <span className="soul-sparkle">✨</span>
+                      <span className="soul-cta">Help Mira<br/>know {pet.name}</span>
+                    </div>
+                  )}
                 </div>
                 
                 {/* Content Side */}
