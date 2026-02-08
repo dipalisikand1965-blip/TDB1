@@ -93,12 +93,13 @@
 ### P1 - Medium Priority
 1. ~~**Fix CSS Build Issue**~~ - ✅ RESOLVED
 2. **Foursquare API Key** - Regenerate key from Foursquare dashboard
-3. **Unified Service Desk Flow** - Implement ticket workflow (User Request → Ticket → Admin/Member Notifications)
+3. ~~**Unified Service Desk Flow**~~ - ✅ RESOLVED - Member notifications now included
 
 ### P2 - Low Priority
-4. **Breed Detector** - Add to Learn tab
-5. **Code Refactoring** - MiraDemoPage.jsx is 4,800+ lines
-6. **Interactive Google Maps** - Replace static direction links with embedded maps
+4. **Loading Skeleton Animations** - Improve perceived performance on data-loading sections
+5. **Breed Detector** - Add to Learn tab
+6. **Code Refactoring** - MiraDemoPage.jsx is 4,800+ lines
+7. **Interactive Google Maps** - Replace static direction links with embedded maps
 
 ---
 
