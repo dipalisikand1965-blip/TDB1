@@ -800,16 +800,31 @@ const StayPage = () => {
                           <div className="mt-3 flex gap-2">
                             <Button
                               size="sm"
-                              variant="outline"
-                              className="flex-1 text-xs"
-                              onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hotel.name + ' ' + (hotel.city || selectedNearbyCity))}`, '_blank')}
+                              className="flex-1 text-xs bg-emerald-600 hover:bg-emerald-700 text-white"
+                              onClick={() => {
+                                // Engage Concierge for booking
+                                const bookingDetails = {
+                                  hotel_name: hotel.name,
+                                  city: hotel.city || selectedNearbyCity,
+                                  type: 'hotel_booking'
+                                };
+                                // Navigate to Mira with booking context
+                                navigate('/mira-demo', { 
+                                  state: { 
+                                    autoMessage: `I'd like to book ${hotel.name} in ${hotel.city || selectedNearbyCity}. Can you help me with the reservation?`,
+                                    context: 'hotel_booking'
+                                  }
+                                });
+                              }}
+                              data-testid={`book-hotel-${idx}`}
                             >
-                              <MapPin className="w-3 h-3 mr-1" /> Directions
+                              <Calendar className="w-3 h-3 mr-1" /> Book Now
                             </Button>
                             {hotel.phone && (
                               <Button
                                 size="sm"
-                                className="bg-green-600 hover:bg-green-700 text-xs"
+                                variant="outline"
+                                className="text-xs"
                                 onClick={() => window.open(`tel:${hotel.phone}`, '_blank')}
                               >
                                 <Phone className="w-3 h-3 mr-1" /> Call
