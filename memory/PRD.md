@@ -142,7 +142,7 @@ Pet: Mojo (pet-99a708f1722a)
 ## DEPLOYMENT NOTES
 
 ### Preview URL
-https://mira-demo-stage.preview.emergentagent.com/mira-demo
+https://mira-bakery-ai.preview.emergentagent.com/mira-demo
 
 ### Production URL  
 https://thedoggycompany.in/mira-demo
