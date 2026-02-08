@@ -4342,7 +4342,7 @@ const MiraDemoPage = () => {
                                       
                                       <button 
                                         className="mp-product-add"
-                                        onClick={() => alert(`Added ${product.name} to cart!`)}
+                                        onClick={() => { hapticFeedback.productSelect(); alert(`Added ${product.name} to cart!`); }}
                                         data-testid={`add-product-${pIdx}`}
                                       >
                                         <ShoppingBag /> Add
