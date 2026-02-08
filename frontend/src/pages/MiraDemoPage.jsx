@@ -4567,7 +4567,7 @@ const MiraDemoPage = () => {
                   stopSpeaking();
                 }
               }}
-              placeholder={`Type your reply to Mira...`}
+              placeholder={`Ask Mira anything...`}
               className="mp-input"
               disabled={isProcessing}
               data-testid="mira-input"
