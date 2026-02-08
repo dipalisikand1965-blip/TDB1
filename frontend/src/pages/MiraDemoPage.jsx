@@ -2586,14 +2586,14 @@ const MiraDemoPage = () => {
             <div className="mira-hero-welcome">
               {/* Action Buttons Row */}
               <div className="hero-actions-row">
-                {/* Soul Journey Button */}
+                {/* Soul / Dashboard Button - Goes to dashboard for logged-in users */}
                 <button 
                   className="soul-journey-btn" 
-                  onClick={() => navigate(`/pet-soul/${pet.id || ''}`)}
+                  onClick={() => navigate(token ? '/dashboard' : `/pet-soul/${pet.id || ''}`)}
                   data-testid="soul-journey-btn"
                 >
                   <Crown className="w-4 h-4" />
-                  <span>Start {pet.name}'s soul journey</span>
+                  <span>{token ? `Enhance ${pet.name}'s Soul` : `Start ${pet.name}'s soul journey`}</span>
                 </button>
                 
                 {/* View Past Chats Button */}
