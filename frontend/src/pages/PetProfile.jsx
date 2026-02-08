@@ -491,14 +491,17 @@ const PetProfile = ({ isEmbed = false }) => {
           💡 Don't know their birthday? No worries! Celebrate their Gotcha Day - the day they joined your family!
         </p>
 
-        {/* Photo Upload Section */}
+        {/* Photo Upload Section with AI Breed Detection */}
         <div className="space-y-3">
           <Label className="flex items-center gap-2">
             <Camera className="w-4 h-4" />
             Pet Photo
+            <Badge variant="outline" className="ml-2 text-xs bg-gradient-to-r from-purple-100 to-pink-100 border-purple-200">
+              ✨ AI Breed Detection
+            </Badge>
           </Label>
           
-          {/* Photo Preview */}
+          {/* Photo Preview with Breed Detection */}
           {formData.photo_url && (
             <div className="flex items-center gap-3 p-3 bg-green-50 rounded-xl border border-green-200">
               <img 
@@ -509,9 +512,18 @@ const PetProfile = ({ isEmbed = false }) => {
               />
               <div className="flex-1">
                 <p className="text-sm text-green-700 font-medium">Photo added! ✨</p>
+                {formData.detected_breed && (
+                  <p className="text-xs text-purple-600 mt-1">
+                    🧠 AI detected: <strong>{formData.detected_breed}</strong> ({formData.breed_confidence}% confidence)
+                  </p>
+                )}
                 <button 
                   type="button"
-                  onClick={() => updateFormData('photo_url', '')}
+                  onClick={() => {
+                    updateFormData('photo_url', '');
+                    updateFormData('detected_breed', '');
+                    updateFormData('breed_confidence', '');
+                  }}
                   className="text-xs text-red-500 hover:underline"
                 >
                   Remove
@@ -520,11 +532,19 @@ const PetProfile = ({ isEmbed = false }) => {
             </div>
           )}
           
+          {/* Breed Detection Loading */}
+          {formData.detecting_breed && (
+            <div className="flex items-center gap-2 p-3 bg-purple-50 rounded-xl border border-purple-200 animate-pulse">
+              <div className="w-6 h-6 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
+              <span className="text-sm text-purple-700">🧠 AI is analyzing your pet's breed...</span>
+            </div>
+          )}
+          
           {/* Upload Button */}
           <div className="flex flex-col sm:flex-row gap-2">
             <label className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl cursor-pointer hover:from-purple-600 hover:to-pink-600 transition-all shadow-md">
               <Camera className="w-5 h-5" />
-              <span className="font-medium">Upload from Phone</span>
+              <span className="font-medium">📸 Scan & Detect Breed</span>
               <input
                 type="file"
                 accept="image/*"
@@ -546,9 +566,35 @@ const PetProfile = ({ isEmbed = false }) => {
                   
                   // Create preview immediately
                   const reader = new FileReader();
-                  reader.onload = (ev) => {
-                    updateFormData('photo_url', ev.target.result);
+                  reader.onload = async (ev) => {
+                    const base64Data = ev.target.result;
+                    updateFormData('photo_url', base64Data);
                     updateFormData('photo_file', file);
+                    
+                    // 🧠 AI BREED DETECTION
+                    updateFormData('detecting_breed', true);
+                    try {
+                      const base64Content = base64Data.split(',')[1]; // Remove data:image/... prefix
+                      const response = await fetch(`${API_URL}/api/mira/vision/detect-breed`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ image_base64: base64Content })
+                      });
+                      const data = await response.json();
+                      
+                      if (data.success && data.detected_breed) {
+                        updateFormData('detected_breed', data.detected_breed);
+                        updateFormData('breed_confidence', data.confidence);
+                        // Auto-fill breed if not already set
+                        if (!formData.breed) {
+                          updateFormData('breed', data.detected_breed);
+                        }
+                      }
+                    } catch (error) {
+                      console.error('Breed detection failed:', error);
+                    } finally {
+                      updateFormData('detecting_breed', false);
+                    }
                   };
                   reader.readAsDataURL(file);
                 }}
