@@ -233,13 +233,24 @@ Mira now automatically detects location-based queries and provides:
 
 ## FUTURE: GOOGLE PLACES API INTEGRATION
 
-**Status:** User applying for API key
-**When ready:** Will enhance nearby places with:
-- Real-time opening hours
-- Live reviews and photos
-- True GPS-based "nearby" (not just city-based)
-- Dog parks, groomers, pet stores
-- Automatic data freshness
+**Status:** ✅ INTEGRATED
+**API Key:** Configured in backend/.env
+
+**Working Endpoints:**
+- `GET /api/mira/google/vets?city=X` - Real-time vet clinics
+- `GET /api/mira/google/dog-parks?city=X` - Dog parks via Google
+- `GET /api/mira/google/pet-stores?city=X` - Pet stores & groomers
+- `GET /api/mira/google/search?query=X` - Free text search
+
+**Chat Integration:**
+- Dog parks now powered by Google Places
+- Vet search falls back to Google Places if curated data unavailable
+- Real-time opening hours, ratings, and phone numbers
+
+**Other APIs Available:**
+- OpenWeather API key: Configured (for weather-based pet activity suggestions)
+- Foursquare API key: Available (backup for places data)
+- Amadeus API: Available (for pet-friendly travel booking)
 
 ---
 
