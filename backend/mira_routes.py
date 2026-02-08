@@ -10663,6 +10663,11 @@ async def detect_pet_mood(request: Request):
             "intro": f"I noticed you mentioned {pet_name} isn't quite themselves.",
             "suggestion": "Let's keep an eye on this. When did you first notice the change?",
             "actions": [
+                {"label": "Schedule vet check", "action": "schedule_vet"},
+                {"label": "Track behavior", "action": "track_behavior"},
+                {"label": "See common causes", "action": "common_causes"}
+            ]
+        },
 
 
 
