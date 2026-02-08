@@ -14,6 +14,7 @@
 | 3 | Amadeus Pet-Friendly Travel | ✅ Done | Hotels in chat + Stay page |
 | 4 | Viator Attractions | ✅ Done | Experiences with Book buttons |
 | 5 | CSS Build Error Fix | ✅ Done | Disabled CSS minification in craco.config.js |
+| 6 | Unified Service Desk Flow | ✅ Done | Member notifications added to ticket creation |
 
 ### Pillar Page Enhancements - Done!
 | Page | Feature | Status |
