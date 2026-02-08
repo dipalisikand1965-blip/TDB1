@@ -2220,16 +2220,41 @@ const MiraDemoPage = () => {
       
       // Detect context from intent
       let pickContext = '';
+      let detectedTopic = 'general';
       if (inputQuery.toLowerCase().includes('travel') || inputQuery.toLowerCase().includes('trip')) {
         pickContext = `${pet.name}'s Journey`;
+        detectedTopic = 'travel';
       } else if (inputQuery.toLowerCase().includes('birthday') || inputQuery.toLowerCase().includes('party')) {
         pickContext = `${pet.name}'s Celebration`;
+        detectedTopic = 'birthday';
       } else if (inputQuery.toLowerCase().includes('groom')) {
         pickContext = `Grooming for ${pet.name}`;
+        detectedTopic = 'grooming';
       } else if (inputQuery.toLowerCase().includes('food') || inputQuery.toLowerCase().includes('treat')) {
         pickContext = `${pet.name}'s Treats & Food`;
+        detectedTopic = 'food';
+      } else if (inputQuery.toLowerCase().includes('health') || inputQuery.toLowerCase().includes('vet') || inputQuery.toLowerCase().includes('sick')) {
+        detectedTopic = 'health';
+      } else if (inputQuery.toLowerCase().includes('scratch') || inputQuery.toLowerCase().includes('skin') || inputQuery.toLowerCase().includes('itch')) {
+        detectedTopic = 'skin';
       } else if (newProducts.length > 0 || newServices.length > 0) {
         pickContext = `Picks for ${pet.name}`;
+      }
+      
+      // E033: Save meaningful conversations to memory (for topics worth remembering)
+      const meaningfulTopics = ['health', 'skin', 'grooming', 'food', 'travel', 'birthday', 'behavior'];
+      if (pet?.id && meaningfulTopics.includes(detectedTopic) && miraResponseText.length > 50) {
+        fetch(`${API_URL}/api/mira/conversation-memory/save`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            pet_id: pet.id,
+            topic: detectedTopic,
+            summary: inputQuery.substring(0, 100),
+            user_query: inputQuery,
+            mira_advice: miraResponseText.substring(0, 200)
+          })
+        }).catch(e => console.log('[MEMORY] Auto-save failed:', e.message));
       }
       
       // Update miraPicks if we have new recommendations
