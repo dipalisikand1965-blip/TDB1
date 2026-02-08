@@ -11428,6 +11428,130 @@ async def find_nearby_for_intent(request: Request):
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# GOOGLE PLACES API - Real-time search for vets, dog parks, pet stores
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@router.get("/google/vets")
+async def search_google_vets(
+    city: str,
+    limit: int = 10
+):
+    """
+    Search for veterinary clinics using Google Places API.
+    Returns real-time data with opening hours, ratings, and phone numbers.
+    """
+    try:
+        from services.google_places_service import search_vets_in_city
+        
+        vets = await search_vets_in_city(city, max_results=limit)
+        
+        return {
+            "success": True,
+            "source": "google_places",
+            "city": city,
+            "clinics": vets,
+            "total": len(vets),
+            "message": f"Found {len(vets)} vet clinics in {city} via Google Places"
+        }
+    except Exception as e:
+        logger.error(f"Google Places vet search error: {e}")
+        return {"success": False, "error": str(e)}
+
+
+@router.get("/google/dog-parks")
+async def search_google_dog_parks(
+    city: str,
+    limit: int = 10
+):
+    """
+    Search for dog parks using Google Places API.
+    """
+    try:
+        from services.google_places_service import search_dog_parks_in_city
+        
+        parks = await search_dog_parks_in_city(city, max_results=limit)
+        
+        return {
+            "success": True,
+            "source": "google_places",
+            "city": city,
+            "parks": parks,
+            "total": len(parks),
+            "message": f"Found {len(parks)} dog parks in {city} via Google Places"
+        }
+    except Exception as e:
+        logger.error(f"Google Places dog park search error: {e}")
+        return {"success": False, "error": str(e)}
+
+
+@router.get("/google/pet-stores")
+async def search_google_pet_stores(
+    city: str,
+    limit: int = 10
+):
+    """
+    Search for pet stores and groomers using Google Places API.
+    """
+    try:
+        from services.google_places_service import search_pet_stores_in_city
+        
+        stores = await search_pet_stores_in_city(city, max_results=limit)
+        
+        return {
+            "success": True,
+            "source": "google_places",
+            "city": city,
+            "stores": stores,
+            "total": len(stores),
+            "message": f"Found {len(stores)} pet stores in {city} via Google Places"
+        }
+    except Exception as e:
+        logger.error(f"Google Places pet store search error: {e}")
+        return {"success": False, "error": str(e)}
+
+
+@router.get("/google/search")
+async def search_google_places_text(
+    query: str,
+    limit: int = 10
+):
+    """
+    Search Google Places by text query.
+    Example: "dog friendly cafes in Bandra Mumbai"
+    """
+    try:
+        from services.google_places_service import search_places_by_text
+        
+        places = await search_places_by_text(query, max_results=limit)
+        
+        return {
+            "success": True,
+            "source": "google_places",
+            "query": query,
+            "places": places,
+            "total": len(places),
+            "message": f"Found {len(places)} places for '{query}'"
+        }
+    except Exception as e:
+        logger.error(f"Google Places text search error: {e}")
+        return {"success": False, "error": str(e)}
+
+
+@router.get("/google/test")
+async def test_google_places_api():
+    """
+    Test if Google Places API is configured and working.
+    """
+    try:
+        from services.google_places_service import test_google_places_connection
+        
+        result = await test_google_places_connection()
+        return result
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # AI SEMANTIC TAGGING - Run as part of Master Sync
 # ═══════════════════════════════════════════════════════════════════════════════
 
