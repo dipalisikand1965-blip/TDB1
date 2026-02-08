@@ -3092,7 +3092,7 @@ const MiraDemoPage = () => {
     setShowSkeleton(false); // Always clear skeleton when done
   }, [query, token, user, pet, extractQuickReplies, currentTicket, syncToServiceDesk, 
       conversationStage, completedSteps, stepHistory, currentStep, completeStep, isAskingForMoreInfo,
-      voiceEnabled, speakWithMira]);
+      voiceEnabled, speakWithMira, stopSpeaking]);
   
   useEffect(() => {
     handleSubmitRef.current = handleSubmit;
