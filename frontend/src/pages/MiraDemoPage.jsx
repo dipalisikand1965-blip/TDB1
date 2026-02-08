@@ -3408,6 +3408,99 @@ const MiraDemoPage = () => {
                             </div>
                           )}
                           
+                          {/* NEARBY PLACES CARDS - Vets, Restaurants, Parks with click-to-call */}
+                          {msg.data?.nearby_places?.places?.length > 0 && (
+                            <div className="nearby-places-section" data-testid="nearby-places">
+                              <div className="nearby-places-title">
+                                <MapPin size={14} />
+                                <span>
+                                  {msg.data.nearby_places.type === 'vet_clinics' ? '🏥 Nearby Vet Clinics' :
+                                   msg.data.nearby_places.type === 'restaurants' ? '🍽️ Pet-Friendly Restaurants' :
+                                   msg.data.nearby_places.type === 'dog_parks' ? '🌳 Dog Parks' :
+                                   msg.data.nearby_places.type === 'stays' ? '🏨 Pet-Friendly Stays' :
+                                   '📍 Nearby Places'}
+                                  {msg.data.nearby_places.city && ` in ${msg.data.nearby_places.city}`}
+                                </span>
+                              </div>
+                              
+                              {msg.data.nearby_places.places.slice(0, 3).map((place, pIdx) => (
+                                <div key={pIdx} className="nearby-place-card" data-testid={`place-card-${pIdx}`}>
+                                  <div className={`place-icon ${place.is_emergency || place.is_24_hours ? 'emergency' : ''}`}>
+                                    {msg.data.nearby_places.type === 'vet_clinics' ? '🏥' :
+                                     msg.data.nearby_places.type === 'restaurants' ? '🍽️' :
+                                     msg.data.nearby_places.type === 'dog_parks' ? '🌳' : '📍'}
+                                  </div>
+                                  <div className="place-info">
+                                    <div className="place-name">{place.name}</div>
+                                    <div className="place-details">
+                                      {place.rating && (
+                                        <span className="place-rating">
+                                          <Star size={10} fill="#f59e0b" /> {place.rating}
+                                        </span>
+                                      )}
+                                      {place.is_24_hours && (
+                                        <span className="place-badge emergency-badge">24/7</span>
+                                      )}
+                                      {place.is_open_now === true && (
+                                        <span className="place-badge">Open Now</span>
+                                      )}
+                                      {place.area && <span>{place.area}</span>}
+                                    </div>
+                                  </div>
+                                  {place.phone && (
+                                    <a 
+                                      href={`tel:${place.phone}`} 
+                                      className="place-phone"
+                                      onClick={(e) => e.stopPropagation()}
+                                      data-testid={`call-place-${pIdx}`}
+                                    >
+                                      <Phone size={12} /> Call
+                                    </a>
+                                  )}
+                                </div>
+                              ))}
+                              
+                              {/* Get Directions Button */}
+                              {msg.data.nearby_places.places[0] && (
+                                <a 
+                                  href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(msg.data.nearby_places.places[0].name + ' ' + (msg.data.nearby_places.places[0].address || msg.data.nearby_places.city))}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="directions-btn"
+                                  data-testid="get-directions-btn"
+                                >
+                                  <Navigation size={14} /> Get Directions to {msg.data.nearby_places.places[0].name?.split(' ').slice(0, 2).join(' ')}
+                                </a>
+                              )}
+                            </div>
+                          )}
+                          
+                          {/* WEATHER ADVISORY CARD - When weather data is included */}
+                          {msg.data?.weather && (
+                            <div className={`weather-advisory-card weather-${msg.data.weather.pet_advisory?.safety_level || 'good'}`}>
+                              <div className="weather-advisory-header">
+                                <span className="weather-advisory-icon">
+                                  {msg.data.weather.pet_advisory?.safety_level === 'danger' ? '🔥' :
+                                   msg.data.weather.pet_advisory?.safety_level === 'warning' ? '⚠️' :
+                                   msg.data.weather.pet_advisory?.safety_level === 'caution' ? '☀️' : '✨'}
+                                </span>
+                                <span className="weather-advisory-title">
+                                  {msg.data.weather.current_weather?.temperature}°C in {msg.data.weather.city}
+                                </span>
+                              </div>
+                              <div className="weather-advisory-message">
+                                {msg.data.weather.pet_advisory?.walk_message}
+                              </div>
+                              {msg.data.weather.suggested_activities?.length > 0 && (
+                                <div className="weather-activities">
+                                  {msg.data.weather.suggested_activities.slice(0, 3).map((activity, aIdx) => (
+                                    <span key={aIdx} className="weather-activity">{activity}</span>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          )}
+                          
                           {/* SERVICE CARDS - Self-service wizard options */}
                           {/* MIRA DOCTRINE: Mira is a router - offer choice between self-service and concierge */}
                           {/* E014: Services now come from database API */}
