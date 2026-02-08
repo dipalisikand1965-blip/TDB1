@@ -12281,3 +12281,216 @@ async def test_amadeus_api():
         return {"success": False, "error": str(e)}
 
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# FOURSQUARE PLACES API - Richer venue data
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@router.get("/foursquare/search")
+async def foursquare_search(
+    query: str = None,
+    city: str = "mumbai",
+    latitude: float = None,
+    longitude: float = None,
+    limit: int = 10
+):
+    """Search places using Foursquare for richer venue data."""
+    try:
+        from services.foursquare_service import search_places
+        places = await search_places(
+            query=query,
+            city=city,
+            latitude=latitude,
+            longitude=longitude,
+            limit=limit
+        )
+        return {
+            "success": True,
+            "query": query,
+            "city": city,
+            "places": places,
+            "total": len(places)
+        }
+    except Exception as e:
+        logger.error(f"Foursquare search error: {e}")
+        return {"success": False, "error": str(e), "places": []}
+
+
+@router.get("/foursquare/pet-cafes")
+async def foursquare_pet_cafes(city: str = "mumbai", limit: int = 5):
+    """Get pet-friendly cafes from Foursquare."""
+    try:
+        from services.foursquare_service import get_pet_friendly_cafes
+        return await get_pet_friendly_cafes(city, limit)
+    except Exception as e:
+        logger.error(f"Foursquare pet cafes error: {e}")
+        return {"success": False, "error": str(e), "places": []}
+
+
+@router.get("/foursquare/dog-parks")
+async def foursquare_dog_parks(city: str = "mumbai", limit: int = 5):
+    """Get dog parks from Foursquare."""
+    try:
+        from services.foursquare_service import get_dog_parks
+        return await get_dog_parks(city, limit)
+    except Exception as e:
+        logger.error(f"Foursquare dog parks error: {e}")
+        return {"success": False, "error": str(e), "places": []}
+
+
+@router.get("/foursquare/pet-stores")
+async def foursquare_pet_stores(city: str = "mumbai", limit: int = 5):
+    """Get pet stores from Foursquare."""
+    try:
+        from services.foursquare_service import get_pet_stores
+        return await get_pet_stores(city, limit)
+    except Exception as e:
+        logger.error(f"Foursquare pet stores error: {e}")
+        return {"success": False, "error": str(e), "places": []}
+
+
+@router.get("/foursquare/groomers")
+async def foursquare_groomers(city: str = "mumbai", limit: int = 5):
+    """Get pet groomers from Foursquare."""
+    try:
+        from services.foursquare_service import get_pet_groomers
+        return await get_pet_groomers(city, limit)
+    except Exception as e:
+        logger.error(f"Foursquare groomers error: {e}")
+        return {"success": False, "error": str(e), "places": []}
+
+
+@router.get("/foursquare/enrich")
+async def foursquare_enrich(venue_name: str, city: str = "mumbai"):
+    """Enrich venue data with Foursquare details (photos, ratings, etc.)."""
+    try:
+        from services.foursquare_service import enrich_venue_data
+        return await enrich_venue_data(venue_name, city)
+    except Exception as e:
+        logger.error(f"Foursquare enrich error: {e}")
+        return {"success": False, "error": str(e)}
+
+
+@router.get("/foursquare/test")
+async def test_foursquare_api():
+    """Test if Foursquare API is working."""
+    try:
+        from services.foursquare_service import test_foursquare_connection
+        return await test_foursquare_connection()
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# VIATOR EXPERIENCES API - Pet-friendly attractions & tours
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@router.get("/viator/attractions")
+async def viator_attractions(
+    city: str = "mumbai",
+    query: str = None,
+    limit: int = 5
+):
+    """Search for attractions and tours in a city."""
+    try:
+        from services.viator_service import search_attractions
+        attractions = await search_attractions(
+            destination=city,
+            query=query,
+            pet_friendly=False,
+            limit=limit
+        )
+        return {
+            "success": True,
+            "city": city,
+            "attractions": attractions,
+            "total": len(attractions)
+        }
+    except Exception as e:
+        logger.error(f"Viator attractions error: {e}")
+        return {"success": False, "error": str(e), "attractions": []}
+
+
+@router.get("/viator/pet-friendly")
+async def viator_pet_friendly(city: str = "mumbai", limit: int = 5):
+    """Get pet-friendly attractions (outdoor, nature, parks)."""
+    try:
+        from services.viator_service import get_pet_friendly_attractions
+        return await get_pet_friendly_attractions(city, limit)
+    except Exception as e:
+        logger.error(f"Viator pet-friendly error: {e}")
+        return {"success": False, "error": str(e), "attractions": []}
+
+
+@router.get("/viator/day-trips")
+async def viator_day_trips(city: str = "mumbai", limit: int = 5):
+    """Get day trips from a city."""
+    try:
+        from services.viator_service import get_day_trips
+        return await get_day_trips(city, limit)
+    except Exception as e:
+        logger.error(f"Viator day trips error: {e}")
+        return {"success": False, "error": str(e), "attractions": []}
+
+
+@router.get("/viator/nature")
+async def viator_nature(city: str = "mumbai", limit: int = 5):
+    """Get nature and wildlife experiences."""
+    try:
+        from services.viator_service import get_nature_experiences
+        return await get_nature_experiences(city, limit)
+    except Exception as e:
+        logger.error(f"Viator nature error: {e}")
+        return {"success": False, "error": str(e), "attractions": []}
+
+
+@router.get("/viator/recommended/{pet_id}")
+async def viator_recommended_for_pet(
+    pet_id: str,
+    destination: str = "mumbai"
+):
+    """Get personalized travel experiences for a pet."""
+    try:
+        from services.viator_service import get_travel_experiences_for_pet
+        db = get_db()
+        
+        # Fetch pet details
+        pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
+        if not pet:
+            return {"success": False, "error": "Pet not found"}
+        
+        return await get_travel_experiences_for_pet(
+            pet_name=pet.get("name", "Your pet"),
+            pet_breed=pet.get("breed", "dog"),
+            destination=destination,
+            activity_level=pet.get("activity_level", "moderate")
+        )
+    except Exception as e:
+        logger.error(f"Viator recommended error: {e}")
+        return {"success": False, "error": str(e)}
+
+
+@router.get("/viator/destinations")
+async def viator_destinations():
+    """Get list of supported destinations."""
+    try:
+        from services.viator_service import get_supported_destinations
+        destinations = get_supported_destinations()
+        return {
+            "success": True,
+            "destinations": destinations,
+            "total": len(destinations)
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@router.get("/viator/test")
+async def test_viator_api():
+    """Test if Viator API is working."""
+    try:
+        from services.viator_service import test_viator_connection
+        return await test_viator_connection()
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
