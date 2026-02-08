@@ -78,8 +78,8 @@
 | | - Hotels, resorts, homestays, Airbnbs across India | | | |
 | E041 | **Restaurant/Stay Verification Flow** | F | P1 | Low |
 | | Admin panel to verify user-submitted listings | | | |
-| E042 | **Local Places Integration** | F | P1 | Medium |
-| | Dog parks, pet stores, vet clinics by city | | | |
+| E042 | **Local Places Integration** | F | P1 | Medium | ✅ DONE |
+| | Dog parks, pet stores, vet clinics by city (Google Places API) | | | | Feb 8, 2026 |
 
 ### TIER 1: MUST HAVE (Next 2 Weeks)
 
