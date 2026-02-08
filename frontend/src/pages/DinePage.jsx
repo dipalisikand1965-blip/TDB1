@@ -539,6 +539,151 @@ const DinePage = () => {
             </>
           )}
         </section>
+        
+        {/* Nearby Pet Cafes & Dog Parks Section */}
+        <section className="mt-16 bg-gradient-to-b from-orange-50 to-white py-12 px-4 -mx-4 rounded-2xl">
+          <div className="max-w-full mx-auto">
+            <div className="text-center mb-8">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <Coffee className="w-6 h-6 text-orange-600" />
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-800">Pet-Friendly Hangouts</h2>
+              </div>
+              <p className="text-gray-600 max-w-2xl mx-auto mb-4">
+                Cafes and parks where your furry friend is always welcome
+              </p>
+              
+              {/* City Selector */}
+              <div className="flex flex-wrap justify-center gap-2 mt-4">
+                {['mumbai', 'delhi', 'bangalore'].map((city) => (
+                  <Button
+                    key={city}
+                    variant={selectedNearbyCity === city ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => fetchNearbyPlaces(city)}
+                    className={selectedNearbyCity === city ? 'bg-orange-600 hover:bg-orange-700' : ''}
+                    data-testid={`dine-city-btn-${city}`}
+                  >
+                    {city.charAt(0).toUpperCase() + city.slice(1)}
+                  </Button>
+                ))}
+              </div>
+            </div>
+            
+            {nearbyLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="w-8 h-8 animate-spin text-orange-600" />
+                <span className="ml-2 text-gray-600">Finding pet-friendly spots...</span>
+              </div>
+            ) : (
+              <>
+                {/* Pet Cafes Grid */}
+                {nearbyCafes.length > 0 && (
+                  <div className="mb-10">
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                      <Coffee className="w-5 h-5 text-orange-600" />
+                      Pet Cafes in {selectedNearbyCity.charAt(0).toUpperCase() + selectedNearbyCity.slice(1)}
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {nearbyCafes.slice(0, 6).map((cafe, idx) => (
+                        <Card key={idx} className="overflow-hidden hover:shadow-lg transition-all duration-300" data-testid={`cafe-card-${idx}`}>
+                          <div className="p-4">
+                            <div className="flex items-start gap-3">
+                              <div className="w-12 h-12 rounded-lg bg-orange-100 flex items-center justify-center text-2xl">
+                                ☕
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-semibold text-gray-800 text-sm line-clamp-1">{cafe.name}</h4>
+                                <p className="text-xs text-gray-500">{cafe.address || cafe.area || selectedNearbyCity}</p>
+                                {cafe.rating && (
+                                  <div className="flex items-center gap-1 mt-1">
+                                    <Star className="w-3 h-3 text-amber-500 fill-current" />
+                                    <span className="text-xs text-gray-600">{cafe.rating}</span>
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                            
+                            <div className="mt-3 flex flex-wrap gap-1">
+                              <Badge className="bg-orange-100 text-orange-700 text-xs">🐾 Pet Friendly</Badge>
+                              {cafe.category && (
+                                <Badge variant="secondary" className="text-xs">{cafe.category}</Badge>
+                              )}
+                            </div>
+                            
+                            <div className="mt-3 flex gap-2">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="flex-1 text-xs"
+                                onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(cafe.name + ' ' + (cafe.city || selectedNearbyCity))}`, '_blank')}
+                              >
+                                <MapPin className="w-3 h-3 mr-1" /> Directions
+                              </Button>
+                              {cafe.phone && (
+                                <Button
+                                  size="sm"
+                                  className="bg-orange-600 hover:bg-orange-700 text-xs"
+                                  onClick={() => window.open(`tel:${cafe.phone}`, '_blank')}
+                                >
+                                  <Phone className="w-3 h-3 mr-1" /> Call
+                                </Button>
+                              )}
+                            </div>
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Dog Parks Grid */}
+                {nearbyParks.length > 0 && (
+                  <div>
+                    <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                      <Trees className="w-5 h-5 text-green-600" />
+                      Dog Parks in {selectedNearbyCity.charAt(0).toUpperCase() + selectedNearbyCity.slice(1)}
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                      {nearbyParks.slice(0, 4).map((park, idx) => (
+                        <Card key={idx} className="overflow-hidden hover:shadow-lg transition-all duration-300 group" data-testid={`park-card-${idx}`}>
+                          <div className="p-4">
+                            <div className="flex items-start gap-3">
+                              <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center text-xl">
+                                🌳
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-semibold text-gray-800 text-sm line-clamp-1">{park.name}</h4>
+                                <p className="text-xs text-gray-500">{park.address || park.area || selectedNearbyCity}</p>
+                              </div>
+                            </div>
+                            
+                            <div className="mt-3">
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="w-full text-xs"
+                                onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(park.name + ' ' + (park.city || selectedNearbyCity))}`, '_blank')}
+                              >
+                                <MapPin className="w-3 h-3 mr-1" /> Get Directions
+                              </Button>
+                            </div>
+                          </div>
+                        </Card>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {nearbyCafes.length === 0 && nearbyParks.length === 0 && (
+                  <div className="text-center py-8">
+                    <Dog className="w-12 h-12 mx-auto text-gray-300 mb-2" />
+                    <p className="text-gray-500">No places found for this city. Try another!</p>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </section>
 
         {/* Dine Essentials - Bundles Section */}
         {bundles.length > 0 && (
