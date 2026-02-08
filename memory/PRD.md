@@ -51,9 +51,12 @@
 ## STAY PAGE ENHANCEMENT
 
 ### New Section: "Discover Pet-Friendly Places"
-- **City Selector**: Mumbai, Delhi, Bangalore, Goa, Jaipur, Chennai
+- **Global City Search**: Any city worldwide (Paris, Tokyo, Dubai, etc.)
+  - Free-form search input with suggestions
+  - Quick picks: Mumbai, Delhi, Goa, Bangalore, Paris, London, Dubai, Singapore
+- **"Book Now" Flow**: Replaces "Directions" → Engages Concierge for booking
 - **Pet-Friendly Hotels**: Fetched from Amadeus API
-  - Hotel cards with name, distance, directions button
+  - Hotel cards with name, distance, Book Now button
   - Pet Friendly badges for confirmed pet-friendly hotels
 - **Pet-Friendly Experiences**: Fetched from Viator API
   - Attraction cards with image, rating, price, duration
@@ -61,9 +64,32 @@
 
 ### Files Modified:
 - `/app/frontend/src/pages/StayPage.jsx`
-  - Added state: `nearbyHotels`, `nearbyAttractions`, `selectedNearbyCity`
-  - Added function: `fetchNearbyPlaces(city)`
-  - Added UI section after stays grid
+  - Added: `nearbySearchInput` state for free-form search
+  - Updated: City selector to global search
+  - Updated: "Directions" → "Book Now" with Concierge flow
+
+---
+
+## LEARN PAGE ENHANCEMENT
+
+### New Section: "Training Videos"
+- **YouTube Integration**: Live videos from YouTube API
+- **Topic Filters**:
+  - 🎯 Basic Training
+  - 🐶 Puppy Training
+  - 🧠 Behavior Fixes
+  - 🎪 Tricks & Fun
+  - 🦮 Leash Walking
+  - 💜 Anxiety Help
+  - 🐕 Breed-specific tips (if pet selected)
+- **Video Cards**: Thumbnail, play button, title, channel name
+- **Click to Watch**: Opens YouTube in new tab
+
+### Files Modified:
+- `/app/frontend/src/pages/LearnPage.jsx`
+  - Added: `youtubeVideos`, `videoTopic` state
+  - Added: `fetchYouTubeVideos(topic)`, `fetchBreedVideos(breed)`
+  - Added: Training Videos UI section with topic filters
 
 ---
 
