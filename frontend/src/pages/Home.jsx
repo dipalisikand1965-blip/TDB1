@@ -161,8 +161,126 @@ const Home = () => {
           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl" />
           <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-600/20 rounded-full blur-3xl" />
           
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
+            {/* MOBILE HERO - Phone Mockup Design */}
+            <div className="lg:hidden flex flex-col items-center text-center">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+                className="mb-8"
+              >
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/5 border border-white/10 rounded-full mb-4">
+                  <Sparkles className="w-3 h-3 text-purple-400" />
+                  <span className="text-white/70 text-xs">The World's First Pet Life Operating System</span>
+                </div>
+                
+                <h1 className="text-3xl font-bold text-white leading-tight mb-4">
+                  Every moment deserves to be{' '}
+                  <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400 bg-clip-text text-transparent">
+                    extraordinary
+                  </span>
+                </h1>
+              </motion.div>
+              
+              {/* Phone Mockup with Dog */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="relative mb-8"
+              >
+                {/* Floating icons around phone */}
+                <motion.div 
+                  className="absolute -left-4 top-8 w-10 h-10 bg-purple-500/20 backdrop-blur-sm rounded-xl flex items-center justify-center border border-purple-500/30"
+                  animate={{ y: [0, -8, 0] }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                >
+                  <PawPrint className="w-5 h-5 text-purple-400" />
+                </motion.div>
+                <motion.div 
+                  className="absolute -right-4 top-16 w-10 h-10 bg-pink-500/20 backdrop-blur-sm rounded-xl flex items-center justify-center border border-pink-500/30"
+                  animate={{ y: [0, 8, 0] }}
+                  transition={{ duration: 3.5, repeat: Infinity }}
+                >
+                  <Heart className="w-5 h-5 text-pink-400" />
+                </motion.div>
+                <motion.div 
+                  className="absolute -left-6 bottom-24 w-10 h-10 bg-amber-500/20 backdrop-blur-sm rounded-xl flex items-center justify-center border border-amber-500/30"
+                  animate={{ y: [0, 6, 0] }}
+                  transition={{ duration: 2.5, repeat: Infinity }}
+                >
+                  <Star className="w-5 h-5 text-amber-400" />
+                </motion.div>
+                <motion.div 
+                  className="absolute -right-6 bottom-32 w-10 h-10 bg-green-500/20 backdrop-blur-sm rounded-xl flex items-center justify-center border border-green-500/30"
+                  animate={{ y: [0, -6, 0] }}
+                  transition={{ duration: 4, repeat: Infinity }}
+                >
+                  <Crown className="w-5 h-5 text-green-400" />
+                </motion.div>
+                
+                {/* Phone frame */}
+                <div className="relative w-64 h-[420px] bg-gradient-to-b from-gray-800 to-gray-900 rounded-[3rem] p-2 shadow-2xl">
+                  {/* Phone notch */}
+                  <div className="absolute top-0 left-1/2 -translate-x-1/2 w-20 h-6 bg-black rounded-b-2xl" />
+                  
+                  {/* Phone screen */}
+                  <div className="relative w-full h-full rounded-[2.5rem] overflow-hidden bg-gradient-to-b from-[#1a0a2e] to-[#0f0720]">
+                    {/* Dog image */}
+                    <img 
+                      src={BRAND_IMAGES.hero} 
+                      alt="Your pet" 
+                      className="absolute inset-0 w-full h-full object-cover opacity-90"
+                    />
+                    
+                    {/* Gradient overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0f0720] via-transparent to-transparent" />
+                    
+                    {/* App UI overlay */}
+                    <div className="absolute bottom-0 left-0 right-0 p-4 text-center">
+                      <p className="text-white font-bold text-lg mb-1">Meet Mira</p>
+                      <p className="text-white/60 text-xs mb-3">Your Pet's AI Soul</p>
+                      <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-full py-2 px-6 mx-auto inline-block">
+                        <span className="text-white text-sm font-medium">Get Started</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+              
+              {/* Mobile CTA */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+                className="w-full space-y-3"
+              >
+                <Link to="/join" className="block">
+                  <Button size="lg" className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white py-6 text-lg rounded-xl">
+                    Meet Mira <ArrowRight className="ml-2 w-5 h-5" />
+                  </Button>
+                </Link>
+                
+                {/* Trust badges - mobile */}
+                <div className="flex items-center justify-center gap-4 pt-4">
+                  <div className="flex -space-x-2">
+                    {[BRAND_IMAGES.goldenRetriever, BRAND_IMAGES.bulldog, BRAND_IMAGES.happyPet].map((img, i) => (
+                      <img key={i} src={img} alt="Pet" className="w-8 h-8 rounded-full border-2 border-[#0f0720] object-cover" />
+                    ))}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                    ))}
+                    <span className="text-white/50 text-xs ml-1">10k+ families</span>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+            
+            {/* DESKTOP HERO - Original Design */}
+            <div className="hidden lg:grid lg:grid-cols-2 gap-12 items-center">
               {/* Left content */}
               <motion.div
                 initial={{ opacity: 0, x: -30 }}
