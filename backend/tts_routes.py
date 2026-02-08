@@ -209,13 +209,19 @@ async def generate_tts(request: TTSRequest):
         if not cleaned_text:
             raise HTTPException(status_code=400, detail="Text is empty after cleaning")
         
-        # Use Mira's voice or the provided voice_id
-        voice_id = request.voice_id or MIRA_VOICE_ID
+        # E024: Get voice personality settings
+        personality_key = request.personality or "default"
+        personality = VOICE_PERSONALITIES.get(personality_key, VOICE_PERSONALITIES["default"])
+        
+        # Use personality settings or override with explicit values
+        voice_id = request.voice_id or personality.get("voice_id", MIRA_VOICE_ID)
+        stability = request.stability if request.stability != 0.7 else personality.get("stability", 0.7)
+        similarity_boost = request.similarity_boost if request.similarity_boost != 0.75 else personality.get("similarity_boost", 0.75)
         
         # Generate audio
         voice_settings = VoiceSettings(
-            stability=request.stability,
-            similarity_boost=request.similarity_boost,
+            stability=stability,
+            similarity_boost=similarity_boost,
             style=0.0,
             use_speaker_boost=True
         )
@@ -238,6 +244,9 @@ async def generate_tts(request: TTSRequest):
         return TTSResponse(
             audio_base64=audio_b64,
             text_spoken=cleaned_text,
+            voice_id=voice_id,
+            personality=personality_key
+        )
             voice_id=voice_id
         )
         
