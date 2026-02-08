@@ -23,6 +23,25 @@
 6. ✅ **Stay Page Book Now** - "Directions" → "Book Now" via Concierge
 7. ✅ **Global City Search** - Removed city restrictions, search any city worldwide
 8. ✅ **Age/Breed Filtering** - Products filtered by pet age (puppy/adult/senior) and breed size
+9. ✅ **YouTube Learn Page** - Training videos by topic with YouTube API
+10. ✅ **Google Vision Breed Detection** - Photo-based breed identification
+11. ✅ **Mira-First Landing** - After login redirects to `/mira-demo`
+
+---
+
+## API INTEGRATIONS STATUS
+
+| API | Status | Usage |
+|-----|--------|-------|
+| **Google Vision** | ✅ Working | Breed detection from photos |
+| **YouTube** | ✅ Working | Training videos on Learn page |
+| **Amadeus** | ✅ Working | Pet-friendly hotels on Stay page |
+| **Viator** | ✅ Working | Attractions on Stay page |
+| **Google Places** | ✅ Working | Vet search, dog parks |
+| **ElevenLabs** | ✅ Working | Mira's voice output |
+| **Foursquare** | ⚠️ Keys invalid | Using curated fallback data |
+| **Eventbrite** | ⚠️ API deprecated | Search endpoint removed |
+| **Google Calendar** | 🔜 Ready | Key added, can implement sync |
 
 ---
 
