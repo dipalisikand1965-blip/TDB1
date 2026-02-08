@@ -7579,6 +7579,9 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                             {"name": {"$not": {"$regex": "toy|game|ball", "$options": "i"}}}  # Exclude toys
                         ]
                     }
+                    # Apply age/breed filter
+                    if age_breed_filter:
+                        query["$and"].append(age_breed_filter)
                     found_products = await db.products_master.find(query, {"_id": 0}).limit(6).to_list(6)
                 elif is_treat_request:
                     query = {
@@ -7588,6 +7591,9 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                             {"name": {"$regex": "treat|snack|chew", "$options": "i"}}
                         ]
                     }
+                    # Apply age/breed filter
+                    if age_breed_filter:
+                        query = {"$and": [query, age_breed_filter]}
                     found_products = await db.products_master.find(query, {"_id": 0}).limit(6).to_list(6)
                 elif is_toy_request:
                     query = {
@@ -7597,6 +7603,9 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                             {"name": {"$regex": "toy|ball|tug|fetch", "$options": "i"}}
                         ]
                     }
+                    # Apply age/breed filter
+                    if age_breed_filter:
+                        query = {"$and": [query, age_breed_filter]}
                     found_products = await db.products_master.find(query, {"_id": 0}).limit(6).to_list(6)
                 else:
                     # ===================================================================
