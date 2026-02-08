@@ -2708,14 +2708,12 @@ const MiraDemoPage = () => {
       clearTimeout(skeletonTimer);
       setShowSkeleton(false);
       
-      // TYPING ANIMATION - Stream text then speak
-      // Determine typing speed based on mode
-      const voicePersonality = detectVoicePersonality(miraResponseText);
-      await streamTextAnimation(miraResponseText, voicePersonality);
-      
-      // VOICE OUTPUT - Speak AFTER text animation completes
+      // VOICE OUTPUT - Speak Mira's response
+      // Small delay to let text render, then speak
       if (voiceEnabled && miraResponseText) {
-        speakWithMira(miraResponseText);
+        setTimeout(() => {
+          speakWithMira(miraResponseText);
+        }, 500); // Let text appear first
       }
       
       // Sync Mira's response to service desk
