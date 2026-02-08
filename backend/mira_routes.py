@@ -10937,3 +10937,134 @@ async def get_semantic_intents():
         "intents": intents,
         "total": len(intents)
     }
+
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# RESTAURANTS & PET-FRIENDLY STAYS MANAGEMENT
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@router.get("/restaurants")
+async def get_restaurants(city: str = None, verified_only: bool = False, limit: int = 20):
+    """Get pet-friendly restaurants. Filter by city and/or verified status."""
+    db = get_db()
+    
+    query = {}
+    if city:
+        query["city"] = {"$regex": city, "$options": "i"}
+    if verified_only:
+        query["verified"] = True
+    
+    restaurants = await db.restaurants.find(
+        query, {"_id": 0}
+    ).limit(limit).to_list(limit)
+    
+    return {
+        "success": True,
+        "restaurants": restaurants,
+        "total": len(restaurants),
+        "filters": {"city": city, "verified_only": verified_only}
+    }
+
+
+@router.post("/restaurants/add")
+async def add_restaurant(request: Request):
+    """Add a new pet-friendly restaurant."""
+    db = get_db()
+    data = await request.json()
+    
+    restaurant = {
+        "name": data.get("name"),
+        "city": data.get("city"),
+        "address": data.get("address"),
+        "phone": data.get("phone"),
+        "website": data.get("website"),
+        "pet_policy": data.get("pet_policy", "Dogs allowed"),
+        "outdoor_seating": data.get("outdoor_seating", True),
+        "water_bowls": data.get("water_bowls", False),
+        "dog_menu": data.get("dog_menu", False),
+        "rating": data.get("rating"),
+        "verified": False,  # Needs verification
+        "semantic_tags": ["pet-friendly", "dining", "outdoor", "travel"],
+        "semantic_intents": ["travel_adventure"]
+    }
+    
+    await db.restaurants.insert_one(restaurant)
+    
+    return {"success": True, "message": f"Restaurant '{restaurant['name']}' added for verification"}
+
+
+@router.get("/pet-stays")
+async def get_pet_stays(city: str = None, verified_only: bool = False, limit: int = 20):
+    """Get pet-friendly stays/hotels. Filter by city and/or verified status."""
+    db = get_db()
+    
+    query = {}
+    if city:
+        query["city"] = {"$regex": city, "$options": "i"}
+    if verified_only:
+        query["verified"] = True
+    
+    stays = await db.pet_friendly_stays.find(
+        query, {"_id": 0}
+    ).limit(limit).to_list(limit)
+    
+    return {
+        "success": True,
+        "stays": stays,
+        "total": len(stays),
+        "filters": {"city": city, "verified_only": verified_only}
+    }
+
+
+@router.post("/pet-stays/add")
+async def add_pet_stay(request: Request):
+    """Add a new pet-friendly stay/hotel."""
+    db = get_db()
+    data = await request.json()
+    
+    stay = {
+        "name": data.get("name"),
+        "city": data.get("city"),
+        "address": data.get("address"),
+        "phone": data.get("phone"),
+        "website": data.get("website"),
+        "pet_policy": data.get("pet_policy"),
+        "pet_fee": data.get("pet_fee"),
+        "max_pet_weight": data.get("max_pet_weight"),
+        "amenities": data.get("amenities", []),  # ["Pet bed", "Dog park", "Grooming"]
+        "rating": data.get("rating"),
+        "price_range": data.get("price_range"),
+        "verified": False,  # Needs verification
+        "semantic_tags": ["pet-friendly", "accommodation", "travel", "vacation"],
+        "semantic_intents": ["travel_adventure"]
+    }
+    
+    await db.pet_friendly_stays.insert_one(stay)
+    
+    return {"success": True, "message": f"Stay '{stay['name']}' added for verification"}
+
+
+@router.post("/verify-listing")
+async def verify_listing(request: Request):
+    """Mark a restaurant or stay as verified."""
+    db = get_db()
+    data = await request.json()
+    
+    listing_type = data.get("type")  # "restaurant" or "stay"
+    name = data.get("name")
+    
+    if listing_type == "restaurant":
+        result = await db.restaurants.update_one(
+            {"name": name},
+            {"$set": {"verified": True}}
+        )
+    elif listing_type == "stay":
+        result = await db.pet_friendly_stays.update_one(
+            {"name": name},
+            {"$set": {"verified": True}}
+        )
+    else:
+        return {"success": False, "error": "Invalid type"}
+    
+    return {"success": result.modified_count > 0, "message": f"Verified {name}"}
