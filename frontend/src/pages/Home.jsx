@@ -737,13 +737,15 @@ const Home = () => {
                 initial={{ opacity: 0, x: 20 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                className="relative"
+                className="relative flex items-center justify-center"
               >
-                <div className="absolute -inset-1 bg-gradient-to-r from-green-600 to-emerald-600 rounded-3xl blur-lg opacity-30" />
-                <img 
-                  src={BRAND_IMAGES.petWithOwner} 
-                  alt="Pet Concierge" 
-                  className="relative rounded-3xl border border-white/10 w-full"
+                {/* Magical bulldog with transparent background */}
+                <motion.img 
+                  src={BRAND_IMAGES.bulldog} 
+                  alt="Happy pet with Concierge care" 
+                  className="relative w-full max-w-md"
+                  animate={{ y: [0, -10, 0] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                 />
               </motion.div>
             </div>
