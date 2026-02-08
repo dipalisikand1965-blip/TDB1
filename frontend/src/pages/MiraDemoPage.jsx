@@ -4454,30 +4454,58 @@ const MiraDemoPage = () => {
                         !rawImage.includes('amazon.') &&
                         !rawImage.includes('petco.') &&
                         !rawImage.includes('petsmart.');
-                      const displayImage = isValidImage ? rawImage : getPlaceholderImage(product.id || product.name);
+                      
+                      // If no valid image OR marked as concierge-sourced, show gift icon with C badge
+                      const isConciergeSourced = product.concierge_sourced || !isValidImage;
+                      const displayImage = isValidImage ? rawImage : null;
                       
                       return (
-                        <div key={idx} className="mp-tray-product">
+                        <div key={idx} className={`mp-tray-product ${isConciergeSourced && !displayImage ? 'concierge-sourced' : ''}`}>
                           <div className="mp-tray-product-img-wrap">
-                            <img 
-                              src={displayImage}
-                              alt={product.name}
-                              onError={(e) => { e.target.src = getPlaceholderImage(product.id); }}
-                            />
-                            {product.why_for_pet && (
+                            {displayImage ? (
+                              <img 
+                                src={displayImage}
+                                alt={product.name}
+                                onError={(e) => { 
+                                  // On error, replace with gift icon
+                                  e.target.style.display = 'none';
+                                  e.target.nextSibling?.classList.remove('hidden');
+                                }}
+                              />
+                            ) : (
+                              <div className="mp-concierge-gift-icon">
+                                <Gift size={32} />
+                              </div>
+                            )}
+                            {/* Small C badge for concierge-sourced items */}
+                            {isConciergeSourced && (
+                              <div className="mp-product-concierge-badge" title="Sourced by Concierge®" />
+                            )}
+                            {product.why_for_pet && !isConciergeSourced && (
                               <span className="mp-product-match" title={product.why_for_pet}>✓</span>
                             )}
                           </div>
                           <div className="mp-tray-product-info">
                             <span className="mp-tray-product-name">{product.name}</span>
-                            {product.price && <span className="mp-tray-product-price">₹{product.price}</span>}
+                            {product.price ? (
+                              <span className="mp-tray-product-price">₹{product.price}</span>
+                            ) : isConciergeSourced ? (
+                              <span className="mp-tray-product-price" style={{color: 'var(--mira-purple)'}}>Get Quote</span>
+                            ) : null}
                             {product.why_for_pet && (
                               <span className="mp-product-why">{product.why_for_pet}</span>
                             )}
                           </div>
                           <button 
                             className="mp-tray-add"
-                            onClick={() => alert(`Added ${product.name} to cart!`)}
+                            onClick={() => {
+                              if (isConciergeSourced) {
+                                setShowMiraTray(false);
+                                engageConcierge('product_request', { product_name: product.name, context: miraPicks.context, pet_name: pet.name });
+                              } else {
+                                alert(`Added ${product.name} to cart!`);
+                              }
+                            }}
                           >
                             <Plus size={16} />
                           </button>
