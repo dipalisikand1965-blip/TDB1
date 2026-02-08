@@ -2562,11 +2562,12 @@ const MiraDemoPage = () => {
       }
       
       // Update miraPicks if we have new recommendations
-      if (newProducts.length > 0 || newServices.length > 0 || newExperiences.length > 0) {
+      if (newProducts.length > 0 || newServices.length > 0 || newExperiences.length > 0 || ['party_planning', 'cake_shopping', 'celebration'].includes(celebrationSubIntent)) {
         setMiraPicks({
           products: newProducts,
           services: [...newServices, ...newExperiences],
           context: pickContext,
+          subIntent: celebrationSubIntent, // Store for tray rendering
           hasNew: true
         });
       }
