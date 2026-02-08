@@ -549,30 +549,56 @@ const DinePage = () => {
                 <h2 className="text-2xl md:text-3xl font-bold text-gray-800">Pet-Friendly Hangouts</h2>
               </div>
               <p className="text-gray-600 max-w-2xl mx-auto mb-4">
-                Cafes and parks where your furry friend is always welcome
+                Cafes and parks where your furry friend is always welcome - search any city worldwide
               </p>
               
-              {/* City Selector */}
-              <div className="flex flex-wrap justify-center gap-2 mt-4">
-                {['mumbai', 'delhi', 'bangalore'].map((city) => (
-                  <Button
-                    key={city}
-                    variant={selectedNearbyCity === city ? 'default' : 'outline'}
-                    size="sm"
-                    onClick={() => fetchNearbyPlaces(city)}
-                    className={selectedNearbyCity === city ? 'bg-orange-600 hover:bg-orange-700' : ''}
-                    data-testid={`dine-city-btn-${city}`}
+              {/* City Search Input - Worldwide Support */}
+              <div className="flex flex-col items-center gap-4 mt-4">
+                <div className="flex gap-2 max-w-md w-full">
+                  <div className="relative flex-1">
+                    <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <Input
+                      type="text"
+                      placeholder="Enter any city (e.g., Paris, Tokyo, New York...)"
+                      value={selectedNearbyCity}
+                      onChange={(e) => setSelectedNearbyCity(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && fetchNearbyPlaces(selectedNearbyCity)}
+                      className="pl-10 h-11"
+                      data-testid="dine-city-search-input"
+                    />
+                  </div>
+                  <Button 
+                    onClick={() => fetchNearbyPlaces(selectedNearbyCity)}
+                    className="bg-orange-600 hover:bg-orange-700 h-11 px-6"
+                    data-testid="dine-city-search-btn"
                   >
-                    {city.charAt(0).toUpperCase() + city.slice(1)}
+                    <Search className="w-4 h-4" />
                   </Button>
-                ))}
+                </div>
+                
+                {/* Quick City Picks */}
+                <div className="flex flex-wrap justify-center gap-2">
+                  <span className="text-xs text-gray-500 mr-2">Quick picks:</span>
+                  {['Mumbai', 'Delhi', 'Goa', 'Bangalore', 'Paris', 'London', 'Dubai', 'Singapore'].map((city) => (
+                    <Button
+                      key={city}
+                      variant={selectedNearbyCity.toLowerCase() === city.toLowerCase() ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => { setSelectedNearbyCity(city); fetchNearbyPlaces(city); }}
+                      className={`text-xs ${selectedNearbyCity.toLowerCase() === city.toLowerCase() ? 'bg-orange-600 hover:bg-orange-700' : ''}`}
+                      data-testid={`dine-quick-city-${city.toLowerCase()}`}
+                    >
+                      {city}
+                    </Button>
+                  ))}
+                </div>
               </div>
             </div>
             
             {nearbyLoading ? (
               <div className="flex items-center justify-center py-12">
                 <Loader2 className="w-8 h-8 animate-spin text-orange-600" />
-                <span className="ml-2 text-gray-600">Finding pet-friendly spots...</span>
+                <span className="ml-2 text-gray-600">Finding pet-friendly spots in {selectedNearbyCity}...</span>
               </div>
             ) : (
               <>
@@ -581,7 +607,7 @@ const DinePage = () => {
                   <div className="mb-10">
                     <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
                       <Coffee className="w-5 h-5 text-orange-600" />
-                      Pet Cafes in {selectedNearbyCity.charAt(0).toUpperCase() + selectedNearbyCity.slice(1)}
+                      Pet-Friendly Restaurants in {selectedNearbyCity.charAt(0).toUpperCase() + selectedNearbyCity.slice(1)}
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {nearbyCafes.slice(0, 6).map((cafe, idx) => (
