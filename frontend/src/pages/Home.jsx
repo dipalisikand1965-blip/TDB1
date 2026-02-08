@@ -230,7 +230,7 @@ const Home = () => {
               >
                 <Link to="/join" className="block">
                   <Button size="lg" className="w-full bg-gradient-to-r from-amber-500 via-pink-500 to-purple-600 hover:from-amber-600 hover:via-pink-600 hover:to-purple-700 text-white py-7 text-xl font-bold rounded-2xl shadow-2xl shadow-purple-500/30">
-                    Start Free Today <ArrowRight className="ml-2 w-6 h-6" />
+                    Meet Mira - Start Free <ArrowRight className="ml-2 w-6 h-6" />
                   </Button>
                 </Link>
                 
