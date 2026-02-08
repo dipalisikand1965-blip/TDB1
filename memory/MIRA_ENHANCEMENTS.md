@@ -66,9 +66,11 @@
 
 ### TIER 0: IMMEDIATE (This Week)
 
-| ID | Enhancement | Category | Priority | Complexity |
-|----|-------------|----------|----------|------------|
-| E039 | **Pet-Friendly Restaurant Database** | F | P0 | Medium |
+| ID | Enhancement | Category | Priority | Complexity | Status |
+|----|-------------|----------|----------|------------|--------|
+| E038 | **Breed-Specific Product Prioritization** | B | P0 | Low | ✅ DONE |
+| | Birthday cakes show breed-specific cake FIRST (e.g., Golden Retriever cake for Buddy) | | | | |
+| E039 | **Pet-Friendly Restaurant Database** | F | P0 | Medium | |
 | | Expand from 48 to 200+ verified restaurants across India | | | |
 | | - Mumbai: 30+ | Bangalore: 30+ | Delhi: 30+ | Others: 50+ | | | |
 | E040 | **Pet-Friendly Stays Database** | F | P0 | Medium |
