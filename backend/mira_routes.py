@@ -12328,10 +12328,10 @@ async def foursquare_pet_cafes(city: str = "mumbai", limit: int = 5):
 
 @router.get("/foursquare/dog-parks")
 async def foursquare_dog_parks(city: str = "mumbai", limit: int = 5):
-    """Get dog parks from Foursquare."""
+    """Get dog parks from Foursquare (with fallback)."""
     try:
-        from services.foursquare_service import get_dog_parks
-        return await get_dog_parks(city, limit)
+        from services.foursquare_service import get_dog_parks_with_fallback
+        return await get_dog_parks_with_fallback(city, limit)
     except Exception as e:
         logger.error(f"Foursquare dog parks error: {e}")
         return {"success": False, "error": str(e), "places": []}
