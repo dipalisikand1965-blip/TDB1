@@ -1940,6 +1940,23 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
         is_groom_medical_boundary = is_groom_accident or is_groom_post
         
         # ═══════════════════════════════════════════════════════════════════════════
+        # TRAVEL DETECTION - Must be before MODE SYSTEM as modes depend on it
+        # ═══════════════════════════════════════════════════════════════════════════
+        is_travel_request = any(word in user_input_lower for word in [
+            'travel', 'traveling', 'travelling', 'trip', 'vacation', 'holiday',
+            'road trip', 'journey', 'visiting', 'going to'
+        ])
+        
+        # Check conversation history for travel context
+        is_travel_conversation = is_travel_request
+        if not is_travel_conversation and request.conversation_history:
+            for msg in request.conversation_history:
+                content = safe_lower(msg.get('content', ''))
+                if any(word in content for word in ['travel', 'ooty', 'goa', 'trip', 'holiday', 'vacation', 'carrier', 'road trip', 'mumbai', 'delhi', 'bangalore', 'hotel', 'stay']):
+                    is_travel_conversation = True
+                    break
+        
+        # ═══════════════════════════════════════════════════════════════════════════
         # MIRA MODE SYSTEM - Determines conversation behavior
         # 
         # DOING MODES (Clarify-first): PLAN, BOOK, EXECUTE
