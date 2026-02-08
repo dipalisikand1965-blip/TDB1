@@ -2441,10 +2441,10 @@ const MiraDemoPage = () => {
         inputQuery.toLowerCase().includes(signal)
       );
       
-      // Also check if backend response says to show hotels (MIRA decided it's time)
-      const backendSaysShowHotels = miraResponse?.show_travel_results === true || 
-                                     miraResponse?.response?.toLowerCase().includes('browse these hotels') ||
-                                     miraResponse?.response?.toLowerCase().includes('here are some pet-friendly');
+      // Backend signals when to show hotels via show_travel_results flag
+      const backendSaysShowHotels = data?.show_travel_results === true || 
+                                     data?.response?.message?.toLowerCase().includes('browse these hotels') ||
+                                     data?.response?.message?.toLowerCase().includes('here are some pet-friendly');
       
       // Only fetch hotels if:
       // 1. User has had conversation (not first message) AND explicitly asked for hotels, OR
