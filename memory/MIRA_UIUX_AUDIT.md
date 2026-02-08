@@ -58,11 +58,12 @@ Testing the complete Mira conversation flow across:
 | Aspect | Target | Current | Score | Notes |
 |--------|--------|---------|-------|-------|
 | **Auto-speak** | ON by default | ✅ ON | 8/10 | ✅ Fixed |
-| **Mode-based speed** | 130-190 wpm | Not varied | 4/10 | ⚠️ All same speed |
+| **Mode-based speed** | 130-190 wpm | Configured | 6/10 | ⚠️ Needs backend tuning |
 | **Emotion matching** | Stability varies | Configured | 7/10 | ✅ Personalities set |
-| **Interrupt on type** | Stop voice | Not done | 3/10 | ❌ Not implemented |
+| **Interrupt on type** | Stop voice | ✅ Implemented | 8/10 | ✅ Stops on typing |
+| **Voice after text** | Text first | ✅ 500ms delay | 7/10 | ✅ Implemented |
 
-**Voice Score: 5.5/10** ⚠️ NEEDS WORK
+**Voice Score: 7.2/10** ✅ IMPROVED
 
 ---
 
