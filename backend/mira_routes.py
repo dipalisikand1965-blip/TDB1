@@ -2340,6 +2340,14 @@ If, at some point, you just want to say their name, write down a memory, or ask 
                 "execution_type": "HOLD"
             }
         
+        # ═══════════════════════════════════════════════════════════════════════════
+        # MODE-BASED EXECUTION TYPE OVERRIDE
+        # EXPLORE mode should NEVER route to CONCIERGE on first turn
+        # ═══════════════════════════════════════════════════════════════════════════
+        if mira_mode == "EXPLORE" and execution_type == "CONCIERGE" and is_first_turn:
+            execution_type = "INSTANT"
+            logger.info("[MODE OVERRIDE] EXPLORE mode detected but LLM said CONCIERGE - overriding to INSTANT")
+        
         # Step 3: If CONCIERGE, create ticket and notifications (UNIFIED SERVICE FLOW)
         ticket_id = None
         if execution_type == "CONCIERGE":
