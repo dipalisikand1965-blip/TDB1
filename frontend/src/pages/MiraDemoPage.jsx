@@ -3411,7 +3411,6 @@ const MiraDemoPage = () => {
                           )}
                           
                           {/* NEARBY PLACES CARDS - Vets, Restaurants, Parks with click-to-call */}
-                          {console.log('[DEBUG] msg.data.nearby_places:', msg.data?.nearby_places)}
                           {msg.data?.nearby_places?.places?.length > 0 && (
                             <div className="nearby-places-section" data-testid="nearby-places">
                               <div className="nearby-places-title">
