@@ -3173,6 +3173,8 @@ const MiraDemoPage = () => {
       setIsTyping(false);
       
       // Instead of just handing to Concierge®, show a more helpful error
+      // HAPTIC: Error feedback
+      hapticFeedback.error();
       const errorMessage = {
         type: 'mira',
         content: "I'm having a moment - let me try that again. If this keeps happening, your pet Concierge® is always here to help.",
