@@ -4819,3 +4819,136 @@ input, select, textarea {
   color: rgba(255, 255, 255, 0.4);
 }
 
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   E024: VOICE PERSONALITY SELECTOR STYLES
+═══════════════════════════════════════════════════════════════════════════════ */
+
+.mp-voice-personality-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.mp-voice-mood-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(168, 85, 247, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+}
+
+.mp-voice-mood-btn:hover {
+  background: rgba(168, 85, 247, 0.4);
+  transform: scale(1.1);
+}
+
+.mp-voice-menu {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 0;
+  background: rgba(30, 20, 50, 0.98);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: 12px;
+  padding: 8px;
+  min-width: 200px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  backdrop-filter: blur(20px);
+  animation: voiceMenuSlideUp 0.2s ease;
+}
+
+@keyframes voiceMenuSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.voice-menu-header {
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 4px 8px 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 4px;
+}
+
+.voice-menu-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+}
+
+.voice-menu-option:hover {
+  background: rgba(168, 85, 247, 0.2);
+}
+
+.voice-menu-option.active {
+  background: rgba(168, 85, 247, 0.3);
+}
+
+.voice-option-icon {
+  font-size: 18px;
+  width: 24px;
+  text-align: center;
+}
+
+.voice-option-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.voice-option-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.voice-option-desc {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.voice-option-check {
+  color: #a855f7;
+}
+
+/* Mobile adjustments */
+@media (max-width: 768px) {
+  .mp-voice-menu {
+    min-width: 180px;
+    right: 0;
+    left: auto;
+  }
+  
+  .mp-voice-mood-btn {
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+  }
+}
+
