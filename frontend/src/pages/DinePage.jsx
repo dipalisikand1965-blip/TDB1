@@ -6,7 +6,7 @@ import {
   Utensils, Coffee, Pizza, Leaf, Heart, Check, X, AlertCircle,
   Sparkles, ShoppingBag, Truck, Users, Calendar, MessageCircle, Send,
   Bell, Gift, Cake, User, Mail, Package, Percent, PartyPopper,
-  Crown, Wine, ChefHat
+  Crown, Wine, ChefHat, Trees, Loader2
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
