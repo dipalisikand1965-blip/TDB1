@@ -3670,6 +3670,104 @@ def detect_urgency(message: str, pillar: str) -> str:
     # Use pillar default
     return PILLARS.get(pillar, {}).get("urgency_default", "medium")
 
+
+def detect_emotional_undertone(message: str) -> dict:
+    """
+    Detect emotional undertone in pet parent's message.
+    Returns undertone type and suggested response approach.
+    """
+    message_lower = message.lower()
+    
+    # WORRY - User is concerned/anxious
+    worry_phrases = [
+        "should i be worried", "is this normal", "should i worry", "concerned about",
+        "is it serious", "is this bad", "should i be concerned", "am i overreacting",
+        "is something wrong", "seems off", "not sure if", "is it okay"
+    ]
+    if any(phrase in message_lower for phrase in worry_phrases):
+        return {
+            "undertone": "worry",
+            "response_approach": "reassurance_first",
+            "opener": "You're being a thoughtful pet parent by noticing this.",
+            "avoid": ["dismissing concerns", "overwhelming with worst cases"]
+        }
+    
+    # GUILT - User feels bad about something
+    guilt_phrases = [
+        "feel bad", "feel guilty", "feel terrible", "should have", "shouldn't have",
+        "did i do wrong", "is it my fault", "i failed", "i messed up", "i regret",
+        "didn't do enough", "could have done more"
+    ]
+    if any(phrase in message_lower for phrase in guilt_phrases):
+        return {
+            "undertone": "guilt",
+            "response_approach": "no_judgment",
+            "opener": "You clearly care deeply about your pet - that's what matters.",
+            "avoid": ["reinforcing guilt", "saying 'you should have'"]
+        }
+    
+    # OVERWHELM - Too many options/don't know where to start
+    overwhelm_phrases = [
+        "don't know where to start", "too many options", "overwhelmed",
+        "so confusing", "too much", "i don't know what", "can't decide",
+        "help me choose", "no idea", "lost on", "confused about"
+    ]
+    if any(phrase in message_lower for phrase in overwhelm_phrases):
+        return {
+            "undertone": "overwhelm",
+            "response_approach": "simplify",
+            "opener": "Let me make this easier for you.",
+            "max_options": 3,
+            "avoid": ["long lists", "too much information", "complex decisions"]
+        }
+    
+    # GRIEF - Loss or anticipatory grief
+    grief_phrases = [
+        "passed away", "lost my", "died", "no longer with", "had to say goodbye",
+        "put down", "rainbow bridge", "grieving", "in pain", "heartbroken"
+    ]
+    if any(phrase in message_lower for phrase in grief_phrases):
+        return {
+            "undertone": "grief",
+            "response_approach": "comfort_mode",
+            "opener": "I'm so sorry. There are no perfect words for this.",
+            "avoid": ["rushing", "silver linings", "suggesting new pets immediately"]
+        }
+    
+    # EXCITEMENT - Happy, planning something fun
+    excitement_phrases = [
+        "can't wait", "so excited", "excited about", "looking forward",
+        "finally", "yay", "!!!", "amazing", "best", "love this"
+    ]
+    if any(phrase in message_lower for phrase in excitement_phrases):
+        return {
+            "undertone": "excitement",
+            "response_approach": "match_energy",
+            "opener": "How exciting!",
+            "tone": "enthusiastic"
+        }
+    
+    # FRUSTRATION - Something not working
+    frustration_phrases = [
+        "nothing works", "tried everything", "so frustrating", "annoying",
+        "keeps happening", "won't stop", "doesn't help", "useless"
+    ]
+    if any(phrase in message_lower for phrase in frustration_phrases):
+        return {
+            "undertone": "frustration",
+            "response_approach": "validate_then_help",
+            "opener": "That sounds really frustrating. Let's try a different approach.",
+            "avoid": ["repeating same advice", "dismissing frustration"]
+        }
+    
+    # NEUTRAL - No strong emotional undertone detected
+    return {
+        "undertone": "neutral",
+        "response_approach": "standard",
+        "opener": None
+    }
+
+
 def detect_intent(message: str) -> str:
     """Detect if user is exploring or requesting action"""
     message_lower = message.lower()
