@@ -2011,7 +2011,7 @@ button.mp-welcome-chip,
   align-items: center;
   gap: 24px;
   width: 100%;
-  max-width: 800px;
+  max-width: 100%; /* Full width */
   text-align: center;
 }
 
@@ -2019,7 +2019,9 @@ button.mp-welcome-chip,
   .hero-layout {
     flex-direction: row;
     text-align: left;
+    align-items: flex-start;
     gap: 40px;
+    max-width: 100%; /* Full width on desktop */
   }
 }
 
