@@ -3136,7 +3136,7 @@ const MiraDemoPage = () => {
           <button
             type="button"
             onClick={() => setShowMiraTray(true)}
-            className={`mp-ready-btn ${miraPicks.hasNew ? 'has-new' : ''}`}
+            className={`mp-ready-btn ${miraPicks.hasNew ? 'has-new' : ''} ${(healthVault.completeness < 100 || proactiveAlerts.healthReminders.some(r => r.needs_attention) || proactiveAlerts.celebrations.some(c => c.is_upcoming)) ? 'has-alerts' : ''}`}
             data-testid="ready-for-pet-btn"
           >
             <span className="mp-ready-icon">
@@ -3147,6 +3147,14 @@ const MiraDemoPage = () => {
               {miraPicks.context || `Ready for ${pet.name}`}
             </span>
             <span className="mp-ready-count">
+              {/* Show alert badge if there are care items needing attention */}
+              {(healthVault.completeness < 100 || proactiveAlerts.healthReminders.some(r => r.needs_attention) || proactiveAlerts.celebrations.some(c => c.is_upcoming)) && (
+                <span className="mp-alert-badge">
+                  {(healthVault.completeness < 100 ? 1 : 0) + 
+                   proactiveAlerts.healthReminders.filter(r => r.needs_attention).length +
+                   proactiveAlerts.celebrations.filter(c => c.is_upcoming).length}
+                </span>
+              )}
               {miraPicks.products.length + miraPicks.services.length > 0 
                 ? `${miraPicks.products.length + miraPicks.services.length} picks`
                 : 'Concierge®'}
