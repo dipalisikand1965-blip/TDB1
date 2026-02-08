@@ -513,28 +513,47 @@
   color: #d8b4fe;
 }
 
-.formatted-text ul,
-.formatted-text ol {
-  margin: 12px 0;
-  padding-left: 20px;
+/* Premium List Styling */
+.formatted-list {
+  margin: 16px 0;
+  padding-left: 0;
+  list-style: none;
 }
 
-.formatted-text ul {
-  list-style-type: disc;
+.formatted-list-numbered {
+  counter-reset: list-counter;
 }
 
-.formatted-text ol {
-  list-style-type: decimal;
-}
-
-.formatted-text li {
-  margin-bottom: 6px;
-  line-height: 1.5;
+.formatted-list-item {
+  position: relative;
+  padding-left: 24px;
+  margin-bottom: 10px;
+  line-height: 1.6;
   color: rgba(255, 255, 255, 0.95);
 }
 
-.formatted-text li::marker {
+/* Bullet point styling */
+.formatted-list:not(.formatted-list-numbered) .formatted-list-item::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 9px;
+  width: 6px;
+  height: 6px;
+  background: linear-gradient(135deg, #a855f7, #ec4899);
+  border-radius: 50%;
+}
+
+/* Numbered list styling */
+.formatted-list-numbered .formatted-list-item::before {
+  counter-increment: list-counter;
+  content: counter(list-counter) ".";
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-weight: 600;
   color: #a855f7;
+  font-size: 14px;
 }
 
 .formatted-text h1,
@@ -548,7 +567,12 @@
 
 .formatted-text h1 { font-size: 18px; }
 .formatted-text h2 { font-size: 16px; }
-.formatted-text h3 { font-size: 15px; }
+.formatted-text h3 { 
+  font-size: 14px;
+  color: #c4b5fd;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
 
 .formatted-text a {
   color: #c4b5fd;
@@ -583,18 +607,21 @@
     line-height: 1.6;
   }
   
-  .formatted-text ul,
-  .formatted-text ol {
-    padding-left: 16px;
+  .formatted-list-item {
+    padding-left: 20px;
+    margin-bottom: 8px;
   }
   
-  .formatted-text li {
-    margin-bottom: 4px;
+  .formatted-list:not(.formatted-list-numbered) .formatted-list-item::before {
+    left: 6px;
+    top: 8px;
+    width: 5px;
+    height: 5px;
   }
   
   .formatted-text h1 { font-size: 16px; }
   .formatted-text h2 { font-size: 15px; }
-  .formatted-text h3 { font-size: 14px; }
+  .formatted-text h3 { font-size: 13px; }
 }
 
 /* ========================================
