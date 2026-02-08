@@ -810,9 +810,28 @@ const MiraDemoPage = () => {
               name: p.name,
               breed: p.breed,
               age: p.age || 'Unknown',
-              traits: p.doggy_soul_answers?.describe_3_words || ['Loving'],
-              sensitivities: p.doggy_soul_answers?.health_conditions || [],
-              favorites: p.doggy_soul_answers?.favorite_treats || [],
+              // Ensure arrays - doggy_soul_answers fields might be strings
+              traits: (() => {
+                const raw = p.doggy_soul_answers?.describe_3_words;
+                if (!raw) return ['Loving'];
+                if (Array.isArray(raw)) return raw;
+                if (typeof raw === 'string') return raw.split(',').map(s => s.trim()).filter(Boolean);
+                return ['Loving'];
+              })(),
+              sensitivities: (() => {
+                const raw = p.doggy_soul_answers?.health_conditions;
+                if (!raw) return [];
+                if (Array.isArray(raw)) return raw;
+                if (typeof raw === 'string') return raw.split(',').map(s => s.trim()).filter(Boolean);
+                return [];
+              })(),
+              favorites: (() => {
+                const raw = p.doggy_soul_answers?.favorite_treats;
+                if (!raw) return [];
+                if (Array.isArray(raw)) return raw;
+                if (typeof raw === 'string') return raw.split(',').map(s => s.trim()).filter(Boolean);
+                return [];
+              })(),
               photo: p.photo || null
             }));
             setAllPets(formattedPets);
