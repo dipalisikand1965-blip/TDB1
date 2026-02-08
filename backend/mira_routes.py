@@ -9266,3 +9266,161 @@ async def get_health_reminders(pet_id: str):
         "needs_attention_count": sum(1 for r in reminders if r.get("needs_attention"))
     }
 
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# HEALTH VAULT WIZARD - Collect missing health data from pet parents
+# ═══════════════════════════════════════════════════════════════════════════════
+
+class HealthVaultData(BaseModel):
+    pet_id: str
+    last_vet_visit: Optional[str] = None
+    birthday: Optional[str] = None
+    gotcha_day: Optional[str] = None
+    vaccinations: Optional[List[Dict]] = None
+    allergies: Optional[List[str]] = None
+    medications: Optional[List[str]] = None
+    weight: Optional[float] = None
+    spayed_neutered: Optional[bool] = None
+    microchip_id: Optional[str] = None
+
+@router.post("/health-vault/save")
+async def save_health_vault_data(data: HealthVaultData):
+    """
+    Save health vault data for a pet.
+    This is called after the Health Vault wizard completes.
+    """
+    db = get_db()
+    
+    # Build update document
+    update_doc = {"$set": {}}
+    
+    if data.last_vet_visit:
+        update_doc["$set"]["last_vet_visit"] = data.last_vet_visit
+        update_doc["$set"]["last_health_check"] = data.last_vet_visit
+    
+    if data.birthday:
+        update_doc["$set"]["birthday"] = data.birthday
+    
+    if data.gotcha_day:
+        update_doc["$set"]["gotcha_day"] = data.gotcha_day
+        update_doc["$set"]["adoption_date"] = data.gotcha_day
+    
+    if data.vaccinations:
+        update_doc["$set"]["vaccinations"] = data.vaccinations
+    
+    if data.allergies:
+        update_doc["$set"]["allergies"] = data.allergies
+    
+    if data.medications:
+        update_doc["$set"]["medications"] = data.medications
+    
+    if data.weight:
+        update_doc["$set"]["weight"] = data.weight
+    
+    if data.spayed_neutered is not None:
+        update_doc["$set"]["spayed_neutered"] = data.spayed_neutered
+    
+    if data.microchip_id:
+        update_doc["$set"]["microchip_id"] = data.microchip_id
+    
+    if not update_doc["$set"]:
+        return {"success": False, "error": "No data to save"}
+    
+    # Update the pet
+    result = await db.pets.update_one({"id": data.pet_id}, update_doc)
+    
+    if result.modified_count > 0:
+        # Also increment soul score for providing health info!
+        await increment_soul_score_on_interaction(data.pet_id, "health_info")
+        
+        return {
+            "success": True,
+            "message": "Health vault updated! Mira knows your pet better now 💜",
+            "fields_updated": list(update_doc["$set"].keys())
+        }
+    
+    return {"success": False, "error": "Pet not found or no changes made"}
+
+
+@router.get("/health-vault/status/{pet_id}")
+async def get_health_vault_status(pet_id: str):
+    """
+    Check what health data is missing for a pet.
+    Used to prompt parents to complete their Health Vault.
+    """
+    db = get_db()
+    
+    pet = await db.pets.find_one(
+        {"id": pet_id},
+        {
+            "name": 1,
+            "birthday": 1,
+            "gotcha_day": 1,
+            "last_vet_visit": 1,
+            "last_health_check": 1,
+            "vaccinations": 1,
+            "allergies": 1,
+            "medications": 1,
+            "weight": 1,
+            "spayed_neutered": 1,
+            "microchip_id": 1,
+            "_id": 0
+        }
+    )
+    
+    if not pet:
+        return {"success": False, "error": "Pet not found"}
+    
+    # Check what's missing
+    missing_fields = []
+    has_fields = []
+    
+    # Essential fields
+    if not pet.get("birthday"):
+        missing_fields.append({"field": "birthday", "label": "Birthday", "priority": "high"})
+    else:
+        has_fields.append("birthday")
+    
+    if not pet.get("gotcha_day") and not pet.get("adoption_date"):
+        missing_fields.append({"field": "gotcha_day", "label": "Gotcha Day / Adoption Date", "priority": "medium"})
+    else:
+        has_fields.append("gotcha_day")
+    
+    if not pet.get("last_vet_visit") and not pet.get("last_health_check"):
+        missing_fields.append({"field": "last_vet_visit", "label": "Last Vet Visit", "priority": "high"})
+    else:
+        has_fields.append("last_vet_visit")
+    
+    if not pet.get("vaccinations"):
+        missing_fields.append({"field": "vaccinations", "label": "Vaccination Records", "priority": "high"})
+    else:
+        has_fields.append("vaccinations")
+    
+    if not pet.get("allergies"):
+        missing_fields.append({"field": "allergies", "label": "Known Allergies", "priority": "medium"})
+    else:
+        has_fields.append("allergies")
+    
+    if not pet.get("weight"):
+        missing_fields.append({"field": "weight", "label": "Current Weight", "priority": "low"})
+    else:
+        has_fields.append("weight")
+    
+    if pet.get("spayed_neutered") is None:
+        missing_fields.append({"field": "spayed_neutered", "label": "Spayed/Neutered Status", "priority": "low"})
+    else:
+        has_fields.append("spayed_neutered")
+    
+    completeness = len(has_fields) / (len(has_fields) + len(missing_fields)) * 100 if (has_fields or missing_fields) else 0
+    
+    return {
+        "success": True,
+        "pet_name": pet.get("name"),
+        "completeness": round(completeness),
+        "missing_fields": missing_fields,
+        "has_fields": has_fields,
+        "needs_attention": len([f for f in missing_fields if f["priority"] == "high"]) > 0,
+        "prompt_message": f"Help Mira know {pet.get('name')} better! Complete the Health Vault to unlock proactive care." if missing_fields else None
+    }
+
