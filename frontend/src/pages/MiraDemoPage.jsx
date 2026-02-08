@@ -690,6 +690,7 @@ const MiraDemoPage = () => {
   const [voiceEnabled, setVoiceEnabled] = useState(true); // Voice ON by default per MIRA SPEED DOCTRINE
   const [isSpeaking, setIsSpeaking] = useState(false);
   const audioRef = useRef(null);
+  const voiceTimeoutRef = useRef(null); // Track pending voice timeouts to prevent double voice
   
   // GEOLOCATION - Get user's actual location for weather/nearby
   const [userGeoLocation, setUserGeoLocation] = useState(null);
