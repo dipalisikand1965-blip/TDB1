@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { API_URL } from '../utils/api';
+import hapticFeedback from '../utils/haptic';
 
 // Formatted Text Component - Renders markdown with proper styling
 // Uses wrapper div for className (react-markdown v8+ compatible)
