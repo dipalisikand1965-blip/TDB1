@@ -68,6 +68,12 @@ const DinePage = () => {
   
   // Pet state for personalization
   const [activePet, setActivePet] = useState(null);
+  
+  // Nearby Pet Cafes & Places state (Foursquare + Google Places)
+  const [nearbyCafes, setNearbyCafes] = useState([]);
+  const [nearbyParks, setNearbyParks] = useState([]);
+  const [nearbyLoading, setNearbyLoading] = useState(false);
+  const [selectedNearbyCity, setSelectedNearbyCity] = useState('mumbai');
 
   // Rotating hero images for visual appeal
   const HERO_IMAGES = [
