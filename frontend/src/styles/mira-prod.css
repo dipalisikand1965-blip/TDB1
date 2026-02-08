@@ -5704,6 +5704,237 @@ input, select, textarea {
 }
 
 
+/* ========================================
+   TRAINING VIDEOS SECTION (YouTube)
+   ======================================== */
+.training-videos-section {
+  margin-top: 12px;
+  padding: 12px;
+  background: rgba(139, 92, 246, 0.1);
+  border-radius: 12px;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.training-videos-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #a855f7;
+  margin-bottom: 12px;
+  font-size: 13px;
+}
+
+.training-icon {
+  font-size: 16px;
+}
+
+.training-videos-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.training-video-card {
+  display: flex;
+  gap: 10px;
+  padding: 8px;
+  background: rgba(30, 30, 40, 0.6);
+  border-radius: 10px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.training-video-card:hover {
+  background: rgba(139, 92, 246, 0.15);
+  transform: translateX(4px);
+}
+
+.video-thumbnail {
+  position: relative;
+  width: 100px;
+  min-width: 100px;
+  height: 60px;
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.video-thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.video-play-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 32px;
+  height: 32px;
+  background: rgba(0, 0, 0, 0.7);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.8;
+  transition: opacity 0.2s;
+}
+
+.training-video-card:hover .video-play-overlay {
+  opacity: 1;
+  background: rgba(139, 92, 246, 0.9);
+}
+
+.video-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.video-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.video-channel {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* ========================================
+   TRAVEL HOTELS SECTION (Amadeus)
+   ======================================== */
+.travel-hotels-section {
+  margin-top: 12px;
+  padding: 12px;
+  background: rgba(14, 165, 233, 0.1);
+  border-radius: 12px;
+  border: 1px solid rgba(14, 165, 233, 0.2);
+}
+
+.travel-hotels-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #0ea5e9;
+  margin-bottom: 12px;
+  font-size: 13px;
+}
+
+.travel-icon {
+  font-size: 16px;
+}
+
+.travel-hotel-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px;
+  background: rgba(30, 30, 40, 0.6);
+  border-radius: 10px;
+  margin-bottom: 8px;
+}
+
+.travel-hotel-card:last-child {
+  margin-bottom: 0;
+}
+
+.travel-hotel-card:hover {
+  background: rgba(14, 165, 233, 0.15);
+}
+
+.hotel-icon {
+  width: 36px;
+  height: 36px;
+  background: rgba(14, 165, 233, 0.2);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.hotel-icon.pet-friendly {
+  background: rgba(34, 197, 94, 0.2);
+  box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.3);
+}
+
+.hotel-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.hotel-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 4px;
+}
+
+.hotel-details {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.hotel-badge {
+  padding: 2px 6px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.hotel-badge.pet-badge {
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+}
+
+.hotel-distance {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.hotel-policy {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.4);
+  margin-top: 4px;
+  font-style: italic;
+}
+
+.hotel-directions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  background: rgba(14, 165, 233, 0.2);
+  border-radius: 6px;
+  color: #0ea5e9;
+  font-size: 11px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s;
+  flex-shrink: 0;
+}
+
+.hotel-directions:hover {
+  background: rgba(14, 165, 233, 0.3);
+  transform: scale(1.05);
+}
+
 
 /* ========================================
    UNIFIED C® GET HELP BUTTON (Inline in chat)
