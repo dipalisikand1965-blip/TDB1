@@ -68,28 +68,13 @@ const webpackConfig = {
           (plugin) => plugin.constructor.name !== 'CssMinimizerPlugin'
         );
       } else {
-        // Replace default CSS minimizer with cssnano using safe preset
+        // Replace default CSS minimizer with lightningcss which handles Tailwind better
         webpackConfig.optimization.minimizer = webpackConfig.optimization.minimizer.filter(
           (plugin) => plugin.constructor.name !== 'CssMinimizerPlugin'
         );
         webpackConfig.optimization.minimizer.push(
           new CssMinimizerPlugin({
-            minimizerOptions: {
-              preset: ['default', { 
-                calc: false,
-                colormin: false,
-                convertValues: false,
-                discardComments: { removeAll: true },
-                mergeLonghand: false,
-                mergeRules: false,
-                minifyFontValues: false,
-                minifyParams: false,
-                normalizeCharset: false,
-                reduceInitial: false,
-                reduceTransforms: false,
-                svgo: false,
-              }],
-            },
+            minify: CssMinimizerPlugin.lightningCssMinify,
           })
         );
       }
