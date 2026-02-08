@@ -2353,6 +2353,7 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                 await increment_soul_score_on_interaction(request.pet_context.get("id"), interaction_type)
                 
                 # Fetch updated soul score for real-time display
+                db = get_db()
                 pet_data = await db.pets.find_one({"id": request.pet_context.get("id")}, {"overall_score": 1, "_id": 0})
                 if pet_data:
                     updated_soul_score = round(pet_data.get("overall_score", 0), 1)
