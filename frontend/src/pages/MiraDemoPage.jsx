@@ -2771,11 +2771,50 @@ const MiraDemoPage = () => {
       // ═══════════════════════════════════════════════════════════════════
       // AMADEUS TRAVEL - Only fetch hotels AFTER conversation flow confirms
       // Per MIRA DOCTRINE: Ask questions first, then show results
+      // WORLDWIDE SUPPORT: Extract any city name from user query
       // ═══════════════════════════════════════════════════════════════════
       let travelHotels = [];
       let travelAttractions = [];
-      const cityKeywords = ['mumbai', 'delhi', 'bangalore', 'bengaluru', 'chennai', 'kolkata', 'hyderabad', 'pune', 'goa', 'jaipur', 'ahmedabad', 'kochi', 'udaipur', 'shimla', 'manali', 'ooty', 'coorg', 'munnar'];
-      const detectedCity = cityKeywords.find(city => inputQuery.toLowerCase().includes(city));
+      
+      // Smart city extraction - works for ANY city worldwide
+      // Patterns: "trip to [city]", "visit [city]", "going to [city]", "hotels in [city]", "[city] hotels", etc.
+      const extractCityFromQuery = (query) => {
+        const lowerQuery = query.toLowerCase();
+        
+        // Common travel/location patterns
+        const patterns = [
+          /(?:trip|travel|visit|going|vacation|holiday|stay|hotels?|accommodations?)\s+(?:to|in|at|near)\s+([a-zA-Z\s]+?)(?:\s+with|\s+for|\s*$|\s*[,?!.])/i,
+          /(?:to|in|at|near)\s+([a-zA-Z\s]+?)\s+(?:trip|travel|visit|vacation|holiday|hotels?|stay)/i,
+          /([a-zA-Z\s]+?)\s+(?:trip|travel|vacation|holiday|hotels?)/i,
+          /(?:book|find|show|suggest)\s+(?:me\s+)?(?:hotels?|stays?|accommodations?)\s+(?:in|at|near)\s+([a-zA-Z\s]+)/i,
+          /(?:pet[- ]?friendly)\s+(?:hotels?|stays?)\s+(?:in|at|near)\s+([a-zA-Z\s]+)/i,
+        ];
+        
+        for (const pattern of patterns) {
+          const match = query.match(pattern);
+          if (match && match[1]) {
+            // Clean up the extracted city name
+            let city = match[1].trim()
+              .replace(/\s+/g, ' ')
+              .replace(/^(the|a|an)\s+/i, '')
+              .replace(/\s+(please|now|today|asap|quickly)$/i, '')
+              .trim();
+            
+            // Filter out common non-city words
+            const nonCityWords = ['my', 'our', 'the', 'dog', 'puppy', 'pet', 'buddy', 'cat', 'kitten', 'some', 'good', 'nice', 'best'];
+            if (city.length > 2 && !nonCityWords.includes(city.toLowerCase())) {
+              // Capitalize first letter of each word
+              city = city.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+              console.log('[CITY EXTRACT] Found city:', city);
+              return city;
+            }
+          }
+        }
+        
+        return null;
+      };
+      
+      const detectedCity = extractCityFromQuery(inputQuery);
       
       // Check if this is a CONFIRMED travel request (user has answered questions)
       // Look for signals that user has provided details OR backend triggered hotel fetch
