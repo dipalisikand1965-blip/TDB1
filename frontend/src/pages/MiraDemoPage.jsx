@@ -691,6 +691,39 @@ const MiraDemoPage = () => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const audioRef = useRef(null);
   
+  // GEOLOCATION - Get user's actual location for weather/nearby
+  const [userGeoLocation, setUserGeoLocation] = useState(null);
+  const [userCity, setUserCity] = useState('Mumbai'); // Fallback
+  
+  // Fetch user's geolocation on mount
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          setUserGeoLocation({ latitude, longitude });
+          
+          // Reverse geocode to get city name
+          try {
+            const response = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
+            );
+            const data = await response.json();
+            const city = data.address?.city || data.address?.town || data.address?.state || 'Mumbai';
+            setUserCity(city);
+            console.log('[GEO] User location detected:', city);
+          } catch (e) {
+            console.log('[GEO] Could not get city name, using default');
+          }
+        },
+        (error) => {
+          console.log('[GEO] Location access denied or unavailable:', error.message);
+        },
+        { enableHighAccuracy: false, timeout: 10000 }
+      );
+    }
+  }, []);
+  
   // Typing animation - streams text character by character
   const typeText = useCallback((fullText, onComplete, speed = 35) => {
     if (!fullText) {
