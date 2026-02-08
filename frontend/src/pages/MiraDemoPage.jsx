@@ -2886,9 +2886,16 @@ const MiraDemoPage = () => {
     setLearnCategory(category);
     try {
       let url = `${API_URL}/api/mira/youtube/`;
+      // For demo pet or recommended, use by-breed instead
+      const isRealPet = pet.id && !pet.id.startsWith('demo') && !pet.id.startsWith('pet-');
+      
       switch (category) {
         case 'recommended':
-          url += `recommended/${pet.id}?max_results=6`;
+          if (isRealPet) {
+            url += `recommended/${pet.id}?max_results=6`;
+          } else {
+            url += `by-breed?breed=${encodeURIComponent(pet.breed || 'dog')}&max_results=6`;
+          }
           break;
         case 'barking':
           url += `by-topic?topic=stop%20barking&breed=${encodeURIComponent(pet.breed || '')}&max_results=6`;
