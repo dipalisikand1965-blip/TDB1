@@ -665,6 +665,12 @@ const MiraDemoPage = () => {
   const [lastShownProducts, setLastShownProducts] = useState([]);
   const [isRecording, setIsRecording] = useState(false); // For universal search voice
   
+  // Core conversation state
+  const [query, setQuery] = useState('');
+  const [conversationHistory, setConversationHistory] = useState([]);
+  const [isListening, setIsListening] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  
   // MIRA ENGINE MODES - Visible to user like ChatGPT's "Thinking"
   // /Instant - Quick, lightweight replies
   // /Thinking - Deep reasoning for PLAN, BOOK, EXECUTE, ADVISE
