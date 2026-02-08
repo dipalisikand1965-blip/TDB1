@@ -154,40 +154,81 @@ def _process_hotel_response(hotels: List[Dict]) -> List[Dict[str, Any]]:
     return processed
 
 
-# City code mapping for India
-INDIA_CITY_CODES = {
-    "mumbai": "BOM",
-    "delhi": "DEL",
-    "bangalore": "BLR",
-    "bengaluru": "BLR",
-    "chennai": "MAA",
-    "kolkata": "CCU",
-    "hyderabad": "HYD",
-    "pune": "PNQ",
-    "goa": "GOI",
-    "jaipur": "JAI",
-    "ahmedabad": "AMD",
-    "kochi": "COK",
-    "gurgaon": "DEL",
-    "noida": "DEL",
-    "udaipur": "UDR",
-    "jodhpur": "JDH",
-    "agra": "AGR",
-    "varanasi": "VNS",
-    "shimla": "SLV",
-    "manali": "KUU",
-    "rishikesh": "DED",
-    "mussoorie": "DED",
-    "ooty": "CBE",
-    "coorg": "IXE",
-    "munnar": "COK"
+# City code mapping - WORLDWIDE support
+# Common cities with their IATA codes
+CITY_CODES = {
+    # India
+    "mumbai": "BOM", "delhi": "DEL", "bangalore": "BLR", "bengaluru": "BLR",
+    "chennai": "MAA", "kolkata": "CCU", "hyderabad": "HYD", "pune": "PNQ",
+    "goa": "GOI", "jaipur": "JAI", "ahmedabad": "AMD", "kochi": "COK",
+    "gurgaon": "DEL", "noida": "DEL", "udaipur": "UDR", "jodhpur": "JDH",
+    "agra": "AGR", "varanasi": "VNS", "shimla": "SLV", "manali": "KUU",
+    "rishikesh": "DED", "mussoorie": "DED", "ooty": "CBE", "coorg": "IXE",
+    "munnar": "COK", "darjeeling": "IXB", "gangtok": "IXB", "leh": "IXL",
+    "srinagar": "SXR", "amritsar": "ATQ", "chandigarh": "IXC", "lucknow": "LKO",
+    "indore": "IDR", "bhopal": "BHO", "nagpur": "NAG", "thiruvananthapuram": "TRV",
+    "trivandrum": "TRV", "mysore": "MYQ", "vizag": "VTZ", "visakhapatnam": "VTZ",
+    
+    # Europe
+    "london": "LON", "paris": "PAR", "rome": "ROM", "barcelona": "BCN",
+    "madrid": "MAD", "amsterdam": "AMS", "berlin": "BER", "munich": "MUC",
+    "vienna": "VIE", "prague": "PRG", "budapest": "BUD", "lisbon": "LIS",
+    "athens": "ATH", "dublin": "DUB", "zurich": "ZRH", "geneva": "GVA",
+    "milan": "MIL", "venice": "VCE", "florence": "FLR", "nice": "NCE",
+    "brussels": "BRU", "copenhagen": "CPH", "stockholm": "STO", "oslo": "OSL",
+    "helsinki": "HEL", "warsaw": "WAW", "krakow": "KRK", "edinburgh": "EDI",
+    "manchester": "MAN", "birmingham": "BHX", "frankfurt": "FRA",
+    
+    # Asia Pacific
+    "singapore": "SIN", "bangkok": "BKK", "kuala lumpur": "KUL", "tokyo": "TYO",
+    "osaka": "OSA", "kyoto": "KIX", "seoul": "SEL", "hong kong": "HKG",
+    "taipei": "TPE", "manila": "MNL", "jakarta": "JKT", "bali": "DPS",
+    "phuket": "HKT", "hanoi": "HAN", "ho chi minh": "SGN", "saigon": "SGN",
+    "beijing": "BJS", "shanghai": "SHA", "guangzhou": "CAN", "shenzhen": "SZX",
+    "sydney": "SYD", "melbourne": "MEL", "brisbane": "BNE", "perth": "PER",
+    "auckland": "AKL", "wellington": "WLG", "fiji": "SUV",
+    
+    # Middle East
+    "dubai": "DXB", "abu dhabi": "AUH", "doha": "DOH", "muscat": "MCT",
+    "bahrain": "BAH", "kuwait": "KWI", "riyadh": "RUH", "jeddah": "JED",
+    "amman": "AMM", "beirut": "BEY", "tel aviv": "TLV", "istanbul": "IST",
+    
+    # Africa
+    "cairo": "CAI", "johannesburg": "JNB", "cape town": "CPT", "nairobi": "NBO",
+    "casablanca": "CMN", "marrakech": "RAK", "mauritius": "MRU", "seychelles": "SEZ",
+    "zanzibar": "ZNZ", "lagos": "LOS", "accra": "ACC",
+    
+    # Americas
+    "new york": "NYC", "los angeles": "LAX", "san francisco": "SFO", "chicago": "CHI",
+    "miami": "MIA", "las vegas": "LAS", "boston": "BOS", "seattle": "SEA",
+    "washington": "WAS", "denver": "DEN", "dallas": "DFW", "houston": "HOU",
+    "toronto": "YTO", "vancouver": "YVR", "montreal": "YMQ", "cancun": "CUN",
+    "mexico city": "MEX", "sao paulo": "SAO", "rio de janeiro": "RIO", "lima": "LIM",
+    "bogota": "BOG", "buenos aires": "BUE", "santiago": "SCL",
+    
+    # UK specific
+    "uk": "LON", "england": "LON", "britain": "LON",
 }
+
+# Keep backward compatibility
+INDIA_CITY_CODES = {k: v for k, v in CITY_CODES.items() if v in ["BOM", "DEL", "BLR", "MAA", "CCU", "HYD", "PNQ", "GOI", "JAI", "AMD", "COK", "UDR", "JDH", "AGR", "VNS", "SLV", "KUU", "DED", "CBE", "IXE"]}
 
 
 def get_city_code(city_name: str) -> Optional[str]:
-    """Get IATA city code from city name."""
+    """Get IATA city code from city name. Supports worldwide cities."""
     city_lower = city_name.lower().strip()
-    return INDIA_CITY_CODES.get(city_lower)
+    
+    # Direct lookup
+    if city_lower in CITY_CODES:
+        return CITY_CODES[city_lower]
+    
+    # Try partial match (for "New York City" -> "new york")
+    for city, code in CITY_CODES.items():
+        if city in city_lower or city_lower in city:
+            return code
+    
+    # For unknown cities, return None - the caller should handle gracefully
+    return None
 
 
 async def search_pet_friendly_hotels(
