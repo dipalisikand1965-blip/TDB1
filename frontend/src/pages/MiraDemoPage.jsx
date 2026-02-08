@@ -607,10 +607,44 @@ const MiraDemoPage = () => {
   const [lastShownProducts, setLastShownProducts] = useState([]);
   const [isRecording, setIsRecording] = useState(false); // For universal search voice
   
+  // MIRA ENGINE MODES - Visible to user like ChatGPT's "Thinking"
+  // /Instant - Quick, lightweight replies
+  // /Thinking - Deep reasoning for PLAN, BOOK, EXECUTE, ADVISE
+  // /Comfort - Grief, loss, emotional support
+  // /Emergency - Vet-first urgent moments
+  const [miraMode, setMiraMode] = useState('ready'); // ready, instant, thinking, comfort, emergency
+  const [typingText, setTypingText] = useState(''); // For typing animation
+  const [isTyping, setIsTyping] = useState(false);
+  
   // VOICE OUTPUT - Mira speaks back with ElevenLabs
   const [voiceEnabled, setVoiceEnabled] = useState(true); // Voice ON by default per MIRA SPEED DOCTRINE
   const [isSpeaking, setIsSpeaking] = useState(false);
   const audioRef = useRef(null);
+  
+  // Typing animation - streams text character by character
+  const typeText = useCallback((fullText, onComplete, speed = 35) => {
+    if (!fullText) {
+      onComplete?.();
+      return;
+    }
+    
+    setIsTyping(true);
+    setTypingText('');
+    let index = 0;
+    
+    const interval = setInterval(() => {
+      if (index < fullText.length) {
+        setTypingText(fullText.slice(0, index + 1));
+        index++;
+      } else {
+        clearInterval(interval);
+        setIsTyping(false);
+        onComplete?.();
+      }
+    }, 1000 / speed); // speed = chars per second
+    
+    return () => clearInterval(interval);
+  }, []);
   
   // E024: AUTO VOICE PERSONALITY - Mira auto-detects context and adjusts voice
   const detectVoicePersonality = useCallback((text, context = {}) => {
