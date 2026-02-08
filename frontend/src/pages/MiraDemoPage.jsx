@@ -813,11 +813,15 @@ const MiraDemoPage = () => {
         setConversationStage('initial');
         setUserHasOptedInForProducts(false);
         setCurrentTicket(null);
+        // MULTI-PET FIX: Clear Mira Picks when switching pets
+        setMiraPicks({ products: [], services: [], hasNew: false, context: '' });
       }
     } catch (err) {
       console.error('[PET SWITCH] Error:', err);
       // Fallback: just start fresh
       startNewSession();
+      // MULTI-PET FIX: Also clear Mira Picks on error
+      setMiraPicks({ products: [], services: [], hasNew: false, context: '' });
     }
   };
   
