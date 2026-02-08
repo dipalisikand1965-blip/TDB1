@@ -528,6 +528,19 @@ const MiraDemoPage = () => {
   const [showPastChats, setShowPastChats] = useState(false);
   const [loadingPastChats, setLoadingPastChats] = useState(false);
   
+  // ═══════════════════════════════════════════════════════════════════════════
+  // "READY FOR [PET]" TRAY - World Class UX
+  // Conversation stays clean. Products/services ready when customer wants them.
+  // Concierge® is ALWAYS by your side - the helping hand.
+  // ═══════════════════════════════════════════════════════════════════════════
+  const [miraPicks, setMiraPicks] = useState({
+    products: [],
+    services: [],
+    context: '', // e.g., "Road Trip", "Birthday", "Grooming"
+    hasNew: false // Glows when Mira has new picks
+  });
+  const [showMiraTray, setShowMiraTray] = useState(false);
+  
   // SESSION PERSISTENCE - The memory that never forgets
   const [sessionId, setSessionId] = useState(() => {
     // Try to recover session from localStorage first
