@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Navigate, useLocation, Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Navigate, useLocation, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Card } from './ui/card';
 import { Button } from './ui/button';
