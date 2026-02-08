@@ -324,7 +324,7 @@ function MainLayout() {
       <MemberMobileNav />
       <Suspense fallback={<PageLoader />}>
         <Routes>
-          <Route path="/" element={<Home />} />
+          {/* Home is now outside MainLayout for clean landing experience */}
           
           {/* Auth Routes */}
           <Route path="/login" element={<Login />} />
