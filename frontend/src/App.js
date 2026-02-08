@@ -306,6 +306,9 @@ function AppRouter() {
         
         {/* Landing Page - Clean, no navbar for immersive experience */}
         <Route path="/" element={<Home />} />
+        
+        {/* About Page - Clean, same premium aesthetic */}
+        <Route path="/about" element={<AboutPage />} />
       
         {/* Main app routes - WITH navbar */}
         <Route path="/*" element={<MainLayout />} />
