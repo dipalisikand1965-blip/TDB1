@@ -6152,11 +6152,26 @@ IMPORTANT: When recommending these places:
 - These are VERIFIED places - be confident recommending them
 """
         
+        # Add weather context if available
+        weather_instruction = ""
+        if weather_context:
+            weather_instruction = f"""
+WEATHER INTELLIGENCE:
+{weather_context}
+
+IMPORTANT: When giving weather-based advice:
+- Be specific about timing (morning vs afternoon)
+- Mention temperature and how it affects the pet
+- Give practical tips (carry water, check pavement, etc.)
+- Suggest indoor alternatives if weather is bad
+"""
+        
         full_prompt = f"""{history_text}
 {cross_pillar_note}
 {relationship_memory_prompt}
 {research_instruction}
 {nearby_places_instruction}
+{weather_instruction}
 {concierge_action_instruction}
 
 CURRENT USER MESSAGE: {user_message}
