@@ -2570,7 +2570,16 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
             "execution_type": execution_type,
             "nearby_places": nearby_places_data,  # Vet clinics, restaurants, parks, stays
             "weather": weather_data,  # Weather-based activity recommendations
-            "show_travel_results": show_travel_results  # Signal frontend to fetch hotels
+            "show_travel_results": show_travel_results,  # Signal frontend to fetch hotels
+            
+            # ═══════════════════════════════════════════════════════════════════════════
+            # MODE SYSTEM FLAGS - Controls frontend behavior
+            # ═══════════════════════════════════════════════════════════════════════════
+            "mode": mira_mode,  # PLAN, BOOK, EXECUTE, EXPLORE, FIND, ADVISE, REMEMBER, COMFORT, EMERGENCY, GENERAL
+            "clarify_only": clarify_only,  # If true, frontend hides products/services/Concierge
+            "show_products": should_show_products and len(final_products) > 0,  # Explicit flag
+            "show_services": should_show_products and len(services_from_db) > 0,  # Services follow same rule
+            "show_concierge": not clarify_only and not no_products_ever  # Concierge CTA visibility
         }
         
         # ============================================
