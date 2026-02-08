@@ -3937,6 +3937,14 @@ const MiraDemoPage = () => {
                                         </span>
                                       </div>
                                       
+                                      {/* Concierge Whisper - Personalized curator note */}
+                                      {product.concierge_whisper && (
+                                        <div className="mp-concierge-whisper">
+                                          <span className="mp-whisper-badge">C°</span>
+                                          <span className="mp-whisper-text">{product.concierge_whisper}</span>
+                                        </div>
+                                      )}
+                                      
                                       <button 
                                         className="mp-product-add"
                                         onClick={() => alert(`Added ${product.name} to cart!`)}
