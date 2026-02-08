@@ -5885,6 +5885,38 @@ I understand this is urgent. Let me help you immediately.
                         nearby_places_context += f"- {s['name']} ({s.get('area', '')}) - {s.get('price_range', 'Contact for rates')} - Pet fee: {s.get('pet_fee', 'Ask')} - Rating: {s.get('rating', 'N/A')}/5\n"
                     nearby_places_context += "\nRecommend these verified pet-friendly accommodations."
             
+            elif detected_place_type == "park":
+                # Dog parks - use Google Places API
+                try:
+                    from services.google_places_service import search_dog_parks_in_city
+                    parks = await search_dog_parks_in_city(city_for_search, max_results=3)
+                    
+                    if parks:
+                        nearby_places_data = {"type": "dog_parks", "places": parks, "city": city_for_search, "source": "google_places"}
+                        nearby_places_context = f"\n\nDOG PARKS IN {city_for_search.upper()} (via Google):\n"
+                        for p in parks:
+                            nearby_places_context += f"- {p['name']} - {'Open now' if p.get('is_open_now') else 'Check hours'} - Rating: {p.get('rating', 'N/A')}/5\n"
+                        nearby_places_context += "\nRecommend these dog parks for exercise and play."
+                except Exception as e:
+                    logger.warning(f"[NEARBY PLACES] Google Places dog park error: {e}")
+            
+            # If no curated vet data found, fall back to Google Places
+            if detected_place_type == "vet" and not nearby_places_data:
+                try:
+                    from services.google_places_service import search_vets_in_city
+                    google_vets = await search_vets_in_city(city_for_search, max_results=3)
+                    
+                    if google_vets:
+                        nearby_places_data = {"type": "vet_clinics", "places": google_vets, "city": city_for_search, "source": "google_places", "is_emergency": is_emergency_vet}
+                        nearby_places_context = f"\n\nVET CLINICS IN {city_for_search.upper()} (via Google Places):\n"
+                        for v in google_vets:
+                            open_status = "Open now" if v.get("is_open_now") else "Check hours"
+                            hours_24 = "24/7" if v.get("is_24_hours") else ""
+                            nearby_places_context += f"- {v['name']} - {hours_24} {open_status} - Phone: {v.get('phone', 'N/A')} - Rating: {v.get('rating', 'N/A')}/5\n"
+                        nearby_places_context += "\nRecommend these vet clinics. Always include phone numbers for emergencies."
+                except Exception as e:
+                    logger.warning(f"[NEARBY PLACES] Google Places vet fallback error: {e}")
+            
             if nearby_places_context:
                 logger.info(f"[NEARBY PLACES] Found {len(nearby_places_data.get('places', []))} {detected_place_type}s in {city_for_search}")
         
