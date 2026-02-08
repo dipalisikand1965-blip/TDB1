@@ -157,6 +157,7 @@ def clean_text_for_speech(text: str) -> str:
 class TTSRequest(BaseModel):
     text: str
     voice_id: Optional[str] = None
+    personality: Optional[str] = None  # E024: Voice personality (default, celebration, health, comfort, urgent)
     stability: float = 0.7
     similarity_boost: float = 0.75
 
@@ -165,6 +166,21 @@ class TTSResponse(BaseModel):
     audio_base64: str
     text_spoken: str
     voice_id: str
+    personality: Optional[str] = None
+
+
+# E024: Get voice personalities endpoint
+@tts_router.get("/personalities")
+async def get_voice_personalities():
+    """
+    Get available voice personalities for different contexts.
+    E024 Feature: Voice Personality Selection
+    """
+    return {
+        "success": True,
+        "personalities": VOICE_PERSONALITIES,
+        "default": "default"
+    }
 
 
 @tts_router.post("/generate", response_model=TTSResponse)
@@ -172,6 +188,7 @@ async def generate_tts(request: TTSRequest):
     """
     Generate text-to-speech audio using ElevenLabs
     Returns base64-encoded audio
+    Supports E024 voice personalities
     """
     if not ELEVENLABS_API_KEY:
         raise HTTPException(
