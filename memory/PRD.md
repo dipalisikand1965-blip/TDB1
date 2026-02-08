@@ -2,8 +2,8 @@
 ## The World's First Pet Life Operating System
 
 **Last Updated:** February 8, 2026
-**Status:** COMPLETE - All E024-E034 Features Implemented & Tested
-**Agent Handover:** Ready for production deployment
+**Status:** ACTIVE DEVELOPMENT
+**Agent Handover:** Comprehensive handoff prepared
 
 ---
 
@@ -18,50 +18,120 @@ Mira OS is a sophisticated AI-powered pet assistant that provides personalized c
 - **Voice Personalities** (E024) - Auto-adjusts tone based on context
 - **Proactive Nudges** - Health reminders, birthday alerts
 - **AI Auto-Tagging on Deployment** - Semantic intents applied automatically
+- **Nearby Places** - Vet clinics, restaurants, dog parks with click-to-call
+- **Weather Intelligence** - Pet activity recommendations based on weather
+- **Interactive Feature Showcase** - Quick action buttons for common tasks
 
 ---
 
-## SESSION COMPLETE - February 8, 2026
+## SOUL SCORE SYSTEM
 
-### FEATURES IMPLEMENTED THIS SESSION
+**CRITICAL**: Soul Score must be consistent across the entire site.
 
+### Calculation Logic
+Located in: `/app/backend/pet_score_logic.py` → `calculate_pet_soul_score()`
+
+```python
+# Soul score is calculated from doggy_soul_answers
+# Based on 59 questions across categories:
+# - Essential (identity, health basics)
+# - Important (diet, exercise, medical history)
+# - Nice-to-have (personality, preferences)
+
+# Score = (questions_answered / 59) * 100
+# Weighted by category importance
+```
+
+### Files that use Soul Score:
+- `/app/backend/household_routes.py` line 35: `calculate_pet_soul_score(pet)`
+- `/app/backend/server.py` line 10966: `score_data["total_score"]`
+- `/app/backend/paw_points_routes.py` line 583
+- `/app/frontend/src/components/UnifiedHero.jsx` line 320
+- `/app/frontend/src/pages/MiraDemoPage.jsx` line 793
+
+### Frontend Display
+- MiraDemoPage: `pet.soulScore` from `p.overall_score`
+- Shows as "XX% SOUL KNOWN" badge with paw icon
+
+---
+
+## API KEYS & INTEGRATIONS
+
+### Configured in `/app/backend/.env`
+
+| Service | Key Variable | Purpose |
+|---------|--------------|---------|
+| **Emergent LLM** | `EMERGENT_LLM_KEY` | AI chat responses |
+| **Google Places** | `GOOGLE_PLACES_API_KEY` | Vet clinics, dog parks, pet stores |
+| **OpenWeather** | `OPENWEATHER_API_KEY` | Pet activity recommendations |
+| **YouTube** | `YOUTUBE_API_KEY` | Training videos (NEW) |
+| **Amadeus** | `AMADEUS_API_KEY` + `AMADEUS_API_SECRET` | Pet-friendly travel (NEW) |
+| **Foursquare** | `FOURSQUARE_API_KEY` | Backup places data |
+| **ElevenLabs** | `ELEVENLABS_API_KEY` | Voice/TTS features |
+| **Resend** | `RESEND_API_KEY` | Email notifications |
+| **Razorpay** | `RAZORPAY_KEY_ID` + `RAZORPAY_KEY_SECRET` | Payments |
+
+### API Keys (for reference):
+```
+GOOGLE_PLACES_API_KEY=AIzaSyAGhWgj4SqpXMqJWLh6SH3rHjxIYoecny4
+OPENWEATHER_API_KEY=53f54942766320a15584e440644000e3
+YOUTUBE_API_KEY=AIzaSyCEqC2I04NYLTvJmPNU7sWsrfcKLIwOWpU
+AMADEUS_API_KEY=SO6flvJXlIFxNM7jYQckpOkFJoJAp4Ed
+AMADEUS_API_SECRET=M0H1ZYYHkaTMvNkd
+FOURSQUARE_API_KEY=XZ2D4H0TKX4NR2VC1AMF5FDSJ0TFXHANH2PM12RUXIB5UKQN
+ELEVENLABS_API_KEY=2738ad21884d7bf3ff2ddee5fbac5e2efc8a02ab4ca3cd36bdef82b83d9628bc
+```
+
+---
+
+## FEATURES IMPLEMENTED
+
+### Core Chat Features
 | Feature | Status | Description |
 |---------|--------|-------------|
-| E024 Voice Auto-Detection | ✅ | Mira adjusts voice tone based on conversation context |
-| E025 Pet Mood Detection | ✅ | Detects "not eating", "acting weird", etc. with concern levels |
-| E027 Daily Digest | ✅ | "Mojo's Day" section with walk/feed reminders |
-| E028 Milestones | ✅ | Achievement tracking (anniversaries, interactions) |
-| E030 Memory Lane | ✅ | Gotcha day anniversaries, stored memories |
-| E032 Semantic Search | ✅ | AI-powered intent matching with 873 tagged products |
-| E033 Conversation Memory | ✅ | Mira recalls past discussions by topic |
-| E034 Smart Reordering | ✅ | Purchase pattern analysis for reorder suggestions |
+| E024 Voice Auto-Detection | ✅ | Mira adjusts tone based on context |
+| E025 Pet Mood Detection | ✅ | Detects behavioral concerns |
+| E027 Daily Digest | ✅ | Walk/feed reminders |
+| E028 Milestones | ✅ | Achievement tracking |
+| E032 Semantic Search | ✅ | AI-powered intent matching |
+| E033 Conversation Memory | ✅ | Recalls past discussions |
+| E034 Smart Reordering | ✅ | Purchase pattern analysis |
 
-### UI IMPROVEMENTS IMPLEMENTED
+### Location & Weather Features
+| Feature | Status | Description |
+|---------|--------|-------------|
+| Vet Clinic Search | ✅ | 32 verified clinics, 18 are 24/7 |
+| Restaurant Search | ✅ | 75+ pet-friendly restaurants |
+| Pet-Friendly Stays | ✅ | 31+ hotels/resorts |
+| Dog Parks | ✅ | Via Google Places API |
+| Weather Advisory | ✅ | Pet activity recommendations |
+| Click-to-Call | ✅ | Direct call buttons on vet cards |
+| Get Directions | ✅ | Google Maps navigation |
 
-1. **"Mira's Insight"** - Collapsed by default, paw+sparkle icons
-2. **Unified C® Button** - WhatsApp-green, expands to show contact options
-3. **Intent-Specific Products** - Products show "why_for_pet" reasoning
-4. **18 Test Scenarios** - Sandbox chips for testing all features
+### UI Features
+| Feature | Status | Description |
+|---------|--------|-------------|
+| Feature Showcase | ✅ | 6 quick action buttons |
+| Weather Card | ✅ | Temperature & safety level |
+| Soul Score Badge | ✅ | "XX% SOUL KNOWN" display |
+| Nearby Places Cards | ✅ | In-chat vet/restaurant cards |
 
-### AI PRODUCT TAGGING COMPLETE
+---
 
-**4325+ items tagged** with semantic intents using AI-powered tagging
+## PENDING TASKS
 
-**Files:**
-- `/app/backend/scripts/tag_products_with_ai.py` - Standalone AI tagging script
-- `/app/backend/scripts/auto_populate.py` - Deployment auto-population script
+### High Priority
+1. **Soul Score Consistency** - Ensure soul score displays correctly for all pets (not hardcoded 87%)
+2. **YouTube Integration** - Training videos in Mira OS and Learn pillar
+3. **Amadeus Integration** - Pet-friendly flight/hotel booking
 
-**Admin Panel Integration:**
-- Master SYNC button calls `/api/mira/admin/run-ai-tagging`
-- AI tagging runs automatically on server startup
+### Medium Priority
+4. **More Cities** - Add vet/restaurant data for Ahmedabad, Lucknow, Jaipur city
+5. **Google Places Expansion** - Groomers, pet stores
 
-Intent categories:
-- calm_anxiety, skin_coat, digestion_gut, joint_mobility
-- dental_oral, training_behavior, travel_adventure
-- birthday_celebration, puppy_essentials, senior_care
-- weight_fitness, play_enrichment, everyday_treats
-- fashion_wearables, dining_cafe, home_decor
-- fresh_food, boarding_stay, emergency_care
+### Low Priority
+6. **Code Refactoring** - Break down MiraDemoPage.jsx (4000+ lines)
+7. **Voice Commands** - "Navigate to nearest vet" via voice
 
 ---
 
@@ -70,224 +140,119 @@ Intent categories:
 ```
 /app
 ├── backend/
-│   ├── server.py               # Main server with startup hooks
-│   ├── mira_routes.py          # Main Mira API (10,900+ lines)
-│   ├── tts_routes.py           # Text-to-Speech with voice personalities
+│   ├── server.py                    # Main FastAPI server
+│   ├── mira_routes.py               # Mira chat API (12,000+ lines)
+│   ├── pet_score_logic.py           # Soul score calculation
+│   ├── services/
+│   │   ├── google_places_service.py # Google Places API
+│   │   ├── google_maps_service.py   # Directions API
+│   │   └── openweather_service.py   # Weather API
 │   ├── scripts/
-│   │   ├── tag_products_with_ai.py  # AI product tagging script
-│   │   └── auto_populate.py         # Deployment auto-population
-│   └── .env                    # MONGO_URL, DB_NAME
+│   │   ├── seed_vet_clinics.py      # 32 verified vet clinics
+│   │   ├── seed_pet_friendly_places.py # Restaurants & stays
+│   │   ├── tag_products_with_ai.py  # AI semantic tagging
+│   │   └── auto_populate.py         # Deployment script
+│   └── .env                         # All API keys
 │
 ├── frontend/
 │   ├── src/pages/
-│   │   ├── MiraDemoPage.jsx    # Main page (3,900+ lines)
-│   │   └── Admin.jsx           # Admin panel with Master SYNC
-│   ├── src/styles/
-│   │   └── mira-prod.css       # All styles (5,100+ lines)
-│   └── .env                    # REACT_APP_BACKEND_URL
+│   │   ├── MiraDemoPage.jsx         # Main Mira page (4000+ lines)
+│   │   └── Admin.jsx                # Admin panel
+│   ├── src/components/
+│   │   ├── SoulScoreArc.jsx         # Soul score display
+│   │   └── UnifiedHero.jsx          # Hero with soul score
+│   └── src/styles/
+│       └── mira-prod.css            # All styles (6000+ lines)
 │
 └── memory/
-    ├── PRD.md                  # This document
-    └── MIRA_ENHANCEMENTS.md    # Full roadmap
+    └── PRD.md                       # This document
 ```
 
 ---
 
 ## KEY API ENDPOINTS
 
-### Core
-- `POST /api/mira/os-understand-with-products` - Main chat endpoint
-- `POST /api/mira/route_intent` - Intent detection
+### Mira Chat
+- `POST /api/mira/os/understand-with-products` - Main chat endpoint (used by MiraDemoPage)
+- `POST /api/mira/chat` - Alternative chat endpoint
 
-### E032 Semantic Search
-- `POST /api/mira/semantic-search` - Intent-based product search
-- `GET /api/mira/semantic-intents` - List available intents
+### Nearby Places
+- `GET /api/mira/vet-clinics?city=X` - Curated vet clinics
+- `GET /api/mira/vet-clinics/emergency?city=X` - 24/7 emergency vets
+- `GET /api/mira/restaurants?city=X` - Pet-friendly restaurants
+- `GET /api/mira/pet-stays?city=X` - Pet-friendly hotels
+- `GET /api/mira/google/vets?city=X` - Google Places vets
+- `GET /api/mira/google/dog-parks?city=X` - Google Places parks
 
-### E033 Conversation Memory
-- `POST /api/mira/conversation-memory/save` - Save conversation
-- `POST /api/mira/conversation-memory/recall` - Find relevant memory
-- `GET /api/mira/conversation-memory/{pet_id}` - Get all memories
+### Weather
+- `GET /api/mira/weather/pet-activity?city=X` - Activity recommendations
 
-### E025 Pet Mood Detection
-- `POST /api/mira/detect-mood` - Analyze user message for mood concerns
+### Directions
+- `GET /api/mira/directions/to-vet?from_location=X&city=Y&emergency=true/false`
 
-### Admin Panel
-- `POST /api/mira/admin/run-ai-tagging` - Trigger AI tagging (integrated with Master SYNC)
-
-### Restaurants & Pet-Friendly Stays
-- `GET /api/mira/restaurants` - Get pet-friendly restaurants (filter: city, verified_only)
-- `POST /api/mira/restaurants/add` - Add new restaurant (needs verification)
-- `GET /api/mira/pet-stays` - Get pet-friendly accommodations
-- `POST /api/mira/pet-stays/add` - Add new stay (needs verification)
-- `POST /api/mira/verify-listing` - Mark restaurant/stay as verified
-
-### E024 Voice Personalities
-- `GET /api/tts/personalities` - Get voice personalities
-- `POST /api/tts/generate` - Generate TTS with personality
-
-### Proactive Features
-- `GET /api/mira/proactive-alerts/{pet_id}` - Health/birthday reminders
-- `GET /api/mira/daily-digest/{pet_id}` - Daily summary
-- `GET /api/mira/milestones/{pet_id}` - Achievement badges
-- `GET /api/mira/memory-lane/{pet_id}` - Past memories
-
----
-
-## DATABASE COLLECTIONS
-
-- `users` - User accounts with pets array
-- `pets` - Pet profiles with health_records, conversation_memories
-- `products_master` - 2151 products with semantic_tags, semantic_intents
-- `care_bundles` - 8 bundles with semantic tags
-- `health_reminders` - Pet health schedules
-- `celebration_reminders` - Birthday alerts
-- `mira_conversations` - Chat history
+### Soul Score
+- `GET /api/pets/my-pets` - Returns pets with `overall_score`
+- `GET /api/pet-score/{pet_id}/score_state` - Detailed soul score
 
 ---
 
 ## TEST CREDENTIALS
 
-```
-Email: dipali@clubconcierge.in
-Password: test123
-Auth Token Key: tdb_auth_token
-Pet: Mojo (pet-99a708f1722a)
-```
+- **User Email**: `dipali@clubconcierge.in`
+- **Password**: `test12`
+- **Demo Pet**: Buddy (Golden Retriever)
 
 ---
 
-## DEPLOYMENT NOTES
+## DATABASE COLLECTIONS
 
-### Preview URL
-https://mira-bakery-ai.preview.emergentagent.com/mira-demo
-
-### Production URL  
-https://thedoggycompany.in/mira-demo
-
-### Environment Variables
-- Frontend: `REACT_APP_BACKEND_URL` (do not modify)
-- Backend: `MONGO_URL`, `DB_NAME` (do not modify)
-
-### Auto-Population on Deployment
-The backend automatically runs AI semantic tagging on startup via:
-1. `run_ai_semantic_tagging_on_startup()` in `server.py` lifespan
-2. Tags products/services missing `semantic_intents`
-3. Manual trigger: Admin Panel > Master SYNC button
-
-### Critical Rules
-1. Preview MUST always equal Production
-2. Always restart backend after .env changes: `sudo supervisorctl restart backend`
-3. Frontend has hot reload - no restart needed
-4. MongoDB _id must be excluded from all API responses
+| Collection | Count | Description |
+|------------|-------|-------------|
+| `products_master` | 4000+ | Products with semantic_intents |
+| `services` | 2200+ | Services with semantic_intents |
+| `vet_clinics` | 32 | Verified vet clinics |
+| `restaurants` | 75+ | Pet-friendly restaurants |
+| `pet_friendly_stays` | 31+ | Pet-friendly hotels |
+| `pets` | - | Pet profiles with soul data |
 
 ---
 
-## KNOWN ISSUES
+## NEXT AGENT INSTRUCTIONS
 
-1. **Route Intent 422** - Sometimes fails on first message due to pet_context array validation (fixed by testing agent)
-2. **Calm/Anxiety Products** - Limited products tagged with this intent
-3. **Services Collection** - May be empty in dev environment
+1. **Fix Soul Score Display**
+   - Check why Lola shows no score but Buddy shows 87%
+   - Ensure `overall_score` is fetched from API correctly
+   - Remove hardcoded 87% fallback or make it conditional
 
----
+2. **Integrate YouTube API**
+   - Create `/app/backend/services/youtube_service.py`
+   - Add training video search by breed/topic
+   - Display in Mira chat and Learn pillar
 
-## NEXT STEPS FOR NEW AGENT
+3. **Integrate Amadeus API**
+   - Create `/app/backend/services/amadeus_service.py`
+   - Search pet-friendly hotels
+   - Add to nearby places cards
 
-1. **Deploy to Production** - Verify preview matches production
-2. **Test All 18 Scenarios** - Click each test chip and verify response
-3. **Monitor Semantic Search** - Ensure products match intent
-4. **Add More Product Tags** - Run tag_products_with_ai.py if new products added
-
----
-
-## PET-FRIENDLY PLACES DATABASE
-
-**Seeded:** February 8, 2026
-
-| Category | Total | Verified | Cities |
-|----------|-------|----------|--------|
-| Restaurants | 75+ | 100% | Mumbai, Delhi, Bangalore, Goa, Pune, Hyderabad, Chennai |
-| Pet-Friendly Stays | 31+ | 100% | Mumbai, Goa, Coorg, Jaipur, Shimla, Kasol, Kerala, Rajasthan |
-| Vet Clinics | 32 | 100% | Mumbai, Delhi, Bangalore, Gurgaon, Noida, Pune, Hyderabad, Chennai, Kolkata, Goa |
-| 24/7 Emergency Vets | 18 | 100% | All major cities |
-
-**Data Sources:** CarryMyPet, BringFido, LBB, EazyDiner, HeadsUpForTails, Vetic, Crown Vet, MaxPetZ, IndianHoliday, TripAdvisor (2025)
-
-**Scripts:**
-- `/app/backend/scripts/seed_pet_friendly_places.py` - Restaurants & Stays
-- `/app/backend/scripts/seed_vet_clinics.py` - Vet Clinics
-
-**API Endpoints:**
-- `GET /api/mira/vet-clinics` - Get vet clinics by city
-- `GET /api/mira/vet-clinics/emergency` - 24/7 emergency vets
-- `GET /api/mira/nearby-places?city=X` - All pet-friendly places in a city
-- `POST /api/mira/find-nearby` - Smart intent-based place finder
-
-**Chat Integration:**
-Mira now automatically detects location-based queries and provides:
-- Verified vet clinics with phone numbers and 24/7 status
-- Pet-friendly restaurants with ratings and features
-- Pet-friendly stays/hotels with amenities and pet fees
-- User's city is extracted from pet profile or message
+4. **Test with Real User**
+   - Login as `dipali@clubconcierge.in` / `test12`
+   - Verify soul score for Lola
+   - Test all nearby places features
 
 ---
 
-## FUTURE: GOOGLE PLACES API INTEGRATION
+## PREVIEW URLs
 
-**Status:** ✅ FULLY INTEGRATED
-**API Key:** Configured in backend/.env
-
-**Google Places Endpoints:**
-- `GET /api/mira/google/vets?city=X` - Real-time vet clinics
-- `GET /api/mira/google/dog-parks?city=X` - Dog parks via Google
-- `GET /api/mira/google/pet-stores?city=X` - Pet stores & groomers
-- `GET /api/mira/google/search?query=X` - Free text search
-
-**OpenWeather Endpoints:**
-- `GET /api/mira/weather/current?city=X` - Current weather with pet advisory
-- `GET /api/mira/weather/pet-activity?city=X` - Activity recommendations
-- `GET /api/mira/weather/forecast?city=X` - 5-day forecast with best walk times
-
-**Google Maps Directions Endpoints:**
-- `GET /api/mira/directions/to-vet?from_location=X&city=Y&emergency=true/false` - Navigate to nearest vet
-- `GET /api/mira/directions/to-place?from_location=X&place_name=Y&place_address=Z` - Navigate anywhere
-- `POST /api/mira/directions/navigate` - Smart navigation with pet tips
-
-**Chat Integration:**
-- Weather queries → Real-time pet safety advice (temperature, humidity, activity suggestions)
-- Location queries → Google Places for dog parks, vets, pet stores
-- Directions available via API for frontend integration
-
-**UI Feature Showcase (NEW):**
-- Dynamic weather card showing current temperature and pet safety level
-- Feature grid with 6 quick-action buttons:
-  - 🌤️ Weather & Walks
-  - 🏥 Find a Vet
-  - 🌳 Dog Parks
-  - 🍽️ Pet Cafes
-  - ✈️ Travel
-  - 🛍️ Shop
-- One-click to start conversations on any topic
-
-**Configured APIs:**
-- ✅ Google Places API
-- ✅ Google Maps Directions API
-- ✅ OpenWeather API
-- 📋 Foursquare (backup)
-- 📋 Amadeus (travel booking)
+- **Preview**: https://mira-bakery-ai.preview.emergentagent.com/mira-demo
+- **Production**: https://thedoggycompany.in/mira-demo
+- **Admin**: https://mira-bakery-ai.preview.emergentagent.com/admin
 
 ---
 
-## FUTURE ROADMAP
+## LAST 5 USER MESSAGES
 
-- E026: Photo Analysis Integration (deferred - health features go to concierge)
-- E029: Pet Friends Network
-- E031: Predictive Health Alerts
-- Code Refactoring: Split MiraDemoPage.jsx into components
-
----
-
-## CONTACT
-
-For platform issues: Use `support_agent` tool
-For deployment: Use `deployment_agent` tool
-For testing: Use `testing_agent_v3_fork` tool
+1. Asked about soul score consistency - needs to match across site
+2. Provided YouTube API key for training videos
+3. Asked to prepare exhaustive handoff summary with all keys
+4. Wants Amadeus integration for pet-friendly travel
+5. Screenshot showed Lola without soul score percentage
