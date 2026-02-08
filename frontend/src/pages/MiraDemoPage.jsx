@@ -541,6 +541,13 @@ const MiraDemoPage = () => {
   });
   const [showMiraTray, setShowMiraTray] = useState(false);
   
+  // E018 & E019: Proactive Notifications - Birthday/Health Reminders
+  const [proactiveAlerts, setProactiveAlerts] = useState({
+    celebrations: [],
+    healthReminders: [],
+    hasUrgent: false
+  });
+  
   // SESSION PERSISTENCE - The memory that never forgets
   const [sessionId, setSessionId] = useState(() => {
     // Try to recover session from localStorage first
