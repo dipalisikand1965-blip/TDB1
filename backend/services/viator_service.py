@@ -93,6 +93,7 @@ async def search_attractions(
         headers = {
             "exp-api-key": VIATOR_API_KEY,
             "Accept": "application/json;version=2.0",
+            "Accept-Language": "en-US",
             "Content-Type": "application/json"
         }
         
