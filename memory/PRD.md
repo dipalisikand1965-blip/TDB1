@@ -97,6 +97,13 @@ Intent categories:
 ### E025 Pet Mood Detection
 - `POST /api/mira/detect-mood` - Analyze user message for mood concerns
 
+### Restaurants & Pet-Friendly Stays
+- `GET /api/mira/restaurants` - Get pet-friendly restaurants (filter: city, verified_only)
+- `POST /api/mira/restaurants/add` - Add new restaurant (needs verification)
+- `GET /api/mira/pet-stays` - Get pet-friendly accommodations
+- `POST /api/mira/pet-stays/add` - Add new stay (needs verification)
+- `POST /api/mira/verify-listing` - Mark restaurant/stay as verified
+
 ### E024 Voice Personalities
 - `GET /api/tts/personalities` - Get voice personalities
 - `POST /api/tts/generate` - Generate TTS with personality
