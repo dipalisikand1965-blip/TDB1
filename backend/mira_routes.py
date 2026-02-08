@@ -12871,6 +12871,210 @@ async def test_foursquare_api():
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# E042: LOCAL PLACES INTEGRATION - Dog parks, Pet stores, Vets, Groomers
+# Uses Google Places API (worldwide support)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@router.get("/local-places")
+async def get_local_places(
+    city: str = "Mumbai",
+    place_type: str = "all",
+    limit: int = 5
+):
+    """
+    E042: Local Places Integration - Get pet-friendly places in any city.
+    
+    Args:
+        city: City name (works worldwide - Mumbai, Delhi, Paris, Tokyo, etc.)
+        place_type: Type of place - "dog_parks", "pet_stores", "vets", "groomers", or "all"
+        limit: Number of results per category
+    
+    Returns:
+        Pet-friendly places organized by category
+    """
+    from services.google_places_service import (
+        search_dog_parks_worldwide,
+        search_pet_stores_in_city,
+        search_vets_in_city,
+        search_places_by_text
+    )
+    
+    result = {
+        "success": True,
+        "city": city,
+        "source": "google_places",
+        "places": {}
+    }
+    
+    try:
+        # Fetch requested place types
+        if place_type in ["dog_parks", "all"]:
+            parks = await search_dog_parks_worldwide(city, max_results=limit)
+            result["places"]["dog_parks"] = {
+                "items": parks,
+                "count": len(parks),
+                "icon": "🌳",
+                "title": "Dog Parks & Outdoor Spots"
+            }
+        
+        if place_type in ["pet_stores", "all"]:
+            stores = await search_pet_stores_in_city(city, max_results=limit)
+            result["places"]["pet_stores"] = {
+                "items": stores,
+                "count": len(stores),
+                "icon": "🛍️",
+                "title": "Pet Stores & Supplies"
+            }
+        
+        if place_type in ["vets", "all"]:
+            vets = await search_vets_in_city(city, max_results=limit)
+            result["places"]["vets"] = {
+                "items": vets,
+                "count": len(vets),
+                "icon": "🏥",
+                "title": "Veterinary Clinics"
+            }
+        
+        if place_type in ["groomers", "all"]:
+            groomers = await search_places_by_text(
+                query=f"pet groomer dog grooming salon {city}",
+                max_results=limit
+            )
+            result["places"]["groomers"] = {
+                "items": groomers,
+                "count": len(groomers),
+                "icon": "✂️",
+                "title": "Pet Groomers & Salons"
+            }
+        
+        # Calculate total
+        total_count = sum(cat.get("count", 0) for cat in result["places"].values())
+        result["total_places"] = total_count
+        
+        return result
+        
+    except Exception as e:
+        logger.error(f"Local places error: {e}")
+        return {
+            "success": False,
+            "city": city,
+            "error": str(e),
+            "places": {}
+        }
+
+
+@router.get("/local-places/vets")
+async def get_vet_clinics(
+    city: str = "Mumbai",
+    emergency: bool = False,
+    limit: int = 10
+):
+    """
+    Get veterinary clinics in a city.
+    
+    Args:
+        city: City name (worldwide support)
+        emergency: If True, search for 24-hour emergency vets
+        limit: Number of results
+    """
+    from services.google_places_service import search_vets_in_city, search_places_by_text
+    
+    try:
+        if emergency:
+            # Search specifically for emergency vets
+            vets = await search_places_by_text(
+                query=f"24 hour emergency vet hospital {city}",
+                max_results=limit
+            )
+        else:
+            vets = await search_vets_in_city(city, max_results=limit)
+        
+        # Add emergency flag to each result
+        for vet in vets:
+            vet["is_emergency"] = emergency or "emergency" in vet.get("name", "").lower() or "24" in str(vet.get("opening_hours", []))
+        
+        return {
+            "success": True,
+            "city": city,
+            "emergency_search": emergency,
+            "vets": vets,
+            "count": len(vets),
+            "source": "google_places",
+            "concierge_message": "Need help booking an appointment? Let Concierge® handle it for you."
+        }
+        
+    except Exception as e:
+        logger.error(f"Vet search error: {e}")
+        return {"success": False, "error": str(e), "vets": []}
+
+
+@router.get("/local-places/dog-parks")
+async def get_dog_parks(city: str = "Mumbai", limit: int = 10):
+    """Get dog parks and off-leash areas in a city."""
+    from services.google_places_service import search_dog_parks_worldwide
+    
+    try:
+        parks = await search_dog_parks_worldwide(city, max_results=limit)
+        
+        return {
+            "success": True,
+            "city": city,
+            "dog_parks": parks,
+            "count": len(parks),
+            "source": "google_places"
+        }
+        
+    except Exception as e:
+        logger.error(f"Dog parks error: {e}")
+        return {"success": False, "error": str(e), "dog_parks": []}
+
+
+@router.get("/local-places/pet-stores")
+async def get_pet_stores(city: str = "Mumbai", limit: int = 10):
+    """Get pet stores and supply shops in a city."""
+    from services.google_places_service import search_pet_stores_in_city
+    
+    try:
+        stores = await search_pet_stores_in_city(city, max_results=limit)
+        
+        return {
+            "success": True,
+            "city": city,
+            "pet_stores": stores,
+            "count": len(stores),
+            "source": "google_places"
+        }
+        
+    except Exception as e:
+        logger.error(f"Pet stores error: {e}")
+        return {"success": False, "error": str(e), "pet_stores": []}
+
+
+@router.get("/local-places/groomers")
+async def get_groomers(city: str = "Mumbai", limit: int = 10):
+    """Get pet groomers and salons in a city."""
+    from services.google_places_service import search_places_by_text
+    
+    try:
+        groomers = await search_places_by_text(
+            query=f"pet groomer dog grooming salon {city}",
+            max_results=limit
+        )
+        
+        return {
+            "success": True,
+            "city": city,
+            "groomers": groomers,
+            "count": len(groomers),
+            "source": "google_places"
+        }
+        
+    except Exception as e:
+        logger.error(f"Groomers error: {e}")
+        return {"success": False, "error": str(e), "groomers": []}
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # VIATOR EXPERIENCES API - Pet-friendly attractions & tours
 # ═══════════════════════════════════════════════════════════════════════════════
 
