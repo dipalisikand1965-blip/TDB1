@@ -1815,8 +1815,9 @@ const MiraDemoPage = () => {
               name: pet.name,
               breed: pet.breed,
               age_years: parseInt(pet.age) || 3,
-              allergies: pet.sensitivities || [],
-              notes: pet.traits || []
+              // Ensure arrays - convert strings to arrays if needed
+              allergies: Array.isArray(pet.sensitivities) ? pet.sensitivities : (pet.sensitivities ? [pet.sensitivities] : []),
+              notes: Array.isArray(pet.traits) ? pet.traits : (pet.traits ? [pet.traits] : [])
             }
           })
         });
