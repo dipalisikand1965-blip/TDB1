@@ -778,6 +778,12 @@ const MiraDemoPage = () => {
   const [showPastChats, setShowPastChats] = useState(false);
   const [loadingPastChats, setLoadingPastChats] = useState(false);
   
+  // FLOATING TOOLBAR - Clean conversation flow
+  // Insight & Concierge icons at top, expand on tap
+  const [showInsightsPanel, setShowInsightsPanel] = useState(false);
+  const [showConciergePanel, setShowConciergePanel] = useState(false);
+  const [latestInsights, setLatestInsights] = useState([]); // Collected from all messages
+  
   // ═══════════════════════════════════════════════════════════════════════════
   // "READY FOR [PET]" TRAY - World Class UX
   // Conversation stays clean. Products/services ready when customer wants them.
