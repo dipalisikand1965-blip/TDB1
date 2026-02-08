@@ -2009,14 +2009,14 @@ button.mp-welcome-chip,
   color: #fbbf24;
 }
 
-/* Hero Layout - Mobile First */
+/* Hero Layout - CENTERED */
 .hero-layout {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 24px;
   width: 100%;
-  max-width: 100%; /* Full width */
+  max-width: 800px;
   text-align: center;
 }
 
@@ -2024,9 +2024,7 @@ button.mp-welcome-chip,
   .hero-layout {
     flex-direction: row;
     text-align: left;
-    align-items: flex-start;
     gap: 40px;
-    max-width: 100%; /* Full width on desktop */
   }
 }
 
