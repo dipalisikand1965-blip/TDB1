@@ -17,6 +17,7 @@ Mira OS is a sophisticated AI-powered pet assistant that provides personalized c
 - **Pet Mood Detection** (E025) - Detects behavioral concerns
 - **Voice Personalities** (E024) - Auto-adjusts tone based on context
 - **Proactive Nudges** - Health reminders, birthday alerts
+- **AI Auto-Tagging on Deployment** - Semantic intents applied automatically
 
 ---
 
