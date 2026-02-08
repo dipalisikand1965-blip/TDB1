@@ -4301,6 +4301,7 @@ const MiraDemoPage = () => {
                                    msg.data.nearby_places.type === 'restaurants' ? '🍽️ Pet-Friendly Restaurants' :
                                    msg.data.nearby_places.type === 'dog_parks' ? '🌳 Dog Parks' :
                                    msg.data.nearby_places.type === 'stays' ? '🏨 Pet-Friendly Stays' :
+                                   msg.data.nearby_places.type === 'pet_stores' ? '🛍️ Pet Stores' :
                                    '📍 Nearby Places'}
                                   {msg.data.nearby_places.city && ` in ${msg.data.nearby_places.city}`}
                                 </span>
@@ -4311,7 +4312,8 @@ const MiraDemoPage = () => {
                                   <div className={`place-icon ${place.is_emergency || place.is_24_hours ? 'emergency' : ''}`}>
                                     {msg.data.nearby_places.type === 'vet_clinics' ? '🏥' :
                                      msg.data.nearby_places.type === 'restaurants' ? '🍽️' :
-                                     msg.data.nearby_places.type === 'dog_parks' ? '🌳' : '📍'}
+                                     msg.data.nearby_places.type === 'dog_parks' ? '🌳' :
+                                     msg.data.nearby_places.type === 'pet_stores' ? '🛍️' : '📍'}
                                   </div>
                                   <div className="place-info">
                                     <div className="place-name">{place.name}</div>
