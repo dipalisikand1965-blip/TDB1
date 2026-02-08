@@ -5207,3 +5207,380 @@ input, select, textarea {
   margin-left: 2px;
 }
 
+
+
+/* ========================================
+   FEATURE SHOWCASE - What Mira Can Do
+   ======================================== */
+.mira-feature-showcase {
+  margin-top: 24px;
+  padding: 0 16px;
+}
+
+.feature-showcase-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 16px;
+}
+
+.feature-showcase-header svg {
+  color: var(--mira-pink);
+}
+
+/* Weather Card - Dynamic status */
+.weather-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 16px;
+}
+
+.weather-card:hover {
+  background: rgba(59, 130, 246, 0.25);
+  transform: translateX(4px);
+}
+
+.weather-card.weather-good {
+  background: rgba(34, 197, 94, 0.15);
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.weather-card.weather-caution {
+  background: rgba(249, 115, 22, 0.15);
+  border-color: rgba(249, 115, 22, 0.3);
+}
+
+.weather-card.weather-warning {
+  background: rgba(234, 179, 8, 0.15);
+  border-color: rgba(234, 179, 8, 0.3);
+}
+
+.weather-card.weather-danger {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+.weather-card-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+}
+
+.weather-card-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.weather-card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: white;
+}
+
+.weather-card-subtitle {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 2px;
+}
+
+.weather-card-arrow {
+  width: 18px;
+  height: 18px;
+  color: rgba(255, 255, 255, 0.5);
+  flex-shrink: 0;
+}
+
+/* Feature Grid - 3 columns on desktop, 2 on mobile */
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+@media (max-width: 600px) {
+  .feature-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.feature-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 14px 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.feature-card:hover {
+  background: rgba(var(--feature-color-rgb, 139, 92, 246), 0.2);
+  border-color: var(--feature-color, #8b5cf6);
+  transform: translateY(-2px);
+}
+
+.feature-card:active {
+  transform: scale(0.98);
+}
+
+.feature-icon {
+  font-size: 28px;
+  margin-bottom: 6px;
+}
+
+.feature-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+  margin-bottom: 2px;
+}
+
+.feature-desc {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* ========================================
+   NEARBY PLACES CARDS (in chat response)
+   ======================================== */
+.nearby-places-section {
+  margin-top: 16px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nearby-places-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 12px;
+}
+
+.nearby-place-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  margin-bottom: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.nearby-place-card:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.nearby-place-card:last-child {
+  margin-bottom: 0;
+}
+
+.place-icon {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(139, 92, 246, 0.2);
+  border-radius: 10px;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.place-icon.emergency {
+  background: rgba(239, 68, 68, 0.2);
+}
+
+.place-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.place-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.place-details {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 2px;
+}
+
+.place-rating {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  color: #f59e0b;
+}
+
+.place-badge {
+  padding: 2px 6px;
+  background: rgba(34, 197, 94, 0.2);
+  color: #22c55e;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.place-badge.emergency-badge {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
+.place-phone {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 10px;
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 8px;
+  color: #22c55e;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.place-phone:hover {
+  background: rgba(34, 197, 94, 0.25);
+}
+
+/* ========================================
+   DIRECTIONS CARD
+   ======================================== */
+.directions-card {
+  margin-top: 12px;
+  padding: 14px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(139, 92, 246, 0.15));
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 14px;
+}
+
+.directions-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.directions-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+}
+
+.directions-eta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.directions-info {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.directions-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.directions-stat-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: white;
+}
+
+.directions-stat-label {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.directions-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.directions-btn:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+}
+
+/* Pet tips in directions */
+.pet-tips {
+  margin-top: 12px;
+  padding: 10px 12px;
+  background: rgba(249, 115, 22, 0.1);
+  border-radius: 10px;
+}
+
+.pet-tips-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: #f97316;
+  margin-bottom: 6px;
+}
+
+.pet-tips-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.pet-tip {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
+  padding: 4px 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 6px;
+}
+
