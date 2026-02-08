@@ -475,6 +475,7 @@ const generateWhyForPet = (product, pet) => {
 };
 
 // Sample pet for demo - with Soul Score traits
+// Note: Low soul score to demonstrate the "Help Mira know" prompt
 const DEMO_PET = {
   id: 'demo-pet',
   name: 'Buddy',
@@ -484,13 +485,12 @@ const DEMO_PET = {
   sensitivities: ['Chicken allergy'],
   favorites: ['Tennis balls', 'Peanut butter treats'],
   photo: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=200&h=200&fit=crop&crop=face',
-  // Soul Score traits from Travel page reference
   soulTraits: [
     { label: 'Playful spirit', icon: '⭐', color: '#f59e0b' },
     { label: 'Gentle paws', icon: '🎀', color: '#ec4899' },
     { label: 'Loyal friend', icon: '❤️', color: '#ef4444' },
   ],
-  soulScore: 87 // Overall soul score
+  soulScore: 0 // Starts at 0 - encourages users to complete soul profile
 };
 
 // All pets for multi-pet selector
@@ -507,7 +507,7 @@ const ALL_PETS = [
       { label: 'Calm soul', icon: '🌙', color: '#8b5cf6' },
       { label: 'Wise eyes', icon: '👁️', color: '#06b6d4' },
     ],
-    soulScore: 92
+    soulScore: 32 // Low score to show the "Help Mira know" prompt for comparison
   }
 ];
 
