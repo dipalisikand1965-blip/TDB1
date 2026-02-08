@@ -6064,10 +6064,25 @@ YOUR RESPONSE MUST:
 - End with concierge handoff ONLY when truly needed for complex requests
 """
         
+        # Add nearby places context if available
+        nearby_places_instruction = ""
+        if nearby_places_context:
+            nearby_places_instruction = f"""
+NEARBY PLACES AVAILABLE (Use this info to recommend verified places):
+{nearby_places_context}
+
+IMPORTANT: When recommending these places:
+- Include the phone number for vet clinics (users may need to call)
+- Mention if a vet is 24/7 for emergencies
+- Highlight key features like outdoor seating, dog menu, etc.
+- These are VERIFIED places - be confident recommending them
+"""
+        
         full_prompt = f"""{history_text}
 {cross_pillar_note}
 {relationship_memory_prompt}
 {research_instruction}
+{nearby_places_instruction}
 {concierge_action_instruction}
 
 CURRENT USER MESSAGE: {user_message}
