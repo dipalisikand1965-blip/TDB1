@@ -6,10 +6,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
 
 :root {
-  /* Background */
-  --mira-bg-dark: #1a0a2e;
-  --mira-bg-purple: #2d1b4e;
-  --mira-bg-violet: #4a2875;
+  /* Background - Deeper, richer for reduced eye strain */
+  --mira-bg-dark: #0f0720;
+  --mira-bg-purple: #1a0f35;
+  --mira-bg-violet: #2d1b50;
   
   /* Accent Colors */
   --mira-pink: #e91e9a;
@@ -17,14 +17,18 @@
   --mira-purple: #8b5cf6;
   --mira-orange: #f97316;
   
-  /* Cards */
-  --mira-card-bg: rgba(45, 27, 78, 0.9);
-  --mira-card-border: rgba(255, 255, 255, 0.1);
+  /* Cards - Slightly more opaque for better contrast */
+  --mira-card-bg: rgba(35, 22, 62, 0.95);
+  --mira-card-border: rgba(255, 255, 255, 0.08);
   
-  /* Text */
-  --mira-text-white: #ffffff;
-  --mira-text-secondary: rgba(255, 255, 255, 0.7);
-  --mira-text-muted: rgba(255, 255, 255, 0.5);
+  /* Text - Softer whites for reduced eye strain */
+  --mira-text-white: #f0f0f5;
+  --mira-text-secondary: rgba(240, 240, 245, 0.75);
+  --mira-text-muted: rgba(240, 240, 245, 0.5);
+  
+  /* Typography - Premium feel */
+  --font-display: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'Manrope', -apple-system, sans-serif;
   
   /* Spacing */
   --space-xs: 4px;
