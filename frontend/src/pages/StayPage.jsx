@@ -793,10 +793,6 @@ const StayPage = () => {
                             ))}
                           </div>
                           
-                          {hotel.pet_policy_note && (
-                            <p className="text-xs text-gray-500 mt-2 italic">{hotel.pet_policy_note}</p>
-                          )}
-                          
                           <div className="mt-3 flex gap-2">
                             <Button
                               size="sm"
