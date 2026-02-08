@@ -557,6 +557,9 @@ const MiraDemoPage = () => {
     currentField: null
   });
   
+  // PERSONALIZATION TICKER - Moving ticker at top
+  const [tickerItems, setTickerItems] = useState([]);
+  
   // SESSION PERSISTENCE - The memory that never forgets
   const [sessionId, setSessionId] = useState(() => {
     // Try to recover session from localStorage first
