@@ -3865,38 +3865,44 @@ const MiraDemoPage = () => {
                 <div className="mp-tray-section">
                   <h4><ShoppingBag size={16} /> {miraPicks.context || `${pet.name}'s Picks`}</h4>
                   <div className="mp-tray-products">
-                    {miraPicks.products.slice(0, 4).map((product, idx) => (
-                      <div key={idx} className="mp-tray-product">
-                        <div className="mp-tray-product-img-wrap">
-                          {product.image || product.images?.[0] ? (
+                    {miraPicks.products.slice(0, 4).map((product, idx) => {
+                      // Check if image is valid (not competitor, not empty)
+                      const rawImage = product.image || product.images?.[0];
+                      const isValidImage = rawImage && 
+                        !rawImage.includes('chewy.com') && 
+                        !rawImage.includes('amazon.') &&
+                        !rawImage.includes('petco.') &&
+                        !rawImage.includes('petsmart.');
+                      const displayImage = isValidImage ? rawImage : getPlaceholderImage(product.id || product.name);
+                      
+                      return (
+                        <div key={idx} className="mp-tray-product">
+                          <div className="mp-tray-product-img-wrap">
                             <img 
-                              src={product.image || product.images?.[0]}
+                              src={displayImage}
                               alt={product.name}
+                              onError={(e) => { e.target.src = getPlaceholderImage(product.id); }}
                             />
-                          ) : (
-                            <div className="mp-product-placeholder">
-                              <PawPrint size={20} />
-                            </div>
-                          )}
-                          {product.why_for_pet && (
-                            <span className="mp-product-match" title={product.why_for_pet}>✓</span>
-                          )}
+                            {product.why_for_pet && (
+                              <span className="mp-product-match" title={product.why_for_pet}>✓</span>
+                            )}
+                          </div>
+                          <div className="mp-tray-product-info">
+                            <span className="mp-tray-product-name">{product.name}</span>
+                            {product.price && <span className="mp-tray-product-price">₹{product.price}</span>}
+                            {product.why_for_pet && (
+                              <span className="mp-product-why">{product.why_for_pet}</span>
+                            )}
+                          </div>
+                          <button 
+                            className="mp-tray-add"
+                            onClick={() => alert(`Added ${product.name} to cart!`)}
+                          >
+                            <Plus size={16} />
+                          </button>
                         </div>
-                        <div className="mp-tray-product-info">
-                          <span className="mp-tray-product-name">{product.name}</span>
-                          {product.price && <span className="mp-tray-product-price">₹{product.price}</span>}
-                          {product.why_for_pet && (
-                            <span className="mp-product-why">{product.why_for_pet}</span>
-                          )}
-                        </div>
-                        <button 
-                          className="mp-tray-add"
-                          onClick={() => alert(`Added ${product.name} to cart!`)}
-                        >
-                          <Plus size={16} />
-                        </button>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                   
                   {/* C® Can Source More */}
