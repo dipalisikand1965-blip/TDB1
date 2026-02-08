@@ -217,6 +217,42 @@ const LearnPage = () => {
     }
   };
 
+  // Fetch YouTube training videos by topic
+  const fetchYouTubeVideos = async (topic = 'basic_training') => {
+    setYoutubeLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/api/mira/youtube/topic/${topic}?max_results=6`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.videos) {
+          setYoutubeVideos(data.videos);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch YouTube videos:', error);
+    } finally {
+      setYoutubeLoading(false);
+    }
+  };
+
+  // Fetch breed-specific videos if pet is selected
+  const fetchBreedVideos = async (breed) => {
+    setYoutubeLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/api/mira/youtube/breed/${encodeURIComponent(breed)}?max_results=6`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.videos) {
+          setYoutubeVideos(data.videos);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch breed videos:', error);
+    } finally {
+      setYoutubeLoading(false);
+    }
+  };
+
   const fetchUserPets = async () => {
     try {
       const response = await fetch(`${API_URL}/api/pets/my-pets`, {
