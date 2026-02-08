@@ -4952,3 +4952,160 @@ input, select, textarea {
   }
 }
 
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   UNIFIED C® CONCIERGE BUTTON - WhatsApp green style
+═══════════════════════════════════════════════════════════════════════════════ */
+
+.mp-concierge-unified {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.mp-concierge-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+}
+
+.mp-concierge-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+}
+
+.mp-concierge-btn.expanded {
+  padding: 10px 18px;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+}
+
+.concierge-c {
+  font-size: 20px;
+  font-weight: 700;
+  color: white;
+  font-family: serif;
+}
+
+.concierge-r {
+  font-size: 10px;
+  font-weight: 600;
+  color: white;
+  vertical-align: super;
+  margin-left: -2px;
+}
+
+.concierge-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: white;
+  margin-left: 8px;
+}
+
+.mp-concierge-options {
+  display: flex;
+  gap: 8px;
+  animation: fadeSlideUp 0.3s ease;
+}
+
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.concierge-option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border-radius: 25px;
+  font-size: 13px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.concierge-option.wa {
+  background: rgba(37, 211, 102, 0.15);
+  color: #25D366;
+  border: 1px solid rgba(37, 211, 102, 0.3);
+}
+
+.concierge-option.wa:hover {
+  background: rgba(37, 211, 102, 0.25);
+}
+
+.concierge-option.chat {
+  background: rgba(168, 85, 247, 0.15);
+  color: #a855f7;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+.concierge-option.chat:hover {
+  background: rgba(168, 85, 247, 0.25);
+}
+
+.concierge-option.email {
+  background: rgba(59, 130, 246, 0.15);
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.concierge-option.email:hover {
+  background: rgba(59, 130, 246, 0.25);
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+  .mp-concierge-options {
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .concierge-option {
+    justify-content: center;
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   MIRA'S INSIGHT (formerly "Important to Watch For") - Collapsed by default
+═══════════════════════════════════════════════════════════════════════════════ */
+
+.mp-watchfor-toggle {
+  background: rgba(168, 85, 247, 0.08);
+  border: 1px solid rgba(168, 85, 247, 0.2);
+}
+
+.mp-watchfor-label svg {
+  width: 14px;
+  height: 14px;
+}
+
+.mp-watchfor-label svg:first-child {
+  color: #a855f7;
+}
+
+.mp-watchfor-label svg:last-of-type {
+  color: #fbbf24;
+  margin-left: 2px;
+}
+
