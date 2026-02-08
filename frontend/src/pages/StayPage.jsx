@@ -2031,9 +2031,9 @@ const BookingRequestModal = ({ property, onClose }) => {
           ...(token ? { 'Authorization': `Bearer ${token}` } : {})
         },
         body: JSON.stringify({
-          service_type: 'stay_booking',
+          type: 'stay_booking',
           pillar: 'stay',
-          request_source: 'stay_page',
+          source: 'stay_page',
           customer: {
             name: formData.guest_name,
             email: formData.guest_email,
@@ -2057,7 +2057,6 @@ const BookingRequestModal = ({ property, onClose }) => {
             num_pets: selectedPets.length,
             pets: petsData
           },
-          status: 'pending',
           priority: 'normal'
         })
       });
