@@ -12068,3 +12068,216 @@ async def run_ai_tagging():
         logger.error(f"AI tagging error: {e}")
         return {"success": False, "error": str(e)}
 
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# YOUTUBE TRAINING VIDEOS API
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@router.get("/youtube/videos")
+async def get_youtube_videos(
+    query: str = "dog training",
+    max_results: int = 5
+):
+    """Search YouTube for pet training videos."""
+    try:
+        from services.youtube_service import search_youtube_videos
+        videos = await search_youtube_videos(query, max_results)
+        return {
+            "success": True,
+            "query": query,
+            "videos": videos,
+            "total": len(videos)
+        }
+    except Exception as e:
+        logger.error(f"YouTube search error: {e}")
+        return {"success": False, "error": str(e), "videos": []}
+
+
+@router.get("/youtube/by-breed")
+async def get_youtube_by_breed(
+    breed: str,
+    max_results: int = 5
+):
+    """Get training videos specific to a breed."""
+    try:
+        from services.youtube_service import get_training_videos_by_breed
+        return await get_training_videos_by_breed(breed, max_results)
+    except Exception as e:
+        logger.error(f"YouTube breed search error: {e}")
+        return {"success": False, "error": str(e), "videos": []}
+
+
+@router.get("/youtube/by-age")
+async def get_youtube_by_age(
+    age_years: float,
+    breed: str = None,
+    max_results: int = 5
+):
+    """Get training videos appropriate for pet's age/life stage."""
+    try:
+        from services.youtube_service import get_training_videos_by_age
+        return await get_training_videos_by_age(age_years, breed, max_results)
+    except Exception as e:
+        logger.error(f"YouTube age search error: {e}")
+        return {"success": False, "error": str(e), "videos": []}
+
+
+@router.get("/youtube/by-topic")
+async def get_youtube_by_topic(
+    topic: str,
+    breed: str = None,
+    age_years: float = None,
+    max_results: int = 5
+):
+    """Get training videos for a specific topic."""
+    try:
+        from services.youtube_service import get_training_videos_by_topic
+        return await get_training_videos_by_topic(topic, breed, age_years, max_results)
+    except Exception as e:
+        logger.error(f"YouTube topic search error: {e}")
+        return {"success": False, "error": str(e), "videos": []}
+
+
+@router.get("/youtube/recommended/{pet_id}")
+async def get_youtube_recommended(pet_id: str, max_results: int = 6):
+    """Get personalized video recommendations for a specific pet."""
+    try:
+        from services.youtube_service import get_recommended_videos_for_pet
+        db = get_db()
+        
+        # Fetch pet details
+        pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
+        if not pet:
+            return {"success": False, "error": "Pet not found", "videos": []}
+        
+        # Get pet details
+        pet_name = pet.get("name", "Your pet")
+        breed = pet.get("breed", "dog")
+        
+        # Calculate age in years
+        age_years = 2.0  # Default
+        if pet.get("age_years"):
+            age_years = float(pet.get("age_years"))
+        elif pet.get("birth_date"):
+            from datetime import datetime
+            try:
+                birth = datetime.fromisoformat(pet["birth_date"].replace("Z", "+00:00"))
+                age_days = (datetime.now(timezone.utc) - birth).days
+                age_years = age_days / 365.25
+            except:
+                pass
+        
+        # Get sensitivities for topic-specific videos
+        sensitivities = []
+        if pet.get("doggy_soul_answers", {}).get("health_conditions"):
+            conditions = pet["doggy_soul_answers"]["health_conditions"]
+            if isinstance(conditions, str):
+                sensitivities = [c.strip() for c in conditions.split(",")]
+            elif isinstance(conditions, list):
+                sensitivities = conditions
+        
+        return await get_recommended_videos_for_pet(
+            pet_name=pet_name,
+            breed=breed,
+            age_years=age_years,
+            sensitivities=sensitivities,
+            max_results=max_results
+        )
+    except Exception as e:
+        logger.error(f"YouTube recommended error: {e}")
+        return {"success": False, "error": str(e), "videos": []}
+
+
+@router.get("/youtube/test")
+async def test_youtube_api():
+    """Test if YouTube API is working."""
+    try:
+        from services.youtube_service import test_youtube_connection
+        return await test_youtube_connection()
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# AMADEUS TRAVEL API - Pet-Friendly Hotels & Travel
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@router.get("/amadeus/hotels")
+async def get_amadeus_hotels(
+    city: str,
+    check_in: str = None,
+    check_out: str = None,
+    max_results: int = 10
+):
+    """Search for pet-friendly hotels in a city."""
+    try:
+        from services.amadeus_service import search_pet_friendly_hotels
+        return await search_pet_friendly_hotels(
+            city=city,
+            check_in=check_in,
+            check_out=check_out,
+            max_results=max_results
+        )
+    except Exception as e:
+        logger.error(f"Amadeus hotel search error: {e}")
+        return {"success": False, "error": str(e), "hotels": []}
+
+
+@router.get("/amadeus/travel-tips/{pet_id}")
+async def get_amadeus_travel_tips(
+    pet_id: str,
+    destination: str,
+    check_in: str = None,
+    check_out: str = None
+):
+    """Get personalized travel recommendations for traveling with a pet."""
+    try:
+        from services.amadeus_service import get_travel_recommendations_for_pet
+        db = get_db()
+        
+        # Fetch pet details
+        pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
+        if not pet:
+            return {"success": False, "error": "Pet not found"}
+        
+        travel_dates = {}
+        if check_in:
+            travel_dates["check_in"] = check_in
+        if check_out:
+            travel_dates["check_out"] = check_out
+        
+        return await get_travel_recommendations_for_pet(
+            pet_name=pet.get("name", "Your pet"),
+            pet_breed=pet.get("breed", "dog"),
+            destination_city=destination,
+            travel_dates=travel_dates if travel_dates else None
+        )
+    except Exception as e:
+        logger.error(f"Amadeus travel tips error: {e}")
+        return {"success": False, "error": str(e)}
+
+
+@router.get("/amadeus/city-codes")
+async def get_amadeus_city_codes():
+    """Get list of supported city codes for Amadeus API."""
+    try:
+        from services.amadeus_service import INDIA_CITY_CODES
+        return {
+            "success": True,
+            "city_codes": INDIA_CITY_CODES,
+            "supported_cities": list(INDIA_CITY_CODES.keys())
+        }
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+@router.get("/amadeus/test")
+async def test_amadeus_api():
+    """Test if Amadeus API is working."""
+    try:
+        from services.amadeus_service import test_amadeus_connection
+        return await test_amadeus_connection()
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
