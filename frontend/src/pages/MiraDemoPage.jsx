@@ -3199,13 +3199,61 @@ const MiraDemoPage = () => {
                 </div>
               </div>
               
+              {/* FEATURE SHOWCASE - What Mira Can Do */}
+              <div className="mira-feature-showcase" data-testid="feature-showcase">
+                <div className="feature-showcase-header">
+                  <Sparkles className="w-4 h-4" />
+                  <span>What can Mira help with?</span>
+                </div>
+                
+                {/* Weather Card - Dynamic based on current conditions */}
+                {currentWeather && (
+                  <div 
+                    className={`weather-card weather-${currentWeather.pet_advisory?.safety_level || 'good'}`}
+                    onClick={() => handleQuickReply(`Is it a good day to take ${pet.name} for a walk?`)}
+                    data-testid="weather-card"
+                  >
+                    <div className="weather-card-icon">
+                      {currentWeather.pet_advisory?.safety_level === 'danger' ? '🔥' :
+                       currentWeather.pet_advisory?.safety_level === 'warning' ? '⚠️' :
+                       currentWeather.pet_advisory?.safety_level === 'caution' ? '☀️' : '✨'}
+                    </div>
+                    <div className="weather-card-content">
+                      <div className="weather-card-title">
+                        {currentWeather.current_weather?.temperature}°C in {currentWeather.city}
+                      </div>
+                      <div className="weather-card-subtitle">
+                        {currentWeather.pet_advisory?.walk_message}
+                      </div>
+                    </div>
+                    <ChevronRight className="weather-card-arrow" />
+                  </div>
+                )}
+                
+                {/* Feature Grid */}
+                <div className="feature-grid">
+                  {MIRA_FEATURES.map((feature) => (
+                    <button
+                      key={feature.id}
+                      className="feature-card"
+                      style={{ '--feature-color': feature.color }}
+                      onClick={() => handleQuickReply(feature.query)}
+                      data-testid={`feature-${feature.id}`}
+                    >
+                      <span className="feature-icon">{feature.icon}</span>
+                      <span className="feature-title">{feature.title}</span>
+                      <span className="feature-desc">{feature.description}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+              
               {/* Quick Suggestion Chips */}
               <div className="quick-chips">
                 {[
-                  { text: `Treats for ${pet.name}`, icon: '🦴' },
-                  { text: 'Grooming help', icon: '✂️' },
-                  { text: 'Plan a birthday', icon: '🎂' },
-                  { text: 'Travel tips', icon: '✈️' }
+                  { text: `Birthday party for ${pet.name}`, icon: '🎂' },
+                  { text: 'Health checkup reminder', icon: '💉' },
+                  { text: 'Custom meal plan', icon: '🍖' }
                 ].map((s, i) => (
                   <button 
                     key={i} 
