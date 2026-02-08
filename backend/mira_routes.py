@@ -1701,6 +1701,7 @@ async def search_services_from_db(
             "transport": "🚗",
             "nutrition": "🍽️",
             "party": "🎉",
+            "celebrate": "🎂",
             "care": "💝"
         }
         
@@ -1715,6 +1716,7 @@ async def search_services_from_db(
             "transport": "#3B82F6",
             "nutrition": "#14B8A6",
             "party": "#F97316",
+            "celebrate": "#EC4899",
             "care": "#A855F7"
         }
         
