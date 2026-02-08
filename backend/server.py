@@ -1220,6 +1220,10 @@ async def lifespan(app: FastAPI):
     logger.info("Running Product Intelligence Engine for tag enhancement...")
     await auto_enhance_product_tags()
     
+    # Run AI Semantic Tagging on startup (powers E032 Semantic Search)
+    logger.info("Running AI Semantic Tagging for Mira intelligence...")
+    await run_ai_semantic_tagging_on_startup()
+    
     # Initialize role database connection
     set_role_db(db)
     logger.info("Role management initialized")
