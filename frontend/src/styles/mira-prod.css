@@ -2318,7 +2318,7 @@ button.mp-welcome-chip,
   50% { transform: scale(1.2) rotate(10deg); opacity: 0.8; }
 }
 
-/* Quick Chips - Perfectly Centered */
+/* Quick Chips - Mobile centered, Desktop left-aligned */
 .quick-chips {
   display: flex;
   flex-wrap: wrap;
@@ -2328,6 +2328,13 @@ button.mp-welcome-chip,
   margin-top: 32px;
   width: 100%;
   padding: 0 16px;
+}
+
+@media (min-width: 768px) {
+  .quick-chips {
+    justify-content: flex-start;
+    padding: 0;
+  }
 }
 
 .quick-chip {
