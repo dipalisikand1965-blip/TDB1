@@ -3226,26 +3226,26 @@ const MiraDemoPage = () => {
                             </div>
                           )}
                           
-                          {/* Important to Watch For - Collapsible */}
+                          {/* Mira's Insight - Collapsible (Closed by default) */}
                           {msg.data?.response?.tips && msg.data.response.tips.length > 0 && (
                             <div className="mp-watchfor">
                               <button 
                                 className="mp-watchfor-toggle"
                                 onClick={() => setCollapsedSections(prev => ({
                                   ...prev,
-                                  [`tips-${idx}`]: prev[`tips-${idx}`] === false ? true : false
+                                  [`tips-${idx}`]: !prev[`tips-${idx}`]
                                 }))}
                               >
                                 <span className="mp-watchfor-label">
-                                  <AlertCircle /> Important to Watch For
+                                  <PawPrint size={14} /> <Sparkles size={12} /> Mira's Insight
                                 </span>
-                                <ChevronUp style={{ 
+                                <ChevronDown style={{ 
                                   color: 'rgba(255,255,255,0.4)', 
-                                  transform: collapsedSections[`tips-${idx}`] !== false ? 'rotate(0)' : 'rotate(180deg)',
+                                  transform: collapsedSections[`tips-${idx}`] ? 'rotate(180deg)' : 'rotate(0)',
                                   transition: 'transform 0.2s'
                                 }} />
                               </button>
-                              {collapsedSections[`tips-${idx}`] !== false && (
+                              {collapsedSections[`tips-${idx}`] && (
                                 <div className="mp-watchfor-content">
                                   <ul className="mp-watchfor-list">
                                     {msg.data.response.tips.map((tip, tIdx) => (
