@@ -2420,7 +2420,7 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
         # Determine if we should signal frontend to show travel results
         # Only after clarifying questions have been answered
         show_travel_results = False
-        if is_travel_request and travel_clarification_done:
+        if (is_travel_request or is_travel_conversation) and travel_clarification_done:
             show_travel_results = True
             logger.info("[TRAVEL FLOW] Clarification done, signaling frontend to show hotels")
         
