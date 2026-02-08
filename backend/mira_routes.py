@@ -3649,7 +3649,26 @@ async def create_mira_ticket(
         await db[pillar_collection].insert_one(pillar_request)
         logger.info(f"[PILLAR ROUTING] Mira ticket {ticket_id} routed to {pillar_collection}")
     
-    logger.info(f"[UNIFIED FLOW] COMPLETE: Mira | N:{notification_id} → T:{ticket_id} → I:{inbox_id} → P:{pillar_collection or 'none'}")
+    # ==================== UNIFIED FLOW: MEMBER NOTIFICATION ====================
+    # Notify the member that their request has been received
+    if member_info.get("email"):
+        member_notif_id = f"MNOTIF-{uuid.uuid4().hex[:8].upper()}"
+        await db.member_notifications.insert_one({
+            "id": member_notif_id,
+            "user_email": member_info.get("email"),
+            "user_id": member_info.get("id"),
+            "type": "request_received",
+            "title": f"✨ Request Received: {final_subject[:50]}",
+            "message": f"We've received your {pillar_name} request and our concierge team is on it! You'll hear back from us shortly.",
+            "ticket_id": ticket_id,
+            "pillar": pillar,
+            "link": "/member?tab=requests",
+            "read": False,
+            "created_at": now
+        })
+        logger.info(f"[UNIFIED FLOW] Member notification created: {member_notif_id} for {member_info.get('email')}")
+    
+    logger.info(f"[UNIFIED FLOW] COMPLETE: Mira | N:{notification_id} → T:{ticket_id} → I:{inbox_id} → P:{pillar_collection or 'none'} → M:{member_notif_id if member_info.get('email') else 'none'}")
     
     return ticket_id
 
