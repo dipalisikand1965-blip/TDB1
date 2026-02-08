@@ -3687,15 +3687,21 @@ const MiraDemoPage = () => {
                         
                         {/* Card Body */}
                         <div className="mp-card-body">
-                          {/* Message Text */}
+                          {/* Message Text - With Proper Markdown Formatting */}
                           {(() => {
                             const { mainText, questionText } = splitMessageWithQuestion(msg.content);
                             return (
                               <>
-                                {mainText && <p className="mp-card-text">{mainText}</p>}
+                                {mainText && (
+                                  <div className="mp-card-text">
+                                    <FormattedText>{mainText}</FormattedText>
+                                  </div>
+                                )}
                                 {questionText && (
                                   <div className="mp-question">
-                                    <p className="mp-question-text">{questionText}</p>
+                                    <div className="mp-question-text">
+                                      <FormattedText>{questionText}</FormattedText>
+                                    </div>
                                   </div>
                                 )}
                               </>
