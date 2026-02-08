@@ -255,9 +255,12 @@ async def search_pet_friendly_hotels(
     city_code = get_city_code(city)
     
     if not city_code:
+        logger.info(f"City code not found for '{city}', will try Google Places or Viator instead")
         return {
             "success": False,
-            "error": f"City code not found for '{city}'. Try major cities like Mumbai, Delhi, Bangalore, Goa."
+            "error": f"Amadeus doesn't have '{city}' in database. Try using Google Places for local search.",
+            "city": city,
+            "hotels": []
         }
     
     hotels = await search_hotels_by_city(
