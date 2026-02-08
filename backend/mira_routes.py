@@ -2601,6 +2601,17 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                             logger.info(f"[NEARBY] Found {len(parks)} dog parks in {city_for_search}")
                     except Exception as park_err:
                         logger.warning(f"[NEARBY] Google Places error for parks: {park_err}")
+                
+                elif detected_place_type == "pet_store":
+                    # Pet stores - use Google Places API (E042)
+                    try:
+                        from services.google_places_service import search_pet_stores_in_city
+                        stores = await search_pet_stores_in_city(city_for_search, max_results=3)
+                        if stores:
+                            nearby_places_data = {"type": "pet_stores", "places": stores, "city": city_for_search, "source": "google_places"}
+                            logger.info(f"[NEARBY] Found {len(stores)} pet stores in {city_for_search}")
+                    except Exception as store_err:
+                        logger.warning(f"[NEARBY] Google Places error for pet stores: {store_err}")
             
             # Fetch weather data
             if is_weather_query and user_city:
