@@ -2375,9 +2375,18 @@ const MiraDemoPage = () => {
       if (inputQuery.toLowerCase().includes('travel') || inputQuery.toLowerCase().includes('trip')) {
         pickContext = `${pet.name}'s Journey`;
         detectedTopic = 'travel';
-      } else if (inputQuery.toLowerCase().includes('birthday') || inputQuery.toLowerCase().includes('party')) {
+      } else if (inputQuery.toLowerCase().includes('party') || inputQuery.toLowerCase().includes('plan') && inputQuery.toLowerCase().includes('birthday')) {
+        // PARTY PLANNING intent - full party experience
+        pickContext = `Plan ${pet.name}'s Party`;
+        detectedTopic = 'party_planning';
+      } else if (inputQuery.toLowerCase().includes('cake') || inputQuery.toLowerCase().includes('hamper') || inputQuery.toLowerCase().includes('bundle')) {
+        // CAKE/PRODUCT SHOPPING intent - want products
+        pickContext = `${pet.name}'s Celebration Picks`;
+        detectedTopic = 'cake_shopping';
+      } else if (inputQuery.toLowerCase().includes('birthday') || inputQuery.toLowerCase().includes('celebration') || inputQuery.toLowerCase().includes('gotcha')) {
+        // Generic celebration - could be either
         pickContext = `${pet.name}'s Celebration`;
-        detectedTopic = 'birthday';
+        detectedTopic = 'celebration';
       } else if (inputQuery.toLowerCase().includes('groom')) {
         pickContext = `Grooming for ${pet.name}`;
         detectedTopic = 'grooming';
@@ -2391,6 +2400,9 @@ const MiraDemoPage = () => {
       } else if (newProducts.length > 0 || newServices.length > 0) {
         pickContext = `Picks for ${pet.name}`;
       }
+      
+      // Store detected topic for tray rendering
+      const celebrationSubIntent = detectedTopic;
       
       // ═══════════════════════════════════════════════════════════════════
       // YOUTUBE TRAINING VIDEOS - Detect training/learn intents
