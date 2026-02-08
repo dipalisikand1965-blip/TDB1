@@ -2475,6 +2475,33 @@ const MiraDemoPage = () => {
 
   return (
     <div className="mira-prod">
+      {/* PERSONALIZATION TICKER - Animated ribbon showing how Mira knows the pet */}
+      {tickerItems.length > 0 && (
+        <div className="mira-ticker">
+          <div className="ticker-track">
+            <div className="ticker-content">
+              {/* Duplicate items for seamless loop */}
+              {[...tickerItems, ...tickerItems, ...tickerItems].map((item, i) => (
+                <span 
+                  key={`ticker-${i}`} 
+                  className={`ticker-item ticker-${item.type}`}
+                  onClick={() => {
+                    if (item.type === 'place') {
+                      handleQuickReply(`Tell me about ${item.text.split(' welcomes')[0]} for ${pet.name}`);
+                    } else if (item.type === 'weather') {
+                      handleQuickReply(`What activities are good for ${pet.name} in this weather?`);
+                    }
+                  }}
+                >
+                  <span className="ticker-icon">{item.icon}</span>
+                  <span className="ticker-text">{item.text}</span>
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+      
       {/* HEADER */}
       <header className="mp-header">
         <div className="mp-header-inner">
