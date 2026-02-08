@@ -77,7 +77,6 @@ const DinePage = () => {
   
   // Booking modal state for unified Concierge® flow
   const [showBookingModal, setShowBookingModal] = useState(false);
-  const [selectedRestaurant, setSelectedRestaurant] = useState(null);
 
   // Rotating hero images for visual appeal
   const HERO_IMAGES = [
