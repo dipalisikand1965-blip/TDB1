@@ -2576,15 +2576,42 @@ const MiraDemoPage = () => {
         }).catch(e => console.log('[MEMORY] Auto-save failed:', e.message));
       }
       
-      // Update miraPicks if we have new recommendations
-      if (newProducts.length > 0 || newServices.length > 0 || newExperiences.length > 0 || ['party_planning', 'cake_shopping', 'celebration'].includes(celebrationSubIntent)) {
+      // ═══════════════════════════════════════════════════════════════════════════
+      // MODE SYSTEM - Respect backend flags for what to show
+      // ═══════════════════════════════════════════════════════════════════════════
+      const miraMode = data.mode || 'GENERAL';
+      const clarifyOnly = data.clarify_only || false;
+      const shouldShowProductsFromBackend = data.show_products !== false;
+      const shouldShowServicesFromBackend = data.show_services !== false;
+      const shouldShowConcierge = data.show_concierge !== false;
+      
+      console.log(`[MODE SYSTEM] Mode: ${miraMode} | Clarify only: ${clarifyOnly} | Show products: ${shouldShowProductsFromBackend}`);
+      
+      // Update miraPicks only if backend says we can show products/services
+      // OR if it's a celebration sub-intent that needs special handling
+      if ((shouldShowProductsFromBackend && (newProducts.length > 0 || newServices.length > 0 || newExperiences.length > 0)) || 
+          (!clarifyOnly && ['party_planning', 'cake_shopping', 'celebration'].includes(celebrationSubIntent))) {
         setMiraPicks({
-          products: newProducts,
-          services: [...newServices, ...newExperiences],
+          products: clarifyOnly ? [] : newProducts,
+          services: clarifyOnly ? [] : [...newServices, ...newExperiences],
           context: pickContext,
-          subIntent: celebrationSubIntent, // Store for tray rendering
-          hasNew: true
+          subIntent: celebrationSubIntent,
+          mode: miraMode,
+          clarifyOnly: clarifyOnly,
+          showConcierge: shouldShowConcierge,
+          hasNew: !clarifyOnly && (newProducts.length > 0 || newServices.length > 0)
         });
+      } else if (clarifyOnly) {
+        // Clarify-only mode - clear any existing picks
+        setMiraPicks(prev => ({
+          ...prev,
+          products: [],
+          services: [],
+          mode: miraMode,
+          clarifyOnly: true,
+          showConcierge: false,
+          hasNew: false
+        }));
       }
       
       setConversationHistory(prev => [...prev, miraMessage]);
