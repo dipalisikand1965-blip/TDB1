@@ -11096,6 +11096,226 @@ async def verify_listing(request: Request):
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# VET CLINICS API
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@router.get("/vet-clinics")
+async def get_vet_clinics(
+    city: str = None, 
+    emergency_only: bool = False, 
+    is_24_hours: bool = False,
+    limit: int = 20
+):
+    """Get vet clinics. Filter by city, emergency capability, or 24/7 availability."""
+    db = get_db()
+    
+    query = {}
+    if city:
+        query["city"] = {"$regex": city, "$options": "i"}
+    if emergency_only:
+        query["is_emergency"] = True
+    if is_24_hours:
+        query["is_24_hours"] = True
+    
+    clinics = await db.vet_clinics.find(
+        query, {"_id": 0}
+    ).sort([("is_24_hours", -1), ("rating", -1)]).limit(limit).to_list(limit)
+    
+    return {
+        "success": True,
+        "clinics": clinics,
+        "total": len(clinics),
+        "filters": {"city": city, "emergency_only": emergency_only, "is_24_hours": is_24_hours}
+    }
+
+
+@router.get("/vet-clinics/emergency")
+async def get_emergency_vets(city: str = None, limit: int = 10):
+    """Get 24/7 emergency vet clinics - prioritized for urgent situations."""
+    db = get_db()
+    
+    query = {"is_24_hours": True, "is_emergency": True}
+    if city:
+        query["city"] = {"$regex": city, "$options": "i"}
+    
+    clinics = await db.vet_clinics.find(
+        query, {"_id": 0}
+    ).sort("rating", -1).limit(limit).to_list(limit)
+    
+    return {
+        "success": True,
+        "clinics": clinics,
+        "total": len(clinics),
+        "message": f"Found {len(clinics)} 24/7 emergency clinics" + (f" in {city}" if city else "")
+    }
+
+
+@router.post("/vet-clinics/add")
+async def add_vet_clinic(request: Request):
+    """Add a new vet clinic for verification."""
+    db = get_db()
+    data = await request.json()
+    
+    clinic = {
+        "name": data.get("name"),
+        "city": data.get("city"),
+        "area": data.get("area"),
+        "address": data.get("address"),
+        "phone": data.get("phone"),
+        "website": data.get("website"),
+        "email": data.get("email"),
+        "is_24_hours": data.get("is_24_hours", False),
+        "is_emergency": data.get("is_emergency", True),
+        "services": data.get("services", []),
+        "specialties": data.get("specialties", []),
+        "pets_treated": data.get("pets_treated", ["Dogs", "Cats"]),
+        "consultation_fee": data.get("consultation_fee"),
+        "rating": data.get("rating"),
+        "verified": False,  # Needs verification
+        "semantic_tags": ["vet", "clinic", "hospital", "medical"],
+        "semantic_intents": ["emergency_care", "consultation_advice"],
+        "type": "vet_clinic"
+    }
+    
+    await db.vet_clinics.insert_one(clinic)
+    
+    return {"success": True, "message": f"Vet clinic '{clinic['name']}' added for verification"}
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# NEARBY PLACES - Unified search for restaurants, stays, and vets
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@router.get("/nearby-places")
+async def get_nearby_places(
+    city: str,
+    place_type: str = None,  # "restaurant", "stay", "vet", or None for all
+    limit: int = 10
+):
+    """
+    Get nearby pet-friendly places for a city.
+    Returns restaurants, stays, and vet clinics based on user's location.
+    """
+    db = get_db()
+    
+    results = {
+        "city": city,
+        "restaurants": [],
+        "stays": [],
+        "vet_clinics": []
+    }
+    
+    city_query = {"city": {"$regex": city, "$options": "i"}}
+    
+    if place_type is None or place_type == "restaurant":
+        restaurants = await db.restaurants.find(
+            {**city_query, "verified": True}, {"_id": 0}
+        ).sort("rating", -1).limit(limit).to_list(limit)
+        results["restaurants"] = restaurants
+    
+    if place_type is None or place_type == "stay":
+        stays = await db.pet_friendly_stays.find(
+            {**city_query, "verified": True}, {"_id": 0}
+        ).sort("rating", -1).limit(limit).to_list(limit)
+        results["stays"] = stays
+    
+    if place_type is None or place_type == "vet":
+        vets = await db.vet_clinics.find(
+            {**city_query, "verified": True}, {"_id": 0}
+        ).sort([("is_24_hours", -1), ("rating", -1)]).limit(limit).to_list(limit)
+        results["vet_clinics"] = vets
+    
+    total = len(results["restaurants"]) + len(results["stays"]) + len(results["vet_clinics"])
+    
+    return {
+        "success": True,
+        "results": results,
+        "total": total,
+        "message": f"Found {total} pet-friendly places in {city}"
+    }
+
+
+@router.post("/find-nearby")
+async def find_nearby_for_intent(request: Request):
+    """
+    Smart nearby place finder based on user intent.
+    Mira can call this to recommend places based on what the user is looking for.
+    """
+    db = get_db()
+    data = await request.json()
+    
+    city = data.get("city", "").strip()
+    intent = data.get("intent", "").lower()  # "vet", "emergency", "restaurant", "brunch", "stay", "hotel"
+    user_message = data.get("user_message", "").lower()
+    
+    if not city:
+        return {"success": False, "error": "City is required"}
+    
+    city_query = {"city": {"$regex": city, "$options": "i"}}
+    results = []
+    place_type = "general"
+    
+    # Detect intent from keywords
+    vet_keywords = ["vet", "clinic", "hospital", "doctor", "emergency", "sick", "unwell", "not eating", "vomiting", "injury", "hurt", "blood", "pain"]
+    restaurant_keywords = ["restaurant", "cafe", "brunch", "lunch", "dinner", "eat", "food", "dine", "dining"]
+    stay_keywords = ["hotel", "stay", "resort", "accommodation", "vacation", "trip", "travel", "book"]
+    
+    # Check for vet-related queries (highest priority for emergencies)
+    if intent == "vet" or intent == "emergency" or any(kw in user_message for kw in vet_keywords):
+        place_type = "vet_clinic"
+        
+        # For emergency, prioritize 24/7 clinics
+        if "emergency" in user_message or "urgent" in user_message or intent == "emergency":
+            vets = await db.vet_clinics.find(
+                {**city_query, "is_24_hours": True, "is_emergency": True, "verified": True}, {"_id": 0}
+            ).sort("rating", -1).limit(5).to_list(5)
+        else:
+            vets = await db.vet_clinics.find(
+                {**city_query, "verified": True}, {"_id": 0}
+            ).sort([("is_24_hours", -1), ("rating", -1)]).limit(5).to_list(5)
+        
+        results = vets
+    
+    # Check for restaurant queries
+    elif intent == "restaurant" or any(kw in user_message for kw in restaurant_keywords):
+        place_type = "restaurant"
+        restaurants = await db.restaurants.find(
+            {**city_query, "verified": True}, {"_id": 0}
+        ).sort("rating", -1).limit(5).to_list(5)
+        results = restaurants
+    
+    # Check for stay/hotel queries
+    elif intent == "stay" or any(kw in user_message for kw in stay_keywords):
+        place_type = "stay"
+        stays = await db.pet_friendly_stays.find(
+            {**city_query, "verified": True}, {"_id": 0}
+        ).sort("rating", -1).limit(5).to_list(5)
+        results = stays
+    
+    # Default: return a mix of all
+    else:
+        restaurants = await db.restaurants.find(
+            {**city_query, "verified": True}, {"_id": 0}
+        ).sort("rating", -1).limit(3).to_list(3)
+        
+        vets = await db.vet_clinics.find(
+            {**city_query, "is_24_hours": True, "verified": True}, {"_id": 0}
+        ).sort("rating", -1).limit(2).to_list(2)
+        
+        results = restaurants + vets
+        place_type = "mixed"
+    
+    return {
+        "success": True,
+        "city": city,
+        "place_type": place_type,
+        "places": results,
+        "total": len(results),
+        "message": f"Found {len(results)} {place_type.replace('_', ' ')}(s) in {city}"
+    }
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # AI SEMANTIC TAGGING - Run as part of Master Sync
 # ═══════════════════════════════════════════════════════════════════════════════
 
