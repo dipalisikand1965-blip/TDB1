@@ -37,13 +37,14 @@ const FormattedText = ({ children, className = '' }) => {
   const processText = (text) => {
     if (typeof text !== 'string') return text;
     
-    // Convert inline dashes to proper list format
-    // Pattern: " - " followed by text → "\n- " for proper markdown list
+    // Convert inline formatting to proper markdown
     let processed = text
-      // First, handle dashes at start of sentences (after period or colon)
+      // Convert inline numbered items to proper list format (e.g., "1. Text" → "\n1. Text")
+      .replace(/([.:]\s*)(\d+)\.\s+/g, '$1\n\n$2. ')
+      // Handle dashes at start of sentences (after period or colon)
       .replace(/([.:])(\s*)- /g, '$1\n\n- ')
-      // Then handle remaining inline dashes that look like list items
-      .replace(/ - ([A-Z])/g, '\n- $1')
+      // Handle remaining inline dashes that look like list items
+      .replace(/ - ([A-Z])/g, '\n\n- $1')
       // Convert ### headers to proper format
       .replace(/\s*###\s*/g, '\n\n### ')
       // Clean up multiple newlines
