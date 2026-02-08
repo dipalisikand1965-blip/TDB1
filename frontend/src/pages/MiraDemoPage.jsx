@@ -3248,6 +3248,100 @@ const MiraDemoPage = () => {
             
             {/* Tray Content */}
             <div className="mp-tray-content">
+              
+              {/* ═══════════════════════════════════════════════════════════════
+                  CARE ALERTS SECTION - Health Vault, Celebrations, Health Reminders
+                  Shows at top of tray when there are items needing attention
+              ═══════════════════════════════════════════════════════════════ */}
+              {(healthVault.completeness < 100 || 
+                proactiveAlerts.healthReminders.some(r => r.needs_attention) || 
+                proactiveAlerts.celebrations.some(c => c.is_upcoming)) && (
+                <div className="mp-tray-section mp-care-section">
+                  <h4><Heart size={16} /> {pet.name}'s Care</h4>
+                  
+                  <div className="mp-care-alerts">
+                    {/* Health Vault Completion */}
+                    {healthVault.completeness < 100 && (
+                      <button 
+                        className="mp-care-item mp-care-vault"
+                        onClick={() => {
+                          setShowMiraTray(false);
+                          setHealthVault(prev => ({ ...prev, showWizard: true }));
+                        }}
+                      >
+                        <div className="care-item-icon">
+                          <Shield size={16} />
+                        </div>
+                        <div className="care-item-content">
+                          <span className="care-item-title">Complete Health Vault</span>
+                          <div className="care-item-progress">
+                            <div className="care-progress-bar" style={{ width: `${healthVault.completeness}%` }} />
+                          </div>
+                          <span className="care-item-subtitle">{healthVault.completeness}% • {healthVault.missing_fields?.length || 0} items missing</span>
+                        </div>
+                        <ChevronRight size={16} className="care-item-arrow" />
+                      </button>
+                    )}
+                    
+                    {/* Upcoming Celebrations */}
+                    {proactiveAlerts.celebrations.filter(c => c.is_upcoming).map((celeb, i) => (
+                      <button 
+                        key={`care-celeb-${i}`}
+                        className={`mp-care-item ${celeb.is_today ? 'mp-care-today' : 'mp-care-upcoming'}`}
+                        onClick={() => {
+                          setShowMiraTray(false);
+                          handleQuickReply(celeb.is_today 
+                            ? `It's ${pet.name}'s ${celeb.type === 'birthday' ? 'birthday' : 'gotcha day'}! Let's celebrate!` 
+                            : `${pet.name}'s ${celeb.type === 'birthday' ? 'birthday' : 'gotcha day'} is coming up in ${celeb.days_until} days`);
+                        }}
+                      >
+                        <div className="care-item-icon">
+                          {celeb.type === 'birthday' ? '🎂' : '💜'}
+                        </div>
+                        <div className="care-item-content">
+                          <span className="care-item-title">
+                            {celeb.is_today ? `Today is ${pet.name}'s ${celeb.type === 'birthday' ? 'Birthday' : 'Gotcha Day'}!` : celeb.name}
+                          </span>
+                          {!celeb.is_today && (
+                            <span className="care-item-subtitle">{celeb.days_until} days away • {celeb.date}</span>
+                          )}
+                        </div>
+                        <ChevronRight size={16} className="care-item-arrow" />
+                      </button>
+                    ))}
+                    
+                    {/* Health Reminders */}
+                    {proactiveAlerts.healthReminders.filter(r => r.needs_attention).map((reminder, i) => (
+                      <button 
+                        key={`care-health-${i}`}
+                        className={`mp-care-item ${reminder.urgent || reminder.is_overdue ? 'mp-care-urgent' : 'mp-care-notice'}`}
+                        onClick={() => {
+                          setShowMiraTray(false);
+                          handleQuickReply(reminder.type === 'vaccine' 
+                            ? `${pet.name} needs ${reminder.name} vaccine` 
+                            : `Schedule a vet checkup for ${pet.name}`);
+                        }}
+                      >
+                        <div className="care-item-icon">
+                          {reminder.type === 'vaccine' ? '💉' : '🏥'}
+                        </div>
+                        <div className="care-item-content">
+                          <span className="care-item-title">
+                            {reminder.type === 'vet_visit' ? reminder.message : reminder.name}
+                          </span>
+                          {reminder.type === 'vaccine' && (
+                            <span className="care-item-subtitle">
+                              {reminder.is_overdue ? 'Overdue' : reminder.days_until ? `Due in ${reminder.days_until} days` : 'Due soon'}
+                            </span>
+                          )}
+                        </div>
+                        <ChevronRight size={16} className="care-item-arrow" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
               {/* Products Section */}
               {miraPicks.products.length > 0 && (
                 <div className="mp-tray-section">
