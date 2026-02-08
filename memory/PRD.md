@@ -205,12 +205,22 @@ The backend automatically runs AI semantic tagging on startup via:
 
 | Category | Total | Verified | Cities |
 |----------|-------|----------|--------|
-| Restaurants | 29+ | 100% | Mumbai, Delhi, Bangalore, Goa, Pune, Hyderabad, Chennai |
-| Pet-Friendly Stays | 20+ | 100% | Mumbai, Goa, Coorg, Jaipur, Shimla, Kasol, Kerala, Rajasthan |
+| Restaurants | 75+ | 100% | Mumbai, Delhi, Bangalore, Goa, Pune, Hyderabad, Chennai |
+| Pet-Friendly Stays | 31+ | 100% | Mumbai, Goa, Coorg, Jaipur, Shimla, Kasol, Kerala, Rajasthan |
+| Vet Clinics | 32 | 100% | Mumbai, Delhi, Bangalore, Gurgaon, Noida, Pune, Hyderabad, Chennai, Kolkata, Goa |
+| 24/7 Emergency Vets | 18 | 100% | All major cities |
 
-**Data Sources:** CarryMyPet, BringFido, LBB, EazyDiner, HeadsUpForTails, IndianHoliday, TripAdvisor (2025)
+**Data Sources:** CarryMyPet, BringFido, LBB, EazyDiner, HeadsUpForTails, Vetic, Crown Vet, MaxPetZ, IndianHoliday, TripAdvisor (2025)
 
-**Script:** `/app/backend/scripts/seed_pet_friendly_places.py`
+**Scripts:**
+- `/app/backend/scripts/seed_pet_friendly_places.py` - Restaurants & Stays
+- `/app/backend/scripts/seed_vet_clinics.py` - Vet Clinics
+
+**API Endpoints:**
+- `GET /api/mira/vet-clinics` - Get vet clinics by city
+- `GET /api/mira/vet-clinics/emergency` - 24/7 emergency vets
+- `GET /api/mira/nearby-places?city=X` - All pet-friendly places in a city
+- `POST /api/mira/find-nearby` - Smart intent-based place finder
 
 ---
 
