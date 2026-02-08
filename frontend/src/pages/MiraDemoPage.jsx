@@ -4234,7 +4234,13 @@ const MiraDemoPage = () => {
               ref={inputRef}
               type="text"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                // Stop voice if user starts typing (interrupt)
+                if (isSpeaking && e.target.value.length > 0) {
+                  stopSpeaking();
+                }
+              }}
               placeholder={`Type your reply to Mira...`}
               className="mp-input"
               disabled={isProcessing}
