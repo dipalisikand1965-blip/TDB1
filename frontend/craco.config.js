@@ -67,6 +67,31 @@ const webpackConfig = {
         webpackConfig.optimization.minimizer = webpackConfig.optimization.minimizer.filter(
           (plugin) => plugin.constructor.name !== 'CssMinimizerPlugin'
         );
+      } else {
+        // Replace default CSS minimizer with cssnano using safe preset
+        webpackConfig.optimization.minimizer = webpackConfig.optimization.minimizer.filter(
+          (plugin) => plugin.constructor.name !== 'CssMinimizerPlugin'
+        );
+        webpackConfig.optimization.minimizer.push(
+          new CssMinimizerPlugin({
+            minimizerOptions: {
+              preset: ['default', { 
+                calc: false,
+                colormin: false,
+                convertValues: false,
+                discardComments: { removeAll: true },
+                mergeLonghand: false,
+                mergeRules: false,
+                minifyFontValues: false,
+                minifyParams: false,
+                normalizeCharset: false,
+                reduceInitial: false,
+                reduceTransforms: false,
+                svgo: false,
+              }],
+            },
+          })
+        );
       }
 
       // Add health check plugin to webpack if enabled
