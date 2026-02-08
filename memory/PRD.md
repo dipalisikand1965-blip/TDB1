@@ -245,6 +245,32 @@ MIRA UNDERSTANDS (intent, pet context)
 
 ---
 
+## Layout Fix - Desktop Left-Aligned & Wider (Feb 8, 2026)
+
+### Changes Made:
+1. **Hero section** - Now left-aligned on desktop (was centered)
+2. **Container width** - Increased from 900px to 1200px max-width on desktop
+3. **Quick chips** - Left-aligned on desktop
+4. **Soul Journey button** - Left-aligned on desktop
+
+### CSS Changes:
+- `.mira-hero-welcome` - Added `align-items: flex-start` for desktop
+- `.hero-layout` - Updated to `flex-direction: row` with left alignment
+- `.mp-messages-inner` - Increased max-width to 1200px
+- `.quick-chips` - Added `justify-content: flex-start` for desktop
+
+---
+
+## Real-Time Soul Score (Feb 8, 2026)
+
+### How It Works:
+1. Backend increments `overall_score` after each meaningful interaction
+2. Backend returns `pet_soul_score` in API response
+3. Frontend updates `pet.soulScore` state in real-time
+4. Soul badge shows the updated score
+
+---
+
 ## "READY FOR [PET]" TRAY - World Class UX (Feb 8, 2026)
 
 ### The Vision
