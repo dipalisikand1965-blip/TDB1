@@ -148,7 +148,7 @@
 
 ## Preview URL
 
-https://pet-soul-demo.preview.emergentagent.com
+https://premium-pets-5.preview.emergentagent.com
 
 ---
 
