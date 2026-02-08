@@ -2660,7 +2660,14 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
             "clarify_only": clarify_only,  # If true, frontend hides products/services/Concierge
             "show_products": should_show_products and len(final_products) > 0,  # Explicit flag
             "show_services": should_show_products and len(services_from_db) > 0,  # Services follow same rule
-            "show_concierge": not clarify_only and not no_products_ever  # Concierge CTA visibility
+            "show_concierge": not clarify_only and not no_products_ever,  # Concierge CTA visibility
+            
+            # ═══════════════════════════════════════════════════════════════════════════
+            # TOPIC SHIFT - Frontend shows subtle indicator when topic changes
+            # ═══════════════════════════════════════════════════════════════════════════
+            "topic_shift": topic_shift_detected,  # True if topic changed from previous conversation
+            "current_pillar": current_pillar,  # Current conversation pillar
+            "previous_pillar": previous_pillar  # Previous pillar (for UI indicator)
         }
         
         # ============================================
