@@ -12552,6 +12552,111 @@ async def test_youtube_api():
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# GOOGLE VISION API - Breed Detection from Photos
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@router.post("/vision/detect-breed")
+async def detect_breed_from_image(image_url: str = None, image_base64: str = None):
+    """
+    Detect dog/cat breed from an image using Google Vision API.
+    Can accept either an image URL or base64-encoded image data.
+    
+    Returns: breed name, confidence, breed info
+    """
+    import httpx
+    import base64
+    
+    GOOGLE_VISION_API_KEY = os.environ.get("GOOGLE_VISION_API_KEY", "")
+    
+    if not GOOGLE_VISION_API_KEY:
+        return {"success": False, "error": "Google Vision API not configured"}
+    
+    if not image_url and not image_base64:
+        return {"success": False, "error": "Please provide image_url or image_base64"}
+    
+    try:
+        # Prepare the request
+        if image_url:
+            image_content = {"source": {"imageUri": image_url}}
+        else:
+            image_content = {"content": image_base64}
+        
+        request_body = {
+            "requests": [{
+                "image": image_content,
+                "features": [
+                    {"type": "LABEL_DETECTION", "maxResults": 20},
+                    {"type": "OBJECT_LOCALIZATION", "maxResults": 5}
+                ]
+            }]
+        }
+        
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            response = await client.post(
+                f"https://vision.googleapis.com/v1/images:annotate?key={GOOGLE_VISION_API_KEY}",
+                json=request_body
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                responses = data.get("responses", [{}])[0]
+                
+                labels = responses.get("labelAnnotations", [])
+                objects = responses.get("localizedObjectAnnotations", [])
+                
+                # Find breed-related labels
+                breed_keywords = ["retriever", "shepherd", "bulldog", "poodle", "terrier", "spaniel", 
+                                 "labrador", "golden", "husky", "beagle", "chihuahua", "pomeranian",
+                                 "rottweiler", "doberman", "boxer", "pug", "dachshund", "shih tzu",
+                                 "maltese", "yorkshire", "corgi", "dalmatian", "great dane", "mastiff",
+                                 "persian", "siamese", "maine coon", "bengal", "ragdoll", "sphynx"]
+                
+                detected_breed = None
+                confidence = 0
+                is_dog = False
+                is_cat = False
+                
+                # Check labels for breed
+                for label in labels:
+                    label_text = label.get("description", "").lower()
+                    score = label.get("score", 0)
+                    
+                    if "dog" in label_text:
+                        is_dog = True
+                    if "cat" in label_text:
+                        is_cat = True
+                    
+                    for breed in breed_keywords:
+                        if breed in label_text:
+                            if score > confidence:
+                                detected_breed = label.get("description")
+                                confidence = score
+                
+                # Get breed info if detected
+                breed_info = None
+                if detected_breed:
+                    from breed_knowledge import get_breed_knowledge
+                    breed_info = get_breed_knowledge(detected_breed)
+                
+                return {
+                    "success": True,
+                    "detected_breed": detected_breed,
+                    "confidence": round(confidence * 100, 1),
+                    "is_dog": is_dog,
+                    "is_cat": is_cat,
+                    "breed_info": breed_info,
+                    "all_labels": [{"name": l.get("description"), "score": round(l.get("score", 0) * 100, 1)} for l in labels[:10]]
+                }
+            else:
+                logger.error(f"[VISION] API error: {response.status_code}")
+                return {"success": False, "error": f"Vision API error: {response.status_code}"}
+                
+    except Exception as e:
+        logger.error(f"[VISION] Breed detection error: {e}")
+        return {"success": False, "error": str(e)}
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # AMADEUS TRAVEL API - Pet-Friendly Hotels & Travel
 # ═══════════════════════════════════════════════════════════════════════════════
 
