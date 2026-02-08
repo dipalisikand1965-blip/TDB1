@@ -3475,9 +3475,13 @@ const MiraDemoPage = () => {
   const toggleVoice = () => {
     if (!recognitionRef.current) return;
     if (isListening) {
+      // HAPTIC: Voice stop
+      hapticFeedback.voiceStop();
       recognitionRef.current.stop();
       setIsListening(false);
     } else {
+      // HAPTIC: Voice start
+      hapticFeedback.voiceStart();
       recognitionRef.current.start();
       setIsListening(true);
     }
@@ -3485,6 +3489,8 @@ const MiraDemoPage = () => {
   
   // Toggle voice output
   const toggleVoiceOutput = () => {
+    // HAPTIC: Toggle
+    hapticFeedback.toggle();
     if (isSpeaking && audioRef.current) {
       audioRef.current.pause();
       setIsSpeaking(false);
@@ -3494,6 +3500,8 @@ const MiraDemoPage = () => {
   
   // Handle dock click
   const handleDockClick = (item) => {
+    // HAPTIC: Navigation
+    hapticFeedback.navigate();
     setActiveDockItem(item.id);
     if (item.action === 'openChat') {
       window.dispatchEvent(new CustomEvent('openMiraAI'));
