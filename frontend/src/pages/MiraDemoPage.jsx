@@ -525,6 +525,10 @@ const MiraDemoPage = () => {
   const [isListening, setIsListening] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [showHelpModal, setShowHelpModal] = useState(false);
+  const [showLearnModal, setShowLearnModal] = useState(false);
+  const [learnVideos, setLearnVideos] = useState([]);
+  const [learnLoading, setLearnLoading] = useState(false);
+  const [learnCategory, setLearnCategory] = useState('recommended');
   const [conversationHistory, setConversationHistory] = useState([]);
   const [activeDockItem, setActiveDockItem] = useState(null);
   const [pet, setPet] = useState(DEMO_PET);
