@@ -4143,7 +4143,55 @@ const MiraDemoPage = () => {
           {/* Conversation Messages */}
           {conversationHistory.length > 0 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-              {conversationHistory.map((msg, idx) => (
+              {/* Collapsed Older Messages */}
+              {conversationHistory.length > VISIBLE_MESSAGE_COUNT && (
+                <div className="mp-history-toggle" style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  padding: '8px 16px',
+                  background: 'rgba(255,255,255,0.05)',
+                  borderRadius: '12px',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease'
+                }}
+                onClick={() => setShowOlderMessages(!showOlderMessages)}
+                data-testid="toggle-history-btn"
+                >
+                  <History size={14} style={{ opacity: 0.7 }} />
+                  <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.7)' }}>
+                    {showOlderMessages ? 'Hide' : 'Show'} {conversationHistory.length - VISIBLE_MESSAGE_COUNT} earlier messages
+                  </span>
+                  {showOlderMessages ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+                </div>
+              )}
+              
+              {/* Older Messages (Collapsible) */}
+              {showOlderMessages && conversationHistory.slice(0, -VISIBLE_MESSAGE_COUNT).map((msg, idx) => (
+                <div key={`old-${idx}`} style={{ opacity: 0.7 }}>
+                  {msg.type === 'user' ? (
+                    <div className="mp-msg-user">
+                      <div className="mp-bubble-user" style={{ fontSize: '13px' }}>{msg.content}</div>
+                    </div>
+                  ) : msg.type === 'mira' && (
+                    <div className="mp-msg-mira">
+                      <div className="mp-card" style={{ padding: '12px' }}>
+                        <div className="mp-card-header" style={{ marginBottom: '8px' }}>
+                          <div className="mp-mira-avatar" style={{ width: '24px', height: '24px' }}><Sparkles size={12} /></div>
+                          <span className="mp-mira-name" style={{ fontSize: '12px' }}>Mira</span>
+                        </div>
+                        <div className="mp-card-body" style={{ fontSize: '13px' }}>
+                          {msg.content?.substring(0, 200)}{msg.content?.length > 200 ? '...' : ''}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+              
+              {/* Visible Recent Messages */}
+              {(conversationHistory.length > VISIBLE_MESSAGE_COUNT ? conversationHistory.slice(-VISIBLE_MESSAGE_COUNT) : conversationHistory).map((msg, idx) => (
                 <React.Fragment key={idx}>
                   {/* Topic Shift Indicator */}
                   {msg.type === 'topic_shift' ? (
