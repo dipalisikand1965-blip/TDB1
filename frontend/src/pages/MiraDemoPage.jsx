@@ -668,6 +668,42 @@ const MiraDemoPage = () => {
     health: 30
   };
   
+  // Stream text with typing animation
+  const streamTextAnimation = useCallback(async (text, mode = 'default') => {
+    const speed = TYPING_SPEEDS[mode] || TYPING_SPEEDS.default;
+    const charDelay = 1000 / speed; // ms per character
+    
+    setIsTyping(true);
+    setDisplayedText('');
+    
+    // Split into words for more natural feel
+    const words = text.split(' ');
+    let currentText = '';
+    
+    for (let i = 0; i < words.length; i++) {
+      const word = words[i];
+      // Add word with space
+      currentText += (i > 0 ? ' ' : '') + word;
+      setDisplayedText(currentText);
+      
+      // Variable delay - longer for punctuation
+      let delay = charDelay * word.length;
+      if (word.endsWith('.') || word.endsWith('!') || word.endsWith('?')) {
+        delay += 150; // Pause after sentences
+      } else if (word.endsWith(',')) {
+        delay += 50; // Small pause after commas
+      }
+      
+      // Cap delay to prevent too slow
+      delay = Math.min(delay, 200);
+      
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+    
+    setIsTyping(false);
+    return text;
+  }, []);
+  
   // E028: MILESTONES
   const [milestones, setMilestones] = useState([]);
   
