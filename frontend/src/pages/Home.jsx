@@ -1,1937 +1,620 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
-import { Card } from '../components/ui/card';
 import { 
-  Brain, Sparkles, Heart, ArrowRight, PawPrint, 
-  Eye, MessageCircle, Shield, Star,
-  TrendingUp, Quote, ChevronRight, Check,
-  Lock, Users, Award, ExternalLink, X,
-  Play, ChevronDown, Volume2, VolumeX, SkipForward,
-  Crown, Zap, Clock, Gift, Video, PlayCircle
+  Sparkles, Heart, ArrowRight, PawPrint, 
+  MessageCircle, Star, ChevronRight, Check,
+  Users, Play, ChevronDown, Crown, Utensils, 
+  Hotel, GraduationCap, PartyPopper, HeartPulse,
+  Phone, Mail, Quote
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { getApiUrl } from '../utils/api';
 import SEOHead from '../components/SEOHead';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
-// ============ LIVING SOUL ORB COMPONENT ============
-// This is the heart of the experience - a BREATHING, LIVING visualization
-const LivingSoulOrb = ({ size = 'lg', className = '', interactive = true }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  const [pulseIntensity, setPulseIntensity] = useState(1);
-  
-  // Simulate "breathing" with varying intensity
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setPulseIntensity(0.8 + Math.random() * 0.4);
-    }, 2000);
-    return () => clearInterval(interval);
-  }, []);
+// Brand images from your collection
+const BRAND_IMAGES = {
+  hero: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/einpahqm_dog-813103%20%281%29.jpg',
+  goldenRetriever: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/q0alj5za_dog-1194087_1920%20%281%29.jpg',
+  bulldog: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/yl1otn9m_bulldog-1047518_1920%20%281%29.jpg',
+  petWithOwner: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/4oryz05r_shutterstock_131282603%20%281%29.jpg',
+  happyPet: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/s4qmsach_shutterstock_199063937.jpg',
+  lifestyle1: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/sj6layzi_shutterstock_504980047%20%282%29.jpg',
+  lifestyle2: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/tfel85m7_shutterstock_139089332%20%281%29.jpg',
+};
 
+// Mira's Living Soul Orb - Simplified
+const MiraSoulOrb = ({ size = 'md' }) => {
   const sizeClasses = {
-    sm: 'w-20 h-20',
-    md: 'w-32 h-32 sm:w-40 sm:h-40',
-    lg: 'w-40 h-40 sm:w-56 sm:h-56',
-    xl: 'w-56 h-56 sm:w-72 sm:h-72'
+    sm: 'w-16 h-16',
+    md: 'w-24 h-24',
+    lg: 'w-32 h-32',
   };
 
   return (
-    <div 
-      className={`relative ${sizeClasses[size]} ${className}`}
-      onMouseEnter={() => interactive && setIsHovered(true)}
-      onMouseLeave={() => interactive && setIsHovered(false)}
-    >
-      {/* Aurora outer rings - the "aura" */}
+    <div className={`relative ${sizeClasses[size]}`}>
       <motion.div
-        className="absolute inset-[-20%] rounded-full"
-        style={{
-          background: 'conic-gradient(from 0deg, rgba(168,85,247,0.3), rgba(236,72,153,0.3), rgba(99,102,241,0.3), rgba(168,85,247,0.3))',
-          filter: 'blur(40px)',
-        }}
-        animate={{
-          rotate: 360,
-          scale: [1, 1.1 * pulseIntensity, 1],
-        }}
-        transition={{
-          rotate: { duration: 20, repeat: Infinity, ease: 'linear' },
-          scale: { duration: 3, repeat: Infinity, ease: 'easeInOut' }
-        }}
-      />
-      
-      {/* Secondary aurora ring */}
-      <motion.div
-        className="absolute inset-[-10%] rounded-full"
-        style={{
-          background: 'conic-gradient(from 180deg, rgba(236,72,153,0.4), rgba(168,85,247,0.4), rgba(59,130,246,0.4), rgba(236,72,153,0.4))',
-          filter: 'blur(30px)',
-        }}
-        animate={{
-          rotate: -360,
-          scale: [1.1, 1, 1.1],
-        }}
-        transition={{
-          rotate: { duration: 15, repeat: Infinity, ease: 'linear' },
-          scale: { duration: 2.5, repeat: Infinity, ease: 'easeInOut' }
-        }}
-      />
-
-      {/* Breathing glow pulse */}
-      <motion.div
-        className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-500/40 via-pink-500/30 to-indigo-500/40"
-        animate={{
-          scale: [1, 1.2 * pulseIntensity, 1],
-          opacity: [0.4, 0.7, 0.4],
-        }}
+        className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-500 via-pink-500 to-indigo-500"
+        animate={{ scale: [1, 1.1, 1], opacity: [0.6, 0.8, 0.6] }}
         transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-        style={{ filter: 'blur(20px)' }}
+        style={{ filter: 'blur(15px)' }}
       />
-
-      {/* Core orb with glass effect */}
-      <motion.div
-        className="absolute inset-[15%] rounded-full overflow-hidden"
-        style={{
-          background: 'linear-gradient(135deg, rgba(168,85,247,0.9) 0%, rgba(236,72,153,0.9) 50%, rgba(99,102,241,0.9) 100%)',
-          boxShadow: `
-            0 0 60px rgba(168,85,247,0.6),
-            0 0 100px rgba(236,72,153,0.4),
-            0 0 140px rgba(99,102,241,0.3),
-            inset 0 0 60px rgba(255,255,255,0.1)
-          `,
-        }}
-        animate={{
-          scale: isHovered ? 1.1 : [1, 1.03 * pulseIntensity, 1],
-        }}
-        transition={{ duration: isHovered ? 0.3 : 2, repeat: isHovered ? 0 : Infinity }}
-      >
-        {/* Inner light refraction */}
-        <motion.div
-          className="absolute inset-0"
-          style={{
-            background: 'radial-gradient(ellipse at 30% 30%, rgba(255,255,255,0.4) 0%, transparent 50%)',
-          }}
-          animate={{
-            opacity: [0.3, 0.6, 0.3],
-          }}
-          transition={{ duration: 2, repeat: Infinity }}
-        />
-        
-        {/* Sparkle icon */}
-        <div className="absolute inset-0 flex items-center justify-center">
-          <motion.div
-            animate={{
-              rotate: [0, 10, -10, 0],
-              scale: [1, 1.1, 1],
-            }}
-            transition={{ duration: 4, repeat: Infinity }}
-          >
-            <Sparkles className="w-1/3 h-1/3 text-white/90 drop-shadow-lg" />
-          </motion.div>
-        </div>
-      </motion.div>
-
-      {/* Orbiting particles */}
-      {[0, 1, 2, 3, 4].map((i) => (
-        <motion.div
-          key={i}
-          className="absolute w-2 h-2 rounded-full bg-white/80"
-          style={{
-            top: '50%',
-            left: '50%',
-            boxShadow: '0 0 10px rgba(255,255,255,0.8)',
-          }}
-          animate={{
-            x: [
-              Math.cos((i * 72 * Math.PI) / 180) * 60,
-              Math.cos(((i * 72 + 180) * Math.PI) / 180) * 60,
-              Math.cos((i * 72 * Math.PI) / 180) * 60,
-            ],
-            y: [
-              Math.sin((i * 72 * Math.PI) / 180) * 60,
-              Math.sin(((i * 72 + 180) * Math.PI) / 180) * 60,
-              Math.sin((i * 72 * Math.PI) / 180) * 60,
-            ],
-            opacity: [0.3, 0.8, 0.3],
-            scale: [0.5, 1, 0.5],
-          }}
-          transition={{
-            duration: 6 + i,
-            repeat: Infinity,
-            delay: i * 0.5,
-            ease: 'easeInOut',
-          }}
-        />
-      ))}
+      <div className="absolute inset-2 rounded-full bg-gradient-to-br from-purple-600 via-pink-500 to-indigo-600 flex items-center justify-center shadow-2xl">
+        <Sparkles className="w-1/2 h-1/2 text-white" />
+      </div>
     </div>
   );
 };
 
-// Brand Story Video Clips - Sora generated videos with ElevenLabs voiceovers
-const BRAND_STORY_CLIPS = [
-  {
-    src: '/videos/brand_story/01_eyes_bright.mp4',
-    audioSrc: '/videos/brand_story/audio/01_eyes_bright.mp3',
-    title: 'Look into their eyes...',
-    subtitle: 'And you already know.',
-    duration: 5000  // ~3.5s audio + buffer
-  },
-  {
-    src: '/videos/brand_story/02_bond_bright.mp4',
-    audioSrc: '/videos/brand_story/audio/02_bond_bright.mp3',
-    title: "They're not just pets...",
-    subtitle: "They're your heart walking outside your body.",
-    duration: 7000  // ~6.5s audio + buffer
-  },
-  {
-    src: '/videos/brand_story/03_joy_bright.mp4',
-    audioSrc: '/videos/brand_story/audio/03_joy_bright.mp3',
-    title: 'Every tail wag, every happy moment...',
-    subtitle: 'We help you cherish them all.',
-    duration: 6500  // ~6s audio + buffer
-  },
-  {
-    src: '/videos/brand_story/04_family_bright.mp4',
-    audioSrc: '/videos/brand_story/audio/04_family_bright.mp3',
-    title: 'The Doggy Company',
-    subtitle: 'Because Every Pet Has a Soul™',
-    duration: 5500  // ~4.5s audio + buffer
-  }
-];
+// Pillar Card Component
+const PillarCard = ({ icon: Icon, title, description, color, delay }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 30 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true }}
+    transition={{ duration: 0.5, delay }}
+    className="group relative"
+  >
+    <div className={`absolute inset-0 bg-gradient-to-br ${color} rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl`} />
+    <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-white/20 transition-all duration-300">
+      <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${color} flex items-center justify-center mb-4`}>
+        <Icon className="w-6 h-6 text-white" />
+      </div>
+      <h3 className="text-lg font-semibold text-white mb-2">{title}</h3>
+      <p className="text-white/60 text-sm leading-relaxed">{description}</p>
+    </div>
+  </motion.div>
+);
 
-// Brand Story Modal Component - Mobile Optimized with Voiceover
-const BrandStoryModal = ({ onClose, videoMuted, setVideoMuted }) => {
-  const [currentClip, setCurrentClip] = useState(0);
-  const [isEnding, setIsEnding] = useState(false);
-  const [isReady, setIsReady] = useState(false);
-  const videoRef = useRef(null);
-  const audioRef = useRef(null);
-  const timerRef = useRef(null);
-  const playedClipsRef = useRef(new Set()); // Track which clips have played
-  
-  const clip = BRAND_STORY_CLIPS[currentClip];
-  
-  // Preload and sync video + audio together
+// Testimonial Card
+const TestimonialCard = ({ quote, name, pet, image }) => (
+  <motion.div
+    initial={{ opacity: 0, scale: 0.95 }}
+    whileInView={{ opacity: 1, scale: 1 }}
+    viewport={{ once: true }}
+    className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6"
+  >
+    <Quote className="w-8 h-8 text-purple-400 mb-4" />
+    <p className="text-white/80 text-sm leading-relaxed mb-4 italic">"{quote}"</p>
+    <div className="flex items-center gap-3">
+      <img src={image} alt={name} className="w-10 h-10 rounded-full object-cover" />
+      <div>
+        <p className="text-white font-medium text-sm">{name}</p>
+        <p className="text-white/50 text-xs">Pet parent of {pet}</p>
+      </div>
+    </div>
+  </motion.div>
+);
+
+const Home = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [activeFeature, setActiveFeature] = useState(0);
+
+  // Auto-rotate features
   useEffect(() => {
-    if (isEnding) return;
-    
-    // Prevent re-playing the same clip
-    if (playedClipsRef.current.has(currentClip)) return;
-    
-    const video = videoRef.current;
-    const audio = audioRef.current;
-    if (!video || !audio) return;
-    
-    // Clear any existing timer
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-    }
-    
-    // Load both media
-    video.src = clip.src;
-    audio.src = clip.audioSrc;
-    
-    let videoReady = false;
-    let audioReady = false;
-    let hasStarted = false;
-    
-    const tryPlayBoth = async () => {
-      if (!videoReady || !audioReady || hasStarted) return;
-      hasStarted = true;
-      playedClipsRef.current.add(currentClip); // Mark as played
-      
-      setIsReady(true);
-      
-      try {
-        // Reset both to start
-        video.currentTime = 0;
-        audio.currentTime = 0;
-        
-        // Play video (always muted, we use separate audio)
-        video.muted = true;
-        await video.play();
-        
-        // Play audio if not muted
-        if (!videoMuted) {
-          await audio.play();
-        }
-        
-        // Get audio duration for precise timing
-        const audioDuration = audio.duration * 1000;
-        const clipDuration = audioDuration > 0 ? audioDuration + 500 : clip.duration;
-        
-        console.log(`Playing clip ${currentClip + 1}/${BRAND_STORY_CLIPS.length}, duration: ${clipDuration}ms`);
-        
-        // Advance to next clip when audio finishes
-        timerRef.current = setTimeout(() => {
-          if (currentClip < BRAND_STORY_CLIPS.length - 1) {
-            setIsReady(false);
-            setCurrentClip(currentClip + 1); // Use direct value, not prev
-          } else {
-            // FINAL CLIP - show ending then close
-            console.log('Final clip done, showing ending...');
-            setIsEnding(true);
-          }
-        }, clipDuration);
-        
-      } catch (e) {
-        console.log('Playback error:', e.message);
-        setIsReady(true);
-      }
-    };
-    
-    const onVideoReady = () => {
-      videoReady = true;
-      tryPlayBoth();
-    };
-    
-    const onAudioReady = () => {
-      audioReady = true;
-      tryPlayBoth();
-    };
-    
-    video.addEventListener('canplaythrough', onVideoReady);
-    audio.addEventListener('canplaythrough', onAudioReady);
-    
-    video.load();
-    audio.load();
-    
-    return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
-      video.removeEventListener('canplaythrough', onVideoReady);
-      audio.removeEventListener('canplaythrough', onAudioReady);
-    };
-  }, [currentClip, isEnding, videoMuted, clip]);
-  
-  // Close modal after ending screen
-  useEffect(() => {
-    if (isEnding) {
-      const closeTimer = setTimeout(() => {
-        onClose();
-      }, 3000);
-      return () => clearTimeout(closeTimer);
-    }
-  }, [isEnding, onClose]);
-  
-  // Handle mute toggle
-  useEffect(() => {
-    if (audioRef.current) {
-      if (videoMuted) {
-        audioRef.current.pause();
-      } else if (isReady && !isEnding) {
-        if (videoRef.current) {
-          audioRef.current.currentTime = videoRef.current.currentTime;
-        }
-        audioRef.current.play().catch(() => {});
-      }
-    }
-  }, [videoMuted, isReady, isEnding]);
-  
+    const interval = setInterval(() => {
+      setActiveFeature((prev) => (prev + 1) % 5);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Redirect logged-in users to Mira
+  if (user) {
+    navigate('/mira-demo');
+    return null;
+  }
+
+  const pillars = [
+    { icon: Utensils, title: 'Dine', description: 'Fresh meals & pet-friendly restaurants worldwide', color: 'from-orange-500 to-red-500' },
+    { icon: Hotel, title: 'Stay', description: 'Pet-friendly hotels & accommodations globally', color: 'from-blue-500 to-cyan-500' },
+    { icon: GraduationCap, title: 'Learn', description: 'Training videos & expert guidance', color: 'from-green-500 to-emerald-500' },
+    { icon: PartyPopper, title: 'Enjoy', description: 'Activities, events & celebrations', color: 'from-purple-500 to-pink-500' },
+    { icon: HeartPulse, title: 'Care', description: 'Health tracking & vet connections', color: 'from-red-500 to-rose-500' },
+  ];
+
+  const features = [
+    { title: 'Remembers Everything', desc: 'Allergies, preferences, favorite treats - Mira never forgets' },
+    { title: 'Personalized Recommendations', desc: 'Every suggestion tailored to your pet\'s unique personality' },
+    { title: 'Worldwide Access', desc: 'Pet-friendly places in Paris, Tokyo, Mumbai - anywhere you go' },
+    { title: 'Real Concierge Support', desc: 'Human experts ready to help with anything you need' },
+    { title: 'One Dashboard', desc: 'Health, food, travel, memories - all in one place' },
+  ];
+
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[100] bg-black"
-      onClick={onClose}
-    >
-      <motion.div
-        initial={{ scale: 0.98, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.98, opacity: 0 }}
-        className="relative w-full h-full flex items-center justify-center"
-        onClick={e => e.stopPropagation()}
-      >
-        {/* Ending Screen */}
-        <AnimatePresence>
-          {isEnding && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 z-30 bg-slate-950 flex flex-col items-center justify-center"
-            >
-              {/* Soul Orb */}
-              <motion.div
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: 0.2 }}
-                className="relative mb-8"
-              >
-                <div className="absolute inset-0 w-24 h-24 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full blur-xl opacity-60" />
-                <div className="relative w-24 h-24 bg-gradient-to-br from-purple-500 via-pink-500 to-purple-600 rounded-full flex items-center justify-center">
-                  <Sparkles className="w-10 h-10 text-white" />
+    <>
+      <SEOHead 
+        title="MIRA - The World's First Pet Life Operating System"
+        description="Meet Mira, your AI-powered pet companion. Personalized care, worldwide travel, fresh food, and a concierge that handles everything for your furry family member."
+      />
+      
+      <div className="min-h-screen bg-gradient-to-b from-[#0f0720] via-[#1a0a2e] to-[#0f0720]">
+        {/* Navigation */}
+        <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0f0720]/80 backdrop-blur-lg border-b border-white/5">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between h-16">
+              <Link to="/" className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                  <PawPrint className="w-5 h-5 text-white" />
                 </div>
-              </motion.div>
-              <motion.h2
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
-                className="text-3xl sm:text-4xl font-bold text-white text-center mb-3"
-              >
-                Every Pet Has a Soul
-              </motion.h2>
-              <motion.p
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.6 }}
-                className="text-white/60 text-lg"
-              >
-                The Doggy Company
-              </motion.p>
-            </motion.div>
-          )}
-        </AnimatePresence>
-        
-        {/* Video - Full screen with crossfade */}
-        {!isEnding && (
-          <>
-            {/* Loading indicator */}
-            {!isReady && (
-              <div className="absolute inset-0 flex items-center justify-center bg-black z-10">
-                <div className="w-12 h-12 border-4 border-white/20 border-t-white rounded-full animate-spin"></div>
-              </div>
-            )}
-            
-            <motion.div
-              key={currentClip}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: isReady ? 1 : 0 }}
-              transition={{ duration: 0.8, ease: "easeInOut" }}
-              className="absolute inset-0"
-            >
-              <video 
-                ref={videoRef}
-                className="absolute inset-0 w-full h-full object-contain sm:object-cover"
-                muted
-                playsInline
-                preload="auto"
-                style={{
-                  objectPosition: 'center center',
-                  WebkitTransform: 'translateZ(0)',
-                  transform: 'translateZ(0)'
-                }}
-              />
-            </motion.div>
-            
-            {/* Voiceover Audio - Separate from video for better control */}
-            {/* Voiceover Audio - dynamically loaded */}
-            <audio
-              ref={audioRef}
-              preload="auto"
-              className="hidden"
-            />
-          </>
-        )}
-        
-        {/* Cinematic Overlays - Lighter gradient to show video */}
-        {!isEnding && (
-          <>
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 pointer-events-none" />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent pointer-events-none h-32" />
-          </>
-        )}
-        
-        {/* Close Button - Safe area for notch */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 sm:top-6 right-4 sm:right-6 z-40 p-2 sm:p-3 bg-black/40 rounded-full hover:bg-black/60 transition-colors backdrop-blur-sm"
-          style={{ 
-            marginTop: 'env(safe-area-inset-top, 0px)',
-            marginRight: 'env(safe-area-inset-right, 0px)'
-          }}
-        >
-          <X className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-        </button>
-        
-        {/* Brand Logo - Top */}
-        {!isEnding && (
-          <div className="absolute top-4 sm:top-6 left-4 sm:left-6 z-30">
-            <p className="text-purple-400 text-xs sm:text-sm uppercase tracking-widest">The Doggy Company</p>
-          </div>
-        )}
-        
-        {/* Story Text - BOTTOM positioned, above mobile nav */}
-        {!isEnding && (
-          <div className="absolute bottom-36 sm:bottom-28 md:bottom-24 left-0 right-0 z-20 pointer-events-none">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentClip}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.6 }}
-                className="text-center px-6 sm:px-8"
-              >
-                <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-2 sm:mb-4 drop-shadow-2xl leading-tight">
-                  {clip.title}
-                </h2>
-                <p className="text-base sm:text-xl md:text-2xl text-white/90 drop-shadow-lg">
-                  {clip.subtitle}
-                </p>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-        )}
-        
-        {/* Progress Bar & Controls - Bottom, above mobile nav */}
-        {!isEnding && (
-          <div 
-            className="absolute bottom-24 sm:bottom-8 left-4 right-4 sm:left-6 sm:right-6 z-30"
-            style={{ 
-              paddingBottom: 'env(safe-area-inset-bottom, 0px)',
-              marginLeft: 'env(safe-area-inset-left, 0px)',
-              marginRight: 'env(safe-area-inset-right, 0px)'
-            }}
-          >
-            <div className="flex items-center justify-between">
-              {/* Progress Dots */}
-              <div className="flex gap-2 sm:gap-3">
-                {BRAND_STORY_CLIPS.map((_, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setCurrentClip(idx)}
-                    className={`h-1.5 sm:h-2 rounded-full transition-all duration-300 ${
-                      idx === currentClip 
-                        ? 'bg-white w-6 sm:w-8' 
-                        : 'bg-white/40 hover:bg-white/60 w-1.5 sm:w-2'
-                    }`}
-                  />
-                ))}
-              </div>
-              
-              {/* Controls */}
-              <div className="flex gap-2 sm:gap-3">
-                <button
-                  onClick={() => setCurrentClip(prev => (prev + 1) % BRAND_STORY_CLIPS.length)}
-                  className="p-2 sm:p-3 bg-black/40 rounded-full hover:bg-black/60 transition-colors backdrop-blur-sm"
-                  title="Next clip"
-                >
-                  <SkipForward className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                </button>
-                <button
-                  onClick={() => setVideoMuted(!videoMuted)}
-                  className="p-2 sm:p-3 bg-black/40 rounded-full hover:bg-black/60 transition-colors backdrop-blur-sm"
-                >
-                  {videoMuted ? <VolumeX className="w-4 h-4 sm:w-5 sm:h-5 text-white" /> : <Volume2 className="w-4 h-4 sm:w-5 sm:h-5 text-white" />}
-                </button>
+                <span className="text-white font-bold text-lg">thedoggycompany</span>
+              </Link>
+              <div className="flex items-center gap-3">
+                <Link to="/login">
+                  <Button variant="ghost" className="text-white/70 hover:text-white hover:bg-white/10">
+                    Login
+                  </Button>
+                </Link>
+                <Link to="/join">
+                  <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white">
+                    Join Free
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>
-        )}
-      </motion.div>
-    </motion.div>
-  );
-};
+        </nav>
 
-// Pre-computed particle positions for floating effect
-const PARTICLES = Array.from({ length: 20 }, (_, i) => ({
-  id: i,
-  left: (i * 5) % 100,
-  top: (i * 7 + 10) % 100,
-  duration: 3 + (i % 3),
-  delay: (i % 5) * 0.4,
-}));
-
-// Video Testimonials Data - Real Indian families with video stories
-// Dogs in thumbnail MATCH dogs in video (golden retriever, beagle, labrador)
-// Indian accent voiceovers synced to video length
-const VIDEO_TESTIMONIALS = [
-  {
-    id: 1,
-    name: "Priya & Bruno",
-    pet: "Bruno",
-    // Golden retriever face close-up - matches video
-    thumbnail: "https://images.unsplash.com/photo-1743997182218-30d0e9c3b0f1?w=400&h=300&fit=crop",
-    videoSrc: "/videos/testimonials/sharma_testimonial.mp4",
-    quote: "They remembered Bruno's fear of thunderstorms... before I even told them.",
-    duration: "0:05",
-    hasVideo: true,
-  },
-  {
-    id: 2,
-    name: "Rahul & Max",
-    pet: "Max",
-    // Beagle thumbnail - matches video
-    thumbnail: "https://images.unsplash.com/photo-1657162801081-acfdd45242ce?w=400&h=300&fit=crop",
-    videoSrc: "/videos/testimonials/rahul_testimonial.mp4",
-    quote: "Max's favorite treats, his walking route... Mira remembers everything.",
-    duration: "0:06",
-    hasVideo: true,
-  },
-  {
-    id: 3,
-    name: "The Kapoor Family",
-    pet: "Luna",
-    // Labrador thumbnail - matches video
-    thumbnail: "https://images.unsplash.com/photo-1610112747663-45172b603dde?w=400&h=300&fit=crop",
-    videoSrc: "/videos/testimonials/kapoor_testimonial.mp4",
-    quote: "Luna's birthday cake arrived... without me even asking! They truly care.",
-    duration: "0:05",
-    hasVideo: true,
-  },
-];
-
-// Real Membership Tiers - Updated with 7 Bonus Days offer
-const MEMBERSHIP_TIERS = [
-  {
-    name: "Pet Pass Trial",
-    price: "₹499",
-    period: "/month",
-    description: "Full Concierge® experience for your furry family",
-    duration: "37 days",
-    bonusDays: 7,
-    features: [
-      "Full Pet Soul™ Profile",
-      "Unlimited Mira AI Concierge®",
-      "All 14 Life Pillars Unlocked",
-      "Health Vault & Records",
-      "Priority Concierge® Support",
-      "Paw Rewards Points",
-    ],
-    notIncluded: [],
-    cta: "Start with Trial",
-    ctaLink: "/join?plan=trial",
-    highlighted: false,
-    badge: "Try First",
-  },
-  {
-    name: "Pet Pass Foundation",
-    price: "₹4,999",
-    period: "/year",
-    description: "Best value — full Concierge® relationship",
-    duration: "372 days",
-    bonusDays: 7,
-    features: [
-      "Full Pet Soul™ Profile",
-      "Unlimited Mira AI Concierge®",
-      "All 14 Life Pillars Unlocked",
-      "Health Vault & Records",
-      "Priority Concierge® Support",
-      "Double Paw Points (2x)",
-      "Birthday Surprise Gift",
-      "Early Access to New Features",
-      "Founder Badge on Profile",
-    ],
-    notIncluded: [],
-    cta: "Become a Founder",
-    ctaLink: "/join?plan=annual",
-    highlighted: true,
-    badge: "Best Value",
-    savings: "Save ₹989/year",
-  },
-];
-
-// The 14 Life Pillars - Emotional Journey (We celebrate through ALL of life)
-const LIFE_PILLARS = [
-  { name: "Celebrate", icon: "🎂", desc: "Every moment deserves joy", emotion: "The spark of pure happiness" },
-  { name: "Dine", icon: "🍽️", desc: "Breaking bread together", emotion: "Shared meals, deeper bonds" },
-  { name: "Stay", icon: "🏨", desc: "Home away from home", emotion: "Comfort in new places" },
-  { name: "Travel", icon: "✈️", desc: "Adventures await", emotion: "Exploring the world together" },
-  { name: "Care", icon: "🛁", desc: "Tender loving care", emotion: "The language of touch" },
-  { name: "Learn", icon: "🎓", desc: "Growing together", emotion: "Every lesson strengthens the bond" },
-  { name: "Fit", icon: "🏃", desc: "Thriving in motion", emotion: "Joy in every stride" },
-  { name: "Enjoy", icon: "🎾", desc: "Play is sacred", emotion: "Unfiltered happiness" },
-  { name: "Shop", icon: "🛒", desc: "Thoughtful choices", emotion: "Love expressed through care" },
-  { name: "Advisory", icon: "💡", desc: "Wisdom when needed", emotion: "Guidance with heart" },
-  { name: "Paperwork", icon: "📋", desc: "Life documented", emotion: "Their story, preserved" },
-  { name: "Emergency", icon: "🚨", desc: "Always protected", emotion: "Peace in uncertainty" },
-  { name: "Farewell", icon: "🌈", desc: "Celebrating a life lived", emotion: "Love never ends" },
-  { name: "Adopt", icon: "🐕", desc: "A new beginning", emotion: "Two souls finding each other" },
-];
-
-// Fallback images in case API fails
-const FALLBACK_HERO_IMAGES = [
-  'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/0iy6sezo_shutterstock_504980047%20%282%29.jpg',
-  'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/phjxi6rd_dog-1194087_1920%20%281%29.jpg',
-];
-
-const FALLBACK_BOND_GALLERY = [
-  { image_url: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/0iy6sezo_shutterstock_504980047%20%282%29.jpg', caption: 'Unconditional love', is_tall: false, is_wide: false },
-  { image_url: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/7oe8caws_shutterstock_1293337687%20%282%29.jpg', caption: 'Pure joy', is_tall: false, is_wide: false },
-];
-
-// The new emotional home page - designed to capture hearts in 3 seconds
-
-const Home = () => {
-  const { user, token } = useAuth();
-  const navigate = useNavigate();
-  const [showVideo, setShowVideo] = useState(false);
-  const [videoMuted, setVideoMuted] = useState(true);
-  const [currentTestimonial, setCurrentTestimonial] = useState(0);
-  const [currentHeroImage, setCurrentHeroImage] = useState(0);
-  const [soulPulse, setSoulPulse] = useState(false);
-  const [playingTestimonial, setPlayingTestimonial] = useState(null);
-  const heroRef = useRef(null);
-  
-  // CMS-driven content
-  const [heroImages, setHeroImages] = useState(FALLBACK_HERO_IMAGES);
-  const [bondGallery, setBondGallery] = useState(FALLBACK_BOND_GALLERY);
-  const [pageContent, setPageContent] = useState({
-    headline: 'Every Pet Has a Soul',
-    subheadline: "We don't just manage pet services. We nurture the soul of your companion.",
-    cta_text: "Discover Your Pet's Soul"
-  });
-
-  // Fetch landing page content from CMS
-  useEffect(() => {
-    const fetchContent = async () => {
-      try {
-        const response = await fetch(`${getApiUrl()}/api/landing-page/content`);
-        if (response.ok) {
-          const data = await response.json();
-          if (data.hero_images?.length > 0) {
-            setHeroImages(data.hero_images.map(img => img.image_url));
-          }
-          if (data.bond_gallery?.length > 0) {
-            setBondGallery(data.bond_gallery);
-          }
-          setPageContent({
-            headline: data.headline || 'Every Pet Has a Soul',
-            subheadline: data.subheadline || "We don't just manage pet services. We nurture the soul of your companion.",
-            cta_text: data.cta_text || "Discover Your Pet's Soul"
-          });
-        }
-      } catch (error) {
-        console.debug('Using fallback landing page content');
-      }
-    };
-    fetchContent();
-  }, []);
-
-  // Pulse the soul orb
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setSoulPulse(prev => !prev);
-    }, 2000);
-    return () => clearInterval(interval);
-  }, []);
-
-  // Rotate hero background images
-  useEffect(() => {
-    if (heroImages.length > 0) {
-      const interval = setInterval(() => {
-        setCurrentHeroImage(prev => (prev + 1) % heroImages.length);
-      }, 5000);
-      return () => clearInterval(interval);
-    }
-  }, [heroImages.length]);
-
-  // Rotate testimonials
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTestimonial(prev => (prev + 1) % REAL_STORIES.length);
-    }, 6000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const handleOpenMira = () => {
-    window.dispatchEvent(new CustomEvent('openMiraAI'));
-  };
-
-  // If logged in, redirect to member dashboard
-  if (user) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
-  return (
-    <div className="min-h-screen bg-black overflow-x-hidden overflow-y-auto" style={{ overscrollBehavior: 'none', WebkitOverflowScrolling: 'touch' }} data-testid="home-page">
-      <SEOHead page="home" path="/" />
-      
-      {/* ========== THE EMOTIONAL HOOK - First 3 Seconds ========== */}
-      <section 
-        ref={heroRef}
-        className="relative min-h-[50vh] sm:min-h-[45vh] md:min-h-[50vh] flex items-center justify-center overflow-hidden"
-      >
-        {/* AUTO-PLAYING VIDEO BACKGROUND - The emotional hook */}
-        <div className="absolute inset-0 z-0">
-          <video
-            autoPlay
-            loop
-            muted
-            playsInline
-            className="absolute inset-0 w-full h-full object-cover"
-            style={{ objectPosition: 'center top' }}
-            poster={heroImages[0]}
-          >
-            <source src="/videos/brand_story/01_eyes_bright.mp4" type="video/mp4" />
-          </video>
-          {/* Fallback to rotating images if video fails */}
-          <AnimatePresence mode="sync">
-            {heroImages.map((img, idx) => (
-              idx === currentHeroImage && (
-                <motion.div
-                  key={img}
-                  initial={{ opacity: 0, scale: 1.1 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 1.5 }}
-                  className="absolute inset-0 z-[-1]"
-                >
-                  <img 
-                    src={img} 
-                    alt="Beloved pet"
-                    className="w-full h-full object-cover"
-                  />
-                </motion.div>
-              )
-            ))}
-          </AnimatePresence>
-          {/* Cinematic overlay - creates the emotional depth */}
-          <div className="absolute inset-0 bg-gradient-to-b from-slate-950/80 via-purple-950/70 to-slate-950/95" />
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-950/60 via-transparent to-slate-950/60" />
-        </div>
-        
-        {/* Animated Background - Deep, soulful */}
-        <div className="absolute inset-0 z-[1] pointer-events-none">
-          {/* Floating soul particles */}
-          <div className="absolute inset-0 overflow-hidden">
-            {PARTICLES.map((particle) => (
+        {/* Hero Section */}
+        <section className="relative min-h-screen flex items-center pt-16 overflow-hidden">
+          {/* Background gradient orbs */}
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-600/20 rounded-full blur-3xl" />
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-600/20 rounded-full blur-3xl" />
+          
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              {/* Left content */}
               <motion.div
-                key={particle.id}
-                className="absolute w-2 h-2 rounded-full bg-purple-400/40"
-                style={{
-                  left: `${particle.left}%`,
-                  top: `${particle.top}%`,
-                }}
-                animate={{
-                  y: [0, -30, 0],
-                  opacity: [0.3, 0.8, 0.3],
-                  scale: [1, 1.5, 1],
-                }}
-                transition={{
-                  duration: particle.duration,
-                  repeat: Infinity,
-                  delay: particle.delay,
-                }}
-              />
-            ))}
+                initial={{ opacity: 0, x: -30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8 }}
+              >
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full mb-6">
+                  <Sparkles className="w-4 h-4 text-purple-400" />
+                  <span className="text-white/70 text-sm">The World's First Pet Life Operating System</span>
+                </div>
+                
+                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
+                  Every moment with your pet deserves to be{' '}
+                  <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-indigo-400 bg-clip-text text-transparent">
+                    extraordinary
+                  </span>
+                </h1>
+                
+                <p className="text-lg text-white/60 mb-8 leading-relaxed max-w-xl">
+                  Meet Mira - an AI that truly knows your pet. From personalized nutrition to worldwide travel, 
+                  from health tracking to a real concierge team that handles everything. Because your pet isn't just a pet. 
+                  They're family.
+                </p>
+                
+                <div className="flex flex-wrap gap-4">
+                  <Link to="/join">
+                    <Button size="lg" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-6 text-lg rounded-xl">
+                      Meet Mira <ArrowRight className="ml-2 w-5 h-5" />
+                    </Button>
+                  </Link>
+                  <Button 
+                    size="lg" 
+                    variant="outline" 
+                    className="border-white/20 text-white hover:bg-white/10 px-8 py-6 text-lg rounded-xl"
+                    onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
+                  >
+                    <Play className="mr-2 w-5 h-5" /> See How It Works
+                  </Button>
+                </div>
+                
+                {/* Trust badges */}
+                <div className="flex items-center gap-6 mt-10">
+                  <div className="flex -space-x-3">
+                    {[BRAND_IMAGES.goldenRetriever, BRAND_IMAGES.bulldog, BRAND_IMAGES.happyPet].map((img, i) => (
+                      <img key={i} src={img} alt="Pet" className="w-10 h-10 rounded-full border-2 border-[#0f0720] object-cover" />
+                    ))}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-1">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                      ))}
+                    </div>
+                    <p className="text-white/50 text-sm">Loved by 10,000+ pet families</p>
+                  </div>
+                </div>
+              </motion.div>
+              
+              {/* Right - Hero Image with Mira Orb */}
+              <motion.div
+                initial={{ opacity: 0, x: 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="relative"
+              >
+                <div className="relative">
+                  {/* Glowing border effect */}
+                  <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 via-pink-600 to-indigo-600 rounded-3xl blur-lg opacity-50" />
+                  
+                  {/* Main image */}
+                  <div className="relative rounded-3xl overflow-hidden border border-white/10">
+                    <img 
+                      src={BRAND_IMAGES.hero} 
+                      alt="Happy pet" 
+                      className="w-full h-auto object-cover"
+                    />
+                    
+                    {/* Mira floating card */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5 }}
+                      className="absolute bottom-4 left-4 right-4 bg-[#1a0a2e]/90 backdrop-blur-lg rounded-2xl p-4 border border-white/10"
+                    >
+                      <div className="flex items-center gap-3">
+                        <MiraSoulOrb size="sm" />
+                        <div className="flex-1">
+                          <p className="text-white font-medium">Mira</p>
+                          <p className="text-white/60 text-sm">Hi! I already know your pet loves morning walks and is allergic to chicken. Ready to plan something special?</p>
+                        </div>
+                      </div>
+                    </motion.div>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
           </div>
           
-          {/* Large glowing orbs - contained to prevent wobble */}
-          <motion.div 
-            className="absolute top-1/4 left-1/4 w-64 sm:w-96 h-64 sm:h-96 bg-purple-600/20 rounded-full blur-3xl"
-            style={{ willChange: 'transform, opacity', transform: 'translateZ(0)' }}
-            animate={{
-              scale: [1, 1.2, 1],
-              opacity: [0.3, 0.5, 0.3],
-            }}
-            transition={{ duration: 4, repeat: Infinity }}
-          />
-          <motion.div 
-            className="absolute bottom-1/4 right-1/4 w-64 sm:w-96 h-64 sm:h-96 bg-pink-600/20 rounded-full blur-3xl"
-            style={{ willChange: 'transform, opacity', transform: 'translateZ(0)' }}
-            animate={{
-              scale: [1.2, 1, 1.2],
-              opacity: [0.3, 0.5, 0.3],
-            }}
-            transition={{ duration: 4, repeat: Infinity, delay: 1 }}
-          />
-        </div>
-
-        {/* Content */}
-        <div className="relative z-10 max-w-5xl mx-auto px-4 text-center">
-          {/* The Opening Line - THE HOOK */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1 }}
-          >
-            <p className="text-purple-300/90 text-lg sm:text-xl md:text-2xl mb-6 tracking-wide font-light">
-              Look into their eyes. You already know.
-            </p>
-          </motion.div>
-
-          {/* THE LIVING SOUL ORB - Now it BREATHES */}
-          <motion.div
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 1.2, delay: 0.5 }}
-            className="mb-8"
-          >
-            <LivingSoulOrb size="lg" className="mx-auto" />
-          </motion.div>
-
-          {/* Main Headline */}
-          <motion.h1
-            className="text-4xl sm:text-5xl md:text-7xl font-black text-white leading-tight mb-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1 }}
-          >
-            Every Pet Has a
-            <motion.span
-              className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400"
-              animate={{
-                backgroundPosition: ['0%', '100%', '0%'],
-              }}
-              transition={{ duration: 5, repeat: Infinity }}
-              style={{ backgroundSize: '200% auto' }}
-            >
-              Soul
-            </motion.span>
-          </motion.h1>
-
-          {/* Emotional Subtext */}
-          <motion.p
-            className="text-lg sm:text-xl md:text-2xl text-white/70 max-w-2xl mx-auto mb-10 leading-relaxed"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 1.3 }}
-          >
-            We don&apos;t just manage pet services.<br className="hidden sm:block" />
-            <span className="text-white/90 font-medium">We nurture the soul of your companion.</span>
-          </motion.p>
-
-          {/* CTA - Single, powerful */}
-          <motion.div
-            className="flex flex-col gap-4 justify-center items-center"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1.6 }}
-          >
-            <Link to="/join?plan=foundation">
-              <Button 
-                size="lg" 
-                className="group relative bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white px-8 py-6 sm:px-10 sm:py-7 text-base sm:text-lg rounded-full shadow-2xl shadow-purple-500/30 transition-all hover:scale-105 hover:shadow-purple-500/50"
-                data-testid="hero-discover-soul-btn"
-              >
-                <motion.span
-                  className="absolute inset-0 rounded-full bg-white/20"
-                  animate={{ scale: [1, 1.05, 1], opacity: [0, 0.3, 0] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                />
-                <PawPrint className="w-5 h-5 mr-2" />
-                Discover Your Pet&apos;s Soul
-                <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </Link>
-            
-            {/* Stunning Video Play Button */}
-            <motion.button
-              onClick={() => {
-                setVideoMuted(false); // Unmute on user click (allowed by browser)
-                setShowVideo(true);
-              }}
-              className="group flex items-center gap-3 px-4 py-2"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              {/* Animated Play Button with Glow */}
-              <div className="relative">
-                {/* Pulsing glow ring */}
-                <motion.div
-                  className="absolute inset-0 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 blur-md"
-                  animate={{
-                    scale: [1, 1.3, 1],
-                    opacity: [0.5, 0.8, 0.5],
-                  }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                />
-                {/* Play button circle */}
-                <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 flex items-center justify-center shadow-lg shadow-purple-500/30 group-hover:shadow-purple-500/50 transition-shadow">
-                  <Play className="w-5 h-5 sm:w-6 sm:h-6 text-white fill-white ml-0.5" />
-                </div>
-              </div>
-              <div className="text-left">
-                <span className="block text-white font-semibold text-sm sm:text-base group-hover:text-purple-200 transition-colors">Watch Our Story</span>
-                <span className="block text-white/50 text-xs sm:text-sm">See the magic unfold</span>
-              </div>
-            </motion.button>
-          </motion.div>
-
           {/* Scroll indicator */}
-          <motion.div
+          <motion.div 
             className="absolute bottom-8 left-1/2 -translate-x-1/2"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1, y: [0, 10, 0] }}
-            transition={{ duration: 2, repeat: Infinity, delay: 2 }}
+            animate={{ y: [0, 10, 0] }}
+            transition={{ duration: 2, repeat: Infinity }}
           >
             <ChevronDown className="w-8 h-8 text-white/30" />
           </motion.div>
-        </div>
-      </section>
+        </section>
 
-      {/* ========== THE SOUL UNDERSTANDING ========== */}
-      <section className="relative py-24 sm:py-32 bg-gradient-to-b from-slate-950 via-purple-950/30 to-slate-950">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <motion.p
-              className="text-purple-400 text-sm uppercase tracking-widest mb-4"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-            >
-              What is Pet Soul™?
-            </motion.p>
-            <motion.h2
-              className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6"
+        {/* "We See Your Pet Differently" Section */}
+        <section className="py-24 relative" id="how-it-works">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
+              className="text-center mb-16"
             >
-              A Living Memory of
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-                Everything They Are
-              </span>
-            </motion.h2>
-            <motion.p
-              className="text-lg text-white/60 max-w-2xl mx-auto"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-            >
-              Every quirk. Every fear. Every joy. We remember so you never have to explain.
-            </motion.p>
-          </div>
-
-          {/* Soul Dimensions - Emotional Grid */}
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {SOUL_DIMENSIONS.map((dim, idx) => (
-              <motion.div
-                key={idx}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.1 }}
-              >
-                <Card className="relative overflow-hidden bg-white/5 backdrop-blur-sm border-white/10 p-6 hover:bg-white/10 transition-all group h-full">
-                  <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${dim.gradient} opacity-20 blur-2xl group-hover:opacity-30 transition-opacity`} />
-                  <span className="text-3xl mb-4 block">{dim.icon}</span>
-                  <h3 className="text-lg font-bold text-white mb-2">{dim.title}</h3>
-                  <p className="text-sm text-white/60 leading-relaxed">{dim.description}</p>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ========== 14 LIFE PILLARS - The Pet Operating System ========== */}
-      <section className="relative py-20 sm:py-28 bg-gradient-to-b from-slate-950 to-purple-950/20 overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-slate-950 to-transparent" />
-        
-        {/* Animated connection lines in background */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          {/* Flowing energy lines */}
-          {[...Array(6)].map((_, i) => (
-            <motion.div
-              key={`line-${i}`}
-              className="absolute h-[2px] bg-gradient-to-r from-transparent via-purple-500/40 to-transparent"
-              style={{
-                top: `${20 + i * 15}%`,
-                left: '-10%',
-                width: '120%',
-              }}
-              animate={{
-                x: ['-100%', '100%'],
-                opacity: [0, 0.6, 0],
-              }}
-              transition={{
-                duration: 8 + i * 2,
-                repeat: Infinity,
-                delay: i * 1.5,
-                ease: 'linear',
-              }}
-            />
-          ))}
-          
-          {/* Floating orbs connecting pillars */}
-          {[...Array(8)].map((_, i) => (
-            <motion.div
-              key={`orb-${i}`}
-              className="absolute w-3 h-3 rounded-full bg-gradient-to-r from-purple-400 to-pink-400"
-              style={{
-                left: `${10 + (i * 12)}%`,
-                top: '50%',
-                boxShadow: '0 0 20px rgba(168,85,247,0.6)',
-              }}
-              animate={{
-                y: [0, -100, 100, 0],
-                x: [0, 50, -50, 0],
-                opacity: [0.3, 0.8, 0.8, 0.3],
-                scale: [0.5, 1.2, 1.2, 0.5],
-              }}
-              transition={{
-                duration: 10 + i,
-                repeat: Infinity,
-                delay: i * 0.8,
-                ease: 'easeInOut',
-              }}
-            />
-          ))}
-        </div>
-        
-        <div className="relative max-w-6xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <motion.div
-              className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/20 text-purple-300 rounded-full text-sm font-medium mb-6"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-            >
-              <Heart className="w-4 h-4" />
-              The Pet Operating System
-            </motion.div>
-            <motion.h2
-              className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
-              We Don&apos;t Manage Services.
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-                We Celebrate Life.
-              </span>
-            </motion.h2>
-            <motion.p
-              className="text-white/70 text-lg max-w-2xl mx-auto leading-relaxed"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-            >
-              Through every moment — the joyful, the challenging, even the final — 
-              we see <span className="text-purple-300">celebration</span>. Because every day with them is a gift.
-            </motion.p>
-          </div>
-
-          {/* Animated Pillars with Connection Effect */}
-          <div className="relative">
-            {/* Central Soul Orb */}
-            <motion.div 
-              className="hidden lg:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-0"
-              initial={{ scale: 0, opacity: 0 }}
-              whileInView={{ scale: 1, opacity: 1 }}
-              viewport={{ once: true }}
-            >
-              <div className="w-24 h-24 rounded-full bg-gradient-to-r from-purple-600/30 to-pink-600/30 blur-2xl" />
+              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+                We See Your Pet Differently
+              </h2>
+              <p className="text-white/60 text-lg max-w-2xl mx-auto">
+                Not just food and walks. We see joy, comfort, health, memories, and a life worth celebrating.
+              </p>
             </motion.div>
             
-            {/* Pillars in circular/flowing layout on desktop, grid on mobile */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-3 sm:gap-4 relative z-10">
-              {LIFE_PILLARS.map((pillar, idx) => (
-                <motion.div
-                  key={pillar.name}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ 
-                    delay: idx * 0.08,
-                    type: 'spring',
-                    stiffness: 200,
-                  }}
-                  className="group"
-                >
-                  <motion.div 
-                    className="relative p-4 sm:p-5 bg-white/5 rounded-2xl border border-white/10 hover:border-purple-500/50 hover:bg-purple-500/10 transition-all duration-500 text-center h-full"
-                    whileHover={{ 
-                      scale: 1.08,
-                      boxShadow: '0 0 30px rgba(168,85,247,0.4)',
-                    }}
-                  >
-                    {/* Glow effect on hover */}
+            <div className="grid md:grid-cols-2 gap-8 items-center">
+              {/* Before/After comparison */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6"
+              >
+                <h3 className="text-white/50 text-sm uppercase tracking-wider mb-4">The Old Way</h3>
+                <ul className="space-y-3">
+                  {['Generic pet food', 'Random vet visits', 'No travel planning', 'Scattered information', 'Figure it out yourself'].map((item, i) => (
+                    <li key={i} className="flex items-center gap-3 text-white/40">
+                      <div className="w-2 h-2 rounded-full bg-white/20" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+              
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="bg-gradient-to-br from-purple-900/50 to-pink-900/50 backdrop-blur-sm border border-purple-500/20 rounded-2xl p-6"
+              >
+                <h3 className="text-purple-400 text-sm uppercase tracking-wider mb-4">The Mira Way</h3>
+                <ul className="space-y-3">
+                  {[
+                    'Personalized nutrition for their breed & age',
+                    'Health tracking with smart reminders',
+                    'Pet-friendly travel anywhere in the world',
+                    'One dashboard for everything',
+                    'A concierge team that handles it all'
+                  ].map((item, i) => (
+                    <li key={i} className="flex items-center gap-3 text-white">
+                      <Check className="w-5 h-5 text-green-400 flex-shrink-0" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* Mira AI Section */}
+        <section className="py-24 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-900/20 to-pink-900/20" />
+          
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              {/* Left - Mira visualization */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                className="flex justify-center"
+              >
+                <div className="relative">
+                  <MiraSoulOrb size="lg" />
+                  
+                  {/* Floating insight cards */}
+                  {features.map((feature, i) => (
                     <motion.div
-                      className="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-500/0 via-purple-500/20 to-pink-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                    />
-                    
-                    {/* Connection dot */}
-                    <motion.div
-                      className="absolute -top-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-purple-400 opacity-0 group-hover:opacity-100"
-                      animate={{ scale: [1, 1.5, 1] }}
-                      transition={{ duration: 1, repeat: Infinity }}
-                    />
-                    
-                    {/* Icon with bounce */}
-                    <motion.span 
-                      className="text-3xl sm:text-4xl mb-3 block"
-                      whileHover={{ 
-                        y: [-5, 0],
-                        transition: { duration: 0.3 }
+                      key={i}
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ 
+                        opacity: activeFeature === i ? 1 : 0.3,
+                        scale: activeFeature === i ? 1 : 0.9,
                       }}
+                      className={`absolute bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl px-4 py-2 text-sm text-white whitespace-nowrap ${
+                        i === 0 ? 'top-0 left-full ml-4' :
+                        i === 1 ? 'top-1/4 right-full mr-4' :
+                        i === 2 ? 'bottom-1/4 left-full ml-4' :
+                        i === 3 ? 'bottom-0 right-full mr-4' :
+                        'top-1/2 left-full ml-4'
+                      }`}
                     >
-                      {pillar.icon}
-                    </motion.span>
-                    
-                    {/* Name */}
-                    <h4 className="text-white font-bold text-sm mb-1 relative z-10">{pillar.name}</h4>
-                    
-                    {/* Emotion (shows on hover) */}
-                    <motion.p 
-                      className="text-purple-300/90 text-xs leading-snug hidden sm:block relative z-10"
-                      initial={{ opacity: 0, y: 5 }}
-                      whileHover={{ opacity: 1, y: 0 }}
-                    >
-                      {pillar.emotion}
-                    </motion.p>
-                    
-                    {/* Description (mobile) */}
-                    <p className="text-white/50 text-xs leading-snug sm:hidden relative z-10">
-                      {pillar.desc}
-                    </p>
-                  </motion.div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-
-          {/* Connection message */}
-          <motion.div
-            className="text-center mt-12"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <p className="text-purple-300/70 text-sm mb-2">
-              ✨ All pillars are connected through Pet Soul™
-            </p>
-            <p className="text-white/50 text-sm italic">
-              &quot;Even in farewell, we celebrate. Because love never ends.&quot;
-            </p>
-          </motion.div>
-
-          {/* CTA */}
-          <motion.div 
-            className="text-center mt-8"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-          >
-            <Link to="/join">
-              <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 px-8 py-6 rounded-full text-lg">
-                Begin Your Journey
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Button>
-            </Link>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ========== THE BOND - Magical Mobile-First Gallery ========== */}
-      <section className="relative py-16 sm:py-24 lg:py-32 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 overflow-hidden">
-        {/* Ambient background glow */}
-        <div className="absolute top-1/3 left-1/4 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-purple-600/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/3 right-1/4 w-[250px] sm:w-[400px] h-[250px] sm:h-[400px] bg-pink-600/10 rounded-full blur-3xl" />
-        
-        <div className="relative max-w-6xl mx-auto px-4">
-          {/* Section Header - Compact on mobile */}
-          <div className="text-center mb-10 sm:mb-16">
-            <motion.p
-              className="text-purple-400/80 text-xs sm:text-sm uppercase tracking-[0.2em] sm:tracking-[0.3em] mb-3 sm:mb-6"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-            >
-              The Unbreakable Bond
-            </motion.p>
-            <motion.h2
-              className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-3 sm:mb-6 leading-tight"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
-              More Than Pets.
-              <span className="block mt-1 sm:mt-2 text-transparent bg-clip-text bg-gradient-to-r from-purple-300 via-pink-300 to-purple-300">
-                They&apos;re Family.
-              </span>
-            </motion.h2>
-            <motion.p
-              className="text-white/50 text-sm sm:text-lg max-w-xl mx-auto hidden sm:block"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-            >
-              Every wet nose, every wagging tail, every quiet moment together — 
-              these are the moments we help you cherish forever.
-            </motion.p>
-          </div>
-
-          {/* MOBILE: Horizontal Scroll Gallery */}
-          <div className="lg:hidden">
-            <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide -mx-4 px-4">
-              {bondGallery.slice(0, 6).map((item, idx) => (
-                <motion.div
-                  key={item.id || idx}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.1 }}
-                  className="relative flex-shrink-0 snap-center"
-                >
-                  {/* Glow */}
-                  <div className={`absolute inset-0 rounded-2xl blur-xl ${
-                    idx % 3 === 0 ? 'bg-purple-500/20' : idx % 3 === 1 ? 'bg-pink-500/20' : 'bg-indigo-500/20'
-                  }`} />
-                  
-                  <div className="relative w-44 h-56 rounded-2xl overflow-hidden border border-white/10 shadow-xl">
-                    <img 
-                      src={item.image_url} 
-                      alt={item.caption}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent" />
-                    <div className="absolute bottom-0 left-0 right-0 p-3">
-                      <p className="text-white font-medium text-sm">{item.caption}</p>
-                      <div className="w-8 h-0.5 bg-gradient-to-r from-purple-400 to-pink-400 mt-1.5" />
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-            {/* Scroll hint */}
-            <p className="text-center text-white/30 text-xs mt-2">← Swipe to explore →</p>
-          </div>
-
-          {/* DESKTOP: Elegant Floating Gallery - 3 Featured Pets */}
-          <div className="hidden lg:flex relative items-center justify-center gap-12">
-            {bondGallery.slice(0, 3).map((item, idx) => (
-              <motion.div
-                key={item.id || idx}
-                initial={{ opacity: 0, y: 50, scale: 0.9 }}
-                whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.15, duration: 0.6 }}
-                className={`relative group ${idx === 1 ? '-mt-12 z-10' : 'z-0'}`}
-              >
-                {/* Glow behind image */}
-                <div className={`absolute inset-0 rounded-3xl blur-2xl transition-all duration-500 group-hover:blur-3xl ${
-                  idx === 0 ? 'bg-purple-500/20' : idx === 1 ? 'bg-pink-500/25' : 'bg-indigo-500/20'
-                } group-hover:scale-110`} />
-                
-                {/* Image container */}
-                <div className={`relative overflow-hidden rounded-3xl border border-white/10 shadow-2xl transition-all duration-500 group-hover:scale-105 group-hover:border-white/20 ${
-                  idx === 1 ? 'w-80 h-96' : 'w-64 h-80'
-                }`}>
-                  <img 
-                    src={item.image_url} 
-                    alt={item.caption}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent" />
-                  <div className="absolute bottom-0 left-0 right-0 p-6">
-                    <p className="text-white font-medium text-lg">{item.caption}</p>
-                    <div className="w-12 h-0.5 bg-gradient-to-r from-purple-400 to-pink-400 mt-2 group-hover:w-20 transition-all duration-500" />
-                  </div>
+                      {feature.title}
+                    </motion.div>
+                  ))}
                 </div>
               </motion.div>
-            ))}
-          </div>
-
-          {/* DESKTOP: Secondary row - smaller floating portraits */}
-          {bondGallery.length > 3 && (
-            <div className="hidden lg:flex flex-wrap justify-center gap-6 mt-12">
-              {bondGallery.slice(3, 7).map((item, idx) => (
-                <motion.div
-                  key={item.id || idx}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.3 + idx * 0.1 }}
-                  className="relative group"
-                >
-                  <div className="absolute inset-0 rounded-2xl bg-purple-500/20 blur-xl group-hover:bg-purple-500/30 transition-all duration-500" />
-                  <div className="relative w-44 h-44 rounded-2xl overflow-hidden border border-white/10 shadow-xl group-hover:border-white/20 transition-all duration-300 group-hover:scale-105 bg-slate-950">
-                    {/* Image */}
-                    <img 
-                      src={item.image_url} 
-                      alt={item.caption}
-                      className="w-full h-full object-cover"
-                    />
-                    {/* Dark vignette overlay to blend white backgrounds elegantly */}
-                    <div className="absolute inset-0 bg-gradient-to-br from-slate-950/60 via-transparent to-slate-950/60" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-slate-950/40" />
-                    {/* Subtle purple tint */}
-                    <div className="absolute inset-0 bg-purple-900/20 mix-blend-overlay" />
-                    <p className="absolute bottom-2 left-2 right-2 text-white text-xs font-medium truncate">
-                      {item.caption}
-                    </p>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* ========== MEET MIRA - The Memory & Judgement Layer ========== */}
-      <section className="relative py-24 sm:py-32 bg-slate-950 overflow-hidden">
-        {/* Background glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-600/10 rounded-full blur-3xl" />
-        
-        <div className="relative max-w-6xl mx-auto px-4">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Mira Visual - Using Living Soul Orb */}
-            <motion.div
-              className="relative order-2 lg:order-1"
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              <div className="relative mx-auto">
-                <LivingSoulOrb size="xl" className="mx-auto" />
-                
-                {/* Floating text bubbles - Interpretations, not transactions */}
-                <motion.div
-                  className="absolute -top-4 -right-4 bg-white rounded-2xl px-4 py-2 shadow-xl"
-                  animate={{ y: [0, -5, 0] }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                >
-                  <p className="text-sm text-gray-800">&quot;Bruno seems anxious today...&quot;</p>
-                </motion.div>
-                <motion.div
-                  className="absolute -bottom-4 -left-4 bg-white rounded-2xl px-4 py-2 shadow-xl"
-                  animate={{ y: [0, 5, 0] }}
-                  transition={{ duration: 3, repeat: Infinity, delay: 1 }}
-                >
-                  <p className="text-sm text-gray-800">&quot;Perhaps extra cuddles tonight?&quot;</p>
-                </motion.div>
-              </div>
-            </motion.div>
-
-            {/* Mira Description - New positioning */}
-            <motion.div
-              className="order-1 lg:order-2"
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/20 text-purple-300 rounded-full text-sm font-medium mb-6">
-                <Brain className="w-4 h-4" />
-                Meet Mira
-              </div>
               
-              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
-                She Doesn&apos;t Fulfil Requests.
-                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-                  She Interprets Lives.
-                </span>
-              </h2>
-
-              <p className="text-lg text-white/70 mb-4 leading-relaxed">
-                Mira is the memory and judgement layer that turns infrastructure into relationship.
-              </p>
-              
-              <p className="text-base text-white/50 mb-8 leading-relaxed italic border-l-2 border-purple-500/50 pl-4">
-                Mira is the brain. Concierge® is the hand.<br />
-                One understands life. The other moves the world.
-              </p>
-
-              <div className="space-y-4 mb-8">
-                {[
-                  { icon: Eye, title: 'She Sees Beyond Words', desc: 'Patterns, emotions, unspoken needs' },
-                  { icon: Heart, title: 'She Builds Relationships', desc: 'Not transactions — connections that deepen' },
-                  { icon: Brain, title: 'She Remembers Everything', desc: 'Every moment becomes part of the story' },
-                ].map((item, idx) => (
-                  <div key={idx} className="flex items-start gap-4 p-4 bg-white/5 rounded-xl border border-white/10">
-                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <item.icon className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-white">{item.title}</h4>
-                      <p className="text-sm text-white/60">{item.desc}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <Button 
-                onClick={handleOpenMira}
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 px-8 py-6 text-lg rounded-full"
-                data-testid="mira-section-cta"
-              >
-                <Sparkles className="w-5 h-5 mr-2" />
-                Experience Mira
-              </Button>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* ========== VIDEO TESTIMONIALS - Real Families, Real Stories ========== */}
-      <section className="relative py-24 sm:py-32 bg-gradient-to-b from-slate-950 to-purple-950/30 overflow-hidden">
-        {/* Background elements */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-pink-600/10 rounded-full blur-3xl" />
-        
-        <div className="relative max-w-6xl mx-auto px-4">
-          <div className="text-center mb-16">
-            <motion.div
-              className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/20 text-purple-300 rounded-full text-sm font-medium mb-6"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-            >
-              <Video className="w-4 h-4" />
-              Real Stories, Real Tears
-            </motion.div>
-            <motion.h2
-              className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
-              Families Who Trusted Us With
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-                Their Most Precious Members
-              </span>
-            </motion.h2>
-            <motion.p
-              className="text-lg text-white/60 max-w-2xl mx-auto"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-            >
-              Watch their stories. Feel their joy. Understand why they chose us.
-            </motion.p>
-          </div>
-
-          {/* Video Grid */}
-          <div className="grid md:grid-cols-3 gap-6 mb-12">
-            {VIDEO_TESTIMONIALS.map((testimonial, idx) => (
+              {/* Right - Content */}
               <motion.div
-                key={testimonial.id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: idx * 0.1 }}
-                className="group relative"
               >
-                {/* Video card */}
-                <div 
-                  className="relative overflow-hidden rounded-2xl border border-white/10 bg-slate-900/50 backdrop-blur-sm hover:border-purple-500/50 transition-all duration-300 cursor-pointer"
-                  onClick={() => setPlayingTestimonial(playingTestimonial === testimonial.id ? null : testimonial.id)}
-                >
-                  {/* Video/Thumbnail */}
-                  <div className="relative aspect-video overflow-hidden">
-                    {playingTestimonial === testimonial.id && testimonial.hasVideo ? (
-                      <video
-                        autoPlay
-                        muted={false}
-                        playsInline
-                        className="w-full h-full object-cover"
-                        onEnded={() => setPlayingTestimonial(null)}
-                      >
-                        <source src={testimonial.videoSrc} type="video/mp4" />
-                      </video>
-                    ) : (
-                      <>
-                        <img 
-                          src={testimonial.thumbnail} 
-                          alt={testimonial.name}
-                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent" />
-                        
-                        {/* Play button overlay */}
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <motion.div
-                            className="relative"
-                            whileHover={{ scale: 1.1 }}
-                          >
-                            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full blur-md opacity-50" />
-                            <div className="relative w-16 h-16 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center shadow-xl">
-                              <Play className="w-8 h-8 text-white fill-white ml-1" />
-                            </div>
-                          </motion.div>
-                        </div>
-                      </>
-                    )}
-                    
-                    {/* Duration badge */}
-                    <div className="absolute bottom-3 right-3 px-2 py-1 bg-black/70 rounded text-xs text-white font-medium">
-                      {playingTestimonial === testimonial.id ? 'Playing' : testimonial.duration}
-                    </div>
-                  </div>
-                  
-                  {/* Content */}
-                  <div className="p-5">
-                    <h3 className="text-white font-semibold mb-2">{testimonial.name}</h3>
-                    <p className="text-white/60 text-sm italic line-clamp-2">&quot;{testimonial.quote}&quot;</p>
-                  </div>
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/20 border border-purple-500/30 rounded-full mb-6">
+                  <Sparkles className="w-4 h-4 text-purple-400" />
+                  <span className="text-purple-300 text-sm">Powered by AI + Love</span>
                 </div>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Text Testimonial Carousel (below video) */}
-          <div className="relative max-w-3xl mx-auto mt-16 pt-16 border-t border-white/10">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentTestimonial}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.5 }}
-                className="text-center"
-              >
-                <Quote className="w-10 h-10 text-purple-500/30 mx-auto mb-6" />
-                <p className="text-xl sm:text-2xl text-white/90 mb-6 leading-relaxed italic">
-                  &quot;{REAL_STORIES[currentTestimonial].quote}&quot;
+                
+                <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
+                  Mira Knows Your Pet
+                </h2>
+                
+                <p className="text-white/60 text-lg mb-8">
+                  Not just another chatbot. Mira learns your pet's personality, remembers their allergies, 
+                  tracks their health, and becomes a true companion in your pet parenting journey.
                 </p>
-                <div className="flex items-center justify-center gap-4">
-                  <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-purple-500/50">
-                    <img 
-                      src={REAL_STORIES[currentTestimonial].petImage} 
-                      alt={REAL_STORIES[currentTestimonial].petName}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="text-left">
-                    <p className="text-white font-semibold">{REAL_STORIES[currentTestimonial].humanName}</p>
-                    <p className="text-white/60 text-sm">Pet parent of {REAL_STORIES[currentTestimonial].petName}</p>
-                  </div>
+                
+                <div className="space-y-4">
+                  {features.map((feature, i) => (
+                    <motion.div
+                      key={i}
+                      className={`flex items-start gap-4 p-4 rounded-xl transition-all duration-300 cursor-pointer ${
+                        activeFeature === i ? 'bg-white/10' : 'hover:bg-white/5'
+                      }`}
+                      onClick={() => setActiveFeature(i)}
+                    >
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                        activeFeature === i ? 'bg-gradient-to-br from-purple-500 to-pink-500' : 'bg-white/10'
+                      }`}>
+                        <Check className={`w-4 h-4 ${activeFeature === i ? 'text-white' : 'text-white/50'}`} />
+                      </div>
+                      <div>
+                        <h3 className={`font-medium ${activeFeature === i ? 'text-white' : 'text-white/70'}`}>
+                          {feature.title}
+                        </h3>
+                        <p className={`text-sm ${activeFeature === i ? 'text-white/70' : 'text-white/40'}`}>
+                          {feature.desc}
+                        </p>
+                      </div>
+                    </motion.div>
+                  ))}
                 </div>
               </motion.div>
-            </AnimatePresence>
+            </div>
+          </div>
+        </section>
 
-            {/* Dots */}
-            <div className="flex justify-center gap-2 mt-8">
-              {REAL_STORIES.map((_, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setCurrentTestimonial(idx)}
-                  className={`w-2 h-2 rounded-full transition-all ${
-                    idx === currentTestimonial ? 'bg-purple-500 w-6' : 'bg-white/30 hover:bg-white/50'
-                  }`}
-                  data-testid={`testimonial-dot-${idx}`}
-                />
+        {/* 5 Pillars Section */}
+        <section className="py-24">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+                One Place for Everything
+              </h2>
+              <p className="text-white/60 text-lg max-w-2xl mx-auto">
+                Five pillars of pet care, all connected through Mira. Your pet's entire life, beautifully organized.
+              </p>
+            </motion.div>
+            
+            <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
+              {pillars.map((pillar, i) => (
+                <PillarCard key={i} {...pillar} delay={i * 0.1} />
               ))}
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ========== MEMBERSHIP TIERS - Real Pet Pass Pricing ========== */}
-      <section className="relative py-24 sm:py-32 bg-slate-950 overflow-hidden">
-        {/* Background decoration */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-purple-600/5 rounded-full blur-3xl" />
-        
-        <div className="relative max-w-6xl mx-auto px-4">
-          <div className="text-center mb-16">
+        {/* Pet Concierge Section */}
+        <section className="py-24 relative">
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-green-900/10 to-transparent" />
+          
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+              >
+                <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-500/20 border border-green-500/30 rounded-full mb-6">
+                  <Crown className="w-4 h-4 text-green-400" />
+                  <span className="text-green-300 text-sm">Your Pet Concierge®</span>
+                </div>
+                
+                <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
+                  Real Humans Who Handle Everything
+                </h2>
+                
+                <p className="text-white/60 text-lg mb-8">
+                  Want to book a pet-friendly hotel in Paris? Need a vet appointment? Planning a birthday party? 
+                  Just tell Mira what you want - our Concierge team makes it happen.
+                </p>
+                
+                <ul className="space-y-4 mb-8">
+                  {[
+                    'Book hotels, restaurants, vets - anywhere in the world',
+                    'Plan birthday parties and celebrations',
+                    'Handle emergencies with priority support',
+                    'Available 6:30 AM - 11:30 PM, every day'
+                  ].map((item, i) => (
+                    <li key={i} className="flex items-center gap-3 text-white/80">
+                      <Check className="w-5 h-5 text-green-400" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+                
+                <div className="flex flex-wrap gap-4">
+                  <Button className="bg-green-600 hover:bg-green-700 text-white">
+                    <Phone className="w-4 h-4 mr-2" /> WhatsApp Us
+                  </Button>
+                  <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">
+                    <Mail className="w-4 h-4 mr-2" /> Email Concierge
+                  </Button>
+                </div>
+              </motion.div>
+              
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                className="relative"
+              >
+                <div className="absolute -inset-1 bg-gradient-to-r from-green-600 to-emerald-600 rounded-3xl blur-lg opacity-30" />
+                <img 
+                  src={BRAND_IMAGES.petWithOwner} 
+                  alt="Pet Concierge" 
+                  className="relative rounded-3xl border border-white/10 w-full"
+                />
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* Testimonials */}
+        <section className="py-24">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
-              className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500/20 to-pink-500/20 text-purple-300 rounded-full text-sm font-medium mb-6"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
+              className="text-center mb-16"
             >
-              <Crown className="w-4 h-4" />
-              Pet Pass — Personal Concierge®
+              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
+                Loved by Pet Families
+              </h2>
+              <p className="text-white/60 text-lg">
+                Join thousands of pet parents who've transformed their pet care journey
+              </p>
             </motion.div>
-            <motion.h2
-              className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-6"
+            
+            <div className="grid md:grid-cols-3 gap-6">
+              <TestimonialCard 
+                quote="Mira remembered that Bruno has a chicken allergy when I was searching for treats. No other app does this!"
+                name="Priya M."
+                pet="Bruno the Labrador"
+                image={BRAND_IMAGES.goldenRetriever}
+              />
+              <TestimonialCard 
+                quote="Booked a pet-friendly hotel in Goa through the concierge. They even arranged a dog-sitter for our dinner date!"
+                name="Rahul K."
+                pet="Cookie the Beagle"
+                image={BRAND_IMAGES.bulldog}
+              />
+              <TestimonialCard 
+                quote="The health tracking alone is worth it. I get reminders for vaccinations, vet visits, everything!"
+                name="Ananya S."
+                pet="Max the German Shepherd"
+                image={BRAND_IMAGES.happyPet}
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* Final CTA */}
+        <section className="py-24 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-r from-purple-900/50 to-pink-900/50" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-500/30 rounded-full blur-3xl" />
+          
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative text-center">
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              A Personal Concierge®
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">
-                For Your Dog
-              </span>
-            </motion.h2>
-            <motion.p
-              className="text-lg text-white/60 max-w-2xl mx-auto"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-            >
-              Pet Pass creates a living concierge relationship — beginning with understanding your dog, sustained through memory, care, and continuity.
-            </motion.p>
-          </div>
-
-          {/* Limited Time Offer Banner */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="mb-10 p-4 bg-gradient-to-r from-amber-500/20 to-orange-500/20 rounded-2xl border border-amber-500/30 text-center"
-          >
-            <div className="flex items-center justify-center gap-3 flex-wrap">
-              <span className="text-2xl">🎁</span>
-              <p className="text-lg font-semibold text-amber-300">
-                Launch Offer: Get <span className="text-amber-400">7 Bonus Days FREE</span> with any Pet Pass!
+              <MiraSoulOrb size="md" />
+              
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mt-8 mb-6">
+                Ready to give your pet the life they deserve?
+              </h2>
+              
+              <p className="text-white/60 text-lg mb-8 max-w-2xl mx-auto">
+                Join thousands of pet parents who've discovered a better way to care for their furry family members.
               </p>
-              <span className="text-2xl">🎁</span>
-            </div>
-            <p className="text-amber-200/70 text-sm mt-1">Limited time offer for new members</p>
-          </motion.div>
-
-          {/* Membership Cards - 2 columns */}
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            {MEMBERSHIP_TIERS.map((tier, idx) => (
-              <motion.div
-                key={tier.name}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.1 }}
-                className={`relative ${tier.highlighted ? 'md:-mt-4 md:mb-4' : ''}`}
-              >
-                {/* Highlighted badge */}
-                {tier.badge && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
-                    <div className={`px-4 py-1.5 rounded-full text-sm font-semibold text-white shadow-lg ${
-                      tier.highlighted 
-                        ? 'bg-gradient-to-r from-purple-600 to-pink-600 shadow-purple-500/30'
-                        : 'bg-gradient-to-r from-blue-600 to-cyan-600 shadow-blue-500/30'
-                    }`}>
-                      {tier.badge}
-                    </div>
-                  </div>
-                )}
-                
-                <Card className={`relative overflow-hidden h-full ${
-                  tier.highlighted 
-                    ? 'bg-gradient-to-b from-purple-900/40 to-slate-900/90 border-purple-500/50 shadow-xl shadow-purple-500/20' 
-                    : 'bg-white/5 border-white/10'
-                } backdrop-blur-sm`}>
-                  {/* Glow effect for highlighted */}
-                  {tier.highlighted && (
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-1 bg-gradient-to-r from-purple-500 to-pink-500 blur-sm" />
-                  )}
-                  
-                  <div className="p-6 sm:p-8">
-                    {/* Tier name */}
-                    <h3 className="text-xl font-bold text-white mb-2">{tier.name}</h3>
-                    <p className="text-white/60 text-sm mb-4">{tier.description}</p>
-                    
-                    {/* Price */}
-                    <div className="mb-2">
-                      <span className="text-4xl font-black text-white">{tier.price}</span>
-                      {tier.period && <span className="text-white/60">{tier.period}</span>}
-                    </div>
-                    
-                    {/* Bonus Days Badge */}
-                    {tier.bonusDays && (
-                      <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-emerald-500/20 to-teal-500/20 rounded-full border border-emerald-500/30 mb-4">
-                        <span className="text-emerald-400 text-sm font-semibold">+{tier.bonusDays} Bonus Days FREE!</span>
-                      </div>
-                    )}
-                    
-                    {tier.savings && (
-                      <p className="text-green-400 text-sm mb-4">{tier.savings}</p>
-                    )}
-                    {!tier.savings && !tier.bonusDays && <div className="mb-4" />}
-                    
-                    {/* Duration info */}
-                    {tier.duration && (
-                      <p className="text-white/50 text-xs mb-4">
-                        Total: {tier.duration} access
-                      </p>
-                    )}
-                    
-                    {/* CTA Button - Internal Link */}
-                    <Link to={tier.ctaLink || "/join"}>
-                      <Button 
-                        className={`w-full mb-6 py-6 rounded-xl font-semibold ${
-                          tier.highlighted 
-                            ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white shadow-lg shadow-purple-500/30' 
-                            : 'bg-white/10 hover:bg-white/20 text-white border border-white/20'
-                        }`}
-                        data-testid={`membership-cta-${tier.name.toLowerCase().replace(/\s+/g, '-')}`}
-                      >
-                        {tier.cta}
-                        <ArrowRight className="w-4 h-4 ml-2" />
-                      </Button>
-                    </Link>
-                    
-                    {/* Features */}
-                    <div className="space-y-3">
-                      {tier.features.map((feature, fIdx) => (
-                        <div key={fIdx} className="flex items-start gap-3">
-                          <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 ${
-                            tier.highlighted ? 'bg-purple-500/30' : 'bg-white/10'
-                          }`}>
-                            <Check className="w-3 h-3 text-purple-400" />
-                          </div>
-                          <span className="text-sm text-white/80">{feature}</span>
-                        </div>
-                      ))}
-                      
-                      {/* Not included (for free tier) */}
-                      {tier.notIncluded?.map((feature, fIdx) => (
-                        <div key={`not-${fIdx}`} className="flex items-start gap-3 opacity-50">
-                          <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 bg-white/5">
-                            <X className="w-3 h-3 text-white/40" />
-                          </div>
-                          <span className="text-sm text-white/40 line-through">{feature}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Trust badges */}
-          <motion.div 
-            className="flex flex-wrap justify-center gap-8 mt-12 pt-12 border-t border-white/10"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-          >
-            {[
-              { icon: Shield, text: 'Secure Payments' },
-              { icon: Lock, text: 'Your Data Protected' },
-              { icon: Zap, text: 'Cancel Anytime' },
-              { icon: Gift, text: 'Birthday Surprises' },
-            ].map((badge, idx) => (
-              <div key={idx} className="flex items-center gap-2 text-white/50">
-                <badge.icon className="w-4 h-4" />
-                <span className="text-sm">{badge.text}</span>
+              
+              <div className="flex flex-wrap justify-center gap-4">
+                <Link to="/join">
+                  <Button size="lg" className="bg-white text-purple-900 hover:bg-white/90 px-8 py-6 text-lg rounded-xl">
+                    Start Your Pet's Journey <ArrowRight className="ml-2 w-5 h-5" />
+                  </Button>
+                </Link>
               </div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
+              
+              <p className="text-white/40 text-sm mt-6">
+                Free to join. No credit card required.
+              </p>
+            </motion.div>
+          </div>
+        </section>
 
-      {/* ========== THE PROMISE ========== */}
-      <section className="relative py-24 sm:py-32 bg-slate-950">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-8">
-              Our Promise to You
-            </h2>
-            <p className="text-xl sm:text-2xl text-white/70 mb-12 leading-relaxed max-w-3xl mx-auto">
-              The longer you stay with us, the less you&apos;ll have to explain. 
-              We&apos;ll know your pet&apos;s soul — and treat them as family.
-            </p>
-
-            <div className="grid sm:grid-cols-3 gap-6 mb-12">
-              {[
-                { icon: Shield, title: 'Built on Trust', desc: 'Every interaction earns your confidence' },
-                { icon: Lock, title: 'Your Data, Your Control', desc: 'We never sell or share pet data' },
-                { icon: Heart, title: 'Lifetime Memory', desc: 'Your pet\'s soul lives forever with us' },
-              ].map((item, idx) => (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.1 }}
-                  className="p-6 bg-white/5 rounded-2xl border border-white/10"
-                >
-                  <item.icon className="w-8 h-8 text-purple-400 mx-auto mb-4" />
-                  <h3 className="text-white font-semibold mb-2">{item.title}</h3>
-                  <p className="text-sm text-white/60">{item.desc}</p>
-                </motion.div>
-              ))}
+        {/* Footer */}
+        <footer className="py-12 border-t border-white/5">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                  <PawPrint className="w-5 h-5 text-white" />
+                </div>
+                <span className="text-white font-bold">thedoggycompany</span>
+              </div>
+              
+              <div className="flex items-center gap-6 text-white/50 text-sm">
+                <Link to="/privacy" className="hover:text-white transition-colors">Privacy</Link>
+                <Link to="/terms" className="hover:text-white transition-colors">Terms</Link>
+                <a href="mailto:hello@thedoggycompany.in" className="hover:text-white transition-colors">Contact</a>
+              </div>
+              
+              <p className="text-white/30 text-sm">
+                © 2025 The Doggy Company. Made with <Heart className="w-4 h-4 inline text-pink-500" /> for pets everywhere.
+              </p>
             </div>
-
-            <Link to="/join?plan=foundation">
-              <Button 
-                size="lg" 
-                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white px-12 py-7 text-lg rounded-full shadow-2xl shadow-purple-500/30 transition-all hover:scale-105"
-              >
-                Begin Your Pet&apos;s Soul Journey
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Button>
-            </Link>
-          </motion.div>
-        </div>
-      </section>
-
-      {/* ========== FOOTER CTA ========== */}
-      <section className="relative py-16 bg-gradient-to-t from-purple-950/50 to-slate-950 border-t border-white/10">
-        <div className="max-w-6xl mx-auto px-4 text-center">
-          <p className="text-white/60 mb-4">Questions? Mira is always here.</p>
-          <Button 
-            variant="ghost" 
-            onClick={handleOpenMira}
-            className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/10"
-          >
-            <MessageCircle className="w-5 h-5 mr-2" />
-            Chat with Mira
-          </Button>
-        </div>
-      </section>
-
-      {/* Video Modal - Brand Story with Multiple Clips */}
-      <AnimatePresence>
-        {showVideo && (
-          <BrandStoryModal 
-            onClose={() => setShowVideo(false)}
-            videoMuted={videoMuted}
-            setVideoMuted={setVideoMuted}
-          />
-        )}
-      </AnimatePresence>
-    </div>
+          </div>
+        </footer>
+      </div>
+    </>
   );
 };
-
-// Soul Dimensions - What we track
-const SOUL_DIMENSIONS = [
-  {
-    icon: '❤️',
-    title: 'Emotional Patterns',
-    description: 'Anxiety triggers, comfort zones, and what makes their tail wag.',
-    gradient: 'from-pink-500 to-rose-500',
-  },
-  {
-    icon: '🍖',
-    title: 'Dietary Soul',
-    description: 'Allergies, favorites, what they pretend not to like but secretly love.',
-    gradient: 'from-orange-500 to-amber-500',
-  },
-  {
-    icon: '🏥',
-    title: 'Health History',
-    description: 'Vaccinations, conditions, preferred vets, and emergency contacts.',
-    gradient: 'from-blue-500 to-cyan-500',
-  },
-  {
-    icon: '✈️',
-    title: 'Travel Readiness',
-    description: 'Carrier comfort, motion sickness, and documentation always ready.',
-    gradient: 'from-indigo-500 to-purple-500',
-  },
-  {
-    icon: '🎓',
-    title: 'Learning Style',
-    description: 'Training progress, commands mastered, and behavioral growth.',
-    gradient: 'from-green-500 to-emerald-500',
-  },
-  {
-    icon: '🎂',
-    title: 'Life Milestones',
-    description: 'Birthdays, gotcha days, achievements — we celebrate them all.',
-    gradient: 'from-purple-500 to-pink-500',
-  },
-];
-
-// Real Stories - Trust through real families
-const REAL_STORIES = [
-  {
-    quote: "They remembered Bruno's fear of thunderstorms before I even mentioned it. For the first time, I felt like someone truly understood my dog.",
-    humanName: "Priya Sharma",
-    petName: "Bruno",
-    petImage: "https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=200&h=200&fit=crop",
-  },
-  {
-    quote: "When Max got sick at 2am, Mira already had his full health history ready for the emergency vet. That's when I knew this was different.",
-    humanName: "Rahul Mehta",
-    petName: "Max",
-    petImage: "https://images.unsplash.com/photo-1552053831-71594a27632d?w=200&h=200&fit=crop",
-  },
-  {
-    quote: "They sent Luna a birthday cake without me even asking. It's the small things that show they actually care about our pets as family.",
-    humanName: "Anita Kapoor",
-    petName: "Luna",
-    petImage: "https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=200&h=200&fit=crop",
-  },
-  {
-    quote: "Mira knew exactly which treats work best for Coco's training. It's like having a pet expert who actually knows MY dog.",
-    humanName: "Sneha Patel",
-    petName: "Coco",
-    petImage: "https://images.unsplash.com/photo-1618762869266-1e23a6b73a1d?w=200&h=200&fit=crop",
-  },
-];
 
 export default Home;
