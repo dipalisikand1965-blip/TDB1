@@ -7501,10 +7501,71 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                 # =======================================================================
                 search_terms = user_message.lower().split()
                 
+                # =======================================================================
+                # AGE/BREED PERSONALIZATION FILTER
+                # Get pet's age category and breed size for targeted recommendations
+                # =======================================================================
+                pet_age_category = None  # puppy, adult, senior
+                pet_breed_size = None    # small, medium, large
+                
+                if selected_pet:
+                    # Determine age category
+                    pet_age = selected_pet.get("age_years") or selected_pet.get("age", {}).get("years")
+                    if pet_age:
+                        if isinstance(pet_age, str):
+                            try:
+                                pet_age = int(pet_age.split()[0])
+                            except:
+                                pet_age = None
+                        if pet_age:
+                            if pet_age < 1:
+                                pet_age_category = "puppy"
+                            elif pet_age >= 7:
+                                pet_age_category = "senior"
+                            else:
+                                pet_age_category = "adult"
+                    
+                    # Determine breed size
+                    breed = selected_pet.get("breed") or (selected_pet.get("identity") or {}).get("breed", "")
+                    breed_lower = breed.lower() if breed else ""
+                    
+                    # Small breeds
+                    small_breeds = ["chihuahua", "pomeranian", "shih tzu", "maltese", "yorkshire", "yorkie", "pug", "beagle", "dachshund", "french bulldog", "boston terrier", "cavalier", "papillon", "miniature"]
+                    # Large breeds
+                    large_breeds = ["german shepherd", "golden retriever", "labrador", "rottweiler", "great dane", "husky", "malamute", "doberman", "boxer", "mastiff", "saint bernard", "newfoundland", "bernese", "akita", "irish setter"]
+                    
+                    if any(sb in breed_lower for sb in small_breeds):
+                        pet_breed_size = "small"
+                    elif any(lb in breed_lower for lb in large_breeds):
+                        pet_breed_size = "large"
+                    else:
+                        pet_breed_size = "medium"
+                    
+                    logger.info(f"[AGE/BREED FILTER] Pet: {selected_pet.get('name')} - Age: {pet_age_category}, Size: {pet_breed_size}")
+                
                 # Check if user is asking for specific category (food vs toys vs treats)
                 is_food_request = any(word in user_message.lower() for word in ["food", "meal", "kibble", "diet", "eating", "eat", "nutrition"])
                 is_treat_request = any(word in user_message.lower() for word in ["treat", "snack", "reward", "chew"])
                 is_toy_request = any(word in user_message.lower() for word in ["toy", "play", "ball", "fetch", "tug"])
+                
+                # Build age/breed filter if available
+                age_breed_filter = {}
+                if pet_age_category:
+                    age_breed_filter["$or"] = [
+                        {"suitable_for_age": {"$in": [pet_age_category, "all"]}},
+                        {"tags": {"$in": [pet_age_category]}},
+                        {"suitable_for_age": {"$exists": False}}  # Products without age tag work for all
+                    ]
+                if pet_breed_size:
+                    size_filter = [
+                        {"suitable_for_size": {"$in": [pet_breed_size, "all"]}},
+                        {"tags": {"$in": [pet_breed_size, f"{pet_breed_size}_breed"]}},
+                        {"suitable_for_size": {"$exists": False}}  # Products without size tag work for all
+                    ]
+                    if "$or" in age_breed_filter:
+                        age_breed_filter = {"$and": [{"$or": age_breed_filter["$or"]}, {"$or": size_filter}]}
+                    else:
+                        age_breed_filter["$or"] = size_filter
                 
                 # Build targeted query based on what user actually wants
                 if is_food_request:
