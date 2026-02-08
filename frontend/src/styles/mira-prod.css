@@ -5654,3 +5654,119 @@ input, select, textarea {
   color: rgba(255, 255, 255, 0.7);
 }
 
+
+
+/* ========================================
+   UNIFIED C® GET HELP BUTTON (Inline in chat)
+   ======================================== */
+.mp-concierge-unified-inline {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.concierge-help-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #25D366, #128C7E);
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  font-size: 14px;
+  color: white;
+  width: fit-content;
+  box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+}
+
+.concierge-help-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+}
+
+.concierge-help-btn .concierge-c {
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.concierge-help-btn .concierge-r {
+  font-size: 10px;
+  vertical-align: super;
+  margin-right: 4px;
+}
+
+.concierge-help-btn .concierge-label {
+  margin-left: 4px;
+}
+
+.concierge-options-inline {
+  display: none;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+  animation: fadeInSlide 0.3s ease;
+}
+
+.concierge-options-inline.expanded {
+  display: flex;
+}
+
+@keyframes fadeInSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.concierge-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.concierge-option.whatsapp {
+  background: rgba(37, 211, 102, 0.2);
+  color: #25D366;
+  border: 1px solid rgba(37, 211, 102, 0.3);
+}
+
+.concierge-option.whatsapp:hover {
+  background: rgba(37, 211, 102, 0.3);
+}
+
+.concierge-option.chat {
+  background: rgba(139, 92, 246, 0.2);
+  color: #a78bfa;
+  border: 1px solid rgba(139, 92, 246, 0.3);
+}
+
+.concierge-option.chat:hover {
+  background: rgba(139, 92, 246, 0.3);
+}
+
+.concierge-option.email {
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.concierge-option.email:hover {
+  background: rgba(59, 130, 246, 0.3);
+}
+
