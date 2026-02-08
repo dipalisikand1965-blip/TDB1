@@ -207,6 +207,36 @@ const DinePage = () => {
       default: return 'Check with restaurant';
     }
   };
+  
+  // Fetch nearby pet cafes and dog parks from Foursquare
+  const fetchNearbyPlaces = async (city) => {
+    setNearbyLoading(true);
+    setSelectedNearbyCity(city);
+    try {
+      // Fetch pet cafes from Foursquare
+      const cafesResponse = await fetch(`${API_URL}/api/mira/foursquare/pet-cafes?city=${encodeURIComponent(city)}&limit=6`);
+      if (cafesResponse.ok) {
+        const cafesData = await cafesResponse.json();
+        setNearbyCafes(cafesData.places || []);
+      }
+      
+      // Fetch dog parks
+      const parksResponse = await fetch(`${API_URL}/api/mira/foursquare/dog-parks?city=${encodeURIComponent(city)}&limit=4`);
+      if (parksResponse.ok) {
+        const parksData = await parksResponse.json();
+        setNearbyParks(parksData.places || []);
+      }
+    } catch (error) {
+      console.error('Error fetching nearby places:', error);
+    } finally {
+      setNearbyLoading(false);
+    }
+  };
+  
+  // Fetch nearby places on mount
+  useEffect(() => {
+    fetchNearbyPlaces('mumbai');
+  }, []);
 
   return (
     <PillarPageLayout
