@@ -550,7 +550,7 @@ const MiraDemoPage = () => {
   
   // HEALTH VAULT - Track completeness and prompt for missing data
   const [healthVault, setHealthVault] = useState({
-    completeness: 100, // Assume complete until we check
+    completeness: 0, // Start at 0, will update when pet data loads
     missing_fields: [],
     showWizard: false,
     currentField: null
