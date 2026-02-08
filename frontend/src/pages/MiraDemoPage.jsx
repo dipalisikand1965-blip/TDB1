@@ -648,6 +648,26 @@ const MiraDemoPage = () => {
   // E027: DAILY DIGEST
   const [dailyDigest, setDailyDigest] = useState(null);
   
+  // ═══════════════════════════════════════════════════════════════════════════
+  // TYPING ANIMATION - Stream text like a real assistant
+  // ═══════════════════════════════════════════════════════════════════════════
+  const [isTyping, setIsTyping] = useState(false);
+  const [displayedText, setDisplayedText] = useState('');
+  const [showSkeleton, setShowSkeleton] = useState(false);
+  const typingTimeoutRef = useRef(null);
+  
+  // Typing speeds per mode (chars per second)
+  const TYPING_SPEEDS = {
+    default: 40,
+    celebration: 50,
+    comfort: 20,
+    emergency: 30,
+    adventure: 45,
+    informative: 35,
+    caring: 35,
+    health: 30
+  };
+  
   // E028: MILESTONES
   const [milestones, setMilestones] = useState([]);
   
