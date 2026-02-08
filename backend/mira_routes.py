@@ -10789,6 +10789,31 @@ SEMANTIC_INTENTS = {
         "product_categories": ["toys", "enrichment", "accessories"],
         "product_tags": ["toy", "interactive", "puzzle", "enrichment"],
         "why_message": "For mental stimulation and fun"
+    },
+    # NEW INTENTS for comprehensive coverage
+    "fashion_wearables": {
+        "triggers": ["collar", "bandana", "bow tie", "harness", "leash", "dress", "costume", "jacket", "sweater", "hoodie", "fashion", "style", "cute outfit"],
+        "product_categories": ["accessories", "wearables", "fashion"],
+        "product_tags": ["fashion", "wearable", "collar", "bandana", "harness", "outfit"],
+        "why_message": "Stylish accessories"
+    },
+    "dining_cafe": {
+        "triggers": ["cafe", "restaurant", "dine out", "outing", "bowl", "feeder", "food bowl", "water bowl", "slow feeder"],
+        "product_categories": ["dine", "bowls", "feeders"],
+        "product_tags": ["dining", "cafe", "bowl", "feeder"],
+        "why_message": "For dining experiences"
+    },
+    "home_decor": {
+        "triggers": ["home decor", "gift", "magnet", "coaster", "frame", "poster", "mug", "decoration"],
+        "product_categories": ["accessories", "gifts", "decor"],
+        "product_tags": ["home", "decor", "gift", "accessory"],
+        "why_message": "Pet-lover gifts and decor"
+    },
+    "fresh_food": {
+        "triggers": ["fresh food", "fresh meal", "homemade", "cooked food", "chicken meal", "natural food"],
+        "product_categories": ["fresh-meals", "food"],
+        "product_tags": ["fresh-food", "meal", "homemade", "natural"],
+        "why_message": "Freshly prepared meals"
     }
 }
 
