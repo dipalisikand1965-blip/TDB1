@@ -4168,8 +4168,22 @@ const MiraDemoPage = () => {
                 </React.Fragment>
               ))}
               
-              {/* Loading Indicator */}
-              {isProcessing && (
+              {/* Skeleton Loader - Shows after 800ms */}
+              {showSkeleton && isProcessing && (
+                <div className="mp-msg-mira mp-skeleton-loader">
+                  <div className="mp-mira-avatar"><Sparkles className="pulse" /></div>
+                  <div className="mp-skeleton-content">
+                    <span className="mp-skeleton-text">Mira is thinking about {pet.name}...</span>
+                    <div className="mp-skeleton-lines">
+                      <div className="mp-skeleton-line"></div>
+                      <div className="mp-skeleton-line short"></div>
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Loading Indicator - Quick dots before skeleton */}
+              {isProcessing && !showSkeleton && (
                 <div className="mp-msg-mira">
                   <div className="mp-loading">
                     <div className="mp-mira-avatar"><Sparkles /></div>
@@ -4178,6 +4192,17 @@ const MiraDemoPage = () => {
                       <div className="mp-loading-dot"></div>
                       <div className="mp-loading-dot"></div>
                     </div>
+                  </div>
+                </div>
+              )}
+              
+              {/* Typing Animation Display */}
+              {isTyping && displayedText && (
+                <div className="mp-msg-mira mp-typing-message">
+                  <div className="mp-mira-avatar"><Sparkles /></div>
+                  <div className="mp-msg-content">
+                    <span className="mp-typing-text">{displayedText}</span>
+                    <span className="mp-typing-cursor">|</span>
                   </div>
                 </div>
               )}
