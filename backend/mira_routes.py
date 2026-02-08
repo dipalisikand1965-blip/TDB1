@@ -12412,10 +12412,10 @@ async def viator_attractions(
 
 @router.get("/viator/pet-friendly")
 async def viator_pet_friendly(city: str = "mumbai", limit: int = 5):
-    """Get pet-friendly attractions (outdoor, nature, parks)."""
+    """Get pet-friendly attractions (with fallback)."""
     try:
-        from services.viator_service import get_pet_friendly_attractions
-        return await get_pet_friendly_attractions(city, limit)
+        from services.viator_service import get_pet_friendly_attractions_with_fallback
+        return await get_pet_friendly_attractions_with_fallback(city, limit)
     except Exception as e:
         logger.error(f"Viator pet-friendly error: {e}")
         return {"success": False, "error": str(e), "attractions": []}
