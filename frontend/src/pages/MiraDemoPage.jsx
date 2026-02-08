@@ -157,7 +157,7 @@ const TEST_SCENARIOS = [
   { id: 'health', label: '🏥 Health', query: "I'm worried about coughing" },
   { id: 'anxious', label: '😰 Anxiety', query: "Seems anxious during thunderstorms" },
   { id: 'memorial', label: '🌈 Farewell', query: "I lost my dog last week" },
-  { id: 'travel', label: '✈️ Travel', query: "Planning a trip next month" },
+  { id: 'travel', label: '✈️ Travel', query: "Planning a trip to Goa with my dog" },
   { id: 'boarding', label: '🏠 Boarding', query: "Need someone to watch while I'm away" },
   // E032 Semantic Search tests
   { id: 'calm', label: '😌 Calm', query: "Something to calm during Diwali fireworks" },
@@ -168,6 +168,10 @@ const TEST_SCENARIOS = [
   { id: 'acting-weird', label: '❓ Acting Weird', query: "Has been acting strange lately" },
   // E033 Memory test
   { id: 'memory', label: '💭 Memory', query: "Remember when we talked about skin issues?" },
+  // YouTube Training Videos test
+  { id: 'learn', label: '📺 Learn', query: "How do I train my dog to stop barking?" },
+  // Amadeus Travel test
+  { id: 'hotels', label: '🏨 Hotels', query: "Find pet-friendly hotels in Mumbai" },
 ];
 
 // SERVICE CATEGORIES - Maps to wizard pages on main site
