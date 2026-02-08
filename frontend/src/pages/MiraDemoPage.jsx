@@ -781,20 +781,27 @@ const MiraDemoPage = () => {
       if (!pet.id || pet.id === 'demo') return;
       
       try {
-        // Fetch celebrations, health reminders, and health vault status in parallel
-        const [celebResponse, healthResponse, vaultResponse] = await Promise.all([
+        // Fetch celebrations, health reminders, health vault status, weather, and bundles in parallel
+        const [celebResponse, healthResponse, vaultResponse, weatherResponse, bundlesResponse] = await Promise.all([
           fetch(`${API_URL}/api/mira/celebrations/${pet.id}`),
           fetch(`${API_URL}/api/mira/health-reminders/${pet.id}`),
-          fetch(`${API_URL}/api/mira/health-vault/status/${pet.id}`)
+          fetch(`${API_URL}/api/mira/health-vault/status/${pet.id}`),
+          fetch(`${API_URL}/api/mira/weather-suggestions/${pet.id}`),
+          fetch(`${API_URL}/api/mira/bundles/${pet.id}`)
         ]);
         
         const celebData = celebResponse.ok ? await celebResponse.json() : { celebrations: [] };
         const healthData = healthResponse.ok ? await healthResponse.json() : { reminders: [] };
         const vaultData = vaultResponse.ok ? await vaultResponse.json() : { completeness: 100, missing_fields: [] };
+        const weatherData = weatherResponse.ok ? await weatherResponse.json() : { suggestions: [] };
+        const bundlesData = bundlesResponse.ok ? await bundlesResponse.json() : { bundles: [] };
         
         setProactiveAlerts({
           celebrations: celebData.celebrations || [],
           healthReminders: healthData.reminders || [],
+          weatherSuggestions: weatherData.suggestions || [],
+          weather: weatherData.weather || {},
+          bundles: bundlesData.bundles || [],
           hasUrgent: healthData.has_urgent || celebData.celebrations?.some(c => c.is_today)
         });
         
