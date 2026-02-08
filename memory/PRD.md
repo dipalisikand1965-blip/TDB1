@@ -204,7 +204,7 @@ The double voice issue was caused by:
 ## TEST CREDENTIALS
 
 - **Email**: `dipali@clubconcierge.in`
-- **Password**: `test123`
+- **Password**: `lola4304`
 
 ---
 
