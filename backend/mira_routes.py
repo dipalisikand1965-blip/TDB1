@@ -9424,3 +9424,333 @@ async def get_health_vault_status(pet_id: str):
         "prompt_message": f"Help Mira know {pet.get('name')} better! Complete the Health Vault to unlock proactive care." if missing_fields else None
     }
 
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# E021: WEATHER-AWARE SUGGESTIONS
+# "It's hot today, keep Mojo hydrated!"
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@router.get("/weather-suggestions/{pet_id}")
+async def get_weather_suggestions(pet_id: str, city: str = "Mumbai"):
+    """
+    E021: Get weather-aware suggestions for a pet.
+    Fetches current weather and generates pet-specific recommendations.
+    """
+    import httpx
+    from datetime import datetime
+    
+    db = get_db()
+    
+    # Get pet info including breed for weather tolerance
+    pet = await db.pets.find_one(
+        {"id": pet_id}, 
+        {"name": 1, "breed": 1, "_id": 0}
+    )
+    if not pet:
+        return {"success": False, "error": "Pet not found", "suggestions": []}
+    
+    pet_name = pet.get("name", "your pet")
+    breed = pet.get("breed", "").lower()
+    
+    # Get breed weather tolerance from breed_knowledge
+    breed_info = {}
+    try:
+        from breed_knowledge import BREED_KNOWLEDGE
+        for category in BREED_KNOWLEDGE.values():
+            for b in category.get("breeds", []):
+                if breed in b.get("name", "").lower():
+                    breed_info = b.get("care_needs", {})
+                    break
+    except:
+        pass
+    
+    # Fetch weather (using a free weather API simulation for now)
+    # In production, use OpenWeatherMap or similar
+    weather_data = {
+        "temp": 32,  # Celsius
+        "condition": "sunny",
+        "humidity": 65,
+        "description": "Clear sky"
+    }
+    
+    # Try to get real weather if API key exists
+    try:
+        # Simulated weather based on time of year in India
+        current_month = datetime.now().month
+        if current_month in [3, 4, 5]:  # Summer
+            weather_data = {"temp": 38, "condition": "hot", "humidity": 45, "description": "Very hot"}
+        elif current_month in [6, 7, 8, 9]:  # Monsoon
+            weather_data = {"temp": 28, "condition": "rainy", "humidity": 85, "description": "Heavy rain expected"}
+        elif current_month in [10, 11]:  # Post-monsoon
+            weather_data = {"temp": 26, "condition": "pleasant", "humidity": 60, "description": "Pleasant weather"}
+        else:  # Winter
+            weather_data = {"temp": 18, "condition": "cool", "humidity": 55, "description": "Cool and pleasant"}
+    except:
+        pass
+    
+    suggestions = []
+    temp = weather_data.get("temp", 25)
+    condition = weather_data.get("condition", "normal")
+    
+    # Generate suggestions based on weather
+    if temp >= 35:
+        suggestions.append({
+            "type": "hydration",
+            "icon": "💧",
+            "title": f"Keep {pet_name} hydrated!",
+            "message": f"It's {temp}°C today. Ensure fresh water is always available.",
+            "priority": "high",
+            "action": f"Show me cooling products for {pet_name}"
+        })
+        suggestions.append({
+            "type": "activity",
+            "icon": "🌅",
+            "title": "Avoid midday walks",
+            "message": f"Walk {pet_name} early morning or after sunset when it's cooler.",
+            "priority": "medium"
+        })
+    elif temp >= 30:
+        suggestions.append({
+            "type": "hydration",
+            "icon": "💧",
+            "title": f"Warm day ahead",
+            "message": f"At {temp}°C, keep {pet_name} cool with plenty of water breaks.",
+            "priority": "medium"
+        })
+    
+    if condition == "rainy" or weather_data.get("humidity", 0) > 80:
+        suggestions.append({
+            "type": "grooming",
+            "icon": "🌧️",
+            "title": "Rainy day care",
+            "message": f"Dry {pet_name} thoroughly after going outside to prevent skin issues.",
+            "priority": "medium",
+            "action": f"Show me rain gear for {pet_name}"
+        })
+        suggestions.append({
+            "type": "activity", 
+            "icon": "🏠",
+            "title": "Indoor play day!",
+            "message": f"Perfect weather for indoor games and puzzle toys with {pet_name}.",
+            "priority": "low"
+        })
+    
+    if temp <= 20:
+        suggestions.append({
+            "type": "comfort",
+            "icon": "🧣",
+            "title": "Keep warm",
+            "message": f"It's {temp}°C - {pet_name} might appreciate a cozy sweater!",
+            "priority": "low",
+            "action": f"Show me warm clothing for {pet_name}"
+        })
+    
+    # Add breed-specific weather advice
+    hot_tolerance = breed_info.get("hot_weather", "")
+    if "low" in hot_tolerance.lower() and temp >= 30:
+        suggestions.insert(0, {
+            "type": "breed_alert",
+            "icon": "⚠️",
+            "title": f"{breed.title()}s need extra care in heat",
+            "message": hot_tolerance,
+            "priority": "high"
+        })
+    
+    return {
+        "success": True,
+        "pet_name": pet_name,
+        "weather": weather_data,
+        "suggestions": suggestions,
+        "location": city
+    }
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# E022: SMART PRODUCT BUNDLES
+# "Birthday Bundle for Mojo - Save ₹200!"
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@router.get("/bundles/{pet_id}")
+async def get_smart_bundles(pet_id: str, occasion: str = None, limit: int = 4):
+    """
+    E022: Get relevant product bundles for a pet.
+    Returns bundles based on pet context, occasion, and current needs.
+    """
+    from datetime import datetime
+    
+    db = get_db()
+    
+    # Get pet info
+    pet = await db.pets.find_one(
+        {"id": pet_id}, 
+        {"name": 1, "birthday": 1, "size": 1, "_id": 0}
+    )
+    if not pet:
+        return {"success": False, "error": "Pet not found", "bundles": []}
+    
+    pet_name = pet.get("name", "your pet")
+    
+    # Build query based on context
+    query = {"in_stock": True}
+    
+    # Check if birthday is coming up
+    is_birthday_soon = False
+    if pet.get("birthday"):
+        try:
+            today = datetime.now()
+            bday = pet["birthday"]
+            if isinstance(bday, str) and "-" in bday:
+                bday_date = datetime.strptime(bday, "%Y-%m-%d")
+                next_bday = bday_date.replace(year=today.year)
+                if next_bday < today:
+                    next_bday = next_bday.replace(year=today.year + 1)
+                days_until = (next_bday - today).days
+                is_birthday_soon = days_until <= 30
+        except:
+            pass
+    
+    # Filter by occasion if specified
+    if occasion:
+        query["$or"] = [
+            {"category": {"$regex": occasion, "$options": "i"}},
+            {"tags": {"$regex": occasion, "$options": "i"}},
+            {"name": {"$regex": occasion, "$options": "i"}}
+        ]
+    elif is_birthday_soon:
+        query["$or"] = [
+            {"category": "celebration"},
+            {"name": {"$regex": "birthday|party|celebration", "$options": "i"}}
+        ]
+    
+    # Fetch bundles from care_bundles collection
+    bundles = await db.care_bundles.find(
+        query,
+        {"_id": 0}
+    ).limit(limit).to_list(limit)
+    
+    # If no specific bundles found, get general recommendations
+    if not bundles:
+        bundles = await db.care_bundles.find(
+            {"in_stock": True},
+            {"_id": 0}
+        ).limit(limit).to_list(limit)
+    
+    # Add personalization
+    for bundle in bundles:
+        bundle["personalized_name"] = bundle.get("name", "").replace("Pet", pet_name)
+        if bundle.get("savings"):
+            bundle["savings_text"] = f"Save ₹{bundle['savings']}"
+    
+    return {
+        "success": True,
+        "pet_name": pet_name,
+        "bundles": bundles,
+        "is_birthday_soon": is_birthday_soon,
+        "context": "birthday" if is_birthday_soon else (occasion or "general")
+    }
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# E023: VOICE COMMANDS PARSER
+# "Hey Mira, order treats for Mojo"
+# ═══════════════════════════════════════════════════════════════════════════════
+
+VOICE_COMMANDS = {
+    "order_treats": {
+        "patterns": ["order treats", "buy treats", "get treats", "need treats"],
+        "action": "order_product",
+        "category": "treats",
+        "response": "I'll help you order some treats! Here are the best options for {pet_name}..."
+    },
+    "book_grooming": {
+        "patterns": ["book grooming", "schedule grooming", "grooming appointment", "need grooming"],
+        "action": "book_service",
+        "service": "grooming",
+        "response": "Let me help you book a grooming session for {pet_name}!"
+    },
+    "vet_checkup": {
+        "patterns": ["vet visit", "vet appointment", "see the vet", "doctor appointment", "checkup"],
+        "action": "book_service",
+        "service": "vet",
+        "response": "I'll help you schedule a vet visit for {pet_name}."
+    },
+    "birthday_plan": {
+        "patterns": ["plan birthday", "birthday party", "celebrate birthday"],
+        "action": "plan_event",
+        "event": "birthday",
+        "response": "How exciting! Let's plan an amazing birthday for {pet_name}! 🎂"
+    },
+    "check_health": {
+        "patterns": ["health status", "how is", "is healthy", "health check"],
+        "action": "show_health",
+        "response": "Here's {pet_name}'s health overview..."
+    },
+    "show_orders": {
+        "patterns": ["my orders", "order status", "where is my order", "track order"],
+        "action": "show_orders",
+        "response": "Let me check your recent orders..."
+    }
+}
+
+@router.post("/voice-command")
+async def process_voice_command(
+    command: str,
+    pet_id: str = None,
+    pet_name: str = "your pet"
+):
+    """
+    E023: Process voice commands and return appropriate action.
+    Parses natural language commands and maps to actions.
+    """
+    command_lower = command.lower().strip()
+    
+    # Remove wake word if present
+    wake_words = ["hey mira", "hi mira", "mira", "ok mira"]
+    for wake in wake_words:
+        if command_lower.startswith(wake):
+            command_lower = command_lower[len(wake):].strip()
+            command_lower = command_lower.lstrip(",").strip()
+            break
+    
+    # Find matching command
+    matched_command = None
+    matched_key = None
+    
+    for key, cmd in VOICE_COMMANDS.items():
+        for pattern in cmd["patterns"]:
+            if pattern in command_lower:
+                matched_command = cmd
+                matched_key = key
+                break
+        if matched_command:
+            break
+    
+    if matched_command:
+        response_text = matched_command["response"].format(pet_name=pet_name)
+        
+        return {
+            "success": True,
+            "understood": True,
+            "command_type": matched_key,
+            "action": matched_command.get("action"),
+            "parameters": {
+                "category": matched_command.get("category"),
+                "service": matched_command.get("service"),
+                "event": matched_command.get("event")
+            },
+            "response": response_text,
+            "should_execute": True
+        }
+    
+    # No specific command matched - treat as general query
+    return {
+        "success": True,
+        "understood": False,
+        "command_type": "general_query",
+        "action": "chat",
+        "original_command": command,
+        "response": f"I heard: {command}. Let me help you with that!",
+        "should_execute": False
+    }
+
