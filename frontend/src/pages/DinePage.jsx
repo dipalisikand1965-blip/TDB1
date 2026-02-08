@@ -643,21 +643,31 @@ const DinePage = () => {
                             <div className="mt-3 flex gap-2">
                               <Button
                                 size="sm"
+                                className="flex-1 bg-orange-600 hover:bg-orange-700 text-xs text-white"
+                                onClick={() => {
+                                  setSelectedRestaurant({
+                                    id: cafe.place_id || `cafe-${idx}`,
+                                    name: cafe.name,
+                                    address: cafe.address || cafe.area || selectedNearbyCity,
+                                    city: cafe.city || selectedNearbyCity,
+                                    rating: cafe.rating,
+                                    category: cafe.category,
+                                    phone: cafe.phone
+                                  });
+                                  setShowBookingModal(true);
+                                }}
+                                data-testid={`reserve-cafe-${idx}`}
+                              >
+                                <Calendar className="w-3 h-3 mr-1" /> Reserve
+                              </Button>
+                              <Button
+                                size="sm"
                                 variant="outline"
-                                className="flex-1 text-xs"
+                                className="text-xs"
                                 onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(cafe.name + ' ' + (cafe.city || selectedNearbyCity))}`, '_blank')}
                               >
-                                <MapPin className="w-3 h-3 mr-1" /> Directions
+                                <MapPin className="w-3 h-3 mr-1" />
                               </Button>
-                              {cafe.phone && (
-                                <Button
-                                  size="sm"
-                                  className="bg-orange-600 hover:bg-orange-700 text-xs"
-                                  onClick={() => window.open(`tel:${cafe.phone}`, '_blank')}
-                                >
-                                  <Phone className="w-3 h-3 mr-1" /> Call
-                                </Button>
-                              )}
                             </div>
                           </div>
                         </Card>
