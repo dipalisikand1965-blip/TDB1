@@ -3582,6 +3582,81 @@ const MiraDemoPage = () => {
                             </div>
                           )}
                           
+                          {/* TRAINING VIDEOS - YouTube videos when training intent detected */}
+                          {msg.data?.training_videos?.length > 0 && (
+                            <div className="training-videos-section" data-testid="training-videos">
+                              <div className="training-videos-title">
+                                <span className="training-icon">📺</span>
+                                <span>Training Videos for {pet.name}</span>
+                              </div>
+                              <div className="training-videos-grid">
+                                {msg.data.training_videos.slice(0, 3).map((video, vIdx) => (
+                                  <a 
+                                    key={vIdx} 
+                                    href={video.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="training-video-card"
+                                    data-testid={`video-card-${vIdx}`}
+                                  >
+                                    <div className="video-thumbnail">
+                                      <img src={video.thumbnail} alt={video.title} />
+                                      <div className="video-play-overlay">
+                                        <Play size={24} fill="white" />
+                                      </div>
+                                    </div>
+                                    <div className="video-info">
+                                      <div className="video-title">{video.title?.substring(0, 60)}{video.title?.length > 60 ? '...' : ''}</div>
+                                      <div className="video-channel">{video.channel}</div>
+                                    </div>
+                                  </a>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          
+                          {/* TRAVEL HOTELS - Amadeus hotels when travel intent detected */}
+                          {msg.data?.travel_hotels?.length > 0 && (
+                            <div className="travel-hotels-section" data-testid="travel-hotels">
+                              <div className="travel-hotels-title">
+                                <span className="travel-icon">🏨</span>
+                                <span>Pet-Friendly Hotels in {msg.data.travel_city?.charAt(0).toUpperCase() + msg.data.travel_city?.slice(1)}</span>
+                              </div>
+                              {msg.data.travel_hotels.slice(0, 3).map((hotel, hIdx) => (
+                                <div key={hIdx} className="travel-hotel-card" data-testid={`hotel-card-${hIdx}`}>
+                                  <div className={`hotel-icon ${hotel.pet_friendly_likelihood === 'high' ? 'pet-friendly' : ''}`}>
+                                    🏨
+                                  </div>
+                                  <div className="hotel-info">
+                                    <div className="hotel-name">{hotel.name}</div>
+                                    <div className="hotel-details">
+                                      {hotel.pet_friendly_likelihood === 'high' && (
+                                        <span className="hotel-badge pet-badge">🐾 Pet Friendly</span>
+                                      )}
+                                      {hotel.distance && (
+                                        <span className="hotel-distance">{hotel.distance} {hotel.distance_unit}</span>
+                                      )}
+                                      {hotel.city && <span>{hotel.city}</span>}
+                                    </div>
+                                    {hotel.pet_policy_note && (
+                                      <div className="hotel-policy">{hotel.pet_policy_note}</div>
+                                    )}
+                                  </div>
+                                  <a 
+                                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hotel.name + ' ' + (hotel.city || msg.data.travel_city))}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="hotel-directions"
+                                    onClick={(e) => e.stopPropagation()}
+                                    data-testid={`hotel-directions-${hIdx}`}
+                                  >
+                                    <Navigation size={12} /> Directions
+                                  </a>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          
                           {/* SERVICE CARDS - Self-service wizard options */}
                           {/* MIRA DOCTRINE: Mira is a router - offer choice between self-service and concierge */}
                           {/* E014: Services now come from database API */}
