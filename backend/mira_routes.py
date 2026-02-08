@@ -2401,7 +2401,9 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                 "ticket_id": ticket_id,
                 "suggest_concierge": understanding.get("suggest_concierge", False) or execution_type == "CONCIERGE"
             },
-            "execution_type": execution_type
+            "execution_type": execution_type,
+            "nearby_places": nearby_places_data,  # Vet clinics, restaurants, parks, stays
+            "weather": weather_data  # Weather-based activity recommendations
         }
         
         # ============================================
