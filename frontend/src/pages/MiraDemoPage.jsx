@@ -2443,9 +2443,31 @@ const MiraDemoPage = () => {
         }
       }
       
-      // Add YouTube and Amadeus data to message
+      // ═══════════════════════════════════════════════════════════════════
+      // VIATOR ATTRACTIONS - Pet-friendly tours and experiences
+      // ═══════════════════════════════════════════════════════════════════
+      let travelAttractions = [];
+      const attractionKeywords = ['trip', 'travel', 'tour', 'visit', 'explore', 'things to do', 'activities', 'experience', 'adventure', 'sightseeing'];
+      const hasAttractionIntent = attractionKeywords.some(kw => inputQuery.toLowerCase().includes(kw)) || hasTravelIntent;
+      
+      if (hasAttractionIntent && detectedCity) {
+        try {
+          const attractionResponse = await fetch(`${API_URL}/api/mira/viator/pet-friendly?city=${encodeURIComponent(detectedCity)}&limit=3`);
+          const attractionData = await attractionResponse.json();
+          
+          if (attractionData.success && attractionData.attractions?.length > 0) {
+            travelAttractions = attractionData.attractions;
+            console.log('[VIATOR] Found', travelAttractions.length, 'attractions in:', detectedCity);
+          }
+        } catch (e) {
+          console.log('[VIATOR] Attraction fetch failed:', e.message);
+        }
+      }
+      
+      // Add YouTube, Amadeus, and Viator data to message
       miraMessage.data.training_videos = trainingVideos;
       miraMessage.data.travel_hotels = travelHotels;
+      miraMessage.data.travel_attractions = travelAttractions;
       miraMessage.data.travel_city = detectedCity;
       
       // E032: SEMANTIC SEARCH - Enhance tray with intent-based recommendations
