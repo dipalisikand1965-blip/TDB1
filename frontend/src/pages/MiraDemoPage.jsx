@@ -2107,6 +2107,13 @@ const MiraDemoPage = () => {
   const speakWithMira = useCallback(async (text) => {
     if (!voiceEnabled || !text) return;
     
+    // CRITICAL: Stop any existing voice before starting new one (prevents double voice)
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      audioRef.current = null;
+    }
+    
     try {
       setIsSpeaking(true);
       
