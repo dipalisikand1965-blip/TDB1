@@ -2057,14 +2057,30 @@ const MiraDemoPage = () => {
       console.log('[Mira Voice] Auto-detected personality:', personality);
       
       // Clean text for natural speech
-      const cleanText = text
+      let cleanText = text
         .replace(/[🎉🐕✨🦴💜🎂🏥☀️🌤️🌙🌟🐾🎒📅📋😊💝🎁🎤💡]/g, '')
         .replace(/\*\*/g, '')
         .replace(/[*#_~`]/g, '')
         .replace(/\[.*?\]/g, '')
         .replace(/\n/g, ' ')
         .replace(/®/g, '')
-        .substring(0, 500);
+        .trim();
+      
+      // Smart truncation - cut at sentence boundary (up to 800 chars)
+      if (cleanText.length > 800) {
+        // Find the last sentence ending before 800 chars
+        const truncated = cleanText.substring(0, 800);
+        const lastSentenceEnd = Math.max(
+          truncated.lastIndexOf('. '),
+          truncated.lastIndexOf('? '),
+          truncated.lastIndexOf('! ')
+        );
+        if (lastSentenceEnd > 400) {
+          cleanText = truncated.substring(0, lastSentenceEnd + 1);
+        } else {
+          cleanText = truncated;
+        }
+      }
       
       // E024: Pass auto-detected voice personality to TTS endpoint
       const response = await fetch(`${API_URL}/api/tts/generate`, {
