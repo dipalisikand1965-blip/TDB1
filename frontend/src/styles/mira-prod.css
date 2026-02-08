@@ -4525,3 +4525,119 @@ input, select, textarea {
   color: #a855f7;
 }
 
+
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   PERSONALIZATION TICKER - Animated ribbon at top
+   Shows: Weather • Soul Score • Favorite treats • Places nearby
+   ═══════════════════════════════════════════════════════════════════════════════ */
+.mira-ticker {
+  width: 100%;
+  background: linear-gradient(90deg, rgba(168,85,247,0.1) 0%, rgba(236,72,153,0.08) 50%, rgba(168,85,247,0.1) 100%);
+  border-bottom: 1px solid rgba(168,85,247,0.2);
+  overflow: hidden;
+  height: 32px;
+  display: flex;
+  align-items: center;
+}
+
+.ticker-track {
+  display: flex;
+  width: 100%;
+  overflow: hidden;
+}
+
+.ticker-content {
+  display: flex;
+  animation: tickerScroll 40s linear infinite;
+  white-space: nowrap;
+}
+
+@keyframes tickerScroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-33.333%);
+  }
+}
+
+.ticker-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 24px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.8);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-right: 1px solid rgba(255,255,255,0.1);
+}
+
+.ticker-item:hover {
+  color: white;
+  background: rgba(255,255,255,0.05);
+}
+
+.ticker-icon {
+  font-size: 14px;
+}
+
+.ticker-text {
+  font-weight: 400;
+}
+
+/* Ticker item types */
+.ticker-weather {
+  color: #60a5fa;
+}
+
+.ticker-soul {
+  color: #c084fc;
+}
+
+.ticker-favorite {
+  color: #fbbf24;
+}
+
+.ticker-allergy {
+  color: #f87171;
+}
+
+.ticker-personality {
+  color: #34d399;
+}
+
+.ticker-breed {
+  color: #fb923c;
+}
+
+.ticker-place {
+  color: #22d3ee;
+}
+
+.ticker-place:hover {
+  text-decoration: underline;
+}
+
+/* Pause animation on hover */
+.mira-ticker:hover .ticker-content {
+  animation-play-state: paused;
+}
+
+/* Mobile: slightly smaller */
+@media (max-width: 768px) {
+  .mira-ticker {
+    height: 28px;
+  }
+  
+  .ticker-item {
+    font-size: 11px;
+    padding: 0 16px;
+  }
+  
+  .ticker-icon {
+    font-size: 12px;
+  }
+}
+
