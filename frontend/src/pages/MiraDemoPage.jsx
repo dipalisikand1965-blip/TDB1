@@ -710,6 +710,11 @@ const MiraDemoPage = () => {
   const [showOlderMessages, setShowOlderMessages] = useState(false);
   const VISIBLE_MESSAGE_COUNT = 4; // Show last 4 messages (2 pairs of user+mira)
   
+  // CONVERSATION INTELLIGENCE - Context retention for follow-ups
+  const [conversationContext, setConversationContext] = useState(() => 
+    conversationIntelligence.createConversationContext(pet)
+  );
+  
   // GEOLOCATION - Get user's actual location for weather/nearby
   const [userGeoLocation, setUserGeoLocation] = useState(null);
   const [userCity, setUserCity] = useState('Mumbai'); // Fallback
