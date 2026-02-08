@@ -1939,6 +1939,103 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
         # For GROOM_ACCIDENT and GROOM_POST: NO products, route to vet
         is_groom_medical_boundary = is_groom_accident or is_groom_post
         
+        # ═══════════════════════════════════════════════════════════════════════════
+        # MIRA MODE SYSTEM - Determines conversation behavior
+        # 
+        # DOING MODES (Clarify-first): PLAN, BOOK, EXECUTE
+        # THINKING MODES (Answer-first): EXPLORE, FIND, ADVISE, REMEMBER
+        # EMOTIONAL MODES (Presence-first): COMFORT, EMERGENCY
+        # ═══════════════════════════════════════════════════════════════════════════
+        
+        # Detect DOING modes - require clarify-first
+        is_plan_mode = any(phrase in user_input_lower for phrase in [
+            "plan", "planning", "want to plan", "help me plan",
+            "birthday party", "road trip", "meal routine", "schedule for",
+            "how should i", "what should i plan"
+        ]) and not is_groom_booking
+        
+        is_book_mode = any(phrase in user_input_lower for phrase in [
+            "book", "booking", "schedule", "appointment", "reserve",
+            "fix a slot", "arrange", "set up"
+        ]) or is_groom_booking
+        
+        is_execute_mode = any(phrase in user_input_lower for phrase in [
+            "handle everything", "take care of everything", "sort out",
+            "manage this", "handle it", "just do it", "take this off",
+            "can you handle", "can you manage", "you take care"
+        ])
+        
+        # Detect THINKING modes - can answer first
+        is_explore_mode = any(phrase in user_input_lower for phrase in [
+            "why does", "why is", "is this normal", "is it normal",
+            "how often should", "what causes", "should i be worried",
+            "is it okay", "can dogs", "do dogs", "how do i know"
+        ])
+        
+        is_find_mode = any(phrase in user_input_lower for phrase in [
+            "show me", "find me", "looking for", "what toys",
+            "what treats", "options for", "recommend", "suggest some",
+            "i want a", "i need a", "get me"
+        ]) and not is_plan_mode and not is_book_mode
+        
+        is_advise_mode = any(phrase in user_input_lower for phrase in [
+            "which is better", "should i", "what do you think",
+            "compare", "vs", "or should i", "better for",
+            "recommend between", "choose between"
+        ])
+        
+        is_remember_mode = any(phrase in user_input_lower for phrase in [
+            "remember that", "don't forget", "note that",
+            "forget the old", "what did we", "last time we",
+            "what was", "store this"
+        ])
+        
+        # Detect EMOTIONAL modes - presence first
+        is_comfort_mode = is_grief_context or is_grief_hold or any(phrase in user_input_lower for phrase in [
+            "i feel guilty", "i failed", "my fault", "blame myself",
+            "so worried", "can't stop crying", "overwhelmed", "too much"
+        ])
+        
+        is_emergency_mode = any(phrase in user_input_lower for phrase in [
+            "vomit blood", "vomiting blood", "blood in vomit",
+            "collapse", "collapsed", "can't stand", "won't stand",
+            "seizure", "seizing", "convulsing", "not breathing",
+            "gasping", "choking", "heatstroke", "unresponsive",
+            "unconscious", "not moving", "limp and", "emergency"
+        ])
+        
+        # Determine the MODE
+        if is_emergency_mode:
+            mira_mode = "EMERGENCY"
+        elif is_comfort_mode:
+            mira_mode = "COMFORT"
+        elif is_execute_mode:
+            mira_mode = "EXECUTE"
+        elif is_book_mode:
+            mira_mode = "BOOK"
+        elif is_plan_mode:
+            mira_mode = "PLAN"
+        elif is_explore_mode:
+            mira_mode = "EXPLORE"
+        elif is_advise_mode:
+            mira_mode = "ADVISE"
+        elif is_remember_mode:
+            mira_mode = "REMEMBER"
+        elif is_find_mode:
+            mira_mode = "FIND"
+        else:
+            mira_mode = "GENERAL"
+        
+        # DOING modes require clarify-first on first turn
+        is_doing_mode = mira_mode in ["PLAN", "BOOK", "EXECUTE"]
+        is_first_turn = len(request.conversation_history or []) < 2
+        clarify_only = is_doing_mode and is_first_turn
+        
+        # EMOTIONAL modes never show products
+        no_products_ever = mira_mode in ["COMFORT", "EMERGENCY"]
+        
+        logger.info(f"[MIRA MODE] Detected: {mira_mode} | First turn: {is_first_turn} | Clarify only: {clarify_only}")
+        
         # ═══════════════════════════════════════════════════════════════
         # FOOD & NUTRITION OS - INTENT DETECTION
         # ═══════════════════════════════════════════════════════════════
