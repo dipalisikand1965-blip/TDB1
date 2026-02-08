@@ -4620,6 +4620,18 @@ input, select, textarea {
   text-decoration: underline;
 }
 
+/* E028: Milestone ticker items */
+.ticker-milestone {
+  color: #fbbf24;
+  font-weight: 600;
+}
+
+/* E030: Memory ticker items */
+.ticker-memory {
+  color: #f472b6;
+  font-style: italic;
+}
+
 /* Pause animation on hover */
 .mira-ticker:hover .ticker-content {
   animation-play-state: paused;
