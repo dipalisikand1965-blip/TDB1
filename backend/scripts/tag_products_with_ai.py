@@ -61,6 +61,27 @@ SEMANTIC_INTENT_TAGS = {
     "everyday_treats": {
         "keywords": ["treat", "snack", "biscuit", "cookie", "jerky", "chew"],
         "tags": ["everyday", "treats", "snacks"]
+    },
+    # NEW: Fashion & Accessories
+    "fashion_wearables": {
+        "keywords": ["collar", "bandana", "bow", "harness", "leash", "dress", "costume", "jacket", "sweater", "hoodie", "raincoat", "boots", "wearable"],
+        "tags": ["fashion", "wearable", "collar", "bandana", "harness", "outfit"]
+    },
+    "dining_cafe": {
+        "keywords": ["dine", "cafe", "restaurant", "outing", "meal", "food", "fresh-meal", "bowl", "feeder"],
+        "tags": ["dining", "cafe", "meal", "bowl", "feeder"]
+    },
+    "home_decor": {
+        "keywords": ["magnet", "coaster", "frame", "poster", "decor", "home", "fridge", "mug", "gift"],
+        "tags": ["home", "decor", "gift", "accessory"]
+    },
+    "safety_id": {
+        "keywords": ["id tag", "name tag", "engrav", "microchip", "gps", "tracker", "safety", "lost", "found"],
+        "tags": ["safety", "id", "tag", "tracking"]
+    },
+    "fresh_food": {
+        "keywords": ["fresh", "meal", "chicken", "veggies", "lamb", "fish", "rice", "homemade", "cooked"],
+        "tags": ["fresh-food", "meal", "homemade", "natural"]
     }
 }
 
