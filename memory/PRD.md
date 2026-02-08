@@ -21,6 +21,8 @@
 | Mobile Testing | ✅ Done | 100% pass on all viewports |
 | **Stay Page Enhancement** | ✅ Done | Amadeus hotels + city selector |
 | **Dine Page Enhancement** | ✅ Done | Pet cafes + dog parks |
+| **CSS Build Error Fix** | ✅ Done | Disabled CSS minification in craco.config.js |
+| **Unified Service Desk Flow** | ✅ Done | Member notifications added to full ticket workflow |
 | Comprehensive Handover | ✅ Done | This document |
 
 ---
