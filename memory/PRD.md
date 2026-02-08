@@ -200,7 +200,9 @@ MEMORY:
 2. Remembered Service Providers (E013) ✅ DONE
 3. Push to GitHub and test on production
 4. Mobile Responsiveness ✅ DONE - Full specs in `/app/memory/MOBILE_SPECS.md`
-5. Multi-Pet Context Bug - Investigate "Mira confuses which pet" issue
+5. Multi-Pet Context Bug ✅ FIXED (Feb 8, 2026) - Clears miraPicks when switching pets
+6. Store/Hide Older Chats ✅ DONE (Feb 8, 2026) - "Past Chats" button added to hero
+7. Real-time Soul Score ✅ DONE (Feb 8, 2026) - Backend returns updated score in API response
 
 ### P2 - This Month
 4. Birthday/Anniversary Reminders (E018)
