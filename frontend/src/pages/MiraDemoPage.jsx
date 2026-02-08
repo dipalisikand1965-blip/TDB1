@@ -545,7 +545,7 @@ const MiraDemoPage = () => {
   const [isRecording, setIsRecording] = useState(false); // For universal search voice
   
   // VOICE OUTPUT - Mira speaks back with ElevenLabs
-  const [voiceEnabled, setVoiceEnabled] = useState(false);
+  const [voiceEnabled, setVoiceEnabled] = useState(true); // Voice ON by default per MIRA SPEED DOCTRINE
   const [isSpeaking, setIsSpeaking] = useState(false);
   const audioRef = useRef(null);
   
