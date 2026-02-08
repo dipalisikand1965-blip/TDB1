@@ -2267,6 +2267,114 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
         except Exception as svc_err:
             logger.error(f"Service search error: {svc_err}")
         
+        # ============================================
+        # NEARBY PLACES - Vet clinics, restaurants, parks, stays
+        # ============================================
+        nearby_places_data = None
+        weather_data = None
+        
+        try:
+            # Detect location-based queries
+            NEARBY_KEYWORDS = {
+                "vet": ["vet", "veterinary", "clinic", "doctor", "hospital", "sick", "unwell", "not eating", "vomiting", "injury", "checkup", "vaccine", "vaccination"],
+                "restaurant": ["restaurant", "cafe", "brunch", "lunch", "dinner", "eat out", "dine", "dining", "food place", "pet cafe"],
+                "stay": ["hotel", "resort", "stay", "accommodation", "vacation", "trip", "book room", "pet friendly hotel"],
+                "park": ["dog park", "park", "off leash", "play area"]
+            }
+            
+            detected_place_type = None
+            for place_type, keywords in NEARBY_KEYWORDS.items():
+                if any(kw in user_input_lower for kw in keywords):
+                    detected_place_type = place_type
+                    break
+            
+            location_trigger_words = ["near", "nearby", "close", "around", "in my area", "where can", "recommend", "suggest", "find me", "looking for", "need a", "best"]
+            is_location_query = any(word in user_input_lower for word in location_trigger_words)
+            
+            # Weather detection
+            WEATHER_KEYWORDS = ["weather", "walk", "outside", "outdoor", "hot", "cold", "rain", "sunny", "good day", "safe to go", "can i take"]
+            is_weather_query = any(kw in user_input_lower for kw in WEATHER_KEYWORDS)
+            
+            # Get user's city
+            user_city = None
+            if request.pet_context:
+                user_city = request.pet_context.get("location", {}).get("city") if isinstance(request.pet_context.get("location"), dict) else None
+                user_city = user_city or request.pet_context.get("city")
+            
+            INDIAN_CITIES = ["mumbai", "delhi", "bangalore", "bengaluru", "pune", "hyderabad", "chennai", "kolkata", "gurgaon", "noida", "goa", "jaipur"]
+            for city in INDIAN_CITIES:
+                if city in user_input_lower:
+                    user_city = city.title()
+                    break
+            
+            # Fetch nearby places
+            if detected_place_type and (is_location_query or user_city):
+                city_for_search = user_city or "Mumbai"
+                db = get_db()
+                
+                if detected_place_type == "vet":
+                    is_emergency_vet = any(word in user_input_lower for word in ["emergency", "urgent", "immediately", "now", "asap"])
+                    
+                    if is_emergency_vet:
+                        vets = await db.vet_clinics.find(
+                            {"city": {"$regex": city_for_search, "$options": "i"}, "is_24_hours": True, "verified": True},
+                            {"_id": 0}
+                        ).sort("rating", -1).limit(3).to_list(3)
+                    else:
+                        vets = await db.vet_clinics.find(
+                            {"city": {"$regex": city_for_search, "$options": "i"}, "verified": True},
+                            {"_id": 0}
+                        ).sort([("is_24_hours", -1), ("rating", -1)]).limit(3).to_list(3)
+                    
+                    if vets:
+                        nearby_places_data = {"type": "vet_clinics", "places": vets, "city": city_for_search, "is_emergency": is_emergency_vet}
+                        logger.info(f"[NEARBY] Found {len(vets)} vet clinics in {city_for_search}")
+                
+                elif detected_place_type == "restaurant":
+                    restaurants = await db.restaurants.find(
+                        {"city": {"$regex": city_for_search, "$options": "i"}, "verified": True},
+                        {"_id": 0}
+                    ).sort("rating", -1).limit(3).to_list(3)
+                    
+                    if restaurants:
+                        nearby_places_data = {"type": "restaurants", "places": restaurants, "city": city_for_search}
+                        logger.info(f"[NEARBY] Found {len(restaurants)} restaurants in {city_for_search}")
+                
+                elif detected_place_type == "stay":
+                    stays = await db.pet_friendly_stays.find(
+                        {"city": {"$regex": city_for_search, "$options": "i"}, "verified": True},
+                        {"_id": 0}
+                    ).sort("rating", -1).limit(3).to_list(3)
+                    
+                    if stays:
+                        nearby_places_data = {"type": "stays", "places": stays, "city": city_for_search}
+                        logger.info(f"[NEARBY] Found {len(stays)} pet-friendly stays in {city_for_search}")
+                
+                elif detected_place_type == "park":
+                    # Dog parks - use Google Places API
+                    try:
+                        from services.google_places_service import search_dog_parks_in_city
+                        parks = await search_dog_parks_in_city(city_for_search, max_results=3)
+                        if parks:
+                            nearby_places_data = {"type": "dog_parks", "places": parks, "city": city_for_search, "source": "google_places"}
+                            logger.info(f"[NEARBY] Found {len(parks)} dog parks in {city_for_search}")
+                    except Exception as park_err:
+                        logger.warning(f"[NEARBY] Google Places error for parks: {park_err}")
+            
+            # Fetch weather data
+            if is_weather_query and user_city:
+                try:
+                    from services.openweather_service import get_pet_activity_recommendation
+                    weather_result = await get_pet_activity_recommendation(user_city)
+                    if weather_result.get("success"):
+                        weather_data = weather_result
+                        logger.info(f"[WEATHER] Fetched weather for {user_city}")
+                except Exception as weather_err:
+                    logger.warning(f"[WEATHER] Error: {weather_err}")
+        
+        except Exception as nearby_err:
+            logger.error(f"Nearby places error: {nearby_err}")
+        
         response_data = {
             "success": True,
             "understanding": {
