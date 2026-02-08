@@ -308,6 +308,36 @@ const StayPage = () => {
       setTripPlannerLoading(false);
     }
   };
+  
+  // Fetch nearby hotels and attractions from Amadeus + Viator
+  const fetchNearbyPlaces = async (city) => {
+    setNearbyLoading(true);
+    setSelectedNearbyCity(city);
+    try {
+      // Fetch hotels from Amadeus
+      const hotelsResponse = await fetch(`${API_URL}/api/mira/amadeus/hotels?city=${encodeURIComponent(city)}&max_results=6`);
+      if (hotelsResponse.ok) {
+        const hotelsData = await hotelsResponse.json();
+        setNearbyHotels(hotelsData.hotels || []);
+      }
+      
+      // Fetch attractions from Viator
+      const attractionsResponse = await fetch(`${API_URL}/api/mira/viator/pet-friendly?city=${encodeURIComponent(city)}&limit=4`);
+      if (attractionsResponse.ok) {
+        const attractionsData = await attractionsResponse.json();
+        setNearbyAttractions(attractionsData.attractions || []);
+      }
+    } catch (error) {
+      console.error('Error fetching nearby places:', error);
+    } finally {
+      setNearbyLoading(false);
+    }
+  };
+  
+  // Fetch nearby places on mount
+  useEffect(() => {
+    fetchNearbyPlaces('mumbai');
+  }, []);
 
   const fetchBundles = async () => {
     try {
