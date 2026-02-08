@@ -6928,6 +6928,107 @@ input, select, textarea {
 }
 
 /* ═══════════════════════════════════════════════════════════════
+   TYPING ANIMATION - ChatGPT-style streaming text
+═══════════════════════════════════════════════════════════════ */
+.typed-text {
+  display: inline;
+}
+
+.typing-cursor {
+  display: inline-block;
+  animation: cursorBlink 0.8s ease-in-out infinite;
+  margin-left: 1px;
+  color: #a855f7;
+}
+
+@keyframes cursorBlink {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MODE INDICATOR - Small badge in card header
+═══════════════════════════════════════════════════════════════ */
+.mp-mode-indicator {
+  font-size: 12px;
+  margin-left: auto;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: rgba(139, 92, 246, 0.2);
+}
+
+.mp-mode-indicator.mp-mode-comfort {
+  background: rgba(192, 132, 252, 0.2);
+}
+
+.mp-mode-indicator.mp-mode-emergency {
+  background: rgba(239, 68, 68, 0.2);
+}
+
+.mp-mode-indicator.mp-mode-instant {
+  background: rgba(251, 191, 36, 0.2);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CONCIERGE WHISPER - Personalized curator note
+═══════════════════════════════════════════════════════════════ */
+.mp-concierge-whisper {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-top: 8px;
+  padding: 8px 10px;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%);
+  border-radius: 8px;
+  border-left: 3px solid var(--mira-purple);
+}
+
+.mp-whisper-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  background: linear-gradient(135deg, var(--mira-purple) 0%, var(--mira-magenta) 100%);
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  color: white;
+}
+
+.mp-whisper-text {
+  font-size: 12px;
+  color: #d8b4fe;
+  font-style: italic;
+  line-height: 1.4;
+}
+
+/* Inline whisper for tray products */
+.mp-whisper-inline {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #c4b5fd;
+  font-style: italic;
+  margin-top: 4px;
+}
+
+.mp-whisper-badge-sm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  background: var(--mira-purple);
+  border-radius: 3px;
+  font-size: 8px;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════
    TYPING ANIMATION - Text streaming effect
 ═══════════════════════════════════════════════════════════════ */
 .mp-typing-message {
