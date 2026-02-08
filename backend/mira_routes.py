@@ -2078,6 +2078,15 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
         if is_food_portion or is_food_routine:
             should_show_products = False
         
+        # Check conversation history for context - is this a travel conversation?
+        is_travel_conversation = is_travel_request
+        if not is_travel_conversation and request.conversation_history:
+            for msg in request.conversation_history:
+                content = safe_lower(msg.get('content', ''))
+                if any(word in content for word in ['travel', 'ooty', 'goa', 'trip', 'holiday', 'vacation', 'carrier', 'road trip', 'mumbai', 'delhi', 'bangalore']):
+                    is_travel_conversation = True
+                    break
+        
         # For TRAVEL requests - DON'T show products immediately, ASK first
         # Products only after clarifying questions answered
         travel_clarification_done = False
