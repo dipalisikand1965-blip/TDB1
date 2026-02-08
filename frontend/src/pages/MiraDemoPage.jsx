@@ -675,6 +675,14 @@ const MiraDemoPage = () => {
   const [pet, setPet] = useState(DEMO_PET);
   const [allPets, setAllPets] = useState(ALL_PETS);
   
+  // UI modals and helpers
+  const [showHelpModal, setShowHelpModal] = useState(false);
+  const [showLearnModal, setShowLearnModal] = useState(false);
+  const [learnVideos, setLearnVideos] = useState([]);
+  const [learnLoading, setLearnLoading] = useState(false);
+  const [learnCategory, setLearnCategory] = useState('recommended');
+  const [activeDockItem, setActiveDockItem] = useState(null);
+  
   // MIRA ENGINE MODES - Visible to user like ChatGPT's "Thinking"
   // /Instant - Quick, lightweight replies
   // /Thinking - Deep reasoning for PLAN, BOOK, EXECUTE, ADVISE
