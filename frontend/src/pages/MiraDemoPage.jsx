@@ -3164,6 +3164,25 @@ const MiraDemoPage = () => {
         setConversationHistory(prev => [...prev, miraMessage]);
       }
       
+      // UPDATE CONVERSATION CONTEXT - For follow-up intelligence
+      const resultsToStore = data.nearby_places?.places || data.products || data.services || [];
+      const resultsType = data.nearby_places?.type || (data.products?.length ? 'products' : 'services');
+      const detectedLocation = data.nearby_places?.city || intelligence.entities.locations[0] || conversationContext.lastLocation;
+      
+      setConversationContext(prev => conversationIntelligence.updateContext(prev, {
+        topic: intelligence.topic,
+        results: resultsToStore,
+        resultsType: resultsType,
+        location: detectedLocation,
+        preferences: intelligence.entities.preferences,
+      }));
+      
+      console.log('[MIRA Context Updated]', {
+        topic: intelligence.topic,
+        resultsCount: resultsToStore.length,
+        location: detectedLocation
+      });
+      
       // HAPTIC: Mira response complete
       hapticFeedback.miraResponse();
       
