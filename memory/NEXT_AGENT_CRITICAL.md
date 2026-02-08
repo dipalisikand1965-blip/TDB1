@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://mira-voice-fix.preview.emergentagent.com
+https://local-paws.preview.emergentagent.com
 
 ---
 

@@ -148,7 +148,7 @@
 
 ## Preview URL
 
-https://mira-voice-fix.preview.emergentagent.com
+https://local-paws.preview.emergentagent.com
 
 ---
 
