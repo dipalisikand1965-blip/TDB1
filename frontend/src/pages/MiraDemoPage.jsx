@@ -4415,25 +4415,25 @@ const MiraDemoPage = () => {
                       {miraMode === 'thinking' && (
                         <>
                           <span className="mp-mode-icon">🧠</span>
-                          <span className="mp-mode-label">Mira is thinking...</span>
+                          <span className="mp-mode-label">Mira is getting her thoughts together for {pet.name}…</span>
                         </>
                       )}
                       {miraMode === 'instant' && (
                         <>
                           <span className="mp-mode-icon">⚡</span>
-                          <span className="mp-mode-label">Mira /Instant</span>
+                          <span className="mp-mode-label"></span>
                         </>
                       )}
                       {miraMode === 'comfort' && (
                         <>
                           <span className="mp-mode-icon">💜</span>
-                          <span className="mp-mode-label">Mira /Comfort</span>
+                          <span className="mp-mode-label">I'm here with you. We can go as slowly as you need.</span>
                         </>
                       )}
                       {miraMode === 'emergency' && (
                         <>
                           <span className="mp-mode-icon">🚨</span>
-                          <span className="mp-mode-label">Mira /Emergency</span>
+                          <span className="mp-mode-label">This sounds serious enough that a vet should see {pet.name} as soon as possible.</span>
                         </>
                       )}
                       {(miraMode === 'ready' || !miraMode) && (
