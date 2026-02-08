@@ -376,23 +376,69 @@ const Home = () => {
         </section>
 
         {/* "We See Your Pet Differently" Section */}
-        <section className="py-24 relative" id="how-it-works">
+        <section className="py-16 md:py-24 relative" id="how-it-works">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-center mb-16"
+              className="text-center mb-10 md:mb-16"
             >
-              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-                We See Your Pet Differently
+              <h2 className="text-2xl md:text-4xl font-black text-white mb-3">
+                We See Your Pet <span className="text-amber-300">Differently</span>
               </h2>
-              <p className="text-white/60 text-lg max-w-2xl mx-auto">
-                Not just food and walks. We see joy, comfort, health, memories, and a life worth celebrating.
+              <p className="text-purple-200 text-base md:text-lg max-w-2xl mx-auto">
+                Not just food and walks. <span className="text-white font-semibold">Joy. Comfort. Health. Memories.</span>
               </p>
             </motion.div>
             
-            <div className="grid md:grid-cols-2 gap-8 items-center">
+            {/* Mobile: Stacked cards */}
+            <div className="space-y-4 md:hidden">
+              {/* Old Way - Dimmed */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="bg-gray-900/50 border border-gray-700/50 rounded-2xl p-5"
+              >
+                <h3 className="text-gray-400 text-xs uppercase tracking-wider mb-3 font-semibold">❌ The Old Way</h3>
+                <div className="space-y-2">
+                  {['Generic pet food', 'Random vet visits', 'No travel planning', 'Figure it out yourself'].map((item, i) => (
+                    <p key={i} className="text-gray-500 text-sm flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 bg-gray-600 rounded-full" />
+                      {item}
+                    </p>
+                  ))}
+                </div>
+              </motion.div>
+              
+              {/* Mira Way - Highlighted */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.1 }}
+                className="bg-gradient-to-br from-purple-900/80 to-pink-900/80 border-2 border-purple-500/50 rounded-2xl p-5 shadow-lg shadow-purple-500/20"
+              >
+                <h3 className="text-purple-300 text-xs uppercase tracking-wider mb-3 font-semibold">✨ The Mira Way</h3>
+                <div className="space-y-3">
+                  {[
+                    { text: 'Personalized nutrition', icon: '🍽️' },
+                    { text: 'Smart health tracking', icon: '💊' },
+                    { text: 'Pet-friendly travel worldwide', icon: '✈️' },
+                    { text: 'Concierge® handles it all', icon: '👑' }
+                  ].map((item, i) => (
+                    <p key={i} className="text-white text-base flex items-center gap-3 font-medium">
+                      <span className="text-lg">{item.icon}</span>
+                      {item.text}
+                    </p>
+                  ))}
+                </div>
+              </motion.div>
+            </div>
+            
+            {/* Desktop: Side by side */}
+            <div className="hidden md:grid md:grid-cols-2 gap-8 items-center">
               {/* Before/After comparison */}
               <motion.div
                 initial={{ opacity: 0, x: -20 }}
