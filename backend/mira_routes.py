@@ -11093,3 +11093,146 @@ async def verify_listing(request: Request):
         return {"success": False, "error": "Invalid type"}
     
     return {"success": result.modified_count > 0, "message": f"Verified {name}"}
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# AI SEMANTIC TAGGING - Run as part of Master Sync
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# Semantic intent tags mapping (must match tag_products_with_ai.py)
+AI_SEMANTIC_INTENTS = {
+    "calm_anxiety": ["calm", "anxiety", "stress", "relax", "soothing", "nervous", "thunder", "firework"],
+    "skin_coat": ["skin", "coat", "fur", "shampoo", "conditioner", "grooming", "moistur", "itch", "scratch", "shed", "bath"],
+    "digestion_gut": ["digest", "stomach", "tummy", "probiotic", "gut", "sensitive", "fiber"],
+    "joint_mobility": ["joint", "hip", "mobility", "senior", "glucosamine", "arthritis", "movement"],
+    "dental_oral": ["dental", "teeth", "tooth", "breath", "oral", "chew", "tartar", "plaque"],
+    "training_behavior": ["train", "reward", "treat", "small", "bite", "behavior", "obedience"],
+    "travel_adventure": ["travel", "portable", "outdoor", "carrier", "adventure", "trip", "car"],
+    "birthday_celebration": ["birthday", "cake", "celebration", "party", "special", "gift", "box", "pupcake"],
+    "puppy_essentials": ["puppy", "starter", "essential", "beginner", "new", "young"],
+    "senior_care": ["senior", "old", "aging", "mature", "gentle", "elder"],
+    "weight_fitness": ["diet", "weight", "low-calorie", "lite", "light", "healthy", "fitness"],
+    "play_enrichment": ["toy", "play", "puzzle", "interactive", "enrichment", "fun", "ball", "rope"],
+    "everyday_treats": ["treat", "snack", "biscuit", "cookie", "jerky", "chew"],
+    "fashion_wearables": ["collar", "bandana", "bow", "harness", "leash", "dress", "costume", "jacket", "sweater"],
+    "dining_cafe": ["dine", "cafe", "restaurant", "outing", "meal", "bowl", "feeder"],
+    "home_decor": ["magnet", "coaster", "frame", "poster", "decor", "home", "fridge", "mug"],
+    "fresh_food": ["fresh", "meal", "chicken", "veggies", "lamb", "fish", "rice", "homemade"],
+    "boarding_stay": ["boarding", "kennel", "daycare", "overnight", "suite", "stay", "pet hotel"],
+    "emergency_care": ["emergency", "urgent", "poison", "hotline", "transport", "rescue"],
+    "memorial_farewell": ["memorial", "urn", "keepsake", "paw print", "cremation", "farewell", "rainbow bridge"],
+    "swimming_spa": ["swim", "pool", "spa", "hydrotherapy", "water", "aqua"]
+}
+
+def analyze_for_semantic_tags(item):
+    """Analyze a product/service for semantic intent tags."""
+    name = (item.get("name", "") or "").lower()
+    description = (item.get("description", "") or "").lower()
+    category = (item.get("category", "") or "").lower()
+    existing_tags = [t.lower() for t in item.get("tags", [])]
+    
+    text = f"{name} {description} {category} {' '.join(existing_tags)}"
+    
+    matched_tags = set()
+    matched_intents = []
+    
+    for intent_name, keywords in AI_SEMANTIC_INTENTS.items():
+        for keyword in keywords:
+            if keyword in text:
+                matched_intents.append(intent_name)
+                break
+    
+    return matched_intents
+
+
+@router.post("/admin/run-ai-tagging")
+async def run_ai_tagging():
+    """
+    Run AI semantic tagging on all products, services, experiences, bundles.
+    Called by Master SYNC button in admin panel.
+    """
+    db = get_db()
+    results = {
+        "products": 0,
+        "services": 0,
+        "experiences": 0,
+        "bundles": 0,
+        "restaurants": 0,
+        "stays": 0
+    }
+    
+    try:
+        # Tag Products
+        products = await db.products_master.find({}).to_list(5000)
+        for product in products:
+            intents = analyze_for_semantic_tags(product)
+            if intents:
+                await db.products_master.update_one(
+                    {"_id": product["_id"]},
+                    {"$set": {"semantic_intents": intents}}
+                )
+                results["products"] += 1
+        
+        # Tag Services
+        services = await db.services.find({}).to_list(5000)
+        for service in services:
+            intents = analyze_for_semantic_tags(service)
+            if intents:
+                await db.services.update_one(
+                    {"_id": service["_id"]},
+                    {"$set": {"semantic_intents": intents}}
+                )
+                results["services"] += 1
+        
+        # Tag Experiences
+        experiences = await db.enjoy_experiences.find({}).to_list(100)
+        for exp in experiences:
+            intents = analyze_for_semantic_tags(exp)
+            if intents:
+                await db.enjoy_experiences.update_one(
+                    {"_id": exp["_id"]},
+                    {"$set": {"semantic_intents": intents}}
+                )
+                results["experiences"] += 1
+        
+        # Tag Bundles
+        bundles = await db.care_bundles.find({}).to_list(100)
+        for bundle in bundles:
+            intents = analyze_for_semantic_tags(bundle)
+            if intents:
+                await db.care_bundles.update_one(
+                    {"_id": bundle["_id"]},
+                    {"$set": {"semantic_intents": intents}}
+                )
+                results["bundles"] += 1
+        
+        # Tag Restaurants
+        restaurants = await db.restaurants.find({}).to_list(500)
+        for rest in restaurants:
+            await db.restaurants.update_one(
+                {"_id": rest["_id"]},
+                {"$set": {"semantic_intents": ["travel_adventure", "dining_cafe"]}}
+            )
+            results["restaurants"] += 1
+        
+        # Tag Stays
+        stays = await db.pet_friendly_stays.find({}).to_list(500)
+        for stay in stays:
+            await db.pet_friendly_stays.update_one(
+                {"_id": stay["_id"]},
+                {"$set": {"semantic_intents": ["travel_adventure", "boarding_stay"]}}
+            )
+            results["stays"] += 1
+        
+        total = sum(results.values())
+        
+        return {
+            "success": True,
+            "message": f"AI tagging complete! {total} items tagged",
+            "results": results
+        }
+        
+    except Exception as e:
+        logger.error(f"AI tagging error: {e}")
+        return {"success": False, "error": str(e)}
+
