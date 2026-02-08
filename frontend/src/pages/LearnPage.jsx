@@ -210,6 +210,9 @@ const LearnPage = () => {
         const data = await bundlesRes.json();
         setBundles(data.bundles || []);
       }
+      
+      // Fetch initial YouTube videos
+      fetchYouTubeVideos('basic_training');
     } catch (error) {
       console.error('Failed to fetch learn data:', error);
     } finally {
