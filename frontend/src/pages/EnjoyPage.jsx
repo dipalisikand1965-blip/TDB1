@@ -868,6 +868,19 @@ const EnjoyPage = () => {
         maxServices={8}
       />
       
+      {/* === E042: LOCAL PLACES INTEGRATION === */}
+      <div className="max-w-6xl mx-auto px-4 py-12">
+        <div className="bg-gradient-to-b from-rose-50 to-white rounded-2xl p-6">
+          <LocalPlacesSection 
+            initialCity="Mumbai"
+            placeTypes={['dog_parks', 'pet_stores', 'vets', 'groomers']}
+            limit={5}
+            title="Explore Pet-Friendly Places Near You"
+            subtitle="Find dog parks, pet stores, vets, and groomers in any city"
+          />
+        </div>
+      </div>
+      
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="enjoy" position="bottom-left" />
     </PillarPageLayout>
