@@ -82,6 +82,31 @@ SEMANTIC_INTENT_TAGS = {
     "fresh_food": {
         "keywords": ["fresh", "meal", "chicken", "veggies", "lamb", "fish", "rice", "homemade", "cooked"],
         "tags": ["fresh-food", "meal", "homemade", "natural"]
+    },
+    # Additional specialized categories
+    "boarding_stay": {
+        "keywords": ["boarding", "kennel", "daycare", "overnight", "suite", "stay", "pet hotel"],
+        "tags": ["boarding", "daycare", "stay", "overnight"]
+    },
+    "emergency_care": {
+        "keywords": ["emergency", "urgent", "poison", "hotline", "transport", "rescue", "24/7"],
+        "tags": ["emergency", "urgent", "rescue", "safety"]
+    },
+    "memorial_farewell": {
+        "keywords": ["memorial", "urn", "keepsake", "paw print", "cremation", "farewell", "rainbow bridge", "remembrance"],
+        "tags": ["memorial", "farewell", "remembrance", "keepsake"]
+    },
+    "documentation_legal": {
+        "keywords": ["registration", "license", "documentation", "certificate", "kci", "microchip", "insurance", "record"],
+        "tags": ["documentation", "legal", "registration", "certificate"]
+    },
+    "consultation_advice": {
+        "keywords": ["consultation", "counseling", "advice", "adoption", "behavior", "nutrition"],
+        "tags": ["consultation", "advice", "counseling"]
+    },
+    "swimming_spa": {
+        "keywords": ["swim", "pool", "spa", "hydrotherapy", "water", "aqua"],
+        "tags": ["swimming", "spa", "hydrotherapy", "wellness"]
     }
 }
 
