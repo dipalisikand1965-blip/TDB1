@@ -1268,8 +1268,9 @@ const MiraDemoPage = () => {
         });
         
         // Also fetch places, stats, and new E027-E034 features for ticker
+        const placesCity = pet?.location?.city || pet?.city || userCity;
         const [placesResponse, statsResponse, digestResponse, milestonesResponse, memoryResponse, reorderResponse] = await Promise.all([
-          fetch(`${API_URL}/api/mira/places/${pet.id}?city=Mumbai`),
+          fetch(`${API_URL}/api/mira/places/${pet.id}?city=${encodeURIComponent(placesCity)}`),
           fetch(`${API_URL}/api/mira/personalization-stats/${pet.id}`),
           fetch(`${API_URL}/api/mira/daily-digest/${pet.id}`),
           fetch(`${API_URL}/api/mira/milestones/${pet.id}`),
