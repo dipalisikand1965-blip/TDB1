@@ -4168,7 +4168,7 @@ const MiraDemoPage = () => {
               
               {/* ═══════════════════════════════════════════════════════════════
                   CELEBRATION TOOLS - Only show in Celebration context
-                  Party Planning Wizard and Bundle Maker
+                  Party Planning Wizard and Bundle Maker - Connect to real services
               ═══════════════════════════════════════════════════════════════ */}
               {miraPicks.context?.includes('Celebration') && (
                 <div className="mp-tray-section mp-celebration-tools">
@@ -4179,7 +4179,15 @@ const MiraDemoPage = () => {
                       className="mp-party-wizard-btn"
                       onClick={() => {
                         setShowMiraTray(false);
-                        handleQuickReply(`Help me plan a birthday party for ${pet.name}! I need everything - cake, decorations, treats, and venue ideas.`);
+                        // Open service request for Party Planning
+                        openServiceRequest({
+                          id: 'party-planning',
+                          label: 'Birthday Party Planning',
+                          icon: '🎉',
+                          description: `Complete party setup for ${pet.name}`,
+                          pillar: 'celebrate',
+                          category: 'party'
+                        }, false);
                       }}
                       data-testid="party-wizard-btn"
                     >
@@ -4195,7 +4203,15 @@ const MiraDemoPage = () => {
                       className="mp-bundle-maker-btn"
                       onClick={() => {
                         setShowMiraTray(false);
-                        handleQuickReply(`Create a custom celebration bundle for ${pet.name} - I want to pick the cake, treats, and accessories myself.`);
+                        // Open service request for Bundle Maker
+                        openServiceRequest({
+                          id: 'bundle-maker',
+                          label: 'Custom Celebration Bundle',
+                          icon: '🎁',
+                          description: `Pick your own party items for ${pet.name}`,
+                          pillar: 'celebrate',
+                          category: 'party'
+                        }, false);
                       }}
                       data-testid="bundle-maker-btn"
                     >
