@@ -1,6 +1,5 @@
 // craco.config.js
 const path = require("path");
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 require("dotenv").config();
 
 // Check if we're in development/preview mode (not production build)
