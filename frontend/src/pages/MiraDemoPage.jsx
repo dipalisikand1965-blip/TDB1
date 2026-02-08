@@ -2044,10 +2044,6 @@ const MiraDemoPage = () => {
       
       const data = await response.json();
       
-      // DEBUG: Log nearby places data from API
-      console.log('[DEBUG] API response data.nearby_places:', data.nearby_places);
-      console.log('[DEBUG] API response data.weather:', data.weather);
-      
       // ═══════════════════════════════════════════════════════════════════
       // REAL-TIME SOUL SCORE UPDATE - The Pet Soul grows with every conversation!
       // ═══════════════════════════════════════════════════════════════════
