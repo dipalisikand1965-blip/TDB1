@@ -12715,6 +12715,25 @@ async def get_amadeus_travel_tips(
         return {"success": False, "error": str(e)}
 
 
+@router.get("/google-places/hotels")
+async def search_google_places_hotels(
+    city: str,
+    max_results: int = 10
+):
+    """
+    Search for hotels using Google Places API.
+    This works for ANY city including small towns like Ooty that don't have airports.
+    
+    Returns hotels ACTUALLY IN the searched city (not nearest airport city).
+    """
+    try:
+        from services.google_places_service import search_hotels_in_city
+        return await search_hotels_in_city(city=city, max_results=max_results)
+    except Exception as e:
+        logger.error(f"Google Places hotels error: {e}")
+        return {"success": False, "error": str(e), "hotels": []}
+
+
 @router.get("/amadeus/city-codes")
 async def get_amadeus_city_codes():
     """Get list of supported city codes for Amadeus API."""
