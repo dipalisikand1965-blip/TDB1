@@ -2276,7 +2276,10 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                 'train': 'training', 'obedience': 'training',
                 'vet': 'vet', 'doctor': 'vet', 'checkup': 'vet', 'vaccine': 'vet',
                 'board': 'boarding', 'daycare': 'boarding', 'kennel': 'boarding',
-                'photo': 'photography', 'transport': 'transport', 'taxi': 'transport'
+                'photo': 'photography', 'transport': 'transport', 'taxi': 'transport',
+                # CELEBRATE pillar - party planning, bundles, etc.
+                'birthday': 'celebrate', 'party': 'celebrate', 'celebrate': 'celebrate',
+                'pawty': 'celebrate', 'celebration': 'celebrate', 'gotcha': 'celebrate'
             }
             user_input_lower = safe_lower(request.input)
             
