@@ -2046,11 +2046,11 @@ const MiraDemoPage = () => {
     
     // MIRA ENGINE MODE DETECTION - Set mode before processing
     const lowerQuery = inputQuery.toLowerCase();
-    if (/passed away|rainbow bridge|grief|loss|miss.*so much|crying|heartbreak|💔|🌈/.test(lowerQuery)) {
+    if (/passed away|rainbow bridge|grief|lost.*dog|lost.*pet|loss|miss.*so much|crying|heartbreak|💔|🌈|farewell|goodbye/.test(lowerQuery)) {
       setMiraMode('comfort');
-    } else if (/emergency|urgent|bleeding|vomiting blood|collapse|seizure|not breathing|🚨/.test(lowerQuery)) {
+    } else if (/emergency|urgent|bleeding|vomiting blood|collapse|seizure|not breathing|🚨|accident|hurt|injured/.test(lowerQuery)) {
       setMiraMode('emergency');
-    } else if (/show me|find|browse|what.*have|list|toys|treats|products/.test(lowerQuery)) {
+    } else if (/show me|find|browse|what.*have|list of|toys|treats|products|catalog/.test(lowerQuery)) {
       setMiraMode('instant');
     } else {
       setMiraMode('thinking'); // Default for PLAN, BOOK, ADVISE
