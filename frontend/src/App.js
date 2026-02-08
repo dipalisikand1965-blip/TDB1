@@ -139,7 +139,7 @@ import MiraAI from "./components/MiraAI";
 
 // Critical Pages (loaded immediately - main user journey)
 import Home from "./pages/Home";
-import AboutPage from "./pages/AboutPage";
+// AboutPage already imported via lazy loading below
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ShopPage from "./pages/ShopPage";
