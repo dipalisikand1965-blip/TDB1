@@ -4143,16 +4143,21 @@ const MiraDemoPage = () => {
                                       <div className="hotel-policy">{hotel.pet_policy_note}</div>
                                     )}
                                   </div>
-                                  <a 
-                                    href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hotel.name + ' ' + (hotel.city || msg.data.travel_city))}`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="hotel-directions"
-                                    onClick={(e) => e.stopPropagation()}
-                                    data-testid={`hotel-directions-${hIdx}`}
+                                  <button 
+                                    className="hotel-book-btn"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      // Engage Concierge for hotel booking
+                                      engageConcierge('hotel_booking', {
+                                        hotel_name: hotel.name,
+                                        city: hotel.city || msg.data.travel_city,
+                                        pet_name: pet.name
+                                      });
+                                    }}
+                                    data-testid={`hotel-book-${hIdx}`}
                                   >
-                                    <Navigation size={12} /> Directions
-                                  </a>
+                                    <Calendar size={12} /> Book Now
+                                  </button>
                                 </div>
                               ))}
                             </div>
