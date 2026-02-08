@@ -3758,27 +3758,40 @@ const MiraDemoPage = () => {
                 <div className="mp-tray-section mp-bundles-section">
                   <h4><Gift size={16} /> Bundles for {pet.name}</h4>
                   <div className="mp-bundles-grid">
-                    {proactiveAlerts.bundles.slice(0, 2).map((bundle, i) => (
-                      <div 
-                        key={`bundle-${i}`}
-                        className="mp-bundle-card"
-                        onClick={() => {
-                          setShowMiraTray(false);
-                          handleQuickReply(`Tell me about the ${bundle.name}`);
-                        }}
-                      >
-                        <div className="bundle-image">
-                          <img src={bundle.image} alt={bundle.name} />
-                          {bundle.savings > 0 && (
-                            <span className="bundle-savings">Save ₹{bundle.savings}</span>
-                          )}
+                    {proactiveAlerts.bundles.slice(0, 2).map((bundle, i) => {
+                      // Filter out competitor images for bundles too
+                      const rawImage = bundle.image;
+                      const isValidImage = rawImage && 
+                        !rawImage.includes('chewy.com') && 
+                        !rawImage.includes('amazon.');
+                      const displayImage = isValidImage ? rawImage : getPlaceholderImage(bundle.name);
+                      
+                      return (
+                        <div 
+                          key={`bundle-${i}`}
+                          className="mp-bundle-card"
+                          onClick={() => {
+                            setShowMiraTray(false);
+                            handleQuickReply(`Tell me about the ${bundle.name}`);
+                          }}
+                        >
+                          <div className="bundle-image">
+                            <img 
+                              src={displayImage} 
+                              alt={bundle.name}
+                              onError={(e) => { e.target.src = getPlaceholderImage(bundle.name); }}
+                            />
+                            {bundle.savings > 0 && (
+                              <span className="bundle-savings">Save ₹{bundle.savings}</span>
+                            )}
+                          </div>
+                          <div className="bundle-info">
+                            <span className="bundle-name">{bundle.name}</span>
+                            <span className="bundle-price">₹{bundle.price}</span>
+                          </div>
                         </div>
-                        <div className="bundle-info">
-                          <span className="bundle-name">{bundle.name}</span>
-                          <span className="bundle-price">₹{bundle.price}</span>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}
