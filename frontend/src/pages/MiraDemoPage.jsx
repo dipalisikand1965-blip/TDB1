@@ -2614,7 +2614,25 @@ const MiraDemoPage = () => {
         }));
       }
       
-      setConversationHistory(prev => [...prev, miraMessage]);
+      // ═══════════════════════════════════════════════════════════════════════════
+      // TOPIC SHIFT HANDLING - Reset context when topic changes
+      // ═══════════════════════════════════════════════════════════════════════════
+      const topicShiftDetected = data.topic_shift || false;
+      const currentPillar = data.current_pillar || 'general';
+      const previousPillar = data.previous_pillar || null;
+      
+      if (topicShiftDetected) {
+        console.log(`[TOPIC SHIFT] ${previousPillar} → ${currentPillar}`);
+        // Add a topic shift indicator message
+        const shiftIndicator = {
+          type: 'topic_shift',
+          fromPillar: previousPillar,
+          toPillar: currentPillar
+        };
+        setConversationHistory(prev => [...prev, shiftIndicator, miraMessage]);
+      } else {
+        setConversationHistory(prev => [...prev, miraMessage]);
+      }
       
       // VOICE OUTPUT - Speak Mira's response if voice is enabled
       if (voiceEnabled && miraResponseText) {
