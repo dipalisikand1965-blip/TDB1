@@ -10837,36 +10837,24 @@ async def semantic_product_search(request: Request):
     # Use the strongest intent (first match)
     primary_intent = detected_intents[0]
     config = primary_intent["config"]
+    intent_key = primary_intent["intent"]
     
-    # Build product query
-    product_query = {"$or": []}
+    # Build product query - prioritize semantic_intents match
+    product_query = {"$or": [
+        # Best match: products with matching semantic_intents
+        {"semantic_intents": intent_key},
+        # Good match: products with matching semantic_tags
+        {"semantic_tags": {"$in": config.get("product_tags", [])}},
+        # Fallback: category match
+        {"category": {"$regex": "|".join(config.get("product_categories", [])), "$options": "i"}} if config.get("product_categories") else {"_never": True}
+    ]}
     
-    # Match by categories
-    if config.get("product_categories"):
-        product_query["$or"].append({
-            "category": {"$regex": "|".join(config["product_categories"]), "$options": "i"}
-        })
-    
-    # Match by tags
-    if config.get("product_tags"):
-        product_query["$or"].append({
-            "tags": {"$in": config["product_tags"]}
-        })
-    
-    # Match by name/description keywords
-    product_query["$or"].append({
-        "$or": [
-            {"name": {"$regex": "|".join(config["triggers"][:5]), "$options": "i"}},
-            {"description": {"$regex": "|".join(config["triggers"][:5]), "$options": "i"}}
-        ]
-    })
-    
-    # Fetch products
+    # Fetch products from products_master
     products = []
-    if product_query["$or"]:
-        product_cursor = db.products.find(
+    try:
+        product_cursor = db.products_master.find(
             product_query,
-            {"_id": 0, "id": 1, "name": 1, "price": 1, "images": 1, "category": 1, "description": 1}
+            {"_id": 0, "id": 1, "name": 1, "base_price": 1, "price": 1, "images": 1, "image": 1, "category": 1, "description": 1, "semantic_intents": 1}
         ).limit(limit)
         products = await product_cursor.to_list(limit)
         
