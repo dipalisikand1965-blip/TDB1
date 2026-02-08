@@ -29,36 +29,56 @@ import { API_URL } from '../utils/api';
 
 // Formatted Text Component - Renders markdown with proper styling
 // Uses wrapper div for className (react-markdown v8+ compatible)
+// Pre-processes text to ensure proper markdown formatting
 const FormattedText = ({ children, className = '' }) => {
   if (!children) return null;
+  
+  // Pre-process text to convert inline dashes to proper markdown bullet points
+  const processText = (text) => {
+    if (typeof text !== 'string') return text;
+    
+    // Convert inline dashes to proper list format
+    // Pattern: " - " followed by text → "\n- " for proper markdown list
+    let processed = text
+      // First, handle dashes at start of sentences (after period or colon)
+      .replace(/([.:])(\s*)- /g, '$1\n\n- ')
+      // Then handle remaining inline dashes that look like list items
+      .replace(/ - ([A-Z])/g, '\n- $1')
+      // Convert ### headers to proper format
+      .replace(/\s*###\s*/g, '\n\n### ')
+      // Clean up multiple newlines
+      .replace(/\n{3,}/g, '\n\n');
+    
+    return processed.trim();
+  };
   
   return (
     <div className={`formatted-text ${className}`}>
       <ReactMarkdown
         components={{
-          p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+          p: ({ children }) => <p className="mb-3 last:mb-0">{children}</p>,
           strong: ({ children }) => <strong className="font-semibold text-white">{children}</strong>,
           em: ({ children }) => <em className="italic text-purple-200">{children}</em>,
-          ul: ({ children }) => <ul className="list-disc pl-4 my-2 space-y-1">{children}</ul>,
-          ol: ({ children }) => <ol className="list-decimal pl-4 my-2 space-y-1">{children}</ol>,
-          li: ({ children }) => <li className="text-sm leading-relaxed">{children}</li>,
-          h1: ({ children }) => <h1 className="text-lg font-bold mb-2">{children}</h1>,
-          h2: ({ children }) => <h2 className="text-base font-semibold mb-2">{children}</h2>,
-          h3: ({ children }) => <h3 className="text-sm font-semibold mb-1">{children}</h3>,
+          ul: ({ children }) => <ul className="formatted-list my-3">{children}</ul>,
+          ol: ({ children }) => <ol className="formatted-list formatted-list-numbered my-3">{children}</ol>,
+          li: ({ children }) => <li className="formatted-list-item">{children}</li>,
+          h1: ({ children }) => <h1 className="text-lg font-bold mb-3 mt-4 text-white">{children}</h1>,
+          h2: ({ children }) => <h2 className="text-base font-semibold mb-2 mt-3 text-white">{children}</h2>,
+          h3: ({ children }) => <h3 className="text-sm font-semibold mb-2 mt-3 text-purple-200">{children}</h3>,
           a: ({ href, children }) => (
             <a href={href} target="_blank" rel="noopener noreferrer" className="text-purple-300 underline hover:text-purple-200">
               {children}
             </a>
           ),
-          code: ({ children }) => <code className="bg-purple-900/50 px-1 py-0.5 rounded text-xs">{children}</code>,
+          code: ({ children }) => <code className="bg-purple-900/50 px-1.5 py-0.5 rounded text-xs">{children}</code>,
           blockquote: ({ children }) => (
-            <blockquote className="border-l-2 border-purple-400 pl-3 my-2 italic text-purple-200">
+            <blockquote className="border-l-2 border-purple-400 pl-3 my-3 italic text-purple-200">
               {children}
             </blockquote>
           ),
         }}
       >
-        {children}
+        {processText(children)}
       </ReactMarkdown>
     </div>
   );
