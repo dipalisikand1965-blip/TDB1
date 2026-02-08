@@ -1954,10 +1954,22 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
             "how should i", "what should i plan"
         ]) and not is_groom_booking
         
+        # BOOK mode includes ALL logistics/money requests: travel, hotels, grooming, boarding, etc.
+        is_hotel_stay_request = any(phrase in user_input_lower for phrase in [
+            "hotel", "hotels", "stay", "stays", "accommodation", "where to stay",
+            "pet-friendly hotel", "pet friendly hotel", "place to stay",
+            "find hotel", "find hotels", "show me hotel", "suggest hotel"
+        ])
+        
+        is_boarding_request = any(phrase in user_input_lower for phrase in [
+            "board", "boarding", "kennel", "daycare", "day care",
+            "pet sitter", "dog sitter", "leave my dog"
+        ])
+        
         is_book_mode = any(phrase in user_input_lower for phrase in [
             "book", "booking", "schedule", "appointment", "reserve",
             "fix a slot", "arrange", "set up"
-        ]) or is_groom_booking or is_travel_request or is_travel_conversation
+        ]) or is_groom_booking or is_travel_request or is_travel_conversation or is_hotel_stay_request or is_boarding_request
         
         is_execute_mode = any(phrase in user_input_lower for phrase in [
             "handle everything", "take care of everything", "sort out",
