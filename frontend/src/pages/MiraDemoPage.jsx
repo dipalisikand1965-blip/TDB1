@@ -2872,8 +2872,54 @@ const MiraDemoPage = () => {
       window.dispatchEvent(new CustomEvent('openMiraAI'));
     } else if (item.action === 'openHelp') {
       setShowHelpModal(true);
+    } else if (item.action === 'openLearn') {
+      setShowLearnModal(true);
+      fetchLearnVideos('recommended');
     } else if (item.path) {
       navigate(item.tab ? `${item.path}?tab=${item.tab}` : item.path);
+    }
+  };
+  
+  // Fetch Learn videos
+  const fetchLearnVideos = async (category) => {
+    setLearnLoading(true);
+    setLearnCategory(category);
+    try {
+      let url = `${API_URL}/api/mira/youtube/`;
+      switch (category) {
+        case 'recommended':
+          url += `recommended/${pet.id}?max_results=6`;
+          break;
+        case 'barking':
+          url += `by-topic?topic=stop%20barking&breed=${encodeURIComponent(pet.breed || '')}&max_results=6`;
+          break;
+        case 'potty':
+          url += `by-topic?topic=potty%20training&breed=${encodeURIComponent(pet.breed || '')}&max_results=6`;
+          break;
+        case 'leash':
+          url += `by-topic?topic=leash%20walking&breed=${encodeURIComponent(pet.breed || '')}&max_results=6`;
+          break;
+        case 'tricks':
+          url += `by-topic?topic=dog%20tricks&breed=${encodeURIComponent(pet.breed || '')}&max_results=6`;
+          break;
+        case 'anxiety':
+          url += `by-topic?topic=dog%20anxiety%20calm&breed=${encodeURIComponent(pet.breed || '')}&max_results=6`;
+          break;
+        case 'puppy':
+          url += `by-age?age_years=0.5&breed=${encodeURIComponent(pet.breed || '')}&max_results=6`;
+          break;
+        default:
+          url += `by-breed?breed=${encodeURIComponent(pet.breed || 'dog')}&max_results=6`;
+      }
+      
+      const response = await fetch(url);
+      const data = await response.json();
+      setLearnVideos(data.videos || []);
+    } catch (e) {
+      console.error('[LEARN] Failed to fetch videos:', e);
+      setLearnVideos([]);
+    } finally {
+      setLearnLoading(false);
     }
   };
   
