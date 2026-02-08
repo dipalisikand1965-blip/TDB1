@@ -5795,6 +5795,102 @@ I understand this is urgent. Let me help you immediately.
             "is_emergency": True
         }
     
+    # 4.5 NEARBY PLACES DETECTION - Vet clinics, restaurants, stays
+    nearby_places_context = None
+    nearby_places_data = None
+    message_lower = user_message.lower()
+    
+    # Detect location-based queries
+    NEARBY_KEYWORDS = {
+        "vet": ["vet", "veterinary", "clinic", "doctor", "hospital", "sick", "unwell", "not eating", "vomiting", "injury", "checkup", "vaccine", "vaccination"],
+        "restaurant": ["restaurant", "cafe", "brunch", "lunch", "dinner", "eat out", "dine", "dining", "food place", "pet cafe"],
+        "stay": ["hotel", "resort", "stay", "accommodation", "vacation", "trip", "book room", "pet friendly hotel"],
+        "park": ["dog park", "park", "off leash", "play area"]
+    }
+    
+    detected_place_type = None
+    for place_type, keywords in NEARBY_KEYWORDS.items():
+        if any(kw in message_lower for kw in keywords):
+            detected_place_type = place_type
+            break
+    
+    # Only trigger if user is asking for nearby/location-specific info
+    location_trigger_words = ["near", "nearby", "close", "around", "in my area", "where can", "recommend", "suggest", "find me", "looking for", "need a", "best"]
+    is_location_query = any(word in message_lower for word in location_trigger_words)
+    
+    # Get user's city from pet profile or detect from message
+    user_city = None
+    if selected_pet:
+        user_city = selected_pet.get("location", {}).get("city") or selected_pet.get("city")
+    if not user_city and user:
+        user_city = user.get("city") or (user.get("address", {}) or {}).get("city")
+    
+    # Try to extract city from message
+    INDIAN_CITIES = ["mumbai", "delhi", "bangalore", "bengaluru", "pune", "hyderabad", "chennai", "kolkata", "gurgaon", "noida", "goa", "jaipur", "ahmedabad", "lucknow", "chandigarh", "kochi", "indore", "bhopal"]
+    for city in INDIAN_CITIES:
+        if city in message_lower:
+            user_city = city.title()
+            break
+    
+    if detected_place_type and (is_location_query or user_city):
+        try:
+            # Fetch nearby places
+            city_for_search = user_city or "Mumbai"  # Default to Mumbai if no city found
+            
+            if detected_place_type == "vet":
+                # Check if emergency
+                is_emergency_vet = any(word in message_lower for word in ["emergency", "urgent", "immediately", "now", "asap", "critical"])
+                
+                if is_emergency_vet:
+                    vets = await db.vet_clinics.find(
+                        {"city": {"$regex": city_for_search, "$options": "i"}, "is_24_hours": True, "verified": True},
+                        {"_id": 0}
+                    ).sort("rating", -1).limit(3).to_list(3)
+                else:
+                    vets = await db.vet_clinics.find(
+                        {"city": {"$regex": city_for_search, "$options": "i"}, "verified": True},
+                        {"_id": 0}
+                    ).sort([("is_24_hours", -1), ("rating", -1)]).limit(3).to_list(3)
+                
+                if vets:
+                    nearby_places_data = {"type": "vet_clinics", "places": vets, "city": city_for_search, "is_emergency": is_emergency_vet}
+                    nearby_places_context = f"\n\nNEARBY VET CLINICS IN {city_for_search.upper()}:\n"
+                    for v in vets:
+                        nearby_places_context += f"- {v['name']} ({v['area']}) - {'24/7 EMERGENCY' if v.get('is_24_hours') else 'Regular hours'} - Phone: {v['phone']} - Rating: {v.get('rating', 'N/A')}/5\n"
+                    nearby_places_context += "\nUse this information to help the user find a vet. Include phone numbers and highlight 24/7 options."
+            
+            elif detected_place_type == "restaurant":
+                restaurants = await db.restaurants.find(
+                    {"city": {"$regex": city_for_search, "$options": "i"}, "verified": True},
+                    {"_id": 0}
+                ).sort("rating", -1).limit(3).to_list(3)
+                
+                if restaurants:
+                    nearby_places_data = {"type": "restaurants", "places": restaurants, "city": city_for_search}
+                    nearby_places_context = f"\n\nPET-FRIENDLY RESTAURANTS IN {city_for_search.upper()}:\n"
+                    for r in restaurants:
+                        nearby_places_context += f"- {r['name']} ({r.get('area', '')}) - {r.get('highlights', ['Great ambiance'])[0] if r.get('highlights') else 'Pet-friendly'} - Rating: {r.get('rating', 'N/A')}/5\n"
+                    nearby_places_context += "\nRecommend these verified pet-friendly restaurants to the user."
+            
+            elif detected_place_type == "stay":
+                stays = await db.pet_friendly_stays.find(
+                    {"city": {"$regex": city_for_search, "$options": "i"}, "verified": True},
+                    {"_id": 0}
+                ).sort("rating", -1).limit(3).to_list(3)
+                
+                if stays:
+                    nearby_places_data = {"type": "stays", "places": stays, "city": city_for_search}
+                    nearby_places_context = f"\n\nPET-FRIENDLY STAYS IN {city_for_search.upper()}:\n"
+                    for s in stays:
+                        nearby_places_context += f"- {s['name']} ({s.get('area', '')}) - {s.get('price_range', 'Contact for rates')} - Pet fee: {s.get('pet_fee', 'Ask')} - Rating: {s.get('rating', 'N/A')}/5\n"
+                    nearby_places_context += "\nRecommend these verified pet-friendly accommodations."
+            
+            if nearby_places_context:
+                logger.info(f"[NEARBY PLACES] Found {len(nearby_places_data.get('places', []))} {detected_place_type}s in {city_for_search}")
+        
+        except Exception as e:
+            logger.warning(f"[NEARBY PLACES] Error fetching places: {e}")
+    
     # 5. Check if this needs RESEARCH MODE
     research_context = None
     if needs_research(user_message):
