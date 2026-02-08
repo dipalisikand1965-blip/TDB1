@@ -511,16 +511,33 @@ const MiraDemoPage = () => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const audioRef = useRef(null);
   
-  // E024: VOICE PERSONALITY SELECTION
-  const [voicePersonality, setVoicePersonality] = useState('default');
-  const [showVoiceMenu, setShowVoiceMenu] = useState(false);
-  const voicePersonalities = {
-    default: { label: 'Mira', icon: '🎙️', desc: 'Warm & caring' },
-    celebration: { label: 'Joyful', icon: '🎉', desc: 'Excited & celebratory' },
-    health: { label: 'Caring', icon: '💜', desc: 'Calm & reassuring' },
-    comfort: { label: 'Gentle', icon: '🤗', desc: 'Soft & empathetic' },
-    urgent: { label: 'Alert', icon: '⚡', desc: 'Clear & attention-grabbing' }
-  };
+  // E024: AUTO VOICE PERSONALITY - Mira auto-detects context and adjusts voice
+  const detectVoicePersonality = useCallback((text, context = {}) => {
+    const lowerText = (text || '').toLowerCase();
+    
+    // Celebration context - birthdays, parties, milestones, anniversaries
+    if (/birthday|celebrate|party|anniversary|congrat|milestone|achievement|🎂|🎉|🎁/.test(lowerText)) {
+      return 'celebration';
+    }
+    
+    // Comfort context - grief, anxiety, loss, emotional support
+    if (/passed away|rainbow bridge|grief|anxious|scared|worried|nervous|miss|lost|sad|crying|comfort|🌈|💔/.test(lowerText)) {
+      return 'comfort';
+    }
+    
+    // Health context - vet, medical, vaccines, checkups
+    if (/vet|vaccine|checkup|health|medical|sick|symptoms|medicine|doctor|hospital|injury|emergency|💉|🏥/.test(lowerText)) {
+      return 'health';
+    }
+    
+    // Urgent context - immediate action needed
+    if (/urgent|emergency|immediately|asap|right now|critical|danger|alert|⚠️|🚨/.test(lowerText)) {
+      return 'urgent';
+    }
+    
+    // Default warm voice
+    return 'default';
+  }, []);
   
   // IN-MIRA SERVICE REQUEST - Everything stays in the OS
   // When user clicks a service card, show form here instead of external link
