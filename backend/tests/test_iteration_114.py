@@ -13,7 +13,7 @@ import requests
 import os
 import json
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://mira-concierge-3.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://pet-soul-demo.preview.emergentagent.com').rstrip('/')
 
 # Test credentials
 MEMBER_EMAIL = "dipali@clubconcierge.in"
