@@ -45,6 +45,31 @@
 
 ---
 
+## SESSION SUMMARY (Feb 8, 2026 - Session 3)
+
+### ✅ FIXES IMPLEMENTED THIS SESSION
+
+| Task | Status | Details |
+|------|--------|---------|
+| **Landing Page Image** | ✅ Done | Replaced bulldog with golden retriever from user |
+| **Double Voice Fix** | ✅ Done | Added voiceTimeoutRef to prevent overlapping voices |
+| **Voice Cleanup** | ✅ Done | Stop existing voice before starting new one |
+| **New Message Voice Stop** | ✅ Done | Stops voice when user sends new message |
+| **Voice Memory Cleanup** | ✅ Done | Cleanup on component unmount |
+
+### Voice Issue Fix Details:
+The double voice issue was caused by:
+1. No timeout reference tracking - new voice would start while old still playing
+2. No cleanup when new message sent - old voice would continue
+
+**Solution implemented:**
+- Added `voiceTimeoutRef` to track pending voice timeouts
+- Clear pending timeouts when new message is submitted
+- Stop any existing audio before starting new TTS
+- Added cleanup effect on unmount
+
+---
+
 ## SESSION SUMMARY (Feb 8, 2026 - Session 2 COMPLETE)
 
 ### ✅ ALL FEATURES IMPLEMENTED
