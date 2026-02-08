@@ -2556,6 +2556,7 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                 if detected_place_type == "vet":
                     is_emergency_vet = any(word in user_input_lower for word in ["emergency", "urgent", "immediately", "now", "asap"])
                     
+                    # First try database
                     if is_emergency_vet:
                         vets = await db.vet_clinics.find(
                             {"city": {"$regex": city_for_search, "$options": "i"}, "is_24_hours": True, "verified": True},
@@ -2567,7 +2568,23 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                             {"_id": 0}
                         ).sort([("is_24_hours", -1), ("rating", -1)]).limit(3).to_list(3)
                     
-                    if vets:
+                    # E042: Fallback to Google Places API if no database results
+                    if not vets:
+                        try:
+                            from services.google_places_service import search_vets_in_city, search_places_by_text
+                            if is_emergency_vet:
+                                vets = await search_places_by_text(
+                                    query=f"24 hour emergency vet hospital {city_for_search}",
+                                    max_results=3
+                                )
+                            else:
+                                vets = await search_vets_in_city(city_for_search, max_results=3)
+                            if vets:
+                                nearby_places_data = {"type": "vet_clinics", "places": vets, "city": city_for_search, "is_emergency": is_emergency_vet, "source": "google_places"}
+                                logger.info(f"[NEARBY] Found {len(vets)} vet clinics via Google Places in {city_for_search}")
+                        except Exception as vet_err:
+                            logger.warning(f"[NEARBY] Google Places error for vets: {vet_err}")
+                    elif vets:
                         nearby_places_data = {"type": "vet_clinics", "places": vets, "city": city_for_search, "is_emergency": is_emergency_vet}
                         logger.info(f"[NEARBY] Found {len(vets)} vet clinics in {city_for_search}")
                 
