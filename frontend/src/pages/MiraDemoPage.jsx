@@ -1863,6 +1863,15 @@ const MiraDemoPage = () => {
     return moreInfoPhrases.some(phrase => lowerInput.includes(phrase));
   }, []);
   
+  // VOICE CONTROL - Stop speaking immediately
+  const stopSpeaking = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+    }
+    setIsSpeaking(false);
+  }, []);
+  
   // VOICE OUTPUT - ElevenLabs TTS for Mira's voice (must be before handleSubmit)
   const speakWithMira = useCallback(async (text) => {
     if (!voiceEnabled || !text) return;
