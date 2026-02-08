@@ -111,6 +111,9 @@ Intent categories:
 ### E025 Pet Mood Detection
 - `POST /api/mira/detect-mood` - Analyze user message for mood concerns
 
+### Admin Panel
+- `POST /api/mira/admin/run-ai-tagging` - Trigger AI tagging (integrated with Master SYNC)
+
 ### Restaurants & Pet-Friendly Stays
 - `GET /api/mira/restaurants` - Get pet-friendly restaurants (filter: city, verified_only)
 - `POST /api/mira/restaurants/add` - Add new restaurant (needs verification)
