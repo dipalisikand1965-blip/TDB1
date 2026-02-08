@@ -2663,6 +2663,43 @@ const MiraDemoPage = () => {
                     </div>
                     <Sparkles className="love-card-sparkle" />
                   </div>
+                  
+                  {/* E018 & E019: Proactive Alerts */}
+                  {(proactiveAlerts.celebrations.length > 0 || proactiveAlerts.healthReminders.filter(r => r.needs_attention).length > 0) && (
+                    <div className="proactive-alerts">
+                      {/* Upcoming Celebrations */}
+                      {proactiveAlerts.celebrations.filter(c => c.is_upcoming).map((celeb, i) => (
+                        <div 
+                          key={`celeb-${i}`} 
+                          className={`proactive-alert ${celeb.is_today ? 'alert-today' : 'alert-upcoming'}`}
+                          onClick={() => handleQuickReply(celeb.is_today ? `It's ${pet.name}'s ${celeb.type}! What should we do?` : `${pet.name}'s ${celeb.type} is coming up!`)}
+                        >
+                          <span className="alert-icon">{celeb.type === 'birthday' ? '🎂' : '💜'}</span>
+                          <span className="alert-text">
+                            {celeb.is_today 
+                              ? `Today is ${pet.name}'s ${celeb.type === 'birthday' ? 'Birthday' : 'Gotcha Day'}!` 
+                              : `${celeb.name} in ${celeb.days_until} days`}
+                          </span>
+                        </div>
+                      ))}
+                      
+                      {/* Health Reminders */}
+                      {proactiveAlerts.healthReminders.filter(r => r.needs_attention).slice(0, 2).map((reminder, i) => (
+                        <div 
+                          key={`health-${i}`} 
+                          className={`proactive-alert ${reminder.urgent || reminder.is_overdue ? 'alert-urgent' : 'alert-notice'}`}
+                          onClick={() => handleQuickReply(reminder.type === 'vaccine' ? `${pet.name} needs ${reminder.name} vaccine` : `Schedule a vet checkup for ${pet.name}`)}
+                        >
+                          <span className="alert-icon">{reminder.urgent ? '⚠️' : '💉'}</span>
+                          <span className="alert-text">
+                            {reminder.type === 'vet_visit' 
+                              ? reminder.message 
+                              : `${reminder.name} ${reminder.is_overdue ? 'overdue' : 'due soon'}`}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
               
