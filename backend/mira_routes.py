@@ -8990,3 +8990,278 @@ async def get_pet_memories(
         "count": len(memories)
     }
 
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# E015: EXPERIENCES FROM DATABASE - Query experiences for wizard cards
+# ═══════════════════════════════════════════════════════════════════════════════
+@router.get("/experiences")
+async def get_experiences_for_mira(
+    pet_id: Optional[str] = None,
+    city: Optional[str] = None,
+    limit: int = 6
+):
+    """
+    E015: Fetch experiences from enjoy_experiences collection for wizard cards.
+    Returns upcoming, active experiences filtered by pet preferences.
+    """
+    db = get_db()
+    
+    query = {"is_active": True}
+    
+    # Filter by city if provided
+    if city:
+        query["city"] = {"$regex": city, "$options": "i"}
+    
+    # If pet_id provided, try to match pet preferences
+    pet_personalities = []
+    if pet_id:
+        pet = await db.pets.find_one({"id": pet_id}, {"personality": 1, "size": 1, "_id": 0})
+        if pet:
+            if pet.get("personality"):
+                pet_personalities = pet.get("personality", [])
+                # Optional: filter by matching personalities
+                # query["pet_personalities"] = {"$in": pet_personalities}
+    
+    experiences = await db.enjoy_experiences.find(
+        query,
+        {"_id": 0}
+    ).sort("event_date", 1).limit(limit).to_list(limit)
+    
+    return {
+        "success": True,
+        "experiences": experiences,
+        "count": len(experiences),
+        "pet_matched": len(pet_personalities) > 0
+    }
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# E016: BREED-SPECIFIC PRODUCT BOOST - Prioritize breed products
+# ═══════════════════════════════════════════════════════════════════════════════
+@router.get("/breed-products/{pet_id}")
+async def get_breed_specific_products(pet_id: str, limit: int = 8):
+    """
+    E016: Fetch breed-specific products for a pet.
+    Queries breed_products collection and filters by pet's breed.
+    """
+    db = get_db()
+    
+    # Get pet's breed info
+    pet = await db.pets.find_one({"id": pet_id}, {"breed": 1, "size": 1, "name": 1, "_id": 0})
+    if not pet:
+        return {"success": False, "error": "Pet not found", "products": []}
+    
+    breed = pet.get("breed", "").lower()
+    size = pet.get("size", "medium").upper()[0] if pet.get("size") else "M"  # L, M, S, XL
+    
+    # Query breed_products collection
+    products = await db.breed_products.find(
+        {
+            "is_active": True,
+            "$or": [
+                {"breed_tags.breeds": {"$regex": breed, "$options": "i"}},
+                {"breed_tags.sizes": size},
+                {"breed_tags.breeds": "all_breeds"}
+            ]
+        },
+        {"_id": 0}
+    ).limit(limit).to_list(limit)
+    
+    return {
+        "success": True,
+        "pet_name": pet.get("name"),
+        "breed": breed,
+        "products": products,
+        "count": len(products)
+    }
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# E018: BIRTHDAY/ANNIVERSARY REMINDERS - Proactive care notifications
+# ═══════════════════════════════════════════════════════════════════════════════
+@router.get("/celebrations/{pet_id}")
+async def get_pet_celebrations(pet_id: str):
+    """
+    E018: Get upcoming celebrations (birthdays, anniversaries) for a pet.
+    Returns upcoming occasions and any past celebration reminders.
+    """
+    db = get_db()
+    from datetime import datetime, timedelta
+    
+    # Get pet's birthday and adoption date
+    pet = await db.pets.find_one(
+        {"id": pet_id}, 
+        {"birthday": 1, "adoption_date": 1, "name": 1, "gotcha_day": 1, "_id": 0}
+    )
+    if not pet:
+        return {"success": False, "error": "Pet not found", "celebrations": []}
+    
+    celebrations = []
+    today = datetime.now(timezone.utc)
+    
+    # Check birthday
+    if pet.get("birthday"):
+        try:
+            bday_str = pet["birthday"]
+            # Handle different date formats
+            if isinstance(bday_str, str):
+                if "-" in bday_str:
+                    bday = datetime.strptime(bday_str, "%Y-%m-%d")
+                else:
+                    bday = datetime.strptime(bday_str, "%B %d")
+            else:
+                bday = bday_str
+            
+            # Calculate next birthday
+            next_bday = bday.replace(year=today.year)
+            if next_bday < today:
+                next_bday = next_bday.replace(year=today.year + 1)
+            
+            days_until = (next_bday - today).days
+            
+            celebrations.append({
+                "type": "birthday",
+                "name": f"{pet.get('name', 'Pet')}'s Birthday",
+                "date": next_bday.strftime("%B %d"),
+                "days_until": days_until,
+                "is_upcoming": days_until <= 30,
+                "is_today": days_until == 0
+            })
+        except Exception as e:
+            logger.warning(f"[E018] Could not parse birthday: {e}")
+    
+    # Check gotcha day / adoption anniversary
+    gotcha = pet.get("gotcha_day") or pet.get("adoption_date")
+    if gotcha:
+        try:
+            if isinstance(gotcha, str):
+                if "-" in gotcha:
+                    gotcha_date = datetime.strptime(gotcha, "%Y-%m-%d")
+                else:
+                    gotcha_date = datetime.strptime(gotcha, "%B %d")
+            else:
+                gotcha_date = gotcha
+            
+            next_gotcha = gotcha_date.replace(year=today.year)
+            if next_gotcha < today:
+                next_gotcha = next_gotcha.replace(year=today.year + 1)
+            
+            days_until = (next_gotcha - today).days
+            years_together = today.year - gotcha_date.year
+            
+            celebrations.append({
+                "type": "gotcha_day",
+                "name": f"{pet.get('name', 'Pet')}'s Gotcha Day",
+                "date": next_gotcha.strftime("%B %d"),
+                "days_until": days_until,
+                "years_together": years_together,
+                "is_upcoming": days_until <= 30,
+                "is_today": days_until == 0
+            })
+        except Exception as e:
+            logger.warning(f"[E018] Could not parse gotcha day: {e}")
+    
+    # Also fetch any celebration reminders from the database
+    reminders = await db.celebration_reminders.find(
+        {"pet_id": pet_id},
+        {"_id": 0}
+    ).sort("date", 1).limit(5).to_list(5)
+    
+    return {
+        "success": True,
+        "pet_name": pet.get("name"),
+        "celebrations": celebrations,
+        "reminders": reminders,
+        "has_upcoming": any(c.get("is_upcoming") for c in celebrations)
+    }
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# E019: HEALTH CHECK REMINDERS - "Buddy's last checkup was 8 months ago..."
+# ═══════════════════════════════════════════════════════════════════════════════
+@router.get("/health-reminders/{pet_id}")
+async def get_health_reminders(pet_id: str):
+    """
+    E019: Get health-related reminders for a pet.
+    Returns vaccination due dates, vet visit reminders, etc.
+    """
+    db = get_db()
+    from datetime import datetime
+    
+    # Get pet's health info
+    pet = await db.pets.find_one(
+        {"id": pet_id}, 
+        {"last_vet_visit": 1, "last_health_check": 1, "vaccinations": 1, "name": 1, "_id": 0}
+    )
+    if not pet:
+        return {"success": False, "error": "Pet not found", "reminders": []}
+    
+    reminders = []
+    today = datetime.now(timezone.utc)
+    
+    # Check last vet visit
+    last_visit = pet.get("last_vet_visit") or pet.get("last_health_check")
+    if last_visit:
+        try:
+            if isinstance(last_visit, str):
+                last_visit_date = datetime.strptime(last_visit, "%Y-%m-%d")
+            else:
+                last_visit_date = last_visit
+            
+            months_since = (today.year - last_visit_date.year) * 12 + (today.month - last_visit_date.month)
+            
+            reminders.append({
+                "type": "vet_visit",
+                "message": f"{pet.get('name', 'Your pet')}'s last checkup was {months_since} months ago",
+                "last_date": last_visit_date.strftime("%B %Y"),
+                "months_since": months_since,
+                "needs_attention": months_since >= 6,
+                "urgent": months_since >= 12,
+                "recommendation": "Annual checkups help catch issues early!" if months_since >= 12 else None
+            })
+        except Exception as e:
+            logger.warning(f"[E019] Could not parse last visit: {e}")
+    else:
+        reminders.append({
+            "type": "vet_visit",
+            "message": f"We don't have {pet.get('name', 'your pet')}'s last checkup on file",
+            "needs_attention": True,
+            "recommendation": "Regular vet visits keep your pet healthy!"
+        })
+    
+    # Fetch pending health reminders from database
+    db_reminders = await db.health_reminders.find(
+        {"pet_id": pet_id, "status": "pending"},
+        {"_id": 0}
+    ).sort("due_date", 1).to_list(10)
+    
+    # Process vaccine reminders
+    for r in db_reminders:
+        if r.get("reminder_type") == "vaccine":
+            due_date = r.get("due_date", "")
+            try:
+                due = datetime.strptime(due_date, "%Y-%m-%d") if due_date else None
+                is_overdue = due and due < today if due else False
+                days_until = (due - today).days if due else None
+            except:
+                is_overdue = False
+                days_until = None
+            
+            reminders.append({
+                "type": "vaccine",
+                "name": r.get("item_name", "Vaccination"),
+                "due_date": due_date,
+                "days_until": days_until,
+                "is_overdue": is_overdue,
+                "needs_attention": is_overdue or (days_until and days_until <= 14)
+            })
+    
+    return {
+        "success": True,
+        "pet_name": pet.get("name"),
+        "reminders": reminders,
+        "has_urgent": any(r.get("urgent") or r.get("is_overdue") for r in reminders),
+        "needs_attention_count": sum(1 for r in reminders if r.get("needs_attention"))
+    }
+
