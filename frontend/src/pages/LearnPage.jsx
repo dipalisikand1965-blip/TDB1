@@ -224,7 +224,7 @@ const LearnPage = () => {
   const fetchYouTubeVideos = async (topic = 'basic_training') => {
     setYoutubeLoading(true);
     try {
-      const response = await fetch(`${API_URL}/api/mira/youtube/topic/${topic}?max_results=6`);
+      const response = await fetch(`${API_URL}/api/mira/youtube/by-topic?topic=${encodeURIComponent(topic)}&max_results=6`);
       if (response.ok) {
         const data = await response.json();
         if (data.success && data.videos) {
@@ -242,7 +242,7 @@ const LearnPage = () => {
   const fetchBreedVideos = async (breed) => {
     setYoutubeLoading(true);
     try {
-      const response = await fetch(`${API_URL}/api/mira/youtube/breed/${encodeURIComponent(breed)}?max_results=6`);
+      const response = await fetch(`${API_URL}/api/mira/youtube/by-breed?breed=${encodeURIComponent(breed)}&max_results=6`);
       if (response.ok) {
         const data = await response.json();
         if (data.success && data.videos) {
