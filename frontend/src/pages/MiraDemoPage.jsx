@@ -861,6 +861,65 @@ const MiraDemoPage = () => {
   const [showPastChats, setShowPastChats] = useState(false);
   const [loadingPastChats, setLoadingPastChats] = useState(false);
   
+  // INACTIVITY AUTO-ARCHIVE: After 30 mins of no activity, archive conversation to past chats
+  const lastActivityRef = useRef(Date.now());
+  const inactivityTimerRef = useRef(null);
+  
+  // Reset inactivity timer on any user interaction
+  const resetInactivityTimer = useCallback(() => {
+    lastActivityRef.current = Date.now();
+  }, []);
+  
+  // Check for inactivity and archive conversation
+  useEffect(() => {
+    const INACTIVITY_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+    
+    const checkInactivity = () => {
+      const timeSinceLastActivity = Date.now() - lastActivityRef.current;
+      
+      if (timeSinceLastActivity >= INACTIVITY_TIMEOUT && conversationHistory.length > 1) {
+        // Archive current conversation to past chats
+        const sessionToArchive = {
+          id: `session_${Date.now()}`,
+          date: new Date().toISOString(),
+          pet_name: pet.name,
+          pet_id: pet.id,
+          messages: conversationHistory,
+          summary: conversationHistory.find(m => m.type === 'user')?.content?.slice(0, 50) || 'Conversation'
+        };
+        
+        setPastSessions(prev => [sessionToArchive, ...prev]);
+        
+        // Clear current conversation (keep welcome message)
+        setConversationHistory([]);
+        setMiraPicks({ products: [], services: [], context: '', hasNew: false });
+        
+        // Reset timer
+        lastActivityRef.current = Date.now();
+        
+        console.log('[MIRA] Conversation archived due to inactivity');
+      }
+    };
+    
+    // Check every minute
+    inactivityTimerRef.current = setInterval(checkInactivity, 60 * 1000);
+    
+    // Track user activity
+    const handleActivity = () => resetInactivityTimer();
+    window.addEventListener('mousemove', handleActivity);
+    window.addEventListener('keydown', handleActivity);
+    window.addEventListener('click', handleActivity);
+    window.addEventListener('touchstart', handleActivity);
+    
+    return () => {
+      if (inactivityTimerRef.current) clearInterval(inactivityTimerRef.current);
+      window.removeEventListener('mousemove', handleActivity);
+      window.removeEventListener('keydown', handleActivity);
+      window.removeEventListener('click', handleActivity);
+      window.removeEventListener('touchstart', handleActivity);
+    };
+  }, [conversationHistory, pet, resetInactivityTimer]);
+  
   // FLOATING TOOLBAR - Clean conversation flow
   // Insight & Concierge icons at top, expand on tap
   const [showInsightsPanel, setShowInsightsPanel] = useState(false);
