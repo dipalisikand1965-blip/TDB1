@@ -1129,14 +1129,21 @@ const MiraDemoPage = () => {
           const data = await response.json();
           if (data.pets && data.pets.length > 0) {
             const p = data.pets[0];
+            // Helper to ensure array format
+            const ensureArray = (val, defaultVal = []) => {
+              if (!val) return defaultVal;
+              if (Array.isArray(val)) return val;
+              if (typeof val === 'string') return val.split(',').map(s => s.trim()).filter(Boolean);
+              return defaultVal;
+            };
             setPet({
               id: p.id,
               name: p.name,
               breed: p.breed,
               age: p.age || 'Unknown',
-              traits: p.doggy_soul_answers?.describe_3_words || ['Loving'],
-              sensitivities: p.doggy_soul_answers?.health_conditions || [],
-              favorites: p.doggy_soul_answers?.favorite_treats || []
+              traits: ensureArray(p.doggy_soul_answers?.describe_3_words, ['Loving']),
+              sensitivities: ensureArray(p.doggy_soul_answers?.health_conditions),
+              favorites: ensureArray(p.doggy_soul_answers?.favorite_treats)
             });
           }
         }
