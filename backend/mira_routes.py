@@ -9754,3 +9754,174 @@ async def process_voice_command(
         "should_execute": False
     }
 
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# DOG-FRIENDLY PLACES - "Great Places for Mojo"
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@router.get("/places/{pet_id}")
+async def get_dog_friendly_places(pet_id: str, city: str = "Mumbai", limit: int = 5):
+    """
+    Get dog-friendly places (parks, cafes, restaurants) for a pet.
+    Returns places from enjoy_experiences collection + curated spots.
+    """
+    db = get_db()
+    
+    # Get pet info
+    pet = await db.pets.find_one(
+        {"id": pet_id}, 
+        {"name": 1, "_id": 0}
+    )
+    pet_name = pet.get("name", "your pet") if pet else "your pet"
+    
+    # Fetch experiences as places
+    experiences = await db.enjoy_experiences.find(
+        {"city": {"$regex": city, "$options": "i"}, "is_active": True},
+        {"_id": 0}
+    ).limit(limit).to_list(limit)
+    
+    places = []
+    
+    # Convert experiences to places format
+    for exp in experiences:
+        place_type = "event"
+        if any(w in (exp.get("name", "") + exp.get("venue_name", "")).lower() for w in ["park", "garden", "trail", "trek"]):
+            place_type = "park"
+        elif any(w in (exp.get("name", "") + exp.get("venue_name", "")).lower() for w in ["cafe", "coffee", "restaurant", "kitchen", "beans"]):
+            place_type = "cafe"
+        elif any(w in (exp.get("name", "") + exp.get("venue_name", "")).lower() for w in ["spa", "grooming", "salon"]):
+            place_type = "spa"
+        elif any(w in (exp.get("name", "") + exp.get("venue_name", "")).lower() for w in ["training", "class", "workshop"]):
+            place_type = "training"
+        
+        places.append({
+            "id": exp.get("id"),
+            "name": exp.get("venue_name") or exp.get("name"),
+            "type": place_type,
+            "description": exp.get("description", "Dog-friendly spot"),
+            "city": exp.get("city", city),
+            "address": exp.get("address", ""),
+            "icon": "🌳" if place_type == "park" else "☕" if place_type == "cafe" else "💆" if place_type == "spa" else "🎓" if place_type == "training" else "📍"
+        })
+    
+    # Add some curated dog-friendly spots if not enough
+    curated_spots = [
+        {"name": "Pet-Friendly Cafes", "type": "cafe", "icon": "☕", "description": f"Cozy spots to enjoy with {pet_name}"},
+        {"name": "Off-Leash Dog Parks", "type": "park", "icon": "🌳", "description": f"Let {pet_name} run free!"},
+        {"name": "Pet Stores & Boutiques", "type": "shop", "icon": "🛍️", "description": "Shop with your furry friend"},
+        {"name": "Dog-Friendly Beaches", "type": "beach", "icon": "🏖️", "description": "Sandy paws adventure"},
+        {"name": "Pet-Friendly Hotels", "type": "hotel", "icon": "🏨", "description": f"Staycation with {pet_name}"}
+    ]
+    
+    if len(places) < limit:
+        for spot in curated_spots[:limit - len(places)]:
+            spot["city"] = city
+            places.append(spot)
+    
+    return {
+        "success": True,
+        "pet_name": pet_name,
+        "city": city,
+        "places": places[:limit],
+        "prompt_message": f"Want to explore? Let Concierge® help plan your outing with {pet_name}!"
+    }
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PERSONALIZATION STATS - "Mira knows Mojo"
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@router.get("/personalization-stats/{pet_id}")
+async def get_personalization_stats(pet_id: str):
+    """
+    Get personalization stats for the ticker.
+    Shows how well Mira knows this pet.
+    """
+    db = get_db()
+    
+    pet = await db.pets.find_one(
+        {"id": pet_id}, 
+        {
+            "name": 1, "overall_score": 1, "soul_answers": 1, 
+            "favorites": 1, "allergies": 1, "personality": 1,
+            "breed": 1, "birthday": 1, "gotcha_day": 1,
+            "vaccinations": 1, "memories": 1, "_id": 0
+        }
+    )
+    
+    if not pet:
+        return {"success": False, "stats": []}
+    
+    pet_name = pet.get("name", "your pet")
+    soul_score = pet.get("overall_score", 0)
+    
+    stats = []
+    
+    # Soul Score
+    stats.append({
+        "icon": "💜",
+        "text": f"Mira knows {pet_name} {int(soul_score)}%",
+        "type": "soul"
+    })
+    
+    # Favorites
+    favorites = pet.get("favorites", {})
+    if favorites.get("treats"):
+        stats.append({
+            "icon": "🦴",
+            "text": f"{pet_name} loves {favorites['treats'][0] if isinstance(favorites['treats'], list) else favorites['treats']}",
+            "type": "favorite"
+        })
+    
+    # Allergies
+    allergies = pet.get("allergies", [])
+    if allergies:
+        stats.append({
+            "icon": "⚠️",
+            "text": f"Avoiding {allergies[0] if isinstance(allergies, list) else allergies} for {pet_name}",
+            "type": "allergy"
+        })
+    
+    # Personality traits
+    personality = pet.get("personality", [])
+    if personality:
+        stats.append({
+            "icon": "✨",
+            "text": f"{pet_name} is {personality[0] if isinstance(personality, list) else personality}",
+            "type": "personality"
+        })
+    
+    # Breed
+    breed = pet.get("breed", "")
+    if breed:
+        stats.append({
+            "icon": "🐕",
+            "text": f"{pet_name} the {breed}",
+            "type": "breed"
+        })
+    
+    # Birthday
+    if pet.get("birthday"):
+        stats.append({
+            "icon": "🎂",
+            "text": f"Remembering {pet_name}'s special day",
+            "type": "birthday"
+        })
+    
+    # Memories count
+    memories = pet.get("memories", [])
+    if memories:
+        stats.append({
+            "icon": "📝",
+            "text": f"{len(memories)} memories with {pet_name}",
+            "type": "memories"
+        })
+    
+    return {
+        "success": True,
+        "pet_name": pet_name,
+        "soul_score": soul_score,
+        "stats": stats
+    }
+
