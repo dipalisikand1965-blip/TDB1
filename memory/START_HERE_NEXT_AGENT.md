@@ -48,7 +48,7 @@
 
 - Email: `dipali@clubconcierge.in`
 - Password: `test123`
-- URL: https://mira-router.preview.emergentagent.com/mira-demo
+- URL: https://pet-tray.preview.emergentagent.com/mira-demo
 
 ---
 
