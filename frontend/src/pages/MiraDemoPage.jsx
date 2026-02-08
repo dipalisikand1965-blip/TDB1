@@ -3349,6 +3349,72 @@ const MiraDemoPage = () => {
         </div>
       )}
       
+      {/* HEALTH VAULT WIZARD MODAL */}
+      {healthVault.showWizard && (
+        <div className="mp-modal-overlay" onClick={() => setHealthVault(prev => ({ ...prev, showWizard: false }))}>
+          <div className="health-vault-modal" onClick={(e) => e.stopPropagation()}>
+            {/* Header */}
+            <div className="vault-modal-header">
+              <div className="vault-modal-icon">
+                <Shield className="w-6 h-6" />
+              </div>
+              <div>
+                <h2>{pet.name}'s Health Vault</h2>
+                <p>{healthVault.completeness}% complete</p>
+              </div>
+              <button onClick={() => setHealthVault(prev => ({ ...prev, showWizard: false }))} className="vault-close-btn">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            {/* Progress */}
+            <div className="vault-modal-progress">
+              <div className="vault-modal-progress-bar" style={{ width: `${healthVault.completeness}%` }} />
+            </div>
+            
+            {/* Missing Fields */}
+            <div className="vault-fields">
+              <p className="vault-fields-intro">
+                Help Mira care for {pet.name} better! Complete these fields to unlock proactive health reminders.
+              </p>
+              
+              {healthVault.missing_fields.map((field, i) => (
+                <button 
+                  key={field.field}
+                  className={`vault-field-item ${field.priority === 'high' ? 'priority-high' : field.priority === 'medium' ? 'priority-medium' : 'priority-low'}`}
+                  onClick={() => {
+                    setHealthVault(prev => ({ ...prev, showWizard: false }));
+                    handleQuickReply(`I want to add ${pet.name}'s ${field.label.toLowerCase()}`);
+                  }}
+                >
+                  <span className="field-icon">
+                    {field.field === 'birthday' ? '🎂' : 
+                     field.field === 'gotcha_day' ? '💜' :
+                     field.field === 'last_vet_visit' ? '🏥' :
+                     field.field === 'vaccinations' ? '💉' :
+                     field.field === 'allergies' ? '⚠️' :
+                     field.field === 'weight' ? '⚖️' : '📋'}
+                  </span>
+                  <span className="field-label">{field.label}</span>
+                  <span className="field-priority">{field.priority === 'high' ? 'Required' : field.priority === 'medium' ? 'Recommended' : 'Optional'}</span>
+                  <ChevronRight className="field-arrow" />
+                </button>
+              ))}
+            </div>
+            
+            {/* Footer */}
+            <div className="vault-modal-footer">
+              <button 
+                className="vault-skip-btn"
+                onClick={() => setHealthVault(prev => ({ ...prev, showWizard: false }))}
+              >
+                I'll do this later
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
       {/* Help Modal */}
       {showHelpModal && (
         <div style={{
