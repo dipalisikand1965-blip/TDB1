@@ -2695,7 +2695,16 @@ const MiraDemoPage = () => {
         setConversationHistory(prev => [...prev, miraMessage]);
       }
       
-      // VOICE OUTPUT - Speak Mira's response if voice is enabled
+      // Clear skeleton loader
+      clearTimeout(skeletonTimer);
+      setShowSkeleton(false);
+      
+      // TYPING ANIMATION - Stream text then speak
+      // Determine typing speed based on mode
+      const voicePersonality = detectVoicePersonality(miraResponseText);
+      await streamTextAnimation(miraResponseText, voicePersonality);
+      
+      // VOICE OUTPUT - Speak AFTER text animation completes
       if (voiceEnabled && miraResponseText) {
         speakWithMira(miraResponseText);
       }
