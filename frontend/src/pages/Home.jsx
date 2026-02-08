@@ -99,11 +99,9 @@ const Home = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // Redirect logged-in users to Mira
-  if (user) {
-    navigate('/mira-demo');
-    return null;
-  }
+  // Show personalized greeting if logged in, but don't redirect
+  // Users can choose to go to Mira OS from the CTA buttons
+  const isLoggedIn = !!user;
 
   const pillars = [
     { icon: Utensils, title: 'Dine', description: 'Fresh meals & pet-friendly restaurants worldwide', color: 'from-orange-500 to-red-500' },
