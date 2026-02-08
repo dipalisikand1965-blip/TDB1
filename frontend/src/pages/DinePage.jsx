@@ -74,6 +74,10 @@ const DinePage = () => {
   const [nearbyParks, setNearbyParks] = useState([]);
   const [nearbyLoading, setNearbyLoading] = useState(false);
   const [selectedNearbyCity, setSelectedNearbyCity] = useState('mumbai');
+  
+  // Booking modal state for unified Concierge® flow
+  const [showBookingModal, setShowBookingModal] = useState(false);
+  const [selectedRestaurant, setSelectedRestaurant] = useState(null);
 
   // Rotating hero images for visual appeal
   const HERO_IMAGES = [
