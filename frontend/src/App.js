@@ -347,7 +347,7 @@ function MainLayout() {
           <Route path="/concierge" element={<MiraConcierge />} />
           <Route path="/checkout" element={<ProtectedRoute><UnifiedCheckout /></ProtectedRoute>} />
           <Route path="/checkout-old" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
-          <Route path="/about" element={<AboutPage />} />
+          {/* About page moved outside MainLayout for clean experience */}
           {/* Membership route is defined outside MainLayout for clean entry */}
           <Route path="/autoship" element={<Autoship />} />
           <Route path="/autoship-products" element={<ProductListing category="autoship" />} />
