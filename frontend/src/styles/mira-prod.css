@@ -6212,7 +6212,8 @@ input, select, textarea {
 
 .learn-video-thumbnail {
   position: relative;
-  aspect-ratio: 16 / 9;
+  width: 100%;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
   overflow: hidden;
 }
 
