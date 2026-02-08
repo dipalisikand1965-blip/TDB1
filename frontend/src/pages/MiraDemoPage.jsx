@@ -3107,6 +3107,7 @@ const MiraDemoPage = () => {
       // VOICE OUTPUT - Speak Mira's response
       // VOICE-TEXT SYNC: Wait for text to appear, then speak
       if (voiceEnabled && miraResponseText) {
+        console.log('[MIRA VOICE] Triggering voice for response, text length:', miraResponseText.length);
         // CRITICAL: Clear any pending voice timeout to prevent double voice
         if (voiceTimeoutRef.current) {
           clearTimeout(voiceTimeoutRef.current);
@@ -3120,9 +3121,12 @@ const MiraDemoPage = () => {
         
         // Wait for text animation to complete, then speak
         voiceTimeoutRef.current = setTimeout(() => {
+          console.log('[MIRA VOICE] Now calling speakWithMira');
           speakWithMira(miraResponseText);
           voiceTimeoutRef.current = null;
         }, Math.min(typingTime + 500, 3000)); // Cap at 3 seconds to avoid too long wait
+      } else {
+        console.log('[MIRA VOICE] Voice not triggered - voiceEnabled:', voiceEnabled, 'text:', !!miraResponseText);
       }
       
       // Sync Mira's response to service desk
