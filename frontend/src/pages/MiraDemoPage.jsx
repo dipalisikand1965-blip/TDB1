@@ -3309,15 +3309,59 @@ const MiraDemoPage = () => {
               disabled={isProcessing}
               data-testid="mira-input"
             />
-            <button
-              type="button"
-              onClick={toggleVoiceOutput}
-              className={`mp-btn-voice ${voiceEnabled ? 'active' : ''} ${isSpeaking ? 'speaking' : ''}`}
-              data-testid="voice-output-btn"
-              title={voiceEnabled ? 'Mira voice ON' : 'Mira voice OFF'}
-            >
-              {voiceEnabled ? <Volume2 /> : <VolumeX />}
-            </button>
+            
+            {/* E024: Voice Personality Selector */}
+            <div className="mp-voice-personality-wrapper">
+              <button
+                type="button"
+                onClick={toggleVoiceOutput}
+                className={`mp-btn-voice ${voiceEnabled ? 'active' : ''} ${isSpeaking ? 'speaking' : ''}`}
+                data-testid="voice-output-btn"
+                title={voiceEnabled ? `Mira voice ON (${voicePersonalities[voicePersonality]?.label})` : 'Mira voice OFF'}
+              >
+                {voiceEnabled ? <Volume2 /> : <VolumeX />}
+              </button>
+              
+              {/* Voice personality dropdown trigger */}
+              {voiceEnabled && (
+                <button
+                  type="button"
+                  onClick={() => setShowVoiceMenu(!showVoiceMenu)}
+                  className="mp-voice-mood-btn"
+                  data-testid="voice-mood-btn"
+                  title="Change Mira's voice mood"
+                >
+                  <span>{voicePersonalities[voicePersonality]?.icon}</span>
+                </button>
+              )}
+              
+              {/* Voice personality dropdown menu */}
+              {showVoiceMenu && voiceEnabled && (
+                <div className="mp-voice-menu" data-testid="voice-personality-menu">
+                  <div className="voice-menu-header">Mira's Voice Mood</div>
+                  {Object.entries(voicePersonalities).map(([key, value]) => (
+                    <button
+                      key={key}
+                      type="button"
+                      className={`voice-menu-option ${voicePersonality === key ? 'active' : ''}`}
+                      onClick={() => {
+                        setVoicePersonality(key);
+                        setShowVoiceMenu(false);
+                      }}
+                      data-testid={`voice-${key}`}
+                    >
+                      <span className="voice-option-icon">{value.icon}</span>
+                      <div className="voice-option-content">
+                        <span className="voice-option-label">{value.label}</span>
+                        <span className="voice-option-desc">{value.desc}</span>
+                      </div>
+                      {voicePersonality === key && <Check size={14} className="voice-option-check" />}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            
             <button
               type="button"
               onClick={toggleVoice}
