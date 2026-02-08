@@ -2212,11 +2212,54 @@ const MiraDemoPage = () => {
       // The tray is "on-demand" - user opens when ready
       // Only suppress products in COMFORT MODE (grief/emotional moments)
       // ═══════════════════════════════════════════════════════════════════
-      const newProducts = !inComfortMode ? (data.response?.products || []) : [];
-      const newServices = (data.response?.services?.length > 0) 
+      let newProducts = !inComfortMode ? (data.response?.products || []) : [];
+      let newServices = (data.response?.services?.length > 0) 
         ? data.response.services 
         : (hasServiceIntent ? detectedServices : []);
-      const newExperiences = hasExperienceIntent ? detectedExperiences : [];
+      let newExperiences = hasExperienceIntent ? detectedExperiences : [];
+      
+      // E032: SEMANTIC SEARCH - Enhance tray with intent-based recommendations
+      // If main API returned few results, use semantic search to find more
+      if (!inComfortMode && pet?.id && (newProducts.length < 3 || newServices.length < 1)) {
+        try {
+          const semanticResponse = await fetch(`${API_URL}/api/mira/semantic-search`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              query: inputQuery,
+              pet_id: pet.id,
+              pet_name: pet.name,
+              limit: 6
+            })
+          });
+          const semanticData = await semanticResponse.json();
+          
+          if (semanticData.success && semanticData.intent_detected) {
+            console.log('[SEMANTIC] Intent detected:', semanticData.primary_intent, '| Results:', semanticData.total_results);
+            
+            // Merge semantic results with existing results (avoid duplicates)
+            const existingProductIds = new Set(newProducts.map(p => p.id));
+            const semanticProducts = (semanticData.products || []).filter(p => !existingProductIds.has(p.id));
+            newProducts = [...newProducts, ...semanticProducts].slice(0, 8);
+            
+            // Add semantic services
+            const existingServiceIds = new Set(newServices.map(s => s.id));
+            const semanticServices = (semanticData.services || []).filter(s => !existingServiceIds.has(s.id));
+            newServices = [...newServices, ...semanticServices].slice(0, 4);
+            
+            // Add experiences
+            const semanticExperiences = semanticData.experiences || [];
+            newExperiences = [...newExperiences, ...semanticExperiences].slice(0, 3);
+            
+            // Use semantic context for tray label if meaningful
+            if (semanticData.tray_context && semanticData.total_results > 0) {
+              pickContext = semanticData.tray_context;
+            }
+          }
+        } catch (e) {
+          console.log('[SEMANTIC] Search failed:', e.message);
+        }
+      }
       
       // Detect context from intent
       let pickContext = '';
