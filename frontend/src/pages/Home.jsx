@@ -185,14 +185,14 @@ const Home = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-purple-900/30 to-transparent" />
                 </div>
                 
-                {/* Floating Mira badge */}
+                {/* Badge - NOT "Meet Mira" - this is about YOUR PET */}
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5 }}
                   className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-2 rounded-full shadow-lg"
                 >
-                  <span className="text-white font-bold text-sm">Meet Mira ✨</span>
+                  <span className="text-white font-bold text-sm">This is YOUR pet ❤️</span>
                 </motion.div>
               </motion.div>
               
