@@ -1998,7 +1998,10 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
         is_explore_mode = any(phrase in user_input_lower for phrase in [
             "why does", "why is", "is this normal", "is it normal",
             "how often should", "what causes", "should i be worried",
-            "is it okay", "can dogs", "do dogs", "how do i know"
+            "is it okay", "can dogs", "do dogs", "how do i know",
+            "how do i train", "how to train", "how can i train",
+            "how do i stop", "how to stop", "how can i stop",
+            "how do i teach", "how to teach", "tips for", "advice on"
         ])
         
         is_find_mode = any(phrase in user_input_lower for phrase in [
