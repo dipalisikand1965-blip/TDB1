@@ -594,7 +594,11 @@ const MiraDemoPage = () => {
   const [allPets, setAllPets] = useState(ALL_PETS);
   const [activeScenario, setActiveScenario] = useState(null);
   const [showScenarios, setShowScenarios] = useState(true);
-  const [showTestScenarios, setShowTestScenarios] = useState(true);
+  // Remember if user dismissed Test Scenarios modal
+  const [showTestScenarios, setShowTestScenarios] = useState(() => {
+    const dismissed = localStorage.getItem('mira_test_scenarios_dismissed');
+    return dismissed !== 'true';
+  });
   const [collapsedSections, setCollapsedSections] = useState({});
   const [currentTicket, setCurrentTicket] = useState(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
