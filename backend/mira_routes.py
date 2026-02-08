@@ -9925,3 +9925,451 @@ async def get_personalization_stats(pet_id: str):
         "stats": stats
     }
 
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# E028: MILESTONE CELEBRATIONS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@router.get("/milestones/{pet_id}")
+async def get_pet_milestones(pet_id: str):
+    """
+    Get milestone celebrations for a pet.
+    Tracks achievements like walks, orders, interactions, anniversaries.
+    """
+    db = get_db()
+    
+    pet = await db.pets.find_one(
+        {"id": pet_id},
+        {"name": 1, "breed": 1, "birthday": 1, "gotcha_day": 1, "created_at": 1, 
+         "stats": 1, "interactions": 1, "orders_count": 1, "_id": 0}
+    )
+    
+    if not pet:
+        return {"success": False, "milestones": []}
+    
+    pet_name = pet.get("name", "your pet")
+    milestones = []
+    
+    # Calculate days since gotcha/birthday
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc)
+    
+    gotcha_day = pet.get("gotcha_day") or pet.get("created_at")
+    if gotcha_day:
+        if isinstance(gotcha_day, str):
+            try:
+                gotcha_day = datetime.fromisoformat(gotcha_day.replace('Z', '+00:00'))
+            except:
+                gotcha_day = None
+        if gotcha_day:
+            days_together = (now - gotcha_day).days
+            
+            # Anniversary milestones
+            years_together = days_together // 365
+            if years_together >= 1:
+                milestones.append({
+                    "icon": "🎉",
+                    "title": f"{years_together} Year{'s' if years_together > 1 else ''} Together!",
+                    "description": f"You and {pet_name} have been family for {years_together} wonderful year{'s' if years_together > 1 else ''}!",
+                    "type": "anniversary",
+                    "achieved": True
+                })
+            
+            # Days together milestones
+            if days_together >= 100 and days_together < 365:
+                milestones.append({
+                    "icon": "💯",
+                    "title": "100 Days of Love!",
+                    "description": f"{pet_name} has been with you for over 100 days!",
+                    "type": "days",
+                    "achieved": True
+                })
+    
+    # Order milestones
+    orders_count = pet.get("orders_count", 0)
+    if orders_count >= 10:
+        milestones.append({
+            "icon": "🛍️",
+            "title": "Super Shopper!",
+            "description": f"You've made {orders_count} orders for {pet_name}!",
+            "type": "orders",
+            "achieved": True
+        })
+    elif orders_count >= 5:
+        milestones.append({
+            "icon": "🛒",
+            "title": "Regular Customer!",
+            "description": f"5 orders and counting for {pet_name}!",
+            "type": "orders",
+            "achieved": True
+        })
+    
+    # Interaction milestones (conversations with Mira)
+    interactions = pet.get("interactions", 0)
+    if interactions >= 100:
+        milestones.append({
+            "icon": "💬",
+            "title": "Mira's Best Friend!",
+            "description": f"{interactions} conversations with Mira about {pet_name}!",
+            "type": "interactions",
+            "achieved": True
+        })
+    elif interactions >= 50:
+        milestones.append({
+            "icon": "🗣️",
+            "title": "Chatty Pet Parent!",
+            "description": f"50+ chats with Mira about {pet_name}!",
+            "type": "interactions",
+            "achieved": True
+        })
+    
+    # Soul score milestones
+    stats = pet.get("stats", {})
+    soul_score = stats.get("overall_score", 0)
+    if soul_score >= 90:
+        milestones.append({
+            "icon": "👑",
+            "title": "Soul Royalty!",
+            "description": f"Mira knows {pet_name} at {soul_score}%!",
+            "type": "soul",
+            "achieved": True
+        })
+    elif soul_score >= 75:
+        milestones.append({
+            "icon": "⭐",
+            "title": "Soul Star!",
+            "description": f"75%+ soul connection with {pet_name}!",
+            "type": "soul",
+            "achieved": True
+        })
+    
+    # Upcoming milestones (not yet achieved)
+    if not any(m["type"] == "anniversary" for m in milestones):
+        if gotcha_day:
+            days_to_anniversary = 365 - (days_together % 365)
+            if days_to_anniversary <= 30:
+                milestones.append({
+                    "icon": "🎂",
+                    "title": "Anniversary Coming!",
+                    "description": f"{pet_name}'s anniversary in {days_to_anniversary} days!",
+                    "type": "upcoming",
+                    "achieved": False
+                })
+    
+    return {
+        "success": True,
+        "pet_name": pet_name,
+        "milestones": milestones,
+        "total_achieved": len([m for m in milestones if m.get("achieved")])
+    }
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# E027: DAILY DIGEST
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@router.get("/daily-digest/{pet_id}")
+async def get_daily_digest(pet_id: str):
+    """
+    Get daily digest for a pet.
+    Morning summary: reminders, weather tips, scheduled activities.
+    """
+    db = get_db()
+    
+    pet = await db.pets.find_one(
+        {"id": pet_id},
+        {"name": 1, "breed": 1, "birthday": 1, "health_records": 1,
+         "feeding_schedule": 1, "walk_schedule": 1, "medications": 1, "_id": 0}
+    )
+    
+    if not pet:
+        return {"success": False, "digest": []}
+    
+    pet_name = pet.get("name", "your pet")
+    digest_items = []
+    
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc)
+    today = now.strftime("%A, %B %d")
+    
+    # Greeting based on time
+    hour = now.hour
+    if hour < 12:
+        greeting = f"Good morning! Here's {pet_name}'s day:"
+    elif hour < 17:
+        greeting = f"Good afternoon! {pet_name}'s updates:"
+    else:
+        greeting = f"Good evening! {pet_name}'s summary:"
+    
+    # Check for birthday today
+    birthday = pet.get("birthday")
+    if birthday:
+        if isinstance(birthday, str):
+            try:
+                birthday = datetime.fromisoformat(birthday.replace('Z', '+00:00'))
+            except:
+                birthday = None
+        if birthday and birthday.month == now.month and birthday.day == now.day:
+            digest_items.append({
+                "icon": "🎂",
+                "title": "Birthday Today!",
+                "description": f"It's {pet_name}'s special day!",
+                "priority": "high",
+                "action": "celebrate"
+            })
+    
+    # Feeding reminders
+    feeding = pet.get("feeding_schedule", {})
+    if feeding:
+        digest_items.append({
+            "icon": "🍽️",
+            "title": "Feeding Time",
+            "description": f"Morning meal for {pet_name}",
+            "priority": "medium",
+            "action": "feed"
+        })
+    
+    # Walk reminder
+    walk_schedule = pet.get("walk_schedule", {})
+    digest_items.append({
+        "icon": "🐕",
+        "title": "Walk Time",
+        "description": f"Daily walk for {pet_name}",
+        "priority": "medium",
+        "action": "walk"
+    })
+    
+    # Medication reminders
+    medications = pet.get("medications", [])
+    for med in medications[:2]:  # Show max 2
+        med_name = med.get("name", "medication")
+        digest_items.append({
+            "icon": "💊",
+            "title": f"Give {med_name}",
+            "description": f"Scheduled medication for {pet_name}",
+            "priority": "high",
+            "action": "medication"
+        })
+    
+    # Health check due
+    health_records = pet.get("health_records", {})
+    last_checkup = health_records.get("last_vet_visit")
+    if last_checkup:
+        if isinstance(last_checkup, str):
+            try:
+                last_checkup = datetime.fromisoformat(last_checkup.replace('Z', '+00:00'))
+                months_since = (now - last_checkup).days // 30
+                if months_since >= 6:
+                    digest_items.append({
+                        "icon": "🏥",
+                        "title": "Vet Check Due",
+                        "description": f"Last visit was {months_since} months ago",
+                        "priority": "low",
+                        "action": "vet"
+                    })
+            except:
+                pass
+    
+    # Weather tip (simple)
+    digest_items.append({
+        "icon": "☀️",
+        "title": "Weather Tip",
+        "description": f"Check today's weather before {pet_name}'s walk",
+        "priority": "low",
+        "action": "weather"
+    })
+    
+    return {
+        "success": True,
+        "pet_name": pet_name,
+        "date": today,
+        "greeting": greeting,
+        "digest": digest_items,
+        "total_items": len(digest_items)
+    }
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# E030: MEMORY LANE
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@router.get("/memory-lane/{pet_id}")
+async def get_memory_lane(pet_id: str):
+    """
+    Get memory lane moments for a pet.
+    Surfaces meaningful memories and anniversaries.
+    """
+    db = get_db()
+    
+    pet = await db.pets.find_one(
+        {"id": pet_id},
+        {"name": 1, "memories": 1, "gotcha_day": 1, "birthday": 1,
+         "first_order_date": 1, "milestones": 1, "_id": 0}
+    )
+    
+    if not pet:
+        return {"success": False, "memories": []}
+    
+    pet_name = pet.get("name", "your pet")
+    memories = []
+    
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc)
+    
+    # Check gotcha day anniversary
+    gotcha_day = pet.get("gotcha_day")
+    if gotcha_day:
+        if isinstance(gotcha_day, str):
+            try:
+                gotcha_day = datetime.fromisoformat(gotcha_day.replace('Z', '+00:00'))
+            except:
+                gotcha_day = None
+        if gotcha_day:
+            years_ago = now.year - gotcha_day.year
+            if gotcha_day.month == now.month and gotcha_day.day == now.day and years_ago > 0:
+                memories.append({
+                    "icon": "💜",
+                    "title": f"{years_ago} Year{'s' if years_ago > 1 else ''} Ago Today",
+                    "description": f"You welcomed {pet_name} into your family!",
+                    "type": "gotcha_anniversary",
+                    "date": gotcha_day.isoformat()
+                })
+    
+    # Check stored memories
+    stored_memories = pet.get("memories", [])
+    for mem in stored_memories[:5]:  # Show max 5
+        memories.append({
+            "icon": mem.get("icon", "📝"),
+            "title": mem.get("title", "A Special Memory"),
+            "description": mem.get("description", ""),
+            "type": "stored",
+            "date": mem.get("date")
+        })
+    
+    # First order memory
+    first_order = pet.get("first_order_date")
+    if first_order:
+        if isinstance(first_order, str):
+            try:
+                first_order = datetime.fromisoformat(first_order.replace('Z', '+00:00'))
+                if first_order.month == now.month and first_order.day == now.day:
+                    years_ago = now.year - first_order.year
+                    if years_ago > 0:
+                        memories.append({
+                            "icon": "🛍️",
+                            "title": f"First Order Anniversary",
+                            "description": f"Your first order for {pet_name} was {years_ago} year{'s' if years_ago > 1 else ''} ago!",
+                            "type": "first_order",
+                            "date": first_order.isoformat()
+                        })
+            except:
+                pass
+    
+    return {
+        "success": True,
+        "pet_name": pet_name,
+        "memories": memories,
+        "has_memories": len(memories) > 0
+    }
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# E034: SMART REORDERING
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@router.get("/reorder-suggestions/{pet_id}")
+async def get_reorder_suggestions(pet_id: str):
+    """
+    Get smart reorder suggestions based on purchase history.
+    "Buddy's treats are running low based on usual consumption"
+    """
+    db = get_db()
+    
+    pet = await db.pets.find_one(
+        {"id": pet_id},
+        {"name": 1, "owner_id": 1, "_id": 0}
+    )
+    
+    if not pet:
+        return {"success": False, "suggestions": []}
+    
+    pet_name = pet.get("name", "your pet")
+    owner_id = pet.get("owner_id")
+    
+    # Get order history for this pet
+    orders = await db.orders.find(
+        {"pet_id": pet_id, "status": {"$in": ["delivered", "completed"]}},
+        {"items": 1, "created_at": 1, "_id": 0}
+    ).sort("created_at", -1).limit(20).to_list(20)
+    
+    if not orders:
+        return {
+            "success": True,
+            "pet_name": pet_name,
+            "suggestions": [],
+            "message": f"No order history yet for {pet_name}"
+        }
+    
+    # Analyze purchase patterns
+    from collections import defaultdict
+    from datetime import datetime, timezone, timedelta
+    
+    product_purchases = defaultdict(list)
+    for order in orders:
+        order_date = order.get("created_at")
+        for item in order.get("items", []):
+            product_id = item.get("product_id")
+            product_name = item.get("name", "Product")
+            if product_id:
+                product_purchases[product_id].append({
+                    "name": product_name,
+                    "date": order_date,
+                    "quantity": item.get("quantity", 1)
+                })
+    
+    suggestions = []
+    now = datetime.now(timezone.utc)
+    
+    for product_id, purchases in product_purchases.items():
+        if len(purchases) >= 2:
+            # Calculate average days between purchases
+            dates = [p["date"] for p in purchases if p["date"]]
+            if len(dates) >= 2:
+                dates = sorted(dates, reverse=True)
+                if isinstance(dates[0], str):
+                    try:
+                        dates = [datetime.fromisoformat(d.replace('Z', '+00:00')) for d in dates]
+                    except:
+                        continue
+                
+                # Average interval
+                intervals = [(dates[i] - dates[i+1]).days for i in range(len(dates)-1)]
+                avg_interval = sum(intervals) / len(intervals)
+                
+                # Days since last purchase
+                days_since = (now - dates[0]).days
+                
+                # If approaching reorder time (80% of interval)
+                if days_since >= avg_interval * 0.8:
+                    product_name = purchases[0]["name"]
+                    suggestions.append({
+                        "product_id": product_id,
+                        "name": product_name,
+                        "icon": "🔄",
+                        "message": f"{pet_name}'s {product_name} may be running low",
+                        "days_since": days_since,
+                        "avg_interval": int(avg_interval),
+                        "urgency": "high" if days_since >= avg_interval else "medium"
+                    })
+    
+    # Sort by urgency
+    suggestions.sort(key=lambda x: x.get("days_since", 0), reverse=True)
+    
+    return {
+        "success": True,
+        "pet_name": pet_name,
+        "suggestions": suggestions[:5],  # Max 5 suggestions
+        "total_suggestions": len(suggestions)
+    }
+
