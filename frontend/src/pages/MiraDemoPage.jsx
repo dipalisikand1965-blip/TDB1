@@ -2284,6 +2284,9 @@ const MiraDemoPage = () => {
     const inputQuery = voiceQuery || query;
     if (!inputQuery.trim()) return;
     
+    // HAPTIC: Send message feedback
+    hapticFeedback.sendMessage();
+    
     // CRITICAL: Stop any existing voice when user sends new message
     stopSpeaking();
     
