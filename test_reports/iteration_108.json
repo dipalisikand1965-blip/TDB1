@@ -1,0 +1,78 @@
+{
+  "summary": "Tested YouTube Training Videos (E033) and Amadeus Pet-Friendly Hotels (E034) integration in Mira chat. All features working correctly - YouTube videos appear when asking training questions, Amadeus hotels appear when asking about travel to cities.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_results": {
+    "api_tests": {
+      "youtube_connection": "PASS - YouTube API returns training videos successfully",
+      "youtube_by_topic": "PASS - Returns 3 videos for 'stop barking' with thumbnail, title, channel",
+      "youtube_by_breed": "PASS - Returns videos specific to Golden Retriever breed",
+      "youtube_by_age": "PASS - Returns life_stage and age-appropriate videos",
+      "amadeus_connection": "PASS - Amadeus API connected successfully",
+      "amadeus_city_codes": "PASS - 32 Indian cities available (Mumbai=BOM, Delhi=DEL, etc.)",
+      "amadeus_hotels_mumbai": "PASS - Returns 3 pet-friendly hotels with directions",
+      "amadeus_hotels_delhi": "PASS - Returns hotels with city_code DEL",
+      "amadeus_hotels_goa": "PASS - Returns hotels with city_code GOI",
+      "amadeus_invalid_city": "PASS - Returns error for unknown cities",
+      "training_keywords": "PASS - 15 training keywords trigger YouTube videos",
+      "city_keywords": "PASS - 9 city keywords trigger Amadeus hotels",
+      "video_card_structure": "PASS - Video response has id, title, thumbnail, channel, url",
+      "hotel_card_structure": "PASS - Hotel response has id, name, pet_friendly_likelihood, pet_policy_note"
+    },
+    "frontend_tests": {
+      "learn_chip": "PASS - 'Learn' test scenario chip triggers YouTube videos",
+      "hotels_chip": "PASS - 'Hotels' test scenario chip triggers Amadeus hotels",
+      "training_videos_section": "PASS - 'Training Videos for [Pet]' section displayed with video cards",
+      "video_card_display": "PASS - Shows thumbnail, title, channel, play button overlay",
+      "video_card_link": "PASS - Links to https://www.youtube.com/watch?v=[video_id]",
+      "pet_friendly_hotels_section": "PASS - 'Pet-Friendly Hotels in [City]' section displayed",
+      "hotel_card_display": "PASS - Shows name, pet-friendly badge (when applicable), distance",
+      "directions_button": "PASS - Links to https://www.google.com/maps/search/?api=1&query=[hotel_name]"
+    }
+  },
+  "features_verified": [
+    "YouTube training videos appear in chat when asking training questions (e.g., 'How do I train my dog to stop barking?')",
+    "Amadeus hotels appear in chat when asking about travel to cities (e.g., 'Find pet-friendly hotels in Mumbai')",
+    "'Learn' test scenario chip triggers YouTube videos",
+    "'Hotels' test scenario chip triggers Amadeus hotels",
+    "Video cards show thumbnail, title, channel, and play button",
+    "Hotel cards show name, pet-friendly badge, distance, and Directions button",
+    "Get Directions button opens Google Maps with correct destination"
+  ],
+  "keywords_documented": {
+    "training_keywords": ["train", "training", "teach", "learn", "how to", "puppy", "behavior", "obedience", "trick", "command", "potty", "leash", "bite", "bark", "recall"],
+    "city_keywords": ["mumbai", "delhi", "bangalore", "chennai", "kolkata", "hyderabad", "pune", "goa", "jaipur"]
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_youtube_amadeus.py",
+    "/app/test_reports/pytest/pytest_youtube_amadeus.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [],
+  "updated_files": [
+    "/app/backend/tests/test_youtube_amadeus.py"
+  ],
+  "success_rate": {
+    "backend": "100% - All 14 API tests passed",
+    "frontend": "100% - All UI features verified"
+  },
+  "test_credentials": {
+    "email": "dipali@clubconcierge.in",
+    "password": "test123"
+  },
+  "seed_data_creation": "No new seed data created",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "YouTube and Amadeus integrations fully tested. YouTube API uses real API with config from env vars. Amadeus API uses OAuth token with API key/secret from env vars. Frontend detects training keywords and city names to trigger respective integrations. Video cards link to YouTube, hotel Directions buttons link to Google Maps.",
+  "screenshots": [
+    "04_youtube_videos.png - Shows 3 training videos with thumbnails and play buttons",
+    "05_amadeus_hotels.png - Shows pet-friendly hotels in Mumbai with Directions buttons"
+  ]
+}
