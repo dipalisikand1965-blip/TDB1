@@ -1915,7 +1915,57 @@ const MiraDemoPage = () => {
         console.log('[SOUL SCORE] Updated to:', data.pet_soul_score);
       }
       
-      const miraResponseText = data.response?.message || "I'm here to help!";
+      let miraResponseText = data.response?.message || "I'm here to help!";
+      
+      // E033: Prepend memory context if relevant past conversation found
+      if (memoryContext?.relevant_memory) {
+        const mem = memoryContext.relevant_memory;
+        const daysAgo = mem.days_ago;
+        let memoryPrefix = '';
+        
+        if (daysAgo && daysAgo > 0) {
+          if (daysAgo === 1) {
+            memoryPrefix = `I remember we talked about ${mem.topic} yesterday. `;
+          } else if (daysAgo < 7) {
+            memoryPrefix = `I recall we discussed ${mem.topic} a few days ago. `;
+          } else if (daysAgo < 30) {
+            memoryPrefix = `Last time we talked about ${mem.topic}, `;
+          } else {
+            memoryPrefix = `I remember when we discussed ${mem.topic} before. `;
+          }
+          
+          if (mem.mira_advice) {
+            memoryPrefix += `I suggested ${mem.mira_advice.substring(0, 80)}... Did that help? `;
+          }
+        }
+        
+        if (memoryPrefix) {
+          miraResponseText = memoryPrefix + miraResponseText;
+          console.log('[MEMORY] Added memory context to response');
+        }
+      }
+      
+      // E025: Handle mood detection - modify response if pet mood concern detected
+      if (moodContext?.mood_detected) {
+        const moodResponse = moodContext.response;
+        miraResponseText = `${moodResponse.intro} ${moodResponse.suggestion}\n\n${miraResponseText}`;
+        console.log('[MOOD] Added mood-aware intro to response');
+        
+        // Save this to conversation memory if significant
+        if (moodContext.should_save_memory && pet?.id) {
+          fetch(`${API_URL}/api/mira/conversation-memory/save`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              pet_id: pet.id,
+              topic: 'behavior',
+              summary: `${pet.name} ${moodContext.matched_indicator}`,
+              user_query: inputQuery,
+              mira_advice: moodResponse.suggestion
+            })
+          }).catch(e => console.log('[MEMORY] Failed to save:', e.message));
+        }
+      }
       
       // Extract contextual quick replies based on Mira's question
       const quickReplies = extractQuickReplies(data);
