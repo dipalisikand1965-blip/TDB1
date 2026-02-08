@@ -3921,30 +3921,49 @@ const MiraDemoPage = () => {
                 <span>Your Concierge® is by your side</span>
               </div>
               <p>For anything, anytime, anywhere — we're here for you and {pet.name}.</p>
-              <div className="mp-tray-concierge-actions">
-                <a 
-                  href={`https://wa.me/919819595095?text=${encodeURIComponent(`Hi! I need help with ${pet.name}.`)}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mp-tray-wa"
-                >
-                  <Phone size={16} /> WhatsApp
-                </a>
+              
+              {/* Unified C® Button - WhatsApp green, expands to show options */}
+              <div className="mp-concierge-unified">
                 <button 
-                  className="mp-tray-chat"
-                  onClick={() => {
-                    setShowMiraTray(false);
-                    engageConcierge('chat');
-                  }}
+                  className={`mp-concierge-btn ${showConciergeOptions ? 'expanded' : ''}`}
+                  onClick={() => setShowConciergeOptions(!showConciergeOptions)}
                 >
-                  <MessageSquare size={16} /> Chat
+                  <span className="concierge-c">C</span>
+                  <span className="concierge-r">®</span>
+                  {!showConciergeOptions && <span className="concierge-label">Get Help</span>}
                 </button>
-                <a 
-                  href={`mailto:concierge@thedoggycompany.in?subject=Help for ${pet.name}`}
-                  className="mp-tray-email"
-                >
-                  <Mail size={16} /> Email
-                </a>
+                
+                {showConciergeOptions && (
+                  <div className="mp-concierge-options">
+                    <a 
+                      href={`https://wa.me/919819595095?text=${encodeURIComponent(`Hi! I need help with ${pet.name}.`)}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="concierge-option wa"
+                    >
+                      <Phone size={16} />
+                      <span>WhatsApp</span>
+                    </a>
+                    <button 
+                      className="concierge-option chat"
+                      onClick={() => {
+                        setShowMiraTray(false);
+                        setShowConciergeOptions(false);
+                        engageConcierge('chat');
+                      }}
+                    >
+                      <MessageSquare size={16} />
+                      <span>Chat</span>
+                    </button>
+                    <a 
+                      href={`mailto:concierge@thedoggycompany.in?subject=Help for ${pet.name}`}
+                      className="concierge-option email"
+                    >
+                      <Mail size={16} />
+                      <span>Email</span>
+                    </a>
+                  </div>
+                )}
               </div>
             </div>
           </div>
