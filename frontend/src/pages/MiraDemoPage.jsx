@@ -3092,7 +3092,7 @@ const MiraDemoPage = () => {
                   
                   {/* Soul Score Badge */}
                   <div className="soul-score-badge">
-                    <span className="soul-percent">{pet.soulScore || 87}%</span>
+                    <span className="soul-percent">{pet.soulScore !== undefined ? pet.soulScore : 0}%</span>
                     <span className="soul-label">SOUL<br/>KNOWN</span>
                   </div>
                 </div>
