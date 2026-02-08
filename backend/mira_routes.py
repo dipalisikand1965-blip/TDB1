@@ -10372,3 +10372,335 @@ async def get_reorder_suggestions(pet_id: str):
         "total_suggestions": len(suggestions)
     }
 
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# E033: CONVERSATION MEMORY - "Mira remembers everything"
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@router.post("/conversation-memory/save")
+async def save_conversation_memory(request: Request):
+    """
+    Save a conversation summary to pet's memory.
+    Called after meaningful conversations to build Mira's memory.
+    """
+    db = get_db()
+    data = await request.json()
+    
+    pet_id = data.get("pet_id")
+    topic = data.get("topic")  # e.g., "health", "grooming", "food", "behavior"
+    summary = data.get("summary")  # What was discussed
+    user_query = data.get("user_query")  # Original user message
+    mira_advice = data.get("mira_advice")  # What Mira suggested
+    outcome = data.get("outcome")  # Optional: did it help?
+    
+    if not pet_id or not summary:
+        return {"success": False, "error": "pet_id and summary required"}
+    
+    from datetime import datetime, timezone
+    
+    memory_entry = {
+        "id": f"mem-{datetime.now(timezone.utc).strftime('%Y%m%d%H%M%S')}",
+        "topic": topic or "general",
+        "summary": summary,
+        "user_query": user_query,
+        "mira_advice": mira_advice,
+        "outcome": outcome,
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "referenced_count": 0
+    }
+    
+    # Add to pet's conversation_memories array
+    await db.pets.update_one(
+        {"id": pet_id},
+        {"$push": {"conversation_memories": {
+            "$each": [memory_entry],
+            "$slice": -50  # Keep last 50 memories
+        }}}
+    )
+    
+    return {
+        "success": True,
+        "memory_id": memory_entry["id"],
+        "message": "Conversation saved to memory"
+    }
+
+
+@router.get("/conversation-memory/{pet_id}")
+async def get_conversation_memories(pet_id: str, topic: str = None, limit: int = 10):
+    """
+    Get past conversation memories for a pet.
+    Optionally filter by topic.
+    """
+    db = get_db()
+    
+    pet = await db.pets.find_one(
+        {"id": pet_id},
+        {"name": 1, "conversation_memories": 1, "_id": 0}
+    )
+    
+    if not pet:
+        return {"success": False, "memories": []}
+    
+    memories = pet.get("conversation_memories", [])
+    
+    # Filter by topic if specified
+    if topic:
+        memories = [m for m in memories if m.get("topic") == topic]
+    
+    # Sort by most recent
+    memories = sorted(memories, key=lambda x: x.get("created_at", ""), reverse=True)
+    
+    return {
+        "success": True,
+        "pet_name": pet.get("name", "your pet"),
+        "memories": memories[:limit],
+        "total": len(memories)
+    }
+
+
+@router.post("/conversation-memory/recall")
+async def recall_relevant_memory(request: Request):
+    """
+    Find relevant past conversations based on current query.
+    Uses keyword matching and topic similarity.
+    """
+    db = get_db()
+    data = await request.json()
+    
+    pet_id = data.get("pet_id")
+    current_query = data.get("query", "").lower()
+    
+    if not pet_id or not current_query:
+        return {"success": False, "relevant_memory": None}
+    
+    pet = await db.pets.find_one(
+        {"id": pet_id},
+        {"name": 1, "conversation_memories": 1, "_id": 0}
+    )
+    
+    if not pet:
+        return {"success": False, "relevant_memory": None}
+    
+    pet_name = pet.get("name", "your pet")
+    memories = pet.get("conversation_memories", [])
+    
+    if not memories:
+        return {"success": False, "relevant_memory": None, "message": "No memories yet"}
+    
+    # Topic detection from current query
+    topic_keywords = {
+        "health": ["sick", "vet", "vaccine", "checkup", "medicine", "symptoms", "doctor", "health"],
+        "grooming": ["grooming", "bath", "haircut", "nail", "fur", "coat", "brush", "shampoo"],
+        "food": ["food", "eat", "feeding", "diet", "treats", "appetite", "hungry", "meal"],
+        "behavior": ["behavior", "training", "bark", "bite", "aggressive", "scared", "anxious", "quiet"],
+        "skin": ["skin", "scratch", "itch", "rash", "allergy", "red", "irritation", "fur loss"],
+        "travel": ["travel", "trip", "vacation", "car", "flight", "hotel", "boarding"],
+        "birthday": ["birthday", "celebration", "party", "anniversary", "cake"]
+    }
+    
+    detected_topic = None
+    for topic, keywords in topic_keywords.items():
+        if any(kw in current_query for kw in keywords):
+            detected_topic = topic
+            break
+    
+    # Find relevant memories
+    relevant_memories = []
+    
+    for memory in memories:
+        relevance_score = 0
+        
+        # Topic match (high weight)
+        if detected_topic and memory.get("topic") == detected_topic:
+            relevance_score += 5
+        
+        # Keyword overlap in summary
+        memory_text = f"{memory.get('summary', '')} {memory.get('user_query', '')}".lower()
+        query_words = set(current_query.split())
+        memory_words = set(memory_text.split())
+        overlap = len(query_words & memory_words)
+        relevance_score += overlap
+        
+        if relevance_score > 0:
+            relevant_memories.append({
+                **memory,
+                "relevance_score": relevance_score
+            })
+    
+    # Sort by relevance and recency
+    relevant_memories.sort(key=lambda x: (x["relevance_score"], x.get("created_at", "")), reverse=True)
+    
+    if relevant_memories:
+        best_match = relevant_memories[0]
+        
+        # Increment reference count
+        await db.pets.update_one(
+            {"id": pet_id, "conversation_memories.id": best_match["id"]},
+            {"$inc": {"conversation_memories.$.referenced_count": 1}}
+        )
+        
+        # Calculate days ago
+        from datetime import datetime, timezone
+        created = best_match.get("created_at", "")
+        days_ago = None
+        if created:
+            try:
+                created_dt = datetime.fromisoformat(created.replace('Z', '+00:00'))
+                days_ago = (datetime.now(timezone.utc) - created_dt).days
+            except:
+                pass
+        
+        return {
+            "success": True,
+            "relevant_memory": {
+                "topic": best_match.get("topic"),
+                "summary": best_match.get("summary"),
+                "mira_advice": best_match.get("mira_advice"),
+                "days_ago": days_ago,
+                "outcome": best_match.get("outcome")
+            },
+            "pet_name": pet_name,
+            "recall_phrase": f"Last time you mentioned {best_match.get('topic', 'this')}, " if days_ago and days_ago > 0 else None
+        }
+    
+    return {"success": False, "relevant_memory": None}
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# E025: PET MOOD DETECTION - "Mira notices when something's off"
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@router.post("/detect-mood")
+async def detect_pet_mood(request: Request):
+    """
+    Detect if user is mentioning their pet's mood/behavior changes.
+    Returns concern level and suggested responses.
+    """
+    data = await request.json()
+    
+    user_message = data.get("message", "").lower()
+    pet_name = data.get("pet_name", "your pet")
+    
+    # Mood indicators and their concern levels
+    mood_patterns = {
+        "high_concern": {
+            "patterns": [
+                r"not eating", r"won't eat", r"stopped eating", r"refusing food",
+                r"vomiting", r"throwing up", r"diarrhea", r"blood in",
+                r"can't walk", r"limping badly", r"collapsed", r"not breathing",
+                r"seizure", r"unconscious", r"not moving"
+            ],
+            "response_type": "urgent_care",
+            "icon": "🚨"
+        },
+        "medium_concern": {
+            "patterns": [
+                r"not himself", r"not herself", r"acting weird", r"acting strange",
+                r"less energy", r"sleeping more", r"won't play", r"not playing",
+                r"scratching a lot", r"itching", r"licking paws",
+                r"drinking more", r"peeing more", r"eating less",
+                r"seems tired", r"seems sad", r"seems depressed"
+            ],
+            "response_type": "monitor_care",
+            "icon": "💛"
+        },
+        "low_concern": {
+            "patterns": [
+                r"a bit quiet", r"little tired", r"not as active",
+                r"seems bored", r"wants attention", r"clingy",
+                r"doesn't want to go outside", r"lazy today"
+            ],
+            "response_type": "comfort_care",
+            "icon": "💚"
+        },
+        "emotional": {
+            "patterns": [
+                r"scared", r"anxious", r"nervous", r"shaking", r"trembling",
+                r"hiding", r"won't come out", r"afraid of",
+                r"stressed", r"panicking", r"freaking out"
+            ],
+            "response_type": "emotional_support",
+            "icon": "💜"
+        }
+    }
+    
+    import re
+    
+    detected_mood = None
+    matched_pattern = None
+    
+    for concern_level, config in mood_patterns.items():
+        for pattern in config["patterns"]:
+            if re.search(pattern, user_message):
+                detected_mood = concern_level
+                matched_pattern = pattern
+                break
+        if detected_mood:
+            break
+    
+    if not detected_mood:
+        return {
+            "success": True,
+            "mood_detected": False,
+            "message": "No mood concerns detected"
+        }
+    
+    config = mood_patterns[detected_mood]
+    
+    # Generate appropriate response suggestions
+    responses = {
+        "urgent_care": {
+            "intro": f"I'm concerned about what you're describing with {pet_name}.",
+            "suggestion": "This sounds like it might need immediate attention.",
+            "actions": [
+                {"label": "Find emergency vet", "action": "emergency_vet"},
+                {"label": "Call vet now", "action": "call_vet"},
+                {"label": "Track symptoms", "action": "track_symptoms"}
+            ]
+        },
+        "monitor_care": {
+            "intro": f"I noticed you mentioned {pet_name} isn't quite themselves.",
+            "suggestion": "Let's keep an eye on this. When did you first notice the change?",
+            "actions": [
+                {"label": "Schedule vet check", "action": "schedule_vet"},
+                {"label": "Track behavior", "action": "track_behavior"},
+                {"label": "See common causes", "action": "common_causes"}
+            ]
+        },
+        "comfort_care": {
+            "intro": f"Sounds like {pet_name} might just be having an off day.",
+            "suggestion": "This is usually normal, but I'll help you keep track.",
+            "actions": [
+                {"label": "Activity ideas", "action": "activity_ideas"},
+                {"label": "Comfort products", "action": "comfort_products"}
+            ]
+        },
+        "emotional_support": {
+            "intro": f"I can tell {pet_name} is going through something stressful.",
+            "suggestion": "Let me help you comfort them and identify the trigger.",
+            "actions": [
+                {"label": "Calming tips", "action": "calming_tips"},
+                {"label": "Anxiety products", "action": "anxiety_products"},
+                {"label": "Find cause", "action": "find_trigger"}
+            ]
+        }
+    }
+    
+    response_config = responses.get(config["response_type"], responses["comfort_care"])
+    
+    return {
+        "success": True,
+        "mood_detected": True,
+        "concern_level": detected_mood,
+        "icon": config["icon"],
+        "response_type": config["response_type"],
+        "matched_indicator": matched_pattern,
+        "response": {
+            "intro": response_config["intro"],
+            "suggestion": response_config["suggestion"],
+            "actions": response_config["actions"]
+        },
+        "should_save_memory": detected_mood in ["high_concern", "medium_concern"]
+    }
+
