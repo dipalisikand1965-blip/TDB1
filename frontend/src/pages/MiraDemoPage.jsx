@@ -3273,6 +3273,8 @@ const MiraDemoPage = () => {
   
   // Handle quick reply
   const handleQuickReply = useCallback((replyValue) => {
+    // HAPTIC: Chip tap
+    hapticFeedback.chipTap();
     setQuery(replyValue);
     setTimeout(() => {
       if (handleSubmitRef.current) {
@@ -3284,6 +3286,8 @@ const MiraDemoPage = () => {
   // IN-MIRA SERVICE REQUEST HANDLERS
   // Open service request modal when clicking a service/experience card
   const openServiceRequest = useCallback((service, isExperience = false) => {
+    // HAPTIC: Card tap
+    hapticFeedback.cardTap();
     setServiceRequestModal({
       isOpen: true,
       service: { ...service, isExperience },
