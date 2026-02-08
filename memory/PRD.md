@@ -233,24 +233,36 @@ Mira now automatically detects location-based queries and provides:
 
 ## FUTURE: GOOGLE PLACES API INTEGRATION
 
-**Status:** ✅ INTEGRATED
+**Status:** ✅ FULLY INTEGRATED
 **API Key:** Configured in backend/.env
 
-**Working Endpoints:**
+**Google Places Endpoints:**
 - `GET /api/mira/google/vets?city=X` - Real-time vet clinics
 - `GET /api/mira/google/dog-parks?city=X` - Dog parks via Google
 - `GET /api/mira/google/pet-stores?city=X` - Pet stores & groomers
 - `GET /api/mira/google/search?query=X` - Free text search
 
-**Chat Integration:**
-- Dog parks now powered by Google Places
-- Vet search falls back to Google Places if curated data unavailable
-- Real-time opening hours, ratings, and phone numbers
+**OpenWeather Endpoints:**
+- `GET /api/mira/weather/current?city=X` - Current weather with pet advisory
+- `GET /api/mira/weather/pet-activity?city=X` - Activity recommendations
+- `GET /api/mira/weather/forecast?city=X` - 5-day forecast with best walk times
 
-**Other APIs Available:**
-- OpenWeather API key: Configured (for weather-based pet activity suggestions)
-- Foursquare API key: Available (backup for places data)
-- Amadeus API: Available (for pet-friendly travel booking)
+**Google Maps Directions Endpoints:**
+- `GET /api/mira/directions/to-vet?from_location=X&city=Y&emergency=true/false` - Navigate to nearest vet
+- `GET /api/mira/directions/to-place?from_location=X&place_name=Y&place_address=Z` - Navigate anywhere
+- `POST /api/mira/directions/navigate` - Smart navigation with pet tips
+
+**Chat Integration:**
+- Weather queries → Real-time pet safety advice (temperature, humidity, activity suggestions)
+- Location queries → Google Places for dog parks, vets, pet stores
+- Directions available via API for frontend integration
+
+**Configured APIs:**
+- ✅ Google Places API
+- ✅ Google Maps Directions API
+- ✅ OpenWeather API
+- 📋 Foursquare (backup)
+- 📋 Amadeus (travel booking)
 
 ---
 
