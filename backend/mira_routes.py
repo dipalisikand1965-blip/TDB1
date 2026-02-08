@@ -6472,6 +6472,17 @@ Pick one, and I'll give you a simple starting point! 🐾"""
             "emotional_undertone": "overwhelm"
         }
     
+    # 5.6 Handle WORRY - Reassurance first approach
+    if emotional_undertone["undertone"] == "worry":
+        # Add reassurance prefix to context for AI response
+        # The AI will generate the main response, but we ensure reassurance is included
+        pass  # We'll let the AI handle this with the emotional context
+    
+    # 5.7 Handle GUILT - No judgment approach  
+    if emotional_undertone["undertone"] == "guilt":
+        # The AI will handle this with empathy
+        pass
+    
     # 6. NEARBY PLACES DETECTION - Vet clinics, restaurants, stays
     nearby_places_context = None
     nearby_places_data = None
