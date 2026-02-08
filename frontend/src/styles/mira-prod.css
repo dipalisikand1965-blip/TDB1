@@ -3236,7 +3236,9 @@ button.mp-experience-card {
 }
 
 .mp-party-wizard-btn,
-.mp-bundle-maker-btn {
+.mp-bundle-maker-btn,
+.mp-explore-more-btn,
+.mp-collection-link-btn {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -3248,13 +3250,45 @@ button.mp-experience-card {
   text-align: left;
   transition: all 0.2s ease;
   color: white;
+  text-decoration: none;
 }
 
 .mp-party-wizard-btn:hover,
-.mp-bundle-maker-btn:hover {
+.mp-bundle-maker-btn:hover,
+.mp-explore-more-btn:hover,
+.mp-collection-link-btn:hover {
   background: rgba(255,255,255,0.1);
   border-color: rgba(236,72,153,0.4);
   transform: translateX(4px);
+}
+
+.mp-explore-more-btn,
+.mp-collection-link-btn {
+  background: linear-gradient(135deg, rgba(168,85,247,0.15), rgba(236,72,153,0.1));
+  border-color: rgba(168,85,247,0.3);
+}
+
+.mp-section-subtitle {
+  font-size: 13px;
+  color: rgba(255,255,255,0.6);
+  margin: -8px 0 12px 0;
+}
+
+.mp-cake-section {
+  background: linear-gradient(135deg, rgba(236,72,153,0.1) 0%, rgba(251,146,60,0.08) 100%);
+  border: 1px solid rgba(236,72,153,0.15);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.mp-cake-section h4 {
+  color: #F472B6;
+}
+
+.mp-cake-actions {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,0.1);
 }
 
 .party-btn-icon {
