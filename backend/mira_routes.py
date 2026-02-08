@@ -2075,6 +2075,50 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
         
         logger.info(f"[MIRA MODE] Detected: {mira_mode} | First turn: {is_first_turn} | Clarify only: {clarify_only}")
         
+        # ═══════════════════════════════════════════════════════════════════════════
+        # TOPIC SHIFT DETECTION - Detect when conversation changes topic
+        # If user switches from Travel to Health, reset context
+        # ═══════════════════════════════════════════════════════════════════════════
+        current_pillar = detect_pillar(request.input)
+        previous_pillar = None
+        topic_shift_detected = False
+        
+        # Check conversation history for previous pillar
+        if request.conversation_history and len(request.conversation_history) > 0:
+            # Get the pillar from the most recent exchange
+            for msg in reversed(request.conversation_history):
+                if msg.get('role') == 'user':
+                    previous_pillar = detect_pillar(msg.get('content', ''))
+                    break
+        
+        # Detect topic shift - different pillars that are clearly unrelated
+        if previous_pillar and current_pillar:
+            # Define pillar groups that are related
+            related_pillars = {
+                "travel": ["stay", "travel"],
+                "stay": ["travel", "stay"],
+                "health": ["care", "emergency", "advisory", "fit"],
+                "care": ["health", "emergency", "advisory", "fit"],
+                "emergency": ["health", "care", "advisory"],
+                "celebrate": ["shop", "celebrate"],
+                "shop": ["celebrate", "shop"],
+                "grooming": ["care", "grooming"],
+            }
+            
+            # Check if pillars are unrelated
+            current_related = related_pillars.get(current_pillar, [current_pillar])
+            if previous_pillar not in current_related and previous_pillar != current_pillar:
+                topic_shift_detected = True
+                logger.info(f"[TOPIC SHIFT] Detected! {previous_pillar} → {current_pillar}")
+        
+        # If topic shift detected, treat this as a fresh conversation
+        if topic_shift_detected:
+            # Reset first_turn flag - this IS a first turn for the new topic
+            is_first_turn = True
+            # Re-evaluate clarify_only for DOING modes
+            clarify_only = is_doing_mode and is_first_turn
+            logger.info(f"[TOPIC SHIFT] Resetting conversation context. New pillar: {current_pillar}")
+        
         # ═══════════════════════════════════════════════════════════════
         # FOOD & NUTRITION OS - INTENT DETECTION
         # ═══════════════════════════════════════════════════════════════
