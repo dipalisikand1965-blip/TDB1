@@ -2024,18 +2024,41 @@ const BookingRequestModal = ({ property, onClose }) => {
         age: pet.age || calculateAge(pet.birthday)
       }));
       
-      const response = await fetch(`${API_URL}/api/stay/booking-request`, {
+      const response = await fetch(`${API_URL}/api/service-requests`, {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
           ...(token ? { 'Authorization': `Bearer ${token}` } : {})
         },
         body: JSON.stringify({
-          property_id: property.id,
-          ...formData,
-          num_pets: selectedPets.length,
-          pets: petsData,
-          selectedPetIds: selectedPets
+          service_type: 'stay_booking',
+          pillar: 'stay',
+          request_source: 'stay_page',
+          customer: {
+            name: formData.guest_name,
+            email: formData.guest_email,
+            phone: formData.guest_phone,
+            whatsapp: formData.guest_whatsapp
+          },
+          details: {
+            property_id: property.id,
+            property_name: property.name,
+            property_city: property.city,
+            property_type: property.property_type || 'hotel',
+            check_in_date: formData.check_in_date,
+            check_out_date: formData.check_out_date,
+            num_rooms: formData.num_rooms,
+            num_adults: formData.num_adults,
+            room_type_preference: formData.room_type_preference,
+            special_requests: formData.special_requests,
+            pet_meal_preorder: formData.pet_meal_preorder,
+            welcome_kit: formData.welcome_kit,
+            grooming_requested: formData.grooming_requested,
+            num_pets: selectedPets.length,
+            pets: petsData
+          },
+          status: 'pending',
+          priority: 'normal'
         })
       });
 
