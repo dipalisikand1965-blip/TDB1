@@ -736,6 +736,113 @@ const LearnPage = () => {
         </div>
       )}
 
+      {/* YouTube Training Videos Section */}
+      <div className="py-16 bg-gradient-to-br from-red-50 via-white to-orange-50">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="text-center mb-8">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <Play className="w-8 h-8 text-red-600" />
+              <h2 className="text-3xl font-bold text-gray-900">Training Videos</h2>
+            </div>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Free expert training videos curated for {selectedPet?.name || 'your pet'} - watch and learn at your own pace
+            </p>
+          </div>
+          
+          {/* Topic Filter */}
+          <div className="flex flex-wrap justify-center gap-2 mb-8">
+            {[
+              { id: 'basic_training', label: 'Basic Training', icon: '🎯' },
+              { id: 'puppy_training', label: 'Puppy Training', icon: '🐶' },
+              { id: 'behavior_fix', label: 'Behavior Fixes', icon: '🧠' },
+              { id: 'tricks', label: 'Tricks & Fun', icon: '🎪' },
+              { id: 'leash_training', label: 'Leash Walking', icon: '🦮' },
+              { id: 'anxiety', label: 'Anxiety Help', icon: '💜' },
+            ].map((topic) => (
+              <Button
+                key={topic.id}
+                variant={videoTopic === topic.id ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => {
+                  setVideoTopic(topic.id);
+                  fetchYouTubeVideos(topic.id);
+                }}
+                className={videoTopic === topic.id ? 'bg-red-600 hover:bg-red-700' : ''}
+                data-testid={`video-topic-${topic.id}`}
+              >
+                {topic.icon} {topic.label}
+              </Button>
+            ))}
+            {selectedPet?.breed && (
+              <Button
+                variant={videoTopic === 'breed' ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => {
+                  setVideoTopic('breed');
+                  fetchBreedVideos(selectedPet.breed);
+                }}
+                className={videoTopic === 'breed' ? 'bg-red-600 hover:bg-red-700' : ''}
+                data-testid="video-topic-breed"
+              >
+                🐕 {selectedPet.breed} Tips
+              </Button>
+            )}
+          </div>
+          
+          {/* Video Grid */}
+          {youtubeLoading ? (
+            <div className="flex justify-center py-12">
+              <Loader2 className="w-8 h-8 animate-spin text-red-600" />
+            </div>
+          ) : youtubeVideos.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {youtubeVideos.map((video, idx) => (
+                <Card 
+                  key={video.video_id || idx} 
+                  className="overflow-hidden hover:shadow-xl transition-all cursor-pointer group"
+                  onClick={() => window.open(`https://www.youtube.com/watch?v=${video.video_id}`, '_blank')}
+                  data-testid={`video-card-${idx}`}
+                >
+                  <div className="aspect-video relative overflow-hidden">
+                    <img 
+                      src={video.thumbnail || `https://img.youtube.com/vi/${video.video_id}/hqdefault.jpg`}
+                      alt={video.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                      <div className="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center opacity-90 group-hover:opacity-100 group-hover:scale-110 transition-all">
+                        <Play className="w-8 h-8 text-white ml-1" fill="white" />
+                      </div>
+                    </div>
+                    {video.duration && (
+                      <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-2 py-1 rounded">
+                        {video.duration}
+                      </div>
+                    )}
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-semibold text-gray-900 line-clamp-2 mb-2 group-hover:text-red-600 transition-colors">
+                      {video.title}
+                    </h3>
+                    {video.channel_name && (
+                      <p className="text-sm text-gray-500">{video.channel_name}</p>
+                    )}
+                    {video.view_count && (
+                      <p className="text-xs text-gray-400 mt-1">{video.view_count} views</p>
+                    )}
+                  </div>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-12 text-gray-500">
+              <Play className="w-12 h-12 mx-auto mb-4 text-gray-300" />
+              <p>No videos found. Try a different topic!</p>
+            </div>
+          )}
+        </div>
+      </div>
+
       {/* Training Products */}
       {products.length > 0 && (
         <div className="py-16 bg-white">
