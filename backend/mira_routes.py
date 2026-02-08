@@ -3136,8 +3136,12 @@ PILLARS = {
 # Emergency keywords that trigger immediate escalation
 EMERGENCY_KEYWORDS = [
     "emergency", "urgent", "help now", "immediately", "lost pet", "missing",
-    "accident", "injured", "bleeding", "poison", "choking", "not breathing",
-    "collapsed", "seizure", "hit by car", "bite", "attacked"
+    "accident", "injured", "bleeding", "poison", "poisoned", "choking", "not breathing",
+    "collapsed", "seizure", "hit by car", "bite", "attacked",
+    # Toxic ingestion emergencies
+    "ate chocolate", "ate xylitol", "ate grapes", "ate raisins", "ate onion",
+    "chocolate", "xylitol", "antifreeze", "rat poison", "medication",
+    "swallowed", "ingested", "ate something", "licked", "drank"
 ]
 
 
