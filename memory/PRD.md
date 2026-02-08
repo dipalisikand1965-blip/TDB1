@@ -89,12 +89,14 @@
 ## PENDING TASKS
 
 ### P1 - Medium Priority
-1. **Fix CSS Build Issue** - Find and escape remaining `/` characters
+1. ~~**Fix CSS Build Issue**~~ - ✅ RESOLVED
 2. **Foursquare API Key** - Regenerate key from Foursquare dashboard
+3. **Unified Service Desk Flow** - Implement ticket workflow (User Request → Ticket → Admin/Member Notifications)
 
 ### P2 - Low Priority
-3. **Breed Detector** - Add to Learn tab
-4. **Code Refactoring** - MiraDemoPage.jsx is 4,800+ lines
+4. **Breed Detector** - Add to Learn tab
+5. **Code Refactoring** - MiraDemoPage.jsx is 4,800+ lines
+6. **Interactive Google Maps** - Replace static direction links with embedded maps
 
 ---
 
