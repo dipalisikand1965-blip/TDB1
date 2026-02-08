@@ -698,6 +698,10 @@ const MiraDemoPage = () => {
   const audioRef = useRef(null);
   const voiceTimeoutRef = useRef(null); // Track pending voice timeouts to prevent double voice
   
+  // CONVERSATION HISTORY - Collapsible older messages
+  const [showOlderMessages, setShowOlderMessages] = useState(false);
+  const VISIBLE_MESSAGE_COUNT = 4; // Show last 4 messages (2 pairs of user+mira)
+  
   // GEOLOCATION - Get user's actual location for weather/nearby
   const [userGeoLocation, setUserGeoLocation] = useState(null);
   const [userCity, setUserCity] = useState('Mumbai'); // Fallback
