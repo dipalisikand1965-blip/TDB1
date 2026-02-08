@@ -193,12 +193,14 @@ MEMORY:
 3. ~~Fix product relevance (Halloween filtering)~~ ✅ DONE
 4. ~~Premium product card UI~~ ✅ DONE
 5. ~~Seasonal product filtering~~ ✅ DONE (Feb 7, 2026)
+6. ~~"Ready for [Pet]" Tray UI~~ ✅ DONE (Feb 8, 2026) - World-class UX redesign!
 
 ### P1 - This Week
 1. Backend Service Integration: Query `services` collection ✅ DONE (E014)
 2. Remembered Service Providers (E013) ✅ DONE
 3. Push to GitHub and test on production
 4. Mobile Responsiveness ✅ DONE - Full specs in `/app/memory/MOBILE_SPECS.md`
+5. Multi-Pet Context Bug - Investigate "Mira confuses which pet" issue
 
 ### P2 - This Month
 4. Birthday/Anniversary Reminders (E018)
