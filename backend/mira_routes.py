@@ -3709,9 +3709,11 @@ def detect_emotional_undertone(message: str) -> dict:
     
     # OVERWHELM - Too many options/don't know where to start
     overwhelm_phrases = [
-        "don't know where to start", "too many options", "overwhelmed",
-        "so confusing", "too much", "i don't know what", "can't decide",
-        "help me choose", "no idea", "lost on", "confused about"
+        "don't know where to start", "too many", "overwhelmed",
+        "so confusing", "so confused", "too much", "i don't know what", 
+        "dont know what", "can't decide", "cant decide",
+        "help me choose", "no idea", "lost on", "confused about",
+        "which one", "what should i", "what do i"
     ]
     if any(phrase in message_lower for phrase in overwhelm_phrases):
         return {
