@@ -2201,6 +2201,9 @@ const MiraDemoPage = () => {
     const inputQuery = voiceQuery || query;
     if (!inputQuery.trim()) return;
     
+    // CRITICAL: Stop any existing voice when user sends new message
+    stopSpeaking();
+    
     // MIRA ENGINE MODE DETECTION - Set mode before processing
     const lowerQuery = inputQuery.toLowerCase();
     if (/passed away|rainbow bridge|grief|lost.*dog|lost.*pet|loss|miss.*so much|crying|heartbreak|💔|🌈|farewell|goodbye/.test(lowerQuery)) {
