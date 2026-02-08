@@ -100,18 +100,10 @@ async def search_attractions(
         # Use freetext search endpoint
         payload = {
             "searchTerm": search_query,
-            "searchTypes": ["PRODUCTS"],
             "currency": "INR",
-            "filtering": {
-                "destination": dest_info["id"]
-            },
             "pagination": {
                 "start": 1,
                 "count": limit
-            },
-            "sorting": {
-                "sort": sort_by,
-                "order": "DESC" if sort_by == "REVIEW_AVG_RATING" else "ASC"
             }
         }
         
