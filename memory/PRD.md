@@ -243,9 +243,9 @@ ELEVENLABS_API_KEY=2738ad21884d7bf3ff2ddee5fbac5e2efc8a02ab4ca3cd36bdef82b83d962
 
 ## PREVIEW URLs
 
-- **Preview**: https://mira-bakery-ai.preview.emergentagent.com/mira-demo
+- **Preview**: https://nearby-pet-places.preview.emergentagent.com/mira-demo
 - **Production**: https://thedoggycompany.in/mira-demo
-- **Admin**: https://mira-bakery-ai.preview.emergentagent.com/admin
+- **Admin**: https://nearby-pet-places.preview.emergentagent.com/admin
 
 ---
 

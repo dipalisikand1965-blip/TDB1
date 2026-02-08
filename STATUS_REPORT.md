@@ -1,6 +1,6 @@
 # 🐕 The Doggy Company - Feature Status Report
 **Generated:** January 18, 2026
-**Preview URL:** https://mira-bakery-ai.preview.emergentagent.com
+**Preview URL:** https://nearby-pet-places.preview.emergentagent.com
 
 ---
 

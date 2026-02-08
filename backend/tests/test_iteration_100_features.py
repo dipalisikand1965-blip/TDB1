@@ -12,7 +12,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://mira-bakery-ai.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://nearby-pet-places.preview.emergentagent.com')
 
 # Test credentials
 ADMIN_USERNAME = "aditya"

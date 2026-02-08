@@ -1,172 +1,189 @@
-<analysis>**original_problem_statement:**
-The user wants to build Mira OS, the best pet operating system a pet parent can rely on. Mira should be a trusted companion across all of a pet's life pillars: Celebrate, Dine, Stay, Travel, Care, Enjoy, Fit, Learn, Paperwork, Advisory, Emergency, Farewell, Adopt, Shop, and Services.
-
-**PRODUCT REQUIREMENTS (The Mira OS Doctrine):**
-- **Universal Entry Point:** Every user input goes to Mira first.
-- **Mira Understanding Layer:** Mira must extract Context (active pet, soul traits, etc.) and a single primary Intent (e.g., FIND, PLAN, ORDER).
-- **Execution Decision Engine:**
-    - **INSTANT (Mira Executes):** For deterministic, unambiguous tasks like product discovery or simple orders.
-    - **HUMAN (Concierge Executes):** For bespoke, emotional, or complex tasks. The handoff to a human concierge must feel like a seamless continuation of a premium service, not an escalation or failure.
-- **Feedback Loop:** The outcome of every interaction, especially from the concierge, must feed back into the Pet Soul, making Mira smarter over time.
-- **The One Rule:** Mira is never allowed to be a dead end. If it can't execute instantly, it must hand off to the Concierge.
-
-The user also provided specific UI feedback on their production site, requesting fixes for layout, colors, and a bug where product recommendations were not showing on iOS.
+<analysis>**original_problem_statement**: The initial request was to integrate an AI tagging feature into the admin panel by connecting a Master SYNC button to a backend endpoint and creating a deployment script for auto-tagging. The project scope then expanded significantly based on user requests:
+-   **Data Expansion**: Add verified pet-friendly restaurants, stays, and vet clinics for India to the database.
+-   **Nearby Places Feature**: Implement a feature to find nearby places (vets, restaurants, etc.) and integrate it into the Mira chat flow.
+-   **3rd Party API Integrations**:
+    -   Integrate Google Places API for authentic, real-time location data as a fallback.
+    -   Integrate OpenWeather API for weather-based pet advice.
+    -   Integrate YouTube API for training videos.
+    -   Integrate Amadeus API for pet-friendly travel booking.
+-   **UI/UX Enhancements**:
+    -   Create a Feature Showcase on the homepage to improve feature discovery.
+    -   Add interactive UI cards (e.g., for vets with Call and Directions buttons) into the chat responses.
+    -   Replace separate help buttons with a single, unified C® Get Help button.
+-   **Bug Fixes & Logic Refinements**:
+    -   Address an issue where the Pet Soul section seemed to be missing.
+    -   Fix the pet Soul Score calculation and display logic to handle cases where the score is zero and ensure consistency.
 
 **User's preferred language**: English
 
 **what currently exists?**
-A sophisticated React (frontend) and Flask/MongoDB (backend) application for Mira, a pet-centric AI concierge. The application features a premium chat interface that displays a dynamic, growing Soul Score for each pet. The system is populated with over 2,000 products and knowledge of 64 breeds. It has a functional multi-pet switching capability and a backend logic that routes user requests to either an instant AI response (like showing products) or a human concierge handoff. The UI has been extensively customized to be premium and mobile-responsive.
+A full-stack pet assistant application (Mira) with a React frontend and a FastAPI backend using MongoDB. The application now includes:
+-   A fully integrated AI tagging system in the Admin Panel that also runs on server startup.
+-   A curated database of pet-friendly restaurants, stays, and vet clinics in India.
+-   A nearby places feature integrated into the chat, which uses the curated database and falls back to the Google Places API.
+-   OpenWeather API integration providing real-time, weather-based advice within the chat.
+-   A Feature Showcase UI on the homepage to highlight Mira's capabilities.
+-   Interactive cards for nearby places are displayed in chat responses, including Call buttons.
+-   A unified C® Get Help button has replaced the older, separate contact buttons in the chat.
+-   Service modules and API key storage are in place for YouTube and Amadeus integrations.
 
 **Last working item**:
-The agent was performing a final round of fixes based on the user's screenshot of the production environment.
-
-- **Last item agent was working:** The agent implemented fixes for several UI and logic issues identified by the user on their production site.
-    1.  **Centered Mira Header:** Added CSS to center the main Mira logo/avatar in the header.
-    2.  **Fixed Icon Colors:** Changed the color of icons (like the sparkle icon) from black to white to be visible on the dark background.
-    3.  **Centered Test Scenario Tiles:** Adjusted the CSS for the test scenario grid to ensure the tiles are properly centered.
-    4.  **iOS Product Display Bug:** Investigated why products were not showing on iOS for treats queries. A CSS class name mismatch ( vs. ) was found and corrected in . This is the likely fix.
-- **Status:** USER VERIFICATION PENDING
-- **Agent Testing Done:** N (Blocked by a platform issue with the preview environment, which prevented visual confirmation.)
-- **Which testing method agent to use?** Manual testing by the user on their production site is required, as the preview environment is unreliable. The user needs to test on Desktop, iOS (Safari), and Android (Chrome).
-- **User Testing Done:** N
+-   Last item agent was working: The agent was adding API endpoints to  for the newly created  and . This is the first step in integrating the YouTube and Amadeus functionalities into the application.
+-   Status: IN PROGRESS
+-   Agent Testing Done: N
+-   Which testing method agent to use? backend testing agent
+-   User Testing Done: N
 
 **All Pending/In progress Issue list**:
-- **Issue 1: Production UI & Bug Verification (P0)**
-- **Issue 2: Unclarified Android Issue (P1)**
+-   Issue 1: Soul Score calculation is not robust (P0)
+-   Issue 2: Soul Score display consistency (P1)
 
-**Issues Detail:**
-- **Issue 1:**
-    - **Description:** The user needs to verify on their live production site that the latest fixes pushed to GitHub have resolved the reported issues.
-    - **Next debug checklist:** The user should check the following on Desktop, iOS, and Android:
-        1. Is the main Mira header component centered correctly?
-        2. Are all icons (e.g., the sparkle on the Personalized Picks button) white and clearly visible?
-        3. Are the tiles in the Test Scenarios panel centered?
-        4. On an iPhone (iOS Safari), does asking for treats now correctly display the product grid instead of just offering a concierge handoff?
-    - **Why fix this issue and what will be achieved with the fix?** This will confirm the application UI is consistent and functional across all major platforms, fulfilling the user's direct feedback.
-    - **Status:** USER VERIFICATION PENDING
-    - **Is recurring issue?** N
-    - **Should Test frontend/backend/both after fix?** Frontend
-    - **Blocked on other issue:** None
+Issues Detail:
+-   **Issue 1:**
+    -   **Description**: The user reported that some pets (e.g., Lola) have no soul score, while others (e.g., Buddy) show 87%. The agent fixed a frontend display bug where a score of  was incorrectly shown as . However, the root cause remains: the score is  because the pet's profile in the database is missing the  data required for the calculation in .
+    -   **Attempted fixes**: Fixed the frontend rendering in  to correctly display  if the score is 0.
+    -   **Next debug checklist**:
+        1.  Verify that the  endpoint returns an  of 0 for pets without .
+        2.  Decide on a strategy for pets with no score: either prompt the user to complete the soul profile or display a Profile Incomplete message instead of 0%.
+        3.  Implement the chosen strategy in the backend () and frontend ().
+    -   **Why fix this issue and what will be achieved with the fix?**: This will fix a core feature of the app. It will provide a clear and accurate representation of the pet's profile completion, improving user trust and encouraging them to provide more data.
+    -   **Status**: IN PROGRESS
+    -   **Is recurring issue?**: Y
+    -   **Should Test frontend/backend/both after fix?**: Both
+    -   **Blocked on other issue**: None
 
-- **Issue 2:**
-    - **Description:** In their last feedback message (Message 590), the user stated Android Google not coming. The agent was unable to get clarification on what this means.
-    - **Next debug checklist:** The next agent MUST use  to ask the user to clarify this issue. For example: Regarding the Android issue you mentioned, could you please explain what you mean by Google not coming? Is a button missing, is a login not working, or is something else not appearing as expected? A screenshot from your Android device would be very helpful.
-    - **Why fix this issue and what will be achieved with the fix?** To ensure the application is fully functional on Android devices.
-    - **Status:** BLOCKED (Awaiting user clarification)
-    - **Is recurring issue?** N
-    - **Should Test frontend/backend/both after fix?** Frontend
-    - **Blocked on other issue:** None
+-   **Issue 2:**
+    -   **Description**: The user wants the soul score to be consistent everywhere.
+    -   **Next debug checklist**: Audit the codebase, especially the frontend, to ensure the soul score is always fetched from the  endpoint and no other hardcoded values or incorrect fallbacks are used.
+    -   **Why fix this issue and what will be achieved with the fix?**: Ensures data consistency and a reliable user experience.
+    -   **Status**: NOT STARTED
+    -   **Is recurring issue?**: N
+    -   **Should Test frontend/backend/both after fix?**: Frontend
+    -   **Blocked on other issue**: Issue 1
 
 **In progress Task List**:
-None. All immediate tasks requested by the user have been implemented and pushed. The next steps depend on the user's verification of the latest fixes.
+-   Task 1: Complete YouTube and Amadeus API Integrations (P0)
+
+Task Detail:
+-   **Task 1**:
+    -   **Where to resume**: The agent was editing  to add new endpoints for YouTube and Amadeus. The next steps are to complete that file, restart the backend, and then integrate these new endpoints into the frontend chat flow and UI.
+    -   **What will be achieved with this?**: Users will be able to search for pet-related training videos (via YouTube) and book pet-friendly travel (via Amadeus) directly within the Mira application.
+    -   **Status**: IN PROGRESS
+    -   **Should Test frontend/backend/both after fix?**: Both
+    -   **Blocked on something**: None
 
 **Upcoming and Future Tasks**
-- **P0: Implement All 16 Life Pillars:** The user's vision is for Mira to be a trusted partner across 16 pillars (Celebrate, Dine, Stay, Travel, etc.). The current implementation focuses mainly on Shop (products) and Services. The next step is to expand Mira's capabilities and recommendations to cover all pillars.
-- **P1: Proactive Mira:** Transform Mira from a reactive assistant to a proactive companion. Mira should be able to initiate conversations based on context (e.g., Its 6 PM, time for Buddys evening walk. Need anything?).
-- **P1: Voice Input:** The UI includes a microphone button. This needs to be connected to a speech-to-text service to allow users to interact with Mira via voice.
-- **P1: Integrate Service Recommendations:** Currently, chat responses focus on product recommendations. The 2,400+ services in the database should be integrated into Mira's recommendations as well.
-- **P2: Full Soul Journey Flow:** Implement an interactive onboarding questionnaire that asks the user questions about their pet to build the initial Pet Soul and score.
-- **P2: Order History Integration:** Allow users to see their past orders within the Mira chat interface.
+-   **Upcoming Tasks**:
+    -   **(P1) Integrate YouTube Videos into Frontend**: After the backend endpoint is ready, modify  to call the YouTube endpoint and display relevant training videos within the chat or a Learn section, filtered by the pet's age, stage, and breed.
+    -   **(P1) Integrate Amadeus Travel into Frontend**: After the backend endpoint is ready, build a UI in the chat flow to handle searches for pet-friendly flights and hotels, using the Amadeus service.
+    -   **(P2) Verify Get Directions button functionality**: A Get Directions button was added to the nearby places cards. The agent needs to verify it correctly opens Google Maps with the destination address.
+-   **Future Tasks**:
+    -   **(P2) Foursquare API Integration**: The user provided an API key. Plan and implement a feature that leverages Foursquare data, potentially for richer venue details or user reviews.
+    -   **(P3) Interactive Google Maps**: Explore embedding an interactive map component in the UI when displaying nearby places, rather than just a static list.
 
 **Completed work in this session**
-- **Rebuilt & Restored Premium UI:** The agent completely rebuilt the premium For Pet welcome UI from scratch based on user screenshots, as the original code was lost. This included the avatar with animated rings, soul score badge, soul traits, and Mira knows {pet} card (, ).
-- **Made Soul Score Dynamic:** Implemented backend logic () to make the Pet Soul Score a real, dynamic value that increases with each user interaction.
-- **Seeded Full Product Catalog:** Created and ran a seeder script to populate the database with **2,151 products** from a CSV file.
-- **Seeded Full Breed Catalog:** Expanded and ran a seeder script to ensure **64 distinct breeds** have associated knowledge and product/service mappings.
-- **Enhanced Multi-Pet Dropdown:** Improved the existing multi-pet switcher to display each pet's soul score badge within the dropdown options.
-- **Implemented Why for {Pet}:** Added a feature to display personalized reasons () alongside each product recommendation in the chat.
-- **Mobile Optimization & Fixes:** Added extensive CSS for mobile responsiveness, including specific fixes for iOS Safari (safe area insets, -webkit prefixes) to ensure the premium UI renders correctly.
-- **Numerous UI/CSS Fixes:** Addressed multiple user requests for centering elements (header, test tiles) and fixing colors (making icons white).
+-   AI Tagging system integrated into Admin Panel and server startup.
+-   Database seeded with verified Indian pet-friendly restaurants, stays, and vet clinics.
+-   Google Places API integrated as a fallback for the nearby places feature.
+-   OpenWeather API integrated for weather-based advice in chat.
+-   Feature Showcase UI and interactive chat cards for nearby places added to .
+-   Unified C® Get Help button implemented in the chat UI.
+-   Fixed a frontend bug causing incorrect soul score display.
+-   Stored all user-provided API keys in .
+-   Created  and .
 
 **Earlier issues found/mentioned but not fixed**
-- **Issue 1: Preview Environment Routing is Broken**
-    - **Debug checklist:** The Emergent preview environment consistently fails to route to specific pages like . It defaults to showing the homepage () regardless of the URL. This seems to be a platform-level proxy or configuration issue. The  was corrected, but the issue persists.
-    - **Why to solve this issue and what will be achieved with this?** Fixing this would unblock the agent from being able to visually test changes and take screenshots, dramatically speeding up the development and debugging cycle. Currently, the agent is flying blind and relying solely on the user for testing.
-    - **Should Test frontend/backend/both after fix:** Frontend
-    - **Is recurring issue?** Y
+-   The root cause of the soul score being 0 (missing profile data) was identified but not fully resolved. This is captured in the Pending/In progress Issue list.
 
 **Known issue recurrence from previous fork**
-- **Issue recurrence in previous fork:** The user's primary frustration was the loss of UI and context when agents switched. The previous agent's work on the premium UI was lost, forcing the current agent to rebuild it from scratch.
-- **Recurrence count:** 1
-- **Status:** RESOLVED. The current agent has attempted to mitigate this by creating this extremely detailed handoff document and updating the . The next agent MUST read this summary and the doctrine thoroughly to avoid repeating this mistake.
+-   N/A
 
 **Code Architecture**
 
 
 **Key Technical Concepts**
-- **Frontend:** React.js, CSS3 (Flexbox, Grid, Animations, Custom Properties), JSX
-- **Backend:** Python (Flask), MongoDB (via )
-- **Architecture:** Monorepo with separate frontend and backend services communicating via a REST API.
-- **UI/UX:** Component-based design, mobile-first responsive design, stateful UI that reflects a dynamic Soul Score.
+-   **Frontend**: React.js
+-   **Backend**: FastAPI (Python)
+-   **Database**: MongoDB
+-   **3rd Party APIs**: Google Places, OpenWeather, Amadeus, YouTube, Foursquare
 
 **key DB schema**
-- **pets:** 
-- **products:** 
-- **services:** 
-- **users:** 
-- **breed_product_mapping:** 
-- **breed_service_mapping:** 
+-   : { name, location, cuisine, verified, ... }
+-   : { name, location, type, pet_policy, verified, ... }
+-   : { name, location, services, emergency_24_7, verified, ... }
+-   : { name, breed, ..., doggy_soul_answers, overall_score }
 
 **changes in tech stack**
-None.
+-   No changes to the core stack, but significant new integrations with external APIs.
 
 **All files of reference**
-1.  : The single most important file. It contains the entire UI structure for the Mira chat experience. It was almost completely rewritten to restore the premium UI.
-2.  : The primary stylesheet. Hundreds of lines of CSS were added to style the new premium UI, handle animations, and ensure mobile responsiveness.
-3.  : The core backend file. It was modified to add the dynamic  logic.
-4.  : A new file created to seed over 2,000 products from a CSV.
-5.  : A new file created to seed 64 breeds and their relationships.
-6.  : The conceptual blueprint for the project. The next agent MUST read this.
+-   : The core of the backend logic. Contains all API endpoints and was heavily modified to add new features. It is the file the agent was last editing.
+-   : The main frontend component. It was heavily modified to add the feature showcase, interactive chat cards, and UI bug fixes.
+-   : Modified to run the AI tagging script on startup.
+-   : New directory containing modular services for each third-party API.
+-   : A new file that centralizes all provided API keys.
+-   : Contains the business logic for calculating the pet soul score.
 
 **Areas that need refactoring**:
-- The  file has grown very large (over 1500 lines) with many specific overrides and  tags. It could benefit from being broken down into smaller, component-specific CSS modules for better maintainability.
-- The  component is also very large (over 2000 lines) and manages a lot of state. It could be broken down into more granular sub-components (e.g., a separate , , etc.).
+-   : This file is extremely large and complex. The logic within the main chat endpoint () should be broken down into smaller, single-responsibility functions to improve readability and maintainability.
+-   : This React component is monolithic. It should be decomposed into smaller, reusable components (e.g., , , , ).
 
 **key api endpoints**
-- : The main endpoint for sending a message to Mira.
-- : Fetches all pets for the current user, including their soul scores.
-- : Health check endpoint for the backend.
+-   : The main chat endpoint orchestrating responses, nearby places, and weather.
+-   : Fallback search using Google Places.
+-   : Endpoint for weather-based advice.
+-   : Fetches the current user's pets, including the calculated .
 
 **Critical Info for New Agent**
-- **The user is extremely anxious about context loss between agents.** The previous agent's work was lost, causing major setbacks and frustration. You MUST start by reading this entire summary and the  file. Your top priority is to build on what exists, not to start over.
-- **The preview environment is BROKEN.** You cannot rely on it for visual verification. Changes must be pushed to GitHub for the user to test on their production site. Do not waste time trying to fix the preview proxy; it appears to be a platform issue.
-- **The current UI in  was meticulously rebuilt from screenshots.** Do not discard it. It is the result of a long and painful recovery process and matches the user's desired premium look.
-- **Communicate clearly and frequently.** Acknowledge the user's requests and provide summaries of your plan before executing, and summaries of your work after completion. The user values this communication highly.
+-   **API Keys**: All necessary third-party API keys have been provided by the user and are stored in . The  file is configured to use them.
+-   **Main Chat Endpoint**: The primary endpoint for chat interactions is  in . This was a critical debugging discovery. Do not use .
+-   **Monolithic Files**: Be aware that  and  are very large. Navigate them carefully. Consider refactoring if time permits.
+-   **Soul Score Logic**: The soul score is calculated in the backend via . A score of 0 on the frontend likely means the pet lacks the necessary  data in the database, which is a backend/data issue, not just a frontend display problem.
 
 **documents and test reports created in this job**
--  (updated)
--  (updated)
--  (created)
--  (created)
--  (created)
+-   /app/memory/api_keys.md
+-   /app/memory/PRD.md (updated)
+-   /app/CHANGELOG.md
+-   /app/ROADMAP.md
+-   /app/backend/scripts/seed_restaurants.py
+-   /app/backend/scripts/seed_stays.py
+-   /app/backend/scripts/seed_vet_clinics.py
 
 **Last 10 User Messages and any pending HUMAN messages**
-1.  **its ot forkig**: User reported the fork is not working. (No action taken by agent).
-2.  **Before you say you are out fo ontext please tell next agent what to do I am so scared**: User is extremely anxious about losing context with the next agent. (Agent created a detailed handoff).
-3.  **what are the steps to get to 100%...**: User wants a roadmap to make Mira the best Pet OS, listing 16 life pillars. (Agent provided a roadmap).
-4.  **i know you are about to say context over...**: User requests a thorough handover and a summary of the current intelligence status. (Agent provided both).
-5.  **1. Shift mira to the middle...**: User provides a screenshot from production and lists 5 specific UI bugs/requests. (Agent implemented fixes for all).
-6.  **I have pushed. Npw wat tp do**: User has pushed changes to GitHub and asks for next steps. (Agent provided a testing plan).
-7.  **sumarise for next to aomplish**: User requests a summary for the next session. (Agent provided one).
-8.  **all 4 and then push to githb**: User confirms they want the agent to fix all 4 identified gaps (alignment, breeds, mobile testing, product count). (Agent implemented all).
-9.  **is the tiles proper like ttis aligned...**: User asks for a status check on multiple items: tile alignment, mobile readiness, product/service sync, and breed count. (Agent provided a detailed status summary).
-10. **it is connected with the real sul and we were working on making it grow...**: User confirms the soul score needs to be dynamic and grow with interactions. (Agent implemented this feature).
+1.  **Request (Pending)**: Fix the C button (DONE), fix soul score (IN PROGRESS), and start YouTube integration (IN PROGRESS).
+2.  **Ack**: User agrees with the plan to integrate YouTube/Amadeus.
+3.  **Ack**: User agrees with PRD update and to proceed with tasks.
+4.  **Request (In Progress)**: Provided YouTube API key, requested Amadeus integration and a handover summary.
+5.  **Request (Partially Done)**: Reported missing soul section (fixed), provided credentials, and requested interactive cards with call/directions.
+6.  **Reported Issue (Resolved)**: Pet soul section disappeared from header.
+7.  **Request (Done)**: Asked to make new features discoverable on the UI.
+8.  **Feedback**: Positive feedback on making the app more interactive.
+9.  **Request (Done)**: Asked about other Google API uses and confirmed weather integration.
+10. **Info (Done)**: Confirmed Google Places integration and provided multiple API keys (Google, OpenWeather, Amadeus, etc.).
 
 **Project Health Check:**
-- **Broken:** The preview environment () is non-functional due to a persistent routing issue. It always displays the homepage. This severely hampers agent-led testing.
-- **Mocked:** None. The data is real (seeded) and the logic is implemented.
+-   **Broken**: The soul score feature is not fully functional. The backend logic correctly calculates a score of 0 for incomplete profiles, but there's no user-friendly path to guide the user to complete it.
+-   **Mocked**: N/A
 
 **3rd Party Integrations**
-None explicitly mentioned or used beyond the core tech stack.
+-   **Google Cloud / Places API**: Used for finding nearby places and directions. Requires User API Key (provided).
+-   **OpenWeather**: Used for weather-based pet advice. Requires User API Key (provided).
+-   **Amadeus**: For pet-friendly travel. Requires User API Key (provided). Integration is **IN PROGRESS**.
+-   **YouTube Data API v3**: For training videos. Requires User API Key (provided). Integration is **IN PROGRESS**.
+-   **Foursquare**: For additional venue data. Requires User API Key (provided). Not yet integrated.
+-   **ElevenLabs**: Mentioned by user; key assumed to be available. Not yet integrated.
 
 **Testing status**
-- **Testing agent used after significant changes:** NO
-- **Troubleshoot agent used after agent stuck in loop:** YES, the deployment agent was used to investigate the preview URL issue, but it could not resolve it.
-- **Test files created:** None. Seeder scripts were created to populate the test database.
-- **Known regressions:** The premium UI was lost at one point but has since been rebuilt and restored.
+-   Testing agent used after significant changes: YES
+-   Troubleshoot agent used after agent stuck in loop: NO
+-   Test files created: None
+-   Known regressions: None
 
 **Credentials to test flow:**
-N/A. The user tests on their own production site.
+-   email: 
+-   password: 
 
 **What agent forgot to execute**
-- The agent was unable to get clarification on the user's report: Android Google not coming. This issue remains unresolved because its meaning is unknown. The next agent must ask for more details.</analysis>
+-   The agent did not finish adding the YouTube and Amadeus endpoints to .
+-   The agent did not verify the end-to-end functionality of the Get Directions button on the nearby places cards.
+-   The agent did not address the root cause of the soul score being 0 for certain pets (i.e., by creating a flow for users to complete their pet's profile).</analysis>
