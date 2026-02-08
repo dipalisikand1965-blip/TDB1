@@ -1615,10 +1615,24 @@ const MiraDemoPage = () => {
   }, [currentTicket, pet, user]);
   
   // Engage Concierge - Flip ticket status, NOT create new ticket
-  const engageConcierge = useCallback(async (reason, latestMiraSummary = '') => {
+  const engageConcierge = useCallback(async (reason, contextData = {}) => {
     if (!currentTicket) return;
     
     const now = new Date();
+    
+    // Build human-readable summary based on reason
+    let latestMiraSummary = 'Parent requested Concierge® assistance.';
+    let userFacingMessage = 'Your pet Concierge® is joining this chat...';
+    
+    if (reason === 'hotel_booking' && contextData.hotel_name) {
+      latestMiraSummary = `Parent wants to book ${contextData.hotel_name} in ${contextData.city} for ${contextData.pet_name}.`;
+      userFacingMessage = `✨ Mira has got it! I'm working on booking "${contextData.hotel_name}" in ${contextData.city} for ${contextData.pet_name}. Our live Concierge® team is on it - you'll hear back shortly with confirmation details!`;
+    } else if (reason === 'product_request' && contextData.product_name) {
+      latestMiraSummary = `Parent interested in ${contextData.product_name} for ${contextData.pet_name}.`;
+      userFacingMessage = `✨ Got it! I'll have our Concierge® help you with "${contextData.product_name}" for ${contextData.pet_name}. They'll reach out with more details shortly!`;
+    } else if (typeof contextData === 'string') {
+      latestMiraSummary = contextData;
+    }
     
     // Call the handoff API
     try {
@@ -1631,7 +1645,8 @@ const MiraDemoPage = () => {
         body: JSON.stringify({
           ticket_id: currentTicket.id,
           handoff_reason: reason,
-          latest_mira_summary: latestMiraSummary || 'Parent requested Concierge® assistance.'
+          latest_mira_summary: latestMiraSummary,
+          context_data: contextData
         })
       });
       console.log('[HANDOFF] Ticket handed to Concierge:', currentTicket.id);
@@ -1652,10 +1667,11 @@ const MiraDemoPage = () => {
     
     setCurrentTicket(updatedTicket);
     
-    // Add visual message to conversation
+    // Add visual message to conversation with context-aware text
     const systemMessage = {
       type: 'system',
-      content: 'Your pet Concierge® is joining this chat...',
+      content: userFacingMessage,
+      isBookingConfirmation: reason === 'hotel_booking',
       timestamp: now
     };
     setConversationHistory(prev => [...prev, systemMessage]);
