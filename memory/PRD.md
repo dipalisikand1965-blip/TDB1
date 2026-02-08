@@ -29,6 +29,14 @@
 - Mira references past discussions: "Last time we talked about skin issues..."
 - Stores up to 50 memories per pet
 
+### E032: SEMANTIC PRODUCT SEARCH ✅ COMPLETED
+- **Endpoint:** `POST /api/mira/semantic-search`
+- 12 intent categories: calm_anxiety, skin_coat, digestion, joint_mobility, dental, training, travel, birthday, puppy, senior, weight, play_enrichment
+- Understands user intent beyond keywords (e.g., "calm during fireworks" → calming products)
+- Returns products, services, experiences with context message
+- Populates "Ready for [Pet]" tray with smarter recommendations
+- Tested: "fireworks" → `calm_anxiety` → 8 products found ✅
+
 ### E027: DAILY DIGEST ✅ COMPLETED
 - **Endpoint:** `GET /api/mira/daily-digest/{pet_id}`
 - Shows "Mojo's Day" section in tray with walk times, feeding, weather tips
