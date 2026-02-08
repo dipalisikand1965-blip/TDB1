@@ -3829,13 +3829,29 @@ const MiraDemoPage = () => {
                         <div className="mp-card-header">
                           <div className="mp-mira-avatar"><Sparkles /></div>
                           <span className="mp-mira-name">Mira</span>
+                          {/* Mode Badge for latest message */}
+                          {idx === conversationHistory.length - 1 && msg.type === 'mira' && miraMode && (
+                            <span className={`mp-mode-indicator mp-mode-${miraMode}`}>
+                              {miraMode === 'comfort' && '💜'}
+                              {miraMode === 'emergency' && '🚨'}
+                              {miraMode === 'instant' && '⚡'}
+                              {miraMode === 'thinking' && '🧠'}
+                            </span>
+                          )}
                         </div>
                         
                         {/* Card Body */}
                         <div className="mp-card-body">
-                          {/* Message Text - With Proper Markdown Formatting */}
+                          {/* Message Text - With Typing Animation for Latest Message */}
                           {(() => {
+                            const isLatestMira = idx === conversationHistory.length - 1 && msg.type === 'mira';
                             const { mainText, questionText } = splitMessageWithQuestion(msg.content);
+                            
+                            // Determine typing speed based on mode
+                            const typingSpeed = miraMode === 'comfort' ? 25 : 
+                                               miraMode === 'emergency' ? 50 :
+                                               miraMode === 'instant' ? 60 : 40;
+                            
                             return (
                               <>
                                 {mainText && (
