@@ -8,72 +8,54 @@
 
 ## API INTEGRATION STATUS ✅
 
-| Service | Status | Note |
-|---------|--------|------|
-| **YouTube** | ✅ Working | Training videos by breed/age/topic |
-| **Amadeus** | ✅ Working | Pet-friendly hotels |
-| **Viator** | ✅ Working | Pet-friendly attractions & tours |
-| **Foursquare** | ⚠️ Fallback | Key needs regeneration |
+| Service | Status | Chat Integration | Note |
+|---------|--------|-----------------|------|
+| **YouTube** | ✅ Working | ✅ In Chat | Training videos by topic |
+| **Amadeus** | ✅ Working | ✅ In Chat | Pet-friendly hotels |
+| **Viator** | ✅ Working | ✅ In Chat | Pet-friendly experiences |
+| **Foursquare** | ⚠️ Fallback | ❌ Not in chat | Key needs regeneration |
 
 ---
 
-## RECENT UPDATES (Feb 8, 2026)
+## COMPLETE FEATURE LIST
 
-### Viator Integration - NOW WORKING ✅
-- Production key: `a66f4b5d-4b7c-45d0-a3de-05c98ddeb6e8`
-- Fixed API format (searchTypes with pagination inside)
-- Returns real attraction data for Indian cities
-- Example: Mumbai has 935 tours, Goa has many nature experiences
+### Chat Integrations
+- **YouTube Training Videos**: Appear when asking training questions (bark, potty, teach, etc.)
+- **Amadeus Hotels**: Appear when mentioning travel + city (Goa, Mumbai, Delhi, etc.)
+- **Viator Attractions**: Appear alongside hotels with outdoor experiences
 
-### Learn Tab in Dock ✅
+### Learn Tab (Dock)
 - Categories: For You, Barking, Potty, Leash, Tricks, Anxiety, Puppy
 - Videos tailored by pet's breed
 - Beautiful modal with video grid
 
-### Chat Integrations ✅
-- YouTube videos in chat (training keywords)
-- Amadeus hotels in chat (city + travel keywords)
-- Nearby places with Call & Directions buttons
+### Travel Experience
+When user asks "Plan a trip to Mumbai with my dog", they see:
+1. 🏨 Pet-Friendly Hotels (Amadeus)
+2. 🎯 Pet-Friendly Experiences (Viator)
+3. 🌡️ Weather Advisory
+4. C® Get Help button for concierge assistance
 
 ---
 
-## API ENDPOINTS
+## COMPLETED IN THIS SESSION
 
-### Viator Attractions (WORKING)
-| Endpoint | Description |
-|----------|-------------|
-| `GET /api/mira/viator/pet-friendly?city=X` | Pet-friendly attractions |
-| `GET /api/mira/viator/day-trips?city=X` | Day trips |
-| `GET /api/mira/viator/nature?city=X` | Nature experiences |
-| `GET /api/mira/viator/attractions?city=X&query=X` | General search |
-
-### Supported Cities for Viator
-Mumbai, Delhi, Bangalore, Chennai, Kolkata, Hyderabad, Jaipur, Goa, Udaipur, Agra, Varanasi, Kochi, Shimla, Manali, Rishikesh, Ooty, Munnar
-
----
-
-## COMPLETED TASKS
-
-1. ✅ Soul Score Mira Prompt
-2. ✅ YouTube Backend + Frontend Integration
-3. ✅ Amadeus Backend + Frontend Integration
-4. ✅ Learn Tab in Dock
-5. ✅ Foursquare Service (with fallback)
-6. ✅ Viator Service - **NOW WORKING WITH REAL DATA**
+1. ✅ Soul Score Mira Prompt - "Help Mira know [Pet]"
+2. ✅ YouTube in Chat - Training videos
+3. ✅ Amadeus in Chat - Hotels with directions
+4. ✅ Viator API Fixed - Production key working
+5. ✅ Viator in Chat - Experiences with Book button
+6. ✅ Learn Tab in Dock - Full video library
+7. ✅ Foursquare Service - With curated fallback
 
 ---
 
 ## PENDING TASKS
 
-### High Priority (P0)
-1. 🔲 **Add Viator attractions to chat** - Show experiences when travel query
-
-### Medium Priority (P1)
-2. 🔲 Foursquare API Key Verification
-3. 🔲 Breed Detector in Learn Tab
-
 ### Low Priority (P2)
-4. 🔲 Code Refactoring - MiraDemoPage.jsx
+1. 🔲 Foursquare API Key Regeneration
+2. 🔲 Breed Detector in Learn Tab
+3. 🔲 Code Refactoring
 
 ---
 
