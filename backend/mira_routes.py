@@ -10663,6 +10663,230 @@ async def detect_pet_mood(request: Request):
             "intro": f"I noticed you mentioned {pet_name} isn't quite themselves.",
             "suggestion": "Let's keep an eye on this. When did you first notice the change?",
             "actions": [
+
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# E032: SEMANTIC PRODUCT SEARCH - "Mira understands what you really need"
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# Intent-to-category mapping for semantic understanding
+SEMANTIC_INTENTS = {
+    "calm_anxiety": {
+        "triggers": ["calm", "anxious", "anxiety", "nervous", "scared", "fireworks", "thunder", "loud noise", "stress", "relax", "soothe", "panic", "shaking", "trembling"],
+        "product_categories": ["calming", "anxiety", "stress-relief", "wellness"],
+        "service_types": ["training", "behavior"],
+        "product_tags": ["calming", "anti-anxiety", "relaxing", "soothing"],
+        "why_message": "Helps with anxiety and stress"
+    },
+    "skin_coat": {
+        "triggers": ["skin", "coat", "fur", "itchy", "scratch", "dry", "flaky", "shiny", "shedding", "dull coat", "dandruff", "hot spots"],
+        "product_categories": ["grooming", "skin-care", "supplements"],
+        "service_types": ["grooming"],
+        "product_tags": ["skin", "coat", "fur", "moisturizing", "anti-itch"],
+        "why_message": "Supports healthy skin and coat"
+    },
+    "digestion_gut": {
+        "triggers": ["digestion", "stomach", "tummy", "gut", "probiotic", "gas", "bloat", "sensitive stomach", "poop", "stool"],
+        "product_categories": ["supplements", "food", "treats"],
+        "product_tags": ["digestive", "probiotic", "gut-health", "sensitive"],
+        "why_message": "Supports digestive health"
+    },
+    "joint_mobility": {
+        "triggers": ["joint", "hip", "mobility", "arthritis", "stiff", "limping", "old dog", "senior", "glucosamine", "movement"],
+        "product_categories": ["supplements", "wellness"],
+        "product_tags": ["joint", "mobility", "senior", "glucosamine", "hip"],
+        "why_message": "Supports joint health and mobility"
+    },
+    "dental_oral": {
+        "triggers": ["dental", "teeth", "breath", "bad breath", "chew", "oral", "gum", "tartar", "plaque"],
+        "product_categories": ["dental", "treats", "grooming"],
+        "product_tags": ["dental", "teeth", "oral", "breath"],
+        "why_message": "Promotes dental health"
+    },
+    "training_behavior": {
+        "triggers": ["train", "training", "behavior", "obedience", "command", "trick", "reward", "positive reinforcement", "puppy training"],
+        "product_categories": ["treats", "training"],
+        "service_types": ["training"],
+        "product_tags": ["training", "reward", "small-bites"],
+        "why_message": "Great for training rewards"
+    },
+    "travel_adventure": {
+        "triggers": ["travel", "trip", "car", "road trip", "vacation", "adventure", "outdoor", "hiking", "camping", "beach"],
+        "product_categories": ["travel", "accessories", "carriers"],
+        "service_types": ["travel", "boarding"],
+        "experience_types": ["pawcation", "travel"],
+        "product_tags": ["travel", "portable", "outdoor"],
+        "why_message": "Perfect for adventures"
+    },
+    "birthday_celebration": {
+        "triggers": ["birthday", "celebrate", "party", "special day", "anniversary", "gotcha day", "treat", "cake", "gift"],
+        "product_categories": ["cakes", "treats", "gifts", "celebration"],
+        "experience_types": ["party", "celebration"],
+        "product_tags": ["birthday", "celebration", "party", "special"],
+        "why_message": "For celebration moments"
+    },
+    "puppy_essentials": {
+        "triggers": ["puppy", "new puppy", "baby dog", "young dog", "starter", "essentials", "first time", "new pet parent"],
+        "product_categories": ["puppy", "starter-kits", "essentials"],
+        "product_tags": ["puppy", "starter", "essential", "beginner"],
+        "why_message": "Essential for new puppies"
+    },
+    "senior_care": {
+        "triggers": ["senior", "old", "aging", "elderly", "geriatric", "old age", "mature dog"],
+        "product_categories": ["senior", "supplements", "wellness"],
+        "product_tags": ["senior", "aging", "mature", "gentle"],
+        "why_message": "Specially formulated for seniors"
+    },
+    "weight_fitness": {
+        "triggers": ["weight", "diet", "fitness", "overweight", "slim", "healthy weight", "low calorie", "exercise", "active"],
+        "product_categories": ["diet", "fitness", "treats"],
+        "service_types": ["walks", "fitness"],
+        "product_tags": ["low-calorie", "diet", "fitness", "weight-management"],
+        "why_message": "Supports healthy weight"
+    },
+    "play_enrichment": {
+        "triggers": ["play", "toy", "bored", "enrichment", "stimulate", "puzzle", "interactive", "fun", "fetch", "ball"],
+        "product_categories": ["toys", "enrichment", "accessories"],
+        "product_tags": ["toy", "interactive", "puzzle", "enrichment"],
+        "why_message": "For mental stimulation and fun"
+    }
+}
+
+
+@router.post("/semantic-search")
+async def semantic_product_search(request: Request):
+    """
+    E032: Semantic Product Search
+    Understands user intent and returns relevant products, services, experiences.
+    Powers the "Ready for [Pet]" tray with smart recommendations.
+    """
+    db = get_db()
+    data = await request.json()
+    
+    query = data.get("query", "").lower()
+    pet_id = data.get("pet_id")
+    pet_name = data.get("pet_name", "your pet")
+    limit = data.get("limit", 8)
+    
+    if not query:
+        return {"success": False, "error": "Query required"}
+    
+    # Detect intent from query
+    detected_intents = []
+    for intent_key, intent_config in SEMANTIC_INTENTS.items():
+        for trigger in intent_config["triggers"]:
+            if trigger in query:
+                detected_intents.append({
+                    "intent": intent_key,
+                    "trigger": trigger,
+                    "config": intent_config
+                })
+                break
+    
+    if not detected_intents:
+        # Fallback: general search
+        return {
+            "success": True,
+            "intent_detected": False,
+            "products": [],
+            "services": [],
+            "experiences": [],
+            "message": "No specific intent detected, using general search"
+        }
+    
+    # Use the strongest intent (first match)
+    primary_intent = detected_intents[0]
+    config = primary_intent["config"]
+    
+    # Build product query
+    product_query = {"$or": []}
+    
+    # Match by categories
+    if config.get("product_categories"):
+        product_query["$or"].append({
+            "category": {"$regex": "|".join(config["product_categories"]), "$options": "i"}
+        })
+    
+    # Match by tags
+    if config.get("product_tags"):
+        product_query["$or"].append({
+            "tags": {"$in": config["product_tags"]}
+        })
+    
+    # Match by name/description keywords
+    product_query["$or"].append({
+        "$or": [
+            {"name": {"$regex": "|".join(config["triggers"][:5]), "$options": "i"}},
+            {"description": {"$regex": "|".join(config["triggers"][:5]), "$options": "i"}}
+        ]
+    })
+    
+    # Fetch products
+    products = []
+    if product_query["$or"]:
+        product_cursor = db.products.find(
+            product_query,
+            {"_id": 0, "id": 1, "name": 1, "price": 1, "images": 1, "category": 1, "description": 1}
+        ).limit(limit)
+        products = await product_cursor.to_list(limit)
+        
+        # Add why_for_pet message
+        for p in products:
+            p["why_for_pet"] = f"{config['why_message']} for {pet_name}"
+    
+    # Fetch services
+    services = []
+    if config.get("service_types"):
+        service_cursor = db.services.find(
+            {"type": {"$in": config["service_types"]}},
+            {"_id": 0, "id": 1, "name": 1, "type": 1, "description": 1, "price": 1}
+        ).limit(4)
+        services = await service_cursor.to_list(4)
+    
+    # Fetch experiences
+    experiences = []
+    if config.get("experience_types"):
+        exp_cursor = db.enjoy_experiences.find(
+            {"type": {"$in": config["experience_types"]}},
+            {"_id": 0, "id": 1, "name": 1, "type": 1, "description": 1}
+        ).limit(3)
+        experiences = await exp_cursor.to_list(3)
+    
+    return {
+        "success": True,
+        "intent_detected": True,
+        "primary_intent": primary_intent["intent"],
+        "trigger_matched": primary_intent["trigger"],
+        "why_message": config["why_message"],
+        "products": products,
+        "services": services,
+        "experiences": experiences,
+        "tray_context": f"{config['why_message']} for {pet_name}",
+        "total_results": len(products) + len(services) + len(experiences)
+    }
+
+
+@router.get("/semantic-intents")
+async def get_semantic_intents():
+    """
+    Get available semantic intents for documentation/debugging.
+    """
+    intents = []
+    for key, config in SEMANTIC_INTENTS.items():
+        intents.append({
+            "intent": key,
+            "triggers": config["triggers"][:5],  # Show first 5 triggers
+            "categories": config.get("product_categories", []),
+            "why_message": config["why_message"]
+        })
+    
+    return {
+        "success": True,
+        "intents": intents,
+        "total": len(intents)
+    }
+
                 {"label": "Schedule vet check", "action": "schedule_vet"},
                 {"label": "Track behavior", "action": "track_behavior"},
                 {"label": "See common causes", "action": "common_causes"}
