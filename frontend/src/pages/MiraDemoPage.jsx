@@ -2387,7 +2387,9 @@ const MiraDemoPage = () => {
               age_years: parseInt(pet.age) || 3,
               // Ensure arrays - convert strings to arrays if needed
               allergies: Array.isArray(pet.sensitivities) ? pet.sensitivities : (pet.sensitivities ? [pet.sensitivities] : []),
-              notes: Array.isArray(pet.traits) ? pet.traits : (pet.traits ? [pet.traits] : [])
+              notes: Array.isArray(pet.traits) ? pet.traits : (pet.traits ? [pet.traits] : []),
+              // E042: Include user's detected city for local places
+              city: pet?.city || pet?.location?.city || userCity || 'Mumbai'
             }
           })
         });
