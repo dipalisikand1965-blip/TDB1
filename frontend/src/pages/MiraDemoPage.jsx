@@ -4180,24 +4180,32 @@ const MiraDemoPage = () => {
             <div className="mp-tray-content">
               
               {/* ═══════════════════════════════════════════════════════════════
-                  CELEBRATION TOOLS - Only show in Celebration context
-                  Party Planning Wizard and Bundle Maker - Connect to real services
+                  CELEBRATION CONTEXT - Different tiles based on sub-intent
+                  
+                  PARTY_PLANNING: "I want to plan a party"
+                  → Planning Wizard | Make Birthday Hamper | Explore More | Concierge®
+                  
+                  CAKE_SHOPPING: "I want a cake for Buddy"
+                  → Cakes Collection (link) | Build Hamper | Concierge®
+                  + Show cake products
               ═══════════════════════════════════════════════════════════════ */}
-              {miraPicks.context?.includes('Celebration') && (
+              
+              {/* PARTY PLANNING INTENT - Full party experience */}
+              {miraPicks.subIntent === 'party_planning' && (
                 <div className="mp-tray-section mp-celebration-tools">
                   <h4><Sparkles size={16} /> Plan {pet.name}'s Party</h4>
+                  <p className="mp-section-subtitle">Let us handle everything for {pet.name}'s special day</p>
                   
                   <div className="mp-celebration-actions">
                     <button 
                       className="mp-party-wizard-btn"
                       onClick={() => {
                         setShowMiraTray(false);
-                        // Open service request for Party Planning
                         openServiceRequest({
                           id: 'party-planning',
-                          label: 'Birthday Party Planning',
+                          label: 'Party Planning Wizard',
                           icon: '🎉',
-                          description: `Complete party setup for ${pet.name}`,
+                          description: `Complete party planning for ${pet.name}`,
                           pillar: 'celebrate',
                           category: 'party'
                         }, false);
@@ -4206,8 +4214,8 @@ const MiraDemoPage = () => {
                     >
                       <div className="party-btn-icon">🎉</div>
                       <div className="party-btn-content">
-                        <span className="party-btn-title">Party Planning Wizard</span>
-                        <span className="party-btn-subtitle">Complete party setup by Concierge®</span>
+                        <span className="party-btn-title">Planning Wizard</span>
+                        <span className="party-btn-subtitle">We'll plan everything for you</span>
                       </div>
                       <ChevronRight size={16} />
                     </button>
@@ -4216,12 +4224,11 @@ const MiraDemoPage = () => {
                       className="mp-bundle-maker-btn"
                       onClick={() => {
                         setShowMiraTray(false);
-                        // Open service request for Bundle Maker
                         openServiceRequest({
                           id: 'bundle-maker',
-                          label: 'Custom Celebration Bundle',
+                          label: 'Make Birthday Hamper',
                           icon: '🎁',
-                          description: `Pick your own party items for ${pet.name}`,
+                          description: `Custom hamper for ${pet.name}`,
                           pillar: 'celebrate',
                           category: 'party'
                         }, false);
@@ -4230,8 +4237,129 @@ const MiraDemoPage = () => {
                     >
                       <div className="party-btn-icon">🎁</div>
                       <div className="party-btn-content">
-                        <span className="party-btn-title">Build Your Bundle</span>
-                        <span className="party-btn-subtitle">Mix & match your perfect party pack</span>
+                        <span className="party-btn-title">Make Birthday Hamper</span>
+                        <span className="party-btn-subtitle">Pick your own party items</span>
+                      </div>
+                      <ChevronRight size={16} />
+                    </button>
+                    
+                    <a 
+                      href="/celebrate"
+                      className="mp-explore-more-btn"
+                      onClick={() => setShowMiraTray(false)}
+                      data-testid="explore-more-btn"
+                    >
+                      <div className="party-btn-icon">✨</div>
+                      <div className="party-btn-content">
+                        <span className="party-btn-title">Explore More</span>
+                        <span className="party-btn-subtitle">Browse our full celebration collection</span>
+                      </div>
+                      <ExternalLink size={16} />
+                    </a>
+                  </div>
+                </div>
+              )}
+              
+              {/* CAKE SHOPPING INTENT - Want cakes/products */}
+              {(miraPicks.subIntent === 'cake_shopping' || miraPicks.subIntent === 'celebration') && miraPicks.products.length > 0 && (
+                <div className="mp-tray-section mp-cake-section">
+                  <h4><Gift size={16} /> We know {pet.name} will love these</h4>
+                  <p className="mp-section-subtitle">Hand-picked for your celebration</p>
+                  
+                  {/* Cake Products */}
+                  <div className="mp-tray-products">
+                    {miraPicks.products.slice(0, 4).map((product, idx) => {
+                      const rawImage = product.image || product.images?.[0];
+                      const isValidImage = rawImage && 
+                        !rawImage.includes('chewy.com') && 
+                        !rawImage.includes('amazon.') &&
+                        !rawImage.includes('petco.') &&
+                        !rawImage.includes('petsmart.');
+                      const isConciergeSourced = product.concierge_sourced || !isValidImage;
+                      const displayImage = isValidImage ? rawImage : null;
+                      
+                      return (
+                        <div key={idx} className={`mp-tray-product ${isConciergeSourced && !displayImage ? 'concierge-sourced' : ''}`}>
+                          <div className="mp-tray-product-img-wrap">
+                            {displayImage ? (
+                              <img 
+                                src={displayImage}
+                                alt={product.name}
+                                onError={(e) => { 
+                                  e.target.style.display = 'none';
+                                }}
+                              />
+                            ) : (
+                              <div className="mp-concierge-gift-icon">
+                                <Gift size={32} />
+                              </div>
+                            )}
+                            {isConciergeSourced && (
+                              <div className="mp-product-concierge-badge" title="Sourced by Concierge®" />
+                            )}
+                          </div>
+                          <div className="mp-tray-product-info">
+                            <span className="mp-tray-product-name">{product.name}</span>
+                            {product.price ? (
+                              <span className="mp-tray-product-price">₹{product.price}</span>
+                            ) : isConciergeSourced ? (
+                              <span className="mp-tray-product-price" style={{color: 'var(--mira-purple)'}}>Get Quote</span>
+                            ) : null}
+                            {product.why_for_pet && (
+                              <span className="mp-product-why">{product.why_for_pet}</span>
+                            )}
+                          </div>
+                          <button 
+                            className="mp-tray-add"
+                            onClick={() => {
+                              if (isConciergeSourced) {
+                                setShowMiraTray(false);
+                                engageConcierge('product_request', { product_name: product.name, context: miraPicks.context, pet_name: pet.name });
+                              } else {
+                                alert(`Added ${product.name} to cart!`);
+                              }
+                            }}
+                          >
+                            <Plus size={16} />
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  
+                  {/* Action Tiles for Cake Shopping */}
+                  <div className="mp-celebration-actions mp-cake-actions">
+                    <a 
+                      href="/celebrate/cakes"
+                      className="mp-collection-link-btn"
+                      onClick={() => setShowMiraTray(false)}
+                    >
+                      <div className="party-btn-icon">🎂</div>
+                      <div className="party-btn-content">
+                        <span className="party-btn-title">Birthday Cakes Collection</span>
+                        <span className="party-btn-subtitle">100+ cakes including breed-specific</span>
+                      </div>
+                      <ExternalLink size={16} />
+                    </a>
+                    
+                    <button 
+                      className="mp-bundle-maker-btn"
+                      onClick={() => {
+                        setShowMiraTray(false);
+                        openServiceRequest({
+                          id: 'bundle-maker',
+                          label: 'Build Your Hamper',
+                          icon: '🎁',
+                          description: `Custom celebration hamper for ${pet.name}`,
+                          pillar: 'celebrate',
+                          category: 'party'
+                        }, false);
+                      }}
+                    >
+                      <div className="party-btn-icon">🎁</div>
+                      <div className="party-btn-content">
+                        <span className="party-btn-title">Build Your Hamper</span>
+                        <span className="party-btn-subtitle">Add cake + treats + accessories</span>
                       </div>
                       <ChevronRight size={16} />
                     </button>
