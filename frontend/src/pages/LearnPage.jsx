@@ -798,14 +798,14 @@ const LearnPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {youtubeVideos.map((video, idx) => (
                 <Card 
-                  key={video.video_id || idx} 
+                  key={video.id || idx} 
                   className="overflow-hidden hover:shadow-xl transition-all cursor-pointer group"
-                  onClick={() => window.open(`https://www.youtube.com/watch?v=${video.video_id}`, '_blank')}
+                  onClick={() => window.open(video.url || `https://www.youtube.com/watch?v=${video.id}`, '_blank')}
                   data-testid={`video-card-${idx}`}
                 >
                   <div className="aspect-video relative overflow-hidden">
                     <img 
-                      src={video.thumbnail || `https://img.youtube.com/vi/${video.video_id}/hqdefault.jpg`}
+                      src={video.thumbnail || `https://img.youtube.com/vi/${video.id}/hqdefault.jpg`}
                       alt={video.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
@@ -814,21 +814,16 @@ const LearnPage = () => {
                         <Play className="w-8 h-8 text-white ml-1" fill="white" />
                       </div>
                     </div>
-                    {video.duration && (
-                      <div className="absolute bottom-2 right-2 bg-black/80 text-white text-xs px-2 py-1 rounded">
-                        {video.duration}
-                      </div>
-                    )}
                   </div>
                   <div className="p-4">
                     <h3 className="font-semibold text-gray-900 line-clamp-2 mb-2 group-hover:text-red-600 transition-colors">
                       {video.title}
                     </h3>
-                    {video.channel_name && (
-                      <p className="text-sm text-gray-500">{video.channel_name}</p>
+                    {video.channel && (
+                      <p className="text-sm text-gray-500">{video.channel}</p>
                     )}
-                    {video.view_count && (
-                      <p className="text-xs text-gray-400 mt-1">{video.view_count} views</p>
+                    {video.description && (
+                      <p className="text-xs text-gray-400 mt-1 line-clamp-2">{video.description}</p>
                     )}
                   </div>
                 </Card>
