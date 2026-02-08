@@ -572,24 +572,54 @@ const Home = () => {
           </div>
         </section>
 
-        {/* 5 Pillars Section */}
-        <section className="py-24">
+        {/* 5 Pillars Section - MOBILE OPTIMIZED */}
+        <section className="py-12 md:py-24">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-center mb-16"
+              className="text-center mb-8 md:mb-16"
             >
-              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-                One Place for Everything
+              <h2 className="text-2xl md:text-4xl font-black text-white mb-2">
+                One Place for <span className="text-pink-400">Everything</span>
               </h2>
-              <p className="text-white/60 text-lg max-w-2xl mx-auto">
-                Five pillars of pet care, all connected through Mira. Your pet's entire life, beautifully organized.
+              <p className="text-purple-200 text-sm md:text-lg">
+                Five pillars. One app. <span className="text-amber-300">Unlimited possibilities.</span>
               </p>
             </motion.div>
             
-            <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
+            {/* Mobile: Horizontal scroll with large cards */}
+            <div className="md:hidden">
+              <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory -mx-4 px-4 scrollbar-hide">
+                {pillars.map((pillar, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.1 }}
+                    className="flex-shrink-0 w-[280px] snap-center"
+                  >
+                    <div className={`relative bg-gradient-to-br ${pillar.color} rounded-3xl p-6 h-44 flex flex-col justify-between shadow-xl`}>
+                      {/* Glow effect */}
+                      <div className={`absolute inset-0 bg-gradient-to-br ${pillar.color} rounded-3xl blur-xl opacity-40`} />
+                      
+                      <div className="relative">
+                        <pillar.icon className="w-10 h-10 text-white mb-3" />
+                        <h3 className="text-2xl font-bold text-white">{pillar.title}</h3>
+                      </div>
+                      <p className="relative text-white/90 text-sm leading-relaxed">{pillar.description}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+              {/* Scroll hint */}
+              <p className="text-center text-purple-400/60 text-xs mt-2">← Swipe to explore →</p>
+            </div>
+            
+            {/* Desktop: Grid */}
+            <div className="hidden md:grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
               {pillars.map((pillar, i) => (
                 <PillarCard key={i} {...pillar} delay={i * 0.1} />
               ))}
