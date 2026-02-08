@@ -2152,8 +2152,22 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
         real_products = []
         should_show_products = not is_service_intent and not is_food_main_intent
         
-        # For treat requests, show products
-        if is_treat_request:
+        # ═══════════════════════════════════════════════════════════════════════════
+        # MODE-BASED PRODUCT CONTROL
+        # ═══════════════════════════════════════════════════════════════════════════
+        
+        # EMOTIONAL modes: NEVER show products
+        if no_products_ever:
+            should_show_products = False
+            logger.info(f"[MODE CONTROL] {mira_mode} mode - NO products allowed")
+        
+        # DOING modes on first turn: NO products (clarify first)
+        if clarify_only:
+            should_show_products = False
+            logger.info(f"[MODE CONTROL] {mira_mode} mode, first turn - Clarify only, no products")
+        
+        # For treat requests, show products (unless blocked by mode)
+        if is_treat_request and not clarify_only and not no_products_ever:
             should_show_products = True
         
         # GROOM_TOOLS explicitly allows products (shampoo, brush, etc.)
