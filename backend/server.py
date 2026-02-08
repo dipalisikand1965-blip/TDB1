@@ -2197,6 +2197,126 @@ async def auto_enhance_product_tags():
         logger.error(f"Error in auto_enhance_product_tags: {e}")
 
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# AI SEMANTIC TAGGING - Runs on deployment to ensure products are tagged
+# ═══════════════════════════════════════════════════════════════════════════════
+
+SEMANTIC_INTENT_KEYWORDS = {
+    "calm_anxiety": ["calm", "anxiety", "stress", "relax", "soothing", "nervous", "thunder", "firework"],
+    "skin_coat": ["skin", "coat", "fur", "shampoo", "conditioner", "grooming", "moistur", "itch", "shed"],
+    "digestion_gut": ["digest", "stomach", "tummy", "probiotic", "gut", "sensitive", "fiber"],
+    "joint_mobility": ["joint", "hip", "mobility", "senior", "glucosamine", "arthritis", "flex"],
+    "dental_oral": ["dental", "teeth", "tooth", "breath", "oral", "chew", "tartar", "plaque"],
+    "training_behavior": ["train", "reward", "treat", "small", "bite", "behavior"],
+    "travel_adventure": ["travel", "portable", "outdoor", "carrier", "adventure", "trip"],
+    "birthday_celebration": ["birthday", "cake", "celebration", "party", "special", "gift", "pupcake"],
+    "puppy_essentials": ["puppy", "starter", "essential", "beginner", "young"],
+    "senior_care": ["senior", "old", "aging", "mature", "gentle", "elder"],
+    "weight_fitness": ["diet", "weight", "low-calorie", "lite", "light", "fitness", "slim"],
+    "play_enrichment": ["toy", "play", "puzzle", "interactive", "enrichment", "ball", "rope"],
+    "everyday_treats": ["treat", "snack", "biscuit", "cookie", "jerky"],
+    "fashion_wearables": ["collar", "bandana", "bow", "harness", "leash", "dress", "costume", "jacket"],
+    "dining_cafe": ["dine", "cafe", "restaurant", "meal", "food", "fresh-meal", "bowl"],
+    "home_decor": ["magnet", "coaster", "frame", "poster", "decor", "home", "gift"],
+    "fresh_food": ["fresh", "meal", "chicken", "veggies", "lamb", "fish", "homemade"],
+    "boarding_stay": ["boarding", "kennel", "daycare", "overnight", "stay", "pet hotel"],
+    "emergency_care": ["emergency", "urgent", "poison", "hotline", "rescue", "24/7"],
+}
+
+
+def analyze_item_for_intents(item: dict) -> list:
+    """Analyze item for semantic intents based on keywords."""
+    name = (item.get("name", "") or "").lower()
+    description = (item.get("description", "") or "").lower()
+    category = (item.get("category", "") or "").lower()
+    existing_tags = [t.lower() for t in item.get("tags", [])]
+    
+    text = f"{name} {description} {category} {' '.join(existing_tags)}"
+    
+    matched_intents = []
+    for intent_name, keywords in SEMANTIC_INTENT_KEYWORDS.items():
+        if any(kw in text for kw in keywords):
+            matched_intents.append(intent_name)
+    
+    return matched_intents
+
+
+async def run_ai_semantic_tagging_on_startup():
+    """
+    Run AI semantic tagging on startup to ensure all products/services have semantic intents.
+    This powers the E032 Semantic Search feature.
+    """
+    try:
+        # Check if products exist
+        products_count = await db.products_master.count_documents({})
+        services_count = await db.services.count_documents({})
+        
+        if products_count == 0 and services_count == 0:
+            logger.info("[AI TAGGING] No products/services found, skipping semantic tagging")
+            return
+        
+        # Check how many are missing semantic_intents
+        products_missing = await db.products_master.count_documents({
+            "$or": [
+                {"semantic_intents": {"$exists": False}},
+                {"semantic_intents": None},
+                {"semantic_intents": []}
+            ]
+        })
+        services_missing = await db.services.count_documents({
+            "$or": [
+                {"semantic_intents": {"$exists": False}},
+                {"semantic_intents": None},
+                {"semantic_intents": []}
+            ]
+        })
+        
+        if products_missing == 0 and services_missing == 0:
+            logger.info(f"[AI TAGGING] Semantic intents already set ({products_count} products, {services_count} services)")
+            return
+        
+        logger.info(f"[AI TAGGING] Tagging {products_missing} products, {services_missing} services...")
+        
+        # Tag products
+        tagged_products = 0
+        async for product in db.products_master.find({
+            "$or": [
+                {"semantic_intents": {"$exists": False}},
+                {"semantic_intents": None},
+                {"semantic_intents": []}
+            ]
+        }):
+            intents = analyze_item_for_intents(product)
+            if intents:
+                await db.products_master.update_one(
+                    {"_id": product["_id"]},
+                    {"$set": {"semantic_intents": intents}}
+                )
+                tagged_products += 1
+        
+        # Tag services
+        tagged_services = 0
+        async for service in db.services.find({
+            "$or": [
+                {"semantic_intents": {"$exists": False}},
+                {"semantic_intents": None},
+                {"semantic_intents": []}
+            ]
+        }):
+            intents = analyze_item_for_intents(service)
+            if intents:
+                await db.services.update_one(
+                    {"_id": service["_id"]},
+                    {"$set": {"semantic_intents": intents}}
+                )
+                tagged_services += 1
+        
+        logger.info(f"[AI TAGGING] ✅ Tagged {tagged_products} products, {tagged_services} services with semantic intents")
+        
+    except Exception as e:
+        logger.error(f"[AI TAGGING] Error: {e}")
+
+
 async def verify_admin_auth(
     credentials: HTTPBasicCredentials = Depends(security),
     bearer_creds: HTTPAuthorizationCredentials = Depends(security_bearer)
