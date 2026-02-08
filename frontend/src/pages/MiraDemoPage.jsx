@@ -4415,79 +4415,23 @@ const MiraDemoPage = () => {
                             </div>
                           )}
                           
-                          {/* MIRA DOCTRINE: Concierge is ALWAYS available (6:30 AM - 11:30 PM) */}
-                          {/* In COMFORT MODE: Softer, more supportive messaging */}
+                          {/* MIRA DOCTRINE: Concierge available - Compact inline hint */}
+                          {/* Full options accessible via floating C° button */}
                           {msg.data?.response?.suggest_concierge && (
-                            <div className={`mp-concierge-strip ${msg.inComfortMode ? 'mp-comfort-mode' : ''}`}>
-                              <div className="mp-concierge-content">
-                                {msg.conciergeIsLive === false ? (
-                                  <>
-                                    <p className="mp-concierge-text mp-after-hours">
-                                      🌙 Our Concierge® team is resting (11:30 PM - 6:30 AM). We've noted your request and will be in touch first thing at 6:30 AM!
-                                    </p>
-                                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-                                      <a 
-                                        href={`https://wa.me/919663185747?text=${encodeURIComponent(`[After Hours Request] Hi, I need help with ${pet.name} (${pet.breed}). ${msg.content?.slice(0, 100)}...`)}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="mp-concierge-btn"
-                                        style={{ background: '#25D366', textDecoration: 'none' }}
-                                        data-testid="concierge-whatsapp-afterhours"
-                                      >
-                                        <Phone style={{ width: 14, height: 14 }} /> Leave a Message
-                                      </a>
-                                    </div>
-                                  </>
-                                ) : (
-                                  <>
-                                    <p className="mp-concierge-text">
-                                      {msg.inComfortMode
-                                        ? `If you'd like to talk to someone who understands, our Concierge® team is here for you and ${pet.name}.`
-                                        : msg.dynamicConciergeRequest
-                                          ? `Your pet Concierge® is ready to help with anything for ${pet.name}. Just reach out!`
-                                          : (msg.showServices || msg.showExperiences)
-                                            ? `Or, if you'd prefer, your pet Concierge® can handle this end-to-end for ${pet.name}.`
-                                            : (msg.data?.response?.concierge_framing || 
-                                               `If you'd like, your pet Concierge® can help handle the vet search and appointment, saving you time and effort.`)}
-                                    </p>
-                                    {/* Unified C® Get Help Button */}
-                                    <div className="mp-concierge-unified-inline">
-                                      <button 
-                                        className="concierge-help-btn"
-                                        onClick={() => {
-                                          const el = document.getElementById(`concierge-expand-${idx}`);
-                                          if (el) el.classList.toggle('expanded');
-                                        }}
-                                        data-testid="concierge-help-btn"
-                                      >
-                                        <span className="concierge-c">C</span>
-                                        <span className="concierge-r">®</span>
-                                        <span className="concierge-label">Get Help</span>
-                                      </button>
-                                      <div id={`concierge-expand-${idx}`} className="concierge-options-inline">
-                                        <a 
-                                          href={`https://wa.me/919663185747?text=${encodeURIComponent(`Hi, I need help with ${pet.name} (${pet.breed}). ${msg.content?.slice(0, 100)}...`)}`}
-                                          target="_blank"
-                                          rel="noopener noreferrer"
-                                          className="concierge-option whatsapp"
-                                        >
-                                          <Phone size={14} /> WhatsApp
-                                        </a>
-                                        <button onClick={handleConciergeHandoff} className="concierge-option chat">
-                                          <MessageSquare size={14} /> Chat
-                                        </button>
-                                        <a 
-                                          href={`mailto:concierge@thedoggycompany.in?subject=Help with ${pet.name}&body=${encodeURIComponent(`Hi, I need help with ${pet.name}.\n\nContext: ${msg.content?.slice(0, 200)}...`)}`}
-                                          className="concierge-option email"
-                                        >
-                                          <Mail size={14} /> Email
-                                        </a>
-                                      </div>
-                                    </div>
-                                  </>
-                                )}
-                              </div>
-                            </div>
+                            <button 
+                              className="mp-concierge-hint"
+                              onClick={() => setShowConciergePanel(true)}
+                              data-testid={`concierge-hint-${idx}`}
+                            >
+                              <span className="hint-c">C</span>
+                              <span className="hint-degree">°</span>
+                              <span className="hint-text">
+                                {msg.inComfortMode 
+                                  ? "Talk to someone who understands" 
+                                  : "Need help? Tap here"}
+                              </span>
+                              <ChevronRight size={12} />
+                            </button>
                           )}
                         </div>
                       </div>
