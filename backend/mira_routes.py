@@ -12964,7 +12964,7 @@ async def get_local_places(
 
 
 @router.get("/local-places/vets")
-async def get_vet_clinics(
+async def get_local_vet_clinics(
     city: str = "Mumbai",
     emergency: bool = False,
     limit: int = 10
