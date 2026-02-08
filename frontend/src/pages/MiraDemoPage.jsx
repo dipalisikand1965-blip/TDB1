@@ -712,6 +712,23 @@ const MiraDemoPage = () => {
   const [userGeoLocation, setUserGeoLocation] = useState(null);
   const [userCity, setUserCity] = useState('Mumbai'); // Fallback
   
+  // Initialize haptic audio context on first user interaction (required for iOS)
+  useEffect(() => {
+    const initHapticAudio = () => {
+      hapticFeedback.init();
+      document.removeEventListener('touchstart', initHapticAudio);
+      document.removeEventListener('click', initHapticAudio);
+    };
+    
+    document.addEventListener('touchstart', initHapticAudio, { once: true });
+    document.addEventListener('click', initHapticAudio, { once: true });
+    
+    return () => {
+      document.removeEventListener('touchstart', initHapticAudio);
+      document.removeEventListener('click', initHapticAudio);
+    };
+  }, []);
+  
   // Fetch user's geolocation on mount
   useEffect(() => {
     if (navigator.geolocation) {
