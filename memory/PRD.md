@@ -199,6 +199,21 @@ The backend automatically runs AI semantic tagging on startup via:
 
 ---
 
+## PET-FRIENDLY PLACES DATABASE
+
+**Seeded:** February 8, 2026
+
+| Category | Total | Verified | Cities |
+|----------|-------|----------|--------|
+| Restaurants | 29+ | 100% | Mumbai, Delhi, Bangalore, Goa, Pune, Hyderabad, Chennai |
+| Pet-Friendly Stays | 20+ | 100% | Mumbai, Goa, Coorg, Jaipur, Shimla, Kasol, Kerala, Rajasthan |
+
+**Data Sources:** CarryMyPet, BringFido, LBB, EazyDiner, HeadsUpForTails, IndianHoliday, TripAdvisor (2025)
+
+**Script:** `/app/backend/scripts/seed_pet_friendly_places.py`
+
+---
+
 ## FUTURE ROADMAP
 
 - E026: Photo Analysis Integration (deferred - health features go to concierge)
