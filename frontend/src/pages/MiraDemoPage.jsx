@@ -85,6 +85,76 @@ const FormattedText = ({ children, className = '' }) => {
   );
 };
 
+// TypedText Component - Streaming text animation like ChatGPT
+// Displays text character by character for a premium feel
+const TypedText = ({ text, speed = 40, onComplete, isLatest = false }) => {
+  const [displayedText, setDisplayedText] = useState('');
+  const [isComplete, setIsComplete] = useState(!isLatest);
+  
+  useEffect(() => {
+    // Only animate the latest message
+    if (!isLatest || !text) {
+      setDisplayedText(text || '');
+      setIsComplete(true);
+      return;
+    }
+    
+    setDisplayedText('');
+    setIsComplete(false);
+    let index = 0;
+    
+    const interval = setInterval(() => {
+      if (index < text.length) {
+        setDisplayedText(text.slice(0, index + 1));
+        index++;
+      } else {
+        clearInterval(interval);
+        setIsComplete(true);
+        onComplete?.();
+      }
+    }, 1000 / speed);
+    
+    return () => clearInterval(interval);
+  }, [text, speed, isLatest, onComplete]);
+  
+  return (
+    <span className={`typed-text ${isComplete ? 'complete' : 'typing'}`}>
+      {displayedText}
+      {!isComplete && <span className="typing-cursor">|</span>}
+    </span>
+  );
+};
+
+// Confetti Component - Micro-delight for celebrations
+import confetti from 'canvas-confetti';
+
+const triggerCelebrationConfetti = () => {
+  // Burst from both sides
+  const count = 200;
+  const defaults = {
+    origin: { y: 0.7 },
+    zIndex: 9999,
+  };
+
+  function fire(particleRatio, opts) {
+    confetti({
+      ...defaults,
+      ...opts,
+      particleCount: Math.floor(count * particleRatio),
+    });
+  }
+
+  // Fire confetti from left
+  fire(0.25, { spread: 26, startVelocity: 55, origin: { x: 0.2 } });
+  fire(0.2, { spread: 60, origin: { x: 0.2 } });
+  fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8, origin: { x: 0.2 } });
+  
+  // Fire confetti from right
+  fire(0.25, { spread: 26, startVelocity: 55, origin: { x: 0.8 } });
+  fire(0.2, { spread: 60, origin: { x: 0.8 } });
+  fire(0.35, { spread: 100, decay: 0.91, scalar: 0.8, origin: { x: 0.8 } });
+};
+
 // Import the production-style CSS (matches thedoggycompany.in)
 import '../styles/mira-prod.css';
 
