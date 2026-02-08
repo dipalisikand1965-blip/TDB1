@@ -16,7 +16,7 @@ import { motion } from 'framer-motion';
 const BRAND_IMAGES = {
   hero: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/einpahqm_dog-813103%20%281%29.jpg',
   goldenRetriever: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/q0alj5za_dog-1194087_1920%20%281%29.jpg',
-  bulldog: 'https://static.prod-images.emergentagent.com/jobs/7752e7b7-8b0f-49be-9d7e-a53ecb01a5cc/images/bc66ffebca8f1d383ebd89b255f91394932ae90028414e47cee2e11b80d875ef.png',
+  bulldog: 'https://static.prod-images.emergentagent.com/jobs/7752e7b7-8b0f-49be-9d7e-a53ecb01a5cc/images/13ca27fde56c5e1ef84caff0da8c8aa78b732f6b501ccfb181d2565594c671af.png',
   petWithOwner: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/4oryz05r_shutterstock_131282603%20%281%29.jpg',
   happyPet: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/s4qmsach_shutterstock_199063937.jpg',
   lifestyle1: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/sj6layzi_shutterstock_504980047%20%282%29.jpg',
