@@ -893,6 +893,16 @@ const DinePage = () => {
         />
       )}
       
+      {/* Restaurant Booking Modal - Unified Concierge® Flow */}
+      {showBookingModal && selectedRestaurant && (
+        <RestaurantBookingModal
+          restaurant={selectedRestaurant}
+          onClose={() => { setShowBookingModal(false); setSelectedRestaurant(null); }}
+          user={user}
+          activePet={activePet}
+        />
+      )}
+      
       {/* Admin Quick Edit */}
       <AdminQuickEdit pillar="dine" position="bottom-left" />
     </PillarPageLayout>
