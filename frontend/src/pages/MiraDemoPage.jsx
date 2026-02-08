@@ -2524,15 +2524,28 @@ const MiraDemoPage = () => {
           {/* Welcome State - Premium "For Pet" Experience - Matches UnifiedHero from Pillar Pages */}
           {conversationHistory.length === 0 && !isProcessing && (
             <div className="mira-hero-welcome">
-              {/* Soul Journey Button */}
-              <button 
-                className="soul-journey-btn" 
-                onClick={() => navigate(`/pet-soul/${pet.id || ''}`)}
-                data-testid="soul-journey-btn"
-              >
-                <Crown className="w-4 h-4" />
-                <span>Start {pet.name}'s soul journey</span>
-              </button>
+              {/* Action Buttons Row */}
+              <div className="hero-actions-row">
+                {/* Soul Journey Button */}
+                <button 
+                  className="soul-journey-btn" 
+                  onClick={() => navigate(`/pet-soul/${pet.id || ''}`)}
+                  data-testid="soul-journey-btn"
+                >
+                  <Crown className="w-4 h-4" />
+                  <span>Start {pet.name}'s soul journey</span>
+                </button>
+                
+                {/* View Past Chats Button */}
+                <button 
+                  className="history-btn" 
+                  onClick={() => { loadPastChats(); setShowPastChats(true); }}
+                  data-testid="view-history-btn"
+                >
+                  <History className="w-4 h-4" />
+                  <span>Past Chats</span>
+                </button>
+              </div>
               
               {/* Hero Layout - Avatar Left, Content Right */}
               <div className="hero-layout">
