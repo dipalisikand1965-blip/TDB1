@@ -10856,37 +10856,61 @@ async def semantic_product_search(request: Request):
             product_query,
             {"_id": 0, "id": 1, "name": 1, "base_price": 1, "price": 1, "images": 1, "image": 1, "category": 1, "description": 1, "semantic_intents": 1}
         ).limit(limit)
-        products = await product_cursor.to_list(limit)
+        products_raw = await product_cursor.to_list(limit)
         
-        # Add why_for_pet message
-        for p in products:
-            p["why_for_pet"] = f"{config['why_message']} for {pet_name}"
+        # Process and add why_for_pet message
+        for p in products_raw:
+            # Check if product has matching intent (priority signal)
+            has_intent_match = intent_key in (p.get("semantic_intents") or [])
+            
+            products.append({
+                "id": p.get("id"),
+                "name": p.get("name", "Product"),
+                "price": p.get("base_price") or p.get("price"),
+                "image": p.get("images", [None])[0] if p.get("images") else p.get("image"),
+                "images": p.get("images", []),
+                "category": p.get("category", ""),
+                "why_for_pet": f"{config['why_message']} for {pet_name}" if has_intent_match else None,
+                "intent_match": has_intent_match
+            })
+        
+        # Sort by intent match first
+        products.sort(key=lambda x: (not x.get("intent_match", False)))
+    except Exception as e:
+        logger.error(f"Semantic search error: {e}")
+        products = []
     
     # Fetch services
     services = []
     if config.get("service_types"):
-        service_cursor = db.services.find(
-            {"type": {"$in": config["service_types"]}},
-            {"_id": 0, "id": 1, "name": 1, "type": 1, "description": 1, "price": 1}
-        ).limit(4)
-        services = await service_cursor.to_list(4)
+        try:
+            service_cursor = db.services.find(
+                {"type": {"$in": config["service_types"]}},
+                {"_id": 0, "id": 1, "name": 1, "type": 1, "description": 1, "price": 1}
+            ).limit(4)
+            services = await service_cursor.to_list(4)
+        except:
+            pass
     
     # Fetch experiences
     experiences = []
     if config.get("experience_types"):
-        exp_cursor = db.enjoy_experiences.find(
-            {"type": {"$in": config["experience_types"]}},
-            {"_id": 0, "id": 1, "name": 1, "type": 1, "description": 1}
-        ).limit(3)
-        experiences = await exp_cursor.to_list(3)
+        try:
+            exp_cursor = db.enjoy_experiences.find(
+                {"type": {"$in": config["experience_types"]}},
+                {"_id": 0, "id": 1, "name": 1, "type": 1, "description": 1}
+            ).limit(3)
+            experiences = await exp_cursor.to_list(3)
+        except:
+            pass
     
     return {
         "success": True,
         "intent_detected": True,
-        "primary_intent": primary_intent["intent"],
+        "primary_intent": intent_key,
         "trigger_matched": primary_intent["trigger"],
         "why_message": config["why_message"],
-        "products": products,
+        "products": products[:limit],
         "services": services,
         "experiences": experiences,
         "tray_context": f"{config['why_message']} for {pet_name}",
