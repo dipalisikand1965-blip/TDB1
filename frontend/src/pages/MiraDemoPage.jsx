@@ -548,6 +548,14 @@ const MiraDemoPage = () => {
     hasUrgent: false
   });
   
+  // HEALTH VAULT - Track completeness and prompt for missing data
+  const [healthVault, setHealthVault] = useState({
+    completeness: 100, // Assume complete until we check
+    missing_fields: [],
+    showWizard: false,
+    currentField: null
+  });
+  
   // SESSION PERSISTENCE - The memory that never forgets
   const [sessionId, setSessionId] = useState(() => {
     // Try to recover session from localStorage first
