@@ -2220,9 +2220,9 @@ const RestaurantBookingModal = ({ restaurant, onClose, user, activePet }) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          service_type: 'dine_reservation',
+          type: 'dine_reservation',
           pillar: 'dine',
-          request_source: 'dine_page',
+          source: 'dine_page',
           customer: {
             name: formData.name,
             email: formData.email,
@@ -2238,7 +2238,6 @@ const RestaurantBookingModal = ({ restaurant, onClose, user, activePet }) => {
             pet_name: activePet?.name || 'Not specified',
             special_requests: formData.specialRequests
           },
-          status: 'pending',
           priority: 'normal'
         })
       });
