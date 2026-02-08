@@ -2439,6 +2439,55 @@ button.mp-welcome-chip,
   letter-spacing: 0.5px;
 }
 
+/* Soul Score Incomplete - Mira prompt */
+.soul-score-badge.soul-incomplete {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.5);
+  cursor: pointer;
+  animation: soul-pulse 2s ease-in-out infinite;
+  padding: 8px 12px;
+  gap: 4px;
+}
+
+.soul-score-badge.soul-incomplete:hover {
+  transform: translateX(-50%) scale(1.05);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.7);
+}
+
+.soul-sparkle {
+  font-size: 14px;
+  animation: sparkle-bounce 1.5s ease-in-out infinite;
+}
+
+.soul-cta {
+  font-size: 9px;
+  font-weight: 700;
+  color: white;
+  line-height: 1.2;
+  text-align: center;
+  letter-spacing: 0.3px;
+}
+
+@keyframes soul-pulse {
+  0%, 100% { box-shadow: 0 4px 16px rgba(139, 92, 246, 0.5); }
+  50% { box-shadow: 0 4px 24px rgba(139, 92, 246, 0.8); }
+}
+
+@keyframes sparkle-bounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-2px) scale(1.1); }
+}
+
+/* Soul badge clickable */
+.soul-score-badge {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.soul-score-badge:hover {
+  transform: translateX(-50%) scale(1.05);
+}
+
 /* Why for {Pet} - Personalized Reason */
 .mp-why-for-pet {
   display: flex;
