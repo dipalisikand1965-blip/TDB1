@@ -6240,6 +6240,16 @@ async def mira_chat(
     urgency = detect_urgency(user_message, pillar)
     intent = detect_intent(user_message)
     
+    # Extract pet info for personalization
+    pet_name = "your pet"
+    pet_breed = None
+    if selected_pet:
+        pet_name = selected_pet.get("name", "your pet")
+        pet_breed = selected_pet.get("breed")
+    elif request.pet_context:
+        pet_name = request.pet_context.get("name", "your pet")
+        pet_breed = request.pet_context.get("breed")
+    
     # 3. Check if ticket exists for this session
     existing_ticket = await db.mira_tickets.find_one({"mira_session_id": session_id}, {"_id": 0})
     ticket_id = None
