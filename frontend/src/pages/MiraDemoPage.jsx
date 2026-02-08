@@ -560,6 +560,18 @@ const MiraDemoPage = () => {
   // PERSONALIZATION TICKER - Moving ticker at top
   const [tickerItems, setTickerItems] = useState([]);
   
+  // E027: DAILY DIGEST
+  const [dailyDigest, setDailyDigest] = useState(null);
+  
+  // E028: MILESTONES
+  const [milestones, setMilestones] = useState([]);
+  
+  // E030: MEMORY LANE
+  const [memoryLane, setMemoryLane] = useState([]);
+  
+  // E034: REORDER SUGGESTIONS
+  const [reorderSuggestions, setReorderSuggestions] = useState([]);
+  
   // SESSION PERSISTENCE - The memory that never forgets
   const [sessionId, setSessionId] = useState(() => {
     // Try to recover session from localStorage first
