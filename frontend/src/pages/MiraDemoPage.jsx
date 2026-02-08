@@ -1633,7 +1633,7 @@ const MiraDemoPage = () => {
     
     try {
       setIsSpeaking(true);
-      console.log('[Mira Voice] Speaking with ElevenLabs...');
+      console.log('[Mira Voice] Speaking with personality:', voicePersonality);
       
       // Clean text for natural speech
       const cleanText = text
@@ -1645,10 +1645,14 @@ const MiraDemoPage = () => {
         .replace(/®/g, '')
         .substring(0, 500);
       
+      // E024: Pass voice personality to TTS endpoint
       const response = await fetch(`${API_URL}/api/tts/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ text: cleanText })
+        body: JSON.stringify({ 
+          text: cleanText,
+          personality: voicePersonality 
+        })
       });
       
       if (!response.ok) {
@@ -1686,7 +1690,7 @@ const MiraDemoPage = () => {
       console.log('[Mira Voice] Error:', error.message);
       setIsSpeaking(false);
     }
-  }, [voiceEnabled]);
+  }, [voiceEnabled, voicePersonality]);
   
   // Handle submit - MIRA DOCTRINE: Let Mira's intelligence decide what to show
   const handleSubmit = useCallback(async (e, voiceQuery = null) => {
