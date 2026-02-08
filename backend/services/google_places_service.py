@@ -46,7 +46,7 @@ async def geocode_city(city_name: str) -> Optional[Dict[str, float]]:
             response = await client.get(
                 "https://maps.googleapis.com/maps/api/geocode/json",
                 params={
-                    "address": f"{city_name}, India",
+                    "address": city_name,  # Works worldwide without ", India" suffix
                     "key": GOOGLE_PLACES_API_KEY
                 },
                 timeout=10.0
