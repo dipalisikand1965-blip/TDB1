@@ -45,13 +45,23 @@ Mira OS is a sophisticated AI-powered pet assistant that provides personalized c
 
 ### AI PRODUCT TAGGING COMPLETE
 
-**873 products tagged** with semantic intents using `/app/backend/scripts/tag_products_with_ai.py`
+**4325+ items tagged** with semantic intents using AI-powered tagging
+
+**Files:**
+- `/app/backend/scripts/tag_products_with_ai.py` - Standalone AI tagging script
+- `/app/backend/scripts/auto_populate.py` - Deployment auto-population script
+
+**Admin Panel Integration:**
+- Master SYNC button calls `/api/mira/admin/run-ai-tagging`
+- AI tagging runs automatically on server startup
 
 Intent categories:
 - calm_anxiety, skin_coat, digestion_gut, joint_mobility
 - dental_oral, training_behavior, travel_adventure
 - birthday_celebration, puppy_essentials, senior_care
 - weight_fitness, play_enrichment, everyday_treats
+- fashion_wearables, dining_cafe, home_decor
+- fresh_food, boarding_stay, emergency_care
 
 ---
 
