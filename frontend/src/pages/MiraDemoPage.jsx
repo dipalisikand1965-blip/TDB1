@@ -649,6 +649,42 @@ const MiraDemoPage = () => {
   const { user, token } = useAuth();
   const navigate = useNavigate();
   
+  // MEMBERSHIP GATE: Require login + active membership to access Mira OS
+  // Users must complete onboarding and payment first
+  useEffect(() => {
+    if (!user) {
+      // Not logged in - redirect to login
+      navigate('/login', { state: { from: '/mira-demo', message: 'Please login to access Mira OS' } });
+      return;
+    }
+    
+    // Check for active membership/pet pass
+    // user.pet_pass_status should be 'active' after payment
+    // Skip check for admin users
+    const isAdmin = user?.role === 'admin' || user?.email?.includes('clubconcierge');
+    const hasActiveMembership = user?.pet_pass_status === 'active' || 
+                                user?.membership_status === 'active' ||
+                                user?.has_paid === true;
+    
+    if (!isAdmin && !hasActiveMembership) {
+      // Not paid - redirect to membership page
+      navigate('/membership', { state: { from: '/mira-demo', message: 'Join Pet Pass to access Mira OS' } });
+      return;
+    }
+  }, [user, navigate]);
+  
+  // Don't render anything while checking auth
+  if (!user) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="text-white text-center">
+          <div className="animate-spin w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p>Checking access...</p>
+        </div>
+      </div>
+    );
+  }
+  
   // State
   const [query, setQuery] = useState('');
   const [isListening, setIsListening] = useState(false);
