@@ -6379,7 +6379,90 @@ I understand this is urgent. Let me help you immediately.
             "is_emergency": True
         }
     
-    # 4.5 NEARBY PLACES DETECTION - Vet clinics, restaurants, stays
+    # 5.5 Handle OVERWHELM - Simplify instead of handing to Concierge
+    emotional_undertone = detect_emotional_undertone(user_message)
+    if emotional_undertone["undertone"] == "overwhelm":
+        # Detect what they're overwhelmed about
+        overwhelm_topic = None
+        if any(kw in user_message.lower() for kw in ["food", "diet", "eat", "feed", "kibble"]):
+            overwhelm_topic = "food"
+            simplified_response = f"""I totally get it - the pet food aisle can feel endless! Let me make this simple for {pet_name}.
+
+**For a {pet_breed or 'dog'} like {pet_name}, here are just 3 solid options:**
+
+1. **Budget-Friendly**: Royal Canin or Pedigree (widely available, vet-approved)
+2. **Mid-Range**: Farmina or Acana (better ingredients, good for sensitive tummies)
+3. **Premium Fresh**: FreshForPaws or PetSutra (if you want home-delivered fresh meals)
+
+**My quick recommendation for {pet_name}:** Start with a mid-range option and see how they do for 2 weeks.
+
+Want me to narrow it down further? Just tell me:
+- Any allergies or sensitivities?
+- Wet food, dry food, or fresh?"""
+
+        elif any(kw in user_message.lower() for kw in ["toy", "toys", "play", "enrichment"]):
+            overwhelm_topic = "toys"
+            simplified_response = f"""So many toys, right? Here's the simple version for {pet_name}:
+
+**Every dog really just needs 3 types:**
+
+1. **Chew toy** - Kong or Nylabone (great for alone time)
+2. **Fetch toy** - A good ball or frisbee
+3. **Puzzle toy** - Snuffle mat or treat dispenser (mental stimulation)
+
+**Start with just one from each category.** You can always add more later!
+
+Which type does {pet_name} enjoy most - chewing, fetching, or problem-solving?"""
+
+        elif any(kw in user_message.lower() for kw in ["groom", "groomer", "grooming", "bath"]):
+            overwhelm_topic = "grooming"
+            simplified_response = f"""Let me simplify grooming for {pet_name}:
+
+**Basic grooming schedule:**
+- **Brushing**: 2-3 times/week (more for long coats)
+- **Bathing**: Once a month (unless they get dirty)
+- **Nails**: Every 3-4 weeks
+- **Ears**: Check weekly, clean if needed
+
+**For a {pet_breed or 'dog'}:** {'Regular professional grooming every 6-8 weeks is recommended.' if pet_breed and pet_breed.lower() in ['poodle', 'shih tzu', 'maltese', 'bichon', 'cocker spaniel'] else 'Most grooming can be done at home, with occasional professional visits.'}
+
+Would you like help finding a groomer near you, or tips for at-home grooming?"""
+
+        else:
+            # Generic overwhelm response
+            simplified_response = f"""I hear you - there's a lot of information out there! Let me help simplify things for {pet_name}.
+
+**Let's take this step by step.** Instead of trying to figure everything out at once, let's focus on just ONE thing.
+
+What's the main thing you're trying to solve for {pet_name} right now?
+
+1. **Health** - Vet, vaccines, or a symptom you've noticed
+2. **Daily life** - Food, grooming, or exercise
+3. **Fun** - Toys, treats, or activities
+4. **Something else** - Just tell me in your own words
+
+Pick one, and I'll give you a simple starting point! 🐾"""
+
+        await add_message_to_ticket(session_id, {
+            "type": "mira_response",
+            "content": simplified_response,
+            "sender": "mira",
+            "channel": request.source,
+            "is_internal": False,
+            "mode": "simplify"
+        })
+        
+        return {
+            "response": simplified_response,
+            "session_id": session_id,
+            "ticket_id": ticket_id,
+            "pillar": pillar,
+            "ticket_type": "advisory",
+            "mode": "simplify",
+            "emotional_undertone": "overwhelm"
+        }
+    
+    # 6. NEARBY PLACES DETECTION - Vet clinics, restaurants, stays
     nearby_places_context = None
     nearby_places_data = None
     message_lower = user_message.lower()
