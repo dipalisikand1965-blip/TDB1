@@ -134,16 +134,26 @@ export const resolveReference = (message, lastResults) => {
   
   const lowerMessage = message.toLowerCase();
   
-  // Check for ordinal references
-  for (const [word, index] of Object.entries(ORDINAL_MAP)) {
-    if (lowerMessage.includes(word)) {
+  // Check for ordinal references - use regex with word boundaries for accuracy
+  const ordinalPatterns = [
+    { pattern: /\b(last|final)\b/, index: -1 },
+    { pattern: /\b(fifth|5th)\b/, index: 4 },
+    { pattern: /\b(fourth|4th)\b/, index: 3 },
+    { pattern: /\b(third|3rd)\b/, index: 2 },
+    { pattern: /\b(second|2nd)\b/, index: 1 },
+    { pattern: /\b(first|1st)\b/, index: 0 },
+  ];
+  
+  for (const { pattern, index } of ordinalPatterns) {
+    const match = lowerMessage.match(pattern);
+    if (match) {
       const actualIndex = index === -1 ? lastResults.length - 1 : index;
-      if (actualIndex < lastResults.length) {
+      if (actualIndex >= 0 && actualIndex < lastResults.length) {
         return {
           resolved: true,
           item: lastResults[actualIndex],
           index: actualIndex,
-          reference: word,
+          reference: match[1],
         };
       }
     }
