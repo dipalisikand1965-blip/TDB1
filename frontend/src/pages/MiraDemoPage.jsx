@@ -130,6 +130,11 @@ const TypedText = ({ text, speed = 40, onComplete, isLatest = false }) => {
 import confetti from 'canvas-confetti';
 
 const triggerCelebrationConfetti = () => {
+  // HAPTIC: Success celebration
+  if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+    navigator.vibrate([30, 50, 30, 50, 100]);
+  }
+  
   // Burst from both sides
   const count = 200;
   const defaults = {
