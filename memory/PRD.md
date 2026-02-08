@@ -222,6 +222,25 @@ The backend automatically runs AI semantic tagging on startup via:
 - `GET /api/mira/nearby-places?city=X` - All pet-friendly places in a city
 - `POST /api/mira/find-nearby` - Smart intent-based place finder
 
+**Chat Integration:**
+Mira now automatically detects location-based queries and provides:
+- Verified vet clinics with phone numbers and 24/7 status
+- Pet-friendly restaurants with ratings and features
+- Pet-friendly stays/hotels with amenities and pet fees
+- User's city is extracted from pet profile or message
+
+---
+
+## FUTURE: GOOGLE PLACES API INTEGRATION
+
+**Status:** User applying for API key
+**When ready:** Will enhance nearby places with:
+- Real-time opening hours
+- Live reviews and photos
+- True GPS-based "nearby" (not just city-based)
+- Dog parks, groomers, pet stores
+- Automatic data freshness
+
 ---
 
 ## FUTURE ROADMAP
