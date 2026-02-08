@@ -93,7 +93,7 @@ def analyze_product_for_intents(product):
 
 async def tag_all_products():
     """
-    Main function to tag all products in the database.
+    Main function to tag all products, services, experiences, bundles in the database.
     """
     # Connect to MongoDB
     mongo_url = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
@@ -103,60 +103,84 @@ async def tag_all_products():
     db = client[db_name]
     
     print("=" * 60)
-    print("AI Product Tagging - Starting...")
+    print("AI SEMANTIC TAGGING - Starting...")
     print("=" * 60)
     
-    # Get all products from products_master collection
-    products = await db.products_master.find({}).to_list(1000)
-    print(f"Found {len(products)} products to analyze")
+    # ═══════════════════════════════════════════════════════════
+    # TAG PRODUCTS
+    # ═══════════════════════════════════════════════════════════
+    products = await db.products_master.find({}).to_list(3000)
+    print(f"\n[PRODUCTS] Found {len(products)} products to analyze")
     
     updated_count = 0
-    skipped_count = 0
-    
     for product in products:
         product_id = product.get("id") or str(product.get("_id"))
         product_name = product.get("name", "Unknown")
         existing_tags = product.get("tags", [])
         
-        # Analyze product
         new_tags, matched_intents = analyze_product_for_intents(product)
         
         if not new_tags:
-            skipped_count += 1
             continue
         
-        # Merge with existing tags (avoid duplicates)
         all_tags = list(set([t.lower() for t in existing_tags] + [t.lower() for t in new_tags]))
         
-        # Store semantic_intents for better matching
-        update_data = {
-            "semantic_tags": new_tags,
-            "semantic_intents": matched_intents,
-            "tags": all_tags
-        }
-        
-        # Update in database
         result = await db.products_master.update_one(
             {"id": product_id} if product.get("id") else {"_id": product["_id"]},
-            {"$set": update_data}
+            {"$set": {"semantic_tags": new_tags, "semantic_intents": matched_intents, "tags": all_tags}}
         )
         
         if result.modified_count > 0:
             updated_count += 1
-            print(f"  ✓ {product_name[:40]:<40} → Intents: {matched_intents}")
-        else:
-            skipped_count += 1
     
-    print("=" * 60)
-    print(f"COMPLETE: {updated_count} products tagged, {skipped_count} skipped")
-    print("=" * 60)
+    print(f"[PRODUCTS] Tagged: {updated_count}")
     
-    # Also update care_bundles
+    # ═══════════════════════════════════════════════════════════
+    # TAG SERVICES
+    # ═══════════════════════════════════════════════════════════
+    services = await db.services.find({}).to_list(3000)
+    print(f"\n[SERVICES] Found {len(services)} services to analyze")
+    
+    service_updated = 0
+    for service in services:
+        new_tags, matched_intents = analyze_product_for_intents(service)
+        
+        if new_tags:
+            await db.services.update_one(
+                {"_id": service["_id"]},
+                {"$set": {"semantic_tags": new_tags, "semantic_intents": matched_intents}}
+            )
+            service_updated += 1
+    
+    print(f"[SERVICES] Tagged: {service_updated}")
+    
+    # ═══════════════════════════════════════════════════════════
+    # TAG EXPERIENCES
+    # ═══════════════════════════════════════════════════════════
+    experiences = await db.enjoy_experiences.find({}).to_list(100)
+    print(f"\n[EXPERIENCES] Found {len(experiences)} experiences to analyze")
+    
+    exp_updated = 0
+    for exp in experiences:
+        new_tags, matched_intents = analyze_product_for_intents(exp)
+        
+        if new_tags:
+            await db.enjoy_experiences.update_one(
+                {"_id": exp["_id"]},
+                {"$set": {"semantic_tags": new_tags, "semantic_intents": matched_intents}}
+            )
+            exp_updated += 1
+    
+    print(f"[EXPERIENCES] Tagged: {exp_updated}")
+    
+    # ═══════════════════════════════════════════════════════════
+    # TAG BUNDLES
+    # ═══════════════════════════════════════════════════════════
     bundles = await db.care_bundles.find({}).to_list(100)
-    print(f"\nTagging {len(bundles)} bundles...")
+    print(f"\n[BUNDLES] Found {len(bundles)} bundles to analyze")
     
+    bundle_updated = 0
     for bundle in bundles:
-        bundle_name = bundle.get("name", "Unknown")
         new_tags, matched_intents = analyze_product_for_intents(bundle)
         
         if new_tags:
@@ -164,9 +188,54 @@ async def tag_all_products():
                 {"_id": bundle["_id"]},
                 {"$set": {"semantic_tags": new_tags, "semantic_intents": matched_intents}}
             )
-            print(f"  ✓ Bundle: {bundle_name[:40]:<40} → {matched_intents}")
+            bundle_updated += 1
     
-    print("\nAI Product Tagging Complete!")
+    print(f"[BUNDLES] Tagged: {bundle_updated}")
+    
+    # ═══════════════════════════════════════════════════════════
+    # TAG RESTAURANTS (pet-friendly dining)
+    # ═══════════════════════════════════════════════════════════
+    restaurants = await db.restaurants.find({}).to_list(500)
+    print(f"\n[RESTAURANTS] Found {len(restaurants)} restaurants")
+    
+    rest_updated = 0
+    for rest in restaurants:
+        # All restaurants get travel/adventure tags
+        await db.restaurants.update_one(
+            {"_id": rest["_id"]},
+            {"$set": {
+                "semantic_tags": ["pet-friendly", "dining", "outdoor", "travel"],
+                "semantic_intents": ["travel_adventure"],
+                "verified": rest.get("verified", False)
+            }}
+        )
+        rest_updated += 1
+    
+    print(f"[RESTAURANTS] Tagged: {rest_updated}")
+    
+    # ═══════════════════════════════════════════════════════════
+    # TAG PET-FRIENDLY STAYS
+    # ═══════════════════════════════════════════════════════════
+    stays = await db.pet_friendly_stays.find({}).to_list(500)
+    print(f"\n[STAYS] Found {len(stays)} pet-friendly stays")
+    
+    stays_updated = 0
+    for stay in stays:
+        await db.pet_friendly_stays.update_one(
+            {"_id": stay["_id"]},
+            {"$set": {
+                "semantic_tags": ["pet-friendly", "accommodation", "travel", "vacation"],
+                "semantic_intents": ["travel_adventure"],
+                "verified": stay.get("verified", False)
+            }}
+        )
+        stays_updated += 1
+    
+    print(f"[STAYS] Tagged: {stays_updated}")
+    
+    print("\n" + "=" * 60)
+    print("AI SEMANTIC TAGGING COMPLETE!")
+    print("=" * 60)
     client.close()
 
 
