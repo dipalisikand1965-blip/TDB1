@@ -20,57 +20,29 @@ Mira OS is a sophisticated AI-powered pet assistant that provides personalized c
 - **Nearby Places** - Vet clinics, restaurants, dog parks with click-to-call
 - **Weather Intelligence** - Pet activity recommendations based on weather
 - **Interactive Feature Showcase** - Quick action buttons for common tasks
-- **YouTube Training Videos** - Personalized training content (NEW)
-- **Amadeus Travel API** - Pet-friendly hotel search (NEW)
+- **YouTube Training Videos** - Personalized training content in chat ✅ NEW
+- **Amadeus Travel API** - Pet-friendly hotel search in chat ✅ NEW
 
 ---
 
-## SOUL SCORE SYSTEM
+## RECENT UPDATES (February 8, 2026)
 
-**CRITICAL**: Soul Score must be consistent across the entire site.
+### Soul Score Mira Prompt ✅
+- Score ≤ 10%: Shows "Help Mira know [Pet]" purple badge with sparkle
+- Score > 10%: Shows actual percentage with amber/gold badge
+- Clicking badge navigates to `/pet-soul/[pet-id]`
 
-### Implementation (Fixed Feb 8, 2026)
-- **Score ≤ 10%**: Shows "Help Mira know [Pet]" prompt with purple badge and sparkle
-- **Score > 10%**: Shows actual percentage with amber/gold badge
-- Clicking the badge navigates to `/pet-soul/[pet-id]` page
+### YouTube Training Videos Integration ✅
+- Detects training keywords in chat (train, teach, learn, bark, potty, etc.)
+- Fetches relevant videos from YouTube Data API
+- Shows video cards with thumbnail, title, channel, play button
+- Links directly to YouTube for viewing
 
-### Calculation Logic
-Located in: `/app/backend/pet_score_logic.py` → `calculate_pet_soul_score()`
-
-```python
-# Soul score is calculated from doggy_soul_answers
-# Based on weighted questions across categories:
-# - Safety & Health (35 points)
-# - Personality (25 points)
-# - Lifestyle (20 points)
-# - Nutrition (10 points)
-# - Training (5 points)
-# - Relationships (5 points)
-
-# Score = weighted_points_earned / total_possible_points * 100
-```
-
-### Files that use Soul Score:
-- `/app/backend/server.py` line 10954: `/api/pets/my-pets` endpoint
-- `/app/backend/pet_score_logic.py`: Calculation logic
-- `/app/frontend/src/pages/MiraDemoPage.jsx` lines 3093-3110: Soul badge display
-- `/app/frontend/src/styles/mira-prod.css` lines 2412-2490: Soul badge styling
-
----
-
-## API KEYS & INTEGRATIONS
-
-### Configured in `/app/backend/.env`
-
-| Service | Key Variable | Status |
-|---------|--------------|--------|
-| **Emergent LLM** | `EMERGENT_LLM_KEY` | ✅ Working |
-| **Google Places** | `GOOGLE_PLACES_API_KEY` | ✅ Working |
-| **OpenWeather** | `OPENWEATHER_API_KEY` | ✅ Working |
-| **YouTube** | `YOUTUBE_API_KEY` | ✅ Working |
-| **Amadeus** | `AMADEUS_API_KEY` + `AMADEUS_API_SECRET` | ✅ Working |
-| **Foursquare** | `FOURSQUARE_API_KEY` | 🔜 Not integrated |
-| **ElevenLabs** | `ELEVENLABS_API_KEY` | 🔜 Not integrated |
+### Amadeus Pet-Friendly Hotels Integration ✅
+- Detects travel intent + city name (Mumbai, Delhi, Goa, etc.)
+- Fetches pet-friendly hotels from Amadeus API
+- Shows hotel cards with pet-friendly badges and policies
+- Directions button links to Google Maps
 
 ---
 
@@ -94,75 +66,68 @@ Located in: `/app/backend/pet_score_logic.py` → `calculate_pet_soul_score()`
 | Click-to-Call | ✅ | Direct call buttons |
 | Get Directions | ✅ | Google Maps navigation |
 
-### New Features (Feb 8, 2026)
+### New Integrations (Feb 8, 2026)
 | Feature | Status | Description |
 |---------|--------|-------------|
-| Soul Score Mira Prompt | ✅ | Shows "Help Mira know [Pet]" for incomplete profiles |
-| YouTube API Integration | ✅ | Training videos by breed/age/topic |
-| Amadeus API Integration | ✅ | Pet-friendly hotel search |
+| Soul Score Mira Prompt | ✅ | Encourages profile completion |
+| YouTube Training Videos | ✅ | Training content in chat |
+| Amadeus Pet Hotels | ✅ | Travel booking in chat |
+| Learn Test Chip | ✅ | Quick training video test |
+| Hotels Test Chip | ✅ | Quick hotel search test |
 
 ---
 
-## NEW API ENDPOINTS
+## API ENDPOINTS
 
 ### YouTube Training Videos
-- `GET /api/mira/youtube/videos?query=X&max_results=5` - Search videos
-- `GET /api/mira/youtube/by-breed?breed=X` - Videos by breed
-- `GET /api/mira/youtube/by-age?age_years=X&breed=X` - Videos by life stage
-- `GET /api/mira/youtube/by-topic?topic=X` - Videos by topic
-- `GET /api/mira/youtube/recommended/{pet_id}` - Personalized for pet
-- `GET /api/mira/youtube/test` - Test API connection
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/mira/youtube/videos` | Search videos by query |
+| `GET /api/mira/youtube/by-breed` | Videos specific to breed |
+| `GET /api/mira/youtube/by-age` | Videos by life stage |
+| `GET /api/mira/youtube/by-topic` | Videos by training topic |
+| `GET /api/mira/youtube/recommended/{pet_id}` | Personalized for pet |
+| `GET /api/mira/youtube/test` | Test API connection |
 
 ### Amadeus Travel
-- `GET /api/mira/amadeus/hotels?city=X` - Search pet-friendly hotels
-- `GET /api/mira/amadeus/travel-tips/{pet_id}?destination=X` - Travel recommendations
-- `GET /api/mira/amadeus/city-codes` - Supported cities
-- `GET /api/mira/amadeus/test` - Test API connection
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/mira/amadeus/hotels` | Search pet-friendly hotels |
+| `GET /api/mira/amadeus/travel-tips/{pet_id}` | Travel recommendations |
+| `GET /api/mira/amadeus/city-codes` | Supported cities (32) |
+| `GET /api/mira/amadeus/test` | Test API connection |
+
+---
+
+## KEYWORD DETECTION
+
+### Training Keywords (YouTube)
+`train`, `training`, `teach`, `learn`, `how to`, `puppy`, `behavior`, `obedience`, `trick`, `command`, `potty`, `leash`, `bite`, `bark`, `recall`
+
+### City Keywords (Amadeus)
+`mumbai`, `delhi`, `bangalore`, `bengaluru`, `chennai`, `kolkata`, `hyderabad`, `pune`, `goa`, `jaipur`, `ahmedabad`, `kochi`, `udaipur`, `shimla`, `manali`, `ooty`, `coorg`, `munnar`
+
+---
+
+## TEST SCENARIOS
+
+| Chip | Query | Tests |
+|------|-------|-------|
+| 📺 Learn | "How do I train my dog to stop barking?" | YouTube videos |
+| 🏨 Hotels | "Find pet-friendly hotels in Mumbai" | Amadeus hotels |
+| ✈️ Travel | "Planning a trip to Goa with my dog" | Hotels + Weather |
 
 ---
 
 ## PENDING TASKS
 
-### High Priority (P0)
-1. ✅ **Soul Score Display** - Fixed! Shows Mira prompt for incomplete profiles
-2. ✅ **YouTube Backend Integration** - Endpoints ready
-3. ✅ **Amadeus Backend Integration** - Endpoints ready
-4. 🔲 **YouTube Frontend Integration** - Display videos in chat/Learn pillar
-5. 🔲 **Amadeus Frontend Integration** - Travel booking in chat
-
 ### Medium Priority (P1)
-6. 🔲 **Verify "Get Directions" button** - Confirm Google Maps integration
-7. 🔲 **Foursquare API Integration** - Additional venue data
+1. 🔲 **Foursquare API Integration** - Additional venue data
+2. 🔲 **Learn Pillar Enhancement** - Dedicated training video section
 
 ### Low Priority (P2)
-8. 🔲 **Code Refactoring** - Break down MiraDemoPage.jsx (4000+ lines)
-9. 🔲 **Interactive Google Maps** - Embed map component
-
----
-
-## CODE ARCHITECTURE
-
-```
-/app
-├── backend/
-│   ├── server.py                    # Main FastAPI server
-│   ├── mira_routes.py               # Mira chat API (12,200+ lines)
-│   ├── pet_score_logic.py           # Soul score calculation
-│   ├── services/
-│   │   ├── google_places_service.py # Google Places API
-│   │   ├── google_maps_service.py   # Directions API
-│   │   ├── openweather_service.py   # Weather API
-│   │   ├── youtube_service.py       # YouTube API (NEW)
-│   │   └── amadeus_service.py       # Amadeus API (NEW)
-│   └── .env                         # All API keys
-│
-├── frontend/
-│   └── src/pages/
-│       └── MiraDemoPage.jsx         # Main Mira page
-│
-└── memory/
-    └── PRD.md                       # This document
-```
+3. 🔲 **Code Refactoring** - Break down MiraDemoPage.jsx (4000+ lines)
+4. 🔲 **Interactive Google Maps** - Embed map component
 
 ---
 
@@ -170,7 +135,6 @@ Located in: `/app/backend/pet_score_logic.py` → `calculate_pet_soul_score()`
 
 - **User Email**: `dipali@clubconcierge.in`
 - **Password**: `test123`
-- **Demo Pet**: Buddy (Golden Retriever, Score: 0%)
 
 ---
 
