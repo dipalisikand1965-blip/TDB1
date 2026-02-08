@@ -152,6 +152,7 @@ const StayPage = () => {
   const [nearbyAttractions, setNearbyAttractions] = useState([]);
   const [nearbyLoading, setNearbyLoading] = useState(false);
   const [selectedNearbyCity, setSelectedNearbyCity] = useState('mumbai');
+  const [nearbySearchInput, setNearbySearchInput] = useState(''); // For free-form city search
 
   // Stay checklist data
   const STAY_CHECKLIST = {
