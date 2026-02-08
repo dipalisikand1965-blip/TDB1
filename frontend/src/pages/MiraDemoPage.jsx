@@ -2044,6 +2044,18 @@ const MiraDemoPage = () => {
     const inputQuery = voiceQuery || query;
     if (!inputQuery.trim()) return;
     
+    // MIRA ENGINE MODE DETECTION - Set mode before processing
+    const lowerQuery = inputQuery.toLowerCase();
+    if (/passed away|rainbow bridge|grief|loss|miss.*so much|crying|heartbreak|💔|🌈/.test(lowerQuery)) {
+      setMiraMode('comfort');
+    } else if (/emergency|urgent|bleeding|vomiting blood|collapse|seizure|not breathing|🚨/.test(lowerQuery)) {
+      setMiraMode('emergency');
+    } else if (/show me|find|browse|what.*have|list|toys|treats|products/.test(lowerQuery)) {
+      setMiraMode('instant');
+    } else {
+      setMiraMode('thinking'); // Default for PLAN, BOOK, ADVISE
+    }
+    
     setIsProcessing(true);
     setQuery('');
     
