@@ -581,6 +581,9 @@ const MiraDemoPage = () => {
   });
   const [showMiraTray, setShowMiraTray] = useState(false);
   
+  // Unified C® button state (collapsed by default, expands to show WhatsApp/Chat/Email)
+  const [showConciergeOptions, setShowConciergeOptions] = useState(false);
+  
   // E018 & E019: Proactive Notifications - Birthday/Health Reminders
   const [proactiveAlerts, setProactiveAlerts] = useState({
     celebrations: [],
