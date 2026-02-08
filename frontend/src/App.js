@@ -303,6 +303,9 @@ function AppRouter() {
         {/* Payment Success Page - NO navbar for celebration feel */}
         <Route path="/payment/success" element={<PaymentSuccess />} />
         <Route path="/welcome" element={<PaymentSuccess />} />
+        
+        {/* Landing Page - Clean, no navbar for immersive experience */}
+        <Route path="/" element={<Home />} />
       
         {/* Main app routes - WITH navbar */}
         <Route path="/*" element={<MainLayout />} />
