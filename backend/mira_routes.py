@@ -1372,6 +1372,24 @@ async def search_real_products(
             # MIRA FIX: For birthday/party context, additional category restrictions
             is_birthday_search = any(word in safe_lower(search_override) for word in ['birthday', 'cake', 'celebration', 'party', 'love'])
             
+            # Get pet context for breed prioritization
+            pet_name = pet_context.get("name", "your pet")
+            pet_sensitivities = pet_context.get("sensitivities", [])
+            pet_breed = pet_context.get("breed", "")
+            
+            # BREED PRIORITIZATION: For birthday, first search for breed-specific cake
+            breed_specific_products = []
+            if is_birthday_search and pet_breed:
+                breed_query = {
+                    "available": {"$ne": False},
+                    "category": {"$in": ["cakes", "breed-cakes"]},
+                    "name": {"$regex": pet_breed, "$options": "i"}
+                }
+                breed_cursor = db.products_master.find(breed_query, {"_id": 0}).limit(2)
+                breed_specific_products = await breed_cursor.to_list(length=2)
+                if breed_specific_products:
+                    logger.info(f"[PRODUCT SEARCH] Found {len(breed_specific_products)} breed-specific cakes for {pet_breed}")
+            
             query["$or"] = [
                 {"name": {"$regex": "|".join(search_terms), "$options": "i"}},
                 {"description": {"$regex": "|".join(search_terms), "$options": "i"}},
@@ -1382,18 +1400,20 @@ async def search_real_products(
             
             # For birthday context, restrict to cake categories
             if is_birthday_search:
-                query["category"] = {"$in": ["cakes", "breed-cakes", "hampers", "celebration", "mini-cakes", "other"]}
-                logger.info("[PRODUCT SEARCH] Birthday context: Prioritizing cakes")
+                query["category"] = {"$in": ["cakes", "breed-cakes", "hampers", "celebration", "mini-cakes"]}
+                # Exclude Halloween items
+                query["name"] = {"$not": {"$regex": "halloween|ghost|creepy|spooky|jack o|googly|ghoul|skeleton|witch|pumpkin|crawly", "$options": "i"}}
+                logger.info("[PRODUCT SEARCH] Birthday context: Prioritizing cakes, excluding Halloween")
             
             cursor = db.products_master.find(query, {"_id": 0}).limit(limit * 2)
-            all_products = await cursor.to_list(length=limit * 2)
+            general_products = await cursor.to_list(length=limit * 2)
+            
+            # Combine breed-specific first, then general (deduplicated)
+            breed_names = {p.get("name", "").lower() for p in breed_specific_products}
+            all_products = breed_specific_products + [p for p in general_products if p.get("name", "").lower() not in breed_names]
             
             if all_products:
                 logger.info(f"[PRODUCT SEARCH] Found {len(all_products)} products with override: {search_override}")
-                # Process products with pet context
-                pet_name = pet_context.get("name", "your pet")
-                pet_sensitivities = pet_context.get("sensitivities", [])
-                pet_breed = pet_context.get("breed", "")
                 
                 for p in all_products[:limit]:
                     # Filter out products with allergens
@@ -1408,7 +1428,10 @@ async def search_real_products(
                             continue
                     
                     # Generate context-appropriate "why_for_pet" message
-                    if is_birthday_search:
+                    product_name = p.get("name", "").lower()
+                    if is_birthday_search and pet_breed and pet_breed.lower() in product_name:
+                        why_reason = f"🎂 Made especially for {pet_breed}s like {pet_name}!"
+                    elif is_birthday_search:
                         why_reason = f"Perfect for {pet_name}'s celebration"
                     elif "travel" in search_override.lower():
                         why_reason = f"Perfect for {pet_name}'s travel needs"
