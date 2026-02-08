@@ -4579,6 +4579,87 @@ const MiraDemoPage = () => {
         </div>
       )}
       
+      {/* LEARN MODAL - Training videos for pet */}
+      {showLearnModal && (
+        <div className="learn-modal-overlay" onClick={() => setShowLearnModal(false)} data-testid="learn-modal">
+          <div className="learn-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="learn-modal-header">
+              <div className="learn-modal-title">
+                <span className="learn-icon">📺</span>
+                <div>
+                  <h3>Learn with {pet.name}</h3>
+                  <p>Training videos tailored for {pet.breed || 'your pet'}</p>
+                </div>
+              </div>
+              <button onClick={() => setShowLearnModal(false)} className="learn-close-btn">
+                <X />
+              </button>
+            </div>
+            
+            {/* Category Tabs */}
+            <div className="learn-categories">
+              {[
+                { id: 'recommended', label: '✨ For You', icon: '✨' },
+                { id: 'barking', label: '🔊 Barking', icon: '🔊' },
+                { id: 'potty', label: '🚽 Potty', icon: '🚽' },
+                { id: 'leash', label: '🦮 Leash', icon: '🦮' },
+                { id: 'tricks', label: '🎪 Tricks', icon: '🎪' },
+                { id: 'anxiety', label: '😰 Anxiety', icon: '😰' },
+                { id: 'puppy', label: '🐕 Puppy', icon: '🐕' },
+              ].map((cat) => (
+                <button
+                  key={cat.id}
+                  className={`learn-category-btn ${learnCategory === cat.id ? 'active' : ''}`}
+                  onClick={() => fetchLearnVideos(cat.id)}
+                  data-testid={`learn-category-${cat.id}`}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
+            
+            {/* Videos Grid */}
+            <div className="learn-videos-container">
+              {learnLoading ? (
+                <div className="learn-loading">
+                  <div className="learn-spinner"></div>
+                  <p>Finding videos for {pet.name}...</p>
+                </div>
+              ) : learnVideos.length > 0 ? (
+                <div className="learn-videos-grid">
+                  {learnVideos.map((video, idx) => (
+                    <a
+                      key={idx}
+                      href={video.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="learn-video-card"
+                      data-testid={`learn-video-${idx}`}
+                    >
+                      <div className="learn-video-thumbnail">
+                        <img src={video.thumbnail} alt={video.title} />
+                        <div className="learn-video-play">
+                          <Play size={32} fill="white" />
+                        </div>
+                      </div>
+                      <div className="learn-video-info">
+                        <h4>{video.title?.substring(0, 50)}{video.title?.length > 50 ? '...' : ''}</h4>
+                        <p>{video.channel}</p>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              ) : (
+                <div className="learn-empty">
+                  <p>No videos found for this category.</p>
+                  <button onClick={() => fetchLearnVideos('recommended')}>View recommended videos</button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+      
       {/* SERVICE REQUEST MODAL - Everything stays in Mira OS */}
       {serviceRequestModal.isOpen && serviceRequestModal.service && (
         <div className="mp-modal-overlay" onClick={closeServiceRequest}>
