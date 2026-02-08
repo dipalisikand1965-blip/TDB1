@@ -11584,6 +11584,182 @@ async def test_google_places_api():
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# WEATHER API - Pet activity recommendations based on weather
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@router.get("/weather/current")
+async def get_current_weather(city: str):
+    """
+    Get current weather with pet safety advisory.
+    """
+    try:
+        from services.openweather_service import get_weather_by_city
+        
+        weather = await get_weather_by_city(city)
+        
+        if not weather:
+            return {"success": False, "error": "Could not fetch weather data"}
+        
+        return {
+            "success": True,
+            "weather": weather
+        }
+    except Exception as e:
+        logger.error(f"Weather API error: {e}")
+        return {"success": False, "error": str(e)}
+
+
+@router.get("/weather/pet-activity")
+async def get_pet_activity_weather(city: str):
+    """
+    Get pet activity recommendations based on current weather.
+    Includes safety level, walk recommendations, and activity suggestions.
+    """
+    try:
+        from services.openweather_service import get_pet_activity_recommendation
+        
+        result = await get_pet_activity_recommendation(city)
+        return result
+    except Exception as e:
+        logger.error(f"Pet activity weather error: {e}")
+        return {"success": False, "error": str(e)}
+
+
+@router.get("/weather/forecast")
+async def get_weather_forecast_endpoint(city: str):
+    """
+    Get weather forecast with best times for dog walks.
+    """
+    try:
+        from services.openweather_service import get_weather_forecast
+        
+        forecast = await get_weather_forecast(city)
+        
+        if not forecast:
+            return {"success": False, "error": "Could not fetch forecast"}
+        
+        return {
+            "success": True,
+            "forecast": forecast
+        }
+    except Exception as e:
+        logger.error(f"Weather forecast error: {e}")
+        return {"success": False, "error": str(e)}
+
+
+@router.get("/weather/test")
+async def test_weather_api():
+    """Test if OpenWeather API is working."""
+    try:
+        from services.openweather_service import test_openweather_connection
+        return await test_openweather_connection()
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# DIRECTIONS API - Navigation to vets, parks, pet-friendly places
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@router.get("/directions/to-vet")
+async def get_directions_to_vet(
+    from_location: str,
+    city: str,
+    emergency: bool = False
+):
+    """
+    Get directions to the nearest vet clinic.
+    Set emergency=true to prioritize 24/7 clinics.
+    """
+    try:
+        from services.google_maps_service import get_directions_to_nearest_vet
+        
+        result = await get_directions_to_nearest_vet(
+            user_location=from_location,
+            city=city,
+            emergency=emergency
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Directions to vet error: {e}")
+        return {"success": False, "error": str(e)}
+
+
+@router.get("/directions/to-place")
+async def get_directions_to_place_endpoint(
+    from_location: str,
+    place_name: str,
+    place_address: str,
+    mode: str = "driving"
+):
+    """
+    Get directions to a specific place.
+    Modes: driving, walking, transit
+    """
+    try:
+        from services.google_maps_service import get_directions_to_place
+        
+        result = await get_directions_to_place(
+            user_location=from_location,
+            place_name=place_name,
+            place_address=place_address,
+            mode=mode
+        )
+        return result
+    except Exception as e:
+        logger.error(f"Directions error: {e}")
+        return {"success": False, "error": str(e)}
+
+
+@router.post("/directions/navigate")
+async def navigate_to_destination(request: Request):
+    """
+    Smart navigation with pet-friendly tips.
+    
+    Request body:
+    {
+        "from": "User's location",
+        "to": "Destination address or place name",
+        "mode": "driving/walking/transit",
+        "with_pet": true/false
+    }
+    """
+    try:
+        from services.google_maps_service import get_directions
+        
+        data = await request.json()
+        origin = data.get("from")
+        destination = data.get("to")
+        mode = data.get("mode", "driving")
+        
+        if not origin or not destination:
+            return {"success": False, "error": "Both 'from' and 'to' locations are required"}
+        
+        directions = await get_directions(origin, destination, mode)
+        
+        if not directions:
+            return {"success": False, "error": "Could not find directions"}
+        
+        return {
+            "success": True,
+            "directions": directions
+        }
+    except Exception as e:
+        logger.error(f"Navigation error: {e}")
+        return {"success": False, "error": str(e)}
+
+
+@router.get("/directions/test")
+async def test_directions_api():
+    """Test if Google Directions API is working."""
+    try:
+        from services.google_maps_service import test_directions_api
+        return await test_directions_api()
+    except Exception as e:
+        return {"success": False, "error": str(e)}
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # AI SEMANTIC TAGGING - Run as part of Master Sync
 # ═══════════════════════════════════════════════════════════════════════════════
 
