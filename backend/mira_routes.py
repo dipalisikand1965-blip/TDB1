@@ -7538,7 +7538,8 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
             "selected_pet": selected_pet.get("name") if selected_pet else None,
             "research_mode": research_context is not None,
             "memories_used": memories_used,  # NEW: Indicates if Mira used relationship memories
-            "nearby_places": nearby_places_data,  # NEW: Nearby vet clinics, restaurants, stays
+            "nearby_places": nearby_places_data,  # Nearby vet clinics, restaurants, stays
+            "weather": weather_data,  # NEW: Weather-based activity recommendations
             "quick_prompts": get_pillar_quick_prompts(pillar),
             "end_state": "RESPONDED",
             "disclaimer_shown": is_nutrition_query  # Track if nutrition disclaimer should be shown
