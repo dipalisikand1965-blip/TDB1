@@ -154,61 +154,65 @@ def _process_hotel_response(hotels: List[Dict]) -> List[Dict[str, Any]]:
     return processed
 
 
-# City code mapping - WORLDWIDE support
-# Common cities with their IATA codes
-CITY_CODES = {
+# City code mapping - WORLDWIDE support with country codes for accuracy
+# Format: city_name: (IATA_code, country_code)
+CITY_CODES_WITH_COUNTRY = {
     # India
-    "mumbai": "BOM", "delhi": "DEL", "bangalore": "BLR", "bengaluru": "BLR",
-    "chennai": "MAA", "kolkata": "CCU", "hyderabad": "HYD", "pune": "PNQ",
-    "goa": "GOI", "jaipur": "JAI", "ahmedabad": "AMD", "kochi": "COK",
-    "gurgaon": "DEL", "noida": "DEL", "udaipur": "UDR", "jodhpur": "JDH",
-    "agra": "AGR", "varanasi": "VNS", "shimla": "SLV", "manali": "KUU",
-    "rishikesh": "DED", "mussoorie": "DED", "ooty": "CBE", "coorg": "IXE",
-    "munnar": "COK", "darjeeling": "IXB", "gangtok": "IXB", "leh": "IXL",
-    "srinagar": "SXR", "amritsar": "ATQ", "chandigarh": "IXC", "lucknow": "LKO",
-    "indore": "IDR", "bhopal": "BHO", "nagpur": "NAG", "thiruvananthapuram": "TRV",
-    "trivandrum": "TRV", "mysore": "MYQ", "vizag": "VTZ", "visakhapatnam": "VTZ",
+    "mumbai": ("BOM", "IN"), "delhi": ("DEL", "IN"), "bangalore": ("BLR", "IN"), "bengaluru": ("BLR", "IN"),
+    "chennai": ("MAA", "IN"), "kolkata": ("CCU", "IN"), "hyderabad": ("HYD", "IN"), "pune": ("PNQ", "IN"),
+    "goa": ("GOI", "IN"), "jaipur": ("JAI", "IN"), "ahmedabad": ("AMD", "IN"), "kochi": ("COK", "IN"),
+    "gurgaon": ("DEL", "IN"), "noida": ("DEL", "IN"), "udaipur": ("UDR", "IN"), "jodhpur": ("JDH", "IN"),
+    "agra": ("AGR", "IN"), "varanasi": ("VNS", "IN"), "shimla": ("SLV", "IN"), "manali": ("KUU", "IN"),
+    "rishikesh": ("DED", "IN"), "mussoorie": ("DED", "IN"), "ooty": ("CJB", "IN"), "coorg": ("IXE", "IN"),
+    "munnar": ("COK", "IN"), "darjeeling": ("IXB", "IN"), "gangtok": ("IXB", "IN"), "leh": ("IXL", "IN"),
+    "srinagar": ("SXR", "IN"), "amritsar": ("ATQ", "IN"), "chandigarh": ("IXC", "IN"), "lucknow": ("LKO", "IN"),
+    "indore": ("IDR", "IN"), "bhopal": ("BHO", "IN"), "nagpur": ("NAG", "IN"), "thiruvananthapuram": ("TRV", "IN"),
+    "trivandrum": ("TRV", "IN"), "mysore": ("MYQ", "IN"), "vizag": ("VTZ", "IN"), "visakhapatnam": ("VTZ", "IN"),
+    "coimbatore": ("CJB", "IN"),
     
     # Europe
-    "london": "LON", "paris": "PAR", "rome": "ROM", "barcelona": "BCN",
-    "madrid": "MAD", "amsterdam": "AMS", "berlin": "BER", "munich": "MUC",
-    "vienna": "VIE", "prague": "PRG", "budapest": "BUD", "lisbon": "LIS",
-    "athens": "ATH", "dublin": "DUB", "zurich": "ZRH", "geneva": "GVA",
-    "milan": "MIL", "venice": "VCE", "florence": "FLR", "nice": "NCE",
-    "brussels": "BRU", "copenhagen": "CPH", "stockholm": "STO", "oslo": "OSL",
-    "helsinki": "HEL", "warsaw": "WAW", "krakow": "KRK", "edinburgh": "EDI",
-    "manchester": "MAN", "birmingham": "BHX", "frankfurt": "FRA",
+    "london": ("LON", "GB"), "paris": ("PAR", "FR"), "rome": ("ROM", "IT"), "barcelona": ("BCN", "ES"),
+    "madrid": ("MAD", "ES"), "amsterdam": ("AMS", "NL"), "berlin": ("BER", "DE"), "munich": ("MUC", "DE"),
+    "vienna": ("VIE", "AT"), "prague": ("PRG", "CZ"), "budapest": ("BUD", "HU"), "lisbon": ("LIS", "PT"),
+    "athens": ("ATH", "GR"), "dublin": ("DUB", "IE"), "zurich": ("ZRH", "CH"), "geneva": ("GVA", "CH"),
+    "milan": ("MIL", "IT"), "venice": ("VCE", "IT"), "florence": ("FLR", "IT"), "nice": ("NCE", "FR"),
+    "brussels": ("BRU", "BE"), "copenhagen": ("CPH", "DK"), "stockholm": ("STO", "SE"), "oslo": ("OSL", "NO"),
+    "helsinki": ("HEL", "FI"), "warsaw": ("WAW", "PL"), "krakow": ("KRK", "PL"), "edinburgh": ("EDI", "GB"),
+    "manchester": ("MAN", "GB"), "birmingham": ("BHX", "GB"), "frankfurt": ("FRA", "DE"),
     
     # Asia Pacific
-    "singapore": "SIN", "bangkok": "BKK", "kuala lumpur": "KUL", "tokyo": "TYO",
-    "osaka": "OSA", "kyoto": "KIX", "seoul": "SEL", "hong kong": "HKG",
-    "taipei": "TPE", "manila": "MNL", "jakarta": "JKT", "bali": "DPS",
-    "phuket": "HKT", "hanoi": "HAN", "ho chi minh": "SGN", "saigon": "SGN",
-    "beijing": "BJS", "shanghai": "SHA", "guangzhou": "CAN", "shenzhen": "SZX",
-    "sydney": "SYD", "melbourne": "MEL", "brisbane": "BNE", "perth": "PER",
-    "auckland": "AKL", "wellington": "WLG", "fiji": "SUV",
+    "singapore": ("SIN", "SG"), "bangkok": ("BKK", "TH"), "kuala lumpur": ("KUL", "MY"), "tokyo": ("TYO", "JP"),
+    "osaka": ("OSA", "JP"), "kyoto": ("KIX", "JP"), "seoul": ("SEL", "KR"), "hong kong": ("HKG", "HK"),
+    "taipei": ("TPE", "TW"), "manila": ("MNL", "PH"), "jakarta": ("JKT", "ID"), "bali": ("DPS", "ID"),
+    "phuket": ("HKT", "TH"), "hanoi": ("HAN", "VN"), "ho chi minh": ("SGN", "VN"), "saigon": ("SGN", "VN"),
+    "beijing": ("BJS", "CN"), "shanghai": ("SHA", "CN"), "guangzhou": ("CAN", "CN"), "shenzhen": ("SZX", "CN"),
+    "sydney": ("SYD", "AU"), "melbourne": ("MEL", "AU"), "brisbane": ("BNE", "AU"), "perth": ("PER", "AU"),
+    "auckland": ("AKL", "NZ"), "wellington": ("WLG", "NZ"), "fiji": ("SUV", "FJ"),
     
     # Middle East
-    "dubai": "DXB", "abu dhabi": "AUH", "doha": "DOH", "muscat": "MCT",
-    "bahrain": "BAH", "kuwait": "KWI", "riyadh": "RUH", "jeddah": "JED",
-    "amman": "AMM", "beirut": "BEY", "tel aviv": "TLV", "istanbul": "IST",
+    "dubai": ("DXB", "AE"), "abu dhabi": ("AUH", "AE"), "doha": ("DOH", "QA"), "muscat": ("MCT", "OM"),
+    "bahrain": ("BAH", "BH"), "kuwait": ("KWI", "KW"), "riyadh": ("RUH", "SA"), "jeddah": ("JED", "SA"),
+    "amman": ("AMM", "JO"), "beirut": ("BEY", "LB"), "tel aviv": ("TLV", "IL"), "istanbul": ("IST", "TR"),
     
     # Africa
-    "cairo": "CAI", "johannesburg": "JNB", "cape town": "CPT", "nairobi": "NBO",
-    "casablanca": "CMN", "marrakech": "RAK", "mauritius": "MRU", "seychelles": "SEZ",
-    "zanzibar": "ZNZ", "lagos": "LOS", "accra": "ACC",
+    "cairo": ("CAI", "EG"), "johannesburg": ("JNB", "ZA"), "cape town": ("CPT", "ZA"), "nairobi": ("NBO", "KE"),
+    "casablanca": ("CMN", "MA"), "marrakech": ("RAK", "MA"), "mauritius": ("MRU", "MU"), "seychelles": ("SEZ", "SC"),
+    "zanzibar": ("ZNZ", "TZ"), "lagos": ("LOS", "NG"), "accra": ("ACC", "GH"),
     
     # Americas
-    "new york": "NYC", "los angeles": "LAX", "san francisco": "SFO", "chicago": "CHI",
-    "miami": "MIA", "las vegas": "LAS", "boston": "BOS", "seattle": "SEA",
-    "washington": "WAS", "denver": "DEN", "dallas": "DFW", "houston": "HOU",
-    "toronto": "YTO", "vancouver": "YVR", "montreal": "YMQ", "cancun": "CUN",
-    "mexico city": "MEX", "sao paulo": "SAO", "rio de janeiro": "RIO", "lima": "LIM",
-    "bogota": "BOG", "buenos aires": "BUE", "santiago": "SCL",
+    "new york": ("NYC", "US"), "los angeles": ("LAX", "US"), "san francisco": ("SFO", "US"), "chicago": ("CHI", "US"),
+    "miami": ("MIA", "US"), "las vegas": ("LAS", "US"), "boston": ("BOS", "US"), "seattle": ("SEA", "US"),
+    "washington": ("WAS", "US"), "denver": ("DEN", "US"), "dallas": ("DFW", "US"), "houston": ("HOU", "US"),
+    "toronto": ("YTO", "CA"), "vancouver": ("YVR", "CA"), "montreal": ("YMQ", "CA"), "cancun": ("CUN", "MX"),
+    "mexico city": ("MEX", "MX"), "sao paulo": ("SAO", "BR"), "rio de janeiro": ("RIO", "BR"), "lima": ("LIM", "PE"),
+    "bogota": ("BOG", "CO"), "buenos aires": ("BUE", "AR"), "santiago": ("SCL", "CL"),
     
     # UK specific
-    "uk": "LON", "england": "LON", "britain": "LON",
+    "uk": ("LON", "GB"), "england": ("LON", "GB"), "britain": ("LON", "GB"),
 }
+
+# Legacy simple mapping for backward compatibility
+CITY_CODES = {k: v[0] for k, v in CITY_CODES_WITH_COUNTRY.items()}
 
 # Keep backward compatibility
 INDIA_CITY_CODES = {k: v for k, v in CITY_CODES.items() if v in ["BOM", "DEL", "BLR", "MAA", "CCU", "HYD", "PNQ", "GOI", "JAI", "AMD", "COK", "UDR", "JDH", "AGR", "VNS", "SLV", "KUU", "DED", "CBE", "IXE"]}
