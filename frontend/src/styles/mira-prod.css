@@ -6767,7 +6767,112 @@ input, select, textarea {
 .mp-skeleton-content {
   display: flex;
   flex-direction: column;
+  gap: 10px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   MIRA ENGINE MODE BADGES - Like ChatGPT's "Thinking"
+   /Instant, /Thinking, /Comfort, /Emergency
+═══════════════════════════════════════════════════════════════ */
+.mp-mode-badge {
+  display: inline-flex;
+  align-items: center;
   gap: 8px;
+  padding: 8px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  animation: modeAppear 0.4s ease;
+}
+
+.mp-mode-icon {
+  font-size: 14px;
+  animation: iconPulse 2s ease-in-out infinite;
+}
+
+.mp-mode-label {
+  letter-spacing: 0.3px;
+}
+
+/* Thinking Mode - Deep purple, thoughtful */
+.mp-mode-thinking {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.2) 0%, rgba(168, 85, 247, 0.15) 100%);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  color: #c4b5fd;
+}
+
+.mp-mode-thinking .mp-mode-icon {
+  animation: brainThink 2s ease-in-out infinite;
+}
+
+/* Instant Mode - Quick, electric */
+.mp-mode-instant {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.15) 0%, rgba(245, 158, 11, 0.1) 100%);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  color: #fde68a;
+}
+
+.mp-mode-instant .mp-mode-icon {
+  animation: lightning 0.8s ease-in-out infinite;
+}
+
+/* Comfort Mode - Soft, gentle purple */
+.mp-mode-comfort {
+  background: linear-gradient(135deg, rgba(192, 132, 252, 0.2) 0%, rgba(167, 139, 250, 0.15) 100%);
+  border: 1px solid rgba(192, 132, 252, 0.3);
+  color: #e9d5ff;
+}
+
+.mp-mode-comfort .mp-mode-icon {
+  animation: gentlePulse 3s ease-in-out infinite;
+}
+
+/* Emergency Mode - Urgent red */
+.mp-mode-emergency {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.15) 100%);
+  border: 1px solid rgba(239, 68, 68, 0.4);
+  color: #fecaca;
+}
+
+.mp-mode-emergency .mp-mode-icon {
+  animation: urgentPulse 0.5s ease-in-out infinite;
+}
+
+/* Ready Mode - Default */
+.mp-mode-ready {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(168, 85, 247, 0.1) 100%);
+  border: 1px solid rgba(168, 85, 247, 0.25);
+  color: #d8b4fe;
+}
+
+@keyframes modeAppear {
+  0% { opacity: 0; transform: translateY(-5px) scale(0.95); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes brainThink {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15) rotate(5deg); }
+}
+
+@keyframes lightning {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.7; }
+}
+
+@keyframes gentlePulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+
+@keyframes urgentPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
+@keyframes iconPulse {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
 }
 
 .mp-skeleton-text {
