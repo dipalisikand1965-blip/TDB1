@@ -522,6 +522,7 @@ const MiraDemoPage = () => {
   
   // MULTI-PET SUPPORT - Switch between pets
   const [showPetSelector, setShowPetSelector] = useState(false);
+  const [userHasOptedInForProducts, setUserHasOptedInForProducts] = useState(false);
   
   // MULTI-SESSION MANAGEMENT - Past chats
   const [pastSessions, setPastSessions] = useState([]);
