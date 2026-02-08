@@ -2417,6 +2417,13 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
         except Exception as nearby_err:
             logger.error(f"Nearby places error: {nearby_err}")
         
+        # Determine if we should signal frontend to show travel results
+        # Only after clarifying questions have been answered
+        show_travel_results = False
+        if is_travel_request and travel_clarification_done:
+            show_travel_results = True
+            logger.info("[TRAVEL FLOW] Clarification done, signaling frontend to show hotels")
+        
         response_data = {
             "success": True,
             "understanding": {
@@ -2445,7 +2452,8 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
             },
             "execution_type": execution_type,
             "nearby_places": nearby_places_data,  # Vet clinics, restaurants, parks, stays
-            "weather": weather_data  # Weather-based activity recommendations
+            "weather": weather_data,  # Weather-based activity recommendations
+            "show_travel_results": show_travel_results  # Signal frontend to fetch hotels
         }
         
         # ============================================
