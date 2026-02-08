@@ -20,7 +20,8 @@ import {
   HelpCircle, Heart, Sparkles, ChevronDown, ChevronUp, ChevronRight,
   ShoppingBag, PawPrint, Bot, History, Plus, Check, Search,
   ThumbsUp, ThumbsDown, X, Phone, Mail, MessageSquare, AlertCircle,
-  Star, Crown, Gift, Volume2, VolumeX, Wand2, ArrowRight, ExternalLink, Shield
+  Star, Crown, Gift, Volume2, VolumeX, Wand2, ArrowRight, ExternalLink, Shield,
+  Award, RefreshCw
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { API_URL } from '../utils/api';
