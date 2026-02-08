@@ -47,10 +47,37 @@
 | E013 | Remembered Service Providers | B | ✅ DONE | Feb 7, 2026 |
 | E014 | Services from Database | F | ✅ DONE | Feb 7, 2026 |
 | E017 | Pet Photo in Recommendations | D | ✅ DONE | Feb 7, 2026 |
+| E018 | Birthday/Anniversary Reminders | C | ✅ DONE | Feb 8, 2026 |
+| E019 | Health Check Reminders | C | ✅ DONE | Feb 8, 2026 |
+| E021 | Weather-Aware Suggestions | A | ✅ DONE | Feb 8, 2026 |
+| E022 | Smart Product Bundles | F | ✅ DONE | Feb 8, 2026 |
+| E024 | Voice Personality Auto-Detection | D | ✅ DONE | Feb 8, 2026 |
+| E025 | Pet Mood Detection | A | ✅ DONE | Feb 8, 2026 |
+| E027 | Daily Digest | C | ✅ DONE | Feb 8, 2026 |
+| E028 | Milestone Celebrations | D | ✅ DONE | Feb 8, 2026 |
+| E030 | Memory Lane | D | ✅ DONE | Feb 8, 2026 |
+| E032 | Semantic Product Search | A | ✅ DONE | Feb 8, 2026 |
+| E033 | Conversation Memory | A | ✅ DONE | Feb 8, 2026 |
+| E034 | Smart Reordering | F | ✅ DONE | Feb 8, 2026 |
 
 ---
 
 ## 🚀 PLANNED ENHANCEMENTS (The Road to World Class)
+
+### TIER 0: IMMEDIATE (This Week)
+
+| ID | Enhancement | Category | Priority | Complexity |
+|----|-------------|----------|----------|------------|
+| E039 | **Pet-Friendly Restaurant Database** | F | P0 | Medium |
+| | Expand from 48 to 200+ verified restaurants across India | | | |
+| | - Mumbai: 30+ | Bangalore: 30+ | Delhi: 30+ | Others: 50+ | | | |
+| E040 | **Pet-Friendly Stays Database** | F | P0 | Medium |
+| | Expand from 12 to 100+ verified pet-friendly stays | | | |
+| | - Hotels, resorts, homestays, Airbnbs across India | | | |
+| E041 | **Restaurant/Stay Verification Flow** | F | P1 | Low |
+| | Admin panel to verify user-submitted listings | | | |
+| E042 | **Local Places Integration** | F | P1 | Medium |
+| | Dog parks, pet stores, vet clinics by city | | | |
 
 ### TIER 1: MUST HAVE (Next 2 Weeks)
 
