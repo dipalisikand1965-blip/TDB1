@@ -2740,6 +2740,11 @@ const MiraDemoPage = () => {
       
     } catch (error) {
       console.error('Mira error:', error);
+      // Clear skeleton on error
+      clearTimeout(skeletonTimer);
+      setShowSkeleton(false);
+      setIsTyping(false);
+      
       // Instead of just handing to Concierge®, show a more helpful error
       const errorMessage = {
         type: 'mira',
@@ -2755,6 +2760,7 @@ const MiraDemoPage = () => {
     }
     
     setIsProcessing(false);
+    setShowSkeleton(false); // Always clear skeleton when done
   }, [query, token, user, pet, extractQuickReplies, currentTicket, syncToServiceDesk, 
       conversationStage, completedSteps, stepHistory, currentStep, completeStep, isAskingForMoreInfo,
       voiceEnabled, speakWithMira]);
