@@ -2383,6 +2383,62 @@ const MiraDemoPage = () => {
         pickContext = `Picks for ${pet.name}`;
       }
       
+      // ═══════════════════════════════════════════════════════════════════
+      // YOUTUBE TRAINING VIDEOS - Detect training/learn intents
+      // ═══════════════════════════════════════════════════════════════════
+      let trainingVideos = [];
+      const trainingKeywords = ['train', 'training', 'teach', 'learn', 'how to', 'puppy', 'behavior', 'obedience', 'trick', 'command', 'potty', 'leash', 'bite', 'bark', 'recall'];
+      const hasTrainingIntent = trainingKeywords.some(kw => inputQuery.toLowerCase().includes(kw));
+      
+      if (hasTrainingIntent && pet?.id) {
+        try {
+          // Extract topic from query for better video matching
+          let videoTopic = inputQuery.toLowerCase()
+            .replace(/how (do i|to|can i)/g, '')
+            .replace(/my (dog|puppy|pet)/g, '')
+            .replace(/[?!]/g, '')
+            .trim();
+          
+          const videoResponse = await fetch(`${API_URL}/api/mira/youtube/by-topic?topic=${encodeURIComponent(videoTopic)}&breed=${encodeURIComponent(pet.breed || '')}&max_results=3`);
+          const videoData = await videoResponse.json();
+          
+          if (videoData.success && videoData.videos?.length > 0) {
+            trainingVideos = videoData.videos;
+            console.log('[YOUTUBE] Found', trainingVideos.length, 'training videos for:', videoTopic);
+          }
+        } catch (e) {
+          console.log('[YOUTUBE] Video fetch failed:', e.message);
+        }
+      }
+      
+      // ═══════════════════════════════════════════════════════════════════
+      // AMADEUS TRAVEL - Detect hotel/travel intents for cities
+      // ═══════════════════════════════════════════════════════════════════
+      let travelHotels = [];
+      const travelKeywords = ['hotel', 'stay', 'trip', 'travel', 'vacation', 'holiday', 'book', 'pet-friendly'];
+      const cityKeywords = ['mumbai', 'delhi', 'bangalore', 'bengaluru', 'chennai', 'kolkata', 'hyderabad', 'pune', 'goa', 'jaipur', 'ahmedabad', 'kochi', 'udaipur', 'shimla', 'manali', 'ooty', 'coorg', 'munnar'];
+      const hasTravelIntent = travelKeywords.some(kw => inputQuery.toLowerCase().includes(kw));
+      const detectedCity = cityKeywords.find(city => inputQuery.toLowerCase().includes(city));
+      
+      if (hasTravelIntent && detectedCity) {
+        try {
+          const hotelResponse = await fetch(`${API_URL}/api/mira/amadeus/hotels?city=${encodeURIComponent(detectedCity)}&max_results=3`);
+          const hotelData = await hotelResponse.json();
+          
+          if (hotelData.success && hotelData.hotels?.length > 0) {
+            travelHotels = hotelData.hotels;
+            console.log('[AMADEUS] Found', travelHotels.length, 'hotels in:', detectedCity);
+          }
+        } catch (e) {
+          console.log('[AMADEUS] Hotel fetch failed:', e.message);
+        }
+      }
+      
+      // Add YouTube and Amadeus data to message
+      miraMessage.data.training_videos = trainingVideos;
+      miraMessage.data.travel_hotels = travelHotels;
+      miraMessage.data.travel_city = detectedCity;
+      
       // E032: SEMANTIC SEARCH - Enhance tray with intent-based recommendations
       // If main API returned few results, use semantic search to find more relevant items
       if (!inComfortMode && pet?.id && (newProducts.length < 3 || newServices.length < 1)) {
