@@ -86,7 +86,7 @@ async def search_places(
     
     try:
         headers = {
-            "Authorization": FOURSQUARE_API_KEY,
+            "Authorization": f"{FOURSQUARE_API_KEY}",  # Foursquare v3 uses plain API key
             "Accept": "application/json"
         }
         
