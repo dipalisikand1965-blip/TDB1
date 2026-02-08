@@ -3695,7 +3695,7 @@ const MiraDemoPage = () => {
         <button onClick={() => setShowHelpModal(true)} className="mp-dock-btn" data-testid="dock-help">
           <HelpCircle /> <span>Help</span>
         </button>
-        <button onClick={() => navigate('/pet-soul')} className="mp-dock-btn" data-testid="dock-soul">
+        <button onClick={() => navigate('/dashboard')} className="mp-dock-btn" data-testid="dock-soul">
           <Heart /> <span>Soul</span>
         </button>
         <button onClick={() => { setShowLearnModal(true); fetchLearnVideos('recommended'); }} className="mp-dock-btn" data-testid="dock-learn">
