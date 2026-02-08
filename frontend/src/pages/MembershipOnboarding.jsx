@@ -113,8 +113,9 @@ const MembershipOnboarding = () => {
   const [parentErrors, setParentErrors] = useState({});
   const [petErrors, setPetErrors] = useState([]);
   const [uploadingPhoto, setUploadingPhoto] = useState(null); // Track which pet is uploading
+  const [detectingBreed, setDetectingBreed] = useState(null); // Track which pet is detecting breed
 
-  // Handle pet photo upload
+  // Handle pet photo upload with AI Breed Detection
   const handlePetPhotoSelect = async (petIndex, event) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -135,6 +136,40 @@ const MembershipOnboarding = () => {
 
     // Store the file for later upload (during form submission)
     updatePetData(petIndex, 'photo_file', file);
+    
+    // 🧠 AI BREED DETECTION - Auto-detect breed from photo
+    setDetectingBreed(petIndex);
+    try {
+      const reader = new FileReader();
+      reader.onload = async (ev) => {
+        const base64Data = ev.target.result;
+        const base64Content = base64Data.split(',')[1]; // Remove data:image/... prefix
+        
+        const response = await fetch(`${API_URL}/api/mira/vision/detect-breed`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image_base64: base64Content })
+        });
+        const data = await response.json();
+        
+        if (data.success && data.detected_breed) {
+          // Store detected breed info
+          updatePetData(petIndex, 'detected_breed', data.detected_breed);
+          updatePetData(petIndex, 'breed_confidence', data.confidence);
+          
+          // Auto-fill breed if not already set
+          const currentBreed = petsData[petIndex]?.breed;
+          if (!currentBreed || currentBreed === '') {
+            updatePetData(petIndex, 'breed', data.detected_breed);
+          }
+        }
+        setDetectingBreed(null);
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error('Breed detection failed:', error);
+      setDetectingBreed(null);
+    }
   };
 
   // Handle parent photo upload
