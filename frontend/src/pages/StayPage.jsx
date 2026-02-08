@@ -700,23 +700,55 @@ const StayPage = () => {
               <h2 className="text-2xl md:text-3xl font-bold text-gray-800">Discover Pet-Friendly Places</h2>
             </div>
             <p className="text-gray-600 max-w-2xl mx-auto mb-4">
-              Hotels and experiences that welcome you and your furry friend
+              Hotels and experiences that welcome you and your furry friend - search any city worldwide
             </p>
             
-            {/* City Selector */}
-            <div className="flex flex-wrap justify-center gap-2 mt-4">
-              {['mumbai', 'delhi', 'bangalore', 'goa', 'jaipur', 'chennai'].map((city) => (
-                <Button
-                  key={city}
-                  variant={selectedNearbyCity === city ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => fetchNearbyPlaces(city)}
-                  className={selectedNearbyCity === city ? 'bg-blue-600 hover:bg-blue-700' : ''}
-                  data-testid={`city-btn-${city}`}
+            {/* City Search - Any destination worldwide */}
+            <div className="flex flex-col items-center gap-3 mt-4">
+              <div className="flex items-center gap-2 w-full max-w-md">
+                <div className="relative flex-1">
+                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Input
+                    type="text"
+                    placeholder="Enter any city (e.g., Paris, Tokyo, New York...)"
+                    value={nearbySearchInput}
+                    onChange={(e) => setNearbySearchInput(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && nearbySearchInput.trim() && fetchNearbyPlaces(nearbySearchInput.trim())}
+                    className="pl-10 pr-4 py-3 w-full rounded-xl border-2 border-gray-200 focus:border-blue-500"
+                    data-testid="city-search-input"
+                  />
+                </div>
+                <Button 
+                  onClick={() => nearbySearchInput.trim() && fetchNearbyPlaces(nearbySearchInput.trim())}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl"
+                  disabled={!nearbySearchInput.trim() || nearbyLoading}
+                  data-testid="city-search-btn"
                 >
-                  {city.charAt(0).toUpperCase() + city.slice(1)}
+                  {nearbyLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Search className="w-5 h-5" />}
                 </Button>
-              ))}
+              </div>
+              
+              {/* Quick city suggestions */}
+              <div className="flex flex-wrap justify-center gap-2">
+                <span className="text-xs text-gray-500 mr-1">Quick picks:</span>
+                {['Mumbai', 'Delhi', 'Goa', 'Bangalore', 'Paris', 'London', 'Dubai', 'Singapore'].map((city) => (
+                  <button
+                    key={city}
+                    onClick={() => {
+                      setNearbySearchInput(city);
+                      fetchNearbyPlaces(city);
+                    }}
+                    className={`text-xs px-3 py-1 rounded-full transition-all ${
+                      selectedNearbyCity.toLowerCase() === city.toLowerCase() 
+                        ? 'bg-blue-600 text-white' 
+                        : 'bg-gray-100 text-gray-600 hover:bg-blue-100'
+                    }`}
+                    data-testid={`quick-city-${city.toLowerCase()}`}
+                  >
+                    {city}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
           
