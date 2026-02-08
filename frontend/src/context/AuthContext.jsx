@@ -132,7 +132,8 @@ export const AuthProvider = ({ children }) => {
    * REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
    */
   const initiateGoogleLogin = () => {
-    const redirectUrl = window.location.origin + '/dashboard';
+    // MIRA-FIRST: After login, land on Mira - the Pet Life Operating System hub
+    const redirectUrl = window.location.origin + '/mira-demo';
     window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
   };
 
