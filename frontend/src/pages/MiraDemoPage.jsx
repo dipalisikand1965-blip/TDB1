@@ -2918,7 +2918,7 @@ const MiraDemoPage = () => {
                     <span style={{ display: 'block', color: 'white', fontWeight: 600, fontSize: 14 }}>{p.name}</span>
                     <span style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'rgba(255,255,255,0.5)', fontSize: 12 }}>
                       {p.breed}
-                      {p.soulScore > 0 && (
+                      {p.soulScore > 10 ? (
                         <span style={{ 
                           background: 'linear-gradient(135deg, #f59e0b, #d97706)', 
                           padding: '2px 6px', 
@@ -2928,6 +2928,18 @@ const MiraDemoPage = () => {
                           color: 'white'
                         }}>
                           {p.soulScore}%
+                        </span>
+                      ) : (
+                        <span style={{ 
+                          background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)', 
+                          padding: '2px 6px', 
+                          borderRadius: '8px', 
+                          fontSize: '9px',
+                          fontWeight: '600',
+                          color: 'white',
+                          animation: 'pulse 2s infinite'
+                        }}>
+                          ✨ New
                         </span>
                       )}
                     </span>
