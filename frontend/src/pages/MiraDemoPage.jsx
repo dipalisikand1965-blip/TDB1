@@ -2975,6 +2975,32 @@ const MiraDemoPage = () => {
       
       {/* Input Composer - Premium */}
       <div className="mp-composer">
+        {/* ═══════════════════════════════════════════════════════════════════
+            "READY FOR [PET]" BUTTON - Shows when Mira has picks
+            Concierge® is ALWAYS by your side
+        ═══════════════════════════════════════════════════════════════════ */}
+        {(miraPicks.products.length > 0 || miraPicks.services.length > 0 || true) && (
+          <button
+            type="button"
+            onClick={() => setShowMiraTray(true)}
+            className={`mp-ready-btn ${miraPicks.hasNew ? 'has-new' : ''}`}
+            data-testid="ready-for-pet-btn"
+          >
+            <span className="mp-ready-icon">
+              <Wand2 size={18} />
+              {miraPicks.hasNew && <span className="mp-ready-dot" />}
+            </span>
+            <span className="mp-ready-text">
+              {miraPicks.context || `Ready for ${pet.name}`}
+            </span>
+            <span className="mp-ready-count">
+              {miraPicks.products.length + miraPicks.services.length > 0 
+                ? `${miraPicks.products.length + miraPicks.services.length} picks`
+                : 'Concierge®'}
+            </span>
+          </button>
+        )}
+        
         <div className="mp-composer-inner">
           <form onSubmit={handleSubmit} className="mp-input-row">
             <input
