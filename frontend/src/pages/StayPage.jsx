@@ -690,6 +690,170 @@ const StayPage = () => {
         )}
       </section>
       )}
+      
+      {/* Nearby Pet-Friendly Hotels & Attractions Section (Amadeus + Viator) */}
+      <section className="bg-gradient-to-b from-blue-50 to-white py-12 px-4">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-8">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <MapPin className="w-6 h-6 text-blue-600" />
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-800">Discover Pet-Friendly Places</h2>
+            </div>
+            <p className="text-gray-600 max-w-2xl mx-auto mb-4">
+              Hotels and experiences that welcome you and your furry friend
+            </p>
+            
+            {/* City Selector */}
+            <div className="flex flex-wrap justify-center gap-2 mt-4">
+              {['mumbai', 'delhi', 'bangalore', 'goa', 'jaipur', 'chennai'].map((city) => (
+                <Button
+                  key={city}
+                  variant={selectedNearbyCity === city ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => fetchNearbyPlaces(city)}
+                  className={selectedNearbyCity === city ? 'bg-blue-600 hover:bg-blue-700' : ''}
+                  data-testid={`city-btn-${city}`}
+                >
+                  {city.charAt(0).toUpperCase() + city.slice(1)}
+                </Button>
+              ))}
+            </div>
+          </div>
+          
+          {nearbyLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+              <span className="ml-2 text-gray-600">Finding pet-friendly places...</span>
+            </div>
+          ) : (
+            <>
+              {/* Hotels Grid */}
+              {nearbyHotels.length > 0 && (
+                <div className="mb-10">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                    <Building2 className="w-5 h-5 text-blue-600" />
+                    Pet-Friendly Hotels in {selectedNearbyCity.charAt(0).toUpperCase() + selectedNearbyCity.slice(1)}
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {nearbyHotels.slice(0, 6).map((hotel, idx) => (
+                      <Card key={idx} className="overflow-hidden hover:shadow-lg transition-all duration-300" data-testid={`hotel-card-${idx}`}>
+                        <div className="p-4">
+                          <div className="flex items-start gap-3">
+                            <div className={`w-12 h-12 rounded-lg flex items-center justify-center text-2xl ${hotel.pet_friendly_likelihood === 'high' ? 'bg-green-100' : 'bg-blue-100'}`}>
+                              🏨
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h4 className="font-semibold text-gray-800 text-sm line-clamp-1">{hotel.name}</h4>
+                              <p className="text-xs text-gray-500">{hotel.city || selectedNearbyCity}</p>
+                              {hotel.distance && (
+                                <p className="text-xs text-gray-400">{hotel.distance} {hotel.distance_unit} away</p>
+                              )}
+                            </div>
+                          </div>
+                          
+                          <div className="mt-3 flex flex-wrap gap-1">
+                            {hotel.pet_friendly_likelihood === 'high' && (
+                              <Badge className="bg-green-100 text-green-700 text-xs">🐾 Pet Friendly</Badge>
+                            )}
+                            {hotel.amenities?.slice(0, 2).map((amenity, i) => (
+                              <Badge key={i} variant="secondary" className="text-xs">{amenity}</Badge>
+                            ))}
+                          </div>
+                          
+                          {hotel.pet_policy_note && (
+                            <p className="text-xs text-gray-500 mt-2 italic">{hotel.pet_policy_note}</p>
+                          )}
+                          
+                          <div className="mt-3 flex gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="flex-1 text-xs"
+                              onClick={() => window.open(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hotel.name + ' ' + (hotel.city || selectedNearbyCity))}`, '_blank')}
+                            >
+                              <MapPin className="w-3 h-3 mr-1" /> Directions
+                            </Button>
+                            {hotel.phone && (
+                              <Button
+                                size="sm"
+                                className="bg-green-600 hover:bg-green-700 text-xs"
+                                onClick={() => window.open(`tel:${hotel.phone}`, '_blank')}
+                              >
+                                <Phone className="w-3 h-3 mr-1" /> Call
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* Attractions Grid */}
+              {nearbyAttractions.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                    <Sparkles className="w-5 h-5 text-emerald-600" />
+                    Pet-Friendly Experiences in {selectedNearbyCity.charAt(0).toUpperCase() + selectedNearbyCity.slice(1)}
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {nearbyAttractions.slice(0, 4).map((attr, idx) => (
+                      <Card key={idx} className="overflow-hidden hover:shadow-lg transition-all duration-300 group" data-testid={`attraction-card-${idx}`}>
+                        {attr.image_url && (
+                          <div className="relative h-32 overflow-hidden">
+                            <img 
+                              src={attr.image_url} 
+                              alt={attr.title}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                            {attr.is_outdoor && (
+                              <Badge className="absolute top-2 left-2 bg-emerald-500 text-white text-xs">
+                                🌿 Outdoor
+                              </Badge>
+                            )}
+                          </div>
+                        )}
+                        <div className="p-3">
+                          <h4 className="font-semibold text-gray-800 text-sm line-clamp-2">{attr.title}</h4>
+                          <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
+                            {attr.rating && (
+                              <span className="flex items-center gap-1 text-amber-600">
+                                <Star className="w-3 h-3 fill-current" /> {attr.rating.toFixed(1)}
+                              </span>
+                            )}
+                            {attr.duration && <span>{attr.duration}</span>}
+                          </div>
+                          <div className="mt-2 flex items-center justify-between">
+                            {attr.price_from && (
+                              <span className="text-sm font-semibold text-emerald-600">From ₹{Math.round(attr.price_from)}</span>
+                            )}
+                            <Button
+                              size="sm"
+                              className="bg-emerald-600 hover:bg-emerald-700 text-xs"
+                              onClick={() => window.open(attr.booking_url || `https://www.google.com/search?q=${encodeURIComponent(attr.title)}`, '_blank')}
+                            >
+                              Book <ChevronRight className="w-3 h-3 ml-1" />
+                            </Button>
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {nearbyHotels.length === 0 && nearbyAttractions.length === 0 && (
+                <div className="text-center py-8">
+                  <Dog className="w-12 h-12 mx-auto text-gray-300 mb-2" />
+                  <p className="text-gray-500">No places found for this city. Try another!</p>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </section>
 
       {/* Boarding Section */}
       {activeTab === 'boarding' && (
