@@ -380,6 +380,78 @@ async def search_pet_stores_in_city(city: str, max_results: int = 10) -> List[Di
         )
 
 
+
+async def search_pet_friendly_restaurants(city: str, max_results: int = 10) -> List[Dict[str, Any]]:
+    """
+    Search for pet-friendly restaurants, cafes, and outdoor dining in a city.
+    Works WORLDWIDE - not limited to India.
+    
+    Args:
+        city: City name (any city worldwide)
+        max_results: Maximum results
+        
+    Returns:
+        List of pet-friendly restaurants
+    """
+    # Try multiple search strategies for best results
+    all_results = []
+    seen_ids = set()
+    
+    search_queries = [
+        f"pet friendly restaurant {city}",
+        f"dog friendly cafe {city}",
+        f"outdoor dining restaurant {city}",
+        f"pet friendly cafe {city}"
+    ]
+    
+    for query in search_queries:
+        if len(all_results) >= max_results:
+            break
+            
+        results = await search_places_by_text(query=query, max_results=5)
+        
+        for place in results:
+            if place.get("id") not in seen_ids:
+                seen_ids.add(place.get("id"))
+                # Add pet-friendly flags
+                place["pet_friendly"] = True
+                place["pet_friendly_source"] = "google_search"
+                place["place_type"] = "restaurant"
+                all_results.append(place)
+    
+    return all_results[:max_results]
+
+
+async def search_dog_parks_worldwide(city: str, max_results: int = 10) -> List[Dict[str, Any]]:
+    """
+    Search for dog parks in any city worldwide.
+    
+    Args:
+        city: City name (any city worldwide)
+        max_results: Maximum results
+        
+    Returns:
+        List of dog parks
+    """
+    coords = await geocode_city(city)
+    
+    if coords:
+        return await search_nearby_places_google(
+            latitude=coords["latitude"],
+            longitude=coords["longitude"],
+            place_type="dog_park",
+            radius_meters=15000,
+            max_results=max_results
+        )
+    else:
+        # Text search as fallback
+        return await search_places_by_text(
+            query=f"dog park off-leash park {city}",
+            max_results=max_results
+        )
+
+
+
 # Quick test function
 async def test_google_places_connection():
     """Test if Google Places API is working."""
