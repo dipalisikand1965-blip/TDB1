@@ -2319,6 +2319,8 @@ const MiraDemoPage = () => {
         content: miraResponseText,
         data: {
           ...data,
+          nearby_places: data.nearby_places,  // Explicitly pass nearby places
+          weather: data.weather,  // Explicitly pass weather
           response: {
             ...data.response,
             products: shouldShowProducts ? data.response?.products : [],
