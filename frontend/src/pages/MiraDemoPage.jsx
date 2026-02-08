@@ -649,63 +649,7 @@ const MiraDemoPage = () => {
   const { user, token } = useAuth();
   const navigate = useNavigate();
   
-  // ALL STATE DECLARATIONS MUST BE BEFORE ANY EARLY RETURNS
-  // (React hooks rules - hooks must be called in same order every render)
-  const [query, setQuery] = useState('');
-  const [isListening, setIsListening] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [showHelpModal, setShowHelpModal] = useState(false);
-  const [showLearnModal, setShowLearnModal] = useState(false);
-  const [learnVideos, setLearnVideos] = useState([]);
-  const [learnLoading, setLearnLoading] = useState(false);
-  const [learnCategory, setLearnCategory] = useState('recommended');
-  const [conversationHistory, setConversationHistory] = useState([]);
-  const [activeDockItem, setActiveDockItem] = useState(null);
-  const [pet, setPet] = useState(DEMO_PET);
-  const [allPets, setAllPets] = useState(ALL_PETS);
-  const [shouldRedirect, setShouldRedirect] = useState(false);
-  const [redirectPath, setRedirectPath] = useState('');
-  
-  // MEMBERSHIP GATE: Require login + active membership to access Mira OS
-  useEffect(() => {
-    if (!user) {
-      setRedirectPath('/login');
-      setShouldRedirect(true);
-      return;
-    }
-    
-    // Check for active membership/pet pass
-    const isAdmin = user?.role === 'admin' || user?.email?.includes('clubconcierge');
-    const hasActiveMembership = user?.pet_pass_status === 'active' || 
-                                user?.membership_status === 'active' ||
-                                user?.has_paid === true;
-    
-    if (!isAdmin && !hasActiveMembership) {
-      setRedirectPath('/membership');
-      setShouldRedirect(true);
-    }
-  }, [user]);
-  
-  // Handle redirect after state is set
-  useEffect(() => {
-    if (shouldRedirect && redirectPath) {
-      navigate(redirectPath, { state: { from: '/mira-demo' } });
-    }
-  }, [shouldRedirect, redirectPath, navigate]);
-  
-  // Show loading while checking access or if redirecting
-  if (!user || shouldRedirect) {
-    return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-white text-center">
-          <div className="animate-spin w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-          <p>Checking access...</p>
-        </div>
-      </div>
-    );
-  }
-  
-  // State (continued - these are NOT hooks, just variable assignments)
+  // State
   const [activeScenario, setActiveScenario] = useState(null);
   const [showScenarios, setShowScenarios] = useState(true);
   // Remember if user dismissed Test Scenarios modal
