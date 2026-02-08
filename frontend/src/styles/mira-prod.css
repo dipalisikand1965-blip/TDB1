@@ -3211,6 +3211,134 @@ button.mp-experience-card {
   color: var(--mira-text-muted);
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   CELEBRATION TOOLS - Party Planning Wizard & Bundle Maker
+═══════════════════════════════════════════════════════════════ */
+.mp-celebration-tools {
+  background: linear-gradient(135deg, rgba(236,72,153,0.15) 0%, rgba(168,85,247,0.1) 100%);
+  border: 1px solid rgba(236,72,153,0.2);
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.mp-celebration-tools h4 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #EC4899;
+  margin-bottom: 12px;
+}
+
+.mp-celebration-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mp-party-wizard-btn,
+.mp-bundle-maker-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 14px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+  color: white;
+}
+
+.mp-party-wizard-btn:hover,
+.mp-bundle-maker-btn:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(236,72,153,0.4);
+  transform: translateX(4px);
+}
+
+.party-btn-icon {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(236,72,153,0.3), rgba(168,85,247,0.2));
+  border-radius: 12px;
+  font-size: 22px;
+}
+
+.party-btn-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.party-btn-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: white;
+}
+
+.party-btn-subtitle {
+  font-size: 12px;
+  color: rgba(255,255,255,0.6);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CONCIERGE BADGE - Small "C" on products sourced by Concierge
+═══════════════════════════════════════════════════════════════ */
+.mp-product-concierge-badge {
+  position: absolute;
+  bottom: 6px;
+  right: 6px;
+  width: 20px;
+  height: 20px;
+  background: linear-gradient(135deg, #8B5CF6, #A855F7);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: white;
+  box-shadow: 0 2px 8px rgba(139,92,246,0.5);
+  border: 2px solid rgba(255,255,255,0.3);
+}
+
+.mp-product-concierge-badge::after {
+  content: 'C';
+}
+
+/* Product card with concierge sourcing */
+.mp-tray-product.concierge-sourced .mp-tray-product-img {
+  position: relative;
+}
+
+.mp-tray-product.concierge-sourced img {
+  opacity: 0.8;
+}
+
+/* Generic gift icon for concierge-sourced items */
+.mp-concierge-gift-icon {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(168,85,247,0.2), rgba(236,72,153,0.15));
+  border-radius: 12px;
+  position: relative;
+}
+
+.mp-concierge-gift-icon svg {
+  width: 32px;
+  height: 32px;
+  color: var(--mira-purple);
+  opacity: 0.7;
+}
+
 /* Empty State */
 .mp-tray-empty {
   display: flex;
