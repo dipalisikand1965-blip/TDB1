@@ -8,11 +8,12 @@
 
 ## LATEST SESSION - February 8, 2026 (Batch 2)
 
-### E024: VOICE PERSONALITY SELECTION ✅ COMPLETED
+### E024: VOICE PERSONALITY AUTO-DETECTION ✅ COMPLETED
 - **Endpoint:** `GET /api/tts/personalities`
 - 5 voice personalities: default, celebration, health, comfort, urgent
+- **Auto-detects context** from Mira's response (birthday→joyful, health→caring, grief→gentle)
 - Different stability/similarity settings for emotional context
-- TTS endpoint now accepts `personality` parameter
+- No manual selection needed - Mira intelligently adapts her tone
 
 ### E027: DAILY DIGEST ✅ COMPLETED
 - **Endpoint:** `GET /api/mira/daily-digest/{pet_id}`
