@@ -3876,62 +3876,64 @@ input, select, textarea {
 
 
 /* ═══════════════════════════════════════════════════════════════════════════════
-   E018 & E019: PROACTIVE ALERTS - Birthday/Health Reminders
+   E018 & E019: PROACTIVE ALERTS - Gentle, personalized nudges
    ═══════════════════════════════════════════════════════════════════════════════ */
 .proactive-alerts {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-top: 16px;
+  gap: 6px;
+  margin-top: 10px;
   width: 100%;
-  max-width: 320px;
+  max-width: 300px;
 }
 
 .proactive-alert {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
-  border-radius: 12px;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 10px;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-size: 13px;
+  font-size: 12px;
+  opacity: 0.8;
 }
 
 .proactive-alert:hover {
-  transform: translateY(-1px);
+  opacity: 1;
+  transform: translateX(2px);
 }
 
-/* Birthday/Celebration Today */
+/* Birthday/Celebration Today - Warm glow */
 .proactive-alert.alert-today {
-  background: linear-gradient(135deg, rgba(251,191,36,0.2) 0%, rgba(236,72,153,0.2) 100%);
-  border: 1px solid rgba(251,191,36,0.4);
+  background: rgba(251,191,36,0.1);
+  border: 1px solid rgba(251,191,36,0.2);
   color: #fbbf24;
 }
 
-/* Upcoming Celebration */
+/* Upcoming Celebration - Subtle purple */
 .proactive-alert.alert-upcoming {
-  background: rgba(168,85,247,0.1);
-  border: 1px solid rgba(168,85,247,0.3);
-  color: rgba(255,255,255,0.9);
+  background: rgba(168,85,247,0.06);
+  border: 1px solid rgba(168,85,247,0.15);
+  color: rgba(255,255,255,0.8);
 }
 
-/* Urgent Health Alert */
+/* Urgent Health Alert - Soft red, not alarming */
 .proactive-alert.alert-urgent {
-  background: rgba(239,68,68,0.15);
-  border: 1px solid rgba(239,68,68,0.4);
+  background: rgba(239,68,68,0.08);
+  border: 1px solid rgba(239,68,68,0.2);
   color: #fca5a5;
 }
 
-/* Normal Notice */
+/* Normal Notice - Very subtle */
 .proactive-alert.alert-notice {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid rgba(255,255,255,0.1);
-  color: rgba(255,255,255,0.7);
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.6);
 }
 
 .alert-icon {
-  font-size: 16px;
+  font-size: 14px;
   flex-shrink: 0;
 }
 
