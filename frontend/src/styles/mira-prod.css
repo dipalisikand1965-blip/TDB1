@@ -4653,3 +4653,169 @@ input, select, textarea {
   }
 }
 
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   E027: DAILY DIGEST SECTION STYLES
+═══════════════════════════════════════════════════════════════════════════════ */
+
+.mp-digest-section {
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.05));
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.mp-digest-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mp-digest-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mp-digest-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.mp-digest-item.digest-high {
+  border-left: 3px solid #f59e0b;
+}
+
+.digest-icon {
+  font-size: 20px;
+}
+
+.digest-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.digest-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.digest-desc {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   E028: MILESTONES SECTION STYLES
+═══════════════════════════════════════════════════════════════════════════════ */
+
+.mp-milestones-section {
+  background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(245, 158, 11, 0.05));
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.mp-milestones-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.mp-milestone-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 12px 8px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  text-align: center;
+  transition: all 0.2s ease;
+}
+
+.mp-milestone-badge:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.02);
+}
+
+.milestone-icon {
+  font-size: 24px;
+}
+
+.milestone-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: #fbbf24;
+  line-height: 1.2;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   E034: SMART REORDER SECTION STYLES
+═══════════════════════════════════════════════════════════════════════════════ */
+
+.mp-reorder-section {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(16, 185, 129, 0.05));
+  border-radius: 12px;
+  padding: 12px;
+}
+
+.mp-reorder-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mp-reorder-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  text-align: left;
+}
+
+.mp-reorder-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.mp-reorder-item.reorder-urgent {
+  border-left: 3px solid #ef4444;
+}
+
+.reorder-icon {
+  font-size: 20px;
+}
+
+.reorder-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.reorder-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.reorder-msg {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.reorder-arrow {
+  color: rgba(255, 255, 255, 0.4);
+}
+
