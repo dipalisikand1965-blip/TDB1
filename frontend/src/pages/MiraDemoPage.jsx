@@ -3349,6 +3349,74 @@ const MiraDemoPage = () => {
                 </div>
               )}
               
+              {/* ═══════════════════════════════════════════════════════════════
+                  E021: WEATHER SUGGESTIONS SECTION
+              ═══════════════════════════════════════════════════════════════ */}
+              {proactiveAlerts.weatherSuggestions?.length > 0 && (
+                <div className="mp-tray-section mp-weather-section">
+                  <h4>
+                    <span className="weather-icon">
+                      {proactiveAlerts.weather?.temp >= 30 ? '☀️' : 
+                       proactiveAlerts.weather?.condition === 'rainy' ? '🌧️' : 
+                       proactiveAlerts.weather?.temp <= 20 ? '❄️' : '🌤️'}
+                    </span>
+                    {proactiveAlerts.weather?.temp}°C • {proactiveAlerts.weather?.description || 'Weather'}
+                  </h4>
+                  <div className="mp-weather-suggestions">
+                    {proactiveAlerts.weatherSuggestions.slice(0, 2).map((suggestion, i) => (
+                      <div 
+                        key={`weather-${i}`}
+                        className={`mp-weather-item ${suggestion.priority === 'high' ? 'priority-high' : ''}`}
+                        onClick={() => {
+                          if (suggestion.action) {
+                            setShowMiraTray(false);
+                            handleQuickReply(suggestion.action);
+                          }
+                        }}
+                      >
+                        <span className="weather-item-icon">{suggestion.icon}</span>
+                        <div className="weather-item-content">
+                          <span className="weather-item-title">{suggestion.title}</span>
+                          <span className="weather-item-message">{suggestion.message}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* ═══════════════════════════════════════════════════════════════
+                  E022: SMART BUNDLES SECTION
+              ═══════════════════════════════════════════════════════════════ */}
+              {proactiveAlerts.bundles?.length > 0 && (
+                <div className="mp-tray-section mp-bundles-section">
+                  <h4><Gift size={16} /> Bundles for {pet.name}</h4>
+                  <div className="mp-bundles-grid">
+                    {proactiveAlerts.bundles.slice(0, 2).map((bundle, i) => (
+                      <div 
+                        key={`bundle-${i}`}
+                        className="mp-bundle-card"
+                        onClick={() => {
+                          setShowMiraTray(false);
+                          handleQuickReply(`Tell me about the ${bundle.name}`);
+                        }}
+                      >
+                        <div className="bundle-image">
+                          <img src={bundle.image} alt={bundle.name} />
+                          {bundle.savings > 0 && (
+                            <span className="bundle-savings">Save ₹{bundle.savings}</span>
+                          )}
+                        </div>
+                        <div className="bundle-info">
+                          <span className="bundle-name">{bundle.name}</span>
+                          <span className="bundle-price">₹{bundle.price}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
               {/* Products Section */}
               {miraPicks.products.length > 0 && (
                 <div className="mp-tray-section">
