@@ -247,8 +247,6 @@ async def generate_tts(request: TTSRequest):
             voice_id=voice_id,
             personality=personality_key
         )
-            voice_id=voice_id
-        )
         
     except ImportError:
         raise HTTPException(status_code=503, detail="ElevenLabs library not installed")
