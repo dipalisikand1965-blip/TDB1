@@ -1905,6 +1905,11 @@ const MiraDemoPage = () => {
     setIsProcessing(true);
     setQuery('');
     
+    // Show skeleton loader after 800ms if still processing
+    const skeletonTimer = setTimeout(() => {
+      setShowSkeleton(true);
+    }, 800);
+    
     const userMessage = {
       type: 'user',
       content: inputQuery,
