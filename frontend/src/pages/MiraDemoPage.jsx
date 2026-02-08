@@ -1300,7 +1300,7 @@ const MiraDemoPage = () => {
           const icon = temp >= 30 ? '☀️' : temp <= 20 ? '❄️' : '🌤️';
           tickerItems.push({
             icon,
-            text: `${temp}°C in Mumbai`,
+            text: `${temp}°C in ${weatherData.city || placesCity}`,
             type: 'weather'
           });
         }
