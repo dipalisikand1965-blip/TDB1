@@ -2196,4 +2196,223 @@ const DineBundleModal = ({ bundle, onClose, addToCart }) => {
   );
 };
 
+// Restaurant Booking Modal - Unified Concierge® Service Flow
+// For Google Places restaurants without full reservation system
+const RestaurantBookingModal = ({ restaurant, onClose, user, activePet }) => {
+  const [submitting, setSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [formData, setFormData] = useState({
+    name: user?.name || '',
+    phone: user?.phone || user?.whatsapp || '',
+    email: user?.email || '',
+    date: '',
+    time: '',
+    guests: 2,
+    specialRequests: activePet ? `Dining with my pet: ${activePet.name}. ` : ''
+  });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    
+    try {
+      // Create unified service request - triggers full flow
+      const response = await fetch(`${API_URL}/api/service-requests`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          service_type: 'dine_reservation',
+          pillar: 'dine',
+          request_source: 'dine_page',
+          customer: {
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone
+          },
+          details: {
+            restaurant_name: restaurant.name,
+            restaurant_address: restaurant.address,
+            restaurant_city: restaurant.city,
+            date: formData.date,
+            time: formData.time,
+            guests: formData.guests,
+            pet_name: activePet?.name || 'Not specified',
+            special_requests: formData.specialRequests
+          },
+          status: 'pending',
+          priority: 'normal'
+        })
+      });
+      
+      if (response.ok) {
+        setSuccess(true);
+      } else {
+        alert('Failed to submit request. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error submitting request:', error);
+      alert('Failed to submit request. Please try again.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // Success state - Unified Concierge® confirmation
+  if (success) {
+    return (
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
+        <Card className="max-w-md w-full p-8 text-center" onClick={(e) => e.stopPropagation()}>
+          <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Check className="w-8 h-8 text-purple-600" />
+          </div>
+          <h3 className="text-2xl font-bold text-gray-800 mb-2">Request Received!</h3>
+          <p className="text-gray-600 mb-4">
+            Our <strong>Concierge®</strong> team will make the reservation at <strong>{restaurant.name}</strong> for you.
+          </p>
+          <div className="bg-purple-50 p-4 rounded-lg mb-4">
+            <p className="text-sm text-purple-700">
+              📅 {formData.date} at {formData.time}<br/>
+              👥 {formData.guests} guests
+              {activePet && <><br/>🐕 With {activePet.name}</>}
+            </p>
+          </div>
+          <p className="text-sm text-gray-500 mb-6">
+            We'll confirm your booking within 24 hours via WhatsApp. 📱
+          </p>
+          <Button className="w-full bg-purple-600 hover:bg-purple-700" onClick={onClose}>
+            Done
+          </Button>
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <Card className="max-w-lg w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+        <div className="p-4 border-b flex items-center justify-between">
+          <div>
+            <h3 className="font-bold text-lg">{restaurant.name}</h3>
+            <p className="text-sm text-gray-500">{restaurant.address}</p>
+          </div>
+          <Button variant="ghost" size="icon" onClick={onClose}>
+            <X className="w-5 h-5" />
+          </Button>
+        </div>
+        
+        {/* Concierge® Header */}
+        <div className="mx-4 mt-4 p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border border-purple-200">
+          <p className="text-sm text-purple-700 flex items-center gap-2">
+            <Crown className="w-4 h-4" />
+            <span><strong>Concierge®</strong> will handle your reservation</span>
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-4 space-y-4">
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">Your Name</label>
+              <Input
+                value={formData.name}
+                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                placeholder="Full name"
+                required
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">Phone</label>
+              <Input
+                value={formData.phone}
+                onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                placeholder="+91..."
+                required
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="text-sm font-medium text-gray-700 mb-1 block">Email</label>
+            <Input
+              type="email"
+              value={formData.email}
+              onChange={(e) => setFormData({...formData, email: e.target.value})}
+              placeholder="your@email.com"
+              required
+            />
+          </div>
+
+          <div className="grid grid-cols-3 gap-3">
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">Date</label>
+              <Input
+                type="date"
+                value={formData.date}
+                onChange={(e) => setFormData({...formData, date: e.target.value})}
+                min={new Date().toISOString().split('T')[0]}
+                required
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">Time</label>
+              <Input
+                type="time"
+                value={formData.time}
+                onChange={(e) => setFormData({...formData, time: e.target.value})}
+                required
+              />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-gray-700 mb-1 block">Guests</label>
+              <Input
+                type="number"
+                min={1}
+                max={20}
+                value={formData.guests}
+                onChange={(e) => setFormData({...formData, guests: parseInt(e.target.value)})}
+                required
+              />
+            </div>
+          </div>
+
+          {activePet && (
+            <div className="p-3 bg-orange-50 rounded-lg flex items-center gap-3">
+              <Dog className="w-5 h-5 text-orange-600" />
+              <span className="text-sm text-orange-700">
+                Dining with <strong>{activePet.name}</strong>
+              </span>
+            </div>
+          )}
+
+          <div>
+            <label className="text-sm font-medium text-gray-700 mb-1 block">Special Requests</label>
+            <textarea
+              className="w-full p-3 border rounded-lg text-sm resize-none"
+              rows={2}
+              value={formData.specialRequests}
+              onChange={(e) => setFormData({...formData, specialRequests: e.target.value})}
+              placeholder="Any special requests for your dining experience..."
+            />
+          </div>
+
+          <Button 
+            type="submit" 
+            className="w-full bg-purple-600 hover:bg-purple-700 py-6"
+            disabled={submitting}
+          >
+            {submitting ? (
+              <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Submitting...</>
+            ) : (
+              <><Send className="w-4 h-4 mr-2" /> Request Reservation</>
+            )}
+          </Button>
+          
+          <p className="text-xs text-center text-gray-500">
+            Our Concierge® team will confirm within 24 hours
+          </p>
+        </form>
+      </Card>
+    </div>
+  );
+};
+
 export default DinePage;
