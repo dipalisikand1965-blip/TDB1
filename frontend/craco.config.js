@@ -62,22 +62,11 @@ const webpackConfig = {
         ],
       };
 
-      // Disable CSS minification for debugging
-      if (process.env.DISABLE_CSS_MINIFY === 'true') {
-        webpackConfig.optimization.minimizer = webpackConfig.optimization.minimizer.filter(
-          (plugin) => plugin.constructor.name !== 'CssMinimizerPlugin'
-        );
-      } else {
-        // Replace default CSS minimizer with lightningcss which handles Tailwind better
-        webpackConfig.optimization.minimizer = webpackConfig.optimization.minimizer.filter(
-          (plugin) => plugin.constructor.name !== 'CssMinimizerPlugin'
-        );
-        webpackConfig.optimization.minimizer.push(
-          new CssMinimizerPlugin({
-            minify: CssMinimizerPlugin.lightningCssMinify,
-          })
-        );
-      }
+      // Completely disable CSS minification during production build
+      // This fixes the Tailwind arbitrary values issue with '/' character
+      webpackConfig.optimization.minimizer = webpackConfig.optimization.minimizer.filter(
+        (plugin) => plugin.constructor.name !== 'CssMinimizerPlugin'
+      );
 
       // Add health check plugin to webpack if enabled
       if (config.enableHealthCheck && healthPluginInstance) {
