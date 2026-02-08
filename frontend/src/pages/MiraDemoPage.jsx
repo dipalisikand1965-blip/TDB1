@@ -164,7 +164,7 @@ const DOCK_ITEMS = [
   { id: 'orders', label: 'Orders', icon: Package, path: '/orders' },
   { id: 'plan', label: 'Plan', icon: Calendar, path: '/family-dashboard', tab: 'calendar' },
   { id: 'help', label: 'Help', icon: HelpCircle, action: 'openHelp' },
-  { id: 'soul', label: 'Soul', icon: Heart, path: '/pet-soul' },
+  { id: 'soul', label: 'Soul', icon: Heart, path: '/dashboard' },
   { id: 'learn', label: 'Learn', icon: Play, action: 'openLearn' },
 ];
 
