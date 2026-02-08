@@ -36,6 +36,7 @@ const DOCK_ITEMS = [
   { id: 'plan', label: 'Plan', icon: Calendar, path: '/family-dashboard', tab: 'calendar' },
   { id: 'help', label: 'Help', icon: HelpCircle, action: 'openHelp' },
   { id: 'soul', label: 'Soul', icon: Heart, path: '/pet-soul' },
+  { id: 'learn', label: 'Learn', icon: Play, action: 'openLearn' },
 ];
 
 // CONCIERGE OPERATING HOURS
