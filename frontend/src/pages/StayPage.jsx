@@ -146,6 +146,12 @@ const StayPage = () => {
   const [showChecklistPopup, setShowChecklistPopup] = useState(false);
   const [checklistData, setChecklistData] = useState(null);
   const [checklistProducts, setChecklistProducts] = useState([]);
+  
+  // Nearby Hotels & Attractions state (Amadeus + Viator)
+  const [nearbyHotels, setNearbyHotels] = useState([]);
+  const [nearbyAttractions, setNearbyAttractions] = useState([]);
+  const [nearbyLoading, setNearbyLoading] = useState(false);
+  const [selectedNearbyCity, setSelectedNearbyCity] = useState('mumbai');
 
   // Stay checklist data
   const STAY_CHECKLIST = {
