@@ -1,6 +1,6 @@
 # 🐕 The Doggy Company - Feature Status Report
 **Generated:** January 18, 2026
-**Preview URL:** https://pet-tray.preview.emergentagent.com
+**Preview URL:** https://mira-demo-stage.preview.emergentagent.com
 
 ---
 
