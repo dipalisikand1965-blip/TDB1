@@ -245,7 +245,42 @@ MIRA UNDERSTANDS (intent, pet context)
 
 ---
 
-## CURRENT PROGRESS: 95%
+## "READY FOR [PET]" TRAY - World Class UX (Feb 8, 2026)
+
+### The Vision
+"Conversation first. Help ready when needed."
+
+Products and services no longer interrupt the chat flow. Instead:
+- A "Ready for [Pet]" button appears in the composer bar
+- Button glows when Mira has new recommendations
+- User taps to open a beautiful bottom tray with curated picks
+
+### Implementation
+- `miraPicks` state stores products/services from API response
+- Products always populate the tray (except in COMFORT_MODE for grief/emotional moments)
+- Contextual naming: "Buddy's Celebration", "Grooming for Buddy", etc.
+- Tray includes:
+  - Pet photo header
+  - Product picks with images, names, prices, and add buttons
+  - Service cards with descriptions and booking flow
+  - Concierge® contact options (WhatsApp, Chat, Email)
+
+### Key Code Change
+```javascript
+// Before (bug): Products only stored if shouldShowProducts was true
+const newProducts = shouldShowProducts ? (data.response?.products || []) : [];
+
+// After (fixed): Products always stored unless in emotional comfort mode
+const newProducts = !inComfortMode ? (data.response?.products || []) : [];
+```
+
+### Files Modified
+- `/app/frontend/src/pages/MiraDemoPage.jsx` - State management, tray component
+- `/app/frontend/src/styles/mira-prod.css` - Tray styling, button animations
+
+---
+
+## CURRENT PROGRESS: 98%
 
 The Pet Operating System is almost complete!
 
