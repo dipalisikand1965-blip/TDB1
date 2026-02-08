@@ -15,6 +15,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ReactMarkdown from 'react-markdown';
 import { 
   Mic, MicOff, Send, MessageCircle, Package, Calendar, 
   HelpCircle, Heart, Sparkles, ChevronDown, ChevronUp, ChevronRight,
@@ -25,6 +26,41 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { API_URL } from '../utils/api';
+
+// Formatted Text Component - Renders markdown with proper styling
+const FormattedText = ({ children, className = '' }) => {
+  if (!children) return null;
+  
+  return (
+    <ReactMarkdown
+      className={`formatted-text ${className}`}
+      components={{
+        p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+        strong: ({ children }) => <strong className="font-semibold text-white">{children}</strong>,
+        em: ({ children }) => <em className="italic text-purple-200">{children}</em>,
+        ul: ({ children }) => <ul className="list-disc pl-4 my-2 space-y-1">{children}</ul>,
+        ol: ({ children }) => <ol className="list-decimal pl-4 my-2 space-y-1">{children}</ol>,
+        li: ({ children }) => <li className="text-sm leading-relaxed">{children}</li>,
+        h1: ({ children }) => <h1 className="text-lg font-bold mb-2">{children}</h1>,
+        h2: ({ children }) => <h2 className="text-base font-semibold mb-2">{children}</h2>,
+        h3: ({ children }) => <h3 className="text-sm font-semibold mb-1">{children}</h3>,
+        a: ({ href, children }) => (
+          <a href={href} target="_blank" rel="noopener noreferrer" className="text-purple-300 underline hover:text-purple-200">
+            {children}
+          </a>
+        ),
+        code: ({ children }) => <code className="bg-purple-900/50 px-1 py-0.5 rounded text-xs">{children}</code>,
+        blockquote: ({ children }) => (
+          <blockquote className="border-l-2 border-purple-400 pl-3 my-2 italic text-purple-200">
+            {children}
+          </blockquote>
+        ),
+      }}
+    >
+      {children}
+    </ReactMarkdown>
+  );
+};
 
 // Import the production-style CSS (matches thedoggycompany.in)
 import '../styles/mira-prod.css';
