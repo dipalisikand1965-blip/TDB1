@@ -2354,6 +2354,9 @@ const MiraDemoPage = () => {
     return moreInfoPhrases.some(phrase => lowerInput.includes(phrase));
   }, []);
   
+
+  // NOTE: Voice control functions (stopSpeaking, speak as speakWithMira) now come from useVoice hook
+
   
   // Handle submit - MIRA DOCTRINE: Let Mira's intelligence decide what to show
   const handleSubmit = useCallback(async (e, voiceQuery = null) => {
