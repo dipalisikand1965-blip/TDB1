@@ -443,9 +443,9 @@ tip_card = {
 ## Progress Summary
 | Metric | Before | After | Change |
 |--------|--------|-------|--------|
-| Lines | 5,789 | **5,093** | **-696 (12%)** |
+| Lines | 5,789 | **5,076** | **-713 (12%)** |
 | useState hooks | 67 | 61 | -6 |
-| Target | - | ~1,500 | ~3,593 to go |
+| Target | - | ~1,500 | ~3,576 to go |
 
 ## Completed ✅
 
@@ -459,20 +459,21 @@ tip_card = {
 └── useSession.js   - Session management (✅ integrated)
 ```
 
-### UI Components Extracted (1,823 lines total)
+### UI Components Extracted (12 components, ~1,900 lines)
 ```
 /app/frontend/src/components/Mira/
-├── ChatMessage.jsx        (392) - Message bubbles
-├── WelcomeHero.jsx        (320) - Welcome screen
-├── PastChatsPanel.jsx     (186) - History panel
-├── ServiceRequestModal.jsx(166) - Service booking
-├── HealthVaultWizard.jsx  (146) - Health wizard
-├── LearnModal.jsx         (133) - Training videos
-├── ChatInputBar.jsx       (128) - Input bar ✅ NEW
-├── MiraTray.jsx           (108) - Picks tray
-├── HelpModal.jsx          (101) - Help options
-├── ConciergePanel.jsx     (80)  - Quick help
-└── InsightsPanel.jsx      (63)  - Tips panel
+├── ChatMessage.jsx         (392) - Message bubbles
+├── WelcomeHero.jsx         (320) - Welcome screen
+├── PastChatsPanel.jsx      (186) - History panel
+├── ServiceRequestModal.jsx (166) - Service booking
+├── HealthVaultWizard.jsx   (146) - Health wizard
+├── LearnModal.jsx          (133) - Training videos
+├── ChatInputBar.jsx        (128) - Input bar
+├── MiraTray.jsx            (108) - Picks tray
+├── HelpModal.jsx           (101) - Help options
+├── ConciergePanel.jsx      (80)  - Quick help
+├── TestScenariosPanel.jsx  (77)  - Test scenarios ✅ NEW
+└── InsightsPanel.jsx       (63)  - Tips panel
 ```
 
 ### State Moved to Hooks (~12 useState)
