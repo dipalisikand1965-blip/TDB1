@@ -4125,34 +4125,16 @@ const MiraDemoPage = () => {
         onChatHandoff={handleConciergeHandoff}
       />
       
-      {/* TEST SCENARIOS PANEL - Dark Card (like production) */}
-      {showTestScenarios && (
-        <div className="mp-test-panel">
-          <div className="mp-test-header">
-            <span className="mp-test-title">
-              <Sparkles /> Test Scenarios
-            </span>
-            <button className="mp-test-close" onClick={() => {
-              localStorage.setItem('mira_test_scenarios_dismissed', 'true');
-              setShowTestScenarios(false);
-            }}>
-              <X />
-            </button>
-          </div>
-          <div className="mp-test-grid">
-            {TEST_SCENARIOS.map((scenario) => (
-              <button
-                key={scenario.id}
-                onClick={() => { hapticFeedback.chipTap(); setActiveScenario(scenario.id); handleQuickReply(scenario.query); }}
-                data-testid={`scenario-${scenario.id}`}
-                className={`mp-test-chip ${activeScenario === scenario.id ? 'active' : ''}`}
-              >
-                {scenario.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
+      {/* TEST SCENARIOS PANEL - Extracted to TestScenariosPanel component */}
+      <TestScenariosPanel
+        isOpen={showTestScenarios}
+        onClose={() => setShowTestScenarios(false)}
+        activeScenario={activeScenario}
+        onScenarioClick={(id, query) => {
+          setActiveScenario(id);
+          handleQuickReply(query);
+        }}
+      />
       
       {/* Past Chats Sidebar */}
       {/* Past Chats Panel - Extracted to PastChatsPanel component (Stage 5) */}
