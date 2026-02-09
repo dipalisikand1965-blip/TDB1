@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://voice-sync-fix-1.preview.emergentagent.com
+https://curated-pets.preview.emergentagent.com
 
 ---
 

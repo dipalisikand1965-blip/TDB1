@@ -1,6 +1,6 @@
 # 🐕 The Doggy Company - Feature Status Report
 **Generated:** January 18, 2026
-**Preview URL:** https://voice-sync-fix-1.preview.emergentagent.com
+**Preview URL:** https://curated-pets.preview.emergentagent.com
 
 ---
 
