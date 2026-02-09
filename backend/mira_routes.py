@@ -14194,16 +14194,30 @@ async def get_amadeus_hotels(
     city: str,
     check_in: str = None,
     check_out: str = None,
-    max_results: int = 10
+    adults: int = 2,
+    rooms: int = 1,
+    max_results: int = 20,
+    currency: str = "INR",
+    include_offers: bool = True
 ):
-    """Search for pet-friendly hotels in a city."""
+    """
+    Search for ALL accommodations in a city - NO RESTRICTIONS.
+    
+    Returns hotels, villas, boutique hotels, resorts, homestays - all types.
+    All star ratings (1-5 stars).
+    Full room details with pricing in INR.
+    """
     try:
         from services.amadeus_service import search_pet_friendly_hotels
         return await search_pet_friendly_hotels(
             city=city,
             check_in=check_in,
             check_out=check_out,
-            max_results=max_results
+            adults=adults,
+            rooms=rooms,
+            max_results=max_results,
+            currency=currency,
+            include_offers=include_offers
         )
     except Exception as e:
         logger.error(f"Amadeus hotel search error: {e}")
