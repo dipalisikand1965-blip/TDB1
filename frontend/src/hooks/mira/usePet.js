@@ -187,12 +187,13 @@ const usePet = ({ user, token, onPetSwitch, autoLoad = false } = {}) => {
     return pet.id && !pet.id.startsWith('demo') && !pet.id.startsWith('pet-');
   }, [pet.id]);
   
-  // Load pets on user change
+  // Load pets on user change (only if autoLoad is enabled)
+  // Note: MiraDemoPage has its own pet-loading logic, so autoLoad is disabled there
   useEffect(() => {
-    if (user?.id) {
+    if (autoLoad && user?.id) {
       loadUserPets();
     }
-  }, [user?.id, loadUserPets]);
+  }, [autoLoad, user?.id, loadUserPets]);
   
   // Find pet by ID
   const getPetById = useCallback((petId) => {
