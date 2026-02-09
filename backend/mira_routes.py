@@ -1306,7 +1306,22 @@ async def search_real_products(
         # PILLAR-FIRST FILTERING - Critical for Picks System
         # This ensures picks are 100% relevant to the conversation context
         # ═══════════════════════════════════════════════════════════════════
-        if current_pillar:
+        
+        # Special handling for treat requests - treats are in shop/dine, not celebrate
+        is_treat_query = any(word in user_input_lower for word in ["treat", "treats", "snack", "snacks", "jerky", "chew", "biscuit"])
+        is_birthday_query = any(word in user_input_lower for word in ["birthday", "cake", "party", "celebration"])
+        
+        # If it's a treat query WITHOUT birthday context, search in shop/dine
+        if is_treat_query and not is_birthday_query:
+            query["pillar"] = {"$in": ["shop", "dine"]}
+            # Also filter by treat-related categories/intents
+            query["$or"] = [
+                {"category": {"$regex": "treat", "$options": "i"}},
+                {"semantic_intents": {"$in": ["everyday_treats"]}},
+                {"tags": {"$in": ["treats", "Treats", "treat", "snack", "snacks"]}}
+            ]
+            logger.info(f"[TREAT OVERRIDE] Searching for treats in shop/dine pillars")
+        elif current_pillar:
             # Map pillar to allowed pillars (some overlap allowed)
             PILLAR_SEARCH_MAP = {
                 "celebrate": ["celebrate"],
