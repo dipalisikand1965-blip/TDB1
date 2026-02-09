@@ -1312,7 +1312,8 @@ const MiraDemoPage = () => {
     loadUserPets();
   }, [token]);
   
-  // SESSION RECOVERY - Load conversation from backend on page load
+  // SESSION RECOVERY - Now handled by useSession hook
+  // The hook auto-recovers session on mount, but we need to set conversation history
   useEffect(() => {
     const recoverSession = async () => {
       if (sessionRecovered || !sessionId) return;
@@ -1340,7 +1341,6 @@ const MiraDemoPage = () => {
             setSessionRecovered(true);
           }
         } else if (response.status === 404) {
-          // Session doesn't exist yet - that's OK, it's a new conversation
           console.log('[SESSION] New session, no history to recover');
           setSessionRecovered(true);
         }
@@ -1351,24 +1351,26 @@ const MiraDemoPage = () => {
     };
     
     recoverSession();
-  }, [sessionId, sessionRecovered]);
+  }, [sessionId, sessionRecovered, setSessionRecovered]);
   
   // Clear session function (for "New Chat" button)
-  const startNewSession = () => {
-    const newSession = `mira-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    localStorage.setItem('mira_session_id', newSession);
-    localStorage.setItem('mira_session_pet_id', pet.id); // Track which pet this session is for
-    setSessionId(newSession);
+  // Wraps hook's startNewSession with additional state clearing
+  const startNewSession = useCallback(() => {
+    // Use hook's base function for session ID management
+    const newSessionId = baseStartNewSession();
+    
+    // Clear conversation-related state
     setConversationHistory([]);
     setCompletedSteps([]);
     setCurrentStep(null);
     setStepHistory([]);
     setConversationStage('initial');
     setUserHasOptedInForProducts(false);
-    setSessionRecovered(true);
     setShowPastChats(false);
-    console.log('[SESSION] Started new session:', newSession, 'for pet:', pet.name);
-  };
+    
+    console.log('[SESSION] Started new session:', newSessionId, 'for pet:', pet.name);
+    return newSessionId;
+  }, [baseStartNewSession, pet.name]);
   
   // FETCH WEATHER DATA for pet activity recommendations
   useEffect(() => {
