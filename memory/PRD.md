@@ -1,5 +1,5 @@
 # MIRA OS - COMPREHENSIVE HANDOVER DOCUMENT
-## Session: February 9, 2026
+## Session: December 2025
 ## For: Next Agent
 
 ---
@@ -9,7 +9,8 @@
 | File | Purpose |
 |------|---------|
 | `/app/memory/MIRA_DOCTRINE.md` | THE BIBLE - Voice, tone, behavior |
-| `/app/memory/MIRA_VOICE_RULES.md` | **NEW** - Voice sync & pet description rules |
+| `/app/memory/MIRA_VOICE_RULES.md` | Voice sync & pet description rules |
+| `/app/memory/MIRA_FORMATTING_GUIDE.md` | **NEW** - High-class formatting for iOS/Android/Desktop |
 | `/app/memory/ROADMAP_TO_100.md` | Full roadmap to 100% |
 | `/app/memory/MIRA_QUESTION_BANK.md` | Questions Mira must handle |
 
@@ -17,57 +18,39 @@
 
 # EXECUTIVE SUMMARY
 
-This session focused on **UI repositioning**, **bug fixes**, **Foundation completion**, and **Voice sync fixes**.
+This session focused on **Product Display Improvements**, **Conversation Lifecycle Management**, and **Formatting Guide**.
 
 ---
 
 # WHAT WAS COMPLETED THIS SESSION
 
-## 1. UI Repositioning ✅
-**All action elements moved to header bar of Mira message card:**
-```
-[✨ Mira] [Mira] [Tile 1] [Tile 2] [C° Need help?] [🐾 Insight] [🎁 Picks]
-```
+## 1. Product Display - Catalog Style ✅ (NEW)
+**Products now show as curated catalog with:**
+- Pet photo + "{Pet}'s Picks" title
+- Pillar badge (🎂 Celebrate, 🍽️ Dine, etc.)
+- "See More" button → links to pillar page
+- Match badges: Breed match | Context match | For {Pet}
 
-| Element | Status | Location |
-|---------|--------|----------|
-| Quick Reply Tiles | ✅ Moved | Header bar |
-| C° Need help button | ✅ Moved | Header bar (green) |
-| Insight icon | ✅ Moved | Header bar (purple circle) |
-| Picks icon (gift + pet face) | ✅ NEW | Header bar (pink) |
-| Old "Ready for Mojo" button | ❌ Removed | Was in composer |
+## 2. Conversation Lifecycle Management ✅ (NEW)
+**Auto-archive conversations:**
+- **10-minute inactivity** → Archive to history, start new chat (changed from 30 min)
+- **Complete flow detection** → When Mira provides assistance + user acknowledges
+- **"Mira has helped" banner** → Options: Continue Chat | New Chat
 
-## 2. Bug Fixes ✅
+## 3. Formatting Guide Restored ✅ (NEW)
+Created `/app/memory/MIRA_FORMATTING_GUIDE.md` with:
+- Bold usage rules
+- Bullet/numbered list formatting
+- Voice sync rules
+- Pillar integration flow
+- Responsive breakpoints
 
-| Bug | Status | Fix |
-|-----|--------|-----|
-| "cake" → "cat" spell correction | ✅ FIXED | Disabled fuzzy matching in spellCorrect.js |
-| "Friend's dog" context confusion | ✅ FIXED | Added detection in mira_routes.py |
-| Barking → "overwhelm" misclassification | ✅ FIXED | Added behavior keywords filter |
-| setShowConciergeExpanded error | ✅ FIXED | Changed to setShowConciergePanel |
-| ElevenLabs quota exceeded | ✅ FIXED | Added OpenAI TTS fallback (shimmer voice) |
-
-## 3. Shopify Product Sync ✅
-- **392 products** synced from thedoggybakery.com
-- **69 breed-specific cakes** (Indie, Labrador, Golden Retriever, etc.)
-- All have beautiful Shopify CDN images
-
-## 4. OpenAI TTS Fallback ✅
-- Primary: ElevenLabs (when credits available)
-- Fallback: OpenAI TTS `shimmer` voice (British-style, feminine)
-- Model: `tts-1-hd` (high quality)
-
-## 5. Voice Sync Fixes ✅ (NEW)
-- **Pet description rule**: Only describe pet on FIRST message, not every response
-- **Voice on tile clicks**: DISABLED - voice only plays for typed messages
-- **Voice cancellation**: Stops immediately when user types or clicks tiles
-- See `/app/memory/MIRA_VOICE_RULES.md` for full documentation
-
-## 6. Foundation Completion ✅ (NEW)
-- iOS voice input compatibility with permission flow
-- Safe area insets for notched phones (iPhone X+)
-- Visual recording feedback (pulsing animation)
-- Proactive welcome messages (time-based greetings)
+## 4. Previous Session Work (Carried Forward)
+- UI repositioning (header bar with tiles, help, insight, picks)
+- Voice sync fixes (no voice on tile clicks)
+- Pet description rule (only first message)
+- OpenAI TTS fallback
+- Shopify product sync (392 products)
 
 ---
 
