@@ -60,6 +60,8 @@ import {
   shouldFetchTravelData, isMeaningfulTopic, isCelebrationQuery, MEANINGFUL_TOPICS,
   // New helpers
   calculateVoiceDelay, hasServiceIntent, extractQuickRepliesFromData,
+  // Message builders
+  createErrorMessage, createTopicShiftIndicator, createUserMessage,
   // API helpers
   fetchConversationMemory, fetchMoodContext, routeIntent, createOrAttachTicket,
   fetchTrainingVideos, fetchTravelHotels, fetchTravelAttractions,
