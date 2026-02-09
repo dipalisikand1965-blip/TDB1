@@ -2539,6 +2539,17 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                 # Generate session ID
                 session_id = f"mira-{uuid.uuid4().hex[:12]}"
                 
+                # Create picks_vault for Concierge
+                from timestamp_utils import get_utc_timestamp
+                picks_vault = {
+                    "products": real_products[:4] if real_products else [],
+                    "services": [],  # Will be populated later
+                    "tip_cards": [],
+                    "pillar": current_pillar or pillar,
+                    "context": mira_mode,
+                    "generated_at": get_utc_timestamp()
+                }
+                
                 # Create the ticket using unified flow
                 ticket_id = await create_mira_ticket(
                     session_id=session_id,
@@ -2548,9 +2559,10 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                     description=description,
                     user=None,  # TODO: Get from auth token if available
                     pet=request.pet_context,
-                    source="mira_search"
+                    source="mira_search",
+                    picks_vault=picks_vault  # NEW: Pass picks to ticket
                 )
-                logger.info(f"[UNIFIED FLOW] Created Mira ticket {ticket_id} for CONCIERGE handoff")
+                logger.info(f"[UNIFIED FLOW] Created Mira ticket {ticket_id} with {len(picks_vault['products'])} picks")
             except Exception as ticket_error:
                 logger.error(f"Failed to create ticket for CONCIERGE: {ticket_error}")
                 import traceback
