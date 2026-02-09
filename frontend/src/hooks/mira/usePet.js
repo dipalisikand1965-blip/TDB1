@@ -77,7 +77,7 @@ const transformPetData = (apiPet) => ({
  * @param {Function} options.onPetSwitch - Called when pet is switched
  * @returns {Object} Pet state and controls
  */
-const usePet = ({ user, token, onPetSwitch } = {}) => {
+const usePet = ({ user, token, onPetSwitch, autoLoad = false } = {}) => {
   const [pet, setPet] = useState(DEMO_PET);
   const [allPets, setAllPets] = useState(ALL_DEMO_PETS);
   const [showPetSelector, setShowPetSelector] = useState(false);
