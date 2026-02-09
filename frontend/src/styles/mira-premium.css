@@ -765,6 +765,10 @@
   -ms-overflow-style: none;
   justify-content: center;
   flex-wrap: wrap;
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .mp-smart-chips::-webkit-scrollbar {
@@ -785,6 +789,7 @@
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
+  position: relative;
 }
 
 .mp-smart-chip:hover {
