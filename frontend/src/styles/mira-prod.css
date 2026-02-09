@@ -2798,6 +2798,52 @@ button.mp-welcome-chip,
   }
 }
 
+/* Proactive Greeting - Time/Context based greeting */
+.proactive-greeting {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: 16px;
+  margin-bottom: 20px;
+  transition: all 0.2s ease;
+  width: 100%;
+  max-width: 400px;
+}
+
+.proactive-greeting.has-alert {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.15), rgba(139, 92, 246, 0.15));
+  border-color: rgba(236, 72, 153, 0.3);
+  cursor: pointer;
+}
+
+.proactive-greeting.has-alert:hover {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.25), rgba(139, 92, 246, 0.25));
+  transform: translateY(-2px);
+}
+
+.greeting-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.greeting-text {
+  flex: 1;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+}
+
+.greeting-arrow {
+  width: 16px;
+  height: 16px;
+  color: #ec4899;
+  flex-shrink: 0;
+}
+
 /* Soul Traits */
 .soul-traits {
   display: flex;
