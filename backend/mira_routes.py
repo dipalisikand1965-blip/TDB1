@@ -2474,6 +2474,29 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
             is_treat_request = False  # Override - don't show treats
             logger.info("[BOARDING] Detected boarding/pet-sitting request - NO products")
         
+        # ═══════════════════════════════════════════════════════════════════════════
+        # AUTO-ROUTE SERVICE INTENTS TO CONCIERGE
+        # Services like dog walking, boarding, grooming appointments, training need human coordination
+        # These follow the UNIFORM SERVICE FLOW: User → Mira Ticket → Admin Notification → Concierge
+        # ═══════════════════════════════════════════════════════════════════════════
+        service_keywords_for_concierge = [
+            "dog walker", "dog walking", "walker for", "walk my dog", "walk my pet",
+            "boarding", "pet sitting", "pet sitter", "sitter for", "watch my dog", "watch my pet",
+            "grooming", "groomer", "grooming appointment", "schedule grooming",
+            "training", "trainer", "training session", "puppy training",
+            "vet appointment", "veterinary", "doctor appointment", "checkup",
+            "daycare", "day care", "pet daycare",
+            "someone to", "need help with", "find me someone", "book a", "schedule a",
+            "while i'm away", "while i am away", "while i travel", "going out of town"
+        ]
+        
+        is_service_request_for_concierge = any(keyword in user_input_lower for keyword in service_keywords_for_concierge)
+        
+        if is_service_request_for_concierge and execution_type != "HOLD":
+            execution_type = "CONCIERGE"
+            should_show_products = False
+            logger.info(f"[AUTO-CONCIERGE] Service request detected - routing to Concierge®: {request.input[:50]}")
+        
         # For GRIEF_HOLD, override everything - NO products, NO actions
         if is_grief_hold:
             should_show_products = False
