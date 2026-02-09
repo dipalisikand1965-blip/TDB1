@@ -8722,6 +8722,80 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
             except Exception as soul_err:
                 logger.warning(f"[SOUL SCORE] Failed to increment: {soul_err}")
         
+        # ═══════════════════════════════════════════════════════════════════
+        # MIRA MEMORY SYSTEM - "Store forever. Surface selectively."
+        # Every meaningful conversation helps Mira know the pet better!
+        # ═══════════════════════════════════════════════════════════════════
+        try:
+            from mira_memory import MiraMemory, detect_memory_type
+            
+            member_id = user.get("email") if user else None
+            pet_id = selected_pet.get("id") if selected_pet else None
+            pet_name = selected_pet.get("name") if selected_pet else None
+            
+            if member_id and pet_id:
+                # Auto-detect memory type from user input
+                memory_type = detect_memory_type(user_input)
+                
+                # Store meaningful interactions as memories
+                should_store = False
+                memory_content = None
+                relevance_tags = [pillar] if pillar else []
+                
+                # Health-related memories (CRITICAL - never forget)
+                if pillar == "care" or any(kw in user_input.lower() for kw in ["sick", "vet", "health", "allergy", "symptom", "medicine", "vaccine"]):
+                    should_store = True
+                    memory_type = "health"
+                    memory_content = f"Health concern mentioned: {user_input[:150]}"
+                    relevance_tags.extend(["health", "symptom"])
+                
+                # Travel/Event memories
+                elif pillar == "travel" or any(kw in user_input.lower() for kw in ["trip", "travel", "vacation", "birthday", "party", "celebrate"]):
+                    should_store = True
+                    memory_type = "event"
+                    memory_content = f"Event/Travel mentioned: {user_input[:150]}"
+                    relevance_tags.extend(["event", "planning"])
+                
+                # Shopping/Preference memories
+                elif products and len(products) > 0:
+                    should_store = True
+                    memory_type = "shopping"
+                    product_names = [p.get("name", "") for p in products[:3]]
+                    memory_content = f"Interested in: {', '.join(product_names)}"
+                    relevance_tags.extend(["shopping", "product_interest"])
+                
+                # Service booking memories
+                elif handoff_to_concierge:
+                    should_store = True
+                    memory_type = "general"
+                    memory_content = f"Requested service: {pillar} - {handoff_reason}"
+                    relevance_tags.extend(["service", "concierge_request"])
+                
+                # Grooming memories
+                elif pillar == "care" and any(kw in user_input.lower() for kw in ["groom", "haircut", "bath", "nail"]):
+                    should_store = True
+                    memory_type = "general"
+                    memory_content = f"Grooming request: {user_input[:100]}"
+                    relevance_tags.extend(["grooming", "care"])
+                
+                if should_store and memory_content:
+                    await MiraMemory.store_memory(
+                        member_id=member_id,
+                        memory_type=memory_type,
+                        content=memory_content,
+                        pet_id=pet_id,
+                        pet_name=pet_name,
+                        context=f"Pillar: {pillar}",
+                        relevance_tags=relevance_tags,
+                        source="conversation",
+                        confidence="high",
+                        session_id=session_id
+                    )
+                    logger.info(f"[MEMORY] Stored {memory_type} memory for {pet_name}: {memory_content[:50]}...")
+                    
+        except Exception as mem_err:
+            logger.warning(f"[MEMORY] Could not store memory: {mem_err}")
+        
         return {
             "response": response,
             "session_id": session_id,
