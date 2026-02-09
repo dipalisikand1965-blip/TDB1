@@ -46,6 +46,7 @@ import ServiceRequestModal from '../components/Mira/ServiceRequestModal';
 import HealthVaultWizard from '../components/Mira/HealthVaultWizard';
 import ChatInputBar from '../components/Mira/ChatInputBar';
 import TestScenariosPanel from '../components/Mira/TestScenariosPanel';
+import PetSelector from '../components/Mira/PetSelector';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // EXTRACTED HOOKS - Stage 1, 2, 3 Refactoring
