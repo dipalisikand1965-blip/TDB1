@@ -3,12 +3,13 @@
  * ====================================================
  * Shows list of previous chat sessions
  * Allows loading past conversations
+ * Displays retention status (summarized, archived)
  * 
  * Extracted from MiraDemoPage.jsx - Stage 5 Refactoring
  */
 
 import React from 'react';
-import { X, Plus, PawPrint } from 'lucide-react';
+import { X, Plus, PawPrint, Archive, FileText, Star, Clock } from 'lucide-react';
 import hapticFeedback from '../../utils/haptic';
 
 /**
@@ -27,6 +28,42 @@ const formatSessionDate = (dateString) => {
   if (diffHours < 24) return `${diffHours}h ago`;
   if (diffDays < 7) return `${diffDays}d ago`;
   return date.toLocaleDateString('en-IN', { month: 'short', day: 'numeric' });
+};
+
+/**
+ * Get retention status display info
+ */
+const getRetentionInfo = (session) => {
+  const status = session.retention_status;
+  
+  if (status === 'important') {
+    return {
+      icon: <Star size={12} className="retention-icon important" />,
+      label: 'Saved',
+      className: 'retention-important',
+      tooltip: 'This conversation is saved permanently'
+    };
+  }
+  
+  if (status === 'compressed') {
+    return {
+      icon: <FileText size={12} className="retention-icon compressed" />,
+      label: 'Summarized',
+      className: 'retention-compressed',
+      tooltip: 'Older messages have been summarized'
+    };
+  }
+  
+  if (status === 'archived') {
+    return {
+      icon: <Archive size={12} className="retention-icon archived" />,
+      label: 'Archived',
+      className: 'retention-archived',
+      tooltip: 'Only summary available'
+    };
+  }
+  
+  return null;
 };
 
 /**
