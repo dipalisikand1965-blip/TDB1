@@ -1270,7 +1270,6 @@ const MiraDemoPage = () => {
   // Refs
   const inputRef = useRef(null);
   const recognitionRef = useRef(null);
-  const handleSubmitRef = useRef(null);
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
   
