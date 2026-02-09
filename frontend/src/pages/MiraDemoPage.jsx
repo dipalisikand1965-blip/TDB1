@@ -2641,27 +2641,9 @@ const MiraDemoPage = () => {
       let miraResponseText = data.response?.message || "I'm here to help!";
       
       // E033: Prepend memory context if relevant past conversation found
+      // E033: Add memory context to response (using extracted helper)
       if (memoryContext?.relevant_memory) {
-        const mem = memoryContext.relevant_memory;
-        const daysAgo = mem.days_ago;
-        let memoryPrefix = '';
-        
-        if (daysAgo && daysAgo > 0) {
-          if (daysAgo === 1) {
-            memoryPrefix = `I remember we talked about ${mem.topic} yesterday. `;
-          } else if (daysAgo < 7) {
-            memoryPrefix = `I recall we discussed ${mem.topic} a few days ago. `;
-          } else if (daysAgo < 30) {
-            memoryPrefix = `Last time we talked about ${mem.topic}, `;
-          } else {
-            memoryPrefix = `I remember when we discussed ${mem.topic} before. `;
-          }
-          
-          if (mem.mira_advice) {
-            memoryPrefix += `I suggested ${mem.mira_advice.substring(0, 80)}... Did that help? `;
-          }
-        }
-        
+        const memoryPrefix = buildMemoryPrefix(memoryContext);
         if (memoryPrefix) {
           miraResponseText = memoryPrefix + miraResponseText;
           console.log('[MEMORY] Added memory context to response');
@@ -2676,8 +2658,13 @@ const MiraDemoPage = () => {
         
         // Save this to conversation memory if significant
         if (moodContext.should_save_memory && pet?.id) {
-          fetch(`${API_URL}/api/mira/conversation-memory/save`, {
-            method: 'POST',
+          saveConversationMemory({
+            petId: pet.id,
+            topic: 'mood_concern',
+            summary: moodContext.concern_level,
+            query: inputQuery,
+            advice: moodResponse.suggestion
+          });
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               pet_id: pet.id,
