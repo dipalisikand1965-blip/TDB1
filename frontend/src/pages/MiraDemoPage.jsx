@@ -5270,7 +5270,7 @@ const MiraDemoPage = () => {
                           setShowMiraTray(false);
                           handleQuickReply(celeb.is_today 
                             ? `It's ${pet.name}'s ${celeb.type === 'birthday' ? 'birthday' : 'gotcha day'}! Let's celebrate!` 
-                            : `${pet.name}'s ${celeb.type === 'birthday' ? 'birthday' : 'gotcha day'} is coming up in ${celeb.days_until} days`);
+                            : `${pet.name}'s ${celeb.type === 'birthday' ? 'birthday' : 'gotcha day'} is coming up in ${celeb.days_until} days`, true);
                         }}
                       >
                         <div className="care-item-icon">
@@ -5297,7 +5297,7 @@ const MiraDemoPage = () => {
                           setShowMiraTray(false);
                           handleQuickReply(reminder.type === 'vaccine' 
                             ? `${pet.name} needs ${reminder.name} vaccine` 
-                            : `Schedule a vet checkup for ${pet.name}`);
+                            : `Schedule a vet checkup for ${pet.name}`, true);
                         }}
                       >
                         <div className="care-item-icon">
