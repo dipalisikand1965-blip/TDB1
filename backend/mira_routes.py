@@ -2473,7 +2473,8 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
                 limit=6,
                 search_override=search_keywords,  # Use context-specific search
                 current_pillar=current_pillar,    # PILLAR-FIRST filtering
-                current_life_state=life_state     # Life state exclusions
+                current_life_state=life_state,    # Life state exclusions
+                user_query=request.input          # Pass original query for treat detection
             )
         
         logger.info(f"[PRODUCT FILTER] intent={intent}, is_service={is_service_intent}, is_food_main={is_food_main_intent}, is_treat={is_treat_request}, is_grief_hold={is_grief_hold}, is_groom_tools={is_groom_tools}, is_groom_medical={is_groom_medical_boundary}, is_food_medical={is_food_medical_boundary}, showing_products={should_show_products}")
