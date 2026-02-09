@@ -658,7 +658,7 @@ const ALL_PETS = [
   }
 ];
 
-const MiraDemoPage = () => {
+const MiraDemoBackupPage = () => {
   const { user, token } = useAuth();
   const navigate = useNavigate();
   
@@ -5785,5 +5785,5 @@ const MiraDemoPage = () => {
   );
 };
 
-export default MiraDemoPage;
+export default MiraDemoBackupPage;
 
