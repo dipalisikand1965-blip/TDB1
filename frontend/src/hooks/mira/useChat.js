@@ -797,6 +797,53 @@ export const createUserMessage = (content) => ({
   timestamp: new Date()
 });
 
+/**
+ * Build Mira message object
+ * @param {object} params - Message parameters
+ * @returns {object} - Mira message object
+ */
+export const buildMiraMessage = ({
+  content,
+  data,
+  quickReplies = [],
+  shouldShowProducts = false,
+  detectedServices = [],
+  detectedExperiences = [],
+  conciergeIsLive = true,
+  inComfortMode = false,
+  miraStepId = null,
+  isNewClarifyingQuestion = false
+}) => ({
+  type: 'mira',
+  content,
+  data: {
+    ...data,
+    nearby_places: data?.nearby_places,
+    weather: data?.weather,
+    response: {
+      ...data?.response,
+      products: shouldShowProducts ? data?.response?.products : [],
+      suggest_concierge: true, // Concierge can do ANYTHING
+      detected_services: detectedServices,
+      detected_experiences: detectedExperiences,
+      services_from_db: data?.response?.services || []
+    }
+  },
+  quickReplies,
+  // WORLD CLASS UX: Don't auto-show - use tray instead
+  showProducts: false,
+  showServices: false,
+  showExperiences: false,
+  detectedServices: [],
+  detectedExperiences: [],
+  dynamicConciergeRequest: null,
+  conciergeIsLive,
+  inComfortMode,
+  stepId: miraStepId,
+  isClarifyingQuestion: isNewClarifyingQuestion,
+  timestamp: new Date()
+});
+
 // ═══════════════════════════════════════════════════════════════════════════════
 // EXPORTS
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -824,6 +871,7 @@ const useChat = () => {
     createErrorMessage,
     createTopicShiftIndicator,
     createUserMessage,
+    buildMiraMessage,
     // API helpers
     fetchConversationMemory,
     fetchMoodContext,
