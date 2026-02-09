@@ -17,14 +17,16 @@
 
 # 🛡️ REFACTORING STATUS SUMMARY
 
-## Progress: 24% Complete (MAJOR MILESTONE)
+## Progress: 27% Complete (CONTINUING PROGRESS)
 | Metric | Before | After | Change |
 |--------|--------|-------|--------|
-| Lines | 5,789 | **4,386** | **-1,403 (24%)** |
+| Lines | 5,789 | **4,202** | **-1,587 (27%)** |
 | Components | 0 | **12** | +12 |
-| Hooks | 0 | **4** | +4 |
+| Hooks | 0 | **5** | +5 |
 
-## MAJOR REFACTOR: ChatMessage.jsx Enhanced
+## MAJOR REFACTORS THIS SESSION:
+
+### 1. ChatMessage.jsx Enhanced (Stage 5)
 The `ChatMessage.jsx` component was enhanced from 392 lines to **988 lines** to handle ALL complex message types:
 - Products grid with pillar badges
 - Nearby places (vets, restaurants, parks)
@@ -36,6 +38,18 @@ The `ChatMessage.jsx` component was enhanced from 392 lines to **988 lines** to 
 - Remembered providers
 
 This extraction removed ~596 lines from MiraDemoPage.jsx!
+
+### 2. useChat.js Hook Created (Stage 6)
+New hook with helper functions extracted from handleSubmit:
+- `detectMiraMode()` - Mode detection (comfort, emergency, instant)
+- `detectStepId()` - Step ID detection for all canonical flows
+- `extractCityFromQuery()` - City extraction for travel
+- `detectContextTopic()` - Context topic detection
+- `hasTrainingIntent()` / `extractTrainingTopic()` - Training videos
+- `shouldFetchTravelData()` - Travel confirmation detection
+- `isMeaningfulTopic()` / `isCelebrationQuery()` - Topic utilities
+
+This extraction removed ~184 more lines from MiraDemoPage.jsx!
 
 ## 12 Components Created
 ```
@@ -54,19 +68,21 @@ This extraction removed ~596 lines from MiraDemoPage.jsx!
 └── InsightsPanel.jsx      (63)
 ```
 
-## 4 Hooks Created
+## 5 Hooks Created
 ```
 /app/frontend/src/hooks/mira/
 ├── usePet.js       ✅ integrated
 ├── useVault.js     ✅ integrated
 ├── useSession.js   ✅ integrated
-└── useVoice.js     ⏳ pending
+├── useChat.js      ✅ NEW - handleSubmit helpers
+└── useVoice.js     ⏳ pending integration
 ```
 
 ## Remaining Work
 1. ~~Message rendering (~500 lines)~~ ✅ DONE - Extracted to ChatMessage.jsx
-2. handleSubmit function (~800 lines) - Very complex, next priority
-3. Integrate useVoice hook
+2. ~~handleSubmit helper functions~~ ✅ DONE - Extracted to useChat.js
+3. handleSubmit main logic (~700 lines still in main file) - Can be further broken down
+4. Integrate useVoice hook
 
 **Full details**: See `/app/memory/REFACTORING_HANDOVER.md`
 
