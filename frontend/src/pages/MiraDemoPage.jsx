@@ -3275,12 +3275,18 @@ const MiraDemoPage = () => {
                           miraMode === 'instant' ? 60 : 40;
         const typingTime = (miraResponseText.length / typingSpeed) * 1000;
         
-        // Wait for text animation to complete, then speak
-        voiceTimeoutRef.current = setTimeout(() => {
-          console.log('[MIRA VOICE] Now calling speakWithMira');
-          speakWithMira(miraResponseText);
-          voiceTimeoutRef.current = null;
-        }, Math.min(typingTime + 500, 3000)); // Cap at 3 seconds to avoid too long wait
+        // Check if voice should be skipped (tile was clicked)
+        if (skipVoiceOnNextResponseRef.current) {
+          console.log('[MIRA VOICE] Skipping voice - response triggered by tile click');
+          skipVoiceOnNextResponseRef.current = false; // Reset for next response
+        } else {
+          // Wait for text animation to complete, then speak
+          voiceTimeoutRef.current = setTimeout(() => {
+            console.log('[MIRA VOICE] Now calling speakWithMira');
+            speakWithMira(miraResponseText);
+            voiceTimeoutRef.current = null;
+          }, Math.min(typingTime + 500, 3000)); // Cap at 3 seconds to avoid too long wait
+        }
       } else {
         console.log('[MIRA VOICE] Voice not triggered - voiceEnabled:', voiceEnabled, 'text:', !!miraResponseText);
       }
