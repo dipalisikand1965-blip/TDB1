@@ -124,21 +124,53 @@ const PastChatsPanel = ({
             No past conversations
           </div>
         ) : (
-          sessions.map((session) => (
-            <button
-              key={session.session_id}
-              onClick={() => handleSessionClick(session)}
-              className={`mp-session-btn ${session.session_id === currentSessionId ? 'active' : ''}`}
-              data-testid={`session-${session.session_id}`}
-            >
-              <div className="mp-session-meta">
-                <PawPrint />
-                <span className="mp-session-pet">{session.pet_name}</span>
-                <span className="mp-session-date">{formatSessionDate(session.updated_at)}</span>
-              </div>
-              <p className="mp-session-preview">{session.preview || 'Empty conversation'}</p>
-            </button>
-          ))
+          sessions.map((session) => {
+            const retentionInfo = getRetentionInfo(session);
+            const isArchived = session.retention_status === 'archived';
+            const isSummarized = session.retention_status === 'compressed' || isArchived;
+            
+            return (
+              <button
+                key={session.session_id}
+                onClick={() => handleSessionClick(session)}
+                className={`mp-session-btn ${session.session_id === currentSessionId ? 'active' : ''} ${retentionInfo?.className || ''}`}
+                data-testid={`session-${session.session_id}`}
+                title={retentionInfo?.tooltip}
+              >
+                <div className="mp-session-meta">
+                  <PawPrint size={14} />
+                  <span className="mp-session-pet">{session.pet_name}</span>
+                  <span className="mp-session-date">{formatSessionDate(session.updated_at)}</span>
+                  {retentionInfo && (
+                    <span className={`mp-retention-badge ${retentionInfo.className}`}>
+                      {retentionInfo.icon}
+                      <span>{retentionInfo.label}</span>
+                    </span>
+                  )}
+                </div>
+                
+                {/* Show summary for archived/compressed sessions */}
+                {isSummarized && session.summary ? (
+                  <div className="mp-session-summary">
+                    <Clock size={10} />
+                    <p>{session.summary.summary || session.summary.first_message || 'Conversation summarized'}</p>
+                    {session.summary.intents?.length > 0 && (
+                      <div className="mp-session-intents">
+                        {session.summary.intents.slice(0, 3).map((intent, i) => (
+                          <span key={i} className="mp-intent-tag">{intent}</span>
+                        ))}
+                      </div>
+                    )}
+                    {session.message_count && (
+                      <span className="mp-msg-count">{session.message_count} messages</span>
+                    )}
+                  </div>
+                ) : (
+                  <p className="mp-session-preview">{session.preview || 'Empty conversation'}</p>
+                )}
+              </button>
+            );
+          })
         )}
       </div>
       
