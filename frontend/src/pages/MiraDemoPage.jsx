@@ -4778,11 +4778,15 @@ const MiraDemoPage = () => {
                                       )}
                                       
                                       <button 
-                                        className="mp-product-add"
-                                        onClick={() => { hapticFeedback.productSelect(); alert(`Added ${product.name} to cart!`); }}
+                                        className="mp-product-add mp-send-concierge"
+                                        onClick={() => { 
+                                          hapticFeedback.productSelect(); 
+                                          // Add to picks for Concierge - no cart functionality
+                                          console.log(`[PICKS] Added ${product.name} to Concierge picks`);
+                                        }}
                                         data-testid={`add-product-${pIdx}`}
                                       >
-                                        <ShoppingBag /> Add
+                                        <ShoppingBag /> Pick
                                       </button>
                                     </div>
                                   </div>
