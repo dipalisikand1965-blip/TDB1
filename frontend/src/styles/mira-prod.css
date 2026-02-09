@@ -1807,6 +1807,14 @@
 .mp-composer {
   padding: var(--space-lg) var(--space-xl) var(--space-2xl);
   background: linear-gradient(180deg, transparent 0%, rgba(26, 10, 46, 0.95) 30%);
+  position: relative;
+}
+
+/* Safe area insets for notched phones (iPhone X+) */
+@supports (padding: env(safe-area-inset-bottom)) {
+  .mp-composer {
+    padding-bottom: calc(var(--space-2xl) + env(safe-area-inset-bottom));
+  }
 }
 
 .mp-composer-inner {
