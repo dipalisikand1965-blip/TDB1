@@ -14,12 +14,12 @@
 | **4. Service Flow** | 90/100 | 🟢 EXCELLENT |
 | **5. 14 Pillars** | 55/100 | 🟡 PARTIAL |
 | **7 Services** | 70/100 | 🟡 GOOD |
-| **6. Intelligence** | 65/100 | 🟡 IMPROVED ⬆️ |
-| **7. Proactive System** | 40/100 | 🟡 IMPROVED ⬆️ |
+| **6. Intelligence** | 65/100 | 🟡 IMPROVED |
+| **7. Proactive System** | 55/100 | 🟡 IMPROVED ⬆️⬆️ |
 | **8. Admin Panel** | 80/100 | 🟢 GOOD |
 | **9. Mobile/Desktop** | 85/100 | 🟢 GOOD |
 | **10. Documentation** | 90/100 | 🟢 EXCELLENT |
-| **OVERALL** | **74/100** | 🟡 ⬆️ from 68 |
+| **OVERALL** | **76/100** | 🟡 ⬆️ from 74 |
 
 ---
 
