@@ -3995,27 +3995,12 @@ const MiraDemoPage = () => {
         </div>
       </header>
       
-      {/* NAVIGATION DOCK - Horizontal Pills */}
-      <nav className="mp-dock">
-        <button onClick={() => inputRef.current?.focus()} className="mp-dock-btn" data-testid="dock-concierge">
-          <MessageCircle /> <span>Concierge®</span>
-        </button>
-        <button onClick={() => navigate('/orders')} className="mp-dock-btn" data-testid="dock-orders">
-          <Package /> <span>Orders</span>
-        </button>
-        <button onClick={() => navigate('/family-dashboard')} className="mp-dock-btn" data-testid="dock-plan">
-          <Calendar /> <span>Plan</span>
-        </button>
-        <button onClick={() => setShowHelpModal(true)} className="mp-dock-btn" data-testid="dock-help">
-          <HelpCircle /> <span>Help</span>
-        </button>
-        <button onClick={() => navigate('/dashboard')} className="mp-dock-btn" data-testid="dock-soul">
-          <Heart /> <span>Soul</span>
-        </button>
-        <button onClick={() => { setShowLearnModal(true); fetchLearnVideos('recommended'); }} className="mp-dock-btn" data-testid="dock-learn">
-          <Play /> <span>Learn</span>
-        </button>
-      </nav>
+      {/* NAVIGATION DOCK - Extracted to NavigationDock component */}
+      <NavigationDock
+        inputRef={inputRef}
+        onShowHelp={() => setShowHelpModal(true)}
+        onShowLearn={() => { setShowLearnModal(true); fetchLearnVideos('recommended'); }}
+      />
       
       {/* FLOATING ACTION BAR - Always visible, clean icons for Insight/Concierge/History */}
       {conversationHistory.length > 0 && (
