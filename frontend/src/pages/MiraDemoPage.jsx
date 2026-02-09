@@ -5745,9 +5745,8 @@ const MiraDemoPage = () => {
       {/* ═══════════════════════════════════════════════════════════════════════════
           VAULT SYSTEM - Full-screen overlay for picks, bookings, places, etc.
           "Mira is the Brain, Concierge® is the Hands"
-          TEMPORARILY DISABLED - needs investigation
           ═══════════════════════════════════════════════════════════════════════════ */}
-      {/* {showVault && (
+      {showVault && (
         <div className="vault-overlay" data-testid="vault-overlay">
           <VaultManager
             isOpen={showVault}
@@ -5781,7 +5780,7 @@ const MiraDemoPage = () => {
             }}
           />
         </div>
-      )} */}
+      )}
     </div>
   );
 };
