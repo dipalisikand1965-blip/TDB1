@@ -8724,59 +8724,219 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
         
         # ═══════════════════════════════════════════════════════════════════
         # MIRA MEMORY SYSTEM - "Store forever. Surface selectively."
-        # Every meaningful conversation helps Mira know the pet better!
+        # ═══════════════════════════════════════════════════════════════════
+        # WE ARE NOT CHEWY. WE ARE NOT GOOGLE. WE ACTION.
+        # EVERY USER INTENT HAS A MESSAGE. STORE ALL MEMORIES.
+        # THE MORE MIRA REMEMBERS, THE SMARTER SHE BECOMES.
         # ═══════════════════════════════════════════════════════════════════
         try:
-            from mira_memory import MiraMemory, detect_memory_type
+            from mira_memory import MiraMemory
             
             member_id = user.get("email") if user else None
             pet_id = selected_pet.get("id") if selected_pet else None
             pet_name = selected_pet.get("name") if selected_pet else None
             
             if member_id and pet_id:
-                # Auto-detect memory type from user message
-                memory_type = detect_memory_type(user_message)
-                
-                # Store meaningful interactions as memories
-                should_store = False
-                memory_content = None
+                # ALWAYS STORE - Every interaction is valuable
+                should_store = True
+                memory_type = "general"
+                memory_content = user_message[:200]
                 relevance_tags = [pillar] if pillar else []
                 
-                # Health-related memories (CRITICAL - never forget)
-                if pillar == "care" or any(kw in user_message.lower() for kw in ["sick", "vet", "health", "allergy", "symptom", "medicine", "vaccine", "scratch", "itchy", "skin"]):
-                    should_store = True
+                user_msg_lower = user_message.lower()
+                
+                # ════════════════════════════════════════════════════════════
+                # 14 PILLARS - Categorize and Tag Memories
+                # ════════════════════════════════════════════════════════════
+                
+                # 🎂 CELEBRATE - Birthdays, parties, gotcha days, celebrations
+                if pillar == "celebrate" or any(kw in user_msg_lower for kw in ["birthday", "party", "celebrate", "gotcha", "anniversary", "cake", "gift", "balloon", "decoration"]):
+                    memory_type = "celebrate"
+                    memory_content = f"🎂 Celebration: {user_message[:150]}"
+                    relevance_tags.extend(["celebrate", "party", "special_occasion"])
+                
+                # 🍽️ DINE - Food, meals, treats, nutrition
+                elif pillar == "dine" or any(kw in user_msg_lower for kw in ["food", "eat", "meal", "treat", "snack", "kibble", "diet", "nutrition", "hungry", "feed"]):
+                    memory_type = "dine"
+                    memory_content = f"🍽️ Food preference: {user_message[:150]}"
+                    relevance_tags.extend(["dine", "food", "nutrition"])
+                
+                # 🏨 STAY - Hotels, boarding, stays, accommodations
+                elif pillar == "stay" or any(kw in user_msg_lower for kw in ["hotel", "stay", "boarding", "kennel", "overnight", "accommodation", "resort"]):
+                    memory_type = "stay"
+                    memory_content = f"🏨 Stay preference: {user_message[:150]}"
+                    relevance_tags.extend(["stay", "accommodation", "boarding"])
+                
+                # ✈️ TRAVEL - Trips, flights, vacations, destinations
+                elif pillar == "travel" or any(kw in user_msg_lower for kw in ["travel", "trip", "flight", "vacation", "fly", "airport", "destination", "journey"]):
+                    memory_type = "travel"
+                    memory_content = f"✈️ Travel plan: {user_message[:150]}"
+                    relevance_tags.extend(["travel", "trip", "destination"])
+                
+                # 💊 CARE - Health, vet, symptoms, medicines, vaccines
+                elif pillar == "care" or any(kw in user_msg_lower for kw in ["sick", "vet", "health", "medicine", "vaccine", "symptom", "allergy", "pain", "doctor", "clinic", "checkup"]):
                     memory_type = "health"
-                    memory_content = f"Health concern mentioned: {user_message[:150]}"
-                    relevance_tags.extend(["health", "symptom"])
+                    memory_content = f"💊 Health: {user_message[:150]}"
+                    relevance_tags.extend(["care", "health", "medical"])
                 
-                # Travel/Event memories
-                elif pillar == "travel" or any(kw in user_message.lower() for kw in ["trip", "travel", "vacation", "birthday", "party", "celebrate"]):
-                    should_store = True
-                    memory_type = "event"
-                    memory_content = f"Event/Travel mentioned: {user_message[:150]}"
-                    relevance_tags.extend(["event", "planning"])
+                # 🎾 ENJOY - Activities, play, fun, outings
+                elif pillar == "enjoy" or any(kw in user_msg_lower for kw in ["play", "fun", "activity", "park", "beach", "swim", "toy", "game", "fetch"]):
+                    memory_type = "enjoy"
+                    memory_content = f"🎾 Activity: {user_message[:150]}"
+                    relevance_tags.extend(["enjoy", "activity", "fun"])
                 
-                # Shopping/Preference memories
-                elif products and len(products) > 0:
-                    should_store = True
-                    memory_type = "shopping"
-                    product_names = [p.get("name", "") for p in products[:3]]
-                    memory_content = f"Interested in: {', '.join(product_names)}"
-                    relevance_tags.extend(["shopping", "product_interest"])
+                # 🏃 FIT - Exercise, fitness, weight, walks
+                elif pillar == "fit" or any(kw in user_msg_lower for kw in ["exercise", "walk", "run", "weight", "fitness", "active", "workout", "calories"]):
+                    memory_type = "fit"
+                    memory_content = f"🏃 Fitness: {user_message[:150]}"
+                    relevance_tags.extend(["fit", "exercise", "fitness"])
                 
-                # Service booking memories
-                elif handoff_to_concierge:
-                    should_store = True
-                    memory_type = "general"
-                    memory_content = f"Requested service: {pillar} - {handoff_reason}"
-                    relevance_tags.extend(["service", "concierge_request"])
+                # 🎓 LEARN - Training videos, education, learning
+                elif pillar == "learn" or any(kw in user_msg_lower for kw in ["train", "learn", "video", "watch", "tutorial", "how to", "teach", "command", "obedience"]):
+                    memory_type = "learn"
+                    memory_content = f"🎓 Learning: {user_message[:150]}"
+                    relevance_tags.extend(["learn", "training", "education"])
                 
-                # Grooming memories
-                elif pillar == "care" and any(kw in user_message.lower() for kw in ["groom", "haircut", "bath", "nail"]):
-                    should_store = True
-                    memory_type = "general"
-                    memory_content = f"Grooming request: {user_message[:100]}"
-                    relevance_tags.extend(["grooming", "care"])
+                # 📄 PAPERWORK - Documents, records, licenses, certificates
+                elif pillar == "paperwork" or any(kw in user_msg_lower for kw in ["document", "certificate", "license", "registration", "record", "paper", "form"]):
+                    memory_type = "paperwork"
+                    memory_content = f"📄 Paperwork: {user_message[:150]}"
+                    relevance_tags.extend(["paperwork", "document", "record"])
+                
+                # 📋 ADVISORY - Advice, guidance, recommendations
+                elif pillar == "advisory" or any(kw in user_msg_lower for kw in ["advice", "recommend", "suggest", "help", "guide", "what should", "best for"]):
+                    memory_type = "advisory"
+                    memory_content = f"📋 Seeking advice: {user_message[:150]}"
+                    relevance_tags.extend(["advisory", "guidance", "recommendation"])
+                
+                # 🚨 EMERGENCY - Urgent, emergency, poison, injury
+                elif pillar == "emergency" or any(kw in user_msg_lower for kw in ["emergency", "urgent", "poison", "injury", "bleeding", "accident", "choking", "collapse"]):
+                    memory_type = "emergency"
+                    memory_content = f"🚨 Emergency: {user_message[:150]}"
+                    relevance_tags.extend(["emergency", "urgent", "critical"])
+                
+                # 🌈 FAREWELL - Memorial, grief, loss, rainbow bridge
+                elif pillar == "farewell" or any(kw in user_msg_lower for kw in ["passed", "died", "loss", "grief", "memorial", "rainbow", "farewell", "goodbye", "miss"]):
+                    memory_type = "farewell"
+                    memory_content = f"🌈 Memorial: {user_message[:150]}"
+                    relevance_tags.extend(["farewell", "memorial", "remembrance"])
+                
+                # 🐾 ADOPT - Adoption, new pet, rescue, foster
+                elif pillar == "adopt" or any(kw in user_msg_lower for kw in ["adopt", "rescue", "foster", "new pet", "shelter", "puppy", "kitten"]):
+                    memory_type = "adopt"
+                    memory_content = f"🐾 Adoption: {user_message[:150]}"
+                    relevance_tags.extend(["adopt", "rescue", "new_pet"])
+                
+                # 🛒 SHOP - Products, buy, order, purchase
+                elif pillar == "shop" or any(kw in user_msg_lower for kw in ["buy", "order", "purchase", "shop", "cart", "product", "price"]):
+                    memory_type = "shop"
+                    memory_content = f"🛒 Shopping: {user_message[:150]}"
+                    relevance_tags.extend(["shop", "purchase", "product"])
+                
+                # ════════════════════════════════════════════════════════════
+                # 7 SERVICES - Specific Service Memories
+                # ════════════════════════════════════════════════════════════
+                
+                # ✂️ GROOMING
+                if any(kw in user_msg_lower for kw in ["groom", "haircut", "bath", "nail", "trim", "brush", "shampoo", "coat"]):
+                    memory_type = "service_grooming"
+                    memory_content = f"✂️ Grooming: {user_message[:150]}"
+                    relevance_tags.extend(["service", "grooming"])
+                
+                # 🎓 TRAINING
+                elif any(kw in user_msg_lower for kw in ["train", "behavior", "obedience", "sit", "stay", "come", "heel"]):
+                    memory_type = "service_training"
+                    memory_content = f"🎓 Training: {user_message[:150]}"
+                    relevance_tags.extend(["service", "training"])
+                
+                # 🏠 BOARDING
+                elif any(kw in user_msg_lower for kw in ["board", "overnight", "kennel", "away"]):
+                    memory_type = "service_boarding"
+                    memory_content = f"🏠 Boarding: {user_message[:150]}"
+                    relevance_tags.extend(["service", "boarding"])
+                
+                # 🌞 DAYCARE
+                elif any(kw in user_msg_lower for kw in ["daycare", "day care", "daytime"]):
+                    memory_type = "service_daycare"
+                    memory_content = f"🌞 Daycare: {user_message[:150]}"
+                    relevance_tags.extend(["service", "daycare"])
+                
+                # 🏥 VET CARE
+                elif any(kw in user_msg_lower for kw in ["vet", "clinic", "doctor", "checkup", "vaccine"]):
+                    memory_type = "service_vet"
+                    memory_content = f"🏥 Vet: {user_message[:150]}"
+                    relevance_tags.extend(["service", "vet"])
+                
+                # 🐕 DOG WALKING
+                elif any(kw in user_msg_lower for kw in ["walk", "walker", "walking"]):
+                    memory_type = "service_walking"
+                    memory_content = f"🐕 Walking: {user_message[:150]}"
+                    relevance_tags.extend(["service", "walking"])
+                
+                # 📸 PHOTOGRAPHY
+                elif any(kw in user_msg_lower for kw in ["photo", "picture", "shoot", "portrait", "camera"]):
+                    memory_type = "service_photo"
+                    memory_content = f"📸 Photography: {user_message[:150]}"
+                    relevance_tags.extend(["service", "photography"])
+                
+                # ════════════════════════════════════════════════════════════
+                # PRODUCT INTERESTS - When Mira shows products
+                # ════════════════════════════════════════════════════════════
+                if products and len(products) > 0:
+                    product_names = [p.get("name", "")[:30] for p in products[:5]]
+                    product_memory = f"Products shown: {', '.join(product_names)}"
+                    # Store as additional memory
+                    await MiraMemory.store_memory(
+                        member_id=member_id,
+                        memory_type="product_interest",
+                        content=product_memory,
+                        pet_id=pet_id,
+                        pet_name=pet_name,
+                        context=f"Pillar: {pillar} | Query: {user_message[:50]}",
+                        relevance_tags=["product", "shown", pillar] if pillar else ["product", "shown"],
+                        source="product_display",
+                        confidence="medium",
+                        session_id=session_id
+                    )
+                
+                # ════════════════════════════════════════════════════════════
+                # SERVICE HANDOFFS - When Concierge takes over
+                # ════════════════════════════════════════════════════════════
+                if handoff_to_concierge:
+                    service_memory = f"Service requested: {pillar} | Reason: {handoff_reason}"
+                    await MiraMemory.store_memory(
+                        member_id=member_id,
+                        memory_type="service_request",
+                        content=service_memory,
+                        pet_id=pet_id,
+                        pet_name=pet_name,
+                        context=f"Handoff to Concierge",
+                        relevance_tags=["service", "concierge", "request", pillar] if pillar else ["service", "concierge"],
+                        source="concierge_handoff",
+                        confidence="high",
+                        session_id=session_id
+                    )
+                
+                # ════════════════════════════════════════════════════════════
+                # STORE THE PRIMARY MEMORY - EVERY INTERACTION MATTERS
+                # ════════════════════════════════════════════════════════════
+                if should_store and memory_content:
+                    await MiraMemory.store_memory(
+                        member_id=member_id,
+                        memory_type=memory_type,
+                        content=memory_content,
+                        pet_id=pet_id,
+                        pet_name=pet_name,
+                        context=f"Pillar: {pillar} | Response: {response[:100] if response else 'N/A'}",
+                        relevance_tags=list(set(relevance_tags)),  # Dedupe tags
+                        source="conversation",
+                        confidence="high",
+                        session_id=session_id
+                    )
+                    logger.info(f"[MEMORY] 🧠 Stored {memory_type} for {pet_name}: {memory_content[:50]}...")
+                    
+        except Exception as mem_err:
+            logger.warning(f"[MEMORY] Could not store memory: {mem_err}")
                 
                 if should_store and memory_content:
                     await MiraMemory.store_memory(
