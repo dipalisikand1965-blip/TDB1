@@ -34,9 +34,10 @@ import conversationIntelligence from '../utils/conversationIntelligence';
 // VAULT SYSTEM - "Mira is the Brain, Concierge® is the Hands"
 // ═══════════════════════════════════════════════════════════════════════════════
 import { VaultManager } from '../components/PicksVault';
+import MiraTray from '../components/Mira/MiraTray';
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// EXTRACTED HOOKS - Stage 1 Refactoring
+// EXTRACTED HOOKS - Stage 1, 2, 3 Refactoring
 // ═══════════════════════════════════════════════════════════════════════════════
 import { useVoice, usePet, useVault, useSession, DEMO_PET, ALL_DEMO_PETS } from '../hooks/mira';
 
