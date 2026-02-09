@@ -14,6 +14,7 @@
 
 import React, { useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import hapticFeedback from '../utils/haptic';
 
 // Mira's soul colors - Enhanced for magical presence
 const MIRA_COLORS = {
