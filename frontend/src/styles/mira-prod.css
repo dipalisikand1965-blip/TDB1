@@ -8512,3 +8512,65 @@ input, select, textarea {
     font-size: 12px;
   }
 }
+
+/* ========================================
+   CONCIERGE CURATION MESSAGE
+   "Your pet Concierge® will curate..."
+   ======================================== */
+.mp-concierge-curation-message {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  margin-top: 16px;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(52, 211, 153, 0.05) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 12px;
+}
+
+.mp-concierge-curation-message .curation-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  border-radius: 50%;
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+  flex-shrink: 0;
+}
+
+.mp-concierge-curation-message p {
+  margin: 0;
+  font-size: 13px;
+  color: var(--mira-text-secondary);
+  line-height: 1.4;
+}
+
+/* Send to Concierge button style (replaces Add) */
+.mp-product-add.mp-send-concierge {
+  background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.mp-product-add.mp-send-concierge:hover {
+  background: linear-gradient(135deg, #059669, #047857);
+  transform: scale(1.05);
+}
+
+@media (max-width: 480px) {
+  .mp-concierge-curation-message {
+    padding: 12px 14px;
+  }
+  
+  .mp-concierge-curation-message .curation-icon {
+    width: 32px;
+    height: 32px;
+    font-size: 12px;
+  }
+  
+  .mp-concierge-curation-message p {
+    font-size: 12px;
+  }
+}
