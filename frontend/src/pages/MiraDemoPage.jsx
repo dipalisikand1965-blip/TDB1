@@ -33,8 +33,7 @@ import conversationIntelligence from '../utils/conversationIntelligence';
 // ═══════════════════════════════════════════════════════════════════════════════
 // VAULT SYSTEM - "Mira is the Brain, Concierge® is the Hands"
 // ═══════════════════════════════════════════════════════════════════════════════
-// import { VaultManager } from '../components/PicksVault';
-// Temporarily disabled - causing page crash. Needs investigation.
+import { VaultManager } from '../components/PicksVault';
 
 // Formatted Text Component - Renders markdown with proper styling
 // Uses wrapper div for className (react-markdown v8+ compatible)
