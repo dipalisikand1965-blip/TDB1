@@ -419,9 +419,9 @@ class TestAdminNotificationCreation:
         # Verify CONCIERGE
         assert data.get("execution_type") == "CONCIERGE"
         
-        # Get ticket_id
+        # Get ticket_id from concierge_confirmation (at TOP level) or response
+        concierge_confirmation = data.get("concierge_confirmation")
         resp = data.get("response", {})
-        concierge_confirmation = resp.get("concierge_confirmation")
         ticket_id = concierge_confirmation.get("ticket_id") if concierge_confirmation else resp.get("ticket_id")
         
         print(f"Ticket ID for admin notification test: {ticket_id}")
