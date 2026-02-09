@@ -7,11 +7,13 @@
 
 import React, { useState, useCallback } from 'react';
 import { Check, X, Sparkles, Upload, DollarSign, Clock } from 'lucide-react';
+import hapticFeedback from '../../utils/haptic';
 import './CustomVault.css';
 
+// Use centralized haptic utility for iOS + Android support
 const haptic = {
-  light: () => navigator.vibrate && navigator.vibrate(10),
-  success: () => navigator.vibrate && navigator.vibrate([10, 50, 10])
+  light: () => hapticFeedback.buttonTap(),
+  success: () => hapticFeedback.success()
 };
 
 const CustomVault = ({
