@@ -281,11 +281,11 @@ class TestMiraProductMatchType:
         print(f"✓ Response.message present: {len(resp.get('message', ''))}")
         print(f"✓ Response.products count: {len(resp.get('products', []))}")
         
-        # Check for current_pillar field
-        if "current_pillar" in resp:
-            print(f"✓ current_pillar present: {resp.get('current_pillar')}")
+        # Check for current_pillar field at TOP LEVEL (not inside response object)
+        if "current_pillar" in data:
+            print(f"✓ current_pillar present at top level: {data.get('current_pillar')}")
         else:
-            print("⚠ current_pillar field not present in response")
+            print("⚠ current_pillar field not present at top level")
 
     def test_products_include_why_for_pet(self):
         """Test that products include why_for_pet field for personalization"""
