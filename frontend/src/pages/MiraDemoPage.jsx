@@ -989,7 +989,7 @@ const MiraDemoPage = () => {
   // Full-screen vault overlay for picks, booking, places, etc.
   // ═══════════════════════════════════════════════════════════════════════════
   const [showVault, setShowVault] = useState(false);
-  const [vaultResponse, setVaultResponse] = useState(null);
+  const [activeVaultData, setActiveVaultData] = useState(null);
   const [vaultUserMessage, setVaultUserMessage] = useState('');
   
   // ═══════════════════════════════════════════════════════════════════════════
