@@ -163,6 +163,11 @@ async def search_transfers(
             data = response.json()
             offers = data.get("data", [])
             
+            # If no real offers, return mock data
+            if not offers:
+                logger.info("[TRANSFER] No real offers found, returning mock data")
+                return _get_mock_transfers(pickup_location, dropoff_location, passengers, currency)
+            
             return {
                 "success": True,
                 "pickup": pickup_location,
