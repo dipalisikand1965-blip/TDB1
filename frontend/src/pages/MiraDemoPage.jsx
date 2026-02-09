@@ -4805,6 +4805,12 @@ const MiraDemoPage = () => {
                                   </a>
                                 </div>
                               )}
+                              
+                              {/* CONCIERGE CURATION MESSAGE */}
+                              <div className="mp-concierge-curation-message" data-testid="concierge-curation-msg">
+                                <div className="curation-icon">C°</div>
+                                <p>Your pet Concierge® will review these picks and curate something special for {pet.name}.</p>
+                              </div>
                             </div>
                           )}
                           
