@@ -2,13 +2,13 @@
  * ChatInputBar - Message Input Component
  * ======================================
  * The bottom input bar for typing/voice messages to Mira
- * Includes: Text input, Voice output toggle, Voice input button, Send button
+ * Includes: Text input, Photo upload, Voice output toggle, Voice input button, Send button
  * 
  * Extracted from MiraDemoPage.jsx - Stage 5 Refactoring
  */
 
-import React from 'react';
-import { Send, Mic, MicOff, Volume2, VolumeX, X } from 'lucide-react';
+import React, { useRef, useState } from 'react';
+import { Send, Mic, MicOff, Volume2, VolumeX, X, Camera, ImagePlus, Loader2 } from 'lucide-react';
 import hapticFeedback from '../../utils/haptic';
 
 /**
@@ -29,6 +29,9 @@ import hapticFeedback from '../../utils/haptic';
  * @param {string} props.voiceError - Voice error message
  * @param {Function} props.onClearVoiceError - Clear voice error
  * @param {string} props.placeholder - Input placeholder text
+ * @param {Function} props.onPhotoUpload - Called when photo is uploaded (receives file, uploadResponse)
+ * @param {string} props.petId - Pet ID for photo uploads
+ * @param {string} props.sessionId - Session ID for photo uploads
  */
 const ChatInputBar = ({
   inputRef,
@@ -44,8 +47,14 @@ const ChatInputBar = ({
   onToggleVoiceInput,
   voiceError = null,
   onClearVoiceError,
-  placeholder = 'Ask Mira anything...'
+  placeholder = 'Ask Mira anything...',
+  onPhotoUpload,
+  petId,
+  sessionId
 }) => {
+  const fileInputRef = useRef(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadPreview, setUploadPreview] = useState(null);
   
   const handleSubmit = (e) => {
     e.preventDefault();
