@@ -948,6 +948,9 @@ const MiraDemoPage = () => {
   });
   const [showMiraTray, setShowMiraTray] = useState(false);
   
+  // Active quick reply tiles - shown next to input bar (NOT inside chat)
+  const [activeQuickReplies, setActiveQuickReplies] = useState([]);
+  
   // Unified C® button state (collapsed by default, expands to show WhatsApp/Chat/Email)
   const [showConciergeOptions, setShowConciergeOptions] = useState(false);
   
