@@ -1,6 +1,6 @@
 # MIRA DEMO PAGE REFACTORING - HANDOVER REPORT
 ## Date: February 9, 2026
-## Status: IN PROGRESS
+## Status: IN PROGRESS (12% Complete)
 
 ---
 
@@ -8,11 +8,11 @@
 
 | Metric | Before | After | Change |
 |--------|--------|-------|--------|
-| MiraDemoPage.jsx Lines | 5,791 | 5,417 | **-374 (6.5%)** |
+| MiraDemoPage.jsx Lines | 5,789 | **5,076** | **-713 (12%)** |
 | useState hooks | 67 | 61 | -6 |
-| Components Created | 0 | 4 | +4 |
-| Hooks Created | 0 | 4 | +4 |
-| Target Lines | - | ~1,500 | 3,917 to go |
+| Components Created | 0 | **12** | +12 |
+| Hooks Created | 0 | **4** | +4 |
+| Target Lines | - | ~1,500 | 3,576 to go |
 
 ---
 
@@ -22,12 +22,13 @@
 
 ### Location: `/app/frontend/src/hooks/mira/`
 
-| Hook | File | Status | Purpose |
-|------|------|--------|---------|
-| usePet | `usePet.js` | ✅ Integrated | Pet selection, switching, loading |
-| useVault | `useVault.js` | ✅ Integrated | Picks, vault visibility, data |
-| useSession | `useSession.js` | ✅ Integrated | Session ID, recovery |
-| useVoice | `useVoice.js` | ⏳ Created | Voice I/O (pending integration) |
+| Hook | File | Lines | Status | Purpose |
+|------|------|-------|--------|---------|
+| usePet | `usePet.js` | 210 | ✅ Integrated | Pet selection, switching, loading |
+| useVault | `useVault.js` | 105 | ✅ Integrated | Picks, vault visibility, data |
+| useSession | `useSession.js` | 145 | ✅ Integrated | Session ID, recovery |
+| useVoice | `useVoice.js` | 438 | ⏳ Created | Voice I/O (pending integration) |
+| **Total** | | **898** | | |
 
 ### State Variables Moved to Hooks:
 ```
@@ -42,67 +43,89 @@ useSession: sessionId, setSessionId, sessionRecovered, setSessionRecovered
 
 | Component | File | Lines | Purpose |
 |-----------|------|-------|---------|
-| WelcomeHero | `WelcomeHero.jsx` | 320 | Welcome screen with pet avatar, features |
-| ChatMessage | `ChatMessage.jsx` | 368 | Message bubble rendering |
-| MiraTray | `MiraTray.jsx` | 108 | Picks preview popup |
-| PastChatsPanel | `PastChatsPanel.jsx` | 117 | Past conversations list |
-| **TOTAL** | | **913** | |
+| ChatMessage | `ChatMessage.jsx` | 392 | Message bubble rendering |
+| WelcomeHero | `WelcomeHero.jsx` | 320 | Welcome screen with pet avatar |
+| PastChatsPanel | `PastChatsPanel.jsx` | 186 | Past conversations list |
+| ServiceRequestModal | `ServiceRequestModal.jsx` | 166 | Service booking form |
+| HealthVaultWizard | `HealthVaultWizard.jsx` | 146 | Health profile completion wizard |
+| LearnModal | `LearnModal.jsx` | 133 | Training videos modal |
+| ChatInputBar | `ChatInputBar.jsx` | 128 | Message input bar |
+| MiraTray | `MiraTray.jsx` | 108 | Picks preview tray |
+| HelpModal | `HelpModal.jsx` | 101 | Quick help options |
+| ConciergePanel | `ConciergePanel.jsx` | 80 | Concierge contact panel |
+| TestScenariosPanel | `TestScenariosPanel.jsx` | 77 | Demo test scenarios |
+| InsightsPanel | `InsightsPanel.jsx` | 63 | Mira's tips display |
+| **TOTAL** | | **~1,900** | |
 
-## 3. Integration Points
+## 3. Backend: Retention System Created
 
-### MiraDemoPage.jsx Imports Added:
-```javascript
-import { useVoice, usePet, useVault, useSession, DEMO_PET, ALL_DEMO_PETS } from '../hooks/mira';
-import MiraTray from '../components/Mira/MiraTray';
-import PastChatsPanel from '../components/Mira/PastChatsPanel';
-import WelcomeHero from '../components/Mira/WelcomeHero';
-import ChatMessage from '../components/Mira/ChatMessage';
-```
+### Location: `/app/backend/`
+
+| File | Lines | Purpose |
+|------|-------|---------|
+| `mira_retention.py` | 463 | Chat history retention (Golden Standard) |
+| `retention_scheduler.py` | 110 | Background scheduler for cleanup |
+| `cron_retention.py` | 69 | Standalone cron script |
+| **TOTAL** | **642** | |
+
+### Retention API Endpoints:
+- `GET /api/mira/retention/stats` - View retention statistics
+- `POST /api/mira/retention/run-cleanup` - Manual cleanup trigger
+- `POST /api/mira/retention/mark-important/{session_id}` - Mark session permanent
+- `GET /api/mira/retention/history/{member_id}` - Smart history loading
+
+### Retention Tiers:
+| Tier | Duration | What's Kept |
+|------|----------|-------------|
+| Hot | 0-30 days | Full messages |
+| Warm | 30-90 days | Last 5 msgs + summary |
+| Cold | 90-365 days | Summary only |
+| Delete | >2 years | Metadata only |
 
 ---
 
 # 🔮 REMAINING WORK
 
-## High Priority (Big Impact)
+## High Priority - Big Impact
 
-### 1. Extend ChatMessage Usage (~400 lines reduction)
-- Currently only used for "older messages" (collapsed)
-- Need to use for ALL recent messages too
-- Complex due to products/services rendering inside messages
+### 1. Message Rendering (~500 lines)
+- **Location**: `MiraDemoPage.jsx` lines ~4267-4881
+- **Complexity**: HIGH - Contains products, services, dynamic cards
+- **Challenge**: ChatMessage.jsx exists but doesn't handle all cases
+- **Recommendation**: Extend ChatMessage.jsx to handle products/services
 
-### 2. Break Down handleSubmit Function (~992 lines)
-- Location: `MiraDemoPage.jsx` line ~2410
-- Currently one massive function handling:
+### 2. handleSubmit Function (~800 lines)
+- **Location**: `MiraDemoPage.jsx` line ~2420
+- **Complexity**: VERY HIGH - Core business logic
+- **Contains**:
   - Intent routing
-  - API calls
+  - API calls to `/api/mira/chat`
   - Response processing
   - State updates
-- Should split into:
-  - `routeIntent()` - Detect user intent
-  - `processChat()` - Call Mira API
-  - `handleResponse()` - Process response
-  - `updateConversation()` - Update state
+  - Voice triggering
+- **Recommendation**: Split into utility functions:
+  ```
+  /app/frontend/src/utils/miraChat/
+  ├── routeIntent.js
+  ├── processChat.js
+  ├── handleResponse.js
+  └── index.js
+  ```
 
 ### 3. Integrate useVoice Hook
-- Hook exists at `/app/frontend/src/hooks/mira/useVoice.js`
-- Complex because voice logic is scattered:
-  - `voiceEnabled`, `isSpeaking` state
-  - `audioRef`, `voiceTimeoutRef` refs
-  - `speakWithMira()`, `stopSpeaking()` functions
-  - Voice timeout management in multiple places
+- **Location**: Hook exists at `/app/frontend/src/hooks/mira/useVoice.js`
+- **Challenge**: Voice logic scattered across 15+ places
+- **Affected state**: voiceEnabled, isSpeaking, isListening, audioRef, voiceTimeoutRef
 
 ## Medium Priority
 
-### 4. Extract Remaining Modals (~200 lines)
-- Help Modal
-- Learn Modal  
-- Health Vault Wizard
-- Concierge Panel
-- Insights Panel
+### 4. Header Component (~100 lines)
+- Pet selector, navigation, badges
+- Self-contained but has many props
 
-### 5. Remove Duplicate Pet Loading
-- Two useEffects load pets from different endpoints
-- Should consolidate into usePet hook
+### 5. Remove Duplicate Constants
+- `TEST_SCENARIOS` defined in both MiraDemoPage and TestScenariosPanel
+- `MIRA_FEATURES` could be moved to constants file
 
 ---
 
@@ -119,42 +142,67 @@ import ChatMessage from '../components/Mira/ChatMessage';
 │       └── useVoice.js       # ⏳ Voice I/O (pending)
 │
 ├── components/
-│   └── Mira/
-│       ├── ChatMessage.jsx   # ✅ Message bubbles
-│       ├── MiraTray.jsx      # ✅ Picks tray
-│       ├── PastChatsPanel.jsx # ✅ History panel
-│       └── WelcomeHero.jsx   # ✅ Welcome screen
+│   ├── Mira/
+│   │   ├── ChatMessage.jsx       # ✅ Message bubbles
+│   │   ├── WelcomeHero.jsx       # ✅ Welcome screen
+│   │   ├── PastChatsPanel.jsx    # ✅ History panel
+│   │   ├── ServiceRequestModal.jsx # ✅ Service booking
+│   │   ├── HealthVaultWizard.jsx # ✅ Health wizard
+│   │   ├── LearnModal.jsx        # ✅ Training videos
+│   │   ├── ChatInputBar.jsx      # ✅ Input bar
+│   │   ├── MiraTray.jsx          # ✅ Picks tray
+│   │   ├── HelpModal.jsx         # ✅ Help options
+│   │   ├── ConciergePanel.jsx    # ✅ Quick help
+│   │   ├── TestScenariosPanel.jsx # ✅ Test scenarios
+│   │   └── InsightsPanel.jsx     # ✅ Tips panel
+│   │
+│   └── PicksVault/               # Existing vault components
+│       ├── VaultManager.jsx
+│       ├── PicksVault.jsx
+│       └── ... (8 vault types)
 │
 ├── pages/
-│   └── MiraDemoPage.jsx      # Main file (5,417 lines)
+│   └── MiraDemoPage.jsx          # Main file (5,076 lines)
 │
-└── components/PicksVault/    # Existing vault components
-    ├── VaultManager.jsx
-    ├── PicksVault.jsx
-    ├── BookingVault.jsx
-    └── ... (other vaults)
+└── styles/
+    └── mira-premium.css          # All Mira styles
+
+/app/backend/
+├── mira_retention.py             # ✅ Retention system
+├── retention_scheduler.py        # ✅ Background scheduler
+├── cron_retention.py             # ✅ Cron script
+├── mira_session_persistence.py   # Session storage
+└── server.py                     # Main server
 ```
 
 ---
 
 # 🔧 HOW TO CONTINUE
 
-## Next Steps (in order):
+## Safe Next Steps (in order):
 
-1. **Use ChatMessage for recent messages**
-   - Find the "Visible Recent Messages" section (~line 4272)
-   - Replace inline JSX with `<ChatMessage />` component
-   - Need to handle products/services display
+1. **Extend ChatMessage for products/services**
+   - Add ProductCard, ServiceCard sub-components
+   - Handle all message types
 
-2. **Split handleSubmit**
-   - Create `/app/frontend/src/utils/miraChat.js`
-   - Extract API call logic
-   - Keep state updates in component
+2. **Extract Header component**
+   - Pet selector, nav badges, etc.
+   - ~100 lines reduction
 
-3. **Integrate useVoice**
-   - Replace useState for voice variables
-   - Update all voice-related functions to use hook
-   - Test voice input/output carefully
+3. **Split handleSubmit into utilities**
+   - Create `/app/frontend/src/utils/miraChat/`
+   - Move API logic out of component
+   - ~400 lines reduction potential
+
+4. **Integrate useVoice hook**
+   - Replace scattered voice state
+   - ~150 lines reduction
+
+## DO NOT:
+- Delete any functionality
+- Change component behavior
+- Modify API endpoints
+- Break existing imports
 
 ---
 
@@ -162,13 +210,15 @@ import ChatMessage from '../components/Mira/ChatMessage';
 
 1. **Backup exists**: `/app/backups/MiraDemoPage_BACKUP_20260209_092521.jsx`
 
-2. **Test comparison**: Use `/mira-demobackup` route to compare functionality
+2. **Feature inventory**: `/app/memory/MIRA_DEMO_FEATURE_INVENTORY.md`
 
-3. **Screenshot tool crashes**: Due to page size, use curl/testing agent instead
+3. **Test comparison**: Use `/mira-demobackup` route to compare functionality
 
-4. **No functionality lost**: All extractions preserve original behavior
+4. **Screenshot tool crashes**: Due to page size (5,076 lines), use curl/testing agent
 
-5. **Services healthy**: Both frontend and backend running correctly
+5. **No functionality lost**: All extractions preserve original behavior
+
+6. **Services verified healthy**: Both frontend and backend running correctly
 
 ---
 
@@ -183,14 +233,26 @@ import ChatMessage from '../components/Mira/ChatMessage';
 # 📈 PROGRESS VISUALIZATION
 
 ```
-Original:  ████████████████████████████████████████ 5,791 lines
-Current:   █████████████████████████████████████░░░ 5,417 lines
-Target:    ████████████░░░░░░░░░░░░░░░░░░░░░░░░░░░░ 1,500 lines
+Original:  ████████████████████████████████████████ 5,789 lines
+Current:   ███████████████████████████████████░░░░░ 5,076 lines
+Target:    ██████████████░░░░░░░░░░░░░░░░░░░░░░░░░░ 1,500 lines
 
-Progress:  ████░░░░░░░░░░░░░░░░ ~9% complete
+Saved:     ████░░░░░░░░░░░░░░░░ 713 lines (12%)
+Remaining: ░░░░████████████████ 3,576 lines (62%)
 ```
 
 ---
 
+# 🧪 VERIFICATION CHECKLIST
+
+Before continuing, verify:
+- [ ] `npm run lint` passes (or MCP lint)
+- [ ] Backend: `curl /api/health` returns 200
+- [ ] Backend: `curl /api/mira/chat` works
+- [ ] Frontend: Page loads without errors
+- [ ] All 12 components imported in MiraDemoPage.jsx
+
+---
+
 *Last updated: February 9, 2026*
-*Next agent: Continue with ChatMessage integration for all messages*
+*Next agent: Continue with message rendering or handleSubmit split*
