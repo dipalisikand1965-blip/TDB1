@@ -5739,7 +5739,7 @@ const MiraDemoPage = () => {
               </button>
             </div>
             <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <button onClick={() => { setShowHelpModal(false); handleQuickReply('I need help with my order'); }} style={{
+              <button onClick={() => { setShowHelpModal(false); handleQuickReply('I need help with my order', true); }} style={{
                 display: 'flex', alignItems: 'center', gap: '14px', padding: '14px',
                 border: '1px solid #e5e7eb', borderRadius: '12px', background: 'white', cursor: 'pointer', textAlign: 'left'
               }}>
