@@ -212,7 +212,7 @@ class TestConciergeConfirmation:
         
         assert data.get("execution_type") == "CONCIERGE"
         
-        concierge_confirmation = data.get("response", {}).get("concierge_confirmation")
+        concierge_confirmation = data.get("concierge_confirmation")
         if concierge_confirmation:
             assert concierge_confirmation.get("show_banner") == True
 
