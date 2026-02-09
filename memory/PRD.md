@@ -133,6 +133,11 @@
 2. **Page may be slow to load** - Still 3,299 lines, needs more splitting
 3. **Meilisearch FATAL** - Not used, can be ignored
 
+## Fixed This Session
+- ✅ Logout API 422 error - Fixed with proper Pydantic model
+- ✅ iOS haptic feedback - All 12 components now use centralized utility
+- ✅ Sign Out button z-index - Increased to 999 with pointer-events:auto
+
 ---
 
 # 🚀 QUICK START FOR NEXT AGENT
