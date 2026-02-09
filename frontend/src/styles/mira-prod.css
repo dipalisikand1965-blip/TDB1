@@ -751,14 +751,30 @@
     width: 32px;
     height: 32px;
   }
+  
+  .mp-header-picks-icon {
+    width: 38px;
+    height: 38px;
+  }
+  
+  .mp-picks-pet-face,
+  .mp-picks-paw {
+    width: 16px;
+    height: 16px;
+  }
 }
 
 @media (max-width: 480px) {
+  .mp-card-header {
+    padding: 8px 10px;
+    gap: 6px;
+  }
+  
   .mp-header-tiles {
-    flex-wrap: wrap;
+    order: 10; /* Move tiles to end on very small screens */
+    flex-basis: 100%;
     margin-left: 0;
     margin-top: 8px;
-    width: 100%;
     justify-content: flex-start;
   }
   
@@ -768,7 +784,18 @@
   }
   
   .mp-mira-name {
-    font-size: 14px;
+    font-size: 13px;
+  }
+  
+  .mp-header-picks-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+  }
+  
+  .mp-picks-gift svg {
+    width: 14px;
+    height: 14px;
   }
 }
 
