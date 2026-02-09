@@ -417,6 +417,240 @@ export const isCelebrationQuery = (query) => {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// API HELPER FUNCTIONS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Fetch relevant past conversation memory
+ * @param {string} petId - Pet ID
+ * @param {string} query - User's query
+ * @returns {Promise<object|null>} - Memory context or null
+ */
+export const fetchConversationMemory = async (petId, query) => {
+  if (!petId) return null;
+  
+  try {
+    const response = await fetch(`${API_URL}/api/mira/conversation-memory/recall`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pet_id: petId, query })
+    });
+    const data = await response.json();
+    if (data.success && data.relevant_memory) {
+      console.log('[MEMORY] Found relevant past conversation:', data.relevant_memory.topic);
+      return data;
+    }
+  } catch (e) {
+    console.log('[MEMORY] Recall check failed:', e.message);
+  }
+  return null;
+};
+
+/**
+ * Detect pet mood from user message
+ * @param {string} message - User's message
+ * @param {string} petName - Pet's name
+ * @returns {Promise<object|null>} - Mood context or null
+ */
+export const fetchMoodContext = async (message, petName) => {
+  try {
+    const response = await fetch(`${API_URL}/api/mira/detect-mood`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message, pet_name: petName })
+    });
+    const data = await response.json();
+    if (data.success && data.mood_detected) {
+      console.log('[MOOD] Detected pet mood concern:', data.concern_level);
+      return data;
+    }
+  } catch (e) {
+    console.log('[MOOD] Detection failed:', e.message);
+  }
+  return null;
+};
+
+/**
+ * Route intent for first message
+ * @param {object} params - Route parameters
+ * @returns {Promise<object>} - Intent data
+ */
+export const routeIntent = async ({ userId, petId, query, pet, token, userCity }) => {
+  const response = await fetch(`${API_URL}/api/mira/route_intent`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token && { Authorization: `Bearer ${token}` })
+    },
+    body: JSON.stringify({
+      parent_id: userId || 'DEMO-PARENT',
+      pet_id: petId,
+      utterance: query,
+      source_event: 'search',
+      device: 'web',
+      pet_context: {
+        name: pet.name,
+        breed: pet.breed,
+        age_years: parseInt(pet.age) || 3,
+        allergies: Array.isArray(pet.sensitivities) ? pet.sensitivities : (pet.sensitivities ? [pet.sensitivities] : []),
+        notes: Array.isArray(pet.traits) ? pet.traits : (pet.traits ? [pet.traits] : []),
+        city: pet?.city || pet?.location?.city || userCity || 'Mumbai'
+      }
+    })
+  });
+  return response.json();
+};
+
+/**
+ * Create or attach ticket
+ * @param {object} params - Ticket parameters
+ * @returns {Promise<object>} - Ticket data
+ */
+export const createOrAttachTicket = async ({ userId, petId, pillar, intent, intentSecondary, lifeState, query, token }) => {
+  const response = await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token && { Authorization: `Bearer ${token}` })
+    },
+    body: JSON.stringify({
+      parent_id: userId || 'DEMO-PARENT',
+      pet_id: petId,
+      pillar: pillar,
+      intent_primary: intent,
+      intent_secondary: intentSecondary || [],
+      life_state: lifeState,
+      channel: 'Mira_OS',
+      initial_message: {
+        sender: 'parent',
+        source: 'Mira_OS',
+        text: query
+      }
+    })
+  });
+  return response.json();
+};
+
+/**
+ * Fetch training videos from YouTube
+ * @param {string} topic - Training topic
+ * @param {string} breed - Pet breed
+ * @returns {Promise<array>} - Array of videos
+ */
+export const fetchTrainingVideos = async (topic, breed = '') => {
+  try {
+    const response = await fetch(
+      `${API_URL}/api/mira/youtube/by-topic?topic=${encodeURIComponent(topic)}&breed=${encodeURIComponent(breed)}&max_results=3`
+    );
+    const data = await response.json();
+    if (data.success && data.videos?.length > 0) {
+      console.log('[YOUTUBE] Found', data.videos.length, 'training videos for:', topic);
+      return data.videos;
+    }
+  } catch (e) {
+    console.log('[YOUTUBE] Video fetch failed:', e.message);
+  }
+  return [];
+};
+
+/**
+ * Fetch travel hotels from Amadeus
+ * @param {string} city - City name
+ * @returns {Promise<array>} - Array of hotels
+ */
+export const fetchTravelHotels = async (city) => {
+  try {
+    const response = await fetch(
+      `${API_URL}/api/mira/amadeus/hotels?city=${encodeURIComponent(city)}&max_results=3`
+    );
+    const data = await response.json();
+    if (data.success && data.hotels?.length > 0) {
+      console.log('[AMADEUS] Found', data.hotels.length, 'hotels in:', city);
+      return data.hotels;
+    }
+  } catch (e) {
+    console.log('[AMADEUS] Hotel fetch failed:', e.message);
+  }
+  return [];
+};
+
+/**
+ * Fetch travel attractions from Viator
+ * @param {string} city - City name
+ * @returns {Promise<array>} - Array of attractions
+ */
+export const fetchTravelAttractions = async (city) => {
+  try {
+    const response = await fetch(
+      `${API_URL}/api/mira/viator/pet-friendly?city=${encodeURIComponent(city)}&limit=3`
+    );
+    const data = await response.json();
+    if (data.success && data.attractions?.length > 0) {
+      console.log('[VIATOR] Found', data.attractions.length, 'attractions in:', city);
+      return data.attractions;
+    }
+  } catch (e) {
+    console.log('[VIATOR] Attraction fetch failed:', e.message);
+  }
+  return [];
+};
+
+/**
+ * Save conversation to memory
+ * @param {object} params - Memory save parameters
+ */
+export const saveConversationMemory = async ({ petId, topic, summary, query, advice }) => {
+  if (!petId) return;
+  
+  try {
+    await fetch(`${API_URL}/api/mira/conversation-memory/save`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        pet_id: petId,
+        topic: topic,
+        summary: summary?.substring(0, 100),
+        user_query: query,
+        mira_advice: advice?.substring(0, 200)
+      })
+    });
+  } catch (e) {
+    console.log('[MEMORY] Auto-save failed:', e.message);
+  }
+};
+
+/**
+ * Build memory prefix for response
+ * @param {object} memoryContext - Memory context data
+ * @returns {string} - Prefix string
+ */
+export const buildMemoryPrefix = (memoryContext) => {
+  if (!memoryContext?.relevant_memory) return '';
+  
+  const mem = memoryContext.relevant_memory;
+  const daysAgo = mem.days_ago;
+  let prefix = '';
+  
+  if (daysAgo && daysAgo > 0) {
+    if (daysAgo === 1) {
+      prefix = `I remember we talked about ${mem.topic} yesterday. `;
+    } else if (daysAgo < 7) {
+      prefix = `I recall we discussed ${mem.topic} a few days ago. `;
+    } else if (daysAgo < 30) {
+      prefix = `Last time we talked about ${mem.topic}, `;
+    } else {
+      prefix = `I remember when we discussed ${mem.topic} before. `;
+    }
+    
+    if (mem.mira_advice) {
+      prefix += `I suggested ${mem.mira_advice.substring(0, 80)}... Did that help? `;
+    }
+  }
+  
+  return prefix;
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // EXPORTS
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -433,8 +667,31 @@ const useChat = () => {
     extractTrainingTopic,
     shouldFetchTravelData,
     isMeaningfulTopic,
-    isCelebrationQuery
+    isCelebrationQuery,
+    // API helpers
+    fetchConversationMemory,
+    fetchMoodContext,
+    routeIntent,
+    createOrAttachTicket,
+    fetchTrainingVideos,
+    fetchTravelHotels,
+    fetchTravelAttractions,
+    saveConversationMemory,
+    buildMemoryPrefix
   };
 };
 
 export default useChat;
+
+// Also export API helpers individually
+export {
+  fetchConversationMemory,
+  fetchMoodContext,
+  routeIntent,
+  createOrAttachTicket,
+  fetchTrainingVideos,
+  fetchTravelHotels,
+  fetchTravelAttractions,
+  saveConversationMemory,
+  buildMemoryPrefix
+};
