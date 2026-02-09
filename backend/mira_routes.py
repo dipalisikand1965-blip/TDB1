@@ -2902,6 +2902,11 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
             "show_travel_results": show_travel_results,  # Signal frontend to fetch hotels
             
             # ═══════════════════════════════════════════════════════════════════════════
+            # CONCIERGE CONFIRMATION - Clear message when service request received
+            # ═══════════════════════════════════════════════════════════════════════════
+            "concierge_confirmation": concierge_confirmation,  # Banner with ticket confirmation
+            
+            # ═══════════════════════════════════════════════════════════════════════════
             # MODE SYSTEM FLAGS - Controls frontend behavior
             # ═══════════════════════════════════════════════════════════════════════════
             "mode": mira_mode,  # PLAN, BOOK, EXECUTE, EXPLORE, FIND, ADVISE, REMEMBER, COMFORT, EMERGENCY, GENERAL
