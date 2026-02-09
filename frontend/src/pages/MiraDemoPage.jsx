@@ -3413,7 +3413,7 @@ const MiraDemoPage = () => {
   }, [currentTicket, conversationHistory, pet, token]);
   
   // Handle quick reply
-  const handleQuickReply = useCallback((replyValue) => {
+  const handleQuickReply = useCallback((replyValue, skipVoice = false) => {
     // ═══════════════════════════════════════════════════════════════════
     // VOICE SYNC FIX: Cancel any pending/playing voice before new action
     // This prevents overlap when tiles are clicked rapidly
@@ -3423,6 +3423,9 @@ const MiraDemoPage = () => {
       voiceTimeoutRef.current = null;
     }
     stopSpeaking();
+    
+    // Mark that the next response should skip voice (tile was clicked)
+    skipVoiceOnNextResponseRef.current = true;
     
     // HAPTIC: Chip tap
     hapticFeedback.chipTap();
