@@ -934,13 +934,13 @@ const MiraDemoPage = () => {
     
     setPastSessions(prev => [sessionToArchive, ...prev]);
     setConversationHistory([]);
-    setMiraPicks({ products: [], services: [], context: '', hasNew: false });
+    clearPicks(); // Use hook's clearPicks function
     setConversationComplete(false);
     setShowConversationEndBanner(false);
     lastActivityRef.current = Date.now();
     
     console.log(`[MIRA] Conversation archived: ${reason}`);
-  }, [conversationHistory, pet.name, pet.id]);
+  }, [conversationHistory, pet.name, pet.id, clearPicks]);
   
   // Check for inactivity and archive conversation
   useEffect(() => {
