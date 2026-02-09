@@ -13067,6 +13067,10 @@ def analyze_for_semantic_tags(item):
 # ═══════════════════════════════════════════════════════════════════════════════
 # TIP CARDS - Generate summary cards for conversations without products
 # ═══════════════════════════════════════════════════════════════════════════════
+# "Mira is the Brain, Concierge® is the Hands"
+# Tip Cards are the NON-PRODUCT equivalent of Picks
+# Same plumbing: Notification → Ticket → Inbox
+# ═══════════════════════════════════════════════════════════════════════════════
 
 class TipCardRequest(BaseModel):
     """Request to generate a tip card from conversation"""
@@ -13087,6 +13091,31 @@ class TipCard(BaseModel):
     pet_name: Optional[str] = None
     created_at: str
 
+# Icon maps for tip cards
+TIP_CARD_ICONS = {
+    "meal_plan": "🍽️",
+    "travel_tips": "✈️",
+    "grooming_routine": "✨",
+    "training_tips": "🎓",
+    "health_advice": "💊",
+    "exercise_routine": "🏃",
+    "checklist": "✅",
+    "reminder": "⏰",
+    "guide": "📖",
+    "general": "💡"
+}
+
+PILLAR_ICONS = {
+    "dine": "🍽️",
+    "travel": "✈️",
+    "care": "💊",
+    "learn": "🎓",
+    "fit": "🏃",
+    "celebrate": "🎂",
+    "stay": "🏨",
+    "enjoy": "🎾"
+}
+
 @router.post("/generate-tip-card")
 async def generate_tip_card(request: TipCardRequest):
     """
@@ -13096,29 +13125,6 @@ async def generate_tip_card(request: TipCardRequest):
     Example: User asks for meal plan → Mira gives advice → Generate tip card
     """
     from timestamp_utils import get_utc_timestamp
-    
-    # Map card types to icons
-    CARD_ICONS = {
-        "meal_plan": "🍽️",
-        "travel_tips": "✈️",
-        "grooming_routine": "✨",
-        "training_tips": "🎓",
-        "health_advice": "💊",
-        "exercise_routine": "🏃",
-        "general": "💡"
-    }
-    
-    # Map pillars to default icons
-    PILLAR_ICONS = {
-        "dine": "🍽️",
-        "travel": "✈️",
-        "care": "💊",
-        "learn": "🎓",
-        "fit": "🏃",
-        "celebrate": "🎂",
-        "stay": "🏨",
-        "enjoy": "🎾"
-    }
     
     pet_name = request.pet_context.get("name", "your pet") if request.pet_context else "your pet"
     
@@ -13130,10 +13136,13 @@ async def generate_tip_card(request: TipCardRequest):
         "training_tips": f"Training Tips for {pet_name}",
         "health_advice": f"Health Advice for {pet_name}",
         "exercise_routine": f"{pet_name}'s Exercise Plan",
+        "checklist": f"Checklist for {pet_name}",
+        "reminder": f"Reminder for {pet_name}",
+        "guide": f"Guide for {pet_name}",
         "general": f"Tips for {pet_name}"
     }
     
-    icon = CARD_ICONS.get(request.card_type, PILLAR_ICONS.get(request.pillar, "💡"))
+    icon = TIP_CARD_ICONS.get(request.card_type, PILLAR_ICONS.get(request.pillar, "💡"))
     title = title_templates.get(request.card_type, f"Tips for {pet_name}")
     
     tip_card = TipCard(
@@ -13152,6 +13161,149 @@ async def generate_tip_card(request: TipCardRequest):
         "success": True,
         "tip_card": tip_card.model_dump()
     }
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# SEND TIP CARD TO CONCIERGE® - Same plumbing as Picks
+# For NON-PRODUCT conversations: meal plans, guides, checklists, advice
+# ═══════════════════════════════════════════════════════════════════════════════
+
+class SendTipCardRequest(BaseModel):
+    """Request to send a tip card to Concierge via unified flow"""
+    session_id: Optional[str] = None
+    member_id: Optional[str] = None
+    member_email: Optional[str] = None
+    member_phone: Optional[str] = None
+    member_name: Optional[str] = None
+    pet: Optional[Dict] = None  # {id, name, breed, photo}
+    pillar: Optional[str] = "general"
+    
+    # Tip Card data
+    card_type: str = "general"  # meal_plan, travel_tips, grooming_routine, etc.
+    card_title: Optional[str] = None
+    card_content: str  # The actual advice/plan/guide content
+    conversation_context: Optional[str] = None  # What were they discussing
+    
+    # User can request Concierge to formalize this
+    request_formal_version: bool = False  # "Please make this official"
+    additional_notes: Optional[str] = None  # User's notes for Concierge
+
+@router.post("/send-tip-card-to-concierge")
+async def send_tip_card_to_concierge(request: SendTipCardRequest):
+    """
+    Send a tip card to Concierge® via unified signal flow.
+    Creates: Notification → Service Desk Ticket → Channel Intake
+    
+    Same plumbing as Picks, but for NON-PRODUCT conversations:
+    - Meal plans
+    - Travel checklists  
+    - Grooming routines
+    - Training guides
+    - Health advice
+    
+    "Mira is the Brain, Concierge® is the Hands"
+    """
+    try:
+        from central_signal_flow import create_signal
+        from timestamp_utils import get_utc_timestamp
+        
+        pet = request.pet or {}
+        pet_name = pet.get('name', 'Pet')
+        
+        # Generate title based on card type
+        title_templates = {
+            "meal_plan": f"{pet_name}'s Meal Plan - For Concierge Review",
+            "travel_tips": f"Travel Guide for {pet_name} - For Concierge Review",
+            "grooming_routine": f"{pet_name}'s Grooming Routine - For Concierge Review",
+            "training_tips": f"Training Plan for {pet_name} - For Concierge Review",
+            "health_advice": f"Health Advice for {pet_name} - For Concierge Review",
+            "exercise_routine": f"Exercise Plan for {pet_name} - For Concierge Review",
+            "checklist": f"Checklist for {pet_name} - For Concierge Review",
+            "guide": f"Guide for {pet_name} - For Concierge Review",
+            "general": f"Mira's Advice for {pet_name} - For Concierge Review"
+        }
+        
+        title = request.card_title or title_templates.get(request.card_type, f"Tip Card for {pet_name}")
+        icon = TIP_CARD_ICONS.get(request.card_type, PILLAR_ICONS.get(request.pillar, "💡"))
+        
+        # Build description
+        description_parts = []
+        
+        if request.conversation_context:
+            description_parts.append(f"Context: {request.conversation_context}")
+        
+        description_parts.append(f"\n{icon} {request.card_type.upper().replace('_', ' ')}")
+        description_parts.append(f"\n{request.card_content}")
+        
+        if request.request_formal_version:
+            description_parts.append("\n\n📋 CUSTOMER REQUESTED: Please formalize this into an official plan/guide")
+        
+        if request.additional_notes:
+            description_parts.append(f"\n\nCustomer Notes: {request.additional_notes}")
+        
+        description = "\n".join(description_parts)
+        
+        # Determine action type and urgency
+        action_type = "tip_card_advice"
+        urgency = "medium" if request.request_formal_version else "low"
+        
+        # Build tip card object for picks_vault
+        tip_card_data = {
+            "id": f"tip-{uuid.uuid4().hex[:8]}",
+            "type": request.card_type,
+            "title": title,
+            "content": request.card_content[:1000],
+            "icon": icon,
+            "pillar": request.pillar,
+            "for_concierge": True,
+            "pet_name": pet_name,
+            "request_formal_version": request.request_formal_version,
+            "created_at": get_utc_timestamp()
+        }
+        
+        # Create unified signal - SAME PLUMBING AS PICKS
+        signal_result = await create_signal(
+            pillar=request.pillar or "general",
+            action_type=action_type,
+            title=title,
+            description=description,
+            customer_name=request.member_name,
+            customer_email=request.member_email,
+            customer_phone=request.member_phone,
+            pet_name=pet.get('name'),
+            pet_breed=pet.get('breed'),
+            pet_id=pet.get('id'),
+            urgency=urgency,
+            source="mira",
+            linked_id=request.session_id,
+            extra_data={
+                "picks_vault": {
+                    "products": [],  # No products - this is advice
+                    "services": [],  # No services
+                    "tip_cards": [tip_card_data],  # The tip card
+                    "context": request.conversation_context,
+                    "pillar": request.pillar,
+                    "sent_at": get_utc_timestamp()
+                }
+            }
+        )
+        
+        logger.info(f"[TIP CARD → CONCIERGE] Signal created: {signal_result.get('ticket_id')} | Type: {request.card_type}")
+        
+        return {
+            "success": True,
+            "ticket_id": signal_result.get("ticket_id"),
+            "notification_id": signal_result.get("notification_id"),
+            "inbox_id": signal_result.get("inbox_id"),
+            "tip_card": tip_card_data,
+            "message": "Your Pet Concierge® will get back to you shortly"
+        }
+        
+    except Exception as e:
+        logger.error(f"[TIP CARD → CONCIERGE] Failed: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return {"success": False, "error": str(e)}
 
 
 
