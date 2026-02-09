@@ -5224,28 +5224,24 @@ const MiraDemoPage = () => {
               
               <div ref={messagesEndRef} />
               
-              {/* CONVERSATION COMPLETE BANNER - Shows when Mira has provided assistance */}
+              {/* CONVERSATION COMPLETE BANNER - Compact, non-intrusive */}
               {showConversationEndBanner && conversationComplete && (
-                <div className="mp-conversation-complete" data-testid="conversation-complete-banner">
-                  <div className="mp-complete-icon">✨</div>
-                  <div className="mp-complete-content">
-                    <p className="mp-complete-title">Mira has helped with this request</p>
-                    <p className="mp-complete-subtitle">This conversation will be saved to history</p>
-                  </div>
-                  <div className="mp-complete-actions">
+                <div className="mp-picks-curated-banner" data-testid="picks-curated-banner">
+                  <div className="picks-curated-content">
+                    <span className="picks-curated-text">
+                      Mira has curated for {pet.name}
+                    </span>
                     <button 
-                      className="mp-complete-btn continue"
-                      onClick={() => { setShowConversationEndBanner(false); setConversationComplete(false); }}
+                      className="picks-curated-icon"
+                      onClick={() => setShowMiraTray(true)}
+                      title="View Picks"
                     >
-                      Continue Chat
-                    </button>
-                    <button 
-                      className="mp-complete-btn archive"
-                      onClick={() => { archiveCurrentConversation('completed'); startNewSession(); }}
-                    >
-                      New Chat
+                      <Gift size={16} className="picks-icon-pulse" />
                     </button>
                   </div>
+                  <span className="picks-curated-subtext">
+                    Your Concierge® will take it from here
+                  </span>
                 </div>
               )}
             </div>
