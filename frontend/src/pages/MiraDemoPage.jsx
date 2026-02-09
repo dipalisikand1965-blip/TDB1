@@ -4247,7 +4247,7 @@ const MiraDemoPage = () => {
                 ].map((s, i) => (
                   <button 
                     key={i} 
-                    onClick={() => handleQuickReply(s.text)} 
+                    onClick={() => handleQuickReply(s.text, true)} 
                     className="quick-chip"
                     data-testid={`quick-chip-${i}`}
                   >
