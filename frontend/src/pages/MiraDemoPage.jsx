@@ -3236,7 +3236,6 @@ const MiraDemoPage = () => {
   }, []);
   
   // Voice recognition state
-  const [voiceSupported, setVoiceSupported] = useState(true);
   
   // Voice recognition - Enhanced for iOS compatibility
   useEffect(() => {
