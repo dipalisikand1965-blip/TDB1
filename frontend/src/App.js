@@ -211,6 +211,8 @@ const MiraConciergeEmbed = lazy(() => import("./pages/MiraConciergeEmbed"));
 // MiraDemoPage - Direct import to avoid lazy loading issues
 import MiraDemoPage from "./pages/MiraDemoPage";
 import MiraDemoOriginalPage from "./pages/MiraDemoOriginalPage";
+// MiraDemoBackupPage - UNTOUCHED BACKUP for comparison during refactoring
+import MiraDemoBackupPage from "./pages/MiraDemoBackupPage";
 import ConciergeDashboard from "./pages/ConciergeDashboard";
 const AuthCallback = lazy(() => import("./pages/AuthCallback"));
 const CollectionPage = lazy(() => import("./pages/CollectionPage"));
