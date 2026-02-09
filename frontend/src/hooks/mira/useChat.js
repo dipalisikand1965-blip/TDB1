@@ -755,6 +755,49 @@ export const extractQuickRepliesFromData = (data) => {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// MESSAGE BUILDERS
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Create an error message for chat errors
+ * @param {string} originalQuery - The query that failed
+ * @returns {object} - Error message object
+ */
+export const createErrorMessage = (originalQuery) => ({
+  type: 'mira',
+  content: "I'm having a moment - let me try that again. If this keeps happening, your pet Concierge® is always here to help.",
+  error: true,
+  quickReplies: [
+    { text: 'Try again', value: originalQuery },
+    { text: 'Connect to Concierge®', value: 'Yes, connect me to my Concierge®.' }
+  ],
+  timestamp: new Date()
+});
+
+/**
+ * Create a topic shift indicator message
+ * @param {string} fromPillar - Previous pillar
+ * @param {string} toPillar - New pillar
+ * @returns {object} - Topic shift indicator object
+ */
+export const createTopicShiftIndicator = (fromPillar, toPillar) => ({
+  type: 'topic_shift',
+  fromPillar,
+  toPillar
+});
+
+/**
+ * Create a user message object
+ * @param {string} content - Message content
+ * @returns {object} - User message object
+ */
+export const createUserMessage = (content) => ({
+  type: 'user',
+  content,
+  timestamp: new Date()
+});
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // EXPORTS
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -777,6 +820,10 @@ const useChat = () => {
     isComfortMode,
     hasServiceIntent,
     extractQuickRepliesFromData,
+    // Message builders
+    createErrorMessage,
+    createTopicShiftIndicator,
+    createUserMessage,
     // API helpers
     fetchConversationMemory,
     fetchMoodContext,
