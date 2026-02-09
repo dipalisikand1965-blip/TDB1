@@ -1,5 +1,5 @@
 # MIRA OS - COMPREHENSIVE HANDOVER DOCUMENT
-## Session: December 2025
+## Session: December 2025 - February 2026
 ## For: Next Agent
 
 ---
@@ -20,6 +20,32 @@
 | **Member** | dipali@clubconcierge.in | test123 |
 | **Admin (Basic)** | aditya | lola4304 |
 | **Admin (Email)** | dipali@clubconcierge.in | lola4304 |
+
+---
+
+## Latest Session Fixes (Feb 2026)
+
+### 🔴 CRITICAL FIX: Pillar-First Search
+**Problem:** Asking about "dog walking" was showing birthday cakes (cross-pillar leakage)
+**Solution:** Pillar filter now ALWAYS applies FIRST, category refinement adds to it
+**File:** `/app/backend/mira_routes.py` - `search_real_products()` function
+
+### 🟠 Fixed: Question Extraction Bug
+**Problem:** "?" appearing in separate yellow box instead of inline
+**Solution:** Disabled question extraction - questions stay inline per MIRA_UNIVERSAL_RULES
+**File:** `/app/frontend/src/components/Mira/ChatMessage.jsx` - `splitMessageWithQuestion()`
+
+### 🟡 Fixed: ProactiveAlertsBanner Error
+**Problem:** `setInputText is not defined` error
+**Solution:** Changed to `setQuery` (correct state setter)
+**File:** `/app/frontend/src/pages/MiraDemoPage.jsx`
+
+### 🔵 Completed: Conversation Flow Architecture
+All 4 priority items from PICKS_VAULT spec are working:
+- ✅ P1: Pillar-first search (prevents cross-pillar leakage)
+- ✅ P2: Picks vault storage in tickets
+- ✅ P3: UI "Send to Concierge®" (not "Add to cart")
+- ✅ P4: TipCardVault for non-product conversations
 
 ---
 
