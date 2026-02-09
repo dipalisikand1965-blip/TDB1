@@ -653,6 +653,24 @@ const MiraDemoPage = () => {
     isRealPet
   } = usePet({ user, token });
   
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // VAULT MANAGEMENT - Extracted to useVault hook (Stage 2 Refactoring)
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const {
+    showVault,
+    setShowVault,
+    activeVaultData,
+    setActiveVaultData,
+    vaultUserMessage,
+    setVaultUserMessage,
+    miraPicks,
+    setMiraPicks,
+    showMiraTray,
+    setShowMiraTray,
+    clearPicks,
+    markPicksSeen
+  } = useVault();
+  
   // State
   const [activeScenario, setActiveScenario] = useState(null);
   const [showScenarios, setShowScenarios] = useState(true);
