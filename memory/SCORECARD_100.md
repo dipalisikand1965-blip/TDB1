@@ -182,23 +182,26 @@
 
 ---
 
-# 8️⃣ PROACTIVE SYSTEM (10/100) 🔴 CRITICAL
+# 8️⃣ PROACTIVE SYSTEM (10/100 → 40/100) 🟡 IMPROVED
 
-## What's Working
+## What's Working NOW
 | Feature | Score | Status |
 |---------|-------|--------|
 | Birthday detection | 30% | ⚠️ Partial |
 | Celebration confetti | 100% | ✅ |
+| **E020 Vaccination alerts** | 80% | ✅ NEW |
+| **Birthday reminders** | 80% | ✅ NEW |
+| **Grooming due alerts** | 70% | ✅ NEW |
+| **API endpoint** | 100% | ✅ `/api/mira/proactive/alerts/{pet_id}` |
 
-## Critical Gaps
+## Remaining Gaps
 | Missing Feature | Points | Priority |
 |-----------------|--------|----------|
-| **E020 Vaccination alerts** | -25 | **P0** |
-| **Birthday reminders** | -20 | **P0** |
-| Grooming due reminders | -15 | P1 |
-| Re-order suggestions | -15 | P1 |
+| Re-order suggestions | -20 | P1 |
+| Frontend notification UI | -15 | P1 |
 | Health check-in prompts | -10 | P2 |
 | Seasonal tips (monsoon, summer) | -5 | P2 |
+| Push notifications | -10 | P2 |
 
 ---
 
