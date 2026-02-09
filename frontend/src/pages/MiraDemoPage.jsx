@@ -4408,16 +4408,8 @@ const MiraDemoPage = () => {
                             );
                           })()}
                           
-                          {/* Quick Reply Chips */}
-                          {msg.quickReplies && msg.quickReplies.length > 0 && (
-                            <div className="mp-chips">
-                              {msg.quickReplies.map((chip, cIdx) => (
-                                <button key={cIdx} onClick={() => handleQuickReply(chip.value)} className="mp-chip">
-                                  {chip.text}
-                                </button>
-                              ))}
-                            </div>
-                          )}
+                          {/* Quick Reply Chips - MOVED TO HEADER BAR */}
+                          {/* Tiles now appear in mp-card-header above */}
                           
                           {/* Products - Premium Bento Grid */}
                           {msg.showProducts && msg.data?.response?.products?.length > 0 && (
