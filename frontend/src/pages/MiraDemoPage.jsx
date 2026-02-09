@@ -4158,7 +4158,7 @@ const MiraDemoPage = () => {
                         <div 
                           key={`celeb-${i}`} 
                           className={`proactive-alert ${celeb.is_today ? 'alert-today' : 'alert-upcoming'}`}
-                          onClick={() => handleQuickReply(celeb.is_today ? `It's ${pet.name}'s ${celeb.type}! What should we do?` : `${pet.name}'s ${celeb.type} is coming up!`)}
+                          onClick={() => handleQuickReply(celeb.is_today ? `It's ${pet.name}'s ${celeb.type}! What should we do?` : `${pet.name}'s ${celeb.type} is coming up!`, true)}
                         >
                           <span className="alert-icon">{celeb.type === 'birthday' ? '🎂' : '💜'}</span>
                           <span className="alert-text">
@@ -4174,7 +4174,7 @@ const MiraDemoPage = () => {
                         <div 
                           key={`health-${i}`} 
                           className={`proactive-alert ${reminder.urgent || reminder.is_overdue ? 'alert-urgent' : 'alert-notice'}`}
-                          onClick={() => handleQuickReply(reminder.type === 'vaccine' ? `${pet.name} needs ${reminder.name} vaccine` : `Schedule a vet checkup for ${pet.name}`)}
+                          onClick={() => handleQuickReply(reminder.type === 'vaccine' ? `${pet.name} needs ${reminder.name} vaccine` : `Schedule a vet checkup for ${pet.name}`, true)}
                         >
                           <span className="alert-icon">{reminder.urgent ? '⚠️' : '💉'}</span>
                           <span className="alert-text">
