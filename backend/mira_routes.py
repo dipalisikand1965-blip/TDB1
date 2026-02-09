@@ -8051,16 +8051,33 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                         }, {"_id": 0}).limit(3 - len(breed_products)).to_list(3 - len(breed_products))
                         breed_products.extend(legacy_breed_products)
                     
-                    # PRIORITY 3: General celebration accessories (bandanas, hats) that match breed
-                    if len(breed_products) < 5:
-                        celebration_accessories = await db.products_master.find({
-                            "category": {"$in": ["accessories", "party_accessories"]},
+                    # PRIORITY 3: Celebration hampers (often include bandana + cake + treats)
+                    if len(breed_products) < 4:
+                        celebration_hampers = await db.products_master.find({
+                            "category": "hampers",
+                            "shopify_id": {"$exists": True, "$ne": None},
                             "$or": [
-                                {"name": {"$regex": detected_breed, "$options": "i"}},
-                                {"tags": {"$regex": detected_breed, "$options": "i"}}
+                                {"name": {"$regex": "birthday|party|celebration|bandana", "$options": "i"}},
+                                {"tags": {"$in": ["birthday", "party", "celebration"]}}
                             ]
-                        }, {"_id": 0}).limit(5 - len(breed_products)).to_list(5 - len(breed_products))
-                        breed_products.extend(celebration_accessories)
+                        }, {"_id": 0}).limit(2).to_list(2)
+                        
+                        for hamper in celebration_hampers:
+                            hamper["why_for_pet"] = "🎁 Complete party set with accessories!"
+                        breed_products.extend(celebration_hampers)
+                        logger.info(f"[BREED BOOST] Added {len(celebration_hampers)} celebration hampers")
+                    
+                    # PRIORITY 4: Shopify accessories (bandanas, toys for celebration)
+                    if len(breed_products) < 6:
+                        shopify_accessories = await db.products_master.find({
+                            "category": "accessories",
+                            "shopify_id": {"$exists": True, "$ne": None},
+                            "name": {"$regex": "bandana|toy|squeaky", "$options": "i"}
+                        }, {"_id": 0}).limit(3).to_list(3)
+                        
+                        for acc in shopify_accessories:
+                            acc["why_for_pet"] = "🎉 Fun addition to the party!"
+                        breed_products.extend(shopify_accessories)
                     
                     logger.info(f"[BREED BOOST] Celebration context - total {len(breed_products)} breed products for {detected_breed}")
                 else:
