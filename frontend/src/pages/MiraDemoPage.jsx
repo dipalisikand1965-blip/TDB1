@@ -710,6 +710,35 @@ const MiraDemoPage = () => {
     startNewSession: baseStartNewSession
   } = useSession({ pet });
   
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // VOICE HOOK - Voice input/output (P1 Integration)
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const {
+    voiceEnabled,
+    setVoiceEnabled,
+    isSpeaking,
+    speak: speakWithMira,
+    stopSpeaking,
+    toggleVoiceOutput,
+    skipNextVoice,
+    scheduleVoice,
+    isListening,
+    voiceError,
+    voiceSupported,
+    toggleListening,
+    audioRef
+  } = useVoice({
+    onTranscript: (text) => setQuery(text),
+    onSubmit: (text) => {
+      if (handleSubmitRef.current) {
+        handleSubmitRef.current(null, text);
+      }
+    }
+  });
+  
+  // Ref for handleSubmit (needed for voice callback)
+  const handleSubmitRef = useRef(null);
+  
   // State
   const [activeScenario, setActiveScenario] = useState(null);
   const [showScenarios, setShowScenarios] = useState(true);
@@ -729,7 +758,6 @@ const MiraDemoPage = () => {
   // Core conversation state
   const [query, setQuery] = useState('');
   const [conversationHistory, setConversationHistory] = useState([]);
-  const [isListening, setIsListening] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   
   // NOTE: Pet state (pet, setPet, allPets, setAllPets) now comes from usePet hook above
