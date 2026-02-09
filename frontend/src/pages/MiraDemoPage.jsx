@@ -3353,10 +3353,20 @@ const MiraDemoPage = () => {
     setIsProcessing(false);
   }, [currentTicket, conversationHistory, pet, token]);
   
-  // Handle quick reply
-  const handleQuickReply = useCallback((replyValue) => {
+  // Track if next response should skip voice (for tile/suggestion clicks)
+  const skipNextVoiceRef = useRef(false);
+  
+  // Handle quick reply - tiles/suggestions that trigger a query
+  // skipVoice: if true, the response won't be spoken (prevents double voice)
+  const handleQuickReply = useCallback((replyValue, skipVoice = false) => {
     // HAPTIC: Chip tap
     hapticFeedback.chipTap();
+    
+    // Set flag to skip voice for this response
+    if (skipVoice) {
+      skipNextVoiceRef.current = true;
+    }
+    
     setQuery(replyValue);
     setTimeout(() => {
       if (handleSubmitRef.current) {
