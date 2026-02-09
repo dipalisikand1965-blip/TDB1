@@ -5136,100 +5136,19 @@ const MiraDemoPage = () => {
         onCategoryChange={fetchLearnVideos}
       />
       
-      {/* SERVICE REQUEST MODAL - Everything stays in Mira OS */}
-      {serviceRequestModal.isOpen && serviceRequestModal.service && (
-        <div className="mp-modal-overlay" onClick={closeServiceRequest}>
-          <div className="mp-service-modal" onClick={(e) => e.stopPropagation()}>
-            {serviceRequestModal.submitted ? (
-              <div className="mp-modal-success">
-                <div className="mp-success-icon">✓</div>
-                <h3>Request Submitted!</h3>
-                <p>Your Concierge® has been notified and will reach out shortly.</p>
-              </div>
-            ) : (
-              <>
-                <div className="mp-modal-header">
-                  <div className="mp-modal-title-row">
-                    <span className="mp-modal-icon" style={{ background: serviceRequestModal.service.color }}>
-                      {serviceRequestModal.service.icon}
-                    </span>
-                    <div>
-                      <h3 className="mp-modal-title">{serviceRequestModal.service.label}</h3>
-                      <p className="mp-modal-subtitle">for {pet.name}</p>
-                    </div>
-                  </div>
-                  <button onClick={closeServiceRequest} className="mp-modal-close">
-                    <X />
-                  </button>
-                </div>
-                
-                <div className="mp-modal-body">
-                  <p className="mp-modal-desc">{serviceRequestModal.service.description}</p>
-                  
-                  <div className="mp-form-group">
-                    <label className="mp-form-label">Additional Details</label>
-                    <textarea
-                      className="mp-form-textarea"
-                      placeholder={`Tell us more about what you need for ${pet.name}...`}
-                      value={serviceRequestModal.formData.notes || ''}
-                      onChange={(e) => updateServiceFormData('notes', e.target.value)}
-                      rows={3}
-                    />
-                  </div>
-                  
-                  <div className="mp-form-row">
-                    <div className="mp-form-group">
-                      <label className="mp-form-label">Preferred Date</label>
-                      <input
-                        type="date"
-                        className="mp-form-input"
-                        value={serviceRequestModal.formData.preferredDate || ''}
-                        onChange={(e) => updateServiceFormData('preferredDate', e.target.value)}
-                      />
-                    </div>
-                    
-                    <div className="mp-form-group">
-                      <label className="mp-form-label">Urgency</label>
-                      <select
-                        className="mp-form-select"
-                        value={serviceRequestModal.formData.urgency || 'normal'}
-                        onChange={(e) => updateServiceFormData('urgency', e.target.value)}
-                      >
-                        <option value="flexible">Flexible</option>
-                        <option value="normal">Normal</option>
-                        <option value="soon">Soon (this week)</option>
-                        <option value="urgent">Urgent</option>
-                      </select>
-                    </div>
-                  </div>
-                  
-                  {!isConciergeLive() && (
-                    <div className="mp-after-hours-notice">
-                      🌙 Our team is resting (11:30 PM - 6:30 AM). Your request will be processed first thing at 6:30 AM!
-                    </div>
-                  )}
-                </div>
-                
-                <div className="mp-modal-footer">
-                  <button 
-                    onClick={closeServiceRequest}
-                    className="mp-btn-secondary"
-                  >
-                    Cancel
-                  </button>
-                  <button 
-                    onClick={submitServiceRequest}
-                    className="mp-btn-primary"
-                    disabled={serviceRequestModal.isSubmitting}
-                  >
-                    {serviceRequestModal.isSubmitting ? 'Submitting...' : 'Submit Request'}
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      )}
+      {/* SERVICE REQUEST MODAL - Extracted to ServiceRequestModal component */}
+      <ServiceRequestModal
+        isOpen={serviceRequestModal.isOpen}
+        service={serviceRequestModal.service}
+        formData={serviceRequestModal.formData}
+        isSubmitting={serviceRequestModal.isSubmitting}
+        submitted={serviceRequestModal.submitted}
+        petName={pet.name}
+        isConciergeLive={isConciergeLive()}
+        onClose={closeServiceRequest}
+        onSubmit={submitServiceRequest}
+        onUpdateFormData={updateServiceFormData}
+      />
       
       {/* ═══════════════════════════════════════════════════════════════════════════
           VAULT SYSTEM - Full-screen overlay for picks, bookings, places, etc.
