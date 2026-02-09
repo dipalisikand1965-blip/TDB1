@@ -4996,6 +4996,68 @@ const MiraDemoPage = () => {
             </button>
           </form>
         </div>
+        
+        {/* ═══════════════════════════════════════════════════════════════════
+            SMART SUGGESTION CHIPS - Context-aware, always accessible
+            Positioned below input for easy access without interrupting chat
+        ═══════════════════════════════════════════════════════════════════ */}
+        {conversationHistory.length > 0 && !isProcessing && (
+          <div className="mp-smart-chips" data-testid="smart-chips-container">
+            {(() => {
+              // Generate contextual suggestions based on last message
+              const lastMsg = conversationHistory[conversationHistory.length - 1];
+              const lastContent = lastMsg?.content?.toLowerCase() || '';
+              
+              // Determine context-aware suggestions
+              let suggestions = [];
+              
+              if (lastContent.includes('cake') || lastContent.includes('birthday') || lastContent.includes('party')) {
+                suggestions = [
+                  { icon: '🎂', text: 'Show me cakes', query: `Show me birthday cakes for ${pet.name}` },
+                  { icon: '🎁', text: 'Party supplies', query: `I need party supplies for ${pet.name}'s birthday` },
+                  { icon: '📅', text: 'Book party', query: `Help me plan a birthday party for ${pet.name}` },
+                ];
+              } else if (lastContent.includes('groom') || lastContent.includes('bath') || lastContent.includes('haircut')) {
+                suggestions = [
+                  { icon: '✂️', text: 'Book groomer', query: `I want to book a grooming session for ${pet.name}` },
+                  { icon: '🛁', text: 'Grooming tips', query: `Give me grooming tips for ${pet.name}` },
+                  { icon: '🧴', text: 'Products', query: `What grooming products does ${pet.name} need?` },
+                ];
+              } else if (lastContent.includes('health') || lastContent.includes('vet') || lastContent.includes('sick')) {
+                suggestions = [
+                  { icon: '🏥', text: 'Find vet', query: `Find a vet near me for ${pet.name}` },
+                  { icon: '💊', text: 'Symptoms', query: `I want to discuss ${pet.name}'s symptoms` },
+                  { icon: '📋', text: 'Health vault', query: `Show me ${pet.name}'s health records` },
+                ];
+              } else if (lastContent.includes('food') || lastContent.includes('eat') || lastContent.includes('diet')) {
+                suggestions = [
+                  { icon: '🍖', text: 'Meal plan', query: `Create a meal plan for ${pet.name}` },
+                  { icon: '🥗', text: 'Healthy treats', query: `What healthy treats can I give ${pet.name}?` },
+                  { icon: '🍽️', text: 'Food delivery', query: `I want to order food for ${pet.name}` },
+                ];
+              } else {
+                // Default suggestions
+                suggestions = [
+                  { icon: '🎂', text: 'Celebrate', query: `I want to celebrate ${pet.name}` },
+                  { icon: '✂️', text: 'Grooming', query: `${pet.name} needs grooming` },
+                  { icon: '🏥', text: 'Health', query: `I have a health question about ${pet.name}` },
+                ];
+              }
+              
+              return suggestions.map((s, i) => (
+                <button
+                  key={i}
+                  className="mp-smart-chip"
+                  onClick={() => { hapticFeedback.chipTap(); handleQuickReply(s.query, true); }}
+                  data-testid={`smart-chip-${i}`}
+                >
+                  <span className="smart-chip-icon">{s.icon}</span>
+                  <span className="smart-chip-text">{s.text}</span>
+                </button>
+              ));
+            })()}
+          </div>
+        )}
       </div>
       
       {/* Sandbox Footer */}
