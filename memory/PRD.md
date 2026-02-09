@@ -4,9 +4,20 @@
 
 ---
 
+# ⚠️ CRITICAL FILES TO READ FIRST
+
+| File | Purpose |
+|------|---------|
+| `/app/memory/MIRA_DOCTRINE.md` | THE BIBLE - Voice, tone, behavior |
+| `/app/memory/MIRA_VOICE_RULES.md` | **NEW** - Voice sync & pet description rules |
+| `/app/memory/ROADMAP_TO_100.md` | Full roadmap to 100% |
+| `/app/memory/MIRA_QUESTION_BANK.md` | Questions Mira must handle |
+
+---
+
 # EXECUTIVE SUMMARY
 
-This session focused on **UI repositioning** and **bug fixes**. Major roadmap items remain pending.
+This session focused on **UI repositioning**, **bug fixes**, **Foundation completion**, and **Voice sync fixes**.
 
 ---
 
