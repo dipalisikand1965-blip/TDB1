@@ -6788,7 +6788,13 @@ Use this weather information to advise the user on pet activities. Be specific a
                 "error": "llm_config"
             }
         
-        system_prompt = build_mira_system_prompt(user, pets, pillar, selected_pet)
+        # Build system prompt - SKIP pet context if asking about another pet
+        if is_asking_about_another_pet:
+            # Don't pass pet context when asking about someone else's pet
+            system_prompt = build_mira_system_prompt(user, None, pillar, None)
+            logger.info("[CONTEXT] Building prompt WITHOUT pet context (asking about another pet)")
+        else:
+            system_prompt = build_mira_system_prompt(user, pets, pillar, selected_pet)
         
         # Build conversation history
         history_text = ""
