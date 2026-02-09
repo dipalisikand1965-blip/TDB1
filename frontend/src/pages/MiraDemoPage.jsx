@@ -38,6 +38,8 @@ import MiraTray from '../components/Mira/MiraTray';
 import PastChatsPanel from '../components/Mira/PastChatsPanel';
 import WelcomeHero from '../components/Mira/WelcomeHero';
 import ChatMessage from '../components/Mira/ChatMessage';
+import InsightsPanel from '../components/Mira/InsightsPanel';
+import ConciergePanel from '../components/Mira/ConciergePanel';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // EXTRACTED HOOKS - Stage 1, 2, 3 Refactoring
