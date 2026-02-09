@@ -14302,6 +14302,81 @@ async def test_amadeus_api():
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# TRANSFERS API - Airport & City Transfers
+# ═══════════════════════════════════════════════════════════════════════════════
+
+@router.get("/transfers/search")
+async def search_transfers(
+    pickup: str,
+    dropoff: str,
+    datetime: str = None,
+    passengers: int = 2,
+    transfer_type: str = None,
+    currency: str = "INR"
+):
+    """
+    Search for ALL transfer options - NO RESTRICTIONS.
+    
+    Includes private cars, shared shuttles, taxis, SUVs, vans, limousines.
+    All cities worldwide.
+    Pricing in INR.
+    """
+    try:
+        from services.transfer_service import search_transfers as search_transfer_offers
+        from datetime import datetime as dt, timedelta
+        
+        if not datetime:
+            datetime = (dt.now() + timedelta(days=7, hours=10)).strftime("%Y-%m-%dT%H:%M:%S")
+        
+        return await search_transfer_offers(
+            pickup_location=pickup,
+            dropoff_location=dropoff,
+            pickup_datetime=datetime,
+            passengers=passengers,
+            transfer_type=transfer_type,
+            currency=currency
+        )
+    except Exception as e:
+        logger.error(f"Transfer search error: {e}")
+        return {"success": False, "error": str(e), "transfers": []}
+
+
+@router.get("/transfers/airport")
+async def search_airport_transfers(
+    city: str,
+    direction: str = "from_airport",
+    hotel: str = None,
+    datetime: str = None,
+    passengers: int = 2,
+    currency: str = "INR"
+):
+    """
+    Search for airport transfers.
+    
+    Args:
+        city: City name
+        direction: "from_airport" or "to_airport"
+        hotel: Hotel name or address
+        datetime: Pickup datetime
+        passengers: Number of passengers
+        currency: Currency (default INR)
+    """
+    try:
+        from services.transfer_service import search_airport_transfers as search_apt_transfers
+        return await search_apt_transfers(
+            city=city,
+            direction=direction,
+            hotel_or_address=hotel,
+            pickup_datetime=datetime,
+            passengers=passengers,
+            currency=currency
+        )
+    except Exception as e:
+        logger.error(f"Airport transfer search error: {e}")
+        return {"success": False, "error": str(e), "transfers": []}
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # FOURSQUARE PLACES API - Richer venue data
 # ═══════════════════════════════════════════════════════════════════════════════
 
