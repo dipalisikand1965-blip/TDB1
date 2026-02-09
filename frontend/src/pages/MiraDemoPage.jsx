@@ -985,6 +985,14 @@ const MiraDemoPage = () => {
   const [latestInsights, setLatestInsights] = useState([]); // Collected from all messages
   
   // ═══════════════════════════════════════════════════════════════════════════
+  // VAULT SYSTEM - "Mira is the Brain, Concierge® is the Hands"
+  // Full-screen vault overlay for picks, booking, places, etc.
+  // ═══════════════════════════════════════════════════════════════════════════
+  const [showVault, setShowVault] = useState(false);
+  const [vaultResponse, setVaultResponse] = useState(null);
+  const [vaultUserMessage, setVaultUserMessage] = useState('');
+  
+  // ═══════════════════════════════════════════════════════════════════════════
   // "READY FOR [PET]" TRAY - World Class UX
   // Conversation stays clean. Products/services ready when customer wants them.
   // Concierge® is ALWAYS by your side - the helping hand.
