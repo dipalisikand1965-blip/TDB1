@@ -4913,39 +4913,7 @@ const MiraDemoPage = () => {
       
       {/* Input Composer - Premium */}
       <div className="mp-composer">
-        {/* ═══════════════════════════════════════════════════════════════════
-            "READY FOR [PET]" BUTTON - Shows when Mira has picks
-            Concierge® is ALWAYS by your side
-        ═══════════════════════════════════════════════════════════════════ */}
-        {(miraPicks.products.length > 0 || miraPicks.services.length > 0 || true) && (
-          <button
-            type="button"
-            onClick={() => setShowMiraTray(true)}
-            className={`mp-ready-btn ${miraPicks.hasNew ? 'has-new' : ''} ${(healthVault.completeness < 100 || proactiveAlerts.healthReminders.some(r => r.needs_attention) || proactiveAlerts.celebrations.some(c => c.is_upcoming)) ? 'has-alerts' : ''}`}
-            data-testid="ready-for-pet-btn"
-          >
-            <span className="mp-ready-icon">
-              <Wand2 size={18} />
-              {miraPicks.hasNew && <span className="mp-ready-dot" />}
-            </span>
-            <span className="mp-ready-text">
-              {miraPicks.context || `Ready for ${pet.name}`}
-            </span>
-            <span className="mp-ready-count">
-              {/* Show alert badge if there are care items needing attention */}
-              {(healthVault.completeness < 100 || proactiveAlerts.healthReminders.some(r => r.needs_attention) || proactiveAlerts.celebrations.some(c => c.is_upcoming)) && (
-                <span className="mp-alert-badge">
-                  {(healthVault.completeness < 100 ? 1 : 0) + 
-                   proactiveAlerts.healthReminders.filter(r => r.needs_attention).length +
-                   proactiveAlerts.celebrations.filter(c => c.is_upcoming).length}
-                </span>
-              )}
-              {miraPicks.products.length + miraPicks.services.length > 0 
-                ? `${miraPicks.products.length + miraPicks.services.length} picks`
-                : 'Concierge®'}
-            </span>
-          </button>
-        )}
+        {/* "Ready for Pet" button moved to header bar as compact icon */}
         
         <div className="mp-composer-inner">
           <form onSubmit={handleSubmit} className="mp-input-row">
