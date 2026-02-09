@@ -151,7 +151,10 @@ async def add_message_to_session(
     execution_type: str = None,
     products: List[Dict] = None,
     step_id: str = None,
-    extra_data: Dict = None
+    extra_data: Dict = None,
+    member_id: str = None,
+    pet_id: str = None,
+    pet_name: str = None
 ) -> bool:
     """Add a message to an existing session"""
     db = get_db()
@@ -183,15 +186,20 @@ async def add_message_to_session(
         )
         
         if result.modified_count == 0:
-            # Session doesn't exist, create it
+            # Session doesn't exist, create it with member and pet info
             logger.warning(f"[SESSION] Session {session_id} not found, creating new")
-            await db.mira_sessions.insert_one({
+            new_session = {
                 "session_id": session_id,
+                "member_id": member_id or "demo",
+                "pet_id": pet_id,
+                "pet_name": pet_name,
                 "messages": [message],
                 "status": "active",
                 "created_at": now,
-                "updated_at": now
-            })
+                "updated_at": now,
+                "preview": content[:50] if content else "New conversation"
+            }
+            await db.mira_sessions.insert_one(new_session)
         
         logger.info(f"[SESSION] Added {role} message to {session_id}")
         return True
