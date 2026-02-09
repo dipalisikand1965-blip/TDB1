@@ -173,8 +173,8 @@ class TestConciergeConfirmation:
         assert execution_type == "CONCIERGE", \
             f"Expected CONCIERGE for boarding, got {execution_type}"
         
-        # Verify confirmation present
-        concierge_confirmation = data.get("response", {}).get("concierge_confirmation")
+        # Verify confirmation present (at TOP level, not inside "response")
+        concierge_confirmation = data.get("concierge_confirmation")
         
         if concierge_confirmation:
             print(f"Confirmation: {concierge_confirmation}")
