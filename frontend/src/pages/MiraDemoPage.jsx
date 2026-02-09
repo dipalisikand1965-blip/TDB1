@@ -15,7 +15,6 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import ReactMarkdown from 'react-markdown';
 import { 
   Mic, MicOff, Send, MessageCircle, Package, Calendar, 
   HelpCircle, Heart, Sparkles, ChevronDown, ChevronUp, ChevronRight,
