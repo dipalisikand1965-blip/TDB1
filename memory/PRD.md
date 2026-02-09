@@ -136,11 +136,26 @@
 | `POST /api/mira/chat` | Main chat endpoint |
 | `POST /api/mira/route_intent` | Intent routing |
 | `GET /api/mira/retention/stats` | Retention statistics |
+| `GET /api/mira/amadeus/hotels` | **ENHANCED** - All hotels/villas/boutique, INR, room offers |
+| `GET /api/mira/transfers/search` | **NEW** - All transfer types, INR |
+| `GET /api/mira/transfers/airport` | **NEW** - Airport transfers |
 | `POST /api/mira/conversation-memory/recall` | Memory recall |
 | `POST /api/mira/detect-mood` | Mood detection |
-| `GET /api/mira/amadeus/hotels` | Travel hotels |
 | `GET /api/mira/viator/pet-friendly` | Travel attractions |
 | `GET /api/mira/youtube/by-topic` | Training videos |
+
+## Hotels API - NO RESTRICTIONS
+- All star ratings (1-5 stars)
+- All property types: Hotels, Villas, Boutique, Resorts, Homestays
+- Room offers with pricing in **INR**
+- Expandable cards with full details
+- All cities worldwide
+
+## Transfers API - NO RESTRICTIONS  
+- All transfer types: Private, Shared, Taxi, SUV, Van, Limousine
+- Pricing in **INR**
+- All cities worldwide
+- Pet-friendly indicators
 
 ---
 
