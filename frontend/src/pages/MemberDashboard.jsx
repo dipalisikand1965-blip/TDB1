@@ -925,15 +925,18 @@ const MemberDashboard = () => {
                   logout(); 
                   navigate('/'); 
                 }}
+                onTouchStart={(e) => {
+                  e.stopPropagation();
+                }}
                 onTouchEnd={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
                   logout();
                   navigate('/');
                 }}
-                className="text-red-400 hover:text-red-300 hover:bg-red-500/10 border-red-500/30 rounded-xl transition-all hover:scale-105 relative z-[100]"
+                className="text-red-400 hover:text-red-300 hover:bg-red-500/10 border-red-500/30 rounded-xl transition-all hover:scale-105 relative z-[999]"
                 data-testid="signout-btn"
-                style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent' }}
+                style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', pointerEvents: 'auto' }}
               >
                 <LogOut className="w-4 h-4 mr-2" />
                 Sign Out
