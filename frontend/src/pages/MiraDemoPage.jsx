@@ -3105,19 +3105,11 @@ const MiraDemoPage = () => {
       setShowSkeleton(false);
       setIsTyping(false);
       
-      // Instead of just handing to Concierge®, show a more helpful error
       // HAPTIC: Error feedback
       hapticFeedback.error();
-      const errorMessage = {
-        type: 'mira',
-        content: "I'm having a moment - let me try that again. If this keeps happening, your pet Concierge® is always here to help.",
-        error: true,
-        quickReplies: [
-          { text: 'Try again', value: query },
-          { text: 'Connect to Concierge®', value: 'Yes, connect me to my Concierge®.' }
-        ],
-        timestamp: new Date()
-      };
+      
+      // Use extracted helper for error message
+      const errorMessage = createErrorMessage(query);
       setConversationHistory(prev => [...prev, errorMessage]);
     }
     
