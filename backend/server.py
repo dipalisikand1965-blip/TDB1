@@ -14167,6 +14167,9 @@ set_migration_admin_verify(verify_admin)
 set_admin_db(db)
 set_admin_env_credentials(ADMIN_USERNAME, ADMIN_PASSWORD)
 
+# Set database for proactive system
+set_proactive_db(db)
+
 # Create email helper for admin auth
 async def send_admin_email(to_email: str, subject: str, html_content: str):
     """Send email using Resend"""
