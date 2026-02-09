@@ -71,6 +71,11 @@ async def summarize_conversation(messages: List[Dict], pet_name: str = "pet") ->
             for p in msg["products"]:
                 products_discussed.append(p.get("name", "Unknown product"))
         
+        # Track services
+        if msg.get("services"):
+            for s in msg["services"]:
+                services_discussed.append(s.get("name", "Unknown service"))
+        
         # Track execution types (what Mira actually did)
         exec_type = msg.get("execution_type")
         if exec_type and exec_type not in ["clarify", "acknowledge"]:
