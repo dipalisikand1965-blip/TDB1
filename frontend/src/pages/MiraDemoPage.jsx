@@ -5505,27 +5505,7 @@ const MiraDemoPage = () => {
                       <ExternalLink size={16} />
                     </a>
                     
-                    <button 
-                      className="mp-bundle-maker-btn"
-                      onClick={() => {
-                        setShowMiraTray(false);
-                        openServiceRequest({
-                          id: 'bundle-maker',
-                          label: 'Build Your Hamper',
-                          icon: '🎁',
-                          description: `Custom celebration hamper for ${pet.name}`,
-                          pillar: 'celebrate',
-                          category: 'party'
-                        }, false);
-                      }}
-                    >
-                      <div className="party-btn-icon">🎁</div>
-                      <div className="party-btn-content">
-                        <span className="party-btn-title">Build Your Hamper</span>
-                        <span className="party-btn-subtitle">Add cake + treats + accessories</span>
-                      </div>
-                      <ChevronRight size={16} />
-                    </button>
+                    {/* Bundle maker removed - Concierge handles custom requests */}
                   </div>
                 </div>
               )}
