@@ -991,25 +991,9 @@ const MiraDemoPage = () => {
   const [latestInsights, setLatestInsights] = useState([]); // Collected from all messages
   
   // ═══════════════════════════════════════════════════════════════════════════
-  // VAULT SYSTEM - "Mira is the Brain, Concierge® is the Hands"
-  // Full-screen vault overlay for picks, booking, places, etc.
+  // NOTE: Vault state (showVault, activeVaultData, vaultUserMessage, miraPicks, 
+  // showMiraTray) now comes from useVault hook above
   // ═══════════════════════════════════════════════════════════════════════════
-  const [showVault, setShowVault] = useState(false);
-  const [activeVaultData, setActiveVaultData] = useState(null);
-  const [vaultUserMessage, setVaultUserMessage] = useState('');
-  
-  // ═══════════════════════════════════════════════════════════════════════════
-  // "READY FOR [PET]" TRAY - World Class UX
-  // Conversation stays clean. Products/services ready when customer wants them.
-  // Concierge® is ALWAYS by your side - the helping hand.
-  // ═══════════════════════════════════════════════════════════════════════════
-  const [miraPicks, setMiraPicks] = useState({
-    products: [],
-    services: [],
-    context: '', // e.g., "Road Trip", "Birthday", "Grooming"
-    hasNew: false // Glows when Mira has new picks
-  });
-  const [showMiraTray, setShowMiraTray] = useState(false);
   
   // Unified C® button state (collapsed by default, expands to show WhatsApp/Chat/Email)
   const [showConciergeOptions, setShowConciergeOptions] = useState(false);
