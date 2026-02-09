@@ -682,16 +682,3 @@ const useChat = () => {
 };
 
 export default useChat;
-
-// Also export API helpers individually
-export {
-  fetchConversationMemory,
-  fetchMoodContext,
-  routeIntent,
-  createOrAttachTicket,
-  fetchTrainingVideos,
-  fetchTravelHotels,
-  fetchTravelAttractions,
-  saveConversationMemory,
-  buildMemoryPrefix
-};
