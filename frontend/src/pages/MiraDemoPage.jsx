@@ -73,7 +73,7 @@ import {
   detectContextTopic, hasTrainingIntent, extractTrainingTopic,
   shouldFetchTravelData, isMeaningfulTopic, isCelebrationQuery, MEANINGFUL_TOPICS,
   // New helpers
-  calculateVoiceDelay, hasServiceIntent, extractQuickRepliesFromData,
+  calculateVoiceDelay, isComfortMode, hasServiceIntent, extractQuickRepliesFromData,
   // Message builders
   createErrorMessage, createTopicShiftIndicator, createUserMessage, buildMiraMessage,
   // API helpers
