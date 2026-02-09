@@ -8186,3 +8186,242 @@ input, select, textarea {
     font-size: 15px;
   }
 }
+
+/* ========================================
+   CONVERSATION COMPLETE BANNER
+   Shows when Mira has provided assistance
+   ======================================== */
+.mp-conversation-complete {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+  margin: 16px 0;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(52, 211, 153, 0.1) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 16px;
+  animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mp-complete-icon {
+  font-size: 24px;
+  background: linear-gradient(135deg, #10b981, #34d399);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mp-complete-content {
+  flex: 1;
+}
+
+.mp-complete-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #10b981;
+  margin: 0 0 4px 0;
+}
+
+.mp-complete-subtitle {
+  font-size: 12px;
+  color: var(--mira-text-muted);
+  margin: 0;
+}
+
+.mp-complete-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.mp-complete-btn {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.mp-complete-btn.continue {
+  background: transparent;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+  color: #10b981;
+}
+
+.mp-complete-btn.continue:hover {
+  background: rgba(16, 185, 129, 0.15);
+}
+
+.mp-complete-btn.archive {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+}
+
+.mp-complete-btn.archive:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+/* Mobile responsive */
+@media (max-width: 480px) {
+  .mp-conversation-complete {
+    flex-direction: column;
+    text-align: center;
+    padding: 14px;
+  }
+  
+  .mp-complete-actions {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* ========================================
+   CATALOG-STYLE PRODUCTS WITH SEE MORE
+   Premium pet picks display
+   ======================================== */
+.mp-products-catalog {
+  margin-top: var(--space-lg);
+  padding-top: var(--space-md);
+}
+
+.mp-products-catalog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+  padding: 0 4px;
+}
+
+.mp-products-catalog-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mp-products-pillar-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.2) 0%, rgba(168, 85, 247, 0.1) 100%);
+  border: 1px solid rgba(236, 72, 153, 0.3);
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--mira-pink);
+}
+
+.mp-products-pillar-icon {
+  font-size: 14px;
+}
+
+.mp-see-more-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.2) 0%, rgba(139, 92, 246, 0.1) 100%);
+  border: 1px solid rgba(168, 85, 247, 0.3);
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--mira-purple);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+}
+
+.mp-see-more-btn:hover {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.3) 0%, rgba(139, 92, 246, 0.2) 100%);
+  transform: translateX(4px);
+  box-shadow: 0 4px 15px rgba(168, 85, 247, 0.2);
+}
+
+.mp-see-more-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Product match indicator */
+.mp-product-match-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 4px 8px;
+  background: linear-gradient(135deg, #10b981, #059669);
+  border-radius: 12px;
+  font-size: 10px;
+  font-weight: 700;
+  color: white;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.mp-product-match-badge.breed {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.mp-product-match-badge.pillar {
+  background: linear-gradient(135deg, #ec4899, #db2777);
+}
+
+/* Empty state for no products */
+.mp-products-empty {
+  text-align: center;
+  padding: 32px 16px;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 16px;
+  border: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.mp-products-empty-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.mp-products-empty-text {
+  font-size: 14px;
+  color: var(--mira-text-muted);
+  margin: 0;
+}
+
+.mp-products-empty-cta {
+  margin-top: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, var(--mira-pink), var(--mira-magenta));
+  border: none;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mp-products-empty-cta:hover {
+  transform: scale(1.05);
+  box-shadow: 0 8px 25px rgba(236, 72, 153, 0.3);
+}
