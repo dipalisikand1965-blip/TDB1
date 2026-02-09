@@ -5341,7 +5341,7 @@ const MiraDemoPage = () => {
                         onClick={() => {
                           if (suggestion.action) {
                             setShowMiraTray(false);
-                            handleQuickReply(suggestion.action);
+                            handleQuickReply(suggestion.action, true);
                           }
                         }}
                       >
@@ -5377,7 +5377,7 @@ const MiraDemoPage = () => {
                           className="mp-bundle-card"
                           onClick={() => {
                             setShowMiraTray(false);
-                            handleQuickReply(`Tell me about the ${bundle.name}`);
+                            handleQuickReply(`Tell me about the ${bundle.name}`, true);
                           }}
                         >
                           <div className="bundle-image">
