@@ -7,16 +7,15 @@
  */
 
 import confetti from 'canvas-confetti';
+import hapticFeedback from './haptic';
 
 /**
  * Trigger celebration confetti with haptic feedback
  * Used for birthdays, achievements, and special moments
  */
 export const triggerCelebrationConfetti = () => {
-  // HAPTIC: Success celebration pattern
-  if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
-    navigator.vibrate([30, 50, 30, 50, 100]);
-  }
+  // HAPTIC: Success celebration pattern (works on iOS + Android)
+  hapticFeedback.success();
   
   // Burst from both sides
   const count = 200;
