@@ -10,12 +10,14 @@ import {
   Check, X, MapPin, Star, Navigation, Phone,
   Utensils, Hotel, Trees, Coffee, Waves
 } from 'lucide-react';
+import hapticFeedback from '../../utils/haptic';
 import './PlacesVault.css';
 
+// Use centralized haptic utility for iOS + Android support
 const haptic = {
-  light: () => navigator.vibrate && navigator.vibrate(10),
-  selection: () => navigator.vibrate && navigator.vibrate(15),
-  success: () => navigator.vibrate && navigator.vibrate([10, 50, 10])
+  light: () => hapticFeedback.buttonTap(),
+  selection: () => hapticFeedback.productSelect(),
+  success: () => hapticFeedback.success()
 };
 
 const PLACE_ICONS = {
