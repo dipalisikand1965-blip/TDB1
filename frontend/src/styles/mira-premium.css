@@ -747,6 +747,40 @@
   background: linear-gradient(180deg, transparent 0%, rgba(30, 27, 75, 0.95) 40%);
 }
 
+/* Quick Reply Tiles - Positioned LEFT of input bar */
+.mp-composer-tiles {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.mp-composer-tile {
+  padding: 12px 20px;
+  background: rgba(139, 92, 246, 0.15);
+  border: 1px solid rgba(139, 92, 246, 0.35);
+  border-radius: 24px;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.mp-composer-tile:hover {
+  background: rgba(139, 92, 246, 0.25);
+  border-color: rgba(139, 92, 246, 0.5);
+  transform: translateY(-2px);
+}
+
+.mp-composer-tile:active {
+  transform: scale(0.97);
+}
+
 .mp-composer-inner {
   max-width: 600px;
   margin: 0 auto;
