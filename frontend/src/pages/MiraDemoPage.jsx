@@ -2363,6 +2363,15 @@ const MiraDemoPage = () => {
     let inputQuery = voiceQuery || query;
     if (!inputQuery.trim()) return;
     
+    // ═══════════════════════════════════════════════════════════════════
+    // VOICE SYNC FIX: Stop any playing voice when user sends new message
+    // ═══════════════════════════════════════════════════════════════════
+    if (voiceTimeoutRef.current) {
+      clearTimeout(voiceTimeoutRef.current);
+      voiceTimeoutRef.current = null;
+    }
+    stopSpeaking();
+    
     // HAPTIC: Send message feedback
     hapticFeedback.sendMessage();
     
