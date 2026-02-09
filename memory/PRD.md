@@ -168,6 +168,17 @@
 - ✅ **Picks & Tip Flow**: Verified Feb 2026 - /api/mira/os/understand-with-products correctly returns execution_type: CONCIERGE and creates ticket for non-product service requests (e.g., dog walker)
 - ✅ **Vault Send to Concierge**: /api/mira/vault/send-to-concierge creates ticket_id, notification_id, inbox_id
 - ✅ **Sign Out Button**: Tested working on desktop and mobile with z-index:999
+- ✅ **AUTO-CONCIERGE Routing**: Service requests (dog walker, boarding, grooming, training, vet, daycare) now automatically route to CONCIERGE with confirmation banner
+- ✅ **Concierge Confirmation Banner**: New component shows "Request Received!" with ticket ID when service request is submitted
+
+## NEW: Auto-Concierge Service Keywords
+The following service requests now automatically route to CONCIERGE execution_type:
+- Dog walking / dog walker
+- Boarding / pet sitting / kennel / daycare
+- Grooming / grooming appointment
+- Training / trainer / puppy training
+- Vet appointment / veterinary / checkup
+- "While I'm away" / "going out of town"
 
 ---
 
