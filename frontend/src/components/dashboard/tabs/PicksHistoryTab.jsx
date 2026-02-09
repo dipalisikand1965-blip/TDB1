@@ -4,11 +4,12 @@
  */
 import React, { useState, useEffect } from 'react';
 import { Gift, ShoppingBag, Sparkles, Clock, ChevronRight, Lightbulb, Filter } from 'lucide-react';
-import { Card } from '../../components/ui/card';
-import { Badge } from '../../components/ui/badge';
-import { Button } from '../../components/ui/button';
+import { Card } from '../../../components/ui/card';
+import { Badge } from '../../../components/ui/badge';
+import { Button } from '../../../components/ui/button';
 import axios from 'axios';
-import { API_URL } from '../../utils/api';
+
+const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 // Pillar icons and colors
 const PILLAR_CONFIG = {
