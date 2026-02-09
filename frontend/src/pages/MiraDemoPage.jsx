@@ -3722,9 +3722,9 @@ const MiraDemoPage = () => {
                   className={`ticker-item ticker-${item.type}`}
                   onClick={() => {
                     if (item.type === 'place') {
-                      handleQuickReply(`Tell me about ${item.text.split(' welcomes')[0]} for ${pet.name}`);
+                      handleQuickReply(`Tell me about ${item.text.split(' welcomes')[0]} for ${pet.name}`, true);
                     } else if (item.type === 'weather') {
-                      handleQuickReply(`What activities are good for ${pet.name} in this weather?`);
+                      handleQuickReply(`What activities are good for ${pet.name} in this weather?`, true);
                     }
                   }}
                 >
