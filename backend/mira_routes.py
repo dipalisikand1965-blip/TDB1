@@ -8726,6 +8726,7 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
             } if handoff_to_concierge else None,
             "pets": [{"id": p.get("id"), "name": p.get("name")} for p in pets] if pets else [],
             "selected_pet": selected_pet.get("name") if selected_pet else None,
+            "pet_soul_score": round(selected_pet.get("overall_score", 0), 1) if selected_pet else None,  # Soul score for UI
             "research_mode": research_context is not None,
             "memories_used": memories_used,  # NEW: Indicates if Mira used relationship memories
             "nearby_places": nearby_places_data,  # Nearby vet clinics, restaurants, stays
