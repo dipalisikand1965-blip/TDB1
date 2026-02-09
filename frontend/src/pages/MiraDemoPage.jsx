@@ -2274,18 +2274,13 @@ const MiraDemoPage = () => {
         // VAULT SYSTEM - Auto-trigger vault for products/services
         // "Mira is the Brain, Concierge® is the Hands"
         // ═══════════════════════════════════════════════════════════════════════════
-        console.log('[VAULT DEBUG] newProducts:', newProducts.length, 'newServices:', newServices.length, 'clarifyOnly:', clarifyOnly);
         if (!clarifyOnly && (newProducts.length > 0 || newServices.length > 0)) {
-          console.log('[VAULT DEBUG] ✅ Triggering vault with products!');
           setActiveVaultData(data.response || data);
           setVaultUserMessage(inputQuery);
           // Small delay to let the message render first
           setTimeout(() => {
-            console.log('[VAULT DEBUG] Setting showVault = true');
             setShowVault(true);
           }, 800);
-        } else {
-          console.log('[VAULT DEBUG] ❌ NOT triggering vault - clarifyOnly:', clarifyOnly, 'products:', newProducts.length);
         }
       } else if (clarifyOnly) {
         // Clarify-only mode - clear any existing picks
