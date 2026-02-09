@@ -779,12 +779,10 @@ const MiraDemoPage = () => {
   const [typingText, setTypingText] = useState(''); // For typing animation
   const [isTyping, setIsTyping] = useState(false);
   
-  // VOICE OUTPUT - Mira speaks back with ElevenLabs
-  const [voiceEnabled, setVoiceEnabled] = useState(true); // Voice ON by default per MIRA SPEED DOCTRINE
-  const [isSpeaking, setIsSpeaking] = useState(false);
-  const audioRef = useRef(null);
-  const voiceTimeoutRef = useRef(null); // Track pending voice timeouts to prevent double voice
-  const skipVoiceOnNextResponseRef = useRef(false); // Skip voice when tile is clicked
+  // NOTE: Voice state (voiceEnabled, isSpeaking, audioRef) now comes from useVoice hook above
+  // Refs for voice timing (still needed for handleSubmit)
+  const voiceTimeoutRef = useRef(null);
+  const skipVoiceOnNextResponseRef = useRef(false);
   
   // CONVERSATION HISTORY - Collapsible older messages
   const [showOlderMessages, setShowOlderMessages] = useState(false);
