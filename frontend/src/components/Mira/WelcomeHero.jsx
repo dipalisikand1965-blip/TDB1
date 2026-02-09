@@ -13,6 +13,7 @@ import {
   Crown, History, PawPrint, Heart, Sparkles, 
   ChevronRight, Shield 
 } from 'lucide-react';
+import ProactiveAlertsBanner from './ProactiveAlertsBanner';
 
 /**
  * WelcomeHero Component
