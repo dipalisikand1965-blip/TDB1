@@ -61,7 +61,7 @@ import {
   // New helpers
   calculateVoiceDelay, hasServiceIntent, extractQuickRepliesFromData,
   // Message builders
-  createErrorMessage, createTopicShiftIndicator, createUserMessage,
+  createErrorMessage, createTopicShiftIndicator, createUserMessage, buildMiraMessage,
   // API helpers
   fetchConversationMemory, fetchMoodContext, routeIntent, createOrAttachTicket,
   fetchTrainingVideos, fetchTravelHotels, fetchTravelAttractions,
