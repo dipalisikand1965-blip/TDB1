@@ -40,6 +40,8 @@ import WelcomeHero from '../components/Mira/WelcomeHero';
 import ChatMessage from '../components/Mira/ChatMessage';
 import InsightsPanel from '../components/Mira/InsightsPanel';
 import ConciergePanel from '../components/Mira/ConciergePanel';
+import HelpModal from '../components/Mira/HelpModal';
+import LearnModal from '../components/Mira/LearnModal';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // EXTRACTED HOOKS - Stage 1, 2, 3 Refactoring
