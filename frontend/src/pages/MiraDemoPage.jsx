@@ -4774,7 +4774,7 @@ const MiraDemoPage = () => {
                               {msg.data.response.products.length > 4 && (
                                 <div style={{ textAlign: 'center', marginTop: '16px' }}>
                                   <a 
-                                    href={`/${msg.data?.response?.pillar || 'shop'}`}
+                                    href={`/${msg.data?.response?.pillar || msg.data?.current_pillar || 'shop'}`}
                                     className="mp-see-more-btn"
                                     style={{ display: 'inline-flex' }}
                                   >
