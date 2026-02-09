@@ -4323,6 +4323,23 @@ const MiraDemoPage = () => {
                         <div className="mp-card-header">
                           <div className="mp-mira-avatar"><Sparkles /></div>
                           <span className="mp-mira-name">Mira</span>
+                          
+                          {/* Intent & Execution Badges - Day 1 Style */}
+                          {msg.data && (
+                            <div className="mp-badges-row">
+                              {msg.data.understanding?.intent && (
+                                <span className={`mp-badge mp-badge-intent mp-badge-${(msg.data.understanding.intent || '').toLowerCase().replace(/[^a-z]/g, '')}`}>
+                                  {msg.data.understanding.intent}
+                                </span>
+                              )}
+                              {msg.executionType && (
+                                <span className={`mp-badge mp-badge-exec ${msg.executionType === 'INSTANT' ? 'mp-badge-instant' : 'mp-badge-concierge'}`}>
+                                  {msg.executionType === 'INSTANT' ? '⚡ Instant' : '👤 Concierge'}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                          
                           {/* Mode Badge for latest message */}
                           {idx === conversationHistory.length - 1 && msg.type === 'mira' && miraMode && (
                             <span className={`mp-mode-indicator mp-mode-${miraMode}`}>
