@@ -36,6 +36,7 @@ import conversationIntelligence from '../utils/conversationIntelligence';
 import { VaultManager } from '../components/PicksVault';
 import MiraTray from '../components/Mira/MiraTray';
 import PastChatsPanel from '../components/Mira/PastChatsPanel';
+import WelcomeHero from '../components/Mira/WelcomeHero';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // EXTRACTED HOOKS - Stage 1, 2, 3 Refactoring
