@@ -651,6 +651,110 @@ export const buildMemoryPrefix = (memoryContext) => {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// VOICE TIMING HELPER
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Calculate voice delay based on text length and mode
+ * @param {string} text - Response text
+ * @param {string} miraMode - Current Mira mode
+ * @returns {number} - Delay in milliseconds
+ */
+export const calculateVoiceDelay = (text, miraMode) => {
+  if (!text) return 0;
+  
+  const typingSpeed = miraMode === 'comfort' ? 25 : 
+                      miraMode === 'emergency' ? 50 :
+                      miraMode === 'instant' ? 60 : 40;
+  const typingTime = (text.length / typingSpeed) * 1000;
+  
+  // Cap at 3 seconds to avoid too long wait
+  return Math.min(typingTime + 500, 3000);
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// COMFORT MODE DETECTION
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const COMFORT_KEYWORDS = [
+  'passed away', 'rainbow bridge', 'grief', 'lost', 'loss', 
+  'miss', 'crying', 'heartbreak', 'gone', 'died', 'death',
+  'memorial', 'remember', 'farewell', 'goodbye'
+];
+
+/**
+ * Check if user is in comfort mode (grieving, emotional)
+ * @param {string} query - User's query
+ * @param {array} conversationHistory - Conversation history
+ * @returns {boolean}
+ */
+export const isComfortMode = (query, conversationHistory = []) => {
+  const lowerQuery = query.toLowerCase();
+  
+  // Check current query
+  if (COMFORT_KEYWORDS.some(kw => lowerQuery.includes(kw))) {
+    return true;
+  }
+  
+  // Check recent history for context
+  const recentMessages = conversationHistory.slice(-3);
+  for (const msg of recentMessages) {
+    if (msg.content && COMFORT_KEYWORDS.some(kw => msg.content.toLowerCase().includes(kw))) {
+      return true;
+    }
+  }
+  
+  return false;
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// SERVICE DETECTION
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const SERVICE_INTENTS = [
+  'book', 'booking', 'appointment', 'schedule', 'reserve',
+  'grooming', 'groomer', 'vet', 'veterinary', 'boarding',
+  'walker', 'walking', 'sitting', 'sitter', 'daycare',
+  'training', 'trainer'
+];
+
+/**
+ * Check if query has service intent
+ * @param {string} query - User's query
+ * @returns {boolean}
+ */
+export const hasServiceIntent = (query) => {
+  const lowerQuery = query.toLowerCase();
+  return SERVICE_INTENTS.some(intent => lowerQuery.includes(intent));
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// QUICK REPLY EXTRACTION
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Extract quick replies from backend data
+ * @param {object} data - Backend response data
+ * @returns {array} - Array of quick reply objects
+ */
+export const extractQuickRepliesFromData = (data) => {
+  if (!data) return [];
+  
+  // Try different sources for quick replies
+  const chips = data.response?.chips || 
+                data.response?.quick_replies || 
+                data.chips || 
+                [];
+  
+  return chips.map(chip => {
+    if (typeof chip === 'string') {
+      return { text: chip, value: chip };
+    }
+    return chip;
+  });
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // EXPORTS
 // ═══════════════════════════════════════════════════════════════════════════════
 
@@ -668,6 +772,11 @@ const useChat = () => {
     shouldFetchTravelData,
     isMeaningfulTopic,
     isCelebrationQuery,
+    // New helpers
+    calculateVoiceDelay,
+    isComfortMode,
+    hasServiceIntent,
+    extractQuickRepliesFromData,
     // API helpers
     fetchConversationMemory,
     fetchMoodContext,
