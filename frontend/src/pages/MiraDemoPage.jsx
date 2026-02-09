@@ -3058,8 +3058,7 @@ const MiraDemoPage = () => {
         }, 800);
       }
       
-      // VOICE OUTPUT - Speak Mira's response
-      // VOICE-TEXT SYNC: Wait for text to appear, then speak
+      // VOICE OUTPUT - Speak Mira's response (using extracted helper for timing)
       if (voiceEnabled && miraResponseText) {
         console.log('[MIRA VOICE] Triggering voice for response, text length:', miraResponseText.length);
         // CRITICAL: Clear any pending voice timeout to prevent double voice
@@ -3067,23 +3066,18 @@ const MiraDemoPage = () => {
           clearTimeout(voiceTimeoutRef.current);
         }
         
-        // Calculate approximate typing time based on text length and speed
-        const typingSpeed = miraMode === 'comfort' ? 25 : 
-                          miraMode === 'emergency' ? 50 :
-                          miraMode === 'instant' ? 60 : 40;
-        const typingTime = (miraResponseText.length / typingSpeed) * 1000;
-        
         // Check if voice should be skipped (tile was clicked)
         if (skipVoiceOnNextResponseRef.current) {
           console.log('[MIRA VOICE] Skipping voice - response triggered by tile click');
           skipVoiceOnNextResponseRef.current = false; // Reset for next response
         } else {
-          // Wait for text animation to complete, then speak
+          // Wait for text animation to complete, then speak (using extracted helper)
+          const voiceDelay = calculateVoiceDelay(miraResponseText, miraMode);
           voiceTimeoutRef.current = setTimeout(() => {
             console.log('[MIRA VOICE] Now calling speakWithMira');
             speakWithMira(miraResponseText);
             voiceTimeoutRef.current = null;
-          }, Math.min(typingTime + 500, 3000)); // Cap at 3 seconds to avoid too long wait
+          }, voiceDelay);
         }
       } else {
         console.log('[MIRA VOICE] Voice not triggered - voiceEnabled:', voiceEnabled, 'text:', !!miraResponseText);
