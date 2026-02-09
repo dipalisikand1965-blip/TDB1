@@ -2847,31 +2847,12 @@ const MiraDemoPage = () => {
       const celebrationSubIntent = detectedTopic;
       
       // ═══════════════════════════════════════════════════════════════════
-      // YOUTUBE TRAINING VIDEOS - Detect training/learn intents
+      // YOUTUBE TRAINING VIDEOS - Detect training/learn intents (using extracted helpers)
       // ═══════════════════════════════════════════════════════════════════
       let trainingVideos = [];
-      const trainingKeywords = ['train', 'training', 'teach', 'learn', 'how to', 'puppy', 'behavior', 'obedience', 'trick', 'command', 'potty', 'leash', 'bite', 'bark', 'recall'];
-      const hasTrainingIntent = trainingKeywords.some(kw => inputQuery.toLowerCase().includes(kw));
-      
-      if (hasTrainingIntent && pet?.id) {
-        try {
-          // Extract topic from query for better video matching
-          let videoTopic = inputQuery.toLowerCase()
-            .replace(/how (do i|to|can i)/g, '')
-            .replace(/my (dog|puppy|pet)/g, '')
-            .replace(/[?!]/g, '')
-            .trim();
-          
-          const videoResponse = await fetch(`${API_URL}/api/mira/youtube/by-topic?topic=${encodeURIComponent(videoTopic)}&breed=${encodeURIComponent(pet.breed || '')}&max_results=3`);
-          const videoData = await videoResponse.json();
-          
-          if (videoData.success && videoData.videos?.length > 0) {
-            trainingVideos = videoData.videos;
-            console.log('[YOUTUBE] Found', trainingVideos.length, 'training videos for:', videoTopic);
-          }
-        } catch (e) {
-          console.log('[YOUTUBE] Video fetch failed:', e.message);
-        }
+      if (hasTrainingIntent(inputQuery) && pet?.id) {
+        const videoTopic = extractTrainingTopic(inputQuery);
+        trainingVideos = await fetchTrainingVideos(videoTopic, pet.breed || '');
       }
       
       // ═══════════════════════════════════════════════════════════════════
@@ -2894,30 +2875,11 @@ const MiraDemoPage = () => {
       
       if (shouldFetchHotels) {
         console.log('[TRAVEL FLOW] Confirmed - fetching hotels for:', detectedCity);
-        try {
-          const hotelResponse = await fetch(`${API_URL}/api/mira/amadeus/hotels?city=${encodeURIComponent(detectedCity)}&max_results=3`);
-          const hotelData = await hotelResponse.json();
-          
-          if (hotelData.success && hotelData.hotels?.length > 0) {
-            travelHotels = hotelData.hotels;
-            console.log('[AMADEUS] Found', travelHotels.length, 'hotels in:', detectedCity);
-          }
-        } catch (e) {
-          console.log('[AMADEUS] Hotel fetch failed:', e.message);
-        }
-        
-        // Also fetch attractions when showing hotels
-        try {
-          const attractionResponse = await fetch(`${API_URL}/api/mira/viator/pet-friendly?city=${encodeURIComponent(detectedCity)}&limit=3`);
-          const attractionData = await attractionResponse.json();
-          
-          if (attractionData.success && attractionData.attractions?.length > 0) {
-            travelAttractions = attractionData.attractions;
-            console.log('[VIATOR] Found', travelAttractions.length, 'attractions in:', detectedCity);
-          }
-        } catch (e) {
-          console.log('[VIATOR] Attraction fetch failed:', e.message);
-        }
+        // Fetch hotels and attractions in parallel using extracted helpers
+        [travelHotels, travelAttractions] = await Promise.all([
+          fetchTravelHotels(detectedCity),
+          fetchTravelAttractions(detectedCity)
+        ]);
       } else if (detectedCity) {
         console.log('[TRAVEL FLOW] City detected but waiting for confirmation. City:', detectedCity, '| History length:', conversationHistory.length);
       }
