@@ -30,6 +30,11 @@ import hapticFeedback from '../utils/haptic';
 import { correctSpelling } from '../utils/spellCorrect';
 import conversationIntelligence from '../utils/conversationIntelligence';
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// VAULT SYSTEM - "Mira is the Brain, Concierge® is the Hands"
+// ═══════════════════════════════════════════════════════════════════════════════
+import { VaultManager } from '../components/PicksVault';
+
 // Formatted Text Component - Renders markdown with proper styling
 // Uses wrapper div for className (react-markdown v8+ compatible)
 // Pre-processes text to ensure proper markdown formatting
