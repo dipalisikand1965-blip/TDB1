@@ -3195,8 +3195,8 @@ const MiraDemoPage = () => {
       clearTimeout(skeletonTimer);
       setShowSkeleton(false);
       
-      // 🎉 MICRO-DELIGHT: Confetti for celebrations (birthday, party, anniversary)
-      const celebrationKeywords = ['birthday', 'party', 'celebrate', 'celebration', 'anniversary', 'gotcha day', 'pawty'];
+      // 🎉 MICRO-DELIGHT: Confetti for celebrations (birthday, party, anniversary, cake)
+      const celebrationKeywords = ['birthday', 'party', 'celebrate', 'celebration', 'anniversary', 'gotcha day', 'pawty', 'cake', 'cupcake', 'treat'];
       const isCelebrationQuery = celebrationKeywords.some(kw => inputQuery.toLowerCase().includes(kw));
       if (isCelebrationQuery && !inComfortMode) {
         // Slight delay for visual impact
