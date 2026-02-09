@@ -3370,15 +3370,7 @@ const MiraDemoPage = () => {
   };
   
   // Toggle voice output
-  const toggleVoiceOutput = () => {
-    // HAPTIC: Toggle
-    hapticFeedback.toggle();
-    if (isSpeaking && audioRef.current) {
-      audioRef.current.pause();
-      setIsSpeaking(false);
-    }
-    setVoiceEnabled(!voiceEnabled);
-  };
+  // NOTE: toggleVoiceOutput now comes from useVoice hook
   
   // Handle dock click
   const handleDockClick = (item) => {
