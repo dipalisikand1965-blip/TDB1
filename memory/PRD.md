@@ -137,6 +137,15 @@
 - ✅ Logout API 422 error - Fixed with proper Pydantic model
 - ✅ iOS haptic feedback - All 12 components now use centralized utility
 - ✅ Sign Out button z-index - Increased to 999 with pointer-events:auto
+- ✅ Soul score in chat response - Now returns `pet_soul_score` in main /chat endpoint
+- ✅ Soul score increments on every chat interaction
+
+## Verified Working
+- ✅ **Service Flow**: User Request → Service Desk Ticket → Admin Notification → Channel Intake
+- ✅ **Soul Score**: Increments with each interaction (50.0 → 50.1 → 50.2)
+- ✅ **Collections populated**: service_desk_tickets, admin_notifications, channel_intakes, mira_tickets
+- ✅ **Mobile + Desktop**: Both tested and working
+- ✅ **Photo upload API**: /api/mira/upload/file endpoint available
 
 ---
 
