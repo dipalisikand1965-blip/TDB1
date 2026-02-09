@@ -490,6 +490,12 @@ const MiraDemoPage = () => {
   const [latestInsights, setLatestInsights] = useState([]); // Collected from all messages
   
   // ═══════════════════════════════════════════════════════════════════════════
+  // CONCIERGE CONFIRMATION - Service Request Received Banner
+  // Part of UNIFORM SERVICE FLOW: User → Mira Ticket → Admin Notification → Concierge
+  // ═══════════════════════════════════════════════════════════════════════════
+  const [conciergeConfirmation, setConciergeConfirmation] = useState(null);
+  
+  // ═══════════════════════════════════════════════════════════════════════════
   // NOTE: Vault state (showVault, activeVaultData, vaultUserMessage, miraPicks, 
   // showMiraTray) now comes from useVault hook above
   // ═══════════════════════════════════════════════════════════════════════════
