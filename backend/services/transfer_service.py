@@ -108,11 +108,17 @@ async def search_transfers(
         transfer_type: Specific type or None for all
         currency: Currency code (default INR)
     """
+    logger.info(f"[TRANSFER] Searching: {pickup_location} -> {dropoff_location}, {passengers} pax, {currency}")
+    
     token = await get_access_token()
+    logger.info(f"[TRANSFER] Token: {'present' if token else 'None'}")
+    
     if not token:
         # Return mock data when API not configured
-        logger.info("Amadeus API not configured, returning mock transfers")
-        return _get_mock_transfers(pickup_location, dropoff_location, passengers, currency)
+        logger.info("[TRANSFER] Returning mock data (no API token)")
+        mock_result = _get_mock_transfers(pickup_location, dropoff_location, passengers, currency)
+        logger.info(f"[TRANSFER] Mock result: {len(mock_result.get('transfers', []))} transfers")
+        return mock_result
     
     # Parse locations
     pickup_airport = None
