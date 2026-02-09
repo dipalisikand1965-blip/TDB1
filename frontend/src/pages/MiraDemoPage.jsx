@@ -4386,7 +4386,7 @@ const MiraDemoPage = () => {
                           {msg.quickReplies && msg.quickReplies.length > 0 && (
                             <div className="mp-chips">
                               {msg.quickReplies.map((chip, cIdx) => (
-                                <button key={cIdx} onClick={() => handleQuickReply(chip.value)} className="mp-chip">
+                                <button key={cIdx} onClick={() => handleQuickReply(chip.value, true)} className="mp-chip" data-testid={`chip-${cIdx}`}>
                                   {chip.text}
                                 </button>
                               ))}
