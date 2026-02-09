@@ -4003,54 +4003,18 @@ const MiraDemoPage = () => {
         onShowLearn={() => { setShowLearnModal(true); fetchLearnVideos('recommended'); }}
       />
       
-      {/* FLOATING ACTION BAR - Always visible, clean icons for Insight/Concierge/History */}
-      {conversationHistory.length > 0 && (
-        <div className="mp-floating-bar" data-testid="floating-action-bar">
-          {/* Past Chats */}
-          <button 
-            className={`mp-float-btn ${showPastChats ? 'active' : ''}`}
-            onClick={() => { loadPastChats(); setShowPastChats(true); }}
-            data-testid="float-history-btn"
-            title="Past Chats"
-          >
-            <History size={18} />
-          </button>
-          
-          {/* Mira's Insights - Paw icon */}
-          <button 
-            className={`mp-float-btn insight-btn ${showInsightsPanel ? 'active' : ''}`}
-            onClick={() => setShowInsightsPanel(!showInsightsPanel)}
-            data-testid="float-insight-btn"
-            title="Mira's Insights"
-          >
-            <PawPrint size={18} />
-            <Sparkles size={10} className="insight-sparkle" />
-          </button>
-          
-          {/* Concierge Help - C° icon */}
-          <button 
-            className={`mp-float-btn concierge-float-btn ${showConciergePanel ? 'active' : ''}`}
-            onClick={() => setShowConciergePanel(!showConciergePanel)}
-            data-testid="float-concierge-btn"
-            title="Get Help"
-          >
-            <span className="float-c">C</span>
-            <span className="float-degree">°</span>
-          </button>
-          
-          {/* New Chat */}
-          <button 
-            className="mp-float-btn new-chat-btn"
-            onClick={startNewSession}
-            data-testid="float-new-chat-btn"
-            title="New Chat"
-          >
-            <Plus size={18} />
-          </button>
-        </div>
-      )}
+      {/* FLOATING ACTION BAR - Extracted to FloatingActionBar component */}
+      <FloatingActionBar
+        isVisible={conversationHistory.length > 0}
+        showPastChats={showPastChats}
+        showInsights={showInsightsPanel}
+        showConcierge={showConciergePanel}
+        onPastChatsClick={() => { loadPastChats(); setShowPastChats(true); }}
+        onInsightsClick={() => setShowInsightsPanel(!showInsightsPanel)}
+        onConciergeClick={() => setShowConciergePanel(!showConciergePanel)}
+        onNewChatClick={startNewSession}
+      />
       
-      {/* INSIGHTS PANEL - Slides down when insight icon clicked */}
       {/* INSIGHTS PANEL - Extracted to InsightsPanel component */}
       <InsightsPanel
         isOpen={showInsightsPanel}
