@@ -754,76 +754,71 @@
 
 /* ========================================
    SMART SUGGESTION CHIPS - Below Input
-   Context-aware, accessible, non-intrusive
+   Clean pill-shaped buttons with subtle styling
    ======================================== */
 .mp-smart-chips {
   display: flex;
-  gap: 8px;
-  padding: 10px 4px 0;
-  overflow-x: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  gap: 10px;
+  padding: 12px 0 4px;
   justify-content: center;
   flex-wrap: wrap;
-  position: relative;
-  z-index: 1;
   width: 100%;
-  box-sizing: border-box;
-}
-
-.mp-smart-chips::-webkit-scrollbar {
-  display: none;
 }
 
 .mp-smart-chip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 20px;
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 13px;
+  gap: 8px;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(139, 92, 246, 0.08) 100%);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 24px;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
-  position: relative;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
 }
 
 .mp-smart-chip:hover {
-  background: rgba(139, 92, 246, 0.2);
-  border-color: rgba(139, 92, 246, 0.4);
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.3) 0%, rgba(139, 92, 246, 0.2) 100%);
+  border-color: rgba(139, 92, 246, 0.5);
   color: white;
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.25);
 }
 
 .mp-smart-chip:active {
-  transform: scale(0.96);
-  background: rgba(139, 92, 246, 0.3);
+  transform: scale(0.97);
 }
 
 .smart-chip-icon {
-  font-size: 14px;
+  font-size: 16px;
+  line-height: 1;
 }
 
 .smart-chip-text {
-  font-size: 13px;
+  font-size: 14px;
+  font-weight: 500;
 }
 
-/* Mobile: horizontal scroll */
+/* Mobile adjustments */
 @media (max-width: 480px) {
   .mp-smart-chips {
-    justify-content: flex-start;
-    flex-wrap: nowrap;
-    padding-left: 4px;
-    padding-right: 4px;
+    padding: 10px 8px 4px;
+    gap: 8px;
   }
   
   .mp-smart-chip {
-    padding: 6px 12px;
-    font-size: 12px;
+    padding: 8px 14px;
+    font-size: 13px;
+  }
+  
+  .smart-chip-icon {
+    font-size: 14px;
   }
 }
 
