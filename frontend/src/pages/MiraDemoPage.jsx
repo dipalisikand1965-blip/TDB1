@@ -250,31 +250,59 @@ const MiraDemoPage = () => {
   
   // Fetch user's geolocation on mount
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const { latitude, longitude } = position.coords;
-          setUserGeoLocation({ latitude, longitude });
-          
-          // Reverse geocode to get city name
-          try {
-            const response = await fetch(
-              `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
-            );
-            const data = await response.json();
-            const city = data.address?.city || data.address?.town || data.address?.state || 'Mumbai';
-            setUserCity(city);
-            console.log('[GEO] User location detected:', city);
-          } catch (e) {
-            console.log('[GEO] Could not get city name, using default');
+    const detectLocation = async () => {
+      // First try browser geolocation
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            const { latitude, longitude } = position.coords;
+            setUserGeoLocation({ latitude, longitude });
+            
+            // Reverse geocode to get city name
+            try {
+              const response = await fetch(
+                `https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`
+              );
+              const data = await response.json();
+              const city = data.address?.city || data.address?.town || data.address?.state || 'Mumbai';
+              setUserCity(city);
+              console.log('[GEO] ✅ User location detected via GPS:', city);
+            } catch (e) {
+              console.log('[GEO] Could not reverse geocode, using default');
+            }
+          },
+          async (error) => {
+            console.log('[GEO] Browser geolocation failed:', error.message);
+            // Fallback: Try IP-based geolocation
+            try {
+              const ipResponse = await fetch('https://ipapi.co/json/');
+              const ipData = await ipResponse.json();
+              if (ipData.city) {
+                setUserCity(ipData.city);
+                console.log('[GEO] ✅ Location detected via IP:', ipData.city);
+              }
+            } catch (ipError) {
+              console.log('[GEO] IP geolocation also failed, using default Mumbai');
+            }
+          },
+          { enableHighAccuracy: false, timeout: 5000, maximumAge: 600000 }
+        );
+      } else {
+        // No geolocation support - try IP fallback
+        try {
+          const ipResponse = await fetch('https://ipapi.co/json/');
+          const ipData = await ipResponse.json();
+          if (ipData.city) {
+            setUserCity(ipData.city);
+            console.log('[GEO] ✅ Location detected via IP (no GPS):', ipData.city);
           }
-        },
-        (error) => {
-          console.log('[GEO] Location access denied or unavailable:', error.message);
-        },
-        { enableHighAccuracy: false, timeout: 10000 }
-      );
-    }
+        } catch (e) {
+          console.log('[GEO] No location detection available, using default');
+        }
+      }
+    };
+    
+    detectLocation();
   }, []);
   
   // Cleanup voice on unmount to prevent memory leaks and double voice
