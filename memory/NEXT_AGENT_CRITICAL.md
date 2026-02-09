@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://local-paws.preview.emergentagent.com
+https://context-aware-mira.preview.emergentagent.com
 
 ---
 

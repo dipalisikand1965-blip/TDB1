@@ -13,7 +13,7 @@ import os
 
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 if not BASE_URL:
-    BASE_URL = "https://local-paws.preview.emergentagent.com"
+    BASE_URL = "https://context-aware-mira.preview.emergentagent.com"
 
 ADMIN_USERNAME = "aditya"
 ADMIN_PASSWORD = "lola4304"

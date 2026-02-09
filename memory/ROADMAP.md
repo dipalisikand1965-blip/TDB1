@@ -148,7 +148,7 @@
 
 ## Preview URL
 
-https://local-paws.preview.emergentagent.com
+https://context-aware-mira.preview.emergentagent.com
 
 ---
 
