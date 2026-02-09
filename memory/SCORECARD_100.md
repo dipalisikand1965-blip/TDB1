@@ -160,24 +160,25 @@
 
 ---
 
-# 7️⃣ INTELLIGENCE (45/100) 🔴
+# 7️⃣ INTELLIGENCE (45/100 → 65/100) 🟡 IMPROVED
 
-## What's Working
+## What's Working NOW
 | Feature | Score | Status |
 |---------|-------|--------|
 | Basic intent detection | 80% | ✅ |
 | Pillar routing | 75% | ✅ |
 | Comfort mode | 85% | ✅ |
 | Pet personalization | 70% | ✅ |
+| **Pronoun resolution** | 80% | ✅ NEW |
+| **Follow-up context** | 70% | ✅ NEW |
+| **Multi-intent detection** | 60% | ✅ NEW |
 
-## Critical Gaps
+## Remaining Gaps
 | Missing Feature | Points | Priority |
 |-----------------|--------|----------|
-| **Pronoun resolution** ("book that one") | -15 | **P0** |
-| **Follow-up context** ("show cheaper") | -15 | **P0** |
-| Multi-intent queries | -10 | P1 |
-| Implicit intent detection | -8 | P1 |
+| Auto-select resolved item | -10 | P1 |
 | Learning from corrections | -7 | P2 |
+| Implicit intent detection | -8 | P1 |
 
 ---
 
