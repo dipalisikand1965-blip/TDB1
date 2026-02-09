@@ -13361,6 +13361,214 @@ async def save_picks_to_vault(request: SavePicksRequest):
         return {"success": False, "error": str(e)}
 
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# SEND PICKS TO CONCIERGE® - Unified Signal Flow
+# "Mira is the Brain, Concierge® is the Hands"
+# This creates the full signal: Notification → Ticket → Inbox
+# ═══════════════════════════════════════════════════════════════════════════════
+
+class SendPicksRequest(BaseModel):
+    """Request to send picks to Concierge via unified flow"""
+    session_id: Optional[str] = None
+    member_id: Optional[str] = None
+    member_email: Optional[str] = None
+    member_phone: Optional[str] = None
+    member_name: Optional[str] = None
+    pet: Optional[Dict] = None  # {id, name, breed, photo}
+    pillar: Optional[str] = "general"
+    context: Optional[str] = None  # What were they looking for
+    picked_items: Optional[List[Dict]] = []  # Items user selected
+    shown_items: Optional[List[Dict]] = []   # All items shown
+    user_action: Optional[str] = "sent_with_picks"  # sent_with_picks, sent_without_picks
+
+@router.post("/send-picks-to-concierge")
+async def send_picks_to_concierge(request: SendPicksRequest):
+    """
+    Send user's picks to Concierge® via unified signal flow.
+    Creates: Notification → Service Desk Ticket → Channel Intake
+    
+    "Mira is the Brain, Concierge® is the Hands"
+    """
+    try:
+        from central_signal_flow import create_signal
+        from timestamp_utils import get_utc_timestamp
+        
+        pet = request.pet or {}
+        picked_count = len(request.picked_items) if request.picked_items else 0
+        shown_count = len(request.shown_items) if request.shown_items else 0
+        
+        # Build title based on user action
+        if picked_count > 0:
+            title = f"{pet.get('name', 'Pet')}'s Picks - {picked_count} item{'s' if picked_count > 1 else ''} selected"
+        else:
+            title = f"{pet.get('name', 'Pet')}'s Request - Awaiting Concierge Review"
+        
+        # Build description
+        description_parts = []
+        if request.context:
+            description_parts.append(f"Context: {request.context}")
+        
+        if picked_count > 0:
+            description_parts.append(f"\nSelected Items ({picked_count}):")
+            for item in request.picked_items[:6]:
+                price_str = f" - ₹{item.get('price')}" if item.get('price') else ""
+                description_parts.append(f"  • {item.get('name')}{price_str}")
+        
+        if shown_count > picked_count:
+            not_picked = [i for i in (request.shown_items or []) 
+                         if i.get('id') not in [p.get('id') for p in (request.picked_items or [])]]
+            if not_picked:
+                description_parts.append(f"\nShown but not selected ({len(not_picked)}):")
+                for item in not_picked[:4]:
+                    description_parts.append(f"  • {item.get('name')}")
+        
+        description = "\n".join(description_parts) if description_parts else "Picks request awaiting review"
+        
+        # Determine urgency
+        urgency = "medium" if picked_count > 0 else "low"
+        
+        # Create unified signal
+        signal_result = await create_signal(
+            pillar=request.pillar or "general",
+            action_type="picks_selected" if picked_count > 0 else "picks_request",
+            title=title,
+            description=description,
+            customer_name=request.member_name,
+            customer_email=request.member_email,
+            customer_phone=request.member_phone,
+            pet_name=pet.get('name'),
+            pet_breed=pet.get('breed'),
+            pet_id=pet.get('id'),
+            urgency=urgency,
+            source="mira",
+            linked_id=request.session_id,
+            extra_data={
+                "picks_vault": {
+                    "picked_items": request.picked_items or [],
+                    "shown_items": request.shown_items or [],
+                    "user_action": request.user_action,
+                    "context": request.context,
+                    "pillar": request.pillar,
+                    "sent_at": get_utc_timestamp()
+                }
+            }
+        )
+        
+        logger.info(f"[PICKS → CONCIERGE] Signal created: {signal_result.get('ticket_id')} | {picked_count} picked, {shown_count} shown")
+        
+        return {
+            "success": True,
+            "ticket_id": signal_result.get("ticket_id"),
+            "notification_id": signal_result.get("notification_id"),
+            "inbox_id": signal_result.get("inbox_id"),
+            "picked_count": picked_count,
+            "message": "Your Pet Concierge® will get back to you shortly"
+        }
+        
+    except Exception as e:
+        logger.error(f"[PICKS → CONCIERGE] Failed: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return {"success": False, "error": str(e)}
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# REFRESH PICKS - Get different options (excludes previously shown)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+class RefreshPicksRequest(BaseModel):
+    """Request to get different picks"""
+    session_id: Optional[str] = None
+    pet_context: Optional[Dict] = None
+    pillar: Optional[str] = None
+    exclude_ids: Optional[List[str]] = []  # Previously shown product IDs
+    context: Optional[str] = None  # What user is looking for
+
+@router.post("/refresh-picks")
+async def refresh_picks(request: RefreshPicksRequest):
+    """
+    Get different picks, excluding previously shown items.
+    Used when user clicks "Show Different Options"
+    """
+    db = get_db()
+    if db is None:
+        return {"success": False, "error": "Database not available", "picks": []}
+    
+    try:
+        # Build query excluding previously shown items
+        query = {"available": {"$ne": False}}
+        
+        if request.exclude_ids:
+            query["id"] = {"$nin": request.exclude_ids}
+        
+        # Filter by pillar if specified
+        if request.pillar:
+            PILLAR_SEARCH_MAP = {
+                "celebrate": ["celebrate", "shop"],
+                "dine": ["dine", "shop"],
+                "care": ["care", "shop"],
+                "travel": ["travel", "shop"],
+                "enjoy": ["enjoy", "shop"]
+            }
+            allowed_pillars = PILLAR_SEARCH_MAP.get(request.pillar.lower(), [request.pillar.lower(), "shop"])
+            query["pillar"] = {"$in": allowed_pillars}
+        
+        # Get random products matching criteria
+        pipeline = [
+            {"$match": query},
+            {"$sample": {"size": 4}}  # Random 4 products
+        ]
+        
+        products = await db.products_master.aggregate(pipeline).to_list(4)
+        
+        # Format products for response
+        formatted = []
+        for p in products:
+            formatted.append({
+                "id": p.get("id"),
+                "name": p.get("name"),
+                "price": p.get("price"),
+                "image": p.get("image") or (p.get("images", [None])[0]),
+                "category": p.get("category"),
+                "pillar": p.get("pillar"),
+                "why_for_pet": p.get("why_for_pet") or generate_why_for_pet_simple(p, request.pet_context)
+            })
+        
+        logger.info(f"[REFRESH PICKS] Returned {len(formatted)} new picks, excluded {len(request.exclude_ids or [])} items")
+        
+        return {
+            "success": True,
+            "picks": formatted,
+            "excluded_count": len(request.exclude_ids or [])
+        }
+        
+    except Exception as e:
+        logger.error(f"[REFRESH PICKS] Failed: {e}")
+        return {"success": False, "error": str(e), "picks": []}
+
+
+def generate_why_for_pet_simple(product, pet_context):
+    """Generate a simple 'why for pet' reason"""
+    if not pet_context:
+        return None
+    
+    pet_name = pet_context.get("name", "your pet")
+    breed = pet_context.get("breed", "")
+    
+    product_name = (product.get("name") or "").lower()
+    
+    if "treat" in product_name:
+        return f"A delicious treat for {pet_name}"
+    elif "cake" in product_name:
+        return f"Perfect for {pet_name}'s celebration"
+    elif "toy" in product_name:
+        return f"Great for playtime with {pet_name}"
+    elif breed:
+        return f"Popular choice for {breed}s"
+    
+    return None
+
+
 @router.post("/admin/run-ai-tagging")
 async def run_ai_tagging():
     """
