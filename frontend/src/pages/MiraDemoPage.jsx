@@ -54,6 +54,17 @@ import { FormattedText, TypedText } from '../components/Mira/TextComponents';
 import { triggerCelebrationConfetti } from '../utils/confetti';
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// EXTRACTED CONSTANTS & UTILITIES
+// ═══════════════════════════════════════════════════════════════════════════════
+import {
+  DOCK_ITEMS, CONCIERGE_HOURS, isConciergeLive, generateConciergeRequest,
+  DOG_PLACEHOLDER_IMAGES, getPlaceholderImage, TEST_SCENARIOS,
+  SERVICE_CATEGORIES, detectServiceIntent,
+  COMFORT_KEYWORDS, ACKNOWLEDGMENT_PHRASES, isComfortModeCheck, getComfortModeServices,
+  EXPERIENCE_CATEGORIES, detectExperienceIntent, generateWhyForPet
+} from '../utils/miraConstants';
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // EXTRACTED HOOKS - Stage 1, 2, 3 Refactoring
 // ═══════════════════════════════════════════════════════════════════════════════
 import { 
@@ -73,9 +84,6 @@ import {
 
 // Import the production-style CSS (matches thedoggycompany.in)
 import '../styles/mira-prod.css';
-
-// Dock Items - Clean and minimal
-const DOCK_ITEMS = [
   { id: 'concierge', label: 'Concierge®', icon: MessageCircle, action: 'openChat' },
   { id: 'orders', label: 'Orders', icon: Package, path: '/orders' },
   { id: 'plan', label: 'Plan', icon: Calendar, path: '/family-dashboard', tab: 'calendar' },
