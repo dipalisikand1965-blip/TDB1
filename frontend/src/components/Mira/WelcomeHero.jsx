@@ -153,6 +153,27 @@ const WelcomeHero = ({
             </div>
           )}
           
+          {/* SMART PROACTIVE ALERTS - Vaccination, Birthday, Grooming */}
+          {proactiveAlerts.smartAlerts && proactiveAlerts.smartAlerts.length > 0 && (
+            <ProactiveAlertsBanner
+              alerts={proactiveAlerts.smartAlerts}
+              criticalCount={proactiveAlerts.criticalCount || 0}
+              maxVisible={2}
+              onAlertAction={(alert) => {
+                // Handle alert action - send to Mira
+                const actionMessages = {
+                  'book_vet_vaccination': `I need to schedule ${pet.name}'s vaccination`,
+                  'book_grooming': `Book a grooming appointment for ${pet.name}`,
+                  'celebrate_birthday': `Let's celebrate ${pet.name}'s birthday!`,
+                  'plan_birthday_party': `Help me plan ${pet.name}'s birthday party`,
+                  'order_birthday_cake': `Order a birthday cake for ${pet.name}`
+                };
+                handleQuickReply(actionMessages[alert.cta_action] || alert.message);
+              }}
+              className="mb-4 mt-2"
+            />
+          )}
+          
           {/* Soul Traits */}
           <div className="soul-traits">
             {(pet.soulTraits || [
