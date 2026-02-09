@@ -4948,85 +4948,35 @@ const MiraDemoPage = () => {
         </button>
       )}
       
-      {/* Input Composer - Premium */}
-      <div className="mp-composer">
-        {/* "Ready for Pet" button moved to header bar as compact icon */}
-        
-        <div className="mp-composer-inner">
-          <form onSubmit={handleSubmit} className="mp-input-row">
-            <input
-              ref={inputRef}
-              type="text"
-              value={query}
-              onChange={(e) => {
-                setQuery(e.target.value);
-                // VOICE SYNC: Stop voice and cancel pending voice when user types
-                if (e.target.value.length > 0) {
-                  if (voiceTimeoutRef.current) {
-                    clearTimeout(voiceTimeoutRef.current);
-                    voiceTimeoutRef.current = null;
-                  }
-                  if (isSpeaking) {
-                    stopSpeaking();
-                  }
-                }
-              }}
-              placeholder={`Ask Mira anything...`}
-              className="mp-input"
-              disabled={isProcessing}
-              data-testid="mira-input"
-            />
-            
-            {/* E024: Voice Output Toggle - Auto-detects personality from context */}
-            <button
-              type="button"
-              onClick={toggleVoiceOutput}
-              className={`mp-btn-voice ${voiceEnabled ? 'active' : ''} ${isSpeaking ? 'speaking' : ''}`}
-              data-testid="voice-output-btn"
-              title={voiceEnabled ? 'Mira voice ON (auto-adjusts to context)' : 'Mira voice OFF'}
-            >
-              {voiceEnabled ? <Volume2 /> : <VolumeX />}
-            </button>
-            
-            {/* Voice Input Button - Enhanced with error state and visual feedback */}
-            {voiceSupported && (
-              <button
-                type="button"
-                onClick={toggleVoice}
-                className={`mp-btn-mic ${isListening ? 'recording' : ''} ${voiceError ? 'error' : ''}`}
-                data-testid="mic-btn"
-                title={voiceError || (isListening ? 'Listening... Tap to stop' : 'Tap to speak')}
-              >
-                {isListening ? (
-                  <div className="mp-mic-recording">
-                    <MicOff />
-                    <span className="mp-mic-pulse"></span>
-                  </div>
-                ) : (
-                  <Mic />
-                )}
-              </button>
-            )}
-            
-            {/* Voice Error Toast */}
-            {voiceError && (
-              <div className="mp-voice-error" onClick={() => setVoiceError(null)}>
-                <span>{voiceError}</span>
-                <X size={14} />
-              </div>
-            )}
-            
-            <button
-              type="submit"
-              disabled={isProcessing || !query.trim()}
-              className="mp-btn-send"
-              data-testid="send-btn"
-            >
-              <Send />
-            </button>
-          </form>
-        </div>
-      </div>
+      {/* Input Composer - Extracted to ChatInputBar component */}
+      <ChatInputBar
+        inputRef={inputRef}
+        query={query}
+        onQueryChange={(value) => {
+          setQuery(value);
+          // VOICE SYNC: Stop voice when user types
+          if (value.length > 0) {
+            if (voiceTimeoutRef.current) {
+              clearTimeout(voiceTimeoutRef.current);
+              voiceTimeoutRef.current = null;
+            }
+            if (isSpeaking) {
+              stopSpeaking();
+            }
+          }
+        }}
+        onSubmit={handleSubmit}
+        isProcessing={isProcessing}
+        voiceEnabled={voiceEnabled}
+        isSpeaking={isSpeaking}
+        onToggleVoiceOutput={toggleVoiceOutput}
+        voiceSupported={voiceSupported}
+        isListening={isListening}
+        onToggleVoiceInput={toggleVoice}
+        voiceError={voiceError}
+        onClearVoiceError={() => setVoiceError(null)}
+        placeholder={`Ask Mira anything...`}
+      />
       
       {/* Sandbox Footer */}
       <div className="mp-sandbox-footer">
