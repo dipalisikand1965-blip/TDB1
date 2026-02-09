@@ -100,8 +100,8 @@ After:  "Go Bananas Box" has intent: birthday_celebration ✅
 
 ## Core Principle
 ```
-Mira is the brain. Concierge® is the hand.
-Picks are the bridge between them.
+MIRA IS THE BRAIN. CONCIERGE® IS THE HANDS. 
+THE APP IS THE ENABLER FOR A SEAMLESS LUXURY HAPTIC EXPERIENCE.
 ```
 
 ## Hard Rule: 100% Relevance
@@ -110,12 +110,52 @@ Picks are the bridge between them.
 - Talking about **travel** → Only see travel products (carriers, harnesses)
 - **FORBIDDEN**: Cake showing when asking about dog walking
 
-## What Picks Vault Should Do
-1. **Pillar-locked picks** - Filter by pillar FIRST
-2. **3-4 picks max** on screen, full packet stored
-3. **No add-to-cart** - CTA is "Your pet Concierge® will curate..."
-4. **Picks stored with ticket** for Concierge to work from
-5. **Icon/Tip Cards** - For conversations without products (e.g., meal plan summary)
+## Picks Flow Implementation ✅ COMPLETED
+
+### UI Components Created:
+1. `PicksVault.jsx` - Main picks selection component
+2. `PickDetail.jsx` - Product detail view (tap image to view)
+3. `PicksVault.css` - Luxury dark theme styling
+4. `PickDetail.css` - Detail view styling
+
+### User Actions:
+| Action | Result |
+|--------|--------|
+| Tap SELECT (✓) | Toggle item selection with haptic |
+| Tap IMAGE | Open detail view with haptic |
+| REFRESH 🔄 | Get different options (max 3 refreshes) |
+| SEND TO CONCIERGE® | Always visible, sends picks to unified flow |
+
+### Flow Permutations:
+
+**FLOW A: Send with NO picks**
+→ Concierge sees "shown but not selected" items
+→ Can follow up with different suggestions
+
+**FLOW B: Send with 1+ picks**
+→ Concierge sees picked items + context
+→ Ready to fulfill
+
+**FLOW C: Refresh for different options**
+→ New products shown (excludes previous)
+→ User can pick from expanded list
+
+**FLOW D: View details → Pick from there**
+→ Tap image → Full detail view
+→ "Pick This" button available
+
+### Backend Endpoints:
+| Endpoint | Purpose |
+|----------|---------|
+| `POST /api/mira/send-picks-to-concierge` | Send picks via unified signal flow |
+| `POST /api/mira/refresh-picks` | Get different options |
+| `GET /api/mira/picks-history/{pet_id}` | View past picks |
+
+### Unified Signal Flow:
+When user sends picks → Creates:
+1. `admin_notifications` - Bell icon for admin
+2. `service_desk_tickets` - Service desk with picks_vault
+3. `channel_intakes` - Unified inbox entry
 
 ---
 
