@@ -5692,7 +5692,7 @@ const MiraDemoPage = () => {
                   className={`vault-field-item ${field.priority === 'high' ? 'priority-high' : field.priority === 'medium' ? 'priority-medium' : 'priority-low'}`}
                   onClick={() => {
                     setHealthVault(prev => ({ ...prev, showWizard: false }));
-                    handleQuickReply(`I want to add ${pet.name}'s ${field.label.toLowerCase()}`);
+                    handleQuickReply(`I want to add ${pet.name}'s ${field.label.toLowerCase()}`, true);
                   }}
                 >
                   <span className="field-icon">
