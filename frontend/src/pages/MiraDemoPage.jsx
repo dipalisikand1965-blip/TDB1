@@ -5434,7 +5434,7 @@ const MiraDemoPage = () => {
                 className="mp-tray-open-vault"
                 onClick={() => {
                   setShowMiraTray(false);
-                  setVaultResponse({
+                  setActiveVaultData({
                     products: miraPicks.products,
                     services: miraPicks.services
                   });
