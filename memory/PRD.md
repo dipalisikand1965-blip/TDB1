@@ -115,10 +115,17 @@ THE APP IS THE ENABLER FOR A SEAMLESS LUXURY HAPTIC EXPERIENCE.
 ### UI Components Created:
 1. `PicksVault.jsx` - Main picks selection component
 2. `PickDetail.jsx` - Product detail view (tap image to view)
-3. `PicksVault.css` - Luxury dark theme styling
-4. `PickDetail.css` - Detail view styling
+3. `TipCardVault.jsx` - Non-product advisory flow (NEW!)
+4. CSS files - Luxury dark theme styling
 
-### User Actions:
+### Two Flows, Same Plumbing:
+
+| Flow | For | Component | Endpoint |
+|------|-----|-----------|----------|
+| **PICKS** | Products, Services | `PicksVault` | `/api/mira/send-picks-to-concierge` |
+| **TIP CARDS** | Advice, Plans, Guides | `TipCardVault` | `/api/mira/send-tip-card-to-concierge` |
+
+### User Actions (Picks):
 | Action | Result |
 |--------|--------|
 | Tap SELECT (✓) | Toggle item selection with haptic |
@@ -126,28 +133,44 @@ THE APP IS THE ENABLER FOR A SEAMLESS LUXURY HAPTIC EXPERIENCE.
 | REFRESH 🔄 | Get different options (max 3 refreshes) |
 | SEND TO CONCIERGE® | Always visible, sends picks to unified flow |
 
+### User Actions (Tip Cards):
+| Action | Result |
+|--------|--------|
+| Review advice | See Mira's formatted tip card |
+| Request formal | Toggle to ask Concierge for official doc |
+| Add notes | Additional context for Concierge |
+| SEND TO CONCIERGE® | Sends tip card to unified flow |
+
 ### Flow Permutations:
 
-**FLOW A: Send with NO picks**
+**PICKS FLOW A: Send with NO picks**
 → Concierge sees "shown but not selected" items
 → Can follow up with different suggestions
 
-**FLOW B: Send with 1+ picks**
+**PICKS FLOW B: Send with 1+ picks**
 → Concierge sees picked items + context
 → Ready to fulfill
 
-**FLOW C: Refresh for different options**
+**PICKS FLOW C: Refresh for different options**
 → New products shown (excludes previous)
 → User can pick from expanded list
 
-**FLOW D: View details → Pick from there**
+**PICKS FLOW D: View details → Pick from there**
 → Tap image → Full detail view
 → "Pick This" button available
+
+**TIP CARD FLOW: Advisory content**
+→ User gets advice (meal plan, travel tips, etc.)
+→ Can request formal version
+→ Sends to Concierge for action
 
 ### Backend Endpoints:
 | Endpoint | Purpose |
 |----------|---------|
-| `POST /api/mira/send-picks-to-concierge` | Send picks via unified signal flow |
+| `POST /api/mira/send-picks-to-concierge` | Send product picks via unified signal flow |
+| `POST /api/mira/send-tip-card-to-concierge` | Send tip cards via unified signal flow |
+| `POST /api/mira/refresh-picks` | Get different options |
+| `GET /api/mira/picks-history/{pet_id}` | View past picks |
 | `POST /api/mira/refresh-picks` | Get different options |
 | `GET /api/mira/picks-history/{pet_id}` | View past picks |
 
