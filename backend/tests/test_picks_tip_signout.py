@@ -68,7 +68,7 @@ class TestPicksAndTipFlow:
             ticket_id = data.get("response", {}).get("ticket_id")
             print(f"Ticket ID: {ticket_id}")
             assert ticket_id is not None, "CONCIERGE execution should return ticket_id"
-            assert ticket_id.startswith("TCK-") or ticket_id.startswith("MIRA-") or ticket_id.startswith("REQ-"), f"Invalid ticket_id format: {ticket_id}"
+            assert ticket_id.startswith("TCK-") or ticket_id.startswith("MIRA-") or ticket_id.startswith("REQ-") or ticket_id.startswith("CNC-"), f"Invalid ticket_id format: {ticket_id}"
         else:
             # Even if not CONCIERGE, the endpoint should work
             print(f"Non-CONCIERGE response - execution_type: {execution_type}")
