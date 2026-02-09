@@ -6107,6 +6107,48 @@ const MiraDemoPage = () => {
           </div>
         </div>
       )}
+      
+      {/* ═══════════════════════════════════════════════════════════════════════════
+          VAULT SYSTEM - Full-screen overlay for picks, bookings, places, etc.
+          "Mira is the Brain, Concierge® is the Hands"
+          ═══════════════════════════════════════════════════════════════════════════ */}
+      {showVault && (
+        <div className="vault-overlay" data-testid="vault-overlay">
+          <VaultManager
+            isOpen={showVault}
+            onClose={() => {
+              setShowVault(false);
+              setVaultResponse(null);
+              setVaultUserMessage('');
+            }}
+            miraResponse={{
+              products: miraPicks.products,
+              services: miraPicks.services,
+              response: vaultResponse,
+              pillar: currentPillar,
+              ...vaultResponse
+            }}
+            userMessage={vaultUserMessage}
+            pet={pet}
+            pillar={currentPillar}
+            sessionId={sessionId}
+            member={user}
+            onVaultSent={(result) => {
+              console.log('[VAULT] Sent to Concierge:', result);
+              // Could add a success toast or message here
+              if (result.success) {
+                // Add confirmation message to chat
+                setMessages(prev => [...prev, {
+                  type: 'mira',
+                  content: `✨ Your picks have been sent to your Pet Concierge®! They'll get back to you shortly.`,
+                  timestamp: new Date().toISOString(),
+                  isVaultConfirmation: true
+                }]);
+              }
+            }}
+          />
+        </div>
+      )}
     </div>
   );
 };
