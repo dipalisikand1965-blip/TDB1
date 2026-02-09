@@ -182,33 +182,35 @@
 
 ---
 
-# 8️⃣ PROACTIVE SYSTEM (10/100 → 55/100) 🟡 IMPROVED ⬆️
+# 8️⃣ PROACTIVE SYSTEM (10/100 → 70/100) 🟢 GOOD ⬆️⬆️⬆️
 
 ## What's Working NOW
 | Feature | Score | Status |
 |---------|-------|--------|
-| Birthday detection | 30% | ⚠️ Partial |
-| Celebration confetti | 100% | ✅ |
-| **E020 Vaccination alerts** | 90% | ✅ NEW |
-| **Birthday reminders** | 90% | ✅ NEW |
-| **Grooming due alerts** | 85% | ✅ NEW |
-| **API endpoint** | 100% | ✅ `/api/mira/proactive/alerts/{pet_id}` |
-| **Frontend UI Banner** | 85% | ✅ NEW |
+| **E020 Vaccination alerts** | 95% | ✅ |
+| **Birthday reminders** | 95% | ✅ |
+| **Grooming due alerts** | 90% | ✅ |
+| **Re-order suggestions** | 85% | ✅ NEW |
+| **Notification inbox API** | 100% | ✅ NEW |
+| **Notification preferences** | 100% | ✅ NEW |
+| **Notification Bell UI** | 90% | ✅ NEW |
+| **Quiet hours support** | 100% | ✅ NEW |
 
-## Tested & Verified
+## API Endpoints
 ```
-[CRITICAL] ⚠️ Rabies OVERDUE - 3 days overdue!
-[HIGH] ✂️ Mojo Needs Grooming - 21 days overdue
-[MEDIUM] 🎂 Mojo's Birthday in 4 Days!
+GET  /api/mira/proactive/alerts/{pet_id}     - All alerts
+GET  /api/mira/notifications/inbox/{email}   - Notification inbox
+POST /api/mira/notifications/subscribe       - Push subscription
+POST /api/mira/notifications/preferences     - Update preferences
+POST /api/mira/notifications/mark-read/{id}  - Mark as read
 ```
 
 ## Remaining Gaps
 | Missing Feature | Points | Priority |
 |-----------------|--------|----------|
-| Re-order suggestions | -15 | P1 |
+| Web Push (VAPID keys) | -15 | P2 |
 | Health check-in prompts | -10 | P2 |
-| Seasonal tips | -5 | P2 |
-| Push notifications | -15 | P2 |
+| Seasonal tips | -5 | P3 |
 
 ---
 
