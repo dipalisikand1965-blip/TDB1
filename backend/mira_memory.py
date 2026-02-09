@@ -107,6 +107,21 @@ def get_db():
     return _db
 
 
+def detect_memory_type(user_input: str) -> str:
+    """
+    Auto-detect memory type from user input.
+    Returns: event, health, shopping, or general
+    """
+    user_input_lower = user_input.lower()
+    
+    # Check each memory type's keywords
+    for mem_type, keywords in MEMORY_KEYWORDS.items():
+        if any(kw in user_input_lower for kw in keywords):
+            return mem_type
+    
+    return "general"
+
+
 class MiraMemory:
     """Core memory operations"""
     
