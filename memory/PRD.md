@@ -387,28 +387,58 @@ tip_card = {
 # KNOWN ISSUES
 
 1. **ElevenLabs quota exceeded** - Using OpenAI TTS fallback (`shimmer` voice)
-2. **MiraDemoPage.jsx is ~6000 lines** - Needs refactoring (IN PROGRESS)
+2. **MiraDemoPage.jsx is ~5779 lines** - Refactoring IN PROGRESS (was 5,791)
 3. **Screenshot tool crashes** on MiraDemoPage (too large)
 
 ---
 
-# REFACTORING STATUS (Stage 1 - February 2026)
+# REFACTORING STATUS (February 2026)
 
-## Completed
-- ✅ Created `usePet` hook at `/app/frontend/src/hooks/mira/usePet.js`
-- ✅ Created `useVoice` hook at `/app/frontend/src/hooks/mira/useVoice.js`
+## Progress Summary
+| Metric | Before | After | Change |
+|--------|--------|-------|--------|
+| Lines | 5,791 | 5,779 | -12 |
+| useState hooks | 67 | 63 | -4 |
+| Target | - | ~1,500 | 74% to go |
+
+## Completed ✅
+- ✅ Created `usePet` hook - Pet selection & management
+- ✅ Created `useVoice` hook - Voice I/O (created, not yet integrated)
+- ✅ Created `useVault` hook - Picks & vault management
 - ✅ Integrated `usePet` hook into MiraDemoPage.jsx
-- ✅ Removed 3 duplicate useState declarations (pet, allPets, showPetSelector)
-- ✅ Code compiles and runs correctly
+- ✅ Integrated `useVault` hook into MiraDemoPage.jsx
+- ✅ Moved 10 useState declarations to hooks
+- ✅ All code compiles and runs correctly
 
-## Pending (Stage 1 Continuation)
+## Hooks Location
+- `/app/frontend/src/hooks/mira/usePet.js`
+- `/app/frontend/src/hooks/mira/useVoice.js`
+- `/app/frontend/src/hooks/mira/useVault.js`
+- `/app/frontend/src/hooks/mira/index.js`
+
+## Remaining Work (4-5 Stages)
+
+### Stage 3: useSession hook (~200 lines)
+- sessionId, sessionRecovered
+- Session recovery/persistence logic
+
+### Stage 4: useConversation hook (~300 lines)
+- conversationHistory, conversationContext
+- Message handling logic
+
+### Stage 5: Extract UI Components (~2000+ lines)
+- ChatMessages component
+- QuickReplyChips component
+- PetSelector component
+- MiraTray component
+
+### Stage 6: Break down handleSubmit (~992 lines)
+- Split into smaller functions
+- Move API calls to service layer
+
+### Pending
 - ⏳ Integrate `useVoice` hook (complex due to scattered voice timeout logic)
 - ⏳ Remove duplicate pet-loading useEffects (kept for now due to complex transformation)
-
-## Future Stages
-- Stage 2: Extract `useChat` hook (conversation/messages management)
-- Stage 3: Extract `useVault` hook (vault detection and management)
-- Stage 4: Extract UI components (ChatHistory, MessageInput, PetSelector)
 
 ---
 
