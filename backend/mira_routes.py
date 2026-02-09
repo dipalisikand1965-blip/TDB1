@@ -1282,7 +1282,8 @@ async def search_real_products(
     limit: int = 6,
     search_override: str = None,  # For context-specific searches like "travel carrier"
     current_pillar: str = None,   # NEW: For pillar-first filtering
-    current_life_state: str = None  # NEW: For life state exclusions
+    current_life_state: str = None,  # NEW: For life state exclusions
+    user_query: str = None  # NEW: Original user query for treat detection
 ) -> List[Dict[str, Any]]:
     """
     Search real products from the database based on Mira's understanding.
@@ -1297,6 +1298,7 @@ async def search_real_products(
         return []
     
     products = []
+    user_input_lower = (user_query or search_override or "").lower()
     
     try:
         # Build search query based on entities
