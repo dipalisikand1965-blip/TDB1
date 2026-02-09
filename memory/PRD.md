@@ -443,9 +443,9 @@ tip_card = {
 ## Progress Summary
 | Metric | Before | After | Change |
 |--------|--------|-------|--------|
-| Lines | 5,789 | **5,381** | **-408 (7%)** |
+| Lines | 5,789 | **5,277** | **-512 (9%)** |
 | useState hooks | 67 | 61 | -6 |
-| Target | - | ~1,500 | ~3,881 to go |
+| Target | - | ~1,500 | ~3,777 to go |
 
 ## Completed ✅
 
@@ -459,12 +459,14 @@ tip_card = {
 └── useSession.js   - Session management (✅ integrated)
 ```
 
-### UI Components Extracted (1,149 lines total)
+### UI Components Extracted (1,383 lines total)
 ```
 /app/frontend/src/components/Mira/
 ├── ChatMessage.jsx     (392 lines) - Message bubbles
-├── ConciergePanel.jsx  (80 lines)  - Help panel ✅ NEW
-├── InsightsPanel.jsx   (63 lines)  - Tips panel ✅ NEW
+├── ConciergePanel.jsx  (80 lines)  - Help panel
+├── HelpModal.jsx       (96 lines)  - Quick help ✅ NEW
+├── InsightsPanel.jsx   (63 lines)  - Tips panel
+├── LearnModal.jsx      (134 lines) - Training videos ✅ NEW
 ├── MiraTray.jsx        (108 lines) - Picks tray
 ├── PastChatsPanel.jsx  (186 lines) - History panel
 └── WelcomeHero.jsx     (320 lines) - Welcome screen
