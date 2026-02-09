@@ -408,8 +408,16 @@ async def get_retention_stats():
     """Get retention statistics."""
     from server import db
     
+    # Count sessions by retention status
+    # Note: Most old sessions don't have retention_status field (treated as "hot")
     stats = {
-        "hot": await db.mira_sessions.count_documents({"retention_status": {"$in": [None, "hot"]}}),
+        "hot": await db.mira_sessions.count_documents({
+            "$or": [
+                {"retention_status": {"$exists": False}},
+                {"retention_status": None},
+                {"retention_status": "hot"}
+            ]
+        }),
         "compressed": await db.mira_sessions.count_documents({"retention_status": "compressed"}),
         "archived": await db.mira_sessions.count_documents({"retention_status": "archived"}),
         "deleted": await db.mira_sessions.count_documents({"retention_status": "deleted"}),
