@@ -4343,7 +4343,7 @@ const MiraDemoPage = () => {
                           {/* Need help? Concierge CTA - Always visible */}
                           <button 
                             className="mp-header-help"
-                            onClick={() => { hapticFeedback.buttonTap(); setShowConciergeExpanded(true); }}
+                            onClick={() => { hapticFeedback.buttonTap(); setShowConciergePanel(true); }}
                           >
                             C° <span>Need help? Tap here</span> <ChevronRight size={12} />
                           </button>
