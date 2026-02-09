@@ -249,9 +249,9 @@ class TestTicketCreation:
         # Verify CONCIERGE execution
         assert data.get("execution_type") == "CONCIERGE"
         
-        # Get ticket_id from concierge_confirmation OR directly from response
+        # Get ticket_id from concierge_confirmation (at TOP level) OR directly from response
+        concierge_confirmation = data.get("concierge_confirmation")
         resp = data.get("response", {})
-        concierge_confirmation = resp.get("concierge_confirmation")
         
         ticket_id = None
         if concierge_confirmation:
