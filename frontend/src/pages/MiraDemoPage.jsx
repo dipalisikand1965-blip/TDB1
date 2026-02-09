@@ -639,6 +639,8 @@ const MiraDemoPage = () => {
   
   // ═══════════════════════════════════════════════════════════════════════════════
   // PET MANAGEMENT - Extracted to usePet hook (Stage 1 Refactoring)
+  // Note: We don't use the hook's switchPet because the local version handles
+  // session management and conversation history which requires more state
   // ═══════════════════════════════════════════════════════════════════════════════
   const {
     pet,
@@ -648,8 +650,6 @@ const MiraDemoPage = () => {
     showPetSelector,
     setShowPetSelector,
     isLoadingPets,
-    loadUserPets,
-    switchPet,
     isRealPet
   } = usePet({ user, token });
   
