@@ -94,7 +94,9 @@ class TestServiceFlow:
         session = auth_session["session"]
         response = session.get(f"{BASE_URL}/api/pets/my-pets")
         if response.status_code == 200:
-            return response.json()
+            data = response.json()
+            # API returns {"pets": [...]}
+            return data.get("pets", data) if isinstance(data, dict) else data
         return []
     
     def test_get_user_pets(self, auth_session):
@@ -309,7 +311,9 @@ class TestSoulScore:
         session = auth_session["session"]
         response = session.get(f"{BASE_URL}/api/pets/my-pets")
         if response.status_code == 200:
-            return response.json()
+            data = response.json()
+            # API returns {"pets": [...]}
+            return data.get("pets", data) if isinstance(data, dict) else data
         return []
     
     def test_get_initial_soul_score(self, auth_session, pets_data):
