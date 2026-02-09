@@ -17296,6 +17296,14 @@ async def send_manual_reminder(user_email: str, username: str = Depends(verify_a
 
 @app.on_event("shutdown")
 async def shutdown_db_client():
+    # Stop retention scheduler
+    try:
+        from retention_scheduler import stop_scheduler
+        stop_scheduler()
+        logger.info("Retention scheduler stopped")
+    except Exception as e:
+        logger.warning(f"Error stopping retention scheduler: {e}")
+    
     client.close()
 
 
