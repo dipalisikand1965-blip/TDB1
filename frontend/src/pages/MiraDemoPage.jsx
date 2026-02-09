@@ -960,7 +960,18 @@ const MiraDemoPage = () => {
       window.removeEventListener('click', handleActivity);
       window.removeEventListener('touchstart', handleActivity);
     };
-  }, [conversationHistory, pet, resetInactivityTimer]);
+  }, [conversationHistory, archiveCurrentConversation, resetInactivityTimer]);
+  
+  // Check for conversation completion after each message
+  useEffect(() => {
+    if (conversationHistory.length > 0 && detectConversationComplete(conversationHistory)) {
+      setConversationComplete(true);
+      // Show banner after a short delay
+      setTimeout(() => {
+        setShowConversationEndBanner(true);
+      }, 1500);
+    }
+  }, [conversationHistory, detectConversationComplete]);
   
   // FLOATING TOOLBAR - Clean conversation flow
   // Insight & Concierge icons at top, expand on tap
