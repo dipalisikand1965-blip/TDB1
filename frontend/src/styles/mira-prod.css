@@ -1852,6 +1852,7 @@
 
 .mp-btn-mic,
 .mp-btn-voice,
+.mp-btn-photo,
 .mp-btn-send {
   width: 44px;
   height: 44px;
@@ -1865,15 +1866,86 @@
 }
 
 .mp-btn-mic,
-.mp-btn-voice {
+.mp-btn-voice,
+.mp-btn-photo {
   background: transparent;
   color: var(--mira-text-muted);
 }
 
 .mp-btn-mic:hover,
-.mp-btn-voice:hover {
+.mp-btn-voice:hover,
+.mp-btn-photo:hover {
   background: rgba(255, 255, 255, 0.1);
   color: white;
+}
+
+/* Photo upload button */
+.mp-btn-photo {
+  color: var(--mira-pink);
+}
+
+.mp-btn-photo:hover {
+  background: rgba(236, 72, 153, 0.15);
+  color: var(--mira-pink);
+}
+
+.mp-btn-photo.uploading {
+  color: var(--mira-pink);
+  opacity: 0.7;
+  cursor: wait;
+}
+
+.mp-btn-photo:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Photo preview banner */
+.mp-upload-preview {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: linear-gradient(to right, rgba(236, 72, 153, 0.1), rgba(168, 85, 247, 0.1));
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: -4px;
+}
+
+.mp-preview-thumb {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.mp-preview-name {
+  flex: 1;
+  font-size: 12px;
+  color: var(--mira-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mp-preview-clear {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--mira-text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.mp-preview-clear:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
 }
 
 /* Voice output button states */
