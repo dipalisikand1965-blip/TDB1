@@ -4660,25 +4660,67 @@ const MiraDemoPage = () => {
                           {/* Quick Reply Chips - MOVED TO HEADER BAR */}
                           {/* Tiles now appear in mp-card-header above */}
                           
-                          {/* Products - Premium Bento Grid */}
+                          {/* Products - CATALOG STYLE with Pillar Badge & See More */}
                           {msg.showProducts && msg.data?.response?.products?.length > 0 && (
-                            <div className="mp-products">
-                              <div className="mp-products-header">
-                                {/* E017: Pet Photo in Recommendations */}
-                                {pet.photo && (
-                                  <img 
-                                    src={pet.photo} 
-                                    alt={pet.name}
-                                    className="mp-products-pet-photo"
-                                  />
+                            <div className="mp-products mp-products-catalog" data-testid="products-catalog">
+                              <div className="mp-products-catalog-header">
+                                <div className="mp-products-catalog-left">
+                                  {/* Pet Photo */}
+                                  {pet.photo && (
+                                    <img 
+                                      src={pet.photo} 
+                                      alt={pet.name}
+                                      className="mp-products-pet-photo"
+                                    />
+                                  )}
+                                  <div>
+                                    <p className="mp-products-title">
+                                      <span className="pet-name">{pet.name}'s</span> Picks
+                                    </p>
+                                    {/* Pillar Badge - Shows context */}
+                                    {msg.data?.response?.pillar && (
+                                      <span className="mp-products-pillar-badge">
+                                        <span className="mp-products-pillar-icon">
+                                          {msg.data.response.pillar === 'celebrate' ? '🎂' :
+                                           msg.data.response.pillar === 'dine' ? '🍽️' :
+                                           msg.data.response.pillar === 'stay' ? '🏨' :
+                                           msg.data.response.pillar === 'travel' ? '✈️' :
+                                           msg.data.response.pillar === 'care' ? '💊' :
+                                           msg.data.response.pillar === 'enjoy' ? '🎾' :
+                                           msg.data.response.pillar === 'fit' ? '🏃' :
+                                           msg.data.response.pillar === 'learn' ? '🎓' :
+                                           msg.data.response.pillar === 'shop' ? '🛒' : '✨'}
+                                        </span>
+                                        {msg.data.response.pillar.charAt(0).toUpperCase() + msg.data.response.pillar.slice(1)}
+                                      </span>
+                                    )}
+                                  </div>
+                                </div>
+                                
+                                {/* See More Button - Links to pillar page */}
+                                {msg.data?.response?.pillar && (
+                                  <a 
+                                    href={`/${msg.data.response.pillar === 'shop' ? 'shop' : msg.data.response.pillar}`}
+                                    className="mp-see-more-btn"
+                                    data-testid="see-more-btn"
+                                  >
+                                    See More <ArrowRight />
+                                  </a>
                                 )}
-                                <p className="mp-products-title">
-                                  Recommended for <span className="pet-name">{pet.name}</span>
-                                </p>
                               </div>
+                              
                               <div className="mp-products-grid">
                                 {msg.data.response.products.slice(0, 4).map((product, pIdx) => (
                                   <div key={pIdx} className="mp-product-tile" data-testid={`product-tile-${pIdx}`}>
+                                    {/* Match Badge - Shows why this product */}
+                                    {product.match_type && (
+                                      <span className={`mp-product-match-badge ${product.match_type}`}>
+                                        {product.match_type === 'breed' ? `🐕 ${pet.breed?.split(' ')[0] || 'Breed'} match` :
+                                         product.match_type === 'pillar' ? '✨ Context match' :
+                                         '✓ For ' + pet.name}
+                                      </span>
+                                    )}
+                                    
                                     <div className="mp-product-img-wrapper">
                                       <img 
                                         src={product.image || product.images?.[0] || `https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&h=400&fit=crop`} 
@@ -4718,6 +4760,19 @@ const MiraDemoPage = () => {
                                   </div>
                                 ))}
                               </div>
+                              
+                              {/* "Explore Full Catalog" CTA for more than 4 products */}
+                              {msg.data.response.products.length > 4 && (
+                                <div style={{ textAlign: 'center', marginTop: '16px' }}>
+                                  <a 
+                                    href={`/${msg.data?.response?.pillar || 'shop'}`}
+                                    className="mp-see-more-btn"
+                                    style={{ display: 'inline-flex' }}
+                                  >
+                                    View all {msg.data.response.products.length} products <ArrowRight />
+                                  </a>
+                                </div>
+                              )}
                             </div>
                           )}
                           
