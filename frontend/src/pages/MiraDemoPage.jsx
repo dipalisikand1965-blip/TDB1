@@ -284,32 +284,37 @@ const getPlaceholderImage = (productId) => {
 
 // Test Scenarios
 const TEST_SCENARIOS = [
-  // Core scenarios
-  { id: 'treats', label: '🦴 Treats', query: "Show me some treats" },
-  { id: 'birthday', label: '🎂 Birthday', query: "I want to plan a birthday party" },
-  { id: 'food', label: '🍽️ Food', query: "What food would be best?" },
+  // ═══════════════════════════════════════════════════════════════════
+  // CELEBRATE PILLAR - Comprehensive test scenarios from question bank
+  // ═══════════════════════════════════════════════════════════════════
+  // Birthday & Gotcha Day
+  { id: 'bday-simple', label: '🎂 Birthday Ideas', query: "I want to celebrate Buddy but I don't know how" },
+  { id: 'bday-cake', label: '🎂 Want a Cake', query: "I want a birthday cake for my dog" },
+  { id: 'bday-meaningful', label: '💜 Meaningful', query: "What's a simple but meaningful way to make his birthday special?" },
+  { id: 'bday-forgot', label: '😅 Forgot Bday', query: "We forgot his birthday - can we still do something?" },
+  { id: 'bday-invite', label: '🐕 Invite Dogs?', query: "Should we invite other dogs or keep it just us?" },
+  { id: 'bday-venue', label: '📍 Party Venue', query: "Where can we host a small party for him?" },
+  { id: 'bday-treat-safe', label: '🍰 Safe Treat', query: "What's a good birthday treat that won't upset his stomach?" },
+  { id: 'gotcha', label: '🐾 Gotcha Day', query: "What's a gotcha day, and how do we celebrate it?" },
+  // Festivals
+  { id: 'diwali', label: '🪔 Diwali Safe', query: "How do we include Buddy in Diwali safely?" },
+  { id: 'christmas', label: '🎄 Christmas', query: "What can we do for Christmas that's pet-friendly?" },
+  { id: 'holi', label: '🎨 Holi', query: "Any ideas to celebrate Holi without stressing him out?" },
+  // Micro-celebrations
+  { id: 'micro-sit', label: '🎉 First Sit', query: "Can we mark the day Buddy learned to sit?" },
+  { id: 'micro-vet', label: '🏥 Vet Win', query: "How do we make vet visits feel like a win?" },
+  { id: 'micro-health', label: '💚 Health Win', query: "Any ideas for celebrating small health improvements?" },
+  
+  // ═══════════════════════════════════════════════════════════════════
+  // OTHER PILLARS - Quick tests
+  // ═══════════════════════════════════════════════════════════════════
   { id: 'grooming', label: '✂️ Haircut', query: "Need a haircut, can you help?" },
-  { id: 'groom-bath', label: '🛁 Bath', query: "Really needs a bath" },
-  { id: 'groom-tools', label: '🧴 Tools', query: "What shampoo should I use?" },
-  { id: 'groom-accident', label: '🩹 Accident', query: "I cut the nail too short and it's bleeding" },
   { id: 'health', label: '🏥 Health', query: "I'm worried about coughing" },
-  { id: 'anxious', label: '😰 Anxiety', query: "Seems anxious during thunderstorms" },
   { id: 'memorial', label: '🌈 Farewell', query: "I lost my dog last week" },
   { id: 'travel', label: '✈️ Travel', query: "Planning a trip to Goa with my dog" },
   { id: 'boarding', label: '🏠 Boarding', query: "Need someone to watch while I'm away" },
-  // E032 Semantic Search tests
   { id: 'calm', label: '😌 Calm', query: "Something to calm during Diwali fireworks" },
-  { id: 'skin', label: '🐾 Skin', query: "Has dry itchy skin, keeps scratching" },
-  { id: 'joint', label: '🦴 Joints', query: "Senior dog with stiff joints" },
-  // E025 Mood Detection tests
-  { id: 'not-eating', label: '🚫 Not Eating', query: "Not eating and seems tired today" },
-  { id: 'acting-weird', label: '❓ Acting Weird', query: "Has been acting strange lately" },
-  // E033 Memory test
-  { id: 'memory', label: '💭 Memory', query: "Remember when we talked about skin issues?" },
-  // YouTube Training Videos test
   { id: 'learn', label: '📺 Learn', query: "How do I train my dog to stop barking?" },
-  // Amadeus Travel test
-  { id: 'hotels', label: '🏨 Hotels', query: "Find pet-friendly hotels in Mumbai" },
 ];
 
 // SERVICE CATEGORIES - Maps to wizard pages on main site
