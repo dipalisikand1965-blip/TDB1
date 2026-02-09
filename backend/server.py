@@ -14173,6 +14173,9 @@ set_admin_env_credentials(ADMIN_USERNAME, ADMIN_PASSWORD)
 # Set database for proactive system
 set_proactive_db(db)
 
+# Set database for notifications system
+set_notifications_db(db)
+
 # Create email helper for admin auth
 async def send_admin_email(to_email: str, subject: str, html_content: str):
     """Send email using Resend"""
