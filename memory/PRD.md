@@ -173,6 +173,13 @@ POST /api/mira/generate-tip-card
 }
 ```
 
+## Priority 5: Picks History in Dashboard ✅ DONE (BONUS!)
+- New `/api/mira/picks-history/{pet_id}` endpoint
+- New `PicksHistoryTab` component in Member Dashboard
+- Shows all picks across conversations with pillar filters
+- Displays tip cards from Mira
+- "Contact Concierge" CTA for acting on picks
+
 ## Priority 2: Picks Vault Storage
 Add `picks_vault` field to ticket creation:
 ```python
