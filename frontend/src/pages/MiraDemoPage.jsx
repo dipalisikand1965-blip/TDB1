@@ -4110,7 +4110,7 @@ const MiraDemoPage = () => {
                   </div>
                   
                   {/* Personalized Picks Card - "Mira knows" style */}
-                  <div className="mira-love-card" onClick={() => handleQuickReply(`Show me personalized picks for ${pet.name}`)}>
+                  <div className="mira-love-card" onClick={() => handleQuickReply(`Show me personalized picks for ${pet.name}`, true)} data-testid="personalized-picks-card">
                     <div className="love-card-icon">
                       <Sparkles className="w-5 h-5" />
                     </div>
