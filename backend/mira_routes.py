@@ -8664,6 +8664,45 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
         # Check if memories were used in this response
         memories_used = bool(relationship_memory_prompt and len(relationship_memory_prompt.strip()) > 50)
         
+        # ═══════════════════════════════════════════════════════════════════════════
+        # PICKS VAULT: AUTO-SAVE when products are shown
+        # "Mira is the brain, Concierge is the hand" - save picks for handoff
+        # ═══════════════════════════════════════════════════════════════════════════
+        picks_saved_to_vault = False
+        picks_vault_ticket_id = None
+        
+        if products and len(products) > 0:
+            try:
+                from timestamp_utils import get_utc_timestamp
+                
+                # Build picks vault data
+                picks_vault_data = {
+                    "products": products[:6],  # Max 6 products
+                    "services": [],  # Services handled separately
+                    "tip_cards": [],
+                    "pillar": pillar,
+                    "context": user_message[:200],  # Original query context
+                    "conversation_summary": f"User asked about {pillar}: {user_message[:100]}...",
+                    "generated_at": get_utc_timestamp()
+                }
+                
+                # Update the mira_ticket with picks_vault
+                if ticket_id:
+                    await db.mira_tickets.update_one(
+                        {"ticket_id": ticket_id},
+                        {"$set": {
+                            "picks_vault": picks_vault_data,
+                            "picks_shown_at": get_utc_timestamp(),
+                            "picks_count": len(products)
+                        }}
+                    )
+                    picks_saved_to_vault = True
+                    picks_vault_ticket_id = ticket_id
+                    logger.info(f"[PICKS VAULT] Saved {len(products)} picks to ticket {ticket_id}")
+                
+            except Exception as vault_err:
+                logger.error(f"[PICKS VAULT] Failed to save picks: {vault_err}")
+        
         return {
             "response": response,
             "session_id": session_id,
