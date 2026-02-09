@@ -148,7 +148,7 @@
 
 ## Preview URL
 
-https://curated-pets.preview.emergentagent.com
+https://mira-stable.preview.emergentagent.com
 
 ---
 

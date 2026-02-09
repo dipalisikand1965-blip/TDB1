@@ -48,7 +48,7 @@
 
 - Email: `dipali@clubconcierge.in`
 - Password: `test123`
-- URL: https://curated-pets.preview.emergentagent.com/mira-demo
+- URL: https://mira-stable.preview.emergentagent.com/mira-demo
 
 ---
 
