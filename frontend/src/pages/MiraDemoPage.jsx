@@ -3531,45 +3531,139 @@ const MiraDemoPage = () => {
     });
   }, []);
   
-  // Voice recognition
+  // Voice recognition state
+  const [voiceError, setVoiceError] = useState(null);
+  const [voiceSupported, setVoiceSupported] = useState(true);
+  
+  // Voice recognition - Enhanced for iOS compatibility
   useEffect(() => {
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    // Check for browser support
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    
+    if (!SpeechRecognition) {
+      setVoiceSupported(false);
+      console.log('Speech recognition not supported in this browser');
+      return;
+    }
+    
+    try {
       recognitionRef.current = new SpeechRecognition();
       recognitionRef.current.continuous = false;
-      recognitionRef.current.interimResults = false;
+      recognitionRef.current.interimResults = true; // Show interim results for better UX
+      recognitionRef.current.lang = 'en-US'; // Explicit language setting
+      recognitionRef.current.maxAlternatives = 1;
       
       recognitionRef.current.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        setQuery(transcript);
-        setIsListening(false);
-        if (handleSubmitRef.current) {
-          handleSubmitRef.current(null, transcript);
+        let finalTranscript = '';
+        let interimTranscript = '';
+        
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            finalTranscript += transcript;
+          } else {
+            interimTranscript += transcript;
+          }
+        }
+        
+        // Show interim results while speaking
+        if (interimTranscript) {
+          setQuery(interimTranscript);
+        }
+        
+        // Submit on final result
+        if (finalTranscript) {
+          setQuery(finalTranscript);
+          setIsListening(false);
+          setVoiceError(null);
+          if (handleSubmitRef.current) {
+            setTimeout(() => {
+              handleSubmitRef.current(null, finalTranscript);
+            }, 300);
+          }
         }
       };
       
-      recognitionRef.current.onerror = () => setIsListening(false);
-      recognitionRef.current.onend = () => setIsListening(false);
+      recognitionRef.current.onerror = (event) => {
+        console.error('Speech recognition error:', event.error);
+        setIsListening(false);
+        
+        // Handle specific errors
+        switch (event.error) {
+          case 'not-allowed':
+          case 'permission-denied':
+            setVoiceError('Microphone access denied. Please allow microphone in your browser settings.');
+            break;
+          case 'no-speech':
+            setVoiceError('No speech detected. Please try again.');
+            break;
+          case 'network':
+            setVoiceError('Network error. Please check your connection.');
+            break;
+          case 'aborted':
+            // User aborted, no error message needed
+            break;
+          default:
+            setVoiceError('Voice input error. Please try again.');
+        }
+      };
+      
+      recognitionRef.current.onend = () => {
+        setIsListening(false);
+      };
+      
+    } catch (error) {
+      console.error('Failed to initialize speech recognition:', error);
+      setVoiceSupported(false);
     }
+    
     return () => {
       if (recognitionRef.current) {
-        recognitionRef.current.abort();
+        try {
+          recognitionRef.current.abort();
+        } catch (e) {
+          // Ignore cleanup errors
+        }
       }
     };
   }, []);
   
-  const toggleVoice = () => {
-    if (!recognitionRef.current) return;
+  const toggleVoice = async () => {
+    // Clear any previous error
+    setVoiceError(null);
+    
+    if (!recognitionRef.current) {
+      setVoiceError('Voice input not available in this browser. Try Chrome or Safari.');
+      return;
+    }
+    
     if (isListening) {
       // HAPTIC: Voice stop
       hapticFeedback.voiceStop();
-      recognitionRef.current.stop();
+      try {
+        recognitionRef.current.stop();
+      } catch (e) {
+        // Ignore stop errors
+      }
       setIsListening(false);
     } else {
       // HAPTIC: Voice start
       hapticFeedback.voiceStart();
-      recognitionRef.current.start();
-      setIsListening(true);
+      
+      // Request microphone permission explicitly for iOS
+      try {
+        // Check if we need to request permission (iOS Safari)
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          await navigator.mediaDevices.getUserMedia({ audio: true });
+        }
+        
+        recognitionRef.current.start();
+        setIsListening(true);
+      } catch (error) {
+        console.error('Microphone permission error:', error);
+        setVoiceError('Please allow microphone access to use voice input.');
+        setIsListening(false);
+      }
     }
   };
   
