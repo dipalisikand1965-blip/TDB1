@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://mira-refactor.preview.emergentagent.com
+https://haptic-travel-demo.preview.emergentagent.com
 
 ---
 

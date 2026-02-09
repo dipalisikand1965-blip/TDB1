@@ -148,7 +148,7 @@
 
 ## Preview URL
 
-https://mira-refactor.preview.emergentagent.com
+https://haptic-travel-demo.preview.emergentagent.com
 
 ---
 
