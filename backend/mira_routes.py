@@ -1305,34 +1305,65 @@ async def search_real_products(
         query = {"available": {"$ne": False}}
         
         # ═══════════════════════════════════════════════════════════════════
-        # PILLAR-FIRST FILTERING - Critical for Picks System
-        # This ensures picks are 100% relevant to the conversation context
+        # SMART PRODUCT SEARCH - Based on user intent
+        # Products are across pillars: shop (general), celebrate (party), care, etc.
+        # Search by CATEGORY when specific item type is requested
         # ═══════════════════════════════════════════════════════════════════
         
-        # Special handling for treat requests - treats are in shop/dine, not celebrate
-        is_treat_query = any(word in user_input_lower for word in ["treat", "treats", "snack", "snacks", "jerky", "chew", "biscuit"])
-        is_birthday_query = any(word in user_input_lower for word in ["birthday", "cake", "party", "celebration"])
+        # Detect specific product type requests
+        is_treat_query = any(word in user_input_lower for word in ["treat", "treats", "snack", "snacks", "jerky", "chew", "biscuit", "ladoo"])
+        is_toy_query = any(word in user_input_lower for word in ["toy", "toys", "play", "squeaky", "ball", "fetch"])
+        is_cake_query = any(word in user_input_lower for word in ["cake", "birthday cake", "dognut", "pupcake"])
+        is_bed_query = any(word in user_input_lower for word in ["bed", "beds", "sleeping", "mattress", "cushion"])
+        is_apparel_query = any(word in user_input_lower for word in ["clothes", "clothing", "dress", "bandana", "collar", "harness"])
+        is_grooming_query = any(word in user_input_lower for word in ["shampoo", "brush", "grooming", "nail", "ear clean"])
         
-        # If it's a PURE treat query WITHOUT birthday context, search in shop/dine
-        # But if it's "treats for birthday", let it go to celebrate pillar normally
-        if is_treat_query and not is_birthday_query:
-            query["pillar"] = {"$in": ["shop", "dine"]}
-            # Also filter by treat-related categories/intents
+        # Search by category for specific product types
+        if is_treat_query:
+            query["category"] = {"$regex": "treat|snack|ladoo|jerky", "$options": "i"}
+            logger.info(f"[CATEGORY SEARCH] Searching for treats")
+        elif is_toy_query:
+            query["category"] = {"$regex": "toy|play", "$options": "i"}
+            logger.info(f"[CATEGORY SEARCH] Searching for toys")
+        elif is_cake_query:
             query["$or"] = [
-                {"category": {"$regex": "treat", "$options": "i"}},
-                {"semantic_intents": {"$in": ["everyday_treats"]}},
-                {"tags": {"$in": ["treats", "Treats", "treat", "snack", "snacks"]}}
+                {"category": {"$regex": "cake|dognut|pupcake", "$options": "i"}},
+                {"pillar": "celebrate"}
             ]
-            logger.info(f"[TREAT OVERRIDE] Searching for treats in shop/dine pillars")
-        elif is_treat_query and is_birthday_query:
-            # Treats for birthday - search in celebrate pillar for party treats
-            query["pillar"] = {"$in": ["celebrate", "shop"]}
+            logger.info(f"[CATEGORY SEARCH] Searching for cakes in celebrate")
+        elif is_bed_query:
+            query["category"] = {"$regex": "bed|sleep|mattress|cushion", "$options": "i"}
+            logger.info(f"[CATEGORY SEARCH] Searching for beds")
+        elif is_apparel_query:
+            query["category"] = {"$regex": "apparel|cloth|bandana|collar|harness|accessori", "$options": "i"}
+            logger.info(f"[CATEGORY SEARCH] Searching for apparel/accessories")
+        elif is_grooming_query:
             query["$or"] = [
-                {"category": {"$regex": "treat|party|celebration", "$options": "i"}},
-                {"tags": {"$in": ["treats", "party", "celebration", "birthday"]}}
+                {"category": {"$regex": "groom|care|hygiene", "$options": "i"}},
+                {"pillar": "care"}
             ]
-            logger.info(f"[BIRTHDAY TREATS] Searching for party treats in celebrate/shop pillars")
+            logger.info(f"[CATEGORY SEARCH] Searching for grooming products")
         elif current_pillar:
+            # Default: Use pillar-first filtering for general queries
+            PILLAR_SEARCH_MAP = {
+                "celebrate": ["celebrate", "shop"],
+                "dine": ["dine", "shop"],
+                "stay": ["stay"],
+                "travel": ["travel", "shop"],
+                "care": ["care", "shop"],
+                "enjoy": ["enjoy", "shop"],
+                "fit": ["fit", "care"],
+                "learn": ["learn", "shop"],
+                "paperwork": ["paperwork", "advisory"],
+                "advisory": ["advisory"],
+                "emergency": ["emergency", "care"],
+                "farewell": ["farewell"],
+                "adopt": ["adopt"],
+                "shop": ["shop"]
+            }
+            allowed_pillars = PILLAR_SEARCH_MAP.get(current_pillar.lower(), [current_pillar.lower(), "shop"])
+            query["pillar"] = {"$in": allowed_pillars}
+            logger.info(f"[PILLAR-FIRST] Filtering products for pillar: {current_pillar} -> {allowed_pillars}")
             # Map pillar to allowed pillars (some overlap allowed)
             PILLAR_SEARCH_MAP = {
                 "celebrate": ["celebrate"],
