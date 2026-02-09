@@ -5374,10 +5374,10 @@ const MiraDemoPage = () => {
       </div>
       
       {/* ═══════════════════════════════════════════════════════════════════
-          MIRA PICKS TRAY - "Ready for [Pet]" 
-          Beautiful bottom sheet with curated picks + Concierge®
+          MIRA PICKS TRAY - Now opens the full Vault system
+          "Mira is the Brain, Concierge® is the Hands"
       ═══════════════════════════════════════════════════════════════════ */}
-      {showMiraTray && (
+      {showMiraTray && !showVault && (
         <div 
           className="mp-tray-overlay" 
           onClick={() => {
@@ -5385,7 +5385,7 @@ const MiraDemoPage = () => {
             setMiraPicks(prev => ({ ...prev, hasNew: false }));
           }}
         >
-          <div className="mp-tray" onClick={(e) => e.stopPropagation()}>
+          <div className="mp-tray mp-tray-mini" onClick={(e) => e.stopPropagation()}>
             {/* Tray Header */}
             <div className="mp-tray-header">
               <div className="mp-tray-handle" />
@@ -5396,8 +5396,8 @@ const MiraDemoPage = () => {
                   className="mp-tray-pet-photo"
                 />
                 <div>
-                  <h3>{miraPicks.context || `Ready for ${pet.name}`}</h3>
-                  <p>Curated with 💜 by Mira</p>
+                  <h3>{miraPicks.context || `Picks for ${pet.name}`}</h3>
+                  <p>{miraPicks.products?.length || 0} items curated by Mira</p>
                 </div>
               </div>
               <button 
@@ -5411,8 +5411,50 @@ const MiraDemoPage = () => {
               </button>
             </div>
             
-            {/* Tray Content */}
-            <div className="mp-tray-content">
+            {/* Quick Preview + Open Vault Button */}
+            <div className="mp-tray-content mp-tray-mini-content">
+              <div className="mp-tray-preview">
+                {miraPicks.products?.slice(0, 3).map((product, idx) => (
+                  <div key={idx} className="mp-tray-preview-item">
+                    {product.image ? (
+                      <img src={product.image} alt={product.name} />
+                    ) : (
+                      <div className="mp-tray-preview-placeholder">🎁</div>
+                    )}
+                  </div>
+                ))}
+                {miraPicks.products?.length > 3 && (
+                  <div className="mp-tray-preview-more">
+                    +{miraPicks.products.length - 3}
+                  </div>
+                )}
+              </div>
+              
+              <button 
+                className="mp-tray-open-vault"
+                onClick={() => {
+                  setShowMiraTray(false);
+                  setVaultResponse({
+                    products: miraPicks.products,
+                    services: miraPicks.services
+                  });
+                  setVaultUserMessage(miraPicks.context || '');
+                  setShowVault(true);
+                }}
+                data-testid="open-vault-btn"
+              >
+                <span>View & Select Picks</span>
+                <ChevronRight size={20} />
+              </button>
+              
+              <p className="mp-tray-concierge-note">
+                <span className="mp-concierge-icon">C°</span>
+                Your Concierge® will help finalize your selections
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
               
               {/* ═══════════════════════════════════════════════════════════════
                   CELEBRATION CONTEXT - Different tiles based on sub-intent
