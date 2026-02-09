@@ -151,8 +151,45 @@ const ChatInputBar = ({
   
   return (
     <div className="mp-composer">
+      {/* Photo Preview Banner */}
+      {uploadPreview && (
+        <div className="mp-upload-preview">
+          <img src={uploadPreview.url} alt="Upload preview" className="mp-preview-thumb" />
+          <span className="mp-preview-name">{uploadPreview.name}</span>
+          <button onClick={clearPreview} className="mp-preview-clear" type="button">
+            <X size={14} />
+          </button>
+        </div>
+      )}
+      
       <div className="mp-composer-inner">
+        {/* Hidden file input */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/jpeg,image/png,image/gif,image/webp"
+          onChange={handleFileSelect}
+          style={{ display: 'none' }}
+          data-testid="photo-input"
+        />
+        
         <form onSubmit={handleSubmit} className="mp-input-row">
+          {/* Photo Upload Button */}
+          <button
+            type="button"
+            onClick={handlePhotoClick}
+            disabled={isUploading || isProcessing}
+            className={`mp-btn-photo ${isUploading ? 'uploading' : ''}`}
+            data-testid="photo-upload-btn"
+            title="Upload a photo for Mira to analyze"
+          >
+            {isUploading ? (
+              <Loader2 className="animate-spin" size={18} />
+            ) : (
+              <Camera size={18} />
+            )}
+          </button>
+          
           {/* Text Input */}
           <input
             ref={inputRef}
