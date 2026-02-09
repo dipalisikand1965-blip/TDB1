@@ -4319,7 +4319,7 @@ const MiraDemoPage = () => {
                     /* Mira Message Card - Glass Panel */
                     <div className="mp-msg-mira">
                       <div className="mp-card">
-                        {/* Card Header - Clean top bar: Mira | Tiles | Help | Insight Icon */}
+                        {/* Card Header - Clean top bar: Mira | Tiles | Help | Insight Icon | Picks Icon */}
                         <div className="mp-card-header">
                           <div className="mp-mira-avatar"><Sparkles /></div>
                           <span className="mp-mira-name">Mira</span>
@@ -4361,6 +4361,33 @@ const MiraDemoPage = () => {
                               </span>
                             </button>
                           )}
+                          
+                          {/* Picks Icon - Gift with pet face or paw */}
+                          <button 
+                            className="mp-header-picks-icon"
+                            onClick={() => { hapticFeedback.trayOpen(); setShowMiraTray(true); }}
+                            title={`${pet.name}'s Picks`}
+                          >
+                            <div className="mp-picks-gift">
+                              <Gift size={18} />
+                            </div>
+                            {pet.photo ? (
+                              <img 
+                                src={pet.photo} 
+                                alt={pet.name}
+                                className="mp-picks-pet-face"
+                              />
+                            ) : (
+                              <div className="mp-picks-paw">
+                                <PawPrint size={12} />
+                              </div>
+                            )}
+                            {(miraPicks.products.length + miraPicks.services.length) > 0 && (
+                              <span className="mp-picks-count">
+                                {miraPicks.products.length + miraPicks.services.length}
+                              </span>
+                            )}
+                          </button>
                         </div>
                         
                         {/* Card Body - CLEAN conversation only */}
