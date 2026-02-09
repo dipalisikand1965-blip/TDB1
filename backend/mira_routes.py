@@ -6989,7 +6989,7 @@ PET DESCRIPTION RULE:
 - Instead, just reference the pet by name and get to the point
 - Example WRONG: "From what I know about Luna, she's a Golden Retriever who loves peanut butter... (every message)"
 - Example RIGHT: First message has description, follow-ups just say "For Luna, I suggest..."
-- Current conversation length: {len(request.conversation_history or [])} messages"""
+- Current conversation length: {len(request.history or [])} messages"""
         
         chat = LlmChat(
             api_key=api_key,
