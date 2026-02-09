@@ -60,7 +60,7 @@ import {
   DOCK_ITEMS, CONCIERGE_HOURS, isConciergeLive, generateConciergeRequest,
   DOG_PLACEHOLDER_IMAGES, getPlaceholderImage, TEST_SCENARIOS,
   SERVICE_CATEGORIES, detectServiceIntent,
-  COMFORT_KEYWORDS, ACKNOWLEDGMENT_PHRASES, isComfortModeCheck, getComfortModeServices,
+  COMFORT_KEYWORDS, ACKNOWLEDGMENT_PHRASES, getComfortModeServices,
   EXPERIENCE_CATEGORIES, detectExperienceIntent, generateWhyForPet
 } from '../utils/miraConstants';
 
