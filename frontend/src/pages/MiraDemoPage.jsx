@@ -1145,21 +1145,7 @@ const MiraDemoPage = () => {
   // E034: REORDER SUGGESTIONS
   const [reorderSuggestions, setReorderSuggestions] = useState([]);
   
-  // SESSION PERSISTENCE - The memory that never forgets
-  const [sessionId, setSessionId] = useState(() => {
-    // Try to recover session from localStorage first
-    const savedSession = localStorage.getItem('mira_session_id');
-    if (savedSession) {
-      console.log('[SESSION] Recovered session:', savedSession);
-      return savedSession;
-    }
-    // Generate new session if none exists
-    const newSession = `mira-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-    localStorage.setItem('mira_session_id', newSession);
-    console.log('[SESSION] Created new session:', newSession);
-    return newSession;
-  });
-  const [sessionRecovered, setSessionRecovered] = useState(false);
+  // NOTE: Session state (sessionId, sessionRecovered) now comes from useSession hook above
   
   // Conversation stage tracking
   // Stage: 'initial' | 'clarifying' | 'concierge_engaged'
