@@ -491,4 +491,4 @@ const MiraDemoOriginalPage = () => {
   );
 };
 
-export default MiraDemoPage;
+export default MiraDemoOriginalPage;
