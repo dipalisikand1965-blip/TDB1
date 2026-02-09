@@ -284,37 +284,32 @@ const getPlaceholderImage = (productId) => {
 
 // Test Scenarios
 const TEST_SCENARIOS = [
-  // ═══════════════════════════════════════════════════════════════════
-  // CELEBRATE PILLAR - Comprehensive test scenarios from question bank
-  // ═══════════════════════════════════════════════════════════════════
-  // Birthday & Gotcha Day
-  { id: 'bday-simple', label: '🎂 Birthday Ideas', query: "I want to celebrate Buddy but I don't know how" },
-  { id: 'bday-cake', label: '🎂 Want a Cake', query: "I want a birthday cake for my dog" },
-  { id: 'bday-meaningful', label: '💜 Meaningful', query: "What's a simple but meaningful way to make his birthday special?" },
-  { id: 'bday-forgot', label: '😅 Forgot Bday', query: "We forgot his birthday - can we still do something?" },
-  { id: 'bday-invite', label: '🐕 Invite Dogs?', query: "Should we invite other dogs or keep it just us?" },
-  { id: 'bday-venue', label: '📍 Party Venue', query: "Where can we host a small party for him?" },
-  { id: 'bday-treat-safe', label: '🍰 Safe Treat', query: "What's a good birthday treat that won't upset his stomach?" },
-  { id: 'gotcha', label: '🐾 Gotcha Day', query: "What's a gotcha day, and how do we celebrate it?" },
-  // Festivals
-  { id: 'diwali', label: '🪔 Diwali Safe', query: "How do we include Buddy in Diwali safely?" },
-  { id: 'christmas', label: '🎄 Christmas', query: "What can we do for Christmas that's pet-friendly?" },
-  { id: 'holi', label: '🎨 Holi', query: "Any ideas to celebrate Holi without stressing him out?" },
-  // Micro-celebrations
-  { id: 'micro-sit', label: '🎉 First Sit', query: "Can we mark the day Buddy learned to sit?" },
-  { id: 'micro-vet', label: '🏥 Vet Win', query: "How do we make vet visits feel like a win?" },
-  { id: 'micro-health', label: '💚 Health Win', query: "Any ideas for celebrating small health improvements?" },
-  
-  // ═══════════════════════════════════════════════════════════════════
-  // OTHER PILLARS - Quick tests
-  // ═══════════════════════════════════════════════════════════════════
+  // Core scenarios
+  { id: 'treats', label: '🦴 Treats', query: "Show me some treats" },
+  { id: 'birthday', label: '🎂 Birthday', query: "I want to plan a birthday party" },
+  { id: 'food', label: '🍽️ Food', query: "What food would be best?" },
   { id: 'grooming', label: '✂️ Haircut', query: "Need a haircut, can you help?" },
+  { id: 'groom-bath', label: '🛁 Bath', query: "Really needs a bath" },
+  { id: 'groom-tools', label: '🧴 Tools', query: "What shampoo should I use?" },
+  { id: 'groom-accident', label: '🩹 Accident', query: "I cut the nail too short and it's bleeding" },
   { id: 'health', label: '🏥 Health', query: "I'm worried about coughing" },
+  { id: 'anxious', label: '😰 Anxiety', query: "Seems anxious during thunderstorms" },
   { id: 'memorial', label: '🌈 Farewell', query: "I lost my dog last week" },
   { id: 'travel', label: '✈️ Travel', query: "Planning a trip to Goa with my dog" },
   { id: 'boarding', label: '🏠 Boarding', query: "Need someone to watch while I'm away" },
+  // E032 Semantic Search tests
   { id: 'calm', label: '😌 Calm', query: "Something to calm during Diwali fireworks" },
+  { id: 'skin', label: '🐾 Skin', query: "Has dry itchy skin, keeps scratching" },
+  { id: 'joint', label: '🦴 Joints', query: "Senior dog with stiff joints" },
+  // E025 Mood Detection tests
+  { id: 'not-eating', label: '🚫 Not Eating', query: "Not eating and seems tired today" },
+  { id: 'acting-weird', label: '❓ Acting Weird', query: "Has been acting strange lately" },
+  // E033 Memory test
+  { id: 'memory', label: '💭 Memory', query: "Remember when we talked about skin issues?" },
+  // YouTube Training Videos test
   { id: 'learn', label: '📺 Learn', query: "How do I train my dog to stop barking?" },
+  // Amadeus Travel test
+  { id: 'hotels', label: '🏨 Hotels', query: "Find pet-friendly hotels in Mumbai" },
 ];
 
 // SERVICE CATEGORIES - Maps to wizard pages on main site
@@ -947,9 +942,6 @@ const MiraDemoPage = () => {
     hasNew: false // Glows when Mira has new picks
   });
   const [showMiraTray, setShowMiraTray] = useState(false);
-  
-  // Active quick reply tiles - shown next to input bar (NOT inside chat)
-  const [activeQuickReplies, setActiveQuickReplies] = useState([]);
   
   // Unified C® button state (collapsed by default, expands to show WhatsApp/Chat/Email)
   const [showConciergeOptions, setShowConciergeOptions] = useState(false);
@@ -2633,13 +2625,6 @@ const MiraDemoPage = () => {
       // Extract contextual quick replies based on Mira's question
       const quickReplies = extractQuickReplies(data);
       
-      // Store quick replies in state to show next to input bar (not inside chat)
-      if (quickReplies && quickReplies.length > 0) {
-        setActiveQuickReplies(quickReplies);
-      } else {
-        setActiveQuickReplies([]);
-      }
-      
       // Check if Mira's response has a new clarifying question (step_id)
       // If LLM didn't return step_id, detect it from the question content
       let miraStepId = data.response?.step_id;
@@ -3205,8 +3190,8 @@ const MiraDemoPage = () => {
       clearTimeout(skeletonTimer);
       setShowSkeleton(false);
       
-      // 🎉 MICRO-DELIGHT: Confetti for celebrations (birthday, party, anniversary, cake)
-      const celebrationKeywords = ['birthday', 'party', 'celebrate', 'celebration', 'anniversary', 'gotcha day', 'pawty', 'cake', 'cupcake', 'treat'];
+      // 🎉 MICRO-DELIGHT: Confetti for celebrations (birthday, party, anniversary)
+      const celebrationKeywords = ['birthday', 'party', 'celebrate', 'celebration', 'anniversary', 'gotcha day', 'pawty'];
       const isCelebrationQuery = celebrationKeywords.some(kw => inputQuery.toLowerCase().includes(kw));
       if (isCelebrationQuery && !inComfortMode) {
         // Slight delay for visual impact
@@ -3217,10 +3202,7 @@ const MiraDemoPage = () => {
       
       // VOICE OUTPUT - Speak Mira's response
       // VOICE-TEXT SYNC: Wait for text to appear, then speak
-      // Skip voice if it was triggered from a tile/suggestion click (prevents double voice)
-      const shouldSpeak = voiceEnabled && miraResponseText && !skipNextVoiceRef.current;
-      
-      if (shouldSpeak) {
+      if (voiceEnabled && miraResponseText) {
         console.log('[MIRA VOICE] Triggering voice for response, text length:', miraResponseText.length);
         // CRITICAL: Clear any pending voice timeout to prevent double voice
         if (voiceTimeoutRef.current) {
@@ -3240,12 +3222,7 @@ const MiraDemoPage = () => {
           voiceTimeoutRef.current = null;
         }, Math.min(typingTime + 500, 3000)); // Cap at 3 seconds to avoid too long wait
       } else {
-        if (skipNextVoiceRef.current) {
-          console.log('[MIRA VOICE] Skipped - triggered from tile/suggestion click');
-          skipNextVoiceRef.current = false; // Reset the flag
-        } else {
-          console.log('[MIRA VOICE] Voice not triggered - voiceEnabled:', voiceEnabled, 'text:', !!miraResponseText);
-        }
+        console.log('[MIRA VOICE] Voice not triggered - voiceEnabled:', voiceEnabled, 'text:', !!miraResponseText);
       }
       
       // Sync Mira's response to service desk
@@ -3376,20 +3353,10 @@ const MiraDemoPage = () => {
     setIsProcessing(false);
   }, [currentTicket, conversationHistory, pet, token]);
   
-  // Track if next response should skip voice (for tile/suggestion clicks)
-  const skipNextVoiceRef = useRef(false);
-  
-  // Handle quick reply - tiles/suggestions that trigger a query
-  // skipVoice: if true, the response won't be spoken (prevents double voice)
-  const handleQuickReply = useCallback((replyValue, skipVoice = false) => {
+  // Handle quick reply
+  const handleQuickReply = useCallback((replyValue) => {
     // HAPTIC: Chip tap
     hapticFeedback.chipTap();
-    
-    // Set flag to skip voice for this response
-    if (skipVoice) {
-      skipNextVoiceRef.current = true;
-    }
-    
     setQuery(replyValue);
     setTimeout(() => {
       if (handleSubmitRef.current) {
@@ -3737,9 +3704,9 @@ const MiraDemoPage = () => {
                   className={`ticker-item ticker-${item.type}`}
                   onClick={() => {
                     if (item.type === 'place') {
-                      handleQuickReply(`Tell me about ${item.text.split(' welcomes')[0]} for ${pet.name}`, true);
+                      handleQuickReply(`Tell me about ${item.text.split(' welcomes')[0]} for ${pet.name}`);
                     } else if (item.type === 'weather') {
-                      handleQuickReply(`What activities are good for ${pet.name} in this weather?`, true);
+                      handleQuickReply(`What activities are good for ${pet.name} in this weather?`);
                     }
                   }}
                 >
@@ -3966,7 +3933,7 @@ const MiraDemoPage = () => {
             {TEST_SCENARIOS.map((scenario) => (
               <button
                 key={scenario.id}
-                onClick={() => { hapticFeedback.chipTap(); setActiveScenario(scenario.id); handleQuickReply(scenario.query, true); }}
+                onClick={() => { hapticFeedback.chipTap(); setActiveScenario(scenario.id); handleQuickReply(scenario.query); }}
                 data-testid={`scenario-${scenario.id}`}
                 className={`mp-test-chip ${activeScenario === scenario.id ? 'active' : ''}`}
               >
@@ -4125,7 +4092,7 @@ const MiraDemoPage = () => {
                   </div>
                   
                   {/* Personalized Picks Card - "Mira knows" style */}
-                  <div className="mira-love-card" onClick={() => handleQuickReply(`Show me personalized picks for ${pet.name}`, true)} data-testid="personalized-picks-card">
+                  <div className="mira-love-card" onClick={() => handleQuickReply(`Show me personalized picks for ${pet.name}`)}>
                     <div className="love-card-icon">
                       <Sparkles className="w-5 h-5" />
                     </div>
@@ -4173,7 +4140,7 @@ const MiraDemoPage = () => {
                         <div 
                           key={`celeb-${i}`} 
                           className={`proactive-alert ${celeb.is_today ? 'alert-today' : 'alert-upcoming'}`}
-                          onClick={() => handleQuickReply(celeb.is_today ? `It's ${pet.name}'s ${celeb.type}! What should we do?` : `${pet.name}'s ${celeb.type} is coming up!`, true)}
+                          onClick={() => handleQuickReply(celeb.is_today ? `It's ${pet.name}'s ${celeb.type}! What should we do?` : `${pet.name}'s ${celeb.type} is coming up!`)}
                         >
                           <span className="alert-icon">{celeb.type === 'birthday' ? '🎂' : '💜'}</span>
                           <span className="alert-text">
@@ -4189,7 +4156,7 @@ const MiraDemoPage = () => {
                         <div 
                           key={`health-${i}`} 
                           className={`proactive-alert ${reminder.urgent || reminder.is_overdue ? 'alert-urgent' : 'alert-notice'}`}
-                          onClick={() => handleQuickReply(reminder.type === 'vaccine' ? `${pet.name} needs ${reminder.name} vaccine` : `Schedule a vet checkup for ${pet.name}`, true)}
+                          onClick={() => handleQuickReply(reminder.type === 'vaccine' ? `${pet.name} needs ${reminder.name} vaccine` : `Schedule a vet checkup for ${pet.name}`)}
                         >
                           <span className="alert-icon">{reminder.urgent ? '⚠️' : '💉'}</span>
                           <span className="alert-text">
@@ -4215,7 +4182,7 @@ const MiraDemoPage = () => {
                 {currentWeather && (
                   <div 
                     className={`weather-card weather-${currentWeather.pet_advisory?.safety_level || 'good'}`}
-                    onClick={() => handleQuickReply(`Is it a good day to take ${pet.name} for a walk?`, true)}
+                    onClick={() => handleQuickReply(`Is it a good day to take ${pet.name} for a walk?`)}
                     data-testid="weather-card"
                   >
                     <div className="weather-card-icon">
@@ -4242,7 +4209,7 @@ const MiraDemoPage = () => {
                       key={feature.id}
                       className="feature-card"
                       style={{ '--feature-color': feature.color }}
-                      onClick={() => handleQuickReply(feature.query, true)}
+                      onClick={() => handleQuickReply(feature.query)}
                       data-testid={`feature-${feature.id}`}
                     >
                       <span className="feature-icon">{feature.icon}</span>
@@ -4262,7 +4229,7 @@ const MiraDemoPage = () => {
                 ].map((s, i) => (
                   <button 
                     key={i} 
-                    onClick={() => handleQuickReply(s.text, true)} 
+                    onClick={() => handleQuickReply(s.text)} 
                     className="quick-chip"
                     data-testid={`quick-chip-${i}`}
                   >
@@ -4397,8 +4364,16 @@ const MiraDemoPage = () => {
                             );
                           })()}
                           
-                          {/* Quick Reply Chips - HIDDEN: Now shown in composer area instead */}
-                          {/* Keeping this commented out for reference - tiles moved to mp-composer-tiles */}
+                          {/* Quick Reply Chips */}
+                          {msg.quickReplies && msg.quickReplies.length > 0 && (
+                            <div className="mp-chips">
+                              {msg.quickReplies.map((chip, cIdx) => (
+                                <button key={cIdx} onClick={() => handleQuickReply(chip.value)} className="mp-chip">
+                                  {chip.text}
+                                </button>
+                              ))}
+                            </div>
+                          )}
                           
                           {/* Products - Premium Bento Grid */}
                           {msg.showProducts && msg.data?.response?.products?.length > 0 && (
@@ -4917,35 +4892,13 @@ const MiraDemoPage = () => {
       {/* Input Composer - Premium */}
       <div className="mp-composer">
         {/* ═══════════════════════════════════════════════════════════════════
-            QUICK REPLY TILES - Shown LEFT of input bar (repositioned from chat)
-            Per user request: tiles should be here, not interrupting chat flow
-        ═══════════════════════════════════════════════════════════════════ */}
-        {activeQuickReplies.length > 0 && (
-          <div className="mp-composer-tiles" data-testid="composer-tiles">
-            {activeQuickReplies.map((chip, idx) => (
-              <button
-                key={idx}
-                className="mp-composer-tile"
-                onClick={() => {
-                  hapticFeedback.chipTap();
-                  handleQuickReply(chip.value, true);
-                  setActiveQuickReplies([]); // Clear after selection
-                }}
-                data-testid={`composer-tile-${idx}`}
-              >
-                {chip.text}
-              </button>
-            ))}
-          </div>
-        )}
-        
-        {/* "READY FOR [PET]" BUTTON - Shows when Mira has picks
+            "READY FOR [PET]" BUTTON - Shows when Mira has picks
             Concierge® is ALWAYS by your side
         ═══════════════════════════════════════════════════════════════════ */}
         {(miraPicks.products.length > 0 || miraPicks.services.length > 0 || true) && (
           <button
             type="button"
-            onClick={() => { hapticFeedback.trayOpen(); setShowMiraTray(true); }}
+            onClick={() => setShowMiraTray(true)}
             className={`mp-ready-btn ${miraPicks.hasNew ? 'has-new' : ''} ${(healthVault.completeness < 100 || proactiveAlerts.healthReminders.some(r => r.needs_attention) || proactiveAlerts.celebrations.some(c => c.is_upcoming)) ? 'has-alerts' : ''}`}
             data-testid="ready-for-pet-btn"
           >
@@ -4954,7 +4907,7 @@ const MiraDemoPage = () => {
               {miraPicks.hasNew && <span className="mp-ready-dot" />}
             </span>
             <span className="mp-ready-text">
-              {miraPicks.context || `Picks for ${pet.name}`}
+              {miraPicks.context || `Ready for ${pet.name}`}
             </span>
             <span className="mp-ready-count">
               {/* Show alert badge if there are care items needing attention */}
@@ -5035,7 +4988,6 @@ const MiraDemoPage = () => {
         <div 
           className="mp-tray-overlay" 
           onClick={() => {
-            hapticFeedback.trayClose();
             setShowMiraTray(false);
             setMiraPicks(prev => ({ ...prev, hasNew: false }));
           }}
@@ -5058,7 +5010,6 @@ const MiraDemoPage = () => {
               <button 
                 className="mp-tray-close" 
                 onClick={() => {
-                  hapticFeedback.trayClose();
                   setShowMiraTray(false);
                   setMiraPicks(prev => ({ ...prev, hasNew: false }));
                 }}
@@ -5301,7 +5252,7 @@ const MiraDemoPage = () => {
                           setShowMiraTray(false);
                           handleQuickReply(celeb.is_today 
                             ? `It's ${pet.name}'s ${celeb.type === 'birthday' ? 'birthday' : 'gotcha day'}! Let's celebrate!` 
-                            : `${pet.name}'s ${celeb.type === 'birthday' ? 'birthday' : 'gotcha day'} is coming up in ${celeb.days_until} days`, true);
+                            : `${pet.name}'s ${celeb.type === 'birthday' ? 'birthday' : 'gotcha day'} is coming up in ${celeb.days_until} days`);
                         }}
                       >
                         <div className="care-item-icon">
@@ -5328,7 +5279,7 @@ const MiraDemoPage = () => {
                           setShowMiraTray(false);
                           handleQuickReply(reminder.type === 'vaccine' 
                             ? `${pet.name} needs ${reminder.name} vaccine` 
-                            : `Schedule a vet checkup for ${pet.name}`, true);
+                            : `Schedule a vet checkup for ${pet.name}`);
                         }}
                       >
                         <div className="care-item-icon">
@@ -5372,7 +5323,7 @@ const MiraDemoPage = () => {
                         onClick={() => {
                           if (suggestion.action) {
                             setShowMiraTray(false);
-                            handleQuickReply(suggestion.action, true);
+                            handleQuickReply(suggestion.action);
                           }
                         }}
                       >
@@ -5408,7 +5359,7 @@ const MiraDemoPage = () => {
                           className="mp-bundle-card"
                           onClick={() => {
                             setShowMiraTray(false);
-                            handleQuickReply(`Tell me about the ${bundle.name}`, true);
+                            handleQuickReply(`Tell me about the ${bundle.name}`);
                           }}
                         >
                           <div className="bundle-image">
@@ -5446,10 +5397,10 @@ const MiraDemoPage = () => {
                         onClick={() => {
                           if (item.action === 'celebrate') {
                             setShowMiraTray(false);
-                            handleQuickReply(`Let's celebrate ${pet.name}'s birthday!`, true);
+                            handleQuickReply(`Let's celebrate ${pet.name}'s birthday!`);
                           } else if (item.action === 'vet') {
                             setShowMiraTray(false);
-                            handleQuickReply(`Schedule a vet checkup for ${pet.name}`, true);
+                            handleQuickReply(`Schedule a vet checkup for ${pet.name}`);
                           }
                         }}
                       >
@@ -5494,7 +5445,7 @@ const MiraDemoPage = () => {
                         className={`mp-reorder-item ${item.urgency === 'high' ? 'reorder-urgent' : ''}`}
                         onClick={() => {
                           setShowMiraTray(false);
-                          handleQuickReply(`I need to reorder ${item.name} for ${pet.name}`, true);
+                          handleQuickReply(`I need to reorder ${item.name} for ${pet.name}`);
                         }}
                       >
                         <span className="reorder-icon">{item.icon}</span>
@@ -5723,7 +5674,7 @@ const MiraDemoPage = () => {
                   className={`vault-field-item ${field.priority === 'high' ? 'priority-high' : field.priority === 'medium' ? 'priority-medium' : 'priority-low'}`}
                   onClick={() => {
                     setHealthVault(prev => ({ ...prev, showWizard: false }));
-                    handleQuickReply(`I want to add ${pet.name}'s ${field.label.toLowerCase()}`, true);
+                    handleQuickReply(`I want to add ${pet.name}'s ${field.label.toLowerCase()}`);
                   }}
                 >
                   <span className="field-icon">
@@ -5770,7 +5721,7 @@ const MiraDemoPage = () => {
               </button>
             </div>
             <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <button onClick={() => { setShowHelpModal(false); handleQuickReply('I need help with my order', true); }} style={{
+              <button onClick={() => { setShowHelpModal(false); handleQuickReply('I need help with my order'); }} style={{
                 display: 'flex', alignItems: 'center', gap: '14px', padding: '14px',
                 border: '1px solid #e5e7eb', borderRadius: '12px', background: 'white', cursor: 'pointer', textAlign: 'left'
               }}>
