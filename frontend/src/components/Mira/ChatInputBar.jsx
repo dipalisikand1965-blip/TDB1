@@ -56,9 +56,92 @@ const ChatInputBar = ({
   const [isUploading, setIsUploading] = useState(false);
   const [uploadPreview, setUploadPreview] = useState(null);
   
+  const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+  
+  const handlePhotoClick = () => {
+    hapticFeedback.lightTap();
+    fileInputRef.current?.click();
+  };
+  
+  const handleFileSelect = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
+      alert('Please select an image file (JPG, PNG, GIF, or WebP)');
+      return;
+    }
+    
+    // Validate file size (10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      alert('Image too large. Maximum size is 10MB');
+      return;
+    }
+    
+    // Show preview
+    const previewUrl = URL.createObjectURL(file);
+    setUploadPreview({ url: previewUrl, name: file.name });
+    hapticFeedback.success();
+    
+    // Upload to backend
+    setIsUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('pet_id', petId || 'default');
+      formData.append('session_id', sessionId || 'default');
+      formData.append('context', 'chat_upload');
+      
+      const response = await fetch(`${API_URL}/api/mira/upload/file`, {
+        method: 'POST',
+        body: formData
+      });
+      
+      if (!response.ok) {
+        throw new Error('Upload failed');
+      }
+      
+      const data = await response.json();
+      console.log('[PHOTO UPLOAD] Success:', data);
+      
+      // Notify parent component
+      if (onPhotoUpload) {
+        onPhotoUpload(file, data);
+      }
+      
+      // Auto-populate input with context
+      if (onQueryChange && !query.trim()) {
+        onQueryChange(`I've uploaded a photo: ${file.name}. Can you take a look?`);
+      }
+      
+      hapticFeedback.success();
+      
+    } catch (error) {
+      console.error('[PHOTO UPLOAD] Error:', error);
+      hapticFeedback.error();
+      alert('Failed to upload photo. Please try again.');
+    } finally {
+      setIsUploading(false);
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+  
+  const clearPreview = () => {
+    if (uploadPreview?.url) {
+      URL.revokeObjectURL(uploadPreview.url);
+    }
+    setUploadPreview(null);
+  };
+  
   const handleSubmit = (e) => {
     e.preventDefault();
     hapticFeedback.sendMessage(e);
+    clearPreview();
     if (onSubmit) onSubmit(e);
   };
   
