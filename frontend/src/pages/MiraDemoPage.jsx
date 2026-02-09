@@ -5073,6 +5073,7 @@ const MiraDemoPage = () => {
         <div 
           className="mp-tray-overlay" 
           onClick={() => {
+            hapticFeedback.trayClose();
             setShowMiraTray(false);
             setMiraPicks(prev => ({ ...prev, hasNew: false }));
           }}
@@ -5095,6 +5096,7 @@ const MiraDemoPage = () => {
               <button 
                 className="mp-tray-close" 
                 onClick={() => {
+                  hapticFeedback.trayClose();
                   setShowMiraTray(false);
                   setMiraPicks(prev => ({ ...prev, hasNew: false }));
                 }}
