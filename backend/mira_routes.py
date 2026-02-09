@@ -2443,11 +2443,20 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
             search_keywords = "grooming brush shampoo"
         
         if should_show_products and intent in ["FIND", "ORDER", "COMPARE", "EXPLORE", "PLAN"]:
+            # Determine life state from mode for exclusions
+            life_state = None
+            if mira_mode == "COMFORT":
+                life_state = "GRIEF"
+            elif mira_mode == "EMERGENCY":
+                life_state = "EMERGENCY"
+            
             real_products = await search_real_products(
                 entities=entities,
                 pet_context=request.pet_context or {},
                 limit=6,
-                search_override=search_keywords  # Use context-specific search
+                search_override=search_keywords,  # Use context-specific search
+                current_pillar=current_pillar,    # PILLAR-FIRST filtering
+                current_life_state=life_state     # Life state exclusions
             )
         
         logger.info(f"[PRODUCT FILTER] intent={intent}, is_service={is_service_intent}, is_food_main={is_food_main_intent}, is_treat={is_treat_request}, is_grief_hold={is_grief_hold}, is_groom_tools={is_groom_tools}, is_groom_medical={is_groom_medical_boundary}, is_food_medical={is_food_medical_boundary}, showing_products={should_show_products}")
