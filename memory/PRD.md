@@ -57,6 +57,18 @@ This session focused on **UI repositioning**, **bug fixes**, **Foundation comple
 - Fallback: OpenAI TTS `shimmer` voice (British-style, feminine)
 - Model: `tts-1-hd` (high quality)
 
+## 5. Voice Sync Fixes ✅ (NEW)
+- **Pet description rule**: Only describe pet on FIRST message, not every response
+- **Voice on tile clicks**: DISABLED - voice only plays for typed messages
+- **Voice cancellation**: Stops immediately when user types or clicks tiles
+- See `/app/memory/MIRA_VOICE_RULES.md` for full documentation
+
+## 6. Foundation Completion ✅ (NEW)
+- iOS voice input compatibility with permission flow
+- Safe area insets for notched phones (iPhone X+)
+- Visual recording feedback (pulsing animation)
+- Proactive welcome messages (time-based greetings)
+
 ---
 
 # COMPARISON: ROADMAP vs CURRENT STATUS
