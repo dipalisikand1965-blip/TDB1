@@ -4200,7 +4200,7 @@ const MiraDemoPage = () => {
                 {currentWeather && (
                   <div 
                     className={`weather-card weather-${currentWeather.pet_advisory?.safety_level || 'good'}`}
-                    onClick={() => handleQuickReply(`Is it a good day to take ${pet.name} for a walk?`)}
+                    onClick={() => handleQuickReply(`Is it a good day to take ${pet.name} for a walk?`, true)}
                     data-testid="weather-card"
                   >
                     <div className="weather-card-icon">
