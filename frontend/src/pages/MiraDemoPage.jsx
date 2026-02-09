@@ -3685,18 +3685,11 @@ const MiraDemoPage = () => {
         </div>
       </div>
       
-      {/* Scroll to Bottom Button */}
-      {hasNewMessages && !isAtBottom && (
-        <button onClick={() => scrollToBottom()} style={{
-          position: 'fixed', bottom: '120px', left: '50%', transform: 'translateX(-50%)',
-          padding: '8px 16px', background: 'rgba(168, 85, 247, 0.9)', border: 'none',
-          borderRadius: '20px', boxShadow: '0 4px 20px rgba(168, 85, 247, 0.3)',
-          fontSize: '13px', fontWeight: '500', cursor: 'pointer', zIndex: 100,
-          display: 'flex', alignItems: 'center', gap: '6px', color: 'white'
-        }}>
-          <ChevronDown /> New messages
-        </button>
-      )}
+      {/* Scroll to Bottom Button - Extracted to ScrollToBottomButton component */}
+      <ScrollToBottomButton 
+        visible={hasNewMessages && !isAtBottom}
+        onClick={() => scrollToBottom()}
+      />
       
       {/* Input Composer - Extracted to ChatInputBar component */}
       <ChatInputBar
