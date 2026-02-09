@@ -248,13 +248,24 @@ Any CSS in mira-premium.css will NOT apply to the Mira chat page.
 
 # TEST CHECKLIST BEFORE FINISHING
 
+## Core Functionality
 - [ ] Type "I want a cake for Mojo" - "cake" stays as "cake"
 - [ ] Confetti triggers on birthday/cake queries
 - [ ] Header bar has: Mira, Tiles, C° Help, Insight icon, Picks icon
 - [ ] Clicking "C° Need help?" opens concierge panel (no error)
-- [ ] Voice plays when Mira responds (OpenAI fallback if ElevenLabs fails)
 - [ ] Mobile: Header bar scrolls horizontally
 - [ ] "Friend's dog" questions don't use user's pet context
+
+## Voice Testing (CRITICAL - see /app/memory/MIRA_VOICE_RULES.md)
+- [ ] Type message and send → Voice PLAYS ✅
+- [ ] Click tile/suggestion → Voice does NOT play ✅
+- [ ] Click tile while voice playing → Voice STOPS immediately ✅
+- [ ] Rapid tile clicks → NO voice overlap ✅
+- [ ] ElevenLabs quota exceeded → OpenAI fallback works ✅
+
+## Pet Description Testing
+- [ ] First message in conversation → May include pet breed/traits ✅
+- [ ] Follow-up messages → NO repeated pet description, just name ✅
 
 ---
 
