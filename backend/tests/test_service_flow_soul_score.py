@@ -132,15 +132,17 @@ class TestServiceFlow:
         test_message = f"I need help with grooming for {pet_name}, can you book an appointment?"
         
         chat_payload = {
-            "input": test_message,
+            "message": test_message,  # API expects 'message' not 'input'
             "pet_context": {
                 "id": pet_id,
                 "name": pet_name,
                 "breed": pet.get("breed", "Unknown"),
                 "age": pet.get("age", "Unknown")
             },
+            "selected_pet_id": pet_id,
             "session_id": f"test_session_{datetime.now().timestamp()}",
-            "conversation_history": []
+            "history": [],
+            "source": "web_widget"
         }
         
         # Make chat request
