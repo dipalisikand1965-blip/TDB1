@@ -10,10 +10,12 @@ import {
   Check, X, Phone, AlertTriangle, MapPin, Clock,
   Ambulance, Heart, Search
 } from 'lucide-react';
+import hapticFeedback from '../../utils/haptic';
 import './EmergencyVault.css';
 
+// Use centralized haptic utility - urgent pattern for emergencies
 const haptic = {
-  urgent: () => navigator.vibrate && navigator.vibrate([100, 50, 100, 50, 100])
+  urgent: () => hapticFeedback.error() // Strong feedback for emergencies
 };
 
 const EMERGENCY_TYPES = {
