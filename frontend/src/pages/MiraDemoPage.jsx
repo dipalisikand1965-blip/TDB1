@@ -5102,9 +5102,15 @@ const MiraDemoPage = () => {
               value={query}
               onChange={(e) => {
                 setQuery(e.target.value);
-                // Stop voice if user starts typing (interrupt)
-                if (isSpeaking && e.target.value.length > 0) {
-                  stopSpeaking();
+                // VOICE SYNC: Stop voice and cancel pending voice when user types
+                if (e.target.value.length > 0) {
+                  if (voiceTimeoutRef.current) {
+                    clearTimeout(voiceTimeoutRef.current);
+                    voiceTimeoutRef.current = null;
+                  }
+                  if (isSpeaking) {
+                    stopSpeaking();
+                  }
                 }
               }}
               placeholder={`Ask Mira anything...`}
