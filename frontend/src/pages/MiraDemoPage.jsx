@@ -3252,6 +3252,19 @@ const MiraDemoPage = () => {
           showConcierge: shouldShowConcierge,
           hasNew: !clarifyOnly && (newProducts.length > 0 || newServices.length > 0)
         });
+        
+        // ═══════════════════════════════════════════════════════════════════════════
+        // VAULT SYSTEM - Auto-trigger vault for products/services
+        // "Mira is the Brain, Concierge® is the Hands"
+        // ═══════════════════════════════════════════════════════════════════════════
+        if (!clarifyOnly && (newProducts.length > 0 || newServices.length > 0)) {
+          setVaultResponse(data.response || data);
+          setVaultUserMessage(inputQuery);
+          // Small delay to let the message render first
+          setTimeout(() => {
+            setShowVault(true);
+          }, 800);
+        }
       } else if (clarifyOnly) {
         // Clarify-only mode - clear any existing picks
         setMiraPicks(prev => ({
