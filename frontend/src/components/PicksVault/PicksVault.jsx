@@ -12,22 +12,15 @@
 
 import React, { useState, useCallback } from 'react';
 import { Check, X, RefreshCw, ChevronRight, Heart, Info } from 'lucide-react';
+import hapticFeedback from '../../utils/haptic';
 import './PicksVault.css';
 
-// Haptic feedback utility
+// Use centralized haptic utility for iOS + Android support
 const haptic = {
-  light: () => {
-    if (navigator.vibrate) navigator.vibrate(10);
-  },
-  medium: () => {
-    if (navigator.vibrate) navigator.vibrate(20);
-  },
-  success: () => {
-    if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
-  },
-  selection: () => {
-    if (navigator.vibrate) navigator.vibrate(15);
-  }
+  light: () => hapticFeedback.buttonTap(),
+  medium: () => hapticFeedback.toggle(),
+  success: () => hapticFeedback.success(),
+  selection: () => hapticFeedback.productSelect()
 };
 
 const PicksVault = ({
