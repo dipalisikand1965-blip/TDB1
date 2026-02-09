@@ -4472,18 +4472,8 @@ const MiraDemoPage = () => {
                             </div>
                           )}
                           
-                          {/* Mira's Insight - Minimal inline hint (full view in floating panel) */}
-                          {msg.data?.response?.tips && msg.data.response.tips.length > 0 && (
-                            <button 
-                              className="mp-insight-hint"
-                              onClick={() => setShowInsightsPanel(true)}
-                              data-testid={`insight-hint-${idx}`}
-                            >
-                              <PawPrint size={12} /> 
-                              <span>{msg.data.response.tips.length} insight{msg.data.response.tips.length > 1 ? 's' : ''}</span>
-                              <ChevronRight size={12} />
-                            </button>
-                          )}
+                          {/* Mira's Insight - MOVED TO HEADER BAR */}
+                          {/* Button now appears in mp-card-header above */}
                           
                           {/* NEARBY PLACES CARDS - Vets, Restaurants, Parks with click-to-call */}
                           {msg.data?.nearby_places?.places?.length > 0 && (
