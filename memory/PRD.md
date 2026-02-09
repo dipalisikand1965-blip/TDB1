@@ -17,10 +17,10 @@
 
 # 🛡️ REFACTORING STATUS SUMMARY
 
-## Progress: 27% Complete (CONTINUING PROGRESS)
+## Progress: 29% Complete (P0 IN PROGRESS)
 | Metric | Before | After | Change |
 |--------|--------|-------|--------|
-| Lines | 5,789 | **4,202** | **-1,587 (27%)** |
+| Lines | 5,789 | **4,107** | **-1,682 (29%)** |
 | Components | 0 | **12** | +12 |
 | Hooks | 0 | **5** | +5 |
 
@@ -39,8 +39,10 @@ The `ChatMessage.jsx` component was enhanced from 392 lines to **988 lines** to 
 
 This extraction removed ~596 lines from MiraDemoPage.jsx!
 
-### 2. useChat.js Hook Created (Stage 6)
-New hook with helper functions extracted from handleSubmit:
+### 2. useChat.js Hook Created & Expanded (Stage 6)
+New hook with helper functions extracted from handleSubmit (now **684 lines**):
+
+**Detection Helpers:**
 - `detectMiraMode()` - Mode detection (comfort, emergency, instant)
 - `detectStepId()` - Step ID detection for all canonical flows
 - `extractCityFromQuery()` - City extraction for travel
@@ -49,7 +51,14 @@ New hook with helper functions extracted from handleSubmit:
 - `shouldFetchTravelData()` - Travel confirmation detection
 - `isMeaningfulTopic()` / `isCelebrationQuery()` - Topic utilities
 
-This extraction removed ~184 more lines from MiraDemoPage.jsx!
+**API Helpers (NEW):**
+- `fetchConversationMemory()` - Recall past conversations
+- `fetchMoodContext()` - Detect pet mood
+- `routeIntent()` - Route intent for first message
+- `createOrAttachTicket()` - Create/attach ticket
+- `fetchTrainingVideos()` - YouTube videos fetch
+- `fetchTravelHotels()` / `fetchTravelAttractions()` - Amadeus/Viator
+- `saveConversationMemory()` / `buildMemoryPrefix()` - Memory helpers
 
 ## 12 Components Created
 ```
@@ -74,15 +83,16 @@ This extraction removed ~184 more lines from MiraDemoPage.jsx!
 ├── usePet.js       ✅ integrated
 ├── useVault.js     ✅ integrated
 ├── useSession.js   ✅ integrated
-├── useChat.js      ✅ NEW - handleSubmit helpers
+├── useChat.js      ✅ EXPANDED - detection + API helpers (684 lines)
 └── useVoice.js     ⏳ pending integration
 ```
 
 ## Remaining Work
 1. ~~Message rendering (~500 lines)~~ ✅ DONE - Extracted to ChatMessage.jsx
 2. ~~handleSubmit helper functions~~ ✅ DONE - Extracted to useChat.js
-3. handleSubmit main logic (~700 lines still in main file) - Can be further broken down
-4. Integrate useVoice hook
+3. ~~API helper functions~~ ✅ DONE - Extracted to useChat.js
+4. handleSubmit main logic (~600 lines still in main file) - Can be further broken down
+5. Integrate useVoice hook
 
 **Full details**: See `/app/memory/REFACTORING_HANDOVER.md`
 
