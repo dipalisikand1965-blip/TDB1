@@ -1319,9 +1319,16 @@ async def search_real_products(
         is_grooming_query = any(word in user_input_lower for word in ["shampoo", "brush", "grooming", "nail", "ear clean"])
         
         # Search by category for specific product types
+        # ALWAYS exclude cat products for dog queries
+        if pet_context.get("species", "dog").lower() == "dog":
+            query["category"] = {"$not": {"$regex": "^cat-", "$options": "i"}}
+        
         if is_treat_query:
-            query["category"] = {"$regex": "treat|snack|ladoo|jerky", "$options": "i"}
-            logger.info(f"[CATEGORY SEARCH] Searching for treats")
+            query["$and"] = [
+                {"category": {"$regex": "treat|snack|ladoo|jerky", "$options": "i"}},
+                {"category": {"$not": {"$regex": "^cat-", "$options": "i"}}}  # Exclude cat treats
+            ]
+            logger.info(f"[CATEGORY SEARCH] Searching for dog treats (excluding cat)")
         elif is_toy_query:
             query["category"] = {"$regex": "toy|play", "$options": "i"}
             logger.info(f"[CATEGORY SEARCH] Searching for toys")
