@@ -4044,6 +4044,19 @@ async def create_mira_ticket(
         "enrichments": [],
         "suggested_products": [],
         
+        # ═══════════════════════════════════════════════════════════════════
+        # PICKS VAULT - Mira's curated picks for Concierge to work from
+        # Contains products, services, and tip cards relevant to request
+        # ═══════════════════════════════════════════════════════════════════
+        "picks_vault": picks_vault or {
+            "products": [],
+            "services": [],
+            "tip_cards": [],
+            "pillar": pillar,
+            "context": None,
+            "generated_at": now
+        },
+        
         # Audit trail
         "audit_trail": [{
             "action": "ticket_created",
