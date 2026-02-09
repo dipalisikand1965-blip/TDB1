@@ -180,6 +180,32 @@ The following service requests now automatically route to CONCIERGE execution_ty
 - Vet appointment / veterinary / checkup
 - "While I'm away" / "going out of town"
 
+## 📱 WHATSAPP INTEGRATION (Ready - Awaiting Meta Keys)
+**Status:** Plumbing complete, waiting for Meta Business API credentials
+
+**Files:**
+- `/app/backend/whatsapp_routes.py` - Full WhatsApp Cloud API integration
+- `/app/backend/communication_engine.py` - Multi-channel communication with WhatsApp support
+
+**Required .env variables (add when Meta keys are ready):**
+```
+WHATSAPP_PHONE_NUMBER_ID=your_phone_number_id
+WHATSAPP_ACCESS_TOKEN=your_access_token
+WHATSAPP_VERIFY_TOKEN=your_webhook_verify_token
+WHATSAPP_BUSINESS_ACCOUNT_ID=your_business_account_id
+```
+
+**Endpoints ready:**
+- `POST /api/whatsapp/send` - Send text messages
+- `POST /api/whatsapp/send-template` - Send template messages (pre-approved)
+- `POST /api/whatsapp/send-media` - Send images, documents, audio, video
+- `GET/POST /api/whatsapp/webhook` - Webhook for incoming messages
+
+**Integration points:**
+- Concierge service requests → WhatsApp notification to team
+- Ticket updates → WhatsApp to member
+- Proactive alerts (vaccinations, birthdays) → WhatsApp reminders
+
 ---
 
 # 🚀 QUICK START FOR NEXT AGENT
