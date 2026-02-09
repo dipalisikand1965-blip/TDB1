@@ -50,6 +50,7 @@ import NavigationDock from '../components/Mira/NavigationDock';
 import FloatingActionBar from '../components/Mira/FloatingActionBar';
 import MiraLoader from '../components/Mira/MiraLoader';
 import ScrollToBottomButton from '../components/Mira/ScrollToBottomButton';
+import ProactiveAlertsBanner from '../components/Mira/ProactiveAlertsBanner';
 import { FormattedText, TypedText } from '../components/Mira/TextComponents';
 import { triggerCelebrationConfetti } from '../utils/confetti';
 
