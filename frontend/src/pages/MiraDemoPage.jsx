@@ -705,6 +705,7 @@ const MiraDemoPage = () => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const audioRef = useRef(null);
   const voiceTimeoutRef = useRef(null); // Track pending voice timeouts to prevent double voice
+  const skipVoiceOnNextResponseRef = useRef(false); // Skip voice when tile is clicked
   
   // CONVERSATION HISTORY - Collapsible older messages
   const [showOlderMessages, setShowOlderMessages] = useState(false);
