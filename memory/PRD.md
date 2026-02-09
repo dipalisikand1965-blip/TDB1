@@ -387,7 +387,7 @@ tip_card = {
 # KNOWN ISSUES
 
 1. **ElevenLabs quota exceeded** - Using OpenAI TTS fallback (`shimmer` voice)
-2. **MiraDemoPage.jsx is ~5778 lines** - Refactoring IN PROGRESS (was 5,791)
+2. **MiraDemoPage.jsx is ~5687 lines** - Refactoring IN PROGRESS (was 5,791)
 3. **Screenshot tool crashes** on MiraDemoPage (too large)
 
 ---
@@ -397,47 +397,44 @@ tip_card = {
 ## Progress Summary
 | Metric | Before | After | Change |
 |--------|--------|-------|--------|
-| Lines | 5,791 | 5,778 | -13 |
+| Lines | 5,791 | 5,687 | -104 |
 | useState hooks | 67 | 61 | -6 |
-| Target | - | ~1,500 | 74% to go |
+| Target | - | ~1,500 | ~4,187 to go |
 
 ## Completed ✅
-- ✅ Created & integrated `usePet` hook - Pet selection & management
-- ✅ Created `useVoice` hook - Voice I/O (created, not yet integrated)
-- ✅ Created & integrated `useVault` hook - Picks & vault management
-- ✅ Created & integrated `useSession` hook - Session ID & recovery
-- ✅ Moved 12 useState declarations to hooks
-- ✅ All code compiles and runs correctly
 
-## Hooks Location
+### Hooks Created & Integrated
 ```
 /app/frontend/src/hooks/mira/
 ├── index.js        - Exports all hooks
 ├── usePet.js       - Pet management (✅ integrated)
-├── useVoice.js     - Voice I/O (⏳ pending)
+├── useVoice.js     - Voice I/O (⏳ created, pending)
 ├── useVault.js     - Picks/vault (✅ integrated)
 └── useSession.js   - Session management (✅ integrated)
 ```
 
-## Remaining Work (3-4 Stages)
+### UI Components Extracted
+```
+/app/frontend/src/components/Mira/
+├── MiraTray.jsx        - Picks preview tray (~80 lines)
+└── PastChatsPanel.jsx  - Past conversations panel (~40 lines)
+```
 
-### Stage 4: useConversation hook (~300 lines)
-- conversationHistory, conversationContext
-- Message handling logic
+### State Moved to Hooks (~12 useState)
+- **usePet**: pet, setPet, allPets, setAllPets, showPetSelector
+- **useVault**: showVault, activeVaultData, vaultUserMessage, miraPicks, showMiraTray
+- **useSession**: sessionId, sessionRecovered
 
-### Stage 5: Extract UI Components (~2000+ lines)
-- ChatMessages component
-- QuickReplyChips component
-- PetSelector component
-- MiraTray component
+## Remaining Work
 
-### Stage 6: Break down handleSubmit (~992 lines)
-- Split into smaller functions
-- Move API calls to service layer
+### High Impact Extractions
+1. **ChatMessages component** (~500-800 lines) - Message list rendering
+2. **QuickReplyChips component** (~100 lines) - Suggestion buttons
+3. **Break handleSubmit function** (~992 lines) - Split into smaller functions
 
 ### Pending
 - ⏳ Integrate `useVoice` hook (complex due to scattered voice timeout logic)
-- ⏳ Remove duplicate pet-loading useEffects (kept for now due to complex transformation)
+- ⏳ Remove duplicate pet-loading useEffects
 
 ---
 
