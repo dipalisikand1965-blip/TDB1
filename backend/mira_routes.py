@@ -8098,6 +8098,46 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                     products = breed_products[:3] + generic_products[:5]
                     logger.info(f"[BREED BOOST] Added {len(breed_products[:3])} breed-specific products for {detected_breed}")
             
+            # =======================================================================
+            # SHOPIFY PREFERENCE: Replace placeholder products with real Shopify ones
+            # This ensures beautiful product images from the real catalogue
+            # =======================================================================
+            def is_placeholder_product(p):
+                """Check if product uses placeholder/Unsplash images"""
+                img = p.get("image", "") or (p.get("images", [""])[0] if p.get("images") else "")
+                return "unsplash.com" in str(img).lower() and not p.get("shopify_id")
+            
+            # Count placeholders
+            placeholder_count = sum(1 for p in products if is_placeholder_product(p))
+            
+            if placeholder_count > 0 and is_celebration_context:
+                logger.info(f"[SHOPIFY PREFERENCE] Found {placeholder_count} placeholder products, looking for Shopify replacements")
+                
+                # Get Shopify products to replace placeholders
+                shopify_replacements = await db.products_master.find({
+                    "shopify_id": {"$exists": True, "$ne": None},
+                    "category": {"$in": ["cakes", "breed-cakes", "mini-cakes", "hampers", "accessories"]},
+                    "id": {"$nin": [p.get("id") for p in products]}  # Exclude already-shown products
+                }, {"_id": 0}).limit(placeholder_count + 2).to_list(placeholder_count + 2)
+                
+                if shopify_replacements:
+                    # Replace placeholders with Shopify products
+                    new_products = []
+                    replacement_idx = 0
+                    
+                    for p in products:
+                        if is_placeholder_product(p) and replacement_idx < len(shopify_replacements):
+                            # Replace with Shopify product
+                            replacement = shopify_replacements[replacement_idx]
+                            replacement["why_for_pet"] = p.get("why_for_pet") or "✨ From our bakery collection"
+                            new_products.append(replacement)
+                            replacement_idx += 1
+                            logger.info(f"[SHOPIFY PREFERENCE] Replaced '{p.get('name')}' with '{replacement.get('name')}'")
+                        else:
+                            new_products.append(p)
+                    
+                    products = new_products
+            
             # Fix image URLs for all products
             for p in products:
                 img = p.get("image", "")
