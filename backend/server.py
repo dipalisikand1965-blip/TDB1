@@ -15593,6 +15593,7 @@ app.include_router(mira_router)  # Mira AI routes at /api/mira/*
 app.include_router(mira_intelligence_router)  # Mira Intelligence at /api/mira/intelligence/*
 app.include_router(mira_memory_router)  # Mira Relationship Memory at /api/mira/memory/*
 app.include_router(mira_session_router)  # Mira Session Persistence at /api/mira/session/*
+app.include_router(mira_retention_router)  # Mira Retention System at /api/mira/retention/*
 app.include_router(mira_voice_router)  # Mira Voice Output (TTS) at /api/mira/voice/*
 app.include_router(mira_remember_router)  # Mira Remember Command at /api/mira/memory/*
 app.include_router(mira_upload_router)  # Mira File Upload at /api/mira/upload/*
