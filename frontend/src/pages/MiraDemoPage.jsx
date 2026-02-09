@@ -3202,7 +3202,10 @@ const MiraDemoPage = () => {
       
       // VOICE OUTPUT - Speak Mira's response
       // VOICE-TEXT SYNC: Wait for text to appear, then speak
-      if (voiceEnabled && miraResponseText) {
+      // Skip voice if it was triggered from a tile/suggestion click (prevents double voice)
+      const shouldSpeak = voiceEnabled && miraResponseText && !skipNextVoiceRef.current;
+      
+      if (shouldSpeak) {
         console.log('[MIRA VOICE] Triggering voice for response, text length:', miraResponseText.length);
         // CRITICAL: Clear any pending voice timeout to prevent double voice
         if (voiceTimeoutRef.current) {
@@ -3222,7 +3225,12 @@ const MiraDemoPage = () => {
           voiceTimeoutRef.current = null;
         }, Math.min(typingTime + 500, 3000)); // Cap at 3 seconds to avoid too long wait
       } else {
-        console.log('[MIRA VOICE] Voice not triggered - voiceEnabled:', voiceEnabled, 'text:', !!miraResponseText);
+        if (skipNextVoiceRef.current) {
+          console.log('[MIRA VOICE] Skipped - triggered from tile/suggestion click');
+          skipNextVoiceRef.current = false; // Reset the flag
+        } else {
+          console.log('[MIRA VOICE] Voice not triggered - voiceEnabled:', voiceEnabled, 'text:', !!miraResponseText);
+        }
       }
       
       // Sync Mira's response to service desk
