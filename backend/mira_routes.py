@@ -6535,7 +6535,8 @@ async def mira_chat(
     ticket_id = None
     
     if not existing_ticket:
-        # Create new ticket
+        # Create new ticket - use selected_pet if logged in, otherwise use pet_context
+        pet_for_ticket = selected_pet or request.pet_context
         ticket_id = await create_mira_ticket(
             session_id=session_id,
             ticket_type=intent,
@@ -6543,7 +6544,7 @@ async def mira_chat(
             urgency=urgency,
             description=user_message,
             user=user,
-            pet=selected_pet,
+            pet=pet_for_ticket,
             source=request.source
         )
     else:
