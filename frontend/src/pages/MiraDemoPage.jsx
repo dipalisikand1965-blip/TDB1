@@ -4114,10 +4114,13 @@ const MiraDemoPage = () => {
                     miraPicks={miraPicks}
                     miraMode={miraMode}
                     isOld={true}
+                    hapticFeedback={hapticFeedback}
                     onShowConcierge={() => setShowConciergePanel(true)}
                     onShowInsights={() => setShowInsightsPanel(true)}
                     onShowPicks={() => setShowMiraTray(true)}
                     onQuickReply={handleQuickReply}
+                    onEngageConcierge={engageConcierge}
+                    onOpenServiceRequest={openServiceRequest}
                   />
                 </div>
               ))}
