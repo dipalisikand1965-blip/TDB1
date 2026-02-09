@@ -2917,20 +2917,15 @@ const MiraDemoPage = () => {
         }
       }
       
-      // E033: Save meaningful conversations to memory (for topics worth remembering)
-      const meaningfulTopics = ['health', 'skin', 'grooming', 'food', 'travel', 'birthday', 'behavior'];
-      if (pet?.id && meaningfulTopics.includes(detectedTopic) && miraResponseText.length > 50) {
-        fetch(`${API_URL}/api/mira/conversation-memory/save`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            pet_id: pet.id,
-            topic: detectedTopic,
-            summary: inputQuery.substring(0, 100),
-            user_query: inputQuery,
-            mira_advice: miraResponseText.substring(0, 200)
-          })
-        }).catch(e => console.log('[MEMORY] Auto-save failed:', e.message));
+      // E033: Save meaningful conversations to memory (using extracted helper)
+      if (pet?.id && isMeaningfulTopic(detectedTopic) && miraResponseText.length > 50) {
+        saveConversationMemory({
+          petId: pet.id,
+          topic: detectedTopic,
+          summary: inputQuery.substring(0, 100),
+          query: inputQuery,
+          advice: miraResponseText.substring(0, 200)
+        });
       }
       
       // ═══════════════════════════════════════════════════════════════════════════
