@@ -2083,6 +2083,27 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
         previous_pillar = None
         topic_shift_detected = False
         
+        # ═══════════════════════════════════════════════════════════════════════════
+        # EDGE CASE: Detect when user is asking about SOMEONE ELSE'S pet
+        # "gift for a friend's dog", "my neighbor's cat", "another dog"
+        # In this case, we should NOT use the selected pet's context
+        # ═══════════════════════════════════════════════════════════════════════════
+        another_pet_phrases = [
+            "friend's dog", "friend's cat", "friend's pet",
+            "friends dog", "friends cat", "friends pet",
+            "my friend's", "a friend's", "their dog", "their cat", "their pet",
+            "neighbor's dog", "neighbor's cat", "neighbour's",
+            "someone else's", "another dog", "another cat", "another pet",
+            "gift for a dog", "gift for someone", "gift for their",
+            "coworker's dog", "colleague's pet", "family member's dog",
+            "sister's dog", "brother's dog", "mom's dog", "dad's dog",
+            "parent's dog", "relative's pet"
+        ]
+        is_asking_about_another_pet = any(phrase in user_input_lower for phrase in another_pet_phrases)
+        
+        if is_asking_about_another_pet:
+            logger.info("[CONTEXT] User asking about ANOTHER person's pet - will ask clarifying questions")
+        
         # Check conversation history for previous pillar
         if request.conversation_history and len(request.conversation_history) > 0:
             # Get the pillar from the most recent exchange
