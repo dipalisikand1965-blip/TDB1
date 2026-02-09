@@ -5415,10 +5415,10 @@ const MiraDemoPage = () => {
                         onClick={() => {
                           if (item.action === 'celebrate') {
                             setShowMiraTray(false);
-                            handleQuickReply(`Let's celebrate ${pet.name}'s birthday!`);
+                            handleQuickReply(`Let's celebrate ${pet.name}'s birthday!`, true);
                           } else if (item.action === 'vet') {
                             setShowMiraTray(false);
-                            handleQuickReply(`Schedule a vet checkup for ${pet.name}`);
+                            handleQuickReply(`Schedule a vet checkup for ${pet.name}`, true);
                           }
                         }}
                       >
@@ -5463,7 +5463,7 @@ const MiraDemoPage = () => {
                         className={`mp-reorder-item ${item.urgency === 'high' ? 'reorder-urgent' : ''}`}
                         onClick={() => {
                           setShowMiraTray(false);
-                          handleQuickReply(`I need to reorder ${item.name} for ${pet.name}`);
+                          handleQuickReply(`I need to reorder ${item.name} for ${pet.name}`, true);
                         }}
                       >
                         <span className="reorder-icon">{item.icon}</span>
