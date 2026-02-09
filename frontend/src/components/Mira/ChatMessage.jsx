@@ -53,28 +53,34 @@ const FormattedText = ({ children, className = '' }) => {
 const splitMessageWithQuestion = (content) => {
   if (!content) return { mainText: '', questionText: '' };
   
-  const questionPatterns = [
-    /\?[^?]*$/,
-    /Would you like[^?]*\?/i,
-    /Should I[^?]*\?/i,
-    /Do you want[^?]*\?/i,
-    /Can I[^?]*\?/i,
-    /What would you[^?]*\?/i,
-    /How about[^?]*\?/i
-  ];
+  // Find the last complete question sentence
+  // Look for the last sentence that ends with "?"
+  const sentences = content.split(/(?<=[.!?])\s+/);
   
-  for (const pattern of questionPatterns) {
-    const match = content.match(pattern);
-    if (match) {
-      const questionStart = content.lastIndexOf(match[0]);
-      return {
-        mainText: content.substring(0, questionStart).trim(),
-        questionText: match[0].trim()
-      };
+  // Find the last sentence that ends with a question mark
+  let lastQuestionIndex = -1;
+  for (let i = sentences.length - 1; i >= 0; i--) {
+    if (sentences[i].trim().endsWith('?')) {
+      lastQuestionIndex = i;
+      break;
     }
   }
   
-  return { mainText: content, questionText: '' };
+  // If no question found, or it's the entire message, return as-is
+  if (lastQuestionIndex === -1 || lastQuestionIndex === 0) {
+    return { mainText: content, questionText: '' };
+  }
+  
+  // Split into main text and question
+  const mainText = sentences.slice(0, lastQuestionIndex).join(' ').trim();
+  const questionText = sentences.slice(lastQuestionIndex).join(' ').trim();
+  
+  // Only split if the question is a reasonable length (avoid extracting just "?")
+  if (questionText.length < 10 || questionText === '?') {
+    return { mainText: content, questionText: '' };
+  }
+  
+  return { mainText, questionText };
 };
 
 /**
