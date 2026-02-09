@@ -1280,11 +1280,16 @@ async def search_real_products(
     entities: Dict[str, Any],
     pet_context: Dict[str, Any],
     limit: int = 6,
-    search_override: str = None  # For context-specific searches like "travel carrier"
+    search_override: str = None,  # For context-specific searches like "travel carrier"
+    current_pillar: str = None,   # NEW: For pillar-first filtering
+    current_life_state: str = None  # NEW: For life state exclusions
 ) -> List[Dict[str, Any]]:
     """
     Search real products from the database based on Mira's understanding.
     Returns actual products with images, prices, and personalized "why for pet" reasons.
+    
+    PILLAR-FIRST SEARCH: Always filter by pillar to prevent cross-contamination.
+    e.g., asking about grooming should NEVER show birthday cakes.
     """
     db = get_db()
     if db is None:
@@ -1296,6 +1301,40 @@ async def search_real_products(
     try:
         # Build search query based on entities
         query = {"available": {"$ne": False}}
+        
+        # ═══════════════════════════════════════════════════════════════════
+        # PILLAR-FIRST FILTERING - Critical for Picks System
+        # This ensures picks are 100% relevant to the conversation context
+        # ═══════════════════════════════════════════════════════════════════
+        if current_pillar:
+            # Map pillar to allowed pillars (some overlap allowed)
+            PILLAR_SEARCH_MAP = {
+                "celebrate": ["celebrate"],
+                "dine": ["dine", "shop"],  # Food products may be in shop
+                "stay": ["stay"],
+                "travel": ["travel", "shop"],  # Travel gear may be in shop
+                "care": ["care", "shop"],  # Care products may be in shop
+                "enjoy": ["enjoy", "shop"],
+                "fit": ["fit", "care"],
+                "learn": ["learn", "shop"],
+                "paperwork": ["paperwork", "advisory"],
+                "advisory": ["advisory"],
+                "emergency": ["emergency", "care"],
+                "farewell": ["farewell"],
+                "adopt": ["adopt"],
+                "shop": ["shop", "care", "enjoy", "dine"]  # Shop is broad
+            }
+            allowed_pillars = PILLAR_SEARCH_MAP.get(current_pillar.lower(), [current_pillar.lower()])
+            query["pillar"] = {"$in": allowed_pillars}
+            logger.info(f"[PILLAR-FIRST] Filtering products for pillar: {current_pillar} -> {allowed_pillars}")
+        
+        # ═══════════════════════════════════════════════════════════════════
+        # LIFE STATE EXCLUSIONS - Prevent inappropriate picks
+        # e.g., Don't show birthday cakes when user is grieving
+        # ═══════════════════════════════════════════════════════════════════
+        if current_life_state:
+            query["life_state_exclusions"] = {"$nin": [current_life_state.upper()]}
+            logger.info(f"[LIFE STATE] Excluding products with life_state_exclusions containing: {current_life_state}")
         
         # ═══════════════════════════════════════════════════════════════════
         # SEASONAL PRODUCT FILTERING - World Class Enhancement
