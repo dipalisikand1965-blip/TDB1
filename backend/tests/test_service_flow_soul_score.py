@@ -368,15 +368,17 @@ class TestSoulScore:
         
         # Send a chat message
         chat_payload = {
-            "input": f"Tell me about treats for {pet_name}",
+            "message": f"Tell me about treats for {pet_name}",  # API expects 'message' not 'input'
             "pet_context": {
                 "id": pet_id,
                 "name": pet_name,
                 "breed": pet.get("breed", "Unknown"),
                 "age": pet.get("age", "Unknown")
             },
+            "selected_pet_id": pet_id,
             "session_id": f"soul_test_{datetime.now().timestamp()}",
-            "conversation_history": []
+            "history": [],
+            "source": "web_widget"
         }
         
         response = session.post(f"{BASE_URL}/api/mira/chat", json=chat_payload)
