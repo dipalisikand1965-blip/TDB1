@@ -296,6 +296,9 @@ function AppRouter() {
         {/* MIRA OS ORIGINAL - Day 1 clean version for comparison */}
         <Route path="/mira-demo-original" element={<ProtectedRoute requireMembership={true}><MiraDemoOriginalPage /></ProtectedRoute>} />
         
+        {/* MIRA OS BACKUP - UNTOUCHED version for comparison during refactoring */}
+        <Route path="/mira-demobackup" element={<ProtectedRoute requireMembership={true}><MiraDemoBackupPage /></ProtectedRoute>} />
+        
         {/* Membership Landing Page - NO navbar/footer for clean entry */}
         <Route path="/membership" element={<MembershipPage />} />
         
