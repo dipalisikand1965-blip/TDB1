@@ -2332,6 +2332,15 @@ const MiraDemoPage = () => {
       // HAPTIC: Mira response complete
       hapticFeedback.miraResponse();
       
+      // ═══════════════════════════════════════════════════════════════════════════
+      // CONCIERGE CONFIRMATION BANNER - Show when service request received
+      // Part of UNIFORM SERVICE FLOW: User → Mira Ticket → Concierge Action
+      // ═══════════════════════════════════════════════════════════════════════════
+      if (data.concierge_confirmation?.show_banner) {
+        setConciergeConfirmation(data.concierge_confirmation);
+        console.log('[CONCIERGE CONFIRM] Service request banner shown:', data.concierge_confirmation.ticket_id);
+      }
+      
       // Clear skeleton loader
       clearTimeout(skeletonTimer);
       setShowSkeleton(false);
