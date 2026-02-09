@@ -278,7 +278,8 @@ export const correctSpelling = (text) => {
   for (const word of words) {
     const lowerWord = word.toLowerCase();
     
-    // Check direct match in corrections dictionary
+    // Check direct match in corrections dictionary ONLY
+    // FUZZY MATCHING DISABLED - it was incorrectly changing valid words like "cake" to "cat"
     if (SPELLING_CORRECTIONS[lowerWord]) {
       const corrected = SPELLING_CORRECTIONS[lowerWord];
       corrections.push({ original: word, corrected });
@@ -288,21 +289,8 @@ export const correctSpelling = (text) => {
           ? corrected.charAt(0).toUpperCase() + corrected.slice(1)
           : corrected
       );
-    } 
-    // Try fuzzy matching for longer words
-    else if (word.length >= 4) {
-      const fuzzyMatch = findClosestMatch(word, SPELLING_CORRECTIONS, 2);
-      if (fuzzyMatch) {
-        corrections.push({ original: word, corrected: fuzzyMatch });
-        correctedWords.push(
-          word[0] === word[0].toUpperCase()
-            ? fuzzyMatch.charAt(0).toUpperCase() + fuzzyMatch.slice(1)
-            : fuzzyMatch
-        );
-      } else {
-        correctedWords.push(word);
-      }
     } else {
+      // Keep word as-is - no fuzzy matching
       correctedWords.push(word);
     }
   }
