@@ -1,0 +1,446 @@
+/**
+ * VAULT MANAGER - Auto-detect and render appropriate vault
+ * =========================================================
+ * "Mira is the Brain, Concierge® is the Hands"
+ * 
+ * Detects vault type from Mira's response and renders:
+ * - PicksVault for products
+ * - TipCardVault for advice
+ * - BookingVault for appointments
+ * - PlacesVault for locations
+ * - EmergencyVault for urgent help
+ * - etc.
+ */
+
+import React, { useState, useCallback, useEffect } from 'react';
+import { API_URL } from '../../utils/api';
+import {
+  PicksVault,
+  PickDetail,
+  TipCardVault,
+  BookingVault,
+  PlacesVault,
+  CustomVault,
+  EmergencyVault,
+  MemorialVault,
+  AdoptionVault,
+  VAULT_TYPES,
+  detectVaultType,
+  getVaultConfig
+} from './index';
+
+/**
+ * Detect vault type from Mira's response data
+ */
+function detectVaultTypeFromResponse(miraResponse, userMessage, pillar) {
+  const lowerMessage = (userMessage || '').toLowerCase();
+  
+  // Emergency detection - highest priority
+  const emergencyKeywords = ['emergency', 'urgent', 'help', 'poison', 'ate', 'swallow', 'choking', 'bleeding', 'accident', 'hurt', 'injury', 'lost', 'missing', 'can\'t breathe', 'unconscious', 'seizure'];
+  if (emergencyKeywords.some(kw => lowerMessage.includes(kw)) || pillar === 'emergency') {
+    return VAULT_TYPES.EMERGENCY;
+  }
+  
+  // Grief/Memorial detection
+  const griefKeywords = ['passed away', 'died', 'lost my', 'grief', 'memorial', 'cremation', 'rainbow bridge', 'goodbye', 'farewell'];
+  if (griefKeywords.some(kw => lowerMessage.includes(kw)) || pillar === 'farewell') {
+    return VAULT_TYPES.MEMORIAL;
+  }
+  
+  // Adoption detection
+  const adoptionKeywords = ['adopt', 'foster', 'rescue', 'new pet', 'get a dog', 'get a cat', 'want a puppy', 'looking for a pet'];
+  if (adoptionKeywords.some(kw => lowerMessage.includes(kw)) || pillar === 'adopt') {
+    return VAULT_TYPES.ADOPTION;
+  }
+  
+  // Booking detection
+  const bookingKeywords = ['book', 'appointment', 'schedule', 'reserve', 'grooming', 'vet visit', 'training session', 'boarding', 'daycare', 'dog walker', 'pet sitter'];
+  if (bookingKeywords.some(kw => lowerMessage.includes(kw))) {
+    // Check if response suggests booking
+    if (miraResponse?.suggest_booking || miraResponse?.service_type) {
+      return VAULT_TYPES.BOOKING;
+    }
+  }
+  
+  // Places detection
+  const placesKeywords = ['restaurant', 'cafe', 'hotel', 'park', 'beach', 'pet-friendly', 'where can i', 'places to'];
+  if (placesKeywords.some(kw => lowerMessage.includes(kw))) {
+    if (miraResponse?.places?.length > 0 || miraResponse?.nearby_places) {
+      return VAULT_TYPES.PLACES;
+    }
+  }
+  
+  // Products detection
+  if (miraResponse?.products?.length > 0) {
+    return VAULT_TYPES.PICKS;
+  }
+  
+  // Tip card detection - advice without products
+  const adviceKeywords = ['meal plan', 'diet', 'routine', 'schedule', 'tips', 'guide', 'how to', 'advice', 'recommend', 'suggest'];
+  if (adviceKeywords.some(kw => lowerMessage.includes(kw)) && !miraResponse?.products?.length) {
+    if (miraResponse?.tip_card || miraResponse?.advice || miraResponse?.response) {
+      return VAULT_TYPES.TIP_CARD;
+    }
+  }
+  
+  // Custom request detection
+  const customKeywords = ['custom', 'special', 'bespoke', 'personalized', 'can you find', 'not in', 'don\'t have'];
+  if (customKeywords.some(kw => lowerMessage.includes(kw))) {
+    return VAULT_TYPES.CUSTOM;
+  }
+  
+  // Default: If has products, show picks
+  if (miraResponse?.products?.length > 0) {
+    return VAULT_TYPES.PICKS;
+  }
+  
+  return null; // No vault needed
+}
+
+/**
+ * Detect service type from message
+ */
+function detectServiceType(message) {
+  const lowerMessage = (message || '').toLowerCase();
+  
+  if (lowerMessage.includes('groom')) return 'grooming';
+  if (lowerMessage.includes('vet') || lowerMessage.includes('doctor')) return 'vet';
+  if (lowerMessage.includes('train')) return 'training';
+  if (lowerMessage.includes('board') || lowerMessage.includes('overnight')) return 'boarding';
+  if (lowerMessage.includes('daycare')) return 'daycare';
+  if (lowerMessage.includes('walk')) return 'walking';
+  if (lowerMessage.includes('sit')) return 'sitting';
+  if (lowerMessage.includes('photo')) return 'photoshoot';
+  
+  return 'grooming'; // default
+}
+
+/**
+ * Detect place type from message
+ */
+function detectPlaceType(message) {
+  const lowerMessage = (message || '').toLowerCase();
+  
+  if (lowerMessage.includes('restaurant') || lowerMessage.includes('eat') || lowerMessage.includes('dine')) return 'restaurant';
+  if (lowerMessage.includes('cafe') || lowerMessage.includes('coffee')) return 'cafe';
+  if (lowerMessage.includes('hotel') || lowerMessage.includes('stay')) return 'hotel';
+  if (lowerMessage.includes('park')) return 'park';
+  if (lowerMessage.includes('beach')) return 'beach';
+  
+  return 'restaurant'; // default
+}
+
+/**
+ * Detect tip card type from message
+ */
+function detectTipCardType(message) {
+  const lowerMessage = (message || '').toLowerCase();
+  
+  if (lowerMessage.includes('meal') || lowerMessage.includes('food') || lowerMessage.includes('diet')) return 'meal_plan';
+  if (lowerMessage.includes('travel')) return 'travel_tips';
+  if (lowerMessage.includes('groom')) return 'grooming_routine';
+  if (lowerMessage.includes('train')) return 'training_tips';
+  if (lowerMessage.includes('health') || lowerMessage.includes('medical')) return 'health_advice';
+  if (lowerMessage.includes('exercise') || lowerMessage.includes('fitness')) return 'exercise_routine';
+  if (lowerMessage.includes('checklist')) return 'checklist';
+  
+  return 'general';
+}
+
+/**
+ * Detect emergency type from message
+ */
+function detectEmergencyType(message) {
+  const lowerMessage = (message || '').toLowerCase();
+  
+  if (lowerMessage.includes('poison') || lowerMessage.includes('ate') || lowerMessage.includes('swallow')) return 'poisoning';
+  if (lowerMessage.includes('hurt') || lowerMessage.includes('injur') || lowerMessage.includes('accident')) return 'injury';
+  if (lowerMessage.includes('breath')) return 'breathing';
+  if (lowerMessage.includes('lost') || lowerMessage.includes('missing')) return 'lost_pet';
+  if (lowerMessage.includes('seizure')) return 'seizure';
+  
+  return 'other';
+}
+
+/**
+ * VaultManager Component
+ */
+const VaultManager = ({
+  isOpen,
+  onClose,
+  miraResponse,
+  userMessage,
+  pet,
+  pillar,
+  sessionId,
+  member,
+  onVaultSent
+}) => {
+  const [activeVault, setActiveVault] = useState(null);
+  const [showDetail, setShowDetail] = useState(null);
+  const [selectedItems, setSelectedItems] = useState(new Set());
+
+  // Detect vault type when response changes
+  useEffect(() => {
+    if (isOpen && miraResponse) {
+      const vaultType = detectVaultTypeFromResponse(miraResponse, userMessage, pillar);
+      setActiveVault(vaultType);
+      setSelectedItems(new Set());
+      setShowDetail(null);
+    }
+  }, [isOpen, miraResponse, userMessage, pillar]);
+
+  // Send to Concierge via unified endpoint
+  const sendToConcierge = useCallback(async (vaultData) => {
+    try {
+      const response = await fetch(`${API_URL}/api/mira/vault/send-to-concierge`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          vault_type: activeVault,
+          session_id: sessionId,
+          member_id: member?.id,
+          member_email: member?.email,
+          member_phone: member?.phone,
+          member_name: member?.name,
+          pet: pet,
+          pillar: pillar,
+          data: vaultData
+        })
+      });
+      
+      const result = await response.json();
+      
+      if (result.success && onVaultSent) {
+        onVaultSent(result);
+      }
+      
+      return result;
+    } catch (error) {
+      console.error('[VAULT] Failed to send to Concierge:', error);
+      throw error;
+    }
+  }, [activeVault, sessionId, member, pet, pillar, onVaultSent]);
+
+  // Refresh picks
+  const handleRefreshPicks = useCallback(async (excludeIds) => {
+    try {
+      const response = await fetch(`${API_URL}/api/mira/refresh-picks`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          pillar,
+          pet_context: pet,
+          exclude_ids: excludeIds,
+          context: userMessage
+        })
+      });
+      
+      const result = await response.json();
+      return result.picks || [];
+    } catch (error) {
+      console.error('[VAULT] Failed to refresh picks:', error);
+      return [];
+    }
+  }, [pillar, pet, userMessage]);
+
+  // Handle product detail view
+  const handleViewDetail = useCallback((product) => {
+    setShowDetail(product);
+  }, []);
+
+  // Handle select from detail view
+  const handleSelectFromDetail = useCallback((product) => {
+    setSelectedItems(prev => {
+      const newSet = new Set(prev);
+      const itemId = product.id || product.name;
+      if (newSet.has(itemId)) {
+        newSet.delete(itemId);
+      } else {
+        newSet.add(itemId);
+      }
+      return newSet;
+    });
+    setShowDetail(null);
+  }, []);
+
+  // Handle ask Mira from detail view
+  const handleAskMiraFromDetail = useCallback((product) => {
+    setShowDetail(null);
+    // Could emit an event to add a message to chat
+    console.log('[VAULT] Ask Mira about:', product.name);
+  }, []);
+
+  if (!isOpen) return null;
+
+  // Show product detail view
+  if (showDetail) {
+    return (
+      <PickDetail
+        product={showDetail}
+        pet={pet}
+        isSelected={selectedItems.has(showDetail.id || showDetail.name)}
+        onBack={() => setShowDetail(null)}
+        onSelect={handleSelectFromDetail}
+        onAskMira={handleAskMiraFromDetail}
+      />
+    );
+  }
+
+  // Render appropriate vault based on detected type
+  switch (activeVault) {
+    case VAULT_TYPES.PICKS:
+      return (
+        <PicksVault
+          picks={miraResponse?.products || []}
+          pet={pet}
+          pillar={pillar}
+          context={userMessage}
+          onSendToConcierge={(data) => sendToConcierge({
+            picked_items: data.picked_items,
+            shown_items: data.shown_items,
+            context: data.context,
+            user_action: data.user_action
+          })}
+          onRefresh={handleRefreshPicks}
+          onClose={onClose}
+          onViewDetails={handleViewDetail}
+        />
+      );
+
+    case VAULT_TYPES.TIP_CARD:
+      const cardType = detectTipCardType(userMessage);
+      return (
+        <TipCardVault
+          tipCard={{
+            type: cardType,
+            title: `${cardType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())} for ${pet?.name || 'Your Pet'}`,
+            content: miraResponse?.response || miraResponse?.advice || ''
+          }}
+          pet={pet}
+          pillar={pillar}
+          conversationContext={userMessage}
+          onSendToConcierge={(data) => sendToConcierge({
+            card_type: data.card_type,
+            card_title: data.card_title,
+            card_content: data.card_content,
+            request_formal_version: data.request_formal_version,
+            additional_notes: data.additional_notes
+          })}
+          onClose={onClose}
+        />
+      );
+
+    case VAULT_TYPES.BOOKING:
+      const serviceType = detectServiceType(userMessage);
+      return (
+        <BookingVault
+          serviceType={serviceType}
+          pet={pet}
+          pillar={pillar}
+          suggestedProviders={miraResponse?.providers || []}
+          onSendToConcierge={(data) => sendToConcierge({
+            service_type: data.service_type,
+            preferred_date: data.preferred_date,
+            preferred_time: data.preferred_time,
+            location: data.location,
+            special_requirements: data.special_requirements
+          })}
+          onClose={onClose}
+        />
+      );
+
+    case VAULT_TYPES.PLACES:
+      const placeType = detectPlaceType(userMessage);
+      return (
+        <PlacesVault
+          places={miraResponse?.places || miraResponse?.nearby_places?.places || []}
+          placeType={placeType}
+          location={miraResponse?.location || ''}
+          pet={pet}
+          pillar={pillar}
+          onSendToConcierge={(data) => sendToConcierge({
+            place_type: data.place_type,
+            location: data.location,
+            selected_places: data.selected_places,
+            need_reservation: data.need_reservation,
+            reservation_details: data.reservation_details
+          })}
+          onClose={onClose}
+        />
+      );
+
+    case VAULT_TYPES.CUSTOM:
+      return (
+        <CustomVault
+          pet={pet}
+          pillar={pillar}
+          initialRequest={userMessage}
+          onSendToConcierge={(data) => sendToConcierge({
+            description: data.description,
+            requirements: data.requirements,
+            budget: data.budget,
+            timeline: data.timeline
+          })}
+          onClose={onClose}
+        />
+      );
+
+    case VAULT_TYPES.EMERGENCY:
+      const emergencyType = detectEmergencyType(userMessage);
+      return (
+        <EmergencyVault
+          emergencyType={emergencyType}
+          pet={pet}
+          pillar="emergency"
+          onSendToConcierge={(data) => sendToConcierge({
+            emergency_type: data.emergency_type,
+            symptoms: data.symptoms,
+            action_taken: data.action_taken,
+            location: data.location,
+            is_urgent: true
+          })}
+          onClose={onClose}
+        />
+      );
+
+    case VAULT_TYPES.MEMORIAL:
+      return (
+        <MemorialVault
+          pet={pet}
+          pillar="farewell"
+          onSendToConcierge={(data) => sendToConcierge({
+            selected_services: data.selected_services,
+            special_wishes: data.special_wishes,
+            is_sensitive: true
+          })}
+          onClose={onClose}
+        />
+      );
+
+    case VAULT_TYPES.ADOPTION:
+      return (
+        <AdoptionVault
+          pet={pet}
+          pillar="adopt"
+          onSendToConcierge={(data) => sendToConcierge({
+            pet_type: data.pet_type,
+            breed_preference: data.breed_preference,
+            age_preference: data.age_preference,
+            living_space: data.living_space,
+            has_other_pets: data.has_other_pets,
+            has_children: data.has_children,
+            experience_level: data.experience_level,
+            additional_info: data.additional_info
+          })}
+          onClose={onClose}
+        />
+      );
+
+    default:
+      // No vault needed
+      return null;
+  }
+};
+
+export default VaultManager;
