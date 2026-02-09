@@ -8025,30 +8025,50 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                 celebration_keywords = ['birthday', 'celebrate', 'party', 'gotcha', 'anniversary', 'cake']
                 is_celebration_context = any(kw in user_message.lower() for kw in celebration_keywords) or search_pillar == 'celebrate'
                 
-                # Fetch breed-specific products - prioritize celebration items if applicable
-                breed_query = {
-                    "breed_metadata.breed_name": detected_breed,
-                    "is_breed_specific": True
-                }
+                breed_products = []
                 
                 if is_celebration_context:
-                    # First get celebration-specific breed products (cakes, party hats, etc.)
-                    celebration_breed_products = await db.products_master.find({
-                        **breed_query,
-                        "is_celebration_item": True
-                    }, {"_id": 0}).limit(5).to_list(5)
+                    # PRIORITY 1: Real Shopify breed-cakes (e.g., "Indie" cake from /celebrate/breed-cakes)
+                    shopify_breed_cakes = await db.products_master.find({
+                        "category": "breed-cakes",
+                        "shopify_id": {"$exists": True, "$ne": None},
+                        "name": {"$regex": detected_breed, "$options": "i"}
+                    }, {"_id": 0}).limit(2).to_list(2)
                     
-                    # Then get other breed products with celebration occasions
-                    occasion_breed_products = await db.products_master.find({
-                        **breed_query,
-                        "is_celebration_item": {"$ne": True},
-                        "occasions": {"$in": ["birthday", "gotcha_day", "party"]}
-                    }, {"_id": 0}).limit(3).to_list(3)
+                    if shopify_breed_cakes:
+                        # Add "why_for_pet" message for breed-specific cakes
+                        for cake in shopify_breed_cakes:
+                            cake["why_for_pet"] = f"🎂 Made especially for {detected_breed}s!"
+                        breed_products.extend(shopify_breed_cakes)
+                        logger.info(f"[BREED BOOST] Found {len(shopify_breed_cakes)} Shopify breed-cakes for {detected_breed}")
                     
-                    # Combine: celebration items first, then occasion-tagged items
-                    breed_products = celebration_breed_products + occasion_breed_products
-                    logger.info(f"[BREED BOOST] Celebration context - found {len(celebration_breed_products)} celebration + {len(occasion_breed_products)} occasion products for {detected_breed}")
+                    # PRIORITY 2: Products with breed_metadata (legacy system)
+                    if len(breed_products) < 3:
+                        legacy_breed_products = await db.products_master.find({
+                            "breed_metadata.breed_name": detected_breed,
+                            "is_breed_specific": True,
+                            "is_celebration_item": True
+                        }, {"_id": 0}).limit(3 - len(breed_products)).to_list(3 - len(breed_products))
+                        breed_products.extend(legacy_breed_products)
+                    
+                    # PRIORITY 3: General celebration accessories (bandanas, hats) that match breed
+                    if len(breed_products) < 5:
+                        celebration_accessories = await db.products_master.find({
+                            "category": {"$in": ["accessories", "party_accessories"]},
+                            "$or": [
+                                {"name": {"$regex": detected_breed, "$options": "i"}},
+                                {"tags": {"$regex": detected_breed, "$options": "i"}}
+                            ]
+                        }, {"_id": 0}).limit(5 - len(breed_products)).to_list(5 - len(breed_products))
+                        breed_products.extend(celebration_accessories)
+                    
+                    logger.info(f"[BREED BOOST] Celebration context - total {len(breed_products)} breed products for {detected_breed}")
                 else:
+                    # Non-celebration context - use original breed_metadata query
+                    breed_query = {
+                        "breed_metadata.breed_name": detected_breed,
+                        "is_breed_specific": True
+                    }
                     breed_products = await db.products_master.find(breed_query, {"_id": 0}).limit(6).to_list(6)
                 
                 if breed_products:
