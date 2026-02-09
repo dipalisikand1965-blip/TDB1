@@ -81,7 +81,7 @@ class TestServiceFlow:
             pytest.skip(f"Login failed with status {login_response.status_code}")
             
         data = login_response.json()
-        token = data.get("token")
+        token = data.get("access_token") or data.get("token")
         
         if token:
             session.headers.update({"Authorization": f"Bearer {token}"})
