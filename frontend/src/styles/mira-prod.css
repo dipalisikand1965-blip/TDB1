@@ -423,22 +423,24 @@
   padding: 12px 16px;
   background: rgba(0, 0, 0, 0.2);
   border-bottom: 1px solid var(--mira-card-border);
-  flex-wrap: nowrap;
+  flex-wrap: nowrap !important;
   overflow-x: auto;
+  overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
+  min-height: 60px;
 }
 
 .mp-card-header::-webkit-scrollbar {
   display: none;
 }
 
-/* Header elements alignment */
+/* Header elements alignment - all items stay in single row */
 .mp-card-header > * {
   flex-shrink: 0;
 }
 
-/* Push icons to the right */
+/* Push help button and icons to the right */
 .mp-header-help {
   margin-left: auto;
 }
