@@ -2656,24 +2656,15 @@ const MiraDemoPage = () => {
         miraResponseText = `${moodResponse.intro} ${moodResponse.suggestion}\n\n${miraResponseText}`;
         console.log('[MOOD] Added mood-aware intro to response');
         
-        // Save this to conversation memory if significant
+        // Save this to conversation memory if significant (using extracted helper)
         if (moodContext.should_save_memory && pet?.id) {
           saveConversationMemory({
             petId: pet.id,
-            topic: 'mood_concern',
-            summary: moodContext.concern_level,
+            topic: 'behavior',
+            summary: `${pet.name} ${moodContext.matched_indicator}`,
             query: inputQuery,
             advice: moodResponse.suggestion
           });
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              pet_id: pet.id,
-              topic: 'behavior',
-              summary: `${pet.name} ${moodContext.matched_indicator}`,
-              user_query: inputQuery,
-              mira_advice: moodResponse.suggestion
-            })
-          }).catch(e => console.log('[MEMORY] Failed to save:', e.message));
         }
       }
       
