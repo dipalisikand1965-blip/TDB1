@@ -637,6 +637,22 @@ const MiraDemoPage = () => {
   const { user, token } = useAuth();
   const navigate = useNavigate();
   
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // PET MANAGEMENT - Extracted to usePet hook (Stage 1 Refactoring)
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const {
+    pet,
+    setPet,
+    allPets,
+    setAllPets,
+    showPetSelector,
+    setShowPetSelector,
+    isLoadingPets,
+    loadUserPets,
+    switchPet,
+    isRealPet
+  } = usePet({ user, token });
+  
   // State
   const [activeScenario, setActiveScenario] = useState(null);
   const [showScenarios, setShowScenarios] = useState(true);
