@@ -387,7 +387,7 @@ tip_card = {
 # KNOWN ISSUES
 
 1. **ElevenLabs quota exceeded** - Using OpenAI TTS fallback (`shimmer` voice)
-2. **MiraDemoPage.jsx is ~5779 lines** - Refactoring IN PROGRESS (was 5,791)
+2. **MiraDemoPage.jsx is ~5778 lines** - Refactoring IN PROGRESS (was 5,791)
 3. **Screenshot tool crashes** on MiraDemoPage (too large)
 
 ---
@@ -397,30 +397,29 @@ tip_card = {
 ## Progress Summary
 | Metric | Before | After | Change |
 |--------|--------|-------|--------|
-| Lines | 5,791 | 5,779 | -12 |
-| useState hooks | 67 | 63 | -4 |
+| Lines | 5,791 | 5,778 | -13 |
+| useState hooks | 67 | 61 | -6 |
 | Target | - | ~1,500 | 74% to go |
 
 ## Completed ✅
-- ✅ Created `usePet` hook - Pet selection & management
+- ✅ Created & integrated `usePet` hook - Pet selection & management
 - ✅ Created `useVoice` hook - Voice I/O (created, not yet integrated)
-- ✅ Created `useVault` hook - Picks & vault management
-- ✅ Integrated `usePet` hook into MiraDemoPage.jsx
-- ✅ Integrated `useVault` hook into MiraDemoPage.jsx
-- ✅ Moved 10 useState declarations to hooks
+- ✅ Created & integrated `useVault` hook - Picks & vault management
+- ✅ Created & integrated `useSession` hook - Session ID & recovery
+- ✅ Moved 12 useState declarations to hooks
 - ✅ All code compiles and runs correctly
 
 ## Hooks Location
-- `/app/frontend/src/hooks/mira/usePet.js`
-- `/app/frontend/src/hooks/mira/useVoice.js`
-- `/app/frontend/src/hooks/mira/useVault.js`
-- `/app/frontend/src/hooks/mira/index.js`
+```
+/app/frontend/src/hooks/mira/
+├── index.js        - Exports all hooks
+├── usePet.js       - Pet management (✅ integrated)
+├── useVoice.js     - Voice I/O (⏳ pending)
+├── useVault.js     - Picks/vault (✅ integrated)
+└── useSession.js   - Session management (✅ integrated)
+```
 
-## Remaining Work (4-5 Stages)
-
-### Stage 3: useSession hook (~200 lines)
-- sessionId, sessionRecovered
-- Session recovery/persistence logic
+## Remaining Work (3-4 Stages)
 
 ### Stage 4: useConversation hook (~300 lines)
 - conversationHistory, conversationContext
