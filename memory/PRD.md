@@ -1,5 +1,5 @@
 # MIRA OS - COMPREHENSIVE HANDOVER DOCUMENT
-## Session: December 2025
+## Session: February 2026
 ## For: Next Agent
 
 ---
@@ -19,14 +19,43 @@
 
 # EXECUTIVE SUMMARY
 
-## This Session Focus:
+## This Session Focus (February 2026):
+1. **Picks Vault Handoff to Concierge** ✅ NEW
+2. **Session Persistence Verification** ✅ NEW
+3. **Picks History API Fix** ✅ NEW
+
+## Previous Session:
 1. **Full Product & Service Audit** ✅
 2. **Semantic Tagging Cleanup** ✅
 3. **Cross-Pillar Contamination Fix** ✅
 4. **Picks System Analysis** ✅
 
-## Key Achievement:
-**Data is now 100% clean for pillar-locked picks!**
+## Key Achievement (This Session):
+**"Mira is the brain, Concierge is the hand" - Picks handoff flow is now COMPLETE!**
+
+---
+
+# P0 COMPLETED (February 2026) ✅
+
+### 1. Picks Vault Auto-Save ✅
+When Mira shows products to a user, they are now automatically saved to the ticket's `picks_vault` for the Concierge to act upon.
+
+**Changes Made:**
+- `mira_routes.py` line ~8667-8704: Added auto-save logic in main chat endpoint
+- Response now includes `picks_vault: { saved: true, ticket_id, picks_count }`
+- Picks saved to `mira_tickets` collection with proper pet context
+
+### 2. Pet Context Fix for Guest Users ✅
+Fixed bug where `pet_context` was not being saved to tickets for non-logged-in users.
+
+**Changes Made:**
+- `mira_routes.py` line ~6538: Changed ticket creation to use `selected_pet or request.pet_context`
+
+### 3. Picks History Endpoint Fix ✅
+Fixed the `/api/mira/picks-history/{pet_id}` endpoint which had orphaned code and wasn't working.
+
+**Changes Made:**
+- `mira_routes.py` line ~13169: Rewrote endpoint to properly query both `mira_tickets` and `service_desk_tickets`
 
 ---
 
