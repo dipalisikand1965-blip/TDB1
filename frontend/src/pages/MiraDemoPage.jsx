@@ -4221,6 +4221,22 @@ const MiraDemoPage = () => {
                   {/* Subtitle */}
                   <p className="hero-subtitle">Curated with love for {pet.name}</p>
                   
+                  {/* Proactive Greeting - Time/Context based */}
+                  {proactiveGreeting && (
+                    <div 
+                      className={`proactive-greeting ${proactiveGreeting.hasAlert ? 'has-alert' : ''}`}
+                      onClick={() => {
+                        if (proactiveGreeting.hasAlert) {
+                          handleQuickReply(proactiveGreeting.text);
+                        }
+                      }}
+                    >
+                      <span className="greeting-icon">{proactiveGreeting.icon}</span>
+                      <span className="greeting-text">{proactiveGreeting.text}</span>
+                      {proactiveGreeting.hasAlert && <ChevronRight className="greeting-arrow" />}
+                    </div>
+                  )}
+                  
                   {/* Soul Traits */}
                   <div className="soul-traits">
                     {(pet.soulTraits || [
