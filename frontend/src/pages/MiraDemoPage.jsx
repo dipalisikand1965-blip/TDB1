@@ -941,13 +941,14 @@ const MiraDemoPage = () => {
       if (!pet.id || pet.id === 'demo') return;
       
       try {
-        // Fetch celebrations, health reminders, health vault status, weather, and bundles in parallel
-        const [celebResponse, healthResponse, vaultResponse, weatherResponse, bundlesResponse] = await Promise.all([
+        // Fetch celebrations, health reminders, health vault status, weather, bundles, AND new proactive alerts
+        const [celebResponse, healthResponse, vaultResponse, weatherResponse, bundlesResponse, proactiveResponse] = await Promise.all([
           fetch(`${API_URL}/api/mira/celebrations/${pet.id}`),
           fetch(`${API_URL}/api/mira/health-reminders/${pet.id}`),
           fetch(`${API_URL}/api/mira/health-vault/status/${pet.id}`),
           fetch(`${API_URL}/api/mira/weather-suggestions/${pet.id}`),
-          fetch(`${API_URL}/api/mira/bundles/${pet.id}`)
+          fetch(`${API_URL}/api/mira/bundles/${pet.id}`),
+          fetch(`${API_URL}/api/mira/proactive/alerts/${pet.id}`)  // NEW: Vaccination, Birthday, Grooming alerts
         ]);
         
         const celebData = celebResponse.ok ? await celebResponse.json() : { celebrations: [] };
@@ -955,6 +956,7 @@ const MiraDemoPage = () => {
         const vaultData = vaultResponse.ok ? await vaultResponse.json() : { completeness: 100, missing_fields: [] };
         const weatherData = weatherResponse.ok ? await weatherResponse.json() : { suggestions: [] };
         const bundlesData = bundlesResponse.ok ? await bundlesResponse.json() : { bundles: [] };
+        const proactiveData = proactiveResponse.ok ? await proactiveResponse.json() : { alerts: [], critical_count: 0 };
         
         setProactiveAlerts({
           celebrations: celebData.celebrations || [],
@@ -962,7 +964,10 @@ const MiraDemoPage = () => {
           weatherSuggestions: weatherData.suggestions || [],
           weather: weatherData.weather || {},
           bundles: bundlesData.bundles || [],
-          hasUrgent: healthData.has_urgent || celebData.celebrations?.some(c => c.is_today)
+          // NEW: Smart proactive alerts (vaccination, birthday, grooming)
+          smartAlerts: proactiveData.alerts || [],
+          criticalCount: proactiveData.critical_count || 0,
+          hasUrgent: healthData.has_urgent || celebData.celebrations?.some(c => c.is_today) || proactiveData.critical_count > 0
         });
         
         // Also fetch places, stats, and new E027-E034 features for ticker
