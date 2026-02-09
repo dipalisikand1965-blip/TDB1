@@ -176,13 +176,30 @@ async def add_message_to_session(
     if extra_data:
         message.update(extra_data)
     
+    # Check if this message makes the session "important" (never delete)
+    important_intents = ["purchase", "booking", "order", "buy", "book_appointment", "schedule"]
+    is_important = (
+        intent and any(imp in intent.lower() for imp in important_intents)
+    ) or (
+        execution_type and execution_type in ["complete_purchase", "confirm_booking", "place_order"]
+    )
+    
     try:
+        update_doc = {
+            "$push": {"messages": message},
+            "$set": {"updated_at": now}
+        }
+        
+        # Mark as important if needed
+        if is_important:
+            update_doc["$set"]["retention_status"] = "important"
+            update_doc["$set"]["important_reason"] = f"Contains {intent or execution_type}"
+            update_doc["$set"]["has_purchase"] = True if "purchase" in str(intent).lower() or "order" in str(intent).lower() else None
+            update_doc["$set"]["has_booking"] = True if "book" in str(intent).lower() else None
+        
         result = await db.mira_sessions.update_one(
             {"session_id": session_id},
-            {
-                "$push": {"messages": message},
-                "$set": {"updated_at": now}
-            }
+            update_doc
         )
         
         if result.modified_count == 0:
