@@ -1840,6 +1840,9 @@ from mira_memory_routes import router as mira_memory_router, set_memory_routes_d
 # Import Mira Session Persistence
 from mira_session_persistence import router as mira_session_router, set_session_db
 
+# Import Mira Retention System (Golden Standard)
+from mira_retention import retention_router as mira_retention_router
+
 # Import Mira Voice Output (TTS)
 from mira_voice import router as mira_voice_router
 
