@@ -10,6 +10,7 @@
 
 import React from 'react';
 import { ChevronDown } from 'lucide-react';
+import hapticFeedback from '../../utils/haptic';
 
 const ScrollToBottomButton = ({ 
   visible, 
@@ -18,9 +19,14 @@ const ScrollToBottomButton = ({
 }) => {
   if (!visible) return null;
 
+  const handleClick = (e) => {
+    hapticFeedback.navigate(e);
+    onClick?.();
+  };
+
   return (
     <button 
-      onClick={onClick}
+      onClick={handleClick}
       data-testid="scroll-to-bottom-btn"
       style={{
         position: 'fixed',
