@@ -8,40 +8,57 @@
 
 | File | Purpose |
 |------|---------|
+| `/app/memory/REFACTORING_HANDOVER.md` | **NEW** - Detailed refactoring progress & next steps |
 | `/app/memory/MIRA_DOCTRINE.md` | THE BIBLE - Voice, tone, behavior |
 | `/app/memory/MIRA_VOICE_RULES.md` | Voice sync & pet description rules |
 | `/app/memory/MIRA_FORMATTING_GUIDE.md` | High-class formatting for iOS/Android/Desktop |
 | `/app/memory/PICKS_DATA_MODEL.md` | Pillar-locked picks data model |
 | `/app/memory/PICKS_CURRENT_ANALYSIS.md` | Current Picks system analysis |
-| `/app/memory/MIRA_DEMO_FEATURE_INVENTORY.md` | **NEW** - Complete feature inventory before refactoring |
+| `/app/memory/MIRA_DEMO_FEATURE_INVENTORY.md` | Complete feature inventory before refactoring |
 | `/app/memory/ROADMAP_TO_100.md` | Full roadmap to 100% |
 
 ---
 
-# 🛡️ REFACTORING SAFETY NET
+# 🛡️ REFACTORING STATUS (February 9, 2026)
 
-## Backup Created
+## Progress Summary
+| Metric | Before | After | Change |
+|--------|--------|-------|--------|
+| MiraDemoPage.jsx | 5,791 | **5,417** | -374 lines |
+| useState hooks | 67 | 61 | -6 |
+| Hooks Created | 0 | 4 | +4 |
+| Components Extracted | 0 | 4 | +4 (913 lines) |
+
+## Files Created
+```
+/app/frontend/src/hooks/mira/
+├── usePet.js       ✅ integrated
+├── useVault.js     ✅ integrated  
+├── useSession.js   ✅ integrated
+└── useVoice.js     ⏳ pending
+
+/app/frontend/src/components/Mira/
+├── WelcomeHero.jsx     (320 lines)
+├── ChatMessage.jsx     (368 lines)
+├── MiraTray.jsx        (108 lines)
+└── PastChatsPanel.jsx  (117 lines)
+```
+
+## Backup
 - **File**: `/app/backups/MiraDemoPage_BACKUP_20260209_092521.jsx`
-- **Size**: 262KB, 5,791 lines
 - **Feature Inventory**: `/app/memory/MIRA_DEMO_FEATURE_INVENTORY.md`
-- **Verification Script**: `/app/scripts/verify_mira_demo.sh`
-
-## MiraDemoPage.jsx Stats
-- 67 useState hooks
-- 16 useEffect hooks  
-- 50+ functions
-- **MUST PRESERVE ALL FUNCTIONALITY**
 
 ---
 
 # EXECUTIVE SUMMARY
 
 ## This Session Focus (February 2026):
-1. **Picks Vault Handoff to Concierge** ✅ NEW
-2. **Session Persistence Verification** ✅ NEW
-3. **Picks History API Fix** ✅ NEW
-4. **Complete Vault System** ✅ NEW (8 vault types)
-5. **VaultManager Integration** ✅ NEW
+1. **MiraDemoPage Refactoring** 🔄 IN PROGRESS
+2. **Picks Vault Handoff to Concierge** ✅ 
+3. **Session Persistence Verification** ✅
+4. **Picks History API Fix** ✅
+5. **Complete Vault System** ✅ (8 vault types)
+6. **VaultManager Integration** ✅
 
 ## Previous Session:
 1. **Full Product & Service Audit** ✅
