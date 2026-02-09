@@ -43,6 +43,7 @@ import ConciergePanel from '../components/Mira/ConciergePanel';
 import HelpModal from '../components/Mira/HelpModal';
 import LearnModal from '../components/Mira/LearnModal';
 import ServiceRequestModal from '../components/Mira/ServiceRequestModal';
+import HealthVaultWizard from '../components/Mira/HealthVaultWizard';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // EXTRACTED HOOKS - Stage 1, 2, 3 Refactoring
