@@ -387,8 +387,28 @@ tip_card = {
 # KNOWN ISSUES
 
 1. **ElevenLabs quota exceeded** - Using OpenAI TTS fallback (`shimmer` voice)
-2. **MiraDemoPage.jsx is ~6000 lines** - Needs refactoring
+2. **MiraDemoPage.jsx is ~6000 lines** - Needs refactoring (IN PROGRESS)
 3. **Screenshot tool crashes** on MiraDemoPage (too large)
+
+---
+
+# REFACTORING STATUS (Stage 1 - February 2026)
+
+## Completed
+- ✅ Created `usePet` hook at `/app/frontend/src/hooks/mira/usePet.js`
+- ✅ Created `useVoice` hook at `/app/frontend/src/hooks/mira/useVoice.js`
+- ✅ Integrated `usePet` hook into MiraDemoPage.jsx
+- ✅ Removed 3 duplicate useState declarations (pet, allPets, showPetSelector)
+- ✅ Code compiles and runs correctly
+
+## Pending (Stage 1 Continuation)
+- ⏳ Integrate `useVoice` hook (complex due to scattered voice timeout logic)
+- ⏳ Remove duplicate pet-loading useEffects (kept for now due to complex transformation)
+
+## Future Stages
+- Stage 2: Extract `useChat` hook (conversation/messages management)
+- Stage 3: Extract `useVault` hook (vault detection and management)
+- Stage 4: Extract UI components (ChatHistory, MessageInput, PetSelector)
 
 ---
 
