@@ -3682,64 +3682,13 @@ const MiraDemoPage = () => {
                 />
               ))}
               
-              {/* MIRA MODE INDICATOR - Like ChatGPT's "Thinking" */}
-              {showSkeleton && isProcessing && (
-                <div className="mp-msg-mira mp-skeleton-loader">
-                  <div className="mp-mira-avatar"><Sparkles className="pulse" /></div>
-                  <div className="mp-skeleton-content">
-                    <div className={`mp-mode-badge mp-mode-${miraMode}`}>
-                      {miraMode === 'thinking' && (
-                        <>
-                          <span className="mp-mode-icon">🧠</span>
-                          <span className="mp-mode-label">Mira is getting her thoughts together for {pet.name}…</span>
-                        </>
-                      )}
-                      {miraMode === 'instant' && (
-                        <>
-                          <span className="mp-mode-icon">⚡</span>
-                          <span className="mp-mode-label"></span>
-                        </>
-                      )}
-                      {miraMode === 'comfort' && (
-                        <>
-                          <span className="mp-mode-icon">💜</span>
-                          <span className="mp-mode-label">I'm here with you. We can go as slowly as you need.</span>
-                        </>
-                      )}
-                      {miraMode === 'emergency' && (
-                        <>
-                          <span className="mp-mode-icon">🚨</span>
-                          <span className="mp-mode-label">This sounds serious enough that a vet should see {pet.name} as soon as possible.</span>
-                        </>
-                      )}
-                      {(miraMode === 'ready' || !miraMode) && (
-                        <>
-                          <span className="mp-mode-icon">✨</span>
-                          <span className="mp-mode-label">Mira is thinking about {pet.name}...</span>
-                        </>
-                      )}
-                    </div>
-                    <div className="mp-skeleton-lines">
-                      <div className="mp-skeleton-line"></div>
-                      <div className="mp-skeleton-line short"></div>
-                    </div>
-                  </div>
-                </div>
-              )}
-              
-              {/* Loading Indicator - Quick dots before skeleton */}
-              {isProcessing && !showSkeleton && (
-                <div className="mp-msg-mira">
-                  <div className="mp-loading">
-                    <div className="mp-mira-avatar"><Sparkles /></div>
-                    <div className="mp-loading-dots">
-                      <div className="mp-loading-dot"></div>
-                      <div className="mp-loading-dot"></div>
-                      <div className="mp-loading-dot"></div>
-                    </div>
-                  </div>
-                </div>
-              )}
+              {/* MIRA MODE INDICATOR - Extracted to MiraLoader component (P2) */}
+              <MiraLoader
+                isProcessing={isProcessing}
+                showSkeleton={showSkeleton}
+                mode={miraMode}
+                petName={pet.name}
+              />
               
               <div ref={messagesEndRef} />
               
