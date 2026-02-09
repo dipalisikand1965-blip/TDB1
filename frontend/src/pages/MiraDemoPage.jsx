@@ -5760,7 +5760,7 @@ const MiraDemoPage = () => {
               services: miraPicks.services,
               response: activeVaultData,
               pillar: currentPillar,
-              ...activeVaultData
+              ...(activeVaultData || {})
             }}
             userMessage={vaultUserMessage}
             pet={pet}
