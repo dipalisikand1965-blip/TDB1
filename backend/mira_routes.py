@@ -3733,14 +3733,21 @@ def detect_emotional_undertone(message: str) -> dict:
         }
     
     # OVERWHELM - Too many options/don't know where to start
+    # Must be about CHOICES/OPTIONS, not behavior problems
     overwhelm_phrases = [
-        "don't know where to start", "too many", "overwhelmed",
-        "so confusing", "so confused", "too much", "i don't know what", 
-        "dont know what", "can't decide", "cant decide",
-        "help me choose", "no idea", "lost on", "confused about",
-        "which one", "what should i", "what do i"
+        "don't know where to start", "too many options", "overwhelmed by options",
+        "so confusing", "so confused", "too much choice", "too many choices",
+        "can't decide between", "cant decide between", "which one should i pick",
+        "help me choose between", "no idea which", "lost on which", "confused about which",
+        "which one is better", "what should i buy", "what should i choose",
+        "so many to choose from", "too many products", "overwhelmed with choices"
     ]
-    if any(phrase in message_lower for phrase in overwhelm_phrases):
+    # Additional check: make sure it's about choices, not behavior
+    behavior_keywords = ["barking", "biting", "jumping", "chewing", "pulling", "aggression", 
+                        "anxiety", "scared", "fearful", "destructive", "potty", "pee", "poop"]
+    is_behavior_question = any(bk in message_lower for bk in behavior_keywords)
+    
+    if any(phrase in message_lower for phrase in overwhelm_phrases) and not is_behavior_question:
         return {
             "undertone": "overwhelm",
             "response_approach": "simplify",
