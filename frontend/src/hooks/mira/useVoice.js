@@ -1,0 +1,363 @@
+/**
+ * useVoice - Voice Input/Output Hook for Mira
+ * ============================================
+ * Handles:
+ * - Voice input (speech recognition)
+ * - Voice output (TTS via ElevenLabs)
+ * - iOS/mobile compatibility
+ * 
+ * Extracted from MiraDemoPage.jsx - Stage 1 Refactoring
+ */
+
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { API_URL } from '../../utils/api';
+import hapticFeedback from '../../utils/haptic';
+
+/**
+ * Detect voice personality from response content
+ */
+const detectVoicePersonality = (text) => {
+  const lowerText = (text || '').toLowerCase();
+  
+  // EMERGENCY - Urgent, clear, professional
+  if (lowerText.includes('emergency') || lowerText.includes('immediately') || 
+      lowerText.includes('urgent') || lowerText.includes('vet right away')) {
+    return 'emergency';
+  }
+  
+  // COMFORT - Soft, gentle, reassuring
+  if (lowerText.includes('sorry') || lowerText.includes('understand') ||
+      lowerText.includes('difficult') || lowerText.includes('here for you') ||
+      lowerText.includes('grief') || lowerText.includes('loss')) {
+    return 'comfort';
+  }
+  
+  // CELEBRATION - Warm, excited, joyful
+  if (lowerText.includes('birthday') || lowerText.includes('congratulations') ||
+      lowerText.includes('celebrate') || lowerText.includes('party') ||
+      lowerText.includes('gotcha day') || lowerText.includes('anniversary')) {
+    return 'celebration';
+  }
+  
+  // INFORMATIVE - Clear, helpful, professional
+  if (lowerText.includes('here\'s what') || lowerText.includes('you should') ||
+      lowerText.includes('recommend') || lowerText.includes('tip')) {
+    return 'informative';
+  }
+  
+  // Default - Friendly, warm Mira voice
+  return 'friendly';
+};
+
+/**
+ * useVoice Hook
+ * 
+ * @param {Object} options
+ * @param {Function} options.onTranscript - Called when voice input produces text
+ * @param {Function} options.onSubmit - Called to submit the transcript
+ * @returns {Object} Voice state and controls
+ */
+const useVoice = ({ onTranscript, onSubmit } = {}) => {
+  // Voice OUTPUT state (TTS)
+  const [voiceEnabled, setVoiceEnabled] = useState(true); // Voice ON by default per MIRA SPEED DOCTRINE
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const audioRef = useRef(null);
+  const voiceTimeoutRef = useRef(null);
+  const skipVoiceOnNextResponseRef = useRef(false);
+  
+  // Voice INPUT state (Speech Recognition)
+  const [isListening, setIsListening] = useState(false);
+  const [voiceError, setVoiceError] = useState(null);
+  const [voiceSupported, setVoiceSupported] = useState(true);
+  const recognitionRef = useRef(null);
+  
+  // Refs for callbacks
+  const onTranscriptRef = useRef(onTranscript);
+  const onSubmitRef = useRef(onSubmit);
+  
+  // Keep refs updated
+  useEffect(() => {
+    onTranscriptRef.current = onTranscript;
+    onSubmitRef.current = onSubmit;
+  }, [onTranscript, onSubmit]);
+  
+  // Initialize speech recognition
+  useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    
+    if (!SpeechRecognition) {
+      setVoiceSupported(false);
+      console.log('[useVoice] Speech recognition not supported');
+      return;
+    }
+    
+    try {
+      recognitionRef.current = new SpeechRecognition();
+      recognitionRef.current.continuous = false;
+      recognitionRef.current.interimResults = true;
+      recognitionRef.current.lang = 'en-US';
+      recognitionRef.current.maxAlternatives = 1;
+      
+      recognitionRef.current.onresult = (event) => {
+        let finalTranscript = '';
+        let interimTranscript = '';
+        
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            finalTranscript += transcript;
+          } else {
+            interimTranscript += transcript;
+          }
+        }
+        
+        // Show interim results while speaking
+        if (interimTranscript && onTranscriptRef.current) {
+          onTranscriptRef.current(interimTranscript);
+        }
+        
+        // Submit on final result
+        if (finalTranscript) {
+          if (onTranscriptRef.current) {
+            onTranscriptRef.current(finalTranscript);
+          }
+          setIsListening(false);
+          setVoiceError(null);
+          
+          if (onSubmitRef.current) {
+            setTimeout(() => {
+              onSubmitRef.current(finalTranscript);
+            }, 300);
+          }
+        }
+      };
+      
+      recognitionRef.current.onerror = (event) => {
+        console.error('[useVoice] Speech recognition error:', event.error);
+        setIsListening(false);
+        
+        switch (event.error) {
+          case 'not-allowed':
+          case 'permission-denied':
+            setVoiceError('Microphone access denied. Please allow microphone in your browser settings.');
+            break;
+          case 'no-speech':
+            setVoiceError('No speech detected. Please try again.');
+            break;
+          case 'audio-capture':
+            setVoiceError('No microphone found. Please connect a microphone.');
+            break;
+          case 'network':
+            setVoiceError('Network error. Please check your connection.');
+            break;
+          case 'aborted':
+            // User aborted, no error needed
+            break;
+          default:
+            setVoiceError(`Voice input error: ${event.error}`);
+        }
+      };
+      
+      recognitionRef.current.onend = () => {
+        setIsListening(false);
+      };
+      
+    } catch (error) {
+      console.error('[useVoice] Failed to initialize speech recognition:', error);
+      setVoiceSupported(false);
+    }
+    
+    return () => {
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.stop();
+        } catch (e) {
+          // Ignore
+        }
+      }
+    };
+  }, []);
+  
+  // Stop speaking
+  const stopSpeaking = useCallback(() => {
+    if (voiceTimeoutRef.current) {
+      clearTimeout(voiceTimeoutRef.current);
+      voiceTimeoutRef.current = null;
+    }
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      audioRef.current = null;
+    }
+    setIsSpeaking(false);
+  }, []);
+  
+  // Speak text with Mira's voice (TTS)
+  const speak = useCallback(async (text) => {
+    if (!voiceEnabled || !text) return;
+    
+    // Skip if flagged
+    if (skipVoiceOnNextResponseRef.current) {
+      skipVoiceOnNextResponseRef.current = false;
+      return;
+    }
+    
+    // Stop any existing voice
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      audioRef.current = null;
+    }
+    
+    try {
+      setIsSpeaking(true);
+      
+      const personality = detectVoicePersonality(text);
+      console.log('[useVoice] Speaking with personality:', personality);
+      
+      // Clean text for natural speech
+      let cleanText = text
+        .replace(/[🎉🐕✨🦴💜🎂🏥☀️🌤️🌙🌟🐾🎒📅📋😊💝🎁🎤💡]/g, '')
+        .replace(/\*\*/g, '')
+        .replace(/[*#_~`]/g, '')
+        .replace(/\[.*?\]/g, '')
+        .replace(/\n/g, ' ')
+        .replace(/®/g, '')
+        .trim();
+      
+      // Smart truncation at sentence boundary (max 800 chars)
+      if (cleanText.length > 800) {
+        const truncated = cleanText.substring(0, 800);
+        const lastSentenceEnd = Math.max(
+          truncated.lastIndexOf('. '),
+          truncated.lastIndexOf('? '),
+          truncated.lastIndexOf('! ')
+        );
+        cleanText = lastSentenceEnd > 400 
+          ? truncated.substring(0, lastSentenceEnd + 1) 
+          : truncated;
+      }
+      
+      const response = await fetch(`${API_URL}/api/tts/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: cleanText, personality })
+      });
+      
+      if (!response.ok) throw new Error('TTS request failed');
+      
+      const data = await response.json();
+      
+      const audio = new Audio();
+      audio.preload = 'auto';
+      audio.volume = 1.0;
+      
+      audio.onended = () => {
+        console.log('[useVoice] Finished speaking');
+        setIsSpeaking(false);
+      };
+      
+      audio.onerror = () => setIsSpeaking(false);
+      
+      audio.oncanplaythrough = () => {
+        audio.play().catch((e) => {
+          console.log('[useVoice] Playback blocked:', e.message);
+          setIsSpeaking(false);
+        });
+      };
+      
+      audio.src = `data:audio/mpeg;base64,${data.audio_base64}`;
+      audio.load();
+      audioRef.current = audio;
+      
+    } catch (error) {
+      console.log('[useVoice] TTS Error:', error.message);
+      setIsSpeaking(false);
+    }
+  }, [voiceEnabled]);
+  
+  // Toggle voice input (listening)
+  const toggleListening = useCallback(async () => {
+    setVoiceError(null);
+    
+    if (!recognitionRef.current) {
+      setVoiceError('Voice input not available in this browser. Try Chrome or Safari.');
+      return;
+    }
+    
+    if (isListening) {
+      hapticFeedback.voiceStop();
+      try {
+        recognitionRef.current.stop();
+      } catch (e) {
+        // Ignore
+      }
+      setIsListening(false);
+    } else {
+      hapticFeedback.voiceStart();
+      
+      try {
+        // Request microphone permission (iOS Safari)
+        if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          await navigator.mediaDevices.getUserMedia({ audio: true });
+        }
+        
+        recognitionRef.current.start();
+        setIsListening(true);
+      } catch (error) {
+        console.error('[useVoice] Microphone permission error:', error);
+        setVoiceError('Please allow microphone access to use voice input.');
+        setIsListening(false);
+      }
+    }
+  }, [isListening]);
+  
+  // Toggle voice output (TTS enabled/disabled)
+  const toggleVoiceOutput = useCallback(() => {
+    hapticFeedback.toggle();
+    if (isSpeaking && audioRef.current) {
+      audioRef.current.pause();
+      setIsSpeaking(false);
+    }
+    setVoiceEnabled(prev => !prev);
+  }, [isSpeaking]);
+  
+  // Skip voice on next response (for tile clicks)
+  const skipNextVoice = useCallback(() => {
+    skipVoiceOnNextResponseRef.current = true;
+  }, []);
+  
+  // Schedule voice with delay
+  const scheduleVoice = useCallback((text, delay = 500) => {
+    if (voiceTimeoutRef.current) {
+      clearTimeout(voiceTimeoutRef.current);
+    }
+    voiceTimeoutRef.current = setTimeout(() => {
+      speak(text);
+    }, delay);
+  }, [speak]);
+  
+  return {
+    // Voice Output (TTS)
+    voiceEnabled,
+    setVoiceEnabled,
+    isSpeaking,
+    speak,
+    stopSpeaking,
+    toggleVoiceOutput,
+    skipNextVoice,
+    scheduleVoice,
+    
+    // Voice Input (Speech Recognition)
+    isListening,
+    voiceError,
+    voiceSupported,
+    toggleListening,
+    
+    // Refs (for advanced usage)
+    audioRef,
+    recognitionRef
+  };
+};
+
+export default useVoice;
