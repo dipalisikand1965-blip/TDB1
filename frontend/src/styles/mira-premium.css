@@ -375,20 +375,25 @@
   transform: translateY(-1px);
 }
 
-/* Insights button */
+/* Insights button - purple with clear border */
 .mp-header-insights {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 6px 12px;
-  background: rgba(168, 85, 247, 0.15);
-  border: 1px solid rgba(168, 85, 247, 0.3);
-  border-radius: 16px;
+  gap: 6px;
+  padding: 8px 14px;
+  background: rgba(168, 85, 247, 0.2);
+  border: 2px solid rgba(168, 85, 247, 0.5);
+  border-radius: 20px;
   color: #a855f7;
-  font-size: 12px;
-  font-weight: 500;
+  font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
+}
+
+.mp-header-insights:hover {
+  background: rgba(168, 85, 247, 0.3);
+  border-color: #a855f7;
 }
 
 /* Need help button - green with clear border */
