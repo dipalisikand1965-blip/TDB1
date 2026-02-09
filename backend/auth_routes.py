@@ -692,12 +692,14 @@ async def process_google_session(request: dict):
     }
 
 
+class LogoutRequest(BaseModel):
+    session_token: Optional[str] = None
+
 @auth_router.post("/logout")
-async def logout_user(request: dict):
+async def logout_user(request: LogoutRequest = None):
     """Logout user by invalidating session"""
-    session_token = request.get("session_token")
-    if session_token:
-        await db.user_sessions.delete_one({"session_token": session_token})
+    if request and request.session_token:
+        await db.user_sessions.delete_one({"session_token": request.session_token})
     return {"message": "Logged out successfully"}
 
 
