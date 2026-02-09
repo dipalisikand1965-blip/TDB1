@@ -418,10 +418,11 @@
 .mp-card-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 12px;
   padding: var(--space-md) var(--space-lg);
   background: rgba(0, 0, 0, 0.2);
   border-bottom: 1px solid var(--mira-card-border);
+  flex-wrap: wrap;
 }
 
 .mp-card-header-left {
