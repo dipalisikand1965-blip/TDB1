@@ -752,6 +752,79 @@
   margin: 0 auto;
 }
 
+/* ========================================
+   SMART SUGGESTION CHIPS - Below Input
+   Context-aware, accessible, non-intrusive
+   ======================================== */
+.mp-smart-chips {
+  display: flex;
+  gap: 8px;
+  padding: 12px 0 0;
+  max-width: 600px;
+  margin: 0 auto;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.mp-smart-chips::-webkit-scrollbar {
+  display: none;
+}
+
+.mp-smart-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.mp-smart-chip:hover {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: rgba(139, 92, 246, 0.4);
+  color: white;
+  transform: translateY(-1px);
+}
+
+.mp-smart-chip:active {
+  transform: scale(0.96);
+  background: rgba(139, 92, 246, 0.3);
+}
+
+.smart-chip-icon {
+  font-size: 14px;
+}
+
+.smart-chip-text {
+  font-size: 13px;
+}
+
+/* Mobile: horizontal scroll */
+@media (max-width: 480px) {
+  .mp-smart-chips {
+    justify-content: flex-start;
+    flex-wrap: nowrap;
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+  
+  .mp-smart-chip {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+}
+
 .mp-input-row {
   display: flex;
   align-items: center;
