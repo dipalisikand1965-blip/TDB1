@@ -2530,61 +2530,32 @@ const MiraDemoPage = () => {
       }
       
       if (!currentTicket) {
-        // First message - route intent and create ticket
-        const routeResponse = await fetch(`${API_URL}/api/mira/route_intent`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(token && { Authorization: `Bearer ${token}` })
-          },
-          body: JSON.stringify({
-            parent_id: user?.id || 'DEMO-PARENT',
-            pet_id: pet.id,
-            utterance: inputQuery,
-            source_event: 'search',
-            device: 'web',
-            pet_context: {
-              name: pet.name,
-              breed: pet.breed,
-              age_years: parseInt(pet.age) || 3,
-              // Ensure arrays - convert strings to arrays if needed
-              allergies: Array.isArray(pet.sensitivities) ? pet.sensitivities : (pet.sensitivities ? [pet.sensitivities] : []),
-              notes: Array.isArray(pet.traits) ? pet.traits : (pet.traits ? [pet.traits] : []),
-              // E042: Include user's detected city for local places
-              city: pet?.city || pet?.location?.city || userCity || 'Mumbai'
-            }
-          })
+        // First message - route intent and create ticket (using extracted helpers)
+        const intentData = await routeIntent({
+          userId: user?.id,
+          petId: pet.id,
+          query: inputQuery,
+          pet,
+          token,
+          userCity
         });
         
-        const intentData = await routeResponse.json();
         pillar = intentData.pillar;
         intent = intentData.intent_primary;
         lifeState = intentData.life_state;
         
-        // STEP 2: Create/attach ticket
-        const ticketResponse = await fetch(`${API_URL}/api/service_desk/attach_or_create_ticket`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(token && { Authorization: `Bearer ${token}` })
-          },
-          body: JSON.stringify({
-            parent_id: user?.id || 'DEMO-PARENT',
-            pet_id: pet.id,
-            pillar: pillar,
-            intent_primary: intent,
-            intent_secondary: intentData.intent_secondary || [],
-            life_state: lifeState,
-            channel: 'Mira_OS',
-            initial_message: {
-              sender: 'parent',
-              source: 'Mira_OS',
-              text: inputQuery
-            }
-          })
+        // STEP 2: Create/attach ticket (using extracted helper)
+        const ticketData = await createOrAttachTicket({
+          userId: user?.id,
+          petId: pet.id,
+          pillar,
+          intent,
+          intentSecondary: intentData.intent_secondary,
+          lifeState,
+          query: inputQuery,
+          token
         });
         
-        const ticketData = await ticketResponse.json();
         ticketId = ticketData.ticket_id;
         
         setCurrentTicket({
