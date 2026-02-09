@@ -15600,6 +15600,7 @@ set_breed_catalogue_db(db)  # Initialize Breed Catalogue with database
 # Mira AI Concierge System (New)
 app.include_router(mira_router)  # Mira AI routes at /api/mira/*
 app.include_router(mira_proactive_router)  # Mira Proactive System at /api/mira/proactive/*
+app.include_router(mira_notifications_router)  # Mira Notifications at /api/mira/notifications/*
 app.include_router(mira_intelligence_router)  # Mira Intelligence at /api/mira/intelligence/*
 app.include_router(mira_memory_router)  # Mira Relationship Memory at /api/mira/memory/*
 app.include_router(mira_session_router)  # Mira Session Persistence at /api/mira/session/*
