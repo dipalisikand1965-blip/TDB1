@@ -8107,10 +8107,14 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                 img = p.get("image", "") or (p.get("images", [""])[0] if p.get("images") else "")
                 return "unsplash.com" in str(img).lower() and not p.get("shopify_id")
             
+            # Determine celebration context for Shopify preference
+            celebration_keywords_check = ['birthday', 'celebrate', 'party', 'gotcha', 'anniversary', 'cake']
+            is_celebrate_pillar = any(kw in user_message.lower() for kw in celebration_keywords_check) or search_pillar == 'celebrate'
+            
             # Count placeholders
             placeholder_count = sum(1 for p in products if is_placeholder_product(p))
             
-            if placeholder_count > 0 and is_celebration_context:
+            if placeholder_count > 0 and is_celebrate_pillar:
                 logger.info(f"[SHOPIFY PREFERENCE] Found {placeholder_count} placeholder products, looking for Shopify replacements")
                 
                 # Get Shopify products to replace placeholders
