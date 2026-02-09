@@ -2769,39 +2769,19 @@ const MiraDemoPage = () => {
       // ALWAYS suggest concierge - they can handle any request
       const shouldSuggestConcierge = true; // Concierge can do ANYTHING
       
-      const miraMessage = {
-        type: 'mira',
+      // Build Mira message using extracted helper
+      const miraMessage = buildMiraMessage({
         content: miraResponseText,
-        data: {
-          ...data,
-          nearby_places: data.nearby_places,  // Explicitly pass nearby places
-          weather: data.weather,  // Explicitly pass weather
-          response: {
-            ...data.response,
-            products: shouldShowProducts ? data.response?.products : [],
-            suggest_concierge: shouldSuggestConcierge,
-            detected_services: detectedServices,
-            detected_experiences: detectedExperiences,
-            services_from_db: data.response?.services || []  // E014: Services from API
-          }
-        },
-        quickReplies: quickReplies,
-        // ═══════════════════════════════════════════════════════════════════
-        // WORLD CLASS UX: Don't auto-show products/services in conversation
-        // Store them in miraPicks tray - customer opens when ready
-        // ═══════════════════════════════════════════════════════════════════
-        showProducts: false, // Never auto-show - use tray instead
-        showServices: false, // Never auto-show - use tray instead  
-        showExperiences: false, // Never auto-show - use tray instead
-        detectedServices: [], // Moved to tray
-        detectedExperiences: [], // Moved to tray
-        dynamicConciergeRequest: null, // Concierge® always in tray
-        conciergeIsLive: conciergeIsLive,
-        inComfortMode: inComfortMode, // NEW: Emotional support mode
-        stepId: miraStepId,
-        isClarifyingQuestion: isNewClarifyingQuestion,
-        timestamp: new Date()
-      };
+        data,
+        quickReplies,
+        shouldShowProducts,
+        detectedServices,
+        detectedExperiences,
+        conciergeIsLive,
+        inComfortMode,
+        miraStepId,
+        isNewClarifyingQuestion
+      });
       
       // ═══════════════════════════════════════════════════════════════════
       // MIRA PICKS TRAY - Store products/services for "Ready for [Pet]"
