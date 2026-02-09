@@ -477,6 +477,135 @@
   color: var(--mira-purple);
 }
 
+/* ========================================
+   HEADER BAR ELEMENTS - Tiles, Help, Picks
+   All action buttons in one horizontal row
+   ======================================== */
+
+/* Header Tiles - Quick reply options */
+.mp-header-tiles {
+  display: flex;
+  gap: 10px;
+  margin-left: 16px;
+}
+
+.mp-header-tile {
+  padding: 10px 18px;
+  background: rgba(139, 92, 246, 0.25);
+  border: 2px solid rgba(139, 92, 246, 0.6);
+  border-radius: 24px;
+  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.mp-header-tile:hover {
+  background: rgba(139, 92, 246, 0.4);
+  border-color: var(--mira-purple);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+/* Insights button - purple */
+.mp-header-insights {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  background: rgba(168, 85, 247, 0.25);
+  border: 2px solid rgba(168, 85, 247, 0.6);
+  border-radius: 24px;
+  color: #a855f7;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.mp-header-insights:hover {
+  background: rgba(168, 85, 247, 0.4);
+  border-color: #a855f7;
+}
+
+/* Need help button - green */
+.mp-header-help {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  background: rgba(16, 185, 129, 0.25);
+  border: 2px solid rgba(16, 185, 129, 0.6);
+  border-radius: 24px;
+  color: #10b981;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.mp-header-help:hover {
+  background: rgba(16, 185, 129, 0.4);
+  border-color: #10b981;
+}
+
+.mp-header-help span {
+  color: #10b981;
+}
+
+/* Ready for Pet + Picks - pink/magenta gradient */
+.mp-header-picks {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.3), rgba(139, 92, 246, 0.3));
+  border: 2px solid rgba(236, 72, 153, 0.6);
+  border-radius: 24px;
+  color: #ec4899;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  margin-left: auto;
+}
+
+.mp-header-picks:hover {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.45), rgba(139, 92, 246, 0.45));
+  border-color: #ec4899;
+  box-shadow: 0 4px 16px rgba(236, 72, 153, 0.3);
+}
+
+.mp-header-picks-count {
+  background: #ec4899;
+  color: white;
+  padding: 3px 10px;
+  border-radius: 14px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.mp-header-concierge-badge {
+  background: rgba(139, 92, 246, 0.5);
+  padding: 4px 12px;
+  border-radius: 14px;
+  font-size: 11px;
+  font-weight: 700;
+  color: white;
+}
+
+/* Pet avatar in header */
+.mp-header-pet-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(139, 92, 246, 0.5);
+  margin-left: 8px;
+}
+
 /* Card Body */
 .mp-card-body {
   padding: var(--space-lg);
