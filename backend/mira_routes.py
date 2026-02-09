@@ -2656,6 +2656,18 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                 import traceback
                 logger.error(traceback.format_exc())
         
+        # Build concierge confirmation message for service requests
+        concierge_confirmation = None
+        if execution_type == "CONCIERGE" and ticket_id:
+            pet_name = request.pet_context.get("name", "your pet") if request.pet_context else "your pet"
+            concierge_confirmation = {
+                "title": "Request Received! 🎉",
+                "message": f"Your Pet Concierge® has received your request for {pet_name}. They'll get back to you shortly with the best options.",
+                "ticket_id": ticket_id,
+                "show_banner": True
+            }
+            logger.info(f"[CONCIERGE CONFIRM] Service request received - Ticket {ticket_id}")
+        
         # Step 4: Build response
         # For SERVICE intents, ensure NO products even if LLM suggested some
         final_products = []
