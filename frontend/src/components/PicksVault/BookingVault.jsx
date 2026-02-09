@@ -10,11 +10,13 @@ import {
   Check, X, Calendar, Clock, MapPin, 
   Scissors, Stethoscope, GraduationCap, Home, Dog, Camera
 } from 'lucide-react';
+import hapticFeedback from '../../utils/haptic';
 import './BookingVault.css';
 
+// Use centralized haptic utility for iOS + Android support
 const haptic = {
-  light: () => navigator.vibrate && navigator.vibrate(10),
-  success: () => navigator.vibrate && navigator.vibrate([10, 50, 10])
+  light: () => hapticFeedback.buttonTap(),
+  success: () => hapticFeedback.success()
 };
 
 const SERVICE_ICONS = {
