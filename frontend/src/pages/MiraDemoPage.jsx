@@ -3405,6 +3405,16 @@ const MiraDemoPage = () => {
   
   // Handle quick reply
   const handleQuickReply = useCallback((replyValue) => {
+    // ═══════════════════════════════════════════════════════════════════
+    // VOICE SYNC FIX: Cancel any pending/playing voice before new action
+    // This prevents overlap when tiles are clicked rapidly
+    // ═══════════════════════════════════════════════════════════════════
+    if (voiceTimeoutRef.current) {
+      clearTimeout(voiceTimeoutRef.current);
+      voiceTimeoutRef.current = null;
+    }
+    stopSpeaking();
+    
     // HAPTIC: Chip tap
     hapticFeedback.chipTap();
     setQuery(replyValue);
@@ -3413,7 +3423,7 @@ const MiraDemoPage = () => {
         handleSubmitRef.current(null, replyValue);
       }
     }, 50);
-  }, []);
+  }, [stopSpeaking]);
   
   // IN-MIRA SERVICE REQUEST HANDLERS
   // Open service request modal when clicking a service/experience card
