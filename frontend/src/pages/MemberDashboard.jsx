@@ -1358,6 +1358,12 @@ const MemberDashboard = () => {
             </Suspense>
           </TabsContent>
 
+          <TabsContent value="picks">
+            <Suspense fallback={<TabLoader />}>
+              <PicksHistoryTab pet={pets?.[0]} user={user} />
+            </Suspense>
+          </TabsContent>
+
           <TabsContent value="requests">
             <Suspense fallback={<TabLoader />}>
               <RequestsTab 
