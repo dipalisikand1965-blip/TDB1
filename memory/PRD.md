@@ -165,6 +165,9 @@
 - ✅ **Photo upload API**: /api/mira/upload/file endpoint available
 - ✅ **MEMORY SYSTEM**: 86 memories stored (Health: 4, Shopping: 62, Events: 11, General: 6)
 - ✅ **Memory Recall**: Mira surfaces relevant memories in responses
+- ✅ **Picks & Tip Flow**: Verified Feb 2026 - /api/mira/os/understand-with-products correctly returns execution_type: CONCIERGE and creates ticket for non-product service requests (e.g., dog walker)
+- ✅ **Vault Send to Concierge**: /api/mira/vault/send-to-concierge creates ticket_id, notification_id, inbox_id
+- ✅ **Sign Out Button**: Tested working on desktop and mobile with z-index:999
 
 ---
 
