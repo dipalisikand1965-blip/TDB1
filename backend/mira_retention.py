@@ -360,13 +360,21 @@ async def get_conversation_history_smart(
     if pet_id:
         query["pet_context.pet_id"] = pet_id
     
-    # Get recent full sessions
+    # Get recent full sessions (hot, important, or no retention_status set)
     recent = await db.mira_sessions.find(
-        {**query, "retention_status": {"$in": ["hot", None, "important"]}},
+        {
+            **query, 
+            "$or": [
+                {"retention_status": {"$exists": False}},
+                {"retention_status": None},
+                {"retention_status": "hot"},
+                {"retention_status": "important"}
+            ]
+        },
         {"_id": 0}
     ).sort("updated_at", -1).limit(limit).to_list(limit)
     
-    # Get summaries of older sessions
+    # Get summaries of older sessions (compressed or archived)
     older = await db.mira_sessions.find(
         {**query, "retention_status": {"$in": ["compressed", "archived"]}},
         {"_id": 0, "messages": 0}  # Exclude messages, just get summary
