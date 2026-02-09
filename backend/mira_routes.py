@@ -8731,7 +8731,13 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
             "weather": weather_data,  # NEW: Weather-based activity recommendations
             "quick_prompts": get_pillar_quick_prompts(pillar),
             "end_state": "RESPONDED",
-            "disclaimer_shown": is_nutrition_query  # Track if nutrition disclaimer should be shown
+            "disclaimer_shown": is_nutrition_query,  # Track if nutrition disclaimer should be shown
+            # Picks Vault handoff info for Concierge
+            "picks_vault": {
+                "saved": picks_saved_to_vault,
+                "ticket_id": picks_vault_ticket_id,
+                "picks_count": len(products) if products else 0
+            } if picks_saved_to_vault else None
         }
         
     except Exception as e:
