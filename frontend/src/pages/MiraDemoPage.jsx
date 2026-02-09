@@ -5746,8 +5746,9 @@ const MiraDemoPage = () => {
       {/* ═══════════════════════════════════════════════════════════════════════════
           VAULT SYSTEM - Full-screen overlay for picks, bookings, places, etc.
           "Mira is the Brain, Concierge® is the Hands"
+          TEMPORARILY DISABLED - needs investigation
           ═══════════════════════════════════════════════════════════════════════════ */}
-      {showVault && (
+      {/* {showVault && (
         <div className="vault-overlay" data-testid="vault-overlay">
           <VaultManager
             isOpen={showVault}
@@ -5770,9 +5771,7 @@ const MiraDemoPage = () => {
             member={user}
             onVaultSent={(result) => {
               console.log('[VAULT] Sent to Concierge:', result);
-              // Could add a success toast or message here
               if (result.success) {
-                // Add confirmation message to chat
                 setMessages(prev => [...prev, {
                   type: 'mira',
                   content: `✨ Your picks have been sent to your Pet Concierge®! They'll get back to you shortly.`,
@@ -5783,7 +5782,7 @@ const MiraDemoPage = () => {
             }}
           />
         </div>
-      )}
+      )} */}
     </div>
   );
 };
