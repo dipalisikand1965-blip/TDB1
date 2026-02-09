@@ -4227,7 +4227,7 @@ const MiraDemoPage = () => {
                       key={feature.id}
                       className="feature-card"
                       style={{ '--feature-color': feature.color }}
-                      onClick={() => handleQuickReply(feature.query)}
+                      onClick={() => handleQuickReply(feature.query, true)}
                       data-testid={`feature-${feature.id}`}
                     >
                       <span className="feature-icon">{feature.icon}</span>
