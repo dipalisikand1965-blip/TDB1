@@ -387,7 +387,7 @@ tip_card = {
 # KNOWN ISSUES
 
 1. **ElevenLabs quota exceeded** - Using OpenAI TTS fallback (`shimmer` voice)
-2. **MiraDemoPage.jsx is ~5687 lines** - Refactoring IN PROGRESS (was 5,791)
+2. **MiraDemoPage.jsx is ~5421 lines** - Refactoring IN PROGRESS (was 5,791)
 3. **Screenshot tool crashes** on MiraDemoPage (too large)
 
 ---
@@ -397,9 +397,9 @@ tip_card = {
 ## Progress Summary
 | Metric | Before | After | Change |
 |--------|--------|-------|--------|
-| Lines | 5,791 | 5,687 | -104 |
+| Lines | 5,791 | 5,421 | **-370** |
 | useState hooks | 67 | 61 | -6 |
-| Target | - | ~1,500 | ~4,187 to go |
+| Target | - | ~1,500 | ~3,921 to go |
 
 ## Completed ✅
 
@@ -416,8 +416,10 @@ tip_card = {
 ### UI Components Extracted
 ```
 /app/frontend/src/components/Mira/
-├── MiraTray.jsx        - Picks preview tray (~80 lines)
-└── PastChatsPanel.jsx  - Past conversations panel (~40 lines)
+├── MiraTray.jsx        - Picks preview tray (108 lines)
+├── PastChatsPanel.jsx  - Past conversations (117 lines)
+└── WelcomeHero.jsx     - Welcome screen (320 lines)
+Total: 545 lines in components
 ```
 
 ### State Moved to Hooks (~12 useState)
@@ -428,9 +430,9 @@ tip_card = {
 ## Remaining Work
 
 ### High Impact Extractions
-1. **ChatMessages component** (~500-800 lines) - Message list rendering
-2. **QuickReplyChips component** (~100 lines) - Suggestion buttons
-3. **Break handleSubmit function** (~992 lines) - Split into smaller functions
+1. **ChatMessages component** (~600 lines) - Message list rendering
+2. **Break handleSubmit function** (~992 lines) - Split into smaller functions
+3. **QuickReplyChips component** (~100 lines) - Suggestion buttons
 
 ### Pending
 - ⏳ Integrate `useVoice` hook (complex due to scattered voice timeout logic)
