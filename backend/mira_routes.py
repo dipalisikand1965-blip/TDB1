@@ -13173,6 +13173,82 @@ async def get_picks_history(pet_id: str, limit: int = 20):
     Shows what Mira has suggested over time.
     """
     db = get_db()
+    if db is None:
+        return {"error": "Database not available", "picks": []}
+    
+    try:
+        # Get all tickets with picks_vault for this pet from both collections
+        mira_tickets = await db.mira_tickets.find(
+            {
+                "$or": [
+                    {"pet.id": pet_id},
+                    {"pet_soul_snapshot.id": pet_id}
+                ],
+                "picks_vault": {"$exists": True}
+            },
+            {"_id": 0, "ticket_id": 1, "picks_vault": 1, "pillar": 1, "created_at": 1}
+        ).sort("created_at", -1).limit(limit).to_list(limit)
+        
+        service_tickets = await db.service_desk_tickets.find(
+            {
+                "$or": [
+                    {"pet.id": pet_id},
+                    {"pet_soul_snapshot.id": pet_id}
+                ],
+                "picks_vault": {"$exists": True}
+            },
+            {"_id": 0, "ticket_id": 1, "picks_vault": 1, "pillar": 1, "created_at": 1}
+        ).sort("created_at", -1).limit(limit).to_list(limit)
+        
+        tickets = mira_tickets + service_tickets
+        
+        # Aggregate picks
+        all_picks = []
+        tip_cards = []
+        pillar_counts = {}
+        
+        for ticket in tickets:
+            vault = ticket.get("picks_vault", {})
+            pillar = vault.get("pillar") or ticket.get("pillar", "general")
+            
+            pillar_counts[pillar] = pillar_counts.get(pillar, 0) + 1
+            
+            for product in vault.get("products", []):
+                all_picks.append({
+                    "type": "product",
+                    "name": product.get("name"),
+                    "price": product.get("price"),
+                    "image": product.get("image"),
+                    "pillar": pillar,
+                    "why_for_pet": product.get("why_for_pet"),
+                    "date": ticket.get("created_at"),
+                    "context": vault.get("context")
+                })
+            
+            for service in vault.get("services", []):
+                all_picks.append({
+                    "type": "service",
+                    "name": service.get("name"),
+                    "price": service.get("price"),
+                    "pillar": pillar,
+                    "date": ticket.get("created_at"),
+                    "context": vault.get("context")
+                })
+            
+            for card in vault.get("tip_cards", []):
+                tip_cards.append({**card, "date": ticket.get("created_at")})
+        
+        return {
+            "success": True,
+            "total_picks": len(all_picks),
+            "picks_by_pillar": pillar_counts,
+            "recent_picks": all_picks[:limit],
+            "tip_cards": tip_cards[:10]
+        }
+        
+    except Exception as e:
+        logger.error(f"[PICKS HISTORY] Error: {e}")
+        return {"success": False, "error": str(e), "picks": []}
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
