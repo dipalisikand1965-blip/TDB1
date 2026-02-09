@@ -20,6 +20,21 @@
 
 This session focused on **Product Display Improvements**, **Conversation Lifecycle Management**, and **Formatting Guide**.
 
+**Testing Status:** ✅ All 10 backend tests passed (iteration_115.json)
+
+---
+
+# REMAINING GAPS TO ADDRESS (User's 6 Priorities)
+
+| Gap | Status | Description |
+|-----|--------|-------------|
+| 1. Formatting | 🟡 IN PROGRESS | Bold/bullets rendering in conversations |
+| 2. Voice Sync | ✅ DONE | Voice on/off rules documented |
+| 3. Personalized Picks | ✅ DONE | Match badges + pillar filtering |
+| 4. Concierge Handoff | 🔴 TODO | Route for missing products, medical advice |
+| 5. Pillar Integration | 🔴 TODO | Google Places flow (ask → show → explore more) |
+| 6. Product Display | ✅ DONE | Catalog style with "See More" |
+
 ---
 
 # WHAT WAS COMPLETED THIS SESSION
