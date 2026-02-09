@@ -102,20 +102,26 @@ class TestMiraProductMatchType:
         
         assert data.get("success") == True, f"API returned success=False: {data}"
         
-        # Check for current_pillar in response
-        resp = data.get("response", {})
+        # current_pillar is at the TOP LEVEL of the response (not inside "response" object)
+        # This is as designed in mira_routes.py lines 2757-2758
+        assert "current_pillar" in data, f"Missing 'current_pillar' at top level. Keys: {data.keys()}"
         
-        # current_pillar should be present at the response level
-        assert "current_pillar" in resp, f"Missing 'current_pillar' in response. Keys: {resp.keys()}"
-        
-        current_pillar = resp.get("current_pillar")
-        print(f"✓ current_pillar field present: '{current_pillar}'")
+        current_pillar = data.get("current_pillar")
+        print(f"✓ current_pillar field present at top level: '{current_pillar}'")
         
         # Verify it's a valid pillar or None
         valid_pillars = ["care", "celebrate", "enjoy", "dine", "travel", "stay", "adopt", "learn", "shop", None]
         assert current_pillar in valid_pillars or current_pillar is None, f"Invalid pillar: {current_pillar}"
         
         print("✓ current_pillar is a valid pillar value")
+        
+        # Also verify previous_pillar field exists (for topic shift detection)
+        assert "previous_pillar" in data, "Missing 'previous_pillar' field"
+        print(f"✓ previous_pillar field present: '{data.get('previous_pillar')}'")
+        
+        # Verify topic_shift field exists
+        assert "topic_shift" in data, "Missing 'topic_shift' field"
+        print(f"✓ topic_shift field present: {data.get('topic_shift')}")
 
     def test_breed_match_type_for_golden_retriever(self):
         """Test that breed-specific products get match_type='breed' for Golden Retriever"""
