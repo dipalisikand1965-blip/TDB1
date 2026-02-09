@@ -3005,7 +3005,7 @@ const MiraDemoPage = () => {
       }
       
       // ═══════════════════════════════════════════════════════════════════════════
-      // TOPIC SHIFT HANDLING - Reset context when topic changes
+      // TOPIC SHIFT HANDLING - Reset context when topic changes (using extracted helper)
       // ═══════════════════════════════════════════════════════════════════════════
       const topicShiftDetected = data.topic_shift || false;
       const currentPillar = data.current_pillar || 'general';
@@ -3013,12 +3013,7 @@ const MiraDemoPage = () => {
       
       if (topicShiftDetected) {
         console.log(`[TOPIC SHIFT] ${previousPillar} → ${currentPillar}`);
-        // Add a topic shift indicator message
-        const shiftIndicator = {
-          type: 'topic_shift',
-          fromPillar: previousPillar,
-          toPillar: currentPillar
-        };
+        const shiftIndicator = createTopicShiftIndicator(previousPillar, currentPillar);
         setConversationHistory(prev => [...prev, shiftIndicator, miraMessage]);
       } else {
         setConversationHistory(prev => [...prev, miraMessage]);
