@@ -3944,11 +3944,22 @@ async def create_mira_ticket(
     description: str,
     user: Dict = None,
     pet: Dict = None,
-    source: str = "web_widget"
+    source: str = "web_widget",
+    picks_vault: Dict = None  # NEW: Picks vault for Concierge
 ) -> str:
     """Create a Mira ticket - EVERY interaction creates one
     
     UNIFIED FLOW: Creates Notification → Service Desk Ticket → Unified Inbox
+    
+    picks_vault structure:
+    {
+        "products": [...],      # Product picks for this request
+        "services": [...],      # Service picks
+        "tip_cards": [...],     # AI-generated summary cards
+        "pillar": str,          # Context pillar
+        "context": str,         # e.g., "birthday_party", "grooming"
+        "generated_at": datetime
+    }
     """
     db = get_db()
     from timestamp_utils import get_utc_timestamp
