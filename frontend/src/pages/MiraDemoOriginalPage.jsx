@@ -40,7 +40,7 @@ const DEMO_PET = {
   favorites: ['Tennis balls', 'Peanut butter treats']
 };
 
-const MiraDemoPage = () => {
+const MiraDemoOriginalPage = () => {
   const { user, token } = useAuth();
   
   // State
