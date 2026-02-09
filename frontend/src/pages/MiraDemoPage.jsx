@@ -5130,6 +5130,31 @@ const MiraDemoPage = () => {
               )}
               
               <div ref={messagesEndRef} />
+              
+              {/* CONVERSATION COMPLETE BANNER - Shows when Mira has provided assistance */}
+              {showConversationEndBanner && conversationComplete && (
+                <div className="mp-conversation-complete" data-testid="conversation-complete-banner">
+                  <div className="mp-complete-icon">✨</div>
+                  <div className="mp-complete-content">
+                    <p className="mp-complete-title">Mira has helped with this request</p>
+                    <p className="mp-complete-subtitle">This conversation will be saved to history</p>
+                  </div>
+                  <div className="mp-complete-actions">
+                    <button 
+                      className="mp-complete-btn continue"
+                      onClick={() => { setShowConversationEndBanner(false); setConversationComplete(false); }}
+                    >
+                      Continue Chat
+                    </button>
+                    <button 
+                      className="mp-complete-btn archive"
+                      onClick={() => { archiveCurrentConversation('completed'); startNewSession(); }}
+                    >
+                      New Chat
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
