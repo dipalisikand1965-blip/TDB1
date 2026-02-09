@@ -3258,7 +3258,7 @@ const MiraDemoPage = () => {
         // "Mira is the Brain, Concierge® is the Hands"
         // ═══════════════════════════════════════════════════════════════════════════
         if (!clarifyOnly && (newProducts.length > 0 || newServices.length > 0)) {
-          setVaultResponse(data.response || data);
+          setActiveVaultData(data.response || data);
           setVaultUserMessage(inputQuery);
           // Small delay to let the message render first
           setTimeout(() => {
