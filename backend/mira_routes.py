@@ -2889,6 +2889,7 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
         try:
             from mira_session_persistence import add_message_to_session, update_session_state
             session_id = request.session_id
+            pet_context = request.pet_context or {}
             
             if session_id:
                 # Save user message
@@ -2897,7 +2898,10 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                     role="user",
                     content=request.input,
                     intent=intent,
-                    step_id=request.current_step
+                    step_id=request.current_step,
+                    member_id=pet_context.get("parent_id") or pet_context.get("member_id") or "demo",
+                    pet_id=pet_context.get("id"),
+                    pet_name=pet_context.get("name")
                 )
                 
                 # Save assistant message
@@ -2908,7 +2912,10 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                     intent=intent,
                     execution_type=execution_type,
                     products=final_products[:3] if final_products else None,  # Save top 3 products
-                    step_id=understanding.get("step_id")
+                    step_id=understanding.get("step_id"),
+                    member_id=pet_context.get("parent_id") or pet_context.get("member_id") or "demo",
+                    pet_id=pet_context.get("id"),
+                    pet_name=pet_context.get("name")
                 )
                 
                 # Update session state
