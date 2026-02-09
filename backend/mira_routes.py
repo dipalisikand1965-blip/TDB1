@@ -1313,7 +1313,8 @@ async def search_real_products(
         is_treat_query = any(word in user_input_lower for word in ["treat", "treats", "snack", "snacks", "jerky", "chew", "biscuit"])
         is_birthday_query = any(word in user_input_lower for word in ["birthday", "cake", "party", "celebration"])
         
-        # If it's a treat query WITHOUT birthday context, search in shop/dine
+        # If it's a PURE treat query WITHOUT birthday context, search in shop/dine
+        # But if it's "treats for birthday", let it go to celebrate pillar normally
         if is_treat_query and not is_birthday_query:
             query["pillar"] = {"$in": ["shop", "dine"]}
             # Also filter by treat-related categories/intents
@@ -1323,6 +1324,14 @@ async def search_real_products(
                 {"tags": {"$in": ["treats", "Treats", "treat", "snack", "snacks"]}}
             ]
             logger.info(f"[TREAT OVERRIDE] Searching for treats in shop/dine pillars")
+        elif is_treat_query and is_birthday_query:
+            # Treats for birthday - search in celebrate pillar for party treats
+            query["pillar"] = {"$in": ["celebrate", "shop"]}
+            query["$or"] = [
+                {"category": {"$regex": "treat|party|celebration", "$options": "i"}},
+                {"tags": {"$in": ["treats", "party", "celebration", "birthday"]}}
+            ]
+            logger.info(f"[BIRTHDAY TREATS] Searching for party treats in celebrate/shop pillars")
         elif current_pillar:
             # Map pillar to allowed pillars (some overlap allowed)
             PILLAR_SEARCH_MAP = {
