@@ -5039,14 +5039,34 @@ const MiraDemoPage = () => {
               {voiceEnabled ? <Volume2 /> : <VolumeX />}
             </button>
             
-            <button
-              type="button"
-              onClick={toggleVoice}
-              className={`mp-btn-mic ${isListening ? 'recording' : ''}`}
-              data-testid="mic-btn"
-            >
-              {isListening ? <MicOff /> : <Mic />}
-            </button>
+            {/* Voice Input Button - Enhanced with error state and visual feedback */}
+            {voiceSupported && (
+              <button
+                type="button"
+                onClick={toggleVoice}
+                className={`mp-btn-mic ${isListening ? 'recording' : ''} ${voiceError ? 'error' : ''}`}
+                data-testid="mic-btn"
+                title={voiceError || (isListening ? 'Listening... Tap to stop' : 'Tap to speak')}
+              >
+                {isListening ? (
+                  <div className="mp-mic-recording">
+                    <MicOff />
+                    <span className="mp-mic-pulse"></span>
+                  </div>
+                ) : (
+                  <Mic />
+                )}
+              </button>
+            )}
+            
+            {/* Voice Error Toast */}
+            {voiceError && (
+              <div className="mp-voice-error" onClick={() => setVoiceError(null)}>
+                <span>{voiceError}</span>
+                <X size={14} />
+              </div>
+            )}
+            
             <button
               type="submit"
               disabled={isProcessing || !query.trim()}
