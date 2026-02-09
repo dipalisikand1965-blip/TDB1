@@ -544,19 +544,20 @@ async def check_reorder_suggestions(pet_id: str, pet_name: str, user_email: str,
 # ═══════════════════════════════════════════════════════════════════════════════
 
 @router.get("/alerts/{pet_id}")
-async def get_proactive_alerts(pet_id: str):
+async def get_proactive_alerts(pet_id: str, user_email: str = None):
     """
     Get all proactive alerts for a pet.
-    Returns vaccination, birthday, grooming alerts.
+    Returns vaccination, birthday, grooming, and reorder alerts.
     """
     db = get_db()
     
     # Get pet info
-    pet = await db.pets.find_one({"id": pet_id}, {"_id": 0, "name": 1})
+    pet = await db.pets.find_one({"id": pet_id}, {"_id": 0, "name": 1, "owner_email": 1, "member_email": 1})
     if not pet:
         return {"alerts": [], "message": "Pet not found"}
     
     pet_name = pet.get("name", "Your pet")
+    owner_email = user_email or pet.get("owner_email") or pet.get("member_email")
     all_alerts = []
     
     # Gather all alerts
@@ -564,9 +565,15 @@ async def get_proactive_alerts(pet_id: str):
     birthday_alerts = await check_birthday_alerts(pet_id, pet_name, db)
     grooming_alerts = await check_grooming_alerts(pet_id, pet_name, db)
     
+    # NEW: Reorder suggestions based on purchase history
+    reorder_alerts = []
+    if owner_email:
+        reorder_alerts = await check_reorder_suggestions(pet_id, pet_name, owner_email, db)
+    
     all_alerts.extend(vaccination_alerts)
     all_alerts.extend(birthday_alerts)
     all_alerts.extend(grooming_alerts)
+    all_alerts.extend(reorder_alerts)
     
     # Sort by urgency
     urgency_order = {"critical": 0, "high": 1, "medium": 2, "low": 3}
