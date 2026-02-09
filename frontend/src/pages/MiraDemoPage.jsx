@@ -675,9 +675,7 @@ const MiraDemoPage = () => {
   const [isListening, setIsListening] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   
-  // Pet state
-  const [pet, setPet] = useState(DEMO_PET);
-  const [allPets, setAllPets] = useState(ALL_PETS);
+  // NOTE: Pet state (pet, setPet, allPets, setAllPets) now comes from usePet hook above
   
   // UI modals and helpers
   const [showHelpModal, setShowHelpModal] = useState(false);
