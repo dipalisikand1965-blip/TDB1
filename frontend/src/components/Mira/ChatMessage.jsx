@@ -539,55 +539,229 @@ const TrainingVideos = ({ msg, pet }) => {
 };
 
 /**
- * TravelHotels - Displays pet-friendly hotels
+ * TravelHotels - Displays pet-friendly hotels with FULL DETAILS
+ * Enhanced: Expandable cards, all property types, pricing in INR, room options
  */
 const TravelHotels = ({ msg, pet, onEngageConcierge }) => {
+  const [expandedHotel, setExpandedHotel] = React.useState(null);
+  
   if (!msg.data?.travel_hotels?.length) return null;
   
   const city = msg.data.travel_city;
+  const currency = msg.data.currency || 'INR';
+  
+  const formatPrice = (price) => {
+    if (!price) return null;
+    return `₹${parseInt(price).toLocaleString('en-IN')}`;
+  };
+  
+  const getPropertyIcon = (type) => {
+    const icons = {
+      'Villa': '🏡',
+      'Boutique Hotel': '✨',
+      'Resort': '🌴',
+      'Hostel': '🛏️',
+      'Homestay': '🏠',
+      'Serviced Apartment': '🏢',
+      'Heritage Property': '🏰',
+      'Lodge': '🏕️',
+      'Hotel': '🏨'
+    };
+    return icons[type] || '🏨';
+  };
+  
+  const toggleExpand = (hotelId) => {
+    setExpandedHotel(expandedHotel === hotelId ? null : hotelId);
+  };
   
   return (
     <div className="travel-hotels-section" data-testid="travel-hotels">
       <div className="travel-hotels-title">
         <span className="travel-icon">🏨</span>
-        <span>Pet-Friendly Hotels in {city?.charAt(0).toUpperCase() + city?.slice(1)}</span>
+        <span>
+          Accommodations in {city?.charAt(0).toUpperCase() + city?.slice(1)}
+          <span style={{ fontSize: '11px', marginLeft: '8px', opacity: 0.7 }}>
+            ({msg.data.travel_hotels.length} options • All types • {currency})
+          </span>
+        </span>
       </div>
-      {msg.data.travel_hotels.slice(0, 3).map((hotel, hIdx) => (
-        <div key={hIdx} className="travel-hotel-card" data-testid={`hotel-card-${hIdx}`}>
-          <div className={`hotel-icon ${hotel.pet_friendly_likelihood === 'high' ? 'pet-friendly' : ''}`}>
-            🏨
-          </div>
-          <div className="hotel-info">
-            <div className="hotel-name">{hotel.name}</div>
-            <div className="hotel-details">
-              {hotel.pet_friendly_likelihood === 'high' && (
-                <span className="hotel-badge pet-badge">🐾 Pet Friendly</span>
-              )}
-              {hotel.distance && (
-                <span className="hotel-distance">{hotel.distance} {hotel.distance_unit}</span>
-              )}
-              {hotel.city && <span>{hotel.city}</span>}
+      
+      {msg.data.travel_hotels.map((hotel, hIdx) => {
+        const isExpanded = expandedHotel === hotel.id;
+        const pricing = hotel.pricing || {};
+        const location = hotel.location || {};
+        const petFriendly = hotel.pet_friendly || {};
+        const rooms = hotel.rooms || [];
+        const propertyType = hotel.property_type || 'Hotel';
+        
+        return (
+          <div 
+            key={hIdx} 
+            className={`travel-hotel-card ${isExpanded ? 'expanded' : ''}`}
+            data-testid={`hotel-card-${hIdx}`}
+          >
+            {/* Main Card */}
+            <div 
+              className="hotel-card-main"
+              onClick={() => toggleExpand(hotel.id)}
+              style={{ cursor: 'pointer' }}
+            >
+              <div className={`hotel-icon ${petFriendly.likelihood === 'high' ? 'pet-friendly' : ''}`}>
+                {getPropertyIcon(propertyType)}
+              </div>
+              
+              <div className="hotel-info">
+                <div className="hotel-name-row">
+                  <span className="hotel-name">{hotel.name}</span>
+                  {hotel.star_rating && (
+                    <span className="hotel-stars">
+                      {'⭐'.repeat(Math.min(hotel.star_rating, 5))}
+                    </span>
+                  )}
+                </div>
+                
+                <div className="hotel-type-badge">
+                  <span className="property-type">{propertyType}</span>
+                </div>
+                
+                <div className="hotel-details">
+                  {petFriendly.likelihood === 'high' && (
+                    <span className="hotel-badge pet-badge">🐾 Pet Friendly</span>
+                  )}
+                  {petFriendly.likelihood === 'medium' && (
+                    <span className="hotel-badge verify-badge">🐾 Likely Pet Friendly</span>
+                  )}
+                  {hotel.distance?.value && (
+                    <span className="hotel-distance">
+                      {hotel.distance.value} {hotel.distance.unit || 'km'}
+                    </span>
+                  )}
+                  {location.city && <span>{location.city}</span>}
+                </div>
+                
+                {/* Pricing */}
+                {pricing.min_price && (
+                  <div className="hotel-pricing">
+                    <span className="price-from">From</span>
+                    <span className="price-amount">{formatPrice(pricing.min_price)}</span>
+                    <span className="price-night">/night</span>
+                    {pricing.max_price && pricing.max_price !== pricing.min_price && (
+                      <span className="price-range"> - {formatPrice(pricing.max_price)}</span>
+                    )}
+                  </div>
+                )}
+              </div>
+              
+              <div className="hotel-actions">
+                <button 
+                  className="hotel-expand-btn"
+                  onClick={(e) => { e.stopPropagation(); toggleExpand(hotel.id); }}
+                >
+                  {isExpanded ? '▲' : '▼'} {isExpanded ? 'Less' : 'More'}
+                </button>
+              </div>
             </div>
-            {hotel.pet_policy_note && (
-              <div className="hotel-policy">{hotel.pet_policy_note}</div>
+            
+            {/* Expanded Details */}
+            {isExpanded && (
+              <div className="hotel-expanded-details">
+                {/* Location */}
+                {location.address && (
+                  <div className="hotel-address">
+                    <MapPin size={12} />
+                    <span>{location.address}, {location.city}</span>
+                  </div>
+                )}
+                
+                {/* Amenities */}
+                {hotel.amenities?.length > 0 && (
+                  <div className="hotel-amenities">
+                    <div className="amenities-title">Amenities:</div>
+                    <div className="amenities-list">
+                      {hotel.amenities.slice(0, 8).map((amenity, aIdx) => (
+                        <span key={aIdx} className="amenity-tag">{amenity}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Room Options */}
+                {rooms.length > 0 && (
+                  <div className="hotel-rooms">
+                    <div className="rooms-title">Room Options ({rooms.length}):</div>
+                    {rooms.slice(0, 4).map((room, rIdx) => (
+                      <div key={rIdx} className="room-option">
+                        <div className="room-info">
+                          <span className="room-type">{room.room_type}</span>
+                          {room.board_type && room.board_type !== 'ROOM_ONLY' && (
+                            <span className="room-board">
+                              {room.board_type === 'BREAKFAST' ? '🍳 Breakfast included' :
+                               room.board_type === 'HALF_BOARD' ? '🍽️ Half Board' :
+                               room.board_type === 'FULL_BOARD' ? '🍽️ Full Board' :
+                               room.board_type}
+                            </span>
+                          )}
+                          {room.bed_type && (
+                            <span className="room-bed">🛏️ {room.bed_type}</span>
+                          )}
+                        </div>
+                        <div className="room-price">
+                          <span className="price-total">{formatPrice(room.price?.total)}</span>
+                          {room.price?.per_night && (
+                            <span className="price-per-night">
+                              ({formatPrice(room.price.per_night)}/night)
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                
+                {/* Pet Policy Note */}
+                {petFriendly.policy_note && (
+                  <div className="hotel-pet-policy">
+                    <span className="policy-icon">🐕</span>
+                    <span>{petFriendly.policy_note}</span>
+                  </div>
+                )}
+                
+                {/* Book Button */}
+                <button 
+                  className="hotel-book-btn-full"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onEngageConcierge?.('hotel_booking', {
+                      hotel_name: hotel.name,
+                      hotel_id: hotel.id,
+                      city: location.city || city,
+                      pet_name: pet.name,
+                      property_type: propertyType,
+                      check_in: msg.data.check_in,
+                      check_out: msg.data.check_out,
+                      pricing: pricing
+                    });
+                  }}
+                  data-testid={`hotel-book-full-${hIdx}`}
+                >
+                  <Calendar size={14} /> Book with Concierge®
+                </button>
+                
+                <div className="concierge-note">
+                  Your Concierge® will verify pet policies and handle the booking.
+                </div>
+              </div>
             )}
           </div>
-          <button 
-            className="hotel-book-btn"
-            onClick={(e) => {
-              e.stopPropagation();
-              onEngageConcierge?.('hotel_booking', {
-                hotel_name: hotel.name,
-                city: hotel.city || city,
-                pet_name: pet.name
-              });
-            }}
-            data-testid={`hotel-book-${hIdx}`}
-          >
-            <Calendar size={12} /> Book Now
-          </button>
+        );
+      })}
+      
+      {/* Show More */}
+      {msg.data.travel_hotels.length > 5 && (
+        <div className="hotels-show-more">
+          Showing {Math.min(5, msg.data.travel_hotels.length)} of {msg.data.travel_hotels.length} options
         </div>
-      ))}
+      )}
     </div>
   );
 };
