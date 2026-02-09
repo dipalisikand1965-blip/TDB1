@@ -3100,8 +3100,11 @@ const MiraDemoPage = () => {
                       'order_birthday_cake': `Order a birthday cake for ${pet.name}`
                     };
                     const message = actionMessages[alert.cta_action] || alert.message;
-                    setInputText(message);
-                    handleSubmit({ preventDefault: () => {} });
+                    setQuery(message);
+                    // Use setTimeout to ensure state is updated before submit
+                    setTimeout(() => {
+                      handleSubmit({ preventDefault: () => {} });
+                    }, 100);
                   }}
                   onDismiss={async (alertId) => {
                     try {
