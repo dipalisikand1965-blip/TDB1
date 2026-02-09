@@ -3983,60 +3983,14 @@ const MiraDemoPage = () => {
           </div>
           
           {/* Right: Pet Badge - Orange */}
-          <button 
-            className="mp-pet-badge"
-            onClick={() => setShowPetSelector(!showPetSelector)}
-            data-testid="pet-selector-btn"
-          >
-            <div className="mp-pet-avatar">
-              {pet.photo ? <img src={pet.photo} alt={pet.name} /> : <PawPrint />}
-            </div>
-            <span className="mp-pet-name">{pet.name}</span>
-          </button>
-          
-          {/* Pet Dropdown */}
-          {showPetSelector && (
-            <div className="mp-pet-dropdown">
-              {allPets.map((p) => (
-                <button key={p.id} onClick={() => switchPet(p)} className={`mp-pet-option ${p.id === pet.id ? 'active' : ''}`}>
-                  <div className="mp-pet-avatar">
-                    {p.photo ? <img src={p.photo} alt={p.name} /> : <PawPrint />}
-                  </div>
-                  <div style={{ flex: 1 }}>
-                    <span style={{ display: 'block', color: 'white', fontWeight: 600, fontSize: 14 }}>{p.name}</span>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'rgba(255,255,255,0.5)', fontSize: 12 }}>
-                      {p.breed}
-                      {p.soulScore > 10 ? (
-                        <span style={{ 
-                          background: 'linear-gradient(135deg, #f59e0b, #d97706)', 
-                          padding: '2px 6px', 
-                          borderRadius: '8px', 
-                          fontSize: '10px',
-                          fontWeight: '700',
-                          color: 'white'
-                        }}>
-                          {p.soulScore}%
-                        </span>
-                      ) : (
-                        <span style={{ 
-                          background: 'linear-gradient(135deg, #8b5cf6, #7c3aed)', 
-                          padding: '2px 6px', 
-                          borderRadius: '8px', 
-                          fontSize: '9px',
-                          fontWeight: '600',
-                          color: 'white',
-                          animation: 'pulse 2s infinite'
-                        }}>
-                          ✨ New
-                        </span>
-                      )}
-                    </span>
-                  </div>
-                  {p.id === pet.id && <Check style={{ color: '#a855f7' }} />}
-                </button>
-              ))}
-            </div>
-          )}
+          {/* Pet Selector - Extracted to PetSelector component */}
+          <PetSelector
+            currentPet={pet}
+            allPets={allPets}
+            isOpen={showPetSelector}
+            onToggle={() => setShowPetSelector(!showPetSelector)}
+            onSelectPet={switchPet}
+          />
         </div>
       </header>
       
