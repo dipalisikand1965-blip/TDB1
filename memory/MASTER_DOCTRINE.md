@@ -116,13 +116,45 @@ Email Auth: dipali@clubconcierge.in / lola4304
 
 # 🧠 MEMORY SYSTEM - THE BRAIN'S CORE
 
-## Memory Types
-| Type | What It Stores | Example |
-|------|----------------|---------|
-| `health` | Health concerns, symptoms, allergies | "Mojo has skin allergies" |
-| `shopping` | Product interests, preferences | "Interested in grain-free treats" |
-| `event` | Birthdays, trips, celebrations | "Planning trip to Goa" |
-| `general` | Services, grooming, misc | "Requested grooming service" |
+## PHILOSOPHY
+> **"Store forever. Surface selectively."**
+> **WE ARE NOT CHEWY. WE ARE NOT GOOGLE. WE ACTION.**
+> **EVERY USER INTENT HAS A MESSAGE. STORE ALL MEMORIES.**
+
+## Memory Types - 14 PILLARS
+| Pillar | Emoji | Memory Type | Keywords |
+|--------|-------|-------------|----------|
+| Celebrate | 🎂 | celebrate | birthday, party, cake, gift |
+| Dine | 🍽️ | dine | food, treat, meal, nutrition |
+| Stay | 🏨 | stay | hotel, boarding, resort |
+| Travel | ✈️ | travel | trip, flight, vacation |
+| Care | 💊 | health | vet, sick, symptom, vaccine |
+| Enjoy | 🎾 | enjoy | play, park, activity, fun |
+| Fit | 🏃 | fit | exercise, walk, fitness |
+| Learn | 🎓 | learn | video, train, tutorial |
+| Paperwork | 📄 | paperwork | document, license, record |
+| Advisory | 📋 | advisory | advice, recommend, help |
+| Emergency | 🚨 | emergency | urgent, poison, injury |
+| Farewell | 🌈 | farewell | memorial, grief, loss |
+| Adopt | 🐾 | adopt | rescue, shelter, new pet |
+| Shop | 🛒 | shop | buy, order, product |
+
+## Memory Types - 7 SERVICES
+| Service | Emoji | Memory Type | Keywords |
+|---------|-------|-------------|----------|
+| Grooming | ✂️ | service_grooming | haircut, bath, nail |
+| Training | 🎓 | service_training | obedience, behavior |
+| Boarding | 🏠 | service_boarding | overnight, kennel |
+| Daycare | 🌞 | service_daycare | daytime |
+| Vet Care | 🏥 | service_vet | clinic, checkup |
+| Walking | 🐕 | service_walking | walk, walker |
+| Photography | 📸 | service_photo | photo, portrait |
+
+## Additional Memory Types
+| Type | Source | Description |
+|------|--------|-------------|
+| product_interest | product_display | Products Mira showed |
+| service_request | concierge_handoff | Concierge requests |
 
 ## Current Stats
 - **Total Memories**: 86
