@@ -2959,15 +2959,20 @@ const MiraDemoPage = () => {
             </div>
           </div>
           
-          {/* Right: Pet Badge - Orange */}
-          {/* Pet Selector - Extracted to PetSelector component */}
-          <PetSelector
-            currentPet={pet}
-            allPets={allPets}
-            isOpen={showPetSelector}
-            onToggle={() => setShowPetSelector(!showPetSelector)}
-            onSelectPet={switchPet}
-          />
+          {/* Right side: Notification Bell + Pet Selector */}
+          <div className="flex items-center gap-2">
+            {/* Notification Bell */}
+            <NotificationBell userEmail={user?.email} />
+            
+            {/* Pet Selector - Extracted to PetSelector component */}
+            <PetSelector
+              currentPet={pet}
+              allPets={allPets}
+              isOpen={showPetSelector}
+              onToggle={() => setShowPetSelector(!showPetSelector)}
+              onSelectPet={switchPet}
+            />
+          </div>
         </div>
       </header>
       
