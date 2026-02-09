@@ -416,12 +416,13 @@ class TestSoulScore:
         response = session.get(f"{BASE_URL}/api/pets/my-pets")
         
         assert response.status_code == 200
-        pets = response.json()
+        data = response.json()
+        pets = data.get("pets", data) if isinstance(data, dict) else data
         
         # Find our pet
         target_pet = None
         for p in pets:
-            if p.get("id") == pet_id:
+            if isinstance(p, dict) and p.get("id") == pet_id:
                 target_pet = p
                 break
         
