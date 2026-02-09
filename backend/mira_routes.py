@@ -8734,8 +8734,8 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
             pet_name = selected_pet.get("name") if selected_pet else None
             
             if member_id and pet_id:
-                # Auto-detect memory type from user input
-                memory_type = detect_memory_type(user_input)
+                # Auto-detect memory type from user message
+                memory_type = detect_memory_type(user_message)
                 
                 # Store meaningful interactions as memories
                 should_store = False
@@ -8743,17 +8743,17 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                 relevance_tags = [pillar] if pillar else []
                 
                 # Health-related memories (CRITICAL - never forget)
-                if pillar == "care" or any(kw in user_input.lower() for kw in ["sick", "vet", "health", "allergy", "symptom", "medicine", "vaccine"]):
+                if pillar == "care" or any(kw in user_message.lower() for kw in ["sick", "vet", "health", "allergy", "symptom", "medicine", "vaccine", "scratch", "itchy", "skin"]):
                     should_store = True
                     memory_type = "health"
-                    memory_content = f"Health concern mentioned: {user_input[:150]}"
+                    memory_content = f"Health concern mentioned: {user_message[:150]}"
                     relevance_tags.extend(["health", "symptom"])
                 
                 # Travel/Event memories
-                elif pillar == "travel" or any(kw in user_input.lower() for kw in ["trip", "travel", "vacation", "birthday", "party", "celebrate"]):
+                elif pillar == "travel" or any(kw in user_message.lower() for kw in ["trip", "travel", "vacation", "birthday", "party", "celebrate"]):
                     should_store = True
                     memory_type = "event"
-                    memory_content = f"Event/Travel mentioned: {user_input[:150]}"
+                    memory_content = f"Event/Travel mentioned: {user_message[:150]}"
                     relevance_tags.extend(["event", "planning"])
                 
                 # Shopping/Preference memories
@@ -8772,10 +8772,10 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                     relevance_tags.extend(["service", "concierge_request"])
                 
                 # Grooming memories
-                elif pillar == "care" and any(kw in user_input.lower() for kw in ["groom", "haircut", "bath", "nail"]):
+                elif pillar == "care" and any(kw in user_message.lower() for kw in ["groom", "haircut", "bath", "nail"]):
                     should_store = True
                     memory_type = "general"
-                    memory_content = f"Grooming request: {user_input[:100]}"
+                    memory_content = f"Grooming request: {user_message[:100]}"
                     relevance_tags.extend(["grooming", "care"])
                 
                 if should_store and memory_content:
