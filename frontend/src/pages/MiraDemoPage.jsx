@@ -4812,24 +4812,8 @@ const MiraDemoPage = () => {
                             </div>
                           )}
                           
-                          {/* MIRA DOCTRINE: Concierge available - Compact inline hint */}
-                          {/* Full options accessible via floating C° button */}
-                          {msg.data?.response?.suggest_concierge && (
-                            <button 
-                              className="mp-concierge-hint"
-                              onClick={() => setShowConciergePanel(true)}
-                              data-testid={`concierge-hint-${idx}`}
-                            >
-                              <span className="hint-c">C</span>
-                              <span className="hint-degree">°</span>
-                              <span className="hint-text">
-                                {msg.inComfortMode 
-                                  ? "Talk to someone who understands" 
-                                  : "Need help? Tap here"}
-                              </span>
-                              <ChevronRight size={12} />
-                            </button>
-                          )}
+                          {/* CONCIERGE HINT - MOVED TO HEADER BAR */}
+                          {/* The "Need help? Tap here" is now in mp-card-header */}
                         </div>
                       </div>
                     </div>
