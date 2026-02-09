@@ -694,3 +694,345 @@ async def get_proactive_triggers(
         "triggers": triggers,
         "generated_at": now.isoformat()
     }
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# CONVERSATION CONTEXT TRACKER
+# Tracks last shown items for pronoun resolution and follow-up context
+# ═══════════════════════════════════════════════════════════════════════════════
+
+class ConversationContext:
+    """
+    In-memory conversation context for pronoun resolution.
+    Tracks last shown products, services, and query context.
+    """
+    
+    _contexts: Dict[str, Dict] = {}
+    
+    @classmethod
+    def get(cls, session_id: str) -> Dict:
+        """Get or create session context"""
+        if session_id not in cls._contexts:
+            cls._contexts[session_id] = {
+                "last_products": [],
+                "last_services": [],
+                "last_places": [],
+                "last_pillar": None,
+                "last_query": None,
+                "created_at": datetime.now(timezone.utc).isoformat()
+            }
+        return cls._contexts[session_id]
+    
+    @classmethod
+    def store_products(cls, session_id: str, products: List[Dict]):
+        """Store products shown for pronoun resolution"""
+        ctx = cls.get(session_id)
+        ctx["last_products"] = products[:10] if products else []
+        ctx["updated_at"] = datetime.now(timezone.utc).isoformat()
+        logger.info(f"[CONTEXT] Stored {len(products)} products for session {session_id[:8]}")
+    
+    @classmethod
+    def store_query(cls, session_id: str, query: str, pillar: str = None):
+        """Store last query for follow-up context"""
+        ctx = cls.get(session_id)
+        ctx["last_query"] = query
+        ctx["last_pillar"] = pillar
+        ctx["updated_at"] = datetime.now(timezone.utc).isoformat()
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# PRONOUN RESOLVER
+# "book that one", "the first one", "the cheaper one"
+# ═══════════════════════════════════════════════════════════════════════════════
+
+ORDINALS = {
+    "first": 0, "1st": 0, "one": 0,
+    "second": 1, "2nd": 1, "two": 1,
+    "third": 2, "3rd": 2, "three": 2,
+    "fourth": 3, "4th": 3,
+    "fifth": 4, "5th": 4,
+    "last": -1, "bottom": -1
+}
+
+PRONOUN_PATTERNS = [
+    "that one", "this one", "that", "this",
+    "the one", "it", "book it", "order it", "buy it",
+    "first one", "second one", "third one",
+    "the first", "the second", "the third",
+    "cheaper one", "cheapest", "the cheap one",
+    "expensive one", "premium one",
+    "top one", "last one"
+]
+
+def needs_pronoun_resolution(query: str) -> bool:
+    """Check if query has pronouns that need resolution"""
+    q = query.lower()
+    return any(p in q for p in PRONOUN_PATTERNS)
+
+def resolve_pronoun(query: str, session_id: str) -> Dict[str, Any]:
+    """
+    Resolve pronouns to actual items from context.
+    
+    Returns:
+    {
+        "resolved": bool,
+        "item": dict or None,
+        "item_type": "product"/"service",
+        "index": int,
+        "resolved_to": "description of resolved item"
+    }
+    """
+    q = query.lower()
+    ctx = ConversationContext.get(session_id)
+    products = ctx.get("last_products", [])
+    
+    result = {
+        "resolved": False,
+        "item": None,
+        "item_type": None,
+        "index": None,
+        "resolved_to": None
+    }
+    
+    if not products:
+        logger.info(f"[PRONOUN] No products in context for session {session_id[:8]}")
+        return result
+    
+    # Check ordinals (first, second, third)
+    for ordinal, idx in ORDINALS.items():
+        if ordinal in q:
+            actual_idx = idx if idx >= 0 else len(products) + idx
+            if 0 <= actual_idx < len(products):
+                result["resolved"] = True
+                result["item"] = products[actual_idx]
+                result["item_type"] = "product"
+                result["index"] = actual_idx
+                result["resolved_to"] = products[actual_idx].get("name", f"item #{actual_idx + 1}")
+                logger.info(f"[PRONOUN] Resolved '{ordinal}' → {result['resolved_to']}")
+                return result
+    
+    # Check price-based references
+    if any(w in q for w in ["cheap", "budget", "affordable"]):
+        priced = [(i, p.get("price", float('inf'))) for i, p in enumerate(products) if p.get("price")]
+        if priced:
+            cheapest_idx = min(priced, key=lambda x: x[1])[0]
+            result["resolved"] = True
+            result["item"] = products[cheapest_idx]
+            result["item_type"] = "product"
+            result["index"] = cheapest_idx
+            result["resolved_to"] = products[cheapest_idx].get("name", "cheapest item")
+            return result
+    
+    if any(w in q for w in ["expensive", "premium", "luxury", "best"]):
+        priced = [(i, p.get("price", 0)) for i, p in enumerate(products) if p.get("price")]
+        if priced:
+            expensive_idx = max(priced, key=lambda x: x[1])[0]
+            result["resolved"] = True
+            result["item"] = products[expensive_idx]
+            result["item_type"] = "product"
+            result["index"] = expensive_idx
+            result["resolved_to"] = products[expensive_idx].get("name", "premium item")
+            return result
+    
+    # Default: "that one", "it", "this" → first item
+    if any(p in q for p in ["that one", "this one", "that", "this", "it", "book it", "order it", "buy it"]):
+        result["resolved"] = True
+        result["item"] = products[0]
+        result["item_type"] = "product"
+        result["index"] = 0
+        result["resolved_to"] = products[0].get("name", "first item")
+        logger.info(f"[PRONOUN] Resolved 'that/this/it' → {result['resolved_to']}")
+        return result
+    
+    return result
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# FOLLOW-UP CONTEXT HANDLER
+# "show me more", "any cheaper", "different options"
+# ═══════════════════════════════════════════════════════════════════════════════
+
+FOLLOW_UP_PATTERNS = {
+    "more_items": ["show me more", "more options", "any others", "what else", "other options", "alternatives"],
+    "cheaper": ["cheaper", "less expensive", "budget", "affordable", "under budget", "lower price"],
+    "expensive": ["premium", "high end", "luxury", "better quality", "top tier"],
+    "different": ["different", "other colors", "other sizes", "variations"],
+    "similar": ["similar", "like this", "same kind", "related"],
+    "details": ["tell me more", "more details", "more info", "about this"]
+}
+
+def is_follow_up_query(query: str) -> bool:
+    """Check if query is a follow-up needing context"""
+    q = query.lower()
+    # Short queries with follow-up patterns
+    if len(query.split()) <= 5:
+        for patterns in FOLLOW_UP_PATTERNS.values():
+            if any(p in q for p in patterns):
+                return True
+    return False
+
+def get_follow_up_type(query: str) -> Optional[str]:
+    """Determine follow-up type"""
+    q = query.lower()
+    for ftype, patterns in FOLLOW_UP_PATTERNS.items():
+        if any(p in q for p in patterns):
+            return ftype
+    return None
+
+def enrich_follow_up(query: str, session_id: str) -> Dict[str, Any]:
+    """
+    Enrich a follow-up query with previous context.
+    
+    Returns:
+    {
+        "is_follow_up": bool,
+        "follow_up_type": str,
+        "enriched_query": str,
+        "context_applied": bool,
+        "filters": {}
+    }
+    """
+    ctx = ConversationContext.get(session_id)
+    ftype = get_follow_up_type(query)
+    
+    result = {
+        "is_follow_up": ftype is not None,
+        "follow_up_type": ftype,
+        "enriched_query": query,
+        "context_applied": False,
+        "filters": {}
+    }
+    
+    if not ftype:
+        return result
+    
+    last_query = ctx.get("last_query", "")
+    last_products = ctx.get("last_products", [])
+    
+    if ftype == "more_items" and last_query:
+        result["enriched_query"] = f"{last_query} - more options"
+        result["context_applied"] = True
+        result["filters"]["offset"] = len(last_products)
+    
+    elif ftype == "cheaper" and last_query:
+        result["enriched_query"] = f"{last_query} - budget friendly"
+        result["context_applied"] = True
+        if last_products:
+            prices = [p.get("price", 0) for p in last_products if p.get("price")]
+            if prices:
+                result["filters"]["max_price"] = min(prices) * 0.8
+    
+    elif ftype == "expensive" and last_query:
+        result["enriched_query"] = f"{last_query} - premium quality"
+        result["context_applied"] = True
+    
+    elif ftype == "details" and last_products:
+        first = last_products[0]
+        result["enriched_query"] = f"details about {first.get('name', 'product')}"
+        result["context_applied"] = True
+        result["filters"]["product_id"] = first.get("id")
+    
+    logger.info(f"[FOLLOW-UP] Type: {ftype}, Enriched: {result['enriched_query'][:50]}")
+    return result
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# MULTI-INTENT DETECTOR
+# "book grooming and order treats"
+# ═══════════════════════════════════════════════════════════════════════════════
+
+INTENT_KEYWORDS = {
+    "shop": ["buy", "order", "purchase", "get me", "i want", "i need"],
+    "grooming": ["groom", "haircut", "bath", "nail trim"],
+    "training": ["train", "obedience", "behavior"],
+    "boarding": ["board", "overnight stay", "kennel"],
+    "walking": ["walk", "walker", "dog walking"],
+    "vet": ["vet", "doctor", "checkup", "vaccine"],
+    "celebrate": ["birthday", "party", "cake", "celebration"],
+    "travel": ["trip", "travel", "vacation", "hotel"]
+}
+
+def detect_multi_intent(query: str) -> List[Dict]:
+    """
+    Detect multiple intents in a query.
+    
+    Returns list of detected intents.
+    """
+    q = query.lower()
+    intents = []
+    
+    # Split by "and", "also", etc.
+    segments = q.replace(" also ", " and ").replace(" plus ", " and ").split(" and ")
+    
+    for segment in segments:
+        segment = segment.strip()
+        for intent, keywords in INTENT_KEYWORDS.items():
+            if any(kw in segment for kw in keywords):
+                intents.append({
+                    "intent": intent,
+                    "segment": segment,
+                    "keywords": [kw for kw in keywords if kw in segment]
+                })
+                break
+    
+    # Dedupe
+    seen = set()
+    unique = []
+    for i in intents:
+        if i["intent"] not in seen:
+            seen.add(i["intent"])
+            unique.append(i)
+    
+    if len(unique) > 1:
+        logger.info(f"[MULTI-INTENT] Detected {len(unique)} intents: {[i['intent'] for i in unique]}")
+    
+    return unique
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# MAIN INTELLIGENCE PROCESSOR
+# Call this at the start of every chat
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def process_intelligence(query: str, session_id: str) -> Dict[str, Any]:
+    """
+    Main intelligence processor - call at start of every chat.
+    
+    Returns enhanced query info with resolved references.
+    """
+    result = {
+        "original_query": query,
+        "processed_query": query,
+        "pronoun_resolved": False,
+        "resolved_item": None,
+        "is_follow_up": False,
+        "follow_up_type": None,
+        "multi_intent": False,
+        "intents": []
+    }
+    
+    # 1. Check pronouns
+    if needs_pronoun_resolution(query):
+        resolution = resolve_pronoun(query, session_id)
+        if resolution["resolved"]:
+            result["pronoun_resolved"] = True
+            result["resolved_item"] = resolution["item"]
+            result["processed_query"] = f"Select {resolution['resolved_to']}"
+    
+    # 2. Check follow-up
+    if is_follow_up_query(query):
+        enriched = enrich_follow_up(query, session_id)
+        if enriched["context_applied"]:
+            result["is_follow_up"] = True
+            result["follow_up_type"] = enriched["follow_up_type"]
+            result["processed_query"] = enriched["enriched_query"]
+            result["filters"] = enriched.get("filters", {})
+    
+    # 3. Check multi-intent
+    intents = detect_multi_intent(query)
+    if len(intents) > 1:
+        result["multi_intent"] = True
+        result["intents"] = intents
+    
+    return result
+
