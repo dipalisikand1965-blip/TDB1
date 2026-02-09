@@ -626,42 +626,12 @@ const generateWhyForPet = (product, pet) => {
   return `Selected for ${petName}'s profile`;
 };
 
-// Sample pet for demo - with Soul Score traits
-// Note: Low soul score to demonstrate the "Help Mira know" prompt
-const DEMO_PET = {
-  id: 'demo-pet',
-  name: 'Buddy',
-  breed: 'Golden Retriever',
-  age: '3 years',
-  traits: ['Playful', 'Friendly', 'Energetic'],
-  sensitivities: ['Chicken allergy'],
-  favorites: ['Tennis balls', 'Peanut butter treats'],
-  photo: 'https://images.unsplash.com/photo-1552053831-71594a27632d?w=200&h=200&fit=crop&crop=face',
-  soulTraits: [
-    { label: 'Playful spirit', icon: '⭐', color: '#f59e0b' },
-    { label: 'Gentle paws', icon: '🎀', color: '#ec4899' },
-    { label: 'Loyal friend', icon: '❤️', color: '#ef4444' },
-  ],
-  soulScore: 0 // Starts at 0 - encourages users to complete soul profile
-};
-
-// All pets for multi-pet selector
-const ALL_PETS = [
-  DEMO_PET,
-  {
-    id: 'pet-2',
-    name: 'Luna',
-    breed: 'Labrador',
-    age: '5 years',
-    sensitivities: [],
-    photo: null,
-    soulTraits: [
-      { label: 'Calm soul', icon: '🌙', color: '#8b5cf6' },
-      { label: 'Wise eyes', icon: '👁️', color: '#06b6d4' },
-    ],
-    soulScore: 32 // Low score to show the "Help Mira know" prompt for comparison
-  }
-];
+// ═══════════════════════════════════════════════════════════════════════════════
+// NOTE: DEMO_PET and ALL_DEMO_PETS are now imported from '../hooks/mira'
+// This ensures consistency between the hook and the page
+// ═══════════════════════════════════════════════════════════════════════════════
+// Alias for backward compatibility
+const ALL_PETS = ALL_DEMO_PETS;
 
 const MiraDemoPage = () => {
   const { user, token } = useAuth();
