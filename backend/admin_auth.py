@@ -82,11 +82,18 @@ def verify_password(password: str, stored_hash: str) -> bool:
 @router.post("/login")
 async def admin_login(credentials: AdminLogin):
     """Login with email and password"""
+    import logging
+    logger = logging.getLogger("admin_auth")
+    
     # First check database for admin user
+    logger.info(f"[ADMIN LOGIN] Attempting login for: {credentials.email.lower()}")
     admin = await db.admin_users.find_one({"email": credentials.email.lower(), "is_active": True})
+    logger.info(f"[ADMIN LOGIN] Admin found: {admin is not None}")
     
     if admin:
-        if verify_password(credentials.password, admin.get("password_hash", "")):
+        pw_valid = verify_password(credentials.password, admin.get("password_hash", ""))
+        logger.info(f"[ADMIN LOGIN] Password valid: {pw_valid}")
+        if pw_valid:
             # Update last login
             await db.admin_users.update_one(
                 {"email": credentials.email.lower()},
