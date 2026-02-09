@@ -51,6 +51,7 @@ import NavigationDock from '../components/Mira/NavigationDock';
 import FloatingActionBar from '../components/Mira/FloatingActionBar';
 import MiraLoader from '../components/Mira/MiraLoader';
 import ScrollToBottomButton from '../components/Mira/ScrollToBottomButton';
+import { FormattedText, TypedText } from '../components/Mira/TextComponents';
 import { triggerCelebrationConfetti } from '../utils/confetti';
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -71,11 +72,8 @@ import {
   saveConversationMemory, buildMemoryPrefix
 } from '../hooks/mira';
 
-// Formatted Text Component - Renders markdown with proper styling
-// Uses wrapper div for className (react-markdown v8+ compatible)
-// Pre-processes text to ensure proper markdown formatting
-const FormattedText = ({ children, className = '' }) => {
-  if (!children) return null;
+// Import the production-style CSS (matches thedoggycompany.in)
+import '../styles/mira-prod.css';
   
   // Pre-process text to convert inline dashes to proper markdown bullet points
   const processText = (text) => {
