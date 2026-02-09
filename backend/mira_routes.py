@@ -13721,6 +13721,144 @@ def generate_why_for_pet_simple(product, pet_context):
     return None
 
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# UNIFIED VAULT ENDPOINTS - All flows go through same plumbing
+# create_signal() → Notification → Ticket → Inbox
+# ═══════════════════════════════════════════════════════════════════════════════
+
+class UnifiedVaultRequest(BaseModel):
+    """Base request for all vault types"""
+    vault_type: str  # picks, tip_card, booking, places, custom, emergency, memorial, adoption
+    session_id: Optional[str] = None
+    member_id: Optional[str] = None
+    member_email: Optional[str] = None
+    member_phone: Optional[str] = None
+    member_name: Optional[str] = None
+    pet: Optional[Dict] = None
+    pillar: Optional[str] = "general"
+    # Dynamic fields based on vault_type
+    data: Optional[Dict] = {}
+
+@router.post("/vault/send-to-concierge")
+async def send_vault_to_concierge(request: UnifiedVaultRequest):
+    """
+    UNIFIED ENDPOINT for ALL vault types.
+    Same plumbing: Notification → Ticket → Inbox
+    
+    Vault Types:
+    - picks: Product selections
+    - tip_card: Advice/plans/guides
+    - booking: Service appointments
+    - places: Pet-friendly locations
+    - custom: Special/bespoke requests
+    - emergency: Urgent help
+    - memorial: Grief/farewell
+    - adoption: Finding new pet
+    """
+    try:
+        from central_signal_flow import create_signal
+        from timestamp_utils import get_utc_timestamp
+        
+        pet = request.pet or {}
+        pet_name = pet.get('name', 'Pet')
+        data = request.data or {}
+        
+        # Build title and description based on vault type
+        VAULT_CONFIG = {
+            'picks': {
+                'title': f"{pet_name}'s Picks - {len(data.get('picked_items', []))} item(s) selected",
+                'action_type': 'picks_selected',
+                'urgency': 'medium'
+            },
+            'tip_card': {
+                'title': f"{data.get('card_type', 'Advice').replace('_', ' ').title()} for {pet_name}",
+                'action_type': 'tip_card_advice',
+                'urgency': 'low'
+            },
+            'booking': {
+                'title': f"Book {data.get('service_type', 'Service').title()} for {pet_name}",
+                'action_type': 'service_booking',
+                'urgency': 'medium'
+            },
+            'places': {
+                'title': f"Pet-Friendly {data.get('place_type', 'Place').title()} - {len(data.get('selected_places', []))} selected",
+                'action_type': 'places_request',
+                'urgency': 'low'
+            },
+            'custom': {
+                'title': f"Custom Request for {pet_name}",
+                'action_type': 'custom_request',
+                'urgency': 'medium'
+            },
+            'emergency': {
+                'title': f"🚨 EMERGENCY: {data.get('emergency_type', 'Urgent').title()} - {pet_name}",
+                'action_type': 'emergency_alert',
+                'urgency': 'critical'
+            },
+            'memorial': {
+                'title': f"Remembering {pet_name} - Memorial Request",
+                'action_type': 'memorial_request',
+                'urgency': 'low'
+            },
+            'adoption': {
+                'title': f"Adoption Request - Looking for {data.get('pet_type', 'Pet')}",
+                'action_type': 'adoption_request',
+                'urgency': 'low'
+            }
+        }
+        
+        config = VAULT_CONFIG.get(request.vault_type, {
+            'title': f"Request for {pet_name}",
+            'action_type': 'general_request',
+            'urgency': 'medium'
+        })
+        
+        # Build description
+        description = f"Vault Type: {request.vault_type}\n"
+        description += f"Pillar: {request.pillar}\n\n"
+        description += f"Data:\n{json.dumps(data, indent=2, default=str)[:2000]}"
+        
+        # Create unified signal
+        signal_result = await create_signal(
+            pillar=request.pillar or "general",
+            action_type=config['action_type'],
+            title=config['title'],
+            description=description,
+            customer_name=request.member_name,
+            customer_email=request.member_email,
+            customer_phone=request.member_phone,
+            pet_name=pet.get('name'),
+            pet_breed=pet.get('breed'),
+            pet_id=pet.get('id'),
+            urgency=config['urgency'],
+            source="mira",
+            linked_id=request.session_id,
+            extra_data={
+                "vault_type": request.vault_type,
+                "vault_data": data,
+                "pillar": request.pillar,
+                "sent_at": get_utc_timestamp()
+            }
+        )
+        
+        logger.info(f"[VAULT → CONCIERGE] {request.vault_type} | Ticket: {signal_result.get('ticket_id')} | Pet: {pet_name}")
+        
+        return {
+            "success": True,
+            "vault_type": request.vault_type,
+            "ticket_id": signal_result.get("ticket_id"),
+            "notification_id": signal_result.get("notification_id"),
+            "inbox_id": signal_result.get("inbox_id"),
+            "message": "Your Pet Concierge® will get back to you shortly"
+        }
+        
+    except Exception as e:
+        logger.error(f"[VAULT → CONCIERGE] Failed: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return {"success": False, "error": str(e)}
+
+
 @router.post("/admin/run-ai-tagging")
 async def run_ai_tagging():
     """
