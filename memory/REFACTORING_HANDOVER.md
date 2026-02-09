@@ -1,6 +1,6 @@
 # MIRA DEMO PAGE REFACTORING - HANDOVER REPORT
 ## Date: February 9, 2026
-## Status: IN PROGRESS (12% Complete)
+## Status: IN PROGRESS (14% Complete)
 
 ---
 
@@ -8,11 +8,11 @@
 
 | Metric | Before | After | Change |
 |--------|--------|-------|--------|
-| MiraDemoPage.jsx Lines | 5,789 | **5,076** | **-713 (12%)** |
+| MiraDemoPage.jsx Lines | 5,789 | **4,982** | **-807 (14%)** |
 | useState hooks | 67 | 61 | -6 |
-| Components Created | 0 | **12** | +12 |
+| Components Created | 0 | **15** | +15 |
 | Hooks Created | 0 | **4** | +4 |
-| Target Lines | - | ~1,500 | 3,576 to go |
+| Target Lines | - | ~1,500 | 3,482 to go |
 
 ---
 
@@ -37,7 +37,7 @@ useVault:   showVault, activeVaultData, vaultUserMessage, miraPicks, showMiraTra
 useSession: sessionId, setSessionId, sessionRecovered, setSessionRecovered
 ```
 
-## 2. UI Components Extracted
+## 2. UI Components Extracted (15 total, ~2,207 lines)
 
 ### Location: `/app/frontend/src/components/Mira/`
 
@@ -47,15 +47,18 @@ useSession: sessionId, setSessionId, sessionRecovered, setSessionRecovered
 | WelcomeHero | `WelcomeHero.jsx` | 320 | Welcome screen with pet avatar |
 | PastChatsPanel | `PastChatsPanel.jsx` | 186 | Past conversations list |
 | ServiceRequestModal | `ServiceRequestModal.jsx` | 166 | Service booking form |
-| HealthVaultWizard | `HealthVaultWizard.jsx` | 146 | Health profile completion wizard |
+| HealthVaultWizard | `HealthVaultWizard.jsx` | 146 | Health profile completion |
 | LearnModal | `LearnModal.jsx` | 133 | Training videos modal |
 | ChatInputBar | `ChatInputBar.jsx` | 128 | Message input bar |
+| PetSelector | `PetSelector.jsx` | 117 | Pet dropdown selector ✅ NEW |
 | MiraTray | `MiraTray.jsx` | 108 | Picks preview tray |
 | HelpModal | `HelpModal.jsx` | 101 | Quick help options |
+| FloatingActionBar | `FloatingActionBar.jsx` | 88 | Quick action buttons ✅ NEW |
 | ConciergePanel | `ConciergePanel.jsx` | 80 | Concierge contact panel |
 | TestScenariosPanel | `TestScenariosPanel.jsx` | 77 | Demo test scenarios |
+| NavigationDock | `NavigationDock.jsx` | 77 | Horizontal nav pills ✅ NEW |
 | InsightsPanel | `InsightsPanel.jsx` | 63 | Mira's tips display |
-| **TOTAL** | | **~1,900** | |
+| **TOTAL** | | **~2,207** | |
 
 ## 3. Backend: Retention System Created
 
