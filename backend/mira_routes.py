@@ -6428,6 +6428,39 @@ async def mira_chat(
     session_id = request.session_id or str(uuid.uuid4())
     user_message = request.message.strip()
     
+    # ═══════════════════════════════════════════════════════════════════════════
+    # MIRA INTELLIGENCE - Process query for pronouns, follow-ups, multi-intent
+    # ═══════════════════════════════════════════════════════════════════════════
+    try:
+        from mira_intelligence import (
+            process_intelligence, ConversationContext, 
+            needs_pronoun_resolution, resolve_pronoun
+        )
+        
+        intelligence = process_intelligence(user_message, session_id)
+        
+        # If pronoun was resolved, use the resolved item
+        if intelligence.get("pronoun_resolved"):
+            resolved_item = intelligence.get("resolved_item")
+            if resolved_item:
+                logger.info(f"[INTELLIGENCE] Pronoun resolved to: {resolved_item.get('name', 'item')}")
+                # The resolved item can be used later for booking/ordering
+        
+        # If follow-up, enrich the query
+        if intelligence.get("is_follow_up"):
+            enriched_query = intelligence.get("processed_query", user_message)
+            logger.info(f"[INTELLIGENCE] Follow-up detected, enriched: {enriched_query[:50]}")
+            # Use enriched query for processing
+            user_message = enriched_query if enriched_query != user_message else user_message
+        
+        # If multi-intent, log and potentially split
+        if intelligence.get("multi_intent"):
+            intents = intelligence.get("intents", [])
+            logger.info(f"[INTELLIGENCE] Multi-intent query: {[i['intent'] for i in intents]}")
+            # For now, handle primary intent first
+    except Exception as intel_err:
+        logger.warning(f"[INTELLIGENCE] Error: {intel_err}")
+    
     # 1. Get user and pets context
     user = await get_user_from_token(authorization)
     pets = []
