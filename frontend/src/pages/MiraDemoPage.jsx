@@ -84,31 +84,15 @@ import {
 
 // Import the production-style CSS (matches thedoggycompany.in)
 import '../styles/mira-prod.css';
-  { id: 'concierge', label: 'Concierge®', icon: MessageCircle, action: 'openChat' },
-  { id: 'orders', label: 'Orders', icon: Package, path: '/orders' },
-  { id: 'plan', label: 'Plan', icon: Calendar, path: '/family-dashboard', tab: 'calendar' },
-  { id: 'help', label: 'Help', icon: HelpCircle, action: 'openHelp' },
-  { id: 'soul', label: 'Soul', icon: Heart, path: '/dashboard' },
-  { id: 'learn', label: 'Learn', icon: Play, action: 'openLearn' },
-];
 
-// CONCIERGE OPERATING HOURS
-// The Concierge works from 6:30 AM to 11:30 PM
-// After hours, Mira takes requests and promises follow-up
-const CONCIERGE_HOURS = {
-  start: { hour: 6, minute: 30 },
-  end: { hour: 23, minute: 30 }
-};
+// ═══════════════════════════════════════════════════════════════════════════════
+// NOTE: DEMO_PET and ALL_DEMO_PETS are now imported from '../hooks/mira'
+// This ensures consistency between the hook and the page
+// ═══════════════════════════════════════════════════════════════════════════════
+// Alias for backward compatibility
+const ALL_PETS = ALL_DEMO_PETS;
 
-const isConciergeLive = () => {
-  const now = new Date();
-  const currentHour = now.getHours();
-  const currentMinute = now.getMinutes();
-  const currentTime = currentHour * 60 + currentMinute;
-  const startTime = CONCIERGE_HOURS.start.hour * 60 + CONCIERGE_HOURS.start.minute;
-  const endTime = CONCIERGE_HOURS.end.hour * 60 + CONCIERGE_HOURS.end.minute;
-  return currentTime >= startTime && currentTime <= endTime;
-};
+const MiraDemoPage = () => {
 
 // Generate dynamic Concierge request card for ANY request
 // MIRA DOCTRINE: Concierge can do ANYTHING (legal, moral, no medical)
