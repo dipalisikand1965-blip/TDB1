@@ -13128,6 +13128,117 @@ async def get_picks_history(pet_id: str, limit: int = 20):
     Shows what Mira has suggested over time.
     """
     db = get_db()
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# SAVE PICKS TO VAULT - Called when conversation completes
+# This is the handoff from Mira (brain) to Concierge (hand)
+# ═══════════════════════════════════════════════════════════════════════════════
+
+class SavePicksRequest(BaseModel):
+    """Request to save picks when conversation completes"""
+    session_id: str
+    member_id: Optional[str] = None
+    pet_context: Optional[Dict] = None
+    picks: Optional[Dict] = None  # {products: [], services: [], context: ''}
+    conversation_summary: Optional[str] = None
+    pillar: Optional[str] = None
+
+@router.post("/save-picks-to-vault")
+async def save_picks_to_vault(request: SavePicksRequest):
+    """
+    Save picks to the vault when conversation completes.
+    Creates a service ticket for Concierge to act on.
+    
+    This is like the agent handoff - Mira summarizes and passes to Concierge.
+    """
+    db = get_db()
+    if db is None:
+        return {"success": False, "error": "Database not available"}
+    
+    from timestamp_utils import get_utc_timestamp
+    import uuid
+    
+    now = get_utc_timestamp()
+    pet = request.pet_context or {}
+    picks = request.picks or {}
+    
+    try:
+        # Create picks vault document
+        picks_vault = {
+            "products": picks.get("products", [])[:6],  # Max 6 products
+            "services": picks.get("services", [])[:4],  # Max 4 services
+            "tip_cards": [],
+            "pillar": request.pillar or picks.get("context", "general"),
+            "context": picks.get("context", ""),
+            "conversation_summary": request.conversation_summary,
+            "generated_at": now
+        }
+        
+        # Create a lightweight service ticket for Concierge
+        ticket_id = f"picks-{uuid.uuid4().hex[:8]}"
+        notification_id = f"notif-{uuid.uuid4().hex[:8]}"
+        
+        ticket_doc = {
+            "ticket_id": ticket_id,
+            "notification_id": notification_id,
+            "type": "picks_handoff",
+            "status": "pending_concierge",
+            "priority": "normal",
+            "pillar": request.pillar or "general",
+            
+            # Member & Pet info
+            "member_id": request.member_id or "demo",
+            "pet": {
+                "id": pet.get("id"),
+                "name": pet.get("name"),
+                "breed": pet.get("breed"),
+                "photo": pet.get("photo")
+            },
+            
+            # The picks vault - this is what Concierge sees
+            "picks_vault": picks_vault,
+            
+            # Conversation context
+            "mira_session_id": request.session_id,
+            "conversation_summary": request.conversation_summary or f"Picks curated for {pet.get('name', 'pet')}",
+            
+            # Default message for Concierge
+            "concierge_note": f"Mira has curated {len(picks_vault['products'])} products and {len(picks_vault['services'])} services for {pet.get('name', 'this pet')}. Please review and follow up.",
+            
+            # Timestamps
+            "created_at": now,
+            "updated_at": now
+        }
+        
+        # Insert into service_desk_tickets
+        await db.service_desk_tickets.insert_one(ticket_doc)
+        
+        # Also update the mira_session with picks_saved flag
+        if request.session_id:
+            await db.mira_sessions.update_one(
+                {"session_id": request.session_id},
+                {"$set": {
+                    "picks_saved": True,
+                    "picks_ticket_id": ticket_id,
+                    "picks_saved_at": now
+                }}
+            )
+        
+        logger.info(f"[PICKS VAULT] Saved picks to ticket {ticket_id} for {pet.get('name')} - {len(picks_vault['products'])} products")
+        
+        return {
+            "success": True,
+            "ticket_id": ticket_id,
+            "picks_count": len(picks_vault["products"]) + len(picks_vault["services"]),
+            "message": f"Picks saved for Concierge to review"
+        }
+        
+    except Exception as e:
+        logger.error(f"[PICKS VAULT] Failed to save picks: {e}")
+        return {"success": False, "error": str(e)}
+
+
     if db is None:
         return {"error": "Database not available", "picks": []}
     
