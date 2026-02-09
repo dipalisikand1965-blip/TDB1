@@ -8971,6 +8971,23 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
         except Exception as mem_err:
             logger.warning(f"[MEMORY] Could not store memory: {mem_err}")
         
+        # ═══════════════════════════════════════════════════════════════════════════
+        # STORE CONTEXT FOR INTELLIGENCE - Enable pronoun resolution in next message
+        # ═══════════════════════════════════════════════════════════════════════════
+        try:
+            from mira_intelligence import ConversationContext
+            
+            # Store products shown for "that one", "the first one" resolution
+            if products and len(products) > 0:
+                ConversationContext.store_products(session_id, products)
+            
+            # Store query and pillar for follow-up context
+            ConversationContext.store_query(session_id, user_message, pillar)
+            
+            logger.info(f"[CONTEXT] Stored {len(products) if products else 0} products + query for session {session_id[:8]}")
+        except Exception as ctx_err:
+            logger.warning(f"[CONTEXT] Could not store context: {ctx_err}")
+        
         return {
             "response": response,
             "session_id": session_id,
