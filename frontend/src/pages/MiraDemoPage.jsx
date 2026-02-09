@@ -4677,30 +4677,39 @@ const MiraDemoPage = () => {
                                     <p className="mp-products-title">
                                       <span className="pet-name">{pet.name}'s</span> Picks
                                     </p>
-                                    {/* Pillar Badge - Shows context */}
-                                    {msg.data?.response?.pillar && (
+                                    {/* Pillar Badge - Shows context (check both pillar and current_pillar) */}
+                                    {(msg.data?.response?.pillar || msg.data?.current_pillar) && (
                                       <span className="mp-products-pillar-badge">
                                         <span className="mp-products-pillar-icon">
-                                          {msg.data.response.pillar === 'celebrate' ? '🎂' :
-                                           msg.data.response.pillar === 'dine' ? '🍽️' :
-                                           msg.data.response.pillar === 'stay' ? '🏨' :
-                                           msg.data.response.pillar === 'travel' ? '✈️' :
-                                           msg.data.response.pillar === 'care' ? '💊' :
-                                           msg.data.response.pillar === 'enjoy' ? '🎾' :
-                                           msg.data.response.pillar === 'fit' ? '🏃' :
-                                           msg.data.response.pillar === 'learn' ? '🎓' :
-                                           msg.data.response.pillar === 'shop' ? '🛒' : '✨'}
+                                          {(() => {
+                                            const p = msg.data?.response?.pillar || msg.data?.current_pillar;
+                                            return p === 'celebrate' ? '🎂' :
+                                                   p === 'dine' ? '🍽️' :
+                                                   p === 'stay' ? '🏨' :
+                                                   p === 'travel' ? '✈️' :
+                                                   p === 'care' ? '💊' :
+                                                   p === 'enjoy' ? '🎾' :
+                                                   p === 'fit' ? '🏃' :
+                                                   p === 'learn' ? '🎓' :
+                                                   p === 'shop' ? '🛒' : '✨';
+                                          })()}
                                         </span>
-                                        {msg.data.response.pillar.charAt(0).toUpperCase() + msg.data.response.pillar.slice(1)}
+                                        {(() => {
+                                          const p = msg.data?.response?.pillar || msg.data?.current_pillar;
+                                          return p ? p.charAt(0).toUpperCase() + p.slice(1) : '';
+                                        })()}
                                       </span>
                                     )}
                                   </div>
                                 </div>
                                 
                                 {/* See More Button - Links to pillar page */}
-                                {msg.data?.response?.pillar && (
+                                {(msg.data?.response?.pillar || msg.data?.current_pillar) && (
                                   <a 
-                                    href={`/${msg.data.response.pillar === 'shop' ? 'shop' : msg.data.response.pillar}`}
+                                    href={`/${(() => {
+                                      const p = msg.data?.response?.pillar || msg.data?.current_pillar;
+                                      return p === 'shop' ? 'shop' : p;
+                                    })()}`}
                                     className="mp-see-more-btn"
                                     data-testid="see-more-btn"
                                   >
