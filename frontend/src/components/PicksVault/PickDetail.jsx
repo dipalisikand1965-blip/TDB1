@@ -7,16 +7,13 @@
 
 import React, { useCallback } from 'react';
 import { ArrowLeft, Heart, Check, MessageCircle } from 'lucide-react';
+import hapticFeedback from '../../utils/haptic';
 import './PickDetail.css';
 
-// Haptic feedback utility
+// Use centralized haptic utility for iOS + Android support
 const haptic = {
-  light: () => {
-    if (navigator.vibrate) navigator.vibrate(10);
-  },
-  selection: () => {
-    if (navigator.vibrate) navigator.vibrate(15);
-  }
+  light: () => hapticFeedback.buttonTap(),
+  selection: () => hapticFeedback.productSelect()
 };
 
 const PickDetail = ({
