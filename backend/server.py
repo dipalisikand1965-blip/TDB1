@@ -1829,6 +1829,9 @@ from mira_routes import router as mira_router, set_mira_db
 # Import Mira Proactive System (Alerts, Reminders)
 from mira_proactive import router as mira_proactive_router, set_proactive_db
 
+# Import Mira Notifications System (Push, Email)
+from mira_notifications import router as mira_notifications_router, set_notifications_db
+
 # Import Mira Service Desk (Canonical Conversational Flow)
 from mira_service_desk import (
     mira_router as mira_service_desk_router,
