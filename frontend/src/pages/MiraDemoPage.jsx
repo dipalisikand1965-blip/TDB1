@@ -5752,15 +5752,15 @@ const MiraDemoPage = () => {
             isOpen={showVault}
             onClose={() => {
               setShowVault(false);
-              setVaultResponse(null);
+              setActiveVaultData(null);
               setVaultUserMessage('');
             }}
             miraResponse={{
               products: miraPicks.products,
               services: miraPicks.services,
-              response: vaultResponse,
+              response: activeVaultData,
               pillar: currentPillar,
-              ...vaultResponse
+              ...activeVaultData
             }}
             userMessage={vaultUserMessage}
             pet={pet}
