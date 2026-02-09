@@ -3027,6 +3027,13 @@ const MiraDemoPage = () => {
         onChatHandoff={handleConciergeHandoff}
       />
       
+      {/* CONCIERGE CONFIRMATION BANNER - Shows when service request received */}
+      <ConciergeConfirmation
+        confirmation={conciergeConfirmation}
+        onDismiss={() => setConciergeConfirmation(null)}
+        petName={pet?.name || 'your pet'}
+      />
+      
       {/* TEST SCENARIOS PANEL - Extracted to TestScenariosPanel component */}
       <TestScenariosPanel
         isOpen={showTestScenarios}
