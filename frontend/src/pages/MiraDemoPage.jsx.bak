@@ -2354,6 +2354,112 @@ const MiraDemoPage = () => {
     return moreInfoPhrases.some(phrase => lowerInput.includes(phrase));
   }, []);
   
+  // VOICE CONTROL - Stop speaking immediately and cancel pending voice
+  const stopSpeaking = useCallback(() => {
+    // Clear any pending voice timeout to prevent double voice
+    if (voiceTimeoutRef.current) {
+      clearTimeout(voiceTimeoutRef.current);
+      voiceTimeoutRef.current = null;
+    }
+    // Stop current audio
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      audioRef.current = null;
+    }
+    setIsSpeaking(false);
+  }, []);
+  
+  // VOICE OUTPUT - ElevenLabs TTS for Mira's voice (must be before handleSubmit)
+  const speakWithMira = useCallback(async (text) => {
+    if (!voiceEnabled || !text) return;
+    
+    // CRITICAL: Stop any existing voice before starting new one (prevents double voice)
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      audioRef.current = null;
+    }
+    
+    try {
+      setIsSpeaking(true);
+      
+      // E024: Auto-detect voice personality from response content
+      const personality = detectVoicePersonality(text);
+      console.log('[Mira Voice] Auto-detected personality:', personality);
+      
+      // Clean text for natural speech
+      let cleanText = text
+        .replace(/[🎉🐕✨🦴💜🎂🏥☀️🌤️🌙🌟🐾🎒📅📋😊💝🎁🎤💡]/g, '')
+        .replace(/\*\*/g, '')
+        .replace(/[*#_~`]/g, '')
+        .replace(/\[.*?\]/g, '')
+        .replace(/\n/g, ' ')
+        .replace(/®/g, '')
+        .trim();
+      
+      // Smart truncation - cut at sentence boundary (up to 800 chars)
+      if (cleanText.length > 800) {
+        // Find the last sentence ending before 800 chars
+        const truncated = cleanText.substring(0, 800);
+        const lastSentenceEnd = Math.max(
+          truncated.lastIndexOf('. '),
+          truncated.lastIndexOf('? '),
+          truncated.lastIndexOf('! ')
+        );
+        if (lastSentenceEnd > 400) {
+          cleanText = truncated.substring(0, lastSentenceEnd + 1);
+        } else {
+          cleanText = truncated;
+        }
+      }
+      
+      // E024: Pass auto-detected voice personality to TTS endpoint
+      const response = await fetch(`${API_URL}/api/tts/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          text: cleanText,
+          personality: personality 
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error('TTS request failed');
+      }
+      
+      const data = await response.json();
+      
+      // Create and play audio
+      const audio = new Audio();
+      audio.preload = 'auto';
+      audio.volume = 1.0;
+      
+      audio.onended = () => {
+        console.log('[Mira Voice] Finished speaking');
+        setIsSpeaking(false);
+      };
+      
+      audio.onerror = () => {
+        setIsSpeaking(false);
+      };
+      
+      audio.oncanplaythrough = () => {
+        audio.play().catch((e) => {
+          console.log('[Mira Voice] Playback blocked:', e.message);
+          setIsSpeaking(false);
+        });
+      };
+      
+      audio.src = `data:audio/mpeg;base64,${data.audio_base64}`;
+      audio.load();
+      audioRef.current = audio;
+      
+    } catch (error) {
+      console.log('[Mira Voice] Error:', error.message);
+      setIsSpeaking(false);
+    }
+  }, [voiceEnabled, detectVoicePersonality]);
   
   // Handle submit - MIRA DOCTRINE: Let Mira's intelligence decide what to show
   const handleSubmit = useCallback(async (e, voiceQuery = null) => {
