@@ -164,20 +164,32 @@ THE APP IS THE ENABLER FOR A SEAMLESS LUXURY HAPTIC EXPERIENCE.
 → Can request formal version
 → Sends to Concierge for action
 
+### Complete Vault System ✅ IMPLEMENTED
+
+| Vault Type | Component | For | Status |
+|------------|-----------|-----|--------|
+| **Picks** | `PicksVault.jsx` | Products, Services | ✅ |
+| **Tip Card** | `TipCardVault.jsx` | Advice, Plans, Guides | ✅ |
+| **Booking** | `BookingVault.jsx` | Service Appointments | ✅ |
+| **Places** | `PlacesVault.jsx` | Pet-Friendly Locations | ✅ |
+| **Custom** | `CustomVault.jsx` | Special/Bespoke Requests | ✅ |
+| **Emergency** | `EmergencyVault.jsx` | Urgent Help | ✅ |
+| **Memorial** | `MemorialVault.jsx` | Grief & Farewell | ✅ |
+| **Adoption** | `AdoptionVault.jsx` | Finding New Pet | ✅ |
+
 ### Backend Endpoints:
 | Endpoint | Purpose |
 |----------|---------|
-| `POST /api/mira/send-picks-to-concierge` | Send product picks via unified signal flow |
-| `POST /api/mira/send-tip-card-to-concierge` | Send tip cards via unified signal flow |
-| `POST /api/mira/refresh-picks` | Get different options |
-| `GET /api/mira/picks-history/{pet_id}` | View past picks |
-| `POST /api/mira/refresh-picks` | Get different options |
+| `POST /api/mira/vault/send-to-concierge` | **UNIFIED** - Handles ALL vault types |
+| `POST /api/mira/send-picks-to-concierge` | Send product picks (legacy) |
+| `POST /api/mira/send-tip-card-to-concierge` | Send tip cards (legacy) |
+| `POST /api/mira/refresh-picks` | Get different product options |
 | `GET /api/mira/picks-history/{pet_id}` | View past picks |
 
 ### Unified Signal Flow:
-When user sends picks → Creates:
+When user sends ANY vault → Creates:
 1. `admin_notifications` - Bell icon for admin
-2. `service_desk_tickets` - Service desk with picks_vault
+2. `service_desk_tickets` - Service desk with vault_data
 3. `channel_intakes` - Unified inbox entry
 
 ---
