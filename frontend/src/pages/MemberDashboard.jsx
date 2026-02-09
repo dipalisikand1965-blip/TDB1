@@ -961,6 +961,9 @@ const MemberDashboard = () => {
                 <TabsTrigger value="mira" className="rounded-lg px-3 py-2 text-xs font-medium text-slate-400 whitespace-nowrap transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white">
                   <Sparkles className="w-3.5 h-3.5 mr-1 inline" /> Mira AI
                 </TabsTrigger>
+                <TabsTrigger value="picks" className="rounded-lg px-3 py-2 text-xs font-medium text-slate-400 whitespace-nowrap transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white">
+                  <Gift className="w-3.5 h-3.5 mr-1 inline" /> Picks
+                </TabsTrigger>
                 <TabsTrigger value="requests" className="rounded-lg px-3 py-2 text-xs font-medium text-slate-400 whitespace-nowrap transition-all data-[state=active]:bg-gradient-to-r data-[state=active]:from-purple-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=active]:shadow-md hover:bg-white/5 hover:text-white">
                   <Calendar className="w-3.5 h-3.5 mr-1 inline" /> Bookings
                   {myRequests.length > 0 && <Badge variant="secondary" className="ml-1 h-4 px-1 text-[10px] bg-purple-500/30 text-purple-200">{myRequests.length}</Badge>}
