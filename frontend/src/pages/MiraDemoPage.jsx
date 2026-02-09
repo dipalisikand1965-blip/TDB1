@@ -5372,7 +5372,7 @@ const MiraDemoPage = () => {
           className="mp-tray-overlay" 
           onClick={() => {
             setShowMiraTray(false);
-            setMiraPicks(prev => ({ ...prev, hasNew: false }));
+            markPicksSeen();
           }}
         >
           <div className="mp-tray mp-tray-mini" onClick={(e) => e.stopPropagation()}>
@@ -5394,7 +5394,7 @@ const MiraDemoPage = () => {
                 className="mp-tray-close" 
                 onClick={() => {
                   setShowMiraTray(false);
-                  setMiraPicks(prev => ({ ...prev, hasNew: false }));
+                  markPicksSeen();
                 }}
               >
                 <X size={20} />
