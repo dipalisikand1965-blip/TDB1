@@ -4319,35 +4319,62 @@ const MiraDemoPage = () => {
                     /* Mira Message Card - Glass Panel */
                     <div className="mp-msg-mira">
                       <div className="mp-card">
-                        {/* Card Header */}
+                        {/* Card Header - ALL controls in one top bar */}
                         <div className="mp-card-header">
                           <div className="mp-mira-avatar"><Sparkles /></div>
                           <span className="mp-mira-name">Mira</span>
                           
-                          {/* Intent & Execution Badges - Day 1 Style */}
-                          {msg.data && (
-                            <div className="mp-badges-row">
-                              {msg.data.understanding?.intent && (
-                                <span className={`mp-badge mp-badge-intent mp-badge-${(msg.data.understanding.intent || '').toLowerCase().replace(/[^a-z]/g, '')}`}>
-                                  {msg.data.understanding.intent}
-                                </span>
-                              )}
-                              {msg.executionType && (
-                                <span className={`mp-badge mp-badge-exec ${msg.executionType === 'INSTANT' ? 'mp-badge-instant' : 'mp-badge-concierge'}`}>
-                                  {msg.executionType === 'INSTANT' ? '⚡ Instant' : '👤 Concierge'}
-                                </span>
-                              )}
+                          {/* Quick Reply Tiles - In header bar */}
+                          {msg.quickReplies && msg.quickReplies.length > 0 && (
+                            <div className="mp-header-tiles">
+                              {msg.quickReplies.map((chip, cIdx) => (
+                                <button 
+                                  key={cIdx} 
+                                  onClick={() => { hapticFeedback.chipTap(); handleQuickReply(chip.value); }} 
+                                  className="mp-header-tile"
+                                  data-testid={`header-tile-${cIdx}`}
+                                >
+                                  {chip.text}
+                                </button>
+                              ))}
                             </div>
                           )}
                           
-                          {/* Mode Badge for latest message */}
-                          {idx === conversationHistory.length - 1 && msg.type === 'mira' && miraMode && (
-                            <span className={`mp-mode-indicator mp-mode-${miraMode}`}>
-                              {miraMode === 'comfort' && '💜'}
-                              {miraMode === 'emergency' && '🚨'}
-                              {miraMode === 'instant' && '⚡'}
-                              {miraMode === 'thinking' && '🧠'}
-                            </span>
+                          {/* Insights button - only if there are insights */}
+                          {msg.data?.insights && msg.data.insights.length > 0 && (
+                            <button className="mp-header-insights" onClick={() => alert('Insights clicked')}>
+                              <Sparkles size={12} /> {msg.data.insights.length} insights <ChevronRight size={12} />
+                            </button>
+                          )}
+                          
+                          {/* Need help? Concierge CTA */}
+                          <button 
+                            className="mp-header-help"
+                            onClick={() => { hapticFeedback.buttonTap(); setShowConciergeExpanded(true); }}
+                          >
+                            C° <span>Need help? Tap here</span> <ChevronRight size={12} />
+                          </button>
+                          
+                          {/* Ready for Pet + Picks */}
+                          <button 
+                            className="mp-header-picks"
+                            onClick={() => { hapticFeedback.trayOpen(); setShowMiraTray(true); }}
+                          >
+                            <Wand2 size={14} />
+                            <span>Ready for {pet.name}</span>
+                            {miraPicks.products.length + miraPicks.services.length > 0 && (
+                              <span className="mp-header-picks-count">{miraPicks.products.length + miraPicks.services.length}</span>
+                            )}
+                            <span className="mp-header-concierge-badge">Concierge®</span>
+                          </button>
+                          
+                          {/* Pet avatar on far right */}
+                          {pet.photo && (
+                            <img 
+                              src={pet.photo} 
+                              alt={pet.name}
+                              className="mp-header-pet-avatar"
+                            />
                           )}
                         </div>
                         
