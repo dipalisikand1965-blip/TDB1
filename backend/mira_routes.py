@@ -6923,6 +6923,22 @@ IMPORTANT: When giving weather-based advice:
 - Suggest indoor alternatives if weather is bad
 """
         
+        # Build pet names reference for prompt
+        if is_asking_about_another_pet:
+            pet_names_ref = "their friend's/someone else's pet (NOT the user's own pet)"
+        else:
+            pet_names_ref = ', '.join([p.get('name', 'pet') for p in pets]) if pets else 'their pets'
+        
+        # Add context note for another pet questions
+        another_pet_instruction = ""
+        if is_asking_about_another_pet:
+            another_pet_instruction = """
+⚠️ IMPORTANT CONTEXT: The user is asking about SOMEONE ELSE'S PET (friend's dog, neighbor's cat, etc.)
+DO NOT reference or assume anything about the user's own registered pets for this question.
+Ask clarifying questions about the OTHER pet (breed, size, age, etc.) since you don't have that information.
+Give generic advice appropriate for any pet unless user provides specific details about the friend's/other pet.
+"""
+        
         full_prompt = f"""{history_text}
 {cross_pillar_note}
 {relationship_memory_prompt}
@@ -6930,6 +6946,7 @@ IMPORTANT: When giving weather-based advice:
 {nearby_places_instruction}
 {weather_instruction}
 {concierge_action_instruction}
+{another_pet_instruction}
 
 CURRENT USER MESSAGE: {user_message}
 
@@ -6937,7 +6954,7 @@ CRITICAL CONCIERGE DOCTRINE:
 - YOU are the concierge. YOU handle everything.
 - NEVER tell the user to call, message, or verify anything themselves.
 - If verification is needed, say "I'll verify this for you" (no repetitive handoff)
-- Reference their pets by name: {', '.join([p.get('name', 'pet') for p in pets]) if pets else 'their pets'}
+- Reference their pets by name: {pet_names_ref}
 - Keep response warm, confident, and action-oriented.
 - When user asks for products, GUIDE THEM TO SEE THE PRODUCTS - don't just describe
 - DO NOT end every message with "Our live concierge will get back to you shortly"
