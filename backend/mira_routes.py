@@ -1305,9 +1305,34 @@ async def search_real_products(
         query = {"available": {"$ne": False}}
         
         # ═══════════════════════════════════════════════════════════════════
-        # SMART PRODUCT SEARCH - Based on user intent
-        # Products are across pillars: shop (general), celebrate (party), care, etc.
-        # Search by CATEGORY when specific item type is requested
+        # 🔴 PILLAR-FIRST SEARCH - CRITICAL FIX
+        # ALWAYS filter by pillar FIRST to prevent cross-contamination.
+        # e.g., asking about "dog walking" (care pillar) should NEVER show birthday cakes
+        # This is the key fix to stop cross-pillar leakage!
+        # ═══════════════════════════════════════════════════════════════════
+        if current_pillar:
+            PILLAR_SEARCH_MAP = {
+                "celebrate": ["celebrate"],  # Party items ONLY
+                "dine": ["dine", "shop"],    # Food products may be in shop
+                "stay": ["stay", "travel"],  # Pet-friendly stays
+                "travel": ["travel", "shop"], # Travel gear
+                "care": ["care"],            # Care products ONLY - no cakes!
+                "enjoy": ["enjoy", "shop"],  # Activities
+                "fit": ["fit", "care"],      # Health/fitness
+                "learn": ["learn"],          # Training
+                "paperwork": ["paperwork"],  # Documents
+                "advisory": ["advisory"],    # Expert advice
+                "emergency": ["emergency", "care"],
+                "farewell": ["farewell"],    # Memorial
+                "adopt": ["adopt"],          # Adoption
+                "shop": ["shop", "care", "enjoy", "dine"]  # Shop is broad
+            }
+            allowed_pillars = PILLAR_SEARCH_MAP.get(current_pillar.lower(), [current_pillar.lower()])
+            query["pillar"] = {"$in": allowed_pillars}
+            logger.info(f"[PILLAR-FIRST] 🎯 Filtering to pillars: {allowed_pillars} for intent: {current_pillar}")
+        
+        # ═══════════════════════════════════════════════════════════════════
+        # CATEGORY REFINEMENT - Narrows within pillar, doesn't override it!
         # ═══════════════════════════════════════════════════════════════════
         
         # Detect specific product type requests
@@ -1318,79 +1343,47 @@ async def search_real_products(
         is_apparel_query = any(word in user_input_lower for word in ["clothes", "clothing", "dress", "bandana", "collar", "harness"])
         is_grooming_query = any(word in user_input_lower for word in ["shampoo", "brush", "grooming", "nail", "ear clean"])
         
-        # Search by category for specific product types
         # ALWAYS exclude cat products for dog queries
         if pet_context.get("species", "dog").lower() == "dog":
-            query["category"] = {"$not": {"$regex": "^cat-", "$options": "i"}}
+            if "$and" not in query:
+                query["$and"] = []
+            query["$and"].append({"category": {"$not": {"$regex": "^cat-", "$options": "i"}}})
         
+        # Category refinement ADDS to pillar filter, doesn't replace it
         if is_treat_query:
-            query["$and"] = [
-                {"category": {"$regex": "treat|snack|ladoo|jerky", "$options": "i"}},
-                {"category": {"$not": {"$regex": "^cat-", "$options": "i"}}}  # Exclude cat treats
-            ]
-            logger.info(f"[CATEGORY SEARCH] Searching for dog treats (excluding cat)")
+            if "$and" not in query:
+                query["$and"] = []
+            query["$and"].append({"category": {"$regex": "treat|snack|ladoo|jerky", "$options": "i"}})
+            logger.info(f"[CATEGORY REFINE] Adding treat filter within pillar")
         elif is_toy_query:
-            query["category"] = {"$regex": "toy|play", "$options": "i"}
-            logger.info(f"[CATEGORY SEARCH] Searching for toys")
+            if "$and" not in query:
+                query["$and"] = []
+            query["$and"].append({"category": {"$regex": "toy|play", "$options": "i"}})
+            logger.info(f"[CATEGORY REFINE] Adding toy filter within pillar")
         elif is_cake_query:
-            query["$or"] = [
-                {"category": {"$regex": "cake|dognut|pupcake", "$options": "i"}},
-                {"pillar": "celebrate"}
-            ]
-            logger.info(f"[CATEGORY SEARCH] Searching for cakes in celebrate")
+            # Cake queries ALWAYS go to celebrate pillar (override)
+            query["pillar"] = {"$in": ["celebrate"]}
+            if "$and" not in query:
+                query["$and"] = []
+            query["$and"].append({"category": {"$regex": "cake|dognut|pupcake|hamper|party", "$options": "i"}})
+            logger.info(f"[CATEGORY REFINE] Cake query - forcing celebrate pillar")
         elif is_bed_query:
-            query["category"] = {"$regex": "bed|sleep|mattress|cushion", "$options": "i"}
-            logger.info(f"[CATEGORY SEARCH] Searching for beds")
+            if "$and" not in query:
+                query["$and"] = []
+            query["$and"].append({"category": {"$regex": "bed|sleep|mattress|cushion", "$options": "i"}})
+            logger.info(f"[CATEGORY REFINE] Adding bed filter within pillar")
         elif is_apparel_query:
-            query["category"] = {"$regex": "apparel|cloth|bandana|collar|harness|accessori", "$options": "i"}
-            logger.info(f"[CATEGORY SEARCH] Searching for apparel/accessories")
+            if "$and" not in query:
+                query["$and"] = []
+            query["$and"].append({"category": {"$regex": "apparel|cloth|bandana|collar|harness|accessori", "$options": "i"}})
+            logger.info(f"[CATEGORY REFINE] Adding apparel filter within pillar")
         elif is_grooming_query:
-            query["$or"] = [
-                {"category": {"$regex": "groom|care|hygiene", "$options": "i"}},
-                {"pillar": "care"}
-            ]
-            logger.info(f"[CATEGORY SEARCH] Searching for grooming products")
-        elif current_pillar:
-            # Default: Use pillar-first filtering for general queries
-            PILLAR_SEARCH_MAP = {
-                "celebrate": ["celebrate", "shop"],
-                "dine": ["dine", "shop"],
-                "stay": ["stay"],
-                "travel": ["travel", "shop"],
-                "care": ["care", "shop"],
-                "enjoy": ["enjoy", "shop"],
-                "fit": ["fit", "care"],
-                "learn": ["learn", "shop"],
-                "paperwork": ["paperwork", "advisory"],
-                "advisory": ["advisory"],
-                "emergency": ["emergency", "care"],
-                "farewell": ["farewell"],
-                "adopt": ["adopt"],
-                "shop": ["shop"]
-            }
-            allowed_pillars = PILLAR_SEARCH_MAP.get(current_pillar.lower(), [current_pillar.lower(), "shop"])
-            query["pillar"] = {"$in": allowed_pillars}
-            logger.info(f"[PILLAR-FIRST] Filtering products for pillar: {current_pillar} -> {allowed_pillars}")
-            # Map pillar to allowed pillars (some overlap allowed)
-            PILLAR_SEARCH_MAP = {
-                "celebrate": ["celebrate"],
-                "dine": ["dine", "shop"],  # Food products may be in shop
-                "stay": ["stay"],
-                "travel": ["travel", "shop"],  # Travel gear may be in shop
-                "care": ["care", "shop"],  # Care products may be in shop
-                "enjoy": ["enjoy", "shop"],
-                "fit": ["fit", "care"],
-                "learn": ["learn", "shop"],
-                "paperwork": ["paperwork", "advisory"],
-                "advisory": ["advisory"],
-                "emergency": ["emergency", "care"],
-                "farewell": ["farewell"],
-                "adopt": ["adopt"],
-                "shop": ["shop", "care", "enjoy", "dine"]  # Shop is broad
-            }
-            allowed_pillars = PILLAR_SEARCH_MAP.get(current_pillar.lower(), [current_pillar.lower()])
-            query["pillar"] = {"$in": allowed_pillars}
-            logger.info(f"[PILLAR-FIRST] Filtering products for pillar: {current_pillar} -> {allowed_pillars}")
+            # Grooming stays in care pillar
+            query["pillar"] = {"$in": ["care"]}
+            if "$and" not in query:
+                query["$and"] = []
+            query["$and"].append({"category": {"$regex": "groom|care|hygiene|shampoo", "$options": "i"}})
+            logger.info(f"[CATEGORY REFINE] Grooming query - care pillar")
         
         # ═══════════════════════════════════════════════════════════════════
         # LIFE STATE EXCLUSIONS - Prevent inappropriate picks
