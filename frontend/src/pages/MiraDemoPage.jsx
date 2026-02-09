@@ -2633,6 +2633,13 @@ const MiraDemoPage = () => {
       // Extract contextual quick replies based on Mira's question
       const quickReplies = extractQuickReplies(data);
       
+      // Store quick replies in state to show next to input bar (not inside chat)
+      if (quickReplies && quickReplies.length > 0) {
+        setActiveQuickReplies(quickReplies);
+      } else {
+        setActiveQuickReplies([]);
+      }
+      
       // Check if Mira's response has a new clarifying question (step_id)
       // If LLM didn't return step_id, detect it from the question content
       let miraStepId = data.response?.step_id;
