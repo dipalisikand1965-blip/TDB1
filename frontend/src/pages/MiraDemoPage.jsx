@@ -851,8 +851,7 @@ const MiraDemoPage = () => {
     submitted: false
   });
   
-  // MULTI-PET SUPPORT - Switch between pets
-  const [showPetSelector, setShowPetSelector] = useState(false);
+  // NOTE: showPetSelector and setShowPetSelector now come from usePet hook
   const [userHasOptedInForProducts, setUserHasOptedInForProducts] = useState(false);
   
   // MULTI-SESSION MANAGEMENT - Past chats
