@@ -101,6 +101,20 @@ Picks are the bridge between them.
 | Services display | Working |
 | Ticket creation | `mira_routes.py:3891` |
 
+## Removed This Session ✅
+| Component | Reason |
+|-----------|--------|
+| Weather section in Picks | Weather shown elsewhere |
+| Bundles section in Picks | Not needed for curation OS |
+| Health/Care section in Picks | Moved to Health tile near Soul Score |
+| "Build Your Hamper" buttons | Concierge handles custom requests |
+
+## Added This Session ✅
+| Component | Location |
+|-----------|----------|
+| Health tile (near Soul Score) | `MiraDemoPage.jsx:4288` |
+| Links to /dashboard | Working |
+
 ## Missing ❌
 | Component | Status |
 |-----------|--------|
