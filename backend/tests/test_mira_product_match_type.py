@@ -197,7 +197,8 @@ class TestMiraProductMatchType:
         assert data.get("success") == True
         
         products = data.get("response", {}).get("products", [])
-        current_pillar = data.get("response", {}).get("current_pillar")
+        # current_pillar is at top level, not inside response object
+        current_pillar = data.get("current_pillar")
         
         print(f"✓ Current pillar detected: {current_pillar}")
         print(f"✓ API returned {len(products)} products for travel")
