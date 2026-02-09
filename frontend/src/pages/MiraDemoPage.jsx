@@ -59,7 +59,7 @@ import {
   detectContextTopic, hasTrainingIntent, extractTrainingTopic,
   shouldFetchTravelData, isMeaningfulTopic, isCelebrationQuery, MEANINGFUL_TOPICS,
   // New helpers
-  calculateVoiceDelay, isComfortMode, hasServiceIntent, extractQuickRepliesFromData,
+  calculateVoiceDelay, hasServiceIntent, extractQuickRepliesFromData,
   // API helpers
   fetchConversationMemory, fetchMoodContext, routeIntent, createOrAttachTicket,
   fetchTrainingVideos, fetchTravelHotels, fetchTravelAttractions,
