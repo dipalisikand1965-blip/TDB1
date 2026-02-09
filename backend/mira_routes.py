@@ -12945,6 +12945,98 @@ def analyze_for_semantic_tags(item):
     return matched_intents
 
 
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# TIP CARDS - Generate summary cards for conversations without products
+# ═══════════════════════════════════════════════════════════════════════════════
+
+class TipCardRequest(BaseModel):
+    """Request to generate a tip card from conversation"""
+    conversation_summary: str
+    pillar: str
+    pet_context: Optional[Dict] = None
+    card_type: str = "general"  # meal_plan, travel_tips, grooming_routine, etc.
+
+class TipCard(BaseModel):
+    """A tip card for the Picks Vault"""
+    id: str
+    type: str
+    title: str
+    content: str
+    icon: str
+    pillar: str
+    for_concierge: bool = True
+    pet_name: Optional[str] = None
+    created_at: str
+
+@router.post("/generate-tip-card")
+async def generate_tip_card(request: TipCardRequest):
+    """
+    Generate a tip card from a conversation summary.
+    Used when Mira provides advice but no products are relevant.
+    
+    Example: User asks for meal plan → Mira gives advice → Generate tip card
+    """
+    from timestamp_utils import get_utc_timestamp
+    
+    # Map card types to icons
+    CARD_ICONS = {
+        "meal_plan": "🍽️",
+        "travel_tips": "✈️",
+        "grooming_routine": "✨",
+        "training_tips": "🎓",
+        "health_advice": "💊",
+        "exercise_routine": "🏃",
+        "general": "💡"
+    }
+    
+    # Map pillars to default icons
+    PILLAR_ICONS = {
+        "dine": "🍽️",
+        "travel": "✈️",
+        "care": "💊",
+        "learn": "🎓",
+        "fit": "🏃",
+        "celebrate": "🎂",
+        "stay": "🏨",
+        "enjoy": "🎾"
+    }
+    
+    pet_name = request.pet_context.get("name", "your pet") if request.pet_context else "your pet"
+    
+    # Generate title based on card type
+    title_templates = {
+        "meal_plan": f"{pet_name}'s Meal Plan",
+        "travel_tips": f"Travel Tips for {pet_name}",
+        "grooming_routine": f"{pet_name}'s Grooming Routine",
+        "training_tips": f"Training Tips for {pet_name}",
+        "health_advice": f"Health Advice for {pet_name}",
+        "exercise_routine": f"{pet_name}'s Exercise Plan",
+        "general": f"Tips for {pet_name}"
+    }
+    
+    icon = CARD_ICONS.get(request.card_type, PILLAR_ICONS.get(request.pillar, "💡"))
+    title = title_templates.get(request.card_type, f"Tips for {pet_name}")
+    
+    tip_card = TipCard(
+        id=f"tip-{uuid.uuid4().hex[:8]}",
+        type=request.card_type,
+        title=title,
+        content=request.conversation_summary[:500],  # Limit content length
+        icon=icon,
+        pillar=request.pillar,
+        for_concierge=True,
+        pet_name=pet_name,
+        created_at=get_utc_timestamp()
+    )
+    
+    return {
+        "success": True,
+        "tip_card": tip_card.model_dump()
+    }
+
+
+
 @router.post("/admin/run-ai-tagging")
 async def run_ai_tagging():
     """
