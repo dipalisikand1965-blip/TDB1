@@ -1611,9 +1611,24 @@ async def search_real_products(
         # Sort by score and take top results
         scored_products.sort(key=lambda x: x["score"], reverse=True)
         
-        # Format for response
+        # Format for response with match_type for UI badges
+        pet_breed_lower = safe_lower(pet_context.get("breed", ""))
         for item in scored_products[:limit]:
             p = item["product"]
+            
+            # Determine match type for UI badge
+            match_type = None
+            product_name_lower = safe_lower(p.get("name", ""))
+            product_tags = safe_string_list(p.get("tags", []))
+            product_breed_tags = [t for t in product_tags if any(breed_word in t.lower() for breed_word in ["retriever", "labrador", "shepherd", "bulldog", "poodle", "beagle", "husky", "indie", "spitz"])]
+            
+            # Check if breed-specific match
+            if pet_breed_lower and (pet_breed_lower in product_name_lower or any(pet_breed_lower in t.lower() for t in product_tags) or product_breed_tags):
+                match_type = "breed"
+            # Check if pillar/context match
+            elif item.get("score", 0) >= 5:
+                match_type = "pillar"
+            
             products.append({
                 "id": p.get("id", ""),
                 "name": p.get("name", ""),
@@ -1622,7 +1637,9 @@ async def search_real_products(
                 "originalPrice": p.get("originalPrice", p.get("price", 0)),
                 "image": p.get("image", ""),
                 "category": p.get("category", ""),
+                "pillar": p.get("pillar", p.get("category", "shop")),
                 "why_for_pet": item["why_for_pet"],
+                "match_type": match_type,  # NEW: For UI badges (breed, pillar, or None)
                 "sizes": p.get("sizes", []),
                 "available": p.get("available", True)
             })
