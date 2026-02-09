@@ -4,7 +4,24 @@
 
 ---
 
-# ⚠️ CRITICAL - READ THIS FIRST
+# ⚠️ CRITICAL - READ MASTER_DOCTRINE.md FIRST
+> **See `/app/memory/MASTER_DOCTRINE.md` for complete operational memory**
+
+# 🧠 CORE DOCTRINE
+> **"MIRA IS THE BRAIN, CONCIERGE® IS THE HANDS, EMERGENT IS THE ENABLER"**
+> This is a **PET OPERATING SYSTEM** - hugely personalized, based on pet interactions.
+> **Memory is sacred. Soul Score must grow. Everything Mira learns must be stored.**
+
+---
+
+# 🔐 CREDENTIALS
+| System | Username/Email | Password |
+|--------|---------------|----------|
+| **Member** | dipali@clubconcierge.in | test123 |
+| **Admin (Basic)** | aditya | lola4304 |
+| **Admin (Email)** | dipali@clubconcierge.in | lola4304 |
+
+---
 
 ## What Was Accomplished This Session
 **MiraDemoPage.jsx refactoring: 5,789 → 3,299 lines (43% reduction total)**
