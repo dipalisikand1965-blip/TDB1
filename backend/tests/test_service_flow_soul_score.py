@@ -40,12 +40,12 @@ class TestAuthFlow:
             pytest.skip(f"Login failed with status {login_response.status_code}")
             
         data = login_response.json()
-        token = data.get("token")
+        token = data.get("access_token") or data.get("token")
         
         if token:
             session.headers.update({"Authorization": f"Bearer {token}"})
         
-        return {"session": session, "user_data": data}
+        return {"session": session, "user_data": data, "token": token}
     
     def test_login_success(self):
         """Test login with dipali@clubconcierge.in / test123"""
@@ -293,12 +293,12 @@ class TestSoulScore:
             pytest.skip(f"Login failed with status {login_response.status_code}")
             
         data = login_response.json()
-        token = data.get("token")
+        token = data.get("access_token") or data.get("token")
         
         if token:
             session.headers.update({"Authorization": f"Bearer {token}"})
         
-        return {"session": session, "user_data": data}
+        return {"session": session, "user_data": data, "token": token}
     
     @pytest.fixture
     def pets_data(self, auth_session):
