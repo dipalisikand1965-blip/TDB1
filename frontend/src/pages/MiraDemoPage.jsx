@@ -4246,26 +4246,21 @@ const MiraDemoPage = () => {
                 </div>
               )}
               
-              {/* Older Messages (Collapsible) */}
+              {/* Older Messages (Collapsible) - Using ChatMessage component */}
               {showOlderMessages && conversationHistory.slice(0, -VISIBLE_MESSAGE_COUNT).map((msg, idx) => (
                 <div key={`old-${idx}`} style={{ opacity: 0.7 }}>
-                  {msg.type === 'user' ? (
-                    <div className="mp-msg-user">
-                      <div className="mp-bubble-user" style={{ fontSize: '13px' }}>{msg.content}</div>
-                    </div>
-                  ) : msg.type === 'mira' && (
-                    <div className="mp-msg-mira">
-                      <div className="mp-card" style={{ padding: '12px' }}>
-                        <div className="mp-card-header" style={{ marginBottom: '8px' }}>
-                          <div className="mp-mira-avatar" style={{ width: '24px', height: '24px' }}><Sparkles size={12} /></div>
-                          <span className="mp-mira-name" style={{ fontSize: '12px' }}>Mira</span>
-                        </div>
-                        <div className="mp-card-body" style={{ fontSize: '13px' }}>
-                          {msg.content?.substring(0, 200)}{msg.content?.length > 200 ? '...' : ''}
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                  <ChatMessage
+                    msg={msg}
+                    index={idx}
+                    pet={pet}
+                    miraPicks={miraPicks}
+                    miraMode={miraMode}
+                    isOld={true}
+                    onShowConcierge={() => setShowConciergePanel(true)}
+                    onShowInsights={() => setShowInsightsPanel(true)}
+                    onShowPicks={() => setShowMiraTray(true)}
+                    onQuickReply={handleQuickReply}
+                  />
                 </div>
               ))}
               
