@@ -12,7 +12,31 @@ import {
   Sparkles, ChevronRight, PawPrint, Gift, Heart,
   RefreshCw, ExternalLink, ShoppingBag
 } from 'lucide-react';
-import FormattedText from '../../utils/FormattedText';
+import ReactMarkdown from 'react-markdown';
+
+/**
+ * FormattedText - Renders markdown text with proper styling
+ */
+const FormattedText = ({ children, className = '' }) => {
+  if (!children) return null;
+  
+  return (
+    <div className={`formatted-text ${className}`}>
+      <ReactMarkdown
+        components={{
+          p: ({ children }) => <p style={{ margin: '0 0 8px 0', lineHeight: '1.6' }}>{children}</p>,
+          strong: ({ children }) => <strong style={{ color: 'var(--mp-gold, #D4AF37)' }}>{children}</strong>,
+          em: ({ children }) => <em style={{ fontStyle: 'italic' }}>{children}</em>,
+          ul: ({ children }) => <ul style={{ margin: '8px 0', paddingLeft: '20px' }}>{children}</ul>,
+          ol: ({ children }) => <ol style={{ margin: '8px 0', paddingLeft: '20px' }}>{children}</ol>,
+          li: ({ children }) => <li style={{ marginBottom: '4px' }}>{children}</li>,
+        }}
+      >
+        {children}
+      </ReactMarkdown>
+    </div>
+  );
+};
 
 /**
  * Split message to extract question for highlighting
