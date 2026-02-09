@@ -207,73 +207,122 @@ async def get_voice_personalities():
 @tts_router.post("/generate", response_model=TTSResponse)
 async def generate_tts(request: TTSRequest):
     """
-    Generate text-to-speech audio using ElevenLabs
+    Generate text-to-speech audio using ElevenLabs (primary) or OpenAI (fallback)
     Returns base64-encoded audio
     Supports E024 voice personalities
     """
-    if not ELEVENLABS_API_KEY:
-        raise HTTPException(
-            status_code=503, 
-            detail="ElevenLabs API key not configured. Please set ELEVENLABS_API_KEY in environment."
-        )
+    # Clean the text for natural speech
+    cleaned_text = clean_text_for_speech(request.text)
     
-    try:
-        from elevenlabs import ElevenLabs
-        from elevenlabs.types import VoiceSettings
-        
-        # Initialize client
-        client = ElevenLabs(api_key=ELEVENLABS_API_KEY)
-        
-        # Clean the text for natural speech
-        cleaned_text = clean_text_for_speech(request.text)
-        
-        if not cleaned_text:
-            raise HTTPException(status_code=400, detail="Text is empty after cleaning")
-        
-        # E024: Get voice personality settings
-        personality_key = request.personality or "default"
-        personality = VOICE_PERSONALITIES.get(personality_key, VOICE_PERSONALITIES["default"])
-        
-        # Use personality settings or override with explicit values
-        voice_id = request.voice_id or personality.get("voice_id", MIRA_VOICE_ID)
-        stability = request.stability if request.stability != 0.7 else personality.get("stability", 0.7)
-        similarity_boost = request.similarity_boost if request.similarity_boost != 0.75 else personality.get("similarity_boost", 0.75)
-        
-        # Generate audio
-        voice_settings = VoiceSettings(
-            stability=stability,
-            similarity_boost=similarity_boost,
-            style=0.0,
-            use_speaker_boost=True
-        )
-        
-        audio_generator = client.text_to_speech.convert(
-            text=cleaned_text,
-            voice_id=voice_id,
-            model_id="eleven_multilingual_v2",  # Better for Indian accent
-            voice_settings=voice_settings
-        )
-        
-        # Collect audio data
-        audio_data = b""
-        for chunk in audio_generator:
-            audio_data += chunk
-        
-        # Convert to base64
-        audio_b64 = base64.b64encode(audio_data).decode('utf-8')
-        
-        return TTSResponse(
-            audio_base64=audio_b64,
-            text_spoken=cleaned_text,
-            voice_id=voice_id,
-            personality=personality_key
-        )
-        
-    except ImportError:
-        raise HTTPException(status_code=503, detail="ElevenLabs library not installed")
-    except Exception as e:
-        logger.error(f"TTS generation failed: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"TTS generation failed: {str(e)}")
+    if not cleaned_text:
+        raise HTTPException(status_code=400, detail="Text is empty after cleaning")
+    
+    # E024: Get voice personality settings
+    personality_key = request.personality or "default"
+    personality = VOICE_PERSONALITIES.get(personality_key, VOICE_PERSONALITIES["default"])
+    
+    # Try ElevenLabs first
+    if ELEVENLABS_API_KEY:
+        try:
+            from elevenlabs import ElevenLabs
+            from elevenlabs.types import VoiceSettings
+            
+            # Initialize client
+            client = ElevenLabs(api_key=ELEVENLABS_API_KEY)
+            
+            # Use personality settings or override with explicit values
+            voice_id = request.voice_id or personality.get("voice_id", MIRA_VOICE_ID)
+            stability = request.stability if request.stability != 0.7 else personality.get("stability", 0.7)
+            similarity_boost = request.similarity_boost if request.similarity_boost != 0.75 else personality.get("similarity_boost", 0.75)
+            
+            # Generate audio
+            voice_settings = VoiceSettings(
+                stability=stability,
+                similarity_boost=similarity_boost,
+                style=0.0,
+                use_speaker_boost=True
+            )
+            
+            audio_generator = client.text_to_speech.convert(
+                text=cleaned_text,
+                voice_id=voice_id,
+                model_id="eleven_multilingual_v2",
+                voice_settings=voice_settings
+            )
+            
+            # Collect audio data
+            audio_data = b""
+            for chunk in audio_generator:
+                audio_data += chunk
+            
+            # Convert to base64
+            audio_b64 = base64.b64encode(audio_data).decode('utf-8')
+            
+            return TTSResponse(
+                audio_base64=audio_b64,
+                text_spoken=cleaned_text,
+                voice_id=voice_id,
+                personality=personality_key
+            )
+            
+        except Exception as e:
+            error_msg = str(e)
+            logger.warning(f"ElevenLabs TTS failed, trying OpenAI fallback: {error_msg}")
+            # Continue to OpenAI fallback
+    
+    # OpenAI TTS Fallback - Beautiful British-style voice
+    EMERGENT_LLM_KEY = os.environ.get("EMERGENT_LLM_KEY")
+    if EMERGENT_LLM_KEY:
+        try:
+            from emergentintegrations.llm.openai import OpenAITextToSpeech
+            
+            tts = OpenAITextToSpeech(api_key=EMERGENT_LLM_KEY)
+            
+            # Map personalities to OpenAI voices
+            # shimmer = bright, cheerful (like Eloise)
+            # nova = energetic, warm
+            openai_voice_map = {
+                "default": "shimmer",      # Bright, cheerful - like Eloise
+                "celebration": "nova",     # Energetic for celebrations
+                "health": "shimmer",       # Calm, clear
+                "comfort": "shimmer",      # Gentle
+                "urgent": "nova",          # Alert
+                "adventure": "nova",       # Upbeat
+                "caring": "shimmer",       # Professional
+                "informative": "shimmer"   # Clear
+            }
+            
+            openai_voice = openai_voice_map.get(personality_key, "shimmer")
+            
+            # Generate speech with OpenAI - use HD model for quality
+            audio_bytes = await tts.generate_speech(
+                text=cleaned_text,
+                model="tts-1-hd",  # High quality
+                voice=openai_voice,
+                speed=1.0,
+                response_format="mp3"
+            )
+            
+            # Convert to base64
+            audio_b64 = base64.b64encode(audio_bytes).decode('utf-8')
+            
+            logger.info(f"OpenAI TTS generated successfully with voice: {openai_voice}")
+            
+            return TTSResponse(
+                audio_base64=audio_b64,
+                text_spoken=cleaned_text,
+                voice_id=f"openai-{openai_voice}",
+                personality=personality_key
+            )
+            
+        except Exception as e:
+            logger.error(f"OpenAI TTS also failed: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Both TTS providers failed. ElevenLabs quota may be exceeded. Error: {str(e)}")
+    
+    raise HTTPException(
+        status_code=503, 
+        detail="No TTS provider available. Please configure ELEVENLABS_API_KEY or EMERGENT_LLM_KEY."
+    )
 
 
 @tts_router.get("/voices")
