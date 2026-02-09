@@ -8,7 +8,7 @@
  * - Pet management
  * - Vault/Picks management
  * - Session management
- * - Chat helpers (input preprocessing, mode detection, step detection)
+ * - Chat helpers (input preprocessing, mode detection, step detection, API helpers)
  */
 
 export { default as useVoice } from './useVoice';
@@ -17,6 +17,7 @@ export { default as useVault } from './useVault';
 export { default as useSession } from './useSession';
 export { 
   default as useChat,
+  // Detection helpers
   detectMiraMode,
   preprocessInput,
   detectStepId,
@@ -27,5 +28,15 @@ export {
   shouldFetchTravelData,
   isMeaningfulTopic,
   isCelebrationQuery,
-  MEANINGFUL_TOPICS
+  MEANINGFUL_TOPICS,
+  // API helpers
+  fetchConversationMemory,
+  fetchMoodContext,
+  routeIntent,
+  createOrAttachTicket,
+  fetchTrainingVideos,
+  fetchTravelHotels,
+  fetchTravelAttractions,
+  saveConversationMemory,
+  buildMemoryPrefix
 } from './useChat';
