@@ -607,6 +607,96 @@
   margin-left: 8px;
 }
 
+/* Insight Icon - Small circular icon with count badge */
+.mp-header-insight-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 36px;
+  height: 36px;
+  background: rgba(168, 85, 247, 0.25);
+  border: 2px solid rgba(168, 85, 247, 0.6);
+  border-radius: 50%;
+  color: #a855f7;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mp-header-insight-icon:hover {
+  background: rgba(168, 85, 247, 0.4);
+  border-color: #a855f7;
+  transform: scale(1.1);
+}
+
+.mp-insight-count {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #a855f7;
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 16px;
+  text-align: center;
+}
+
+/* ========================================
+   MOBILE RESPONSIVE - Header Bar
+   ======================================== */
+@media (max-width: 768px) {
+  .mp-card-header {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+  
+  .mp-header-tiles {
+    gap: 6px;
+    margin-left: 8px;
+  }
+  
+  .mp-header-tile {
+    padding: 8px 12px;
+    font-size: 12px;
+    border-radius: 18px;
+  }
+  
+  .mp-header-help {
+    padding: 8px 10px;
+    font-size: 11px;
+  }
+  
+  .mp-header-help span {
+    display: none; /* Hide "Need help? Tap here" text on mobile, keep C° only */
+  }
+  
+  .mp-header-insight-icon {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+@media (max-width: 480px) {
+  .mp-header-tiles {
+    flex-wrap: wrap;
+    margin-left: 0;
+    margin-top: 8px;
+    width: 100%;
+    justify-content: flex-start;
+  }
+  
+  .mp-header-tile {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+  
+  .mp-mira-name {
+    font-size: 14px;
+  }
+}
+
 /* Card Body */
 .mp-card-body {
   padding: var(--space-lg);
