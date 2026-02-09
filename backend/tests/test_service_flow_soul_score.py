@@ -105,7 +105,9 @@ class TestServiceFlow:
         response = session.get(f"{BASE_URL}/api/pets/my-pets")
         
         assert response.status_code == 200, f"Failed to get pets: {response.text}"
-        pets = response.json()
+        data = response.json()
+        pets = data.get("pets", data) if isinstance(data, dict) else data
+        assert isinstance(pets, list), f"Pets should be a list, got {type(pets)}"
         assert len(pets) > 0, "User should have at least one pet"
         print(f"✓ Found {len(pets)} pets for testing")
         
