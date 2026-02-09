@@ -674,7 +674,7 @@
   border-radius: 14px;
   cursor: pointer;
   transition: all 0.2s ease;
-  margin-left: auto;
+  /* Remove margin-left: auto since it's on help button now */
 }
 
 .mp-header-picks-icon:hover {
