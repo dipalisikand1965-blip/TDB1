@@ -411,6 +411,23 @@ async def mark_important(session_id: str, reason: str = "user_marked"):
     return {"success": success}
 
 
+@retention_router.get("/debug")
+async def debug_retention():
+    """Debug endpoint to check retention status directly."""
+    from server import db
+    
+    # Direct count using aggregation
+    pipeline = [
+        {"$group": {"_id": "$retention_status", "count": {"$sum": 1}}}
+    ]
+    results = await db.mira_sessions.aggregate(pipeline).to_list(100)
+    
+    return {
+        "aggregation_results": results,
+        "db_name": db.name
+    }
+
+
 @retention_router.get("/stats")
 async def get_retention_stats():
     """Get retention statistics."""
