@@ -2844,6 +2844,38 @@ button.mp-welcome-chip,
   flex-shrink: 0;
 }
 
+/* Proactive Greeting - Mobile responsive */
+@media (max-width: 480px) {
+  .proactive-greeting {
+    padding: 10px 14px;
+    margin-bottom: 16px;
+  }
+  
+  .greeting-icon {
+    font-size: 18px;
+  }
+  
+  .greeting-text {
+    font-size: 13px;
+  }
+}
+
+/* Voice Error Toast - Mobile responsive */
+@media (max-width: 480px) {
+  .mp-voice-error {
+    bottom: 80px;
+    padding: 8px 14px;
+    font-size: 12px;
+    max-width: 95%;
+  }
+}
+
+/* Mic Recording Animation - Works everywhere */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
 /* Soul Traits */
 .soul-traits {
   display: flex;
