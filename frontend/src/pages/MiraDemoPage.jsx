@@ -671,6 +671,17 @@ const MiraDemoPage = () => {
     markPicksSeen
   } = useVault();
   
+  // ═══════════════════════════════════════════════════════════════════════════════
+  // SESSION MANAGEMENT - Extracted to useSession hook (Stage 3 Refactoring)
+  // ═══════════════════════════════════════════════════════════════════════════════
+  const {
+    sessionId,
+    setSessionId,
+    sessionRecovered,
+    setSessionRecovered,
+    startNewSession: baseStartNewSession
+  } = useSession({ pet });
+  
   // State
   const [activeScenario, setActiveScenario] = useState(null);
   const [showScenarios, setShowScenarios] = useState(true);
