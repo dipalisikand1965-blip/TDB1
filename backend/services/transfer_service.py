@@ -110,11 +110,9 @@ async def search_transfers(
     """
     token = await get_access_token()
     if not token:
-        return {
-            "success": False,
-            "error": "Amadeus API not configured",
-            "transfers": []
-        }
+        # Return mock data when API not configured
+        logger.info("Amadeus API not configured, returning mock transfers")
+        return _get_mock_transfers(pickup_location, dropoff_location, passengers, currency)
     
     # Parse locations
     pickup_airport = None
