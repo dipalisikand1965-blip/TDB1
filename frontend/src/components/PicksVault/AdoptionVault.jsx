@@ -7,11 +7,13 @@
 
 import React, { useState, useCallback } from 'react';
 import { Check, X, Heart, Home, Users, Baby } from 'lucide-react';
+import hapticFeedback from '../../utils/haptic';
 import './AdoptionVault.css';
 
+// Use centralized haptic utility for iOS + Android support
 const haptic = {
-  light: () => navigator.vibrate && navigator.vibrate(10),
-  success: () => navigator.vibrate && navigator.vibrate([10, 50, 10])
+  light: () => hapticFeedback.buttonTap(),
+  success: () => hapticFeedback.success()
 };
 
 const PET_TYPES = ['Dog', 'Cat', 'Both/Either'];
