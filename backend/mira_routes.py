@@ -1613,8 +1613,11 @@ async def search_real_products(
         
         # Format for response with match_type for UI badges
         pet_breed_lower = safe_lower(pet_context.get("breed", ""))
+        pet_name = pet_context.get("name", "")
+        
         for item in scored_products[:limit]:
             p = item["product"]
+            why_for_pet = item.get("why_for_pet", "")
             
             # Determine match type for UI badge
             match_type = None
@@ -1622,12 +1625,30 @@ async def search_real_products(
             product_tags = safe_string_list(p.get("tags", []))
             product_breed_tags = [t for t in product_tags if any(breed_word in t.lower() for breed_word in ["retriever", "labrador", "shepherd", "bulldog", "poodle", "beagle", "husky", "indie", "spitz"])]
             
-            # Check if breed-specific match
-            if pet_breed_lower and (pet_breed_lower in product_name_lower or any(pet_breed_lower in t.lower() for t in product_tags) or product_breed_tags):
+            # Extract short breed name (e.g., "Golden Retriever" -> ["golden", "retriever"])
+            breed_words = pet_breed_lower.split() if pet_breed_lower else []
+            
+            # Check if breed-specific match - look at name, tags, and why_for_pet
+            breed_match = False
+            if pet_breed_lower:
+                # Check product name
+                if pet_breed_lower in product_name_lower or any(bw in product_name_lower for bw in breed_words):
+                    breed_match = True
+                # Check product tags
+                elif any(pet_breed_lower in t.lower() for t in product_tags) or product_breed_tags:
+                    breed_match = True
+                # Check if why_for_pet mentions breed
+                elif any(bw in why_for_pet.lower() for bw in breed_words if len(bw) > 3):
+                    breed_match = True
+            
+            if breed_match:
                 match_type = "breed"
-            # Check if pillar/context match
+            # Check if pillar/context match (high score)
             elif item.get("score", 0) >= 5:
                 match_type = "pillar"
+            # Default to pet match if personalized
+            elif pet_name and pet_name.lower() in why_for_pet.lower():
+                match_type = "pet"
             
             products.append({
                 "id": p.get("id", ""),
@@ -1638,8 +1659,8 @@ async def search_real_products(
                 "image": p.get("image", ""),
                 "category": p.get("category", ""),
                 "pillar": p.get("pillar", p.get("category", "shop")),
-                "why_for_pet": item["why_for_pet"],
-                "match_type": match_type,  # NEW: For UI badges (breed, pillar, or None)
+                "why_for_pet": why_for_pet,
+                "match_type": match_type,  # For UI badges: breed, pillar, pet, or None
                 "sizes": p.get("sizes", []),
                 "available": p.get("available", True)
             })
