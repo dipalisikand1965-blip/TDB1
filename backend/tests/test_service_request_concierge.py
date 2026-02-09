@@ -113,15 +113,14 @@ class TestConciergeConfirmation:
         assert data.get("execution_type") == "CONCIERGE", \
             f"Expected CONCIERGE, got {data.get('execution_type')}"
         
-        # Extract concierge_confirmation from response
-        resp = data.get("response", {})
-        concierge_confirmation = resp.get("concierge_confirmation")
+        # Extract concierge_confirmation from TOP LEVEL of response (not inside "response" object)
+        concierge_confirmation = data.get("concierge_confirmation")
         
         print(f"Concierge confirmation: {concierge_confirmation}")
         
         # Verify concierge_confirmation exists and has required fields
         assert concierge_confirmation is not None, \
-            "CONCIERGE execution should include concierge_confirmation"
+            "CONCIERGE execution should include concierge_confirmation at top level"
         
         # Verify all required fields
         assert "title" in concierge_confirmation, "Missing 'title' in concierge_confirmation"
