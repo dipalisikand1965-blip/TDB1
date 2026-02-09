@@ -17,16 +17,13 @@ import {
   UtensilsCrossed, Plane, Sparkles, GraduationCap,
   Heart, Dumbbell, ClipboardCheck, Lightbulb
 } from 'lucide-react';
+import hapticFeedback from '../../utils/haptic';
 import './TipCardVault.css';
 
-// Haptic feedback utility
+// Use centralized haptic utility for iOS + Android support
 const haptic = {
-  light: () => {
-    if (navigator.vibrate) navigator.vibrate(10);
-  },
-  success: () => {
-    if (navigator.vibrate) navigator.vibrate([10, 50, 10]);
-  }
+  light: () => hapticFeedback.buttonTap(),
+  success: () => hapticFeedback.success()
 };
 
 // Icon mapping
