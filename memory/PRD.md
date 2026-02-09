@@ -8,7 +8,8 @@
 
 | File | Purpose |
 |------|---------|
-| `/app/memory/REFACTORING_HANDOVER.md` | **NEW** - Detailed refactoring progress & next steps |
+| `/app/memory/REFACTORING_HANDOVER.md` | Detailed refactoring progress & next steps |
+| `/app/backend/mira_retention.py` | **NEW** - Chat retention system (Golden Standard) |
 | `/app/memory/MIRA_DOCTRINE.md` | THE BIBLE - Voice, tone, behavior |
 | `/app/memory/MIRA_VOICE_RULES.md` | Voice sync & pet description rules |
 | `/app/memory/MIRA_FORMATTING_GUIDE.md` | High-class formatting for iOS/Android/Desktop |
@@ -16,6 +17,34 @@
 | `/app/memory/PICKS_CURRENT_ANALYSIS.md` | Current Picks system analysis |
 | `/app/memory/MIRA_DEMO_FEATURE_INVENTORY.md` | Complete feature inventory before refactoring |
 | `/app/memory/ROADMAP_TO_100.md` | Full roadmap to 100% |
+
+---
+
+# 🗄️ CHAT RETENTION SYSTEM (NEW)
+
+## Golden Standard Implementation
+| Tier | Duration | Storage | What's Kept |
+|------|----------|---------|-------------|
+| **Hot** | 0-30 days | Full | All messages |
+| **Warm** | 30-90 days | Compressed | Last 5 messages + summary |
+| **Cold** | 90-365 days | Archived | Summary only |
+| **Delete** | >2 years | None | Metadata only |
+
+## Always Kept Forever
+- Pet preferences & allergies
+- Purchase history
+- Booking history
+- Concierge tickets
+- Health records
+- Key decisions
+
+## API Endpoints
+- `GET /api/mira/retention/stats` - View retention statistics
+- `POST /api/mira/retention/run-cleanup` - Manual cleanup trigger
+- `POST /api/mira/retention/mark-important/{session_id}` - Mark session as permanent
+- `GET /api/mira/retention/history/{member_id}` - Smart history loading
+
+## File: `/app/backend/mira_retention.py`
 
 ---
 
