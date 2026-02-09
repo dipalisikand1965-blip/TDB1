@@ -8937,24 +8937,6 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                     
         except Exception as mem_err:
             logger.warning(f"[MEMORY] Could not store memory: {mem_err}")
-                
-                if should_store and memory_content:
-                    await MiraMemory.store_memory(
-                        member_id=member_id,
-                        memory_type=memory_type,
-                        content=memory_content,
-                        pet_id=pet_id,
-                        pet_name=pet_name,
-                        context=f"Pillar: {pillar}",
-                        relevance_tags=relevance_tags,
-                        source="conversation",
-                        confidence="high",
-                        session_id=session_id
-                    )
-                    logger.info(f"[MEMORY] Stored {memory_type} memory for {pet_name}: {memory_content[:50]}...")
-                    
-        except Exception as mem_err:
-            logger.warning(f"[MEMORY] Could not store memory: {mem_err}")
         
         return {
             "response": response,
