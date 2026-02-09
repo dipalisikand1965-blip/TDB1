@@ -35,5 +35,8 @@ export { default as EmergencyVault } from './EmergencyVault';
 export { default as MemorialVault } from './MemorialVault';
 export { default as AdoptionVault } from './AdoptionVault';
 
+// Manager - Auto-detects and renders appropriate vault
+export { default as VaultManager } from './VaultManager';
+
 // Configuration & Helpers
 export * from './vaultConfig';
