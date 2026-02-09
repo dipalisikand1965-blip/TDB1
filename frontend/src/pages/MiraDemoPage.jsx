@@ -35,6 +35,11 @@ import conversationIntelligence from '../utils/conversationIntelligence';
 // ═══════════════════════════════════════════════════════════════════════════════
 import { VaultManager } from '../components/PicksVault';
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// EXTRACTED HOOKS - Stage 1 Refactoring
+// ═══════════════════════════════════════════════════════════════════════════════
+import { useVoice, usePet, DEMO_PET, ALL_DEMO_PETS } from '../hooks/mira';
+
 // Formatted Text Component - Renders markdown with proper styling
 // Uses wrapper div for className (react-markdown v8+ compatible)
 // Pre-processes text to ensure proper markdown formatting
