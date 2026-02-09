@@ -51,36 +51,12 @@ const FormattedText = ({ children, className = '' }) => {
  * Split message to extract question for highlighting
  */
 const splitMessageWithQuestion = (content) => {
-  if (!content) return { mainText: '', questionText: '' };
-  
-  // Find the last complete question sentence
-  // Look for the last sentence that ends with "?"
-  const sentences = content.split(/(?<=[.!?])\s+/);
-  
-  // Find the last sentence that ends with a question mark
-  let lastQuestionIndex = -1;
-  for (let i = sentences.length - 1; i >= 0; i--) {
-    if (sentences[i].trim().endsWith('?')) {
-      lastQuestionIndex = i;
-      break;
-    }
-  }
-  
-  // If no question found, or it's the entire message, return as-is
-  if (lastQuestionIndex === -1 || lastQuestionIndex === 0) {
-    return { mainText: content, questionText: '' };
-  }
-  
-  // Split into main text and question
-  const mainText = sentences.slice(0, lastQuestionIndex).join(' ').trim();
-  const questionText = sentences.slice(lastQuestionIndex).join(' ').trim();
-  
-  // Only split if the question is a reasonable length (avoid extracting just "?")
-  if (questionText.length < 10 || questionText === '?') {
-    return { mainText: content, questionText: '' };
-  }
-  
-  return { mainText, questionText };
+  // DISABLED: Question extraction was causing issues where partial questions
+  // like "?" were being shown separately. The question should stay inline
+  // with the message text as part of the natural conversation flow.
+  // Per MIRA_UNIVERSAL_RULES.md - Step 3 (CLARIFY) questions should be
+  // part of the acknowledge/clarify flow, not extracted separately.
+  return { mainText: content || '', questionText: '' };
 };
 
 /**
