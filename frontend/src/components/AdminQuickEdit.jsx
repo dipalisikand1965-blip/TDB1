@@ -7,18 +7,21 @@ import { Edit3, Settings } from 'lucide-react';
  * AdminQuickEdit - A floating button for admins to quickly edit pillar page content
  * Positioned at top-right on desktop, hidden on mobile to avoid overlap with Mira/Contact
  * 
+ * SECURITY: Only shows for users with explicit admin/super_admin role
+ * 
  * Usage:
  * <AdminQuickEdit pillar="celebrate" />
  */
 const AdminQuickEdit = ({ pillar, position = 'top-right' }) => {
   const { user } = useAuth();
   
-  // Only show for admin users
+  // STRICT ADMIN CHECK - Only show for users with explicit admin role
+  // DO NOT use email-based checks - that's a security risk!
   const isAdmin = user?.role === 'admin' || 
-                  user?.email?.includes('admin') || 
-                  user?.email === 'aditya@thedoggycompany.in' ||
-                  user?.email === 'dipali@clubconcierge.in';
+                  user?.role === 'super_admin' ||
+                  user?.is_admin === true;
   
+  // Hide in production unless explicitly admin
   if (!isAdmin) return null;
   
   const handleClick = () => {
