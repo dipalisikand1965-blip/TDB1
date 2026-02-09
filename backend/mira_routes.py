@@ -6268,15 +6268,50 @@ async def mira_chat(
     urgency = detect_urgency(user_message, pillar)
     intent = detect_intent(user_message)
     
-    # Extract pet info for personalization
+    # ═══════════════════════════════════════════════════════════════════════════
+    # EDGE CASE: Detect when user is asking about SOMEONE ELSE'S pet
+    # "gift for a friend's dog", "my neighbor's cat", "another dog"
+    # In this case, we should NOT use the selected pet's context
+    # ═══════════════════════════════════════════════════════════════════════════
+    user_message_lower = user_message.lower()
+    another_pet_phrases = [
+        "friend's dog", "friend's cat", "friend's pet",
+        "friends dog", "friends cat", "friends pet",
+        "my friend's", "a friend's", "their dog", "their cat", "their pet",
+        "neighbor's dog", "neighbor's cat", "neighbour's",
+        "someone else's", "another dog", "another cat", "another pet",
+        "gift for a dog", "gift for someone", "gift for their",
+        "coworker's dog", "colleague's pet", "family member's dog",
+        "sister's dog", "brother's dog", "mom's dog", "dad's dog",
+        "parent's dog", "relative's pet", "for a dog", "for someone's"
+    ]
+    is_asking_about_another_pet = any(phrase in user_message_lower for phrase in another_pet_phrases)
+    
+    # Double-check: if user mentions their OWN pet's name, it's NOT another pet
+    if is_asking_about_another_pet and pets:
+        own_pet_names = [p.get('name', '').lower() for p in pets if p.get('name')]
+        # If they mention their pet's name along with "friend's dog", prioritize own pet
+        if any(name in user_message_lower for name in own_pet_names if name):
+            is_asking_about_another_pet = False
+            logger.info(f"[CONTEXT] User mentioned their own pet name - NOT another pet context")
+    
+    if is_asking_about_another_pet:
+        logger.info("[CONTEXT] User asking about ANOTHER person's pet - will NOT use selected pet context")
+    
+    # Extract pet info for personalization (ONLY if not asking about another pet)
     pet_name = "your pet"
     pet_breed = None
-    if selected_pet:
-        pet_name = selected_pet.get("name", "your pet")
-        pet_breed = selected_pet.get("breed")
-    elif request.pet_context:
-        pet_name = request.pet_context.get("name", "your pet")
-        pet_breed = request.pet_context.get("breed")
+    if not is_asking_about_another_pet:
+        if selected_pet:
+            pet_name = selected_pet.get("name", "your pet")
+            pet_breed = selected_pet.get("breed")
+        elif request.pet_context:
+            pet_name = request.pet_context.get("name", "your pet")
+            pet_breed = request.pet_context.get("breed")
+    else:
+        # For another pet, use generic terms
+        pet_name = "their pet"
+        pet_breed = None
     
     # 3. Check if ticket exists for this session
     existing_ticket = await db.mira_tickets.find_one({"mira_session_id": session_id}, {"_id": 0})
