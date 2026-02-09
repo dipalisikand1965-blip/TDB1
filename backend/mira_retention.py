@@ -52,11 +52,10 @@ async def summarize_conversation(messages: List[Dict], pet_name: str = "pet") ->
     Extracts key intents, decisions, and learnings.
     """
     if not messages:
-        return {"summary": "Empty conversation", "intents": [], "learnings": []}
+        return {"summary": "Empty conversation", "intents": [], "key_topics": []}
     
     # Extract key information without AI (fast path)
     intents = []
-    learnings = []
     key_topics = []
     products_discussed = []
     services_discussed = []
