@@ -57,7 +57,11 @@ import {
   useVoice, usePet, useVault, useSession, DEMO_PET, ALL_DEMO_PETS,
   detectMiraMode, preprocessInput, detectStepId, extractCityFromQuery,
   detectContextTopic, hasTrainingIntent, extractTrainingTopic,
-  shouldFetchTravelData, isMeaningfulTopic, isCelebrationQuery, MEANINGFUL_TOPICS
+  shouldFetchTravelData, isMeaningfulTopic, isCelebrationQuery, MEANINGFUL_TOPICS,
+  // API helpers
+  fetchConversationMemory, fetchMoodContext, routeIntent, createOrAttachTicket,
+  fetchTrainingVideos, fetchTravelHotels, fetchTravelAttractions,
+  saveConversationMemory, buildMemoryPrefix
 } from '../hooks/mira';
 
 // Formatted Text Component - Renders markdown with proper styling
