@@ -759,9 +759,7 @@
 .mp-smart-chips {
   display: flex;
   gap: 8px;
-  padding: 12px 0 0;
-  max-width: 600px;
-  margin: 0 auto;
+  padding: 10px 4px 0;
   overflow-x: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
@@ -774,7 +772,7 @@
 }
 
 .mp-smart-chip {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 6px;
   padding: 8px 14px;
@@ -787,7 +785,6 @@
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
-  flex-shrink: 0;
 }
 
 .mp-smart-chip:hover {
