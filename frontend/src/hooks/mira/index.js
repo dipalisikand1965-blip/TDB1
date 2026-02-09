@@ -29,6 +29,11 @@ export {
   isMeaningfulTopic,
   isCelebrationQuery,
   MEANINGFUL_TOPICS,
+  // New helpers
+  calculateVoiceDelay,
+  isComfortMode,
+  hasServiceIntent,
+  extractQuickRepliesFromData,
   // API helpers
   fetchConversationMemory,
   fetchMoodContext,
