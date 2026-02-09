@@ -4183,46 +4183,16 @@ const MiraDemoPage = () => {
       )}
       
       {/* Past Chats Sidebar */}
-      {showPastChats && (
-        <div className="mp-past-chats">
-          <div className="mp-past-chats-header">
-            <h3 className="mp-past-chats-title">Past Chats</h3>
-            <button onClick={() => { hapticFeedback.modalClose(); setShowPastChats(false); }} className="mp-past-chats-close">
-              <X />
-            </button>
-          </div>
-          
-          <div className="mp-past-chats-list">
-            {loadingPastChats ? (
-              <div style={{ padding: '20px', textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>Loading...</div>
-            ) : pastSessions.length === 0 ? (
-              <div style={{ padding: '20px', textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>No past conversations</div>
-            ) : (
-              pastSessions.map((session) => (
-                <button
-                  key={session.session_id}
-                  onClick={() => { hapticFeedback.cardTap(); loadSession(session); }}
-                  className={`mp-session-btn ${session.session_id === sessionId ? 'active' : ''}`}
-                  data-testid={`session-${session.session_id}`}
-                >
-                  <div className="mp-session-meta">
-                    <PawPrint />
-                    <span className="mp-session-pet">{session.pet_name}</span>
-                    <span className="mp-session-date">{formatSessionDate(session.updated_at)}</span>
-                  </div>
-                  <p className="mp-session-preview">{session.preview || 'Empty conversation'}</p>
-                </button>
-              ))
-            )}
-          </div>
-          
-          <div className="mp-past-chats-footer">
-            <button onClick={() => { hapticFeedback.buttonTap(); startNewSession(); setShowPastChats(false); }} className="mp-concierge-btn">
-              <Plus /> Start New Chat
-            </button>
-          </div>
-        </div>
-      )}
+      {/* Past Chats Panel - Extracted to PastChatsPanel component (Stage 5) */}
+      <PastChatsPanel
+        isOpen={showPastChats}
+        onClose={() => setShowPastChats(false)}
+        sessions={pastSessions}
+        isLoading={loadingPastChats}
+        currentSessionId={sessionId}
+        onLoadSession={loadSession}
+        onStartNewChat={startNewSession}
+      />
 
       {/* Main Chat Area - Apple iMessage Spacing */}
       <div 
