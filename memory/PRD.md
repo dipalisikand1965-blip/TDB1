@@ -215,8 +215,8 @@ const hapticFeedback = useMemo(() => ({
 
 | Metric | Original | Current | Reduction |
 |--------|----------|---------|-----------|
-| MiraDemoPage.jsx | 5,789 | **3,926** | **32.2%** |
-| Components | 0 | **15** | - |
+| MiraDemoPage.jsx | 5,789 | **3,876** | **33%** |
+| Components | 0 | **16** | +1 (MiraLoader) |
 | Hooks | 0 | **5** | All integrated |
 | handleSubmit | ~990 | ~600 | 39% |
 
