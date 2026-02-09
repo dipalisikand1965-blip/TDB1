@@ -5679,14 +5679,11 @@ const MiraDemoPage = () => {
                             )}
                           </div>
                           <button 
-                            className="mp-tray-add"
+                            className="mp-tray-add mp-send-concierge"
                             onClick={() => {
-                              if (isConciergeSourced) {
-                                setShowMiraTray(false);
-                                engageConcierge('product_request', { product_name: product.name, context: miraPicks.context, pet_name: pet.name });
-                              } else {
-                                alert(`Added ${product.name} to cart!`);
-                              }
+                              // No cart - all picks go to Concierge
+                              setShowMiraTray(false);
+                              engageConcierge('product_request', { product_name: product.name, context: miraPicks.context, pet_name: pet.name });
                             }}
                           >
                             <Plus size={16} />
