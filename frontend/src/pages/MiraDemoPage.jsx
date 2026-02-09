@@ -53,7 +53,12 @@ import FloatingActionBar from '../components/Mira/FloatingActionBar';
 // ═══════════════════════════════════════════════════════════════════════════════
 // EXTRACTED HOOKS - Stage 1, 2, 3 Refactoring
 // ═══════════════════════════════════════════════════════════════════════════════
-import { useVoice, usePet, useVault, useSession, DEMO_PET, ALL_DEMO_PETS } from '../hooks/mira';
+import { 
+  useVoice, usePet, useVault, useSession, DEMO_PET, ALL_DEMO_PETS,
+  detectMiraMode, preprocessInput, detectStepId, extractCityFromQuery,
+  detectContextTopic, hasTrainingIntent, extractTrainingTopic,
+  shouldFetchTravelData, isMeaningfulTopic, isCelebrationQuery, MEANINGFUL_TOPICS
+} from '../hooks/mira';
 
 // Formatted Text Component - Renders markdown with proper styling
 // Uses wrapper div for className (react-markdown v8+ compatible)
