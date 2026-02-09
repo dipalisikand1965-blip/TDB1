@@ -4921,7 +4921,7 @@ const MiraDemoPage = () => {
         {(miraPicks.products.length > 0 || miraPicks.services.length > 0 || true) && (
           <button
             type="button"
-            onClick={() => setShowMiraTray(true)}
+            onClick={() => { hapticFeedback.trayOpen(); setShowMiraTray(true); }}
             className={`mp-ready-btn ${miraPicks.hasNew ? 'has-new' : ''} ${(healthVault.completeness < 100 || proactiveAlerts.healthReminders.some(r => r.needs_attention) || proactiveAlerts.celebrations.some(c => c.is_upcoming)) ? 'has-alerts' : ''}`}
             data-testid="ready-for-pet-btn"
           >
