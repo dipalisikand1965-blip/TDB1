@@ -3951,7 +3951,7 @@ const MiraDemoPage = () => {
             {TEST_SCENARIOS.map((scenario) => (
               <button
                 key={scenario.id}
-                onClick={() => { hapticFeedback.chipTap(); setActiveScenario(scenario.id); handleQuickReply(scenario.query); }}
+                onClick={() => { hapticFeedback.chipTap(); setActiveScenario(scenario.id); handleQuickReply(scenario.query, true); }}
                 data-testid={`scenario-${scenario.id}`}
                 className={`mp-test-chip ${activeScenario === scenario.id ? 'active' : ''}`}
               >
