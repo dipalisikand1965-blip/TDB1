@@ -50,6 +50,8 @@ import PetSelector from '../components/Mira/PetSelector';
 import NavigationDock from '../components/Mira/NavigationDock';
 import FloatingActionBar from '../components/Mira/FloatingActionBar';
 import MiraLoader from '../components/Mira/MiraLoader';
+import ScrollToBottomButton from '../components/Mira/ScrollToBottomButton';
+import { triggerCelebrationConfetti } from '../utils/confetti';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // EXTRACTED HOOKS - Stage 1, 2, 3 Refactoring
