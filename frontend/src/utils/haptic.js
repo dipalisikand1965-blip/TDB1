@@ -253,6 +253,10 @@ export const hapticFeedback = {
   modalOpen: (event) => haptic('medium', event),
   modalClose: (event) => haptic('light', event),
   
+  // Tray/Drawer interactions
+  trayOpen: (event) => haptic('medium', event),
+  trayClose: (event) => haptic('light', event),
+  
   // Ripple effect (call separately for visual only)
   ripple: createRipple,
   
