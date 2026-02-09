@@ -2504,43 +2504,11 @@ const MiraDemoPage = () => {
     setConversationHistory(prev => [...prev, userMessage]);
     
     try {
-      // E033: Check for relevant past conversation memory
-      let memoryContext = null;
-      if (pet?.id) {
-        try {
-          const memoryResponse = await fetch(`${API_URL}/api/mira/conversation-memory/recall`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ pet_id: pet.id, query: inputQuery })
-          });
-          const memoryData = await memoryResponse.json();
-          if (memoryData.success && memoryData.relevant_memory) {
-            memoryContext = memoryData;
-            console.log('[MEMORY] Found relevant past conversation:', memoryData.relevant_memory.topic);
-          }
-        } catch (e) {
-          console.log('[MEMORY] Recall check failed:', e.message);
-        }
-      }
+      // E033: Check for relevant past conversation memory (using extracted helper)
+      const memoryContext = await fetchConversationMemory(pet?.id, inputQuery);
       
-      // E025: Check for pet mood concerns in user message
-      let moodContext = null;
-      if (pet?.id) {
-        try {
-          const moodResponse = await fetch(`${API_URL}/api/mira/detect-mood`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message: inputQuery, pet_name: pet.name })
-          });
-          const moodData = await moodResponse.json();
-          if (moodData.success && moodData.mood_detected) {
-            moodContext = moodData;
-            console.log('[MOOD] Detected pet mood concern:', moodData.concern_level);
-          }
-        } catch (e) {
-          console.log('[MOOD] Detection failed:', e.message);
-        }
-      }
+      // E025: Check for pet mood concerns (using extracted helper)
+      const moodContext = pet?.id ? await fetchMoodContext(inputQuery, pet.name) : null;
       
       // STEP 1: Route intent (first call for first message)
       let pillar = currentTicket?.pillar || 'General';
