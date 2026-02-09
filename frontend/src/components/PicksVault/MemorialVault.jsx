@@ -7,10 +7,12 @@
 
 import React, { useState, useCallback } from 'react';
 import { Check, X, Heart, Feather, Star, Camera } from 'lucide-react';
+import hapticFeedback from '../../utils/haptic';
 import './MemorialVault.css';
 
+// Use centralized haptic utility - gentle feedback for sensitive context
 const haptic = {
-  gentle: () => navigator.vibrate && navigator.vibrate(5)
+  gentle: () => hapticFeedback.buttonTap() // Soft tap for sensitive moments
 };
 
 const MEMORIAL_SERVICES = [
