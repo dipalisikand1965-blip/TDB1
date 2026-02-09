@@ -15758,6 +15758,14 @@ async def startup_load_admin_credentials():
     # Auto-seed engagement data (stories, tips) if none exist
     await initialize_engagement_data()
     logger.info("Engagement data initialization complete")
+    
+    # Start retention scheduler (runs daily at 3 AM UTC)
+    try:
+        from retention_scheduler import start_scheduler
+        start_scheduler(db)
+        logger.info("Retention scheduler started - will run daily at 3 AM UTC")
+    except Exception as e:
+        logger.warning(f"Could not start retention scheduler: {e}")
 
 # ==================== BLOG AUTO-SEED ====================
 
