@@ -34,6 +34,10 @@ export {
   isComfortMode,
   hasServiceIntent,
   extractQuickRepliesFromData,
+  // Message builders
+  createErrorMessage,
+  createTopicShiftIndicator,
+  createUserMessage,
   // API helpers
   fetchConversationMemory,
   fetchMoodContext,
