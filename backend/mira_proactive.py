@@ -394,6 +394,152 @@ async def check_grooming_alerts(pet_id: str, pet_name: str, db) -> List[Dict]:
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
+# RE-ORDER SUGGESTIONS
+# Based on purchase history - suggest re-ordering consumables
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# Consumable product categories and their typical reorder intervals (in days)
+CONSUMABLE_INTERVALS = {
+    "food": 30,           # Dog food - monthly
+    "kibble": 30,
+    "treats": 21,         # Treats - 3 weeks
+    "snacks": 21,
+    "supplement": 30,     # Supplements - monthly
+    "vitamin": 30,
+    "medicine": 30,       # Medicines - monthly
+    "shampoo": 60,        # Shampoo - 2 months
+    "conditioner": 60,
+    "dental": 45,         # Dental treats - 6 weeks
+    "flea": 30,           # Flea/tick - monthly
+    "tick": 30,
+    "wipes": 30,          # Wipes - monthly
+    "poop bags": 30,
+    "pads": 21,           # Training pads - 3 weeks
+}
+
+async def check_reorder_suggestions(pet_id: str, pet_name: str, user_email: str, db) -> List[Dict]:
+    """
+    Analyze purchase history and suggest re-orders for consumables.
+    
+    Logic:
+    1. Find past orders for this user
+    2. Identify consumable products
+    3. Calculate expected reorder date
+    4. Suggest if due or overdue
+    """
+    alerts = []
+    now = datetime.now(timezone.utc)
+    
+    if not user_email:
+        return alerts
+    
+    # Get user's order history
+    orders = await db.orders.find(
+        {"$or": [
+            {"email": user_email},
+            {"user_email": user_email},
+            {"customer_email": user_email}
+        ]},
+        {"_id": 0, "items": 1, "created_at": 1, "order_date": 1}
+    ).sort("created_at", -1).limit(50).to_list(50)
+    
+    if not orders:
+        return alerts
+    
+    # Track last purchase of each consumable type
+    consumable_purchases = {}
+    
+    for order in orders:
+        order_date_str = order.get("created_at") or order.get("order_date")
+        if not order_date_str:
+            continue
+        
+        try:
+            if isinstance(order_date_str, str):
+                order_date = datetime.fromisoformat(order_date_str.replace("Z", "+00:00"))
+            else:
+                order_date = order_date_str
+        except:
+            continue
+        
+        items = order.get("items", [])
+        for item in items:
+            product_name = (item.get("name") or item.get("product_name") or "").lower()
+            product_id = item.get("product_id") or item.get("id")
+            
+            # Check if this is a consumable
+            for consumable_type, interval in CONSUMABLE_INTERVALS.items():
+                if consumable_type in product_name:
+                    key = f"{consumable_type}:{product_id or product_name[:20]}"
+                    if key not in consumable_purchases:
+                        consumable_purchases[key] = {
+                            "type": consumable_type,
+                            "product_name": item.get("name") or item.get("product_name"),
+                            "product_id": product_id,
+                            "last_purchase": order_date,
+                            "interval": interval,
+                            "price": item.get("price") or item.get("amount"),
+                            "quantity": item.get("quantity", 1)
+                        }
+                    break
+    
+    # Generate reorder alerts
+    for key, purchase in consumable_purchases.items():
+        last_date = purchase["last_purchase"]
+        interval = purchase["interval"]
+        next_reorder = last_date + timedelta(days=interval)
+        days_until = (next_reorder - now).days
+        
+        product_name = purchase["product_name"] or purchase["type"].title()
+        
+        if days_until < -7:
+            # Very overdue - might have run out
+            alerts.append({
+                "id": f"reorder-{key.replace(':', '-')}",
+                "type": "reorder",
+                "pillar": "shop",
+                "title": f"🛒 Time to Reorder {product_name}?",
+                "message": f"You last ordered {product_name} {abs(days_until)} days ago. {pet_name} might be running low!",
+                "pet_id": pet_id,
+                "pet_name": pet_name,
+                "urgency": "high",
+                "due_date": next_reorder.isoformat(),
+                "days_until": days_until,
+                "cta": "Reorder Now",
+                "cta_action": "reorder_product",
+                "product_id": purchase.get("product_id"),
+                "product_name": product_name,
+                "last_price": purchase.get("price"),
+                "created_at": now.isoformat()
+            })
+        elif days_until <= 5:
+            # Coming up soon
+            alerts.append({
+                "id": f"reorder-{key.replace(':', '-')}",
+                "type": "reorder",
+                "pillar": "shop",
+                "title": f"📦 {product_name} Running Low?",
+                "message": f"Based on your purchase history, it might be time to restock {product_name} for {pet_name}.",
+                "pet_id": pet_id,
+                "pet_name": pet_name,
+                "urgency": "medium",
+                "due_date": next_reorder.isoformat(),
+                "days_until": days_until,
+                "cta": "Quick Reorder",
+                "cta_action": "reorder_product",
+                "product_id": purchase.get("product_id"),
+                "product_name": product_name,
+                "last_price": purchase.get("price"),
+                "created_at": now.isoformat()
+            })
+    
+    # Sort by urgency
+    alerts.sort(key=lambda x: x.get("days_until", 0))
+    
+    return alerts[:5]  # Return top 5 reorder suggestions
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
 # MAIN API ENDPOINTS
 # ═══════════════════════════════════════════════════════════════════════════════
 
