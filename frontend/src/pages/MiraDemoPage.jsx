@@ -4397,16 +4397,8 @@ const MiraDemoPage = () => {
                             );
                           })()}
                           
-                          {/* Quick Reply Chips */}
-                          {msg.quickReplies && msg.quickReplies.length > 0 && (
-                            <div className="mp-chips">
-                              {msg.quickReplies.map((chip, cIdx) => (
-                                <button key={cIdx} onClick={() => handleQuickReply(chip.value, true)} className="mp-chip" data-testid={`chip-${cIdx}`}>
-                                  {chip.text}
-                                </button>
-                              ))}
-                            </div>
-                          )}
+                          {/* Quick Reply Chips - HIDDEN: Now shown in composer area instead */}
+                          {/* Keeping this commented out for reference - tiles moved to mp-composer-tiles */}
                           
                           {/* Products - Premium Bento Grid */}
                           {msg.showProducts && msg.data?.response?.products?.length > 0 && (
