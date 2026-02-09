@@ -115,26 +115,61 @@ Picks are the bridge between them.
 | Health tile (near Soul Score) | `MiraDemoPage.jsx:4288` |
 | Links to /dashboard | Working |
 
-## Missing ❌
+## ✅ IMPLEMENTED THIS SESSION (Picks Vault)
 | Component | Status |
 |-----------|--------|
-| Pillar-first search | ❌ Not implemented |
-| Picks vault storage with ticket | ❌ Not implemented |
-| life_state_exclusions check | ❌ Not in search |
-| Icon/Tip Cards | ❌ Not implemented |
-| "Concierge will curate" message | ❌ Not implemented |
+| Pillar-first search | ✅ DONE - `mira_routes.py:1279` |
+| Life_state_exclusions check | ✅ DONE - filters in search |
+| Picks vault storage with ticket | ✅ DONE - `create_mira_ticket()` |
+| "Concierge will curate" message | ✅ DONE - in product display |
+| "Pick" button (replaces Add) | ✅ DONE - sends to Concierge |
+| Tip Cards API | ✅ DONE - `/generate-tip-card` endpoint |
 
 ---
 
-# NEXT STEPS FOR NEXT AGENT
+# ✅ ALL PRIORITIES IMPLEMENTED
 
-## Priority 1: Pillar-First Search (Critical)
-Update `search_real_products()` in `mira_routes.py`:
+## Priority 1: Pillar-First Search ✅ DONE
+Updated `search_real_products()` in `mira_routes.py`:
 ```python
-query = {
-    "pillar": current_pillar,  # ALWAYS filter by pillar FIRST
-    "semantic_intents": {"$in": [intent]},
-    "life_state_exclusions": {"$nin": [current_life_state]}
+# PILLAR-FIRST FILTERING - Line 1310
+if current_pillar:
+    PILLAR_SEARCH_MAP = {...}
+    allowed_pillars = PILLAR_SEARCH_MAP.get(current_pillar.lower(), [current_pillar.lower()])
+    query["pillar"] = {"$in": allowed_pillars}
+
+# LIFE STATE EXCLUSIONS - Line 1322
+if current_life_state:
+    query["life_state_exclusions"] = {"$nin": [current_life_state.upper()]}
+```
+
+## Priority 2: Picks Vault Storage ✅ DONE
+Added `picks_vault` to ticket creation:
+```python
+ticket_doc["picks_vault"] = {
+    "products": [...],
+    "services": [...],
+    "tip_cards": [...],
+    "pillar": pillar,
+    "context": mira_mode,
+    "generated_at": timestamp
+}
+```
+
+## Priority 3: UI Updates ✅ DONE
+- Changed "Add" buttons to "Pick" (sends to Concierge)
+- Added Concierge curation message: "Your pet Concierge® will review these picks..."
+- Removed all `alert('Added to cart!')` calls
+
+## Priority 4: Tip Cards API ✅ DONE
+New endpoint `/api/mira/generate-tip-card`:
+```python
+POST /api/mira/generate-tip-card
+{
+    "conversation_summary": "Meal plan advice...",
+    "pillar": "dine",
+    "pet_context": {"name": "Mystique"},
+    "card_type": "meal_plan"
 }
 ```
 
