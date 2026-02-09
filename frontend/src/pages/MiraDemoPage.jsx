@@ -48,6 +48,7 @@ import ChatInputBar from '../components/Mira/ChatInputBar';
 import TestScenariosPanel from '../components/Mira/TestScenariosPanel';
 import PetSelector from '../components/Mira/PetSelector';
 import NavigationDock from '../components/Mira/NavigationDock';
+import FloatingActionBar from '../components/Mira/FloatingActionBar';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // EXTRACTED HOOKS - Stage 1, 2, 3 Refactoring
