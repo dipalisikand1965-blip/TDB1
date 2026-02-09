@@ -38,6 +38,7 @@ export {
   createErrorMessage,
   createTopicShiftIndicator,
   createUserMessage,
+  buildMiraMessage,
   // API helpers
   fetchConversationMemory,
   fetchMoodContext,
