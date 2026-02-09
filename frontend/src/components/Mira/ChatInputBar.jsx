@@ -9,6 +9,7 @@
 
 import React from 'react';
 import { Send, Mic, MicOff, Volume2, VolumeX, X } from 'lucide-react';
+import hapticFeedback from '../../utils/haptic';
 
 /**
  * ChatInputBar Component
@@ -48,6 +49,7 @@ const ChatInputBar = ({
   
   const handleSubmit = (e) => {
     e.preventDefault();
+    hapticFeedback.sendMessage(e);
     if (onSubmit) onSubmit(e);
   };
   
@@ -74,7 +76,7 @@ const ChatInputBar = ({
           {/* Voice Output Toggle */}
           <button
             type="button"
-            onClick={onToggleVoiceOutput}
+            onClick={(e) => { hapticFeedback.toggle(e); onToggleVoiceOutput?.(); }}
             className={`mp-btn-voice ${voiceEnabled ? 'active' : ''} ${isSpeaking ? 'speaking' : ''}`}
             data-testid="voice-output-btn"
             title={voiceEnabled ? 'Mira voice ON' : 'Mira voice OFF'}
@@ -86,7 +88,10 @@ const ChatInputBar = ({
           {voiceSupported && (
             <button
               type="button"
-              onClick={onToggleVoiceInput}
+              onClick={(e) => { 
+                isListening ? hapticFeedback.voiceStop(e) : hapticFeedback.voiceStart(e); 
+                onToggleVoiceInput?.(); 
+              }}
               className={`mp-btn-mic ${isListening ? 'recording' : ''} ${voiceError ? 'error' : ''}`}
               data-testid="mic-btn"
               title={voiceError || (isListening ? 'Listening... Tap to stop' : 'Tap to speak')}
