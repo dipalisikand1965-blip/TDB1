@@ -2934,74 +2934,19 @@ const MiraDemoPage = () => {
       // ═══════════════════════════════════════════════════════════════════
       // AMADEUS TRAVEL - Only fetch hotels AFTER conversation flow confirms
       // Per MIRA DOCTRINE: Ask questions first, then show results
-      // WORLDWIDE SUPPORT: Extract any city name from user query
+      // WORLDWIDE SUPPORT: Uses extracted helper for city extraction
       // ═══════════════════════════════════════════════════════════════════
       let travelHotels = [];
       let travelAttractions = [];
       
-      // Smart city extraction - works for ANY city worldwide
-      // Patterns: "trip to [city]", "visit [city]", "going to [city]", "hotels in [city]", "[city] hotels", etc.
-      const extractCityFromQuery = (query) => {
-        const lowerQuery = query.toLowerCase();
-        
-        // Common travel/location patterns
-        const patterns = [
-          /(?:trip|travel|visit|going|vacation|holiday|stay|hotels?|accommodations?)\s+(?:to|in|at|near)\s+([a-zA-Z\s]+?)(?:\s+with|\s+for|\s*$|\s*[,?!.])/i,
-          /(?:to|in|at|near)\s+([a-zA-Z\s]+?)\s+(?:trip|travel|visit|vacation|holiday|hotels?|stay)/i,
-          /([a-zA-Z\s]+?)\s+(?:trip|travel|vacation|holiday|hotels?)/i,
-          /(?:book|find|show|suggest)\s+(?:me\s+)?(?:hotels?|stays?|accommodations?)\s+(?:in|at|near)\s+([a-zA-Z\s]+)/i,
-          /(?:pet[- ]?friendly)\s+(?:hotels?|stays?)\s+(?:in|at|near)\s+([a-zA-Z\s]+)/i,
-        ];
-        
-        for (const pattern of patterns) {
-          const match = query.match(pattern);
-          if (match && match[1]) {
-            // Clean up the extracted city name
-            let city = match[1].trim()
-              .replace(/\s+/g, ' ')
-              .replace(/^(the|a|an)\s+/i, '')
-              .replace(/\s+(please|now|today|asap|quickly)$/i, '')
-              .trim();
-            
-            // Filter out common non-city words
-            const nonCityWords = ['my', 'our', 'the', 'dog', 'puppy', 'pet', 'buddy', 'cat', 'kitten', 'some', 'good', 'nice', 'best'];
-            if (city.length > 2 && !nonCityWords.includes(city.toLowerCase())) {
-              // Capitalize first letter of each word
-              city = city.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
-              console.log('[CITY EXTRACT] Found city:', city);
-              return city;
-            }
-          }
-        }
-        
-        return null;
-      };
-      
+      // Smart city extraction using extracted helper
       const detectedCity = extractCityFromQuery(inputQuery);
       
-      // Check if this is a CONFIRMED travel request (user has answered questions)
-      // Look for signals that user has provided details OR backend triggered hotel fetch
-      const travelConfirmationSignals = [
-        'show me hotels', 'find hotels', 'book hotel', 'suggest hotels',
-        'show accommodations', 'where to stay', 'hotel options', 'hotel recommendations',
-        'yes', 'sounds good', 'go ahead', 'please find', 'help me book'
-      ];
-      const hasConversationHistory = conversationHistory.length >= 2; // At least 1 back-and-forth
-      const hasTravelConfirmation = travelConfirmationSignals.some(signal => 
-        inputQuery.toLowerCase().includes(signal)
-      );
-      
-      // Backend signals when to show hotels via show_travel_results flag
-      const backendSaysShowHotels = data?.show_travel_results === true || 
-                                     data?.response?.message?.toLowerCase().includes('browse these hotels') ||
-                                     data?.response?.message?.toLowerCase().includes('here are some pet-friendly');
-      
-      // Only fetch hotels if:
-      // 1. User has had conversation (not first message) AND explicitly asked for hotels, OR
-      // 2. Backend said it's time to show hotels
-      const shouldFetchHotels = detectedCity && (
-        (hasConversationHistory && hasTravelConfirmation) || 
-        backendSaysShowHotels
+      // Check if this is a CONFIRMED travel request using extracted helper
+      const shouldFetchHotels = detectedCity && shouldFetchTravelData(
+        inputQuery, 
+        conversationHistory.length, 
+        data
       );
       
       if (shouldFetchHotels) {
