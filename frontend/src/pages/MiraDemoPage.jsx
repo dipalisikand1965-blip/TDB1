@@ -4286,6 +4286,25 @@ const MiraDemoPage = () => {
                       <span className="soul-cta">Help Mira<br/>know {pet.name}</span>
                     </div>
                   )}
+                  
+                  {/* Health Tile - Links to /dashboard */}
+                  <a 
+                    href="/dashboard"
+                    className="health-tile"
+                    data-testid="health-tile"
+                  >
+                    <div className="health-tile-icon">
+                      <Heart size={16} />
+                    </div>
+                    <div className="health-tile-content">
+                      <span className="health-tile-label">Health</span>
+                      {healthVault.completeness < 100 ? (
+                        <span className="health-tile-status incomplete">{healthVault.completeness}%</span>
+                      ) : (
+                        <span className="health-tile-status complete">✓</span>
+                      )}
+                    </div>
+                  </a>
                 </div>
                 
                 {/* Content Side */}
