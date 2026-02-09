@@ -8704,6 +8704,24 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
             except Exception as vault_err:
                 logger.error(f"[PICKS VAULT] Failed to save picks: {vault_err}")
         
+        # INCREMENT SOUL SCORE - Every meaningful conversation helps Mira know the pet better!
+        if selected_pet and selected_pet.get("id"):
+            try:
+                interaction_type = "conversation"
+                if products:
+                    interaction_type = "product_recommendation"
+                elif handoff_to_concierge:
+                    interaction_type = "service_booked"
+                
+                await increment_soul_score_on_interaction(selected_pet.get("id"), interaction_type)
+                
+                # Refresh the soul score for return
+                pet_data = await db.pets.find_one({"id": selected_pet.get("id")}, {"overall_score": 1, "_id": 0})
+                if pet_data:
+                    selected_pet["overall_score"] = pet_data.get("overall_score", 0)
+            except Exception as soul_err:
+                logger.warning(f"[SOUL SCORE] Failed to increment: {soul_err}")
+        
         return {
             "response": response,
             "session_id": session_id,
