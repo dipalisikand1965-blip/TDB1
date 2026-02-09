@@ -3782,10 +3782,11 @@ def detect_emotional_undertone(message: str) -> dict:
             "tone": "enthusiastic"
         }
     
-    # FRUSTRATION - Something not working
+    # FRUSTRATION - Something not working (check BEFORE overwhelm)
     frustration_phrases = [
         "nothing works", "tried everything", "so frustrating", "annoying",
-        "keeps happening", "won't stop", "doesn't help", "useless"
+        "keeps happening", "won't stop", "doesn't help", "useless",
+        "still doing it", "still barking", "still biting", "won't listen"
     ]
     if any(phrase in message_lower for phrase in frustration_phrases):
         return {
@@ -3793,6 +3794,21 @@ def detect_emotional_undertone(message: str) -> dict:
             "response_approach": "validate_then_help",
             "opener": "That sounds really frustrating. Let's try a different approach.",
             "avoid": ["repeating same advice", "dismissing frustration"]
+        }
+    
+    # SEEKING HELP - User wants advice on a problem (not overwhelm by choices)
+    # This should route to advice mode, not simplification mode
+    seeking_help_phrases = [
+        "what to do about", "how do i stop", "how do i get", "how can i",
+        "what should i do about", "help with", "having trouble with",
+        "problem with", "issue with", "struggling with", "dealing with"
+    ]
+    if any(phrase in message_lower for phrase in seeking_help_phrases):
+        return {
+            "undertone": "seeking_help",
+            "response_approach": "advisory",
+            "opener": "Let me help you with that.",
+            "avoid": ["overwhelming with options", "being vague"]
         }
     
     # NEUTRAL - No strong emotional undertone detected
