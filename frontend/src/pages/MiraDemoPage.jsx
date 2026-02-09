@@ -3054,6 +3054,39 @@ const MiraDemoPage = () => {
           {/* Conversation Messages */}
           {conversationHistory.length > 0 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              
+              {/* PROACTIVE ALERTS BANNER - Smart reminders from Mira */}
+              {proactiveAlerts.smartAlerts && proactiveAlerts.smartAlerts.length > 0 && (
+                <ProactiveAlertsBanner
+                  alerts={proactiveAlerts.smartAlerts}
+                  criticalCount={proactiveAlerts.criticalCount || 0}
+                  maxVisible={2}
+                  onAlertAction={(alert) => {
+                    // Handle alert CTA - send as message to Mira
+                    const actionMessages = {
+                      'book_vet_vaccination': `I need to schedule ${pet.name}'s vaccination`,
+                      'book_grooming': `Book a grooming appointment for ${pet.name}`,
+                      'celebrate_birthday': `Let's celebrate ${pet.name}'s birthday!`,
+                      'plan_birthday_party': `Help me plan ${pet.name}'s birthday party`,
+                      'order_birthday_cake': `Order a birthday cake for ${pet.name}`
+                    };
+                    const message = actionMessages[alert.cta_action] || alert.message;
+                    setInputText(message);
+                    handleSubmit({ preventDefault: () => {} });
+                  }}
+                  onDismiss={async (alertId) => {
+                    try {
+                      await fetch(`${API_URL}/api/mira/proactive/dismiss/${alertId}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ user_email: user?.email })
+                      });
+                    } catch (e) { console.log('Could not dismiss alert'); }
+                  }}
+                  className="mb-4"
+                />
+              )}
+              
               {/* Collapsed Older Messages */}
               {conversationHistory.length > VISIBLE_MESSAGE_COUNT && (
                 <div className="mp-history-toggle" style={{
