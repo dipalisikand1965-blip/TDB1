@@ -14,20 +14,18 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 import { API_URL } from '../../utils/api';
-import {
-  PicksVault,
-  PickDetail,
-  TipCardVault,
-  BookingVault,
-  PlacesVault,
-  CustomVault,
-  EmergencyVault,
-  MemorialVault,
-  AdoptionVault,
-  VAULT_TYPES,
-  detectVaultType,
-  getVaultConfig
-} from './index';
+
+// Direct imports to avoid circular dependency
+import PicksVault from './PicksVault';
+import PickDetail from './PickDetail';
+import TipCardVault from './TipCardVault';
+import BookingVault from './BookingVault';
+import PlacesVault from './PlacesVault';
+import CustomVault from './CustomVault';
+import EmergencyVault from './EmergencyVault';
+import MemorialVault from './MemorialVault';
+import AdoptionVault from './AdoptionVault';
+import { VAULT_TYPES, detectVaultType, getVaultConfig } from './vaultConfig';
 
 /**
  * Detect vault type from Mira's response data
