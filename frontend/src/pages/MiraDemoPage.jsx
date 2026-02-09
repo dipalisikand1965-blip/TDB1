@@ -4925,7 +4925,29 @@ const MiraDemoPage = () => {
       {/* Input Composer - Premium */}
       <div className="mp-composer">
         {/* ═══════════════════════════════════════════════════════════════════
-            "READY FOR [PET]" BUTTON - Shows when Mira has picks
+            QUICK REPLY TILES - Shown LEFT of input bar (repositioned from chat)
+            Per user request: tiles should be here, not interrupting chat flow
+        ═══════════════════════════════════════════════════════════════════ */}
+        {activeQuickReplies.length > 0 && (
+          <div className="mp-composer-tiles" data-testid="composer-tiles">
+            {activeQuickReplies.map((chip, idx) => (
+              <button
+                key={idx}
+                className="mp-composer-tile"
+                onClick={() => {
+                  hapticFeedback.chipTap();
+                  handleQuickReply(chip.value, true);
+                  setActiveQuickReplies([]); // Clear after selection
+                }}
+                data-testid={`composer-tile-${idx}`}
+              >
+                {chip.text}
+              </button>
+            ))}
+          </div>
+        )}
+        
+        {/* "READY FOR [PET]" BUTTON - Shows when Mira has picks
             Concierge® is ALWAYS by your side
         ═══════════════════════════════════════════════════════════════════ */}
         {(miraPicks.products.length > 0 || miraPicks.services.length > 0 || true) && (
@@ -4940,7 +4962,7 @@ const MiraDemoPage = () => {
               {miraPicks.hasNew && <span className="mp-ready-dot" />}
             </span>
             <span className="mp-ready-text">
-              {miraPicks.context || `Ready for ${pet.name}`}
+              {miraPicks.context || `Picks for ${pet.name}`}
             </span>
             <span className="mp-ready-count">
               {/* Show alert badge if there are care items needing attention */}
