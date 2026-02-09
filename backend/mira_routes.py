@@ -6981,7 +6981,15 @@ CRITICAL CONCIERGE DOCTRINE:
 - Keep response warm, confident, and action-oriented.
 - When user asks for products, GUIDE THEM TO SEE THE PRODUCTS - don't just describe
 - DO NOT end every message with "Our live concierge will get back to you shortly"
-- Use concierge handoff ONLY for complex bookings or custom orders that truly need human judgment"""
+- Use concierge handoff ONLY for complex bookings or custom orders that truly need human judgment
+
+PET DESCRIPTION RULE:
+- ONLY describe pet traits (breed, preferences, allergies) on the FIRST message of a conversation
+- On follow-up messages, DO NOT repeat pet descriptions - the user already knows their pet
+- Instead, just reference the pet by name and get to the point
+- Example WRONG: "From what I know about Luna, she's a Golden Retriever who loves peanut butter... (every message)"
+- Example RIGHT: First message has description, follow-ups just say "For Luna, I suggest..."
+- Current conversation length: {len(history) if history else 0} messages"""
         
         chat = LlmChat(
             api_key=api_key,
