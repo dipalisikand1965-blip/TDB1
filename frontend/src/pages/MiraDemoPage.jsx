@@ -3250,6 +3250,12 @@ const MiraDemoPage = () => {
         voiceError={voiceError}
         onClearVoiceError={() => setVoiceError(null)}
         placeholder={`Ask Mira anything...`}
+        petId={pet?.id}
+        sessionId={sessionId}
+        onPhotoUpload={(file, uploadData) => {
+          console.log('[MIRA] Photo uploaded:', file.name, uploadData);
+          // Optionally trigger a message about the upload
+        }}
       />
       
       {/* Sandbox Footer */}
