@@ -121,7 +121,8 @@ const ProtectedRoute = ({ children, requireMembership = false }) => {
       
       // Check membership if required
       if (requireMembership) {
-        const isAdmin = user?.role === 'admin' || user?.email?.includes('clubconcierge');
+        // STRICT ADMIN CHECK - Only explicit admin role
+        const isAdmin = user?.role === 'admin' || user?.role === 'super_admin' || user?.is_admin === true;
         const hasActiveMembership = user?.pet_pass_status === 'active' || 
                                     user?.membership_status === 'active' ||
                                     user?.has_paid === true ||
@@ -164,7 +165,8 @@ const ProtectedRoute = ({ children, requireMembership = false }) => {
 
   // Check membership for protected routes
   if (requireMembership) {
-    const isAdmin = user?.role === 'admin' || user?.email?.includes('clubconcierge');
+    // STRICT ADMIN CHECK - Only explicit admin role
+    const isAdmin = user?.role === 'admin' || user?.role === 'super_admin' || user?.is_admin === true;
     const hasActiveMembership = user?.pet_pass_status === 'active' || 
                                 user?.membership_status === 'active' ||
                                 user?.has_paid === true ||
