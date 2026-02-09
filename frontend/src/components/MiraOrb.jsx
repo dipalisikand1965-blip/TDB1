@@ -317,10 +317,8 @@ const MiraOrb = ({
       {/* Main orb button - the soul vessel */}
       <motion.button
         onClick={(e) => {
-          // Haptic feedback for mobile devices
-          if (navigator.vibrate) {
-            navigator.vibrate(50); // Short vibration pulse
-          }
+          // Haptic feedback for mobile devices (iOS + Android)
+          hapticFeedback.buttonTap(e);
           onClick?.(e);
         }}
         className="relative rounded-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2"
