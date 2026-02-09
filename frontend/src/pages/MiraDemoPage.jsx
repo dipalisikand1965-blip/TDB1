@@ -875,39 +875,76 @@ const MiraDemoPage = () => {
     lastActivityRef.current = Date.now();
   }, []);
   
+  // CONVERSATION FLOW DETECTION - Track when Mira has provided assistance
+  const [conversationComplete, setConversationComplete] = useState(false);
+  const [showConversationEndBanner, setShowConversationEndBanner] = useState(false);
+  
+  // Detect if conversation is "complete" (Mira has provided assistance)
+  // A complete flow = User asked → Mira responded with products/action → User acknowledged
+  const detectConversationComplete = useCallback((history) => {
+    if (history.length < 2) return false;
+    
+    const lastMessages = history.slice(-4);
+    const hasUserMessage = lastMessages.some(m => m.type === 'user');
+    const hasMiraResponse = lastMessages.some(m => m.type === 'mira');
+    const hasMiraWithProducts = lastMessages.some(m => 
+      m.type === 'mira' && (m.showProducts || m.data?.response?.products?.length > 0)
+    );
+    const hasMiraWithAction = lastMessages.some(m =>
+      m.type === 'mira' && (m.showConcierge || m.data?.nearby_places || m.data?.training_videos)
+    );
+    
+    // Complete if: Mira provided products/action AND user sent follow-up (thank you, ok, etc.)
+    if ((hasMiraWithProducts || hasMiraWithAction) && hasUserMessage) {
+      const lastUserMsg = lastMessages.filter(m => m.type === 'user').pop();
+      const acknowledgmentPhrases = ['thank', 'thanks', 'ok', 'okay', 'great', 'perfect', 'got it', 'nice', 'awesome', 'good', 'done', 'yes'];
+      const isAcknowledgment = acknowledgmentPhrases.some(p => 
+        (lastUserMsg?.content || '').toLowerCase().includes(p)
+      );
+      return isAcknowledgment;
+    }
+    
+    return false;
+  }, []);
+  
+  // Archive conversation helper
+  const archiveCurrentConversation = useCallback((reason = 'manual') => {
+    if (conversationHistory.length < 2) return;
+    
+    const sessionToArchive = {
+      id: `session_${Date.now()}`,
+      date: new Date().toISOString(),
+      pet_name: pet.name,
+      pet_id: pet.id,
+      messages: conversationHistory,
+      summary: conversationHistory.find(m => m.type === 'user')?.content?.slice(0, 50) || 'Conversation',
+      archived_reason: reason
+    };
+    
+    setPastSessions(prev => [sessionToArchive, ...prev]);
+    setConversationHistory([]);
+    setMiraPicks({ products: [], services: [], context: '', hasNew: false });
+    setConversationComplete(false);
+    setShowConversationEndBanner(false);
+    lastActivityRef.current = Date.now();
+    
+    console.log(`[MIRA] Conversation archived: ${reason}`);
+  }, [conversationHistory, pet.name, pet.id]);
+  
   // Check for inactivity and archive conversation
   useEffect(() => {
-    const INACTIVITY_TIMEOUT = 30 * 60 * 1000; // 30 minutes
+    const INACTIVITY_TIMEOUT = 10 * 60 * 1000; // 10 minutes (changed from 30)
     
     const checkInactivity = () => {
       const timeSinceLastActivity = Date.now() - lastActivityRef.current;
       
       if (timeSinceLastActivity >= INACTIVITY_TIMEOUT && conversationHistory.length > 1) {
-        // Archive current conversation to past chats
-        const sessionToArchive = {
-          id: `session_${Date.now()}`,
-          date: new Date().toISOString(),
-          pet_name: pet.name,
-          pet_id: pet.id,
-          messages: conversationHistory,
-          summary: conversationHistory.find(m => m.type === 'user')?.content?.slice(0, 50) || 'Conversation'
-        };
-        
-        setPastSessions(prev => [sessionToArchive, ...prev]);
-        
-        // Clear current conversation (keep welcome message)
-        setConversationHistory([]);
-        setMiraPicks({ products: [], services: [], context: '', hasNew: false });
-        
-        // Reset timer
-        lastActivityRef.current = Date.now();
-        
-        console.log('[MIRA] Conversation archived due to inactivity');
+        archiveCurrentConversation('inactivity');
       }
     };
     
-    // Check every minute
-    inactivityTimerRef.current = setInterval(checkInactivity, 60 * 1000);
+    // Check every 30 seconds for faster detection
+    inactivityTimerRef.current = setInterval(checkInactivity, 30 * 1000);
     
     // Track user activity
     const handleActivity = () => resetInactivityTimer();
