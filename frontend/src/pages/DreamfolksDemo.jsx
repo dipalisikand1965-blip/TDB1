@@ -653,6 +653,194 @@ What happened? I can provide specific first-aid guidance.`,
     urgency: "Critical"
   },
 
+  // TOXIC FOODS & SAFETY (Critical knowledge!)
+  "chocolate|cocoa|choco": {
+    response: `🚫 **NO! Chocolate is TOXIC to dogs!**
+
+**Never give Dollar chocolate.** It contains theobromine and caffeine, which dogs cannot metabolize.
+
+**Toxicity Levels (most to least dangerous):**
+☠️ Baking chocolate - MOST toxic
+☠️ Dark chocolate - Very toxic
+⚠️ Milk chocolate - Toxic
+⚠️ White chocolate - Least toxic (still avoid)
+
+**Toxic dose for Dollar (8.5 kg):**
+• Dark chocolate: ~40g can be dangerous
+• Milk chocolate: ~100g can be dangerous
+
+**Symptoms of chocolate poisoning:**
+• Vomiting, diarrhea
+• Rapid breathing, restlessness
+• Muscle tremors
+• Seizures (severe cases)
+
+**If Dollar ate chocolate:**
+1. Note WHAT type and HOW MUCH
+2. Call poison control: +91 98765 00000
+3. Or rush to emergency vet
+
+🍫➡️🐕 = ❌ **NEVER**
+
+**Safe alternatives Dollar can enjoy:**
+✅ Carob treats (chocolate-like, dog-safe!)
+✅ Peanut butter (his favorite!)
+✅ Sweet potato chews`,
+    intent: "Toxic food inquiry",
+    pillar: "Care/Emergency",
+    urgency: "High"
+  },
+
+  "grape|raisin|grapes|raisins": {
+    response: `🚫 **NO! Grapes and raisins are HIGHLY TOXIC to dogs!**
+
+Even small amounts can cause **acute kidney failure** in dogs.
+
+**There is NO safe amount** - even 1-2 grapes can be dangerous for Dollar.
+
+**Symptoms (within 6-12 hours):**
+• Vomiting, diarrhea
+• Lethargy, weakness
+• Loss of appetite
+• Decreased urination
+• Abdominal pain
+
+**If Dollar ate grapes/raisins:**
+🚨 **This is an emergency!**
+1. Call vet or poison control IMMEDIATELY
+2. They may induce vomiting if recent
+3. Kidney function monitoring needed
+
+**Emergency Contacts:**
+• 24/7 PetCare: +91 98765 43210
+• Poison Helpline: +91 98765 00000
+
+**Safe fruit alternatives:**
+✅ Blueberries
+✅ Watermelon (seedless)
+✅ Apple slices (no seeds)
+✅ Bananas`,
+    intent: "Toxic food inquiry",
+    pillar: "Emergency",
+    urgency: "Critical"
+  },
+
+  "onion|garlic|onions": {
+    response: `🚫 **NO! Onions and garlic are TOXIC to dogs!**
+
+All members of the allium family are dangerous:
+• Onions (raw, cooked, powder)
+• Garlic
+• Leeks, chives, shallots
+
+**Why it's dangerous:**
+Damages red blood cells → causes anemia
+
+**Toxic amount for Dollar:**
+• Onion: ~100g can be dangerous
+• Garlic: Smaller amounts needed
+
+**Symptoms (may take days to appear):**
+• Weakness, lethargy
+• Pale gums
+• Rapid breathing
+• Dark-colored urine
+• Vomiting
+
+**If Dollar ate onion/garlic:**
+Monitor closely. If large amount, contact vet.
+
+**Watch out for hidden sources:**
+• Baby food
+• Seasonings
+• Prepared foods
+• Pizza, pasta sauces
+
+**Safe flavor alternatives:**
+✅ Plain cooked meat
+✅ Dog-safe broths (no onion/garlic)`,
+    intent: "Toxic food inquiry",
+    pillar: "Care",
+    urgency: "High"
+  },
+
+  "xylitol|sugar free|sugarfree": {
+    response: `🚫 **EXTREMELY DANGEROUS! Xylitol is highly toxic to dogs!**
+
+Xylitol is an artificial sweetener that can be **fatal** to dogs even in small amounts.
+
+**Where xylitol hides:**
+• Sugar-free gum
+• Sugar-free candy
+• Peanut butter (some brands!)
+• Toothpaste
+• Baked goods
+• Vitamins/supplements
+
+⚠️ **Always check peanut butter labels!** Dollar loves peanut butter, so make sure yours is xylitol-free.
+
+**Why it's so dangerous:**
+Causes rapid insulin release → severe hypoglycemia (low blood sugar) → liver failure
+
+**Symptoms (within 15-30 mins):**
+• Vomiting
+• Weakness, collapse
+• Seizures
+• Coma
+
+**If Dollar ingested xylitol:**
+🚨 **EMERGENCY - Go to vet IMMEDIATELY!**
+Time is critical. Don't wait for symptoms.
+
+**Safe peanut butter brands:**
+✅ Regular Skippy/Jif (check label)
+✅ 365 Organic
+✅ Teddie All Natural`,
+    intent: "Toxic food inquiry",
+    pillar: "Emergency",
+    urgency: "Critical"
+  },
+
+  "can dog eat|can dogs eat|safe for dog|ok for dog|good for dog": {
+    response: `Great question! Let me help you know what's safe for Dollar.
+
+**🚫 TOXIC - Never give to dogs:**
+• Chocolate (all types)
+• Grapes & raisins
+• Onions & garlic
+• Xylitol (artificial sweetener)
+• Macadamia nuts
+• Alcohol
+• Caffeine
+• Avocado (persin toxin)
+
+**⚠️ CAUTION - Small amounts only:**
+• Cheese (lactose)
+• Milk
+• Nuts (except macadamia - those are toxic)
+• Salt
+• Fatty foods
+
+**✅ SAFE - Good for dogs:**
+• Carrots
+• Blueberries
+• Watermelon (seedless)
+• Apple (no seeds)
+• Bananas
+• Pumpkin (plain)
+• Cooked chicken, lamb, fish
+• Rice, oatmeal
+• Peanut butter (xylitol-free!)
+
+**For Dollar specifically:**
+Remember he's allergic to chicken! Stick to lamb, fish, or beef.
+
+What specific food were you wondering about?`,
+    intent: "Food safety inquiry",
+    pillar: "Care + Feed",
+    urgency: "Normal"
+  },
+
   // MULTI-INTENT (2 responses)
   "and also|and order|and book|and get": {
     response: `I can help with multiple things at once! Let me break this down:
