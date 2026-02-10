@@ -185,27 +185,36 @@ const AboutPage = () => {
                 
                 <div className="space-y-4 text-white/70 leading-relaxed">
                   <p>
-                    It started with <strong className="text-amber-300">Mrs. Mira Sikand</strong> — 
-                    who built LesConcierges® on one truth: real service means remembering, anticipating, 
-                    and caring before being asked. Her spirit became the foundation.
+                    It started with <strong className="text-white">Dipali Sikand</strong>.
+                    She built LesConcierges® on one uncompromising truth: 
+                    <em className="text-purple-300"> real service is not transactional. 
+                    It is memory, anticipation, and care delivered before it is asked for.</em>
                   </p>
                   <p>
-                    <strong className="text-white">Dipali</strong> carried that legacy forward with 
-                    Club Concierge® — three decades of service excellence, millions of customers, 
-                    and the understanding that every "yes" matters.
+                    Behind that philosophy was <strong className="text-amber-300">Mrs. Mira Sikand</strong> — 
+                    not as the headline, but as the quiet force. The person whose instincts, standards, 
+                    and way of looking after people shaped the kind of service Dipali would go on to 
+                    professionalise and scale. <span className="text-pink-300">Mira was the spirit. 
+                    Dipali was the builder.</span>
                   </p>
                   <p>
-                    <strong className="text-white">Aditya</strong> built The Doggy Bakery® celebrating 
-                    45,000+ pets — not just baking treats, but baking meaning into 
-                    every milestone. (With grandma Mira's hands in those early batches!)
+                    <strong className="text-white">Dipali</strong> carried that legacy forward through 
+                    Club Concierge® — three decades of service excellence, scale across millions of customers, 
+                    and the belief that every yes must feel personal.
                   </p>
                   <p>
-                    When they looked at the pet industry, they saw something missing: 
-                    <em className="text-purple-300"> a system that truly knows your pet</em>. 
-                    Not just sells to them. Knows them.
+                    And when <strong className="text-white">Aditya</strong> built The Doggy Bakery®, 
+                    it wasn't just about treats. It was about meaning: celebrating pets like family, 
+                    milestone by milestone. In those early days, Grandma Mira's hands were right there 
+                    in the work — part of the care, the making, the doing.
+                  </p>
+                  <p>
+                    So when they looked at the pet industry, they didn't see a category. They saw a gap: 
+                    <em className="text-purple-300"> lots of products, very little understanding. 
+                    Plenty of commerce, not enough care.</em>
                   </p>
                   <p className="text-white font-medium">
-                    That's why The Doggy Company® was born.
+                    That is why The Doggy Company® was born.
                   </p>
                 </div>
               </div>
@@ -344,8 +353,12 @@ const AboutPage = () => {
                   <p>
                     Mira is <strong className="text-amber-300">Mrs. Mira Sikand</strong> — 
                     <span className="text-white">Dipali's mother</span> and 
-                    <span className="text-pink-300"> Aditya and Diya's beloved grandmother</span> — 
-                    the original human blueprint for what Mira AI is meant to become.
+                    <span className="text-pink-300"> Aditya and Diya's beloved grandmother</span>.
+                  </p>
+                  <p>
+                    She wasn't the headline. She was the <em className="text-purple-300">quiet force</em> — 
+                    the person whose instincts, standards, and way of looking after people shaped the kind 
+                    of service that became LesConcierges® and Club Concierge®.
                   </p>
                   <p>
                     Long before search engines existed, she was a <em className="text-purple-300">living reference desk</em>: 
@@ -353,18 +366,17 @@ const AboutPage = () => {
                     Her wisdom still guides every decision we make.
                   </p>
                   <p>
-                    At <strong className="text-pink-300">The Doggy Bakery®</strong>, Grandma Mira was hands-on — 
-                    making treats with her granddaughter Diya, managing ingredients and deliveries. 
-                    This wasn't just inspiration in theory. It was care, detail, and doing the work properly.
+                    At <strong className="text-pink-300">The Doggy Bakery®</strong>, Grandma Mira's hands were 
+                    right there in the early work — part of the care, the making, the doing. 
+                    This wasn't just inspiration in theory.
                   </p>
                   <p>
-                    When you interact with Mira AI, you're experiencing her legacy: 
-                    <span className="text-white font-medium"> Judgment over listing. Memory and context. 
-                    Warmth with backbone. The calm certainty behind the "yes."</span>
+                    That is why <strong className="text-white">Mira AI</strong> exists on The Doggy Company®: 
+                    <span className="text-white font-medium"> to bring Dipali's concierge lineage into pet parenting — 
+                    with Mira's spirit inside it — so every recommendation feels remembered, not generated.</span>
                   </p>
                   <p className="text-white font-medium border-l-4 border-amber-400 pl-4 mt-6">
-                    "She didn't spray options. She picked the right one. 
-                    She remembered what mattered, and why it mattered."
+                    "Mira was the spirit. Dipali was the builder."
                   </p>
                 </div>
               </motion.div>
