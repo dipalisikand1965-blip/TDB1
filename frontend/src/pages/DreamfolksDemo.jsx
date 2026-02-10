@@ -1084,9 +1084,13 @@ Ask me anything about him!` }
   const chatEndRef = useRef(null);
   const heritageRef = useRef(null);
   const chatContainerRef = useRef(null);
+  const messagesContainerRef = useRef(null);
 
   useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    // Scroll within the messages container only, not the whole page
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
   }, [chatMessages, streamingText]);
 
   // Tour navigation functions
