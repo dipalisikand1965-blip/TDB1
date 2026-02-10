@@ -19,6 +19,10 @@ const PILLAR_ICONS = {
   stay: MapPin,
   fit: Heart,
   shop: Gift,
+  learn: Sparkles,
+  paperwork: Calendar,
+  emergency: Heart,
+  advisory: Sparkles,
   default: Sparkles
 };
 
@@ -30,6 +34,10 @@ const PILLAR_COLORS = {
   stay: 'from-indigo-500/20 to-violet-500/20',
   fit: 'from-rose-500/20 to-pink-500/20',
   shop: 'from-amber-500/20 to-yellow-500/20',
+  learn: 'from-purple-500/20 to-indigo-500/20',
+  paperwork: 'from-slate-500/20 to-gray-500/20',
+  emergency: 'from-red-500/20 to-orange-500/20',
+  advisory: 'from-teal-500/20 to-cyan-500/20',
   default: 'from-purple-500/20 to-pink-500/20'
 };
 
