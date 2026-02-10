@@ -560,6 +560,45 @@ def generate_tip_card_structure(
             "sections": ["basics", "tips", "mistakes_to_avoid", "progress"],
             "cta_text": "Find a trainer",
             "cta_action": "find_trainer"
+        },
+        "festival_safety": {
+            "type": "festival_safety",
+            "title": f"Festival Safety for {pet_name}",
+            "icon": "🎆",
+            "color": "orange",
+            "sections": ["preparation", "during_event", "calming_tips", "emergency"],
+            "cta_text": "Get anxiety products",
+            "cta_action": "shop_anxiety_products"
+        },
+        "celebration_tips": {
+            "type": "celebration_tips",
+            "title": f"Celebrating {pet_name}'s Special Day",
+            "icon": "🎉",
+            "color": "pink",
+            "sections": ["ideas", "activities", "treats", "memories"],
+            "cta_text": "Shop celebration items",
+            "cta_action": "shop_celebration"
+        },
+        "new_pet_guide": {
+            "type": "new_pet_guide",
+            "title": f"Welcome {pet_name}! Your First Week Guide",
+            "icon": "🐾",
+            "color": "teal",
+            "sections": ["essentials", "first_vet_visit", "house_training", "bonding"],
+            "cta_text": "Shop puppy essentials",
+            "cta_action": "shop_puppy_essentials"
+        },
+        "home_tips": {
+            "type": "home_tips",
+            "title": f"Home Comfort for {pet_name}",
+            "icon": "🏠",
+            "color": "indigo",
+            "sections": ["sleeping", "safe_space", "routine", "comfort_items"],
+            "cta_text": "Shop comfort items",
+            "cta_action": "shop_comfort"
+        }
+            "cta_text": "Find a trainer",
+            "cta_action": "find_trainer"
         }
     }
     
