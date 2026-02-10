@@ -3560,7 +3560,7 @@ PILLARS = {
     "emergency": {
         "name": "Emergency",
         "icon": "🚨",
-        "keywords": ["emergency", "urgent", "help", "lost", "missing", "accident", "injured", "sick", "poison", "bleeding", "choking", "not eating", "hasn't eaten", "limping", "vomiting", "diarrhea", "seizure", "unconscious", "ate chocolate", "ate something", "swallowed"],
+        "keywords": ["emergency", "urgent", "help", "lost", "missing", "accident", "injured", "sick", "poison", "bleeding", "choking", "not eating", "hasn't eaten", "hasnt eaten", "wont eat", "stopped eating", "refuses to eat", "limping", "vomiting", "diarrhea", "seizure", "unconscious", "ate chocolate", "ate something", "swallowed", "cant breathe", "difficulty breathing", "collapsed", "not moving"],
         "urgency_default": "critical"
     },
     "farewell": {
