@@ -73,14 +73,27 @@ const PicksVault = ({
   }, [onViewDetails]);
 
   // Refresh picks with haptic
-  const handleRefresh = useCallback(() => {
-    if (refreshCount >= maxRefreshes) return;
+  const handleRefresh = useCallback(async () => {
+    if (refreshCount >= maxRefreshes || isRefreshing) return;
+    
     haptic.medium();
+    setIsRefreshing(true);
     setRefreshCount(prev => prev + 1);
+    
     if (onRefresh) {
-      onRefresh(picks.map(p => p.id)); // Pass current picks to exclude
+      try {
+        const newPicks = await onRefresh(displayedPicks.map(p => p.id)); // Pass current picks to exclude
+        if (newPicks && newPicks.length > 0) {
+          setDisplayedPicks(newPicks);
+          setSelectedItems(new Set()); // Clear selections on refresh
+          setSentItems(new Set()); // Clear sent status on refresh
+        }
+      } catch (error) {
+        console.error('[PicksVault] Refresh failed:', error);
+      }
     }
-  }, [refreshCount, maxRefreshes, onRefresh, picks]);
+    setIsRefreshing(false);
+  }, [refreshCount, maxRefreshes, isRefreshing, onRefresh, displayedPicks]);
 
   // Send to Concierge with haptic
   const handleSendToConcierge = useCallback(async () => {
