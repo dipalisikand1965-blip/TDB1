@@ -2209,6 +2209,37 @@ const MiraDemoPage = () => {
         : (hasServiceIntent ? detectedServices : []);
       let newExperiences = hasExperienceIntent ? detectedExperiences : [];
       
+      // ═══════════════════════════════════════════════════════════════════
+      // CONVERSATION INTELLIGENCE - Track context for follow-up queries
+      // "book that one" needs to know what products were shown
+      // "cheaper ones" needs to know what we were searching for
+      // ═══════════════════════════════════════════════════════════════════
+      if (newProducts.length > 0 || newServices.length > 0) {
+        // Save products/services for pronoun resolution ("that one", "the first one")
+        const itemsForTracking = [
+          ...newProducts.map(p => ({ name: p.name, price: p.price, id: p.id, type: 'product' })),
+          ...newServices.map(s => ({ name: s.name, price: s.price, id: s.id, type: 'service' }))
+        ];
+        setLastShownProducts(itemsForTracking);
+        console.log('[INTELLIGENCE] Tracking', itemsForTracking.length, 'items for pronoun resolution');
+      }
+      
+      // Save search context from backend for follow-up queries ("cheaper ones", "show me more")
+      if (data.intelligence?.last_search_context) {
+        setLastSearchContext(data.intelligence.last_search_context);
+        console.log('[INTELLIGENCE] Tracking search context:', data.intelligence.last_search_context.pillar);
+      }
+      
+      // Log intelligence usage
+      if (data.intelligence?.context_used) {
+        console.log('[INTELLIGENCE] Context was used!', {
+          pronoun: data.intelligence.pronoun_resolved,
+          followUp: data.intelligence.follow_up_detected,
+          original: data.intelligence.original_input,
+          enhanced: data.intelligence.enhanced_input
+        });
+      }
+      
       // Detect context from intent (using extracted helper)
       const { topic: detectedTopic, context: pickContext } = detectContextTopic(inputQuery, pet.name);
       
