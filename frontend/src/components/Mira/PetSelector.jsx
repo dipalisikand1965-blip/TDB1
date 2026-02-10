@@ -121,7 +121,7 @@ const PetSelector = ({
                 <Check style={{ color: '#a855f7' }} />
               )}
             </button>
-          ))}
+          );})}
         </div>
       )}
     </>
