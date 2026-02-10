@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://pet-os-brain.preview.emergentagent.com
+https://conversational-picks.preview.emergentagent.com
 
 ---
 
