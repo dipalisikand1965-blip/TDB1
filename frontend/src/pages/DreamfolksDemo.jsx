@@ -1468,6 +1468,25 @@ Ask me anything about him!`
               </div>
             </div>
 
+            {/* Scenario Tiles - Inside chat, at top */}
+            <div className="p-3 sm:p-4 border-b border-white/10 bg-[#12061f]/50">
+              <h3 className="text-white/60 text-xs mb-2">Try asking about:</h3>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {TEST_SCENARIOS.map((scenario) => (
+                  <motion.button
+                    key={scenario.id}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => handleScenarioClick(scenario)}
+                    className="bg-white/5 hover:bg-purple-500/20 border border-white/10 hover:border-purple-500/30 rounded-lg p-2 text-left transition-all"
+                  >
+                    <div className="text-lg mb-0.5">{scenario.icon}</div>
+                    <div className="text-white/80 text-[10px] sm:text-xs line-clamp-2">{scenario.query}</div>
+                  </motion.button>
+                ))}
+              </div>
+            </div>
+
             {/* Chat Messages */}
             <div className="h-[45vh] sm:h-[350px] overflow-y-auto p-4 sm:p-6 space-y-4 overscroll-contain bg-[#12061f]">
               {chatMessages.map((msg, i) => (
