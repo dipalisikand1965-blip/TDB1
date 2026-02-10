@@ -62,6 +62,33 @@ const PLACE_COLORS = {
   trainers: '#6366f1'
 };
 
+// Display-friendly titles for place types
+const PLACE_TITLES = {
+  restaurant: 'Pet-Friendly Restaurants',
+  restaurants: 'Pet-Friendly Restaurants',
+  hotel: 'Pet-Friendly Hotels',
+  hotels: 'Pet-Friendly Hotels',
+  park: 'Dog Parks',
+  parks: 'Dog Parks',
+  dog_parks: 'Dog Parks',
+  cafe: 'Pet-Friendly Cafes',
+  beach: 'Dog-Friendly Beaches',
+  groomer: 'Pet Groomers',
+  groomers: 'Pet Groomers',
+  photographer: 'Pet Photographers',
+  photographers: 'Pet Photographers',
+  shelter: 'Animal Shelters',
+  shelters: 'Animal Shelters',
+  boarding: 'Pet Boarding & Daycare',
+  trainer: 'Dog Trainers',
+  trainers: 'Dog Trainers',
+  vet: 'Vet Clinics',
+  vets: 'Vet Clinics',
+  pet_store: 'Pet Stores',
+  pet_stores: 'Pet Stores',
+  places: 'Pet-Friendly Places'
+};
+
 const PlacesVault = ({
   places = [],
   placeType = 'restaurant',
@@ -82,6 +109,7 @@ const PlacesVault = ({
 
   const IconComponent = PLACE_ICONS[placeType] || MapPin;
   const placeColor = PLACE_COLORS[placeType] || '#a855f7';
+  const displayTitle = PLACE_TITLES[placeType] || `Pet-Friendly ${placeType.charAt(0).toUpperCase() + placeType.slice(1)}s`;
 
   const toggleSelect = useCallback((placeId) => {
     haptic.selection();
