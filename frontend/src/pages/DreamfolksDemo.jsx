@@ -1240,17 +1240,17 @@ What can I help with today?` }
                             ? 'bg-purple-500 text-white'
                             : 'bg-white/10 text-white/90'
                         }`}>
-                          <div className="whitespace-pre-line text-sm">{msg.content}</div>
+                          <div className="whitespace-pre-line text-xs sm:text-sm">{msg.content}</div>
                         </div>
                       </motion.div>
                     ))}
                     {isTyping && (
                       <div className="flex justify-start">
-                        <div className="bg-white/10 rounded-2xl px-4 py-3">
+                        <div className="bg-white/10 rounded-2xl px-3 sm:px-4 py-2 sm:py-3">
                           <div className="flex gap-1">
-                            <span className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
-                            <span className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
-                            <span className="w-2 h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
                           </div>
                         </div>
                       </div>
@@ -1259,40 +1259,40 @@ What can I help with today?` }
                   </div>
 
                   {/* Chat Input */}
-                  <div className="p-4 border-t border-white/10">
+                  <div className="p-3 sm:p-4 border-t border-white/10">
                     <div className="flex gap-2">
                       <input
                         type="text"
                         value={inputMessage}
                         onChange={(e) => setInputMessage(e.target.value)}
                         onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                        placeholder="Try: 'Is chocolate safe?' or 'Book grooming'"
-                        className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-purple-500"
+                        placeholder="Try: 'Is chocolate safe?'"
+                        className="flex-1 min-w-0 bg-white/5 border border-white/10 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 text-sm text-white placeholder-white/40 focus:outline-none focus:border-purple-500"
                       />
                       <Button 
                         onClick={() => handleSendMessage()}
-                        className="bg-purple-500 hover:bg-purple-600 text-white rounded-xl px-4"
+                        className="bg-purple-500 hover:bg-purple-600 text-white rounded-xl px-3 sm:px-4 flex-shrink-0"
                       >
-                        <Send className="w-5 h-5" />
+                        <Send className="w-4 h-4 sm:w-5 sm:h-5" />
                       </Button>
                     </div>
                     
                     {/* Guided Suggestions */}
-                    <div className="mt-4">
-                      <div className="text-white/40 text-xs mb-2">💡 Try asking about:</div>
-                      <div className="flex flex-wrap gap-2">
+                    <div className="mt-3 sm:mt-4">
+                      <div className="text-white/40 text-[10px] sm:text-xs mb-2">💡 Try asking:</div>
+                      <div className="flex flex-wrap gap-1.5 sm:gap-2">
                         {[
                           "Is chocolate safe?",
-                          "Dollar is scratching",
-                          "Book grooming",
-                          "Food recommendations",
-                          "Birthday party",
-                          "He's not eating"
+                          "Scratching",
+                          "Grooming",
+                          "Food",
+                          "Birthday",
+                          "Not eating"
                         ].map((q, i) => (
                           <button
                             key={i}
                             onClick={() => handleSendMessage(q)}
-                            className="px-3 py-1.5 bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/30 rounded-full text-purple-300 text-xs transition-colors"
+                            className="px-2 sm:px-3 py-1 sm:py-1.5 bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/30 rounded-full text-purple-300 text-[10px] sm:text-xs transition-colors"
                           >
                             {q}
                           </button>
@@ -1305,7 +1305,7 @@ What can I help with today?` }
 
               {/* Pillars Tab */}
               {activeTab === 'pillars' && (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3">
                   {PILLARS.map((pillar) => (
                     <motion.div
                       key={pillar.id}
