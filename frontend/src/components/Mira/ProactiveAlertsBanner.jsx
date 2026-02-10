@@ -151,9 +151,15 @@ const ProactiveAlertCard = ({ alert, onAskMira, onBookNow, onDismiss }) => {
         </div>
       </div>
       
-      {/* Expanded action buttons */}
+      {/* Expanded action buttons with slide-down animation */}
       {isExpanded && (
-        <div className="px-3 pb-3 pt-1 border-t border-white/10 animate-fadeIn">
+        <div 
+          className="px-3 pb-3 pt-1 border-t border-white/10"
+          style={{
+            animation: 'slideDownReveal 0.25s ease-out forwards',
+            transformOrigin: 'top'
+          }}
+        >
           <div className="flex gap-2">
             {/* Ask Mira button */}
             <button
@@ -197,6 +203,22 @@ const ProactiveAlertCard = ({ alert, onAskMira, onBookNow, onDismiss }) => {
               <span>Book Now</span>
             </button>
           </div>
+          
+          {/* Slide-down animation keyframes */}
+          <style jsx>{`
+            @keyframes slideDownReveal {
+              from {
+                opacity: 0;
+                max-height: 0;
+                transform: translateY(-8px);
+              }
+              to {
+                opacity: 1;
+                max-height: 100px;
+                transform: translateY(0);
+              }
+            }
+          `}</style>
         </div>
       )}
     </div>
