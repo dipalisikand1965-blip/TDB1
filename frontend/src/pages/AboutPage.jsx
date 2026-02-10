@@ -328,7 +328,7 @@ const AboutPage = () => {
                   <div className="absolute -bottom-8 left-4 right-4 bg-[#1a0a2e]/90 backdrop-blur-lg rounded-2xl p-4 border border-amber-400/30">
                     <Quote className="w-6 h-6 text-amber-400 mb-2" />
                     <p className="text-white/80 text-sm italic">
-                      "She didn't spray options. She picked the right one. She remembered what mattered."
+                      "The quiet force. The spirit behind the service."
                     </p>
                   </div>
                 </div>
