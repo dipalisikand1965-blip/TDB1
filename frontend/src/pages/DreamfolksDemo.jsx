@@ -1074,23 +1074,23 @@ What can I help with today?` }
         <div className="max-w-7xl mx-auto px-4 py-3 sm:py-4">
           <div className="flex items-center justify-between">
             {/* TDC Logo */}
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                <PawPrint className="w-6 h-6 text-white" />
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
+                <PawPrint className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               </div>
               <div>
-                <span className="text-white font-bold text-lg">thedoggycompany</span>
-                <span className="text-purple-400 text-xs block">Mira OS™ Demo</span>
+                <span className="text-white font-bold text-sm sm:text-lg">thedoggycompany</span>
+                <span className="text-purple-400 text-[10px] sm:text-xs block">Mira OS™ Demo</span>
               </div>
             </div>
 
-            {/* DreamFolks Badge - Subtle */}
-            <div className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full border border-white/10">
-              <span className="text-white/60 text-sm">Prepared for</span>
+            {/* DreamFolks Badge - Hidden on very small screens */}
+            <div className="hidden sm:flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-white/5 rounded-full border border-white/10">
+              <span className="text-white/60 text-xs sm:text-sm">Prepared for</span>
               <img 
                 src="https://customer-assets.emergentagent.com/job_2dad3d7e-c3ab-4896-a445-d39e2953ce1d/artifacts/omygtrey_image.png" 
                 alt="DreamFolks" 
-                className="h-6 object-contain"
+                className="h-5 sm:h-6 object-contain"
               />
             </div>
           </div>
