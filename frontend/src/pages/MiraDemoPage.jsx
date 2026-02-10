@@ -441,26 +441,37 @@ const MiraDemoPage = () => {
   // Detect if conversation is "complete" (Mira has provided assistance)
   // A complete flow = User asked → Mira responded with products/action → User acknowledged
   const detectConversationComplete = useCallback((history) => {
-    if (history.length < 2) return false;
+    if (history.length < 4) return false; // Need at least 4 messages (2 exchanges)
     
-    const lastMessages = history.slice(-4);
-    const hasUserMessage = lastMessages.some(m => m.type === 'user');
-    const hasMiraResponse = lastMessages.some(m => m.type === 'mira');
-    const hasMiraWithProducts = lastMessages.some(m => 
-      m.type === 'mira' && (m.showProducts || m.data?.response?.products?.length > 0)
+    const lastMessages = history.slice(-6);
+    const miraMessages = lastMessages.filter(m => m.type === 'mira');
+    const userMessages = lastMessages.filter(m => m.type === 'user');
+    
+    const hasMiraWithProducts = miraMessages.some(m => 
+      m.showProducts || m.data?.response?.products?.length > 0
     );
-    const hasMiraWithAction = lastMessages.some(m =>
-      m.type === 'mira' && (m.showConcierge || m.data?.nearby_places || m.data?.training_videos)
+    const hasMiraWithAction = miraMessages.some(m =>
+      m.showConcierge || m.data?.nearby_places || m.data?.training_videos
     );
     
-    // Complete if: Mira provided products/action AND user sent follow-up (thank you, ok, etc.)
-    if ((hasMiraWithProducts || hasMiraWithAction) && hasUserMessage) {
-      const lastUserMsg = lastMessages.filter(m => m.type === 'user').pop();
-      const acknowledgmentPhrases = ['thank', 'thanks', 'ok', 'okay', 'great', 'perfect', 'got it', 'nice', 'awesome', 'good', 'done', 'yes'];
-      const isAcknowledgment = acknowledgmentPhrases.some(p => 
-        (lastUserMsg?.content || '').toLowerCase().includes(p)
-      );
-      return isAcknowledgment;
+    // Only mark complete if user EXPLICITLY confirms (not just "ok" or "thanks")
+    // These are explicit confirmation phrases
+    if ((hasMiraWithProducts || hasMiraWithAction) && userMessages.length > 0) {
+      const lastUserMsg = userMessages[userMessages.length - 1];
+      const userText = (lastUserMsg?.content || '').toLowerCase();
+      
+      // Strong confirmation phrases - user is clearly done
+      const strongConfirmations = [
+        'send to concierge', 'book this', 'book it', "let's do it", "lets do it",
+        'go ahead', 'proceed', 'confirm', 'finalize', 'order this', 'order it',
+        "i'll take", "i want this", 'perfect thanks', 'that\'s all', 'thats all',
+        'done for now', 'all set', 'sounds good book', 'yes book', 'yes please book'
+      ];
+      
+      const isStrongConfirmation = strongConfirmations.some(p => userText.includes(p));
+      
+      // Only complete on strong confirmation, not casual acknowledgments
+      return isStrongConfirmation;
     }
     
     return false;
