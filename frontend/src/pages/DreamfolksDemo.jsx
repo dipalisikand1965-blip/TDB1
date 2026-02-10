@@ -1050,8 +1050,6 @@ const formatInlineMarkdown = (text) => {
 };
 
 export default function DreamfolksDemo() {
-  const [activeTab, setActiveTab] = useState('chat');
-  const [selectedPillar, setSelectedPillar] = useState(null);
   const [chatMessages, setChatMessages] = useState([
     { role: 'mira', content: `Hey! I'm Mira 👋
 
