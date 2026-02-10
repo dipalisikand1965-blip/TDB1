@@ -3006,6 +3006,27 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
             "show_travel_results": show_travel_results,  # Signal frontend to fetch hotels
             
             # ═══════════════════════════════════════════════════════════════════════════
+            # CONVERSATION INTELLIGENCE - For pronoun resolution & follow-up context
+            # Frontend should pass these back on next message for continuity
+            # ═══════════════════════════════════════════════════════════════════════════
+            "intelligence": {
+                "pronoun_resolved": resolution_info.get("pronoun_resolved", False),
+                "follow_up_detected": resolution_info.get("follow_up_detected", False),
+                "resolved_item": resolution_info.get("resolved_item"),
+                "context_used": resolution_info.get("context_used", False),
+                "original_input": original_input,
+                "enhanced_input": enhanced_input if resolution_info.get("context_used") else None,
+                # For next request - frontend should track this
+                "last_search_context": {
+                    "query": original_input,
+                    "pillar": current_pillar,
+                    "intent": intent,
+                    "products_count": len(final_products),
+                    "services_count": len(services_from_db)
+                } if len(final_products) > 0 or len(services_from_db) > 0 else None
+            },
+            
+            # ═══════════════════════════════════════════════════════════════════════════
             # CONCIERGE CONFIRMATION - Clear message when service request received
             # ═══════════════════════════════════════════════════════════════════════════
             "concierge_confirmation": concierge_confirmation,  # Banner with ticket confirmation
