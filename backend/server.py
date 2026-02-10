@@ -1826,6 +1826,9 @@ from smart_routes import router as smart_router
 # Import Mira AI Concierge System
 from mira_routes import router as mira_router, set_mira_db
 
+# Import Mira Streaming Service (Response Streaming via SSE)
+from mira_streaming import router as mira_streaming_router
+
 # Import Mira Proactive System (Alerts, Reminders)
 from mira_proactive import router as mira_proactive_router, set_proactive_db
 
