@@ -3030,6 +3030,13 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
         is_seeking_advice = any(kw in user_input_lower for kw in advisory_keywords)
         
         if is_advisory_response and is_seeking_advice:
+            # Tip card icons
+            tip_icons = {
+                "meal_plan": "🍽️", "travel_tips": "✈️", "grooming_routine": "✨",
+                "training_tips": "🎓", "health_advice": "💊", "exercise_routine": "🏃",
+                "checklist": "✅", "reminder": "⏰", "guide": "📖", "general": "💡"
+            }
+            
             # Determine tip card type
             tip_card_type = "general"
             if "meal" in user_input_lower or "food" in user_input_lower or "diet" in user_input_lower:
@@ -3053,7 +3060,7 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                 "type": tip_card_type,
                 "title": f"{pet_name}'s {tip_card_type.replace('_', ' ').title()}",
                 "content": understanding.get("message", "")[:500],
-                "icon": TIP_CARD_ICONS.get(tip_card_type, "💡"),
+                "icon": tip_icons.get(tip_card_type, "💡"),
                 "pillar": current_pillar or "general",
                 "for_concierge": True,
                 "pet_name": pet_name
