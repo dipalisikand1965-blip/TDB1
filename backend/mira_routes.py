@@ -11771,7 +11771,8 @@ async def get_dog_friendly_places(pet_id: str, city: str = "Mumbai", limit: int 
 async def get_personalization_stats(pet_id: str):
     """
     Get personalization stats for the ticker.
-    Shows how well Mira knows this pet.
+    Shows everything Mira knows about this pet - their soul, preferences, breed traits.
+    This powers the dynamic "Soul Knowledge Ticker" in the UI.
     """
     db = get_db()
     
@@ -11781,26 +11782,198 @@ async def get_personalization_stats(pet_id: str):
             "name": 1, "overall_score": 1, "soul_answers": 1, 
             "favorites": 1, "allergies": 1, "personality": 1,
             "breed": 1, "birthday": 1, "gotcha_day": 1,
-            "vaccinations": 1, "memories": 1, "_id": 0
+            "vaccinations": 1, "preferences": 1, "health": 1,
+            "doggy_soul_answers": 1, "soul": 1, "_id": 0
         }
     )
     
     if not pet:
-        return {"success": False, "stats": []}
+        return {"success": False, "stats": [], "knowledge_items": []}
     
     pet_name = pet.get("name", "your pet")
     soul_score = pet.get("overall_score", 0)
+    breed = pet.get("breed", "")
+    
+    # Also fetch relationship memories for this pet
+    memories = await db.mira_memories.find(
+        {"pet_id": pet_id}
+    ).sort("created_at", -1).limit(20).to_list(length=20)
     
     stats = []
+    knowledge_items = []  # NEW: Rich knowledge items for rolling ticker
     
-    # Soul Score
+    # Helper to add knowledge item
+    def add_knowledge(icon, text, category, priority=5, actionable=False, action_hint=None):
+        knowledge_items.append({
+            "icon": icon,
+            "text": text,
+            "category": category,  # soul, diet, health, activity, personality, memory, breed
+            "priority": priority,  # 1-10, higher = more important
+            "actionable": actionable,
+            "action_hint": action_hint
+        })
+    
+    # ═══════════════════════════════════════════════════════════════════
+    # SOUL SCORE - The core metric
+    # ═══════════════════════════════════════════════════════════════════
     stats.append({
         "icon": "💜",
         "text": f"Mira knows {pet_name} {int(soul_score)}%",
         "type": "soul"
     })
+    add_knowledge("💜", f"Soul Score: {int(soul_score)}%", "soul", 10)
     
-    # Favorites
+    # If soul score is low, encourage completing it
+    if soul_score < 50:
+        add_knowledge("✨", f"Help Mira know {pet_name} better", "soul", 9, True, "Answer soul questions")
+    
+    # ═══════════════════════════════════════════════════════════════════
+    # DOGGY SOUL ANSWERS - Deep personalization data
+    # ═══════════════════════════════════════════════════════════════════
+    doggy_soul = pet.get("doggy_soul_answers") or {}
+    
+    # Favorite treats
+    if doggy_soul.get("favorite_treats"):
+        treats = doggy_soul["favorite_treats"]
+        if isinstance(treats, list) and treats:
+            add_knowledge("🦴", f"{pet_name} loves {treats[0]}", "diet", 8)
+        elif isinstance(treats, str) and treats:
+            add_knowledge("🦴", f"{pet_name} loves {treats}", "diet", 8)
+    
+    # Food preferences
+    if doggy_soul.get("food_preferences"):
+        food = doggy_soul["food_preferences"]
+        if isinstance(food, str) and food:
+            add_knowledge("🍖", f"Prefers {food}", "diet", 7)
+    
+    # Activity level / exercise
+    if doggy_soul.get("activity_level"):
+        level = doggy_soul["activity_level"]
+        icons = {"high": "🏃", "medium": "🚶", "low": "😴"}
+        add_knowledge(icons.get(level.lower(), "🐕"), f"{pet_name} has {level} energy", "activity", 7)
+    
+    if doggy_soul.get("favorite_activities"):
+        activities = doggy_soul["favorite_activities"]
+        if isinstance(activities, list) and activities:
+            add_knowledge("⚡", f"Loves {activities[0]}", "activity", 7)
+        elif isinstance(activities, str) and activities:
+            add_knowledge("⚡", f"Loves {activities}", "activity", 7)
+    
+    # Walking preferences
+    if doggy_soul.get("walk_duration"):
+        duration = doggy_soul["walk_duration"]
+        add_knowledge("🚶", f"Enjoys {duration} walks", "activity", 6)
+    
+    # Personality traits from describe_3_words
+    if doggy_soul.get("describe_3_words"):
+        words = doggy_soul["describe_3_words"]
+        if isinstance(words, str):
+            traits = [w.strip() for w in words.split(",")][:2]
+            for trait in traits:
+                if trait:
+                    add_knowledge("✨", f"{pet_name} is {trait}", "personality", 7)
+        elif isinstance(words, list) and words:
+            for trait in words[:2]:
+                if trait:
+                    add_knowledge("✨", f"{pet_name} is {trait}", "personality", 7)
+    
+    # Social behavior
+    if doggy_soul.get("behavior_with_dogs"):
+        behavior = doggy_soul["behavior_with_dogs"]
+        add_knowledge("🐕", f"{behavior} around other dogs", "personality", 6)
+    
+    if doggy_soul.get("behavior_with_strangers"):
+        behavior = doggy_soul["behavior_with_strangers"]
+        add_knowledge("👥", f"{behavior} with strangers", "personality", 5)
+    
+    # Health conditions
+    if doggy_soul.get("health_conditions"):
+        conditions = doggy_soul["health_conditions"]
+        if isinstance(conditions, list) and conditions:
+            add_knowledge("🏥", f"Tracking {conditions[0]}", "health", 8)
+        elif isinstance(conditions, str) and conditions and conditions.lower() != "none":
+            add_knowledge("🏥", f"Tracking {conditions}", "health", 8)
+    
+    # Allergies / sensitivities
+    if doggy_soul.get("allergies"):
+        allergies = doggy_soul["allergies"]
+        if isinstance(allergies, list) and allergies:
+            add_knowledge("⚠️", f"Avoiding {allergies[0]} for {pet_name}", "health", 9)
+        elif isinstance(allergies, str) and allergies and allergies.lower() != "none":
+            add_knowledge("⚠️", f"Avoiding {allergies}", "health", 9)
+    
+    # Anxiety triggers
+    if doggy_soul.get("anxiety_triggers"):
+        triggers = doggy_soul["anxiety_triggers"]
+        if isinstance(triggers, list) and triggers:
+            add_knowledge("💆", f"Sensitive to {triggers[0]}", "personality", 7)
+        elif isinstance(triggers, str) and triggers and triggers.lower() != "none":
+            add_knowledge("💆", f"Sensitive to {triggers}", "personality", 7)
+    
+    # Sleep habits
+    if doggy_soul.get("sleep_location"):
+        location = doggy_soul["sleep_location"]
+        add_knowledge("😴", f"Sleeps {location}", "personality", 4)
+    
+    # Travel preferences
+    if doggy_soul.get("usual_travel"):
+        travel = doggy_soul["usual_travel"]
+        add_knowledge("🚗", f"Travels by {travel}", "activity", 5)
+    
+    # ═══════════════════════════════════════════════════════════════════
+    # BREED-SPECIFIC KNOWLEDGE
+    # ═══════════════════════════════════════════════════════════════════
+    if breed:
+        add_knowledge("🐕", f"{pet_name} the {breed}", "breed", 6)
+        
+        # Fetch breed-specific traits
+        try:
+            from breed_knowledge import get_breed_knowledge
+            breed_info = get_breed_knowledge(breed)
+            if breed_info:
+                if breed_info.get("exercise_needs"):
+                    add_knowledge("🏃", f"{breed}s need {breed_info['exercise_needs']} exercise", "breed", 5)
+                if breed_info.get("grooming_frequency"):
+                    add_knowledge("✂️", f"{breed}s need {breed_info['grooming_frequency']} grooming", "breed", 5)
+                if breed_info.get("temperament"):
+                    temps = breed_info["temperament"][:1]  # First trait
+                    for temp in temps:
+                        add_knowledge("💫", f"{breed}s are naturally {temp}", "breed", 4)
+        except Exception as e:
+            logger.debug(f"Could not fetch breed knowledge: {e}")
+    
+    # ═══════════════════════════════════════════════════════════════════
+    # RELATIONSHIP MEMORIES - What Mira has learned
+    # ═══════════════════════════════════════════════════════════════════
+    if memories:
+        add_knowledge("📝", f"{len(memories)} memories with {pet_name}", "memory", 6)
+        
+        # Add specific memories as knowledge items
+        for mem in memories[:5]:  # Top 5 recent memories
+            summary = mem.get("summary") or mem.get("content", "")
+            topic = mem.get("topic", "general")
+            if summary and len(summary) > 10:
+                # Truncate long summaries
+                display_text = summary[:50] + "..." if len(summary) > 50 else summary
+                icon = {
+                    "diet": "🍖", "food": "🍖", "health": "🏥", 
+                    "grooming": "✂️", "travel": "✈️", "birthday": "🎂",
+                    "activity": "⚡", "behavior": "🐕"
+                }.get(topic.lower(), "💭")
+                add_knowledge(icon, display_text, "memory", 5)
+    
+    # ═══════════════════════════════════════════════════════════════════
+    # SPECIAL DATES
+    # ═══════════════════════════════════════════════════════════════════
+    if pet.get("birthday"):
+        add_knowledge("🎂", f"Remembering {pet_name}'s birthday", "soul", 7)
+    
+    if pet.get("gotcha_day"):
+        add_knowledge("💜", f"Celebrating {pet_name}'s gotcha day", "soul", 7)
+    
+    # ═══════════════════════════════════════════════════════════════════
+    # LEGACY STATS (for backward compatibility)
+    # ═══════════════════════════════════════════════════════════════════
     favorites = pet.get("favorites", {})
     if favorites.get("treats"):
         stats.append({
@@ -11809,7 +11982,6 @@ async def get_personalization_stats(pet_id: str):
             "type": "favorite"
         })
     
-    # Allergies
     allergies = pet.get("allergies", [])
     if allergies:
         stats.append({
@@ -11818,7 +11990,6 @@ async def get_personalization_stats(pet_id: str):
             "type": "allergy"
         })
     
-    # Personality traits
     personality = pet.get("personality", [])
     if personality:
         stats.append({
@@ -11827,8 +11998,6 @@ async def get_personalization_stats(pet_id: str):
             "type": "personality"
         })
     
-    # Breed
-    breed = pet.get("breed", "")
     if breed:
         stats.append({
             "icon": "🐕",
@@ -11836,7 +12005,6 @@ async def get_personalization_stats(pet_id: str):
             "type": "breed"
         })
     
-    # Birthday
     if pet.get("birthday"):
         stats.append({
             "icon": "🎂",
@@ -11844,20 +12012,17 @@ async def get_personalization_stats(pet_id: str):
             "type": "birthday"
         })
     
-    # Memories count
-    memories = pet.get("memories", [])
-    if memories:
-        stats.append({
-            "icon": "📝",
-            "text": f"{len(memories)} memories with {pet_name}",
-            "type": "memories"
-        })
+    # Sort knowledge items by priority (highest first)
+    knowledge_items.sort(key=lambda x: x.get("priority", 5), reverse=True)
     
     return {
         "success": True,
         "pet_name": pet_name,
         "soul_score": soul_score,
-        "stats": stats
+        "stats": stats,  # Legacy format
+        "knowledge_items": knowledge_items,  # NEW: Rich rolling ticker data
+        "total_knowledge_points": len(knowledge_items),
+        "encourage_soul_completion": soul_score < 50
     }
 
 
