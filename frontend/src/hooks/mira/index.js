@@ -9,12 +9,14 @@
  * - Vault/Picks management
  * - Session management
  * - Chat helpers (input preprocessing, mode detection, step detection, API helpers)
+ * - Streaming chat (SSE response streaming)
  */
 
 export { default as useVoice } from './useVoice';
 export { default as usePet, DEMO_PET, ALL_DEMO_PETS } from './usePet';
 export { default as useVault } from './useVault';
 export { default as useSession } from './useSession';
+export { default as useStreamingChat } from './useStreamingChat';
 export { 
   default as useChat,
   // Detection helpers
