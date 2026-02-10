@@ -3464,18 +3464,19 @@ const MiraDemoPage = () => {
                   alerts={proactiveAlerts.smartAlerts}
                   criticalCount={proactiveAlerts.criticalCount || 0}
                   maxVisible={2}
-                  onAlertAction={(alert) => {
-                    // Handle alert CTA - send as message to Mira
-                    const actionMessages = {
-                      'book_vet_vaccination': `I need to schedule ${pet.name}'s vaccination`,
-                      'book_grooming': `Book a grooming appointment for ${pet.name}`,
-                      'celebrate_birthday': `Let's celebrate ${pet.name}'s birthday!`,
-                      'plan_birthday_party': `Help me plan ${pet.name}'s birthday party`,
-                      'order_birthday_cake': `Order a birthday cake for ${pet.name}`
-                    };
-                    const message = actionMessages[alert.cta_action] || alert.message;
+                  onAskMira={(message, alert) => {
+                    // "Ask Mira" - Start a conversation about this reminder
                     setQuery(message);
-                    // Use setTimeout to ensure state is updated before submit
+                    setTimeout(() => {
+                      handleSubmit({ preventDefault: () => {} });
+                    }, 100);
+                  }}
+                  onBookNow={(request, alert) => {
+                    // "Book Now" - Send directly to Concierge
+                    const conciergeMessage = `Please help me book: ${request.title}. Details: ${request.details}`;
+                    setQuery(conciergeMessage);
+                    // Mark as service request for direct concierge handling
+                    setIsServiceRequest(true);
                     setTimeout(() => {
                       handleSubmit({ preventDefault: () => {} });
                     }, 100);
