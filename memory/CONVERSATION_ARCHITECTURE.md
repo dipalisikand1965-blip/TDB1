@@ -452,23 +452,27 @@ Mira: [SUMMARIZING] "Wonderful! I'm sending this plan
 # ✅ IMPLEMENTATION CHECKLIST
 
 ## Backend Changes
+- [x] Silent ticket creation on service intents
+- [x] Concierge confirmation only on explicit conclusion
+- [x] No invented place names (strict prompt rule)
 - [ ] Add `conversation_state` to response
-- [ ] Add `handoff_summary` generator
-- [ ] Add `confirmation_required` flag
 - [ ] Add `tip_card` generator for advice
 
 ## Frontend Changes
-- [ ] State machine implementation
-- [ ] Summary card component
-- [ ] Handoff preview component
-- [ ] Confirmation buttons (standardized)
-- [ ] Tip card display
+- [x] State machine (partial - needs full implementation)
+- [x] Summary card component (HandoffSummary.jsx)
+- [x] Confirmation buttons (Quick Replies)
+- [x] Picks indicator with animated glow
+- [x] Personalized handoff banner
+- [x] 5-minute inactivity archive
+- [ ] Full state machine implementation
+- [ ] Tip card display in vault
 
 ## States to Track
-- [ ] Current conversation state
-- [ ] Pending confirmation items
-- [ ] Curated picks (not yet shown)
-- [ ] Handoff decision (yes/no/pending)
+- [x] Current conversation state (partial)
+- [x] Pending confirmation items (handoffSummary)
+- [x] Curated picks (miraPicks.hasNew)
+- [x] Handoff decision (handoffSummary flow)
 
 ---
 
