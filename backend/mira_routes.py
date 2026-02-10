@@ -3125,31 +3125,60 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
         # ═══════════════════════════════════════════════════════════════════════════
         # TIP CARD GENERATION - For advisory responses without products
         # "Like Mira summarizing advice into a card that can go to Concierge®"
-        # Generate tip cards even for clarifying questions - user might want to save
+        # Uses conversation intelligence module for better detection
         # ═══════════════════════════════════════════════════════════════════════════
         mira_message_text = response_data.get("response", {}).get("message", "") or ""
         is_advisory_response = len(final_products) == 0 and len(mira_message_text) > 150
-        advisory_keywords = ["meal plan", "diet", "routine", "schedule", "tips", "advice", "guide", 
-                           "recommend", "suggest", "help with", "how to", "should", "would recommend",
-                           "create", "plan", "healthy"]
-        user_input_lower = request.input.lower() if request.input else ""
         
-        # Check both current input AND conversation history for advisory context
-        conversation_context = " ".join([
-            msg.get("content", "").lower() 
-            for msg in (request.conversation_history or [])[-3:]  # Last 3 messages
-        ])
-        full_context = user_input_lower + " " + conversation_context
+        # Use intelligence module for tip card detection (more comprehensive)
+        should_tip, detected_tip_type = should_generate_tip_card(
+            user_input=request.input or "",
+            intent=intent,
+            conversation_history=conversation_history
+        )
         
-        is_seeking_advice = any(kw in full_context for kw in advisory_keywords)
+        # Fallback to original logic if intelligence module doesn't detect
+        if not should_tip:
+            advisory_keywords = ["meal plan", "diet", "routine", "schedule", "tips", "advice", "guide", 
+                               "recommend", "suggest", "help with", "how to", "should", "would recommend",
+                               "create", "plan", "healthy"]
+            user_input_lower = request.input.lower() if request.input else ""
+            
+            # Check both current input AND conversation history for advisory context
+            conversation_context = " ".join([
+                msg.get("content", "").lower() 
+                for msg in (request.conversation_history or [])[-3:]  # Last 3 messages
+            ])
+            full_context = user_input_lower + " " + conversation_context
+            
+            is_seeking_advice = any(kw in full_context for kw in advisory_keywords)
+            
+            # Also detect food-related follow-ups for meal plan conversations
+            food_words = ["eggs", "chicken", "carrots", "vegetables", "rice", "meat", "fish", 
+                         "breakfast", "lunch", "dinner", "morning", "night", "feed", "eating"]
+            is_food_followup = any(word in user_input_lower for word in food_words) and \
+                              any(kw in conversation_context for kw in ["meal", "food", "diet", "feeding", "eat"])
+            
+            should_tip = is_advisory_response and (is_seeking_advice or is_food_followup)
+            
+            # Determine tip card type based on full context
+            if should_tip:
+                if any(w in full_context for w in ["meal", "food", "diet", "eat", "feeding", "breakfast", "lunch", "dinner"]):
+                    detected_tip_type = "meal_plan"
+                elif any(w in full_context for w in ["travel", "trip", "vacation", "holiday"]):
+                    detected_tip_type = "travel_tips"
+                elif any(w in full_context for w in ["groom", "bath", "brush"]):
+                    detected_tip_type = "grooming_routine"
+                elif any(w in full_context for w in ["train", "behavior", "obedience"]):
+                    detected_tip_type = "training_tips"
+                elif any(w in full_context for w in ["health", "vet", "doctor", "medicine"]):
+                    detected_tip_type = "health_advice"
+                elif any(w in full_context for w in ["exercise", "walk", "fit", "weight"]):
+                    detected_tip_type = "exercise_routine"
+                else:
+                    detected_tip_type = "general"
         
-        # Also detect food-related follow-ups for meal plan conversations
-        food_words = ["eggs", "chicken", "carrots", "vegetables", "rice", "meat", "fish", 
-                     "breakfast", "lunch", "dinner", "morning", "night", "feed", "eating"]
-        is_food_followup = any(word in user_input_lower for word in food_words) and \
-                          any(kw in conversation_context for kw in ["meal", "food", "diet", "feeding", "eat"])
-        
-        if is_advisory_response and (is_seeking_advice or is_food_followup):
+        if should_tip and is_advisory_response:
             # Tip card icons
             tip_icons = {
                 "meal_plan": "🍽️", "travel_tips": "✈️", "grooming_routine": "✨",
@@ -3157,21 +3186,7 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                 "checklist": "✅", "reminder": "⏰", "guide": "📖", "general": "💡"
             }
             
-            # Determine tip card type based on full context (not just current message)
-            tip_card_type = "general"
-            if any(w in full_context for w in ["meal", "food", "diet", "eat", "feeding", "breakfast", "lunch", "dinner"]):
-                tip_card_type = "meal_plan"
-            elif any(w in full_context for w in ["travel", "trip", "vacation", "holiday"]):
-                tip_card_type = "travel_tips"
-            elif any(w in full_context for w in ["groom", "bath", "brush"]):
-                tip_card_type = "grooming_routine"
-            elif any(w in full_context for w in ["train", "behavior", "obedience"]):
-                tip_card_type = "training_tips"
-            elif any(w in full_context for w in ["health", "vet", "doctor", "medicine"]):
-                tip_card_type = "health_advice"
-            elif any(w in full_context for w in ["exercise", "walk", "fit", "weight"]):
-                tip_card_type = "exercise_routine"
-            
+            tip_card_type = detected_tip_type or "general"
             pet_name = request.pet_context.get("name", "your pet") if request.pet_context else "your pet"
             breed = request.pet_context.get("breed", "") if request.pet_context else ""
             
