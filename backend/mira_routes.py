@@ -3383,7 +3383,36 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                 elif execution_type == "CONCIERGE":
                     interaction_type = "service_booked"
                 
-                await increment_soul_score_on_interaction(request.pet_context.get("id"), interaction_type)
+                # Detect learning type from the conversation
+                user_input_lower = (request.input or "").lower()
+                learning_type = None
+                if any(w in user_input_lower for w in ["allergic", "allergy", "sensitive", "sensitivity"]):
+                    learning_type = "allergy"
+                elif any(w in user_input_lower for w in ["scared", "afraid", "fear", "anxious", "anxiety"]):
+                    learning_type = "fear"
+                elif any(w in user_input_lower for w in ["loves", "favorite", "favourite", "prefers"]):
+                    learning_type = "preference"
+                elif any(w in user_input_lower for w in ["usually", "every day", "routine", "always"]):
+                    learning_type = "routine"
+                elif any(w in user_input_lower for w in ["medical", "condition", "diagnosis", "medication"]):
+                    learning_type = "medical"
+                elif any(w in user_input_lower for w in ["behavior", "behaviour", "habit", "does this"]):
+                    learning_type = "behavior"
+                
+                # Calculate engagement depth from conversation history
+                conv_history = request.conversation_history or []
+                engagement_depth = min(len(conv_history), 8) if conv_history else 1
+                
+                # Get current pillar
+                current_pillar = data.current_pillar or intent or ""
+                
+                await increment_soul_score_on_interaction(
+                    pet_id=request.pet_context.get("id"), 
+                    interaction_type=interaction_type,
+                    pillar=current_pillar,
+                    learning_type=learning_type,
+                    engagement_depth=engagement_depth
+                )
                 
                 # Fetch updated soul score for real-time display
                 db = get_db()
