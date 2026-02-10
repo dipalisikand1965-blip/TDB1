@@ -3623,7 +3623,9 @@ Would you like me to find vets or pet pharmacies near you, or shall I have your 
                 "senior_care": "Senior Care Tips",
                 "senior_diet": "Senior Diet Guide",
                 "senior_mobility": "Joint & Mobility Care",
-                "calming_tips": "Calming Tips"
+                "calming_tips": "Calming Tips",
+                "safety_tips": "Safety & Privacy Tips",
+                "home_tips": "Home Setup Tips"
             }
             
             tip_card_type = detected_tip_type or "general"
