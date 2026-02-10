@@ -138,7 +138,7 @@ const SoulKnowledgeTicker = ({
           data-testid="soul-score-badge"
         >
           <Brain className="w-3.5 h-3.5" />
-          <span className="score-value">{displayScore}%</span>
+          <span className="score-value">{Math.round(displayScore)}%</span>
           <span className="score-label">SOUL</span>
         </div>
         
