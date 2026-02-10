@@ -712,24 +712,33 @@ const findBestResponse = (query) => {
   
   return CURATED_RESPONSES['default'];
 };
+
+// Pre-built test scenarios
+const TEST_SCENARIOS = [
   { id: 1, query: "Dollar hasn't been eating well lately", 
     intent: "Implicit: appetite_loss", pillar: "Care", urgency: "High",
-    icon: "🍽️", response: "I sense something might be off with Dollar's appetite..." },
+    icon: "🍽️" },
   { id: 2, query: "Book grooming and order some treats", 
     intent: "Multi-intent: grooming + shop", pillar: "Groom + Shop", urgency: "Normal",
-    icon: "✂️🦴", response: "I can help with both! Let me find grooming slots and lamb treats..." },
+    icon: "✂️🦴" },
   { id: 3, query: "I'm traveling to Goa next week with Dollar", 
     intent: "Travel planning", pillar: "Travel", urgency: "Normal",
-    icon: "✈️", response: "Exciting trip! Let me check pet-friendly flights and hotels..." },
+    icon: "✈️" },
   { id: 4, query: "Dollar's birthday is on March 15th", 
     intent: "Celebration planning", pillar: "Celebrate", urgency: "Low",
-    icon: "🎂", response: "Dollar turns 4! Let me plan something special..." },
+    icon: "🎂" },
   { id: 5, query: "He's been vomiting since morning", 
     intent: "Emergency detection", pillar: "Emergency", urgency: "Critical",
-    icon: "🚨", response: "This sounds urgent. Let me connect you to emergency care..." },
-  { id: 6, query: "Show me hypoallergenic food options", 
+    icon: "🚨" },
+  { id: 6, query: "Show me chicken-free food options", 
     intent: "Product search + allergy aware", pillar: "Shop", urgency: "Normal",
-    icon: "🥗", response: "Remembering Dollar's chicken allergy, here are safe options..." },
+    icon: "🥗" },
+  { id: 7, query: "Dollar is scratching a lot lately",
+    intent: "Implicit: skin_issue", pillar: "Care", urgency: "Medium",
+    icon: "🐾" },
+  { id: 8, query: "I need pet insurance for Dollar",
+    intent: "Insurance inquiry", pillar: "Protect", urgency: "Low",
+    icon: "🛡️" },
 ];
 
 // B2B Stats
