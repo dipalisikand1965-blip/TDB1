@@ -4,7 +4,7 @@ import {
   MessageCircle, Sparkles, Heart, Shield, Plane, Home, Scissors, 
   GraduationCap, Stethoscope, ShoppingBag, PartyPopper, BookOpen,
   Users, FileText, Dumbbell, PawPrint, Send, Brain, Zap, Eye, 
-  Clock, Star, TrendingUp, Mail, Calendar, Building2, CreditCard, Check
+  Clock, Star, TrendingUp, Mail, Calendar, Building2, CreditCard, Check, Play
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 
