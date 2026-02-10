@@ -511,13 +511,64 @@ curl -s https://mira-os-build.preview.emergentagent.com/api/health
 
 ---
 
-### P0 - Remaining Issues (From User)
+### P0 - Remaining Issues (UPDATED Feb 10, 2026 End of Session)
 
-1. **Voice on Tiles** - Voice plays when scenario tiles first appear
-   - Status: NOT REPRODUCED - No voice code found in DreamfolksDemo.jsx
-   - Need clarification: Which page? What triggers the voice?
+1. **Tip Card Type Detection** - STILL SHOWING WRONG TYPE
+   - Status: FIX APPLIED - Needs verification
+   - Problem: "Care routines" showing as "Meal Plan"
+   - Fix: Reordered detection in mira_routes.py - care/routine checks BEFORE meal
 
-2. **Concierge® Button** - Clicking "concierge" button should open ticket form
+2. **Voice Overflow** - Voice plays when tiles clicked
+   - Status: FIX APPLIED - Needs testing
+   - Fix: Removed duplicate skipVoiceOnNextResponseRef, using skipNextVoice() from hook
+   
+3. **Location Search Flow** - Mira doesn't wait for user input
+   - Status: NOT STARTED
+   - Problem: Asks "which city?" but immediately shows results without waiting
+
+4. **Soul Score Sync** - API returns old score
+   - Status: PARTIALLY FIXED
+   - Issue: Pet ID format mismatch (PET-XXX vs pet-xxx)
+
+5. **Bold Text Formatting** - Not appearing in pink consistently
+   - Status: PROMPT UPDATED - Needs verification
+
+---
+
+### Session 2 Additional Features Completed
+
+1. **Soul Score Augmentation** ✅
+   - Pillar-based scoring (+1.0 to +3.0 by pillar)
+   - Learning-based scoring (+0.5 to +3.0 for allergies, preferences, fears)
+   - Engagement depth multipliers (1.0x to 2.5x based on conversation turns)
+   - Milestone system (Getting to Know You → Soul Bonded)
+
+2. **Google Places API** ✅
+   - Added 5 new search functions: groomers, photographers, shelters, boarding, trainers
+   - Frontend displays places in MiraTray with appropriate icons
+
+3. **Notification Sounds** ✅
+   - notificationSounds.js with picks, tip, concierge bell sounds
+   - iOS/Android compatible via Web Audio API
+
+4. **Learn Button Notification** ✅
+   - Golden pulse animation when new training videos available
+   - Badge with video count
+   - Clears when Learn is opened
+
+5. **Emergency Modal Fix** ✅
+   - Removed generic "help" from emergency keywords
+
+6. **YouTube Video Relevance** ✅
+   - Diet/health conversations no longer show training videos
+   - Topic-specific video search mapping
+
+---
+
+### Test Credentials
+- Email: dipali@clubconcierge.in
+- Password: test123
+- Note: Pet IDs in DB are lowercase (pet-xxxxx not PET-XXXXX)
    - Status: NOT STARTED
    - Blocked: Need to identify which button and where
 
