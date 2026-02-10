@@ -501,9 +501,9 @@ const Home = () => {
                 viewport={{ once: true }}
                 className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6"
               >
-                <h3 className="text-white/50 text-sm uppercase tracking-wider mb-4">The Old Way</h3>
+                <h3 className="text-white/50 text-sm uppercase tracking-wider mb-4">Others</h3>
                 <ul className="space-y-3">
-                  {['Generic pet food', 'Random vet visits', 'No travel planning', 'Scattered information', 'Figure it out yourself'].map((item, i) => (
+                  {['Forgets your conversation the next day', '"What breed is your pet again?"', 'Show me cheaper... shows random results', 'Book that one... "which one?"', 'Forms, tickets, waiting, frustration'].map((item, i) => (
                     <li key={i} className="flex items-center gap-3 text-white/40">
                       <div className="w-2 h-2 rounded-full bg-white/20" />
                       {item}
@@ -518,14 +518,14 @@ const Home = () => {
                 viewport={{ once: true }}
                 className="bg-gradient-to-br from-purple-900/50 to-pink-900/50 backdrop-blur-sm border border-purple-500/20 rounded-2xl p-6"
               >
-                <h3 className="text-purple-400 text-sm uppercase tracking-wider mb-4">The Mira Way</h3>
+                <h3 className="text-purple-400 text-sm uppercase tracking-wider mb-4">Mira</h3>
                 <ul className="space-y-3">
                   {[
-                    'Personalized nutrition for their breed & age',
-                    'Health tracking with smart reminders',
-                    'Pet-friendly travel anywhere in the world',
-                    'One dashboard for everything',
-                    'A concierge team that handles it all'
+                    'Remembers every conversation, forever',
+                    'Knows their personality, fears, and joys',
+                    '"Show me cheaper" - I know exactly what we discussed',
+                    '"Book that one" - I know which one you mean',
+                    'Real humans who act on what I know'
                   ].map((item, i) => (
                     <li key={i} className="flex items-center gap-3 text-white">
                       <Check className="w-5 h-5 text-green-400 flex-shrink-0" />
