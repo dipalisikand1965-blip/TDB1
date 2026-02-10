@@ -3636,6 +3636,9 @@ const MiraDemoPage = () => {
             miraResponse={{
               products: miraPicks.products,
               services: miraPicks.services,
+              places: miraPicks.places,
+              nearby_places: miraPicks.places ? { places: miraPicks.places, type: miraPicks.placesType } : null,
+              tip_card: miraPicks.tipCard,
               response: activeVaultData,
               pillar: currentPillar,
               ...(activeVaultData || {})
