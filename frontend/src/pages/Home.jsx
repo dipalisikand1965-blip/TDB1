@@ -538,6 +538,161 @@ const Home = () => {
           </div>
         </section>
 
+        {/* Heritage & Concierge® Section - The Human Hands */}
+        <section className="py-16 md:py-24 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-amber-900/10 to-transparent" />
+          
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-12"
+            >
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500/20 border border-amber-400/30 rounded-full mb-6">
+                <span className="text-amber-300 text-sm font-medium">20+ Years of Unconditional Service</span>
+              </div>
+              
+              <h2 className="text-2xl md:text-4xl font-black text-white mb-4">
+                Unconditional Love Deserves{' '}
+                <span className="bg-gradient-to-r from-amber-300 to-pink-300 bg-clip-text text-transparent">
+                  Human Hands
+                </span>
+              </h2>
+              
+              <p className="text-purple-200 text-base md:text-lg max-w-3xl mx-auto leading-relaxed">
+                Mira is not just technology. She is the culmination of two decades of 
+                <span className="text-white font-semibold"> Concierge®</span> heritage — 
+                real humans who have been caring for families, solving problems, and making magic happen 
+                since before AI existed.
+              </p>
+            </motion.div>
+            
+            {/* Heritage Timeline - Mobile */}
+            <div className="md:hidden space-y-6">
+              {[
+                { 
+                  name: 'LesConcierges', 
+                  year: '2003',
+                  desc: 'Where it began. Premium concierge services for those who value time.',
+                  icon: '🏛️'
+                },
+                { 
+                  name: 'Club Concierge®', 
+                  year: '2010',
+                  desc: 'Membership elevated. 24/7 human support for life\'s moments.',
+                  icon: '👑'
+                },
+                { 
+                  name: 'The Doggy Bakery', 
+                  year: '2018',
+                  desc: 'Where pets became family. Fresh food, real care, pure love.',
+                  icon: '🍰'
+                },
+                { 
+                  name: 'Mira', 
+                  year: '2024',
+                  desc: 'The soul that speaks. AI + Human hands = Unconditional.',
+                  icon: '💜'
+                }
+              ].map((item, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  className="flex gap-4"
+                >
+                  <div className="flex flex-col items-center">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-amber-500/30 to-purple-500/30 border border-amber-400/30 flex items-center justify-center text-2xl">
+                      {item.icon}
+                    </div>
+                    {i < 3 && <div className="w-0.5 h-full bg-gradient-to-b from-amber-400/30 to-transparent mt-2" />}
+                  </div>
+                  <div className="flex-1 pb-6">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="text-white font-bold">{item.name}</h3>
+                      <span className="text-amber-300 text-sm">{item.year}</span>
+                    </div>
+                    <p className="text-purple-200 text-sm">{item.desc}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+            
+            {/* Heritage - Desktop */}
+            <div className="hidden md:grid md:grid-cols-4 gap-6">
+              {[
+                { 
+                  name: 'LesConcierges', 
+                  year: '2003',
+                  desc: 'Where it began. Premium concierge services for those who value time above all.',
+                  icon: '🏛️',
+                  color: 'from-slate-500/20 to-slate-600/20',
+                  borderColor: 'border-slate-400/30'
+                },
+                { 
+                  name: 'Club Concierge®', 
+                  year: '2010',
+                  desc: 'Membership elevated. 24/7 human support for life\'s most important moments.',
+                  icon: '👑',
+                  color: 'from-amber-500/20 to-amber-600/20',
+                  borderColor: 'border-amber-400/30'
+                },
+                { 
+                  name: 'The Doggy Bakery', 
+                  year: '2018',
+                  desc: 'Where pets became family. Fresh food, real care, pure unconditional love.',
+                  icon: '🍰',
+                  color: 'from-pink-500/20 to-pink-600/20',
+                  borderColor: 'border-pink-400/30'
+                },
+                { 
+                  name: 'Mira', 
+                  year: '2024',
+                  desc: 'The soul that speaks. AI intelligence + Human hands = Unconditional care.',
+                  icon: '💜',
+                  color: 'from-purple-500/20 to-purple-600/20',
+                  borderColor: 'border-purple-400/30'
+                }
+              ].map((item, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  className={`bg-gradient-to-br ${item.color} backdrop-blur-sm border ${item.borderColor} rounded-2xl p-6 text-center hover:scale-105 transition-transform`}
+                >
+                  <div className="text-4xl mb-4">{item.icon}</div>
+                  <div className="text-amber-300 text-sm mb-1">{item.year}</div>
+                  <h3 className="text-white font-bold text-lg mb-2">{item.name}</h3>
+                  <p className="text-purple-200 text-sm">{item.desc}</p>
+                </motion.div>
+              ))}
+            </div>
+            
+            {/* The Promise */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="mt-12 text-center"
+            >
+              <div className="inline-block bg-gradient-to-r from-purple-900/50 to-pink-900/50 border border-purple-500/30 rounded-2xl p-6 md:p-8 max-w-2xl">
+                <p className="text-white text-lg md:text-xl font-medium leading-relaxed">
+                  "When Mira knows your pet needs something, 
+                  <span className="text-amber-300"> real humans</span> make it happen.
+                  Not bots. Not forms. Not waiting.
+                  <span className="text-purple-300"> Concierge®</span> — 
+                  the hands that turn love into action."
+                </p>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
         {/* Mira AI Section */}
         <section className="py-24 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-purple-900/20 to-pink-900/20" />
