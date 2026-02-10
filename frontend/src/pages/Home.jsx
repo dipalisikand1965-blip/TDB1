@@ -581,27 +581,27 @@ const Home = () => {
             <div className="md:hidden space-y-6">
               {[
                 { 
-                  name: 'LesConcierges', 
-                  year: '2003',
-                  desc: 'Where it began. Premium concierge services for those who value time.',
+                  name: 'LesConcierges®', 
+                  year: '1998',
+                  desc: 'Where it began. Mrs. Mira Sikand\'s spirit of service — the living reference desk.',
                   icon: '🏛️'
                 },
                 { 
                   name: 'Club Concierge®', 
-                  year: '2010',
+                  year: '2008',
                   desc: 'Membership elevated. 24/7 human support for life\'s moments.',
                   icon: '👑'
                 },
                 { 
-                  name: 'The Doggy Bakery', 
-                  year: '2018',
-                  desc: 'Where pets became family. Fresh food, real care, pure love.',
+                  name: 'The Doggy Bakery®', 
+                  year: '2014',
+                  desc: 'Where pets became family. Mira made treats with her granddaughter.',
                   icon: '🍰'
                 },
                 { 
-                  name: 'Mira', 
+                  name: 'Mira AI', 
                   year: '2024',
-                  desc: 'The soul that speaks. AI + Human hands = Unconditional.',
+                  desc: 'Her soul lives on. AI + Human hands = Unconditional.',
                   icon: '💜'
                 }
               ].map((item, i) => (
