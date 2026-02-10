@@ -285,7 +285,7 @@ const PicksVault = ({
                     <button
                       className="pv-send-item-btn"
                       onClick={() => handleSendItemToConcierge(product)}
-                      aria-label="Send to Concierge"
+                      aria-label="Send to Concierge®"
                       data-testid={`picks-vault-send-${idx}`}
                     >
                       <span className="pv-concierge-badge">C°</span>

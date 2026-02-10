@@ -721,7 +721,7 @@ const MembershipPage = () => {
               <ul className="space-y-3 mb-8">
                 {[
                   'Full Pet Soul™ Profile',
-                  'Unlimited Mira AI Concierge',
+                  'Unlimited Mira AI Concierge®',
                   'All 14 Life Pillars Unlocked',
                   'Health Vault & Records',
                   'Priority Concierge Support',
@@ -765,7 +765,7 @@ const MembershipPage = () => {
               <ul className="space-y-3 mb-8">
                 {[
                   'Full Pet Soul™ Profile',
-                  'Unlimited Mira AI Concierge',
+                  'Unlimited Mira AI Concierge®',
                   'All 14 Life Pillars Unlocked',
                   'Health Vault & Records',
                   'Priority Concierge Support',
