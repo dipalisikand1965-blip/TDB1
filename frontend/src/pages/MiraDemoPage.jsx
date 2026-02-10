@@ -652,6 +652,13 @@ const MiraDemoPage = () => {
   // PERSONALIZATION TICKER - Moving ticker at top
   const [tickerItems, setTickerItems] = useState([]);
   
+  // SOUL KNOWLEDGE - Rich data for the dynamic ticker
+  const [soulKnowledge, setSoulKnowledge] = useState({
+    items: [],
+    soulScore: 0,
+    encourageCompletion: false
+  });
+  
   // E027: DAILY DIGEST
   const [dailyDigest, setDailyDigest] = useState(null);
   
