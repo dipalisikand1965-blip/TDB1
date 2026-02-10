@@ -133,6 +133,8 @@ class HandoffToConciergeRequest(BaseModel):
     ticket_id: str
     concierge_queue: str  # "FOOD", "GROOMING", "CELEBRATE", "TRAVEL", etc.
     latest_mira_summary: str
+    pillar: Optional[str] = None  # User-selected pillar from edit form
+    request_title: Optional[str] = None  # User-edited title
 
 # New: Step completion tracking
 class CompleteStepRequest(BaseModel):
