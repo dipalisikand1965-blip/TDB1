@@ -13,7 +13,7 @@ import SEOHead from '../components/SEOHead';
 const BRAND_IMAGES = {
   founder1: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/4oryz05r_shutterstock_131282603%20%281%29.jpg',
   founder2: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/s4qmsach_shutterstock_199063937.jpg',
-  mira: 'https://customer-assets.emergentagent.com/job_fb4fe188-9dcd-4168-922c-d00bcc6f0e32/artifacts/dvhzt4zj_image.png',
+  mira: 'https://customer-assets.emergentagent.com/job_2dad3d7e-c3ab-4896-a445-d39e2953ce1d/artifacts/hfy5z95e_Mira%20Aunty.png',
   team: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/q0alj5za_dog-1194087_1920%20%281%29.jpg',
 };
 
@@ -185,36 +185,38 @@ const AboutPage = () => {
                 
                 <div className="space-y-4 text-white/70 leading-relaxed">
                   <p>
-                    It started with <strong className="text-white">Dipali Sikand</strong>.
-                    She built LesConcierges® on one uncompromising truth: 
-                    <em className="text-purple-300"> real service is not transactional. 
-                    It is memory, anticipation, and care delivered before it is asked for.</em>
+                    It started with <strong className="text-white">Dipali Sikand</strong> — and the 
+                    concierge belief that real service means remembering, anticipating, and caring before being asked.
                   </p>
                   <p>
-                    Behind that philosophy was <strong className="text-amber-300">Mrs. Mira Sikand</strong> — 
-                    not as the headline, but as the quiet force. The person whose instincts, standards, 
-                    and way of looking after people shaped the kind of service Dipali would go on to 
-                    professionalise and scale. <span className="text-pink-300">Mira was the spirit. 
-                    Dipali was the builder.</span>
+                    Behind her was <strong className="text-amber-300">Mrs. Mira Sikand</strong>: 
+                    the spirit, the standard, and the quiet force that shaped how Dipali understood 
+                    what care really looks like in practice.
                   </p>
                   <p>
                     <strong className="text-white">Dipali</strong> carried that legacy forward through 
-                    Club Concierge® — three decades of service excellence, scale across millions of customers, 
-                    and the belief that every yes must feel personal.
+                    LesConcierges® and Club Concierge® — three decades of service excellence, serving millions, 
+                    with one non-negotiable principle: <em className="text-purple-300">every yes must feel personal.</em>
                   </p>
                   <p>
-                    And when <strong className="text-white">Aditya</strong> built The Doggy Bakery®, 
-                    it wasn't just about treats. It was about meaning: celebrating pets like family, 
-                    milestone by milestone. In those early days, Grandma Mira's hands were right there 
-                    in the work — part of the care, the making, the doing.
+                    <strong className="text-white">Aditya</strong> built The Doggy Bakery®, celebrating 
+                    45,000+ pets — not just baking treats, but baking meaning into milestones. 
+                    And yes, Grandma Mira's hands were in those early batches.
                   </p>
                   <p>
-                    So when they looked at the pet industry, they didn't see a category. They saw a gap: 
-                    <em className="text-purple-300"> lots of products, very little understanding. 
-                    Plenty of commerce, not enough care.</em>
+                    When they looked at the pet industry, they saw what was missing: 
+                    <em className="text-purple-300"> a system that truly knows your pet</em>. 
+                    Not just sells to them. Knows them.
+                  </p>
+                  <p>
+                    That's why <strong className="text-white">The Doggy Company®</strong> was born — 
+                    to build a pet-first world where everything is personalised to the life you share: 
+                    what your dog eats, loves, needs, fears, enjoys, and is growing into.
                   </p>
                   <p className="text-white font-medium">
-                    That is why The Doggy Company® was born.
+                    And that's why we're building Mira AI — to bring concierge-grade memory and judgement 
+                    into pet parenting, so every recommendation feels like it came from someone who 
+                    genuinely understands your pet.
                   </p>
                 </div>
               </div>
