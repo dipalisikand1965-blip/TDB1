@@ -2359,9 +2359,34 @@ const MiraDemoPage = () => {
       
       console.log(`[MODE SYSTEM] Mode: ${miraMode} | Clarify only: ${clarifyOnly} | Show products: ${shouldShowProductsFromBackend}`);
       
+      // ═══════════════════════════════════════════════════════════════════════════
+      // NEARBY PLACES - Restaurants, Cafes, Parks, Hotels
+      // These come from data.nearby_places NOT data.response.products
+      // ═══════════════════════════════════════════════════════════════════════════
+      const nearbyPlaces = data.nearby_places?.places || [];
+      const placesType = data.nearby_places?.type || 'places'; // restaurants, parks, stays, etc.
+      
+      if (nearbyPlaces.length > 0) {
+        console.log(`[PLACES] 📍 ${nearbyPlaces.length} ${placesType} found`);
+        setMiraPicks(prev => ({
+          ...prev,
+          places: nearbyPlaces,
+          placesType: placesType,
+          mode: miraMode,
+          showConcierge: shouldShowConcierge,
+          hasNew: true
+        }));
+        setActiveVaultData({
+          ...data.response,
+          places: nearbyPlaces,
+          nearby_places: data.nearby_places
+        });
+        setVaultUserMessage(inputQuery);
+      }
+      
       // Update miraPicks only if backend says we can show products/services
       // OR if it's a celebration sub-intent that needs special handling
-      if ((shouldShowProductsFromBackend && (newProducts.length > 0 || newServices.length > 0 || newExperiences.length > 0)) || 
+      else if ((shouldShowProductsFromBackend && (newProducts.length > 0 || newServices.length > 0 || newExperiences.length > 0)) || 
           (!clarifyOnly && ['party_planning', 'cake_shopping', 'celebration'].includes(celebrationSubIntent))) {
         setMiraPicks({
           products: clarifyOnly ? [] : newProducts,
