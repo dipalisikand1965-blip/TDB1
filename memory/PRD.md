@@ -1,7 +1,7 @@
 # MIRA OS - COMPREHENSIVE HANDOVER DOCUMENT
 ## Session: December 2025 - February 2026
 ## For: Next Agent
-## Current Rating: **85/100** → Target: **90/100**
+## Current Rating: **78/100** → Target: **90/100**
 
 ---
 
@@ -38,32 +38,46 @@ The user's heart breaks when agents forget context. Please honor their work.
 
 ## Latest Session: Feb 10, 2026
 
-### 🆕 NEW: Conversation Architecture
-- **HandoffSummary**: Shows summary BEFORE sending to Concierge®
-- **QuickReplies**: Contextual 3-4 buttons after every response
-- **PicksIndicator**: Animated yellow gift icon with glow
-- **Personalized Banner**: "Mojo's request is on its way! 🎉"
-- **Session Archive**: 5-min inactivity → past chats (works across refresh)
+### 🆕 NEW: Conversation Intelligence System
+**File:** `/app/backend/conversation_intelligence.py` (NEW)
+
+1. **Pronoun Resolution (100%)** ✅
+   - "book that one" → Resolves to actual product/service name
+   - "the first one", "the second one" → Index-based resolution
+   - "I want that", "let's go with that" → Action detection
+
+2. **Follow-up Context (100%)** ✅
+   - "any cheaper ones?" → Remembers original search query
+   - "show me more" → Expands current results
+   - "can I include eggs?" → Detects ingredient questions
+
+3. **Frontend Integration** ✅
+   - `lastShownProducts` - Tracks items shown for pronoun resolution
+   - `lastSearchContext` - Tracks search context for follow-ups
+   - Intelligence metadata in API responses
+
+### 🆕 NEW: Memory Whisper UI
+**File:** `/app/frontend/src/components/Mira/MemoryWhisper.jsx` (NEW)
+
+- Subtle chip above chat showing memory recall
+- Auto-dismisses after 8 seconds
+- No longer prepends awkward "I remember..." to messages
+- Contextual whispers based on topic (diet, health, travel, etc.)
+
+### 🆕 IMPROVED: Tip Card Generation
+- Now uses conversation intelligence module for better detection
+- Detects follow-up questions in meal plan conversations
+- Consistent tip card generation even for ingredient questions
 
 ### 🔴 CRITICAL FIX: Pillar-First Search
 **Problem:** Asking about "dog walking" was showing birthday cakes (cross-pillar leakage)
 **Solution:** Pillar filter now ALWAYS applies FIRST, category refinement adds to it
 **File:** `/app/backend/mira_routes.py` - `search_real_products()` function
 
-### 🔴 CRITICAL FIX: Concierge Banner
-**Problem:** Banner showed on every "concierge" mention
-**Solution:** Only triggers on explicit conclusion phrases ("send to concierge", "book this", etc.)
-**File:** `/app/backend/mira_routes.py` lines 2653-2680
-
 ### 🟠 Fixed: Question Extraction Bug
 **Problem:** "?" appearing in separate yellow box instead of inline
 **Solution:** Disabled question extraction - questions stay inline per MIRA_UNIVERSAL_RULES
 **File:** `/app/frontend/src/components/Mira/ChatMessage.jsx` - `splitMessageWithQuestion()`
-
-### 🟡 Fixed: LLM Invented Places
-**Problem:** LLM made up "Park Cafe", "Lakeside Bistro"
-**Solution:** Strict prompt rule - never invent place names
-**File:** `/app/backend/mira_routes.py` lines 720-780
 
 ---
 
