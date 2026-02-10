@@ -1062,6 +1062,7 @@ const MiraDemoPage = () => {
               name: p.name,
               breed: p.breed,
               age: p.age || 'Unknown',
+              soulScore: Math.round(p.overall_score || 0), // ADDED: Soul Score!
               // Ensure arrays - doggy_soul_answers fields might be strings
               traits: (() => {
                 const raw = p.doggy_soul_answers?.describe_3_words;
