@@ -3476,7 +3476,8 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
             
             should_tip = is_advisory_response and (is_seeking_advice or is_food_followup)
             
-            # Determine tip card type based on full context
+            # Determine tip card type based on USER INPUT primarily (not Mira's response)
+            # This prevents Mira's response words from influencing the tip type
             # ORDER MATTERS - check most specific patterns first!
             if should_tip:
                 # SENIOR CARE - Check FIRST (senior, aging, old age, elderly)
