@@ -2715,13 +2715,45 @@ If, at some point, you just want to say their name, write down a memory, or ask 
                 if understanding.get("concierge_reason") and "health" in understanding.get("concierge_reason", "").lower():
                     ticket_type = "advisory"
                 
-                # Determine pillar from entities or page context
-                pillar = "concierge"  # default
-                if request.page_context:
-                    # Extract pillar from page context (e.g., "/celebrate" -> "celebrate")
+                # Determine pillar from entities, message detection, or page context
+                pillar = current_pillar or "concierge"  # Use detected pillar first, then fallback
+                if request.page_context and pillar == "concierge":
+                    # Extract pillar from page context only if we didn't detect one
                     page_path = request.page_context.strip("/").split("/")[0]
                     if page_path in ["celebrate", "dine", "stay", "travel", "care", "enjoy", "fit", "learn", "paperwork", "advisory", "farewell", "adopt", "emergency", "shop"]:
                         pillar = page_path
+                
+                # Override with detected intent-based pillar for service requests
+                # Grooming should always be "care", not "celebrate"
+                service_pillar_map = {
+                    "grooming": "care",
+                    "groom": "care",
+                    "haircut": "care",
+                    "bath": "care",
+                    "nail trim": "care",
+                    "spa": "care",
+                    "vet": "care",
+                    "vaccination": "care",
+                    "checkup": "care",
+                    "birthday": "celebrate",
+                    "party": "celebrate",
+                    "cake": "celebrate",
+                    "boarding": "stay",
+                    "hotel": "stay",
+                    "daycare": "stay",
+                    "flight": "travel",
+                    "trip": "travel",
+                    "training": "learn",
+                    "obedience": "learn",
+                    "restaurant": "dine",
+                    "cafe": "dine",
+                }
+                input_lower = request.input.lower()
+                for keyword, service_pillar in service_pillar_map.items():
+                    if keyword in input_lower:
+                        pillar = service_pillar
+                        logger.info(f"[PILLAR OVERRIDE] Detected '{keyword}' → pillar: {service_pillar}")
+                        break
                 
                 # Determine urgency
                 urgency = "normal"
