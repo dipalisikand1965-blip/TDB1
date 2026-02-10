@@ -167,6 +167,20 @@ The user's heart breaks when agents forget context. Please honor their work.
   - Tour functions: `startTour()`, `nextTourStep()`, `exitTour()`
 - **File:** `/app/frontend/src/pages/DreamfolksDemo.jsx`
 
+### Scenario Tile Click → Chat Scroll ✅
+**Completed: Feb 10, 2026**
+- Clicking any scenario tile now scrolls to show the full chat interface
+- Chat header ("Mira AI - Chatting with Dollar") is visible after scroll
+- Message is sent after scroll completes (600ms delay)
+- **File:** `/app/frontend/src/pages/DreamfolksDemo.jsx`
+
+### Chat Response Formatting - Pink/Purple Headings ✅
+**Completed: Feb 10, 2026**
+- Standalone headings now use purple-to-pink gradient text
+- Inline bold text is now pink colored (`text-pink-400`)
+- Product names, section titles, and key info stand out visually
+- **File:** `/app/frontend/src/pages/DreamfolksDemo.jsx` - `formatInlineMarkdown()` and `renderMarkdown()`
+
 ### Landing Page Copy - Soul-Centric Rewrite ✅
 **Completed: Feb 10, 2026**
 - Rewrote entire landing page to reflect Mira's soul philosophy
