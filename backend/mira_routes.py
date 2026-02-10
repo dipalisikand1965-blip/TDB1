@@ -3559,11 +3559,14 @@ Would you like me to find vets or pet pharmacies near you, or shall I have your 
                 # CARE ROUTINE - Check early (care, routine, daily care, wellness)
                 elif any(w in type_context for w in ["care routine", "daily routine", "daily care", "wellness routine", "wellness", "self care", "pet care routine"]):
                     detected_tip_type = "bonding_ritual"  # Care routines are bonding
+                # CALMING/ANXIETY - Check BEFORE celebration and bonding
+                elif any(w in type_context for w in ["calm", "calming", "soothe", "anxiety", "scared", "stress", "nervous", "thunder", "loud noise", "afraid", "panic", "trembling", "cracker", "firework"]):
+                    detected_tip_type = "calming_tips"
                 # CELEBRATION
                 elif any(w in type_context for w in ["celebrate", "birthday", "party", "gotcha", "anniversary", "calendar", "special moment", "special day"]):
                     detected_tip_type = "celebration_tips"
-                # BONDING RITUAL - Check before meal (has "ritual", "bonding", "calming")
-                elif any(w in type_context for w in ["ritual", "bonding", "calming", "relax", "matter", "quality time", "connection", "spend time"]):
+                # BONDING RITUAL - Check before meal (has "ritual", "bonding", "relax")
+                elif any(w in type_context for w in ["ritual", "bonding", "relax", "matter", "quality time", "connection", "spend time"]):
                     detected_tip_type = "bonding_ritual"
                 # GROOMING
                 elif any(w in type_context for w in ["groom", "bath", "brush", "haircut", "trim", "nail", "ear clean"]):
@@ -3574,11 +3577,8 @@ Would you like me to find vets or pet pharmacies near you, or shall I have your 
                 # EXERCISE
                 elif any(w in type_context for w in ["exercise", "walk", "fit", "weight", "activity", "run", "play"]):
                     detected_tip_type = "exercise_routine"
-                # CALMING/ANXIETY - Check BEFORE festival safety
-                elif any(w in type_context for w in ["calm", "calming", "soothe", "anxiety", "scared", "stress", "nervous", "thunder", "loud noise", "afraid", "panic", "trembling"]):
-                    detected_tip_type = "calming_tips"
                 # FESTIVAL SAFETY
-                elif any(w in type_context for w in ["safe", "safety", "festival", "diwali", "holi", "firework", "cracker"]):
+                elif any(w in type_context for w in ["safe", "safety", "festival", "diwali", "holi"]):
                     detected_tip_type = "festival_safety"
                 # TRAVEL
                 elif any(w in type_context for w in ["travel", "trip", "vacation", "holiday", "flight", "road trip"]):
