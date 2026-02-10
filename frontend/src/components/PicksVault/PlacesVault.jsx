@@ -189,8 +189,8 @@ const PlacesVault = ({
             <IconComponent size={24} />
           </div>
           <div className="plv-header-text">
-            <h2>Pet-Friendly {placeType.charAt(0).toUpperCase() + placeType.slice(1)}s</h2>
-            <p>{location || 'Near you'}</p>
+            <h2>{displayTitle}</h2>
+            <p>{location ? `in ${location}` : 'Near you'} • {places.length} found</p>
           </div>
         </div>
         <button className="plv-close-btn" onClick={handleClose}>
