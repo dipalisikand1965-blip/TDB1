@@ -358,17 +358,21 @@ export default function DreamfolksDemo() {
             <div className="lg:col-span-2 space-y-6">
               {/* Tab Navigation */}
               <div className="flex gap-2 overflow-x-auto pb-2">
-                {['Chat with Mira', '14 Pillars', 'Test Scenarios'].map((tab, i) => (
+                {[
+                  { id: 'chat', label: 'Chat with Mira' },
+                  { id: 'pillars', label: '14 Pillars' },
+                  { id: 'scenarios', label: 'Test Scenarios' }
+                ].map((tab) => (
                   <button
-                    key={tab}
-                    onClick={() => setActiveTab(['chat', 'pillars', 'scenarios'][i])}
-                    className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
-                      activeTab === ['chat', 'pillars', 'scenarios'][i]
-                        ? 'bg-purple-500 text-white'
-                        : 'bg-white/5 text-white/60 hover:bg-white/10'
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={`px-6 py-3 rounded-full text-sm font-medium whitespace-nowrap transition-all cursor-pointer ${
+                      activeTab === tab.id
+                        ? 'bg-purple-500 text-white shadow-lg shadow-purple-500/30'
+                        : 'bg-white/10 text-white/70 hover:bg-white/20 hover:text-white'
                     }`}
                   >
-                    {tab}
+                    {tab.label}
                   </button>
                 ))}
               </div>
