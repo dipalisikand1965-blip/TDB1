@@ -206,7 +206,8 @@ const ProactiveAlertCard = ({ alert, onAskMira, onBookNow, onDismiss }) => {
 const ProactiveAlertsBanner = ({ 
   alerts = [], 
   criticalCount = 0,
-  onAlertAction,
+  onAskMira,
+  onBookNow,
   onDismiss,
   maxVisible = 3,
   className = ''
