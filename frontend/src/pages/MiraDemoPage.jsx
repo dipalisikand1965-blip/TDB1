@@ -2395,6 +2395,26 @@ const MiraDemoPage = () => {
         console.log('[CONCIERGE CONFIRM] Service request banner shown:', data.concierge_confirmation.ticket_id);
       }
       
+      // ═══════════════════════════════════════════════════════════════════════════
+      // QUICK REPLIES - Generate contextual suggestions for this response
+      // Golden Standard: 3-4 actionable buttons after every advisory response
+      // ═══════════════════════════════════════════════════════════════════════════
+      const hasProducts = newProducts.length > 0;
+      const hasServices = newServices.length > 0;
+      const isAdvisory = !hasProducts && !hasServices && miraResponseText.length > 100;
+      const currentPillarForReplies = data.current_pillar || data.pillar || 'general';
+      
+      const newQuickReplies = generateQuickReplies({
+        pillar: currentPillarForReplies,
+        hasProducts,
+        hasServices,
+        intent: data.understanding?.intent,
+        isAdvisory,
+        petName: pet?.name || 'your pet'
+      });
+      setQuickReplies(newQuickReplies);
+      console.log(`[QUICK REPLIES] Generated ${newQuickReplies.length} suggestions for pillar: ${currentPillarForReplies}`);
+      
       // Clear skeleton loader
       clearTimeout(skeletonTimer);
       setShowSkeleton(false);
