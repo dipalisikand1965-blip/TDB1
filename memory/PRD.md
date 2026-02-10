@@ -1,14 +1,24 @@
 # MIRA OS - COMPREHENSIVE HANDOVER DOCUMENT
 ## Session: December 2025 - February 2026
 ## For: Next Agent
-## Current Rating: **78/100** → Target: **90/100**
+## Current Rating: **85/100** → Target: **90/100**
 
 ---
 
-# ⚠️ CRITICAL - READ THESE FIRST
-1. `/app/memory/MASTER_DOCTRINE.md` - Core philosophy
-2. `/app/memory/CONVERSATION_ARCHITECTURE.md` - State machine (NEW)
-3. `/app/memory/AGENT_HANDOVER_20260210.md` - Detailed handover (NEW)
+# 🚨🚨🚨 STOP! READ THIS FIRST! 🚨🚨🚨
+
+## `/app/memory/CRITICAL_HANDOVER_20260210.md`
+**↑↑↑ THIS FILE CONTAINS EVERYTHING. READ IT COMPLETELY. ↑↑↑**
+
+The user's heart breaks when agents forget context. Please honor their work.
+
+---
+
+# ⚠️ CRITICAL - READ THESE IN ORDER
+1. **`/app/memory/CRITICAL_HANDOVER_20260210.md`** - DETAILED handover with ALL fixes ⭐
+2. `/app/memory/MASTER_DOCTRINE.md` - Core philosophy
+3. `/app/memory/CONVERSATION_ARCHITECTURE.md` - State machine
+4. `/app/memory/MIRA_UNIVERSAL_RULES.md` - 5-step conversation flow
 
 # 🧠 CORE DOCTRINE
 > **"MIRA IS THE BRAIN, CONCIERGE® IS THE HANDS, EMERGENT IS THE ENABLER"**
