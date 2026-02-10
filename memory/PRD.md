@@ -152,6 +152,21 @@ The user's heart breaks when agents forget context. Please honor their work.
 - Verified mobile and desktop responsiveness
 - **File:** `/app/frontend/src/pages/DreamfolksDemo.jsx`
 
+### NEW: Guided Demo Tour Feature ✅
+**Completed: Feb 10, 2026**
+- Added "Start 2-Minute Demo Tour" button in hero section
+- Implemented 7-step guided tour with progress dots and navigation
+- Tour highlights key capabilities: Chat Interface, Health Detection, Emergency Mode, Multi-Intent
+- Auto-scrolls to relevant sections and auto-triggers demo scenarios
+- Semi-transparent overlay during tour for focus
+- "Skip Tour" and "Next/Finish" navigation
+- **Components added:**
+  - `TOUR_STEPS` constant with 7 guided tour steps
+  - `TourTooltip` inline component with animations
+  - Tour state management: `tourActive`, `tourStep`
+  - Tour functions: `startTour()`, `nextTourStep()`, `exitTour()`
+- **File:** `/app/frontend/src/pages/DreamfolksDemo.jsx`
+
 ### Landing Page Copy - Soul-Centric Rewrite ✅
 **Completed: Feb 10, 2026**
 - Rewrote entire landing page to reflect Mira's soul philosophy
