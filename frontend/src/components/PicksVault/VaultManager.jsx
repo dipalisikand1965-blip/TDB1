@@ -460,8 +460,80 @@ const VaultManager = ({
       );
 
     default:
-      // No vault needed
-      return null;
+      // Fallback: If we have products, show picks vault
+      if (miraResponse?.products?.length > 0) {
+        return (
+          <PicksVault
+            picks={miraResponse.products}
+            pet={pet}
+            pillar={pillar}
+            context={userMessage}
+            onSendToConcierge={(data) => sendToConcierge({
+              picked_items: data.picked_items,
+              shown_items: data.shown_items,
+              context: data.context,
+              user_action: data.user_action
+            })}
+            onRefresh={handleRefreshPicks}
+            onClose={onClose}
+            onViewDetails={handleViewDetail}
+          />
+        );
+      }
+      
+      // If we have a tip card, show tip card vault
+      if (miraResponse?.tip_card) {
+        return (
+          <TipCardVault
+            tipCard={miraResponse.tip_card}
+            pet={pet}
+            pillar={pillar}
+            conversationContext={userMessage}
+            onSendToConcierge={(data) => sendToConcierge({
+              card_type: data.card_type,
+              card_title: data.card_title,
+              card_content: data.card_content,
+              request_formal_version: data.request_formal_version,
+              additional_notes: data.additional_notes
+            })}
+            onClose={onClose}
+          />
+        );
+      }
+      
+      // Empty state - nothing to show
+      return (
+        <div className="pv-container" data-testid="vault-empty">
+          <div className="pv-header">
+            <div className="pv-header-text">
+              <h2>Picks for {pet?.name || 'Your Pet'}</h2>
+              <p>Ask Mira for recommendations!</p>
+            </div>
+            <button 
+              className="pv-close-btn"
+              onClick={onClose}
+              aria-label="Close"
+              data-testid="vault-close"
+            >
+              <X size={24} />
+            </button>
+          </div>
+          <div style={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'center', 
+            justifyContent: 'center', 
+            height: '60%',
+            color: 'rgba(255,255,255,0.6)',
+            textAlign: 'center',
+            padding: '2rem'
+          }}>
+            <span style={{ fontSize: '3rem', marginBottom: '1rem' }}>🎁</span>
+            <p style={{ fontSize: '1.1rem', marginBottom: '0.5rem' }}>No picks yet</p>
+            <p style={{ fontSize: '0.9rem', opacity: 0.7 }}>Ask Mira for recommendations and they'll appear here!</p>
+          </div>
+        </div>
+      );
   }
 };
 
