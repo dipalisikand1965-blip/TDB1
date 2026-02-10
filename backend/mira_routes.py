@@ -962,6 +962,10 @@ class MiraOSUnderstandRequest(BaseModel):
     step_history: Optional[List[Dict[str, Any]]] = []  # Full Q&A history
     # Full conversation history for context
     conversation_history: Optional[List[Dict[str, str]]] = []  # [{role: user/assistant, content: ...}]
+    # INTELLIGENCE: Last shown items for pronoun resolution ("that one", "the first one")
+    last_shown_items: Optional[List[Dict[str, Any]]] = []  # Products/services shown in previous response
+    # INTELLIGENCE: Last search context for follow-ups ("cheaper ones", "show me more")
+    last_search_context: Optional[Dict[str, Any]] = None  # {query, pillar, filters}
     # Tell me more handling
     user_asking_for_more_info: Optional[bool] = False  # User wants options explained
     current_step: Optional[str] = None  # Current pending step being explained
