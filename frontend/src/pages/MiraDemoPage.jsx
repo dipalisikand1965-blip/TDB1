@@ -3153,6 +3153,26 @@ const MiraDemoPage = () => {
         petName={pet?.name || 'your pet'}
       />
       
+      {/* HANDOFF SUMMARY - Shows BEFORE sending to Concierge® */}
+      <HandoffSummary
+        isOpen={handoffSummary?.isOpen || false}
+        onClose={() => setHandoffSummary(null)}
+        onConfirm={async () => {
+          setHandoffSummary(null);
+          await handleConciergeHandoff();
+        }}
+        onEdit={() => {
+          setHandoffSummary(null);
+          // Focus on input for user to add more details
+          inputRef.current?.focus();
+        }}
+        petName={handoffSummary?.petName || pet?.name || 'your pet'}
+        pillar={handoffSummary?.pillar || currentPillar?.toLowerCase()}
+        title={handoffSummary?.title || 'Request Summary'}
+        items={handoffSummary?.items || []}
+        notes={handoffSummary?.notes || ''}
+      />
+      
       {/* PICKS INDICATOR - Yellow gift icon when Mira has curated picks */}
       {/* Non-intrusive: user clicks to view, not forced */}
       <PicksIndicator
