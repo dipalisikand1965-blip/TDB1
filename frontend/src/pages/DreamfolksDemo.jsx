@@ -1341,46 +1341,53 @@ Ask me anything about him!` }
                   </div>
 
                   {/* Chat Messages */}
-                  <div className="h-[50vh] sm:h-[400px] overflow-y-auto p-3 sm:p-4 space-y-3 sm:space-y-4 overscroll-contain">
+                  <div className="h-[50vh] sm:h-[400px] overflow-y-auto p-4 sm:p-6 space-y-4 overscroll-contain bg-[#1a0a2e]/50">
                     {chatMessages.map((msg, i) => (
                       <motion.div
                         key={i}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3 }}
                         className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                       >
                         {msg.role === 'mira' && (
-                          <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mr-2 flex-shrink-0 mt-1">
-                            <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mr-3 flex-shrink-0 shadow-lg shadow-purple-500/30">
+                            <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                           </div>
                         )}
-                        <div className={`max-w-[85%] sm:max-w-[80%] rounded-2xl px-3 sm:px-4 py-2 sm:py-3 ${
+                        <div className={`max-w-[75%] sm:max-w-[70%] ${
                           msg.role === 'user'
-                            ? 'bg-purple-500 text-white'
-                            : 'bg-white/5 border border-white/10'
+                            ? 'bg-gradient-to-r from-pink-500 to-purple-500 rounded-2xl rounded-br-md px-5 py-3 shadow-lg shadow-pink-500/20'
+                            : 'bg-purple-900/40 border border-purple-500/20 rounded-2xl rounded-bl-md px-5 py-4 shadow-lg'
                         }`}>
                           {msg.role === 'user' ? (
-                            <div className="text-xs sm:text-sm">{msg.content}</div>
+                            <div className="text-white font-medium text-sm sm:text-base">{msg.content}</div>
                           ) : (
-                            <div className="text-xs sm:text-sm">{renderMarkdown(msg.content)}</div>
+                            <div className="text-sm sm:text-base">{renderMarkdown(msg.content)}</div>
                           )}
                         </div>
                       </motion.div>
                     ))}
                     {isTyping && (
-                      <div className="flex justify-start">
-                        <div className="bg-white/10 rounded-2xl px-3 sm:px-4 py-2 sm:py-3 max-w-[90%] sm:max-w-[80%]">
+                      <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="flex justify-start"
+                      >
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center mr-3 flex-shrink-0 shadow-lg shadow-purple-500/30 animate-pulse">
+                          <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                        </div>
+                        <div className="bg-purple-900/40 border border-purple-500/20 rounded-2xl rounded-bl-md px-5 py-4 shadow-lg">
                           {streamingText ? (
-                            <div className="whitespace-pre-line text-xs sm:text-sm text-white/90">{streamingText}<span className="animate-pulse">▊</span></div>
+                            <div className="text-sm sm:text-base">{renderMarkdown(streamingText)}<span className="animate-pulse text-pink-400">▊</span></div>
                           ) : (
-                            <div className="flex gap-1">
-                              <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
-                              <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
-                              <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                            <div className="flex items-center gap-2 text-purple-300">
+                              <span className="w-2 h-2 bg-pink-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                              <span className="text-sm italic">Mira is getting her thoughts together for Dollar...</span>
                             </div>
                           )}
                         </div>
-                      </div>
+                      </motion.div>
                     )}
                     <div ref={chatEndRef} />
                   </div>
