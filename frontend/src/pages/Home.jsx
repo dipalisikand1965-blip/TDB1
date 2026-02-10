@@ -410,7 +410,7 @@ const Home = () => {
                         <MiraSoulOrb size="sm" />
                         <div className="flex-1">
                           <p className="text-white font-medium">Mira</p>
-                          <p className="text-white/60 text-sm">Hi! I already know your pet loves morning walks and is allergic to chicken. Ready to plan something special?</p>
+                          <p className="text-white/60 text-sm">I remember that morning walk ritual. The way they light up for chicken jerky. Should I find some for today?</p>
                         </div>
                       </div>
                     </motion.div>
