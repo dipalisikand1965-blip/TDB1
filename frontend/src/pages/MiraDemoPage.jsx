@@ -193,6 +193,8 @@ const MiraDemoPage = () => {
   const [lastShownProducts, setLastShownProducts] = useState([]);
   // INTELLIGENCE: Track search context for follow-up queries ("cheaper ones", "show me more")
   const [lastSearchContext, setLastSearchContext] = useState(null);
+  // MEMORY WHISPER: Track active memory context for whisper display
+  const [activeMemoryContext, setActiveMemoryContext] = useState(null);
   const [isRecording, setIsRecording] = useState(false); // For universal search voice
   
   // Core conversation state
