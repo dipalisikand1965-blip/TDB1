@@ -658,6 +658,15 @@ def should_generate_tip_card(
     if any(kw in full_context for kw in training_keywords):
         return True, "training_tips"
     
+    # Calming / Anxiety tips - CHECK BEFORE festival (more specific)
+    calming_keywords = [
+        "calming", "calm", "soothe", "anxiety", "anxious", "scared", "stress",
+        "nervous", "thunder", "loud noise", "afraid", "panic", "trembling",
+        "calming space", "safe space", "comfort", "comfort zone"
+    ]
+    if any(kw in full_context for kw in calming_keywords):
+        return True, "calming_tips"
+    
     # Festival/Event safety tips
     festival_keywords = [
         "diwali", "holi", "christmas", "new year", "festival", "fireworks",
