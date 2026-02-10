@@ -723,6 +723,11 @@ const MiraDemoPage = () => {
   // Stage: 'initial' | 'clarifying' | 'concierge_engaged'
   const [conversationStage, setConversationStage] = useState('initial');
   
+  // CLARIFYING QUESTION COUNTER - Limit to 4 before auto-transition
+  // This prevents endless clarification loops
+  const [clarifyingQuestionCount, setClarifyingQuestionCount] = useState(0);
+  const MAX_CLARIFYING_QUESTIONS = 4;  // After 4 questions, auto-transition to transaction
+  
   // Step tracking - ANTI-LOOP SYSTEM
   // Tracks which steps (questions) have been asked and answered
   const [completedSteps, setCompletedSteps] = useState([]);  // List of step_ids that are done
