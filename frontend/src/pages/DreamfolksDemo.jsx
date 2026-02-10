@@ -953,6 +953,7 @@ Ask me anything about him!` }
   const [isTyping, setIsTyping] = useState(false);
   const [aiThinking, setAiThinking] = useState(null);
   const [showThinkingPanel, setShowThinkingPanel] = useState(true);
+  const [showLiveMira, setShowLiveMira] = useState(false);
   const [streamingText, setStreamingText] = useState('');
   const chatEndRef = useRef(null);
 
