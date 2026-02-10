@@ -2051,7 +2051,13 @@ const MiraDemoPage = () => {
           // Tell LLM if user is asking for more info (should explain options, not complete step)
           user_asking_for_more_info: askingForMoreInfo,
           // Pass the current pending step so LLM knows what question to explain
-          current_step: currentStep?.step_id || null
+          current_step: currentStep?.step_id || null,
+          // ═══════════════════════════════════════════════════════════════════
+          // CONVERSATION INTELLIGENCE - Pronoun resolution & follow-up context
+          // "book that one" → knows which product | "cheaper ones" → remembers cake search
+          // ═══════════════════════════════════════════════════════════════════
+          last_shown_items: lastShownProducts,
+          last_search_context: lastSearchContext
         })
       });
       
