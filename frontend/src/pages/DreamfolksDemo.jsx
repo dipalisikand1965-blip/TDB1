@@ -943,128 +943,137 @@ export default function DreamfolksDemo() {
   const [activeTab, setActiveTab] = useState('chat');
   const [selectedPillar, setSelectedPillar] = useState(null);
   const [chatMessages, setChatMessages] = useState([
-    { role: 'mira', content: `Hi! I'm Mira, Dollar's personal AI companion. 🐩
+    { role: 'mira', content: `Hey! I'm Mira 👋
 
-**I already know:**
-• He's a 4-year-old Apricot Poodle
-• Allergic to chicken (I filter products automatically!)
-• Loves peanut butter treats & lamb jerky
-• Last groomed 2 weeks ago
+I already know Dollar — your 4-year-old Poodle who's allergic to chicken and loves peanut butter treats.
 
-**Try asking me about:**
-• Health concerns ("Is chocolate safe?")
-• Grooming & spa bookings
-• Food & nutrition
-• Travel planning
-• Birthday celebrations
-• Training help
-
-What can I help with today?` }
+Ask me anything about him!` }
   ]);
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [aiThinking, setAiThinking] = useState(null);
   const [showThinkingPanel, setShowThinkingPanel] = useState(true);
+  const [streamingText, setStreamingText] = useState('');
   const chatEndRef = useRef(null);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [chatMessages]);
+  }, [chatMessages, streamingText]);
 
-  const simulateAIThinking = (query) => {
-    // Detect intents from the query
+  // Call real Mira API
+  const callMiraAPI = async (userMessage) => {
     const thinking = {
-      query,
-      timestamp: new Date().toISOString(),
-      steps: []
+      query: userMessage,
+      steps: [{ step: "Query received", result: "✓", time: "2ms" }]
     };
+    setAiThinking(thinking);
+    setIsTyping(true);
+    setStreamingText('');
 
-    // Step 1: Intent Detection
-    if (query.toLowerCase().includes(' and ') || query.toLowerCase().includes(' also ')) {
-      thinking.steps.push({ step: "Multi-Intent Detection", result: "✓ Multiple intents detected", time: "12ms" });
-    }
-
-    // Step 2: Implicit Intent
-    const implicitPatterns = {
-      'scratching': { intent: 'skin_issue', pillar: 'care', urgency: 'medium' },
-      'not eating': { intent: 'appetite_loss', pillar: 'care', urgency: 'high' },
-      'vomiting': { intent: 'emergency', pillar: 'emergency', urgency: 'critical' },
-      'birthday': { intent: 'celebration', pillar: 'celebrate', urgency: 'low' },
-      'travel': { intent: 'travel_planning', pillar: 'travel', urgency: 'normal' },
-      'groom': { intent: 'grooming', pillar: 'groom', urgency: 'normal' },
-    };
-
-    for (const [pattern, info] of Object.entries(implicitPatterns)) {
-      if (query.toLowerCase().includes(pattern)) {
-        thinking.steps.push({ 
-          step: "Implicit Intent", 
-          result: `✓ "${pattern}" → ${info.pillar}/${info.intent}`, 
-          time: "8ms",
-          urgency: info.urgency
-        });
-        break;
-      }
-    }
-
-    // Step 3: Pet Memory
-    thinking.steps.push({ 
-      step: "Memory Recall", 
-      result: "✓ Dollar: Poodle, 4yo, chicken allergy", 
-      time: "3ms" 
-    });
-
-    // Step 4: Personalization
-    if (query.toLowerCase().includes('food') || query.toLowerCase().includes('treat')) {
-      thinking.steps.push({ 
-        step: "Allergy Filter", 
-        result: "✓ Excluding chicken products", 
-        time: "5ms" 
+    try {
+      // Try streaming endpoint first
+      const response = await fetch(`${API_URL}/api/mira/chat/stream`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: userMessage,
+          pet_id: "demo-dollar-dreamfolks",
+          pet_name: "Dollar",
+          pet_context: {
+            name: "Dollar",
+            breed: "Poodle", 
+            age_years: 4,
+            allergies: ["chicken"],
+            preferences: { favorite_treats: ["peanut butter", "lamb jerky"] }
+          },
+          user_email: "demo@dreamfolks.in",
+          session_id: `dreamfolks-${Date.now()}`,
+          demo_mode: true
+        })
       });
+
+      if (response.ok && response.body) {
+        thinking.steps.push({ step: "Pet memory loaded", result: "✓ Dollar (Poodle, no chicken)", time: "5ms" });
+        setAiThinking({...thinking});
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let fullText = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          
+          const chunk = decoder.decode(value);
+          const lines = chunk.split('\n');
+          
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              const data = line.slice(6);
+              if (data === '[DONE]') continue;
+              try {
+                const parsed = JSON.parse(data);
+                if (parsed.text) {
+                  fullText += parsed.text;
+                  setStreamingText(fullText);
+                }
+                if (parsed.pillar) {
+                  thinking.steps.push({ step: "Pillar", result: `✓ ${parsed.pillar}`, time: "3ms" });
+                  setAiThinking({...thinking});
+                }
+              } catch {
+                fullText += data;
+                setStreamingText(fullText);
+              }
+            }
+          }
+        }
+
+        thinking.steps.push({ step: "Complete", result: "✓", time: "done" });
+        setAiThinking({...thinking});
+        
+        if (fullText) {
+          setChatMessages(prev => [...prev, { role: 'mira', content: fullText }]);
+        } else {
+          throw new Error('Empty response');
+        }
+      } else {
+        throw new Error('Streaming not available');
+      }
+    } catch (error) {
+      // Fallback to non-streaming or curated
+      console.log('Using fallback:', error.message);
+      thinking.steps.push({ step: "Fallback mode", result: "✓", time: "5ms" });
+      setAiThinking({...thinking});
+      
+      const fallback = findBestResponse(userMessage);
+      setChatMessages(prev => [...prev, { role: 'mira', content: fallback.response }]);
     }
 
-    // Step 5: Response Generation
-    thinking.steps.push({ 
-      step: "Response Generation", 
-      result: "✓ Streaming enabled", 
-      time: "45ms" 
-    });
-
-    return thinking;
+    setStreamingText('');
+    setIsTyping(false);
   };
 
   const handleSendMessage = async (message) => {
     const query = message || inputMessage;
     if (!query.trim()) return;
 
-    // Add user message
     setChatMessages(prev => [...prev, { role: 'user', content: query }]);
     setInputMessage('');
-    setIsTyping(true);
-
-    // Simulate AI thinking
-    const thinking = simulateAIThinking(query);
-    setAiThinking(thinking);
-
-    // Simulate response delay (typing effect)
-    await new Promise(resolve => setTimeout(resolve, 1200));
-
-    // Get curated response from our 30 perfect responses
-    const matchedResponse = findBestResponse(query);
-    
-    // Update thinking panel with matched intent
-    thinking.steps.push({
-      step: "Response Selected",
-      result: `✓ ${matchedResponse.pillar} pillar`,
-      time: "2ms"
-    });
-    setAiThinking({...thinking});
-
-    setChatMessages(prev => [...prev, { role: 'mira', content: matchedResponse.response }]);
-    setIsTyping(false);
+    await callMiraAPI(query);
   };
 
   const handleScenarioClick = (scenario) => {
     handleSendMessage(scenario.query);
+  };
+
+  const clearChat = () => {
+    setChatMessages([{
+      role: 'mira',
+      content: `Fresh start! 🐩 What would you like to know about Dollar?`
+    }]);
+    setAiThinking(null);
+    setStreamingText('');
   };
 
   return (
