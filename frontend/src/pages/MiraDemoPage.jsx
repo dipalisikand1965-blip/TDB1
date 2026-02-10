@@ -228,7 +228,7 @@ const MiraDemoPage = () => {
   // NOTE: Voice state (voiceEnabled, isSpeaking, audioRef) now comes from useVoice hook above
   // Refs for voice timing (still needed for handleSubmit)
   const voiceTimeoutRef = useRef(null);
-  const skipVoiceOnNextResponseRef = useRef(false);
+  // NOTE: skipVoiceOnNextResponseRef REMOVED - now using skipNextVoice() from useVoice hook
   
   // CONVERSATION HISTORY - Collapsible older messages
   const [showOlderMessages, setShowOlderMessages] = useState(false);
