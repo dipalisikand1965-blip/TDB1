@@ -486,8 +486,8 @@ const AboutPage = () => {
                 <h4 className="text-white font-semibold mb-4">Heritage</h4>
                 <div className="space-y-2">
                   <a href="https://thedoggybakery.com" target="_blank" rel="noopener noreferrer" className="block text-white/50 hover:text-white transition-colors text-sm">The Doggy Bakery®</a>
-                  <span className="block text-white/50 text-sm">LesConcierges®</span>
-                  <span className="block text-white/50 text-sm">Club Concierge®</span>
+                  <a href="https://clubconcierge.in" target="_blank" rel="noopener noreferrer" className="block text-white/50 hover:text-white transition-colors text-sm">Club Concierge®</a>
+                  <a href="https://lesconcierges.co.in" target="_blank" rel="noopener noreferrer" className="block text-white/50 hover:text-white transition-colors text-sm">LesConcierges®</a>
                 </div>
               </div>
               <div>
@@ -510,7 +510,7 @@ const AboutPage = () => {
               </div>
               
               <div className="flex items-center gap-6 text-white/50 text-sm">
-                <Link to="/privacy" className="hover:text-white transition-colors">Privacy</Link>
+                <Link to="/privacy-policy" className="hover:text-white transition-colors">Privacy</Link>
                 <Link to="/terms" className="hover:text-white transition-colors">Terms</Link>
                 <Link to="/about" className="hover:text-white transition-colors">About</Link>
               </div>
