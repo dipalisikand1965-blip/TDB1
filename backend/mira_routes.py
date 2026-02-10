@@ -2996,7 +2996,17 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                         {"_id": 0}
                     ).sort("rating", -1).limit(3).to_list(3)
                     
-                    if stays:
+                    # Fallback to Google Places API if no database results
+                    if not stays:
+                        try:
+                            from services.google_places_service import search_pet_friendly_hotels
+                            stays = await search_pet_friendly_hotels(city_for_search, max_results=5)
+                            if stays:
+                                nearby_places_data = {"type": "stays", "places": stays, "city": city_for_search, "source": "google_places"}
+                                logger.info(f"[NEARBY] Found {len(stays)} pet-friendly stays via Google Places in {city_for_search}")
+                        except Exception as stay_err:
+                            logger.warning(f"[NEARBY] Google Places error for stays: {stay_err}")
+                    elif stays:
                         nearby_places_data = {"type": "stays", "places": stays, "city": city_for_search}
                         logger.info(f"[NEARBY] Found {len(stays)} pet-friendly stays in {city_for_search}")
                 
