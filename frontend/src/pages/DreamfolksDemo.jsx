@@ -1910,18 +1910,22 @@ Ask me anything about him!`
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button className="bg-purple-500 hover:bg-purple-600 text-white px-8 py-6 text-lg">
-                <Calendar className="w-5 h-5 mr-2" />
-                Schedule a Call
-              </Button>
-              <Button variant="outline" className="border-white/20 text-white hover:bg-white/10 px-8 py-6 text-lg">
-                <Mail className="w-5 h-5 mr-2" />
-                partnerships@thedoggycompany.in
-              </Button>
+              <a href="tel:+919739908844">
+                <Button className="bg-purple-500 hover:bg-purple-600 text-white px-8 py-6 text-lg w-full">
+                  <Calendar className="w-5 h-5 mr-2" />
+                  Schedule a Call
+                </Button>
+              </a>
+              <a href="mailto:dipali@clubconcierge.in">
+                <Button variant="outline" className="border-white/20 text-white hover:bg-white/10 px-8 py-6 text-lg w-full">
+                  <Mail className="w-5 h-5 mr-2" />
+                  partnerships@thedoggycompany.in
+                </Button>
+              </a>
             </div>
 
             <p className="text-white/40 text-sm mt-6">
-              Or call us directly: +91 96631 85747
+              Or call us directly: <a href="tel:+919739908844" className="hover:text-white/60 transition-colors">+91 97399 08844</a>
             </p>
           </div>
         </div>
