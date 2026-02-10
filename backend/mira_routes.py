@@ -3504,7 +3504,8 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                 # HEALTH - Check early for symptoms (scratching, itching, sick, etc.)
                 elif any(w in type_context for w in ["health", "vet", "doctor", "medicine", "sick", "symptom", "checkup", "vaccination", 
                                                       "scratching", "itching", "itch", "skin", "rash", "allergy", "vomit", "diarrhea",
-                                                      "lethargic", "limping", "pain", "hurt", "injury", "wound"]):
+                                                      "lethargic", "limping", "pain", "hurt", "injury", "wound",
+                                                      "tick", "flea", "parasite", "worm", "prevention", "protect"]):
                     detected_tip_type = "health_advice"
                 # CARE ROUTINE - Check early (care, routine, daily care, wellness)
                 elif any(w in type_context for w in ["care routine", "daily routine", "daily care", "wellness routine", "wellness", "self care", "pet care routine"]):
