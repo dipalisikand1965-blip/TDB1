@@ -3456,7 +3456,9 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                                "diwali", "festival", "gotcha", "celebrate", "ritual", "bonding", "daily",
                                "calming", "relaxing", "care", "wellness", "habit", "routine", "matter",
                                "senior", "aging", "old age", "elderly", "joint", "stiff", "mobility",
-                               "what can i do", "what should i", "getting old", "becomes senior"]
+                               "what can i do", "what should i", "getting old", "becomes senior",
+                               "tick", "flea", "parasite", "prevention", "protect", "scratching", "itching",
+                               "skin", "allergy", "health", "vet", "doctor", "medicine", "sick", "symptom"]
             user_input_lower = request.input.lower() if request.input else ""
             
             # Check both current input AND conversation history for advisory context
