@@ -3575,8 +3575,23 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
             pet_name = request.pet_context.get("name", "your pet") if request.pet_context else "your pet"
             breed = request.pet_context.get("breed", "") if request.pet_context else ""
             
-            # Get friendly title
+            # Get friendly title - with special handling for health_advice to be more specific
             friendly_title = tip_titles.get(tip_card_type, tip_card_type.replace('_', ' ').title())
+            
+            # Make health advice titles more specific based on the topic
+            if tip_card_type == "health_advice":
+                if any(w in user_input_lower for w in ["tick"]):
+                    friendly_title = "Tick Prevention Tips"
+                elif any(w in user_input_lower for w in ["flea"]):
+                    friendly_title = "Flea Prevention Tips"
+                elif any(w in user_input_lower for w in ["scratching", "itching", "itch"]):
+                    friendly_title = "Skin Care Tips"
+                elif any(w in user_input_lower for w in ["parasite", "worm"]):
+                    friendly_title = "Parasite Prevention"
+                elif any(w in user_input_lower for w in ["allergy", "allergic"]):
+                    friendly_title = "Allergy Care Tips"
+                elif any(w in user_input_lower for w in ["vaccination", "vaccine"]):
+                    friendly_title = "Vaccination Guide"
             
             # Generate tip card with breed-specific content
             import uuid as uuid_module
