@@ -2567,7 +2567,7 @@ async def send_email_reply(
         """
         
         response = resend.Emails.send({
-            "from": "The Doggy Company <woof@thedoggycompany.in>",
+            "from": "THEDOGGYCOMPANY <woof@thedoggycompany.in>",
             "to": [recipient_email],
             "subject": email_subject,
             "html": html_content
