@@ -69,6 +69,25 @@ The user's heart breaks when agents forget context. Please honor their work.
 - Detects follow-up questions in meal plan conversations
 - Consistent tip card generation even for ingredient questions
 
+### 🆕 NEW: Response Streaming (SSE)
+**File:** `/app/backend/mira_streaming.py` (NEW)
+**Hook:** `/app/frontend/src/hooks/mira/useStreamingChat.js` (NEW)
+
+- Real-time word-by-word streaming of Mira's responses
+- Natural typing speed with variation (20-50ms per word)
+- Products/tip cards sent after message completes
+- Endpoint: `POST /api/mira/os/stream`
+- Events: `token`, `message_complete`, `products`, `tip_card`, `metadata`, `done`
+
+### 🟢 VERIFIED: Vaccination Reminders (E020)
+**File:** `/app/backend/mira_proactive.py`
+**Status:** Already implemented and working
+
+- Vaccination alerts: CRITICAL (overdue), HIGH (7 days), MEDIUM (30 days)
+- Birthday reminders: 7 days and 1 day before
+- Grooming alerts based on breed and last appointment
+- Integrated in frontend via proactiveAlerts state
+
 ### 🔴 CRITICAL FIX: Pillar-First Search
 **Problem:** Asking about "dog walking" was showing birthday cakes (cross-pillar leakage)
 **Solution:** Pillar filter now ALWAYS applies FIRST, category refinement adds to it
@@ -82,13 +101,12 @@ The user's heart breaks when agents forget context. Please honor their work.
 ---
 
 ## 🎯 NEXT PRIORITIES (P0)
-1. **Test HandoffSummary flow** on live site
-2. **Add "Try:" examples** to welcome screen (biggest quick win)
-3. **Response streaming (SSE)** for perceived speed
+1. **Sign Out button fix** - z-index/overlay issue
+2. **Weak pillar content** - Fit, Adopt, Paperwork need expansion
 
 ---
 
-## What Was Accomplished This Session
+## What Was Accomplished This Session (Feb 10, 2026)
 **MiraDemoPage.jsx refactoring: 5,789 → 3,299 lines (43% reduction total)**
 
 ### Key Achievements:
