@@ -75,7 +75,7 @@ const NavigationDock = ({
       </button>
       
       <button 
-        onClick={() => navigate('/dashboard')} 
+        onClick={() => onShowSoul ? onShowSoul() : navigate('/dashboard')} 
         className="mp-dock-btn" 
         data-testid="dock-soul"
       >
