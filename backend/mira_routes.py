@@ -3472,20 +3472,27 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
             
             # Determine tip card type based on full context
             if should_tip:
-                if any(w in full_context for w in ["meal", "food", "diet", "eat", "feeding", "breakfast", "lunch", "dinner"]):
+                # CELEBRATION - Check first (most specific for birthday/party)
+                if any(w in full_context for w in ["celebrate", "birthday", "party", "gotcha", "anniversary", "calendar", "special moment", "special day"]):
+                    detected_tip_type = "celebration_tips"
+                elif any(w in full_context for w in ["meal", "food", "diet", "eat", "feeding", "breakfast", "lunch", "dinner"]):
                     detected_tip_type = "meal_plan"
                 elif any(w in full_context for w in ["travel", "trip", "vacation", "holiday"]):
                     detected_tip_type = "travel_tips"
-                elif any(w in full_context for w in ["groom", "bath", "brush"]):
+                elif any(w in full_context for w in ["groom", "bath", "brush", "haircut", "trim"]):
                     detected_tip_type = "grooming_routine"
-                elif any(w in full_context for w in ["train", "behavior", "obedience"]):
+                elif any(w in full_context for w in ["train", "behavior", "obedience", "teach"]):
                     detected_tip_type = "training_tips"
-                elif any(w in full_context for w in ["health", "vet", "doctor", "medicine"]):
+                elif any(w in full_context for w in ["health", "vet", "doctor", "medicine", "sick"]):
                     detected_tip_type = "health_advice"
-                elif any(w in full_context for w in ["exercise", "walk", "fit", "weight"]):
+                elif any(w in full_context for w in ["exercise", "walk", "fit", "weight", "activity"]):
                     detected_tip_type = "exercise_routine"
-                elif any(w in full_context for w in ["ritual", "bonding", "daily", "calming", "relax", "matter", "care"]):
+                elif any(w in full_context for w in ["ritual", "bonding", "daily", "calming", "relax", "matter", "care", "quality time"]):
                     detected_tip_type = "bonding_ritual"
+                elif any(w in full_context for w in ["safe", "safety", "festival", "diwali", "holi", "firework", "loud noise"]):
+                    detected_tip_type = "festival_safety"
+                elif any(w in full_context for w in ["new pet", "puppy", "kitten", "first time", "new parent"]):
+                    detected_tip_type = "new_pet_guide"
                 else:
                     detected_tip_type = "general"
         
