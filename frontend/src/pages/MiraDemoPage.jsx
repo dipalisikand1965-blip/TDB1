@@ -1084,7 +1084,7 @@ const MiraDemoPage = () => {
         ]);
         
         const placesData = placesResponse.ok ? await placesResponse.json() : { places: [] };
-        const statsData = statsResponse.ok ? await statsResponse.json() : { stats: [] };
+        const statsData = statsResponse.ok ? await statsResponse.json() : { stats: [], knowledge_items: [] };
         const digestData = digestResponse.ok ? await digestResponse.json() : { digest: [] };
         const milestonesData = milestonesResponse.ok ? await milestonesResponse.json() : { milestones: [] };
         const memoryData = memoryResponse.ok ? await memoryResponse.json() : { memories: [] };
@@ -1096,7 +1096,14 @@ const MiraDemoPage = () => {
         setMemoryLane(memoryData.memories || []);
         setReorderSuggestions(reorderData.suggestions || []);
         
-        // Build ticker items
+        // NEW: Store soul knowledge for the dynamic ticker
+        setSoulKnowledge({
+          items: statsData.knowledge_items || [],
+          soulScore: statsData.soul_score || 0,
+          encourageCompletion: statsData.encourage_soul_completion || false
+        });
+        
+        // Build ticker items (legacy format for backward compatibility)
         const tickerItems = [];
         
         // Add weather
