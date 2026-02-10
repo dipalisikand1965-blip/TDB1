@@ -93,26 +93,25 @@ const SoulFormModal = ({
     setIsSubmitting(true);
     
     try {
-      // Submit each answer to update the pet's Soul
-      const response = await fetch(`${API_URL}/api/pets/${pet.id}/soul-answers`, {
+      // Submit answers to update the pet's Soul using bulk endpoint
+      const response = await fetch(`${API_URL}/api/pet-soul/profile/${pet.id}/answers/bulk`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({
-          answers: allAnswers
-        })
+        body: JSON.stringify(allAnswers)
       });
       
       if (response.ok) {
         const data = await response.json();
-        setNewScore(data.new_score || pet.soulScore + 15); // Estimate +15 for 3 questions
+        const calculatedScore = data.scores?.overall || pet.soulScore + 15;
+        setNewScore(calculatedScore);
         setIsComplete(true);
         
         // Notify parent to refresh pet data
         if (onSoulUpdated) {
-          onSoulUpdated(data.new_score, allAnswers);
+          onSoulUpdated(calculatedScore, allAnswers);
         }
       } else {
         console.error('[SoulFormModal] Failed to submit answers');
