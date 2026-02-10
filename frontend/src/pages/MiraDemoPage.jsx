@@ -550,6 +550,12 @@ const MiraDemoPage = () => {
   const [quickReplies, setQuickReplies] = useState([]);
   
   // ═══════════════════════════════════════════════════════════════════════════
+  // HANDOFF SUMMARY - Shows summary BEFORE sending to Concierge®
+  // User confirms before handoff happens
+  // ═══════════════════════════════════════════════════════════════════════════
+  const [handoffSummary, setHandoffSummary] = useState(null);
+  
+  // ═══════════════════════════════════════════════════════════════════════════
   // NOTE: Vault state (showVault, activeVaultData, vaultUserMessage, miraPicks, 
   // showMiraTray) now comes from useVault hook above
   // ═══════════════════════════════════════════════════════════════════════════
