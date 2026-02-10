@@ -359,12 +359,12 @@ const VaultManager = ({
       );
 
     case VAULT_TYPES.PLACES:
-      const placeType = detectPlaceType(userMessage);
+      const placeType = miraResponse?.nearby_places?.type || detectPlaceType(userMessage);
       return (
         <PlacesVault
           places={miraResponse?.places || miraResponse?.nearby_places?.places || []}
           placeType={placeType}
-          location={miraResponse?.location || ''}
+          location={miraResponse?.nearby_places?.city || miraResponse?.location || ''}
           pet={pet}
           pillar={pillar}
           onSendToConcierge={(data) => sendToConcierge({
