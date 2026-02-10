@@ -3047,9 +3047,23 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                            "recommend", "suggest", "help with", "how to", "should", "would recommend",
                            "create", "plan", "healthy"]
         user_input_lower = request.input.lower() if request.input else ""
-        is_seeking_advice = any(kw in user_input_lower for kw in advisory_keywords)
         
-        if is_advisory_response and is_seeking_advice:
+        # Check both current input AND conversation history for advisory context
+        conversation_context = " ".join([
+            msg.get("content", "").lower() 
+            for msg in (request.conversation_history or [])[-3:]  # Last 3 messages
+        ])
+        full_context = user_input_lower + " " + conversation_context
+        
+        is_seeking_advice = any(kw in full_context for kw in advisory_keywords)
+        
+        # Also detect food-related follow-ups for meal plan conversations
+        food_words = ["eggs", "chicken", "carrots", "vegetables", "rice", "meat", "fish", 
+                     "breakfast", "lunch", "dinner", "morning", "night", "feed", "eating"]
+        is_food_followup = any(word in user_input_lower for word in food_words) and \
+                          any(kw in conversation_context for kw in ["meal", "food", "diet", "feeding", "eat"])
+        
+        if is_advisory_response and (is_seeking_advice or is_food_followup):
             # Tip card icons
             tip_icons = {
                 "meal_plan": "🍽️", "travel_tips": "✈️", "grooming_routine": "✨",
