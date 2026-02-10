@@ -3438,6 +3438,55 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
         # ═══════════════════════════════════════════════════════════════════════════
         mira_message_text = response_data.get("response", {}).get("message", "") or ""
         
+        # ═══════════════════════════════════════════════════════════════════════════
+        # MEDICAL GUARDRAIL - Mira should NOT recommend medical products
+        # For tick/flea treatments, medications, etc. → Suggest vet or Concierge®
+        # ═══════════════════════════════════════════════════════════════════════════
+        user_input_lower_guard = (request.input or "").lower()
+        medical_product_keywords = [
+            "spot-on", "spot on", "tick collar", "flea collar", "oral medication", 
+            "medicine for", "medication for", "tablet for", "drops for", "spray for",
+            "treatment for tick", "treatment for flea", "anti-tick", "anti-flea",
+            "nexgard", "frontline", "bravecto", "seresto", "advantix", "simparica",
+            "deworming", "deworm", "antibiotic", "painkiller", "steroid"
+        ]
+        
+        is_medical_product_request = any(kw in user_input_lower_guard for kw in medical_product_keywords)
+        
+        # Also check if Mira's response is recommending medical products (should redirect)
+        medical_response_indicators = [
+            "spot-on treatment", "oral medication", "tick collar", "flea collar",
+            "apply to skin", "apply directly", "kills tick", "kills flea",
+            "prescription", "dosage", "administer"
+        ]
+        is_mira_giving_medical_advice = any(ind in mira_message_text.lower() for ind in medical_response_indicators)
+        
+        if is_medical_product_request or is_mira_giving_medical_advice:
+            pet_name = request.pet_context.get("name", "your pet") if request.pet_context else "your pet"
+            
+            # Override Mira's response with a proper guardrail message
+            guardrail_message = f"""I appreciate you wanting to protect {pet_name} from ticks and parasites — that's really thoughtful care.
+
+For tick prevention products like spot-on treatments, tick collars, or oral medications, **I'd recommend consulting with a veterinarian** first. They can assess {pet_name}'s specific needs, weight, and any sensitivities to recommend the safest and most effective option.
+
+Here's how I can help:
+- **Find a trusted vet nearby** who can guide you on the right product
+- **Connect you with your pet Concierge®** to help coordinate a vet appointment
+- **Show nearby pet pharmacies or vet clinics** where you can get the right treatment
+
+Would you like me to find vets or pet pharmacies near you, or shall I have your Concierge® help arrange a quick consultation?"""
+            
+            response_data["response"]["message"] = guardrail_message
+            response_data["response"]["products"] = []  # Don't show medical products
+            
+            # Set places_search to show vets nearby
+            response_data["response"]["suggest_places"] = True
+            response_data["response"]["places_type"] = "vet"
+            response_data["response"]["handoff_suggested"] = True
+            
+            logger.info(f"[MEDICAL GUARDRAIL] Blocked medical product recommendation, redirecting to vet/concierge")
+            mira_message_text = guardrail_message
+        
         # Advisory response = message is long enough AND either no products OR explicitly advisory intent
         is_advisory_response = len(mira_message_text) > 150
         
