@@ -2995,7 +2995,8 @@ const MiraDemoPage = () => {
     stopSpeaking();
     
     // Mark that the next response should skip voice (tile was clicked)
-    skipVoiceOnNextResponseRef.current = true;
+    // Using useVoice hook's skipNextVoice function
+    skipNextVoice();
     
     // HAPTIC: Chip tap
     hapticFeedback.chipTap();
@@ -3005,7 +3006,7 @@ const MiraDemoPage = () => {
         handleSubmitRef.current(null, replyValue);
       }
     }, 50);
-  }, [stopSpeaking]);
+  }, [stopSpeaking, skipNextVoice]);
   
   // IN-MIRA SERVICE REQUEST HANDLERS
   // Open service request modal when clicking a service/experience card
