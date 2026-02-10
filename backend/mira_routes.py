@@ -3372,8 +3372,10 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
         
         # INCREMENT SOUL SCORE - Every conversation helps Mira know the pet better!
         updated_soul_score = None
+        logger.info(f"[SOUL SCORE DEBUG] pet_context: {request.pet_context}")
         if request.pet_context and request.pet_context.get("id"):
             try:
+                logger.info(f"[SOUL SCORE] Starting increment for pet: {request.pet_context.get('id')}")
                 # Determine interaction type based on what happened
                 interaction_type = "conversation"
                 if understanding.get("pet_preference_learned"):
