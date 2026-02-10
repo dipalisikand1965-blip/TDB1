@@ -3497,67 +3497,67 @@ PILLARS = {
     "celebrate": {
         "name": "Celebrate",
         "icon": "🎂",
-        "keywords": ["birthday", "cake", "celebration", "party", "treats", "milestone", "anniversary"],
+        "keywords": ["birthday", "cake", "celebration", "celebrate", "party", "treats", "milestone", "anniversary", "gotcha", "gotcha day", "adoption day", "pup-day", "pawty", "gift", "balloon", "decoration"],
         "urgency_default": "medium"
     },
     "dine": {
         "name": "Dine",
         "icon": "🍽️",
-        "keywords": ["restaurant", "dining out", "cafe", "brunch", "lunch", "dinner", "reservation", "pet-friendly restaurant", "dine out"],
+        "keywords": ["restaurant", "dining out", "cafe", "brunch", "lunch", "dinner", "reservation", "pet-friendly restaurant", "dine out", "pet cafe", "dog cafe", "cat cafe"],
         "urgency_default": "medium"
     },
     "stay": {
         "name": "Stay",
         "icon": "🏨",
-        "keywords": ["hotel", "stay", "boarding", "daycare", "accommodation", "resort", "pawcation", "vacation"],
+        "keywords": ["hotel", "stay", "boarding", "daycare", "accommodation", "resort", "pawcation", "vacation", "kennel", "pet sitter"],
         "urgency_default": "medium"
     },
     "travel": {
         "name": "Travel",
         "icon": "✈️",
-        "keywords": ["travel", "flight", "cab", "car", "transport", "relocate", "relocation", "train", "airport", "pickup", "drop"],
+        "keywords": ["travel", "flight", "cab", "car", "transport", "relocate", "relocation", "train", "airport", "pickup", "drop", "road trip", "packing", "checklist"],
         "urgency_default": "medium"
     },
     "care": {
         "name": "Care",
         "icon": "💊",
-        "keywords": ["grooming", "vet", "veterinary", "health", "wellness", "vaccine", "checkup", "sitting", "walking", "daycare", "medical"],
+        "keywords": ["grooming", "vet", "veterinary", "health", "wellness", "vaccine", "checkup", "sitting", "walking", "daycare", "medical", "groom", "haircut", "bath", "nail trim"],
         "urgency_default": "medium"
     },
     "enjoy": {
         "name": "Enjoy",
         "icon": "🎾",
-        "keywords": ["event", "meetup", "trail", "hike", "experience", "activity", "fun", "play", "park"],
+        "keywords": ["event", "meetup", "trail", "hike", "experience", "activity", "fun", "play", "park", "beach", "outdoor"],
         "urgency_default": "low"
     },
     "fit": {
         "name": "Fit",
         "icon": "🏃",
-        "keywords": ["fitness", "weight", "exercise", "training", "behaviour", "diet", "nutrition", "obesity", "meal plan", "food plan", "feeding schedule", "what to feed", "home cooked", "homemade food", "kibble", "wet food", "raw diet"],
+        "keywords": ["fitness", "weight", "exercise", "diet", "nutrition", "obesity", "meal plan", "food plan", "feeding schedule", "what to feed", "home cooked", "homemade food", "kibble", "wet food", "raw diet", "overweight", "portion", "how much to feed"],
         "urgency_default": "low"
     },
     "learn": {
         "name": "Learn",
         "icon": "🎓",
-        "keywords": ["learn", "training", "course", "class", "puppy", "obedience", "behaviour", "agility"],
+        "keywords": ["learn", "training", "course", "class", "puppy", "obedience", "behaviour", "behavior", "agility", "teach", "command", "sit", "stay", "come", "heel", "barking", "biting"],
         "urgency_default": "low"
     },
     "paperwork": {
         "name": "Paperwork",
         "icon": "📄",
-        "keywords": ["document", "certificate", "passport", "vaccine", "insurance", "record", "microchip", "license"],
+        "keywords": ["document", "certificate", "passport", "vaccine certificate", "insurance", "record", "microchip", "license", "upload", "store", "save"],
         "urgency_default": "medium"
     },
     "advisory": {
         "name": "Advisory",
         "icon": "📋",
-        "keywords": ["advice", "consult", "question", "help", "guidance", "recommendation", "suggest"],
+        "keywords": ["advice", "consult", "question", "help", "guidance", "recommendation", "suggest", "tips", "how to", "what should"],
         "urgency_default": "low"
     },
     "emergency": {
         "name": "Emergency",
         "icon": "🚨",
-        "keywords": ["emergency", "urgent", "help", "lost", "missing", "accident", "injured", "sick", "poison", "bleeding", "choking"],
+        "keywords": ["emergency", "urgent", "help", "lost", "missing", "accident", "injured", "sick", "poison", "bleeding", "choking", "not eating", "hasn't eaten", "limping", "vomiting", "diarrhea", "seizure", "unconscious", "ate chocolate", "ate something", "swallowed"],
         "urgency_default": "critical"
     },
     "farewell": {
