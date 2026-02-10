@@ -228,8 +228,13 @@ const VaultManager = ({
       
       const result = await response.json();
       
-      if (result.success && onVaultSent) {
-        onVaultSent(result);
+      if (result.success) {
+        // Play concierge bell sound on successful send
+        notificationSounds.concierge();
+        
+        if (onVaultSent) {
+          onVaultSent(result);
+        }
       }
       
       return result;
