@@ -131,6 +131,186 @@ CONTEXT_CONTINUITY_WORDS = [
 ]
 
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# MULTI-INTENT DETECTION - Handle "X AND Y" queries
+# ═══════════════════════════════════════════════════════════════════════════════
+
+MULTI_INTENT_CONNECTORS = [
+    " and ", " also ", " plus ", " & ", " as well as ",
+    ", and ", ", also ", " both ", " along with ",
+]
+
+def detect_multi_intent(user_input: str) -> Dict[str, Any]:
+    """
+    Detect if user is asking for multiple things at once.
+    
+    Examples:
+    - "Book grooming AND order treats" → [grooming, treats]
+    - "I need a vet and also a groomer" → [vet, groomer]
+    - "Show me food and toys" → [food, toys]
+    
+    Returns:
+        {
+            "is_multi_intent": True,
+            "intents": ["grooming", "treats"],
+            "original_query": "...",
+            "split_queries": ["book grooming", "order treats"]
+        }
+    """
+    if not user_input:
+        return {"is_multi_intent": False}
+    
+    input_lower = user_input.lower().strip()
+    
+    # Check for multi-intent connectors
+    for connector in MULTI_INTENT_CONNECTORS:
+        if connector in input_lower:
+            parts = input_lower.split(connector)
+            if len(parts) >= 2:
+                # Clean up parts
+                split_queries = [p.strip() for p in parts if p.strip()]
+                
+                if len(split_queries) >= 2:
+                    # Detect intent for each part
+                    intents = []
+                    for query in split_queries:
+                        intent = detect_implicit_intent(query)
+                        if intent.get("detected"):
+                            intents.append(intent)
+                        else:
+                            intents.append({"query": query, "pillar": "general"})
+                    
+                    logger.info(f"[MULTI-INTENT] Detected {len(split_queries)} intents: {[i.get('pillar', i.get('query', '')) for i in intents]}")
+                    
+                    return {
+                        "is_multi_intent": True,
+                        "connector": connector.strip(),
+                        "intents": intents,
+                        "original_query": user_input,
+                        "split_queries": split_queries,
+                        "count": len(split_queries)
+                    }
+    
+    return {"is_multi_intent": False}
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# IMPLICIT INTENT DETECTION - Understand hidden meanings
+# ═══════════════════════════════════════════════════════════════════════════════
+
+# Symptom → Pillar/Intent mapping
+IMPLICIT_INTENT_PATTERNS = {
+    # Health symptoms → Care pillar
+    "scratching": {"pillar": "care", "intent": "skin_issue", "urgency": "medium", "suggest": "vet_dermatology"},
+    "itching": {"pillar": "care", "intent": "skin_issue", "urgency": "medium", "suggest": "vet_dermatology"},
+    "not eating": {"pillar": "care", "intent": "appetite_loss", "urgency": "high", "suggest": "vet_checkup"},
+    "won't eat": {"pillar": "care", "intent": "appetite_loss", "urgency": "high", "suggest": "vet_checkup"},
+    "refusing food": {"pillar": "care", "intent": "appetite_loss", "urgency": "high", "suggest": "vet_checkup"},
+    "vomiting": {"pillar": "emergency", "intent": "digestive_issue", "urgency": "critical", "suggest": "emergency_vet"},
+    "throwing up": {"pillar": "emergency", "intent": "digestive_issue", "urgency": "critical", "suggest": "emergency_vet"},
+    "diarrhea": {"pillar": "care", "intent": "digestive_issue", "urgency": "high", "suggest": "vet_checkup"},
+    "loose stool": {"pillar": "care", "intent": "digestive_issue", "urgency": "medium", "suggest": "vet_checkup"},
+    "limping": {"pillar": "emergency", "intent": "injury", "urgency": "high", "suggest": "emergency_vet"},
+    "can't walk": {"pillar": "emergency", "intent": "injury", "urgency": "critical", "suggest": "emergency_vet"},
+    "bleeding": {"pillar": "emergency", "intent": "injury", "urgency": "critical", "suggest": "emergency_vet"},
+    "lethargic": {"pillar": "care", "intent": "general_illness", "urgency": "high", "suggest": "vet_checkup"},
+    "not playing": {"pillar": "care", "intent": "behavior_change", "urgency": "medium", "suggest": "vet_checkup"},
+    "seems sad": {"pillar": "care", "intent": "behavior_change", "urgency": "medium", "suggest": "behavior_consult"},
+    "acting weird": {"pillar": "care", "intent": "behavior_change", "urgency": "medium", "suggest": "vet_checkup"},
+    "coughing": {"pillar": "care", "intent": "respiratory", "urgency": "medium", "suggest": "vet_checkup"},
+    "sneezing": {"pillar": "care", "intent": "respiratory", "urgency": "low", "suggest": "vet_checkup"},
+    "breathing hard": {"pillar": "emergency", "intent": "respiratory", "urgency": "critical", "suggest": "emergency_vet"},
+    "eye discharge": {"pillar": "care", "intent": "eye_issue", "urgency": "medium", "suggest": "vet_ophthalmology"},
+    "red eyes": {"pillar": "care", "intent": "eye_issue", "urgency": "medium", "suggest": "vet_ophthalmology"},
+    "ear smell": {"pillar": "care", "intent": "ear_infection", "urgency": "medium", "suggest": "vet_checkup"},
+    "shaking head": {"pillar": "care", "intent": "ear_infection", "urgency": "medium", "suggest": "vet_checkup"},
+    "losing fur": {"pillar": "care", "intent": "skin_issue", "urgency": "medium", "suggest": "vet_dermatology"},
+    "bald patches": {"pillar": "care", "intent": "skin_issue", "urgency": "medium", "suggest": "vet_dermatology"},
+    "drinking a lot": {"pillar": "care", "intent": "metabolic_issue", "urgency": "medium", "suggest": "vet_checkup"},
+    "peeing a lot": {"pillar": "care", "intent": "urinary_issue", "urgency": "medium", "suggest": "vet_checkup"},
+    
+    # Behavior → Learn pillar
+    "biting": {"pillar": "learn", "intent": "behavior_training", "urgency": "medium", "suggest": "trainer"},
+    "barking too much": {"pillar": "learn", "intent": "behavior_training", "urgency": "low", "suggest": "trainer"},
+    "aggressive": {"pillar": "learn", "intent": "behavior_training", "urgency": "high", "suggest": "behavior_specialist"},
+    "not listening": {"pillar": "learn", "intent": "obedience", "urgency": "low", "suggest": "trainer"},
+    "pulling on leash": {"pillar": "learn", "intent": "leash_training", "urgency": "low", "suggest": "trainer"},
+    "jumping on people": {"pillar": "learn", "intent": "behavior_training", "urgency": "low", "suggest": "trainer"},
+    "separation anxiety": {"pillar": "learn", "intent": "anxiety", "urgency": "medium", "suggest": "behavior_specialist"},
+    "scared of": {"pillar": "learn", "intent": "fear", "urgency": "medium", "suggest": "behavior_specialist"},
+    
+    # Life events → Various pillars
+    "going on vacation": {"pillar": "stay", "intent": "boarding", "urgency": "low", "suggest": "boarding_service"},
+    "traveling": {"pillar": "travel", "intent": "travel_planning", "urgency": "low", "suggest": "travel_service"},
+    "moving": {"pillar": "travel", "intent": "relocation", "urgency": "medium", "suggest": "pet_relocation"},
+    "having a baby": {"pillar": "learn", "intent": "baby_prep", "urgency": "medium", "suggest": "behavior_specialist"},
+    "new pet": {"pillar": "learn", "intent": "introduction", "urgency": "medium", "suggest": "trainer"},
+    "birthday": {"pillar": "celebrate", "intent": "celebration", "urgency": "low", "suggest": "party_planning"},
+    "anniversary": {"pillar": "celebrate", "intent": "celebration", "urgency": "low", "suggest": "party_planning"},
+    "passed away": {"pillar": "farewell", "intent": "grief", "urgency": "high", "suggest": "memorial_service"},
+    "rainbow bridge": {"pillar": "farewell", "intent": "grief", "urgency": "high", "suggest": "memorial_service"},
+    "lost my": {"pillar": "farewell", "intent": "grief", "urgency": "high", "suggest": "grief_support"},
+    
+    # Daily care → Various pillars
+    "getting fat": {"pillar": "fit", "intent": "weight_management", "urgency": "medium", "suggest": "diet_plan"},
+    "overweight": {"pillar": "fit", "intent": "weight_management", "urgency": "medium", "suggest": "vet_nutrition"},
+    "needs exercise": {"pillar": "fit", "intent": "fitness", "urgency": "low", "suggest": "dog_walker"},
+    "too much energy": {"pillar": "fit", "intent": "fitness", "urgency": "low", "suggest": "daycare"},
+    "bored": {"pillar": "enjoy", "intent": "enrichment", "urgency": "low", "suggest": "toys_activities"},
+}
+
+def detect_implicit_intent(user_input: str) -> Dict[str, Any]:
+    """
+    Detect implicit intent from user's description of symptoms/situations.
+    
+    Instead of user saying "I need a vet", they might say "he's scratching a lot"
+    and Mira should understand this means skin issue → vet needed.
+    
+    Returns:
+        {
+            "detected": True,
+            "pattern": "scratching",
+            "pillar": "care",
+            "intent": "skin_issue",
+            "urgency": "medium",
+            "suggest": "vet_dermatology",
+            "response_hint": "It sounds like there might be a skin issue..."
+        }
+    """
+    if not user_input:
+        return {"detected": False}
+    
+    input_lower = user_input.lower().strip()
+    
+    # Check each implicit pattern
+    for pattern, info in IMPLICIT_INTENT_PATTERNS.items():
+        if pattern in input_lower:
+            result = {
+                "detected": True,
+                "pattern": pattern,
+                "pillar": info["pillar"],
+                "intent": info["intent"],
+                "urgency": info["urgency"],
+                "suggest": info["suggest"],
+            }
+            
+            # Generate response hint based on urgency
+            if info["urgency"] == "critical":
+                result["response_hint"] = f"This sounds urgent! Please seek immediate veterinary care."
+            elif info["urgency"] == "high":
+                result["response_hint"] = f"I'd recommend seeing a vet soon about this."
+            elif info["urgency"] == "medium":
+                result["response_hint"] = f"This is worth getting checked out."
+            else:
+                result["response_hint"] = f"I can help you with this."
+            
+            logger.info(f"[IMPLICIT] Detected '{pattern}' → {info['pillar']}/{info['intent']} (urgency: {info['urgency']})")
+            
+            return result
+    
+    return {"detected": False}
+
+
 def detect_pronoun_reference(
     user_input: str,
     last_shown_items: List[Dict[str, Any]] = None
