@@ -2344,6 +2344,26 @@ const MiraDemoPage = () => {
           // The MiraTray or PicksIndicator will show the yellow gift icon
           console.log(`[PICKS READY] 🎁 ${newProducts.length} products, ${newServices.length} services curated silently`);
         }
+        
+        // ═══════════════════════════════════════════════════════════════════════════
+        // TIP CARD - For advisory responses without products
+        // Shows a summary card that can be sent to Concierge®
+        // ═══════════════════════════════════════════════════════════════════════════
+        const tipCard = data.response?.tip_card;
+        if (tipCard) {
+          console.log(`[TIP CARD] 📋 ${tipCard.type}: ${tipCard.title}`);
+          // Add tip card to miraPicks so it shows in the vault
+          setMiraPicks(prev => ({
+            ...prev,
+            tipCard: tipCard,
+            hasNew: true
+          }));
+          setActiveVaultData({
+            ...data.response,
+            advice: tipCard.content,
+            tip_card: tipCard
+          });
+        }
       } else if (clarifyOnly) {
         // Clarify-only mode - clear any existing picks
         setMiraPicks(prev => ({
