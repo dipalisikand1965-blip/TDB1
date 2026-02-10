@@ -2625,25 +2625,48 @@ const MiraDemoPage = () => {
     let detectedPillar = currentPillar?.toLowerCase() || 'general';
     let detectedTitle = `${currentPillar || 'Help'} Request`;
     
-    // Smarter pillar detection from conversation
-    if (contextLower.includes('meal') || contextLower.includes('food') || contextLower.includes('diet') || contextLower.includes('protein')) {
-      detectedPillar = 'dine';
+    // Smarter pillar detection from conversation - ORDER MATTERS (most specific first)
+    // EMERGENCY first - highest priority
+    if (contextLower.includes('emergency') || contextLower.includes('chocolate') || contextLower.includes('poison') || 
+        contextLower.includes('seizure') || contextLower.includes('bleeding') || contextLower.includes('not eating') ||
+        contextLower.includes('limping') || contextLower.includes('urgent')) {
+      detectedPillar = 'emergency';
+      detectedTitle = 'Emergency Request';
+    } 
+    // Specific intents
+    else if (contextLower.includes('meal') || contextLower.includes('diet') || contextLower.includes('nutrition') || contextLower.includes('protein')) {
+      detectedPillar = 'fit';
       detectedTitle = 'Meal Plan Request';
-    } else if (contextLower.includes('birthday') || contextLower.includes('party') || contextLower.includes('cake')) {
+    } else if (contextLower.includes('birthday') || contextLower.includes('party') || contextLower.includes('cake') || contextLower.includes('celebration') || contextLower.includes('gotcha')) {
       detectedPillar = 'celebrate';
       detectedTitle = 'Celebration Request';
-    } else if (contextLower.includes('grooming') || contextLower.includes('bath') || contextLower.includes('haircut')) {
+    } else if (contextLower.includes('grooming') || contextLower.includes('bath') || contextLower.includes('haircut') || contextLower.includes('nail trim')) {
       detectedPillar = 'care';
       detectedTitle = 'Grooming Request';
-    } else if (contextLower.includes('travel') || contextLower.includes('trip') || contextLower.includes('vacation')) {
+    } else if (contextLower.includes('travel') || contextLower.includes('trip') || contextLower.includes('vacation') || contextLower.includes('flight')) {
       detectedPillar = 'travel';
       detectedTitle = 'Travel Request';
-    } else if (contextLower.includes('cafe') || contextLower.includes('restaurant') || contextLower.includes('dine')) {
+    } else if (contextLower.includes('cafe') || contextLower.includes('restaurant') || contextLower.includes('dine out')) {
       detectedPillar = 'dine';
       detectedTitle = 'Dining Request';
-    } else if (contextLower.includes('walker') || contextLower.includes('sitter') || contextLower.includes('boarding')) {
+    } else if (contextLower.includes('walker') || contextLower.includes('sitter') || contextLower.includes('boarding') || contextLower.includes('daycare')) {
       detectedPillar = 'care';
       detectedTitle = 'Pet Care Service';
+    } else if (contextLower.includes('vet') || contextLower.includes('vaccination') || contextLower.includes('checkup') || contextLower.includes('health')) {
+      detectedPillar = 'care';
+      detectedTitle = 'Health & Vet Request';
+    } else if (contextLower.includes('hotel') || contextLower.includes('stay') || contextLower.includes('accommodation')) {
+      detectedPillar = 'stay';
+      detectedTitle = 'Stay Request';
+    } else if (contextLower.includes('train') || contextLower.includes('teach') || contextLower.includes('behavior') || contextLower.includes('obedience')) {
+      detectedPillar = 'learn';
+      detectedTitle = 'Training Request';
+    } else if (contextLower.includes('exercise') || contextLower.includes('fitness') || contextLower.includes('weight') || contextLower.includes('activity')) {
+      detectedPillar = 'fit';
+      detectedTitle = 'Fitness Request';
+    } else if (contextLower.includes('document') || contextLower.includes('certificate') || contextLower.includes('insurance') || contextLower.includes('paperwork')) {
+      detectedPillar = 'paperwork';
+      detectedTitle = 'Documents Request';
     }
     
     setHandoffSummary({
