@@ -3454,7 +3454,9 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                                "recommend", "suggest", "help with", "how to", "should", "would recommend",
                                "create", "plan", "healthy", "train", "teach", "learn", "safely", "safe",
                                "diwali", "festival", "gotcha", "celebrate", "ritual", "bonding", "daily",
-                               "calming", "relaxing", "care", "wellness", "habit", "routine", "matter"]
+                               "calming", "relaxing", "care", "wellness", "habit", "routine", "matter",
+                               "senior", "aging", "old age", "elderly", "joint", "stiff", "mobility",
+                               "what can i do", "what should i", "getting old", "becomes senior"]
             user_input_lower = request.input.lower() if request.input else ""
             
             # Check both current input AND conversation history for advisory context
