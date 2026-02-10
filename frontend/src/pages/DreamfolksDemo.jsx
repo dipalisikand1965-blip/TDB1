@@ -841,29 +841,21 @@ export default function DreamfolksDemo() {
     const thinking = simulateAIThinking(query);
     setAiThinking(thinking);
 
-    // Simulate response delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    // Simulate response delay (typing effect)
+    await new Promise(resolve => setTimeout(resolve, 1200));
 
-    // Generate contextual response
-    let response = "I understand you're asking about " + query.split(' ').slice(0, 3).join(' ') + "...";
+    // Get curated response from our 30 perfect responses
+    const matchedResponse = findBestResponse(query);
     
-    if (query.toLowerCase().includes('eating') || query.toLowerCase().includes('appetite')) {
-      response = "I'm concerned about Dollar not eating well. Given his usual healthy appetite, this could indicate:\n\n• Digestive upset\n• Dental issues\n• Stress or anxiety\n\n**Recommendation:** I'd suggest a vet check-up soon. Would you like me to find available appointments nearby?";
-    } else if (query.toLowerCase().includes('groom')) {
-      response = "Let me find grooming options for Dollar! As a Poodle, he needs regular professional grooming every 4-6 weeks.\n\n**Available this week:**\n• Pawsome Spa - ₹1,200 (Tomorrow 10 AM)\n• Fluffy Tails - ₹950 (Thursday 2 PM)\n\nShall I book one of these?";
-    } else if (query.toLowerCase().includes('birthday') || query.toLowerCase().includes('celebrate')) {
-      response = "Dollar's birthday on March 15th - he's turning 4! 🎂\n\n**Party Package Options:**\n• Basic: Cake + Photo (₹2,500)\n• Premium: Cake + Photo + 5 Friends (₹5,500)\n• Deluxe: Full party + Venue + Catering (₹12,000)\n\nWant me to start planning?";
-    } else if (query.toLowerCase().includes('travel') || query.toLowerCase().includes('goa')) {
-      response = "Exciting trip to Goa with Dollar! ✈️\n\n**Pet-Friendly Options:**\n• IndiGo allows pets in cabin (₹3,500 pet fee)\n• Pet-friendly hotels: Taj Fort Aguada, W Goa\n\n**I'll need:**\n• Health certificate (within 10 days)\n• Vaccination records\n\nWant me to prepare a travel checklist?";
-    } else if (query.toLowerCase().includes('vomit')) {
-      response = "⚠️ **This sounds urgent!**\n\nVomiting since morning needs immediate attention. Please:\n\n1. **Keep Dollar hydrated** - small sips of water\n2. **No food** for 12 hours\n3. **Monitor** for blood or lethargy\n\n**Emergency vets near you:**\n• 24/7 Pet Care - 2.3 km (Open now)\n• City Vet Hospital - 4.1 km\n\nShould I call them for you?";
-    } else if (query.toLowerCase().includes('food') || query.toLowerCase().includes('hypoallergenic')) {
-      response = "Looking for safe food for Dollar (avoiding chicken)! 🥗\n\n**Top Picks:**\n• Royal Canin Poodle Adult - ₹4,200\n• Farmina N&D Lamb & Blueberry - ₹3,800\n• Acana Singles Lamb - ₹5,100\n\nAll are chicken-free and perfect for poodles. Want details on any?";
-    } else if (query.toLowerCase().includes('treat')) {
-      response = "Treats for Dollar! Remembering he loves lamb and can't have chicken:\n\n**Safe & Delicious:**\n• Lamb Jerky Strips - ₹450\n• Peanut Butter Biscuits - ₹320\n• Sweet Potato Chews - ₹280\n\nAll chicken-free! ✓ Add to cart?";
-    }
+    // Update thinking panel with matched intent
+    thinking.steps.push({
+      step: "Response Selected",
+      result: `✓ ${matchedResponse.pillar} pillar`,
+      time: "2ms"
+    });
+    setAiThinking({...thinking});
 
-    setChatMessages(prev => [...prev, { role: 'mira', content: response }]);
+    setChatMessages(prev => [...prev, { role: 'mira', content: matchedResponse.response }]);
     setIsTyping(false);
   };
 
