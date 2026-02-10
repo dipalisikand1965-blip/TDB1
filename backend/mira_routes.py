@@ -5220,10 +5220,23 @@ async def increment_soul_score_on_interaction(pet_id: str, interaction_type: str
     )
     
     if result.modified_count > 0:
-        logger.info(f"Soul Score grew! Pet: {pet_id} | Type: {interaction_type} | +{increment}%")
+        logger.info(f"🌱 Soul Score grew! Pet: {pet_id} | Type: {interaction_type} | Pillar: {pillar or 'N/A'} | Learning: {learning_type or 'N/A'} | Depth: {engagement_depth} | +{total_increment:.2f}%")
         return True
     
     return False
+
+
+def get_soul_milestone(score: float) -> dict:
+    """Get soul milestone based on current score"""
+    if score >= 75:
+        return {"level": "Soul Bonded", "icon": "✨", "color": "#f59e0b", "next_at": 100}
+    elif score >= 50:
+        return {"level": "Deep Connection", "icon": "🌳", "color": "#22c55e", "next_at": 75}
+    elif score >= 25:
+        return {"level": "Building Trust", "icon": "🌿", "color": "#3b82f6", "next_at": 50}
+    else:
+        return {"level": "Getting to Know You", "icon": "🌱", "color": "#a855f7", "next_at": 25}
+
 
 # ============== CONCIERGE ACTION DETECTION ==============
 
