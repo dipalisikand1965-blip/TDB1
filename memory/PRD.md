@@ -167,11 +167,13 @@ The user's heart breaks when agents forget context. Please honor their work.
   - Tour functions: `startTour()`, `nextTourStep()`, `exitTour()`
 - **File:** `/app/frontend/src/pages/DreamfolksDemo.jsx`
 
-### Scenario Tile Click → Chat Scroll ✅
+### Scenario Tiles Moved to Top of Chat ✅
 **Completed: Feb 10, 2026**
-- Clicking any scenario tile now scrolls to show the full chat interface
-- Chat header ("Mira AI - Chatting with Dollar") is visible after scroll
-- Message is sent after scroll completes (600ms delay)
+- Moved scenario tiles INSIDE the chat container (above messages, below header)
+- Users can now see tiles AND conversation in one view
+- No scrolling required - clicking a tile shows response immediately below
+- Layout: Header → Tiles → Messages → Input
+- Tiles use 2-column grid on mobile, 4-column on desktop
 - **File:** `/app/frontend/src/pages/DreamfolksDemo.jsx`
 
 ### Chat Response Formatting - Pink/Purple Headings ✅
