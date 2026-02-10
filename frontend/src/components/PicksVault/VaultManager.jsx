@@ -60,10 +60,12 @@ function detectVaultTypeFromResponse(miraResponse, userMessage, pillar) {
     }
   }
   
-  // Places detection
-  const placesKeywords = ['restaurant', 'cafe', 'hotel', 'park', 'beach', 'pet-friendly', 'where can i', 'places to'];
+  // Places detection - expanded for all place types
+  const placesKeywords = ['restaurant', 'cafe', 'hotel', 'park', 'beach', 'pet-friendly', 'where can i', 'places to', 
+                          'groomer', 'grooming', 'photographer', 'photo', 'shelter', 'rescue', 'adoption', 
+                          'boarding', 'daycare', 'trainer', 'training', 'near me', 'find me'];
   if (placesKeywords.some(kw => lowerMessage.includes(kw))) {
-    if (miraResponse?.places?.length > 0 || miraResponse?.nearby_places) {
+    if (miraResponse?.places?.length > 0 || miraResponse?.nearby_places?.places?.length > 0) {
       return VAULT_TYPES.PLACES;
     }
   }
