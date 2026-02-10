@@ -124,8 +124,8 @@ const SEO_DATA = {
   
   // Other important pages
   membership: {
-    title: "Club Concierge Membership | Exclusive Pet Benefits | The Doggy Company",
-    description: "Join Club Concierge for exclusive pet benefits - priority bookings, member discounts, free deliveries & VIP services. Elevate your pet parenting!",
+    title: "Club Concierge® Membership | Exclusive Pet Benefits | The Doggy Company",
+    description: "Join Club Concierge® for exclusive pet benefits - priority bookings, member discounts, free deliveries & VIP services. Elevate your pet parenting!",
     keywords: "pet membership, club concierge, pet club, dog membership, pet rewards, exclusive pet benefits",
     image: DEFAULT_IMAGE,
   },
