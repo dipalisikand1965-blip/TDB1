@@ -142,7 +142,17 @@ The user's heart breaks when agents forget context. Please honor their work.
 
 ## What Was Accomplished This Session (Feb 10, 2026)
 
-### Latest: Landing Page Copy - Soul-Centric Rewrite ✅
+### Latest: Dreamfolks Demo Page - Layout Simplification ✅
+**Completed: Feb 10, 2026**
+- Removed redundant tabbed interface from B2B demo page (`/demo/dreamfolks`)
+- Deleted orphaned JSX code (~200 lines removed, 2002 → 1800 lines)
+- Removed unused state variables: `activeTab`, `setActiveTab`, `selectedPillar`, `setSelectedPillar`
+- Cleaned up unused imports: `ChevronRight`, `ChevronDown`, `Phone`, `X`, `ArrowRight`, `Play`, `Loader2`, `Volume2`
+- Page now flows directly: Chat Interface → Scenario Tiles → Heritage Section
+- Verified mobile and desktop responsiveness
+- **File:** `/app/frontend/src/pages/DreamfolksDemo.jsx`
+
+### Landing Page Copy - Soul-Centric Rewrite ✅
 **Completed: Feb 10, 2026**
 - Rewrote entire landing page to reflect Mira's soul philosophy
 - **New headline:** "They can't tell you what they need. But I can."
