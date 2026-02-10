@@ -8,7 +8,7 @@
 import React, { useState, useCallback } from 'react';
 import { 
   Check, X, MapPin, Star, Navigation, Phone,
-  Utensils, Hotel, Trees, Coffee, Waves, Scissors, Camera, Home, GraduationCap
+  Utensils, Hotel, Trees, Coffee, Waves, Scissors, Camera, Home, GraduationCap, Stethoscope, ShoppingBag
 } from 'lucide-react';
 import hapticFeedback from '../../utils/haptic';
 import './PlacesVault.css';
@@ -38,7 +38,11 @@ const PLACE_ICONS = {
   shelters: Home,
   boarding: Hotel,
   trainer: GraduationCap,
-  trainers: GraduationCap
+  trainers: GraduationCap,
+  vet: Stethoscope,
+  vets: Stethoscope,
+  pet_store: ShoppingBag,
+  pet_stores: ShoppingBag
 };
 
 const PLACE_COLORS = {
@@ -59,7 +63,11 @@ const PLACE_COLORS = {
   shelters: '#10b981',
   boarding: '#7c3aed',
   trainer: '#6366f1',
-  trainers: '#6366f1'
+  trainers: '#6366f1',
+  vet: '#ef4444',
+  vets: '#ef4444',
+  pet_store: '#f59e0b',
+  pet_stores: '#f59e0b'
 };
 
 // Display-friendly titles for place types
