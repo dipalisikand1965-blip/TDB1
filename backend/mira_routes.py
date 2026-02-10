@@ -9408,6 +9408,47 @@ async def get_mira_ticket_session(session_id: str):
         "ticket": ticket  # Keep full ticket for backward compatibility
     }
 
+@router.post("/session/{session_id}/complete")
+async def complete_session(
+    session_id: str,
+    request: Request,
+    authorization: Optional[str] = Header(None)
+):
+    """
+    Mark a session as complete and save to past chats.
+    Called on idle timeout or logout.
+    """
+    db = get_db()
+    
+    try:
+        body = await request.json()
+    except:
+        body = {}
+    
+    reason = body.get("reason", "manual")
+    message_count = body.get("message_count", 0)
+    
+    # Update the session in the database
+    result = await db.mira_sessions.update_one(
+        {"session_id": session_id},
+        {
+            "$set": {
+                "status": "completed",
+                "completed_at": datetime.now(timezone.utc),
+                "completion_reason": reason,
+                "message_count": message_count
+            }
+        }
+    )
+    
+    logger.info(f"[SESSION COMPLETE] {session_id} - reason: {reason}, messages: {message_count}")
+    
+    return {
+        "success": True,
+        "session_id": session_id,
+        "status": "completed"
+    }
+
 @router.post("/session/new")
 async def create_new_session(
     authorization: Optional[str] = Header(None)
