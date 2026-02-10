@@ -196,6 +196,8 @@ const MiraDemoPage = () => {
   // MEMORY WHISPER: Track active memory context for whisper display
   const [activeMemoryContext, setActiveMemoryContext] = useState(null);
   const [isRecording, setIsRecording] = useState(false); // For universal search voice
+  // SOUL SCORE: Track when score updates for glow animation
+  const [soulScoreUpdated, setSoulScoreUpdated] = useState(false);
   
   // Core conversation state
   const [query, setQuery] = useState('');
