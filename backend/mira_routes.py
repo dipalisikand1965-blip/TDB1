@@ -1298,7 +1298,8 @@ async def search_real_products(
     search_override: str = None,  # For context-specific searches like "travel carrier"
     current_pillar: str = None,   # NEW: For pillar-first filtering
     current_life_state: str = None,  # NEW: For life state exclusions
-    user_query: str = None  # NEW: Original user query for treat detection
+    user_query: str = None,  # NEW: Original user query for treat detection
+    conversation_history: List[Dict] = None  # NEW: For context-aware advisory detection
 ) -> List[Dict[str, Any]]:
     """
     Search real products from the database based on Mira's understanding.
