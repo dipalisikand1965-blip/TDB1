@@ -3346,7 +3346,13 @@ const MiraDemoPage = () => {
                   replies={quickReplies}
                   onReply={(action) => {
                     setQuickReplies([]); // Clear after use
-                    handleQuickReply(action);
+                    
+                    // If "Send to Concierge" action, show summary first
+                    if (action.toLowerCase().includes('send') && action.toLowerCase().includes('concierge')) {
+                      showHandoffSummary();
+                    } else {
+                      handleQuickReply(action);
+                    }
                   }}
                   show={true}
                 />
