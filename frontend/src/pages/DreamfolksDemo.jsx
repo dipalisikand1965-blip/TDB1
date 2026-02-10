@@ -1867,10 +1867,10 @@ Ask me anything about him!`
                 stat: "34% lower churn"
               },
               {
-                title: "Revenue Share",
-                description: "Every transaction through Mira = revenue. Food, grooming, vet, boarding, travel — all monetizable.",
-                icon: TrendingUp,
-                stat: "₹18K avg. monthly spend"
+                title: "Simple Membership",
+                description: "Clean, predictable pricing per member. No complex revenue splits. Banks purchase memberships for cardholders.",
+                icon: CreditCard,
+                stat: "Per-member pricing"
               },
               {
                 title: "White-Label Ready",
