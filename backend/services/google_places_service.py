@@ -588,6 +588,42 @@ async def search_hotels_in_city(city: str, max_results: int = 10) -> Dict[str, A
         }
 
 
+async def search_pet_friendly_hotels(city: str, max_results: int = 5) -> List[Dict[str, Any]]:
+    """
+    Search for pet-friendly hotels/stays using Google Places API.
+    
+    Args:
+        city: City name
+        max_results: Maximum results (default 5 for display in chat)
+        
+    Returns:
+        List of hotel dictionaries with pet-friendly focus
+    """
+    result = await search_hotels_in_city(city, max_results=max_results * 2)  # Get more, filter down
+    
+    if result.get("success") and result.get("hotels"):
+        hotels = result["hotels"]
+        
+        # Format for Mira's display
+        formatted = []
+        for hotel in hotels[:max_results]:
+            formatted.append({
+                "name": hotel.get("name"),
+                "address": hotel.get("address"),
+                "rating": hotel.get("rating"),
+                "reviews": hotel.get("total_reviews"),
+                "phone": hotel.get("phone"),
+                "website": hotel.get("website"),
+                "price_level": hotel.get("price_level"),
+                "source": "google_places",
+                "pet_policy": "Pet policy to be verified by Concierge®"
+            })
+        
+        return formatted
+    
+    return []
+
+
 # Quick test function
 async def test_google_places_connection():
     """Test if Google Places API is working."""
