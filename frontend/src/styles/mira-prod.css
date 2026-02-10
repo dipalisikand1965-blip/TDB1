@@ -9153,3 +9153,103 @@ input, select, textarea {
   font-weight: 600;
 }
 
+
+/* ═══════════════════════════════════════════════════════════════════
+   PICKS INDICATOR - Yellow gift icon for silently curated picks
+   Non-intrusive, user chooses when to view
+   ═══════════════════════════════════════════════════════════════════ */
+.picks-indicator {
+  position: fixed;
+  bottom: 100px;
+  right: 20px;
+  z-index: 100;
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  border: none;
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(251, 191, 36, 0.4);
+  transition: all 0.3s ease;
+}
+
+.picks-indicator:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 30px rgba(251, 191, 36, 0.6);
+}
+
+.picks-indicator.has-new {
+  animation: picks-pulse 2s ease-in-out infinite;
+}
+
+@keyframes picks-pulse {
+  0%, 100% { box-shadow: 0 4px 20px rgba(251, 191, 36, 0.4); }
+  50% { box-shadow: 0 4px 30px rgba(251, 191, 36, 0.8); }
+}
+
+.picks-indicator-inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.picks-icon {
+  width: 24px;
+  height: 24px;
+  color: #1a0a2e;
+}
+
+.picks-badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #ec4899;
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  box-shadow: 0 2px 8px rgba(236, 72, 153, 0.5);
+}
+
+.picks-tooltip {
+  position: absolute;
+  bottom: 100%;
+  right: 0;
+  margin-bottom: 8px;
+  background: rgba(26, 10, 46, 0.95);
+  color: white;
+  font-size: 12px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.picks-indicator:hover .picks-tooltip {
+  opacity: 1;
+}
+
+/* Mobile positioning */
+@media (max-width: 480px) {
+  .picks-indicator {
+    bottom: 90px;
+    right: 12px;
+    width: 48px;
+    height: 48px;
+  }
+  
+  .picks-icon {
+    width: 20px;
+    height: 20px;
+  }
+}
