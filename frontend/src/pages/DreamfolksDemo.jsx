@@ -1918,6 +1918,56 @@ Ask me anything about him!` }
           </p>
         </div>
       </footer>
+
+      {/* Live Mira Popup Modal */}
+      <AnimatePresence>
+        {showLiveMira && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+            onClick={() => setShowLiveMira(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative w-full max-w-5xl h-[85vh] bg-[#0a0a1a] rounded-2xl border border-purple-500/30 overflow-hidden shadow-2xl shadow-purple-500/20"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-purple-500/20 to-pink-500/20 backdrop-blur-xl p-4 border-b border-white/10 flex items-center justify-between z-10">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                    <Sparkles className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <div className="text-white font-bold">Live Mira Experience</div>
+                    <div className="text-green-400 text-xs flex items-center gap-1">
+                      <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                      Full interactive demo with Dollar
+                    </div>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowLiveMira(false)}
+                  className="p-2 hover:bg-white/10 rounded-lg transition-colors"
+                >
+                  <X className="w-6 h-6 text-white" />
+                </button>
+              </div>
+
+              {/* Iframe to real Mira demo */}
+              <iframe
+                src="/mira-demo?demo_pet=dollar&demo_mode=true"
+                className="w-full h-full pt-16"
+                title="Live Mira Demo"
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
