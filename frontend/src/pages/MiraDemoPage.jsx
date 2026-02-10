@@ -2079,14 +2079,15 @@ const MiraDemoPage = () => {
       
       let miraResponseText = data.response?.message || "I'm here to help!";
       
-      // E033: Prepend memory context if relevant past conversation found
-      // E033: Add memory context to response (using extracted helper)
+      // ═══════════════════════════════════════════════════════════════════
+      // MEMORY WHISPER - Show memory context as subtle whisper, NOT inline
+      // Mira remembers but doesn't shout about it
+      // ═══════════════════════════════════════════════════════════════════
       if (memoryContext?.relevant_memory) {
-        const memoryPrefix = buildMemoryPrefix(memoryContext);
-        if (memoryPrefix) {
-          miraResponseText = memoryPrefix + miraResponseText;
-          console.log('[MEMORY] Added memory context to response');
-        }
+        // Instead of prepending to message, show whisper notification
+        setActiveMemoryContext(memoryContext);
+        console.log('[MEMORY WHISPER] Showing memory context as whisper:', memoryContext.relevant_memory.topic);
+        // Note: We no longer prepend to miraResponseText - the whisper handles it
       }
       
       // E025: Handle mood detection - modify response if pet mood concern detected
