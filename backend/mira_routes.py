@@ -3037,7 +3037,12 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                 "restaurant": ["restaurant", "cafe", "brunch", "lunch", "dinner", "eat out", "dine", "dining", "food place", "pet cafe"],
                 "stay": ["hotel", "resort", "stay", "accommodation", "vacation", "trip", "book room", "pet friendly hotel"],
                 "park": ["dog park", "park", "off leash", "play area"],
-                "pet_store": ["pet store", "pet shop", "buy food", "pet supplies", "dog food store", "pet boutique"]
+                "pet_store": ["pet store", "pet shop", "buy food", "pet supplies", "dog food store", "pet boutique"],
+                "groomer": ["groomer", "grooming", "groom", "haircut", "trim", "pet salon", "dog spa", "bath"],
+                "photographer": ["photographer", "photoshoot", "photography", "pet photo", "dog photo", "portrait"],
+                "shelter": ["shelter", "rescue", "adoption", "adopt", "spca", "animal welfare", "rescue organization"],
+                "boarding": ["boarding", "daycare", "hostel", "kennel", "dog hotel", "pet sitting"],
+                "trainer": ["trainer", "training", "obedience", "puppy class", "dog school", "behavior"]
             }
             
             detected_place_type = None
