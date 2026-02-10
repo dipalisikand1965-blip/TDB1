@@ -1083,6 +1083,7 @@ Ask me anything about him!` }
   const [tourStep, setTourStep] = useState(0);
   const chatEndRef = useRef(null);
   const heritageRef = useRef(null);
+  const chatContainerRef = useRef(null);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
