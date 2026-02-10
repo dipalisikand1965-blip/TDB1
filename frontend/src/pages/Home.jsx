@@ -285,7 +285,7 @@ const Home = () => {
               >
                 <Link to="/join" className="block">
                   <Button size="lg" className="w-full bg-gradient-to-r from-amber-500 via-pink-500 to-purple-600 hover:from-amber-600 hover:via-pink-600 hover:to-purple-700 text-white py-7 text-xl font-bold rounded-2xl shadow-2xl shadow-purple-500/30">
-                    Begin Your Pet's Journey <ArrowRight className="ml-2 w-6 h-6" />
+                    Let Me Know Your Pet <ArrowRight className="ml-2 w-6 h-6" />
                   </Button>
                 </Link>
                 
@@ -295,7 +295,7 @@ const Home = () => {
                   className="w-full border-2 border-purple-400/50 text-purple-200 hover:bg-purple-500/20 py-6 text-lg font-semibold rounded-2xl"
                   onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
                 >
-                  <Play className="mr-2 w-5 h-5" /> See the Magic
+                  <Play className="mr-2 w-5 h-5" /> See Who I Am
                 </Button>
               </motion.div>
               
