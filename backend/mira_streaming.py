@@ -178,12 +178,13 @@ async def mira_stream_response(request: MiraStreamRequest):
             }
         )
         
-    except Exception as e:
-        logger.error(f"[STREAM] Error: {e}")
+    except Exception as ex:
+        logger.error(f"[STREAM] Error: {ex}")
+        error_msg = str(ex)
         
         # Return error as stream
         async def error_stream():
-            yield f"event: error\ndata: {json.dumps({'error': str(e)})}\n\n"
+            yield f"event: error\ndata: {json.dumps({'error': error_msg})}\n\n"
             yield f"event: done\ndata: {json.dumps({'done': True, 'error': True})}\n\n"
         
         return StreamingResponse(
