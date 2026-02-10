@@ -2622,6 +2622,12 @@ const MiraDemoPage = () => {
       const isAdvisory = !hasProducts && !hasServices && miraResponseText.length > 100;
       const currentPillarForReplies = data.current_pillar || data.pillar || 'general';
       
+      // UPDATE PILLAR STATE: Ensure pillar is updated from API response
+      if (currentPillarForReplies && currentPillarForReplies !== 'general') {
+        setPillar(currentPillarForReplies);
+        console.log(`[PILLAR] Updated currentPillar to: ${currentPillarForReplies}`);
+      }
+      
       const newQuickReplies = generateQuickReplies({
         pillar: currentPillarForReplies,
         hasProducts,
