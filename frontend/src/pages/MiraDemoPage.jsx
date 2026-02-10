@@ -3946,6 +3946,23 @@ const MiraDemoPage = () => {
         onCategoryChange={fetchLearnVideos}
       />
       
+      {/* SOUL FORM MODAL - Quick questions to enrich pet profile */}
+      <SoulFormModal
+        isOpen={showSoulFormModal}
+        onClose={() => setShowSoulFormModal(false)}
+        pet={pet}
+        token={token}
+        onSoulUpdated={(newScore, answers) => {
+          // Update pet state with new score
+          if (newScore) {
+            setPet(prev => ({ ...prev, soulScore: Math.round(newScore) }));
+            setSoulScoreUpdated(true);
+            setTimeout(() => setSoulScoreUpdated(false), 2000);
+          }
+          console.log('[SOUL FORM] Pet soul updated:', { newScore, answers });
+        }}
+      />
+      
       {/* SERVICE REQUEST MODAL - Extracted to ServiceRequestModal component */}
       <ServiceRequestModal
         isOpen={serviceRequestModal.isOpen}
