@@ -317,21 +317,27 @@ const AboutPage = () => {
                 
                 <div className="space-y-4 text-white/70 leading-relaxed">
                   <p>
-                    Mira was a real dog. <strong className="text-amber-300">A Golden Retriever who taught us 
-                    what unconditional love looks like.</strong>
+                    Mira is <strong className="text-amber-300">Mrs. Mira Sikand</strong> — Dipali's mother — 
+                    the original human blueprint for what Mira AI is meant to become.
                   </p>
                   <p>
-                    She had her quirks — a specific spot she loved to be scratched, a treat she'd do 
-                    anything for, a particular way she'd greet us at the door.
+                    Long before search engines existed, she was a <em className="text-purple-300">living reference desk</em>: 
+                    an encyclopedia, a solutionist, and the warm force behind every "yes" the Concierge® team delivered.
+                    Her wisdom still guides every decision we make.
                   </p>
                   <p>
-                    When we built our AI, we didn't want a chatbot. We wanted something that understood 
-                    pets the way Mira taught us to understand them — 
-                    <em className="text-purple-300"> with patience, memory, and love</em>.
+                    At <strong className="text-pink-300">The Doggy Bakery®</strong>, Mira was hands-on — 
+                    making treats with her granddaughter, managing ingredients and deliveries. 
+                    This wasn't just inspiration in theory. It was care, detail, and doing the work properly.
                   </p>
-                  <p className="text-white font-medium">
-                    Mira® AI carries her spirit forward. Every interaction is guided by one question: 
-                    "What would Mira do?"
+                  <p>
+                    When you interact with Mira AI, you're experiencing her legacy: 
+                    <span className="text-white font-medium"> Judgment over listing. Memory and context. 
+                    Warmth with backbone. The calm certainty behind the "yes."</span>
+                  </p>
+                  <p className="text-white font-medium border-l-4 border-amber-400 pl-4 mt-6">
+                    "She didn't spray options. She picked the right one. 
+                    She remembered what mattered, and why it mattered."
                   </p>
                 </div>
               </motion.div>
