@@ -944,57 +944,6 @@ const MiraDemoPage = () => {
   // ═══════════════════════════════════════════════════════════════════════════════
   const idleTimerRef = useRef(null);
   
-  // Save conversation to past chats and start fresh
-  const saveAndClearConversation = useCallback(async () => {
-    if (conversationHistory.length > 1) { // Only save if there's actual conversation
-      try {
-        // Save session to backend as completed
-        const response = await fetch(`${API_URL}/api/mira/session/${sessionId}/complete`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(token && { Authorization: `Bearer ${token}` })
-          },
-          body: JSON.stringify({
-            reason: 'idle_timeout',
-            message_count: conversationHistory.length
-          })
-        });
-        
-        if (response.ok) {
-          console.log('[IDLE] Conversation saved to past chats after 5 minutes idle');
-        }
-      } catch (err) {
-        console.log('[IDLE] Could not save session:', err.message);
-      }
-      
-      // Start a fresh session
-      startNewSession();
-    }
-  }, [sessionId, conversationHistory.length, token, startNewSession]);
-  
-  // Check for idle timeout every minute
-  useEffect(() => {
-    const IDLE_TIMEOUT = 5 * 60 * 1000; // 5 minutes in ms
-    
-    const checkIdle = () => {
-      const timeSinceLastActivity = Date.now() - lastActivityRef.current;
-      if (timeSinceLastActivity >= IDLE_TIMEOUT && conversationHistory.length > 1) {
-        console.log('[IDLE] 5 minutes idle detected, saving conversation');
-        saveAndClearConversation();
-      }
-    };
-    
-    // Check every 30 seconds
-    idleTimerRef.current = setInterval(checkIdle, 30 * 1000);
-    
-    return () => {
-      if (idleTimerRef.current) {
-        clearInterval(idleTimerRef.current);
-      }
-    };
-  }, [conversationHistory.length, saveAndClearConversation]);
-  
   // Clear session function (for "New Chat" button)
   // Wraps hook's startNewSession with additional state clearing
   const startNewSession = useCallback(() => {
