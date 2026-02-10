@@ -1914,6 +1914,7 @@ const MiraDemoPage = () => {
     
     setIsProcessing(true);
     setQuery('');
+    setQuickReplies([]); // Clear quick replies when user sends new message
     
     // Show skeleton loader after 800ms if still processing
     const skeletonTimer = setTimeout(() => {
