@@ -2747,7 +2747,8 @@ const MiraDemoPage = () => {
         if (newCount >= MAX_CLARIFYING_QUESTIONS) {
           console.log('[CLARIFY LIMIT] Max questions reached - auto-transitioning');
           // Show what we have - products, tips, or send to concierge
-          if (newProducts.length > 0 || newServices.length > 0) {
+          // But ONLY if we actually have picks to show
+          if ((newProducts.length > 0 || newServices.length > 0) && miraPicks.products?.length > 0) {
             // We have picks - show them
             setShowVault(true);
           } else if (data.response?.tip_card) {
