@@ -5201,11 +5201,18 @@ async def increment_soul_score_on_interaction(pet_id: str, interaction_type: str
     result = await db.pets.update_one(
         {"id": pet_id, "overall_score": {"$lt": 100}},  # Cap at 100%
         {
-            "$inc": {"overall_score": increment},
+            "$inc": {"overall_score": total_increment},
             "$push": {
                 "soul_growth_log": {
                     "type": interaction_type,
-                    "increment": increment,
+                    "pillar": pillar,
+                    "learning_type": learning_type,
+                    "engagement_depth": engagement_depth,
+                    "base_increment": base_increment,
+                    "pillar_bonus": pillar_bonus,
+                    "learning_bonus": learning_bonus,
+                    "multiplier": multiplier,
+                    "total_increment": total_increment,
                     "timestamp": datetime.now(timezone.utc).isoformat()
                 }
             }
