@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://conversational-picks.preview.emergentagent.com/mira-demo**
+**https://mira-brain.preview.emergentagent.com/mira-demo**
 
 ---
 

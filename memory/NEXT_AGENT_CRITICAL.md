@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://conversational-picks.preview.emergentagent.com
+https://mira-brain.preview.emergentagent.com
 
 ---
 

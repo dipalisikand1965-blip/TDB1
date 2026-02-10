@@ -20,7 +20,7 @@ from typing import Dict, Any, List
 # Get backend URL from environment
 BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', '').rstrip('/')
 if not BASE_URL:
-    BASE_URL = "https://conversational-picks.preview.emergentagent.com"
+    BASE_URL = "https://mira-brain.preview.emergentagent.com"
 
 print(f"[TEST] Using BASE_URL: {BASE_URL}")
 
