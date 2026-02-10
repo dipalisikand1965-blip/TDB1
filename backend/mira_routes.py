@@ -5078,7 +5078,7 @@ CONCIERGE_ACTION_TRIGGERS = {
         "action_type": "dining_reservation"
     },
     "stay": {
-        "keywords": ["hotel", "stay", "accommodation", "room", "resort", "pet-friendly hotel", "book a room", "pawcation"],
+        "keywords": ["hotel", "stay", "accommodation", "room", "resort", "pet-friendly hotel", "book a room", "pawcation", "boarding", "daycare", "sitter"],
         "priority": "medium", 
         "action_type": "hotel_booking"
     },
@@ -5087,13 +5087,18 @@ CONCIERGE_ACTION_TRIGGERS = {
         "priority": "high",
         "action_type": "travel_arrangement"
     },
+    "grooming": {
+        "keywords": ["grooming", "groom", "haircut", "trim", "salon", "spa", "bath", "nail trim", "nail cut", "ear cleaning"],
+        "priority": "medium",
+        "action_type": "grooming_appointment"
+    },
     "care": {
-        "keywords": ["vet", "grooming", "appointment", "vaccination", "checkup", "salon", "spa", "trim", "bath"],
+        "keywords": ["vet", "appointment", "vaccination", "checkup", "health", "doctor", "medical", "sick", "medicine"],
         "priority": "high",
         "action_type": "care_appointment"
     },
     "celebrate": {
-        "keywords": ["cake", "birthday", "party", "celebration", "order cake", "birthday cake", "pup-cake", "cupcake", "treats", "gift"],
+        "keywords": ["cake", "birthday", "party", "celebration", "order cake", "birthday cake", "pup-cake", "cupcake", "gotcha day"],
         "priority": "medium",
         "action_type": "celebrate_order"
     },
