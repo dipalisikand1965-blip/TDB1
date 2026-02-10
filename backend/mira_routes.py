@@ -3474,7 +3474,14 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
             is_food_followup = any(word in user_input_lower for word in food_words) and \
                               any(kw in conversation_context for kw in ["meal", "food", "diet", "feeding", "eat"])
             
-            should_tip = is_advisory_response and (is_seeking_advice or is_food_followup)
+            # IMPORTANT: If response has products, this is likely a SHOPPING intent, not advisory
+            # Don't generate tip cards for shopping queries even if conversation history has advisory keywords
+            has_products = len(response_data.get("response", {}).get("products", [])) > 0
+            shopping_keywords = ["buy", "purchase", "order", "get me", "find me", "show me", "cake", "treat", "toy", "food", "product"]
+            is_shopping_intent = has_products and (any(kw in user_input_lower for kw in shopping_keywords) or 
+                                                   len(user_input_lower.split()) <= 3)  # Short queries like "Cake" are shopping
+            
+            should_tip = is_advisory_response and (is_seeking_advice or is_food_followup) and not is_shopping_intent
             
             # Determine tip card type based on USER INPUT primarily (not Mira's response)
             # This prevents Mira's response words from influencing the tip type
