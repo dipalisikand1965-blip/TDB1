@@ -8336,14 +8336,14 @@ input, select, textarea {
 /* Mini Tip Card in Insights */
 .mp-tip-card-mini {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  flex-direction: column;
   padding: 10px 12px;
   background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(217, 119, 6, 0.1) 100%);
   border: 1px solid rgba(245, 158, 11, 0.2);
   border-radius: 10px;
   margin-bottom: 8px;
   transition: all 0.2s ease;
+  cursor: pointer;
 }
 
 .mp-tip-card-mini:hover {
@@ -8351,14 +8351,24 @@ input, select, textarea {
   border-color: rgba(245, 158, 11, 0.4);
 }
 
+.mp-tip-card-mini .tip-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
 .mp-tip-card-mini .tip-card-icon {
   font-size: 20px;
+  flex-shrink: 0;
 }
 
 .mp-tip-card-mini .tip-card-content {
   display: flex;
   flex-direction: column;
   gap: 2px;
+  flex: 1;
+  min-width: 0;
 }
 
 .mp-tip-card-mini .tip-card-title {
@@ -8371,6 +8381,30 @@ input, select, textarea {
   font-size: 11px;
   color: rgba(245, 158, 11, 0.8);
   text-transform: capitalize;
+}
+
+.mp-tip-card-mini .tip-card-expand-icon {
+  color: rgba(255, 255, 255, 0.5);
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.mp-tip-card-mini.expanded .tip-card-expand-icon {
+  color: rgba(245, 158, 11, 0.9);
+}
+
+.mp-tip-card-mini .tip-card-expanded-content {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.mp-tip-card-mini .tip-card-expanded-content p {
+  font-size: 13px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+  white-space: pre-wrap;
 }
 
 /* Memory Item in Insights */
