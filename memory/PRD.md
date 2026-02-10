@@ -449,6 +449,89 @@ curl -s https://mira-os-build.preview.emergentagent.com/api/health
 
 ---
 
+
+---
+
+## Latest Session: Feb 10, 2026 (Session 2)
+
+### Concierge® Form Fixes - Edit Button & Pillar Detection ✅
+**Completed: Feb 10, 2026**
+
+**Problem:** 
+1. Edit button on Concierge® handoff form didn't work - just closed modal
+2. ALL requests defaulted to "celebrate" pillar instead of correct pillar
+3. Missing ® trademark symbol on several "Concierge" references
+
+**Root Cause Analysis:**
+- `currentPillar` state in MiraDemoPage.jsx was initialized to `'celebrate'` (line 193) and `setPillar()` was NEVER called anywhere in the code
+- The handoff summary detection worked correctly, but fell back to `currentPillar` which was always 'celebrate'
+
+**Fixes Applied:**
+
+1. **HandoffSummary Component - Inline Editing** (`/app/frontend/src/components/Mira/HandoffSummary.jsx`)
+   - Edit button now toggles editing mode instead of closing modal
+   - Added inline editing for: Title (input), Pillar (dropdown), Notes (textarea)
+   - Added pillar dropdown with all 11 pillar options
+   - Cancel/Save buttons replace Edit/Send when in editing mode
+   - Edited data passed to parent via `onConfirm(editedData)`
+
+2. **MiraDemoPage.jsx - Pillar State Management**
+   - Changed default pillar from `'celebrate'` to `'general'` (line 193)
+   - Added `setPillar(currentPillarForReplies)` after receiving API response (line 2628)
+   - Updated `handleConciergeHandoff` to accept `editedData` parameter and use edited pillar
+   - Expanded queue mapping to include all pillar types (lowercase keys)
+
+3. **Backend - Handoff Endpoint** (`/app/backend/mira_service_desk.py`)
+   - Added `pillar` and `request_title` fields to `HandoffToConciergeRequest` model
+   - Updated `handoff_to_concierge` endpoint to save user-edited pillar to ticket
+
+4. **Pillar Detection Improvements** (`/app/backend/mira_routes.py`)
+   - Added separate `grooming` category in `CONCIERGE_ACTION_TRIGGERS`
+   - Added keywords: `groomer`, `salon`, `spa`, `nail trim`, `nail cut`, `ear cleaning`
+   - Removed grooming from `care` category to prevent misclassification
+
+5. **Grooming Intent Detection** (`/app/backend/mira_service_desk.py`)
+   - Added patterns: `groomer`, `salon`, `spa` to `GROOM_PLAN` intent
+
+6. **® Trademark Symbol Updates**
+   - Updated 9+ instances of "Concierge" to "Concierge®"
+   - Files: FirstVisitTour.jsx, QuickReplies.jsx, RequestsTab.jsx, PicksVault.jsx, MembershipPage.jsx, SEOHead.jsx
+
+**Test Results:**
+- Backend `/api/mira/route_intent` - Correctly detects "groomer" as GROOM_PLAN intent
+- Backend `/api/service_desk/handoff_to_concierge` - Accepts pillar parameter
+- Frontend - Pillar state now updates from API response
+
+**Files Modified:**
+- `/app/frontend/src/components/Mira/HandoffSummary.jsx` - Full rewrite with editing mode
+- `/app/frontend/src/pages/MiraDemoPage.jsx` - Pillar state fix + handleConciergeHandoff update
+- `/app/backend/mira_service_desk.py` - Model + endpoint update
+- `/app/backend/mira_routes.py` - CONCIERGE_ACTION_TRIGGERS update
+- Various frontend files - ® symbol additions
+
+---
+
+### P0 - Remaining Issues (From User)
+
+1. **Voice on Tiles** - Voice plays when scenario tiles first appear
+   - Status: NOT REPRODUCED - No voice code found in DreamfolksDemo.jsx
+   - Need clarification: Which page? What triggers the voice?
+
+2. **Concierge® Button** - Clicking "concierge" button should open ticket form
+   - Status: NOT STARTED
+   - Blocked: Need to identify which button and where
+
+3. **Concierge® Fallback Message** - Add "our pet Concierge® will get back to you shortly" to search results
+   - Status: NOT STARTED
+   - Location: LLM prompt in mira_constants.py or response formatting
+
+4. **Location Search Flow** - Mira should wait for user's city input before showing results
+   - Status: RECURRING ISSUE - Needs deeper investigation
+
+---
+
+
+
 **Last Updated**: February 10, 2026
 **Preview URL**: https://mira-os-build.preview.emergentagent.com
 **Original File**: 5,789 lines → **Current**: 3,299 lines (**43% reduction**)
