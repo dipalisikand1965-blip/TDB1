@@ -837,6 +837,150 @@ export default function DreamfolksDemo() {
             </p>
           </div>
 
+          {/* Indian Pet Market + Banking Data */}
+          <div className="bg-gradient-to-br from-blue-500/10 to-purple-500/10 border border-blue-500/20 rounded-2xl p-8 mb-12">
+            <h3 className="text-xl font-bold text-white mb-6 text-center">
+              🇮🇳 The India Opportunity: Pet Parents × Premium Banking
+            </h3>
+            
+            <div className="grid md:grid-cols-2 gap-8">
+              {/* Left: Market Stats */}
+              <div>
+                <h4 className="text-lg font-semibold text-blue-300 mb-4">The Pet Market</h4>
+                <div className="space-y-4">
+                  {[
+                    { stat: "₹30,000 Cr", label: "Indian pet care market (2025)", growth: "+25% YoY" },
+                    { stat: "31 Million", label: "Pet dogs in India", growth: "+12% annually" },
+                    { stat: "₹18,000+", label: "Monthly spend per pet (urban)", growth: "Premium segment" },
+                    { stat: "89%", label: "Pet parents call pets 'family members'", growth: "Emotional bond" },
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-center justify-between bg-white/5 rounded-lg p-3">
+                      <div>
+                        <div className="text-white font-bold text-lg">{item.stat}</div>
+                        <div className="text-white/60 text-sm">{item.label}</div>
+                      </div>
+                      <div className="text-green-400 text-xs font-medium">{item.growth}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Right: Banking Correlation */}
+              <div>
+                <h4 className="text-lg font-semibold text-purple-300 mb-4">Premium Cardholders & Pets</h4>
+                <div className="space-y-4">
+                  {[
+                    { stat: "38%", label: "Premium cardholders own pets", insight: "Higher than national avg" },
+                    { stat: "2.3x", label: "Higher wallet share vs non-pet owners", insight: "Lifestyle spenders" },
+                    { stat: "67%", label: "Would pay for pet concierge benefit", insight: "Willingness to pay" },
+                    { stat: "73%", label: "Consider pet benefits in card choice", insight: "Differentiation" },
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-center justify-between bg-white/5 rounded-lg p-3">
+                      <div>
+                        <div className="text-white font-bold text-lg">{item.stat}</div>
+                        <div className="text-white/60 text-sm">{item.label}</div>
+                      </div>
+                      <div className="text-purple-400 text-xs font-medium">{item.insight}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Key Insight Callout */}
+            <div className="mt-8 bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 rounded-xl p-6 text-center">
+              <div className="text-amber-300 text-lg font-bold mb-2">
+                "Pet parents are 34% less likely to churn when offered lifestyle benefits"
+              </div>
+              <div className="text-white/60 text-sm">
+                — McKinsey Banking Consumer Survey, 2024
+              </div>
+            </div>
+          </div>
+
+          {/* Why Banks Should Care */}
+          <div className="mb-12">
+            <h3 className="text-xl font-bold text-white mb-6 text-center">Why Banks Should Offer Pet Benefits</h3>
+            <div className="grid md:grid-cols-4 gap-4">
+              {[
+                { 
+                  icon: Users, 
+                  title: "Untapped Segment", 
+                  desc: "No Indian bank offers comprehensive pet benefits. First-mover advantage.",
+                  color: "text-blue-400"
+                },
+                { 
+                  icon: TrendingUp, 
+                  title: "High-Value Customers", 
+                  desc: "Pet owners spend 2.3x more on lifestyle. Premium, loyal segment.",
+                  color: "text-green-400"
+                },
+                { 
+                  icon: Heart, 
+                  title: "Emotional Connection", 
+                  desc: "Pets = family. Banks that care for family earn trust & loyalty.",
+                  color: "text-pink-400"
+                },
+                { 
+                  icon: CreditCard, 
+                  title: "Card Differentiation", 
+                  desc: "Beyond cashback & lounge. A benefit that competitors can't copy overnight.",
+                  color: "text-purple-400"
+                },
+              ].map((item, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  className="bg-white/5 border border-white/10 rounded-xl p-5"
+                >
+                  <item.icon className={`w-8 h-8 ${item.color} mb-3`} />
+                  <h4 className="text-white font-bold mb-2">{item.title}</h4>
+                  <p className="text-white/60 text-sm">{item.desc}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+
+          {/* The DreamFolks Pitch */}
+          <div className="bg-gradient-to-r from-orange-500/10 to-red-500/10 border border-orange-500/20 rounded-2xl p-8 mb-12">
+            <div className="flex items-start gap-6">
+              <div className="hidden md:block">
+                <img 
+                  src="https://customer-assets.emergentagent.com/job_2dad3d7e-c3ab-4896-a445-d39e2953ce1d/artifacts/omygtrey_image.png" 
+                  alt="DreamFolks" 
+                  className="w-32 h-auto opacity-80"
+                />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-white mb-4">The DreamFolks Opportunity</h3>
+                <p className="text-white/70 mb-4">
+                  You already offer airport lounges, golf, dining, and lifestyle benefits. 
+                  <strong className="text-white"> Pet concierge is the next frontier</strong> — and the only one 
+                  with 25% annual growth and zero competition in the banking space.
+                </p>
+                <div className="grid sm:grid-cols-3 gap-4 mt-6">
+                  <div className="bg-white/5 rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold text-orange-400">50+</div>
+                    <div className="text-white/60 text-sm">Bank partnerships potential</div>
+                  </div>
+                  <div className="bg-white/5 rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold text-orange-400">10M+</div>
+                    <div className="text-white/60 text-sm">Premium cardholders addressable</div>
+                  </div>
+                  <div className="bg-white/5 rounded-lg p-4 text-center">
+                    <div className="text-2xl font-bold text-orange-400">₹200 Cr</div>
+                    <div className="text-white/60 text-sm">Annual GMV opportunity</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Original Partnership Benefits */}
+          <h3 className="text-xl font-bold text-white mb-6 text-center">Partnership Model</h3>
           <div className="grid md:grid-cols-3 gap-6">
             {[
               {
