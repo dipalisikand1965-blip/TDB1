@@ -2784,40 +2784,66 @@ const MiraDemoPage = () => {
       detectedPillar = 'emergency';
       detectedTitle = 'Emergency Request';
     } 
-    // Specific intents
+    // GROOMING - specific pillar (before general care)
+    else if (contextLower.includes('grooming') || contextLower.includes('groom') || contextLower.includes('bath') || 
+             contextLower.includes('haircut') || contextLower.includes('nail trim') || contextLower.includes('spa')) {
+      detectedPillar = 'groom';
+      detectedTitle = 'Grooming Request';
+    }
+    // MEAL/NUTRITION
     else if (contextLower.includes('meal') || contextLower.includes('diet') || contextLower.includes('nutrition') || contextLower.includes('protein')) {
       detectedPillar = 'fit';
       detectedTitle = 'Meal Plan Request';
-    } else if (contextLower.includes('birthday') || contextLower.includes('party') || contextLower.includes('cake') || contextLower.includes('celebration') || contextLower.includes('gotcha')) {
+    } 
+    // CELEBRATION
+    else if (contextLower.includes('birthday') || contextLower.includes('party') || contextLower.includes('cake') || contextLower.includes('celebration') || contextLower.includes('gotcha')) {
       detectedPillar = 'celebrate';
       detectedTitle = 'Celebration Request';
-    } else if (contextLower.includes('grooming') || contextLower.includes('bath') || contextLower.includes('haircut') || contextLower.includes('nail trim')) {
-      detectedPillar = 'care';
-      detectedTitle = 'Grooming Request';
-    } else if (contextLower.includes('travel') || contextLower.includes('trip') || contextLower.includes('vacation') || contextLower.includes('flight')) {
+    } 
+    // TRAVEL
+    else if (contextLower.includes('travel') || contextLower.includes('trip') || contextLower.includes('vacation') || contextLower.includes('flight')) {
       detectedPillar = 'travel';
       detectedTitle = 'Travel Request';
-    } else if (contextLower.includes('cafe') || contextLower.includes('restaurant') || contextLower.includes('dine out')) {
+    } 
+    // DINING
+    else if (contextLower.includes('cafe') || contextLower.includes('restaurant') || contextLower.includes('dine out') || contextLower.includes('dining')) {
       detectedPillar = 'dine';
       detectedTitle = 'Dining Request';
-    } else if (contextLower.includes('walker') || contextLower.includes('sitter') || contextLower.includes('boarding') || contextLower.includes('daycare')) {
-      detectedPillar = 'care';
+    } 
+    // PET CARE SERVICES (walker, sitter, boarding)
+    else if (contextLower.includes('walker') || contextLower.includes('sitter') || contextLower.includes('boarding') || contextLower.includes('daycare')) {
+      detectedPillar = 'stay';
       detectedTitle = 'Pet Care Service';
-    } else if (contextLower.includes('vet') || contextLower.includes('vaccination') || contextLower.includes('checkup') || contextLower.includes('health')) {
+    } 
+    // HEALTH/VET
+    else if (contextLower.includes('vet') || contextLower.includes('vaccination') || contextLower.includes('checkup') || contextLower.includes('health') || contextLower.includes('sick')) {
       detectedPillar = 'care';
       detectedTitle = 'Health & Vet Request';
-    } else if (contextLower.includes('hotel') || contextLower.includes('stay') || contextLower.includes('accommodation')) {
+    } 
+    // STAY/HOTEL
+    else if (contextLower.includes('hotel') || contextLower.includes('stay') || contextLower.includes('accommodation')) {
       detectedPillar = 'stay';
       detectedTitle = 'Stay Request';
-    } else if (contextLower.includes('train') || contextLower.includes('teach') || contextLower.includes('behavior') || contextLower.includes('obedience')) {
+    } 
+    // TRAINING
+    else if (contextLower.includes('train') || contextLower.includes('teach') || contextLower.includes('behavior') || contextLower.includes('obedience')) {
       detectedPillar = 'learn';
       detectedTitle = 'Training Request';
-    } else if (contextLower.includes('exercise') || contextLower.includes('fitness') || contextLower.includes('weight') || contextLower.includes('activity')) {
+    } 
+    // FITNESS
+    else if (contextLower.includes('exercise') || contextLower.includes('fitness') || contextLower.includes('weight') || contextLower.includes('activity')) {
       detectedPillar = 'fit';
       detectedTitle = 'Fitness Request';
-    } else if (contextLower.includes('document') || contextLower.includes('certificate') || contextLower.includes('insurance') || contextLower.includes('paperwork')) {
+    } 
+    // DOCUMENTS
+    else if (contextLower.includes('document') || contextLower.includes('certificate') || contextLower.includes('insurance') || contextLower.includes('paperwork')) {
       detectedPillar = 'paperwork';
       detectedTitle = 'Documents Request';
+    }
+    // SHOPPING
+    else if (contextLower.includes('buy') || contextLower.includes('purchase') || contextLower.includes('order') || contextLower.includes('shop')) {
+      detectedPillar = 'shop';
+      detectedTitle = 'Shopping Request';
     }
     
     setHandoffSummary({
