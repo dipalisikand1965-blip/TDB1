@@ -692,8 +692,12 @@ export default function DreamfolksDemo() {
               viewport={{ once: true }}
               className="bg-gradient-to-br from-amber-500/10 to-orange-500/10 border border-amber-500/20 rounded-2xl p-6 text-center"
             >
-              <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-amber-400/20 to-orange-400/20 flex items-center justify-center">
-                <span className="text-4xl">✨</span>
+              <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden border-4 border-amber-400/30 shadow-lg shadow-amber-500/20">
+                <img 
+                  src="https://customer-assets.emergentagent.com/job_2dad3d7e-c3ab-4896-a445-d39e2953ce1d/artifacts/hfy5z95e_Mira%20Aunty.png" 
+                  alt="Mrs. Mira Sikand"
+                  className="w-full h-full object-cover"
+                />
               </div>
               <h3 className="text-xl font-bold text-amber-300 mb-2">The Soul</h3>
               <h4 className="text-white font-medium mb-3">Mrs. Mira Sikand</h4>
