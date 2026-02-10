@@ -3537,9 +3537,18 @@ Would you like me to find vets or pet pharmacies near you, or shall I have your 
             # Determine tip card type based on USER INPUT primarily (not Mira's response)
             # This prevents Mira's response words from influencing the tip type
             # ORDER MATTERS - check most specific patterns first!
+            detected_tip_type = None
             if should_tip:
                 # Use user input + conversation history (not including Mira's current response)
                 type_context = user_input_lower + " " + conversation_context
+                logger.info(f"[TIP TYPE DEBUG] type_context: {type_context[:100]}...")
+                
+                # Check all keywords for debugging
+                calming_kw = ["calm", "calming", "soothe", "anxiety", "scared", "stress", "nervous", "thunder", "loud noise", "afraid", "panic", "trembling", "cracker", "firework"]
+                festival_kw = ["safe", "safety", "festival", "diwali", "holi"]
+                calming_matches = [kw for kw in calming_kw if kw in type_context]
+                festival_matches = [kw for kw in festival_kw if kw in type_context]
+                logger.info(f"[TIP TYPE DEBUG] calming_matches: {calming_matches}, festival_matches: {festival_matches}")
                 
                 # SENIOR CARE - Check FIRST (senior, aging, old age, elderly)
                 if any(w in type_context for w in ["senior", "aging", "old age", "elderly", "older dog", "getting old", "becomes senior", "as he ages", "as she ages"]):
