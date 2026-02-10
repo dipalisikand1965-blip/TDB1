@@ -175,7 +175,7 @@ INTENT_PATTERNS = {
     # Grooming intents
     "GROOM_PLAN": [
         r"\bhaircut\b", r"\btrim\b", r"\bgrooming\b", r"\bgroom\b", r"\bbath\b",
-        r"\bneeds?\s+a\s+(haircut|trim|groom|bath)\b"
+        r"\bneeds?\s+a\s+(haircut|trim|groom|bath)\b", r"\bgroomer\b", r"\bsalon\b", r"\bspa\b"
     ],
     "GROOM_TOOLS": [
         r"\bshampoo\b", r"\bbrush\b", r"\bwhat\s+tools?\b", r"\bat\s+home\b",
