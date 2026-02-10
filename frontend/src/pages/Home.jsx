@@ -888,16 +888,18 @@ const Home = () => {
                 </h2>
                 
                 <p className="text-white/60 text-lg mb-8">
-                  Pet-friendly hotel in Paris? Emergency vet at midnight? A birthday party with custom treats? 
-                  Tell Mira — and our human Concierge® team takes it from there. No tabs. No comparisons. Just done.
+                  Stuck at work and need a dog walker in 30 minutes? Can't find a vet who's open on Sunday? 
+                  Want someone to plan the perfect birthday pawty? Just tell Mira — real humans take it from there.
                 </p>
                 
                 <ul className="space-y-4 mb-8">
                   {[
-                    'Hotels, flights, restaurants — booked and confirmed',
-                    'Birthday parties planned down to the last treat',
-                    'Emergencies handled with priority care',
-                    'Available 6:30 AM – 11:30 PM, every single day'
+                    'Last-minute dog walkers, pet sitters & daycare',
+                    'Vet appointments, grooming & spa bookings',
+                    'Birthday parties with dog-safe cakes & décor',
+                    'Pet-friendly hotels, cafés & travel planning',
+                    'Emergency support when you need it most',
+                    'Medicines, food & treats delivered to your door'
                   ].map((item, i) => (
                     <li key={i} className="flex items-center gap-3 text-white/80">
                       <Check className="w-5 h-5 text-green-400" />
@@ -905,6 +907,8 @@ const Home = () => {
                     </li>
                   ))}
                 </ul>
+                
+                <p className="text-white/40 text-sm mb-6">Available 6:30 AM – 11:30 PM, every single day</p>
                 
                 <div className="flex flex-wrap gap-4">
                   <Button className="bg-green-600 hover:bg-green-700 text-white">
