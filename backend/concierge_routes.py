@@ -2609,7 +2609,7 @@ async def send_whatsapp_reply(
     message: str,
     recipient_phone: str
 ):
-    """Generate WhatsApp click-to-chat link."""
+    """Send WhatsApp reply to customer via Gupshup API."""
     db = get_db()
     
     # Clean phone number
@@ -2617,36 +2617,104 @@ async def send_whatsapp_reply(
     if not phone.startswith("91") and len(phone) == 10:
         phone = "91" + phone
     
-    # URL encode the message
-    import urllib.parse
-    encoded_message = urllib.parse.quote(message)
+    # Check if Gupshup is configured
+    gupshup_api_key = os.environ.get("GUPSHUP_API_KEY")
+    gupshup_app_name = os.environ.get("GUPSHUP_APP_NAME", "DoggyCompany")
+    gupshup_source = os.environ.get("GUPSHUP_SOURCE_NUMBER", "919663185747")
     
-    whatsapp_link = f"https://wa.me/{phone}?text={encoded_message}"
+    sent_via_api = False
+    whatsapp_link = None
+    api_response = None
     
-    # Log the communication intent
+    if gupshup_api_key:
+        # Send via Gupshup API
+        try:
+            import httpx
+            import json
+            
+            async with httpx.AsyncClient() as client:
+                payload = {
+                    "channel": "whatsapp",
+                    "source": gupshup_source,
+                    "destination": phone,
+                    "message": json.dumps({
+                        "type": "text",
+                        "text": message
+                    }),
+                    "src.name": gupshup_app_name
+                }
+                
+                response = await client.post(
+                    "https://api.gupshup.io/wa/api/v1/msg",
+                    headers={
+                        "apikey": gupshup_api_key,
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    data=payload
+                )
+                
+                result = response.json()
+                
+                if response.status_code == 200 and result.get("status") != "error":
+                    sent_via_api = True
+                    api_response = result
+                    logger.info(f"[GUPSHUP] WhatsApp sent to {phone}: {result}")
+                else:
+                    logger.error(f"[GUPSHUP] API error: {result}")
+                    
+        except Exception as e:
+            logger.error(f"[GUPSHUP] Send failed: {e}")
+    
+    # Fallback: Generate click-to-chat link if API fails
+    if not sent_via_api:
+        import urllib.parse
+        encoded_message = urllib.parse.quote(message)
+        whatsapp_link = f"https://wa.me/{phone}?text={encoded_message}"
+    
+    # Log the communication
+    comm_log = {
+        "channel": "whatsapp",
+        "to": recipient_phone,
+        "message": message,
+        "sent_at": get_utc_timestamp(),
+        "status": "sent" if sent_via_api else "link_generated",
+        "sent_via": "gupshup_api" if sent_via_api else "manual_link"
+    }
+    
+    if api_response:
+        comm_log["message_id"] = api_response.get("messageId")
+    if whatsapp_link:
+        comm_log["link"] = whatsapp_link
+    
     await db.service_desk_tickets.update_one(
         {"ticket_id": ticket_id},
-        {
-            "$push": {
-                "communications": {
-                    "channel": "whatsapp",
-                    "to": recipient_phone,
-                    "message": message,
-                    "link": whatsapp_link,
-                    "created_at": get_utc_timestamp(),
-                    "status": "link_generated"
-                }
-            }
-        }
+        {"$push": {"communications": comm_log}}
     )
     
-    return {
-        "success": True,
-        "channel": "whatsapp",
-        "link": whatsapp_link,
-        "phone": phone,
-        "message": "Click the link to open WhatsApp"
-    }
+    # Also update regular tickets collection
+    await db.tickets.update_one(
+        {"ticket_id": ticket_id},
+        {"$push": {"communications": comm_log}}
+    )
+    
+    if sent_via_api:
+        return {
+            "success": True,
+            "channel": "whatsapp",
+            "phone": phone,
+            "message": "WhatsApp sent via Gupshup",
+            "sent_via": "gupshup_api",
+            "message_id": api_response.get("messageId") if api_response else None
+        }
+    else:
+        return {
+            "success": True,
+            "channel": "whatsapp",
+            "link": whatsapp_link,
+            "phone": phone,
+            "message": "Click the link to open WhatsApp (API fallback)",
+            "sent_via": "manual_link"
+        }
 
 
 # ============== SELF-SERVICE PORTAL ==============
