@@ -1098,43 +1098,42 @@ What can I help with today?` }
       </header>
 
       {/* Hero Section */}
-      <section className="py-16 px-4">
+      <section className="py-8 sm:py-16 px-4">
         <div className="max-w-7xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="space-y-6"
+            className="space-y-4 sm:space-y-6"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-500/20 border border-orange-500/30 rounded-full">
-              <Sparkles className="w-4 h-4 text-orange-400" />
-              <span className="text-orange-300 text-sm">Exclusive Partnership Opportunity</span>
+            <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-orange-500/20 border border-orange-500/30 rounded-full">
+              <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-orange-400" />
+              <span className="text-orange-300 text-xs sm:text-sm">Exclusive Partnership</span>
             </div>
             
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white">
+            <h1 className="text-2xl sm:text-4xl lg:text-5xl font-bold text-white leading-tight">
               Your Members Are<br />
               <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400 bg-clip-text text-transparent">
                 Pet Parents Too
               </span>
             </h1>
             
-            <p className="text-white/60 text-lg max-w-2xl mx-auto">
-              38% of premium cardholders have pets. Give them a reason to stay — 
-              with India's first AI-powered Pet Concierge® service.
+            <p className="text-white/60 text-sm sm:text-lg max-w-2xl mx-auto px-4">
+              38% of premium cardholders have pets. Give them India's first AI-powered Pet Concierge® service.
             </p>
 
             {/* B2B Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-12 max-w-4xl mx-auto">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-4 mt-6 sm:mt-12 max-w-4xl mx-auto">
               {B2B_STATS.map((stat, i) => (
                 <motion.div
                   key={i}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.1 }}
-                  className="bg-white/5 border border-white/10 rounded-2xl p-4"
+                  className="bg-white/5 border border-white/10 rounded-xl sm:rounded-2xl p-2 sm:p-4"
                 >
-                  <stat.icon className="w-6 h-6 text-purple-400 mx-auto mb-2" />
-                  <div className="text-2xl font-bold text-white">{stat.value}</div>
-                  <div className="text-white/50 text-xs">{stat.label}</div>
+                  <stat.icon className="w-4 h-4 sm:w-6 sm:h-6 text-purple-400 mx-auto mb-1 sm:mb-2" />
+                  <div className="text-lg sm:text-2xl font-bold text-white">{stat.value}</div>
+                  <div className="text-white/50 text-[10px] sm:text-xs leading-tight">{stat.label}</div>
                 </motion.div>
               ))}
             </div>
