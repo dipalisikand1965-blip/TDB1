@@ -729,12 +729,17 @@ async def get_user_pets(credentials: HTTPAuthorizationCredentials = Depends(secu
         if not email:
             raise HTTPException(status_code=401, detail="Invalid token")
         
-        # Find user's pets by matching parent_email
+        # Find user's pets by matching owner_email or user_id
+        # Also check membership-linked pets
+        user = await db.users.find_one({"email": email})
+        user_id = user.get("id") if user else None
+        
         pets_cursor = db.pets.find({
             "$or": [
+                {"owner_email": email},
                 {"parent_email": email},
-                {"parent.email": email},
-                {"member_email": email}
+                {"member_email": email},
+                {"user_id": user_id} if user_id else {"_never_match": True}
             ]
         })
         
