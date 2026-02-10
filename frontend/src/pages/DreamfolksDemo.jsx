@@ -1479,7 +1479,7 @@ Ask me anything about him!`
             </div>
 
             {/* Chat Messages */}
-            <div className="h-[45vh] sm:h-[350px] overflow-y-auto p-4 sm:p-6 space-y-4 overscroll-contain bg-[#12061f]">
+            <div ref={messagesContainerRef} className="h-[45vh] sm:h-[350px] overflow-y-auto p-4 sm:p-6 space-y-4 overscroll-contain bg-[#12061f]">
               {chatMessages.map((msg, i) => (
                 <motion.div
                   key={i}
