@@ -41,7 +41,7 @@ function ConditionalFloatingButton() {
   
   // Hide on /mira, /admin, and ALL pillar pages (they have their own Ask Concierge buttons)
   const hiddenPaths = [
-    '/mira', '/admin',
+    '/mira', '/admin', '/demo',
     '/care', '/celebrate', '/advisory', '/dine', '/stay', '/travel', 
     '/emergency', '/enjoy', '/fit', '/learn', '/farewell', '/adopt', 
     '/paperwork', '/shop', '/cakes', '/breed-cakes', '/mini-cakes'
