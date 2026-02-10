@@ -926,14 +926,24 @@ const Home = () => {
                 viewport={{ once: true }}
                 className="relative flex items-center justify-center"
               >
-                {/* Concierge lifestyle image */}
-                <motion.img 
-                  src="https://static.prod-images.emergentagent.com/jobs/2dad3d7e-c3ab-4896-a445-d39e2953ce1d/images/dc2348428b667aedc3ff347d1f1c05d44b11cb2fb5c8327a3b741284d9e5873d.png" 
-                  alt="Golden retriever at luxury hotel concierge desk with birthday cake" 
-                  className="relative w-full max-w-lg rounded-2xl shadow-2xl"
-                  animate={{ y: [0, -8, 0] }}
-                  transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                />
+                {/* Real photo with premium styling */}
+                <div className="relative">
+                  {/* Soft glow behind */}
+                  <div className="absolute -inset-4 bg-gradient-to-r from-green-500/20 via-purple-500/20 to-pink-500/20 rounded-3xl blur-2xl" />
+                  
+                  <motion.img 
+                    src="https://customer-assets.emergentagent.com/job_2dad3d7e-c3ab-4896-a445-d39e2953ce1d/artifacts/k2k6bfsy_20220204_CELESTE_RESTAURANT_28_SHA09688-S%20%281%29.jpg" 
+                    alt="Dipali with her beloved Shih Tzus - The Doggy Company Founder" 
+                    className="relative w-full max-w-md rounded-2xl shadow-2xl border border-white/10"
+                    animate={{ y: [0, -6, 0] }}
+                    transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+                  />
+                  
+                  {/* Caption badge */}
+                  <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-[#1a0a2e]/90 backdrop-blur-lg px-4 py-2 rounded-full border border-green-400/30">
+                    <span className="text-green-300 text-sm font-medium">Real humans. Real care.</span>
+                  </div>
+                </div>
               </motion.div>
             </div>
           </div>
