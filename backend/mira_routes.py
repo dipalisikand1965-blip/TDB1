@@ -3418,9 +3418,13 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                 
                 # Fetch updated soul score for real-time display
                 db = get_db()
+                logger.info(f"[SOUL SCORE] Fetching updated score for pet: {request.pet_context.get('id')}")
                 pet_data = await db.pets.find_one({"id": request.pet_context.get("id")}, {"overall_score": 1, "_id": 0})
                 if pet_data:
                     updated_soul_score = round(pet_data.get("overall_score", 0), 1)
+                    logger.info(f"[SOUL SCORE] Updated score fetched: {updated_soul_score}")
+                else:
+                    logger.warning(f"[SOUL SCORE] Pet not found for score fetch: {request.pet_context.get('id')}")
             except Exception as soul_err:
                 logger.warning(f"[SOUL SCORE] Failed to increment: {soul_err}")
         
