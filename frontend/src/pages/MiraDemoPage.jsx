@@ -2506,6 +2506,43 @@ const MiraDemoPage = () => {
   }, [handleSubmit]);
   
   // Handle Concierge® handoff - flip ticket status, don't create new ticket
+  // ═══════════════════════════════════════════════════════════════════════════
+  // HANDOFF FLOW - Show summary BEFORE sending to Concierge®
+  // ═══════════════════════════════════════════════════════════════════════════
+  
+  // Step 1: Show summary for confirmation
+  const showHandoffSummary = useCallback((customItems = []) => {
+    // Build summary items from conversation context
+    const summaryItems = customItems.length > 0 ? customItems : [
+      { label: 'Pet', value: `${pet?.name || 'Your pet'} (${pet?.breed || 'Unknown breed'})` },
+      { label: 'Request', value: currentPillar || 'General help' },
+      ...(miraPicks.products?.length > 0 ? [{ 
+        label: 'Products', 
+        value: miraPicks.products.slice(0, 2).map(p => p.name).join(', ')
+      }] : []),
+      ...(miraPicks.services?.length > 0 ? [{
+        label: 'Services',
+        value: miraPicks.services.slice(0, 2).map(s => s.name).join(', ')
+      }] : [])
+    ];
+    
+    // Get last few messages for context
+    const recentMessages = conversationHistory
+      .slice(-4)
+      .map(m => m.content?.slice(0, 100))
+      .join(' ');
+    
+    setHandoffSummary({
+      isOpen: true,
+      petName: pet?.name || 'your pet',
+      pillar: currentPillar?.toLowerCase() || 'general',
+      title: `${currentPillar || 'Help'} Request`,
+      items: summaryItems,
+      notes: recentMessages.slice(0, 200)
+    });
+  }, [pet, currentPillar, miraPicks, conversationHistory]);
+  
+  // Step 2: Actually send to Concierge (after user confirms)
   const handleConciergeHandoff = useCallback(async () => {
     if (!currentTicket?.id) {
       console.warn('[HANDOFF] No active ticket to hand off');
