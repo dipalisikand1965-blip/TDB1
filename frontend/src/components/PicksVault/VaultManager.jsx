@@ -13,6 +13,7 @@
  */
 
 import React, { useState, useCallback, useEffect } from 'react';
+import { X } from 'lucide-react';
 import { API_URL } from '../../utils/api';
 import notificationSounds from '../../utils/notificationSounds';
 
