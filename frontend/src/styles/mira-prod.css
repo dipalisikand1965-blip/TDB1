@@ -9253,3 +9253,61 @@ input, select, textarea {
     height: 20px;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   QUICK REPLIES - Contextual action suggestions
+   Golden Standard: 3-4 buttons after every advisory response
+   ═══════════════════════════════════════════════════════════════════ */
+.quick-replies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+  padding-left: 48px; /* Align with message content */
+}
+
+.quick-reply-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  color: var(--mira-text-muted);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.quick-reply-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+  color: white;
+}
+
+.quick-reply-btn.primary {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.2), rgba(168, 85, 247, 0.2));
+  border-color: rgba(236, 72, 153, 0.4);
+  color: var(--mira-pink);
+}
+
+.quick-reply-btn.primary:hover {
+  background: linear-gradient(135deg, rgba(236, 72, 153, 0.3), rgba(168, 85, 247, 0.3));
+  border-color: var(--mira-pink);
+  color: white;
+}
+
+/* Mobile adjustments */
+@media (max-width: 480px) {
+  .quick-replies {
+    padding-left: 0;
+    gap: 6px;
+  }
+  
+  .quick-reply-btn {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+}
