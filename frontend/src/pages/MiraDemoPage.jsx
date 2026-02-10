@@ -2546,13 +2546,17 @@ const MiraDemoPage = () => {
           setMiraPicks(prev => ({
             ...prev,
             tipCard: tipCard,
-            hasNew: true
+            hasNew: true,
+            hasNewTip: true  // Specifically for tip card flash
           }));
           setActiveVaultData({
             ...data.response,
             advice: tipCard.content,
             tip_card: tipCard
           });
+          
+          // Auto-open insights panel when tip card is generated
+          setTimeout(() => setShowInsightsPanel(true), 500);
         }
       } else if (clarifyOnly) {
         // Clarify-only mode - clear any existing picks
