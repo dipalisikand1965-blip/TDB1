@@ -1207,16 +1207,21 @@ What can I help with today?` }
                 <div className="bg-[#1a0a2e]/50 border border-white/10 rounded-2xl overflow-hidden">
                   {/* Chat Header */}
                   <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 p-4 border-b border-white/10">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
-                        <Sparkles className="w-5 h-5 text-white" />
-                      </div>
-                      <div>
-                        <div className="text-white font-medium">Mira AI</div>
-                        <div className="text-green-400 text-xs flex items-center gap-1">
-                          <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
-                          Online • Knows Dollar
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
+                          <Sparkles className="w-5 h-5 text-white" />
                         </div>
+                        <div>
+                          <div className="text-white font-medium">Mira AI</div>
+                          <div className="text-green-400 text-xs flex items-center gap-1">
+                            <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                            Online • Knows Dollar
+                          </div>
+                        </div>
+                      </div>
+                      <div className="px-2 py-1 bg-amber-500/20 border border-amber-500/30 rounded text-amber-300 text-xs">
+                        Demo Mode
                       </div>
                     </div>
                   </div>
