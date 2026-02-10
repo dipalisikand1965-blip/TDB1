@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://dreamfolks-demo.preview.emergentagent.com/mira-demo**
+**https://mira-os-build.preview.emergentagent.com/mira-demo**
 
 ---
 
