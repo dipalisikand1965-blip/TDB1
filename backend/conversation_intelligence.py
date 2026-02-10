@@ -684,14 +684,27 @@ def should_generate_tip_card(
     if any(kw in full_context for kw in celebration_keywords):
         return True, "celebration_tips"
     
-    # New pet / Adoption tips
+    # New pet / Adoption / Preparation tips - EXPANDED
     adoption_keywords = [
         "just adopted", "new puppy", "new pet", "first time pet parent",
         "what do i need to know", "new dog owner", "just got a dog",
-        "first time with", "puppy care", "kitten care"
+        "first time with", "puppy care", "kitten care",
+        "before the dog arrives", "before bringing home", "set up at home",
+        "prepare for", "getting ready for", "what do we need", "checklist",
+        "things to buy", "essentials for", "must-have", "prepare home"
     ]
     if any(kw in full_context for kw in adoption_keywords):
         return True, "new_pet_guide"
+    
+    # Privacy / Safety / Security tips
+    privacy_safety_keywords = [
+        "privacy", "sharing photos", "share photos", "photographer",
+        "social media", "posting online", "public photos", "consent",
+        "security", "location", "personal details", "watermark",
+        "stranger danger", "safe to share", "should i share"
+    ]
+    if any(kw in full_context for kw in privacy_safety_keywords):
+        return True, "safety_tips"
     
     # Sleeping / Home tips
     home_keywords = [
@@ -700,6 +713,32 @@ def should_generate_tip_card(
     ]
     if any(kw in full_context for kw in home_keywords):
         return True, "home_tips"
+    
+    # Grooming tips
+    grooming_keywords = [
+        "groom", "grooming", "bath", "bathing", "brush", "brushing",
+        "nail trim", "nail cutting", "ear clean", "coat care", "shedding",
+        "how often to bathe", "how to brush"
+    ]
+    if any(kw in full_context for kw in grooming_keywords):
+        return True, "grooming_routine"
+    
+    # Exercise / Activity tips
+    exercise_keywords = [
+        "exercise", "how much exercise", "daily walk", "activity",
+        "physical activity", "play time", "outdoor activities",
+        "how much should", "how often should"
+    ]
+    if any(kw in full_context for kw in exercise_keywords):
+        return True, "exercise_routine"
+    
+    # Bonding / Quality time tips
+    bonding_keywords = [
+        "bonding", "bond with", "quality time", "spend time",
+        "connection", "ritual", "daily ritual", "routine with"
+    ]
+    if any(kw in full_context for kw in bonding_keywords):
+        return True, "bonding_ritual"
     
     return False, None
 
