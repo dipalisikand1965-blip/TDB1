@@ -2605,6 +2605,35 @@ const MiraDemoPage = () => {
         });
       }
       
+      // ═══════════════════════════════════════════════════════════════════════════
+      // CLARIFYING QUESTION LIMIT - Auto-transition after 4 questions
+      // Prevents endless clarification loops
+      // ═══════════════════════════════════════════════════════════════════════════
+      if (isNewClarifyingQuestion) {
+        const newCount = clarifyingQuestionCount + 1;
+        setClarifyingQuestionCount(newCount);
+        console.log(`[CLARIFY LIMIT] Question ${newCount} of ${MAX_CLARIFYING_QUESTIONS}`);
+        
+        // If we've reached the limit, auto-transition to showing picks/tips/concierge
+        if (newCount >= MAX_CLARIFYING_QUESTIONS) {
+          console.log('[CLARIFY LIMIT] Max questions reached - auto-transitioning');
+          // Show what we have - products, tips, or send to concierge
+          if (newProducts.length > 0 || newServices.length > 0) {
+            // We have picks - show them
+            setShowVault(true);
+          } else if (data.response?.tip_card) {
+            // We have a tip card - show insights
+            setShowInsightsPanel(true);
+          } else {
+            // No picks/tips - trigger concierge handoff
+            setShowConversationEndBanner(true);
+            setConversationComplete(true);
+          }
+          // Reset counter
+          setClarifyingQuestionCount(0);
+        }
+      }
+      
       // Update conversation stage
       if (conversationStage === 'initial') {
         setConversationStage('clarifying');
