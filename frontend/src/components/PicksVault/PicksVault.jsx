@@ -222,20 +222,29 @@ const PicksVault = ({
           <span>PICKS FOR {(pet.name || 'YOUR PET').toUpperCase()}</span>
         </div>
 
-        {picks.slice(0, maxPicks).map((product, idx) => {
+        {displayedPicks.slice(0, maxPicks).map((product, idx) => {
           const itemId = product.id || product.name;
           const isSelected = selectedItems.has(itemId);
+          const isSent = sentItems.has(itemId);
           
           return (
             <div 
               key={itemId || idx}
-              className={`pv-pick-item ${isSelected ? 'pv-pick-selected' : ''}`}
+              className={`pv-pick-item ${isSelected ? 'pv-pick-selected' : ''} ${isSent ? 'pv-pick-sent' : ''}`}
               data-testid={`picks-vault-item-${idx}`}
             >
+              {/* Sent to Concierge® overlay */}
+              {isSent && (
+                <div className="pv-sent-overlay">
+                  <Check size={20} className="pv-sent-icon" />
+                  <span>Sent to Concierge®</span>
+                </div>
+              )}
+              
               {/* Product Image - Tap for details */}
               <div 
                 className="pv-pick-image"
-                onClick={() => handleViewDetails(product)}
+                onClick={() => !isSent && handleViewDetails(product)}
                 role="button"
                 tabIndex={0}
                 aria-label={`View details for ${product.name}`}
@@ -247,7 +256,7 @@ const PicksVault = ({
                     <span>🎁</span>
                   </div>
                 )}
-                {isSelected && (
+                {isSelected && !isSent && (
                   <div className="pv-pick-selected-badge">
                     <Check size={16} />
                   </div>
@@ -268,19 +277,41 @@ const PicksVault = ({
                 )}
               </div>
 
-              {/* Select Button */}
-              <button
-                className={`pv-select-btn ${isSelected ? 'pv-select-btn-active' : ''}`}
-                onClick={() => toggleSelect(itemId)}
-                aria-label={isSelected ? 'Deselect' : 'Select'}
-                data-testid={`picks-vault-select-${idx}`}
-              >
-                {isSelected ? (
-                  <Check size={20} />
+              {/* Action Buttons */}
+              <div className="pv-pick-actions">
+                {!isSent ? (
+                  <>
+                    {/* Send to Concierge - Individual */}
+                    <button
+                      className="pv-send-item-btn"
+                      onClick={() => handleSendItemToConcierge(product)}
+                      aria-label="Send to Concierge"
+                      data-testid={`picks-vault-send-${idx}`}
+                    >
+                      <span className="pv-concierge-badge">C°</span>
+                    </button>
+                    
+                    {/* Select Button */}
+                    <button
+                      className={`pv-select-btn ${isSelected ? 'pv-select-btn-active' : ''}`}
+                      onClick={() => toggleSelect(itemId)}
+                      aria-label={isSelected ? 'Deselect' : 'Select'}
+                      data-testid={`picks-vault-select-${idx}`}
+                    >
+                      {isSelected ? (
+                        <Check size={20} />
+                      ) : (
+                        <span className="pv-select-plus">+</span>
+                      )}
+                    </button>
+                  </>
                 ) : (
-                  <span className="pv-select-plus">+</span>
+                  <div className="pv-sent-badge">
+                    <Check size={16} />
+                    <span>Sent</span>
+                  </div>
                 )}
-              </button>
+              </div>
             </div>
           );
         })}
