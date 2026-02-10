@@ -57,7 +57,9 @@ const PetSelector = ({
       {/* Pet Dropdown */}
       {isOpen && (
         <div className="mp-pet-dropdown" data-testid="pet-dropdown">
-          {allPets.map((p) => (
+          {allPets.map((p) => {
+            console.log('[PetSelector] Pet:', p.name, 'soulScore:', p.soulScore, 'type:', typeof p.soulScore, '>10:', Number(p.soulScore) > 10);
+            return (
             <button 
               key={p.id} 
               onClick={() => handleSelectPet(p)} 
