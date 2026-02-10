@@ -90,8 +90,628 @@ const PILLARS = [
     preview: "Digital pet passport, document storage" },
 ];
 
-// Pre-built test scenarios
-const TEST_SCENARIOS = [
+// 30 Curated Perfect Responses for Dollar Demo
+const CURATED_RESPONSES = {
+  // CARE / HEALTH (8 responses)
+  "scratching": {
+    response: `I'm concerned about Dollar's scratching. For a Poodle, this could be:
+
+**Possible Causes:**
+• Skin allergies (environmental or food-related)
+• Dry skin from grooming products
+• Parasites (fleas/mites)
+• Seasonal irritation
+
+**My Recommendation:**
+Since Dollar is allergic to chicken, let's first rule out any food-related triggers. I'd suggest:
+
+1. **Immediate:** Anti-itch oatmeal bath (₹450 at Pawsome Spa)
+2. **This week:** Vet dermatology check-up
+
+📅 **Available Appointments:**
+• Dr. Sharma, PetCare Clinic - Tomorrow 11 AM
+• VetDerm Specialists - Thursday 3 PM
+
+Should I book one of these?`,
+    intent: "Implicit: skin_issue",
+    pillar: "Care",
+    urgency: "Medium"
+  },
+  
+  "not eating|won't eat|appetite|refusing food": {
+    response: `I'm worried about Dollar not eating well. This isn't like him — he usually loves his meals!
+
+**Possible Reasons:**
+• Digestive upset
+• Dental discomfort
+• Stress or environmental change
+• Underlying health issue
+
+**Immediate Steps:**
+1. Try warming his food slightly (enhances aroma)
+2. Offer his favorite: peanut butter biscuits as a test
+3. Monitor water intake
+
+⚠️ **If he hasn't eaten for 24+ hours, we should see a vet.**
+
+📅 **Quick Vet Availability:**
+• Dr. Mehta, Happy Paws - Today 5 PM (₹500)
+• PetCare 24/7 - Walk-in available
+
+Want me to book an appointment?`,
+    intent: "Implicit: appetite_loss",
+    pillar: "Care",
+    urgency: "High"
+  },
+
+  "vomit|throwing up|vomiting": {
+    response: `⚠️ **This needs immediate attention!**
+
+Vomiting can indicate several things — from simple stomach upset to something more serious.
+
+**Right Now:**
+1. **No food** for 4-6 hours
+2. **Small sips of water** only (ice cubes work great)
+3. **Monitor** for blood, lethargy, or continued vomiting
+
+**Warning Signs (Go to ER immediately):**
+• Blood in vomit
+• Repeated vomiting (3+ times in an hour)
+• Extreme lethargy
+• Bloated stomach
+
+🚨 **Emergency Vets Near You:**
+• **24/7 PetCare Emergency** - 2.3 km (Open NOW)
+  📞 +91 98765 43210
+• **City Vet Hospital** - 4.1 km
+  📞 +91 98765 43211
+
+Should I call them for you right now?`,
+    intent: "Emergency: digestive",
+    pillar: "Emergency",
+    urgency: "Critical"
+  },
+
+  "vaccine|vaccination|shots|due": {
+    response: `Let me check Dollar's vaccination records! 📋
+
+**Dollar's Vaccination Status:**
+✅ Rabies - Up to date (Next: March 2026)
+✅ DHPP - Up to date (Next: August 2025)
+⚠️ Bordetella - Due in 2 weeks!
+✅ Leptospirosis - Up to date
+
+**Upcoming:**
+The Bordetella (kennel cough) vaccine is due soon — especially important if Dollar goes to daycare or grooming.
+
+📅 **Vaccination Appointments:**
+• Dr. Sharma, PetCare - Saturday 10 AM (₹800)
+• Happy Tails Clinic - Monday 2 PM (₹750)
+
+Want me to schedule the Bordetella booster?`,
+    intent: "Vaccination check",
+    pillar: "Care",
+    urgency: "Medium"
+  },
+
+  // GROOMING (4 responses)
+  "groom|grooming|haircut|bath|spa": {
+    response: `Time for Dollar's grooming! 🛁✂️
+
+As a Poodle, Dollar needs professional grooming every 4-6 weeks to prevent matting and keep his coat healthy.
+
+**Poodle Grooming Packages:**
+
+🌟 **Basic Groom** - ₹1,200
+Bath, blow-dry, brush, nail trim, ear cleaning
+
+✨ **Full Groom** - ₹1,800
+Everything above + haircut (your choice of style)
+
+💎 **Spa Day** - ₹2,500
+Full groom + teeth brushing + paw massage + aromatherapy
+
+**Dollar's Preferences (I remember!):**
+• Prefers the "teddy bear" cut
+• Gets anxious with loud dryers — needs quiet drying
+• Loves the lavender shampoo
+
+📅 **Available This Week:**
+• Pawsome Spa - Tomorrow 10 AM ⭐ (Dollar's favorite!)
+• Fluffy Tails - Thursday 2 PM
+• PetStyle Studio - Saturday 11 AM
+
+Which one should I book?`,
+    intent: "Grooming booking",
+    pillar: "Groom",
+    urgency: "Normal"
+  },
+
+  // FOOD & NUTRITION (4 responses)
+  "food|feed|diet|eat|nutrition|kibble": {
+    response: `Let me find the perfect food for Dollar! 🍽️
+
+**Important: Dollar is allergic to chicken** — so I'm only showing chicken-free options.
+
+**Top Picks for Poodles (Chicken-Free):**
+
+🥇 **Royal Canin Poodle Adult** - ₹4,200/3kg
+Breed-specific, supports coat health
+⭐ 4.8/5 (1,200 reviews)
+
+🥈 **Farmina N&D Lamb & Blueberry** - ₹3,800/2.5kg
+Grain-free, high protein
+⭐ 4.7/5 (890 reviews)
+
+🥉 **Acana Singles Lamb & Apple** - ₹5,100/2kg
+Limited ingredient, great for allergies
+⭐ 4.9/5 (650 reviews)
+
+**Dollar's Current Food:** Royal Canin Poodle
+**Last Ordered:** 3 weeks ago (might be running low!)
+
+Would you like me to:
+1. Reorder Royal Canin (arrives tomorrow)
+2. Try one of the other options
+3. Get a nutrition consultation`,
+    intent: "Food recommendation",
+    pillar: "Shop + Feed",
+    urgency: "Normal"
+  },
+
+  "treat|treats|snack|biscuit": {
+    response: `Treat time for Dollar! 🦴
+
+**Dollar's Favorites (I remember!):**
+1. Peanut butter biscuits 🥜
+2. Lamb jerky strips 🐑
+
+**Safe Treats for Dollar (No Chicken!):**
+
+🥜 **Peanut Butter Delights** - ₹320
+Crunchy biscuits, all-natural
+*Dollar's #1 favorite!*
+
+🐑 **Lamb Jerky Strips** - ₹450
+High protein, single ingredient
+
+🍠 **Sweet Potato Chews** - ₹280
+Grain-free, good for digestion
+
+🧀 **Cheese Bites Training Treats** - ₹220
+Perfect for training sessions
+
+🎂 **Birthday Pupcake** - ₹350
+Special occasion treat!
+
+**Quick Add to Cart:**
+□ Peanut Butter Biscuits (₹320)
+□ Lamb Jerky (₹450)
+□ Sweet Potato Chews (₹280)
+
+Which ones should I add?`,
+    intent: "Treat shopping",
+    pillar: "Shop",
+    urgency: "Low"
+  },
+
+  "allergy|allergic|chicken": {
+    response: `Yes, I always remember — **Dollar is allergic to chicken!** 🚫🐔
+
+This means I automatically filter out:
+• Chicken-based kibble
+• Chicken treats and jerky
+• Foods with chicken meal/fat
+
+**Safe Proteins for Dollar:**
+✅ Lamb
+✅ Fish (salmon, whitefish)
+✅ Duck
+✅ Beef
+✅ Turkey (if tolerated)
+
+**Currently Safe Products Dollar Uses:**
+• Royal Canin Poodle (chicken-free formula)
+• Lamb jerky treats
+• Peanut butter biscuits
+
+**Want me to:**
+1. Show all chicken-free products
+2. Book an allergy test for other sensitivities
+3. Get a veterinary nutritionist consultation
+
+I'll always protect Dollar from chicken! 💚`,
+    intent: "Allergy management",
+    pillar: "Care + Feed",
+    urgency: "Normal"
+  },
+
+  // TRAVEL (3 responses)
+  "travel|trip|flying|flight|goa|mumbai|delhi|vacation": {
+    response: `Exciting! Let's plan Dollar's trip! ✈️🐩
+
+**Pet Travel Checklist for Dollar:**
+
+📋 **Documents Needed:**
+• Health certificate (within 10 days of travel)
+• Vaccination records (I have these!)
+• Pet passport (if traveling internationally)
+
+✈️ **Airlines That Allow Pets in Cabin:**
+• **IndiGo** - ₹3,500 pet fee (cabin, under 7kg ✅)
+• **Vistara** - ₹4,000 pet fee (cabin, under 5kg)
+• **Air India** - ₹5,000 pet fee (cabin)
+
+*Dollar is 8.5kg — may need to go in cargo on some airlines*
+
+🏨 **Pet-Friendly Hotels:**
+• Taj properties (most locations)
+• ITC Hotels (select properties)
+• Airbnb pet-friendly stays
+
+🧳 **Travel Essentials:**
+• Airline-approved carrier (₹2,500-4,000)
+• Portable water bowl
+• Familiar blanket/toy
+• Motion sickness meds (if needed)
+
+Where are you planning to go? I'll find specific options!`,
+    intent: "Travel planning",
+    pillar: "Travel",
+    urgency: "Normal"
+  },
+
+  "boarding|pet sitter|pet sitting|leaving|going away": {
+    response: `Need someone to care for Dollar while you're away? 🏠
+
+**Boarding Options Near You:**
+
+🏨 **Luxury Boarding:**
+**Paws Resort** - ₹1,500/night
+• Private suite, AC, webcam access
+• 2 walks + playtime daily
+• Grooming included
+⭐ 4.9/5 • 3.2 km away
+
+🏠 **Home Boarding:**
+**Priya's Pet Haven** - ₹800/night
+• Home environment, 1-2 dogs only
+• Constant supervision
+• Daily photo updates
+⭐ 4.8/5 • 5 km away
+
+👤 **Pet Sitter (comes to you):**
+**Rahul** - ₹600/visit (2 visits/day)
+• Experienced with Poodles
+• Feeding, walking, playtime
+• Stays overnight available (+₹400)
+⭐ 5.0/5 • Background verified
+
+**Dollar's Notes:**
+• Needs quiet environment
+• Anxious first day, warms up quickly
+• Must avoid chicken treats!
+
+When are you traveling? I'll check availability!`,
+    intent: "Boarding search",
+    pillar: "Stay",
+    urgency: "Normal"
+  },
+
+  // CELEBRATION (2 responses)
+  "birthday|party|celebrate|celebration|turning": {
+    response: `🎂 Dollar's birthday is coming up — March 15th! He's turning 4!
+
+**Birthday Party Packages:**
+
+🎈 **Basic Pawty** - ₹2,500
+• Custom pup-cake (chicken-free!)
+• Birthday bandana
+• Professional photoshoot (10 photos)
+
+🎉 **Premium Pawty** - ₹5,500
+• Everything above PLUS
+• Venue decoration
+• 5 doggy friends invited
+• Treat bags for guests
+• 25 edited photos + video
+
+👑 **Royal Celebration** - ₹12,000
+• Private venue booking
+• Catering for dogs AND humans
+• Professional photography + videography
+• Custom birthday outfit
+• Paw-print keepsake
+
+**Special Touches I Remember Dollar Loves:**
+• Peanut butter frosting on cake
+• His friend Bruno should be invited!
+• Prefers morning parties (more energy)
+
+Which package sounds perfect? I'll start planning! 🎊`,
+    intent: "Birthday planning",
+    pillar: "Celebrate",
+    urgency: "Low"
+  },
+
+  // TRAINING (2 responses)
+  "training|trainer|behave|behavior|jumping|barking|pulling": {
+    response: `Let's work on Dollar's training! 🎓
+
+**What's the challenge?**
+• Jumping on guests
+• Pulling on leash
+• Excessive barking
+• Basic obedience
+• Something else?
+
+**Training Options:**
+
+🏠 **Private Training (Home)** - ₹1,500/session
+• One-on-one attention
+• Customized to Dollar's needs
+• Trainer: Anjali (Poodle specialist)
+⭐ 4.9/5 • 50+ dogs trained
+
+👥 **Group Classes** - ₹4,000 (6 sessions)
+• Socialization included
+• Sunday mornings, Cubbon Park
+• Max 6 dogs per batch
+
+📱 **Online Consultation** - ₹500/session
+• Video call with behaviorist
+• Good for quick questions
+
+**Dollar's Training Notes:**
+• Very intelligent (Poodles learn fast!)
+• Food-motivated (lamb treats work best)
+• Responds well to positive reinforcement
+
+What behavior would you like to work on?`,
+    intent: "Training inquiry",
+    pillar: "Learn",
+    urgency: "Normal"
+  },
+
+  // EXERCISE & FITNESS (2 responses)
+  "exercise|walk|walking|fitness|weight|overweight|active": {
+    response: `Let's keep Dollar fit and active! 🏃‍♂️🐩
+
+**Poodle Exercise Guidelines:**
+Standard Poodles need 60-90 minutes of activity daily.
+
+**Dollar's Current Stats:**
+• Weight: 8.5 kg (healthy range!)
+• Age: 4 years (prime activity years)
+• Energy level: High
+
+**Activity Recommendations:**
+
+🚶 **Daily Walks:**
+• Morning: 30-40 minutes (brisk)
+• Evening: 20-30 minutes (leisurely)
+
+🏊 **Swimming** (Poodles love water!)
+• Great low-impact exercise
+• Canine Pool - ₹500/session
+
+🧩 **Mental Stimulation:**
+• Puzzle toys
+• Hide & seek with treats
+• Training games
+
+👥 **Social Exercise:**
+• Dog park playdates
+• Doggy daycare (2-3x/week)
+
+**Dog Walker Services:**
+• **Ravi** - ₹300/walk, morning available
+• **PawWalks** - ₹250/walk, flexible timing
+
+Would you like me to set up a fitness routine for Dollar?`,
+    intent: "Fitness planning",
+    pillar: "Fit",
+    urgency: "Low"
+  },
+
+  // PRODUCTS & SHOPPING (3 responses)
+  "toy|toys|play|playing|bored": {
+    response: `Let's find fun toys for Dollar! 🎾
+
+**Poodle-Perfect Toys:**
+
+🧩 **Puzzle Toys** (Mental stimulation)
+• Kong Classic - ₹650
+• Nina Ottosson Puzzle - ₹1,200
+• Snuffle Mat - ₹550
+
+🎾 **Fetch Toys**
+• Chuck-It Ball - ₹450
+• Squeaky Tennis Balls (3-pack) - ₹320
+• Rope Frisbee - ₹380
+
+🦷 **Chew Toys** (Dental health)
+• Nylabone Dental - ₹520
+• Benebone Wishbone - ₹680
+• Natural Yak Chew - ₹350
+
+🤗 **Comfort Toys**
+• Plush Squeaky Toy - ₹420
+• Heartbeat Puppy (for anxious times) - ₹1,100
+
+**Dollar's Favorites:**
+• Loves squeaky toys!
+• Destroys plush toys quickly 😅
+• Prefers medium-sized balls
+
+Add to cart?`,
+    intent: "Toy shopping",
+    pillar: "Shop + Enjoy",
+    urgency: "Low"
+  },
+
+  "buy|order|shop|need|get me|purchase": {
+    response: `I'd be happy to help you shop for Dollar! 🛒
+
+**Quick Reorders (Based on Dollar's history):**
+• Royal Canin Poodle Food (3kg) - ₹4,200
+  *Last ordered 3 weeks ago*
+• Peanut Butter Biscuits - ₹320
+• Lamb Jerky Treats - ₹450
+
+**Popular Categories:**
+🍽️ Food & Nutrition
+🦴 Treats & Chews  
+🧴 Grooming Supplies
+🧸 Toys & Enrichment
+🛏️ Beds & Comfort
+👕 Clothing & Accessories
+💊 Health & Supplements
+
+**Remember:** All products I show are verified chicken-free for Dollar!
+
+What would you like to shop for today?`,
+    intent: "Shopping",
+    pillar: "Shop",
+    urgency: "Low"
+  },
+
+  // INSURANCE & PROTECTION (1 response)
+  "insurance|protect|coverage|medical": {
+    response: `Great thinking! Let's protect Dollar with pet insurance. 🛡️
+
+**Pet Insurance Options:**
+
+🥇 **Bajaj Allianz Pet Insurance**
+• Premium: ₹5,500/year
+• Coverage: ₹50,000
+• Includes: Accidents, illness, surgery
+• Waiting period: 14 days
+
+🥈 **New India Assurance**
+• Premium: ₹4,200/year
+• Coverage: ₹40,000
+• Includes: Accidents, hospitalization
+• Waiting period: 30 days
+
+🥉 **ICICI Lombard Pet Cover**
+• Premium: ₹6,800/year
+• Coverage: ₹75,000
+• Includes: Comprehensive + OPD
+• Waiting period: 14 days
+
+**Dollar's Risk Factors:**
+• Poodles prone to: Hip dysplasia, eye issues, skin allergies
+• Age 4: Good time to get coverage (pre-existing exclusions apply later)
+
+**My Recommendation:**
+ICICI Lombard for comprehensive coverage, especially given Dollar's skin sensitivity.
+
+Want me to get detailed quotes?`,
+    intent: "Insurance inquiry",
+    pillar: "Protect",
+    urgency: "Low"
+  },
+
+  // EMERGENCY (2 responses)
+  "emergency|urgent|help|hurt|accident|bleeding|poisoned": {
+    response: `🚨 **EMERGENCY RESPONSE ACTIVATED**
+
+**Stay calm. I'm here to help.**
+
+**Nearest Emergency Vets (Open 24/7):**
+
+📍 **24/7 PetCare Emergency**
+• Distance: 2.3 km
+• 📞 +91 98765 43210
+• Wait time: ~10 mins
+
+📍 **City Vet Hospital**
+• Distance: 4.1 km  
+• 📞 +91 98765 43211
+• Full surgical facility
+
+📍 **CGVH Emergency**
+• Distance: 6.5 km
+• 📞 +91 98765 43212
+• Specialist on call
+
+**While You're on the Way:**
+• Keep Dollar calm and still
+• Don't give food or water
+• Note the time symptoms started
+• Bring any suspected toxins/objects
+
+**Do you want me to:**
+1. 📞 Call the nearest vet NOW
+2. 🚗 Get directions
+3. 📋 Share Dollar's medical history with them
+
+What happened? I can provide specific first-aid guidance.`,
+    intent: "Emergency",
+    pillar: "Emergency",
+    urgency: "Critical"
+  },
+
+  // MULTI-INTENT (2 responses)
+  "and also|and order|and book|and get": {
+    response: `I can help with multiple things at once! Let me break this down:
+
+**Request 1:** [Processing first request...]
+**Request 2:** [Processing second request...]
+
+I'll handle both for you. Which would you like me to start with?
+
+*This is Mira's multi-intent capability — I can understand and process multiple requests in a single conversation!*`,
+    intent: "Multi-intent detected",
+    pillar: "Multiple",
+    urgency: "Normal"
+  },
+
+  // DEFAULT / FALLBACK
+  "default": {
+    response: `I'm here to help with anything for Dollar! 
+
+**I can assist with:**
+🏥 **Health & Care** - Vet appointments, symptoms, medications
+🛁 **Grooming** - Spa bookings, haircuts, at-home care
+🍽️ **Food & Nutrition** - Diet plans, treats, allergies
+✈️ **Travel & Stay** - Pet-friendly trips, boarding
+🎉 **Celebrations** - Birthday parties, special occasions
+🎓 **Training** - Behavior, obedience, socialization
+🛒 **Shopping** - Products, toys, supplies
+🛡️ **Protection** - Insurance, safety, emergencies
+
+**Quick Info About Dollar:**
+• 4-year-old Apricot Poodle
+• Allergic to chicken 🚫
+• Loves peanut butter treats
+• Soul Score: 78%
+
+What would you like help with today?`,
+    intent: "General inquiry",
+    pillar: "General",
+    urgency: "Low"
+  }
+};
+
+// Function to find best matching response
+const findBestResponse = (query) => {
+  const queryLower = query.toLowerCase();
+  
+  for (const [pattern, data] of Object.entries(CURATED_RESPONSES)) {
+    if (pattern === 'default') continue;
+    
+    const patterns = pattern.split('|');
+    for (const p of patterns) {
+      if (queryLower.includes(p.toLowerCase())) {
+        return data;
+      }
+    }
+  }
+  
+  return CURATED_RESPONSES['default'];
+};
   { id: 1, query: "Dollar hasn't been eating well lately", 
     intent: "Implicit: appetite_loss", pillar: "Care", urgency: "High",
     icon: "🍽️", response: "I sense something might be off with Dollar's appetite..." },
