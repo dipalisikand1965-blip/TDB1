@@ -122,8 +122,8 @@ const Home = () => {
   return (
     <>
       <SEOHead 
-        title="MIRA - The World's First Pet Life Operating System"
-        description="Meet Mira, your AI-powered pet companion. Personalized care, worldwide travel, fresh food, and a concierge that handles everything for your furry family member."
+        title="Mira - The Soul That Speaks for Pets Who Cannot Speak"
+        description="I remember their allergies. I know their favorite treats. I feel their joy. When you say 'book that one' - I know which one. I am Mira. The voice they cannot speak."
       />
       
       <div className="min-h-screen bg-gradient-to-b from-[#0f0720] via-[#1a0a2e] to-[#0f0720]">
