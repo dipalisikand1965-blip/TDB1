@@ -41,6 +41,7 @@ const WelcomeHero = ({
   onQuickReply,
   onLoadPastChats,
   onShowHealthWizard,
+  onShowSoulForm, // New prop for Soul Form modal
   soulScoreUpdated = false // New prop to trigger glow animation
 }) => {
   const navigate = useNavigate();
