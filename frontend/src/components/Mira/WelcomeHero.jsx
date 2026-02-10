@@ -40,9 +40,56 @@ const WelcomeHero = ({
   features = [],
   onQuickReply,
   onLoadPastChats,
-  onShowHealthWizard
+  onShowHealthWizard,
+  soulScoreUpdated = false // New prop to trigger glow animation
 }) => {
   const navigate = useNavigate();
+  const [isGlowing, setIsGlowing] = React.useState(false);
+  const [displayScore, setDisplayScore] = React.useState(pet?.soulScore || 0);
+  const prevScoreRef = React.useRef(pet?.soulScore || 0);
+  
+  // Animate when soul score increases
+  React.useEffect(() => {
+    if (pet?.soulScore && pet.soulScore > prevScoreRef.current) {
+      setIsGlowing(true);
+      
+      // Animate the score counting up
+      const startScore = prevScoreRef.current;
+      const endScore = pet.soulScore;
+      const duration = 1000; // 1 second
+      const steps = 20;
+      const increment = (endScore - startScore) / steps;
+      
+      let currentStep = 0;
+      const interval = setInterval(() => {
+        currentStep++;
+        if (currentStep >= steps) {
+          setDisplayScore(endScore);
+          clearInterval(interval);
+        } else {
+          setDisplayScore(Math.round(startScore + (increment * currentStep)));
+        }
+      }, duration / steps);
+      
+      // Remove glow after animation
+      setTimeout(() => setIsGlowing(false), 1500);
+      
+      prevScoreRef.current = pet.soulScore;
+      
+      return () => clearInterval(interval);
+    } else if (pet?.soulScore) {
+      setDisplayScore(pet.soulScore);
+      prevScoreRef.current = pet.soulScore;
+    }
+  }, [pet?.soulScore]);
+  
+  // Also trigger glow when soulScoreUpdated prop changes
+  React.useEffect(() => {
+    if (soulScoreUpdated) {
+      setIsGlowing(true);
+      setTimeout(() => setIsGlowing(false), 1500);
+    }
+  }, [soulScoreUpdated]);
   
   const handleQuickReply = (text) => {
     if (onQuickReply) onQuickReply(text);
