@@ -703,19 +703,32 @@ async def handoff_to_concierge(request: HandoffToConciergeRequest):
     # The proper closing line Mira should say
     mira_closing_line = "I've shared everything we've discussed with your pet Concierge®. They'll take it forward from here and get back to you in this chat."
     
+    # Build update with pillar if provided
+    update_set = {
+        "status": "open_concierge",
+        "handoff_to_concierge": True,
+        "concierge_queue": request.concierge_queue,
+        "handoff_time": now.isoformat(),
+        "latest_mira_summary": request.latest_mira_summary,
+        "current_step": None,  # Clear any pending step on handoff
+        "updated_at": now.isoformat()
+    }
+    
+    # If user edited the pillar, update it
+    if request.pillar:
+        update_set["pillar"] = request.pillar
+        logger.info(f"[HANDOFF] User updated pillar to: {request.pillar}")
+    
+    # If user edited the title, update it
+    if request.request_title:
+        update_set["request_title"] = request.request_title
+        logger.info(f"[HANDOFF] User updated title to: {request.request_title}")
+    
     # Update the ticket
     result = await db.mira_conversations.update_one(
         {"ticket_id": request.ticket_id},
         {
-            "$set": {
-                "status": "open_concierge",
-                "handoff_to_concierge": True,
-                "concierge_queue": request.concierge_queue,
-                "handoff_time": now.isoformat(),
-                "latest_mira_summary": request.latest_mira_summary,
-                "current_step": None,  # Clear any pending step on handoff
-                "updated_at": now.isoformat()
-            },
+            "$set": update_set,
             "$push": {
                 "conversation": {
                     "$each": [
@@ -727,6 +740,7 @@ async def handoff_to_concierge(request: HandoffToConciergeRequest):
                             "meta": {
                                 "type": "handoff",
                                 "queue": request.concierge_queue,
+                                "pillar": request.pillar,
                                 "summary": request.latest_mira_summary
                             }
                         },
