@@ -1088,6 +1088,108 @@ Ask me anything about him!` }
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [chatMessages, streamingText]);
 
+  // Tour navigation functions
+  const startTour = () => {
+    setTourActive(true);
+    setTourStep(0);
+    // Reset chat to welcome state
+    setChatMessages([{
+      role: 'mira',
+      content: `Hey! I'm Mira 👋
+
+I already know Dollar — your 4-year-old Poodle who's allergic to chicken and loves peanut butter treats.
+
+Ask me anything about him!`
+    }]);
+  };
+
+  const nextTourStep = async () => {
+    const nextStep = tourStep + 1;
+    if (nextStep >= TOUR_STEPS.length) {
+      setTourActive(false);
+      setTourStep(0);
+      return;
+    }
+    
+    setTourStep(nextStep);
+    const step = TOUR_STEPS[nextStep];
+    
+    // Auto-scroll to target
+    if (step.target === 'heritage-section' && heritageRef.current) {
+      heritageRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    } else if (step.target === 'chat-interface') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    
+    // Auto-click scenarios during tour
+    if (step.autoClick && step.target?.startsWith('scenario-')) {
+      const scenarioIndex = parseInt(step.target.split('-')[1]);
+      const scenario = TEST_SCENARIOS[scenarioIndex];
+      if (scenario) {
+        // Small delay for visual effect
+        await new Promise(r => setTimeout(r, 800));
+        handleSendMessage(scenario.query);
+      }
+    }
+  };
+
+  const exitTour = () => {
+    setTourActive(false);
+    setTourStep(0);
+  };
+
+  // Tour Tooltip Component
+  const TourTooltip = ({ step, onNext, onExit }) => {
+    const currentStep = TOUR_STEPS[step];
+    if (!currentStep) return null;
+    
+    const isFirst = step === 0;
+    const isLast = step === TOUR_STEPS.length - 1;
+    
+    return (
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.9 }}
+        className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] max-w-md w-[90%]"
+      >
+        <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl p-1 shadow-2xl shadow-purple-500/30">
+          <div className="bg-[#1a0a2e] rounded-xl p-5">
+            {/* Progress dots */}
+            <div className="flex justify-center gap-1.5 mb-4">
+              {TOUR_STEPS.map((_, i) => (
+                <div 
+                  key={i} 
+                  className={`w-2 h-2 rounded-full transition-colors ${
+                    i === step ? 'bg-pink-400' : i < step ? 'bg-purple-400' : 'bg-white/20'
+                  }`} 
+                />
+              ))}
+            </div>
+            
+            <h4 className="text-white font-bold text-lg mb-2">{currentStep.title}</h4>
+            <p className="text-white/70 text-sm mb-4">{currentStep.description}</p>
+            
+            <div className="flex items-center justify-between">
+              <button
+                onClick={onExit}
+                className="text-white/50 hover:text-white text-sm transition-colors"
+              >
+                Skip Tour
+              </button>
+              <Button
+                onClick={onNext}
+                className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white px-6"
+              >
+                {isFirst ? 'Start Tour' : isLast ? 'Finish' : 'Next'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    );
+  };
+
   // Call real Mira API
   const callMiraAPI = async (userMessage) => {
     const thinking = {
