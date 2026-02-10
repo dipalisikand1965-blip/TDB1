@@ -6,8 +6,8 @@
  * Extracted from MiraDemoPage.jsx - Stage 5 Refactoring
  */
 
-import React from 'react';
-import { PawPrint, Sparkles, X, Lightbulb, Brain, FileText, Heart } from 'lucide-react';
+import React, { useState } from 'react';
+import { PawPrint, Sparkles, X, Lightbulb, Brain, FileText, Heart, ChevronDown, ChevronUp } from 'lucide-react';
 
 /**
  * InsightsPanel Component
@@ -28,6 +28,8 @@ const InsightsPanel = ({
   tipCard = null,
   memoryContext = null
 }) => {
+  const [expandedTipId, setExpandedTipId] = useState(null);
+  
   if (!isOpen) return null;
   
   // Extract tips from Mira's messages
@@ -62,6 +64,11 @@ const InsightsPanel = ({
     general: '💡'
   };
   
+  // Toggle expand/collapse for a tip card
+  const toggleTipExpand = (tipId) => {
+    setExpandedTipId(prev => prev === tipId ? null : tipId);
+  };
+  
   return (
     <div className="mp-insights-panel" data-testid="insights-panel">
       <div className="mp-insights-header">
@@ -79,15 +86,35 @@ const InsightsPanel = ({
             <h4 className="insights-section-title">
               <FileText size={14} /> Saved Tips
             </h4>
-            {tipCards.map((tc, idx) => (
-              <div key={tc.id || idx} className="mp-tip-card-mini">
-                <span className="tip-card-icon">{tipCardIcons[tc.type] || '💡'}</span>
-                <div className="tip-card-content">
-                  <span className="tip-card-title">{tc.title}</span>
-                  <span className="tip-card-type">{tc.type?.replace('_', ' ')}</span>
+            {tipCards.map((tc, idx) => {
+              const tipId = tc.id || `tip-${idx}`;
+              const isExpanded = expandedTipId === tipId;
+              
+              return (
+                <div 
+                  key={tipId} 
+                  className={`mp-tip-card-mini ${isExpanded ? 'expanded' : ''}`}
+                  onClick={() => toggleTipExpand(tipId)}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <div className="tip-card-header">
+                    <span className="tip-card-icon">{tipCardIcons[tc.type] || '💡'}</span>
+                    <div className="tip-card-content">
+                      <span className="tip-card-title">{tc.title}</span>
+                      <span className="tip-card-type">{tc.type?.replace('_', ' ')}</span>
+                    </div>
+                    <span className="tip-card-expand-icon">
+                      {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                    </span>
+                  </div>
+                  {isExpanded && tc.content && (
+                    <div className="tip-card-expanded-content">
+                      <p>{tc.content}</p>
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
         
