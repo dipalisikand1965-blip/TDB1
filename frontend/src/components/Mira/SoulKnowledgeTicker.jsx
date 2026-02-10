@@ -46,7 +46,7 @@ const SoulKnowledgeTicker = ({
   const prevScoreRef = useRef(soulScore);
   const tickerRef = useRef(null);
   
-  // Fetch knowledge items from backend
+  // Fetch knowledge items from backend - prioritize personal knowledge over places
   useEffect(() => {
     const fetchKnowledge = async () => {
       if (!petId || !apiUrl) return;
@@ -56,7 +56,11 @@ const SoulKnowledgeTicker = ({
         if (response.ok) {
           const data = await response.json();
           if (data.knowledge_items && data.knowledge_items.length > 0) {
-            setItems(data.knowledge_items);
+            // Sort by priority (highest first) and filter out low-value items
+            const sortedItems = data.knowledge_items
+              .filter(item => item.priority >= 4) // Only show items with priority 4+
+              .sort((a, b) => (b.priority || 5) - (a.priority || 5));
+            setItems(sortedItems);
           }
         }
       } catch (err) {
@@ -66,6 +70,22 @@ const SoulKnowledgeTicker = ({
     
     fetchKnowledge();
   }, [petId, apiUrl]);
+  
+  // Update items when knowledgeItems prop changes (e.g., when switching pets)
+  useEffect(() => {
+    if (knowledgeItems && knowledgeItems.length > 0) {
+      // Filter and sort prop items too - prefer personal knowledge over places
+      const personalItems = knowledgeItems.filter(item => 
+        item.category !== 'place' && item.category !== 'activity'
+      );
+      const otherItems = knowledgeItems.filter(item => 
+        item.category === 'place' || item.category === 'activity'
+      );
+      // Personal items first, then places/activities
+      const sortedItems = [...personalItems, ...otherItems.slice(0, 2)]; // Limit places to 2
+      setItems(sortedItems);
+    }
+  }, [knowledgeItems]);
   
   // Animate soul score when it increases
   useEffect(() => {
