@@ -3517,7 +3517,15 @@ const MiraDemoPage = () => {
       <NavigationDock
         inputRef={inputRef}
         onShowHelp={() => setShowHelpModal(true)}
-        onShowLearn={() => { setShowLearnModal(true); fetchLearnVideos('recommended'); }}
+        onShowLearn={() => { 
+          setShowLearnModal(true); 
+          fetchLearnVideos('recommended');
+          // Clear the notification when Learn is opened
+          setHasNewVideos(false);
+          setNewVideosCount(0);
+        }}
+        hasNewVideos={hasNewVideos}
+        newVideosCount={newVideosCount}
       />
       
       {/* FLOATING ACTION BAR - Extracted to FloatingActionBar component */}
