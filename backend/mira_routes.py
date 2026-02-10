@@ -3071,19 +3071,19 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                 "checklist": "✅", "reminder": "⏰", "guide": "📖", "general": "💡"
             }
             
-            # Determine tip card type
+            # Determine tip card type based on full context (not just current message)
             tip_card_type = "general"
-            if "meal" in user_input_lower or "food" in user_input_lower or "diet" in user_input_lower:
+            if any(w in full_context for w in ["meal", "food", "diet", "eat", "feeding", "breakfast", "lunch", "dinner"]):
                 tip_card_type = "meal_plan"
-            elif "travel" in user_input_lower or "trip" in user_input_lower:
+            elif any(w in full_context for w in ["travel", "trip", "vacation", "holiday"]):
                 tip_card_type = "travel_tips"
-            elif "groom" in user_input_lower:
+            elif any(w in full_context for w in ["groom", "bath", "brush"]):
                 tip_card_type = "grooming_routine"
-            elif "train" in user_input_lower:
+            elif any(w in full_context for w in ["train", "behavior", "obedience"]):
                 tip_card_type = "training_tips"
-            elif "health" in user_input_lower or "vet" in user_input_lower:
+            elif any(w in full_context for w in ["health", "vet", "doctor", "medicine"]):
                 tip_card_type = "health_advice"
-            elif "exercise" in user_input_lower or "walk" in user_input_lower or "fit" in user_input_lower:
+            elif any(w in full_context for w in ["exercise", "walk", "fit", "weight"]):
                 tip_card_type = "exercise_routine"
             
             pet_name = request.pet_context.get("name", "your pet") if request.pet_context else "your pet"
