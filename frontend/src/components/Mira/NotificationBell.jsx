@@ -232,8 +232,8 @@ const NotificationBell = ({ userEmail, className = '' }) => {
                            flex items-center justify-center gap-1"
                 onClick={() => {
                   setIsOpen(false);
-                  // Navigate to full notifications page
-                  window.location.href = '/notifications';
+                  // Navigate to member dashboard - notifications shown there
+                  window.location.href = '/dashboard';
                 }}
               >
                 View all notifications
