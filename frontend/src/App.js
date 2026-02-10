@@ -56,8 +56,8 @@ function ConditionalFloatingButton() {
 // ConditionalMobileNav - Show mobile nav bar only on appropriate pages
 function ConditionalMobileNav() {
   const { pathname } = useLocation();
-  // Don't show on admin, login, or register pages
-  const hiddenPaths = ['/admin', '/login', '/register', '/forgot-password'];
+  // Don't show on admin, login, register, or demo pages
+  const hiddenPaths = ['/admin', '/login', '/register', '/forgot-password', '/demo'];
   if (hiddenPaths.some(path => pathname.startsWith(path))) {
     return null;
   }
