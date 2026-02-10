@@ -7,7 +7,7 @@
  */
 
 import React, { useState } from 'react';
-import { PawPrint, Sparkles, X, Lightbulb, Brain, FileText, Heart, ChevronDown, ChevronUp } from 'lucide-react';
+import { PawPrint, Sparkles, X, Lightbulb, Brain, FileText, Heart, ChevronDown, ChevronUp, Send } from 'lucide-react';
 
 /**
  * InsightsPanel Component
@@ -19,6 +19,7 @@ import { PawPrint, Sparkles, X, Lightbulb, Brain, FileText, Heart, ChevronDown, 
  * @param {Array} props.conversationHistory - Conversation messages
  * @param {Object} props.tipCard - Current tip card from response
  * @param {Object} props.memoryContext - What Mira knows about the pet
+ * @param {Function} props.onSendToConcierge - Called when sending tip to Concierge®
  */
 const InsightsPanel = ({ 
   isOpen, 
@@ -26,9 +27,11 @@ const InsightsPanel = ({
   petName = 'your pet',
   conversationHistory = [],
   tipCard = null,
-  memoryContext = null
+  memoryContext = null,
+  onSendToConcierge = null
 }) => {
   const [expandedTipId, setExpandedTipId] = useState(null);
+  const [sendingTipId, setSendingTipId] = useState(null);
   
   if (!isOpen) return null;
   
@@ -70,6 +73,30 @@ const InsightsPanel = ({
     setExpandedTipId(prev => prev === tipId ? null : tipId);
   };
   
+  // Handle sending tip card to Concierge®
+  const handleSendToConcierge = async (tc, e) => {
+    e.stopPropagation(); // Prevent card from collapsing
+    
+    if (!onSendToConcierge) return;
+    
+    const tipId = tc.id || `tip-${Date.now()}`;
+    setSendingTipId(tipId);
+    
+    try {
+      await onSendToConcierge({
+        type: 'tip_card',
+        title: tc.title,
+        content: tc.content,
+        tipType: tc.type,
+        petName: petName
+      });
+    } catch (err) {
+      console.error('[INSIGHTS] Failed to send to Concierge®:', err);
+    }
+    
+    setSendingTipId(null);
+  };
+  
   return (
     <div className="mp-insights-panel" data-testid="insights-panel">
       <div className="mp-insights-header">
@@ -90,6 +117,7 @@ const InsightsPanel = ({
             {tipCards.map((tc, idx) => {
               const tipId = tc.id || `tip-${idx}`;
               const isExpanded = expandedTipId === tipId;
+              const isSending = sendingTipId === tipId;
               
               return (
                 <div 
@@ -108,9 +136,22 @@ const InsightsPanel = ({
                       {isExpanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                     </span>
                   </div>
-                  {isExpanded && tc.content && (
+                  {isExpanded && (
                     <div className="tip-card-expanded-content">
-                      <p>{tc.content}</p>
+                      {tc.content && <p>{tc.content}</p>}
+                      
+                      {/* Send to Concierge® button */}
+                      {onSendToConcierge && (
+                        <button
+                          className="tip-send-concierge-btn"
+                          onClick={(e) => handleSendToConcierge(tc, e)}
+                          disabled={isSending}
+                          data-testid="tip-send-concierge"
+                        >
+                          <Send size={14} />
+                          <span>{isSending ? 'Sending...' : 'Send to Concierge®'}</span>
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>
@@ -157,6 +198,33 @@ const InsightsPanel = ({
           </p>
         )}
       </div>
+      
+      {/* Additional styles for Concierge® button */}
+      <style>{`
+        .tip-send-concierge-btn {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          margin-top: 12px;
+          padding: 8px 14px;
+          background: linear-gradient(135deg, #ec4899 0%, #8b5cf6 100%);
+          border: none;
+          border-radius: 8px;
+          color: white;
+          font-size: 0.85rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+        .tip-send-concierge-btn:hover:not(:disabled) {
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+        }
+        .tip-send-concierge-btn:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+      `}</style>
     </div>
   );
 };
