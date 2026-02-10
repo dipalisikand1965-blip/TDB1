@@ -543,6 +543,320 @@ async def check_reorder_suggestions(pet_id: str, pet_name: str, user_email: str,
 # MAIN API ENDPOINTS
 # ═══════════════════════════════════════════════════════════════════════════════
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# HEALTH CHECK-IN PROMPTS
+# Periodic wellness prompts to engage pet parents
+# ═══════════════════════════════════════════════════════════════════════════════
+
+async def check_health_checkin_prompts(pet_id: str, pet_name: str, db) -> List[Dict]:
+    """
+    Generate periodic health check-in prompts.
+    
+    Types:
+    - Weekly wellness check
+    - Post-vaccination check (3 days after)
+    - Senior pet monthly check (for dogs 7+)
+    - Post-illness follow-up
+    """
+    alerts = []
+    now = datetime.now(timezone.utc)
+    
+    # Get pet info
+    pet = await db.pets.find_one(
+        {"id": pet_id},
+        {"_id": 0, "birth_date": 1, "health_records": 1, "last_wellness_checkin": 1}
+    )
+    
+    if not pet:
+        return alerts
+    
+    # Calculate age
+    age_years = 0
+    birth_date_str = pet.get("birth_date")
+    if birth_date_str:
+        try:
+            if isinstance(birth_date_str, str):
+                birth_date = datetime.fromisoformat(birth_date_str.replace("Z", "+00:00"))
+            else:
+                birth_date = birth_date_str
+            age_years = (now - birth_date).days // 365
+        except:
+            pass
+    
+    # Check last wellness check-in
+    last_checkin = pet.get("last_wellness_checkin")
+    days_since_checkin = 999
+    if last_checkin:
+        try:
+            if isinstance(last_checkin, str):
+                last_checkin_date = datetime.fromisoformat(last_checkin.replace("Z", "+00:00"))
+            else:
+                last_checkin_date = last_checkin
+            days_since_checkin = (now - last_checkin_date).days
+        except:
+            pass
+    
+    # Weekly wellness check (if no check-in for 7+ days)
+    if days_since_checkin >= 7:
+        alerts.append({
+            "id": f"wellness-weekly-{pet_id}",
+            "type": "health_checkin",
+            "pillar": "care",
+            "title": f"💚 How is {pet_name} doing?",
+            "message": f"It's been a week! Quick check - is {pet_name} eating well, playing normally, and feeling happy?",
+            "pet_id": pet_id,
+            "pet_name": pet_name,
+            "urgency": "low",
+            "cta": "All Good!",
+            "cta_action": "wellness_checkin_ok",
+            "secondary_cta": "Something's Off",
+            "secondary_action": "wellness_checkin_concern",
+            "created_at": now.isoformat()
+        })
+    
+    # Senior pet monthly check (for dogs 7+)
+    if age_years >= 7 and days_since_checkin >= 14:
+        alerts.append({
+            "id": f"wellness-senior-{pet_id}",
+            "type": "health_checkin",
+            "pillar": "care",
+            "title": f"👴 Senior Check: {pet_name}",
+            "message": f"At {age_years} years young, {pet_name} deserves extra attention. Any changes in appetite, mobility, or energy levels?",
+            "pet_id": pet_id,
+            "pet_name": pet_name,
+            "urgency": "medium",
+            "cta": "Doing Great",
+            "cta_action": "senior_checkin_ok",
+            "secondary_cta": "Schedule Checkup",
+            "secondary_action": "book_senior_checkup",
+            "created_at": now.isoformat()
+        })
+    
+    # Post-vaccination check (3 days after any vaccination)
+    vaccinations = pet.get("health_records", {}).get("vaccinations", []) or pet.get("vaccinations", [])
+    for vax in vaccinations:
+        vax_date_str = vax.get("date") or vax.get("administered_date")
+        if vax_date_str:
+            try:
+                if isinstance(vax_date_str, str):
+                    vax_date = datetime.fromisoformat(vax_date_str.replace("Z", "+00:00"))
+                else:
+                    vax_date = vax_date_str
+                days_since_vax = (now - vax_date).days
+                
+                if 2 <= days_since_vax <= 4:  # 2-4 days after vaccination
+                    vax_name = vax.get("name") or vax.get("type") or "vaccination"
+                    alerts.append({
+                        "id": f"postvax-{pet_id}-{vax_date_str[:10]}",
+                        "type": "health_checkin",
+                        "pillar": "care",
+                        "title": f"💉 Post-Vaccination Check",
+                        "message": f"It's been {days_since_vax} days since {pet_name}'s {vax_name}. Any soreness, lethargy, or unusual behavior?",
+                        "pet_id": pet_id,
+                        "pet_name": pet_name,
+                        "urgency": "medium",
+                        "cta": "All Normal",
+                        "cta_action": "postvax_ok",
+                        "secondary_cta": "Report Side Effect",
+                        "secondary_action": "postvax_concern",
+                        "created_at": now.isoformat()
+                    })
+                    break  # Only one post-vax alert
+            except:
+                pass
+    
+    return alerts
+
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# SEASONAL TIPS
+# Weather and season-aware care tips
+# ═══════════════════════════════════════════════════════════════════════════════
+
+def get_current_season_india() -> Dict[str, Any]:
+    """
+    Determine current season in India and provide context.
+    
+    India seasons:
+    - Winter: Dec-Feb (cold, dry)
+    - Summer: Mar-May (hot, dry)
+    - Monsoon: Jun-Sep (hot, humid, rainy)
+    - Post-Monsoon: Oct-Nov (moderate)
+    """
+    now = datetime.now(timezone.utc)
+    month = now.month
+    
+    if month in [12, 1, 2]:
+        return {
+            "season": "winter",
+            "name": "Winter",
+            "months": "December - February",
+            "weather": "cold, dry",
+            "risks": ["hypothermia for small dogs", "dry skin", "joint stiffness"],
+            "emoji": "❄️"
+        }
+    elif month in [3, 4, 5]:
+        return {
+            "season": "summer",
+            "name": "Summer",
+            "months": "March - May",
+            "weather": "hot, dry",
+            "risks": ["heat stroke", "dehydration", "paw burns", "tick season"],
+            "emoji": "☀️"
+        }
+    elif month in [6, 7, 8, 9]:
+        return {
+            "season": "monsoon",
+            "name": "Monsoon",
+            "months": "June - September",
+            "weather": "hot, humid, rainy",
+            "risks": ["fungal infections", "waterborne diseases", "leptospirosis", "muddy paws"],
+            "emoji": "🌧️"
+        }
+    else:  # 10, 11
+        return {
+            "season": "post_monsoon",
+            "name": "Post-Monsoon",
+            "months": "October - November",
+            "weather": "moderate, pleasant",
+            "risks": ["allergies", "tick resurgence"],
+            "emoji": "🍂"
+        }
+
+
+SEASONAL_TIPS = {
+    "winter": [
+        {
+            "title": "❄️ Keep {pet_name} Warm",
+            "message": "Winter nights can be cold! Consider a cozy sweater for {pet_name}, especially for short-haired breeds. Keep their bed away from drafts.",
+            "cta": "Shop Sweaters",
+            "cta_action": "shop_winter_wear"
+        },
+        {
+            "title": "❄️ Moisturize Those Paws",
+            "message": "Cold weather can dry out {pet_name}'s paw pads. A paw balm can help prevent cracking and discomfort.",
+            "cta": "Shop Paw Care",
+            "cta_action": "shop_paw_balm"
+        },
+        {
+            "title": "❄️ Senior Joint Care",
+            "message": "Cold weather can make joints stiff. If {pet_name} is older, consider joint supplements and a warm bed.",
+            "cta": "Shop Supplements",
+            "cta_action": "shop_joint_supplements"
+        }
+    ],
+    "summer": [
+        {
+            "title": "☀️ Beat the Heat",
+            "message": "It's getting hot! Never leave {pet_name} in a parked car. Walk during early morning or late evening only.",
+            "cta": "Shop Cooling Mats",
+            "cta_action": "shop_cooling_products"
+        },
+        {
+            "title": "☀️ Hydration Alert",
+            "message": "Make sure {pet_name} always has fresh, cool water. Consider adding ice cubes or a pet water fountain.",
+            "cta": "Shop Water Bowls",
+            "cta_action": "shop_water_bowls"
+        },
+        {
+            "title": "☀️ Paw-tect from Hot Surfaces",
+            "message": "Pavements can burn paws in summer! Test with your hand - if it's too hot for you, it's too hot for {pet_name}.",
+            "cta": "Shop Paw Protection",
+            "cta_action": "shop_paw_protection"
+        },
+        {
+            "title": "☀️ Tick & Flea Season",
+            "message": "Summer means more ticks and fleas! Make sure {pet_name}'s prevention is up to date.",
+            "cta": "Shop Tick Prevention",
+            "cta_action": "shop_tick_prevention"
+        }
+    ],
+    "monsoon": [
+        {
+            "title": "🌧️ Monsoon Paw Care",
+            "message": "Wet paws = infection risk! Always dry {pet_name}'s paws after walks and check between toes for fungus.",
+            "cta": "Shop Paw Wipes",
+            "cta_action": "shop_paw_wipes"
+        },
+        {
+            "title": "🌧️ Lepto Alert",
+            "message": "Monsoon increases leptospirosis risk from puddles. Make sure {pet_name}'s vaccination is current!",
+            "cta": "Check Vaccinations",
+            "cta_action": "check_vaccinations"
+        },
+        {
+            "title": "🌧️ Indoor Boredom Busters",
+            "message": "Stuck indoors due to rain? Keep {pet_name} mentally stimulated with puzzle toys and training games.",
+            "cta": "Shop Puzzle Toys",
+            "cta_action": "shop_puzzle_toys"
+        },
+        {
+            "title": "🌧️ Raincoat Ready",
+            "message": "A good raincoat keeps {pet_name} dry and happy during monsoon walks!",
+            "cta": "Shop Raincoats",
+            "cta_action": "shop_raincoats"
+        }
+    ],
+    "post_monsoon": [
+        {
+            "title": "🍂 Allergy Season",
+            "message": "Post-monsoon can trigger allergies. Watch for excessive scratching or sneezing in {pet_name}.",
+            "cta": "Shop Allergy Relief",
+            "cta_action": "shop_allergy_products"
+        },
+        {
+            "title": "🍂 Perfect Walking Weather",
+            "message": "The weather is beautiful! Great time for longer walks with {pet_name}. Enjoy the outdoors!",
+            "cta": "Shop Walking Gear",
+            "cta_action": "shop_walking_gear"
+        }
+    ]
+}
+
+async def check_seasonal_tips(pet_id: str, pet_name: str, db) -> List[Dict]:
+    """
+    Generate seasonal tips based on current weather/season.
+    
+    Logic:
+    - Show 1-2 seasonal tips per week
+    - Rotate through tips to avoid repetition
+    - Consider pet-specific factors (age, breed, coat)
+    """
+    alerts = []
+    now = datetime.now(timezone.utc)
+    
+    # Get current season
+    season_info = get_current_season_india()
+    season = season_info["season"]
+    
+    # Get tips for current season
+    tips = SEASONAL_TIPS.get(season, [])
+    
+    if not tips:
+        return alerts
+    
+    # Select 1 tip (rotate based on day of week)
+    tip_index = now.timetuple().tm_yday % len(tips)
+    selected_tip = tips[tip_index]
+    
+    # Format tip with pet name
+    alerts.append({
+        "id": f"seasonal-{season}-{tip_index}-{pet_id}",
+        "type": "seasonal_tip",
+        "pillar": "advisory",
+        "title": selected_tip["title"].format(pet_name=pet_name),
+        "message": selected_tip["message"].format(pet_name=pet_name),
+        "pet_id": pet_id,
+        "pet_name": pet_name,
+        "urgency": "low",
+        "season": season_info["name"],
+        "cta": selected_tip["cta"],
+        "cta_action": selected_tip["cta_action"],
+        "created_at": now.isoformat()
+    })
+    
+    return alerts
+
 @router.get("/alerts/{pet_id}")
 async def get_proactive_alerts(pet_id: str, user_email: str = None):
     """
