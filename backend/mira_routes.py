@@ -5092,25 +5092,111 @@ async def save_pet_soul_enrichment(pet_id: str, enrichment: Dict, source: str = 
     
     return False
 
-async def increment_soul_score_on_interaction(pet_id: str, interaction_type: str = "conversation"):
-    """Increment soul score when meaningful interactions happen - The Pet Soul grows!"""
+async def increment_soul_score_on_interaction(pet_id: str, interaction_type: str = "conversation", pillar: str = None, learning_type: str = None, engagement_depth: int = 1):
+    """
+    Increment soul score when meaningful interactions happen - The Pet Soul grows!
+    
+    Enhanced Soul Score System:
+    1. Intent-based scoring (by pillar)
+    2. Learning-based scoring (when Mira learns something new)
+    3. Engagement depth multiplier (conversation turns)
+    
+    Soul Score Milestones:
+    - 0-25: "Getting to Know You" 🌱
+    - 25-50: "Building Trust" 🌿
+    - 50-75: "Deep Connection" 🌳
+    - 75-100: "Soul Bonded" ✨
+    """
     db = get_db()
     
     if not pet_id:
         return False
     
-    # Different interactions contribute differently to soul growth
-    score_increments = {
+    # ═══════════════════════════════════════════════════════════════════════════
+    # BASE INTERACTION SCORES
+    # ═══════════════════════════════════════════════════════════════════════════
+    base_scores = {
         "conversation": 0.1,       # Basic chat
         "preference_learned": 1.5, # Learning what pet likes/dislikes
         "health_info": 2.0,        # Health data is critical
         "milestone": 3.0,          # Birthday, adoption day, etc.
         "purchase": 0.5,           # User bought something for pet
         "service_booked": 1.0,     # Grooming, vet, etc.
-        "soul_journey": 5.0        # Completing soul questionnaire
+        "soul_journey": 5.0,       # Completing soul questionnaire
+        "concierge_handoff": 2.5,  # Sent to Concierge® for action
+        "tip_saved": 0.8           # Saved a tip/advice
     }
     
-    increment = score_increments.get(interaction_type, 0.1)
+    # ═══════════════════════════════════════════════════════════════════════════
+    # INTENT/PILLAR-BASED SCORING
+    # Different pillars indicate different depths of engagement
+    # ═══════════════════════════════════════════════════════════════════════════
+    pillar_scores = {
+        "emergency": 3.0,      # Emergency - critical context learned
+        "care": 2.0,           # Health/Care - important pet info
+        "groom": 1.5,          # Grooming - routine care
+        "grooming": 1.5,
+        "celebrate": 1.5,      # Celebrations - personal milestones
+        "travel": 1.5,         # Travel - complex planning
+        "fit": 1.2,            # Fitness - routine health
+        "learn": 1.2,          # Training - behavioral insights
+        "dine": 1.0,           # Dining - lifestyle preferences
+        "stay": 1.0,           # Boarding - trust/preferences
+        "shop": 0.8,           # Shopping - product preferences
+        "paperwork": 0.5,      # Documents - admin tasks
+        "advisory": 0.5        # General advice
+    }
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # LEARNING-BASED SCORING
+    # When Mira learns something new about the pet
+    # ═══════════════════════════════════════════════════════════════════════════
+    learning_scores = {
+        "allergy": 3.0,        # Allergy/Sensitivity - critical
+        "sensitivity": 3.0,
+        "medical": 2.5,        # Medical condition
+        "preference": 2.0,     # Likes/dislikes
+        "behavior": 1.5,       # Behavioral traits
+        "fear": 1.5,           # Fears/anxieties
+        "routine": 1.0,        # Daily routines
+        "favorite": 1.0,       # Favorite things
+        "relationship": 0.5,   # Pet friendships
+        "memory": 0.3          # General memory addition
+    }
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # ENGAGEMENT DEPTH MULTIPLIER
+    # Longer, more meaningful conversations score higher
+    # ═══════════════════════════════════════════════════════════════════════════
+    depth_multipliers = {
+        1: 1.0,      # Single message
+        2: 1.1,      # Brief exchange
+        3: 1.3,      # Engaged conversation
+        4: 1.5,      # Deep discussion
+        5: 1.8,      # Extended session
+        6: 2.0,      # Very engaged
+        7: 2.2,      # Highly engaged
+        8: 2.5       # Maximum engagement
+    }
+    
+    # Calculate total increment
+    base_increment = base_scores.get(interaction_type, 0.1)
+    
+    # Add pillar bonus if provided
+    pillar_bonus = pillar_scores.get(pillar.lower() if pillar else "", 0)
+    
+    # Add learning bonus if provided
+    learning_bonus = learning_scores.get(learning_type.lower() if learning_type else "", 0)
+    
+    # Apply depth multiplier (cap at 8)
+    depth = min(engagement_depth, 8)
+    multiplier = depth_multipliers.get(depth, 1.0)
+    
+    # Final score calculation
+    total_increment = (base_increment + pillar_bonus + learning_bonus) * multiplier
+    
+    # Cap individual increment at 10.0 to prevent gaming
+    total_increment = min(total_increment, 10.0)
     
     result = await db.pets.update_one(
         {"id": pet_id, "overall_score": {"$lt": 100}},  # Cap at 100%
