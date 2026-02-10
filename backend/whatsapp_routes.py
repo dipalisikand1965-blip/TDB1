@@ -319,7 +319,10 @@ async def process_gupshup_webhook(body: dict):
     except Exception as e:
         logger.error(f"[GUPSHUP] Processing error: {e}")
         raise
-    """Process incoming WhatsApp message with Mira AI response"""
+
+
+async def process_incoming_message(message: dict, contacts: list):
+    """Process incoming WhatsApp message with Mira AI response (Meta Cloud API format)"""
     from motor.motor_asyncio import AsyncIOMotorClient
     from realtime_notifications import notification_manager
     
