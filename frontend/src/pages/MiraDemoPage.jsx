@@ -496,6 +496,7 @@ const MiraDemoPage = () => {
     clearPicks(); // Use hook's clearPicks function
     setConversationComplete(false);
     setShowConversationEndBanner(false);
+    setClarifyingQuestionCount(0);  // Reset question counter
     lastActivityRef.current = Date.now();
     
     console.log(`[MIRA] Conversation archived: ${reason}`);
