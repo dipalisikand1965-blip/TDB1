@@ -190,7 +190,7 @@ const MiraDemoPage = () => {
   const [currentTicket, setCurrentTicket] = useState(null);
   const [isAtBottom, setIsAtBottom] = useState(true);
   const [hasNewMessages, setHasNewMessages] = useState(false);
-  const [currentPillar, setPillar] = useState('celebrate');
+  const [currentPillar, setPillar] = useState('general'); // Default to 'general' not 'celebrate'
   const [lastShownProducts, setLastShownProducts] = useState([]);
   // INTELLIGENCE: Track search context for follow-up queries ("cheaper ones", "show me more")
   const [lastSearchContext, setLastSearchContext] = useState(null);
