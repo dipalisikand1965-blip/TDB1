@@ -148,7 +148,7 @@
 
 ## Preview URL
 
-https://mira-os-build.preview.emergentagent.com
+https://mira-os-preview-1.preview.emergentagent.com
 
 ---
 
