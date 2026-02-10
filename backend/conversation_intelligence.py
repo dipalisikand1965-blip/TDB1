@@ -5,6 +5,8 @@ This module handles:
 1. Pronoun Resolution - "book that one" → actual product/service
 2. Follow-up Context - "what about cheaper ones?" → remembers context
 3. Reference Resolution - "the first one", "the second option" → specific item
+4. Multi-Intent Detection - "book grooming AND order treats" → multiple intents
+5. Implicit Intent Detection - "he's scratching" → skin issue → vet needed
 
 MIRA IS THE SOUL. This is how she truly understands.
 """
