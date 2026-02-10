@@ -1938,6 +1938,23 @@ Ask me anything about him!`
           </p>
         </div>
       </footer>
+
+      {/* Tour Overlay & Tooltip */}
+      <AnimatePresence>
+        {tourActive && (
+          <>
+            {/* Semi-transparent overlay */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-black/40 z-[90] pointer-events-none"
+            />
+            {/* Tour Tooltip */}
+            <TourTooltip step={tourStep} onNext={nextTourStep} onExit={exitTour} />
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
