@@ -3166,6 +3166,61 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                             logger.info(f"[NEARBY] Found {len(stores)} pet stores in {city_for_search}")
                     except Exception as store_err:
                         logger.warning(f"[NEARBY] Google Places error for pet stores: {store_err}")
+                
+                elif detected_place_type == "groomer":
+                    # Pet groomers - use Google Places API
+                    try:
+                        from services.google_places_service import search_pet_groomers_in_city
+                        groomers = await search_pet_groomers_in_city(city_for_search, max_results=4)
+                        if groomers:
+                            nearby_places_data = {"type": "groomers", "places": groomers, "city": city_for_search, "source": "google_places"}
+                            logger.info(f"[NEARBY] Found {len(groomers)} groomers in {city_for_search}")
+                    except Exception as groomer_err:
+                        logger.warning(f"[NEARBY] Google Places error for groomers: {groomer_err}")
+                
+                elif detected_place_type == "photographer":
+                    # Pet photographers - use Google Places API
+                    try:
+                        from services.google_places_service import search_pet_photographers_in_city
+                        photographers = await search_pet_photographers_in_city(city_for_search, max_results=4)
+                        if photographers:
+                            nearby_places_data = {"type": "photographers", "places": photographers, "city": city_for_search, "source": "google_places"}
+                            logger.info(f"[NEARBY] Found {len(photographers)} photographers in {city_for_search}")
+                    except Exception as photo_err:
+                        logger.warning(f"[NEARBY] Google Places error for photographers: {photo_err}")
+                
+                elif detected_place_type == "shelter":
+                    # Animal shelters - use Google Places API
+                    try:
+                        from services.google_places_service import search_animal_shelters_in_city
+                        shelters = await search_animal_shelters_in_city(city_for_search, max_results=4)
+                        if shelters:
+                            nearby_places_data = {"type": "shelters", "places": shelters, "city": city_for_search, "source": "google_places"}
+                            logger.info(f"[NEARBY] Found {len(shelters)} shelters in {city_for_search}")
+                    except Exception as shelter_err:
+                        logger.warning(f"[NEARBY] Google Places error for shelters: {shelter_err}")
+                
+                elif detected_place_type == "boarding":
+                    # Pet boarding/daycare - use Google Places API
+                    try:
+                        from services.google_places_service import search_pet_boarding_in_city
+                        boarding = await search_pet_boarding_in_city(city_for_search, max_results=4)
+                        if boarding:
+                            nearby_places_data = {"type": "boarding", "places": boarding, "city": city_for_search, "source": "google_places"}
+                            logger.info(f"[NEARBY] Found {len(boarding)} boarding facilities in {city_for_search}")
+                    except Exception as boarding_err:
+                        logger.warning(f"[NEARBY] Google Places error for boarding: {boarding_err}")
+                
+                elif detected_place_type == "trainer":
+                    # Dog trainers - use Google Places API
+                    try:
+                        from services.google_places_service import search_dog_trainers_in_city
+                        trainers = await search_dog_trainers_in_city(city_for_search, max_results=4)
+                        if trainers:
+                            nearby_places_data = {"type": "trainers", "places": trainers, "city": city_for_search, "source": "google_places"}
+                            logger.info(f"[NEARBY] Found {len(trainers)} trainers in {city_for_search}")
+                    except Exception as trainer_err:
+                        logger.warning(f"[NEARBY] Google Places error for trainers: {trainer_err}")
             
             # Fetch weather data
             if is_weather_query and user_city:
