@@ -456,9 +456,9 @@ const Home = () => {
                 viewport={{ once: true }}
                 className="bg-gray-900/50 border border-gray-700/50 rounded-2xl p-5"
               >
-                <h3 className="text-gray-400 text-xs uppercase tracking-wider mb-3 font-semibold">❌ The Old Way</h3>
+                <h3 className="text-gray-400 text-xs uppercase tracking-wider mb-3 font-semibold">❌ Others</h3>
                 <div className="space-y-2">
-                  {['Generic pet food', 'Random vet visits', 'No travel planning', 'Figure it out yourself'].map((item, i) => (
+                  {['Forgets your last conversation', 'Generic recommendations', '"What breed is your pet again?"', 'You figure it out'].map((item, i) => (
                     <p key={i} className="text-gray-500 text-sm flex items-center gap-2">
                       <span className="w-1.5 h-1.5 bg-gray-600 rounded-full" />
                       {item}
@@ -475,13 +475,13 @@ const Home = () => {
                 transition={{ delay: 0.1 }}
                 className="bg-gradient-to-br from-purple-900/80 to-pink-900/80 border-2 border-purple-500/50 rounded-2xl p-5 shadow-lg shadow-purple-500/20"
               >
-                <h3 className="text-purple-300 text-xs uppercase tracking-wider mb-3 font-semibold">✨ The Mira Way</h3>
+                <h3 className="text-purple-300 text-xs uppercase tracking-wider mb-3 font-semibold">✨ Mira</h3>
                 <div className="space-y-3">
                   {[
-                    { text: 'Personalized nutrition', icon: '🍽️' },
-                    { text: 'Smart health tracking', icon: '💊' },
-                    { text: 'Pet-friendly travel worldwide', icon: '✈️' },
-                    { text: 'Concierge® handles it all', icon: '👑' }
+                    { text: 'Remembers every conversation, forever', icon: '🧠' },
+                    { text: '"Show me cheaper" - I know what we talked about', icon: '💬' },
+                    { text: 'Knows their soul, not just their species', icon: '💜' },
+                    { text: 'Human hands that act on what I know', icon: '🤝' }
                   ].map((item, i) => (
                     <p key={i} className="text-white text-base flex items-center gap-3 font-medium">
                       <span className="text-lg">{item.icon}</span>
