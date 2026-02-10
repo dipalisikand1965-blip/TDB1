@@ -95,13 +95,42 @@ const PicksVault = ({
     setIsRefreshing(false);
   }, [refreshCount, maxRefreshes, isRefreshing, onRefresh, displayedPicks]);
 
-  // Send to Concierge with haptic
+  // Send to Concierge with haptic - individual item
+  const handleSendItemToConcierge = useCallback(async (item) => {
+    haptic.success();
+    
+    // Mark this item as sent
+    setSentItems(prev => new Set([...prev, item.id || item.name]));
+    
+    try {
+      if (onSendToConcierge) {
+        await onSendToConcierge({
+          picked_items: [item],
+          shown_items: displayedPicks,
+          pet,
+          pillar,
+          context,
+          user_action: 'sent_single_item'
+        });
+      }
+    } catch (error) {
+      console.error('Failed to send item to Concierge:', error);
+      // Revert sent status on error
+      setSentItems(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(item.id || item.name);
+        return newSet;
+      });
+    }
+  }, [displayedPicks, pet, pillar, context, onSendToConcierge]);
+
+  // Send to Concierge with haptic - all selected items
   const handleSendToConcierge = useCallback(async () => {
     haptic.success();
     setIsSending(true);
     
-    const pickedItems = picks.filter(p => selectedItems.has(p.id || p.name));
-    const shownItems = picks;
+    const pickedItems = displayedPicks.filter(p => selectedItems.has(p.id || p.name));
+    const shownItems = displayedPicks;
     
     try {
       if (onSendToConcierge) {
@@ -120,7 +149,7 @@ const PicksVault = ({
     } finally {
       setIsSending(false);
     }
-  }, [selectedItems, picks, pet, pillar, context, onSendToConcierge]);
+  }, [selectedItems, displayedPicks, pet, pillar, context, onSendToConcierge]);
 
   // Close with haptic
   const handleClose = useCallback(() => {
