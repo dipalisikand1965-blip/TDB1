@@ -3019,6 +3019,49 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
         # Add soul score to response for real-time UI updates
         response_data["pet_soul_score"] = updated_soul_score
         
+        # ═══════════════════════════════════════════════════════════════════════════
+        # TIP CARD GENERATION - For advisory responses without products
+        # "Like Mira summarizing advice into a card that can go to Concierge®"
+        # ═══════════════════════════════════════════════════════════════════════════
+        is_advisory_response = len(final_products) == 0 and len(understanding.get("message", "")) > 200
+        advisory_keywords = ["meal plan", "diet", "routine", "schedule", "tips", "advice", "guide", 
+                           "recommend", "suggest", "help with", "how to", "should", "would recommend"]
+        user_input_lower = request.input.lower() if request.input else ""
+        is_seeking_advice = any(kw in user_input_lower for kw in advisory_keywords)
+        
+        if is_advisory_response and is_seeking_advice:
+            # Determine tip card type
+            tip_card_type = "general"
+            if "meal" in user_input_lower or "food" in user_input_lower or "diet" in user_input_lower:
+                tip_card_type = "meal_plan"
+            elif "travel" in user_input_lower or "trip" in user_input_lower:
+                tip_card_type = "travel_tips"
+            elif "groom" in user_input_lower:
+                tip_card_type = "grooming_routine"
+            elif "train" in user_input_lower:
+                tip_card_type = "training_tips"
+            elif "health" in user_input_lower or "vet" in user_input_lower:
+                tip_card_type = "health_advice"
+            elif "exercise" in user_input_lower or "walk" in user_input_lower or "fit" in user_input_lower:
+                tip_card_type = "exercise_routine"
+            
+            pet_name = request.pet_context.get("name", "your pet") if request.pet_context else "your pet"
+            
+            # Generate tip card
+            tip_card = {
+                "id": f"tip-{uuid.uuid4().hex[:8]}",
+                "type": tip_card_type,
+                "title": f"{pet_name}'s {tip_card_type.replace('_', ' ').title()}",
+                "content": understanding.get("message", "")[:500],
+                "icon": TIP_CARD_ICONS.get(tip_card_type, "💡"),
+                "pillar": current_pillar or "general",
+                "for_concierge": True,
+                "pet_name": pet_name
+            }
+            
+            response_data["response"]["tip_card"] = tip_card
+            logger.info(f"[TIP CARD] Generated {tip_card_type} tip card for {pet_name}")
+        
         return response_data
     except Exception as e:
         logger.error(f"Mira OS understand-with-products error: {e}")
