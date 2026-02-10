@@ -61,6 +61,7 @@ const InsightsPanel = ({
     home_tips: '🏠',
     grooming_routine: '✨',
     exercise_routine: '🏃',
+    bonding_ritual: '💜',
     general: '💡'
   };
   
