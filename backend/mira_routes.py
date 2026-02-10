@@ -8061,6 +8061,16 @@ PET DESCRIPTION RULE:
 - Instead, just reference the pet by name and get to the point
 - Example WRONG: "From what I know about Luna, she's a Golden Retriever who loves peanut butter... (every message)"
 - Example RIGHT: First message has description, follow-ups just say "For Luna, I suggest..."
+
+FOLLOW-UP CONCISENESS RULE:
+- When user clicks a follow-up option or asks a related question, DO NOT:
+  1. Repeat "I'm really glad you..." or similar praise phrases
+  2. Re-explain the same context that was just discussed
+  3. Repeat breed characteristics that were mentioned in previous message
+- Instead, GET TO THE POINT quickly:
+  - Example WRONG: "I'm really glad you're considering this. From what I know about Indies, their resilience is remarkable..."
+  - Example RIGHT: "Great choice! Let me connect you with your Concierge® to check local registration requirements."
+- If user selects an option you offered, acknowledge briefly and take action
 - Current conversation length: {len(request.history or [])} messages"""
         
         chat = LlmChat(
