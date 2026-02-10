@@ -95,7 +95,7 @@ const TOUR_STEPS = [
     id: 'mira',
     emoji: '🐕‍🦺',
     title: "I'm Always Here!",
-    highlight: "Your 24/7 Pet Concierge",
+    highlight: "Your 24/7 Pet Concierge®",
     description: "Questions? Orders? Recommendations? Just ask me anything - I'm here to help!",
     features: ['💬 Chat anytime', '🎤 Voice commands', '📱 WhatsApp support', '🧠 I remember everything'],
     miraMessage: "Think of me as your pet's fairy godmother! I'll help with shopping, planning, questions, emergencies - whatever you need!",

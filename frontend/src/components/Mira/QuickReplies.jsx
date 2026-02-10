@@ -38,7 +38,7 @@ export const generateQuickReplies = (context) => {
     travel: [
       { text: 'Find stays', icon: MapPin, action: `Find pet-friendly stays for ${petName}` },
       { text: 'Travel checklist', icon: ChevronRight, action: `What should I pack for traveling with ${petName}?` },
-      { text: 'Book with Concierge', icon: Send, action: 'Help me book this trip', primary: true }
+      { text: 'Book with Concierge®', icon: Send, action: 'Help me book this trip', primary: true }
     ],
     care: [
       { text: 'Find vet nearby', icon: MapPin, action: 'Find a vet clinic near me' },
@@ -48,7 +48,7 @@ export const generateQuickReplies = (context) => {
     stay: [
       { text: 'See options', icon: ChevronRight, action: 'Show me more boarding options' },
       { text: 'Check availability', icon: Calendar, action: 'Check availability for these dates' },
-      { text: 'Book with Concierge', icon: Send, action: 'Help me book boarding', primary: true }
+      { text: 'Book with Concierge®', icon: Send, action: 'Help me book boarding', primary: true }
     ],
     fit: [
       { text: 'Exercise plan', icon: Heart, action: `Create an exercise plan for ${petName}` },

@@ -550,7 +550,7 @@ const RequestsTab = ({
                           data-testid="message-concierge-btn"
                         >
                           <MessageCircle className="w-4 h-4 mr-1.5" /> 
-                          {isUnread ? 'View New Message' : 'Message Concierge'}
+                          {isUnread ? 'View New Message' : 'Message Concierge®'}
                         </Button>
                       </div>
                     </div>
