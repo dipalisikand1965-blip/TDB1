@@ -3123,12 +3123,14 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
         response_data["pet_soul_score"] = updated_soul_score
         
         # ═══════════════════════════════════════════════════════════════════════════
-        # TIP CARD GENERATION - For advisory responses without products
+        # TIP CARD GENERATION - For advisory responses (WITH or WITHOUT products)
         # "Like Mira summarizing advice into a card that can go to Concierge®"
-        # Uses conversation intelligence module for better detection
+        # Tip cards can coexist with products - user gets advice + shopping options
         # ═══════════════════════════════════════════════════════════════════════════
         mira_message_text = response_data.get("response", {}).get("message", "") or ""
-        is_advisory_response = len(final_products) == 0 and len(mira_message_text) > 150
+        
+        # Advisory response = message is long enough AND either no products OR explicitly advisory intent
+        is_advisory_response = len(mira_message_text) > 150
         
         # Use intelligence module for tip card detection (more comprehensive)
         should_tip, detected_tip_type = should_generate_tip_card(
@@ -3141,7 +3143,8 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
         if not should_tip:
             advisory_keywords = ["meal plan", "diet", "routine", "schedule", "tips", "advice", "guide", 
                                "recommend", "suggest", "help with", "how to", "should", "would recommend",
-                               "create", "plan", "healthy"]
+                               "create", "plan", "healthy", "train", "teach", "learn", "safely", "safe",
+                               "diwali", "festival", "gotcha", "celebrate"]
             user_input_lower = request.input.lower() if request.input else ""
             
             # Check both current input AND conversation history for advisory context
