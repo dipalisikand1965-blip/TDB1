@@ -13,7 +13,7 @@ import SEOHead from '../components/SEOHead';
 const BRAND_IMAGES = {
   founder1: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/4oryz05r_shutterstock_131282603%20%281%29.jpg',
   founder2: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/s4qmsach_shutterstock_199063937.jpg',
-  mira: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/einpahqm_dog-813103%20%281%29.jpg',
+  mira: 'https://customer-assets.emergentagent.com/job_fb4fe188-9dcd-4168-922c-d00bcc6f0e32/artifacts/dvhzt4zj_image.png',
   team: 'https://customer-assets.emergentagent.com/job_pet-soul-platform/artifacts/q0alj5za_dog-1194087_1920%20%281%29.jpg',
 };
 
@@ -287,19 +287,39 @@ const AboutPage = () => {
                 viewport={{ once: true }}
                 className="order-2 lg:order-1"
               >
-                <div className="relative">
-                  <div className="absolute -inset-1 bg-gradient-to-r from-amber-500 to-orange-500 rounded-3xl blur-lg opacity-30" />
-                  <img 
-                    src={BRAND_IMAGES.mira} 
-                    alt="Mira" 
-                    className="relative rounded-3xl border border-white/10 w-full"
-                  />
+                <div className="relative flex justify-center">
+                  {/* Ethereal halo effect - outer glow */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-80 h-80 bg-gradient-to-r from-amber-400/40 via-purple-400/30 to-pink-400/40 rounded-full blur-3xl animate-pulse" />
+                  </div>
+                  {/* Secondary halo ring */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-72 h-72 bg-gradient-to-br from-amber-300/50 to-orange-400/30 rounded-full blur-2xl" />
+                  </div>
+                  {/* Inner warm glow */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-64 h-64 bg-amber-200/20 rounded-full blur-xl" />
+                  </div>
                   
-                  {/* Floating quote */}
-                  <div className="absolute bottom-4 left-4 right-4 bg-[#1a0a2e]/90 backdrop-blur-lg rounded-2xl p-4 border border-white/10">
+                  {/* Photo with ethereal border */}
+                  <div className="relative">
+                    <div className="absolute -inset-2 bg-gradient-to-r from-amber-400 via-purple-300 to-pink-400 rounded-full blur opacity-60" />
+                    <div className="absolute -inset-1 bg-gradient-to-br from-amber-200/80 to-orange-300/60 rounded-full" />
+                    <img 
+                      src={BRAND_IMAGES.mira} 
+                      alt="Mrs. Mira Sikand - The Soul Behind Mira AI" 
+                      className="relative rounded-full w-64 h-64 object-cover border-4 border-amber-100/50 shadow-2xl"
+                      style={{
+                        filter: 'drop-shadow(0 0 30px rgba(251, 191, 36, 0.4)) drop-shadow(0 0 60px rgba(192, 132, 252, 0.2))'
+                      }}
+                    />
+                  </div>
+                  
+                  {/* Floating quote below */}
+                  <div className="absolute -bottom-8 left-4 right-4 bg-[#1a0a2e]/90 backdrop-blur-lg rounded-2xl p-4 border border-amber-400/30">
                     <Quote className="w-6 h-6 text-amber-400 mb-2" />
                     <p className="text-white/80 text-sm italic">
-                      "Every pet has a soul. We just needed to build the technology to understand it."
+                      "She didn't spray options. She picked the right one. She remembered what mattered."
                     </p>
                   </div>
                 </div>
@@ -322,7 +342,9 @@ const AboutPage = () => {
                 
                 <div className="space-y-4 text-white/70 leading-relaxed">
                   <p>
-                    Mira is <strong className="text-amber-300">Mrs. Mira Sikand</strong> — Dipali's mother — 
+                    Mira is <strong className="text-amber-300">Mrs. Mira Sikand</strong> — 
+                    <span className="text-white">Dipali's mother</span> and 
+                    <span className="text-pink-300"> Aditya and Diya's beloved grandmother</span> — 
                     the original human blueprint for what Mira AI is meant to become.
                   </p>
                   <p>
@@ -331,8 +353,8 @@ const AboutPage = () => {
                     Her wisdom still guides every decision we make.
                   </p>
                   <p>
-                    At <strong className="text-pink-300">The Doggy Bakery®</strong>, Mira was hands-on — 
-                    making treats with her granddaughter, managing ingredients and deliveries. 
+                    At <strong className="text-pink-300">The Doggy Bakery®</strong>, Grandma Mira was hands-on — 
+                    making treats with her granddaughter Diya, managing ingredients and deliveries. 
                     This wasn't just inspiration in theory. It was care, detail, and doing the work properly.
                   </p>
                   <p>
