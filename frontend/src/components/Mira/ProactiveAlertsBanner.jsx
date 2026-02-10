@@ -271,7 +271,8 @@ const ProactiveAlertsBanner = ({
           <ProactiveAlertCard
             key={alert.id}
             alert={alert}
-            onAction={onAlertAction}
+            onAskMira={onAskMira}
+            onBookNow={onBookNow}
             onDismiss={handleDismiss}
           />
         ))}
