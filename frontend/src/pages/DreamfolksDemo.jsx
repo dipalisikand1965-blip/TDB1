@@ -123,7 +123,7 @@ const B2B_STATS = [
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
 export default function DreamfolksDemo() {
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState('chat');
   const [selectedPillar, setSelectedPillar] = useState(null);
   const [chatMessages, setChatMessages] = useState([
     { role: 'mira', content: `Hi! I'm Mira, Dollar's AI companion. I already know he's a 4-year-old Apricot Poodle who loves lamb treats and is allergic to chicken. How can I help you today?` }
