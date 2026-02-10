@@ -3081,6 +3081,15 @@ const MiraDemoPage = () => {
         petName={pet?.name || 'your pet'}
       />
       
+      {/* PICKS INDICATOR - Yellow gift icon when Mira has curated picks */}
+      {/* Non-intrusive: user clicks to view, not forced */}
+      <PicksIndicator
+        picksCount={(miraPicks.products?.length || 0) + (miraPicks.services?.length || 0)}
+        hasNewPicks={miraPicks.hasNew}
+        onClick={() => setShowVault(true)}
+        petName={pet?.name || 'your pet'}
+      />
+      
       {/* TEST SCENARIOS PANEL - Extracted to TestScenariosPanel component */}
       <TestScenariosPanel
         isOpen={showTestScenarios}
