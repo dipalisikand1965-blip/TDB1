@@ -943,7 +943,23 @@ export default function DreamfolksDemo() {
   const [activeTab, setActiveTab] = useState('chat');
   const [selectedPillar, setSelectedPillar] = useState(null);
   const [chatMessages, setChatMessages] = useState([
-    { role: 'mira', content: `Hi! I'm Mira, Dollar's AI companion. I already know he's a 4-year-old Apricot Poodle who loves lamb treats and is allergic to chicken. How can I help you today?` }
+    { role: 'mira', content: `Hi! I'm Mira, Dollar's personal AI companion. 🐩
+
+**I already know:**
+• He's a 4-year-old Apricot Poodle
+• Allergic to chicken (I filter products automatically!)
+• Loves peanut butter treats & lamb jerky
+• Last groomed 2 weeks ago
+
+**Try asking me about:**
+• Health concerns ("Is chocolate safe?")
+• Grooming & spa bookings
+• Food & nutrition
+• Travel planning
+• Birthday celebrations
+• Training help
+
+What can I help with today?` }
   ]);
   const [inputMessage, setInputMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
