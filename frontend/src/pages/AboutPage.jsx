@@ -20,44 +20,44 @@ const BRAND_IMAGES = {
 // Timeline data for the heritage journey
 const timelineData = [
   {
-    year: '1990s',
-    title: 'Les Concierges® Founded',
-    description: 'Dipali establishes the foundation of concierge excellence — service defined by memory, anticipation, and quiet judgement.',
+    year: '1998',
+    title: 'LesConcierges® Founded',
+    description: 'Mrs. Mira Sikand establishes premium concierge services — the living reference desk who always had the right answer.',
     icon: Crown,
     color: 'from-indigo-500 to-blue-600'
   },
   {
-    year: '2010s',
-    title: '1 Million+ Customers Served',
-    description: 'Les Concierges® and Club Concierge® expand globally, serving over 1 million customers with premium concierge excellence.',
+    year: '2008',
+    title: 'Club Concierge® Expands',
+    description: 'Dipali carries the legacy forward globally, serving over 1 million customers with premium Concierge® excellence.',
     icon: Globe,
     color: 'from-purple-500 to-indigo-600'
   },
   {
-    year: '2015',
+    year: '2014',
     title: 'The Doggy Bakery® Born',
-    description: 'Aditya launches a handcrafted pet bakery celebrating birthdays, adoption milestones, and everyday joy moments.',
+    description: 'Aditya launches handcrafted pet treats. Grandma Mira is hands-on — making treats with her granddaughter.',
     icon: Cake,
     color: 'from-amber-500 to-orange-600'
   },
   {
     year: '2024',
-    title: '45,000+ Pets Fed',
+    title: '45,000+ Pets Celebrated',
     description: 'The Doggy Bakery® becomes synonymous with celebrating pets across India — not just with products, but with meaning.',
     icon: Heart,
     color: 'from-pink-500 to-rose-600'
   },
   {
-    year: '2026',
+    year: '2025',
     title: 'The Doggy Company® Launches',
-    description: 'Concierge® expertise and lived pet experience converge into India\'s first Pet Life Operating System.',
+    description: 'Three decades of Concierge® expertise and lived pet experience converge into India\'s first Pet Life Operating System.',
     icon: Building2,
     color: 'from-violet-500 to-purple-600'
   },
   {
-    year: '2026',
-    title: 'Pet Soul™ & Mira® AI Go Live',
-    description: 'Revolutionary pet intelligence technology that remembers, learns, and anticipates — bringing Mira\'s spirit to life.',
+    year: '2025',
+    title: 'Pet Soul™ & Mira AI Go Live',
+    description: 'Mrs. Mira Sikand\'s spirit lives on — AI that remembers, learns, and anticipates. Her legacy, forever.',
     icon: Cpu,
     color: 'from-emerald-500 to-teal-600'
   }
