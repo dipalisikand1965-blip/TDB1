@@ -335,6 +335,48 @@ const WelcomeHero = ({
           </button>
         ))}
       </div>
+      
+      {/* TRY EXAMPLES - Golden Standard for First 30 Seconds */}
+      <div className="try-examples" data-testid="try-examples">
+        <div className="try-header">
+          <Sparkles className="w-3.5 h-3.5" />
+          <span>Try asking Mira:</span>
+        </div>
+        <div className="try-list">
+          <button 
+            className="try-item"
+            onClick={() => handleQuickReply(`Plan a birthday party for ${pet.name}`)}
+          >
+            <span className="try-quote">"</span>
+            <span className="try-text">Plan a birthday party for {pet.name}</span>
+            <span className="try-quote">"</span>
+          </button>
+          <button 
+            className="try-item"
+            onClick={() => handleQuickReply(`Find pet-friendly cafes near me`)}
+          >
+            <span className="try-quote">"</span>
+            <span className="try-text">Find pet-friendly cafes near me</span>
+            <span className="try-quote">"</span>
+          </button>
+          <button 
+            className="try-item"
+            onClick={() => handleQuickReply(`Create a healthy meal plan for ${pet.name}`)}
+          >
+            <span className="try-quote">"</span>
+            <span className="try-text">Create a healthy meal plan for {pet.name}</span>
+            <span className="try-quote">"</span>
+          </button>
+          <button 
+            className="try-item"
+            onClick={() => handleQuickReply(`I need a dog walker for next week`)}
+          >
+            <span className="try-quote">"</span>
+            <span className="try-text">I need a dog walker for next week</span>
+            <span className="try-quote">"</span>
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
