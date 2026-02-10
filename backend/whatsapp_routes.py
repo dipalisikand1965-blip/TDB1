@@ -762,25 +762,41 @@ async def send_gupshup_template(
 
 @router.get("/status")
 async def get_whatsapp_status():
-    """Check WhatsApp integration status"""
-    configured = is_whatsapp_configured()
-    config = get_whatsapp_config()
+    """Check WhatsApp integration status (Meta and Gupshup)"""
+    meta_configured = bool(get_whatsapp_config()["phone_number_id"] and get_whatsapp_config()["access_token"])
+    gupshup_configured = is_gupshup_configured()
+    meta_config = get_whatsapp_config()
+    gupshup_config = get_gupshup_config()
     
     return {
-        "configured": configured,
-        "phone_number_id": config["phone_number_id"][:6] + "..." if config["phone_number_id"] else None,
-        "business_account_id": config["business_account_id"][:6] + "..." if config["business_account_id"] else None,
-        "webhook_verify_token": config["verify_token"],
-        "setup_required": not configured,
+        "configured": meta_configured or gupshup_configured,
+        "providers": {
+            "meta_cloud_api": {
+                "configured": meta_configured,
+                "phone_number_id": meta_config["phone_number_id"][:6] + "..." if meta_config["phone_number_id"] else None,
+            },
+            "gupshup": {
+                "configured": gupshup_configured,
+                "app_name": gupshup_config["app_name"],
+                "source_number": gupshup_config["source_number"]
+            }
+        },
+        "webhook_verify_token": meta_config["verify_token"],
+        "webhook_url": "/api/whatsapp/webhook",
         "setup_instructions": {
-            "1": "Go to Meta Business Suite > WhatsApp Manager",
-            "2": "Create a WhatsApp Business Account if needed",
-            "3": "Add a phone number and verify it",
-            "4": "Get your Phone Number ID from WhatsApp Manager",
-            "5": "Generate a permanent access token",
-            "6": "Add to .env: WHATSAPP_PHONE_NUMBER_ID, WHATSAPP_ACCESS_TOKEN",
-            "7": "Configure webhook URL in Meta Developer Portal"
-        } if not configured else None
+            "gupshup": {
+                "1": "Go to Gupshup Dashboard (gupshup.io)",
+                "2": "Create WhatsApp Business API App",
+                "3": "Get your API Key from Settings",
+                "4": "Add to .env: GUPSHUP_API_KEY=your_key",
+                "5": "Set callback URL in Gupshup: https://thedoggycompany.in/api/whatsapp/webhook"
+            },
+            "meta_cloud_api": {
+                "1": "Go to Meta Business Suite > WhatsApp Manager",
+                "2": "Get Phone Number ID and Access Token",
+                "3": "Add to .env: WHATSAPP_PHONE_NUMBER_ID, WHATSAPP_ACCESS_TOKEN"
+            }
+        } if not (meta_configured or gupshup_configured) else None
     }
 
 
