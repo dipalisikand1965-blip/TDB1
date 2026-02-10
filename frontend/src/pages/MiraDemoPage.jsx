@@ -2552,11 +2552,37 @@ const MiraDemoPage = () => {
       .map(m => m.content?.slice(0, 100))
       .join(' ');
     
+    // Detect pillar from conversation context
+    const contextLower = recentMessages.toLowerCase();
+    let detectedPillar = currentPillar?.toLowerCase() || 'general';
+    let detectedTitle = `${currentPillar || 'Help'} Request`;
+    
+    // Smarter pillar detection from conversation
+    if (contextLower.includes('meal') || contextLower.includes('food') || contextLower.includes('diet') || contextLower.includes('protein')) {
+      detectedPillar = 'dine';
+      detectedTitle = 'Meal Plan Request';
+    } else if (contextLower.includes('birthday') || contextLower.includes('party') || contextLower.includes('cake')) {
+      detectedPillar = 'celebrate';
+      detectedTitle = 'Celebration Request';
+    } else if (contextLower.includes('grooming') || contextLower.includes('bath') || contextLower.includes('haircut')) {
+      detectedPillar = 'care';
+      detectedTitle = 'Grooming Request';
+    } else if (contextLower.includes('travel') || contextLower.includes('trip') || contextLower.includes('vacation')) {
+      detectedPillar = 'travel';
+      detectedTitle = 'Travel Request';
+    } else if (contextLower.includes('cafe') || contextLower.includes('restaurant') || contextLower.includes('dine')) {
+      detectedPillar = 'dine';
+      detectedTitle = 'Dining Request';
+    } else if (contextLower.includes('walker') || contextLower.includes('sitter') || contextLower.includes('boarding')) {
+      detectedPillar = 'care';
+      detectedTitle = 'Pet Care Service';
+    }
+    
     setHandoffSummary({
       isOpen: true,
       petName: pet?.name || 'your pet',
-      pillar: currentPillar?.toLowerCase() || 'general',
-      title: `${currentPillar || 'Help'} Request`,
+      pillar: detectedPillar,
+      title: detectedTitle,
       items: summaryItems,
       notes: recentMessages.slice(0, 200)
     });
