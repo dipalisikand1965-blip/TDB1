@@ -25,6 +25,9 @@ router = APIRouter(prefix="/api/whatsapp", tags=["whatsapp"])
 # WhatsApp Cloud API Configuration
 WHATSAPP_API_URL = "https://graph.facebook.com/v18.0"
 
+# Gupshup API Configuration
+GUPSHUP_API_URL = "https://api.gupshup.io/wa/api/v1/msg"
+
 
 def get_whatsapp_config():
     """Get WhatsApp configuration from environment"""
@@ -36,10 +39,29 @@ def get_whatsapp_config():
     }
 
 
+def get_gupshup_config():
+    """Get Gupshup configuration from environment"""
+    return {
+        "api_key": os.environ.get("GUPSHUP_API_KEY"),
+        "app_name": os.environ.get("GUPSHUP_APP_NAME", "DoggyCompany"),
+        "source_number": os.environ.get("GUPSHUP_SOURCE_NUMBER") or os.environ.get("WHATSAPP_NUMBER")
+    }
+
+
 def is_whatsapp_configured():
-    """Check if WhatsApp is properly configured"""
-    config = get_whatsapp_config()
-    return bool(config["phone_number_id"] and config["access_token"])
+    """Check if WhatsApp is properly configured (Meta or Gupshup)"""
+    meta_config = get_whatsapp_config()
+    gupshup_config = get_gupshup_config()
+    return bool(
+        (meta_config["phone_number_id"] and meta_config["access_token"]) or
+        gupshup_config["api_key"]
+    )
+
+
+def is_gupshup_configured():
+    """Check if Gupshup is configured"""
+    config = get_gupshup_config()
+    return bool(config["api_key"])
 
 
 # Pydantic Models
