@@ -319,12 +319,13 @@ const PicksVault = ({
         {/* Refresh Button */}
         {refreshCount < maxRefreshes && (
           <button 
-            className="pv-refresh-btn"
+            className={`pv-refresh-btn ${isRefreshing ? 'pv-refreshing' : ''}`}
             onClick={handleRefresh}
+            disabled={isRefreshing}
             data-testid="picks-vault-refresh"
           >
-            <RefreshCw size={16} />
-            <span>Show Different Options</span>
+            <RefreshCw size={16} className={isRefreshing ? 'pv-spin' : ''} />
+            <span>{isRefreshing ? 'Loading...' : 'Show Different Options'}</span>
             <span className="pv-refresh-count">({maxRefreshes - refreshCount} left)</span>
           </button>
         )}
