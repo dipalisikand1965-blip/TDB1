@@ -624,6 +624,206 @@ async def search_pet_friendly_hotels(city: str, max_results: int = 5) -> List[Di
     return []
 
 
+async def search_pet_groomers_in_city(city: str, max_results: int = 10) -> List[Dict[str, Any]]:
+    """
+    Search for pet groomers/grooming salons in any city.
+    
+    Args:
+        city: City name (any city worldwide)
+        max_results: Maximum results
+        
+    Returns:
+        List of grooming places
+    """
+    logger.info(f"[GOOGLE PLACES GROOMERS] Searching in: {city}")
+    
+    all_results = []
+    seen_ids = set()
+    
+    search_queries = [
+        f"pet grooming {city}",
+        f"dog grooming salon {city}",
+        f"pet spa {city}",
+        f"dog groomer {city}"
+    ]
+    
+    for query in search_queries:
+        if len(all_results) >= max_results:
+            break
+            
+        results = await search_places_by_text(query=query, max_results=5)
+        
+        for place in results:
+            if place.get("id") not in seen_ids:
+                seen_ids.add(place.get("id"))
+                place["place_type"] = "groomer"
+                all_results.append(place)
+    
+    logger.info(f"[GOOGLE PLACES GROOMERS] Found {len(all_results)} in {city}")
+    return all_results[:max_results]
+
+
+async def search_pet_photographers_in_city(city: str, max_results: int = 10) -> List[Dict[str, Any]]:
+    """
+    Search for pet photographers in any city.
+    
+    Args:
+        city: City name (any city worldwide)
+        max_results: Maximum results
+        
+    Returns:
+        List of pet photographers
+    """
+    logger.info(f"[GOOGLE PLACES PHOTOGRAPHERS] Searching in: {city}")
+    
+    all_results = []
+    seen_ids = set()
+    
+    search_queries = [
+        f"pet photographer {city}",
+        f"dog photography {city}",
+        f"pet photoshoot studio {city}",
+        f"animal photographer {city}"
+    ]
+    
+    for query in search_queries:
+        if len(all_results) >= max_results:
+            break
+            
+        results = await search_places_by_text(query=query, max_results=5)
+        
+        for place in results:
+            if place.get("id") not in seen_ids:
+                seen_ids.add(place.get("id"))
+                place["place_type"] = "photographer"
+                all_results.append(place)
+    
+    logger.info(f"[GOOGLE PLACES PHOTOGRAPHERS] Found {len(all_results)} in {city}")
+    return all_results[:max_results]
+
+
+async def search_animal_shelters_in_city(city: str, max_results: int = 10) -> List[Dict[str, Any]]:
+    """
+    Search for animal shelters and rescue organizations in any city.
+    
+    Args:
+        city: City name (any city worldwide)
+        max_results: Maximum results
+        
+    Returns:
+        List of animal shelters
+    """
+    logger.info(f"[GOOGLE PLACES SHELTERS] Searching in: {city}")
+    
+    all_results = []
+    seen_ids = set()
+    
+    search_queries = [
+        f"animal shelter {city}",
+        f"dog rescue {city}",
+        f"animal rescue organization {city}",
+        f"pet adoption center {city}",
+        f"SPCA {city}"
+    ]
+    
+    for query in search_queries:
+        if len(all_results) >= max_results:
+            break
+            
+        results = await search_places_by_text(query=query, max_results=5)
+        
+        for place in results:
+            if place.get("id") not in seen_ids:
+                seen_ids.add(place.get("id"))
+                place["place_type"] = "shelter"
+                all_results.append(place)
+    
+    logger.info(f"[GOOGLE PLACES SHELTERS] Found {len(all_results)} in {city}")
+    return all_results[:max_results]
+
+
+async def search_pet_boarding_in_city(city: str, max_results: int = 10) -> List[Dict[str, Any]]:
+    """
+    Search for pet boarding/daycare facilities in any city.
+    
+    Args:
+        city: City name (any city worldwide)
+        max_results: Maximum results
+        
+    Returns:
+        List of boarding facilities
+    """
+    logger.info(f"[GOOGLE PLACES BOARDING] Searching in: {city}")
+    
+    all_results = []
+    seen_ids = set()
+    
+    search_queries = [
+        f"pet boarding {city}",
+        f"dog daycare {city}",
+        f"dog hostel {city}",
+        f"pet hotel {city}",
+        f"dog kennel {city}"
+    ]
+    
+    for query in search_queries:
+        if len(all_results) >= max_results:
+            break
+            
+        results = await search_places_by_text(query=query, max_results=5)
+        
+        for place in results:
+            if place.get("id") not in seen_ids:
+                seen_ids.add(place.get("id"))
+                place["place_type"] = "boarding"
+                all_results.append(place)
+    
+    logger.info(f"[GOOGLE PLACES BOARDING] Found {len(all_results)} in {city}")
+    return all_results[:max_results]
+
+
+async def search_dog_trainers_in_city(city: str, max_results: int = 10) -> List[Dict[str, Any]]:
+    """
+    Search for dog trainers in any city.
+    
+    Args:
+        city: City name (any city worldwide)
+        max_results: Maximum results
+        
+    Returns:
+        List of dog trainers
+    """
+    logger.info(f"[GOOGLE PLACES TRAINERS] Searching in: {city}")
+    
+    all_results = []
+    seen_ids = set()
+    
+    search_queries = [
+        f"dog trainer {city}",
+        f"dog training {city}",
+        f"pet training classes {city}",
+        f"puppy training {city}",
+        f"dog obedience school {city}"
+    ]
+    
+    for query in search_queries:
+        if len(all_results) >= max_results:
+            break
+            
+        results = await search_places_by_text(query=query, max_results=5)
+        
+        for place in results:
+            if place.get("id") not in seen_ids:
+                seen_ids.add(place.get("id"))
+                place["place_type"] = "trainer"
+                all_results.append(place)
+    
+    logger.info(f"[GOOGLE PLACES TRAINERS] Found {len(all_results)} in {city}")
+    return all_results[:max_results]
+
+
+
+
 # Quick test function
 async def test_google_places_connection():
     """Test if Google Places API is working."""
