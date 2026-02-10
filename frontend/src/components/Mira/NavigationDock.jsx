@@ -20,6 +20,7 @@ import {
  * @param {React.Ref} props.inputRef - Ref for focusing chat input
  * @param {Function} props.onShowHelp - Show help modal
  * @param {Function} props.onShowLearn - Show learn modal
+ * @param {Function} props.onShowSoul - Show soul form modal (optional, falls back to navigation)
  * @param {boolean} props.hasNewVideos - Whether new training videos are available
  * @param {number} props.newVideosCount - Count of new videos
  */
@@ -27,6 +28,7 @@ const NavigationDock = ({
   inputRef,
   onShowHelp,
   onShowLearn,
+  onShowSoul,
   hasNewVideos = false,
   newVideosCount = 0
 }) => {
