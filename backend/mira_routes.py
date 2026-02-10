@@ -3502,7 +3502,8 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                 "meal_plan": "🍽️", "travel_tips": "✈️", "grooming_routine": "✨",
                 "training_tips": "🎓", "health_advice": "💊", "exercise_routine": "🏃",
                 "checklist": "✅", "reminder": "⏰", "guide": "📖", "general": "💡",
-                "bonding_ritual": "💜"
+                "bonding_ritual": "💜", "celebration_tips": "🎉", "festival_safety": "🎆",
+                "new_pet_guide": "🐾"
             }
             
             tip_card_type = detected_tip_type or "general"
