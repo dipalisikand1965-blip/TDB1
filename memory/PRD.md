@@ -65,10 +65,23 @@ The user's heart breaks when agents forget context. Please honor their work.
    - Before: "Bruno's Meal Plan" for ALL food-related topics
    - After: "Bruno's Senior Diet Guide" for senior food questions
    - After: "Bruno's Joint & Mobility Care" for joint/stiffness questions
-   - Friendly titles map for each tip type
 
-3. **Advisory Keywords Extended** ✅
-   - Added: "senior", "aging", "joint", "stiff", "mobility", "what can i do"
+3. **Fixed Shopping vs Advisory Intent** ✅
+   - "Cake" now correctly shows products only (no tip card)
+   - Short queries (≤3 words) with products = shopping intent
+   - Shopping keywords: "buy", "purchase", "order", "get me", "cake", "treat", "toy"
+
+### 🐛 BUG FIX: Picks Vault Blank Page (Feb 10, 2026)
+**File:** `/app/frontend/src/components/PicksVault/VaultManager.jsx`
+
+1. **Added Fallback Empty State** ✅
+   - When no vault type detected, shows friendly empty state
+   - "No picks yet - Ask Mira for recommendations!"
+   - Proper close button works
+
+2. **Improved Loading State Visibility** ✅
+   - Enhanced text visibility for "Mira thinking..." state
+   - File: `/app/frontend/src/styles/mira-prod.css`
 
 ### 🆕 NEW: Conversation Intelligence System
 **File:** `/app/backend/conversation_intelligence.py` (NEW)
