@@ -638,10 +638,10 @@ const Home = () => {
               className="text-center mb-8 md:mb-16"
             >
               <h2 className="text-2xl md:text-4xl font-black text-white mb-2">
-                One Place for <span className="text-pink-400">Everything</span>
+                Every Part of Their <span className="text-pink-400">Life</span>
               </h2>
               <p className="text-purple-200 text-sm md:text-lg">
-                Five pillars. One app. <span className="text-amber-300">Unlimited possibilities.</span>
+                From the treats they dream about to the places that welcome them as family.
               </p>
             </motion.div>
             
