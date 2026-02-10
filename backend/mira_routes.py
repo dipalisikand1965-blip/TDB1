@@ -3358,7 +3358,8 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
             advisory_keywords = ["meal plan", "diet", "routine", "schedule", "tips", "advice", "guide", 
                                "recommend", "suggest", "help with", "how to", "should", "would recommend",
                                "create", "plan", "healthy", "train", "teach", "learn", "safely", "safe",
-                               "diwali", "festival", "gotcha", "celebrate"]
+                               "diwali", "festival", "gotcha", "celebrate", "ritual", "bonding", "daily",
+                               "calming", "relaxing", "care", "wellness", "habit", "routine", "matter"]
             user_input_lower = request.input.lower() if request.input else ""
             
             # Check both current input AND conversation history for advisory context
@@ -3392,6 +3393,8 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                     detected_tip_type = "health_advice"
                 elif any(w in full_context for w in ["exercise", "walk", "fit", "weight"]):
                     detected_tip_type = "exercise_routine"
+                elif any(w in full_context for w in ["ritual", "bonding", "daily", "calming", "relax", "matter", "care"]):
+                    detected_tip_type = "bonding_ritual"
                 else:
                     detected_tip_type = "general"
         
