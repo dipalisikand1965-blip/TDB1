@@ -41,11 +41,13 @@ const MiraTray = ({
     onClose();
     onOpenVault({
       products: miraPicks.products,
-      services: miraPicks.services
+      services: miraPicks.services,
+      places: miraPicks.places,
+      placesType: miraPicks.placesType
     }, miraPicks.context || '');
   };
   
-  const totalPicks = (miraPicks.products?.length || 0) + (miraPicks.services?.length || 0);
+  const totalPicks = (miraPicks.products?.length || 0) + (miraPicks.services?.length || 0) + (miraPicks.places?.length || 0);
   const hasItems = totalPicks > 0;
   
   return (
