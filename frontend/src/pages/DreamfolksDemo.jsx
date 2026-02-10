@@ -1467,7 +1467,7 @@ What can I help with today?` }
                       <Eye className="w-6 h-6 mx-auto mb-2 opacity-50" />
                       <p className="text-[10px]">Send a message to see<br />Mira's thinking</p>
                     </div>
-                  )}}
+                  )}
                 </div>
               )}
 
