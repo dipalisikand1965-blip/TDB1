@@ -404,13 +404,24 @@ const MiraDemoPage = () => {
   const [showPastChats, setShowPastChats] = useState(false);
   const [loadingPastChats, setLoadingPastChats] = useState(false);
   
-  // INACTIVITY AUTO-ARCHIVE: After 30 mins of no activity, archive conversation to past chats
-  const lastActivityRef = useRef(Date.now());
+  // INACTIVITY AUTO-ARCHIVE: After X mins of no activity, archive conversation to past chats
+  const SESSION_TIMEOUT_KEY = 'mira_last_activity';
+  const INACTIVITY_TIMEOUT_MS = 5 * 60 * 1000; // 5 minutes for faster archiving
+  
+  // Initialize from localStorage to persist across page refreshes
+  const getStoredLastActivity = () => {
+    const stored = localStorage.getItem(SESSION_TIMEOUT_KEY);
+    return stored ? parseInt(stored, 10) : Date.now();
+  };
+  
+  const lastActivityRef = useRef(getStoredLastActivity());
   const inactivityTimerRef = useRef(null);
   
   // Reset inactivity timer on any user interaction
   const resetInactivityTimer = useCallback(() => {
-    lastActivityRef.current = Date.now();
+    const now = Date.now();
+    lastActivityRef.current = now;
+    localStorage.setItem(SESSION_TIMEOUT_KEY, now.toString());
   }, []);
   
   // CONVERSATION FLOW DETECTION - Track when Mira has provided assistance
