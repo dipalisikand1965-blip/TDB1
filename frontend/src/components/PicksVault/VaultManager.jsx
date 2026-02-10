@@ -121,13 +121,21 @@ function detectServiceType(message) {
 function detectPlaceType(message) {
   const lowerMessage = (message || '').toLowerCase();
   
-  if (lowerMessage.includes('restaurant') || lowerMessage.includes('eat') || lowerMessage.includes('dine')) return 'restaurant';
+  // New place types first (more specific)
+  if (lowerMessage.includes('groomer') || lowerMessage.includes('grooming') || lowerMessage.includes('haircut') || lowerMessage.includes('trim')) return 'groomers';
+  if (lowerMessage.includes('photographer') || lowerMessage.includes('photo')) return 'photographers';
+  if (lowerMessage.includes('shelter') || lowerMessage.includes('rescue') || lowerMessage.includes('adopt')) return 'shelters';
+  if (lowerMessage.includes('boarding') || lowerMessage.includes('daycare') || lowerMessage.includes('hostel')) return 'boarding';
+  if (lowerMessage.includes('trainer') || lowerMessage.includes('training') || lowerMessage.includes('obedience')) return 'trainers';
+  
+  // Original place types
+  if (lowerMessage.includes('restaurant') || lowerMessage.includes('eat') || lowerMessage.includes('dine')) return 'restaurants';
   if (lowerMessage.includes('cafe') || lowerMessage.includes('coffee')) return 'cafe';
-  if (lowerMessage.includes('hotel') || lowerMessage.includes('stay')) return 'hotel';
-  if (lowerMessage.includes('park')) return 'park';
+  if (lowerMessage.includes('hotel') || lowerMessage.includes('stay')) return 'hotels';
+  if (lowerMessage.includes('park')) return 'parks';
   if (lowerMessage.includes('beach')) return 'beach';
   
-  return 'restaurant'; // default
+  return 'places'; // default
 }
 
 /**
