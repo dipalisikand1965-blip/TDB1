@@ -185,14 +185,19 @@ const AboutPage = () => {
                 
                 <div className="space-y-4 text-white/70 leading-relaxed">
                   <p>
-                    <strong className="text-white">Dipali</strong> spent 30 years building Les Concierges® — 
-                    a company that understood one truth: real service means remembering, anticipating, 
-                    and caring before being asked.
+                    It started with <strong className="text-amber-300">Mrs. Mira Sikand</strong> — 
+                    who built LesConcierges® on one truth: real service means remembering, anticipating, 
+                    and caring before being asked. Her spirit became the foundation.
+                  </p>
+                  <p>
+                    <strong className="text-white">Dipali</strong> carried that legacy forward with 
+                    Club Concierge® — three decades of service excellence, millions of customers, 
+                    and the understanding that every "yes" matters.
                   </p>
                   <p>
                     <strong className="text-white">Aditya</strong> built The Doggy Bakery® celebrating 
-                    45,000+ pets with handcrafted joy — not just baking treats, but baking meaning into 
-                    every milestone.
+                    45,000+ pets — not just baking treats, but baking meaning into 
+                    every milestone. (With grandma Mira's hands in those early batches!)
                   </p>
                   <p>
                     When they looked at the pet industry, they saw something missing: 
