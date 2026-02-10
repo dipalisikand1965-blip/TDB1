@@ -33,9 +33,14 @@ import { VAULT_TYPES, detectVaultType, getVaultConfig } from './vaultConfig';
 function detectVaultTypeFromResponse(miraResponse, userMessage, pillar) {
   const lowerMessage = (userMessage || '').toLowerCase();
   
-  // Emergency detection - highest priority
-  const emergencyKeywords = ['emergency', 'urgent', 'help', 'poison', 'ate', 'swallow', 'choking', 'bleeding', 'accident', 'hurt', 'injury', 'lost', 'missing', 'can\'t breathe', 'unconscious', 'seizure'];
-  if (emergencyKeywords.some(kw => lowerMessage.includes(kw)) || pillar === 'emergency') {
+  // Emergency detection - ONLY explicit emergency keywords (not "help" alone)
+  // "help" alone is too generic - users say "help me find" all the time
+  const emergencyKeywords = ['emergency', 'urgent', 'poison', 'ate chocolate', 'swallowed', 'choking', 'bleeding', 'accident', 'injured', 'lost pet', 'missing dog', 'missing cat', 'can\'t breathe', 'unconscious', 'seizure', 'not breathing'];
+  const isEmergency = emergencyKeywords.some(kw => lowerMessage.includes(kw)) || 
+                      pillar === 'emergency' ||
+                      (lowerMessage.includes('help') && (lowerMessage.includes('emergency') || lowerMessage.includes('urgent')));
+  
+  if (isEmergency) {
     return VAULT_TYPES.EMERGENCY;
   }
   
@@ -45,24 +50,18 @@ function detectVaultTypeFromResponse(miraResponse, userMessage, pillar) {
     return VAULT_TYPES.MEMORIAL;
   }
   
-  // Adoption detection
-  const adoptionKeywords = ['adopt', 'foster', 'rescue', 'new pet', 'get a dog', 'get a cat', 'want a puppy', 'looking for a pet'];
-  if (adoptionKeywords.some(kw => lowerMessage.includes(kw)) || pillar === 'adopt') {
+  // Adoption detection - but NOT if user is asking for shelter/rescue locations
+  const adoptionKeywords = ['adopt', 'foster', 'new pet', 'get a dog', 'get a cat', 'want a puppy', 'looking for a pet'];
+  const isAdoptionQuery = adoptionKeywords.some(kw => lowerMessage.includes(kw)) || pillar === 'adopt';
+  const isPlacesQuery = lowerMessage.includes('near') || lowerMessage.includes('find me') || lowerMessage.includes('where');
+  
+  if (isAdoptionQuery && !isPlacesQuery) {
     return VAULT_TYPES.ADOPTION;
   }
   
-  // Booking detection
-  const bookingKeywords = ['book', 'appointment', 'schedule', 'reserve', 'grooming', 'vet visit', 'training session', 'boarding', 'daycare', 'dog walker', 'pet sitter'];
-  if (bookingKeywords.some(kw => lowerMessage.includes(kw))) {
-    // Check if response suggests booking
-    if (miraResponse?.suggest_booking || miraResponse?.service_type) {
-      return VAULT_TYPES.BOOKING;
-    }
-  }
-  
-  // Places detection - expanded for all place types
+  // Places detection - check FIRST before other types (groomers, photographers, etc.)
   const placesKeywords = ['restaurant', 'cafe', 'hotel', 'park', 'beach', 'pet-friendly', 'where can i', 'places to', 
-                          'groomer', 'grooming', 'photographer', 'photo', 'shelter', 'rescue', 'adoption', 
+                          'groomer', 'grooming', 'photographer', 'photo', 'shelter', 'rescue',
                           'boarding', 'daycare', 'trainer', 'training', 'near me', 'find me'];
   if (placesKeywords.some(kw => lowerMessage.includes(kw))) {
     if (miraResponse?.places?.length > 0 || miraResponse?.nearby_places?.places?.length > 0) {
@@ -75,8 +74,17 @@ function detectVaultTypeFromResponse(miraResponse, userMessage, pillar) {
     return VAULT_TYPES.PICKS;
   }
   
+  // Booking detection
+  const bookingKeywords = ['book', 'appointment', 'schedule', 'reserve', 'vet visit', 'training session'];
+  if (bookingKeywords.some(kw => lowerMessage.includes(kw))) {
+    // Check if response suggests booking
+    if (miraResponse?.suggest_booking || miraResponse?.service_type) {
+      return VAULT_TYPES.BOOKING;
+    }
+  }
+  
   // Tip card detection - advice without products
-  const adviceKeywords = ['meal plan', 'diet', 'routine', 'schedule', 'tips', 'guide', 'how to', 'advice', 'recommend', 'suggest'];
+  const adviceKeywords = ['meal plan', 'diet', 'routine', 'schedule', 'tips', 'guide', 'how to', 'advice', 'recommend', 'suggest', 'ritual', 'bonding'];
   if (adviceKeywords.some(kw => lowerMessage.includes(kw)) && !miraResponse?.products?.length) {
     if (miraResponse?.tip_card || miraResponse?.advice || miraResponse?.response) {
       return VAULT_TYPES.TIP_CARD;
