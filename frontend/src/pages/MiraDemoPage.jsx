@@ -3142,6 +3142,17 @@ const MiraDemoPage = () => {
 
   return (
     <div className="mira-prod">
+      {/* ═══════════════════════════════════════════════════════════════════
+          MEMORY WHISPER - Subtle notification when Mira recalls past context
+          Shows as a small chip above the chat, auto-dismisses
+          ═══════════════════════════════════════════════════════════════════ */}
+      <MemoryWhisper 
+        memoryContext={activeMemoryContext}
+        petName={pet?.name || 'your pet'}
+        onDismiss={() => setActiveMemoryContext(null)}
+        autoDismissDelay={8000}
+      />
+      
       {/* PERSONALIZATION TICKER - Animated ribbon showing how Mira knows the pet */}
       {tickerItems.length > 0 && (
         <div className="mira-ticker">
