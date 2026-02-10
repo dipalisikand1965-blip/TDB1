@@ -1,11 +1,14 @@
 # MIRA OS - COMPREHENSIVE HANDOVER DOCUMENT
 ## Session: December 2025 - February 2026
 ## For: Next Agent
+## Current Rating: **78/100** → Target: **90/100**
 
 ---
 
-# ⚠️ CRITICAL - READ MASTER_DOCTRINE.md FIRST
-> **See `/app/memory/MASTER_DOCTRINE.md` for complete operational memory**
+# ⚠️ CRITICAL - READ THESE FIRST
+1. `/app/memory/MASTER_DOCTRINE.md` - Core philosophy
+2. `/app/memory/CONVERSATION_ARCHITECTURE.md` - State machine (NEW)
+3. `/app/memory/AGENT_HANDOVER_20260210.md` - Detailed handover (NEW)
 
 # 🧠 CORE DOCTRINE
 > **"MIRA IS THE BRAIN, CONCIERGE® IS THE HANDS, EMERGENT IS THE ENABLER"**
@@ -23,29 +26,41 @@
 
 ---
 
-## Latest Session Fixes (Feb 2026)
+## Latest Session: Feb 10, 2026
+
+### 🆕 NEW: Conversation Architecture
+- **HandoffSummary**: Shows summary BEFORE sending to Concierge®
+- **QuickReplies**: Contextual 3-4 buttons after every response
+- **PicksIndicator**: Animated yellow gift icon with glow
+- **Personalized Banner**: "Mojo's request is on its way! 🎉"
+- **Session Archive**: 5-min inactivity → past chats (works across refresh)
 
 ### 🔴 CRITICAL FIX: Pillar-First Search
 **Problem:** Asking about "dog walking" was showing birthday cakes (cross-pillar leakage)
 **Solution:** Pillar filter now ALWAYS applies FIRST, category refinement adds to it
 **File:** `/app/backend/mira_routes.py` - `search_real_products()` function
 
+### 🔴 CRITICAL FIX: Concierge Banner
+**Problem:** Banner showed on every "concierge" mention
+**Solution:** Only triggers on explicit conclusion phrases ("send to concierge", "book this", etc.)
+**File:** `/app/backend/mira_routes.py` lines 2653-2680
+
 ### 🟠 Fixed: Question Extraction Bug
 **Problem:** "?" appearing in separate yellow box instead of inline
 **Solution:** Disabled question extraction - questions stay inline per MIRA_UNIVERSAL_RULES
 **File:** `/app/frontend/src/components/Mira/ChatMessage.jsx` - `splitMessageWithQuestion()`
 
-### 🟡 Fixed: ProactiveAlertsBanner Error
-**Problem:** `setInputText is not defined` error
-**Solution:** Changed to `setQuery` (correct state setter)
-**File:** `/app/frontend/src/pages/MiraDemoPage.jsx`
+### 🟡 Fixed: LLM Invented Places
+**Problem:** LLM made up "Park Cafe", "Lakeside Bistro"
+**Solution:** Strict prompt rule - never invent place names
+**File:** `/app/backend/mira_routes.py` lines 720-780
 
-### 🔵 Completed: Conversation Flow Architecture
-All 4 priority items from PICKS_VAULT spec are working:
-- ✅ P1: Pillar-first search (prevents cross-pillar leakage)
-- ✅ P2: Picks vault storage in tickets
-- ✅ P3: UI "Send to Concierge®" (not "Add to cart")
-- ✅ P4: TipCardVault for non-product conversations
+---
+
+## 🎯 NEXT PRIORITIES (P0)
+1. **Test HandoffSummary flow** on live site
+2. **Add "Try:" examples** to welcome screen (biggest quick win)
+3. **Response streaming (SSE)** for perceived speed
 
 ---
 
