@@ -3530,6 +3530,7 @@ const MiraDemoPage = () => {
           setHasNewVideos(false);
           setNewVideosCount(0);
         }}
+        onShowSoul={() => setShowSoulFormModal(true)}
         hasNewVideos={hasNewVideos}
         newVideosCount={newVideosCount}
       />
