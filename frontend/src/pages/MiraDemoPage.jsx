@@ -2686,7 +2686,13 @@ const MiraDemoPage = () => {
       setShowSkeleton(false);
       
       // 🎉 MICRO-DELIGHT: Confetti for celebrations (using extracted helper)
-      if (isCelebrationQuery(inputQuery) && !inComfortMode) {
+      // Only trigger for actual celebration moments, not just planning queries
+      const isCelebratingNow = isCelebrationQuery(inputQuery) && 
+                               !inComfortMode && 
+                               !inputQuery.toLowerCase().includes('plan') &&
+                               !inputQuery.toLowerCase().includes('prepare') &&
+                               !inputQuery.toLowerCase().includes('suggest');
+      if (isCelebratingNow) {
         // Slight delay for visual impact
         setTimeout(() => {
           triggerCelebrationConfetti();
