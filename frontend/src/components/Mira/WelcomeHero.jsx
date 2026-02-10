@@ -147,10 +147,14 @@ const WelcomeHero = ({
             )}
           </div>
           
-          {/* Soul Score Badge */}
+          {/* Soul Score Badge - Dynamic with glow */}
           {pet.soulScore > 10 ? (
-            <div className="soul-score-badge" onClick={() => navigate(`/pet-soul/${pet.id || ''}`)}>
-              <span className="soul-percent">{pet.soulScore}%</span>
+            <div 
+              className={`soul-score-badge soul-active ${isGlowing ? 'soul-growing' : ''}`} 
+              onClick={() => navigate(`/pet-soul/${pet.id || ''}`)}
+              title={`${pet.name}'s Soul Score - Click to enhance`}
+            >
+              <span className={`soul-percent ${isGlowing ? 'counting' : ''}`}>{displayScore}%</span>
               <span className="soul-label">SOUL<br/>KNOWN</span>
             </div>
           ) : (
