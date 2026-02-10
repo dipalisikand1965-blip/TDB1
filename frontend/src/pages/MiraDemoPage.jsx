@@ -2556,6 +2556,9 @@ const MiraDemoPage = () => {
             tip_card: tipCard
           });
           
+          // Play tip notification sound
+          notificationSounds.tip();
+          
           // Auto-open insights panel when tip card is generated
           setTimeout(() => setShowInsightsPanel(true), 500);
         }
