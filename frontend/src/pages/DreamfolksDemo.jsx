@@ -1245,7 +1245,7 @@ export default function DreamfolksDemo() {
                         value={inputMessage}
                         onChange={(e) => setInputMessage(e.target.value)}
                         onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                        placeholder="Ask Mira anything about Dollar..."
+                        placeholder="Try: 'Is chocolate safe?' or 'Book grooming'"
                         className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-white/40 focus:outline-none focus:border-purple-500"
                       />
                       <Button 
@@ -1256,17 +1256,27 @@ export default function DreamfolksDemo() {
                       </Button>
                     </div>
                     
-                    {/* Quick Suggestions */}
-                    <div className="flex flex-wrap gap-2 mt-3">
-                      {["What food for Dollar?", "Book grooming", "He's not eating"].map((q, i) => (
-                        <button
-                          key={i}
-                          onClick={() => handleSendMessage(q)}
-                          className="px-3 py-1 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full text-white/60 text-xs transition-colors"
-                        >
-                          {q}
-                        </button>
-                      ))}
+                    {/* Guided Suggestions */}
+                    <div className="mt-4">
+                      <div className="text-white/40 text-xs mb-2">💡 Try asking about:</div>
+                      <div className="flex flex-wrap gap-2">
+                        {[
+                          "Is chocolate safe?",
+                          "Dollar is scratching",
+                          "Book grooming",
+                          "Food recommendations",
+                          "Birthday party",
+                          "He's not eating"
+                        ].map((q, i) => (
+                          <button
+                            key={i}
+                            onClick={() => handleSendMessage(q)}
+                            className="px-3 py-1.5 bg-purple-500/20 hover:bg-purple-500/30 border border-purple-500/30 rounded-full text-purple-300 text-xs transition-colors"
+                          >
+                            {q}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
