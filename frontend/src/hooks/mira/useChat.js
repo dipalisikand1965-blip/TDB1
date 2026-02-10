@@ -625,35 +625,10 @@ export const saveConversationMemory = async ({ petId, topic, summary, query, adv
  * @returns {string} - Prefix string
  */
 export const buildMemoryPrefix = (memoryContext) => {
-  if (!memoryContext?.relevant_memory) return '';
-  
-  const mem = memoryContext.relevant_memory;
-  const daysAgo = mem.days_ago;
-  let prefix = '';
-  
-  // Only add memory prefix if we have meaningful advice to reference
-  // And avoid awkward phrasing like "I suggested I'm really glad..."
-  if (daysAgo && daysAgo > 0 && mem.mira_advice) {
-    // Clean up the advice - remove common LLM phrases from start
-    let cleanAdvice = mem.mira_advice
-      .replace(/^(I'm really glad|I'm glad|I'm happy|That's great|Of course|Absolutely|Sure|Great question)[^.]*\.\s*/i, '')
-      .substring(0, 100);
-    
-    // Only include if we have meaningful advice content
-    if (cleanAdvice.length > 20) {
-      if (daysAgo === 1) {
-        prefix = `From yesterday: ${cleanAdvice}... `;
-      } else if (daysAgo < 7) {
-        prefix = `A few days ago we discussed ${mem.topic}. `;
-      } else if (daysAgo < 30) {
-        prefix = `Previously we talked about ${mem.topic}. `;
-      } else {
-        prefix = `I remember ${mem.topic}. `;
-      }
-    }
-  }
-  
-  return prefix;
+  // DISABLED: User prefers memory shown as subtle indicator, not inline prefix
+  // "silently like a whisper running on a tab at the back"
+  // This saves voice and keeps conversation cleaner
+  return '';
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
