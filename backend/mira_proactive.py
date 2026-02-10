@@ -861,7 +861,7 @@ async def check_seasonal_tips(pet_id: str, pet_name: str, db) -> List[Dict]:
 async def get_proactive_alerts(pet_id: str, user_email: str = None):
     """
     Get all proactive alerts for a pet.
-    Returns vaccination, birthday, grooming, and reorder alerts.
+    Returns vaccination, birthday, grooming, reorder, health check-in, and seasonal alerts.
     """
     db = get_db()
     
@@ -879,7 +879,13 @@ async def get_proactive_alerts(pet_id: str, user_email: str = None):
     birthday_alerts = await check_birthday_alerts(pet_id, pet_name, db)
     grooming_alerts = await check_grooming_alerts(pet_id, pet_name, db)
     
-    # NEW: Reorder suggestions based on purchase history
+    # Health check-ins (NEW)
+    health_checkin_alerts = await check_health_checkin_prompts(pet_id, pet_name, db)
+    
+    # Seasonal tips (NEW)
+    seasonal_alerts = await check_seasonal_tips(pet_id, pet_name, db)
+    
+    # Reorder suggestions based on purchase history
     reorder_alerts = []
     if owner_email:
         reorder_alerts = await check_reorder_suggestions(pet_id, pet_name, owner_email, db)
@@ -887,6 +893,8 @@ async def get_proactive_alerts(pet_id: str, user_email: str = None):
     all_alerts.extend(vaccination_alerts)
     all_alerts.extend(birthday_alerts)
     all_alerts.extend(grooming_alerts)
+    all_alerts.extend(health_checkin_alerts)
+    all_alerts.extend(seasonal_alerts)
     all_alerts.extend(reorder_alerts)
     
     # Sort by urgency
@@ -899,6 +907,15 @@ async def get_proactive_alerts(pet_id: str, user_email: str = None):
         "alerts": all_alerts,
         "total": len(all_alerts),
         "critical_count": len([a for a in all_alerts if a.get("urgency") == "critical"]),
+        "high_count": len([a for a in all_alerts if a.get("urgency") == "high"]),
+        "types": {
+            "vaccination": len(vaccination_alerts),
+            "birthday": len(birthday_alerts),
+            "grooming": len(grooming_alerts),
+            "health_checkin": len(health_checkin_alerts),
+            "seasonal": len(seasonal_alerts),
+            "reorder": len(reorder_alerts)
+        },
         "generated_at": datetime.now(timezone.utc).isoformat()
     }
 
