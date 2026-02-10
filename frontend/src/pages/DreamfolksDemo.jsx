@@ -1435,7 +1435,7 @@ Ask me anything about him!`
         <div className="max-w-4xl mx-auto">
           
           {/* Chat Interface - No tabs, just chat */}
-          <div className="bg-[#1a0a2e]/50 border border-white/10 rounded-2xl overflow-hidden shadow-xl">
+          <div ref={chatContainerRef} className="bg-[#1a0a2e]/50 border border-white/10 rounded-2xl overflow-hidden shadow-xl">
             {/* Chat Header */}
             <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 p-3 sm:p-4 border-b border-white/10">
               <div className="flex items-center justify-between">
