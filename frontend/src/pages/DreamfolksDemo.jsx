@@ -1142,30 +1142,21 @@ What can I help with today?` }
       </section>
 
       {/* Demo Pet Card */}
-      <section className="py-8 px-4">
+      <section className="py-4 sm:py-8 px-3 sm:px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20 rounded-2xl p-6">
-            <div className="flex flex-col md:flex-row items-center gap-6">
-              <div className="w-24 h-24 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-4xl">
+          <div className="bg-gradient-to-r from-purple-500/10 to-pink-500/10 border border-purple-500/20 rounded-xl sm:rounded-2xl p-4 sm:p-6">
+            <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+              <div className="w-16 h-16 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center text-3xl sm:text-4xl flex-shrink-0">
                 🐩
               </div>
-              <div className="text-center md:text-left">
-                <h3 className="text-2xl font-bold text-white">Meet Dollar</h3>
-                <p className="text-white/60">Your demo pet for this session</p>
-                <div className="flex flex-wrap gap-2 mt-3 justify-center md:justify-start">
-                  <span className="px-3 py-1 bg-purple-500/20 text-purple-300 text-sm rounded-full">{DEMO_PET.breed}</span>
-                  <span className="px-3 py-1 bg-pink-500/20 text-pink-300 text-sm rounded-full">{DEMO_PET.age}</span>
-                  <span className="px-3 py-1 bg-amber-500/20 text-amber-300 text-sm rounded-full">{DEMO_PET.color}</span>
-                  <span className="px-3 py-1 bg-red-500/20 text-red-300 text-sm rounded-full">🚫 Chicken Allergy</span>
-                  <span className="px-3 py-1 bg-green-500/20 text-green-300 text-sm rounded-full">Soul Score: {DEMO_PET.soul_score}%</span>
-                </div>
-              </div>
-              <div className="ml-auto hidden lg:block">
-                <div className="text-right">
-                  <div className="text-white/40 text-sm">Mira knows:</div>
-                  <div className="text-white/70 text-sm">• Favorite: {DEMO_PET.favorite_treats[0]}</div>
-                  <div className="text-white/70 text-sm">• Last groomed: {DEMO_PET.last_grooming}</div>
-                  <div className="text-white/70 text-sm">• Personality: {DEMO_PET.personality.join(', ')}</div>
+              <div className="text-center sm:text-left flex-1">
+                <h3 className="text-xl sm:text-2xl font-bold text-white">Meet Dollar</h3>
+                <p className="text-white/60 text-sm">Your demo pet</p>
+                <div className="flex flex-wrap gap-1.5 sm:gap-2 mt-2 sm:mt-3 justify-center sm:justify-start">
+                  <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-purple-500/20 text-purple-300 text-[10px] sm:text-sm rounded-full">{DEMO_PET.breed}</span>
+                  <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-pink-500/20 text-pink-300 text-[10px] sm:text-sm rounded-full">{DEMO_PET.age}</span>
+                  <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-red-500/20 text-red-300 text-[10px] sm:text-sm rounded-full">🚫 Chicken</span>
+                  <span className="px-2 sm:px-3 py-0.5 sm:py-1 bg-green-500/20 text-green-300 text-[10px] sm:text-sm rounded-full">Soul: {DEMO_PET.soul_score}%</span>
                 </div>
               </div>
             </div>
