@@ -201,6 +201,8 @@ const MiraDemoPage = () => {
   const [isRecording, setIsRecording] = useState(false); // For universal search voice
   // SOUL SCORE: Track when score updates for glow animation
   const [soulScoreUpdated, setSoulScoreUpdated] = useState(false);
+  // SOUL FORM MODAL: Quick questions to enrich pet profile
+  const [showSoulFormModal, setShowSoulFormModal] = useState(false);
   
   // Core conversation state
   const [query, setQuery] = useState('');
