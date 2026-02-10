@@ -23,6 +23,9 @@ logger = logging.getLogger(__name__)
 # Create router
 auth_router = APIRouter(prefix="/api/auth", tags=["Authentication"])
 
+# Security schemes
+security_bearer = HTTPBearer(auto_error=False)
+
 
 # ==================== PET PASS NUMBER GENERATION ====================
 
