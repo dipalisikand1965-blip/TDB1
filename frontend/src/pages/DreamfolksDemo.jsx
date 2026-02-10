@@ -978,7 +978,7 @@ const renderMarkdown = (text) => {
     if (line.match(/^\*\*[^*]+\*\*:?$/) || line.match(/^\*\*[^*]+:\*\*$/)) {
       const headerText = line.replace(/\*\*/g, '').replace(/:$/, '');
       elements.push(
-        <div key={key++} className="font-semibold text-white mt-3 mb-1">{headerText}</div>
+        <div key={key++} className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 mt-3 mb-1 text-base">{headerText}</div>
       );
       continue;
     }
