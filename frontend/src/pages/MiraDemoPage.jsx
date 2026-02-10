@@ -1146,6 +1146,19 @@ const MiraDemoPage = () => {
     }
     
     console.log('[PET SWITCH] Switching to:', newPet.name);
+    
+    // IMMEDIATELY clear old alerts before switching
+    setProactiveAlerts({
+      celebrations: [],
+      healthReminders: [],
+      weatherSuggestions: [],
+      weather: {},
+      bundles: [],
+      smartAlerts: [],
+      criticalCount: 0,
+      hasUrgent: false
+    });
+    
     setPet(newPet);
     setShowPetSelector(false);
     
