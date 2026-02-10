@@ -942,13 +942,7 @@ const MiraDemoPage = () => {
   // ═══════════════════════════════════════════════════════════════════════════════
   // IDLE TIMEOUT - Auto-save conversation after 5 minutes of inactivity
   // ═══════════════════════════════════════════════════════════════════════════════
-  const lastActivityRef = useRef(Date.now());
   const idleTimerRef = useRef(null);
-  
-  // Track user activity
-  const updateActivity = useCallback(() => {
-    lastActivityRef.current = Date.now();
-  }, []);
   
   // Save conversation to past chats and start fresh
   const saveAndClearConversation = useCallback(async () => {
@@ -1000,24 +994,6 @@ const MiraDemoPage = () => {
       }
     };
   }, [conversationHistory.length, saveAndClearConversation]);
-  
-  // Reset activity on user interactions
-  useEffect(() => {
-    const handleActivity = () => updateActivity();
-    
-    // Track mouse, keyboard, and touch events
-    window.addEventListener('mousemove', handleActivity);
-    window.addEventListener('keydown', handleActivity);
-    window.addEventListener('touchstart', handleActivity);
-    window.addEventListener('scroll', handleActivity);
-    
-    return () => {
-      window.removeEventListener('mousemove', handleActivity);
-      window.removeEventListener('keydown', handleActivity);
-      window.removeEventListener('touchstart', handleActivity);
-      window.removeEventListener('scroll', handleActivity);
-    };
-  }, [updateActivity]);
   
   // Clear session function (for "New Chat" button)
   // Wraps hook's startNewSession with additional state clearing
