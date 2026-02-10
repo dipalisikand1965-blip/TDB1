@@ -1525,26 +1525,21 @@ What can I help with today?` }
 
           {/* Three Pillars of Heritage */}
           <div className="grid md:grid-cols-3 gap-8 mb-16">
-            {/* The Soul */}
+            {/* The Soul - Mira AI */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="bg-gradient-to-br from-amber-500/10 to-orange-500/10 border border-amber-500/20 rounded-2xl p-6 text-center"
+              className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/20 rounded-2xl p-6 text-center"
             >
-              <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden border-4 border-amber-400/30 shadow-lg shadow-amber-500/20">
-                <img 
-                  src="https://customer-assets.emergentagent.com/job_2dad3d7e-c3ab-4896-a445-d39e2953ce1d/artifacts/hfy5z95e_Mira%20Aunty.png" 
-                  alt="Mrs. Mira Sikand"
-                  className="w-full h-full object-cover"
-                />
+              <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden border-4 border-purple-400/30 shadow-lg shadow-purple-500/30 bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center">
+                <Sparkles className="w-12 h-12 text-white" />
               </div>
-              <h3 className="text-xl font-bold text-amber-300 mb-2">The Soul</h3>
-              <h4 className="text-white font-medium mb-3">Mrs. Mira Sikand</h4>
+              <h3 className="text-xl font-bold text-purple-300 mb-2">The Soul</h3>
+              <h4 className="text-white font-medium mb-3">Mira AI</h4>
               <p className="text-white/60 text-sm">
-                The quiet force behind everything. Her instincts, standards, and way of caring shaped 
-                what service excellence means to us. Mira AI carries her spirit — judgment over listing, 
-                memory over forgetting.
+                Named after the quiet force who shaped our philosophy. Mira AI carries that spirit forward — 
+                judgment over listing, memory over forgetting. AI that truly understands your pet's world.
               </p>
             </motion.div>
 
