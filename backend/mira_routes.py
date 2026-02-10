@@ -1321,11 +1321,21 @@ async def search_real_products(
     # These are advisory conversations, not product searches
     # Mira will generate a TIP CARD instead
     # ═══════════════════════════════════════════════════════════════════
-    is_meal_diet_request = any(kw in user_input_lower for kw in [
+    
+    # Also check conversation history for context
+    conversation_text = " ".join([
+        msg.get("content", "").lower() 
+        for msg in (conversation_history or [])[-5:]
+    ]).lower() if conversation_history else ""
+    
+    full_search_context = user_input_lower + " " + conversation_text
+    
+    is_meal_diet_request = any(kw in full_search_context for kw in [
         "meal plan", "diet", "nutrition", "food plan", "feeding schedule", 
         "what to feed", "what should i feed", "home cooked", "homemade food",
         "raw diet", "healthy food", "healthy meal", "eggs", "chicken", "carrots",
-        "vegetables", "portion", "how much to feed"
+        "vegetables", "portion", "how much to feed", "ingredients", "protein",
+        "proteins", "grains", "breakfast", "lunch", "dinner", "snack"
     ])
     
     if is_meal_diet_request:
