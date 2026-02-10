@@ -839,11 +839,29 @@ const Home = () => {
               <p className="text-center text-purple-400/60 text-xs mt-2">← Swipe to explore →</p>
             </div>
             
-            {/* Desktop: Grid */}
-            <div className="hidden md:grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
-              {pillars.map((pillar, i) => (
-                <PillarCard key={i} {...pillar} delay={i * 0.1} />
-              ))}
+            {/* Desktop: Horizontal scroll for 13 pillars */}
+            <div className="hidden md:block">
+              <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                {pillars.map((pillar, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.05 }}
+                    className="flex-shrink-0 snap-center"
+                  >
+                    <div className={`relative bg-gradient-to-br ${pillar.color} rounded-2xl p-5 w-[160px] h-[140px] flex flex-col justify-between shadow-lg hover:scale-105 transition-transform cursor-pointer`}>
+                      <pillar.icon className="w-8 h-8 text-white" />
+                      <div>
+                        <h3 className="text-white font-bold text-sm">{pillar.title}</h3>
+                        <p className="text-white/70 text-xs mt-1 line-clamp-2">{pillar.description}</p>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+              <p className="text-center text-white/40 text-sm mt-4">← Swipe to explore all 13 pillars →</p>
             </div>
           </div>
         </section>
