@@ -3298,10 +3298,10 @@ const MiraDemoPage = () => {
         notes={handoffSummary?.notes || ''}
       />
       
-      {/* PICKS INDICATOR - Yellow gift icon when Mira has curated picks OR tip card */}
+      {/* PICKS INDICATOR - Yellow gift icon when Mira has curated picks OR tip card OR places */}
       {/* Non-intrusive: user clicks to view, not forced */}
       <PicksIndicator
-        picksCount={(miraPicks.products?.length || 0) + (miraPicks.services?.length || 0) + (miraPicks.tipCard ? 1 : 0)}
+        picksCount={(miraPicks.products?.length || 0) + (miraPicks.services?.length || 0) + (miraPicks.places?.length || 0) + (miraPicks.tipCard ? 1 : 0)}
         hasNewPicks={miraPicks.hasNew}
         onClick={() => setShowVault(true)}
         petName={pet?.name || 'your pet'}
