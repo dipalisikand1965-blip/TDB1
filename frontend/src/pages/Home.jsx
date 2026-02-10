@@ -1014,7 +1014,44 @@ const Home = () => {
         {/* Footer */}
         <footer className="py-12 border-t border-white/5">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            {/* Navigation Links */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+              <div>
+                <h4 className="text-white font-semibold mb-4">Explore</h4>
+                <div className="space-y-2">
+                  <Link to="/about" className="block text-white/50 hover:text-white transition-colors text-sm">About Us</Link>
+                  <Link to="/join" className="block text-white/50 hover:text-white transition-colors text-sm">Join Mira®</Link>
+                  <Link to="/login" className="block text-white/50 hover:text-white transition-colors text-sm">Member Login</Link>
+                </div>
+              </div>
+              <div>
+                <h4 className="text-white font-semibold mb-4">Services</h4>
+                <div className="space-y-2">
+                  <Link to="/mira-demo" className="block text-white/50 hover:text-white transition-colors text-sm">Meet Mira AI</Link>
+                  <Link to="/products" className="block text-white/50 hover:text-white transition-colors text-sm">Shop Products</Link>
+                  <Link to="/services" className="block text-white/50 hover:text-white transition-colors text-sm">Concierge® Services</Link>
+                </div>
+              </div>
+              <div>
+                <h4 className="text-white font-semibold mb-4">Heritage</h4>
+                <div className="space-y-2">
+                  <a href="https://thedoggybakery.com" target="_blank" rel="noopener noreferrer" className="block text-white/50 hover:text-white transition-colors text-sm">The Doggy Bakery®</a>
+                  <span className="block text-white/50 text-sm">LesConcierges®</span>
+                  <span className="block text-white/50 text-sm">Club Concierge®</span>
+                </div>
+              </div>
+              <div>
+                <h4 className="text-white font-semibold mb-4">Connect</h4>
+                <div className="space-y-2">
+                  <a href="mailto:hello@thedoggycompany.in" className="block text-white/50 hover:text-white transition-colors text-sm">hello@thedoggycompany.in</a>
+                  <a href="https://instagram.com/thedoggybakery" target="_blank" rel="noopener noreferrer" className="block text-white/50 hover:text-white transition-colors text-sm">Instagram</a>
+                  <a href="https://wa.me/919876543210" target="_blank" rel="noopener noreferrer" className="block text-white/50 hover:text-white transition-colors text-sm">WhatsApp</a>
+                </div>
+              </div>
+            </div>
+            
+            {/* Bottom Bar */}
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6 pt-8 border-t border-white/5">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
                   <PawPrint className="w-5 h-5 text-white" />
@@ -1025,11 +1062,11 @@ const Home = () => {
               <div className="flex items-center gap-6 text-white/50 text-sm">
                 <Link to="/privacy" className="hover:text-white transition-colors">Privacy</Link>
                 <Link to="/terms" className="hover:text-white transition-colors">Terms</Link>
-                <a href="mailto:hello@thedoggycompany.in" className="hover:text-white transition-colors">Contact</a>
+                <Link to="/about" className="hover:text-white transition-colors">About</Link>
               </div>
               
               <p className="text-white/30 text-sm">
-                © 2025 The Doggy Company. Made with <Heart className="w-4 h-4 inline text-pink-500" /> for pets everywhere.
+                © 2025 The Doggy Company®. Made with <Heart className="w-4 h-4 inline text-pink-500" /> for pets everywhere.
               </p>
             </div>
           </div>
