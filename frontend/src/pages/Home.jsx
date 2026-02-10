@@ -740,7 +740,7 @@ const Home = () => {
               >
                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/20 border border-purple-500/30 rounded-full mb-6">
                   <Sparkles className="w-4 h-4 text-purple-400" />
-                  <span className="text-purple-300 text-sm">Not AI. Soul.</span>
+                  <span className="text-purple-300 text-sm">Soul + Concierge®</span>
                 </div>
                 
                 <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
@@ -749,8 +749,9 @@ const Home = () => {
                 
                 <p className="text-white/60 text-lg mb-8">
                   The soul that speaks for pets who cannot speak. The brain that remembers every meal preference, 
-                  every allergy, every birthday, every moment of joy and concern. I grow with every conversation. 
-                  I become more of who your pet needs me to be.
+                  every allergy, every birthday, every moment of joy and concern. 
+                  <span className="text-amber-300"> And when I know what your pet needs, 
+                  Concierge® makes it happen.</span> Real humans. Real action. Real love.
                 </p>
                 
                 <div className="space-y-4">
