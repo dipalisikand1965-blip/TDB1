@@ -2316,16 +2316,17 @@ const MiraDemoPage = () => {
         });
         
         // ═══════════════════════════════════════════════════════════════════════════
-        // VAULT SYSTEM - Auto-trigger vault for products/services
-        // "Mira is the Brain, Concierge® is the Hands"
+        // PICKS NOTIFICATION - Non-intrusive indicator
+        // Instead of forcing vault open, show a subtle notification
+        // User clicks to see picks when THEY want (not forced)
+        // "Mira silently curates in background, yellow gift tells member picks are ready"
         // ═══════════════════════════════════════════════════════════════════════════
         if (!clarifyOnly && (newProducts.length > 0 || newServices.length > 0)) {
           setActiveVaultData(data.response || data);
           setVaultUserMessage(inputQuery);
-          // Small delay to let the message render first
-          setTimeout(() => {
-            setShowVault(true);
-          }, 800);
+          // DON'T auto-open vault - just mark that picks are available
+          // The MiraTray or PicksIndicator will show the yellow gift icon
+          console.log(`[PICKS READY] 🎁 ${newProducts.length} products, ${newServices.length} services curated silently`);
         }
       } else if (clarifyOnly) {
         // Clarify-only mode - clear any existing picks
