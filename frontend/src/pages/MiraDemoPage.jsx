@@ -59,6 +59,7 @@ import QuickReplies, { generateQuickReplies } from '../components/Mira/QuickRepl
 import HandoffSummary from '../components/Mira/HandoffSummary';
 import MemoryWhisper from '../components/Mira/MemoryWhisper';
 import SoulKnowledgeTicker from '../components/Mira/SoulKnowledgeTicker';
+import SoulFormModal from '../components/Mira/SoulFormModal';
 import { FormattedText, TypedText } from '../components/Mira/TextComponents';
 import { triggerCelebrationConfetti } from '../utils/confetti';
 
