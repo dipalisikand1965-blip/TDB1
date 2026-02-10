@@ -190,6 +190,8 @@ const MiraDemoPage = () => {
   const [hasNewMessages, setHasNewMessages] = useState(false);
   const [currentPillar, setPillar] = useState('celebrate');
   const [lastShownProducts, setLastShownProducts] = useState([]);
+  // INTELLIGENCE: Track search context for follow-up queries ("cheaper ones", "show me more")
+  const [lastSearchContext, setLastSearchContext] = useState(null);
   const [isRecording, setIsRecording] = useState(false); // For universal search voice
   
   // Core conversation state
