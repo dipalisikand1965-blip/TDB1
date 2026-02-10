@@ -1056,8 +1056,8 @@ const renderMarkdown = (text) => {
 // Format inline markdown (bold, italic, etc)
 const formatInlineMarkdown = (text) => {
   return text
-    // Bold
-    .replace(/\*\*([^*]+)\*\*/g, '<strong class="text-white font-semibold">$1</strong>')
+    // Bold - now pink/purple gradient effect with inline style
+    .replace(/\*\*([^*]+)\*\*/g, '<strong class="text-pink-400 font-semibold">$1</strong>')
     // Italic
     .replace(/\*([^*]+)\*/g, '<em class="text-purple-300">$1</em>')
     // Underline stars (⭐)
