@@ -104,11 +104,19 @@ const Home = () => {
   const isLoggedIn = !!user;
 
   const pillars = [
-    { icon: Utensils, title: 'Dine', description: 'From their favorite chicken jerky to birthday cakes that make tails wag', color: 'from-orange-500 to-red-500' },
-    { icon: Hotel, title: 'Stay', description: 'Places that welcome them as family, not just allow them', color: 'from-blue-500 to-cyan-500' },
-    { icon: GraduationCap, title: 'Learn', description: 'Understanding the why behind every bark and purr', color: 'from-green-500 to-emerald-500' },
-    { icon: PartyPopper, title: 'Celebrate', description: 'Because every gotcha day deserves confetti', color: 'from-purple-500 to-pink-500' },
-    { icon: HeartPulse, title: 'Care', description: 'The vet reminders you forget. The allergies you remember forever.', color: 'from-red-500 to-rose-500' },
+    { icon: PartyPopper, title: 'Celebrate', description: 'Every gotcha day, birthday, and milestone deserves confetti', color: 'from-purple-500 to-pink-500' },
+    { icon: Utensils, title: 'Dine', description: 'From their favorite chicken jerky to birthday cakes', color: 'from-orange-500 to-red-500' },
+    { icon: Hotel, title: 'Stay', description: 'Places that welcome them as family', color: 'from-blue-500 to-cyan-500' },
+    { icon: Plane, title: 'Travel', description: 'The world is their playground', color: 'from-sky-500 to-blue-500' },
+    { icon: HeartPulse, title: 'Care', description: 'Health tracking, vet reminders, wellness', color: 'from-red-500 to-rose-500' },
+    { icon: Gamepad2, title: 'Enjoy', description: 'Activities, events, and pure joy', color: 'from-pink-500 to-fuchsia-500' },
+    { icon: Dumbbell, title: 'Fit', description: 'Exercise, training, staying active', color: 'from-green-500 to-emerald-500' },
+    { icon: GraduationCap, title: 'Learn', description: 'Understanding every bark and purr', color: 'from-amber-500 to-yellow-500' },
+    { icon: FileText, title: 'Paperwork', description: 'Documents, permits, certificates handled', color: 'from-slate-500 to-gray-500' },
+    { icon: Lightbulb, title: 'Advisory', description: 'Expert guidance when you need it', color: 'from-violet-500 to-purple-500' },
+    { icon: AlertCircle, title: 'Emergency', description: '24/7 urgent care support', color: 'from-red-600 to-rose-600' },
+    { icon: Rainbow, title: 'Farewell', description: 'Honoring the bond, always', color: 'from-indigo-500 to-blue-500' },
+    { icon: PawPrint, title: 'Adopt', description: 'Finding forever homes', color: 'from-teal-500 to-cyan-500' },
   ];
 
   const features = [
