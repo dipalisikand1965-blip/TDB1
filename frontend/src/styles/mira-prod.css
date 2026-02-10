@@ -8308,6 +8308,91 @@ input, select, textarea {
   color: rgba(255, 255, 255, 0.4);
   font-size: 14px;
   padding: 16px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Insights Panel Sections */
+.insights-section {
+  margin-bottom: 16px;
+}
+
+.insights-section-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Mini Tip Card in Insights */
+.mp-tip-card-mini {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(217, 119, 6, 0.1) 100%);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  border-radius: 10px;
+  margin-bottom: 8px;
+  transition: all 0.2s ease;
+}
+
+.mp-tip-card-mini:hover {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.25) 0%, rgba(217, 119, 6, 0.15) 100%);
+  border-color: rgba(245, 158, 11, 0.4);
+}
+
+.mp-tip-card-mini .tip-card-icon {
+  font-size: 20px;
+}
+
+.mp-tip-card-mini .tip-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mp-tip-card-mini .tip-card-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.mp-tip-card-mini .tip-card-type {
+  font-size: 11px;
+  color: rgba(245, 158, 11, 0.8);
+  text-transform: capitalize;
+}
+
+/* Memory Item in Insights */
+.mp-memory-item {
+  padding: 10px 12px;
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, rgba(139, 92, 246, 0.1) 100%);
+  border: 1px solid rgba(168, 85, 247, 0.2);
+  border-radius: 10px;
+}
+
+.mp-memory-item .memory-topic {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(168, 85, 247, 0.9);
+  text-transform: capitalize;
+}
+
+.mp-memory-item .memory-summary {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 4px;
+  line-height: 1.4;
 }
 
 /* ========================================
