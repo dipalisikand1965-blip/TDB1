@@ -3275,6 +3275,18 @@ const MiraDemoPage = () => {
                 petName={pet.name}
               />
               
+              {/* QUICK REPLIES - Contextual suggestions after Mira's response */}
+              {!isProcessing && quickReplies.length > 0 && conversationHistory.length > 0 && (
+                <QuickReplies
+                  replies={quickReplies}
+                  onReply={(action) => {
+                    setQuickReplies([]); // Clear after use
+                    handleQuickReply(action);
+                  }}
+                  show={true}
+                />
+              )}
+              
               <div ref={messagesEndRef} />
               
               {/* CONVERSATION COMPLETE BANNER - Compact, non-intrusive */}
