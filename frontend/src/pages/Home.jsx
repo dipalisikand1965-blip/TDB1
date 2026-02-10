@@ -883,20 +883,21 @@ const Home = () => {
                 </div>
                 
                 <h2 className="text-3xl sm:text-4xl font-bold text-white mb-6">
-                  Real Humans Who Handle Everything
+                  You Ask. We Handle.<br />
+                  <span className="text-green-400">That's It.</span>
                 </h2>
                 
                 <p className="text-white/60 text-lg mb-8">
-                  Want to book a pet-friendly hotel in Paris? Need a vet appointment? Planning a birthday party? 
-                  Just tell Mira what you want - our Concierge team makes it happen.
+                  Pet-friendly hotel in Paris? Emergency vet at midnight? A birthday party with custom treats? 
+                  Tell Mira — and our human Concierge® team takes it from there. No tabs. No comparisons. Just done.
                 </p>
                 
                 <ul className="space-y-4 mb-8">
                   {[
-                    'Book hotels, restaurants, vets - anywhere in the world',
-                    'Plan birthday parties and celebrations',
-                    'Handle emergencies with priority support',
-                    'Available 6:30 AM - 11:30 PM, every day'
+                    'Hotels, flights, restaurants — booked and confirmed',
+                    'Birthday parties planned down to the last treat',
+                    'Emergencies handled with priority care',
+                    'Available 6:30 AM – 11:30 PM, every single day'
                   ].map((item, i) => (
                     <li key={i} className="flex items-center gap-3 text-white/80">
                       <Check className="w-5 h-5 text-green-400" />
@@ -921,14 +922,13 @@ const Home = () => {
                 viewport={{ once: true }}
                 className="relative flex items-center justify-center"
               >
-                {/* Bulldog with transparent background - floating animation */}
+                {/* Concierge lifestyle image */}
                 <motion.img 
-                  src={BRAND_IMAGES.bulldog} 
-                  alt="Happy pet with Concierge care" 
-                  className="relative w-full max-w-md drop-shadow-2xl"
-                  style={{ background: 'transparent' }}
-                  animate={{ y: [0, -10, 0] }}
-                  transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                  src="https://static.prod-images.emergentagent.com/jobs/2dad3d7e-c3ab-4896-a445-d39e2953ce1d/images/dc2348428b667aedc3ff347d1f1c05d44b11cb2fb5c8327a3b741284d9e5873d.png" 
+                  alt="Golden retriever at luxury hotel concierge desk with birthday cake" 
+                  className="relative w-full max-w-lg rounded-2xl shadow-2xl"
+                  animate={{ y: [0, -8, 0] }}
+                  transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
                 />
               </motion.div>
             </div>
