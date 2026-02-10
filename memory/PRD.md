@@ -108,29 +108,37 @@ The user's heart breaks when agents forget context. Please honor their work.
 
 ## What Was Accomplished This Session (Feb 10, 2026)
 
-### Latest: Soul Knowledge Ticker ✅
+### Latest: Landing Page Copy - Soul-Centric Rewrite ✅
+**Completed: Feb 10, 2026**
+- Rewrote entire landing page to reflect Mira's soul philosophy
+- **New headline:** "They can't tell you what they need. But I can."
+- **New tagline:** "The Soul That Speaks for Pets Who Cannot Speak"
+- **New body copy:** "I am the brain that remembers every meal preference, every allergy, every birthday. The soul that knows when you say 'book that one' - exactly which one you mean."
+- Updated comparison section: "Others" vs "Mira" (not generic "Old Way")
+- Updated features: "I Remember What Matters", "I Understand Context", "I Know Their Soul", "I Have Human Hands", "I Grow With Them"
+- Updated pillars descriptions to be emotional and specific
+- Updated CTAs: "Let Me Know Your Pet" / "See Who I Am"
+- **Key philosophy:** "I'm not an app. I'm not a chatbot. I'm the voice they cannot speak."
+
+### Bug Fix: "Book Now" Button Runtime Error ✅
+**Completed: Feb 10, 2026**
+- Fixed `ReferenceError: setIsServiceRequest is not defined` when clicking Book Now on reminders
+- Simplified booking message format
+
+### Soul Knowledge Ticker ✅
 **Completed: Feb 10, 2026**
 - Created new `SoulKnowledgeTicker.jsx` component - dynamic rolling ticker showing everything Mira knows about the pet
 - Ticker displays: Soul Score badge, favorites, personality traits, breed info, memories, health data
-- Encourages pet parents to complete soul questions to grow soul score
-- Soul score animates/glows when it increases
-- Click to expand shows full knowledge panel organized by category
-- Backend enhanced: `/api/mira/personalization-stats/{pet_id}` now returns rich `knowledge_items` array
+- Personal knowledge items prioritized over places
 - **Test Results:** Backend 100% (14/14 tests), Frontend verified via screenshot
 
-### Latest: Slide-Down Animation for Proactive Alert Cards ✅
+### Slide-Down Animation for Proactive Alert Cards ✅
 **Completed: Feb 10, 2026**
 - Added `slideDownReveal` CSS animation (0.25s ease-out) for expanded action buttons
-- Smooth reveal of "Ask Mira" and "Book Now" buttons when card expands
 
-### Latest: Expandable Proactive Reminder Cards ✅
+### Expandable Proactive Reminder Cards ✅
 **Completed: Feb 10, 2026**
 - Implemented expandable reminder cards with "Ask Mira" and "Book Now" actions
-- Cards expand on tap to reveal action buttons, collapse on second tap
-- "Ask Mira" sends contextual message to start conversation (e.g., "When should Mojo get groomed next?")
-- "Book Now" sends service request directly to Concierge
-- Fixed integration gap: `ProactiveAlertsBanner` now properly passes `onAskMira` and `onBookNow` props
-- Fixed minor bug: greeting text showing "undefined" - added fallback to `name` field
 - **Test Results:** 100% pass (6/6 features verified)
 
 **MiraDemoPage.jsx refactoring: 5,789 → 3,299 lines (43% reduction total)**
