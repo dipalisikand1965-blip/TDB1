@@ -2043,6 +2043,7 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
     
     ANTI-LOOP: Uses completed_steps and step_history to prevent repeating questions.
     SESSION PERSISTENCE: Loads full conversation from database if session_id provided.
+    INTELLIGENCE: Resolves pronouns ("that one") and follow-up context ("cheaper ones").
     """
     try:
         # ============================================
@@ -2065,9 +2066,37 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
             except Exception as session_err:
                 logger.warning(f"[SESSION] Failed to load session: {session_err}")
         
+        # ============================================
+        # CONVERSATION INTELLIGENCE - Resolve references
+        # ============================================
+        # This is the BRAIN - resolving "that one", "cheaper ones", "show me more"
+        original_input = request.input
+        enhanced_input = request.input
+        resolution_info = {}
+        
+        if INTELLIGENCE_AVAILABLE:
+            enhanced_input, resolution_info = resolve_conversation_references(
+                user_input=request.input,
+                conversation_history=conversation_history,
+                last_shown_items=request.last_shown_items or [],
+                last_search_context=request.last_search_context
+            )
+            
+            if resolution_info.get("context_used"):
+                logger.info(f"[INTELLIGENCE] Input enhanced: '{original_input}' → '{enhanced_input}'")
+                
+            # If pronoun resolved to specific item, we may want to take action
+            if resolution_info.get("pronoun_resolved") and resolution_info.get("resolved_item"):
+                resolved_item = resolution_info["resolved_item"]
+                action = resolution_info.get("pronoun_action")
+                logger.info(f"[INTELLIGENCE] Resolved to item: {resolved_item.get('name')} with action: {action}")
+        
+        # Use enhanced input for LLM understanding
+        input_for_llm = enhanced_input if resolution_info.get("context_used") else request.input
+        
         # Step 1: Get LLM understanding - pass completed_steps for anti-loop
         understanding = await understand_with_llm(
-            user_input=request.input,
+            user_input=input_for_llm,
             pet_context=request.pet_context or {},
             page_context=request.page_context,
             completed_steps=request.completed_steps or [],
