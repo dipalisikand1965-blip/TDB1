@@ -2959,6 +2959,9 @@ const MiraDemoPage = () => {
       }));
       setConversationStage('concierge_engaged');
       
+      // Play concierge bell sound
+      notificationSounds.concierge();
+      
       // Add Mira's confirmation message
       const miraConfirmation = {
         type: 'mira',
