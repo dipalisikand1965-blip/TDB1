@@ -75,7 +75,29 @@ const MiraTray = ({
           {hasItems ? (
             <>
               <div className="mp-tray-preview">
-                {miraPicks.products?.slice(0, 3).map((product, idx) => (
+                {/* Show PLACES (groomers, restaurants, etc.) first if available */}
+                {miraPicks.places?.slice(0, 3).map((place, idx) => (
+                  <div key={`place-${idx}`} className="mp-tray-preview-item mp-tray-place-item">
+                    <div className="mp-tray-preview-placeholder mp-place-icon">
+                      {miraPicks.placesType === 'groomers' ? '✂️' :
+                       miraPicks.placesType === 'photographers' ? '📸' :
+                       miraPicks.placesType === 'shelters' ? '🏠' :
+                       miraPicks.placesType === 'boarding' ? '🏨' :
+                       miraPicks.placesType === 'trainers' ? '🎓' :
+                       miraPicks.placesType === 'restaurants' ? '🍽️' :
+                       miraPicks.placesType === 'parks' ? '🌳' : '📍'}
+                    </div>
+                    <span className="mp-place-name">{place.name?.slice(0, 15)}...</span>
+                  </div>
+                ))}
+                {miraPicks.places?.length > 3 && (
+                  <div className="mp-tray-preview-more">
+                    +{miraPicks.places.length - 3}
+                  </div>
+                )}
+                
+                {/* Show products if no places */}
+                {!miraPicks.places?.length && miraPicks.products?.slice(0, 3).map((product, idx) => (
                   <div key={idx} className="mp-tray-preview-item">
                     {product.image ? (
                       <img src={product.image} alt={product.name} />
@@ -84,7 +106,7 @@ const MiraTray = ({
                     )}
                   </div>
                 ))}
-                {miraPicks.products?.length > 3 && (
+                {!miraPicks.places?.length && miraPicks.products?.length > 3 && (
                   <div className="mp-tray-preview-more">
                     +{miraPicks.products.length - 3}
                   </div>
@@ -96,7 +118,7 @@ const MiraTray = ({
                 onClick={handleOpenVault}
                 data-testid="open-vault-btn"
               >
-                <span>View & Select Picks</span>
+                <span>{miraPicks.places?.length ? `View ${miraPicks.placesType}` : 'View & Select Picks'}</span>
                 <ChevronRight size={20} />
               </button>
               
