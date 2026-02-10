@@ -3533,6 +3533,7 @@ Would you like me to find vets or pet pharmacies near you, or shall I have your 
                                                    len(user_input_lower.split()) <= 3)  # Short queries like "Cake" are shopping
             
             should_tip = is_advisory_response and (is_seeking_advice or is_food_followup) and not is_shopping_intent
+            print(f"[TIP DEBUG] should_tip={should_tip}, is_advisory_response={is_advisory_response}, is_seeking_advice={is_seeking_advice}, is_food_followup={is_food_followup}, is_shopping_intent={is_shopping_intent}")
             
             # Determine tip card type based on USER INPUT primarily (not Mira's response)
             # This prevents Mira's response words from influencing the tip type
