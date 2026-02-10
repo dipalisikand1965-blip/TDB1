@@ -3601,7 +3601,7 @@ Would you like me to find vets or pet pharmacies near you, or shall I have your 
                 "checklist": "✅", "reminder": "⏰", "guide": "📖", "general": "💡",
                 "bonding_ritual": "💜", "celebration_tips": "🎉", "festival_safety": "🎆",
                 "new_pet_guide": "🐾", "senior_care": "🧓", "senior_diet": "🍲", "senior_mobility": "🦴",
-                "calming_tips": "🧘"
+                "calming_tips": "🧘", "safety_tips": "🔒", "home_tips": "🏠"
             }
             
             # Better titles for each tip type
