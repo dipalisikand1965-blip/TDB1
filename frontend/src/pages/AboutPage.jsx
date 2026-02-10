@@ -22,7 +22,7 @@ const timelineData = [
   {
     year: '1998',
     title: 'LesConcierges® Founded',
-    description: 'Mrs. Mira Sikand establishes premium concierge services — the living reference desk who always had the right answer.',
+    description: 'Dipali Sikand builds LesConcierges® — with Mrs. Mira Sikand as the quiet force behind the philosophy of care.',
     icon: Crown,
     color: 'from-indigo-500 to-blue-600'
   },
@@ -36,7 +36,7 @@ const timelineData = [
   {
     year: '2014',
     title: 'The Doggy Bakery® Born',
-    description: 'Aditya launches handcrafted pet treats. Grandma Mira is hands-on — making treats with her granddaughter.',
+    description: 'Aditya launches handcrafted pet treats — celebrating pets like family, milestone by milestone. Grandma Mira\'s hands in the early work.',
     icon: Cake,
     color: 'from-amber-500 to-orange-600'
   },
@@ -57,7 +57,7 @@ const timelineData = [
   {
     year: '2025',
     title: 'Pet Soul™ & Mira AI Go Live',
-    description: 'Mrs. Mira Sikand\'s spirit lives on — AI that remembers, learns, and anticipates. Her legacy, forever.',
+    description: 'Dipali\'s concierge lineage meets pet parenting — with Mira\'s spirit inside it. Every recommendation remembered, not generated.',
     icon: Cpu,
     color: 'from-emerald-500 to-teal-600'
   }
