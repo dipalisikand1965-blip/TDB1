@@ -3,10 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   MessageCircle, Sparkles, Heart, Shield, Plane, Home, Scissors, 
   GraduationCap, Stethoscope, ShoppingBag, PartyPopper, BookOpen,
-  Users, FileText, Dumbbell, PawPrint, Send, ChevronRight, 
-  ChevronDown, Brain, Zap, Eye, Clock, Star, TrendingUp,
-  Phone, Mail, Calendar, Building2, CreditCard, Check, X,
-  ArrowRight, Play, Loader2, Volume2
+  Users, FileText, Dumbbell, PawPrint, Send, Brain, Zap, Eye, 
+  Clock, Star, TrendingUp, Mail, Calendar, Building2, CreditCard, Check
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 
