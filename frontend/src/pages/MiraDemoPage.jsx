@@ -1087,6 +1087,7 @@ const MiraDemoPage = () => {
               })(),
               photo: p.photo || null
             }));
+            console.log('[PETS-MY-PETS] Setting allPets with scores:', formattedPets.map(p => ({name: p.name, soulScore: p.soulScore})));
             setAllPets(formattedPets);
             // Set first pet as active if no pet selected
             if (!pet || pet.id === 'demo-pet') {
