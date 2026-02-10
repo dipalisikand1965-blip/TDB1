@@ -104,19 +104,19 @@ const Home = () => {
   const isLoggedIn = !!user;
 
   const pillars = [
-    { icon: Utensils, title: 'Dine', description: 'Fresh meals & pet-friendly restaurants worldwide', color: 'from-orange-500 to-red-500' },
-    { icon: Hotel, title: 'Stay', description: 'Pet-friendly hotels & accommodations globally', color: 'from-blue-500 to-cyan-500' },
-    { icon: GraduationCap, title: 'Learn', description: 'Training videos & expert guidance', color: 'from-green-500 to-emerald-500' },
-    { icon: PartyPopper, title: 'Enjoy', description: 'Activities, events & celebrations', color: 'from-purple-500 to-pink-500' },
-    { icon: HeartPulse, title: 'Care', description: 'Health tracking & vet connections', color: 'from-red-500 to-rose-500' },
+    { icon: Utensils, title: 'Dine', description: 'From their favorite chicken jerky to birthday cakes that make tails wag', color: 'from-orange-500 to-red-500' },
+    { icon: Hotel, title: 'Stay', description: 'Places that welcome them as family, not just allow them', color: 'from-blue-500 to-cyan-500' },
+    { icon: GraduationCap, title: 'Learn', description: 'Understanding the why behind every bark and purr', color: 'from-green-500 to-emerald-500' },
+    { icon: PartyPopper, title: 'Celebrate', description: 'Because every gotcha day deserves confetti', color: 'from-purple-500 to-pink-500' },
+    { icon: HeartPulse, title: 'Care', description: 'The vet reminders you forget. The allergies you remember forever.', color: 'from-red-500 to-rose-500' },
   ];
 
   const features = [
-    { title: 'Remembers Everything', desc: 'Allergies, preferences, favorite treats - Mira never forgets' },
-    { title: 'Personalized Recommendations', desc: 'Every suggestion tailored to your pet\'s unique personality' },
-    { title: 'Worldwide Access', desc: 'Pet-friendly places in Paris, Tokyo, Mumbai - anywhere you go' },
-    { title: 'Real Concierge Support', desc: 'Human experts ready to help with anything you need' },
-    { title: 'One Dashboard', desc: 'Health, food, travel, memories - all in one place' },
+    { title: 'I Remember What Matters', desc: 'That chicken allergy from 2 years ago. That one treat they go crazy for. Every moment that makes them, them.' },
+    { title: 'I Understand Context', desc: 'When you say "show me cheaper ones" - I know what we were just talking about. When you say "book that one" - I know exactly which one.' },
+    { title: 'I Know Their Soul', desc: 'Not just breed and age. Their personality. Their fears. Their joys. The little things that make your bond unique.' },
+    { title: 'I Have Human Hands', desc: 'Real people who act on what I know. Not chatbots. Not forms. Humans who care.' },
+    { title: 'I Grow With Them', desc: 'Every conversation. Every preference. Every memory. I become more of who they need me to be.' },
   ];
 
   return (
