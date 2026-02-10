@@ -6,7 +6,8 @@ import {
   MessageCircle, Star, ChevronRight, Check,
   Users, Play, ChevronDown, Crown, Utensils, 
   Hotel, GraduationCap, PartyPopper, HeartPulse,
-  Phone, Mail, Quote
+  Phone, Mail, Quote, Plane, Gamepad2, Dumbbell,
+  FileText, Lightbulb, AlertCircle, Rainbow
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import SEOHead from '../components/SEOHead';
