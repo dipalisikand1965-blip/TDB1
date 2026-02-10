@@ -97,13 +97,20 @@ async def verify_webhook(
 async def receive_whatsapp_webhook(request: Request):
     """
     Receive incoming WhatsApp messages and status updates.
-    This endpoint processes all incoming WhatsApp communications.
+    Supports both Meta Cloud API and Gupshup webhook formats.
     """
     try:
         body = await request.json()
         logger.info(f"Received WhatsApp webhook: {json.dumps(body, indent=2)[:500]}")
         
-        # Extract message data from webhook payload
+        # ============== GUPSHUP FORMAT ==============
+        # Gupshup sends: {"app": "App", "timestamp": ..., "type": "message", "payload": {...}}
+        if "payload" in body and body.get("type") in ["message", "message-event"]:
+            await process_gupshup_webhook(body)
+            return {"status": "ok"}
+        
+        # ============== META CLOUD API FORMAT ==============
+        # Meta sends: {"entry": [{"changes": [{"value": {"messages": [...]}}]}]}
         if "entry" in body:
             for entry in body.get("entry", []):
                 for change in entry.get("changes", []):
@@ -127,7 +134,169 @@ async def receive_whatsapp_webhook(request: Request):
         return {"status": "error", "message": str(e)}
 
 
-async def process_incoming_message(message: dict, contacts: list):
+async def process_gupshup_webhook(body: dict):
+    """
+    Process Gupshup webhook payload.
+    
+    Gupshup message format:
+    {
+        "app": "DoggyCompany",
+        "timestamp": 1234567890,
+        "version": 2,
+        "type": "message",
+        "payload": {
+            "id": "message_id",
+            "source": "919876543210",
+            "type": "text",
+            "payload": {
+                "text": "Hello"
+            },
+            "sender": {
+                "phone": "919876543210",
+                "name": "John Doe"
+            }
+        }
+    }
+    """
+    from motor.motor_asyncio import AsyncIOMotorClient
+    from realtime_notifications import notification_manager
+    
+    try:
+        payload = body.get("payload", {})
+        msg_type = body.get("type", "")
+        
+        # Handle message events (delivered, read, etc.)
+        if msg_type == "message-event":
+            event_type = payload.get("type", "")
+            logger.info(f"[GUPSHUP] Message event: {event_type}")
+            return
+        
+        # Handle incoming messages
+        if msg_type == "message":
+            from_number = payload.get("source", "") or payload.get("sender", {}).get("phone", "")
+            sender_name = payload.get("sender", {}).get("name", "WhatsApp User")
+            message_id = payload.get("id", str(uuid.uuid4()))
+            message_type = payload.get("type", "text")
+            
+            # Extract content based on message type
+            content = ""
+            inner_payload = payload.get("payload", {})
+            
+            if message_type == "text":
+                content = inner_payload.get("text", "")
+            elif message_type == "image":
+                content = inner_payload.get("caption", "[Image received]")
+            elif message_type == "document":
+                content = inner_payload.get("caption", "[Document received]")
+            elif message_type == "audio":
+                content = "[Voice message received]"
+            elif message_type == "video":
+                content = inner_payload.get("caption", "[Video received]")
+            elif message_type == "location":
+                lat = inner_payload.get("latitude", "")
+                lon = inner_payload.get("longitude", "")
+                content = f"📍 Location: {lat}, {lon}"
+            else:
+                content = f"[{message_type} message]"
+            
+            logger.info(f"[GUPSHUP] Message from {from_number}: {content[:100]}")
+            
+            # Connect to database
+            mongo_url = os.environ.get("MONGO_URL", "mongodb://localhost:27017")
+            db_name = os.environ.get("DB_NAME", "test_database")
+            client = AsyncIOMotorClient(mongo_url)
+            db = client[db_name]
+            
+            # Find or create conversation/ticket
+            ticket = await db.tickets.find_one({
+                "$or": [
+                    {"member.phone": {"$regex": from_number[-10:]}},
+                    {"member.whatsapp": from_number}
+                ],
+                "status": {"$nin": ["closed", "resolved"]}
+            }, sort=[("created_at", -1)])
+            
+            now = datetime.now(timezone.utc).isoformat()
+            
+            if ticket:
+                # Add message to existing ticket
+                new_message = {
+                    "id": str(uuid.uuid4()),
+                    "type": "customer_reply",
+                    "content": content,
+                    "sender": "member",
+                    "sender_name": sender_name,
+                    "channel": "whatsapp",
+                    "direction": "incoming",
+                    "timestamp": now,
+                    "is_internal": False,
+                    "metadata": {
+                        "whatsapp_message_id": message_id,
+                        "phone": from_number,
+                        "message_type": message_type,
+                        "provider": "gupshup"
+                    }
+                }
+                
+                await db.tickets.update_one(
+                    {"_id": ticket["_id"]},
+                    {
+                        "$push": {"messages": new_message},
+                        "$set": {"updated_at": now, "last_message_at": now}
+                    }
+                )
+                
+                logger.info(f"[GUPSHUP] Added message to ticket {ticket.get('ticket_id')}")
+            else:
+                # Create new ticket from WhatsApp message
+                ticket_id = f"WA-{uuid.uuid4().hex[:8].upper()}"
+                new_ticket = {
+                    "ticket_id": ticket_id,
+                    "type": "whatsapp_inquiry",
+                    "source": "whatsapp",
+                    "provider": "gupshup",
+                    "status": "new",
+                    "priority": "medium",
+                    "member": {
+                        "name": sender_name,
+                        "phone": from_number,
+                        "whatsapp": from_number
+                    },
+                    "subject": content[:100] if content else "WhatsApp Inquiry",
+                    "messages": [{
+                        "id": str(uuid.uuid4()),
+                        "type": "initial_message",
+                        "content": content,
+                        "sender": "member",
+                        "sender_name": sender_name,
+                        "channel": "whatsapp",
+                        "direction": "incoming",
+                        "timestamp": now,
+                        "is_internal": False
+                    }],
+                    "created_at": now,
+                    "updated_at": now
+                }
+                
+                await db.tickets.insert_one(new_ticket)
+                logger.info(f"[GUPSHUP] Created new ticket {ticket_id}")
+            
+            # Send real-time notification to admin
+            try:
+                await notification_manager.broadcast_to_group("concierge_admins", {
+                    "type": "whatsapp_message",
+                    "ticket_id": ticket.get("ticket_id") if ticket else ticket_id,
+                    "from": from_number,
+                    "sender_name": sender_name,
+                    "message": content[:200],
+                    "timestamp": now
+                })
+            except Exception as notif_err:
+                logger.warning(f"[GUPSHUP] Notification failed: {notif_err}")
+                
+    except Exception as e:
+        logger.error(f"[GUPSHUP] Processing error: {e}")
+        raise
     """Process incoming WhatsApp message with Mira AI response"""
     from motor.motor_asyncio import AsyncIOMotorClient
     from realtime_notifications import notification_manager
