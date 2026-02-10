@@ -1805,7 +1805,7 @@
    INPUT COMPOSER
    ======================================== */
 .mp-composer {
-  padding: var(--space-lg) var(--space-xl) var(--space-2xl);
+  padding: var(--space-lg) var(--space-md) var(--space-2xl);
   background: linear-gradient(180deg, transparent 0%, rgba(26, 10, 46, 0.95) 30%);
   position: relative;
 }
@@ -1814,22 +1814,51 @@
 @supports (padding: env(safe-area-inset-bottom)) {
   .mp-composer {
     padding-bottom: calc(var(--space-2xl) + env(safe-area-inset-bottom));
+    padding-left: calc(var(--space-md) + env(safe-area-inset-left));
+    padding-right: calc(var(--space-md) + env(safe-area-inset-right));
   }
 }
 
 .mp-composer-inner {
   max-width: 700px;
   margin: 0 auto;
+  width: 100%;
 }
 
 .mp-input-row {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: var(--space-xs);
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: var(--radius-lg);
-  padding: 6px 6px 6px var(--space-lg);
+  padding: 6px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* iOS input row adjustments */
+@media screen and (max-width: 480px) {
+  .mp-input-row {
+    gap: 2px;
+    padding: 4px;
+  }
+  
+  .mp-btn-mic,
+  .mp-btn-voice,
+  .mp-btn-photo,
+  .mp-btn-send {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    flex-shrink: 0;
+  }
+  
+  .mp-input {
+    min-width: 0;
+    padding: var(--space-sm) var(--space-xs);
+    font-size: 16px; /* Prevents iOS zoom on focus */
+  }
 }
 
 .mp-input-row:focus-within {
