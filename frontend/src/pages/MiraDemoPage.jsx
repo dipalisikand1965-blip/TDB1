@@ -3284,6 +3284,7 @@ const MiraDemoPage = () => {
       {/* ═══════════════════════════════════════════════════════════════════
           MEMORY WHISPER - Subtle notification when Mira recalls past context
           Shows as a small chip above the chat, auto-dismisses
+          (Keeping for backward compatibility, but SoulKnowledgeTicker is primary now)
           ═══════════════════════════════════════════════════════════════════ */}
       <MemoryWhisper 
         memoryContext={activeMemoryContext}
@@ -3292,31 +3293,44 @@ const MiraDemoPage = () => {
         autoDismissDelay={8000}
       />
       
-      {/* PERSONALIZATION TICKER - Animated ribbon showing how Mira knows the pet */}
-      {tickerItems.length > 0 && (
-        <div className="mira-ticker">
-          <div className="ticker-track">
-            <div className="ticker-content">
-              {/* Duplicate items for seamless loop */}
-              {[...tickerItems, ...tickerItems, ...tickerItems].map((item, i) => (
-                <span 
-                  key={`ticker-${i}`} 
-                  className={`ticker-item ticker-${item.type}`}
-                  onClick={() => {
-                    if (item.type === 'place') {
-                      handleQuickReply(`Tell me about ${item.text.split(' welcomes')[0]} for ${pet.name}`);
-                    } else if (item.type === 'weather') {
-                      handleQuickReply(`What activities are good for ${pet.name} in this weather?`);
-                    }
-                  }}
-                >
-                  <span className="ticker-icon">{item.icon}</span>
-                  <span className="ticker-text">{item.text}</span>
-                </span>
-              ))}
-            </div>
-          </div>
-        </div>
+      {/* ═══════════════════════════════════════════════════════════════════
+          SOUL KNOWLEDGE TICKER - Dynamic rolling ticker showing everything
+          Mira knows about the pet. Encourages completing soul questions.
+          "Mira knows Mojo 67%" with all the WHY - favorites, allergies, breed traits
+          ═══════════════════════════════════════════════════════════════════ */}
+      {(soulKnowledge.items.length > 0 || tickerItems.length > 0) && (
+        <SoulKnowledgeTicker
+          petId={pet?.id}
+          petName={pet?.name || 'your pet'}
+          soulScore={pet?.soulScore || soulKnowledge.soulScore || 0}
+          knowledgeItems={soulKnowledge.items.length > 0 ? soulKnowledge.items : tickerItems.map(t => ({
+            icon: t.icon,
+            text: t.text,
+            category: t.type === 'weather' ? 'activity' : t.type === 'place' ? 'activity' : 'soul',
+            priority: 5
+          }))}
+          apiUrl={API_URL}
+          onSoulQuestionClick={() => {
+            // Navigate to soul questions page
+            hapticFeedback.buttonTap();
+            navigate(`/pet-soul/${pet.id || ''}`);
+          }}
+          onKnowledgeItemClick={(item) => {
+            // Convert knowledge item click to a query
+            hapticFeedback.buttonTap();
+            if (item.category === 'diet') {
+              handleQuickReply(`Tell me about ${pet.name}'s diet preferences`);
+            } else if (item.category === 'health') {
+              handleQuickReply(`What health information do you have for ${pet.name}?`);
+            } else if (item.category === 'activity') {
+              handleQuickReply(`What activities would ${pet.name} enjoy?`);
+            } else if (item.category === 'breed') {
+              handleQuickReply(`Tell me about ${pet.breed || pet.name}'s breed characteristics`);
+            } else {
+              handleQuickReply(`What do you know about ${pet.name}?`);
+            }
+          }}
+        />
       )}
       
       {/* HEADER */}
