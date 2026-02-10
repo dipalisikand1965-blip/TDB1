@@ -1079,7 +1079,10 @@ Ask me anything about him!` }
   const [aiThinking, setAiThinking] = useState(null);
   const [showThinkingPanel, setShowThinkingPanel] = useState(true);
   const [streamingText, setStreamingText] = useState('');
+  const [tourActive, setTourActive] = useState(false);
+  const [tourStep, setTourStep] = useState(0);
   const chatEndRef = useRef(null);
+  const heritageRef = useRef(null);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
