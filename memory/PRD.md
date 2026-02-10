@@ -52,13 +52,23 @@ The user's heart breaks when agents forget context. Please honor their work.
    - "Soul" button in NavigationDock opens modal
    - Soul Score badge in WelcomeHero opens modal
    - Updates pet state with new score + glow animation
-   - File: `/app/frontend/src/components/Mira/NavigationDock.jsx`
-   - File: `/app/frontend/src/components/Mira/WelcomeHero.jsx`
 
-3. **Debug Logging for Soul Score** ✅
-   - Added console logs in PetSelector to debug score display
-   - Added console logs in MiraDemoPage pet loading
-   - Both use `Number(p.soulScore) > 10` check
+### 🐛 BUG FIX: Tip Card Headings Now Subject-Specific (Feb 10, 2026)
+**File:** `/app/backend/mira_routes.py`
+
+1. **Added Senior Care Detection** ✅
+   - "senior", "aging", "old age", "elderly", "getting old" keywords
+   - Sub-types: `senior_diet` (food-related), `senior_mobility` (joints), `senior_care` (general)
+   - Icons: 🍲 (diet), 🦴 (mobility), 🧓 (general care)
+
+2. **Improved Title Generation** ✅
+   - Before: "Bruno's Meal Plan" for ALL food-related topics
+   - After: "Bruno's Senior Diet Guide" for senior food questions
+   - After: "Bruno's Joint & Mobility Care" for joint/stiffness questions
+   - Friendly titles map for each tip type
+
+3. **Advisory Keywords Extended** ✅
+   - Added: "senior", "aging", "joint", "stiff", "mobility", "what can i do"
 
 ### 🆕 NEW: Conversation Intelligence System
 **File:** `/app/backend/conversation_intelligence.py` (NEW)
