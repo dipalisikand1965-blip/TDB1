@@ -939,6 +939,116 @@ const B2B_STATS = [
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || '';
 
+// Simple markdown renderer for chat messages
+const renderMarkdown = (text) => {
+  if (!text) return null;
+  
+  // Split into lines
+  const lines = text.split('\n');
+  const elements = [];
+  let key = 0;
+  
+  for (let i = 0; i < lines.length; i++) {
+    let line = lines[i];
+    
+    // Empty line = spacing
+    if (!line.trim()) {
+      elements.push(<div key={key++} className="h-2" />);
+      continue;
+    }
+    
+    // Headers (lines that are **bold** and standalone)
+    if (line.match(/^\*\*[^*]+\*\*:?$/) || line.match(/^\*\*[^*]+:\*\*$/)) {
+      const headerText = line.replace(/\*\*/g, '').replace(/:$/, '');
+      elements.push(
+        <div key={key++} className="font-semibold text-white mt-3 mb-1">{headerText}</div>
+      );
+      continue;
+    }
+    
+    // Emoji bullet points (🥇, 🛁, ✅, ⚠️, etc)
+    if (line.match(/^[🥇🥈🥉🛁✨💎📅🚨📍✅⚠️🏨🏠👤🎈🎉👑🧩🎾🦷🤗☠️🚫🍫➡️🐕❌]/)) {
+      elements.push(
+        <div key={key++} className="flex items-start gap-2 my-1 ml-1">
+          <span className="flex-shrink-0">{line.charAt(0)}</span>
+          <span className="text-white/80" dangerouslySetInnerHTML={{ __html: formatInlineMarkdown(line.slice(1).trim()) }} />
+        </div>
+      );
+      continue;
+    }
+    
+    // Regular bullet points
+    if (line.match(/^[•·-]\s/)) {
+      elements.push(
+        <div key={key++} className="flex items-start gap-2 my-0.5 ml-2">
+          <span className="text-purple-400 mt-1">•</span>
+          <span className="text-white/70" dangerouslySetInnerHTML={{ __html: formatInlineMarkdown(line.slice(2)) }} />
+        </div>
+      );
+      continue;
+    }
+    
+    // Numbered lists
+    if (line.match(/^\d+\.\s/)) {
+      const num = line.match(/^(\d+)\./)[1];
+      elements.push(
+        <div key={key++} className="flex items-start gap-2 my-0.5 ml-2">
+          <span className="text-purple-400 font-medium w-4">{num}.</span>
+          <span className="text-white/70" dangerouslySetInnerHTML={{ __html: formatInlineMarkdown(line.replace(/^\d+\.\s/, '')) }} />
+        </div>
+      );
+      continue;
+    }
+    
+    // Checkbox style
+    if (line.match(/^□\s/)) {
+      elements.push(
+        <div key={key++} className="flex items-center gap-2 my-0.5 ml-2 bg-white/5 rounded px-2 py-1">
+          <div className="w-4 h-4 border border-purple-400 rounded" />
+          <span className="text-white/80" dangerouslySetInnerHTML={{ __html: formatInlineMarkdown(line.slice(2)) }} />
+        </div>
+      );
+      continue;
+    }
+    
+    // Soul Score line
+    if (line.includes('[Soul Score') || line.includes('*[Soul')) {
+      const match = line.match(/\[Soul Score ([^\]]+)\]/);
+      if (match) {
+        elements.push(
+          <div key={key++} className="flex items-center gap-2 mt-3 pt-2 border-t border-white/10">
+            <div className="w-5 h-5 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+              <Sparkles className="w-3 h-3 text-white" />
+            </div>
+            <span className="text-purple-300 text-xs italic">{match[1]}</span>
+          </div>
+        );
+        continue;
+      }
+    }
+    
+    // Regular paragraph
+    elements.push(
+      <p key={key++} className="text-white/80 my-1" dangerouslySetInnerHTML={{ __html: formatInlineMarkdown(line) }} />
+    );
+  }
+  
+  return <div className="space-y-0">{elements}</div>;
+};
+
+// Format inline markdown (bold, italic, etc)
+const formatInlineMarkdown = (text) => {
+  return text
+    // Bold
+    .replace(/\*\*([^*]+)\*\*/g, '<strong class="text-white font-semibold">$1</strong>')
+    // Italic
+    .replace(/\*([^*]+)\*/g, '<em class="text-purple-300">$1</em>')
+    // Underline stars (⭐)
+    .replace(/⭐/g, '<span class="text-yellow-400">⭐</span>')
+    // Keep emojis visible
+    .replace(/([\u{1F300}-\u{1F9FF}])/gu, '<span class="inline-block">$1</span>');
+};
+
 export default function DreamfolksDemo() {
   const [activeTab, setActiveTab] = useState('chat');
   const [selectedPillar, setSelectedPillar] = useState(null);
