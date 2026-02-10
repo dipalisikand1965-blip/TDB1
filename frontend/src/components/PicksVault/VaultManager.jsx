@@ -14,6 +14,7 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 import { API_URL } from '../../utils/api';
+import notificationSounds from '../../utils/notificationSounds';
 
 // Direct imports to avoid circular dependency
 import PicksVault from './PicksVault';
