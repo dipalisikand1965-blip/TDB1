@@ -1295,14 +1295,21 @@ Ask me anything about him!`
   };
 
   const handleScenarioClick = (scenario) => {
-    // Scroll to chat interface first
+    // Scroll to chat interface first - using smooth scroll with offset
     if (chatContainerRef.current) {
-      chatContainerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      const headerOffset = 100; // Account for sticky header
+      const elementPosition = chatContainerRef.current.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+      
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
     }
     // Small delay then send message
     setTimeout(() => {
       handleSendMessage(scenario.query);
-    }, 300);
+    }, 400);
   };
 
   const clearChat = () => {
