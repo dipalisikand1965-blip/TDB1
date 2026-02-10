@@ -3529,19 +3529,43 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                 "training_tips": "🎓", "health_advice": "💊", "exercise_routine": "🏃",
                 "checklist": "✅", "reminder": "⏰", "guide": "📖", "general": "💡",
                 "bonding_ritual": "💜", "celebration_tips": "🎉", "festival_safety": "🎆",
-                "new_pet_guide": "🐾"
+                "new_pet_guide": "🐾", "senior_care": "🧓", "senior_diet": "🍲", "senior_mobility": "🦴"
+            }
+            
+            # Better titles for each tip type
+            tip_titles = {
+                "meal_plan": "Meal Plan",
+                "travel_tips": "Travel Tips",
+                "grooming_routine": "Grooming Guide",
+                "training_tips": "Training Tips",
+                "health_advice": "Health Advice",
+                "exercise_routine": "Exercise Routine",
+                "checklist": "Checklist",
+                "reminder": "Reminder",
+                "guide": "Guide",
+                "general": "Tips",
+                "bonding_ritual": "Bonding Ritual",
+                "celebration_tips": "Celebration Tips",
+                "festival_safety": "Festival Safety",
+                "new_pet_guide": "New Pet Guide",
+                "senior_care": "Senior Care Tips",
+                "senior_diet": "Senior Diet Guide",
+                "senior_mobility": "Joint & Mobility Care"
             }
             
             tip_card_type = detected_tip_type or "general"
             pet_name = request.pet_context.get("name", "your pet") if request.pet_context else "your pet"
             breed = request.pet_context.get("breed", "") if request.pet_context else ""
             
+            # Get friendly title
+            friendly_title = tip_titles.get(tip_card_type, tip_card_type.replace('_', ' ').title())
+            
             # Generate tip card with breed-specific content
             import uuid as uuid_module
             tip_card = {
                 "id": f"tip-{uuid_module.uuid4().hex[:8]}",
                 "type": tip_card_type,
-                "title": f"{pet_name}'s {tip_card_type.replace('_', ' ').title()}",
+                "title": f"{pet_name}'s {friendly_title}",
                 "content": mira_message_text[:500],
                 "icon": tip_icons.get(tip_card_type, "💡"),
                 "pillar": current_pillar or "general",
