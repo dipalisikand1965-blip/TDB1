@@ -53,6 +53,7 @@ import ScrollToBottomButton from '../components/Mira/ScrollToBottomButton';
 import ProactiveAlertsBanner from '../components/Mira/ProactiveAlertsBanner';
 import NotificationBell from '../components/Mira/NotificationBell';
 import ConciergeConfirmation from '../components/Mira/ConciergeConfirmation';
+import PicksIndicator from '../components/Mira/PicksIndicator';
 import { FormattedText, TypedText } from '../components/Mira/TextComponents';
 import { triggerCelebrationConfetti } from '../utils/confetti';
 
