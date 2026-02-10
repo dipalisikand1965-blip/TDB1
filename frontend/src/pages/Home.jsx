@@ -349,7 +349,7 @@ const Home = () => {
                 <div className="flex flex-wrap gap-4">
                   <Link to="/join">
                     <Button size="lg" className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-6 text-lg rounded-xl">
-                      Meet Mira <ArrowRight className="ml-2 w-5 h-5" />
+                      Let Me Know Your Pet <ArrowRight className="ml-2 w-5 h-5" />
                     </Button>
                   </Link>
                   <Button 
@@ -358,7 +358,7 @@ const Home = () => {
                     className="border-white/20 text-white hover:bg-white/10 px-8 py-6 text-lg rounded-xl"
                     onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' })}
                   >
-                    <Play className="mr-2 w-5 h-5" /> See How It Works
+                    <Play className="mr-2 w-5 h-5" /> See Who I Am
                   </Button>
                 </div>
                 
