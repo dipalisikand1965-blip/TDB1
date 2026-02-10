@@ -3297,6 +3297,8 @@ const MiraDemoPage = () => {
         onClose={() => setShowInsightsPanel(false)}
         petName={pet.name}
         conversationHistory={conversationHistory}
+        tipCard={miraPicks.tipCard}
+        memoryContext={activeMemoryContext}
       />
       
       {/* CONCIERGE PANEL - Extracted to ConciergePanel component */}
