@@ -88,7 +88,8 @@ const PetSelector = ({
                   fontSize: 12 
                 }}>
                   {p.breed}
-                  {p.soulScore > 10 ? (
+                  {/* Debug: Soul Score should show for scores > 10 */}
+                  {Number(p.soulScore) > 10 ? (
                     <span style={{ 
                       background: 'linear-gradient(135deg, #f59e0b, #d97706)', 
                       padding: '2px 6px', 
