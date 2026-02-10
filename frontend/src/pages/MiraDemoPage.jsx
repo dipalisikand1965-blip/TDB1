@@ -3509,6 +3509,47 @@ const MiraDemoPage = () => {
         conversationHistory={conversationHistory}
         tipCard={miraPicks.tipCard}
         memoryContext={activeMemoryContext}
+        onSendToConcierge={async (tipData) => {
+          // Send tip card to Concierge® using the unified signal flow
+          try {
+            const response = await fetch(`${API_URL}/api/mira/vault/send-to-concierge`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                ...(token && { Authorization: `Bearer ${token}` })
+              },
+              body: JSON.stringify({
+                vault_type: 'tip_card',
+                session_id: sessionId,
+                member_name: user?.name,
+                member_email: user?.email,
+                pet: { name: pet.name, breed: pet.breed },
+                pillar: tipData.tipType || 'general',
+                data: {
+                  title: tipData.title,
+                  content: tipData.content,
+                  type: tipData.type,
+                  tip_type: tipData.tipType
+                }
+              })
+            });
+            
+            const result = await response.json();
+            if (result.success) {
+              // Add confirmation message to chat
+              const confirmMsg = {
+                type: 'mira',
+                content: `I've sent "${tipData.title}" to your pet Concierge® for follow-up. They'll help you put this into action!`,
+                isConciergeHandoff: true,
+                timestamp: new Date()
+              };
+              setConversationHistory(prev => [...prev, confirmMsg]);
+              setShowInsightsPanel(false);
+            }
+          } catch (err) {
+            console.error('[INSIGHTS → CONCIERGE] Error:', err);
+          }
+        }}
       />
       
       {/* CONCIERGE PANEL - Extracted to ConciergePanel component */}
