@@ -1295,12 +1295,12 @@ Ask me anything about him!`
   };
 
   const handleScenarioClick = (scenario) => {
-    // Scroll to chat interface - position it at center of screen so messages are visible
+    // Scroll to chat interface - position it to show the full chat panel
     if (chatContainerRef.current) {
-      // Get the chat container position relative to the page
+      // Get the chat container position and scroll to show header + messages
       const rect = chatContainerRef.current.getBoundingClientRect();
       const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      const targetPosition = scrollTop + rect.top - 50; // 50px from top to show header
+      const targetPosition = scrollTop + rect.top - 20; // Small offset from top
       
       window.scrollTo({
         top: targetPosition,
@@ -1310,7 +1310,7 @@ Ask me anything about him!`
     // Delay message sending to allow scroll to complete
     setTimeout(() => {
       handleSendMessage(scenario.query);
-    }, 500);
+    }, 600);
   };
 
   const clearChat = () => {
