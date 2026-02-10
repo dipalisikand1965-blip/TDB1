@@ -3502,11 +3502,10 @@ const MiraDemoPage = () => {
                     }, 100);
                   }}
                   onBookNow={(request, alert) => {
-                    // "Book Now" - Send directly to Concierge
-                    const conciergeMessage = `Please help me book: ${request.title}. Details: ${request.details}`;
-                    setQuery(conciergeMessage);
-                    // Mark as service request for direct concierge handling
-                    setIsServiceRequest(true);
+                    // "Book Now" - Send request to Mira who will route to Concierge
+                    // The message format triggers service request detection on backend
+                    const bookingMessage = `I want to book ${request.title} for ${pet?.name || 'my pet'}. ${request.details}`;
+                    setQuery(bookingMessage);
                     setTimeout(() => {
                       handleSubmit({ preventDefault: () => {} });
                     }, 100);
