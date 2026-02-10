@@ -28,6 +28,7 @@ import { API_URL } from '../utils/api';
 import hapticFeedback from '../utils/haptic';
 import { correctSpelling } from '../utils/spellCorrect';
 import conversationIntelligence from '../utils/conversationIntelligence';
+import notificationSounds from '../utils/notificationSounds';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // VAULT SYSTEM - "Mira is the Brain, Concierge® is the Hands"
