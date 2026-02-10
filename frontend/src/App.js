@@ -272,6 +272,9 @@ function AppRouter() {
         <Route path="/mira-landing-embed" element={<MiraLandingEmbed />} />
         <Route path="/concierge-embed" element={<MiraConciergeEmbed />} />
         
+        {/* B2B Demo Pages - Standalone, no auth required */}
+        <Route path="/demo/dreamfolks" element={<DreamfolksDemo />} />
+        
         {/* Agent Portal - Standalone Service Desk for agents */}
         <Route path="/agent" element={<AgentPortal />} />
         
