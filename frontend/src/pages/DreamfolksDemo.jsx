@@ -1547,7 +1547,7 @@ Ask me anything about him!`
       </section>
 
       {/* Heritage & Soul Section */}
-      <section className="py-16 px-4 bg-gradient-to-b from-transparent via-purple-900/5 to-transparent">
+      <section ref={heritageRef} id="heritage-section" className="py-16 px-4 bg-gradient-to-b from-transparent via-purple-900/5 to-transparent">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500/20 border border-amber-500/30 rounded-full mb-4">
