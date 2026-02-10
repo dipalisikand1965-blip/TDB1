@@ -69,6 +69,7 @@ const InsightsPanel = ({
     senior_diet: '🍲',
     senior_mobility: '🦴',
     calming_tips: '🧘',
+    safety_tips: '🔒',
     general: '💡'
   };
   
