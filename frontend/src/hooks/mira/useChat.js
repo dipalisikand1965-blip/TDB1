@@ -333,26 +333,70 @@ export const detectContextTopic = (query, petName) => {
  * @returns {boolean}
  */
 export const hasTrainingIntent = (query) => {
-  const trainingKeywords = [
-    'train', 'training', 'teach', 'learn', 'how to', 
-    'puppy', 'behavior', 'obedience', 'trick', 'command', 
-    'potty', 'leash', 'bite', 'bark', 'recall'
-  ];
   const lowerQuery = query.toLowerCase();
+  
+  // Explicit training keywords - must be about dog training/behavior
+  const trainingKeywords = [
+    'train', 'training class', 'teach him', 'teach her', 'teach my', 
+    'obedience', 'trick', 'command', 'potty training', 'house training',
+    'leash training', 'bite', 'barking', 'recall', 'sit', 'stay', 'come',
+    'heel', 'down', 'fetch', 'roll over', 'puppy class', 'dog school',
+    'behavior problem', 'behavior issue', 'aggression', 'separation anxiety'
+  ];
+  
+  // Exclude queries about food/diet/health - these shouldn't show training videos
+  const excludeKeywords = [
+    'food', 'diet', 'meal', 'eat', 'feeding', 'weight', 'nutrition',
+    'health', 'vet', 'sick', 'medicine', 'allergy', 'coat', 'fur',
+    'groom', 'bath', 'birthday', 'cake', 'celebrate', 'travel', 'hotel'
+  ];
+  
+  const hasExclude = excludeKeywords.some(kw => lowerQuery.includes(kw));
+  if (hasExclude) return false;
+  
   return trainingKeywords.some(kw => lowerQuery.includes(kw));
 };
 
 /**
  * Extract training topic from query for video search
+ * Now more specific to get relevant videos
  * @param {string} query - User's input query
  * @returns {string}
  */
 export const extractTrainingTopic = (query) => {
+  const lowerQuery = query.toLowerCase();
+  
+  // Topic-specific keywords for better video relevance
+  const topicMap = {
+    'leash': 'leash training dog',
+    'potty': 'potty training dog',
+    'house': 'house training puppy',
+    'bite': 'stop dog biting',
+    'bark': 'stop dog barking',
+    'jump': 'stop dog jumping',
+    'recall': 'dog recall training',
+    'sit': 'teach dog sit',
+    'stay': 'teach dog stay command',
+    'come': 'teach dog come command',
+    'heel': 'teach dog heel',
+    'aggression': 'dog aggression training',
+    'anxiety': 'dog separation anxiety',
+    'puppy': 'puppy training basics',
+    'obedience': 'dog obedience training'
+  };
+  
+  for (const [keyword, topic] of Object.entries(topicMap)) {
+    if (lowerQuery.includes(keyword)) {
+      return topic;
+    }
+  }
+  
+  // Fallback: clean up the query
   return query.toLowerCase()
     .replace(/how (do i|to|can i)/g, '')
     .replace(/my (dog|puppy|pet)/g, '')
     .replace(/[?!]/g, '')
-    .trim();
+    .trim() + ' dog training';
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
