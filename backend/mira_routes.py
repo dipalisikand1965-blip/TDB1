@@ -1315,6 +1315,23 @@ async def search_real_products(
     products = []
     user_input_lower = (user_query or search_override or "").lower()
     
+    # ═══════════════════════════════════════════════════════════════════
+    # 🔴 ADVISORY-ONLY REQUESTS - NO PRODUCTS
+    # For meal plans, diet advice, nutrition consultation - return empty
+    # These are advisory conversations, not product searches
+    # Mira will generate a TIP CARD instead
+    # ═══════════════════════════════════════════════════════════════════
+    is_meal_diet_request = any(kw in user_input_lower for kw in [
+        "meal plan", "diet", "nutrition", "food plan", "feeding schedule", 
+        "what to feed", "what should i feed", "home cooked", "homemade food",
+        "raw diet", "healthy food", "healthy meal", "eggs", "chicken", "carrots",
+        "vegetables", "portion", "how much to feed"
+    ])
+    
+    if is_meal_diet_request:
+        logger.info(f"[ADVISORY-ONLY] 📋 Meal/diet request detected - skipping product search, use tip card")
+        return []  # Return empty - tip card will be generated instead
+    
     try:
         # Build search query based on entities
         query = {"available": {"$ne": False}}
