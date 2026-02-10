@@ -1,14 +1,14 @@
 /**
- * ConciergeConfirmation - Service Request Confirmation Banner
- * ============================================================
- * Shows a prominent banner when a service request has been 
- * received by the Pet Concierge® via the Uniform Service Flow.
+ * ConciergeConfirmation - Personalized Handoff Confirmation Banner
+ * ================================================================
+ * Shows when Mira successfully sends request to Concierge®
+ * Personalized to the pet: "Mojo's request is on its way!"
  * 
  * Part of the MIRA OS doctrine: "Concierge is the hands"
  */
 
 import React, { useEffect, useState } from 'react';
-import { CheckCircle, X, Sparkles, Clock } from 'lucide-react';
+import { CheckCircle, X, Sparkles, Clock, Heart } from 'lucide-react';
 
 /**
  * ConciergeConfirmation Component
@@ -19,6 +19,7 @@ import { CheckCircle, X, Sparkles, Clock } from 'lucide-react';
  * @param {string} props.confirmation.message - Confirmation message
  * @param {string} props.confirmation.ticket_id - Ticket reference number
  * @param {boolean} props.confirmation.show_banner - Whether to show banner
+ * @param {string} props.confirmation.pillar - Request pillar for theming
  * @param {Function} props.onDismiss - Called when user dismisses banner
  * @param {string} props.petName - Pet name for personalization
  */
@@ -54,6 +55,9 @@ const ConciergeConfirmation = ({
   };
 
   if (!confirmation?.show_banner) return null;
+  
+  // Personalized title based on pet name
+  const personalizedTitle = `${petName}'s request is on its way! 🎉`;
 
   return (
     <div 
