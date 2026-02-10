@@ -597,9 +597,6 @@ def generate_tip_card_structure(
             "cta_text": "Shop comfort items",
             "cta_action": "shop_comfort"
         }
-            "cta_text": "Find a trainer",
-            "cta_action": "find_trainer"
-        }
     }
     
     return tip_cards.get(tip_type, {
