@@ -2650,8 +2650,22 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                 logger.error(traceback.format_exc())
         
         # Build concierge confirmation message for service requests
+        # IMPORTANT: Only show banner when:
+        # 1. User explicitly says "send to concierge" or "book this"
+        # 2. User concludes conversation with a decision
+        # 3. NOT just because execution_type is CONCIERGE (that's for backend routing)
         concierge_confirmation = None
-        if execution_type == "CONCIERGE" and ticket_id:
+        
+        # Explicit conclusion phrases that trigger the banner
+        conclusion_phrases = [
+            "send to concierge", "book this", "book it", "let's do it",
+            "go ahead", "proceed", "confirm", "yes please", "finalize",
+            "send this", "i want this", "i'll take", "order this"
+        ]
+        user_input_lower = request.input.lower()
+        is_user_concluding = any(phrase in user_input_lower for phrase in conclusion_phrases)
+        
+        if execution_type == "CONCIERGE" and ticket_id and is_user_concluding:
             pet_name = request.pet_context.get("name", "your pet") if request.pet_context else "your pet"
             concierge_confirmation = {
                 "title": "Request Received! 🎉",
@@ -2659,7 +2673,7 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                 "ticket_id": ticket_id,
                 "show_banner": True
             }
-            logger.info(f"[CONCIERGE CONFIRM] Service request received - Ticket {ticket_id}")
+            logger.info(f"[CONCIERGE CONFIRM] User concluded conversation - Ticket {ticket_id}")
         
         # Step 4: Build response
         # For SERVICE intents, ensure NO products even if LLM suggested some
