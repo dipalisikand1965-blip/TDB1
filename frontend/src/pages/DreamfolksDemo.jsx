@@ -1222,6 +1222,13 @@ Ask me anything about him!` }
                       </div>
                       <div className="flex items-center gap-2">
                         <button
+                          onClick={() => setShowLiveMira(true)}
+                          className="px-2 py-1 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded text-white text-[10px] sm:text-xs font-medium transition-colors flex items-center gap-1"
+                        >
+                          <Zap className="w-3 h-3" />
+                          Try Live
+                        </button>
+                        <button
                           onClick={clearChat}
                           className="px-2 py-1 bg-white/10 hover:bg-white/20 rounded text-white/60 hover:text-white text-[10px] sm:text-xs transition-colors"
                         >
