@@ -2382,6 +2382,15 @@ const MiraDemoPage = () => {
       if (hasTrainingIntent(inputQuery) && pet?.id) {
         const videoTopic = extractTrainingTopic(inputQuery);
         trainingVideos = await fetchTrainingVideos(videoTopic, pet.breed || '');
+        
+        // Notify user about new videos available in Learn section
+        if (trainingVideos.length > 0) {
+          setHasNewVideos(true);
+          setNewVideosCount(prev => prev + trainingVideos.length);
+          // Play notification sound for new videos
+          notificationSounds.tip(); // Using tip sound - pleasant sparkle
+          console.log(`[LEARN] 🎬 ${trainingVideos.length} new training videos available!`);
+        }
       }
       
       // ═══════════════════════════════════════════════════════════════════
