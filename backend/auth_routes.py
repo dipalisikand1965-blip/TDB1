@@ -723,7 +723,7 @@ async def get_user_pets(credentials: HTTPAuthorizationCredentials = Depends(secu
     
     try:
         # Decode token to get user email
-        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
         email = payload.get("sub")
         
         if not email:
