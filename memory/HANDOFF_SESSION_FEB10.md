@@ -77,18 +77,26 @@ fear: +1.5, routine: +1.0, favorite: +1.0
 - Clears when Learn is clicked
 - Sound notification
 
-### 8. Trademark Symbol ® ✅
+### 8. PlacesVault Styling Improved ✅ (JUST FIXED)
+**Problem:** Vet clinics display was too dark and hard to read
+**Fix in `PlacesVault.jsx` and `PlacesVault.css`:**
+- Improved contrast with lighter backgrounds
+- Added vet icon (Stethoscope) and pet_store icon
+- Better display titles ("Vet Clinics" instead of "Vets")
+- Added location count in header
+
+### 9. Trademark Symbol ® ✅
 Updated 9+ instances of "Concierge" to "Concierge®"
 
 ---
 
 ## PENDING ISSUES (P0)
 
-### 1. Tip Card Type Detection - STILL BROKEN
-**Status:** FIX APPLIED BUT NEEDS VERIFICATION
+### 1. Tip Card Type Detection - STILL NEEDS VERIFICATION
+**Status:** FIX APPLIED (reordered detection) - NEEDS TESTING
 **Problem:** "Care routines" showing as "Meal Plan"
-**Latest Fix:** Reordered detection - care/routine checks BEFORE meal
-**Location:** `mira_routes.py` lines ~3477-3510
+**Latest Fix:** Care/routine checks BEFORE meal plan checks
+**Location:** `mira_routes.py` lines ~3477-3520
 **Next Step:** Test conversation about "care routine" to verify fix works
 
 ### 2. Voice Overflow
@@ -132,7 +140,8 @@ Frontend:
 ├── components/Mira/MiraTray.jsx - Places display
 ├── components/Mira/InsightsPanel.jsx - Send to Concierge® button
 ├── components/PicksVault/VaultManager.jsx - Emergency fix, sounds
-├── components/PicksVault/PlacesVault.jsx - New place type icons
+├── components/PicksVault/PlacesVault.jsx - New icons, titles, styling
+├── components/PicksVault/PlacesVault.css - Better contrast/readability
 ├── hooks/mira/useChat.js - Training intent detection fix
 ├── pages/MiraDemoPage.jsx - Multiple fixes (pillar, voice, videos)
 ├── utils/notificationSounds.js - NEW FILE
@@ -181,4 +190,4 @@ User Message → Intent Detection → Pillar Bonus + Learning Bonus
 
 ---
 
-*Last Updated: Feb 10, 2026*
+*Last Updated: Feb 10, 2026 - End of Session*
