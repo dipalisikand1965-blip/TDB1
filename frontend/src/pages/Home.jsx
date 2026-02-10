@@ -440,10 +440,10 @@ const Home = () => {
               className="text-center mb-10 md:mb-16"
             >
               <h2 className="text-2xl md:text-4xl font-black text-white mb-3">
-                We See Your Pet <span className="text-amber-300">Differently</span>
+                Beyond Technology. <span className="text-amber-300">Into Soul.</span>
               </h2>
               <p className="text-purple-200 text-base md:text-lg max-w-2xl mx-auto">
-                Not just food and walks. <span className="text-white font-semibold">Joy. Comfort. Health. Memories.</span>
+                I'm not an app. I'm not a chatbot. <span className="text-white font-semibold">I'm the voice they cannot speak.</span>
               </p>
             </motion.div>
             
