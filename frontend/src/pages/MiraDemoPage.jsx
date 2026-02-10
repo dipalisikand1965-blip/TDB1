@@ -2070,13 +2070,24 @@ const MiraDemoPage = () => {
       
       // ═══════════════════════════════════════════════════════════════════
       // REAL-TIME SOUL SCORE UPDATE - The Pet Soul grows with every conversation!
+      // Triggers glow animation when score increases
       // ═══════════════════════════════════════════════════════════════════
       if (data.pet_soul_score !== undefined && data.pet_soul_score !== null) {
+        const newScore = Math.round(data.pet_soul_score);
+        const oldScore = pet?.soulScore || 0;
+        
+        if (newScore > oldScore) {
+          // Score increased! Trigger glow animation
+          setSoulScoreUpdated(true);
+          setTimeout(() => setSoulScoreUpdated(false), 2000);
+          console.log(`[SOUL SCORE] 🌟 Grew from ${oldScore}% to ${newScore}%!`);
+        }
+        
         setPet(prev => ({
           ...prev,
-          soulScore: Math.round(data.pet_soul_score)
+          soulScore: newScore
         }));
-        console.log('[SOUL SCORE] Updated to:', data.pet_soul_score);
+        console.log('[SOUL SCORE] Updated to:', newScore);
       }
       
       let miraResponseText = data.response?.message || "I'm here to help!";
