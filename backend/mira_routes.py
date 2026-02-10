@@ -3022,10 +3022,13 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
         # ═══════════════════════════════════════════════════════════════════════════
         # TIP CARD GENERATION - For advisory responses without products
         # "Like Mira summarizing advice into a card that can go to Concierge®"
+        # Generate tip cards even for clarifying questions - user might want to save
         # ═══════════════════════════════════════════════════════════════════════════
-        is_advisory_response = len(final_products) == 0 and len(understanding.get("message", "")) > 200
+        mira_message_text = response_data.get("response", {}).get("message", "") or ""
+        is_advisory_response = len(final_products) == 0 and len(mira_message_text) > 150
         advisory_keywords = ["meal plan", "diet", "routine", "schedule", "tips", "advice", "guide", 
-                           "recommend", "suggest", "help with", "how to", "should", "would recommend"]
+                           "recommend", "suggest", "help with", "how to", "should", "would recommend",
+                           "create", "plan", "healthy"]
         user_input_lower = request.input.lower() if request.input else ""
         is_seeking_advice = any(kw in user_input_lower for kw in advisory_keywords)
         
@@ -3053,21 +3056,23 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                 tip_card_type = "exercise_routine"
             
             pet_name = request.pet_context.get("name", "your pet") if request.pet_context else "your pet"
+            breed = request.pet_context.get("breed", "") if request.pet_context else ""
             
-            # Generate tip card
+            # Generate tip card with breed-specific content
             tip_card = {
                 "id": f"tip-{uuid.uuid4().hex[:8]}",
                 "type": tip_card_type,
                 "title": f"{pet_name}'s {tip_card_type.replace('_', ' ').title()}",
-                "content": understanding.get("message", "")[:500],
+                "content": mira_message_text[:500],
                 "icon": tip_icons.get(tip_card_type, "💡"),
                 "pillar": current_pillar or "general",
                 "for_concierge": True,
-                "pet_name": pet_name
+                "pet_name": pet_name,
+                "breed": breed
             }
             
             response_data["response"]["tip_card"] = tip_card
-            logger.info(f"[TIP CARD] Generated {tip_card_type} tip card for {pet_name}")
+            logger.info(f"[TIP CARD] Generated {tip_card_type} tip card for {pet_name} ({breed})")
         
         return response_data
     except Exception as e:
