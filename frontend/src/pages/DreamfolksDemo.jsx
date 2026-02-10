@@ -1295,22 +1295,9 @@ Ask me anything about him!`
   };
 
   const handleScenarioClick = (scenario) => {
-    // Scroll to chat interface - position it to show the full chat panel
-    if (chatContainerRef.current) {
-      // Get the chat container position and scroll to show header + messages
-      const rect = chatContainerRef.current.getBoundingClientRect();
-      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-      const targetPosition = scrollTop + rect.top - 20; // Small offset from top
-      
-      window.scrollTo({
-        top: targetPosition,
-        behavior: 'smooth'
-      });
-    }
-    // Delay message sending to allow scroll to complete
-    setTimeout(() => {
-      handleSendMessage(scenario.query);
-    }, 600);
+    // No scroll needed - tiles are now inside the chat container
+    // Just send the message directly
+    handleSendMessage(scenario.query);
   };
 
   const clearChat = () => {
