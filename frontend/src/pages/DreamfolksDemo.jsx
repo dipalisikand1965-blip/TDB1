@@ -1210,8 +1210,22 @@ What can I help with today?` }
                           </div>
                         </div>
                       </div>
-                      <div className="px-2 py-1 bg-amber-500/20 border border-amber-500/30 rounded text-amber-300 text-[10px] sm:text-xs">
-                        Demo
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => {
+                            setChatMessages([{
+                              role: 'mira',
+                              content: `Hey! 👋 I'm ready to help with Dollar.\n\nWhat's on your mind? Try asking about his health, food, grooming, or anything else!`
+                            }]);
+                            setAiThinking(null);
+                          }}
+                          className="px-2 py-1 bg-white/10 hover:bg-white/20 rounded text-white/60 hover:text-white text-[10px] sm:text-xs transition-colors"
+                        >
+                          New Chat
+                        </button>
+                        <div className="px-2 py-1 bg-amber-500/20 border border-amber-500/30 rounded text-amber-300 text-[10px] sm:text-xs">
+                          Demo
+                        </div>
                       </div>
                     </div>
                   </div>
