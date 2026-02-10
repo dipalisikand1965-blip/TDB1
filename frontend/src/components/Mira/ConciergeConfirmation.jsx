@@ -82,12 +82,11 @@ const ConciergeConfirmation = ({
           <div className="flex items-start justify-between mb-2">
             <div className="flex items-center gap-2">
               <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center">
-                <CheckCircle className="w-5 h-5 text-white" />
+                <Heart className="w-5 h-5 text-white" />
               </div>
               <div>
                 <h3 className="text-white font-semibold text-sm flex items-center gap-1">
-                  {confirmation.title || 'Request Received!'}
-                  <Sparkles className="w-3.5 h-3.5 text-yellow-200" />
+                  {personalizedTitle}
                 </h3>
                 <span className="text-emerald-100 text-xs font-mono">
                   {confirmation.ticket_id}
@@ -103,9 +102,9 @@ const ConciergeConfirmation = ({
             </button>
           </div>
           
-          {/* Message */}
+          {/* Message - Personalized */}
           <p className="text-white/90 text-sm leading-relaxed ml-12">
-            {confirmation.message || `Your Pet Concierge® has received your request for ${petName}. They'll get back to you shortly.`}
+            Your Pet Concierge® is now reviewing {petName}'s request. They'll get back to you with the best options shortly.
           </p>
           
           {/* Status indicator */}
