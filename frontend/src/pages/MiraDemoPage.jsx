@@ -56,6 +56,7 @@ import ConciergeConfirmation from '../components/Mira/ConciergeConfirmation';
 import PicksIndicator from '../components/Mira/PicksIndicator';
 import QuickReplies, { generateQuickReplies } from '../components/Mira/QuickReplies';
 import HandoffSummary from '../components/Mira/HandoffSummary';
+import MemoryWhisper from '../components/Mira/MemoryWhisper';
 import { FormattedText, TypedText } from '../components/Mira/TextComponents';
 import { triggerCelebrationConfetti } from '../utils/confetti';
 
