@@ -1295,21 +1295,22 @@ Ask me anything about him!`
   };
 
   const handleScenarioClick = (scenario) => {
-    // Scroll to chat interface first - using smooth scroll with offset
+    // Scroll to chat interface - position it at center of screen so messages are visible
     if (chatContainerRef.current) {
-      const headerOffset = 100; // Account for sticky header
-      const elementPosition = chatContainerRef.current.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+      // Get the chat container position relative to the page
+      const rect = chatContainerRef.current.getBoundingClientRect();
+      const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+      const targetPosition = scrollTop + rect.top - 50; // 50px from top to show header
       
       window.scrollTo({
-        top: offsetPosition,
+        top: targetPosition,
         behavior: 'smooth'
       });
     }
-    // Small delay then send message
+    // Delay message sending to allow scroll to complete
     setTimeout(() => {
       handleSendMessage(scenario.query);
-    }, 400);
+    }, 500);
   };
 
   const clearChat = () => {
