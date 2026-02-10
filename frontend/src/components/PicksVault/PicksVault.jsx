@@ -24,7 +24,7 @@ const haptic = {
 };
 
 const PicksVault = ({
-  picks = [],
+  picks: initialPicks = [],
   pet = {},
   pillar = 'general',
   context = '',
@@ -35,10 +35,20 @@ const PicksVault = ({
   maxPicks = 4,
   maxRefreshes = 3
 }) => {
+  const [displayedPicks, setDisplayedPicks] = useState(initialPicks);
   const [selectedItems, setSelectedItems] = useState(new Set());
   const [refreshCount, setRefreshCount] = useState(0);
   const [isSending, setIsSending] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [sentItems, setSentItems] = useState(new Set()); // Track sent items
+
+  // Update displayed picks when initial picks change
+  React.useEffect(() => {
+    setDisplayedPicks(initialPicks);
+    setSelectedItems(new Set());
+    setSentItems(new Set());
+  }, [initialPicks]);
 
   // Toggle item selection with haptic
   const toggleSelect = useCallback((itemId) => {
