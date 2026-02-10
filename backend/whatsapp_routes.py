@@ -644,6 +644,120 @@ async def send_media_message(message: WhatsAppMediaMessage):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# ============== GUPSHUP ENDPOINTS ==============
+
+@router.post("/gupshup/send")
+async def send_gupshup_message(message: WhatsAppMessage):
+    """
+    Send a WhatsApp message via Gupshup API.
+    Use this endpoint if you're using Gupshup as your WhatsApp provider.
+    """
+    if not is_gupshup_configured():
+        raise HTTPException(status_code=503, detail="Gupshup not configured. Add GUPSHUP_API_KEY to .env")
+    
+    config = get_gupshup_config()
+    
+    try:
+        async with httpx.AsyncClient() as client:
+            # Gupshup API payload
+            payload = {
+                "channel": "whatsapp",
+                "source": config["source_number"],
+                "destination": message.to,
+                "message": json.dumps({
+                    "type": "text",
+                    "text": message.message
+                }),
+                "src.name": config["app_name"]
+            }
+            
+            response = await client.post(
+                GUPSHUP_API_URL,
+                headers={
+                    "apikey": config["api_key"],
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                data=payload
+            )
+            
+            result = response.json()
+            
+            if response.status_code != 200 or result.get("status") == "error":
+                logger.error(f"Gupshup API error: {result}")
+                raise HTTPException(
+                    status_code=response.status_code, 
+                    detail=result.get("message", "Gupshup API error")
+                )
+            
+            logger.info(f"[GUPSHUP] Message sent: {result}")
+            
+            return {
+                "success": True,
+                "message_id": result.get("messageId"),
+                "to": message.to,
+                "provider": "gupshup"
+            }
+            
+    except httpx.HTTPError as e:
+        logger.error(f"Gupshup HTTP error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/gupshup/send-template")
+async def send_gupshup_template(
+    to: str,
+    template_id: str,
+    params: List[str] = []
+):
+    """
+    Send a template message via Gupshup.
+    Templates must be pre-approved in Gupshup dashboard.
+    """
+    if not is_gupshup_configured():
+        raise HTTPException(status_code=503, detail="Gupshup not configured")
+    
+    config = get_gupshup_config()
+    
+    try:
+        async with httpx.AsyncClient() as client:
+            # Build template message
+            template_message = {
+                "id": template_id,
+                "params": params
+            }
+            
+            payload = {
+                "channel": "whatsapp",
+                "source": config["source_number"],
+                "destination": to,
+                "template": json.dumps(template_message),
+                "src.name": config["app_name"]
+            }
+            
+            response = await client.post(
+                GUPSHUP_API_URL,
+                headers={
+                    "apikey": config["api_key"],
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                data=payload
+            )
+            
+            result = response.json()
+            
+            if response.status_code != 200:
+                raise HTTPException(status_code=response.status_code, detail=result)
+            
+            return {
+                "success": True,
+                "message_id": result.get("messageId"),
+                "provider": "gupshup"
+            }
+            
+    except httpx.HTTPError as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ============== STATUS & CONFIGURATION ==============
 
 @router.get("/status")
