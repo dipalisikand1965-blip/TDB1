@@ -138,6 +138,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = async () => {
+    // Get session token BEFORE clearing storage
+    const sessionToken = localStorage.getItem('tdb_session_token');
+    
     // Clear local state first
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem('tdb_session_token');
@@ -146,7 +149,6 @@ export const AuthProvider = ({ children }) => {
     
     // Then try to invalidate session on server (non-blocking)
     try {
-      const sessionToken = localStorage.getItem('tdb_session_token');
       if (sessionToken) {
         await axios.post(`${API_URL}/api/auth/logout`, { session_token: sessionToken });
       }
