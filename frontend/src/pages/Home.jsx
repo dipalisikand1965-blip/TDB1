@@ -634,33 +634,33 @@ const Home = () => {
             <div className="hidden md:grid md:grid-cols-4 gap-6">
               {[
                 { 
-                  name: 'LesConcierges', 
-                  year: '2003',
-                  desc: 'Where it began. Premium concierge services for those who value time above all.',
+                  name: 'LesConcierges®', 
+                  year: '1998',
+                  desc: 'Where it began. Mrs. Mira Sikand\'s spirit of service — the living reference desk who knew every answer.',
                   icon: '🏛️',
                   color: 'from-slate-500/20 to-slate-600/20',
                   borderColor: 'border-slate-400/30'
                 },
                 { 
                   name: 'Club Concierge®', 
-                  year: '2010',
+                  year: '2008',
                   desc: 'Membership elevated. 24/7 human support for life\'s most important moments.',
                   icon: '👑',
                   color: 'from-amber-500/20 to-amber-600/20',
                   borderColor: 'border-amber-400/30'
                 },
                 { 
-                  name: 'The Doggy Bakery', 
-                  year: '2018',
-                  desc: 'Where pets became family. Fresh food, real care, pure unconditional love.',
+                  name: 'The Doggy Bakery®', 
+                  year: '2014',
+                  desc: 'Where pets became family. Mira made treats with her granddaughter — hands-on love.',
                   icon: '🍰',
                   color: 'from-pink-500/20 to-pink-600/20',
                   borderColor: 'border-pink-400/30'
                 },
                 { 
-                  name: 'Mira', 
+                  name: 'Mira AI', 
                   year: '2024',
-                  desc: 'The soul that speaks. AI intelligence + Human hands = Unconditional care.',
+                  desc: 'Her soul lives on. AI intelligence + Human hands = Unconditional care.',
                   icon: '💜',
                   color: 'from-purple-500/20 to-purple-600/20',
                   borderColor: 'border-purple-400/30'
