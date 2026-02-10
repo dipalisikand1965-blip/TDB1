@@ -2534,6 +2534,23 @@ const MiraDemoPage = () => {
           // DON'T auto-open vault - just mark that picks are available
           // The MiraTray or PicksIndicator will show the yellow gift icon
           console.log(`[PICKS READY] 🎁 ${newProducts.length} products, ${newServices.length} services curated silently`);
+          
+          // Play picks notification sound
+          notificationSounds.picks();
+        }
+        
+        // Also check for places (groomers, photographers, etc.)
+        if (data.nearby_places?.places?.length > 0) {
+          setMiraPicks(prev => ({
+            ...prev,
+            places: data.nearby_places.places,
+            placesType: data.nearby_places.type,
+            hasNew: true
+          }));
+          console.log(`[PLACES READY] 📍 ${data.nearby_places.places.length} ${data.nearby_places.type} found`);
+          
+          // Play picks notification sound for places too
+          notificationSounds.picks();
         }
         
         // ═══════════════════════════════════════════════════════════════════════════
