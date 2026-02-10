@@ -1418,44 +1418,44 @@ What can I help with today?` }
               )}
             </div>
 
-            {/* Right: AI Thinking Panel */}
-            <div className="space-y-6">
+            {/* Right: AI Thinking Panel - Hidden on mobile */}
+            <div className="hidden lg:block w-80 flex-shrink-0 space-y-4">
               {/* Toggle */}
               <div className="flex items-center justify-between">
-                <h3 className="text-white font-medium flex items-center gap-2">
-                  <Brain className="w-5 h-5 text-purple-400" />
-                  AI Thinking (Behind the Scenes)
+                <h3 className="text-white font-medium flex items-center gap-2 text-sm">
+                  <Brain className="w-4 h-4 text-purple-400" />
+                  AI Thinking
                 </h3>
                 <button 
                   onClick={() => setShowThinkingPanel(!showThinkingPanel)}
-                  className="text-white/40 hover:text-white text-sm"
+                  className="text-white/40 hover:text-white text-xs"
                 >
                   {showThinkingPanel ? 'Hide' : 'Show'}
                 </button>
               </div>
 
               {showThinkingPanel && (
-                <div className="bg-[#0a0a1a] border border-white/10 rounded-xl p-4 font-mono text-sm">
+                <div className="bg-[#0a0a1a] border border-white/10 rounded-xl p-3 font-mono text-xs">
                   {aiThinking ? (
-                    <div className="space-y-3">
-                      <div className="text-green-400 text-xs">
-                        Query: "{aiThinking.query.slice(0, 40)}..."
+                    <div className="space-y-2">
+                      <div className="text-green-400 text-[10px]">
+                        Query: "{aiThinking.query.slice(0, 30)}..."
                       </div>
-                      <div className="border-t border-white/10 pt-3 space-y-2">
+                      <div className="border-t border-white/10 pt-2 space-y-1.5">
                         {aiThinking.steps.map((step, i) => (
                           <motion.div
                             key={i}
                             initial={{ opacity: 0, x: -10 }}
                             animate={{ opacity: 1, x: 0 }}
-                            transition={{ delay: i * 0.2 }}
-                            className="flex items-start gap-2"
+                            transition={{ delay: i * 0.15 }}
+                            className="flex items-start gap-1.5"
                           >
-                            <Zap className="w-4 h-4 text-yellow-400 mt-0.5" />
-                            <div>
-                              <div className="text-white/80">{step.step}</div>
-                              <div className="text-green-400 text-xs">{step.result}</div>
+                            <Zap className="w-3 h-3 text-yellow-400 mt-0.5 flex-shrink-0" />
+                            <div className="min-w-0">
+                              <div className="text-white/80 text-[11px]">{step.step}</div>
+                              <div className="text-green-400 text-[10px] truncate">{step.result}</div>
                               {step.urgency && (
-                                <div className={`text-xs mt-1 ${
+                                <div className={`text-[10px] ${
                                   step.urgency === 'critical' ? 'text-red-400' :
                                   step.urgency === 'high' ? 'text-orange-400' :
                                   'text-blue-400'
@@ -1464,20 +1464,20 @@ What can I help with today?` }
                                 </div>
                               )}
                             </div>
-                            <div className="ml-auto text-white/30 text-xs">{step.time}</div>
+                            <div className="ml-auto text-white/30 text-[10px] flex-shrink-0">{step.time}</div>
                           </motion.div>
                         ))}
                       </div>
-                      <div className="border-t border-white/10 pt-3 text-white/40 text-xs">
-                        Total processing: ~73ms
+                      <div className="border-t border-white/10 pt-2 text-white/40 text-[10px]">
+                        Total: ~73ms
                       </div>
                     </div>
                   ) : (
-                    <div className="text-white/40 text-center py-8">
-                      <Eye className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                      <p>Send a message to see<br />Mira's thinking process</p>
+                    <div className="text-white/40 text-center py-6">
+                      <Eye className="w-6 h-6 mx-auto mb-2 opacity-50" />
+                      <p className="text-[10px]">Send a message to see<br />Mira's thinking</p>
                     </div>
-                  )}
+                  )}}
                 </div>
               )}
 
