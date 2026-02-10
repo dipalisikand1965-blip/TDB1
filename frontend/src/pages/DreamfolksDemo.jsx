@@ -1295,7 +1295,14 @@ Ask me anything about him!`
   };
 
   const handleScenarioClick = (scenario) => {
-    handleSendMessage(scenario.query);
+    // Scroll to chat interface first
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    // Small delay then send message
+    setTimeout(() => {
+      handleSendMessage(scenario.query);
+    }, 300);
   };
 
   const clearChat = () => {
