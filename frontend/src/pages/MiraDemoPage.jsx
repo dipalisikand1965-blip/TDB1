@@ -2830,8 +2830,9 @@ const MiraDemoPage = () => {
     });
   }, [pet, currentPillar, miraPicks, conversationHistory]);
   
-  // Step 2: Actually send to Concierge (after user confirms)
-  const handleConciergeHandoff = useCallback(async () => {
+  // Step 2: Actually send to Concierge® (after user confirms)
+  // Accepts optional editedData from HandoffSummary for user-edited values
+  const handleConciergeHandoff = useCallback(async (editedData = null) => {
     if (!currentTicket?.id) {
       console.warn('[HANDOFF] No active ticket to hand off');
       return;
@@ -2847,16 +2848,34 @@ const MiraDemoPage = () => {
         .map(msg => msg.content)
         .join(' ');
       
-      // Map pillar to queue
+      // Use edited pillar if provided, otherwise fall back to current
+      const finalPillar = editedData?.pillar || handoffSummary?.pillar || currentTicket.pillar || currentPillar || 'general';
+      const finalNotes = editedData?.notes || handoffSummary?.notes || '';
+      const finalTitle = editedData?.title || handoffSummary?.title || 'Request';
+      
+      // Map pillar to queue - expanded mapping with lowercase keys
       const queueMap = {
-        'Food': 'FOOD',
-        'Grooming': 'GROOMING',
-        'Celebrate': 'CELEBRATE',
-        'Travel': 'TRAVEL',
-        'Health': 'HEALTH',
-        'General': 'GENERAL'
+        'food': 'FOOD',
+        'feed': 'FOOD',
+        'grooming': 'GROOMING',
+        'groom': 'GROOMING',
+        'care': 'CARE',
+        'health': 'CARE',
+        'celebrate': 'CELEBRATE',
+        'travel': 'TRAVEL',
+        'stay': 'STAY',
+        'dine': 'DINE',
+        'shop': 'SHOP',
+        'learn': 'LEARN',
+        'fit': 'FIT',
+        'paperwork': 'PAPERWORK',
+        'emergency': 'EMERGENCY',
+        'general': 'GENERAL'
       };
-      const conciergeQueue = queueMap[currentTicket.pillar] || 'GENERAL';
+      const conciergeQueue = queueMap[finalPillar.toLowerCase()] || 'GENERAL';
+      
+      // Include user's edited notes in the summary
+      const userNotes = finalNotes ? `\n\nMember notes: ${finalNotes}` : '';
       
       const response = await fetch(`${API_URL}/api/service_desk/handoff_to_concierge`, {
         method: 'POST',
@@ -2867,16 +2886,19 @@ const MiraDemoPage = () => {
         body: JSON.stringify({
           ticket_id: currentTicket.id,
           concierge_queue: conciergeQueue,
-          latest_mira_summary: `Parent needs help with ${currentTicket.pillar.toLowerCase()} for ${pet.name} (${pet.breed}, ${pet.age}y). ${pet.sensitivities?.length ? `Allergies: ${pet.sensitivities.join(', ')}.` : ''} ${conversationSummary}`
+          pillar: finalPillar, // Send the correct pillar
+          request_title: finalTitle,
+          latest_mira_summary: `Parent needs help with ${finalPillar} for ${pet.name} (${pet.breed}, ${pet.age}y). ${pet.sensitivities?.length ? `Allergies: ${pet.sensitivities.join(', ')}.` : ''} ${conversationSummary}${userNotes}`
         })
       });
       
       const data = await response.json();
       
-      // Update local state
+      // Update local state with correct pillar
       setCurrentTicket(prev => ({
         ...prev,
-        status: 'open_concierge'
+        status: 'open_concierge',
+        pillar: finalPillar
       }));
       setConversationStage('concierge_engaged');
       
@@ -2889,7 +2911,7 @@ const MiraDemoPage = () => {
       };
       setConversationHistory(prev => [...prev, miraConfirmation]);
       
-      console.log('[HANDOFF] Ticket handed off to Concierge:', currentTicket.id, '-> Queue:', conciergeQueue);
+      console.log('[HANDOFF] Ticket handed off to Concierge®:', currentTicket.id, '-> Queue:', conciergeQueue, '-> Pillar:', finalPillar);
       
     } catch (error) {
       console.error('[HANDOFF] Failed:', error);
@@ -2903,7 +2925,7 @@ const MiraDemoPage = () => {
     }
     
     setIsProcessing(false);
-  }, [currentTicket, conversationHistory, pet, token]);
+  }, [currentTicket, conversationHistory, pet, token, handoffSummary, currentPillar]);
   
   // Handle quick reply
   const handleQuickReply = useCallback((replyValue, skipVoice = false) => {
