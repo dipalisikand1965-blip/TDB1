@@ -3059,8 +3059,9 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
             breed = request.pet_context.get("breed", "") if request.pet_context else ""
             
             # Generate tip card with breed-specific content
+            import uuid as uuid_module
             tip_card = {
-                "id": f"tip-{uuid.uuid4().hex[:8]}",
+                "id": f"tip-{uuid_module.uuid4().hex[:8]}",
                 "type": tip_card_type,
                 "title": f"{pet_name}'s {tip_card_type.replace('_', ' ').title()}",
                 "content": mira_message_text[:500],
