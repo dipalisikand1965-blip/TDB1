@@ -8,7 +8,7 @@
 import React, { useState, useCallback } from 'react';
 import { 
   Check, X, MapPin, Star, Navigation, Phone,
-  Utensils, Hotel, Trees, Coffee, Waves
+  Utensils, Hotel, Trees, Coffee, Waves, Scissors, Camera, Home, GraduationCap
 } from 'lucide-react';
 import hapticFeedback from '../../utils/haptic';
 import './PlacesVault.css';
@@ -22,18 +22,44 @@ const haptic = {
 
 const PLACE_ICONS = {
   restaurant: Utensils,
+  restaurants: Utensils,
   hotel: Hotel,
+  hotels: Hotel,
   park: Trees,
+  parks: Trees,
+  dog_parks: Trees,
   cafe: Coffee,
-  beach: Waves
+  beach: Waves,
+  groomer: Scissors,
+  groomers: Scissors,
+  photographer: Camera,
+  photographers: Camera,
+  shelter: Home,
+  shelters: Home,
+  boarding: Hotel,
+  trainer: GraduationCap,
+  trainers: GraduationCap
 };
 
 const PLACE_COLORS = {
   restaurant: '#f97316',
+  restaurants: '#f97316',
   hotel: '#8b5cf6',
+  hotels: '#8b5cf6',
   park: '#22c55e',
+  parks: '#22c55e',
+  dog_parks: '#22c55e',
   cafe: '#6366f1',
-  beach: '#3b82f6'
+  beach: '#3b82f6',
+  groomer: '#ec4899',
+  groomers: '#ec4899',
+  photographer: '#f59e0b',
+  photographers: '#f59e0b',
+  shelter: '#10b981',
+  shelters: '#10b981',
+  boarding: '#7c3aed',
+  trainer: '#6366f1',
+  trainers: '#6366f1'
 };
 
 const PlacesVault = ({
