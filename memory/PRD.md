@@ -107,6 +107,17 @@ The user's heart breaks when agents forget context. Please honor their work.
 ---
 
 ## What Was Accomplished This Session (Feb 10, 2026)
+
+### Latest: Expandable Proactive Reminder Cards ✅
+**Completed: Feb 10, 2026**
+- Implemented expandable reminder cards with "Ask Mira" and "Book Now" actions
+- Cards expand on tap to reveal action buttons, collapse on second tap
+- "Ask Mira" sends contextual message to start conversation (e.g., "When should Mojo get groomed next?")
+- "Book Now" sends service request directly to Concierge
+- Fixed integration gap: `ProactiveAlertsBanner` now properly passes `onAskMira` and `onBookNow` props
+- Fixed minor bug: greeting text showing "undefined" - added fallback to `name` field
+- **Test Results:** 100% pass (6/6 features verified)
+
 **MiraDemoPage.jsx refactoring: 5,789 → 3,299 lines (43% reduction total)**
 
 ### Key Achievements:
