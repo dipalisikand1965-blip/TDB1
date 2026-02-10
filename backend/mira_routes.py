@@ -3403,7 +3403,8 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
             tip_icons = {
                 "meal_plan": "🍽️", "travel_tips": "✈️", "grooming_routine": "✨",
                 "training_tips": "🎓", "health_advice": "💊", "exercise_routine": "🏃",
-                "checklist": "✅", "reminder": "⏰", "guide": "📖", "general": "💡"
+                "checklist": "✅", "reminder": "⏰", "guide": "📖", "general": "💡",
+                "bonding_ritual": "💜"
             }
             
             tip_card_type = detected_tip_type or "general"
