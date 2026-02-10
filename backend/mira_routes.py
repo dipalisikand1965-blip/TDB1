@@ -5229,6 +5229,8 @@ async def increment_soul_score_on_interaction(pet_id: str, interaction_type: str
     # Cap individual increment at 10.0 to prevent gaming
     total_increment = min(total_increment, 10.0)
     
+    logger.info(f"[SOUL SCORE CALC] Pet: {pet_id} | Base: {base_increment} | Pillar: {pillar_bonus} | Learning: {learning_bonus} | Depth: {engagement_depth} | Multiplier: {multiplier} | Total: {total_increment}")
+    
     result = await db.pets.update_one(
         {"id": pet_id, "overall_score": {"$lt": 100}},  # Cap at 100%
         {
@@ -5249,6 +5251,8 @@ async def increment_soul_score_on_interaction(pet_id: str, interaction_type: str
             }
         }
     )
+    
+    logger.info(f"[SOUL SCORE DB] matched: {result.matched_count}, modified: {result.modified_count}")
     
     if result.modified_count > 0:
         logger.info(f"🌱 Soul Score grew! Pet: {pet_id} | Type: {interaction_type} | Pillar: {pillar or 'N/A'} | Learning: {learning_type or 'N/A'} | Depth: {engagement_depth} | +{total_increment:.2f}%")
