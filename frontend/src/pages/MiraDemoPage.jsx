@@ -1176,6 +1176,9 @@ const MiraDemoPage = () => {
       hasUrgent: false
     });
     
+    // Reset clarifying question counter
+    setClarifyingQuestionCount(0);
+    
     setPet(newPet);
     setShowPetSelector(false);
     
