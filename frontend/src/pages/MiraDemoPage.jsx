@@ -482,15 +482,21 @@ const MiraDemoPage = () => {
   
   // Check for inactivity and archive conversation
   useEffect(() => {
-    const INACTIVITY_TIMEOUT = 10 * 60 * 1000; // 10 minutes (changed from 30)
-    
     const checkInactivity = () => {
-      const timeSinceLastActivity = Date.now() - lastActivityRef.current;
+      const storedLastActivity = getStoredLastActivity();
+      const timeSinceLastActivity = Date.now() - storedLastActivity;
       
-      if (timeSinceLastActivity >= INACTIVITY_TIMEOUT && conversationHistory.length > 1) {
+      console.log(`[INACTIVITY] Time since last activity: ${Math.round(timeSinceLastActivity / 1000)}s`);
+      
+      if (timeSinceLastActivity >= INACTIVITY_TIMEOUT_MS && conversationHistory.length > 1) {
+        console.log('[INACTIVITY] Archiving conversation due to timeout');
         archiveCurrentConversation('inactivity');
+        localStorage.removeItem(SESSION_TIMEOUT_KEY);
       }
     };
+    
+    // Check immediately on mount (handles page refresh after long absence)
+    checkInactivity();
     
     // Check every 30 seconds for faster detection
     inactivityTimerRef.current = setInterval(checkInactivity, 30 * 1000);
