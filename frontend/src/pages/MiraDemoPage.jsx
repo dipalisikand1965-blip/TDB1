@@ -3472,14 +3472,18 @@ const MiraDemoPage = () => {
       <HandoffSummary
         isOpen={handoffSummary?.isOpen || false}
         onClose={() => setHandoffSummary(null)}
-        onConfirm={async () => {
+        onConfirm={async (editedData) => {
+          // Update handoff summary with edited values before sending
+          if (editedData) {
+            setHandoffSummary(prev => ({
+              ...prev,
+              notes: editedData.notes || prev?.notes,
+              pillar: editedData.pillar || prev?.pillar,
+              title: editedData.title || prev?.title
+            }));
+          }
           setHandoffSummary(null);
-          await handleConciergeHandoff();
-        }}
-        onEdit={() => {
-          setHandoffSummary(null);
-          // Focus on input for user to add more details
-          inputRef.current?.focus();
+          await handleConciergeHandoff(editedData);
         }}
         petName={handoffSummary?.petName || pet?.name || 'your pet'}
         pillar={handoffSummary?.pillar || currentPillar?.toLowerCase()}
