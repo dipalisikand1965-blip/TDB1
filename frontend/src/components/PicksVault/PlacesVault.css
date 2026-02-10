@@ -49,17 +49,22 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px;
+  padding: 14px;
   margin-bottom: 12px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 12px;
   transition: all 0.2s ease;
 }
 
+.plv-place-item:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
 .plv-place-item.plv-place-selected {
-  background: rgba(168, 85, 247, 0.15);
-  border-color: rgba(168, 85, 247, 0.4);
+  background: rgba(168, 85, 247, 0.2);
+  border-color: rgba(168, 85, 247, 0.5);
 }
 
 .plv-place-image {
@@ -74,9 +79,10 @@
 
 .plv-place-placeholder {
   width: 100%; height: 100%;
-  background: linear-gradient(135deg, #3b3b5c 0%, #2d2d4a 100%);
+  background: linear-gradient(135deg, #4a4a6a 0%, #3d3d5a 100%);
   display: flex; align-items: center; justify-content: center;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 24px;
 }
 
 .plv-pet-badge {
@@ -90,13 +96,26 @@
 }
 
 .plv-place-info { flex: 1; min-width: 0; }
-.plv-place-name { display: block; font-size: 15px; font-weight: 500; }
+.plv-place-name { 
+  display: block; 
+  font-size: 15px; 
+  font-weight: 600; 
+  color: #ffffff;
+  margin-bottom: 4px;
+}
 .plv-place-meta { display: flex; gap: 12px; margin-top: 4px; }
 .plv-place-rating, .plv-place-distance {
   display: flex; align-items: center; gap: 4px;
-  font-size: 12px; color: rgba(255, 255, 255, 0.6);
+  font-size: 13px; color: rgba(255, 255, 255, 0.8);
 }
-.plv-place-policy { display: block; font-size: 12px; color: #22c55e; margin-top: 4px; }
+.plv-place-rating svg { color: #f59e0b; }
+.plv-place-policy { 
+  display: block; 
+  font-size: 12px; 
+  color: #4ade80; 
+  margin-top: 6px;
+  font-weight: 500;
+}
 
 .plv-select-btn {
   width: 44px; height: 44px; border-radius: 10px;
