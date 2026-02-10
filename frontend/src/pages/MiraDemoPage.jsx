@@ -630,7 +630,8 @@ const MiraDemoPage = () => {
     if (proactiveAlerts.healthReminders.some(r => r.needs_attention)) {
       const urgent = proactiveAlerts.healthReminders.find(r => r.needs_attention);
       if (urgent && !hasAlert) {
-        greeting = `Reminder: ${urgent.title} for ${pet.name}. Shall I help schedule?`;
+        const reminderTitle = urgent.title || urgent.name || 'health checkup';
+        greeting = `Reminder: ${reminderTitle} for ${pet.name}. Shall I help schedule?`;
         icon = '💊';
         hasAlert = true;
       }
