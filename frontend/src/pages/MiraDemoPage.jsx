@@ -3386,6 +3386,7 @@ const MiraDemoPage = () => {
               onQuickReply={handleQuickReply}
               onLoadPastChats={() => { loadPastChats(); setShowPastChats(true); }}
               onShowHealthWizard={() => setHealthVault(prev => ({ ...prev, showWizard: true }))}
+              soulScoreUpdated={soulScoreUpdated}
             />
           )}
           
