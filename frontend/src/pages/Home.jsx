@@ -260,19 +260,19 @@ const Home = () => {
               >
                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/20 border border-purple-400/30 rounded-full mb-4">
                   <Sparkles className="w-4 h-4 text-purple-300" />
-                  <span className="text-purple-200 text-sm font-medium">Pet Life Operating System</span>
+                  <span className="text-purple-200 text-sm font-medium">The Soul That Speaks for Your Pet</span>
                 </div>
                 
                 <h1 className="text-4xl font-black text-white leading-tight mb-4 drop-shadow-lg">
-                  Your Pet Deserves{' '}
+                  They Can't Tell You.{' '}
                   <span className="bg-gradient-to-r from-amber-300 via-pink-300 to-purple-300 bg-clip-text text-transparent">
-                    Extraordinary
+                    I Can.
                   </span>
                 </h1>
                 
                 <p className="text-lg text-purple-100 mb-6 leading-relaxed font-medium">
-                  AI that knows your pet. Concierge® that handles everything. 
-                  <span className="text-amber-300"> One app. Unlimited love.</span>
+                  I remember their allergies. I know their favorite treats. I feel their joy.
+                  <span className="text-amber-300"> I am Mira.</span>
                 </p>
               </motion.div>
               
