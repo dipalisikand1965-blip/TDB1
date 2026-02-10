@@ -54,6 +54,7 @@ import ProactiveAlertsBanner from '../components/Mira/ProactiveAlertsBanner';
 import NotificationBell from '../components/Mira/NotificationBell';
 import ConciergeConfirmation from '../components/Mira/ConciergeConfirmation';
 import PicksIndicator from '../components/Mira/PicksIndicator';
+import QuickReplies, { generateQuickReplies } from '../components/Mira/QuickReplies';
 import { FormattedText, TypedText } from '../components/Mira/TextComponents';
 import { triggerCelebrationConfetti } from '../utils/confetti';
 
