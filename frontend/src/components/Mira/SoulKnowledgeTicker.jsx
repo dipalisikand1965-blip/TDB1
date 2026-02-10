@@ -203,7 +203,7 @@ const SoulKnowledgeTicker = ({
           
           <div className="expanded-score">
             <div className={`score-circle ${isGlowing ? 'glowing' : ''}`}>
-              <span className="score-number">{displayScore}%</span>
+              <span className="score-number">{Math.round(displayScore)}%</span>
               <span className="score-text">Soul Known</span>
             </div>
             {displayScore < 50 && (
