@@ -703,6 +703,69 @@ async def logout_user(request: LogoutRequest = None):
     return {"message": "Logged out successfully"}
 
 
+# ============ USER PETS ENDPOINT ============
+
+@auth_router.get("/pets")
+async def get_user_pets(credentials: HTTPAuthorizationCredentials = Depends(security_bearer)):
+    """
+    Get all pets belonging to the authenticated user.
+    Returns pet data with soul scores and photos.
+    """
+    from jose import jwt, JWTError
+    
+    if not credentials:
+        raise HTTPException(status_code=401, detail="Not authenticated")
+    
+    token = credentials.credentials
+    
+    try:
+        # Decode token to get user email
+        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        email = payload.get("sub")
+        
+        if not email:
+            raise HTTPException(status_code=401, detail="Invalid token")
+        
+        # Find user's pets by matching parent_email
+        pets_cursor = db.pets.find({
+            "$or": [
+                {"parent_email": email},
+                {"parent.email": email},
+                {"member_email": email}
+            ]
+        })
+        
+        pets = []
+        async for pet in pets_cursor:
+            # Convert ObjectId to string
+            pet_id = str(pet.get("_id", ""))
+            
+            pets.append({
+                "id": pet.get("id") or pet_id,
+                "name": pet.get("name", ""),
+                "breed": pet.get("breed", ""),
+                "species": pet.get("species", "dog"),
+                "age_years": pet.get("age_years"),
+                "gender": pet.get("gender"),
+                "photo_url": pet.get("photo_url"),
+                "overall_score": pet.get("overall_score", 0),
+                "soul": pet.get("soul", {}),
+                "doggy_soul_answers": pet.get("doggy_soul_answers", {}),
+                "preferences": pet.get("preferences", {}),
+                "health_vault": pet.get("health_vault", {}),
+                "traits": pet.get("traits", [])
+            })
+        
+        return {"pets": pets, "count": len(pets)}
+        
+    except JWTError as e:
+        logger.error(f"JWT decode error: {e}")
+        raise HTTPException(status_code=401, detail="Invalid token")
+    except Exception as e:
+        logger.error(f"Get user pets error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # ============ MEMBERSHIP ONBOARDING ============
 
 class PetOnboard(BaseModel):
