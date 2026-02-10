@@ -152,8 +152,9 @@ const WelcomeHero = ({
           {pet.soulScore > 10 ? (
             <div 
               className={`soul-score-badge soul-active ${isGlowing ? 'soul-growing' : ''}`} 
-              onClick={() => navigate(`/pet-soul/${pet.id || ''}`)}
-              title={`${pet.name}'s Soul Score - Click to enhance`}
+              onClick={() => onShowSoulForm ? onShowSoulForm() : navigate(`/pet-soul/${pet.id || ''}`)}
+              title={`${pet.name}'s Soul Score - Click to grow`}
+              style={{ cursor: 'pointer' }}
             >
               <span className={`soul-percent ${isGlowing ? 'counting' : ''}`}>{displayScore}%</span>
               <span className="soul-label">SOUL<br/>KNOWN</span>
@@ -161,8 +162,9 @@ const WelcomeHero = ({
           ) : (
             <div 
               className="soul-score-badge soul-incomplete" 
-              onClick={() => navigate(`/pet-soul/${pet.id || ''}`)}
+              onClick={() => onShowSoulForm ? onShowSoulForm() : navigate(`/pet-soul/${pet.id || ''}`)}
               data-testid="soul-incomplete-prompt"
+              style={{ cursor: 'pointer' }}
             >
               <span className="soul-sparkle">✨</span>
               <span className="soul-cta">Help Mira<br/>know {pet.name}</span>
