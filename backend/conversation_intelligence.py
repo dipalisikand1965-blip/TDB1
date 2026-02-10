@@ -105,6 +105,17 @@ FOLLOW_UP_PATTERNS = {
     "smaller": {"type": "size_filter", "direction": "smaller"},
     "bigger": {"type": "size_filter", "direction": "larger"},
     "larger": {"type": "size_filter", "direction": "larger"},
+    
+    # Ingredient/detail questions (follow-ups to meal plans, recipes, etc.)
+    "can i include": {"type": "detail_question", "action": "clarify"},
+    "can i add": {"type": "detail_question", "action": "clarify"},
+    "can i use": {"type": "detail_question", "action": "clarify"},
+    "what about adding": {"type": "detail_question", "action": "clarify"},
+    "should i include": {"type": "detail_question", "action": "clarify"},
+    "is it okay to": {"type": "detail_question", "action": "clarify"},
+    "can he have": {"type": "detail_question", "action": "clarify"},
+    "can she have": {"type": "detail_question", "action": "clarify"},
+    "what if": {"type": "detail_question", "action": "clarify"},
 }
 
 
