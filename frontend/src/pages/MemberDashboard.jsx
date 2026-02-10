@@ -904,7 +904,7 @@ const MemberDashboard = () => {
             </div>
             
             {/* Header Actions: Notification Bell + Sign Out */}
-            <div className="flex items-center gap-2 self-start sm:self-center">
+            <div className="flex items-center gap-2 self-start sm:self-center relative z-[1000]">
               {/* Member Notification Bell */}
               <MemberNotificationBell 
                 userEmail={user?.email}
@@ -934,9 +934,9 @@ const MemberDashboard = () => {
                   logout();
                   navigate('/');
                 }}
-                className="text-red-400 hover:text-red-300 hover:bg-red-500/10 border-red-500/30 rounded-xl transition-all hover:scale-105 relative z-[999]"
+                className="text-red-400 hover:text-red-300 hover:bg-red-500/10 border-red-500/30 rounded-xl transition-all hover:scale-105 relative z-[1001]"
                 data-testid="signout-btn"
-                style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', pointerEvents: 'auto' }}
+                style={{ touchAction: 'manipulation', WebkitTapHighlightColor: 'transparent', pointerEvents: 'auto', isolation: 'isolate' }}
               >
                 <LogOut className="w-4 h-4 mr-2" />
                 Sign Out
