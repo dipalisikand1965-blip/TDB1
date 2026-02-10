@@ -34,11 +34,60 @@ const FormattedText = ({ children, className = '' }) => {
       <ReactMarkdown
         components={{
           p: ({ children }) => <p style={{ margin: '0 0 8px 0', lineHeight: '1.6' }}>{children}</p>,
-          strong: ({ children }) => <strong style={{ color: 'var(--mp-gold, #D4AF37)' }}>{children}</strong>,
-          em: ({ children }) => <em style={{ fontStyle: 'italic' }}>{children}</em>,
+          strong: ({ children }) => (
+            <strong style={{ 
+              color: '#F472B6', // Bright pink for emphasis
+              fontWeight: '600',
+              textShadow: '0 0 10px rgba(244, 114, 182, 0.3)'
+            }}>
+              {children}
+            </strong>
+          ),
+          em: ({ children }) => (
+            <em style={{ 
+              fontStyle: 'normal',
+              color: '#A78BFA', // Purple for secondary emphasis
+              fontWeight: '500'
+            }}>
+              {children}
+            </em>
+          ),
           ul: ({ children }) => <ul style={{ margin: '8px 0', paddingLeft: '20px' }}>{children}</ul>,
           ol: ({ children }) => <ol style={{ margin: '8px 0', paddingLeft: '20px' }}>{children}</ol>,
           li: ({ children }) => <li style={{ marginBottom: '4px' }}>{children}</li>,
+          a: ({ href, children }) => (
+            <a 
+              href={href} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              style={{ 
+                color: '#60A5FA', // Blue for links
+                textDecoration: 'underline'
+              }}
+            >
+              {children}
+            </a>
+          ),
+          h3: ({ children }) => (
+            <h3 style={{
+              color: '#F472B6',
+              fontSize: '1rem',
+              fontWeight: '600',
+              margin: '12px 0 8px 0'
+            }}>
+              {children}
+            </h3>
+          ),
+          h4: ({ children }) => (
+            <h4 style={{
+              color: '#A78BFA',
+              fontSize: '0.9rem',
+              fontWeight: '600',
+              margin: '10px 0 6px 0'
+            }}>
+              {children}
+            </h4>
+          ),
         }}
       >
         {children}
