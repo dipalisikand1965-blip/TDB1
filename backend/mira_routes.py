@@ -3477,8 +3477,17 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
             # Determine tip card type based on full context
             # ORDER MATTERS - check most specific patterns first!
             if should_tip:
-                # CARE ROUTINE - Check FIRST (care, routine, daily care, wellness)
-                if any(w in full_context for w in ["care routine", "daily routine", "daily care", "wellness routine", "wellness", "self care", "pet care routine"]):
+                # SENIOR CARE - Check FIRST (senior, aging, old age, elderly)
+                if any(w in full_context for w in ["senior", "aging", "old age", "elderly", "older dog", "getting old", "becomes senior", "as he ages", "as she ages"]):
+                    # Senior + food = senior diet, senior + exercise = senior mobility, etc.
+                    if any(w in full_context for w in ["food", "diet", "eat", "meal", "nutrition", "feeding"]):
+                        detected_tip_type = "senior_diet"
+                    elif any(w in full_context for w in ["joint", "mobility", "stiff", "arthritis", "exercise", "walk"]):
+                        detected_tip_type = "senior_mobility"
+                    else:
+                        detected_tip_type = "senior_care"
+                # CARE ROUTINE - Check early (care, routine, daily care, wellness)
+                elif any(w in full_context for w in ["care routine", "daily routine", "daily care", "wellness routine", "wellness", "self care", "pet care routine"]):
                     detected_tip_type = "bonding_ritual"  # Care routines are bonding
                 # CELEBRATION
                 elif any(w in full_context for w in ["celebrate", "birthday", "party", "gotcha", "anniversary", "calendar", "special moment", "special day"]):
