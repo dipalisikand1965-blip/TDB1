@@ -214,6 +214,8 @@ const MiraDemoPage = () => {
   const [learnVideos, setLearnVideos] = useState([]);
   const [learnLoading, setLearnLoading] = useState(false);
   const [learnCategory, setLearnCategory] = useState('recommended');
+  const [hasNewVideos, setHasNewVideos] = useState(false);
+  const [newVideosCount, setNewVideosCount] = useState(0);
   const [activeDockItem, setActiveDockItem] = useState(null);
   
   // MIRA ENGINE MODES - Visible to user like ChatGPT's "Thinking"
