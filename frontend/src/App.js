@@ -229,6 +229,7 @@ const ServiceDetailPage = lazy(() => import("./pages/ServiceDetailPage"));
 const MealPlanPage = lazy(() => import("./pages/MealPlanPage"));
 const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
 const MembershipPayment = lazy(() => import("./pages/MembershipPayment"));
+const DreamfolksDemo = lazy(() => import("./pages/DreamfolksDemo"));
 
 function App() {
   return (
