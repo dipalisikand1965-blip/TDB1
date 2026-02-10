@@ -667,6 +667,162 @@ export default function DreamfolksDemo() {
         </div>
       </section>
 
+      {/* Heritage & Soul Section */}
+      <section className="py-16 px-4 bg-gradient-to-b from-transparent via-purple-900/5 to-transparent">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-500/20 border border-amber-500/30 rounded-full mb-4">
+              <Heart className="w-4 h-4 text-amber-400" />
+              <span className="text-amber-300 text-sm">Our Heritage</span>
+            </div>
+            <h2 className="text-3xl font-bold text-white mb-4">
+              The Soul, The Brains & The Hands
+            </h2>
+            <p className="text-white/60 max-w-2xl mx-auto">
+              This isn't just another pet app. It's 30 years of concierge heritage meets AI intelligence.
+            </p>
+          </div>
+
+          {/* Three Pillars of Heritage */}
+          <div className="grid md:grid-cols-3 gap-8 mb-16">
+            {/* The Soul */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="bg-gradient-to-br from-amber-500/10 to-orange-500/10 border border-amber-500/20 rounded-2xl p-6 text-center"
+            >
+              <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-amber-400/20 to-orange-400/20 flex items-center justify-center">
+                <span className="text-4xl">✨</span>
+              </div>
+              <h3 className="text-xl font-bold text-amber-300 mb-2">The Soul</h3>
+              <h4 className="text-white font-medium mb-3">Mrs. Mira Sikand</h4>
+              <p className="text-white/60 text-sm">
+                The quiet force behind everything. Her instincts, standards, and way of caring shaped 
+                what service excellence means to us. Mira AI carries her spirit — judgment over listing, 
+                memory over forgetting.
+              </p>
+            </motion.div>
+
+            {/* The Brains */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="bg-gradient-to-br from-purple-500/10 to-pink-500/10 border border-purple-500/20 rounded-2xl p-6 text-center"
+            >
+              <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-purple-400/20 to-pink-400/20 flex items-center justify-center">
+                <Brain className="w-10 h-10 text-purple-400" />
+              </div>
+              <h3 className="text-xl font-bold text-purple-300 mb-2">The Brains</h3>
+              <h4 className="text-white font-medium mb-3">Pet Soul™ Technology</h4>
+              <p className="text-white/60 text-sm">
+                AI that truly understands pets. Not just keywords — context, memory, urgency, and emotion. 
+                14 life pillars. Implicit intent detection. Multi-intent handling. 
+                The most intelligent pet AI in India.
+              </p>
+            </motion.div>
+
+            {/* The Hands */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="bg-gradient-to-br from-green-500/10 to-emerald-500/10 border border-green-500/20 rounded-2xl p-6 text-center"
+            >
+              <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-green-400/20 to-emerald-400/20 flex items-center justify-center">
+                <span className="text-4xl">🤝</span>
+              </div>
+              <h3 className="text-xl font-bold text-green-300 mb-2">The Hands</h3>
+              <h4 className="text-white font-medium mb-3">Human Concierge®</h4>
+              <p className="text-white/60 text-sm">
+                AI handles discovery. Humans handle execution. Real people book appointments, 
+                plan parties, handle emergencies. Available 6:30 AM – 11:30 PM. 
+                The perfect hybrid.
+              </p>
+            </motion.div>
+          </div>
+
+          {/* Heritage Timeline */}
+          <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
+            <h3 className="text-xl font-bold text-white mb-6 text-center">30 Years in the Making</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {[
+                { year: "1998", title: "LesConcierges®", desc: "Dipali Sikand builds premium concierge services" },
+                { year: "2008", title: "Club Concierge®", desc: "Scales to serve 1M+ customers across India" },
+                { year: "2014", title: "The Doggy Bakery®", desc: "Aditya launches, celebrates 45,000+ pets" },
+                { year: "2025", title: "Mira OS™", desc: "AI + Human concierge for pets. India's first." },
+              ].map((item, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  className="text-center"
+                >
+                  <div className="text-2xl font-bold text-purple-400 mb-1">{item.year}</div>
+                  <div className="text-white font-medium text-sm mb-1">{item.title}</div>
+                  <div className="text-white/50 text-xs">{item.desc}</div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+
+          {/* Pet Soul Explanation */}
+          <div className="mt-12 grid md:grid-cols-2 gap-8">
+            <div className="bg-gradient-to-br from-purple-500/10 to-pink-500/5 border border-purple-500/20 rounded-2xl p-6">
+              <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-purple-400" />
+                What is Pet Soul™?
+              </h3>
+              <p className="text-white/70 mb-4">
+                It's not a database. It's a living understanding of your pet that grows over time.
+              </p>
+              <ul className="space-y-2 text-white/60 text-sm">
+                <li className="flex items-start gap-2">
+                  <Check className="w-4 h-4 text-green-400 mt-0.5" />
+                  <span><strong className="text-white">Preferences:</strong> What they love, hate, are allergic to</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Check className="w-4 h-4 text-green-400 mt-0.5" />
+                  <span><strong className="text-white">History:</strong> Past purchases, vet visits, grooming</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Check className="w-4 h-4 text-green-400 mt-0.5" />
+                  <span><strong className="text-white">Personality:</strong> Playful? Anxious? Social? Mira remembers</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Check className="w-4 h-4 text-green-400 mt-0.5" />
+                  <span><strong className="text-white">Relationships:</strong> Bonds with family, other pets, routines</span>
+                </li>
+              </ul>
+            </div>
+
+            <div className="bg-gradient-to-br from-green-500/10 to-emerald-500/5 border border-green-500/20 rounded-2xl p-6">
+              <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                <Shield className="w-5 h-5 text-green-400" />
+                14 Life Pillars
+              </h3>
+              <p className="text-white/70 mb-4">
+                Every aspect of pet parenting, covered by one intelligent system:
+              </p>
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                {['Shop', 'Care', 'Groom', 'Learn', 'Travel', 'Stay', 'Celebrate', 
+                  'Protect', 'Feed', 'Fit', 'Adopt', 'Farewell', 'Enjoy', 'Paperwork'].map((pillar, i) => (
+                  <div key={i} className="flex items-center gap-2 text-white/60">
+                    <div className="w-2 h-2 rounded-full bg-gradient-to-r from-purple-400 to-pink-400" />
+                    {pillar}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Why Partner Section */}
       <section className="py-16 px-4 bg-gradient-to-b from-transparent to-purple-900/10">
         <div className="max-w-7xl mx-auto">
