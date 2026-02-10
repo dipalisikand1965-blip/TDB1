@@ -2684,19 +2684,14 @@ const MiraDemoPage = () => {
           clearTimeout(voiceTimeoutRef.current);
         }
         
-        // Check if voice should be skipped (tile was clicked)
-        if (skipVoiceOnNextResponseRef.current) {
-          console.log('[MIRA VOICE] Skipping voice - response triggered by tile click');
-          skipVoiceOnNextResponseRef.current = false; // Reset for next response
-        } else {
-          // Wait for text animation to complete, then speak (using extracted helper)
-          const voiceDelay = calculateVoiceDelay(miraResponseText, miraMode);
-          voiceTimeoutRef.current = setTimeout(() => {
-            console.log('[MIRA VOICE] Now calling speakWithMira');
-            speakWithMira(miraResponseText);
-            voiceTimeoutRef.current = null;
-          }, voiceDelay);
-        }
+        // Voice is now handled by useVoice hook's skipNextVoice() mechanism
+        // No need for local ref - the hook knows when to skip
+        const voiceDelay = calculateVoiceDelay(miraResponseText, miraMode);
+        voiceTimeoutRef.current = setTimeout(() => {
+          console.log('[MIRA VOICE] Triggering voice via hook');
+          speakWithMira(miraResponseText);
+          voiceTimeoutRef.current = null;
+        }, voiceDelay);
       } else {
         console.log('[MIRA VOICE] Voice not triggered - voiceEnabled:', voiceEnabled, 'text:', !!miraResponseText);
       }
