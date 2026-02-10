@@ -28,6 +28,26 @@ from pillar_resolver import get_resolver, PillarResolver
 # Import breed knowledge base
 from breed_knowledge import get_breed_knowledge, format_breed_context_for_llm
 
+# Import conversation intelligence for pronoun resolution and follow-up context
+try:
+    from conversation_intelligence import (
+        resolve_conversation_references,
+        should_generate_tip_card,
+        generate_tip_card_structure,
+        extract_context_from_history
+    )
+    INTELLIGENCE_AVAILABLE = True
+except ImportError:
+    INTELLIGENCE_AVAILABLE = False
+    def resolve_conversation_references(*args, **kwargs):
+        return args[0] if args else "", {}
+    def should_generate_tip_card(*args, **kwargs):
+        return False, None
+    def generate_tip_card_structure(*args, **kwargs):
+        return {}
+    def extract_context_from_history(*args, **kwargs):
+        return {}
+
 # Import push notification for ticket updates
 try:
     from push_notification_routes import notify_ticket_update
