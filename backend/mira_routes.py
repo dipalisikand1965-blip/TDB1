@@ -3480,47 +3480,52 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
             # This prevents Mira's response words from influencing the tip type
             # ORDER MATTERS - check most specific patterns first!
             if should_tip:
+                # Use user input + conversation history (not including Mira's current response)
+                type_context = user_input_lower + " " + conversation_context
+                
                 # SENIOR CARE - Check FIRST (senior, aging, old age, elderly)
-                if any(w in full_context for w in ["senior", "aging", "old age", "elderly", "older dog", "getting old", "becomes senior", "as he ages", "as she ages"]):
+                if any(w in type_context for w in ["senior", "aging", "old age", "elderly", "older dog", "getting old", "becomes senior", "as he ages", "as she ages"]):
                     # Senior + food = senior diet, senior + exercise = senior mobility, etc.
-                    if any(w in full_context for w in ["food", "diet", "eat", "meal", "nutrition", "feeding"]):
+                    if any(w in type_context for w in ["food", "diet", "eat", "meal", "nutrition", "feeding"]):
                         detected_tip_type = "senior_diet"
-                    elif any(w in full_context for w in ["joint", "mobility", "stiff", "arthritis", "exercise", "walk"]):
+                    elif any(w in type_context for w in ["joint", "mobility", "stiff", "arthritis", "exercise", "walk"]):
                         detected_tip_type = "senior_mobility"
                     else:
                         detected_tip_type = "senior_care"
+                # HEALTH - Check early for symptoms (scratching, itching, sick, etc.)
+                elif any(w in type_context for w in ["health", "vet", "doctor", "medicine", "sick", "symptom", "checkup", "vaccination", 
+                                                      "scratching", "itching", "itch", "skin", "rash", "allergy", "vomit", "diarrhea",
+                                                      "lethargic", "limping", "pain", "hurt", "injury", "wound"]):
+                    detected_tip_type = "health_advice"
                 # CARE ROUTINE - Check early (care, routine, daily care, wellness)
-                elif any(w in full_context for w in ["care routine", "daily routine", "daily care", "wellness routine", "wellness", "self care", "pet care routine"]):
+                elif any(w in type_context for w in ["care routine", "daily routine", "daily care", "wellness routine", "wellness", "self care", "pet care routine"]):
                     detected_tip_type = "bonding_ritual"  # Care routines are bonding
                 # CELEBRATION
-                elif any(w in full_context for w in ["celebrate", "birthday", "party", "gotcha", "anniversary", "calendar", "special moment", "special day"]):
+                elif any(w in type_context for w in ["celebrate", "birthday", "party", "gotcha", "anniversary", "calendar", "special moment", "special day"]):
                     detected_tip_type = "celebration_tips"
                 # BONDING RITUAL - Check before meal (has "ritual", "bonding", "calming")
-                elif any(w in full_context for w in ["ritual", "bonding", "calming", "relax", "matter", "quality time", "connection", "spend time"]):
+                elif any(w in type_context for w in ["ritual", "bonding", "calming", "relax", "matter", "quality time", "connection", "spend time"]):
                     detected_tip_type = "bonding_ritual"
-                # HEALTH - Check before meal (has "health", "vet", "doctor")
-                elif any(w in full_context for w in ["health", "vet", "doctor", "medicine", "sick", "symptom", "checkup", "vaccination"]):
-                    detected_tip_type = "health_advice"
                 # GROOMING
-                elif any(w in full_context for w in ["groom", "bath", "brush", "haircut", "trim", "nail", "ear clean"]):
+                elif any(w in type_context for w in ["groom", "bath", "brush", "haircut", "trim", "nail", "ear clean"]):
                     detected_tip_type = "grooming_routine"
                 # TRAINING
-                elif any(w in full_context for w in ["train", "behavior", "obedience", "teach", "command", "trick"]):
+                elif any(w in type_context for w in ["train", "behavior", "obedience", "teach", "command", "trick"]):
                     detected_tip_type = "training_tips"
                 # EXERCISE
-                elif any(w in full_context for w in ["exercise", "walk", "fit", "weight", "activity", "run", "play"]):
+                elif any(w in type_context for w in ["exercise", "walk", "fit", "weight", "activity", "run", "play"]):
                     detected_tip_type = "exercise_routine"
                 # FESTIVAL SAFETY
-                elif any(w in full_context for w in ["safe", "safety", "festival", "diwali", "holi", "firework", "loud noise", "thunder"]):
+                elif any(w in type_context for w in ["safe", "safety", "festival", "diwali", "holi", "firework", "loud noise", "thunder"]):
                     detected_tip_type = "festival_safety"
                 # TRAVEL
-                elif any(w in full_context for w in ["travel", "trip", "vacation", "holiday", "flight", "road trip"]):
+                elif any(w in type_context for w in ["travel", "trip", "vacation", "holiday", "flight", "road trip"]):
                     detected_tip_type = "travel_tips"
                 # NEW PET
-                elif any(w in full_context for w in ["new pet", "puppy", "kitten", "first time", "new parent", "just got"]):
+                elif any(w in type_context for w in ["new pet", "puppy", "kitten", "first time", "new parent", "just got"]):
                     detected_tip_type = "new_pet_guide"
                 # MEAL PLAN - Check LAST (most generic food-related)
-                elif any(w in full_context for w in ["meal", "food", "diet", "eat", "feeding", "breakfast", "lunch", "dinner", "nutrition"]):
+                elif any(w in type_context for w in ["meal", "food", "diet", "eat", "feeding", "breakfast", "lunch", "dinner", "nutrition"]):
                     detected_tip_type = "meal_plan"
                 else:
                     detected_tip_type = "general"
