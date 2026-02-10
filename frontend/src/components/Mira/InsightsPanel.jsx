@@ -65,6 +65,9 @@ const InsightsPanel = ({
     grooming_routine: '✨',
     exercise_routine: '🏃',
     bonding_ritual: '💜',
+    senior_care: '🧓',
+    senior_diet: '🍲',
+    senior_mobility: '🦴',
     general: '💡'
   };
   
