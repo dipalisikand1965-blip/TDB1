@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://pet-soul-hero.preview.emergentagent.com
+https://dreamfolks-demo.preview.emergentagent.com
 
 ---
 
