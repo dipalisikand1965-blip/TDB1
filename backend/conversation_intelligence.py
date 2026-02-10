@@ -459,18 +459,56 @@ def should_generate_tip_card(
     # Health advice
     health_keywords = [
         "health tips", "preventive care", "keep healthy", "wellness tips",
-        "care routine", "daily care", "health advice"
+        "care routine", "daily care", "health advice", "allergies", "allergy",
+        "what to avoid", "dangerous", "toxic", "household items"
     ]
     if any(kw in full_context for kw in health_keywords):
         return True, "health_advice"
     
-    # Training tips
+    # Training tips - expanded keywords
     training_keywords = [
         "training tips", "how to train", "teach him", "teach her",
-        "behavior tips", "stop barking", "stop biting", "potty training"
+        "behavior tips", "stop barking", "stop biting", "potty training",
+        "how do i teach", "teach to sit", "teach to stay", "teach to come",
+        "obedience", "basic commands", "leash training", "crate training",
+        "barking at strangers", "aggressive", "jumping on people"
     ]
     if any(kw in full_context for kw in training_keywords):
         return True, "training_tips"
+    
+    # Festival/Event safety tips
+    festival_keywords = [
+        "diwali", "holi", "christmas", "new year", "festival", "fireworks",
+        "crackers", "loud noise", "safely include", "safe celebration",
+        "pet safe", "keep safe during"
+    ]
+    if any(kw in full_context for kw in festival_keywords):
+        return True, "festival_safety"
+    
+    # Celebration/Gotcha day tips
+    celebration_keywords = [
+        "gotcha day", "gotcha", "adoption day", "how to celebrate",
+        "what is gotcha", "celebrate adoption", "anniversary with pet"
+    ]
+    if any(kw in full_context for kw in celebration_keywords):
+        return True, "celebration_tips"
+    
+    # New pet / Adoption tips
+    adoption_keywords = [
+        "just adopted", "new puppy", "new pet", "first time pet parent",
+        "what do i need to know", "new dog owner", "just got a dog",
+        "first time with", "puppy care", "kitten care"
+    ]
+    if any(kw in full_context for kw in adoption_keywords):
+        return True, "new_pet_guide"
+    
+    # Sleeping / Home tips
+    home_keywords = [
+        "where should", "sleep", "sleeping arrangement", "bed", "crate",
+        "separation anxiety", "home alone", "leaving alone"
+    ]
+    if any(kw in full_context for kw in home_keywords):
+        return True, "home_tips"
     
     return False, None
 
