@@ -887,6 +887,7 @@ const MiraDemoPage = () => {
               };
             });
             
+            console.log('[PETS-API] Setting allPets with scores:', transformedPets.map(p => ({name: p.name, soulScore: p.soulScore})));
             setAllPets(transformedPets);
             if (transformedPets.length > 0) {
               setPet(transformedPets[0]);
