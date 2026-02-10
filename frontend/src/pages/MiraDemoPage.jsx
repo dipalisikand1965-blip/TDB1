@@ -543,6 +543,12 @@ const MiraDemoPage = () => {
   const [conciergeConfirmation, setConciergeConfirmation] = useState(null);
   
   // ═══════════════════════════════════════════════════════════════════════════
+  // QUICK REPLIES - Contextual suggestions after Mira's response
+  // Golden Standard: 3-4 buttons after every advisory response
+  // ═══════════════════════════════════════════════════════════════════════════
+  const [quickReplies, setQuickReplies] = useState([]);
+  
+  // ═══════════════════════════════════════════════════════════════════════════
   // NOTE: Vault state (showVault, activeVaultData, vaultUserMessage, miraPicks, 
   // showMiraTray) now comes from useVault hook above
   // ═══════════════════════════════════════════════════════════════════════════
