@@ -2944,7 +2944,17 @@ Suggested Products: {', '.join([p.get('name', 'Unknown') for p in (real_products
                         {"_id": 0}
                     ).sort("rating", -1).limit(3).to_list(3)
                     
-                    if restaurants:
+                    # Fallback to Google Places API if no database results
+                    if not restaurants:
+                        try:
+                            from services.google_places_service import search_pet_friendly_restaurants
+                            restaurants = await search_pet_friendly_restaurants(city_for_search, max_results=5)
+                            if restaurants:
+                                nearby_places_data = {"type": "restaurants", "places": restaurants, "city": city_for_search, "source": "google_places"}
+                                logger.info(f"[NEARBY] Found {len(restaurants)} pet-friendly restaurants via Google Places in {city_for_search}")
+                        except Exception as rest_err:
+                            logger.warning(f"[NEARBY] Google Places error for restaurants: {rest_err}")
+                    elif restaurants:
                         nearby_places_data = {"type": "restaurants", "places": restaurants, "city": city_for_search}
                         logger.info(f"[NEARBY] Found {len(restaurants)} restaurants in {city_for_search}")
                 
