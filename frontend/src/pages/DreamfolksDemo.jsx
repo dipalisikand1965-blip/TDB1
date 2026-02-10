@@ -1559,25 +1559,6 @@ Ask me anything about him!`
               </div>
             </div>
           </div>
-
-          {/* Scenario Tiles - Below chat */}
-          <div className="mt-6">
-            <h3 className="text-white/60 text-sm mb-3">Try asking about:</h3>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              {TEST_SCENARIOS.map((scenario) => (
-                <motion.button
-                  key={scenario.id}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => handleScenarioClick(scenario)}
-                  className="bg-white/5 hover:bg-purple-500/20 border border-white/10 hover:border-purple-500/30 rounded-xl p-3 text-left transition-all"
-                >
-                  <div className="text-xl mb-1">{scenario.icon}</div>
-                  <div className="text-white/80 text-xs line-clamp-2">{scenario.query}</div>
-                </motion.button>
-              ))}
-            </div>
-          </div>
         </div>
       </section>
 
