@@ -1253,12 +1253,16 @@ Ask me anything about him!` }
                     ))}
                     {isTyping && (
                       <div className="flex justify-start">
-                        <div className="bg-white/10 rounded-2xl px-3 sm:px-4 py-2 sm:py-3">
-                          <div className="flex gap-1">
-                            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
-                            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
-                            <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
-                          </div>
+                        <div className="bg-white/10 rounded-2xl px-3 sm:px-4 py-2 sm:py-3 max-w-[90%] sm:max-w-[80%]">
+                          {streamingText ? (
+                            <div className="whitespace-pre-line text-xs sm:text-sm text-white/90">{streamingText}<span className="animate-pulse">▊</span></div>
+                          ) : (
+                            <div className="flex gap-1">
+                              <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></span>
+                              <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></span>
+                              <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></span>
+                            </div>
+                          )}
                         </div>
                       </div>
                     )}
