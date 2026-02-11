@@ -3956,66 +3956,84 @@ const MiraDemoPage = () => {
         }}
       />
       
-      {/* HEALTH VAULT WIZARD - Extracted to HealthVaultWizard component */}
-      <HealthVaultWizard
-        isOpen={healthVault.showWizard}
-        onClose={() => setHealthVault(prev => ({ ...prev, showWizard: false }))}
-        pet={pet}
-        completeness={healthVault.completeness}
-        missingFields={healthVault.missing_fields}
-        onFieldClick={(field) => handleQuickReply(`I want to add ${pet.name}'s ${field.label.toLowerCase()}`)}
-      />
+      {/* HEALTH VAULT WIZARD - Lazy loaded */}
+      {healthVault.showWizard && (
+        <Suspense fallback={<LazyFallback />}>
+          <HealthVaultWizard
+            isOpen={healthVault.showWizard}
+            onClose={() => setHealthVault(prev => ({ ...prev, showWizard: false }))}
+            pet={pet}
+            completeness={healthVault.completeness}
+            missingFields={healthVault.missing_fields}
+            onFieldClick={(field) => handleQuickReply(`I want to add ${pet.name}'s ${field.label.toLowerCase()}`)}
+          />
+        </Suspense>
+      )}
       
-      {/* Help Modal */}
-      {/* HELP MODAL - Extracted to HelpModal component */}
-      <HelpModal
-        isOpen={showHelpModal}
-        onClose={() => setShowHelpModal(false)}
-        onOrderHelp={() => handleQuickReply('I need help with my order')}
-        onConciergeChat={handleConciergeHandoff}
-      />
+      {/* HELP MODAL - Lazy loaded */}
+      {showHelpModal && (
+        <Suspense fallback={<LazyFallback />}>
+          <HelpModal
+            isOpen={showHelpModal}
+            onClose={() => setShowHelpModal(false)}
+            onOrderHelp={() => handleQuickReply('I need help with my order')}
+            onConciergeChat={handleConciergeHandoff}
+          />
+        </Suspense>
+      )}
       
-      {/* LEARN MODAL - Extracted to LearnModal component */}
-      <LearnModal
-        isOpen={showLearnModal}
-        onClose={() => setShowLearnModal(false)}
-        pet={pet}
-        activeCategory={learnCategory}
-        videos={learnVideos}
-        isLoading={learnLoading}
-        onCategoryChange={fetchLearnVideos}
-      />
+      {/* LEARN MODAL - Lazy loaded */}
+      {showLearnModal && (
+        <Suspense fallback={<LazyFallback />}>
+          <LearnModal
+            isOpen={showLearnModal}
+            onClose={() => setShowLearnModal(false)}
+            pet={pet}
+            activeCategory={learnCategory}
+            videos={learnVideos}
+            isLoading={learnLoading}
+            onCategoryChange={fetchLearnVideos}
+          />
+        </Suspense>
+      )}
       
-      {/* SOUL FORM MODAL - Quick questions to enrich pet profile */}
-      <SoulFormModal
-        isOpen={showSoulFormModal}
-        onClose={() => setShowSoulFormModal(false)}
-        pet={pet}
-        token={token}
-        onSoulUpdated={(newScore, answers) => {
-          // Update pet state with new score
-          if (newScore) {
-            setPet(prev => ({ ...prev, soulScore: Math.round(newScore) }));
-            setSoulScoreUpdated(true);
-            setTimeout(() => setSoulScoreUpdated(false), 2000);
-          }
-          console.log('[SOUL FORM] Pet soul updated:', { newScore, answers });
-        }}
-      />
+      {/* SOUL FORM MODAL - Lazy loaded */}
+      {showSoulFormModal && (
+        <Suspense fallback={<LazyFallback />}>
+          <SoulFormModal
+            isOpen={showSoulFormModal}
+            onClose={() => setShowSoulFormModal(false)}
+            pet={pet}
+            token={token}
+            onSoulUpdated={(newScore, answers) => {
+              if (newScore) {
+                setPet(prev => ({ ...prev, soulScore: Math.round(newScore) }));
+                setSoulScoreUpdated(true);
+                setTimeout(() => setSoulScoreUpdated(false), 2000);
+              }
+              console.log('[SOUL FORM] Pet soul updated:', { newScore, answers });
+            }}
+          />
+        </Suspense>
+      )}
       
-      {/* SERVICE REQUEST MODAL - Extracted to ServiceRequestModal component */}
-      <ServiceRequestModal
-        isOpen={serviceRequestModal.isOpen}
-        service={serviceRequestModal.service}
-        formData={serviceRequestModal.formData}
-        isSubmitting={serviceRequestModal.isSubmitting}
-        submitted={serviceRequestModal.submitted}
-        petName={pet.name}
-        isConciergeLive={isConciergeLive()}
-        onClose={closeServiceRequest}
-        onSubmit={submitServiceRequest}
-        onUpdateFormData={updateServiceFormData}
-      />
+      {/* SERVICE REQUEST MODAL - Lazy loaded */}
+      {serviceRequestModal.isOpen && (
+        <Suspense fallback={<LazyFallback />}>
+          <ServiceRequestModal
+            isOpen={serviceRequestModal.isOpen}
+            service={serviceRequestModal.service}
+            formData={serviceRequestModal.formData}
+            isSubmitting={serviceRequestModal.isSubmitting}
+            submitted={serviceRequestModal.submitted}
+            petName={pet.name}
+            isConciergeLive={isConciergeLive()}
+            onClose={closeServiceRequest}
+            onSubmit={submitServiceRequest}
+            onUpdateFormData={updateServiceFormData}
+          />
+        </Suspense>
+      )}
       
       {/* ═══════════════════════════════════════════════════════════════════════════
           VAULT SYSTEM - Full-screen overlay for picks, bookings, places, etc.
