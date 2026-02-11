@@ -1362,7 +1362,7 @@ const MiraDemoPage = () => {
     
     try {
       const memberId = user?.id || user?.email || 'demo';
-      const response = await fetch(`${API_URL}/api/mira/session/list/by-member/${encodeURIComponent(memberId)}?limit=10`, {
+      const response = await fetch(`${API_URL}/api/mira/session/list/by-member/${encodeURIComponent(memberId)}?limit=3`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {}
       });
       
