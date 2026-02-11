@@ -25,6 +25,7 @@ import {
 import { API_URL } from '../../utils/api';
 import hapticFeedback from '../../utils/haptic';
 import ConciergeServiceStrip from './ConciergeServiceStrip';
+import ConciergeDetailModal from './ConciergeDetailModal';
 import { ProductDetailModal } from '../ProductCard';
 import { createPortal } from 'react-dom';
 
