@@ -777,13 +777,8 @@ const MiraTopBar = ({
           position: relative;
         }
 
-        /* Dropdown */
+        /* Dropdown - Portaled to body */
         .mtb-dropdown {
-          position: absolute;
-          top: 100%;
-          left: 50%;
-          transform: translateX(-50%);
-          margin-top: 8px;
           min-width: 300px;
           background: rgba(26, 15, 53, 0.98);
           backdrop-filter: blur(20px);
@@ -792,7 +787,11 @@ const MiraTopBar = ({
           box-shadow: 0 20px 40px rgba(0,0,0,0.4);
           overflow: hidden;
           animation: dropdownSlide 0.2s ease-out;
-          z-index: 50;
+          z-index: 9999;
+        }
+        
+        .mtb-dropdown-portal {
+          max-width: 90vw;
         }
 
         @keyframes dropdownSlide {
