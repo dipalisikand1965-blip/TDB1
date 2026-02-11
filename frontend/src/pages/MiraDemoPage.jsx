@@ -50,7 +50,7 @@ import ScrollToBottomButton from '../components/Mira/ScrollToBottomButton';
 import ProactiveAlertsBanner from '../components/Mira/ProactiveAlertsBanner';
 import NotificationBell from '../components/Mira/NotificationBell';
 import ConciergeConfirmation from '../components/Mira/ConciergeConfirmation';
-import ConversationPicksIndicator from '../components/Mira/ConversationPicksIndicator';
+// Removed: ConversationPicksIndicator (using top bar indicator instead)
 import QuickReplies, { generateQuickReplies } from '../components/Mira/QuickReplies';
 import MemoryWhisper from '../components/Mira/MemoryWhisper';
 import SoulKnowledgeTicker from '../components/Mira/SoulKnowledgeTicker';
