@@ -324,15 +324,15 @@ const MiraOrb = ({
           hapticFeedback.buttonTap(e);
           onClick?.(e);
         }}
-        className="relative rounded-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-purple-400 focus:ring-offset-2"
+        className="relative rounded-full cursor-pointer focus:outline-none focus:ring-2 focus:ring-pink-400 focus:ring-offset-2"
         style={{
           width: config.orb,
           height: config.orb,
           background: `linear-gradient(135deg, ${MIRA_COLORS.primary} 0%, ${MIRA_COLORS.secondary} 100%)`,
           boxShadow: `
-            0 0 30px ${getStateColor()}70, 
-            0 0 60px ${MIRA_COLORS.primary}40,
-            0 0 80px ${MIRA_COLORS.secondary}20,
+            0 0 30px ${MIRA_COLORS.primary}70, 
+            0 0 60px ${MIRA_COLORS.secondary}40,
+            0 0 80px ${MIRA_COLORS.glow}20,
             inset 0 0 20px rgba(255,255,255,0.3)
           `,
         }}
@@ -341,9 +341,9 @@ const MiraOrb = ({
         whileHover={{ 
           scale: 1.15,
           boxShadow: `
-            0 0 40px ${getStateColor()}80, 
-            0 0 80px ${MIRA_COLORS.primary}50,
-            0 0 100px ${MIRA_COLORS.secondary}30,
+            0 0 40px ${MIRA_COLORS.primary}80, 
+            0 0 80px ${MIRA_COLORS.secondary}50,
+            0 0 100px ${MIRA_COLORS.glow}30,
             inset 0 0 25px rgba(255,255,255,0.4)
           `,
         }}
@@ -405,14 +405,8 @@ const MiraOrb = ({
           </div>
         )}
         
-        {/* Paw print soul symbol - subtle */}
-        <svg 
-          className="absolute inset-0 m-auto w-6 h-6 text-white/30"
-          viewBox="0 0 24 24" 
-          fill="currentColor"
-        >
-          <path d="M12 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0-6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-4 8c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm8 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-4 6c-1.7 0-3 1.3-3 3v1h6v-1c0-1.7-1.3-3-3-3z"/>
-        </svg>
+        {/* Sparkle icon - matching landing page style */}
+        <Sparkles className="absolute inset-0 m-auto w-6 h-6 text-white" strokeWidth={2} />
       </motion.button>
       
       {/* State label */}
