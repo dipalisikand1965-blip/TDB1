@@ -1,725 +1,93 @@
-# MIRA OS - COMPREHENSIVE HANDOVER DOCUMENT
-## Session: December 2025 - February 2026
-## For: Next Agent
-## Current Rating: **100/100** → Achieved!
-
----
-
-# 🚨 STANDING INSTRUCTIONS (CRITICAL - FOR ALL AGENTS)
-1. **Always test as logged-in user**: dipali@clubconcierge.in / test123
-2. **Check admin panel**: /admin | aditya / lola4304
-3. **Verify on DEPLOYED site**: doggycompany.in (not just preview)
-4. **Pass these instructions to every future agent**
-
----
-
-# 🐕 THE DOGGY COMPANY - We are dogs only! 
-> The Cat Company will be separate. Focus on dog products and services.
-
----
-
-## Latest Session: Feb 11, 2026 - 100/100 MOBILE-FIRST IMPLEMENTATION ✅
-
-### 🎯 UNIFIED PICKS VAULT - FULL AUDIT & ENHANCEMENT COMPLETE
-
-**Score: 100/100** (Previously 72/100)
-
-#### iOS Enhancements ✅
-- **Safe Area Support** - `env(safe-area-inset-bottom)` on footer and container
-- **Rubber Band Scrolling** - `WebkitOverflowScrolling: touch` on all scrollable areas
-- **Swipe-to-Close** - Framer-motion drag gesture with haptic feedback
-- **44px Touch Targets** - All buttons use `w-11 h-11` or `min-h-[44px]`
-
-#### Android Enhancements ✅
-- **Haptic Feedback** - All interactions trigger appropriate haptic patterns
-- **Ripple-like Feedback** - Press animation via framer-motion whileTap
-- **Back Button** - Keyboard Escape handler closes modal
-
-#### Smart Features ✅
-- **Animated Smart Badges** - Pulse animation on "New" and "Birthday" badges
-- **Enhanced "Why This Pick?" Tooltips** - Shows multiple intelligent reasons based on badges
-- **Long Press Quick Actions** - Menu with "Add to Cart", "Not Interested", "Share"
-- **Select All / Deselect All** - Batch selection controls
-- **Pull to Refresh** - Refresh button with loading indicator
-- **Skeleton Loading** - Beautiful loading states instead of spinner
-
-#### Scroll & Navigation ✅
-- **Scroll Snap** - Cards snap to edges (`snap-x snap-mandatory`)
-- **Keyboard Navigation** - Escape key closes modal
-- **Tab Switch Haptic** - Medium haptic on tab changes
-
-#### Files Updated:
-- `/app/frontend/src/components/PicksVault/UnifiedPicksVault.jsx` (1147 lines)
-- `/app/frontend/src/components/Mira/TopPicksPanel.jsx` (537 lines)
-
-**Test Report:** `/app/test_reports/iteration_137.json` - 11/11 tests passed
-
----
-
-### Previous: UNIFIED PICKS VAULT - PHASE 2 (User Requirements)
-All user requirements implemented:
-1. **No prices on Concierge cards** - Shows "Concierge® will source"
-2. **Chat command triggers vault** - "Show me personalized picks for Mojo"
-3. **Category/pillar picker** - Filter by all 10 pillars
-4. **Individual item selection** - Checkboxes for granular control
-
----
-
-## Smart Badges System
-| Badge | Trigger | Animation |
-|-------|---------|-----------|
-| 🔥 Trending | Score > 70 | Static |
-| ✨ New | Created < 30 days | Pulse |
-| 🔄 Reorder | Previously purchased | Static |
-| 🎂 Birthday! | Pet birthday ±14 days | Pulse |
-| ⭐ Seasonal | Matches current event | Static |
-
-**Current Season:** Valentine's Day (Feb 1-14) - treats, gifts, bandanas boosted
-
----
-
-**Backend API** (`/api/mira/top-picks/{pet_id}`):
-- Returns 4 picks per pillar (44 total across 11 pillars)
-- Filters by: allergies, size, breed, age, health conditions
-- Marks items as `catalogue_pick` or `concierge_suggestion`
-- Pillars: Celebrate, Dine, Care, Stay, Travel, Learn, Fit, Enjoy, Advisory, Paperwork, Shop
-- Excludes: Adopt, Farewell
-
-**Frontend Panel** (`TopPicksPanel.jsx`):
-- Beautiful grid layout with horizontal scroll per pillar
-- Pet switcher for multi-pet households
-- Intelligence summary (allergies, breed, size shown)
-- "Why this pick?" tooltips
-- Concierge Suggestion Cards for out-of-catalogue items
-- "Send All to Concierge®" CTA
-
-**Integration Points**:
-- "Personalized picks for Mojo" button in WelcomeHero now opens TopPicksPanel
-- Pet switch auto-refreshes with new pet's filtered picks
-
-### ✅ UI UPDATES COMPLETED
-1. **Mira Orb restyled** - Pink-to-Purple gradient with Sparkle icon
-2. **Concierge Button repositioned** - Above Mira orb, more subtle
-3. **Voice toggle** - Default OFF, persists to localStorage
-
-### ⚠️ KNOWN LIMITATION
-- **Playwright crashes on authenticated pages** - This is a memory limitation in the test container, NOT a code bug
-- **Workaround**: Use API testing for auth flows (works), screenshots for public pages (works)
-- **Manual testing**: Required for authenticated UI on doggycompany.in
-
----
-
-# 🔐 CREDENTIALS
-| System | Username/Email | Password |
-|--------|---------------|----------|
-| **Member** | dipali@clubconcierge.in | test123 |
-| **Admin (Basic)** | aditya | lola4304 |
-| **Admin (Email)** | dipali@clubconcierge.in | lola4304 |
-
----
-
-## Previous Session: Feb 10, 2026
-
-### 🆕 NEW: Soul Form Pop-up Modal (Feb 10, 2026)
-**File:** `/app/frontend/src/components/Mira/SoulFormModal.jsx` (NEW)
-
-2. **Integration Points** ✅
-   - "Soul" button in NavigationDock opens modal
-   - Soul Score badge in WelcomeHero opens modal
-   - Updates pet state with new score + glow animation
-
-### 🐛 BUG FIX: Tip Card Headings Now Subject-Specific (Feb 10, 2026)
-**File:** `/app/backend/mira_routes.py`
-
-1. **Added Senior Care Detection** ✅
-   - "senior", "aging", "old age", "elderly", "getting old" keywords
-   - Sub-types: `senior_diet` (food-related), `senior_mobility` (joints), `senior_care` (general)
-   - Icons: 🍲 (diet), 🦴 (mobility), 🧓 (general care)
-
-2. **Improved Title Generation** ✅
-   - Before: "Bruno's Meal Plan" for ALL food-related topics
-   - After: "Bruno's Senior Diet Guide" for senior food questions
-   - After: "Bruno's Joint & Mobility Care" for joint/stiffness questions
-
-3. **Fixed Shopping vs Advisory Intent** ✅
-   - "Cake" now correctly shows products only (no tip card)
-   - Short queries (≤3 words) with products = shopping intent
-   - Shopping keywords: "buy", "purchase", "order", "get me", "cake", "treat", "toy"
-
-### 🐛 BUG FIX: Picks Vault Blank Page (Feb 10, 2026)
-**File:** `/app/frontend/src/components/PicksVault/VaultManager.jsx`
-
-1. **Added Fallback Empty State** ✅
-   - When no vault type detected, shows friendly empty state
-   - "No picks yet - Ask Mira for recommendations!"
-   - Proper close button works
-
-2. **Improved Loading State Visibility** ✅
-   - Enhanced text visibility for "Mira thinking..." state
-   - File: `/app/frontend/src/styles/mira-prod.css`
-
-### 🆕 NEW: Conversation Intelligence System
-**File:** `/app/backend/conversation_intelligence.py` (NEW)
-
-1. **Pronoun Resolution (100%)** ✅
-   - "book that one" → Resolves to actual product/service name
-   - "the first one", "the second one" → Index-based resolution
-   - "I want that", "let's go with that" → Action detection
-
-2. **Follow-up Context (100%)** ✅
-   - "any cheaper ones?" → Remembers original search query
-   - "show me more" → Expands current results
-   - "can I include eggs?" → Detects ingredient questions
-
-3. **Frontend Integration** ✅
-   - `lastShownProducts` - Tracks items shown for pronoun resolution
-   - `lastSearchContext` - Tracks search context for follow-ups
-   - Intelligence metadata in API responses
-
-### 🆕 NEW: Memory Whisper UI
-**File:** `/app/frontend/src/components/Mira/MemoryWhisper.jsx` (NEW)
-
-- Subtle chip above chat showing memory recall
-- Auto-dismisses after 8 seconds
-- No longer prepends awkward "I remember..." to messages
-- Contextual whispers based on topic (diet, health, travel, etc.)
-
-### 🆕 IMPROVED: Tip Card Generation
-- Now uses conversation intelligence module for better detection
-- Detects follow-up questions in meal plan conversations
-- Consistent tip card generation even for ingredient questions
-
-### 🆕 NEW: Response Streaming (SSE)
-**File:** `/app/backend/mira_streaming.py` (NEW)
-**Hook:** `/app/frontend/src/hooks/mira/useStreamingChat.js` (NEW)
-
-- Real-time word-by-word streaming of Mira's responses
-- Natural typing speed with variation (20-50ms per word)
-- Products/tip cards sent after message completes
-- Endpoint: `POST /api/mira/os/stream`
-- Events: `token`, `message_complete`, `products`, `tip_card`, `metadata`, `done`
-
-### 🟢 VERIFIED: Vaccination Reminders (E020)
-**File:** `/app/backend/mira_proactive.py`
-**Status:** Already implemented and working
-
-- Vaccination alerts: CRITICAL (overdue), HIGH (7 days), MEDIUM (30 days)
-- Birthday reminders: 7 days and 1 day before
-- Grooming alerts based on breed and last appointment
-- Integrated in frontend via proactiveAlerts state
-
-### 🔴 CRITICAL FIX: Pillar-First Search
-**Problem:** Asking about "dog walking" was showing birthday cakes (cross-pillar leakage)
-**Solution:** Pillar filter now ALWAYS applies FIRST, category refinement adds to it
-**File:** `/app/backend/mira_routes.py` - `search_real_products()` function
-
-### 🟠 Fixed: Question Extraction Bug
-**Problem:** "?" appearing in separate yellow box instead of inline
-**Solution:** Disabled question extraction - questions stay inline per MIRA_UNIVERSAL_RULES
-**File:** `/app/frontend/src/components/Mira/ChatMessage.jsx` - `splitMessageWithQuestion()`
-
----
-
-## 🎯 NEXT PRIORITIES (P0)
-1. ~~**Sign Out button fix**~~ - z-index/overlay issue
-2. ~~**Weak pillar content**~~ - Fit, Adopt, Paperwork need expansion
-
-## ✅ COMPLETED: Intelligence & Proactive Quick Wins (Feb 10, 2026)
-
-### 🧠 Intelligence System: 65 → 85/100 (+20 points)
-
-**1. Multi-Intent Detection (+10)**
-- File: `/app/backend/conversation_intelligence.py`
-- Handles: "book grooming AND order treats" → splits into 2 intents
-- Connectors: "and", "also", "plus", "&", "as well as", "both", "along with"
-
-**2. Implicit Intent Detection (+10)**
-- File: `/app/backend/conversation_intelligence.py`  
-- 50+ symptom/situation → pillar/intent mappings
-- Examples:
-  - "scratching a lot" → care/skin_issue (medium urgency)
-  - "not eating" → care/appetite_loss (high urgency)
-  - "vomiting" → emergency/digestive_issue (critical)
-  - "scared of loud noises" → learn/fear
-  - "going on vacation" → stay/boarding
-  - "passed away" → farewell/grief
-
-### ⚡ Proactive System: 70 → 85/100 (+15 points)
-
-**3. Health Check-in Prompts (+8)**
-- File: `/app/backend/mira_proactive.py`
-- Weekly wellness check: "How is Bruno doing?"
-- Senior pet check (7+ years): Extra attention prompts
-- Post-vaccination check: 2-4 days after vaccination
-
-**4. Seasonal Tips (+7)**
-- File: `/app/backend/mira_proactive.py`
-- India seasons: Winter, Summer, Monsoon, Post-Monsoon
-- 3-4 tips per season (paw care, hydration, tick prevention, etc.)
-- Auto-rotates tips based on day of year
-
----
-
-## What Was Accomplished This Session (Feb 10, 2026)
-
-### Latest: Dreamfolks Demo Page - Layout Simplification ✅
-**Completed: Feb 10, 2026**
-- Removed redundant tabbed interface from B2B demo page (`/demo/dreamfolks`)
-- Deleted orphaned JSX code (~200 lines removed, 2002 → 1800 lines)
-- Removed unused state variables: `activeTab`, `setActiveTab`, `selectedPillar`, `setSelectedPillar`
-- Cleaned up unused imports: `ChevronRight`, `ChevronDown`, `Phone`, `X`, `ArrowRight`, `Play`, `Loader2`, `Volume2`
-- Page now flows directly: Chat Interface → Scenario Tiles → Heritage Section
-- Verified mobile and desktop responsiveness
-- **File:** `/app/frontend/src/pages/DreamfolksDemo.jsx`
-
-### NEW: Guided Demo Tour Feature ✅
-**Completed: Feb 10, 2026**
-- Added "Start 2-Minute Demo Tour" button in hero section
-- Implemented 7-step guided tour with progress dots and navigation
-- Tour highlights key capabilities: Chat Interface, Health Detection, Emergency Mode, Multi-Intent
-- Auto-scrolls to relevant sections and auto-triggers demo scenarios
-- Semi-transparent overlay during tour for focus
-- "Skip Tour" and "Next/Finish" navigation
-- **Components added:**
-  - `TOUR_STEPS` constant with 7 guided tour steps
-  - `TourTooltip` inline component with animations
-  - Tour state management: `tourActive`, `tourStep`
-  - Tour functions: `startTour()`, `nextTourStep()`, `exitTour()`
-- **File:** `/app/frontend/src/pages/DreamfolksDemo.jsx`
-
-### Scenario Tiles Moved to Top of Chat ✅
-**Completed: Feb 10, 2026**
-- Moved scenario tiles INSIDE the chat container (above messages, below header)
-- Users can now see tiles AND conversation in one view
-- No scrolling required - clicking a tile shows response immediately below
-- Layout: Header → Tiles → Messages → Input
-- Tiles use 2-column grid on mobile, 4-column on desktop
-- **File:** `/app/frontend/src/pages/DreamfolksDemo.jsx`
-
-### Chat Response Formatting - Pink/Purple Headings ✅
-**Completed: Feb 10, 2026**
-- Standalone headings now use purple-to-pink gradient text
-- Inline bold text is now pink colored (`text-pink-400`)
-- Product names, section titles, and key info stand out visually
-- **File:** `/app/frontend/src/pages/DreamfolksDemo.jsx` - `formatInlineMarkdown()` and `renderMarkdown()`
-
-### Landing Page Copy - Soul-Centric Rewrite ✅
-**Completed: Feb 10, 2026**
-- Rewrote entire landing page to reflect Mira's soul philosophy
-- **New headline:** "They can't tell you what they need. But I can."
-- **New tagline:** "The Soul That Speaks for Pets Who Cannot Speak"
-- **New body copy:** "I am the brain that remembers every meal preference, every allergy, every birthday. The soul that knows when you say 'book that one' - exactly which one you mean."
-- Updated comparison section: "Others" vs "Mira" (not generic "Old Way")
-- Updated features: "I Remember What Matters", "I Understand Context", "I Know Their Soul", "I Have Human Hands", "I Grow With Them"
-- Updated pillars descriptions to be emotional and specific
-- Updated CTAs: "Let Me Know Your Pet" / "See Who I Am"
-- **Key philosophy:** "I'm not an app. I'm not a chatbot. I'm the voice they cannot speak."
-
-### Bug Fix: "Book Now" Button Runtime Error ✅
-**Completed: Feb 10, 2026**
-- Fixed `ReferenceError: setIsServiceRequest is not defined` when clicking Book Now on reminders
-- Simplified booking message format
-
-### Soul Knowledge Ticker ✅
-**Completed: Feb 10, 2026**
-- Created new `SoulKnowledgeTicker.jsx` component - dynamic rolling ticker showing everything Mira knows about the pet
-- Ticker displays: Soul Score badge, favorites, personality traits, breed info, memories, health data
-- Personal knowledge items prioritized over places
-- **Test Results:** Backend 100% (14/14 tests), Frontend verified via screenshot
-
-### Slide-Down Animation for Proactive Alert Cards ✅
-**Completed: Feb 10, 2026**
-- Added `slideDownReveal` CSS animation (0.25s ease-out) for expanded action buttons
-
-### Expandable Proactive Reminder Cards ✅
-**Completed: Feb 10, 2026**
-- Implemented expandable reminder cards with "Ask Mira" and "Book Now" actions
-- **Test Results:** 100% pass (6/6 features verified)
-
-**MiraDemoPage.jsx refactoring: 5,789 → 3,299 lines (43% reduction total)**
-
-### Key Achievements:
-1. **18 UI Components** extracted to `/app/frontend/src/components/Mira/` (+1 SoulKnowledgeTicker)
-2. **5 Hooks** created and ALL integrated at `/app/frontend/src/hooks/mira/`
-3. **28+ helper functions** in `useChat.js`
-4. **NEW: Constants & utilities extracted** to `/app/frontend/src/utils/`
-5. **All tests passing** - no breaking changes
-
----
-
-# 📦 EXTRACTED COMPONENTS (18 total)
-
+# The Doggy Company - Mira AI Pet Companion
+
+## Original Problem Statement
+Build and maintain the Mira AI Pet Companion feature for The Doggy Company platform. Key requirements from users:
+1. Remove prices from Concierge Suggestion cards
+2. Trigger "Picks" panel from chat command ("Show me personalized picks for Mojo")
+3. Implement category/pillar picker in UI
+4. Allow individual item selection instead of sending all items
+5. Full UI/UX audit for mobile and desktop with haptic feedback
+6. Beautiful redesign of Concierge cards
+7. Display 5 catalogue + 5 concierge picks per pillar
+8. Confirmation modal before sending to concierge
+9. Selection summary panel
+10. Expandable catalogue item cards
+
+## Core Architecture
 ```
-/app/frontend/src/components/Mira/
-├── ChatMessage.jsx         (988 lines) ✅ Handles ALL message types
-├── WelcomeHero.jsx         (320 lines) ✅ Empty chat welcome screen
-├── PastChatsPanel.jsx      (186 lines) ✅ Chat history sidebar
-├── ServiceRequestModal.jsx (166 lines) ✅ Service booking wizard
-├── HealthVaultWizard.jsx   (146 lines) ✅ Health vault setup
-├── LearnModal.jsx          (133 lines) ✅ Learning content modal
-├── ChatInputBar.jsx        (128 lines) ✅ Input area with voice
-├── MiraTray.jsx            (108 lines) ✅ Picks/recommendations tray
-├── HelpModal.jsx           (101 lines) ✅ Help content
-├── NavigationDock.jsx      (varies)    ✅ Bottom navigation
-├── FloatingActionBar.jsx   (varies)    ✅ FAB buttons
-├── PetSelector.jsx         (varies)    ✅ Pet switcher
-├── InsightsPanel.jsx       (63 lines)  ✅ Pet insights
-├── TestScenariosPanel.jsx  (77 lines)  ✅ Dev testing panel
-├── ConciergePanel.jsx      (80 lines)  ✅ Concierge help
-├── MiraLoader.jsx          (115 lines) ✅ Loading indicators + mode badge
-├── ScrollToBottomButton.jsx (45 lines) ✅ NEW - Scroll FAB
-└── TextComponents.jsx      (105 lines) ✅ NEW - FormattedText & TypedText
+/app
+├── backend (FastAPI)
+│   ├── routes/
+│   │   ├── mira_routes.py - Chat intent detection
+│   │   └── top_picks_routes.py - Picks retrieval logic
+│   └── utils/haptic.py
+├── frontend (React)
+│   └── src/
+│       ├── components/
+│       │   ├── PicksVault/UnifiedPicksVault.jsx - Main picks component
+│       │   └── Mira/ - Mira-related components
+│       ├── pages/MiraDemoPage.jsx - Main demo page
+│       └── hooks/mira/ - Custom hooks
+└── test_top_picks.py
 ```
 
----
+## What's Been Implemented
+**Date: Feb 11, 2026**
 
-# 🛠️ EXTRACTED UTILITIES
+### Backend
+- ✅ Intent detection for opening picks vault from chat
+- ✅ Picks retrieval: 5 catalogue + 5 concierge per pillar
+- ✅ Detailed data structure for concierge suggestions
+- ✅ Fixed "Fit" and "Learn" pillar data bugs
+- ✅ "Cat" product filtering
 
-```
-/app/frontend/src/utils/
-├── miraConstants.js  (380+ lines) ✅ NEW - All constants & helper functions
-│   ├── DOCK_ITEMS, CONCIERGE_HOURS, isConciergeLive
-│   ├── generateConciergeRequest
-│   ├── DOG_PLACEHOLDER_IMAGES, getPlaceholderImage
-│   ├── TEST_SCENARIOS
-│   ├── SERVICE_CATEGORIES, detectServiceIntent
-│   ├── COMFORT_KEYWORDS, ACKNOWLEDGMENT_PHRASES, getComfortModeServices
-│   ├── EXPERIENCE_CATEGORIES, detectExperienceIntent
-│   └── generateWhyForPet
-└── confetti.js       (55 lines)  ✅ NEW - Celebration confetti utility
-```
+### Frontend
+- ✅ `UnifiedPicksVault.jsx` - Unified picks, tips, personalized picks
+- ✅ `ConciergeCard.jsx` - Beautiful dark-theme cards
+- ✅ `ExpandablePickCard.jsx` - Expandable catalogue items
+- ✅ `ConciergeConfirmationModal.jsx` - Confirmation before sending
+- ✅ `CustomRequestBox.jsx` - Custom user input
+- ✅ `SelectionSummaryPanel.jsx` - Review selections
+- ✅ Pillar filter tabs
+- ✅ Individual item selection with checkboxes
+- ✅ Removed floating "C" button
+- ✅ Haptic feedback utility
 
----
+## Current Status
+**UI Status:** ✅ Working (verified Feb 11, 2026)
+- The MiraDemoPage and UnifiedPicksVault render correctly
+- All components loading properly
+- No critical console errors
 
-# 🪝 INTEGRATED HOOKS (5 total - ALL ACTIVE)
+## Prioritized Backlog
 
-```
-/app/frontend/src/hooks/mira/
-├── useChat.js     (888 lines) ✅ 28+ helpers for chat logic
-├── usePet.js      (235 lines) ✅ Pet state management
-├── useSession.js  (165 lines) ✅ Session management
-├── useVault.js    (115 lines) ✅ Picks/vault management
-├── useVoice.js    (363 lines) ✅ Voice input/output
-└── index.js       (52 lines)  - Exports all hooks
-```
+### P1 - High Priority
+- [ ] Haptic & UX Audit Implementation - 19 components need haptic feedback
 
----
+### P2 - Medium Priority
+- [ ] Refactor `UnifiedPicksVault.jsx` (4000+ lines) into smaller components
 
-# 📊 CURRENT STATUS
+### P3 - Low Priority / Future
+- [ ] Full mobile/desktop visual polish
+- [ ] Performance optimizations
 
-| Metric | Original | Current | Reduction |
-|--------|----------|---------|-----------|
-| MiraDemoPage.jsx | 5,789 | **3,299** | **43%** |
-| Components | 0 | **17** | +2 this session |
-| Hooks | 0 | **5** | All integrated |
-| Utility files | 0 | **2** | NEW this session |
+## Key API Endpoints
+- `POST /api/mira/os/understand-with-products` - Main chat endpoint
+- `GET /api/mira/top-picks/<pet_name>` - Curated picks for pet
 
-## All Tests Passing ✅
-- Frontend: Compiles (no errors)
-- Backend: Healthy
-- Chat API: Working
-- Lint: No errors
-
----
-
-# 🎯 REMAINING WORK
-
-## P0 - Critical (Page Size Still Large)
-- [ ] Continue splitting MiraDemoPage.jsx render method
-- [ ] Target: Get below 2,000 lines
-
-## P1 - UI Component Extraction
-- [ ] Extract more inline JSX from render method
-- [ ] Identify repeating patterns
-
-## P2 - handleSubmit Refactoring
-- [ ] Move remaining API call logic to hooks
-- [ ] Target: Reduce from ~600 → ~400 lines
-
-## Future/Backlog (PAUSED per user request)
-- [ ] Hotel & Transfer feature enhancements
-
----
-
-# 🔑 KEY API ENDPOINTS
-
-| Endpoint | Purpose |
-|----------|---------|
-| `POST /api/mira/chat` | Main chat endpoint |
-| `POST /api/mira/route_intent` | Intent routing |
-| `GET /api/mira/amadeus/hotels` | Hotels (all types, INR) |
-| `GET /api/mira/transfers/search` | Transfers (mocked) |
-| `GET /api/mira/retention/stats` | Retention statistics |
-| `POST /api/mira/conversation-memory/recall` | Memory recall |
-| `POST /api/mira/detect-mood` | Mood detection |
-| `POST /api/tts/generate` | ElevenLabs TTS |
-
----
-
-# ⚠️ KNOWN ISSUES
-
-1. **Screenshot tool crashes on /mira-demo** - Known issue due to page complexity
-2. **Page may be slow to load** - Still 3,299 lines, needs more splitting
-3. **Meilisearch FATAL** - Not used, can be ignored
-
-## Fixed This Session
-- ✅ Logout API 422 error - Fixed with proper Pydantic model
-- ✅ iOS haptic feedback - All 12 components now use centralized utility
-- ✅ Sign Out button z-index - Increased to 999 with pointer-events:auto
-- ✅ Soul score in chat response - Now returns `pet_soul_score` in main /chat endpoint
-- ✅ Soul score increments on every chat interaction
-
-## Verified Working
-- ✅ **Service Flow**: User Request → Service Desk Ticket → Admin Notification → Channel Intake
-- ✅ **Soul Score**: Increments with each interaction (50.0 → 50.1 → 50.2)
-- ✅ **Collections populated**: service_desk_tickets, admin_notifications, channel_intakes, mira_tickets
-- ✅ **Mobile + Desktop**: Both tested and working
-- ✅ **Photo upload API**: /api/mira/upload/file endpoint available
-- ✅ **MEMORY SYSTEM**: 86 memories stored (Health: 4, Shopping: 62, Events: 11, General: 6)
-- ✅ **Memory Recall**: Mira surfaces relevant memories in responses
-- ✅ **Picks & Tip Flow**: Verified Feb 2026 - /api/mira/os/understand-with-products correctly returns execution_type: CONCIERGE and creates ticket for non-product service requests (e.g., dog walker)
-- ✅ **Vault Send to Concierge**: /api/mira/vault/send-to-concierge creates ticket_id, notification_id, inbox_id
-- ✅ **Sign Out Button**: Tested working on desktop and mobile with z-index:999
-- ✅ **AUTO-CONCIERGE Routing**: Service requests (dog walker, boarding, grooming, training, vet, daycare) now automatically route to CONCIERGE with confirmation banner
-- ✅ **Concierge Confirmation Banner**: New component shows "Request Received!" with ticket ID when service request is submitted
-
-## NEW: Auto-Concierge Service Keywords
-The following service requests now automatically route to CONCIERGE execution_type:
-- Dog walking / dog walker
-- Boarding / pet sitting / kennel / daycare
-- Grooming / grooming appointment
-- Training / trainer / puppy training
-- Vet appointment / veterinary / checkup
-- "While I'm away" / "going out of town"
-
-## 📱 WHATSAPP INTEGRATION (Ready - Awaiting Meta Keys)
-**Status:** Plumbing complete, waiting for Meta Business API credentials
-
-**Files:**
-- `/app/backend/whatsapp_routes.py` - Full WhatsApp Cloud API integration
-- `/app/backend/communication_engine.py` - Multi-channel communication with WhatsApp support
-
-**Required .env variables (add when Meta keys are ready):**
-```
-WHATSAPP_PHONE_NUMBER_ID=your_phone_number_id
-WHATSAPP_ACCESS_TOKEN=your_access_token
-WHATSAPP_VERIFY_TOKEN=your_webhook_verify_token
-WHATSAPP_BUSINESS_ACCOUNT_ID=your_business_account_id
+## Database Schema
+**unified_products collection:**
+```json
+{
+  "name": "String",
+  "pillars": ["Array of pillar IDs"],
+  "pillar": "String",
+  "tags": ["Array"],
+  "in_stock": "Boolean",
+  "visibility": { "status": "String" }
+}
 ```
 
-**Endpoints ready:**
-- `POST /api/whatsapp/send` - Send text messages
-- `POST /api/whatsapp/send-template` - Send template messages (pre-approved)
-- `POST /api/whatsapp/send-media` - Send images, documents, audio, video
-- `GET/POST /api/whatsapp/webhook` - Webhook for incoming messages
-
-**Integration points:**
-- Concierge service requests → WhatsApp notification to team
-- Ticket updates → WhatsApp to member
-- Proactive alerts (vaccinations, birthdays) → WhatsApp reminders
-
----
-
-# 🚀 QUICK START FOR NEXT AGENT
-
-```bash
-# 1. Check services
-sudo supervisorctl status
-
-# 2. Check frontend logs
-tail -20 /var/log/supervisor/frontend.out.log
-
-# 3. Test API
-curl -s https://mira-picks-repair.preview.emergentagent.com/api/health
-
-# 4. View main file
-/app/frontend/src/pages/MiraDemoPage.jsx (3,299 lines)
-
-# 5. View hooks
-/app/frontend/src/hooks/mira/ (5 hooks)
-
-# 6. View components  
-/app/frontend/src/components/Mira/ (17 components)
-
-# 7. View utilities
-/app/frontend/src/utils/miraConstants.js
-/app/frontend/src/utils/confetti.js
-```
-
----
-
-## Latest Session: Feb 10, 2026 (Continued)
-
-### About Us Page - Mrs. Mira Sikand Photo Update ✅
-**Completed: Feb 10, 2026**
-
-- **Replaced dog image** with actual photo of Mrs. Mira Sikand on the `/about` page
-- **Image URL:** `https://customer-assets.emergentagent.com/job_fb4fe188-9dcd-4168-922c-d00bcc6f0e32/artifacts/dvhzt4zj_image.png`
-- **Added ethereal halo effect** with multiple layered CSS gradients:
-  - Outer glow: amber/purple/pink gradient with blur-3xl + animate-pulse
-  - Secondary ring: amber/orange gradient with blur-2xl
-  - Inner glow: amber blur-xl
-- **Photo styled as circular** with ethereal border and drop-shadow filter
-- **Updated text** to clarify family relationships:
-  - "Dipali's mother and Aditya and Diya's beloved grandmother"
-  - Changed "making treats with her granddaughter" → "making treats with her granddaughter Diya"
-- **Updated alt text** to "Mrs. Mira Sikand - The Soul Behind Mira AI"
-
-**File Modified:** `/app/frontend/src/pages/AboutPage.jsx`
-
----
-
-
----
-
-## Latest Session: Feb 10, 2026 (Session 2)
-
-### Concierge® Form Fixes - Edit Button & Pillar Detection ✅
-**Completed: Feb 10, 2026**
-
-**Problem:** 
-1. Edit button on Concierge® handoff form didn't work - just closed modal
-2. ALL requests defaulted to "celebrate" pillar instead of correct pillar
-3. Missing ® trademark symbol on several "Concierge" references
-
-**Root Cause Analysis:**
-- `currentPillar` state in MiraDemoPage.jsx was initialized to `'celebrate'` (line 193) and `setPillar()` was NEVER called anywhere in the code
-- The handoff summary detection worked correctly, but fell back to `currentPillar` which was always 'celebrate'
-
-**Fixes Applied:**
-
-1. **HandoffSummary Component - Inline Editing** (`/app/frontend/src/components/Mira/HandoffSummary.jsx`)
-   - Edit button now toggles editing mode instead of closing modal
-   - Added inline editing for: Title (input), Pillar (dropdown), Notes (textarea)
-   - Added pillar dropdown with all 11 pillar options
-   - Cancel/Save buttons replace Edit/Send when in editing mode
-   - Edited data passed to parent via `onConfirm(editedData)`
-
-2. **MiraDemoPage.jsx - Pillar State Management**
-   - Changed default pillar from `'celebrate'` to `'general'` (line 193)
-   - Added `setPillar(currentPillarForReplies)` after receiving API response (line 2628)
-   - Updated `handleConciergeHandoff` to accept `editedData` parameter and use edited pillar
-   - Expanded queue mapping to include all pillar types (lowercase keys)
-
-3. **Backend - Handoff Endpoint** (`/app/backend/mira_service_desk.py`)
-   - Added `pillar` and `request_title` fields to `HandoffToConciergeRequest` model
-   - Updated `handoff_to_concierge` endpoint to save user-edited pillar to ticket
-
-4. **Pillar Detection Improvements** (`/app/backend/mira_routes.py`)
-   - Added separate `grooming` category in `CONCIERGE_ACTION_TRIGGERS`
-   - Added keywords: `groomer`, `salon`, `spa`, `nail trim`, `nail cut`, `ear cleaning`
-   - Removed grooming from `care` category to prevent misclassification
-
-5. **Grooming Intent Detection** (`/app/backend/mira_service_desk.py`)
-   - Added patterns: `groomer`, `salon`, `spa` to `GROOM_PLAN` intent
-
-6. **® Trademark Symbol Updates**
-   - Updated 9+ instances of "Concierge" to "Concierge®"
-   - Files: FirstVisitTour.jsx, QuickReplies.jsx, RequestsTab.jsx, PicksVault.jsx, MembershipPage.jsx, SEOHead.jsx
-
-**Test Results:**
-- Backend `/api/mira/route_intent` - Correctly detects "groomer" as GROOM_PLAN intent
-- Backend `/api/service_desk/handoff_to_concierge` - Accepts pillar parameter
-- Frontend - Pillar state now updates from API response
-
-**Files Modified:**
-- `/app/frontend/src/components/Mira/HandoffSummary.jsx` - Full rewrite with editing mode
-- `/app/frontend/src/pages/MiraDemoPage.jsx` - Pillar state fix + handleConciergeHandoff update
-- `/app/backend/mira_service_desk.py` - Model + endpoint update
-- `/app/backend/mira_routes.py` - CONCIERGE_ACTION_TRIGGERS update
-- Various frontend files - ® symbol additions
-
----
-
-### P0 - Remaining Issues (UPDATED Feb 10, 2026 End of Session)
-
-1. **Tip Card Type Detection** - STILL SHOWING WRONG TYPE
-   - Status: FIX APPLIED - Needs verification
-   - Problem: "Care routines" showing as "Meal Plan"
-   - Fix: Reordered detection in mira_routes.py - care/routine checks BEFORE meal
-
-2. **Voice Overflow** - Voice plays when tiles clicked
-   - Status: FIX APPLIED - Needs testing
-   - Fix: Removed duplicate skipVoiceOnNextResponseRef, using skipNextVoice() from hook
-   
-3. **Location Search Flow** - Mira doesn't wait for user input
-   - Status: NOT STARTED
-   - Problem: Asks "which city?" but immediately shows results without waiting
-
-4. **Soul Score Sync** - API returns old score
-   - Status: PARTIALLY FIXED
-   - Issue: Pet ID format mismatch (PET-XXX vs pet-xxx)
-
-5. **Bold Text Formatting** - Not appearing in pink consistently
-   - Status: PROMPT UPDATED - Needs verification
-
----
-
-### Session 2 Additional Features Completed
-
-1. **Soul Score Augmentation** ✅
-   - Pillar-based scoring (+1.0 to +3.0 by pillar)
-   - Learning-based scoring (+0.5 to +3.0 for allergies, preferences, fears)
-   - Engagement depth multipliers (1.0x to 2.5x based on conversation turns)
-   - Milestone system (Getting to Know You → Soul Bonded)
-
-2. **Google Places API** ✅
-   - Added 5 new search functions: groomers, photographers, shelters, boarding, trainers
-   - Frontend displays places in MiraTray with appropriate icons
-
-3. **Notification Sounds** ✅
-   - notificationSounds.js with picks, tip, concierge bell sounds
-   - iOS/Android compatible via Web Audio API
-
-4. **Learn Button Notification** ✅
-   - Golden pulse animation when new training videos available
-   - Badge with video count
-   - Clears when Learn is opened
-
-5. **Emergency Modal Fix** ✅
-   - Removed generic "help" from emergency keywords
-
-6. **YouTube Video Relevance** ✅
-   - Diet/health conversations no longer show training videos
-   - Topic-specific video search mapping
-
----
-
-### Test Credentials
+## Test Credentials
 - Email: dipali@clubconcierge.in
 - Password: test123
-- Note: Pet IDs in DB are lowercase (pet-xxxxx not PET-XXXXX)
-   - Status: NOT STARTED
-   - Blocked: Need to identify which button and where
-
-3. **Concierge® Fallback Message** - Add "our pet Concierge® will get back to you shortly" to search results
-   - Status: NOT STARTED
-   - Location: LLM prompt in mira_constants.py or response formatting
-
-4. **Location Search Flow** - Mira should wait for user's city input before showing results
-   - Status: RECURRING ISSUE - Needs deeper investigation
-
----
-
-
-
-**Last Updated**: February 11, 2026
-**Preview URL**: https://mira-picks-repair.preview.emergentagent.com
-**Original File**: 5,789 lines → **Current**: 4,035 lines
-
-## [Feb 11, 2026] - Audit Session Summary
-
-### Verified Working via Backend Tests
-- Tip card type detection: scratching→health_advice, meal plan→meal_plan, tick prevention→health_advice
-- Cat product filtering: 62 cat products returned correctly
-- Service flow: Creates tickets, notifications, channel intakes
-- Admin panel: Accessible, showing data
-
-### Standing Instructions (CRITICAL - FOR ALL AGENTS)
-1. **Always test as logged-in user**: dipali@clubconcierge.in / test123
-2. **Check admin panel**: /admin | aditya / lola4304
-3. **Verify on DEPLOYED site**: doggycompany.in (not just preview)
-4. **Pass these instructions to every future agent**
-
-### Blocker
-- Playwright screenshot tool crashes on /mira-demo page (memory/resource issue with 4035-line component)
