@@ -307,7 +307,30 @@ async def get_pillar_picks(
     # Sort by score and limit
     picks.sort(key=lambda x: x.get("score", 0), reverse=True)
     
-    # If no picks, add a Concierge Suggestion Card
+    # Always add a Concierge Suggestion Card for service-heavy pillars
+    # This gives users the option to request custom sourcing
+    service_pillars = ["care", "stay", "travel", "fit", "learn", "advisory", "celebrate"]
+    if pillar in service_pillars and len(picks) < 8:
+        concierge_card = {
+            "id": f"concierge-{pillar}-{pet.get('name', 'pet')}",
+            "name": f"Custom {pillar.title()} for {pet.get('name', 'your pet')}",
+            "price": None,  # Concierge will source and get back with price
+            "image": None,
+            "type": "concierge_suggestion",
+            "pick_type": "concierge",
+            "why_reason": f"Can't find what you need? Our Concierge® will source the perfect {pillar} solution for {pet.get('name', 'your pet')}",
+            "score": 50,  # Lower score so catalogue items appear first
+            "badges": [],
+            "specs": [
+                f"Tailored for {pet.get('breed', 'your dog')}",
+                f"Size: {size_cat}",
+                f"Safety-verified by Mira",
+                "Concierge® will get back with price"
+            ]
+        }
+        picks.append(concierge_card)
+    
+    # If NO picks at all, add a prominent Concierge card
     if len(picks) == 0:
         picks.append({
             "id": f"concierge-{pillar}",
@@ -318,6 +341,7 @@ async def get_pillar_picks(
             "pick_type": "concierge",
             "why_reason": f"Our Concierge® will source the perfect {pillar} solution for {pet.get('name', 'your pet')}",
             "score": 100,
+            "badges": [],
             "specs": [
                 f"Tailored for {pet_breed or 'your dog'}",
                 f"Size: {size_cat}",
