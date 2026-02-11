@@ -628,6 +628,23 @@ curl -s https://quality-check-27.preview.emergentagent.com/api/health
 
 
 
-**Last Updated**: February 10, 2026
+**Last Updated**: February 11, 2026
 **Preview URL**: https://quality-check-27.preview.emergentagent.com
-**Original File**: 5,789 lines → **Current**: 3,299 lines (**43% reduction**)
+**Original File**: 5,789 lines → **Current**: 4,035 lines
+
+## [Feb 11, 2026] - Audit Session Summary
+
+### Verified Working via Backend Tests
+- Tip card type detection: scratching→health_advice, meal plan→meal_plan, tick prevention→health_advice
+- Cat product filtering: 62 cat products returned correctly
+- Service flow: Creates tickets, notifications, channel intakes
+- Admin panel: Accessible, showing data
+
+### Standing Instructions (CRITICAL - FOR ALL AGENTS)
+1. **Always test as logged-in user**: dipali@clubconcierge.in / test123
+2. **Check admin panel**: /admin | aditya / lola4304
+3. **Verify on DEPLOYED site**: doggycompany.in (not just preview)
+4. **Pass these instructions to every future agent**
+
+### Blocker
+- Playwright screenshot tool crashes on /mira-demo page (memory/resource issue with 4035-line component)
