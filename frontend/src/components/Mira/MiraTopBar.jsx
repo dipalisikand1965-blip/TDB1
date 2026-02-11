@@ -76,9 +76,24 @@ const MiraTopBar = ({
     
     if (remindersBtnRef.current) {
       const rect = remindersBtnRef.current.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+      const dropdownWidth = 320; // min-width of dropdown
+      
+      // Calculate center position
+      let leftPos = rect.left + rect.width / 2;
+      
+      // Ensure dropdown doesn't go off-screen on the left
+      if (leftPos - dropdownWidth / 2 < 16) {
+        leftPos = dropdownWidth / 2 + 16;
+      }
+      // Ensure dropdown doesn't go off-screen on the right
+      if (leftPos + dropdownWidth / 2 > viewportWidth - 16) {
+        leftPos = viewportWidth - dropdownWidth / 2 - 16;
+      }
+      
       setDropdownPos({
         top: rect.bottom + 8,
-        left: rect.left + rect.width / 2
+        left: leftPos
       });
     }
     setShowReminders(!showReminders);
@@ -92,9 +107,22 @@ const MiraTopBar = ({
     
     if (conciergeBtnRef.current) {
       const rect = conciergeBtnRef.current.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+      const dropdownWidth = 320;
+      
+      let leftPos = rect.left + rect.width / 2;
+      
+      // Ensure dropdown doesn't go off-screen
+      if (leftPos - dropdownWidth / 2 < 16) {
+        leftPos = dropdownWidth / 2 + 16;
+      }
+      if (leftPos + dropdownWidth / 2 > viewportWidth - 16) {
+        leftPos = viewportWidth - dropdownWidth / 2 - 16;
+      }
+      
       setDropdownPos({
         top: rect.bottom + 8,
-        left: rect.left + rect.width / 2
+        left: leftPos
       });
     }
     setShowConcierge(!showConcierge);
