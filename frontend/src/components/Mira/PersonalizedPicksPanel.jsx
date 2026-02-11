@@ -883,35 +883,39 @@ const PersonalizedPicksPanel = ({
                 {conciergePicks.length > 0 && (
                   <CollapsibleSection
                     title={`Concierge Curates for ${pet?.name || 'Your Pet'}`}
-                    subtitle="Personalized services"
+                    subtitle="Handpicked services and experiences"
                     icon={<Star className="w-4 h-4" />}
                     count={conciergePicks.length}
                     defaultExpanded={true}
                     variant="concierge"
                   >
-                    <div className="space-y-3">
-                      {conciergePicks.slice(0, showAllConcierge ? 10 : 3).map((pick, index) => (
-                        <ExpandablePickCard
-                          key={pick.id || index}
-                          pick={pick}
-                          isSelected={isSelected(pick)}
-                          onSelect={toggleSelection}
-                          petName={pet?.name}
-                          type="concierge"
-                        />
-                      ))}
-                      {conciergePicks.length > 3 && !showAllConcierge && (
-                        <button
-                          onClick={() => {
-                            hapticFeedback.buttonTap();
-                            setShowAllConcierge(true);
-                          }}
-                          className="w-full py-2 text-sm text-purple-400 hover:text-purple-300 transition-colors"
-                        >
-                          Show {conciergePicks.length - 3} more →
-                        </button>
-                      )}
+                    {/* Horizontal scroll on mobile, grid on desktop */}
+                    <div className="overflow-x-auto -mx-3 px-3 pb-2" style={{ WebkitOverflowScrolling: 'touch' }}>
+                      <div className="flex gap-3 md:grid md:grid-cols-2 lg:grid-cols-3">
+                        {conciergePicks.slice(0, showAllConcierge ? 10 : 5).map((pick, index) => (
+                          <div key={pick.id || index} className="flex-shrink-0 w-48 md:w-auto">
+                            <ExpandablePickCard
+                              pick={pick}
+                              isSelected={isSelected(pick)}
+                              onSelect={toggleSelection}
+                              petName={pet?.name}
+                              type="concierge"
+                            />
+                          </div>
+                        ))}
+                      </div>
                     </div>
+                    {conciergePicks.length > 5 && !showAllConcierge && (
+                      <button
+                        onClick={() => {
+                          hapticFeedback.buttonTap();
+                          setShowAllConcierge(true);
+                        }}
+                        className="w-full py-2 text-sm text-purple-400 hover:text-purple-300 transition-colors mt-2"
+                      >
+                        Show {conciergePicks.length - 5} more →
+                      </button>
+                    )}
                   </CollapsibleSection>
                 )}
                 
