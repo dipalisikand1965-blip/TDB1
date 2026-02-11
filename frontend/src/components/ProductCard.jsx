@@ -830,6 +830,22 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
       .filter(Boolean)
       .join(' / ');
     
+    // If this is from Mira Picks panel, use the onAddToPicks callback instead
+    if (onAddToPicks) {
+      const pickItem = {
+        ...product,
+        price: currentPrice,
+        selectedVariant: matchingVariant?.title || variantDescription,
+        selectedOptions: selectedOptions,
+        petName: cartInput.petName || selectedPet?.name,
+        pick_type: 'catalogue',
+        addedAt: new Date().toISOString()
+      };
+      onAddToPicks(pickItem);
+      onClose();
+      return;
+    }
+    
     // Calculate autoship details if applicable
     let autoshipDetails = null;
     if (cartInput.purchaseType === 'autoship' && cartInput.autoshipStartDate && cartInput.autoshipEndDate) {
