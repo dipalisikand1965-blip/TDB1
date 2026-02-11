@@ -260,8 +260,19 @@ const MiraDemoPage = () => {
   const [userGeoLocation, setUserGeoLocation] = useState(null);
   const [userCity, setUserCity] = useState('Mumbai'); // Fallback
   
+  // Track if page is fully loaded (for deferring non-critical operations)
+  const [isPageReady, setIsPageReady] = useState(false);
+  
+  // Mark page as ready after initial render
+  useEffect(() => {
+    const timer = setTimeout(() => setIsPageReady(true), 1000);
+    return () => clearTimeout(timer);
+  }, []);
+  
   // Initialize haptic audio context on first user interaction (required for iOS)
   useEffect(() => {
+    if (!isPageReady) return;
+    
     const initHapticAudio = () => {
       hapticFeedback.init();
       document.removeEventListener('touchstart', initHapticAudio);
@@ -275,10 +286,12 @@ const MiraDemoPage = () => {
       document.removeEventListener('touchstart', initHapticAudio);
       document.removeEventListener('click', initHapticAudio);
     };
-  }, []);
+  }, [isPageReady]);
   
-  // Fetch user's geolocation on mount
+  // Fetch user's geolocation AFTER page is ready (deferred for performance)
   useEffect(() => {
+    if (!isPageReady) return;
+    
     const detectLocation = async () => {
       // First try browser geolocation
       if (navigator.geolocation) {
