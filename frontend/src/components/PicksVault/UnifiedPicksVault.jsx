@@ -213,6 +213,232 @@ const QuickActionsMenu = ({ pick, isVisible, onClose, onAction, position }) => {
   );
 };
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// CONCIERGE CONFIRMATION MODAL
+// Beautiful card showing synopsis of selected items before sending to Concierge®
+// ═══════════════════════════════════════════════════════════════════════════════
+const ConciergeConfirmationModal = ({ 
+  isOpen, 
+  onClose, 
+  selectedPicks, 
+  pet, 
+  onConfirm, 
+  onEdit 
+}) => {
+  const [status, setStatus] = useState('preview'); // preview, sending, sent
+  const [notes, setNotes] = useState('');
+  
+  if (!isOpen) return null;
+  
+  const cataloguePicks = selectedPicks.filter(p => p.pick_type !== 'concierge');
+  const conciergePicks = selectedPicks.filter(p => p.pick_type === 'concierge');
+  
+  const handleConfirm = async () => {
+    setStatus('sending');
+    hapticFeedback.toggle();
+    
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    setStatus('sent');
+    hapticFeedback.success();
+    
+    // Auto close after showing success
+    setTimeout(() => {
+      onConfirm({ picks: selectedPicks, notes, pet });
+      onClose();
+    }, 2000);
+  };
+  
+  return (
+    <AnimatePresence>
+      <motion.div
+        className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
+      >
+        <motion.div
+          className="bg-white rounded-t-3xl sm:rounded-3xl w-full sm:max-w-lg max-h-[85vh] overflow-hidden shadow-2xl"
+          style={{ paddingBottom: 'env(safe-area-inset-bottom, 20px)' }}
+          initial={{ y: '100%', opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: '100%', opacity: 0 }}
+          transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Status: Sent */}
+          {status === 'sent' ? (
+            <motion.div 
+              className="p-8 text-center"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+            >
+              <motion.div
+                className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-r from-green-400 to-emerald-500 flex items-center justify-center"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: 'spring', delay: 0.2 }}
+              >
+                <Check className="w-10 h-10 text-white" />
+              </motion.div>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">Request Sent! ✨</h3>
+              <p className="text-gray-600 mb-4">
+                Our Concierge® team is now reaching out and curating this specially for {pet?.name || 'your pet'}.
+              </p>
+              <div className="bg-purple-50 rounded-xl p-4 text-left">
+                <p className="text-sm text-purple-700">
+                  <span className="font-semibold">What happens next:</span>
+                </p>
+                <ul className="mt-2 text-sm text-purple-600 space-y-1">
+                  <li>• We'll source the best options for you</li>
+                  <li>• You'll receive a WhatsApp update within 24 hours</li>
+                  <li>• Pricing and availability will be confirmed</li>
+                </ul>
+              </div>
+            </motion.div>
+          ) : (
+            <>
+              {/* Header */}
+              <div className="sticky top-0 bg-white z-10 px-4 pt-4 pb-3 border-b border-gray-100">
+                <div className="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-3" />
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center">
+                      <Send className="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                      <h2 className="text-lg font-bold text-gray-900">Confirm Request</h2>
+                      <p className="text-xs text-gray-500">{selectedPicks.length} item{selectedPicks.length > 1 ? 's' : ''} for {pet?.name}</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={onClose}
+                    className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center"
+                  >
+                    <X className="w-5 h-5 text-gray-600" />
+                  </button>
+                </div>
+              </div>
+              
+              {/* Content */}
+              <div className="overflow-y-auto px-4 py-4" style={{ maxHeight: 'calc(85vh - 200px)' }}>
+                {/* Catalogue Items */}
+                {cataloguePicks.length > 0 && (
+                  <div className="mb-4">
+                    <h3 className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                      <ShoppingBag className="w-4 h-4 text-amber-500" />
+                      Products & Services ({cataloguePicks.length})
+                    </h3>
+                    <div className="space-y-2">
+                      {cataloguePicks.map((pick, i) => (
+                        <div key={i} className="flex items-center gap-3 p-2 bg-gray-50 rounded-lg">
+                          {pick.image ? (
+                            <img src={pick.image} alt="" className="w-12 h-12 rounded-lg object-cover" />
+                          ) : (
+                            <div className="w-12 h-12 rounded-lg bg-gray-200 flex items-center justify-center">
+                              <Package className="w-5 h-5 text-gray-400" />
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-gray-900 truncate">{pick.name}</p>
+                            {pick.price && <p className="text-xs text-pink-600">₹{pick.price}</p>}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Concierge Items */}
+                {conciergePicks.length > 0 && (
+                  <div className="mb-4">
+                    <h3 className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-purple-500" />
+                      Concierge® Sourcing ({conciergePicks.length})
+                    </h3>
+                    <div className="space-y-2">
+                      {conciergePicks.map((pick, i) => (
+                        <div key={i} className="p-3 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg border border-purple-100">
+                          <p className="text-sm font-medium text-gray-900">{pick.name}</p>
+                          <p className="text-xs text-purple-600 mt-1 italic">Concierge® will source & get back with price</p>
+                          {pick.specs && (
+                            <div className="mt-2 flex flex-wrap gap-1">
+                              {pick.specs.slice(0, 2).map((spec, j) => (
+                                <span key={j} className="text-[10px] px-2 py-0.5 bg-white/60 rounded-full text-purple-700">
+                                  {spec}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {/* Notes field */}
+                <div className="mb-4">
+                  <label className="text-sm font-medium text-gray-700 mb-1 block">
+                    Any special notes? (optional)
+                  </label>
+                  <textarea
+                    value={notes}
+                    onChange={(e) => setNotes(e.target.value)}
+                    placeholder={`E.g., ${pet?.name} is allergic to chicken, please keep that in mind...`}
+                    className="w-full p-3 border border-gray-200 rounded-xl text-sm resize-none h-20 focus:ring-2 focus:ring-purple-200 focus:border-purple-400 outline-none"
+                  />
+                </div>
+                
+                {/* Pet Info Card */}
+                <div className="p-3 bg-amber-50 rounded-xl border border-amber-100">
+                  <p className="text-xs text-amber-700">
+                    <span className="font-semibold">Tailored for {pet?.name}:</span>{' '}
+                    {pet?.breed} • {pet?.size || 'Medium'} • 
+                    {pet?.allergies?.length > 0 ? ` Avoiding: ${pet.allergies.join(', ')}` : ' No known allergies'}
+                  </p>
+                </div>
+              </div>
+              
+              {/* Footer */}
+              <div className="sticky bottom-0 bg-white border-t border-gray-100 px-4 py-3 flex gap-3">
+                <button
+                  onClick={() => {
+                    hapticFeedback.buttonTap();
+                    onEdit?.();
+                    onClose();
+                  }}
+                  className="flex-1 py-3 bg-gray-100 text-gray-700 font-medium rounded-xl flex items-center justify-center gap-2 min-h-[48px]"
+                >
+                  Edit Selection
+                </button>
+                <button
+                  onClick={handleConfirm}
+                  disabled={status === 'sending'}
+                  className="flex-1 py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium rounded-xl flex items-center justify-center gap-2 min-h-[48px] disabled:opacity-70"
+                >
+                  {status === 'sending' ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4" />
+                      Send to Concierge®
+                    </>
+                  )}
+                </button>
+              </div>
+            </>
+          )}
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+};
+
 // Pick Card with Smart Badges, Selection, and Long Press
 const PickCard = ({ 
   pick, 
