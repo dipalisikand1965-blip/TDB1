@@ -367,6 +367,7 @@ const useVoice = ({ onTranscript, onSubmit } = {}) => {
     // Voice Input (Speech Recognition)
     isListening,
     voiceError,
+    setVoiceError,
     voiceSupported,
     toggleListening,
     
