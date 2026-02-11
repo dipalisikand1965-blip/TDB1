@@ -88,7 +88,7 @@ const ServiceQuickViewModal = ({
         className={`fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 ${
           isDark ? 'bg-black/80 backdrop-blur-sm' : 'bg-black/50 backdrop-blur-sm'
         }`}
-        onClick={onClose}
+        onClick={handleClose}
       >
         <motion.div
           initial={{ y: '100%', opacity: 0 }}
