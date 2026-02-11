@@ -566,8 +566,8 @@ const MiraTopBar = ({
           backdrop-filter: blur(20px);
           border-bottom: 1px solid rgba(255,255,255,0.06);
           padding: 12px 16px 16px;
-          position: sticky;
-          top: 0;
+          /* Removed sticky positioning - allows content to scroll naturally */
+          position: relative;
           z-index: 40;
         }
 
