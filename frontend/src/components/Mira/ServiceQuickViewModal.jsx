@@ -95,7 +95,7 @@ const ServiceQuickViewModal = ({
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: '100%', opacity: 0 }}
           transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-          className={`w-full sm:max-w-lg max-h-[90vh] overflow-hidden ${
+          className={`w-full sm:max-w-lg max-h-[85vh] overflow-hidden flex flex-col ${
             isDark 
               ? 'bg-gray-900 border-t border-purple-500/30 sm:border sm:rounded-2xl' 
               : 'bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl'
