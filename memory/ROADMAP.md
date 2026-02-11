@@ -148,7 +148,7 @@
 
 ## Preview URL
 
-https://mira-picks-repair.preview.emergentagent.com
+https://picks-bug-fix.preview.emergentagent.com
 
 ---
 
