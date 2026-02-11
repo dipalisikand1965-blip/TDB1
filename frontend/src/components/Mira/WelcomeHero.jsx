@@ -187,24 +187,7 @@ const WelcomeHero = ({
             </div>
           )}
           
-          {/* SMART PROACTIVE ALERTS - Vaccination, Birthday, Grooming */}
-          {proactiveAlerts.smartAlerts && proactiveAlerts.smartAlerts.length > 0 && (
-            <ProactiveAlertsBanner
-              alerts={proactiveAlerts.smartAlerts}
-              criticalCount={proactiveAlerts.criticalCount || 0}
-              maxVisible={2}
-              onAskMira={(message, alert) => {
-                // "Ask Mira" - Start a conversation about this reminder
-                handleQuickReply(message);
-              }}
-              onBookNow={(request, alert) => {
-                // "Book Now" - Send as service request to Concierge
-                const conciergeMessage = `Please help me book: ${request.title}. Details: ${request.details}`;
-                handleQuickReply(conciergeMessage);
-              }}
-              className="mb-4 mt-2"
-            />
-          )}
+          {/* SMART PROACTIVE ALERTS - REMOVED: Now in MiraTopBar Reminders dropdown */}
           
           {/* Soul Traits */}
           <div className="soul-traits">
