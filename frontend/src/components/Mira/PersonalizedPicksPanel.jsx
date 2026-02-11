@@ -641,6 +641,27 @@ const PersonalizedPicksPanel = ({
                   Try Again
                 </button>
               </div>
+            ) : activePillar === 'services' ? (
+              /* Services Pillar - Show expandable service categories */
+              <div className="space-y-4">
+                <p className="text-sm text-gray-400 mb-4">
+                  Select a service category to request for {pet?.name}. Your concierge will handle everything.
+                </p>
+                <ConciergeServiceStrip
+                  petName={pet?.name}
+                  onServiceSelect={(selection) => {
+                    // Add selected service to cart
+                    const serviceItem = {
+                      id: `service-${selection.service.id}`,
+                      name: `${selection.service.emoji} ${selection.service.name}`,
+                      category: selection.category.name,
+                      type: 'concierge_service',
+                      pick_type: 'concierge'
+                    };
+                    toggleSelection(serviceItem);
+                  }}
+                />
+              </div>
             ) : (
               <div className="space-y-6">
                 {/* Catalogue Products */}
