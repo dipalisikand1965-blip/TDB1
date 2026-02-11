@@ -1314,17 +1314,29 @@
    ======================================== */
 .mp-past-chats {
   position: fixed;
-  top: 60px;
+  top: 120px;
   right: 16px;
   width: 320px;
-  max-height: calc(100vh - 100px);
+  max-height: calc(100vh - 160px);
   background: rgba(30, 20, 50, 0.97);
   backdrop-filter: blur(16px);
   border-radius: var(--mp-radius-lg);
   border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
   overflow: hidden;
-  z-index: 999;
+  z-index: 5000;
+  animation: slideInRight 0.2s ease-out;
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .mp-past-chats-header {
