@@ -3797,7 +3797,10 @@ const MiraDemoPage = () => {
               onLoadPastChats={() => { loadPastChats(); setShowPastChats(true); }}
               onShowHealthWizard={() => setHealthVault(prev => ({ ...prev, showWizard: true }))}
               onShowSoulForm={() => setShowSoulFormModal(true)}
-              onShowTopPicks={() => setShowTopPicksPanel(true)}
+              onShowTopPicks={() => {
+                hapticFeedback.picksOpen();
+                setShowTopPicksPanel(true);
+              }}
               soulScoreUpdated={soulScoreUpdated}
             />
           )}
