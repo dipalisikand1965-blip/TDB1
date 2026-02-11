@@ -18,7 +18,45 @@
 
 ---
 
-## Latest Session: Feb 11, 2026
+## Latest Session: Feb 11, 2026 (Evening Update)
+
+### ✅ UNIFIED PICKS VAULT - PHASE 2 COMPLETE
+All user requirements implemented:
+
+**1. No Prices on Concierge Cards ✅**
+- Concierge suggestion cards now show "Concierge® will source" instead of price
+- Backend sets `price: null` for concierge items
+- Frontend hides price and shows sourcing message
+
+**2. Chat Command Triggers Picks Vault ✅**
+- "Show me personalized picks for Mojo" opens the vault
+- Backend detects intent via `detect_personalized_picks_intent()`
+- Returns `ui_action: { type: 'open_picks_vault' }`
+- Frontend handles action and opens `UnifiedPicksVault`
+- Supported phrases: "show picks", "top picks", "recommendations", "my picks", etc.
+
+**3. Category/Pillar Picker ✅**
+- Horizontal scrollable filter bar with all pillars
+- Pillars: All, Celebrate, Dine, Care, Stay, Travel, Learn, Fit, Enjoy, Shop
+- Filters picks to selected category
+
+**4. Individual Item Selection ✅**
+- "Select items" toggle enables selection mode
+- Checkboxes appear on each pick card
+- "Send X items to Concierge®" button for selected items
+- Clear selection option
+
+**Files Updated:**
+- `/app/frontend/src/components/PicksVault/UnifiedPicksVault.jsx` - Category picker, selection mode
+- `/app/frontend/src/components/Mira/TopPicksPanel.jsx` - No price on concierge cards
+- `/app/backend/mira_routes.py` - `detect_personalized_picks_intent()` + ui_action handler
+- `/app/frontend/src/pages/MiraDemoPage.jsx` - UI action handler for picks vault
+
+**Test Report:** `/app/test_reports/iteration_136.json` - 9/9 tests passed
+
+---
+
+## Previous Session: Feb 11, 2026 (Morning)
 
 ### ✅ UNIFIED PICKS VAULT IMPLEMENTED
 **"Mira's Picks"** - Single tabbed interface combining all picks sources
