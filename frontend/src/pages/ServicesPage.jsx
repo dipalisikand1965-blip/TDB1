@@ -737,6 +737,7 @@ const ServicesPage = () => {
   const [displayCount, setDisplayCount] = useState(24);
   const [miraChatOpen, setMiraChatOpen] = useState(false);
   const [shoppingForOther, setShoppingForOther] = useState(false);
+  const [quickViewService, setQuickViewService] = useState(null); // For service quick view modal
   
   // Fetch services
   useEffect(() => {
