@@ -20,24 +20,32 @@
 
 ## Latest Session: Feb 11, 2026
 
+### ✅ TOP PICKS FEATURE IMPLEMENTED
+**"Top Picks for [Pet]"** - Personalized recommendations across all pillars
+
+**Backend API** (`/api/mira/top-picks/{pet_id}`):
+- Returns 4 picks per pillar (44 total across 11 pillars)
+- Filters by: allergies, size, breed, age, health conditions
+- Marks items as `catalogue_pick` or `concierge_suggestion`
+- Pillars: Celebrate, Dine, Care, Stay, Travel, Learn, Fit, Enjoy, Advisory, Paperwork, Shop
+- Excludes: Adopt, Farewell
+
+**Frontend Panel** (`TopPicksPanel.jsx`):
+- Beautiful grid layout with horizontal scroll per pillar
+- Pet switcher for multi-pet households
+- Intelligence summary (allergies, breed, size shown)
+- "Why this pick?" tooltips
+- Concierge Suggestion Cards for out-of-catalogue items
+- "Send All to Concierge®" CTA
+
+**Integration Points**:
+- "Personalized picks for Mojo" button in WelcomeHero now opens TopPicksPanel
+- Pet switch auto-refreshes with new pet's filtered picks
+
 ### ✅ UI UPDATES COMPLETED
-1. **Mira Orb restyled** - Now matches landing page:
-   - Pink-to-Purple gradient (#EC4899 → #9333EA)
-   - White Sparkle icon instead of paw
-   - Glow effects matching landing page
-2. **Concierge Button repositioned** - Moved to `bottom-28` (above Mira orb), made smaller & subtler
-3. **Voice toggle improved** - Default OFF, persists to localStorage, clearer ON/OFF states
-
-### ✅ VOICE GOLDEN RULES IMPLEMENTED
-- **Default: OFF** - Respectful of office/quiet environments
-- **User preference saved** - localStorage persists choice
-- **Voice sync fixed** - Voice starts immediately (no delay) for better text-speech alignment
-- **Toggle visible** - Speaker icon in chat input bar shows ON/OFF state clearly
-
-### ✅ PERFORMANCE OPTIMIZATIONS
-- Lazy loading for 10 heavy modals
-- Deferred geolocation (1s after page ready)
-- Public pages load successfully in Playwright
+1. **Mira Orb restyled** - Pink-to-Purple gradient with Sparkle icon
+2. **Concierge Button repositioned** - Above Mira orb, more subtle
+3. **Voice toggle** - Default OFF, persists to localStorage
 
 ### ⚠️ KNOWN LIMITATION
 - **Playwright crashes on authenticated pages** - This is a memory limitation in the test container, NOT a code bug
