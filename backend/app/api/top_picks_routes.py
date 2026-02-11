@@ -310,10 +310,12 @@ async def get_top_picks(pet_id: str):
 async def get_pillar_top_picks(
     pet_id: str,
     pillar: str,
-    limit: int = 8,
-    db: AsyncIOMotorDatabase = Depends(get_database)
+    limit: int = 8
 ):
     """Get more picks for a specific pillar."""
+    global db
+    if not db:
+        raise HTTPException(status_code=500, detail="Database not initialized")
     
     pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
     if not pet:
