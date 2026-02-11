@@ -866,7 +866,6 @@ const PersonalizedPicksPanel = ({
                                 pillar: activePillar,
                                 addedAt: new Date().toISOString()
                               };
-                              console.log('[PICKS PANEL] Calling onShowConfirmCard with:', itemWithMeta);
                               onShowConfirmCard?.([itemWithMeta]);
                               onClose();
                             }}
