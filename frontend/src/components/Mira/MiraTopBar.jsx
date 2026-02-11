@@ -615,12 +615,18 @@ const MiraTopBar = ({
           align-items: center;
           gap: 6px;
           overflow-x: auto;
+          overflow-y: visible;
           -webkit-overflow-scrolling: touch;
           scrollbar-width: none;
           padding: 4px 0;
         }
         .mtb-actions-row::-webkit-scrollbar {
           display: none;
+        }
+        
+        /* Allow dropdowns to overflow when open */
+        .mtb-actions-row:has(.mtb-dropdown) {
+          overflow: visible;
         }
 
         .mtb-tab {
