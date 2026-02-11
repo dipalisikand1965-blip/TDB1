@@ -20,7 +20,8 @@ Build and maintain the Mira AI Pet Companion feature for The Doggy Company platf
 │   └── src/
 │       ├── components/
 │       │   ├── Mira/
-│       │   │   ├── PersonalizedPicksPanel.jsx - NEW main picks component
+│       │   │   ├── PersonalizedPicksPanel.jsx - Main picks component
+│       │   │   ├── SendToConciergeChatCard.jsx - NEW: In-chat confirmation card
 │       │   │   ├── ConciergeDetailModal.jsx - Service details modal
 │       │   │   └── ConciergeServiceStrip.jsx - Expandable service categories
 │       │   ├── PicksVault/
@@ -34,17 +35,22 @@ Build and maintain the Mira AI Pet Companion feature for The Doggy Company platf
 ## What's Been Implemented
 **Date: Feb 11, 2026**
 
-### PersonalizedPicksPanel (COMPLETE)
+### Personalized Picks Panel (COMPLETE)
 - ✅ Dark theme sliding panel from bottom
 - ✅ Pillar-based navigation tabs (Celebrate, Dine, Care, Travel, Stay, Enjoy, Fit, Learn, Advisory, Services)
 - ✅ Side-by-side layout on desktop: Products left, Concierge services right
-- ✅ ProductDetailModal opens when clicking products (with variant selection)
-- ✅ `onAddToPicks` callback properly integrated - adds to request list, not cart
-- ✅ ConciergeDetailModal for service details
-- ✅ MiniCart component showing selection count
-- ✅ "Send to My Concierge" button with confirmation modal
-- ✅ Success flow returns to chat with warm acknowledgment message
-- ✅ "Anything Else?" custom request text input
+- ✅ **NEW: Click-to-confirm flow** - Clicking any product/service:
+  1. Closes the panel
+  2. Shows "Send to Concierge" card in chat
+  3. User can add optional notes
+  4. Confirm sends to concierge
+  5. Success message appears in chat
+- ✅ SendToConciergeChatCard component with:
+  - Pink/purple gradient header
+  - "For Mojo" personalization
+  - Selected item with checkmark
+  - "Anything else? (optional)" text input
+  - Cancel and Confirm buttons
 - ✅ Full haptic feedback integration
 - ✅ iOS safe area padding for buttons
 
@@ -54,18 +60,20 @@ Build and maintain the Mira AI Pet Companion feature for The Doggy Company platf
 - ✅ Past chat sessions limited to 3
 
 ### Testing Status
-- ✅ Full flow tested with testing_agent (iteration_138)
-- ✅ Login → Mira → Picks Panel → Product Modal → Add to Picks → Send → Confirm = WORKING
+- ✅ Full flow tested (Feb 11, 2026)
+- ✅ Product click → Card appears → Confirm → Success message = WORKING
+- ✅ Concierge service click → Card appears → Confirm → Success message = WORKING
 
 ## Current Status
-**P0 Issue: RESOLVED** - Products now successfully add to request list from ProductDetailModal
-**UI Status:** ✅ Working (verified Feb 11, 2026 via Playwright)
+**P0 Issue: RESOLVED** - New click-to-confirm flow implemented
+**UI Status:** ✅ Working (verified Feb 11, 2026)
 
 ## Prioritized Backlog
 
 ### P0 - Critical (COMPLETED)
-- [x] Fix "Add to Picks" from ProductDetailModal
-- [x] Verify full send-to-concierge flow
+- [x] Fix "Add to Picks" flow
+- [x] Implement in-chat confirmation card (SendToConciergeChatCard)
+- [x] Full send-to-concierge flow with success message
 
 ### P1 - High Priority
 - [ ] Refactor: Extract ProductDetailModal to its own file
@@ -89,8 +97,11 @@ Build and maintain the Mira AI Pet Companion feature for The Doggy Company platf
 - Email: dipali@clubconcierge.in
 - Password: test123
 
-## Key UI Selectors for Testing
-- `data-testid="personalized-picks-btn"` - Opens PersonalizedPicksPanel
-- Product cards are clickable to open ProductDetailModal
-- "Include" button in modal adds items to picks list
-- "Send to My Concierge" button visible when items selected
+## Key UI Flow
+1. User opens PersonalizedPicksPanel from Mira interface
+2. Panel shows products (left) and concierge services (right) by pillar
+3. User clicks any item
+4. Panel closes, "Send to Concierge" card appears in chat
+5. User optionally adds notes
+6. User clicks "Confirm"
+7. Success message: "✨ Your X personalized picks for Mojo have been sent to your Concierge®!"
