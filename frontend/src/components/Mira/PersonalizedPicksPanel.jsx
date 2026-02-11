@@ -957,6 +957,20 @@ const PersonalizedPicksPanel = ({
             selectedItems={selectedItems}
             petName={pet?.name}
           />
+          
+          {/* Product Quick View Modal */}
+          <ProductQuickViewModal
+            product={quickViewProduct}
+            pet={pet}
+            isOpen={!!quickViewProduct}
+            onClose={() => setQuickViewProduct(null)}
+            variant="dark"
+            onAddToPicks={(productWithVariants) => {
+              hapticFeedback.success();
+              toggleSelection(productWithVariants);
+              setQuickViewProduct(null);
+            }}
+          />
         </motion.div>
       </motion.div>
     </AnimatePresence>
