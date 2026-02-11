@@ -3569,35 +3569,37 @@ const MiraDemoPage = () => {
         onNewChatClick={startNewSession}
       />
       
-      {/* INSIGHTS PANEL - Extracted to InsightsPanel component */}
-      <InsightsPanel
-        isOpen={showInsightsPanel}
-        onClose={() => setShowInsightsPanel(false)}
-        petName={pet.name}
-        conversationHistory={conversationHistory}
-        tipCard={miraPicks.tipCard}
-        memoryContext={activeMemoryContext}
-        onSendToConcierge={async (tipData) => {
-          // Send tip card to Concierge® using the unified signal flow
-          try {
-            const response = await fetch(`${API_URL}/api/mira/vault/send-to-concierge`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                ...(token && { Authorization: `Bearer ${token}` })
-              },
-              body: JSON.stringify({
-                vault_type: 'tip_card',
-                session_id: sessionId,
-                member_name: user?.name,
-                member_email: user?.email,
-                pet: { name: pet.name, breed: pet.breed },
-                pillar: tipData.tipType || 'general',
-                data: {
-                  title: tipData.title,
-                  content: tipData.content,
-                  type: tipData.type,
-                  tip_type: tipData.tipType
+      {/* INSIGHTS PANEL - Lazy loaded */}
+      {showInsightsPanel && (
+        <Suspense fallback={<LazyFallback />}>
+          <InsightsPanel
+            isOpen={showInsightsPanel}
+            onClose={() => setShowInsightsPanel(false)}
+            petName={pet.name}
+            conversationHistory={conversationHistory}
+            tipCard={miraPicks.tipCard}
+            memoryContext={activeMemoryContext}
+            onSendToConcierge={async (tipData) => {
+              // Send tip card to Concierge® using the unified signal flow
+              try {
+                const response = await fetch(`${API_URL}/api/mira/vault/send-to-concierge`, {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    ...(token && { Authorization: `Bearer ${token}` })
+                  },
+                  body: JSON.stringify({
+                    vault_type: 'tip_card',
+                    session_id: sessionId,
+                    member_name: user?.name,
+                    member_email: user?.email,
+                    pet: { name: pet.name, breed: pet.breed },
+                    pillar: tipData.tipType || 'general',
+                    data: {
+                      title: tipData.title,
+                      content: tipData.content,
+                      type: tipData.type,
+                      tip_type: tipData.tipType
                 }
               })
             });
