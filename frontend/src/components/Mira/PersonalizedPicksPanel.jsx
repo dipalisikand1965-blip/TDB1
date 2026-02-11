@@ -795,18 +795,21 @@ const PersonalizedPicksPanel = ({
                 />
               </div>
             ) : (
-              /* TWO COLUMN LAYOUT: Catalogue | Concierge */
+              /* TWO COLUMN LAYOUT: Personalized for Pet */
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* ═══════════════════════════════════════════════════ */}
-                {/* LEFT: FROM OUR CATALOGUE - Products ready to go */}
+                {/* LEFT: MIRA'S PICKS - Handpicked products for this pet */}
                 {/* ═══════════════════════════════════════════════════ */}
                 <div>
                   {cataloguePicks.length > 0 && (
                     <div>
-                      <h3 className="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-3 flex items-center gap-2">
-                        <Package className="w-4 h-4" />
-                        From Our Catalogue
-                      </h3>
+                      <div className="mb-3">
+                        <h3 className="text-sm font-semibold text-white uppercase tracking-wider flex items-center gap-2">
+                          <Heart className="w-4 h-4 text-pink-400" />
+                          Mira's Picks for {pet?.name}
+                        </h3>
+                        <p className="text-xs text-gray-500 mt-1">Handpicked because Mira knows {pet?.name}</p>
+                      </div>
                       <div className="space-y-3">
                         {cataloguePicks.slice(0, showAllCatalogue ? 10 : 4).map((pick, index) => (
                           <div 
@@ -816,7 +819,6 @@ const PersonalizedPicksPanel = ({
                             }`}
                             onClick={() => {
                               hapticFeedback.buttonTap();
-                              // Open product detail modal (same as main site)
                               setSelectedProduct(pick);
                             }}
                           >
