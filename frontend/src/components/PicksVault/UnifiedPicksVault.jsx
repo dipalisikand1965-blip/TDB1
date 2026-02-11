@@ -30,10 +30,36 @@ import {
   X, Gift, Lightbulb, Sparkles, ChevronRight, Send, Heart,
   ShoppingBag, Calendar, TrendingUp, RefreshCw, Star, Clock,
   AlertCircle, Check, Info, Flame, Package, Filter, CheckSquare, Square,
-  ShoppingCart, ThumbsDown, Share2, MoreHorizontal, ChevronDown
+  ShoppingCart, ThumbsDown, Share2, MoreHorizontal, ChevronDown,
+  // Icons for Concierge Cards
+  Cake, Utensils, PartyPopper, Camera, Scissors, Cookie, Salad, 
+  Stethoscope, Hotel, Moon, Home, UserCheck, PhoneCall, Plane, MapPin,
+  Car, Route, HeartPulse, Smile, Droplets, Footprints, Puzzle, CloudRain,
+  Users, Coffee, Map, Accessibility, Scale, Thermometer, Mountain,
+  GraduationCap, Dog, DoorOpen, Box, HeartHandshake, ClipboardCheck, Brain,
+  ListChecks, Activity, ShieldCheck, Cpu, FileText, Umbrella, IdCard,
+  Repeat, Search, Ruler, MessageSquarePlus, PenLine
 } from 'lucide-react';
 import { API_URL } from '../../utils/api';
 import hapticFeedback from '../../utils/haptic';
+
+// Icon mapping for concierge cards
+const ICON_MAP = {
+  'cake': Cake, 'utensils': Utensils, 'party-popper': PartyPopper, 'camera': Camera,
+  'heart': Heart, 'clipboard-list': ListChecks, 'cookie': Cookie, 'salad': Salad,
+  'utensils-crossed': Utensils, 'stethoscope': Stethoscope, 'hotel': Hotel, 'moon': Moon,
+  'home': Home, 'user-check': UserCheck, 'phone-call': PhoneCall, 'plane': Plane,
+  'map-pin': MapPin, 'car': Car, 'route': Route, 'heart-pulse': HeartPulse,
+  'scissors': Scissors, 'sparkles': Sparkles, 'smile': Smile, 'droplets': Droplets,
+  'footprints': Footprints, 'puzzle': Puzzle, 'cloud-rain': CloudRain, 'users': Users,
+  'coffee': Coffee, 'map': Map, 'accessibility': Accessibility, 'scale': Scale,
+  'thermometer': Thermometer, 'mountain': Mountain, 'graduation-cap': GraduationCap,
+  'dog': Dog, 'door-open': DoorOpen, 'box': Box, 'heart-handshake': HeartHandshake,
+  'clipboard-check': ClipboardCheck, 'brain': Brain, 'list-checks': ListChecks,
+  'activity': Activity, 'shield-check': ShieldCheck, 'cpu': Cpu, 'file-text': FileText,
+  'umbrella': Umbrella, 'id-card': IdCard, 'package': Package, 'repeat': Repeat,
+  'search': Search, 'ruler': Ruler, 'gift': Gift,
+};
 
 // Smart badge configurations with animations
 const SMART_BADGES = {
