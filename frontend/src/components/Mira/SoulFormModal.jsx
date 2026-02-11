@@ -181,8 +181,9 @@ const SoulFormModal = ({
       setAnswers({});
       setIsComplete(false);
       setNewScore(null);
+      setLiveScore(pet?.soulScore || pet?.overall_score || 0);
     }
-  }, [isOpen]);
+  }, [isOpen, pet]);
   
   if (!isOpen || !pet) return null;
   
