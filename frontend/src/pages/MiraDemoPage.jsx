@@ -1366,7 +1366,8 @@ const MiraDemoPage = () => {
     
     try {
       const memberId = user?.id || user?.email || 'demo';
-      const response = await fetch(`${API_URL}/api/mira/session/list/by-member/${encodeURIComponent(memberId)}?limit=3`, {
+      console.log('[PAST CHATS] Loading for member:', memberId);
+      const response = await fetch(`${API_URL}/api/mira/session/list/by-member/${encodeURIComponent(memberId)}?limit=10`, {
         headers: token ? { Authorization: `Bearer ${token}` } : {}
       });
       
@@ -1374,6 +1375,8 @@ const MiraDemoPage = () => {
         const data = await response.json();
         setPastSessions(data.sessions || []);
         console.log('[PAST CHATS] Loaded', data.sessions?.length || 0, 'sessions');
+      } else {
+        console.error('[PAST CHATS] API error:', response.status);
       }
     } catch (err) {
       console.error('[PAST CHATS] Error loading:', err);
