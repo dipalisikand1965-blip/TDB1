@@ -960,26 +960,21 @@ const PersonalizedPicksPanel = ({
                                   <span className="text-xs text-purple-300">{pick.spec_chip}</span>
                                 )}
                                 {(pick.why_it_fits || pick.why_reason) && (
-                                  <p className="text-xs text-amber-400 mt-1 flex items-center gap-1">
+                                  <p className="text-xs text-purple-300 mt-1 flex items-center gap-1">
                                     <Heart className="w-3 h-3" />
                                     <span className="truncate">{pick.why_it_fits || pick.why_reason}</span>
                                   </p>
                                 )}
                               </div>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  hapticFeedback.success();
-                                  toggleSelection(pick);
-                                }}
-                                className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all active:scale-90 ${
+                              <div
+                                className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
                                   isSelected(pick) 
                                     ? 'bg-pink-500 text-white' 
-                                    : 'bg-purple-700 text-purple-300 hover:bg-purple-600'
+                                    : 'bg-purple-700 text-purple-300'
                                 }`}
                               >
                                 {isSelected(pick) ? <Check className="w-4 h-4" /> : <span className="text-lg">+</span>}
-                              </button>
+                              </div>
                             </div>
                           </div>
                         ))}
