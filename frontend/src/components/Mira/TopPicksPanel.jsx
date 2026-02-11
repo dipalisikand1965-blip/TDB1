@@ -231,7 +231,7 @@ const PickCard = ({ pick, petName, onAddToPicks, onSendToConcierge }) => {
   );
 };
 
-// Pillar Section Component
+// Pillar Section Component with scroll snap
 const PillarSection = ({ pillar, picks, petName, onAddToPicks, onSendToConcierge, onSeeMore }) => {
   if (!picks || picks.length === 0) return null;
   
@@ -250,14 +250,17 @@ const PillarSection = ({ pillar, picks, petName, onAddToPicks, onSendToConcierge
           <span className="text-xs text-gray-400">({picks.length} picks)</span>
         </div>
         <button
-          onClick={() => onSeeMore?.(pillar.id)}
-          className="text-xs text-gray-500 hover:text-gray-700 flex items-center gap-1"
+          onClick={() => {
+            hapticFeedback.light();
+            onSeeMore?.(pillar.id);
+          }}
+          className="text-xs text-gray-500 hover:text-gray-700 flex items-center gap-1 min-h-[44px] touch-manipulation"
         >
           See all <ChevronRight className="w-3 h-3" />
         </button>
       </div>
       
-      {/* Horizontal scroll container */}
+      {/* Horizontal scroll container with snap */}
       <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
         {picks.map((pick, index) => (
           <PickCard
