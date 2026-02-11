@@ -1141,7 +1141,8 @@ const ChatMessage = ({
   onShowPicks,
   onQuickReply,
   onEngageConcierge,
-  onOpenServiceRequest
+  onOpenServiceRequest,
+  onAddPickToRequest // NEW: Callback when adding pick to request from chat
 }) => {
   // Topic shift indicator
   if (msg.type === 'topic_shift') {
@@ -1156,6 +1157,30 @@ const ChatMessage = ({
   // System message
   if (msg.type === 'system') {
     return <SystemMessage content={msg.content} />;
+  }
+  
+  // Pick detail card - shows when user clicks a pick in PersonalizedPicksPanel
+  if (msg.pickDetail) {
+    const { item, type } = msg.pickDetail;
+    return (
+      <div className="mp-msg-mira" data-testid="pick-detail-message">
+        <div className="mp-mira-avatar">
+          <Sparkles className="w-4 h-4 text-white" />
+        </div>
+        <div className="mp-mira-body" style={{ maxWidth: '400px' }}>
+          <PickDetailCard
+            pick={item}
+            petName={pet?.name || 'your pet'}
+            type={type}
+            onAddToRequest={(itemWithDetails) => {
+              if (onAddPickToRequest) {
+                onAddPickToRequest(itemWithDetails);
+              }
+            }}
+          />
+        </div>
+      </div>
+    );
   }
   
   // Mira message (default)
