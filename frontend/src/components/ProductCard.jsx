@@ -1522,4 +1522,5 @@ const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null,
   );
 };
 
+export { ProductDetailModal };
 export default ProductCard;
