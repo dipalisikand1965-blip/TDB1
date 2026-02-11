@@ -113,8 +113,8 @@ const ServiceQuickViewModal = ({
             
             {/* Close button */}
             <button
-              onClick={onClose}
-              className={`absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center transition-all ${
+              onClick={handleClose}
+              className={`absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center transition-all active:scale-90 ${
                 isDark 
                   ? 'bg-gray-900/80 text-white hover:bg-gray-800' 
                   : 'bg-white/90 text-gray-800 hover:bg-white'
