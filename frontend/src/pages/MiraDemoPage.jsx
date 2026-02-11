@@ -3757,6 +3757,30 @@ const MiraDemoPage = () => {
         }}
       />
       
+      {/* Product Detail Modal - Opened from conversation picks */}
+      {selectedProduct && (
+        <ProductDetailModal
+          product={selectedProduct}
+          pillar={currentPillar || selectedProduct.pillar}
+          selectedPet={pet}
+          miraContext={{
+            petName: pet?.name,
+            source: 'conversation_picks',
+            includeText: 'Add to Picks'
+          }}
+          onClose={() => setSelectedProduct(null)}
+          onAddToPicks={(productWithOptions) => {
+            // Add to Mira picks
+            setMiraPicks(prev => ({
+              ...prev,
+              products: [...(prev.products || []), productWithOptions],
+              hasNew: true
+            }));
+            setSelectedProduct(null);
+          }}
+        />
+      )}
+      
       {/* TEST SCENARIOS PANEL - Lazy loaded */}
       {showTestScenarios && (
         <Suspense fallback={<LazyFallback />}>
