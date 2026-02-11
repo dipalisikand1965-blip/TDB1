@@ -18,7 +18,6 @@ import {
   Navigation, Phone, Play, Calendar, ArrowRight
 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
-import PickDetailCard from './PickDetailCard';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // UTILITY FUNCTIONS
