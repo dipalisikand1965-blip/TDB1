@@ -1747,8 +1747,18 @@ async def search_real_products(
                 {"description": {"$regex": "|".join(search_terms), "$options": "i"}},
                 {"tags": {"$regex": "|".join(search_terms), "$options": "i"}},
                 {"category": {"$regex": "|".join(search_terms), "$options": "i"}},
-                {"pillar": {"$regex": "|".join(search_terms), "$options": "i"}}
+                {"pillar": {"$regex": "|".join(search_terms), "$options": "i"}},
+                {"pet_type": {"$regex": "|".join(search_terms), "$options": "i"}}
             ]
+            
+            # If pet_context specifies cat, boost cat products
+            if request.pet_context and request.pet_context.get("pet_type") == "cat":
+                cat_query = {"pet_type": "cat", "$or": query["$or"]}
+                cat_cursor = db.products_master.find(cat_query, {"_id": 0}).limit(limit)
+                cat_products = await cat_cursor.to_list(length=limit)
+                if cat_products:
+                    logger.info(f"[PRODUCT SEARCH] Found {len(cat_products)} cat-specific products")
+                    breed_specific_products = cat_products + breed_specific_products
             
             # For birthday context, restrict to cake categories
             if is_birthday_search:
