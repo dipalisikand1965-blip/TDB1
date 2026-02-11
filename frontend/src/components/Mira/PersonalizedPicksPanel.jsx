@@ -660,6 +660,45 @@ const PersonalizedPicksPanel = ({
     }
   };
   
+  // Quick send single item - when user clicks on a product/service card
+  const handleQuickSendItem = async (item, type) => {
+    const itemWithMeta = {
+      ...item,
+      pick_type: type,
+      addedAt: new Date().toISOString()
+    };
+    
+    try {
+      await fetch(`${API_URL}/api/concierge/picks-request`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token && { Authorization: `Bearer ${token}` })
+        },
+        body: JSON.stringify({
+          pet_name: pet?.name,
+          selected_items: [itemWithMeta],
+          additional_notes: '',
+          timestamp: new Date().toISOString()
+        })
+      });
+      
+      hapticFeedback.success();
+      
+      // Call success callback
+      onSendSuccess?.({
+        count: 1,
+        petName: pet?.name,
+        items: [itemWithMeta],
+        additionalNotes: ''
+      });
+      
+      onClose();
+    } catch (err) {
+      console.error('Error sending to concierge:', err);
+    }
+  };
+  
   // Get current pillar data
   const currentPillarData = picksData?.pillars?.[activePillar] || { picks: [], concierge_picks: [] };
   const cataloguePicks = currentPillarData.picks || [];
