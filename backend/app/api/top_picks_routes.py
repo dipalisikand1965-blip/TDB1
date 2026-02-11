@@ -412,39 +412,41 @@ async def get_pillar_picks(
     # Sort by score 
     picks.sort(key=lambda x: x.get("score", 0), reverse=True)
     
-    # Take top items but leave room for concierge card if applicable
-    service_pillars = ["care", "stay", "travel", "fit", "learn", "advisory", "celebrate"]
-    if pillar in service_pillars:
-        # Keep top (limit-1) catalogue items
-        catalogue_picks = picks[:limit-1]
-        
-        # Add a Concierge Suggestion Card
+    # ═══════════════════════════════════════════════════════════════════════════════
+    # CATALOGUE PICKS (up to 5) + CONCIERGE PICKS (up to 5)
+    # This shows the breadth of what Concierge® can do for users
+    # ═══════════════════════════════════════════════════════════════════════════════
+    
+    catalogue_picks = picks[:5]  # Top 5 catalogue items
+    
+    # Generate Concierge picks from our detailed suggestions
+    concierge_picks = []
+    pillar_suggestions = CONCIERGE_SUGGESTIONS.get(pillar, [])
+    
+    for i, suggestion in enumerate(pillar_suggestions[:5]):  # Up to 5 concierge suggestions
         concierge_card = {
-            "id": f"concierge-{pillar}-{pet.get('name', 'pet')}",
-            "name": f"Custom {pillar.title()} for {pet.get('name', 'your pet')}",
+            "id": f"concierge-{pillar}-{i}-{pet.get('name', 'pet')}",
+            "name": suggestion["name"],
             "price": None,  # Concierge will source and get back with price
             "image": None,
             "type": "concierge_suggestion",
             "pick_type": "concierge",
-            "why_reason": f"Can't find what you need? Our Concierge® will source the perfect {pillar} solution for {pet.get('name', 'your pet')}",
-            "score": 100,  # High score to show prominently
+            "why_reason": f"Our Concierge® will curate this specially for {pet.get('name', 'your pet')}",
+            "score": 50 - i,  # Descending score for ordering
             "badges": [],
-            "specs": [
+            "specs": suggestion.get("specs", []) + [
                 f"Tailored for {pet.get('breed', 'your dog')}",
-                f"Size: {size_cat}",
-                f"Safety-verified by Mira",
                 "Concierge® will get back with price"
             ]
         }
-        catalogue_picks.append(concierge_card)
-        picks = catalogue_picks
-    else:
-        # Non-service pillars, just limit
-        picks = picks[:limit]
+        concierge_picks.append(concierge_card)
     
-    # If NO picks at all, add a prominent Concierge card
-    if len(picks) == 0:
-        picks.append({
+    # Combine: catalogue first, then concierge
+    all_picks = catalogue_picks + concierge_picks
+    
+    # If NO catalogue picks, make sure we have at least the concierge picks
+    if len(catalogue_picks) == 0 and len(concierge_picks) == 0:
+        all_picks.append({
             "id": f"concierge-{pillar}",
             "name": f"Custom {pillar.title()} Solution",
             "price": None,
@@ -462,7 +464,7 @@ async def get_pillar_picks(
             ]
         })
     
-    return picks[:limit]
+    return all_picks  # Return all (up to 10 total)
 
 
 @router.get("/top-picks/{pet_id}")
