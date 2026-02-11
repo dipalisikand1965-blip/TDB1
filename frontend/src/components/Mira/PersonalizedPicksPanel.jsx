@@ -491,7 +491,7 @@ const MiniCart = ({
             hapticFeedback.success();
             onSendToConcierge();
           }}
-          className="flex-1 bg-gradient-to-r from-pink-500 to-purple-500 text-white font-semibold py-3 px-4 rounded-full flex items-center justify-center gap-2 shadow-lg"
+          className="flex-1 bg-gradient-to-r from-pink-500 to-purple-500 text-white font-semibold py-4 px-4 rounded-full flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-transform"
         >
           <Send className="w-4 h-4" />
           Send to My Concierge
