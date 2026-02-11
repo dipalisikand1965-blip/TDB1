@@ -246,6 +246,93 @@ const ExpandablePickCard = ({
 };
 
 /**
+ * CollapsibleSection - Clean section with header and expandable content
+ */
+const CollapsibleSection = ({ 
+  title, 
+  subtitle, 
+  icon, 
+  count, 
+  defaultExpanded = true, 
+  variant = 'catalogue',
+  children 
+}) => {
+  const [isExpanded, setIsExpanded] = useState(defaultExpanded);
+  
+  const variantStyles = {
+    catalogue: {
+      headerBg: 'bg-gray-800/50',
+      headerBorder: 'border-gray-700/50',
+      titleColor: 'text-gray-300',
+      subtitleColor: 'text-gray-500',
+      countBg: 'bg-gray-700',
+      countColor: 'text-gray-300'
+    },
+    concierge: {
+      headerBg: 'bg-purple-900/30',
+      headerBorder: 'border-purple-500/30',
+      titleColor: 'text-purple-300',
+      subtitleColor: 'text-purple-400/70',
+      countBg: 'bg-purple-500/30',
+      countColor: 'text-purple-300'
+    }
+  };
+  
+  const styles = variantStyles[variant];
+  
+  return (
+    <div className="rounded-2xl overflow-hidden">
+      {/* Section Header */}
+      <button
+        onClick={() => {
+          hapticFeedback.buttonTap();
+          setIsExpanded(!isExpanded);
+        }}
+        className={`w-full flex items-center justify-between p-3 ${styles.headerBg} border ${styles.headerBorder} rounded-t-2xl ${!isExpanded ? 'rounded-b-2xl' : ''}`}
+      >
+        <div className="flex items-center gap-3">
+          <div className={`${styles.titleColor}`}>
+            {icon}
+          </div>
+          <div className="text-left">
+            <h3 className={`text-sm font-semibold ${styles.titleColor}`}>
+              {title}
+            </h3>
+            {subtitle && (
+              <p className={`text-xs ${styles.subtitleColor}`}>{subtitle}</p>
+            )}
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className={`px-2 py-0.5 ${styles.countBg} ${styles.countColor} text-xs rounded-full`}>
+            {count}
+          </span>
+          <ChevronDown 
+            className={`w-4 h-4 ${styles.titleColor} transition-transform ${isExpanded ? 'rotate-180' : ''}`} 
+          />
+        </div>
+      </button>
+      
+      {/* Content */}
+      <AnimatePresence>
+        {isExpanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="p-3 pt-2">
+              {children}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+};
+
+/**
  * MiniCart - Selection summary at bottom
  */
 const MiniCart = ({ 
