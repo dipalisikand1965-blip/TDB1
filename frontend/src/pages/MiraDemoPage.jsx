@@ -3688,12 +3688,50 @@ const MiraDemoPage = () => {
         </Suspense>
       )}
       
-      {/* PICKS INDICATOR */}
+      {/* PICKS INDICATOR - Opens Unified Vault */}
       <PicksIndicator
         picksCount={(miraPicks.products?.length || 0) + (miraPicks.services?.length || 0) + (miraPicks.places?.length || 0) + (miraPicks.tipCard ? 1 : 0)}
         hasNewPicks={miraPicks.hasNew}
-        onClick={() => setShowVault(true)}
+        onClick={() => setShowUnifiedVault(true)}
         petName={pet?.name || 'your pet'}
+      />
+      
+      {/* UNIFIED PICKS VAULT - Combined conversation picks, tips, and personalized picks */}
+      <UnifiedPicksVault
+        isOpen={showUnifiedVault}
+        onClose={() => setShowUnifiedVault(false)}
+        conversationPicks={[...(miraPicks.products || []), ...(miraPicks.services || [])]}
+        tipCard={miraPicks.tipCard}
+        userMessage={vaultUserMessage || conversationHistory[conversationHistory.length - 2]?.content}
+        currentPillar={currentPillar}
+        pet={pet}
+        allPets={allPets}
+        token={token}
+        onAddToPicks={(pick) => {
+          setMiraPicks(prev => ({
+            ...prev,
+            products: [...(prev.products || []), pick],
+            hasNew: true
+          }));
+        }}
+        onSendToConcierge={async (data) => {
+          console.log('[UNIFIED VAULT] Send to Concierge:', data);
+          setShowUnifiedVault(false);
+          await handleConciergeHandoff({
+            pet_name: pet.name,
+            pillar: currentPillar || 'shop',
+            items: data.picks || [data],
+            notes: `From Mira's Picks for ${pet.name}`,
+          });
+        }}
+        onSaveTip={(tip) => {
+          console.log('[UNIFIED VAULT] Save tip:', tip);
+          // Could save to pet profile here
+        }}
+        onShowFullTopPicks={() => {
+          setShowUnifiedVault(false);
+          setShowTopPicksPanel(true);
+        }}
       />
       
       {/* TEST SCENARIOS PANEL - Lazy loaded */}
