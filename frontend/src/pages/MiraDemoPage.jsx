@@ -3757,8 +3757,8 @@ const MiraDemoPage = () => {
         }}
       />
       
-      {/* Product Detail Modal - Opened from conversation picks */}
-      {selectedProduct && (
+      {/* Product Detail Modal - Opened from conversation picks - Portaled for proper z-index */}
+      {selectedProduct && createPortal(
         <ProductDetailModal
           product={selectedProduct}
           pillar={currentPillar || selectedProduct.pillar}
@@ -3778,7 +3778,8 @@ const MiraDemoPage = () => {
             }));
             setSelectedProduct(null);
           }}
-        />
+        />,
+        document.body
       )}
       
       {/* TEST SCENARIOS PANEL - Lazy loaded */}
