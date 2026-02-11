@@ -1078,6 +1078,26 @@ const ServicesPage = () => {
       
       <MiraChatWidget pillar="services" isOpen={miraChatOpen} onClose={() => setMiraChatOpen(false)} />
       
+      {/* Service Quick View Modal */}
+      <ServiceQuickViewModal
+        service={quickViewService}
+        pet={selectedPet}
+        isOpen={!!quickViewService}
+        onClose={() => setQuickViewService(null)}
+        variant="light"
+        onBook={async (svc) => {
+          // Handle booking - this would typically create a service request
+          console.log('[Services] Book service:', svc);
+          setQuickViewService(null);
+          // Navigate to booking or show confirmation
+          navigate(`/services/${svc.pillar || 'care'}/${svc.id}?book=true`);
+        }}
+        onAskMira={(svc) => {
+          setQuickViewService(null);
+          setMiraChatOpen(true);
+        }}
+      />
+      
       <style>{`
         .scrollbar-hide::-webkit-scrollbar { display: none; }
         .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
