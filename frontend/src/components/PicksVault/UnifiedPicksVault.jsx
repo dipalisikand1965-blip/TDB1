@@ -592,7 +592,7 @@ const UnifiedPicksVault = ({
                       <p className="text-gray-500 text-sm">Loading picks for {pet?.name}...</p>
                     </div>
                   ) : personalizedPicks ? (
-                    <div className="space-y-6">
+                    <div className="space-y-4">
                       {/* Quick stats */}
                       <div className="flex gap-2 flex-wrap">
                         <span className="px-2 py-1 bg-purple-50 text-purple-600 text-xs rounded-full">
@@ -608,35 +608,99 @@ const UnifiedPicksVault = ({
                         )}
                       </div>
                       
-                      {/* Show top 3 pillars */}
-                      {Object.entries(personalizedPicks.pillars || {}).slice(0, 3).map(([pillarId, data]) => (
+                      {/* Category/Pillar Picker */}
+                      <div className="bg-gray-50 rounded-xl p-2">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Filter className="w-4 h-4 text-gray-500" />
+                          <span className="text-xs font-medium text-gray-600">Filter by category</span>
+                        </div>
+                        <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1">
+                          {PILLAR_FILTERS.map((pillar) => (
+                            <button
+                              key={pillar.id}
+                              onClick={() => {
+                                hapticFeedback.light();
+                                setSelectedPillar(pillar.id);
+                              }}
+                              className={`flex-shrink-0 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                                selectedPillar === pillar.id
+                                  ? 'bg-amber-400 text-white shadow-sm'
+                                  : 'bg-white text-gray-600 hover:bg-gray-100 border border-gray-200'
+                              }`}
+                            >
+                              <span className="mr-1">{pillar.emoji}</span>
+                              {pillar.name}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      {/* Selection Mode Toggle */}
+                      <div className="flex items-center justify-between">
+                        <button
+                          onClick={() => {
+                            hapticFeedback.medium();
+                            setSelectionMode(!selectionMode);
+                            if (selectionMode) clearSelection();
+                          }}
+                          className={`px-3 py-1.5 rounded-lg text-xs font-medium flex items-center gap-1.5 transition-all ${
+                            selectionMode
+                              ? 'bg-amber-100 text-amber-700 border border-amber-300'
+                              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          }`}
+                        >
+                          {selectionMode ? <CheckSquare className="w-3.5 h-3.5" /> : <Square className="w-3.5 h-3.5" />}
+                          {selectionMode ? `${selectedItems.size} selected` : 'Select items'}
+                        </button>
+                        
+                        {selectionMode && selectedItems.size > 0 && (
+                          <button
+                            onClick={clearSelection}
+                            className="text-xs text-gray-500 hover:text-gray-700"
+                          >
+                            Clear all
+                          </button>
+                        )}
+                      </div>
+                      
+                      {/* Pillar sections - filtered by selected pillar */}
+                      {Object.entries(personalizedPicks.pillars || {})
+                        .filter(([pillarId]) => selectedPillar === 'all' || pillarId === selectedPillar)
+                        .map(([pillarId, data]) => (
                         <div key={pillarId}>
                           <h3 className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
                             <span>{data.pillar?.emoji}</span>
                             {data.pillar?.name}
+                            <span className="text-xs text-gray-400 font-normal">({data.picks?.length || 0})</span>
                           </h3>
                           <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4">
-                            {data.picks?.slice(0, 4).map((pick, i) => (
-                              <PickCard
-                                key={pick.id || i}
-                                pick={enhancePicksWithBadges([pick])[0]}
-                                pet={pet}
-                                onAdd={onAddToPicks}
-                                onSendToConcierge={onSendToConcierge}
-                              />
-                            ))}
+                            {data.picks?.map((pick, i) => {
+                              const pickId = pick.id || pick.name;
+                              return (
+                                <PickCard
+                                  key={pickId || i}
+                                  pick={enhancePicksWithBadges([pick])[0]}
+                                  pet={pet}
+                                  onAdd={onAddToPicks}
+                                  onSendToConcierge={onSendToConcierge}
+                                  selectable={selectionMode}
+                                  isSelected={selectedItems.has(pickId)}
+                                  onToggleSelect={toggleItemSelection}
+                                />
+                              );
+                            })}
                           </div>
                         </div>
                       ))}
                       
-                      {/* See all button */}
-                      <button
-                        onClick={onShowFullTopPicks}
-                        className="w-full py-3 text-sm font-medium text-amber-600 bg-amber-50 rounded-xl flex items-center justify-center gap-2 hover:bg-amber-100"
-                      >
-                        See all {personalizedPicks.total_picks} picks
-                        <ChevronRight className="w-4 h-4" />
-                      </button>
+                      {/* Empty state for filtered view */}
+                      {selectedPillar !== 'all' && 
+                       !personalizedPicks.pillars?.[selectedPillar]?.picks?.length && (
+                        <div className="text-center py-6">
+                          <Package className="w-10 h-10 text-gray-200 mx-auto mb-2" />
+                          <p className="text-gray-500 text-sm">No picks in this category yet</p>
+                        </div>
+                      )}
                     </div>
                   ) : (
                     <div className="text-center py-8">
@@ -655,23 +719,46 @@ const UnifiedPicksVault = ({
             </AnimatePresence>
           </div>
           
-          {/* Footer CTA */}
+          {/* Footer CTA - Changes based on selection mode */}
           <div className="sticky bottom-0 bg-white border-t border-gray-100 px-4 py-3">
-            <button
-              onClick={() => {
-                hapticFeedback.success();
-                onSendToConcierge?.({ 
-                  type: 'all_picks', 
-                  picks: enhancedConversationPicks,
-                  tipCard,
-                  pet 
-                });
-              }}
-              className="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium rounded-xl flex items-center justify-center gap-2"
-            >
-              <Send className="w-4 h-4" />
-              Send to Concierge®
-            </button>
+            {selectionMode && selectedItems.size > 0 ? (
+              <button
+                onClick={() => {
+                  hapticFeedback.success();
+                  const selectedPickObjects = getSelectedPickObjects();
+                  onSendToConcierge?.({ 
+                    type: 'selected_picks', 
+                    picks: selectedPickObjects,
+                    pet,
+                    count: selectedItems.size
+                  });
+                  clearSelection();
+                }}
+                className="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium rounded-xl flex items-center justify-center gap-2"
+              >
+                <Send className="w-4 h-4" />
+                Send {selectedItems.size} item{selectedItems.size > 1 ? 's' : ''} to Concierge®
+              </button>
+            ) : (
+              <div className="text-center">
+                <p className="text-xs text-gray-500 mb-2">
+                  {selectionMode 
+                    ? 'Tap items to select, then send to Concierge®' 
+                    : `${personalizedPicks?.total_picks || 0} picks curated for ${pet?.name}`}
+                </p>
+                {!selectionMode && (
+                  <button
+                    onClick={() => {
+                      hapticFeedback.medium();
+                      setSelectionMode(true);
+                    }}
+                    className="text-sm text-amber-600 font-medium hover:text-amber-700"
+                  >
+                    Select items to send →
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         </motion.div>
       </motion.div>
