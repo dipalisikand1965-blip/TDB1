@@ -675,6 +675,10 @@ const PersonalizedPicksPanel = ({
   
   // Quick send single item - when user clicks on a product/service card
   const handleQuickSendItem = async (item, type) => {
+    // Prevent double submission
+    if (isSending) return;
+    setIsSending(true);
+    
     const itemWithMeta = {
       ...item,
       pick_type: type,
@@ -709,6 +713,8 @@ const PersonalizedPicksPanel = ({
       onClose();
     } catch (err) {
       console.error('Error sending to concierge:', err);
+    } finally {
+      setIsSending(false);
     }
   };
   
