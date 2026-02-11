@@ -3620,15 +3620,21 @@ const MiraDemoPage = () => {
             console.error('[INSIGHTS → CONCIERGE] Error:', err);
           }
         }}
-      />
+          />
+        </Suspense>
+      )}
       
-      {/* CONCIERGE PANEL - Extracted to ConciergePanel component */}
-      <ConciergePanel
-        isOpen={showConciergePanel}
-        onClose={() => setShowConciergePanel(false)}
-        pet={pet}
-        onChatHandoff={handleConciergeHandoff}
-      />
+      {/* CONCIERGE PANEL - Lazy loaded */}
+      {showConciergePanel && (
+        <Suspense fallback={<LazyFallback />}>
+          <ConciergePanel
+            isOpen={showConciergePanel}
+            onClose={() => setShowConciergePanel(false)}
+            pet={pet}
+            onChatHandoff={handleConciergeHandoff}
+          />
+        </Suspense>
+      )}
       
       {/* CONCIERGE CONFIRMATION BANNER - Shows when service request received */}
       <ConciergeConfirmation
@@ -3637,7 +3643,7 @@ const MiraDemoPage = () => {
         petName={pet?.name || 'your pet'}
       />
       
-      {/* HANDOFF SUMMARY - Shows BEFORE sending to Concierge® */}
+      {/* HANDOFF SUMMARY - Lazy loaded */}
       <HandoffSummary
         isOpen={handoffSummary?.isOpen || false}
         onClose={() => setHandoffSummary(null)}
