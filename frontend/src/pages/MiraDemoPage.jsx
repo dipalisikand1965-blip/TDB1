@@ -221,6 +221,8 @@ const MiraDemoPage = () => {
   const [showTopPicksPanel, setShowTopPicksPanel] = useState(false);
   // UNIFIED PICKS VAULT: Replaces the old vault with tabbed interface
   const [showUnifiedVault, setShowUnifiedVault] = useState(false);
+  // PENDING PICKS: Items awaiting confirmation in chat card
+  const [pendingPicksForConfirm, setPendingPicksForConfirm] = useState(null);
   
   // Core conversation state
   const [query, setQuery] = useState('');
