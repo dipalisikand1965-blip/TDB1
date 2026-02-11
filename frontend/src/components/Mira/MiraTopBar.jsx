@@ -57,15 +57,6 @@ const MiraTopBar = ({
   userEmail = '',
   isLoggedIn = false
 }) => {
-  // Debug: Log pet photo properties
-  console.log('[MiraTopBar] Pet photo debug:', {
-    name: pet?.name,
-    image_url: pet?.image_url,
-    photo_url: pet?.photo_url,
-    photo: pet?.photo,
-    hasAnyPhoto: !!(pet?.image_url || pet?.photo_url || pet?.photo)
-  });
-  
   const navigate = useNavigate();
   const [showReminders, setShowReminders] = useState(false);
   const [showConcierge, setShowConcierge] = useState(false);
