@@ -20,7 +20,33 @@
 
 ## Latest Session: Feb 11, 2026
 
-### ✅ TOP PICKS FEATURE IMPLEMENTED
+### ✅ UNIFIED PICKS VAULT IMPLEMENTED
+**"Mira's Picks"** - Single tabbed interface combining all picks sources
+
+**Tabs:**
+1. 🎁 **Conversation** - Subject-relevant picks from current chat
+2. 💡 **Tips** - Advice and tips (merged from Insights panel)
+3. ✨ **For [Pet]** - Personalized picks across all pillars
+
+**Smart Badges:**
+- 🔥 **Trending** - Popular items (score > 70)
+- 🆕 **New** - Added in last 30 days
+- 🔄 **Reorder** - Previously purchased
+- 🎁 **Birthday Soon!** - When pet's birthday is within 14 days
+- ⭐ **Seasonal** - Matches current season/event
+
+**Seasonal Boosts (Backend):**
+- 💕 Valentine's (Feb 1-14): treats, bandana, gift, hamper +30
+- 🪔 Diwali (Oct-Nov): calming, safety, festive +25
+- 🎄 Christmas (Dec): gift, hamper, festive +30
+- 🌧️ Monsoon (Jun-Sep): raincoat, paw-care +20
+- ☀️ Summer (Apr-Jun): cooling, hydration, pool +15
+
+**Files Created:**
+- `/app/frontend/src/components/PicksVault/UnifiedPicksVault.jsx`
+- Updated `/app/backend/app/api/top_picks_routes.py` with badges & seasonal boosts
+
+### ✅ TOP PICKS FEATURE (Previous)
 **"Top Picks for [Pet]"** - Personalized recommendations across all pillars
 
 **Backend API** (`/api/mira/top-picks/{pet_id}`):
