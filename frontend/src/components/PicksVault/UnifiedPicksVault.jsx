@@ -1333,15 +1333,8 @@ const UnifiedPicksVault = ({
             {selectionMode && selectedItems.size > 0 ? (
               <button
                 onClick={() => {
-                  hapticFeedback.success();
-                  const selectedPickObjects = getSelectedPickObjects();
-                  onSendToConcierge?.({ 
-                    type: 'selected_picks', 
-                    picks: selectedPickObjects,
-                    pet,
-                    count: selectedItems.size
-                  });
-                  clearSelection();
+                  hapticFeedback.toggle();
+                  setShowConfirmation(true);  // Open confirmation modal
                 }}
                 className="w-full py-3.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium rounded-xl flex items-center justify-center gap-2 min-h-[52px] touch-manipulation active:opacity-90"
               >
