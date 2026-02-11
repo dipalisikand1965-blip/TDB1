@@ -732,6 +732,105 @@ const MiraTopBar = ({
           margin: 4px 0 0;
         }
 
+        /* Pet Selector */
+        .mtb-pet-selector {
+          position: relative;
+          margin-top: 12px;
+        }
+
+        .mtb-pet-switch-btn {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          padding: 8px 16px;
+          background: rgba(255,255,255,0.05);
+          border: 1px solid rgba(255,255,255,0.1);
+          border-radius: 20px;
+          color: rgba(255,255,255,0.7);
+          font-size: 12px;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+        .mtb-pet-switch-btn:hover {
+          background: rgba(255,255,255,0.1);
+          color: white;
+        }
+
+        .mtb-pet-dropdown {
+          position: absolute;
+          top: 100%;
+          left: 50%;
+          transform: translateX(-50%);
+          margin-top: 8px;
+          min-width: 220px;
+          background: rgba(26, 15, 53, 0.98);
+          backdrop-filter: blur(20px);
+          border: 1px solid rgba(255,255,255,0.1);
+          border-radius: 16px;
+          box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+          overflow: hidden;
+          z-index: 100;
+        }
+
+        .mtb-pet-option {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          width: 100%;
+          padding: 12px 16px;
+          background: transparent;
+          border: none;
+          cursor: pointer;
+          transition: background 0.2s;
+        }
+        .mtb-pet-option:hover {
+          background: rgba(255,255,255,0.05);
+        }
+        .mtb-pet-option.active {
+          background: rgba(139, 92, 246, 0.1);
+        }
+
+        .mtb-pet-option-avatar {
+          width: 36px;
+          height: 36px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #1a0f35, #2d1b50);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+          font-size: 14px;
+          font-weight: 600;
+          color: white;
+        }
+        .mtb-pet-option-avatar img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .mtb-pet-option-info {
+          flex: 1;
+          text-align: left;
+        }
+        .mtb-pet-option-name {
+          display: block;
+          font-size: 14px;
+          font-weight: 600;
+          color: white;
+        }
+        .mtb-pet-option-breed {
+          display: block;
+          font-size: 11px;
+          color: rgba(255,255,255,0.5);
+        }
+
+        .mtb-pet-option-check {
+          color: #10b981;
+          font-weight: 700;
+        }
+
         /* Row 3: Action Tabs */
         .mtb-actions-row {
           display: flex;
