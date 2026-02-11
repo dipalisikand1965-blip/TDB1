@@ -225,12 +225,12 @@ const MiraTopBar = ({
           
           {/* Pet photo in center */}
           <div className="mtb-pet-photo">
-            {(pet?.image_url || pet?.photo_url) ? (
+            {(pet?.image_url || pet?.photo_url || pet?.photo) ? (
               <img 
                 src={
-                  (pet.image_url || pet.photo_url)?.startsWith('http') 
-                    ? (pet.image_url || pet.photo_url)
-                    : `${API_URL}${pet.image_url || pet.photo_url}`
+                  (pet.image_url || pet.photo_url || pet.photo)?.startsWith('http') 
+                    ? (pet.image_url || pet.photo_url || pet.photo)
+                    : `${API_URL}${pet.image_url || pet.photo_url || pet.photo}`
                 } 
                 alt={pet?.name || 'Pet'}
                 onError={(e) => {
@@ -241,7 +241,7 @@ const MiraTopBar = ({
             ) : null}
             <span 
               className="mtb-pet-initial" 
-              style={{ display: (pet?.image_url || pet?.photo_url) ? 'none' : 'flex' }}
+              style={{ display: (pet?.image_url || pet?.photo_url || pet?.photo) ? 'none' : 'flex' }}
             >
               {pet?.name?.[0] || '🐕'}
             </span>
