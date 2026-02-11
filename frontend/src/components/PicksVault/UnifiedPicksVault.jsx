@@ -1461,40 +1461,93 @@ const UnifiedPicksVault = ({
                         )}
                       </div>
                       
-                      {/* Pillar sections */}
+                      {/* "Anything else?" Custom Request Box */}
+                      <CustomRequestBox 
+                        pet={pet} 
+                        onSubmit={(data) => {
+                          onSendToConcierge?.({ type: 'custom_request', ...data });
+                        }} 
+                      />
+                      
+                      {/* Pillar sections - Catalogue + Concierge */}
                       {Object.entries(personalizedPicks.pillars || {})
                         .filter(([pillarId]) => selectedPillar === 'all' || pillarId === selectedPillar)
-                        .map(([pillarId, data]) => (
-                        <div key={pillarId}>
-                          <h3 className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                            <span>{data.pillar?.emoji}</span>
-                            {data.pillar?.name}
-                            <span className="text-xs text-gray-400 font-normal">({data.picks?.length || 0})</span>
-                          </h3>
-                          <div 
-                            className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory"
-                            style={{ WebkitOverflowScrolling: 'touch' }}
-                          >
-                            {data.picks?.map((pick, i) => {
-                              const pickId = pick.id || pick.name;
-                              return (
-                                <div key={pickId || i} className="snap-start">
-                                  <PickCard
-                                    pick={enhancePicksWithBadges([pick])[0]}
-                                    pet={pet}
-                                    onAdd={onAddToPicks}
-                                    onSendToConcierge={onSendToConcierge}
-                                    selectable={selectionMode}
-                                    isSelected={selectedItems.has(pickId)}
-                                    onToggleSelect={toggleItemSelection}
-                                    onQuickAction={handleQuickAction}
-                                  />
+                        .map(([pillarId, data]) => {
+                          const cataloguePicks = data.picks?.filter(p => p.pick_type !== 'concierge') || [];
+                          const conciergePicks = data.picks?.filter(p => p.pick_type === 'concierge') || [];
+                          
+                          return (
+                            <div key={pillarId} className="mb-6">
+                              {/* Pillar Header */}
+                              <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                                <span className="text-lg">{data.pillar?.emoji}</span>
+                                {data.pillar?.name}
+                                <span className="text-xs text-gray-400 font-normal">
+                                  ({cataloguePicks.length} products, {conciergePicks.length} services)
+                                </span>
+                              </h3>
+                              
+                              {/* Catalogue Products */}
+                              {cataloguePicks.length > 0 && (
+                                <div className="mb-4">
+                                  <p className="text-xs text-gray-500 mb-2 flex items-center gap-1">
+                                    <ShoppingBag className="w-3 h-3" /> From our catalogue
+                                  </p>
+                                  <div 
+                                    className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory"
+                                    style={{ WebkitOverflowScrolling: 'touch' }}
+                                  >
+                                    {cataloguePicks.map((pick, i) => {
+                                      const pickId = pick.id || pick.name;
+                                      return (
+                                        <div key={pickId || i} className="snap-start">
+                                          <PickCard
+                                            pick={enhancePicksWithBadges([pick])[0]}
+                                            pet={pet}
+                                            onAdd={onAddToPicks}
+                                            onSendToConcierge={onSendToConcierge}
+                                            selectable={selectionMode}
+                                            isSelected={selectedItems.has(pickId)}
+                                            onToggleSelect={toggleItemSelection}
+                                            onQuickAction={handleQuickAction}
+                                          />
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
                                 </div>
-                              );
-                            })}
-                          </div>
-                        </div>
-                      ))}
+                              )}
+                              
+                              {/* Concierge Services - Beautiful Cards */}
+                              {conciergePicks.length > 0 && (
+                                <div>
+                                  <p className="text-xs text-purple-600 mb-2 flex items-center gap-1 font-medium">
+                                    <Sparkles className="w-3 h-3" /> Concierge® can source for you
+                                  </p>
+                                  <div 
+                                    className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory"
+                                    style={{ WebkitOverflowScrolling: 'touch' }}
+                                  >
+                                    {conciergePicks.map((pick, i) => {
+                                      const pickId = pick.id || pick.name;
+                                      return (
+                                        <div key={pickId || i} className="snap-start">
+                                          <ConciergeCard
+                                            pick={pick}
+                                            pet={pet}
+                                            selectable={selectionMode}
+                                            isSelected={selectedItems.has(pickId)}
+                                            onSelect={toggleItemSelection}
+                                          />
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
                       
                       {/* Empty state for filtered view */}
                       {selectedPillar !== 'all' && 
