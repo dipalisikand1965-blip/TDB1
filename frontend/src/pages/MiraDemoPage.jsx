@@ -3644,31 +3644,33 @@ const MiraDemoPage = () => {
       />
       
       {/* HANDOFF SUMMARY - Lazy loaded */}
-      <HandoffSummary
-        isOpen={handoffSummary?.isOpen || false}
-        onClose={() => setHandoffSummary(null)}
-        onConfirm={async (editedData) => {
-          // Update handoff summary with edited values before sending
-          if (editedData) {
-            setHandoffSummary(prev => ({
-              ...prev,
-              notes: editedData.notes || prev?.notes,
-              pillar: editedData.pillar || prev?.pillar,
-              title: editedData.title || prev?.title
-            }));
-          }
-          setHandoffSummary(null);
-          await handleConciergeHandoff(editedData);
-        }}
-        petName={handoffSummary?.petName || pet?.name || 'your pet'}
-        pillar={handoffSummary?.pillar || currentPillar?.toLowerCase()}
-        title={handoffSummary?.title || 'Request Summary'}
-        items={handoffSummary?.items || []}
-        notes={handoffSummary?.notes || ''}
-      />
+      {(handoffSummary?.isOpen) && (
+        <Suspense fallback={<LazyFallback />}>
+          <HandoffSummary
+            isOpen={handoffSummary?.isOpen || false}
+            onClose={() => setHandoffSummary(null)}
+            onConfirm={async (editedData) => {
+              if (editedData) {
+                setHandoffSummary(prev => ({
+                  ...prev,
+                  notes: editedData.notes || prev?.notes,
+                  pillar: editedData.pillar || prev?.pillar,
+                  title: editedData.title || prev?.title
+                }));
+              }
+              setHandoffSummary(null);
+              await handleConciergeHandoff(editedData);
+            }}
+            petName={handoffSummary?.petName || pet?.name || 'your pet'}
+            pillar={handoffSummary?.pillar || currentPillar?.toLowerCase()}
+            title={handoffSummary?.title || 'Request Summary'}
+            items={handoffSummary?.items || []}
+            notes={handoffSummary?.notes || ''}
+          />
+        </Suspense>
+      )}
       
-      {/* PICKS INDICATOR - Yellow gift icon when Mira has curated picks OR tip card OR places */}
-      {/* Non-intrusive: user clicks to view, not forced */}
+      {/* PICKS INDICATOR */}
       <PicksIndicator
         picksCount={(miraPicks.products?.length || 0) + (miraPicks.services?.length || 0) + (miraPicks.places?.length || 0) + (miraPicks.tipCard ? 1 : 0)}
         hasNewPicks={miraPicks.hasNew}
@@ -3676,28 +3678,35 @@ const MiraDemoPage = () => {
         petName={pet?.name || 'your pet'}
       />
       
-      {/* TEST SCENARIOS PANEL - Extracted to TestScenariosPanel component */}
-      <TestScenariosPanel
-        isOpen={showTestScenarios}
-        onClose={() => setShowTestScenarios(false)}
-        activeScenario={activeScenario}
-        onScenarioClick={(id, query) => {
-          setActiveScenario(id);
-          handleQuickReply(query);
-        }}
-      />
+      {/* TEST SCENARIOS PANEL - Lazy loaded */}
+      {showTestScenarios && (
+        <Suspense fallback={<LazyFallback />}>
+          <TestScenariosPanel
+            isOpen={showTestScenarios}
+            onClose={() => setShowTestScenarios(false)}
+            activeScenario={activeScenario}
+            onScenarioClick={(id, query) => {
+              setActiveScenario(id);
+              handleQuickReply(query);
+            }}
+          />
+        </Suspense>
+      )}
       
-      {/* Past Chats Sidebar */}
-      {/* Past Chats Panel - Extracted to PastChatsPanel component (Stage 5) */}
-      <PastChatsPanel
-        isOpen={showPastChats}
-        onClose={() => setShowPastChats(false)}
-        sessions={pastSessions}
-        isLoading={loadingPastChats}
-        currentSessionId={sessionId}
-        onLoadSession={loadSession}
-        onStartNewChat={startNewSession}
-      />
+      {/* Past Chats Panel - Lazy loaded */}
+      {showPastChats && (
+        <Suspense fallback={<LazyFallback />}>
+          <PastChatsPanel
+            isOpen={showPastChats}
+            onClose={() => setShowPastChats(false)}
+            sessions={pastSessions}
+            isLoading={loadingPastChats}
+            currentSessionId={sessionId}
+            onLoadSession={loadSession}
+            onStartNewChat={startNewSession}
+          />
+        </Suspense>
+      )}
 
       {/* Main Chat Area - Apple iMessage Spacing */}
       <div 
