@@ -878,15 +878,18 @@ const PersonalizedPicksPanel = ({
                 </div>
                 
                 {/* ═══════════════════════════════════════════════════ */}
-                {/* RIGHT: CONCIERGE CURATES - Personalized services */}
+                {/* RIGHT: CONCIERGE ARRANGES - Personalized services */}
                 {/* ═══════════════════════════════════════════════════ */}
                 <div>
                   {conciergePicks.length > 0 && (
                     <div>
-                      <h3 className="text-sm font-semibold text-purple-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-                        <Star className="w-4 h-4" />
-                        Concierge Curates for {pet?.name}
-                      </h3>
+                      <div className="mb-3">
+                        <h3 className="text-sm font-semibold text-purple-300 uppercase tracking-wider flex items-center gap-2">
+                          <Sparkles className="w-4 h-4 text-purple-400" />
+                          Concierge Arranges for {pet?.name}
+                        </h3>
+                        <p className="text-xs text-purple-400/70 mt-1">We'll source and arrange everything</p>
+                      </div>
                       <div className="space-y-3">
                         {conciergePicks.slice(0, showAllConcierge ? 10 : 4).map((pick, index) => (
                           <div 
