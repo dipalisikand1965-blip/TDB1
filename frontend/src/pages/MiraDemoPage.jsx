@@ -18,6 +18,7 @@
  */
 
 import React, { useState, useEffect, useRef, useCallback, lazy, Suspense, memo } from 'react';
+import { createPortal } from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import { 
   Mic, MicOff, Send, MessageCircle, Package, Calendar, 
