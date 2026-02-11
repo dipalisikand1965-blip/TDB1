@@ -1637,7 +1637,7 @@ Ask me anything about him!`
               {[
                 { year: "1998", title: "LesConcierges®", desc: "Dipali Sikand builds premium concierge services" },
                 { year: "2008", title: "Club Concierge®", desc: "Scales to serve 1M+ customers across India" },
-                { year: "2014", title: "The Doggy Bakery®", desc: "Aditya launches, celebrates 45,000+ pets" },
+                { year: "2020", title: "The Doggy Bakery®", desc: "Aditya launches, celebrates 45,000+ pets" },
                 { year: "2025", title: "Mira OS™", desc: "AI + Human concierge for pets. India's first." },
               ].map((item, i) => (
                 <motion.div

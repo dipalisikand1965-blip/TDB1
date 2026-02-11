@@ -34,7 +34,7 @@ const timelineData = [
     color: 'from-purple-500 to-indigo-600'
   },
   {
-    year: '2014',
+    year: '2020',
     title: 'The Doggy Bakery® Born',
     description: 'Aditya launches handcrafted pet treats — celebrating pets like family, milestone by milestone. Grandma Mira\'s hands in the early work.',
     icon: Cake,

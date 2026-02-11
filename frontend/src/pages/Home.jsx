@@ -594,7 +594,7 @@ const Home = () => {
                 },
                 { 
                   name: 'The Doggy Bakery®', 
-                  year: '2014',
+                  year: '2020',
                   desc: 'Where pets became family. Mira made treats with her granddaughter.',
                   icon: '🍰'
                 },
@@ -651,7 +651,7 @@ const Home = () => {
                 },
                 { 
                   name: 'The Doggy Bakery®', 
-                  year: '2014',
+                  year: '2020',
                   desc: 'Where pets became family. Mira made treats with her granddaughter — hands-on love.',
                   icon: '🍰',
                   color: 'from-pink-500/20 to-pink-600/20',
