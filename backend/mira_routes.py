@@ -1592,11 +1592,21 @@ async def search_real_products(
         is_apparel_query = any(word in user_input_lower for word in ["clothes", "clothing", "dress", "bandana", "collar", "harness"])
         is_grooming_query = any(word in user_input_lower for word in ["shampoo", "brush", "grooming", "nail", "ear clean"])
         
-        # ALWAYS exclude cat products for dog queries
-        if pet_context.get("species", "dog").lower() == "dog":
+        # ALWAYS exclude cat products for dog queries, boost cat products for cat queries
+        if pet_context.get("species", "dog").lower() == "dog" and pet_context.get("pet_type", "dog").lower() != "cat":
             if "$and" not in query:
                 query["$and"] = []
             query["$and"].append({"category": {"$not": {"$regex": "^cat-", "$options": "i"}}})
+        elif pet_context.get("pet_type", "").lower() == "cat":
+            # For cats, prefer cat-specific products
+            if "$and" not in query:
+                query["$and"] = []
+            query["$and"].append({"$or": [
+                {"pet_type": "cat"},
+                {"category": {"$regex": "^cat-", "$options": "i"}},
+                {"tags": {"$in": ["cat", "kitten", "feline"]}}
+            ]})
+            logger.info("[PET TYPE FILTER] Cat query - boosting cat-specific products")
         
         # Category refinement ADDS to pillar filter, doesn't replace it
         if is_treat_query:
