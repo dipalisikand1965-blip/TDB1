@@ -202,19 +202,25 @@ const PickCard = ({ pick, petName, onAddToPicks, onSendToConcierge }) => {
         )}
       </div>
       
-      {/* Action button */}
+      {/* Action button - 44px min height */}
       <div className="px-2 pb-2">
         {isConcierge ? (
           <button
-            onClick={() => onSendToConcierge?.(pick)}
-            className="w-full py-1.5 text-xs font-medium text-white bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg hover:opacity-90"
+            onClick={() => {
+              hapticFeedback.medium();
+              onSendToConcierge?.(pick);
+            }}
+            className="w-full py-2.5 text-xs font-medium text-white bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg hover:opacity-90 active:opacity-80 min-h-[44px] touch-manipulation"
           >
             Request via Concierge®
           </button>
         ) : (
           <button
-            onClick={() => onAddToPicks?.(pick)}
-            className="w-full py-1.5 text-xs font-medium text-pink-600 bg-pink-50 rounded-lg hover:bg-pink-100 flex items-center justify-center gap-1"
+            onClick={() => {
+              hapticFeedback.medium();
+              onAddToPicks?.(pick);
+            }}
+            className="w-full py-2.5 text-xs font-medium text-pink-600 bg-pink-50 rounded-lg hover:bg-pink-100 active:bg-pink-200 flex items-center justify-center gap-1 min-h-[44px] touch-manipulation"
           >
             <Gift className="w-3 h-3" />
             Add to Picks
