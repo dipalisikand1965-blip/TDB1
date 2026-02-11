@@ -37,8 +37,9 @@ class TestPersonalizedPicksVault:
         assert response.status_code == 200, f"Login failed: {response.text}"
         data = response.json()
         
-        assert "token" in data, "Response should contain token"
-        auth_data["token"] = data["token"]
+        # API returns access_token instead of token
+        assert "access_token" in data or "token" in data, "Response should contain access_token or token"
+        auth_data["token"] = data.get("access_token") or data.get("token")
         
         # Store user info for subsequent tests
         if "user" in data:
