@@ -4076,7 +4076,13 @@ const MiraDemoPage = () => {
             token={token}
             onSoulUpdated={(newScore, answers) => {
               if (newScore) {
-                setPet(prev => ({ ...prev, soulScore: Math.round(newScore) }));
+                const roundedScore = Math.round(newScore);
+                // Update current pet
+                setPet(prev => ({ ...prev, soulScore: roundedScore, doggy_soul_answers: { ...(prev.doggy_soul_answers || {}), ...answers } }));
+                // Also update in allPets array to keep them in sync
+                setAllPets(prevPets => prevPets.map(p => 
+                  p.id === pet.id ? { ...p, soulScore: roundedScore, doggy_soul_answers: { ...(p.doggy_soul_answers || {}), ...answers } } : p
+                ));
                 setSoulScoreUpdated(true);
                 setTimeout(() => setSoulScoreUpdated(false), 2000);
               }
