@@ -812,6 +812,7 @@ const PersonalizedPicksPanel = ({
                           pick={pick}
                           isSelected={isSelected(pick)}
                           onSelect={toggleSelection}
+                          onViewDetails={(p) => setQuickViewProduct(p)}
                           petName={pet?.name}
                           type="catalogue"
                         />
