@@ -4113,50 +4113,11 @@ const MiraDemoPage = () => {
             onClose={() => setShowTopPicksPanel(false)}
             pet={pet}
             token={token}
-            onItemSelect={({ item, type, pillar }) => {
-              // Close the panel first
-              setShowTopPicksPanel(false);
-              
-              // Add Mira intro message
-              const introMessage = {
-                type: 'mira',
-                content: type === 'concierge' 
-                  ? `Here's a special concierge pick for ${pet?.name}! 💜`
-                  : `I found something perfect for ${pet?.name}! 🎁`,
-                timestamp: new Date().toISOString(),
-                metadata: {
-                  type: 'pick_intro',
-                  pillar: pillar
-                }
-              };
-              
-              // Add the pick detail message with the card
-              const pickDetailMessage = {
-                type: 'mira',
-                content: '', // Content is rendered by the card
-                timestamp: new Date().toISOString(),
-                metadata: {
-                  type: 'pick_detail',
-                  pickType: type,
-                  pillar: pillar,
-                  pick: item,
-                  petName: pet?.name
-                },
-                // Flag to render special component
-                pickDetail: {
-                  item: item,
-                  type: type,
-                  pillar: pillar
-                }
-              };
-              
-              setConversationHistory(prev => [...prev, introMessage, pickDetailMessage]);
-            }}
             onSendSuccess={(data) => {
               // Add confirmation message to chat
               const confirmationMessage = {
                 type: 'mira',
-                content: `✨ Your ${data.count} personalized picks for ${data.petName} have been sent to your Concierge®! They're reviewing your selections now and will get back to you shortly to help arrange everything. Is there anything else I can help you with?`,
+                content: `✨ Your ${data.count} personalized pick${data.count > 1 ? 's' : ''} for ${data.petName} have been sent to your Concierge®! They're working on it now and will get back to you shortly to help arrange everything. Is there anything else I can help you with?`,
                 timestamp: new Date().toISOString(),
                 metadata: {
                   type: 'picks_confirmation',
