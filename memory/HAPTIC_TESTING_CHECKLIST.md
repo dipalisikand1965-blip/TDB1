@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://picks-bug-fix.preview.emergentagent.com/mira-demo**
+**https://mojo-os-stage.preview.emergentagent.com/mira-demo**
 
 ---
 

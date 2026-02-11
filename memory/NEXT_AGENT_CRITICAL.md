@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://picks-bug-fix.preview.emergentagent.com
+https://mojo-os-stage.preview.emergentagent.com
 
 ---
 

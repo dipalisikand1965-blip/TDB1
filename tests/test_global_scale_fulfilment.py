@@ -11,7 +11,7 @@ import pytest
 import requests
 import os
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://picks-bug-fix.preview.emergentagent.com')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://mojo-os-stage.preview.emergentagent.com')
 ADMIN_USERNAME = "aditya"
 ADMIN_PASSWORD = "doggy2026"
 

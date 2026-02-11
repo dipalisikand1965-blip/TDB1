@@ -38,7 +38,7 @@
     {
       "flow": "Mojo's photo appears in Soul Orb",
       "status": "PASSED",
-      "notes": "Pet photo IMG element exists with src: https://picks-bug-fix.preview.emergentagent.com/api/pet-photo/pet-99a708f1722a. Initial 'M' is hidden."
+      "notes": "Pet photo IMG element exists with src: https://mojo-os-stage.preview.emergentagent.com/api/pet-photo/pet-99a708f1722a. Initial 'M' is hidden."
     },
     {
       "flow": "Switch Pet button appears below Mojo's name",

@@ -148,7 +148,7 @@
 
 ## Preview URL
 
-https://picks-bug-fix.preview.emergentagent.com
+https://mojo-os-stage.preview.emergentagent.com
 
 ---
 

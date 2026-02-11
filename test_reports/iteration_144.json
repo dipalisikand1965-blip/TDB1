@@ -47,7 +47,7 @@
     {
       "flow": "Verify pet photo in Soul Orb",
       "status": "PASSED",
-      "notes": "Pet photo src: https://picks-bug-fix.preview.emergentagent.com/api/pet-photo/pet-99a708f1722a"
+      "notes": "Pet photo src: https://mojo-os-stage.preview.emergentagent.com/api/pet-photo/pet-99a708f1722a"
     },
     {
       "flow": "Switch Pet dropdown works",

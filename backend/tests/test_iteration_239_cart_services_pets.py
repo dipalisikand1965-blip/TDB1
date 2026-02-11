@@ -13,7 +13,7 @@ import requests
 import os
 import uuid
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://picks-bug-fix.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://mojo-os-stage.preview.emergentagent.com').rstrip('/')
 
 # Test credentials
 TEST_USER_EMAIL = "testuser@test.com"
