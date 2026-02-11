@@ -656,6 +656,174 @@ const PickCard = ({
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// EXPANDABLE CATALOGUE PICK CARD - For products/services from our catalogue
+// Click to select, tap info to see details - matches brand style
+// ═══════════════════════════════════════════════════════════════════════════════
+const ExpandablePickCard = ({ 
+  pick, 
+  pet, 
+  onAdd, 
+  onSendToConcierge,
+  isSelected, 
+  onToggleSelect 
+}) => {
+  const [showDetails, setShowDetails] = useState(false);
+  const petName = pet?.name || 'your pet';
+  
+  return (
+    <>
+      <motion.div
+        className={`relative flex-shrink-0 w-36 rounded-xl overflow-hidden bg-white border ${
+          isSelected ? 'border-amber-400 ring-2 ring-amber-400/30' : 'border-gray-200'
+        }`}
+        whileHover={{ scale: 1.03 }}
+        whileTap={{ scale: 0.98 }}
+        onClick={() => {
+          hapticFeedback.toggle();
+          onToggleSelect?.();
+        }}
+      >
+        {/* Selection indicator */}
+        <div 
+          className={`absolute top-2 left-2 w-6 h-6 rounded-full flex items-center justify-center z-10 transition-all ${
+            isSelected 
+              ? 'bg-amber-400 shadow-md' 
+              : 'bg-white/90 border border-gray-300'
+          }`}
+        >
+          {isSelected ? (
+            <Check className="w-4 h-4 text-white" />
+          ) : (
+            <div className="w-2 h-2 rounded-full bg-gray-300" />
+          )}
+        </div>
+        
+        {/* Info button */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            hapticFeedback.buttonTap();
+            setShowDetails(true);
+          }}
+          className="absolute top-2 right-2 w-7 h-7 rounded-full bg-white/90 flex items-center justify-center hover:bg-white z-10 shadow-sm"
+        >
+          <Info className="w-4 h-4 text-gray-500" />
+        </button>
+        
+        {/* Image */}
+        <div className="relative h-24 bg-gray-100">
+          {pick.image ? (
+            <img src={pick.image} alt={pick.name} className="w-full h-full object-cover" loading="lazy" />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center">
+              <Package className="w-8 h-8 text-gray-300" />
+            </div>
+          )}
+        </div>
+        
+        {/* Content */}
+        <div className="p-2.5">
+          <h4 className="text-xs font-semibold text-gray-900 line-clamp-2 leading-tight mb-1">
+            {pick.name}
+          </h4>
+          <p className="text-[10px] text-purple-600 mb-1">
+            Picked for {petName}
+          </p>
+          {pick.price && (
+            <p className="text-sm font-bold text-pink-600">₹{pick.price}</p>
+          )}
+        </div>
+      </motion.div>
+      
+      {/* Details Modal */}
+      <AnimatePresence>
+        {showDetails && (
+          <motion.div
+            className="fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowDetails(false)}
+          >
+            <motion.div
+              className="bg-white rounded-2xl w-full max-w-sm max-h-[80vh] overflow-hidden shadow-2xl"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Product Image */}
+              {pick.image && (
+                <div className="relative h-48 bg-gray-100">
+                  <img src={pick.image} alt={pick.name} className="w-full h-full object-cover" />
+                  <button
+                    onClick={() => setShowDetails(false)}
+                    className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/90 flex items-center justify-center shadow-md"
+                  >
+                    <X className="w-4 h-4 text-gray-600" />
+                  </button>
+                </div>
+              )}
+              
+              {/* Content */}
+              <div className="p-4">
+                <h3 className="text-lg font-bold text-gray-900 mb-1">{pick.name}</h3>
+                <p className="text-sm text-purple-600 mb-2">Picked for {petName}</p>
+                
+                {pick.description && (
+                  <p className="text-sm text-gray-600 mb-3">{pick.description}</p>
+                )}
+                
+                {pick.price && (
+                  <p className="text-2xl font-bold text-pink-600 mb-4">₹{pick.price}</p>
+                )}
+                
+                {/* Why this pick */}
+                {pick.why_reason && (
+                  <div className="bg-purple-50 rounded-xl p-3 mb-4">
+                    <p className="text-xs font-semibold text-purple-700 mb-1">Why Mira picked this</p>
+                    <p className="text-sm text-purple-600">{pick.why_reason}</p>
+                  </div>
+                )}
+              </div>
+              
+              {/* Footer */}
+              <div className="p-4 border-t border-gray-100 flex gap-2">
+                <button
+                  onClick={() => {
+                    hapticFeedback.toggle();
+                    onToggleSelect?.();
+                    setShowDetails(false);
+                  }}
+                  className={`flex-1 py-3 rounded-xl font-medium flex items-center justify-center gap-2 ${
+                    isSelected 
+                      ? 'bg-amber-100 text-amber-700 border border-amber-300' 
+                      : 'bg-gray-100 text-gray-700'
+                  }`}
+                >
+                  {isSelected ? <Check className="w-4 h-4" /> : <Square className="w-4 h-4" />}
+                  {isSelected ? 'Selected' : 'Select'}
+                </button>
+                <button
+                  onClick={() => {
+                    hapticFeedback.success();
+                    onAdd?.(pick);
+                    setShowDetails(false);
+                  }}
+                  className="flex-1 py-3 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium rounded-xl"
+                >
+                  Add to Cart
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // BEAUTIFUL CONCIERGE CARD - Matches dark theme of The Doggy Company
 // Shows: icon, title, "Handpicked for Pet", why it fits, spec chip, Request button
 // Info panel shows: what we source, selection rules, safety note, questions
