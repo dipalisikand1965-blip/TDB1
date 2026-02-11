@@ -947,8 +947,15 @@ const PersonalizedPicksPanel = ({
                             }`}
                             onClick={() => {
                               hapticFeedback.buttonTap();
-                              // Quick send this item to concierge
-                              handleQuickSendItem(pick, 'concierge');
+                              // Show confirmation card in chat
+                              const itemWithMeta = {
+                                ...pick,
+                                pick_type: 'concierge',
+                                pillar: activePillar,
+                                addedAt: new Date().toISOString()
+                              };
+                              onShowConfirmCard?.([itemWithMeta]);
+                              onClose();
                             }}
                           >
                             <div className="flex items-center gap-3">
