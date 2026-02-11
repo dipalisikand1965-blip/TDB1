@@ -877,6 +877,11 @@ const MiraTopBar = ({
           cursor: pointer;
           transition: all 0.2s;
           flex-shrink: 0;
+          /* iOS touch fixes */
+          -webkit-tap-highlight-color: transparent;
+          touch-action: manipulation;
+          user-select: none;
+          -webkit-user-select: none;
         }
         .mtb-tab:hover {
           background: rgba(255,255,255,0.1);
