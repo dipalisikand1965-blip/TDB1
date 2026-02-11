@@ -183,7 +183,7 @@ Frontend should use these flags to control UI.
 
 ## 🔗 PREVIEW URL
 
-https://quality-check-27.preview.emergentagent.com
+https://doggy-picks-panel.preview.emergentagent.com
 
 ---
 

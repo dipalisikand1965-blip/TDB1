@@ -148,7 +148,7 @@
 
 ## Preview URL
 
-https://quality-check-27.preview.emergentagent.com
+https://doggy-picks-panel.preview.emergentagent.com
 
 ---
 

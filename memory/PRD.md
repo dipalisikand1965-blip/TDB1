@@ -501,7 +501,7 @@ sudo supervisorctl status
 tail -20 /var/log/supervisor/frontend.out.log
 
 # 3. Test API
-curl -s https://quality-check-27.preview.emergentagent.com/api/health
+curl -s https://doggy-picks-panel.preview.emergentagent.com/api/health
 
 # 4. View main file
 /app/frontend/src/pages/MiraDemoPage.jsx (3,299 lines)
@@ -675,7 +675,7 @@ curl -s https://quality-check-27.preview.emergentagent.com/api/health
 
 
 **Last Updated**: February 11, 2026
-**Preview URL**: https://quality-check-27.preview.emergentagent.com
+**Preview URL**: https://doggy-picks-panel.preview.emergentagent.com
 **Original File**: 5,789 lines → **Current**: 4,035 lines
 
 ## [Feb 11, 2026] - Audit Session Summary
