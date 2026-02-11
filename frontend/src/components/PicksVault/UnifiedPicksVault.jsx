@@ -1684,6 +1684,10 @@ const UnifiedPicksVault = ({
                                             selectable={selectionMode}
                                             isSelected={selectedItems.has(pickId)}
                                             onSelect={toggleItemSelection}
+                                            onRequest={(p) => {
+                                              // Add to selection and optionally open confirmation
+                                              toggleItemSelection(p);
+                                            }}
                                           />
                                         </div>
                                       );
