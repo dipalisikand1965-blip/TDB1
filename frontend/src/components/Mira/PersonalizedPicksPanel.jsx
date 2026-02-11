@@ -909,60 +909,57 @@ const PersonalizedPicksPanel = ({
                   )}
                 </div>
               </div>
-            )}
+              
+              {/* Empty state */}
+              {cataloguePicks.length === 0 && conciergePicks.length === 0 && (
+                <div className="text-center py-16">
+                  <Gift className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+                  <p className="text-gray-400">
+                    No picks available for {PILLARS.find(p => p.id === activePillar)?.name || 'this category'} yet.
+                  </p>
+                </div>
+              )}
+              
+              {/* ═══════════════════════════════════════════════════ */}
+              {/* ANYTHING ELSE - Custom request for anything, anytime, anywhere */}
+              {/* ═══════════════════════════════════════════════════ */}
+              <div className="mt-8 pt-6 border-t border-gray-800">
+                <div className="text-center mb-4">
+                  <h3 className="text-lg font-semibold text-white mb-1">
+                    Anything else?
+                  </h3>
+                  <p className="text-sm text-gray-400">
+                    Tell us what you need. Your concierge can do anything, anytime, anywhere.
+                  </p>
+                </div>
                 
-                {/* Empty state */}
-                {cataloguePicks.length === 0 && conciergePicks.length === 0 && (
-                  <div className="text-center py-16">
-                    <Gift className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-                    <p className="text-gray-400">
-                      No picks available for {PILLARS.find(p => p.id === activePillar)?.name || 'this category'} yet.
-                    </p>
-                  </div>
-                )}
-                
-                {/* ═══════════════════════════════════════════════════ */}
-                {/* ANYTHING ELSE - Custom request for anything, anytime, anywhere */}
-                {/* ═══════════════════════════════════════════════════ */}
-                <div className="mt-8 pt-6 border-t border-gray-800">
-                  <div className="text-center mb-4">
-                    <h3 className="text-lg font-semibold text-white mb-1">
-                      Anything else?
-                    </h3>
-                    <p className="text-sm text-gray-400">
-                      Tell us what you need. Your concierge can do anything, anytime, anywhere.
-                    </p>
-                  </div>
-                  
-                  <div className="relative">
-                    <textarea
-                      value={customRequest}
-                      onChange={(e) => setCustomRequest(e.target.value)}
-                      placeholder={`What would you like for ${pet?.name}? A surprise treat? Special arrangement? Just ask...`}
-                      className="w-full bg-gray-800/80 border border-gray-700 rounded-2xl p-4 text-white text-sm placeholder:text-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 resize-none"
-                      rows={3}
-                    />
-                    {customRequest.trim() && (
-                      <button
-                        onClick={() => {
-                          hapticFeedback.success();
-                          // Add custom request to selected items
-                          const customItem = {
-                            id: `custom-${Date.now()}`,
-                            name: customRequest.trim().slice(0, 50) + (customRequest.length > 50 ? '...' : ''),
-                            full_request: customRequest.trim(),
-                            type: 'custom_request',
-                            pick_type: 'custom'
-                          };
-                          setSelectedItems(prev => [...prev, customItem]);
-                          setCustomRequest('');
-                        }}
-                        className="absolute bottom-3 right-3 px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white text-sm font-medium rounded-full hover:opacity-90 transition-opacity"
-                      >
-                        Add Request
-                      </button>
-                    )}
-                  </div>
+                <div className="relative">
+                  <textarea
+                    value={customRequest}
+                    onChange={(e) => setCustomRequest(e.target.value)}
+                    placeholder={`What would you like for ${pet?.name}? A surprise treat? Special arrangement? Just ask...`}
+                    className="w-full bg-gray-800/80 border border-gray-700 rounded-2xl p-4 text-white text-sm placeholder:text-gray-500 focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500 resize-none"
+                    rows={3}
+                  />
+                  {customRequest.trim() && (
+                    <button
+                      onClick={() => {
+                        hapticFeedback.success();
+                        const customItem = {
+                          id: `custom-${Date.now()}`,
+                          name: customRequest.trim().slice(0, 50) + (customRequest.length > 50 ? '...' : ''),
+                          full_request: customRequest.trim(),
+                          type: 'custom_request',
+                          pick_type: 'custom'
+                        };
+                        setSelectedItems(prev => [...prev, customItem]);
+                        setCustomRequest('');
+                      }}
+                      className="absolute bottom-3 right-3 px-4 py-2 bg-gradient-to-r from-pink-500 to-purple-500 text-white text-sm font-medium rounded-full hover:opacity-90 transition-opacity"
+                    >
+                      Add Request
+                    </button>
+                  )}
                 </div>
               </div>
             )}
