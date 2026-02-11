@@ -186,7 +186,7 @@ async def get_pillar_picks(
     db: AsyncIOMotorDatabase,
     pillar: str,
     pet: dict,
-    limit: int = 4
+    limit: int = 5  # Increased to include concierge card
 ) -> List[Dict[str, Any]]:
     """Get top picks for a specific pillar, filtered by pet parameters."""
     
