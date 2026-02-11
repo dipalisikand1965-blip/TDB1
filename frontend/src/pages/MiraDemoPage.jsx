@@ -45,6 +45,7 @@ import ChatInputBar from '../components/Mira/ChatInputBar';
 import PetSelector from '../components/Mira/PetSelector';
 import NavigationDock from '../components/Mira/NavigationDock';
 import FloatingActionBar from '../components/Mira/FloatingActionBar';
+import MiraTopBar from '../components/Mira/MiraTopBar';
 import MiraLoader from '../components/Mira/MiraLoader';
 import ScrollToBottomButton from '../components/Mira/ScrollToBottomButton';
 import ProactiveAlertsBanner from '../components/Mira/ProactiveAlertsBanner';
