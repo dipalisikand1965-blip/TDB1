@@ -1572,17 +1572,33 @@ const UnifiedPicksVault = ({
                       className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory"
                       style={{ WebkitOverflowScrolling: 'touch' }}
                     >
-                      {enhancedConversationPicks.map((pick, i) => (
-                        <div key={pick.id || i} className="snap-start">
-                          <PickCard
-                            pick={pick}
-                            pet={pet}
-                            onAdd={onAddToPicks}
-                            onSendToConcierge={onSendToConcierge}
-                            onQuickAction={handleQuickAction}
-                          />
-                        </div>
-                      ))}
+                      {enhancedConversationPicks.map((pick, i) => {
+                        const pickId = pick.id || pick.name;
+                        const isConcierge = pick.pick_type === 'concierge';
+                        
+                        return (
+                          <div key={pickId || i} className="snap-start">
+                            {isConcierge ? (
+                              <ConciergeCard
+                                pick={pick}
+                                pet={pet}
+                                isSelected={selectedItems.has(pickId)}
+                                onSelect={() => toggleItemSelection(pick)}
+                                onRequest={(p) => toggleItemSelection(p)}
+                              />
+                            ) : (
+                              <ExpandablePickCard
+                                pick={pick}
+                                pet={pet}
+                                onAdd={onAddToPicks}
+                                onSendToConcierge={onSendToConcierge}
+                                isSelected={selectedItems.has(pickId)}
+                                onToggleSelect={() => toggleItemSelection(pick)}
+                              />
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
                   ) : (
                     <div className="text-center py-8">
@@ -1603,17 +1619,33 @@ const UnifiedPicksVault = ({
                         className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 snap-x snap-mandatory"
                         style={{ WebkitOverflowScrolling: 'touch' }}
                       >
-                        {relevantPillarPicks.slice(0, 4).map((pick, i) => (
-                          <div key={pick.id || i} className="snap-start">
-                            <PickCard
-                              pick={enhancePicksWithBadges([pick])[0]}
-                              pet={pet}
-                              onAdd={onAddToPicks}
-                              onSendToConcierge={onSendToConcierge}
-                              onQuickAction={handleQuickAction}
-                            />
-                          </div>
-                        ))}
+                        {relevantPillarPicks.slice(0, 4).map((pick, i) => {
+                          const pickId = pick.id || pick.name;
+                          const isConcierge = pick.pick_type === 'concierge';
+                          
+                          return (
+                            <div key={pickId || i} className="snap-start">
+                              {isConcierge ? (
+                                <ConciergeCard
+                                  pick={enhancePicksWithBadges([pick])[0]}
+                                  pet={pet}
+                                  isSelected={selectedItems.has(pickId)}
+                                  onSelect={() => toggleItemSelection(pick)}
+                                  onRequest={(p) => toggleItemSelection(p)}
+                                />
+                              ) : (
+                                <ExpandablePickCard
+                                  pick={enhancePicksWithBadges([pick])[0]}
+                                  pet={pet}
+                                  onAdd={onAddToPicks}
+                                  onSendToConcierge={onSendToConcierge}
+                                  isSelected={selectedItems.has(pickId)}
+                                  onToggleSelect={() => toggleItemSelection(pick)}
+                                />
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
