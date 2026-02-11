@@ -2276,6 +2276,45 @@ async def mira_os_understand_with_products(request: MiraOSUnderstandRequest):
         # Use enhanced input for LLM understanding
         input_for_llm = enhanced_input if resolution_info.get("context_used") else request.input
         
+        # ═══════════════════════════════════════════════════════════════════════════
+        # CHECK FOR PERSONALIZED PICKS REQUEST - Opens the Picks Vault UI
+        # "Show me personalized picks for Mojo" triggers the picks vault
+        # ═══════════════════════════════════════════════════════════════════════════
+        # Get user's pets for name matching
+        db = get_db()
+        user_pets = []
+        if request.pet_context and request.pet_context.get("name"):
+            # Use pet from request context
+            user_pets = [request.pet_context]
+        
+        picks_intent = detect_personalized_picks_intent(request.input, user_pets)
+        
+        if picks_intent.get("is_picks_request"):
+            pet_name = picks_intent.get("pet_name") or request.pet_context.get("name") if request.pet_context else None
+            pet_id = request.pet_id or (request.pet_context.get("id") if request.pet_context else None)
+            
+            logger.info(f"[PICKS VAULT] 🎁 Opening picks vault for: {pet_name}")
+            
+            return {
+                "response": {
+                    "message": f"Here are personalized picks curated just for {pet_name}! 🎁",
+                    "intent": "picks",
+                    "pillar": "shop",
+                    "products": [],  # Products will be loaded by the vault component
+                    "services": [],
+                    "follow_ups": [
+                        {"text": f"Tell me more about {pet_name}'s preferences", "type": "explore"},
+                        {"text": "I want to filter by category", "type": "action"}
+                    ]
+                },
+                "ui_action": {
+                    "type": "open_picks_vault",
+                    "pet_id": pet_id,
+                    "pet_name": pet_name,
+                    "pet": request.pet_context
+                }
+            }
+        
         # Step 1: Get LLM understanding - pass completed_steps for anti-loop
         understanding = await understand_with_llm(
             user_input=input_for_llm,
