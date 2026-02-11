@@ -566,8 +566,14 @@ const MiraTopBar = ({
         {/* New Chat */}
         <button
           className="mtb-tab mtb-tab-new"
-          onClick={() => {
-            hapticFeedback.cardTap();
+          onClick={(e) => {
+            e.preventDefault();
+            hapticFeedback.cardTap(e);
+            onRefreshChat?.();
+          }}
+          onTouchEnd={(e) => {
+            e.preventDefault();
+            hapticFeedback.cardTap(e);
             onRefreshChat?.();
           }}
           data-testid="new-chat-btn"
