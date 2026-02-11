@@ -136,66 +136,52 @@ const WelcomeHero = ({
           <span>Try asking Mira:</span>
         </div>
         
-        {/* Weather Card */}
-        {currentWeather && (
-          <div 
-            className={`weather-card weather-${currentWeather.pet_advisory?.safety_level || 'good'}`}
-            onClick={() => handleQuickReply(`Is it a good day to take ${pet.name} for a walk?`)}
-            data-testid="weather-card"
-          >
-            <div className="weather-card-icon">
-              {currentWeather.pet_advisory?.safety_level === 'danger' ? '🔥' :
-               currentWeather.pet_advisory?.safety_level === 'warning' ? '⚠️' :
-               currentWeather.pet_advisory?.safety_level === 'caution' ? '☀️' : '✨'}
-            </div>
-            <div className="weather-card-content">
-              <div className="weather-card-title">
-                {currentWeather.current_weather?.temperature}°C in {currentWeather.city}
-              </div>
-              <div className="weather-card-subtitle">
-                {currentWeather.pet_advisory?.walk_message}
-              </div>
-            </div>
-            <ChevronRight className="weather-card-arrow" />
-          </div>
-        )}
+        {/* Weather Card - REMOVED: Already shown in MiraTopBar header */}
         
-        {/* Feature Grid */}
-        <div className="feature-grid">
-          {features.map((feature) => (
-            <button
-              key={feature.id}
-              className="feature-card"
-              style={{ '--feature-color': feature.color }}
-              onClick={() => handleQuickReply(feature.query)}
-              data-testid={`feature-${feature.id}`}
+        {/* Clean Suggestion Cards */}
+        <div className="suggestion-cards" style={{ 
+          display: 'grid', 
+          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          gap: '12px',
+          padding: '0 16px',
+          maxWidth: '600px',
+          margin: '0 auto'
+        }}>
+          {[
+            { text: `Plan a birthday party for ${pet.name}`, icon: '🎂', color: 'rgba(233, 30, 154, 0.15)' },
+            { text: 'Find pet-friendly cafes near me', icon: '☕', color: 'rgba(139, 92, 246, 0.15)' },
+            { text: `What should ${pet.name} eat today?`, icon: '🍖', color: 'rgba(16, 185, 129, 0.15)' },
+            { text: 'Book a grooming session', icon: '✂️', color: 'rgba(59, 130, 246, 0.15)' }
+          ].map((suggestion, i) => (
+            <button 
+              key={i} 
+              onClick={() => handleQuickReply(suggestion.text)} 
+              className="suggestion-card"
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: '8px',
+                padding: '20px 16px',
+                background: suggestion.color,
+                border: '1px solid rgba(255,255,255,0.1)',
+                borderRadius: '16px',
+                color: 'rgba(255,255,255,0.9)',
+                fontSize: '13px',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                textAlign: 'center'
+              }}
+              data-testid={`suggestion-${i}`}
             >
-              <span className="feature-icon">{feature.icon}</span>
-              <span className="feature-title">{feature.title}</span>
-              <span className="feature-desc">{feature.description}</span>
+              <span style={{ fontSize: '28px' }}>{suggestion.icon}</span>
+              <span style={{ lineHeight: '1.4' }}>"{suggestion.text}"</span>
             </button>
           ))}
         </div>
       </div>
       
-      {/* Quick Suggestion Chips */}
-      <div className="quick-chips">
-        {[
-          { text: `Birthday party for ${pet.name}`, icon: '🎂' },
-          { text: 'Health checkup reminder', icon: '💉' },
-          { text: 'Custom meal plan', icon: '🍖' }
-        ].map((s, i) => (
-          <button 
-            key={i} 
-            onClick={() => handleQuickReply(s.text)} 
-            className="quick-chip"
-            data-testid={`quick-chip-${i}`}
-          >
-            <span className="chip-icon">{s.icon}</span>
-            <span className="chip-text">{s.text}</span>
-          </button>
-        ))}
-      </div>
+      {/* Quick Chips & Feature Grid - REMOVED for cleaner design */}
       
       {/* TRY EXAMPLES - Golden Standard for First 30 Seconds */}
       <div className="try-examples" data-testid="try-examples">
