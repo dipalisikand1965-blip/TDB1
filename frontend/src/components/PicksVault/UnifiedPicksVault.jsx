@@ -455,19 +455,20 @@ const TabButton = ({ active, icon: Icon, label, count, onClick }) => (
   </button>
 );
 
-// Pillar filter options (excluding Adopt & Farewell)
+// Pillar filter options - Services & Shop at end
 const PILLAR_FILTERS = [
   { id: 'all', name: 'All', emoji: '✨' },
   { id: 'celebrate', name: 'Celebrate', emoji: '🎂' },
   { id: 'dine', name: 'Dine', emoji: '🍽️' },
-  { id: 'care', name: 'Care', emoji: '🛁' },
   { id: 'stay', name: 'Stay', emoji: '🏨' },
   { id: 'travel', name: 'Travel', emoji: '✈️' },
-  { id: 'learn', name: 'Learn', emoji: '📚' },
-  { id: 'fit', name: 'Fit', emoji: '🏋️' },
+  { id: 'care', name: 'Care', emoji: '🛁' },
   { id: 'enjoy', name: 'Enjoy', emoji: '🎉' },
-  { id: 'shop', name: 'Shop', emoji: '🛒' },
+  { id: 'fit', name: 'Fit', emoji: '🏋️' },
+  { id: 'learn', name: 'Learn', emoji: '📚' },
   { id: 'advisory', name: 'Advisory', emoji: '💡' },
+  { id: 'paperwork', name: 'Paperwork', emoji: '📋' },
+  { id: 'shop', name: 'Shop', emoji: '🛒' },
 ];
 
 // Main Unified Picks Vault Component
