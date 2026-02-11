@@ -314,7 +314,7 @@ async def get_pillar_top_picks(
 ):
     """Get more picks for a specific pillar."""
     global db
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not initialized")
     
     pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
