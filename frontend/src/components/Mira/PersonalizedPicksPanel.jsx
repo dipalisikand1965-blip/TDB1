@@ -611,14 +611,17 @@ const PersonalizedPicksPanel = ({
     }
   }, [isOpen, pet?.name, fetchPicks]);
   
-  // Toggle item selection (with pick type)
+  // Toggle item selection (with pick type) - iOS premium haptic
   const toggleSelection = (item, pickType = 'catalogue') => {
-    hapticFeedback.success();
     setSelectedItems(prev => {
       const exists = prev.find(i => i.id === item.id || i.name === item.name);
       if (exists) {
+        // Deselecting - lighter feedback
+        hapticFeedback.pickDeselect();
         return prev.filter(i => i.id !== item.id && i.name !== item.name);
       }
+      // Selecting - satisfying feedback
+      hapticFeedback.pickSelect();
       return [...prev, { 
         ...item, 
         pick_type: pickType,
