@@ -1,0 +1,430 @@
+/**
+ * TopPicksPanel.jsx
+ * 
+ * "Top Picks for [Pet]" - Personalized recommendations across all pillars
+ * Intelligent, pet-aware picks based on soul parameters
+ * 
+ * Features:
+ * - Grid layout with pillar sections
+ * - Horizontal scroll within each pillar
+ * - Pet switcher at top
+ * - Catalogue vs Concierge Suggestion distinction
+ * - "Why this pick?" tooltips
+ */
+
+import React, { useState, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  X, ChevronRight, ChevronDown, Sparkles, Gift, ShoppingBag,
+  RefreshCw, Info, Heart, Send, Check, AlertCircle
+} from 'lucide-react';
+import { API_URL } from '../../utils/api';
+
+// Pillar emoji mapping
+const PILLAR_EMOJIS = {
+  celebrate: '🎂',
+  dine: '🍽️',
+  care: '🛁',
+  stay: '🏨',
+  travel: '✈️',
+  learn: '📚',
+  fit: '🏋️',
+  enjoy: '🎉',
+  advisory: '💬',
+  paperwork: '📋',
+  shop: '🛒',
+};
+
+// Product/Service Card Component
+const PickCard = ({ pick, petName, onAddToPicks, onSendToConcierge }) => {
+  const [showTooltip, setShowTooltip] = useState(false);
+  const isConcierge = pick.pick_type === 'concierge';
+  
+  return (
+    <motion.div
+      className={`relative flex-shrink-0 w-40 rounded-xl overflow-hidden shadow-md ${
+        isConcierge 
+          ? 'bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-dashed border-purple-300' 
+          : 'bg-white border border-gray-100'
+      }`}
+      whileHover={{ scale: 1.02, y: -2 }}
+      whileTap={{ scale: 0.98 }}
+    >
+      {/* Image */}
+      <div className="relative h-28 bg-gray-100">
+        {pick.image ? (
+          <img 
+            src={pick.image} 
+            alt={pick.name}
+            className="w-full h-full object-cover"
+            loading="lazy"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            {isConcierge ? (
+              <div className="text-center p-2">
+                <Sparkles className="w-8 h-8 mx-auto text-purple-400 mb-1" />
+                <span className="text-xs text-purple-600">Concierge Pick</span>
+              </div>
+            ) : (
+              <ShoppingBag className="w-8 h-8 text-gray-300" />
+            )}
+          </div>
+        )}
+        
+        {/* Type badge */}
+        {pick.type === 'service' && (
+          <span className="absolute top-2 left-2 px-2 py-0.5 text-[10px] font-medium bg-blue-500 text-white rounded-full">
+            Service
+          </span>
+        )}
+        
+        {/* Info tooltip trigger */}
+        <button
+          className="absolute top-2 right-2 w-5 h-5 rounded-full bg-white/80 flex items-center justify-center hover:bg-white"
+          onClick={(e) => {
+            e.stopPropagation();
+            setShowTooltip(!showTooltip);
+          }}
+        >
+          <Info className="w-3 h-3 text-gray-600" />
+        </button>
+        
+        {/* Tooltip */}
+        <AnimatePresence>
+          {showTooltip && (
+            <motion.div
+              initial={{ opacity: 0, y: -5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -5 }}
+              className="absolute top-10 right-2 left-2 bg-gray-900 text-white text-xs p-2 rounded-lg z-10"
+            >
+              <p className="font-medium mb-1">Why this pick?</p>
+              <p className="text-gray-300">{pick.why_reason}</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+      
+      {/* Content */}
+      <div className="p-2">
+        <h4 className="text-sm font-medium text-gray-900 line-clamp-2 leading-tight mb-1">
+          {pick.name}
+        </h4>
+        
+        {pick.price ? (
+          <p className="text-sm font-semibold text-pink-600">₹{pick.price}</p>
+        ) : (
+          <p className="text-xs text-purple-600 italic">Concierge will source</p>
+        )}
+        
+        {/* Concierge specs */}
+        {isConcierge && pick.specs && (
+          <ul className="mt-1 space-y-0.5">
+            {pick.specs.slice(0, 2).map((spec, i) => (
+              <li key={i} className="text-[10px] text-gray-500 flex items-center gap-1">
+                <Check className="w-2.5 h-2.5 text-purple-400" />
+                {spec}
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+      
+      {/* Action button */}
+      <div className="px-2 pb-2">
+        {isConcierge ? (
+          <button
+            onClick={() => onSendToConcierge?.(pick)}
+            className="w-full py-1.5 text-xs font-medium text-white bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg hover:opacity-90"
+          >
+            Request via Concierge®
+          </button>
+        ) : (
+          <button
+            onClick={() => onAddToPicks?.(pick)}
+            className="w-full py-1.5 text-xs font-medium text-pink-600 bg-pink-50 rounded-lg hover:bg-pink-100 flex items-center justify-center gap-1"
+          >
+            <Gift className="w-3 h-3" />
+            Add to Picks
+          </button>
+        )}
+      </div>
+    </motion.div>
+  );
+};
+
+// Pillar Section Component
+const PillarSection = ({ pillar, picks, petName, onAddToPicks, onSendToConcierge, onSeeMore }) => {
+  if (!picks || picks.length === 0) return null;
+  
+  return (
+    <div className="mb-6">
+      {/* Pillar header */}
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <span className="text-xl">{pillar.emoji}</span>
+          <h3 
+            className="text-base font-semibold"
+            style={{ color: pillar.color }}
+          >
+            {pillar.name}
+          </h3>
+          <span className="text-xs text-gray-400">({picks.length} picks)</span>
+        </div>
+        <button
+          onClick={() => onSeeMore?.(pillar.id)}
+          className="text-xs text-gray-500 hover:text-gray-700 flex items-center gap-1"
+        >
+          See all <ChevronRight className="w-3 h-3" />
+        </button>
+      </div>
+      
+      {/* Horizontal scroll container */}
+      <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
+        {picks.map((pick, index) => (
+          <PickCard
+            key={pick.id || index}
+            pick={pick}
+            petName={petName}
+            onAddToPicks={onAddToPicks}
+            onSendToConcierge={onSendToConcierge}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// Main Component
+const TopPicksPanel = ({
+  isOpen,
+  onClose,
+  pets = [],
+  selectedPet,
+  onPetChange,
+  token,
+  onAddToPicks,
+  onSendToConcierge,
+}) => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [picksData, setPicksData] = useState(null);
+  const [showPetDropdown, setShowPetDropdown] = useState(false);
+  
+  const currentPet = selectedPet || pets[0];
+  
+  // Fetch picks for current pet
+  const fetchPicks = useCallback(async () => {
+    if (!currentPet?.name && !currentPet?.id) return;
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const petIdentifier = currentPet.id || currentPet.name;
+      const response = await fetch(`${API_URL}/api/mira/top-picks/${encodeURIComponent(petIdentifier)}`, {
+        headers: {
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch picks');
+      }
+      
+      const data = await response.json();
+      setPicksData(data);
+    } catch (err) {
+      console.error('[TOP PICKS] Error:', err);
+      setError('Unable to load personalized picks. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  }, [currentPet, token]);
+  
+  // Fetch on open or pet change
+  useEffect(() => {
+    if (isOpen && currentPet) {
+      fetchPicks();
+    }
+  }, [isOpen, currentPet, fetchPicks]);
+  
+  // Handle pet switch
+  const handlePetSwitch = (pet) => {
+    onPetChange?.(pet);
+    setShowPetDropdown(false);
+  };
+  
+  if (!isOpen) return null;
+  
+  const pillars = picksData?.pillars || {};
+  const petInfo = picksData?.pet || currentPet;
+  
+  return (
+    <AnimatePresence>
+      <motion.div
+        className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
+      >
+        <motion.div
+          className="absolute bottom-0 left-0 right-0 max-h-[85vh] bg-white rounded-t-3xl overflow-hidden"
+          initial={{ y: '100%' }}
+          animate={{ y: 0 }}
+          exit={{ y: '100%' }}
+          transition={{ type: 'spring', damping: 25 }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* Header */}
+          <div className="sticky top-0 bg-white z-10 px-4 pt-4 pb-3 border-b border-gray-100">
+            {/* Drag handle */}
+            <div className="w-10 h-1 bg-gray-300 rounded-full mx-auto mb-3" />
+            
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center">
+                  <Sparkles className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-bold text-gray-900">
+                    Top Picks for {petInfo?.name || 'Your Pet'}
+                  </h2>
+                  <p className="text-xs text-gray-500">
+                    {petInfo?.breed} • {petInfo?.size} • Soul Score: {petInfo?.soul_score || 0}%
+                  </p>
+                </div>
+              </div>
+              
+              <button
+                onClick={onClose}
+                className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200"
+              >
+                <X className="w-4 h-4 text-gray-600" />
+              </button>
+            </div>
+            
+            {/* Pet Switcher */}
+            {pets.length > 1 && (
+              <div className="mt-3 relative">
+                <button
+                  onClick={() => setShowPetDropdown(!showPetDropdown)}
+                  className="w-full px-3 py-2 bg-gray-50 rounded-lg flex items-center justify-between hover:bg-gray-100"
+                >
+                  <span className="text-sm text-gray-700">
+                    Viewing picks for: <strong>{currentPet?.name}</strong>
+                  </span>
+                  <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${showPetDropdown ? 'rotate-180' : ''}`} />
+                </button>
+                
+                {showPetDropdown && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-lg border border-gray-100 z-20"
+                  >
+                    {pets.map((pet) => (
+                      <button
+                        key={pet.id || pet.name}
+                        onClick={() => handlePetSwitch(pet)}
+                        className={`w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center gap-3 ${
+                          pet.name === currentPet?.name ? 'bg-pink-50' : ''
+                        }`}
+                      >
+                        {pet.photo_url ? (
+                          <img src={pet.photo_url} alt={pet.name} className="w-8 h-8 rounded-full object-cover" />
+                        ) : (
+                          <div className="w-8 h-8 rounded-full bg-gradient-to-r from-pink-400 to-purple-400 flex items-center justify-center text-white text-sm font-bold">
+                            {pet.name?.[0]}
+                          </div>
+                        )}
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">{pet.name}</p>
+                          <p className="text-xs text-gray-500">{pet.breed}</p>
+                        </div>
+                        {pet.name === currentPet?.name && (
+                          <Check className="w-4 h-4 text-pink-500 ml-auto" />
+                        )}
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </div>
+            )}
+            
+            {/* Intelligence summary */}
+            {picksData?.filters_applied && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {picksData.filters_applied.allergies?.length > 0 && (
+                  <span className="px-2 py-1 bg-red-50 text-red-600 text-xs rounded-full flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3" />
+                    Avoiding: {picksData.filters_applied.allergies.join(', ')}
+                  </span>
+                )}
+                <span className="px-2 py-1 bg-purple-50 text-purple-600 text-xs rounded-full">
+                  🐕 {picksData.filters_applied.breed || 'All breeds'}
+                </span>
+                <span className="px-2 py-1 bg-blue-50 text-blue-600 text-xs rounded-full">
+                  📏 {picksData.filters_applied.size || 'All sizes'}
+                </span>
+              </div>
+            )}
+          </div>
+          
+          {/* Content */}
+          <div className="overflow-y-auto px-4 py-4" style={{ maxHeight: 'calc(85vh - 200px)' }}>
+            {loading ? (
+              <div className="flex flex-col items-center justify-center py-12">
+                <RefreshCw className="w-8 h-8 text-pink-500 animate-spin mb-3" />
+                <p className="text-gray-500">Loading personalized picks...</p>
+              </div>
+            ) : error ? (
+              <div className="text-center py-12">
+                <AlertCircle className="w-10 h-10 text-red-400 mx-auto mb-3" />
+                <p className="text-gray-600">{error}</p>
+                <button
+                  onClick={fetchPicks}
+                  className="mt-4 px-4 py-2 bg-pink-100 text-pink-600 rounded-lg hover:bg-pink-200"
+                >
+                  Try Again
+                </button>
+              </div>
+            ) : (
+              <div>
+                {Object.entries(pillars).map(([pillarId, data]) => (
+                  <PillarSection
+                    key={pillarId}
+                    pillar={data.pillar}
+                    picks={data.picks}
+                    petName={petInfo?.name}
+                    onAddToPicks={onAddToPicks}
+                    onSendToConcierge={onSendToConcierge}
+                    onSeeMore={(id) => console.log('See more:', id)}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+          
+          {/* Footer CTA */}
+          <div className="sticky bottom-0 bg-white border-t border-gray-100 px-4 py-3">
+            <button
+              onClick={() => onSendToConcierge?.({ type: 'all_picks', pet: petInfo })}
+              className="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium rounded-xl flex items-center justify-center gap-2 hover:opacity-90"
+            >
+              <Send className="w-4 h-4" />
+              Send All to Concierge®
+            </button>
+            <p className="text-center text-xs text-gray-400 mt-2">
+              {picksData?.total_picks || 0} picks curated for {petInfo?.name}
+            </p>
+          </div>
+        </motion.div>
+      </motion.div>
+    </AnimatePresence>
+  );
+};
+
+export default TopPicksPanel;
