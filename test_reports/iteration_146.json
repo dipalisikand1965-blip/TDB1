@@ -1,0 +1,89 @@
+{
+  "summary": "Frontend testing for bank demo fixes on /mira-demo page. All 6 requested fixes verified working: 1) Reminders dropdown centered (0px offset), 2) History button opens Past Chats panel, 3) Soul questions work and show score update, 4) No weather in content area (only in header), 5) 'For Mojo' is centered (textAlign: center), 6) Suggestion cards use clean grid layout with 4 cards.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": ["/app/test_reports/iteration_146.json"],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "WelcomeHero.jsx line 106: hero-title has style={{ textAlign: 'center' }} - correctly centered",
+    "WelcomeHero.jsx line 139: Weather card explicitly REMOVED with comment - correct",
+    "WelcomeHero.jsx lines 142-149: Suggestion cards use CSS grid with repeat(auto-fit, minmax(200px, 1fr))",
+    "MiraTopBar.jsx: Reminders dropdown uses portal with translateX(-50%) for centering",
+    "mira-premium.css line 1318: Past Chats panel has right: 16px positioning",
+    "SoulFormModal.jsx: Properly calls /api/pet-soul/profile/{pet_id}/answers/bulk endpoint"
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A", "frontend": "100%"},
+  "test_credentials": {"email": "dipali@clubconcierge.in", "password": "test123"},
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Browser automation crashes frequently - may need smaller scripts or fresh sessions. All 6 fixes verified working.",
+  "tested_flows": [
+    {
+      "flow": "1. Reminders dropdown positioning",
+      "status": "PASSED",
+      "notes": "Button center: 310px, Dropdown center: 310px, Offset: 0.0px - perfectly centered"
+    },
+    {
+      "flow": "2. History button opens Past Chats panel",
+      "status": "PASSED",
+      "notes": "PastChatsPanel component renders with .mp-past-chats class. Panel found after clicking History button."
+    },
+    {
+      "flow": "3. Soul questions increase soul score",
+      "status": "PASSED",
+      "notes": "Soul modal shows 'Know Mojo Better' with 3 dynamic questions. After answering all 3, shows 'Soul Updated!' with new score. API endpoint /api/pet-soul/profile/{pet_id}/answers/bulk is called."
+    },
+    {
+      "flow": "4. No weather card in content area",
+      "status": "PASSED",
+      "notes": "0 weather elements found in .mira-hero-welcome. Code comment confirms: 'Weather Card - REMOVED: Already shown in MiraTopBar header'"
+    },
+    {
+      "flow": "5. 'For Mojo' text centered",
+      "status": "PASSED",
+      "notes": "WelcomeHero.jsx line 106: textAlign: center. Verified via JS: window.getComputedStyle returns 'center'"
+    },
+    {
+      "flow": "6. Suggestion cards clean grid layout",
+      "status": "PASSED",
+      "notes": "4 suggestion cards found with data-testid='suggestion-0' through 'suggestion-3'. CSS: display: grid, gridTemplateColumns: repeat(auto-fit, minmax(200px, 1fr))"
+    },
+    {
+      "flow": "7. All top bar buttons working",
+      "status": "PASSED",
+      "notes": "All 8 buttons found and clickable: picks-btn, history-btn, reminders-btn, insights-btn, soul-btn, learn-btn, concierge-btn, new-chat-btn"
+    },
+    {
+      "flow": "8. Learn modal",
+      "status": "PASSED",
+      "notes": "Learn button opens modal with 'Learn with Mojo' header, video categories (For You, Barking, Potty, etc.), and video thumbnails"
+    },
+    {
+      "flow": "9. Concierge dropdown",
+      "status": "PASSED",
+      "notes": "Concierge button opens dropdown with WhatsApp, Chat, Email options"
+    },
+    {
+      "flow": "10. Mobile viewport (390x844)",
+      "status": "PASSED",
+      "notes": "'For Mojo' remains centered on mobile. All UI elements accessible."
+    }
+  ],
+  "screenshots": [
+    ".screenshots/iter146_desktop_initial.png",
+    ".screenshots/iter146_rem.png",
+    ".screenshots/iter146_soul_click.png",
+    ".screenshots/iter146_soul_complete.png",
+    ".screenshots/iter146_history_test.png",
+    ".screenshots/iter146_mobile.png"
+  ]
+}
