@@ -1313,9 +1313,8 @@ const UnifiedPicksVault = ({
                   <h2 className="text-lg font-bold text-gray-900">
                     Mira's Picks
                   </h2>
-                  <p className="text-xs text-gray-500 flex items-center gap-1">
+                  <p className="text-xs text-gray-500">
                     for {pet?.name || 'Your Pet'}
-                    {season && <span className="ml-1">{season.emoji} {season.label}</span>}
                   </p>
                 </div>
               </div>
