@@ -858,13 +858,8 @@ const PersonalizedPicksPanel = ({
                             }`}
                             onClick={() => {
                               hapticFeedback.buttonTap();
-                              // If onItemSelect is provided, show in chat instead of modal
-                              if (onItemSelect) {
-                                onItemSelect({ item: pick, type: 'catalogue', pillar: activePillar });
-                                onClose();
-                              } else {
-                                setSelectedProduct(pick);
-                              }
+                              // Quick send this item to concierge
+                              handleQuickSendItem(pick, 'catalogue');
                             }}
                           >
                             <div className="flex items-center gap-3">
