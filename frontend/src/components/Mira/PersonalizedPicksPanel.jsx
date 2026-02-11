@@ -792,62 +792,123 @@ const PersonalizedPicksPanel = ({
                 />
               </div>
             ) : (
-              <div className="space-y-8">
+              /* TWO COLUMN LAYOUT: Catalogue | Concierge */
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* ═══════════════════════════════════════════════════ */}
-                {/* FROM OUR CATALOGUE - Products ready to go */}
+                {/* LEFT: FROM OUR CATALOGUE - Products ready to go */}
                 {/* ═══════════════════════════════════════════════════ */}
-                {cataloguePicks.length > 0 && (
-                  <CollapsibleSection
-                    title="From Our Catalogue"
-                    subtitle="Ready to fulfill"
-                    icon={<Package className="w-4 h-4" />}
-                    count={cataloguePicks.length}
-                    defaultExpanded={true}
-                    variant="catalogue"
-                  >
-                    <div className="space-y-3">
-                      {cataloguePicks.slice(0, showAllCatalogue ? 10 : 3).map((pick, index) => (
-                        <ExpandablePickCard
-                          key={pick.id || index}
-                          pick={pick}
-                          isSelected={isSelected(pick)}
-                          onSelect={toggleSelection}
-                          onViewDetails={(p) => setQuickViewProduct(p)}
-                          petName={pet?.name}
-                          type="catalogue"
-                        />
-                      ))}
-                      {cataloguePicks.length > 3 && !showAllCatalogue && (
-                        <button
-                          onClick={() => {
-                            hapticFeedback.buttonTap();
-                            setShowAllCatalogue(true);
-                          }}
-                          className="w-full py-2 text-sm text-purple-400 hover:text-purple-300 transition-colors"
-                        >
-                          Show {cataloguePicks.length - 3} more →
-                        </button>
-                      )}
+                <div>
+                  {cataloguePicks.length > 0 && (
+                    <div>
+                      <h3 className="text-sm font-semibold text-gray-300 uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <Package className="w-4 h-4" />
+                        From Our Catalogue
+                      </h3>
+                      <div className="space-y-3">
+                        {cataloguePicks.slice(0, showAllCatalogue ? 10 : 4).map((pick, index) => (
+                          <div 
+                            key={pick.id || index}
+                            className={`p-3 rounded-xl bg-gray-800/60 border border-gray-700/50 cursor-pointer hover:bg-gray-800 transition-all ${
+                              isSelected(pick) ? 'ring-2 ring-pink-500' : ''
+                            }`}
+                            onClick={() => {
+                              hapticFeedback.buttonTap();
+                              // Navigate to product detail page
+                              window.open(`/product/${pick.id}`, '_blank');
+                            }}
+                          >
+                            <div className="flex items-center gap-3">
+                              <div className="w-14 h-14 rounded-lg overflow-hidden bg-gray-700 flex-shrink-0">
+                                {pick.image_url || pick.image ? (
+                                  <img src={pick.image_url || pick.image} alt={pick.name} className="w-full h-full object-cover" />
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center">
+                                    <Package className="w-5 h-5 text-gray-500" />
+                                  </div>
+                                )}
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <h4 className="font-medium text-white text-sm truncate">{pick.name}</h4>
+                                {pick.category && (
+                                  <span className="text-xs text-gray-400">{pick.category}</span>
+                                )}
+                                {(pick.why_it_fits || pick.why_reason) && (
+                                  <p className="text-xs text-amber-400 mt-1 flex items-center gap-1">
+                                    <Heart className="w-3 h-3" />
+                                    <span className="truncate">{pick.why_it_fits || pick.why_reason}</span>
+                                  </p>
+                                )}
+                              </div>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  hapticFeedback.success();
+                                  toggleSelection(pick);
+                                }}
+                                className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all active:scale-90 ${
+                                  isSelected(pick) 
+                                    ? 'bg-pink-500 text-white' 
+                                    : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                                }`}
+                              >
+                                {isSelected(pick) ? <Check className="w-4 h-4" /> : <span className="text-lg">+</span>}
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                        {cataloguePicks.length > 4 && !showAllCatalogue && (
+                          <button
+                            onClick={() => {
+                              hapticFeedback.buttonTap();
+                              setShowAllCatalogue(true);
+                            }}
+                            className="w-full py-2 text-sm text-purple-400 hover:text-purple-300"
+                          >
+                            Show {cataloguePicks.length - 4} more →
+                          </button>
+                        )}
+                      </div>
                     </div>
-                  </CollapsibleSection>
-                )}
-                
-                {/* Divider */}
-                {cataloguePicks.length > 0 && conciergePicks.length > 0 && (
-                  <div className="flex items-center gap-4 py-2">
-                    <div className="flex-1 h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent" />
-                    <Sparkles className="w-4 h-4 text-purple-500/50" />
-                    <div className="flex-1 h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent" />
-                  </div>
-                )}
+                  )}
+                </div>
                 
                 {/* ═══════════════════════════════════════════════════ */}
-                {/* CONCIERGE CURATES - Personalized services */}
+                {/* RIGHT: CONCIERGE CURATES - Personalized services */}
                 {/* ═══════════════════════════════════════════════════ */}
-                {conciergePicks.length > 0 && (
-                  <CollapsibleSection
-                    title={`Concierge Curates for ${pet?.name || 'Your Pet'}`}
-                    subtitle="Handpicked services and experiences"
+                <div>
+                  {conciergePicks.length > 0 && (
+                    <div>
+                      <h3 className="text-sm font-semibold text-purple-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <Star className="w-4 h-4" />
+                        Concierge Curates for {pet?.name}
+                      </h3>
+                      <div className="space-y-3">
+                        {conciergePicks.slice(0, showAllConcierge ? 10 : 4).map((pick, index) => (
+                          <ExpandablePickCard
+                            key={pick.id || index}
+                            pick={pick}
+                            isSelected={isSelected(pick)}
+                            onSelect={toggleSelection}
+                            petName={pet?.name}
+                            type="concierge"
+                          />
+                        ))}
+                        {conciergePicks.length > 4 && !showAllConcierge && (
+                          <button
+                            onClick={() => {
+                              hapticFeedback.buttonTap();
+                              setShowAllConcierge(true);
+                            }}
+                            className="w-full py-2 text-sm text-purple-400 hover:text-purple-300"
+                          >
+                            Show {conciergePicks.length - 4} more →
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
                     icon={<Star className="w-4 h-4" />}
                     count={conciergePicks.length}
                     defaultExpanded={true}
