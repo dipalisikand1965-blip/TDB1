@@ -1,93 +1,96 @@
 # The Doggy Company - Mira AI Pet Companion
 
 ## Original Problem Statement
-Build and maintain the Mira AI Pet Companion feature for The Doggy Company platform. Key requirements from users:
-1. Remove prices from Concierge Suggestion cards
-2. Trigger "Picks" panel from chat command ("Show me personalized picks for Mojo")
-3. Implement category/pillar picker in UI
-4. Allow individual item selection instead of sending all items
-5. Full UI/UX audit for mobile and desktop with haptic feedback
-6. Beautiful redesign of Concierge cards
-7. Display 5 catalogue + 5 concierge picks per pillar
-8. Confirmation modal before sending to concierge
-9. Selection summary panel
-10. Expandable catalogue item cards
+Build and maintain the Mira AI Pet Companion feature for The Doggy Company platform. Key requirements:
+1. Personalized Picks Panel - A soulful concierge experience, not e-commerce
+2. Products and concierge services organized by pillars (Celebrate, Dine, Care, etc.)
+3. ProductDetailModal for selecting variants and adding items to request list
+4. "Send to My Concierge" flow with warm confirmation
+5. Mobile-first dark theme with haptic feedback
+6. "Anything Else?" custom request capability
 
 ## Core Architecture
 ```
 /app
 ├── backend (FastAPI)
-│   ├── routes/
-│   │   ├── mira_routes.py - Chat intent detection
-│   │   └── top_picks_routes.py - Picks retrieval logic
-│   └── utils/haptic.py
+│   ├── server.py - Main application
+│   ├── mira_routes.py - Chat intent detection
+│   └── concierge_routes.py - Picks request handling
 ├── frontend (React)
 │   └── src/
 │       ├── components/
-│       │   ├── PicksVault/UnifiedPicksVault.jsx - Main picks component
-│       │   └── Mira/ - Mira-related components
+│       │   ├── Mira/
+│       │   │   ├── PersonalizedPicksPanel.jsx - NEW main picks component
+│       │   │   ├── ConciergeDetailModal.jsx - Service details modal
+│       │   │   └── ConciergeServiceStrip.jsx - Expandable service categories
+│       │   ├── PicksVault/
+│       │   │   └── UnifiedPicksVault.jsx - Conversation picks component
+│       │   └── ProductCard.jsx - ProductDetailModal with onAddToPicks
 │       ├── pages/MiraDemoPage.jsx - Main demo page
 │       └── hooks/mira/ - Custom hooks
-└── test_top_picks.py
+└── test_reports/ - Testing output
 ```
 
 ## What's Been Implemented
 **Date: Feb 11, 2026**
 
-### Backend
-- ✅ Intent detection for opening picks vault from chat
-- ✅ Picks retrieval: 5 catalogue + 5 concierge per pillar
-- ✅ Detailed data structure for concierge suggestions
-- ✅ Fixed "Fit" and "Learn" pillar data bugs
-- ✅ "Cat" product filtering
+### PersonalizedPicksPanel (COMPLETE)
+- ✅ Dark theme sliding panel from bottom
+- ✅ Pillar-based navigation tabs (Celebrate, Dine, Care, Travel, Stay, Enjoy, Fit, Learn, Advisory, Services)
+- ✅ Side-by-side layout on desktop: Products left, Concierge services right
+- ✅ ProductDetailModal opens when clicking products (with variant selection)
+- ✅ `onAddToPicks` callback properly integrated - adds to request list, not cart
+- ✅ ConciergeDetailModal for service details
+- ✅ MiniCart component showing selection count
+- ✅ "Send to My Concierge" button with confirmation modal
+- ✅ Success flow returns to chat with warm acknowledgment message
+- ✅ "Anything Else?" custom request text input
+- ✅ Full haptic feedback integration
+- ✅ iOS safe area padding for buttons
 
-### Frontend
-- ✅ `UnifiedPicksVault.jsx` - Unified picks, tips, personalized picks
-- ✅ `ConciergeCard.jsx` - Beautiful dark-theme cards
-- ✅ `ExpandablePickCard.jsx` - Expandable catalogue items
-- ✅ `ConciergeConfirmationModal.jsx` - Confirmation before sending
-- ✅ `CustomRequestBox.jsx` - Custom user input
-- ✅ `SelectionSummaryPanel.jsx` - Review selections
-- ✅ Pillar filter tabs
-- ✅ Individual item selection with checkboxes
-- ✅ Removed floating "C" button
-- ✅ Haptic feedback utility
+### Backend
+- ✅ `/api/mira/top-picks/{pet_name}` - Returns 110+ picks across 11 pillars
+- ✅ `/api/concierge/picks-request` - Handles picks request submission
+- ✅ Past chat sessions limited to 3
+
+### Testing Status
+- ✅ Full flow tested with testing_agent (iteration_138)
+- ✅ Login → Mira → Picks Panel → Product Modal → Add to Picks → Send → Confirm = WORKING
 
 ## Current Status
-**UI Status:** ✅ Working (verified Feb 11, 2026)
-- The MiraDemoPage and UnifiedPicksVault render correctly
-- All components loading properly
-- No critical console errors
+**P0 Issue: RESOLVED** - Products now successfully add to request list from ProductDetailModal
+**UI Status:** ✅ Working (verified Feb 11, 2026 via Playwright)
 
 ## Prioritized Backlog
 
-### P1 - High Priority
-- [ ] Haptic & UX Audit Implementation - 19 components need haptic feedback
+### P0 - Critical (COMPLETED)
+- [x] Fix "Add to Picks" from ProductDetailModal
+- [x] Verify full send-to-concierge flow
 
-### P2 - Medium Priority
-- [ ] Refactor `UnifiedPicksVault.jsx` (4000+ lines) into smaller components
+### P1 - High Priority
+- [ ] Refactor: Extract ProductDetailModal to its own file
+- [ ] Remove deprecated TopPicksPanel and related dead code
+
+### P2 - Medium Priority  
+- [ ] Haptic & UX Audit - Remaining components need haptic feedback
+- [ ] Test ConciergeServiceStrip integration in Services pillar
 
 ### P3 - Low Priority / Future
 - [ ] Full mobile/desktop visual polish
-- [ ] Performance optimizations
+- [ ] Performance optimizations for heavy MiraDemoPage
+- [ ] Refactor UnifiedPicksVault.jsx (4000+ lines)
 
 ## Key API Endpoints
 - `POST /api/mira/os/understand-with-products` - Main chat endpoint
-- `GET /api/mira/top-picks/<pet_name>` - Curated picks for pet
-
-## Database Schema
-**unified_products collection:**
-```json
-{
-  "name": "String",
-  "pillars": ["Array of pillar IDs"],
-  "pillar": "String",
-  "tags": ["Array"],
-  "in_stock": "Boolean",
-  "visibility": { "status": "String" }
-}
-```
+- `GET /api/mira/top-picks/<pet_name>` - Curated picks for pet (110+ picks)
+- `POST /api/concierge/picks-request` - Submit picks to concierge
 
 ## Test Credentials
 - Email: dipali@clubconcierge.in
 - Password: test123
+
+## Key UI Selectors for Testing
+- `data-testid="personalized-picks-btn"` - Opens PersonalizedPicksPanel
+- Product cards are clickable to open ProductDetailModal
+- "Include" button in modal adds items to picks list
+- "Send to My Concierge" button visible when items selected
