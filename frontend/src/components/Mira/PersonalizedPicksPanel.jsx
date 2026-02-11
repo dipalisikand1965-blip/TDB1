@@ -1040,6 +1040,21 @@ const PersonalizedPicksPanel = ({
             />,
             document.body
           )}
+          
+          {/* Concierge Detail Modal - Matching design */}
+          {selectedConcierge && createPortal(
+            <ConciergeDetailModal 
+              service={selectedConcierge} 
+              pet={pet}
+              onClose={() => setSelectedConcierge(null)}
+              onRequest={(serviceWithNotes) => {
+                hapticFeedback.success();
+                toggleSelection(serviceWithNotes);
+                setSelectedConcierge(null);
+              }}
+            />,
+            document.body
+          )}
         </motion.div>
       </motion.div>
     </AnimatePresence>
