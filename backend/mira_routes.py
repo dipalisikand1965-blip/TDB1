@@ -7414,6 +7414,53 @@ async def mira_chat(
             # Auto-select if only one pet
             selected_pet = await load_pet_soul(pets[0].get("id") or pets[0].get("name"))
     
+    # ═══════════════════════════════════════════════════════════════════════════
+    # CHECK FOR PERSONALIZED PICKS REQUEST FIRST
+    # "Show me personalized picks for Mojo" should open the picks vault
+    # ═══════════════════════════════════════════════════════════════════════════
+    picks_intent = detect_personalized_picks_intent(user_message, pets)
+    
+    if picks_intent.get("is_picks_request"):
+        # Find the pet to show picks for
+        target_pet = None
+        target_pet_name = picks_intent.get("pet_name")
+        
+        if target_pet_name:
+            # Find pet by name
+            for p in pets:
+                if (p.get("name") or "").lower() == target_pet_name.lower():
+                    target_pet = p
+                    break
+        
+        # Fall back to selected pet or first pet
+        if not target_pet:
+            target_pet = selected_pet or (pets[0] if pets else None)
+        
+        pet_name = target_pet.get("name") if target_pet else "your pet"
+        pet_id = target_pet.get("id") or target_pet.get("name") if target_pet else None
+        
+        logger.info(f"[PICKS VAULT] 🎁 Opening picks vault for: {pet_name}")
+        
+        return {
+            "success": True,
+            "response": f"Here are personalized picks curated just for {pet_name}! 🎁",
+            "session_id": session_id,
+            "ui_action": {
+                "type": "open_picks_vault",
+                "pet_id": pet_id,
+                "pet_name": pet_name,
+                "pet": target_pet
+            },
+            "pillar": "shop",
+            "intent": "picks",
+            "products": [],  # Products will be loaded by the vault component
+            "tip_card": None,
+            "follow_ups": [
+                {"text": f"Tell me more about {pet_name}'s preferences", "type": "explore"},
+                {"text": "I want to filter by category", "type": "action"}
+            ]
+        }
+    
     # 2. CHECK FOR STATUS QUERIES FIRST
     status_keywords = ["status", "update", "what's happening", "where is", "track", "my request", "my booking", "my order", "check on"]
     is_status_query = any(kw in user_message.lower() for kw in status_keywords)
