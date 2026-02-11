@@ -634,6 +634,10 @@ const PersonalizedPicksPanel = ({
   
   // Send to concierge
   const handleSendToConcierge = async (additionalNotes) => {
+    // Prevent double submission
+    if (isSending) return;
+    setIsSending(true);
+    
     try {
       await fetch(`${API_URL}/api/concierge/picks-request`, {
         method: 'POST',
@@ -652,7 +656,7 @@ const PersonalizedPicksPanel = ({
       hapticFeedback.success();
       setShowConfirmation(false);
       
-      // Call success callback with selected items count and pet name
+      // Call success callback with selected items count and pet name (called once)
       onSendSuccess?.({
         count: selectedItems.length,
         petName: pet?.name,
@@ -664,6 +668,8 @@ const PersonalizedPicksPanel = ({
       onClose();
     } catch (err) {
       console.error('Error sending to concierge:', err);
+    } finally {
+      setIsSending(false);
     }
   };
   
