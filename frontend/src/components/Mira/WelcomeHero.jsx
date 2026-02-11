@@ -42,6 +42,7 @@ const WelcomeHero = ({
   onLoadPastChats,
   onShowHealthWizard,
   onShowSoulForm, // New prop for Soul Form modal
+  onShowTopPicks, // New prop for Top Picks panel
   soulScoreUpdated = false // New prop to trigger glow animation
 }) => {
   const navigate = useNavigate();
