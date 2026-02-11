@@ -1606,6 +1606,7 @@ const UnifiedPicksVault = ({
                                 onSendToConcierge={onSendToConcierge}
                                 isSelected={selectedItems.has(pickId)}
                                 onToggleSelect={() => toggleItemSelection(pick)}
+                                onOpenModal={onOpenProductModal}
                               />
                             )}
                           </div>
