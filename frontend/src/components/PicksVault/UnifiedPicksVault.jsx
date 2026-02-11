@@ -1608,27 +1608,6 @@ const UnifiedPicksVault = ({
                           onSendToConcierge?.({ type: 'custom_request', ...data });
                         }} 
                       />
-                              Select All
-                            </button>
-                            {selectedItems.size > 0 && (
-                              <button
-                                onClick={clearSelection}
-                                className="text-xs text-gray-500 hover:text-gray-700 min-h-[40px] px-2 touch-manipulation"
-                              >
-                                Clear
-                              </button>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                      
-                      {/* "Anything else?" Custom Request Box */}
-                      <CustomRequestBox 
-                        pet={pet} 
-                        onSubmit={(data) => {
-                          onSendToConcierge?.({ type: 'custom_request', ...data });
-                        }} 
-                      />
                       
                       {/* Pillar sections - Catalogue + Concierge */}
                       {Object.entries(personalizedPicks.pillars || {})
@@ -1639,19 +1618,16 @@ const UnifiedPicksVault = ({
                           
                           return (
                             <div key={pillarId} className="mb-6">
-                              {/* Pillar Header */}
-                              <h3 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
-                                <span className="text-lg">{data.pillar?.emoji}</span>
+                              {/* Pillar Header - NO counts */}
+                              <h3 className="text-base font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                                <span className="text-xl">{data.pillar?.emoji}</span>
                                 {data.pillar?.name}
-                                <span className="text-xs text-gray-400 font-normal">
-                                  ({cataloguePicks.length} products, {conciergePicks.length} services)
-                                </span>
                               </h3>
                               
-                              {/* Catalogue Products */}
+                              {/* Catalogue Products - Expandable */}
                               {cataloguePicks.length > 0 && (
                                 <div className="mb-4">
-                                  <p className="text-xs text-gray-500 mb-2 flex items-center gap-1">
+                                  <p className="text-xs text-purple-600 mb-2 flex items-center gap-1 font-medium">
                                     <ShoppingBag className="w-3 h-3" /> From our catalogue
                                   </p>
                                   <div 
@@ -1662,15 +1638,13 @@ const UnifiedPicksVault = ({
                                       const pickId = pick.id || pick.name;
                                       return (
                                         <div key={pickId || i} className="snap-start">
-                                          <PickCard
+                                          <ExpandablePickCard
                                             pick={enhancePicksWithBadges([pick])[0]}
                                             pet={pet}
                                             onAdd={onAddToPicks}
                                             onSendToConcierge={onSendToConcierge}
-                                            selectable={selectionMode}
                                             isSelected={selectedItems.has(pickId)}
-                                            onToggleSelect={toggleItemSelection}
-                                            onQuickAction={handleQuickAction}
+                                            onToggleSelect={() => toggleItemSelection(pick)}
                                           />
                                         </div>
                                       );
