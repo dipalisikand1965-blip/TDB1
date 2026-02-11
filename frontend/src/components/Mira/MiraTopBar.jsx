@@ -77,19 +77,15 @@ const MiraTopBar = ({
     if (remindersBtnRef.current) {
       const rect = remindersBtnRef.current.getBoundingClientRect();
       const viewportWidth = window.innerWidth;
-      const dropdownWidth = 320; // min-width of dropdown
+      const dropdownWidth = 300;
       
-      // Calculate center position
+      // Position dropdown centered under button, but constrain to viewport
       let leftPos = rect.left + rect.width / 2;
       
-      // Ensure dropdown doesn't go off-screen on the left
-      if (leftPos - dropdownWidth / 2 < 16) {
-        leftPos = dropdownWidth / 2 + 16;
-      }
-      // Ensure dropdown doesn't go off-screen on the right
-      if (leftPos + dropdownWidth / 2 > viewportWidth - 16) {
-        leftPos = viewportWidth - dropdownWidth / 2 - 16;
-      }
+      // Ensure dropdown stays within viewport with 16px padding
+      const minLeft = dropdownWidth / 2 + 16;
+      const maxLeft = viewportWidth - dropdownWidth / 2 - 16;
+      leftPos = Math.max(minLeft, Math.min(maxLeft, leftPos));
       
       setDropdownPos({
         top: rect.bottom + 8,
@@ -108,17 +104,13 @@ const MiraTopBar = ({
     if (conciergeBtnRef.current) {
       const rect = conciergeBtnRef.current.getBoundingClientRect();
       const viewportWidth = window.innerWidth;
-      const dropdownWidth = 320;
+      const dropdownWidth = 300;
       
       let leftPos = rect.left + rect.width / 2;
       
-      // Ensure dropdown doesn't go off-screen
-      if (leftPos - dropdownWidth / 2 < 16) {
-        leftPos = dropdownWidth / 2 + 16;
-      }
-      if (leftPos + dropdownWidth / 2 > viewportWidth - 16) {
-        leftPos = viewportWidth - dropdownWidth / 2 - 16;
-      }
+      const minLeft = dropdownWidth / 2 + 16;
+      const maxLeft = viewportWidth - dropdownWidth / 2 - 16;
+      leftPos = Math.max(minLeft, Math.min(maxLeft, leftPos));
       
       setDropdownPos({
         top: rect.bottom + 8,
