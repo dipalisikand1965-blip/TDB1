@@ -68,18 +68,15 @@ const ExpandablePickCard = ({
   // Get the "why" text - different field names for catalogue vs concierge
   const whyText = pick.why_it_fits || pick.why_reason || pick.why_this_pick;
   
-  // For CONCIERGE cards - new beautiful design matching reference
+  // For CONCIERGE cards - beautiful design with guaranteed visible button
   if (isConcierge) {
     return (
-      <motion.div
-        layout
-        className={`rounded-2xl overflow-visible bg-gradient-to-br from-pink-50/10 to-purple-50/5 border border-pink-200/20 ${
-          isSelected ? 'ring-2 ring-pink-500' : ''
-        }`}
-        style={{ minHeight: 'auto' }}
-      >
-        {/* Header with badge and info */}
-        <div className="p-4 pb-2">
+      <div className={`rounded-2xl bg-gradient-to-br from-pink-50/10 to-purple-50/5 border border-pink-200/20 ${
+        isSelected ? 'ring-2 ring-pink-500' : ''
+      }`}>
+        {/* Card Content */}
+        <div className="p-4">
+          {/* Badge row */}
           <div className="flex items-center justify-between mb-3">
             <span className="px-3 py-1 bg-gradient-to-r from-pink-500 to-purple-500 text-white text-xs font-medium rounded-full">
               {pick.seasonal ? '☆ Seasonal' : 'Concierge Pick'}
@@ -92,11 +89,9 @@ const ExpandablePickCard = ({
             </button>
           </div>
           
-          {/* Sparkle Icon */}
-          <div className="flex justify-center my-4">
-            <div className="w-12 h-12 flex items-center justify-center">
-              <Sparkles className="w-8 h-8 text-gray-600" strokeWidth={1.5} />
-            </div>
+          {/* Icon */}
+          <div className="flex justify-center my-3">
+            <Sparkles className="w-7 h-7 text-gray-600" strokeWidth={1.5} />
           </div>
           
           {/* Title */}
@@ -104,34 +99,31 @@ const ExpandablePickCard = ({
             {pick.name}
           </h4>
           
-          {/* Arranged for Pet */}
-          <p className="text-xs text-purple-400 text-center mb-3">
+          {/* Arranged for */}
+          <p className="text-xs text-purple-400 text-center mb-2">
             Arranged for {petName}
           </p>
           
           {/* Description */}
-          <p className="text-xs text-gray-400 text-center mb-4 leading-relaxed">
-            {whyText || pick.description || `Handpicked service tailored for ${petName}.`}
+          <p className="text-xs text-gray-400 text-center mb-3 leading-relaxed line-clamp-2">
+            {whyText || pick.description || `Handpicked for ${petName}.`}
           </p>
           
           {/* Spec Chip */}
           {pick.spec_chip && (
-            <div className="flex justify-center mb-4">
+            <div className="flex justify-center mb-3">
               <span className="px-3 py-1 bg-pink-500/20 text-pink-300 text-xs rounded-full border border-pink-500/30">
                 {pick.spec_chip}
               </span>
             </div>
           )}
-          
-          {/* Arranged for (bottom) */}
-          <p className="text-xs text-gray-500 text-center mb-3">
-            Arranged for {petName}
-          </p>
-          
-          {/* Request Button */}
+        </div>
+        
+        {/* Button - ALWAYS visible, separate from scrollable content */}
+        <div className="px-4 pb-4">
           <button
             onClick={handleSelect}
-            className={`w-full py-4 rounded-xl font-semibold text-sm transition-all active:scale-95 ${
+            className={`w-full py-3.5 rounded-xl font-semibold text-sm transition-all active:scale-[0.98] ${
               isSelected 
                 ? 'bg-green-500 text-white' 
                 : 'bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:opacity-90'
@@ -151,7 +143,6 @@ const ExpandablePickCard = ({
               className="border-t border-pink-200/20 overflow-hidden"
             >
               <div className="p-4 space-y-3 bg-gray-900/50">
-                {/* What We Source */}
                 {pick.what_we_source && (
                   <div>
                     <h5 className="text-xs font-semibold text-purple-400 uppercase tracking-wide mb-1">
@@ -161,7 +152,6 @@ const ExpandablePickCard = ({
                   </div>
                 )}
                 
-                {/* What's Included */}
                 {pick.selection_rules && pick.selection_rules.length > 0 && (
                   <div>
                     <h5 className="text-xs font-semibold text-purple-400 uppercase tracking-wide mb-2">
@@ -173,6 +163,24 @@ const ExpandablePickCard = ({
                           <Check className="w-3 h-3 text-green-400 flex-shrink-0 mt-0.5" />
                           <span>{rule}</span>
                         </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                
+                {pick.safety_note && (
+                  <div className="flex items-start gap-2 p-2 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                    <AlertCircle className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
+                    <p className="text-xs text-amber-300">{pick.safety_note}</p>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    );
+  }
                       ))}
                     </ul>
                   </div>
