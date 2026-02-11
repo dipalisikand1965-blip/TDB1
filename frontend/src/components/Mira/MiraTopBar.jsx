@@ -1018,6 +1018,9 @@ const MiraTopBar = ({
         .mtb-reminders-list {
           max-height: 320px;
           overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
+          overscroll-behavior: contain;
+          touch-action: pan-y;
         }
 
         .mtb-reminder-item {
