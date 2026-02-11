@@ -367,6 +367,10 @@ async def get_top_picks(pet_id: str):
         else:
             size_label = "Large"
     
+    # Get seasonal and birthday context
+    season = get_current_season()
+    birthday_info = is_pet_birthday_near(pet)
+    
     pet_intelligence = {
         "name": pet.get("name"),
         "breed": pet_breed,
@@ -375,6 +379,8 @@ async def get_top_picks(pet_id: str):
         "allergies": pet_allergies,
         "soul_score": pet.get("overall_score", 0),
         "photo_url": pet.get("photo_url"),
+        "birthday_near": birthday_info is not None,
+        "days_to_birthday": birthday_info.get("days_until") if birthday_info else None,
     }
     
     # Get picks for each pillar
@@ -402,6 +408,10 @@ async def get_top_picks(pet_id: str):
             "allergies": pet_allergies,
             "size": size_label,
             "breed": pet_breed,
+        },
+        "context": {
+            "season": season,
+            "birthday_near": birthday_info,
         }
     }
 
