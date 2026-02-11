@@ -20,16 +20,24 @@
 
 ## Latest Session: Feb 11, 2026
 
-### ✅ PERFORMANCE OPTIMIZATIONS APPLIED
-- **Lazy loading**: Heavy modals (InsightsPanel, ConciergePanel, HelpModal, etc.) now use React.lazy()
-- **Deferred effects**: Geolocation and non-critical effects wait 1s after page ready
-- **Result**: Public pages load successfully in Playwright
+### ✅ UI UPDATES COMPLETED
+1. **Mira Orb restyled** - Now matches landing page:
+   - Pink-to-Purple gradient (#EC4899 → #9333EA)
+   - White Sparkle icon instead of paw
+   - Glow effects matching landing page
+2. **Concierge Button repositioned** - Moved to `bottom-28` (above Mira orb), made smaller & subtler
+3. **Voice toggle improved** - Default OFF, persists to localStorage, clearer ON/OFF states
 
-### ✅ VERIFIED WORKING (Testing Agent: 11/11 Backend Tests Passed)
-- **Backend APIs**: All pass - Login, Birthday cake products, Scratching tip card, Meal plan, Grooming ticket
-- **Pillar Pages**: All 14 pillars verified UI working (screenshot tested)
-- **Service Flow**: Requests create tickets in admin panel
-- **VaultManager**: Empty state shows helpful text (not blank)
+### ✅ VOICE GOLDEN RULES IMPLEMENTED
+- **Default: OFF** - Respectful of office/quiet environments
+- **User preference saved** - localStorage persists choice
+- **Voice sync fixed** - Voice starts immediately (no delay) for better text-speech alignment
+- **Toggle visible** - Speaker icon in chat input bar shows ON/OFF state clearly
+
+### ✅ PERFORMANCE OPTIMIZATIONS
+- Lazy loading for 10 heavy modals
+- Deferred geolocation (1s after page ready)
+- Public pages load successfully in Playwright
 
 ### ⚠️ KNOWN LIMITATION
 - **Playwright crashes on authenticated pages** - This is a memory limitation in the test container, NOT a code bug
