@@ -4166,13 +4166,7 @@ const MiraDemoPage = () => {
             onClose={() => setShowTopPicksPanel(false)}
             pet={pet}
             token={token}
-            onShowConfirmCard={(items) => {
-              // Set pending picks to show confirmation card in chat
-              setPendingPicksForConfirm(items);
-            }}
             onSendSuccess={(data) => {
-              // Clear pending picks
-              setPendingPicksForConfirm(null);
               // Add confirmation message to chat
               const confirmationMessage = {
                 type: 'mira',
