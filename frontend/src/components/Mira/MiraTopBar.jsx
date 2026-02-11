@@ -343,8 +343,14 @@ const MiraTopBar = ({
         {/* History */}
         <button
           className="mtb-tab"
-          onClick={() => {
-            hapticFeedback.buttonTap();
+          onClick={(e) => {
+            e.preventDefault();
+            hapticFeedback.buttonTap(e);
+            onOpenPastChats?.();
+          }}
+          onTouchEnd={(e) => {
+            e.preventDefault();
+            hapticFeedback.buttonTap(e);
             onOpenPastChats?.();
           }}
           data-testid="history-btn"
