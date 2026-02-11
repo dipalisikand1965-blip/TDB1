@@ -345,7 +345,7 @@ const MiraDemoPage = () => {
     };
     
     detectLocation();
-  }, []);
+  }, [isPageReady]);
   
   // Cleanup voice on unmount to prevent memory leaks and double voice
   useEffect(() => {
