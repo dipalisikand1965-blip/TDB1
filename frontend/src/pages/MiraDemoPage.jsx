@@ -4052,6 +4052,44 @@ const MiraDemoPage = () => {
         </Suspense>
       )}
       
+      {/* TOP PICKS PANEL - Personalized picks across all pillars */}
+      {showTopPicksPanel && (
+        <Suspense fallback={<LazyFallback />}>
+          <TopPicksPanel
+            isOpen={showTopPicksPanel}
+            onClose={() => setShowTopPicksPanel(false)}
+            pets={allPets}
+            selectedPet={pet}
+            onPetChange={(newPet) => {
+              setPet(newPet);
+              // Start a new session for the new pet
+              startNewSession();
+            }}
+            token={token}
+            onAddToPicks={(pick) => {
+              // Add to the conversation picks
+              setMiraPicks(prev => ({
+                ...prev,
+                products: [...(prev.products || []), pick],
+                hasNew: true
+              }));
+              setShowTopPicksPanel(false);
+            }}
+            onSendToConcierge={async (data) => {
+              // Handle sending picks to concierge
+              console.log('[TOP PICKS] Send to Concierge:', data);
+              setShowTopPicksPanel(false);
+              await handleConciergeHandoff({
+                pet_name: pet.name,
+                pillar: 'shop',
+                items: data.type === 'all_picks' ? [] : [data],
+                notes: `Top Picks request for ${pet.name}`,
+              });
+            }}
+          />
+        </Suspense>
+      )}
+      
       {/* ═══════════════════════════════════════════════════════════════════════════
           VAULT SYSTEM - Full-screen overlay for picks, bookings, places, etc.
           "Mira is the Brain, Concierge® is the Hands"
