@@ -33,8 +33,12 @@ const hapticFeedback = {
 const WHATSAPP_NUMBER = process.env.REACT_APP_WHATSAPP_NUMBER || '919663185747';
 const BUSINESS_EMAIL = process.env.REACT_APP_BUSINESS_EMAIL || 'woof@thedoggybakery.in';
 
+const API_URL = process.env.REACT_APP_BACKEND_URL || '';
+
 const MiraTopBar = ({
   pet,
+  allPets = [],
+  onSwitchPet,
   soulScore = 0,
   userCity = 'Mumbai',
   weather = null, // { temp: 26, condition: 'sunny' }
@@ -56,8 +60,10 @@ const MiraTopBar = ({
   const navigate = useNavigate();
   const [showReminders, setShowReminders] = useState(false);
   const [showConcierge, setShowConcierge] = useState(false);
+  const [showPetSelector, setShowPetSelector] = useState(false);
   const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0 });
   const remindersRef = useRef(null);
+  const petSelectorRef = useRef(null);
   const conciergeRef = useRef(null);
   const remindersBtnRef = useRef(null);
   const conciergeBtnRef = useRef(null);
