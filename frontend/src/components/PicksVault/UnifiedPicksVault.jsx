@@ -1234,6 +1234,7 @@ const UnifiedPicksVault = ({
   onSaveTip,
   onShowFullTopPicks,
   onQuickAction,
+  onOpenProductModal,  // NEW: Open product in modal
   token,
 }) => {
   const [activeTab, setActiveTab] = useState('forPet');
