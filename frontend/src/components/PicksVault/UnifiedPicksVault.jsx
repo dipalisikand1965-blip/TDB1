@@ -779,7 +779,7 @@ const UnifiedPicksVault = ({
               <TabButton
                 active={activeTab === 'conversation'}
                 icon={Gift}
-                label="Convo"
+                label="In Chat"
                 count={conversationCount}
                 onClick={() => setActiveTab('conversation')}
               />
