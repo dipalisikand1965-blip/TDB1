@@ -465,7 +465,8 @@ const MiraTopBar = ({
                   <span>Email</span>
                 </button>
               </div>
-            </div>
+            </div>,
+            document.body
           )}
         </div>
 
