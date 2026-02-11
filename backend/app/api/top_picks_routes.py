@@ -215,19 +215,40 @@ async def get_pillar_picks(
     picks = []
     
     # Query products for this pillar
+    # Priority: exact pillar match > primary_pillar > pillars array
     # Note: in_stock may be None for some products, so we check for != False
-    query = {
-        "$or": [
-            {"pillar": pillar},
-            {"primary_pillar": pillar},
-            {"pillars": pillar}
-        ],
+    
+    # First, get products with exact pillar match (highest priority)
+    exact_query = {
+        "pillar": pillar,
         "in_stock": {"$ne": False},
         "visibility.status": {"$in": ["active", None]}
     }
+    cursor = db.unified_products.find(exact_query, {"_id": 0}).limit(20)
+    products = await cursor.to_list(length=20)
     
-    cursor = db.unified_products.find(query, {"_id": 0}).limit(30)
-    products = await cursor.to_list(length=30)
+    # If not enough, add products with primary_pillar match
+    if len(products) < 15:
+        primary_query = {
+            "primary_pillar": pillar,
+            "pillar": {"$ne": pillar},  # Avoid duplicates
+            "in_stock": {"$ne": False},
+            "visibility.status": {"$in": ["active", None]}
+        }
+        additional = await db.unified_products.find(primary_query, {"_id": 0}).limit(10).to_list(length=10)
+        products.extend(additional)
+    
+    # If still not enough, add products from pillars array
+    if len(products) < 10:
+        array_query = {
+            "pillars": pillar,
+            "pillar": {"$ne": pillar},
+            "primary_pillar": {"$ne": pillar},
+            "in_stock": {"$ne": False},
+            "visibility.status": {"$in": ["active", None]}
+        }
+        more = await db.unified_products.find(array_query, {"_id": 0}).limit(5).to_list(length=5)
+        products.extend(more)
     
     # Also get services for this pillar
     service_cursor = db.services.find({"pillar": pillar}, {"_id": 0}).limit(10)
