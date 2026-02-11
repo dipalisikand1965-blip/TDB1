@@ -1593,20 +1593,25 @@ async def search_real_products(
         is_grooming_query = any(word in user_input_lower for word in ["shampoo", "brush", "grooming", "nail", "ear clean"])
         
         # ALWAYS exclude cat products for dog queries, boost cat products for cat queries
-        if pet_context.get("species", "dog").lower() == "dog" and pet_context.get("pet_type", "dog").lower() != "cat":
-            if "$and" not in query:
-                query["$and"] = []
-            query["$and"].append({"category": {"$not": {"$regex": "^cat-", "$options": "i"}}})
-        elif pet_context.get("pet_type", "").lower() == "cat":
-            # For cats, prefer cat-specific products
+        pet_type_value = pet_context.get("pet_type", "").lower() or pet_context.get("type", "").lower() or "dog"
+        logger.info(f"[PET TYPE DEBUG] pet_type from context: {pet_type_value}, full pet_context: {pet_context}")
+        
+        if pet_type_value == "cat":
+            # For cats, REQUIRE cat-specific products only
             if "$and" not in query:
                 query["$and"] = []
             query["$and"].append({"$or": [
                 {"pet_type": "cat"},
-                {"category": {"$regex": "^cat-", "$options": "i"}},
+                {"category": {"$regex": "cat", "$options": "i"}},
                 {"tags": {"$in": ["cat", "kitten", "feline"]}}
             ]})
-            logger.info("[PET TYPE FILTER] Cat query - boosting cat-specific products")
+            logger.info("[PET TYPE FILTER] Cat query - FILTERING to cat-specific products only")
+        elif pet_type_value == "dog" or pet_type_value == "":
+            # For dogs, exclude cat products
+            if "$and" not in query:
+                query["$and"] = []
+            query["$and"].append({"category": {"$not": {"$regex": "^cat-", "$options": "i"}}})
+            logger.info("[PET TYPE FILTER] Dog query - excluding cat products")
         
         # Category refinement ADDS to pillar filter, doesn't replace it
         if is_treat_query:
