@@ -983,6 +983,21 @@ const PersonalizedPicksPanel = ({
             selectedItems={selectedItems}
             petName={pet?.name}
           />
+          
+          {/* Product Detail Modal - Same as main site */}
+          {selectedProduct && createPortal(
+            <ProductDetailModal 
+              product={selectedProduct} 
+              pillar={activePillar}
+              selectedPet={pet}
+              miraContext={{
+                petName: pet?.name,
+                source: 'picks_panel'
+              }}
+              onClose={() => setSelectedProduct(null)} 
+            />,
+            document.body
+          )}
         </motion.div>
       </motion.div>
     </AnimatePresence>
