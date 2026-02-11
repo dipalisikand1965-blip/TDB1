@@ -809,13 +809,13 @@ const PersonalizedPicksPanel = ({
                         {cataloguePicks.slice(0, showAllCatalogue ? 10 : 4).map((pick, index) => (
                           <div 
                             key={pick.id || index}
-                            className={`p-3 rounded-xl bg-gray-800/60 border border-gray-700/50 cursor-pointer hover:bg-gray-800 transition-all ${
+                            className={`p-3 rounded-xl bg-gray-800/60 border border-gray-700/50 cursor-pointer hover:bg-gray-800 transition-all active:scale-[0.98] ${
                               isSelected(pick) ? 'ring-2 ring-pink-500' : ''
                             }`}
                             onClick={() => {
                               hapticFeedback.buttonTap();
-                              // Navigate to product detail page
-                              window.open(`/product/${pick.id}`, '_blank');
+                              // Open product detail modal (same as main site)
+                              setSelectedProduct(pick);
                             }}
                           >
                             <div className="flex items-center gap-3">
