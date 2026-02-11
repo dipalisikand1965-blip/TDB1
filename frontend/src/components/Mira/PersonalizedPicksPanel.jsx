@@ -577,10 +577,13 @@ const ConfirmationModal = ({
         </div>
         
         {/* Actions */}
-        <div className="p-4 border-t border-gray-800 flex gap-3">
+        <div className="p-4 border-t border-gray-800 flex gap-3" style={{ paddingBottom: 'max(1rem, calc(env(safe-area-inset-bottom, 0px) + 1rem))' }}>
           <button
-            onClick={onClose}
-            className="flex-1 py-3 bg-gray-800 text-gray-300 rounded-full font-medium"
+            onClick={() => {
+              hapticFeedback.buttonTap();
+              onClose();
+            }}
+            className="flex-1 py-4 bg-gray-800 text-gray-300 rounded-full font-medium active:scale-95 transition-transform"
           >
             Cancel
           </button>
@@ -589,7 +592,7 @@ const ConfirmationModal = ({
               hapticFeedback.success();
               onConfirm(additionalNotes);
             }}
-            className="flex-1 py-3 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-full font-medium flex items-center justify-center gap-2"
+            className="flex-1 py-4 bg-gradient-to-r from-pink-500 to-purple-500 text-white rounded-full font-medium flex items-center justify-center gap-2 active:scale-95 transition-transform"
           >
             <Send className="w-4 h-4" />
             Confirm
