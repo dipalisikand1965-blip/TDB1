@@ -48,6 +48,7 @@ const ExpandablePickCard = ({
   pick, 
   isSelected, 
   onSelect, 
+  onViewDetails, // Open product detail modal for catalogue items
   petName,
   type = 'catalogue' // 'catalogue' or 'concierge'
 }) => {
