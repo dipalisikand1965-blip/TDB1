@@ -42,6 +42,86 @@ INCLUDED_PILLARS = [
 # Safety blocked ingredients/items
 BLOCKED_ITEMS = ["xylitol", "chocolate", "grapes", "raisins", "onion", "garlic", "macadamia"]
 
+# Seasonal events configuration
+SEASONAL_EVENTS = {
+    "valentine": {"months": [2], "days": (1, 14), "categories": ["treats", "bandana", "gift", "hamper"], "boost": 30},
+    "diwali": {"months": [10, 11], "days": (15, 15), "categories": ["calming", "safety", "festive", "treats"], "boost": 25},
+    "christmas": {"months": [12], "days": (1, 31), "categories": ["gift", "hamper", "festive", "treats"], "boost": 30},
+    "monsoon": {"months": [6, 7, 8, 9], "days": (1, 31), "categories": ["raincoat", "paw-care", "grooming"], "boost": 20},
+    "summer": {"months": [4, 5, 6], "days": (1, 31), "categories": ["cooling", "hydration", "pool", "outdoor"], "boost": 15},
+}
+
+def get_current_season() -> dict:
+    """Get current seasonal event if any."""
+    now = datetime.now()
+    month = now.month
+    day = now.day
+    
+    for event_name, config in SEASONAL_EVENTS.items():
+        if month in config["months"]:
+            day_start, day_end = config["days"]
+            if day_start <= day <= day_end or day_end == 31:  # Full month
+                return {"event": event_name, "categories": config["categories"], "boost": config["boost"]}
+    
+    return None
+
+def is_pet_birthday_near(pet: dict) -> dict:
+    """Check if pet's birthday is within 14 days."""
+    dob = pet.get("date_of_birth") or pet.get("birthday")
+    if not dob:
+        return None
+    
+    try:
+        bday = datetime.fromisoformat(str(dob).replace('Z', '+00:00'))
+        now = datetime.now()
+        this_year_bday = bday.replace(year=now.year)
+        days_until = (this_year_bday - now).days
+        
+        if -7 <= days_until <= 14:
+            return {"days_until": days_until, "boost": 40 if days_until <= 7 else 25}
+    except:
+        pass
+    
+    return None
+
+def get_smart_badges(product: dict, pet: dict, pillar: str, purchase_history: list = None) -> list:
+    """Generate smart badges for a product."""
+    badges = []
+    season = get_current_season()
+    birthday_info = is_pet_birthday_near(pet)
+    category = (product.get("category") or "").lower()
+    name = (product.get("name") or "").lower()
+    
+    # Trending badge (based on score or popularity)
+    if product.get("popularity_score", 0) > 70 or product.get("score", 0) > 80:
+        badges.append("trending")
+    
+    # New badge (created in last 30 days)
+    created_at = product.get("created_at")
+    if created_at:
+        try:
+            created = datetime.fromisoformat(str(created_at).replace('Z', '+00:00'))
+            if (datetime.now() - created).days < 30:
+                badges.append("new")
+        except:
+            pass
+    
+    # Reorder badge (previously purchased)
+    if purchase_history and product.get("id") in purchase_history:
+        badges.append("reorder")
+    
+    # Birthday badge
+    if birthday_info and pillar in ["celebrate", "shop"]:
+        if any(kw in category or kw in name for kw in ["birthday", "cake", "party", "celebration", "gift"]):
+            badges.append("birthday")
+    
+    # Seasonal badge
+    if season:
+        if any(cat in category or cat in name for cat in season["categories"]):
+            badges.append("seasonal")
+    
+    return badges
+
 
 def is_safe_for_pet(product: dict, pet_allergies: list, pet_health_flags: list) -> bool:
     """Check if a product is safe for this specific pet."""
