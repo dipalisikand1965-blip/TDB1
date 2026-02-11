@@ -43,8 +43,6 @@ import WelcomeHero from '../components/Mira/WelcomeHero';
 import ChatMessage from '../components/Mira/ChatMessage';
 import ChatInputBar from '../components/Mira/ChatInputBar';
 import PetSelector from '../components/Mira/PetSelector';
-import NavigationDock from '../components/Mira/NavigationDock';
-import FloatingActionBar from '../components/Mira/FloatingActionBar';
 import MiraTopBar from '../components/Mira/MiraTopBar';
 import MiraLoader from '../components/Mira/MiraLoader';
 import ScrollToBottomButton from '../components/Mira/ScrollToBottomButton';
