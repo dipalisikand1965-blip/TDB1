@@ -5,14 +5,16 @@
  * to answer 3 quick questions to enrich their pet's Soul profile.
  * 
  * Updates the pet's doggy_soul_answers and recalculates Soul Score.
+ * 
+ * DYNAMIC: Only shows questions that haven't been answered yet.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { X, Sparkles, Check, ChevronRight } from 'lucide-react';
 import { API_URL } from '../../utils/api';
 
-// The 3 quick questions to show in the modal
-const QUICK_SOUL_QUESTIONS = [
+// Full pool of soul questions - modal picks 3 unanswered ones
+const ALL_SOUL_QUESTIONS = [
   {
     id: "energy_level",
     field: "energy_level",
@@ -41,6 +43,100 @@ const QUICK_SOUL_QUESTIONS = [
       { label: "Very friendly", value: "Very friendly", emoji: "🤗" },
       { label: "Cautious at first", value: "Cautious at first", emoji: "🤔" },
       { label: "Shy or nervous", value: "Shy or nervous", emoji: "🙈" }
+    ]
+  },
+  {
+    id: "exercise_preference",
+    field: "exercise_preference",
+    question: "What kind of exercise does {petName} enjoy most?",
+    options: [
+      { label: "Long walks/hikes", value: "Long walks and hikes", emoji: "🥾" },
+      { label: "Fetch and play", value: "Fetch and active play", emoji: "🎾" },
+      { label: "Short leisurely walks", value: "Short leisurely walks", emoji: "🚶" },
+      { label: "Indoor play", value: "Indoor play mostly", emoji: "🏠" }
+    ]
+  },
+  {
+    id: "sleep_habits",
+    field: "sleep_habits",
+    question: "How would you describe {petName}'s sleep habits?",
+    options: [
+      { label: "Early bird - up with the sun", value: "Early riser", emoji: "🌅" },
+      { label: "Night owl - active in evenings", value: "Night owl", emoji: "🌙" },
+      { label: "Sleeps a lot throughout the day", value: "Frequent napper", emoji: "😴" }
+    ]
+  },
+  {
+    id: "dog_sociability",
+    field: "dog_sociability",
+    question: "How does {petName} interact with other dogs?",
+    options: [
+      { label: "Loves playing with all dogs", value: "Very social with dogs", emoji: "🐕" },
+      { label: "Selective about dog friends", value: "Selective with dogs", emoji: "🤝" },
+      { label: "Prefers humans over dogs", value: "Prefers humans", emoji: "👤" },
+      { label: "Can be reactive around dogs", value: "Reactive around dogs", emoji: "⚠️" }
+    ]
+  },
+  {
+    id: "grooming_tolerance",
+    field: "grooming_tolerance",
+    question: "How does {petName} handle grooming?",
+    options: [
+      { label: "Loves being groomed", value: "Loves grooming", emoji: "✨" },
+      { label: "Tolerates it fine", value: "Tolerates grooming", emoji: "👍" },
+      { label: "Gets anxious", value: "Anxious during grooming", emoji: "😰" }
+    ]
+  },
+  {
+    id: "car_travel",
+    field: "car_travel",
+    question: "How does {petName} handle car rides?",
+    options: [
+      { label: "Loves car rides!", value: "Loves car rides", emoji: "🚗" },
+      { label: "Gets a bit anxious", value: "Anxious in cars", emoji: "😟" },
+      { label: "Gets car sick", value: "Gets car sick", emoji: "🤢" }
+    ]
+  },
+  {
+    id: "alone_time",
+    field: "alone_time",
+    question: "How does {petName} handle being alone?",
+    options: [
+      { label: "Fine for hours", value: "Comfortable alone", emoji: "😊" },
+      { label: "Gets anxious when alone", value: "Separation anxiety", emoji: "😢" },
+      { label: "Rarely left alone", value: "Rarely alone", emoji: "🏠" }
+    ]
+  },
+  {
+    id: "noise_sensitivity",
+    field: "noise_sensitivity",
+    question: "How does {petName} react to loud noises?",
+    options: [
+      { label: "Not bothered at all", value: "Not noise sensitive", emoji: "😎" },
+      { label: "Startled but recovers", value: "Mildly noise sensitive", emoji: "😮" },
+      { label: "Very scared (fireworks, thunder)", value: "Very noise sensitive", emoji: "😨" }
+    ]
+  },
+  {
+    id: "favorite_activity",
+    field: "favorite_activity",
+    question: "What's {petName}'s absolute favorite activity?",
+    options: [
+      { label: "Playing fetch", value: "Playing fetch", emoji: "🎾" },
+      { label: "Cuddles on the couch", value: "Cuddling", emoji: "🛋️" },
+      { label: "Going for walks", value: "Going for walks", emoji: "🚶" },
+      { label: "Meeting new people/dogs", value: "Socializing", emoji: "🤝" },
+      { label: "Eating treats", value: "Eating treats", emoji: "🍖" }
+    ]
+  },
+  {
+    id: "training_style",
+    field: "training_style",
+    question: "What training approach works best for {petName}?",
+    options: [
+      { label: "Treat-based rewards", value: "Treat motivated", emoji: "🍖" },
+      { label: "Praise and affection", value: "Praise motivated", emoji: "❤️" },
+      { label: "Play-based rewards", value: "Play motivated", emoji: "🎾" }
     ]
   }
 ];
