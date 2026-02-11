@@ -217,7 +217,7 @@ from whatsapp_routes import router as whatsapp_router
 from tts_routes import tts_router
 
 # Top Picks Routes (Personalized picks per pet)
-from app.api.top_picks_routes import router as top_picks_router
+from app.api.top_picks_routes import router as top_picks_router, set_top_picks_db
 
 # User Tickets Routes
 from user_tickets_routes import router as user_tickets_router, set_db as set_user_tickets_db
