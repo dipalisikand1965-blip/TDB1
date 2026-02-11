@@ -1,19 +1,13 @@
 # The Doggy Company - Mira AI Pet Companion
 
 ## Original Problem Statement
-Build and maintain the Mira AI Pet Companion feature for The Doggy Company platform. Core philosophy: "Mira knows your pet" - a premium, personalized concierge experience, not generic e-commerce.
+Build and maintain the Mira AI Pet Companion feature for The Doggy Company platform. Core philosophy: "Mira is the Soul & Brain, Concierge is the Hands" - a premium, personalized pet operating system, not generic e-commerce.
 
-### Key Requirements
-1. Remove prices from Concierge Suggestion cards
-2. Trigger "Picks" panel from chat command
-3. Implement category/pillar picker in UI
-4. Allow individual item selection (not bulk sending)
-5. Full UI/UX audit for mobile and desktop with haptic feedback
-6. Beautiful redesign of Concierge cards
-7. Display 5 catalogue + 5 concierge picks per pillar
-8. Confirmation modal before sending to concierge
-9. Selection summary panel
-10. Expandable catalogue item cards
+### Key Philosophy
+- **Mira** = Soul & Brain (speaks for the pet)
+- **Concierge** = Hands (makes it happen)
+- The experience should make **the dog say "this was for me"** and **pet parents sigh with relief**
+- This is a **Pet Operating System**, not e-commerce or chatbot
 
 ## Core Architecture
 ```
@@ -22,14 +16,16 @@ Build and maintain the Mira AI Pet Companion feature for The Doggy Company platf
 │   ├── routes/
 │   │   ├── mira_routes.py - Chat intent detection
 │   │   └── top_picks_routes.py - Picks retrieval logic
+│   ├── server.py - Main API with soul endpoints
 │   └── utils/haptic.py
 ├── frontend (React)
 │   └── src/
 │       ├── components/
 │       │   ├── Mira/
-│       │   │   ├── PersonalizedPicksPanel.jsx - NEW main picks component
+│       │   │   ├── MiraTopBar.jsx - NEW unified navigation (Feb 11, 2026)
+│       │   │   ├── PersonalizedPicksPanel.jsx - Picks component
+│       │   │   ├── SoulFormModal.jsx - Quick soul questions
 │       │   │   ├── ConciergeDetailModal.jsx - Concierge item modal
-│       │   │   ├── ConciergeServiceStrip.jsx - Expandable services
 │       │   │   └── ...
 │       │   ├── ProductCard.jsx - Contains ProductDetailModal
 │       │   └── PicksVault/UnifiedPicksVault.jsx - Conversation picks
@@ -39,86 +35,119 @@ Build and maintain the Mira AI Pet Companion feature for The Doggy Company platf
 
 ## What's Been Implemented
 
-**Latest Update: Feb 11, 2026**
+### Latest Update: Feb 11, 2026 - UI/UX Overhaul
 
-### P0 Bug Fix - COMPLETED
-- Fixed: Products now correctly add to request list from ProductDetailModal
-- The `onAddToPicks` callback properly passes from PersonalizedPicksPanel to ProductDetailModal
-- handleAddToCart in ProductCard.jsx correctly checks and uses the callback
-- Fixed console error: Changed `setIsLoading` to `setIsProcessing` in MiraDemoPage.jsx
+#### New MiraTopBar Component (COMPLETED)
+Created a unified top bar that consolidates all navigation and actions:
 
-### PersonalizedPicksPanel Feature - COMPLETED
-- Built new `PersonalizedPicksPanel.jsx` from scratch replacing old TopPicksPanel
+**Row 1 - Pet Identity:**
+- Pet photo with Soul Score ring (visual progress indicator)
+- Pet name + Auto-detected location
+- Dashboard button (links to pet's dashboard)
+
+**Row 2 - Actions (horizontally scrollable):**
+- **Picks** - Personalized for pet (e.g., "Mojo's Picks")
+- **History** - Past chats
+- **Reminders** - Consolidated dropdown with all alerts (dismissible)
+- **Insights** - Mira's insights panel
+- **Soul** - Quick questions modal (saves to pet profile)
+- **Learn** - Training videos (with new video badge)
+- **Contact** - Dropdown with WhatsApp/Email/Phone (replaced "Concierge")
+- **New Chat** - Refresh/start new session
+
+**Changes Made:**
+1. ✅ Geo Location auto-detected (uses browser + IP fallback)
+2. ✅ Tabs aligned to top on desktop, horizontally scrollable on mobile
+3. ✅ "Concierge" renamed to "Contact" with WhatsApp/Email/Phone popup
+4. ✅ Soul questions save to pet profile and grow soul score
+5. ✅ Learn remains with sparkle indicator for new videos
+6. ✅ Help removed from navigation
+7. ✅ "Orders" changed to "Dashboard" 
+8. ✅ All Reminders consolidated into single dropdown
+9. ✅ Personalized Picks in top bar (labeled with pet name)
+10. ✅ Past Chats in top bar
+11. ✅ Pet picture + Soul Score prominent in header
+12. ✅ Insights in top bar
+13. ✅ Refresh Chat prominent (New Chat button)
+14. ✅ No duplications - removed old NavigationDock, FloatingActionBar
+
+**Files Changed:**
+- `src/components/Mira/MiraTopBar.jsx` - NEW (390 lines)
+- `src/pages/MiraDemoPage.jsx` - Integrated MiraTopBar, removed old navigation
+- `backend/server.py` - Added `/api/pet-soul/profile/{pet_id}/answers/bulk` endpoint
+
+### Previous Updates
+
+#### P0 Bug Fix - Products Add to Request List (COMPLETED Feb 11)
+- Products from `ProductDetailModal` correctly add to mini-cart in `PersonalizedPicksPanel`
+- Fixed console error: `setIsLoading` → `setIsProcessing`
+
+#### PersonalizedPicksPanel Feature (COMPLETED)
 - Dark theme matching site design
 - Personalized headers ("Mojo's Curated Finds")
 - Side-by-side layout: Catalogue Picks | Concierge Picks
-- Product modals via ProductDetailModal with "Add to Picks" functionality
-- Concierge modals via ConciergeDetailModal
+- Product modals with "Add to Picks" functionality
 - Mini-cart at bottom for selection review
-- "Anything Else" free-text custom request field
-- Confirmation modal before sending to concierge
-- Success callback adds confirmation message to chat
-
-### Backend
-- Intent detection for opening picks vault from chat
-- Picks retrieval: 5 catalogue + 5 concierge per pillar
-- `/api/mira/top-picks/{pet_name}` - Curated picks endpoint
-- `/api/concierge/picks-request` - Submit picks to concierge
-- Session history limited to 3 sessions per `/api/past_chats`
-
-### Frontend Components
-- `PersonalizedPicksPanel.jsx` - Main picks component (NEW)
-- `ConciergeDetailModal.jsx` - Matching modal for concierge picks
-- `ConciergeServiceStrip.jsx` - Expandable service categories
-- `ProductDetailModal` in ProductCard.jsx - Product details with variant selection
-- Pillar filter tabs with haptic feedback
-- Individual item selection with visual feedback
 
 ## Current Status
-**Status: WORKING** (Verified Feb 11, 2026 via testing agent)
+**Status: WORKING** (Verified Feb 11, 2026 via testing agent - iteration_139)
 
-Full flow tested:
-1. Login -> Dashboard
-2. Navigate to /mira-demo
-3. Open PersonalizedPicksPanel
-4. Click catalogue product -> ProductDetailModal opens
-5. Click "Add to Picks" -> Product added to mini-cart
-6. Click "Send to My Concierge" -> Confirmation modal
-7. Confirm -> Success message in chat
+All 15 test flows passed:
+- Login flow ✅
+- MiraTopBar renders ✅
+- Pet photo + Soul score ✅
+- Dashboard navigation ✅
+- Picks button ✅
+- History button ✅
+- Reminders dropdown ✅
+- Contact dropdown ✅
+- Soul modal ✅
+- Learn modal ✅
+- New Chat button ✅
+- No duplicates ✅
+- Location auto-detected ✅
+- Insights panel ✅
+- Mobile responsive ✅
 
 ## Prioritized Backlog
 
 ### P1 - High Priority
-- [ ] Integrate ConciergeServiceStrip into PersonalizedPicksPanel
-- [ ] ServiceQuickViewModal on /services page
-- [ ] Mobile UI & Haptics audit - fix button cut-offs on iOS
+- [ ] **Mira OS Intelligence Improvements** - Make Mira smarter (user mentioned)
+- [ ] Verify Soul Score correctly syncs with /my-pets page
+- [ ] Mobile UI & Haptics audit - ensure all haptics work on iOS
 
 ### P2 - Medium Priority
+- [ ] Integrate ConciergeServiceStrip into PersonalizedPicksPanel
+- [ ] ServiceQuickViewModal on /services page
 - [ ] "Anything Else" field capture in API submission
-- [ ] Review UnifiedPicksVault for conversation-specific picks polish
-- [ ] Refactor ProductDetailModal out of ProductCard.jsx into separate file
 
 ### P3 - Low Priority / Future
+- [ ] UI/UX Score & Roadmap review (user mentioned)
+- [ ] Review UnifiedPicksVault polish
 - [ ] Performance optimizations
-- [ ] Full mobile/desktop visual polish
-- [ ] Investigate root cause of original UI distortion bug
 
 ## Key API Endpoints
 - `POST /api/mira/os/understand-with-products` - Main chat endpoint
 - `GET /api/mira/top-picks/{pet_name}` - Curated picks for pet
-- `POST /api/concierge/picks-request` - Submit picks request
+- `POST /api/pet-soul/profile/{pet_id}/answers/bulk` - Save multiple soul answers (NEW)
+- `GET /api/pet-soul/profile/{pet_id}` - Get pet soul profile
 - `GET /api/past_chats` - Conversation history (limited to 3 sessions)
 
 ## Database Schema
-**unified_products collection:**
+**pets collection - soul_answers:**
 ```json
 {
-  "name": "String",
-  "pillars": ["Array of pillar IDs"],
-  "pillar": "String",
-  "tags": ["Array"],
-  "in_stock": "Boolean",
-  "visibility": { "status": "String" }
+  "id": "pet-xxxxx",
+  "name": "Mojo",
+  "doggy_soul_answers": {
+    "energy_level": "High energy",
+    "food_motivation": "Very food motivated",
+    "stranger_reaction": "Very friendly"
+    // ... more answers
+  },
+  "overall_score": 56.1,
+  "score_tier": "soul_explorer",
+  "soulScore": 56.1
 }
 ```
 
@@ -127,7 +156,8 @@ Full flow tested:
 - Password: test123
 
 ## Files of Reference
+- `src/components/Mira/MiraTopBar.jsx` - New unified top bar
 - `src/components/Mira/PersonalizedPicksPanel.jsx` - Main picks panel
-- `src/components/ProductCard.jsx` - ProductDetailModal component (lines 489-1542)
+- `src/components/Mira/SoulFormModal.jsx` - Soul questions modal
+- `src/components/ProductCard.jsx` - ProductDetailModal component
 - `src/pages/MiraDemoPage.jsx` - Main page integration
-- `src/components/Mira/ConciergeDetailModal.jsx` - Concierge item modal
