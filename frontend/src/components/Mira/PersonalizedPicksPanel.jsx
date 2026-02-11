@@ -562,7 +562,8 @@ const PersonalizedPicksPanel = ({
   onClose,
   pet,
   token,
-  onSendSuccess // Callback when picks are sent successfully
+  onSendSuccess, // Callback when picks are sent successfully
+  onItemSelect   // NEW: Callback when a product/service is clicked - shows in chat instead of modal
 }) => {
   const [activePillar, setActivePillar] = useState('celebrate');
   const [picksData, setPicksData] = useState(null);
@@ -573,8 +574,8 @@ const PersonalizedPicksPanel = ({
   const [showAllCatalogue, setShowAllCatalogue] = useState(false);
   const [showAllConcierge, setShowAllConcierge] = useState(false);
   const [customRequest, setCustomRequest] = useState('');
-  const [selectedProduct, setSelectedProduct] = useState(null); // For product detail modal
-  const [selectedConcierge, setSelectedConcierge] = useState(null); // For concierge detail modal
+  const [selectedProduct, setSelectedProduct] = useState(null); // For product detail modal (fallback)
+  const [selectedConcierge, setSelectedConcierge] = useState(null); // For concierge detail modal (fallback)
   const scrollRef = useRef(null);
   
   // Fetch picks data
