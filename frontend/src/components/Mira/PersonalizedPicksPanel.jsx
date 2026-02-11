@@ -562,8 +562,7 @@ const PersonalizedPicksPanel = ({
   onClose,
   pet,
   token,
-  onSendSuccess, // Callback when picks are sent successfully
-  onItemSelect   // NEW: Callback when a product/service is clicked - shows in chat instead of modal
+  onSendSuccess // Callback when picks are sent successfully
 }) => {
   const [activePillar, setActivePillar] = useState('celebrate');
   const [picksData, setPicksData] = useState(null);
