@@ -52,87 +52,911 @@ SEASONAL_EVENTS = {
 }
 
 # ═══════════════════════════════════════════════════════════════════════════════
-# CONCIERGE SUGGESTIONS BY PILLAR
-# These show the breadth of what Concierge® can do for users
-# Each has an icon name (Lucide React icons) and gradient colors
+# CONCIERGE SUGGESTIONS BY PILLAR - COMPLETE DATA
+# Each card has: title, why_it_fits, spec_chip, what_we_source, selection_rules, safety_note, questions
 # ═══════════════════════════════════════════════════════════════════════════════
 CONCIERGE_SUGGESTIONS = {
     "celebrate": [
-        {"name": "Custom allergy-safe birthday cake", "icon": "cake", "gradient": ["#EC4899", "#F472B6"], "specs": ["Ingredient-controlled", "Portion-sized for pet"]},
-        {"name": "Pup-cuterie grazing board", "icon": "utensils", "gradient": ["#F97316", "#FBBF24"], "specs": ["Dog-safe proteins + veg", "No risky items"]},
-        {"name": "At-home party set-up", "icon": "party-popper", "gradient": ["#8B5CF6", "#A78BFA"], "specs": ["Decor, photo corner, cleanup"]},
-        {"name": "Pet photographer + shoot", "icon": "camera", "gradient": ["#3B82F6", "#60A5FA"], "specs": ["30-minute session", "Edited photos"]},
-        {"name": "Personalised bandana/charm", "icon": "heart", "gradient": ["#EC4899", "#F472B6"], "specs": ["Name + number", "Size-matched"]},
+        {
+            "name": "Custom allergy-safe birthday cake",
+            "icon": "cake",
+            "gradient": ["#EC4899", "#F472B6"],
+            "spec_chip": "Allergy-safe",
+            "why_it_fits": "Made to {pet}'s diet rules, portioned for a safe celebration.",
+            "what_we_source": "A dog-safe cake matched to {pet}'s allergies and size.",
+            "selection_rules": [
+                "Dog-only recipe (no chocolate, no xylitol, no raisins/grapes)",
+                "Ingredient list aligned to allergies (protein + flour base)",
+                "Portion size matched to weight (small servings)",
+                "Soft texture if senior/teeth sensitive"
+            ],
+            "safety_note": "No human desserts; dog-only ingredients.",
+            "questions": ["Any specific allergies?", "Preferred flavour?"]
+        },
+        {
+            "name": "Pup-cuterie grazing board",
+            "icon": "utensils",
+            "gradient": ["#F97316", "#FBBF24"],
+            "spec_chip": "Ingredient-controlled",
+            "why_it_fits": "A fun, photo-worthy spread with dog-safe bites only.",
+            "what_we_source": "A grazing board of dog-safe proteins + crunchy veg + treats.",
+            "selection_rules": [
+                "Single-ingredient treats where possible",
+                "No onion/garlic seasoning, no dairy if sensitive",
+                "Bite-size pieces to reduce choking risk",
+                "Includes 1 enrichment element (lick mat or puzzle)"
+            ],
+            "safety_note": "Avoid cooked bones and fatty/seasoned meats.",
+            "questions": ["How many dogs attending?", "Any dietary restrictions?"]
+        },
+        {
+            "name": "At-home party set-up",
+            "icon": "party-popper",
+            "gradient": ["#8B5CF6", "#A78BFA"],
+            "spec_chip": "Pet-safe decor",
+            "why_it_fits": "Turns your home into a pet-safe celebration zone in 30 minutes.",
+            "what_we_source": "Complete party decor setup with pet-safe materials.",
+            "selection_rules": [
+                "Non-toxic balloons and decorations",
+                "No small parts that can be swallowed",
+                "Photo corner with safe props",
+                "Easy cleanup materials included"
+            ],
+            "safety_note": "All decorations pet-safe; no choking hazards.",
+            "questions": ["Theme preference?", "Indoor or outdoor?"]
+        },
+        {
+            "name": "Pet photographer + shoot",
+            "icon": "camera",
+            "gradient": ["#3B82F6", "#60A5FA"],
+            "spec_chip": "30-45 min",
+            "why_it_fits": "A calm, fast shoot designed around {pet}'s attention span.",
+            "what_we_source": "Professional pet photographer for a 30-minute session.",
+            "selection_rules": [
+                "Photographer experienced with dogs",
+                "Quick session to avoid pet fatigue",
+                "Natural lighting preferred",
+                "10-15 edited photos delivered"
+            ],
+            "safety_note": "No flash photography; positive reinforcement only.",
+            "questions": ["Preferred location?", "Any must-have shots?"]
+        },
+        {
+            "name": "Personalised bandana/charm",
+            "icon": "heart",
+            "gradient": ["#EC4899", "#F472B6"],
+            "spec_chip": "Custom text",
+            "why_it_fits": "A keepsake with {pet}'s name and your contact, sized perfectly.",
+            "what_we_source": "Custom bandana or collar charm with engraving.",
+            "selection_rules": [
+                "Fabric safe for pet skin",
+                "Size matched to neck measurement",
+                "Durable engraving that won't fade",
+                "Contact info for safety"
+            ],
+            "safety_note": "Breakaway safety clip for collar charms.",
+            "questions": ["Text to include?", "Colour preference?"]
+        },
     ],
     "dine": [
-        {"name": "Diet transition plan", "icon": "clipboard-list", "gradient": ["#F97316", "#FB923C"], "specs": ["Exact formula sourcing", "Brand matched"]},
-        {"name": "Allergy-safe treat sourcing", "icon": "cookie", "gradient": ["#EAB308", "#FACC15"], "specs": ["Single-protein", "Allergen-free"]},
-        {"name": "Fresh topper sourcing", "icon": "salad", "gradient": ["#22C55E", "#4ADE80"], "specs": ["Freeze-dried", "GI-friendly"]},
-        {"name": "Picky eater kit", "icon": "utensils-crossed", "gradient": ["#F97316", "#FBBF24"], "specs": ["Lick mats, toppers", "Technique guide"]},
-        {"name": "Nutrition consult booking", "icon": "stethoscope", "gradient": ["#6366F1", "#818CF8"], "specs": ["Expert referral", "Diet planning"]},
+        {
+            "name": "Diet transition plan",
+            "icon": "clipboard-list",
+            "gradient": ["#F97316", "#FB923C"],
+            "spec_chip": "Vet-guided",
+            "why_it_fits": "A gentle switch to new food without tummy troubles for {pet}.",
+            "what_we_source": "Complete diet transition plan with exact food sourcing.",
+            "selection_rules": [
+                "7-10 day gradual transition schedule",
+                "Exact brand and variant matched",
+                "Portion sizes calculated for weight",
+                "Monitoring checklist included"
+            ],
+            "safety_note": "Sudden diet changes can cause GI upset.",
+            "questions": ["Current food brand?", "Target food or goal?"]
+        },
+        {
+            "name": "Allergy-safe treat sourcing",
+            "icon": "cookie",
+            "gradient": ["#EAB308", "#FACC15"],
+            "spec_chip": "Single-protein",
+            "why_it_fits": "Treats {pet} can enjoy without allergic reactions.",
+            "what_we_source": "Limited ingredient treats matched to {pet}'s allergies.",
+            "selection_rules": [
+                "Single protein source only",
+                "No common allergens (wheat, soy, corn)",
+                "Natural ingredients, no artificial additives",
+                "Size appropriate for training or snacking"
+            ],
+            "safety_note": "Always introduce new treats gradually.",
+            "questions": ["Known allergies?", "Preferred protein?"]
+        },
+        {
+            "name": "Fresh topper sourcing",
+            "icon": "salad",
+            "gradient": ["#22C55E", "#4ADE80"],
+            "spec_chip": "GI-friendly",
+            "why_it_fits": "Tasty meal boosters that are gentle on {pet}'s tummy.",
+            "what_we_source": "Freeze-dried or fresh toppers for picky eaters.",
+            "selection_rules": [
+                "Single ingredient or minimal processing",
+                "No artificial preservatives",
+                "Easy to digest proteins",
+                "Appropriate portion guidance"
+            ],
+            "safety_note": "Start with small amounts to test tolerance.",
+            "questions": ["Current food type?", "Protein preferences?"]
+        },
+        {
+            "name": "Picky eater kit",
+            "icon": "utensils-crossed",
+            "gradient": ["#F97316", "#FBBF24"],
+            "spec_chip": "Engagement tools",
+            "why_it_fits": "Tools and techniques to make mealtimes exciting for {pet}.",
+            "what_we_source": "Lick mats, puzzle feeders, and appetite-boosting tips.",
+            "selection_rules": [
+                "Food-grade silicone mats",
+                "Difficulty matched to {pet}'s level",
+                "Easy to clean materials",
+                "Includes technique guide"
+            ],
+            "safety_note": "Supervise first use of puzzle feeders.",
+            "questions": ["Current feeding setup?", "What's been tried?"]
+        },
+        {
+            "name": "Nutrition consult booking",
+            "icon": "stethoscope",
+            "gradient": ["#6366F1", "#818CF8"],
+            "spec_chip": "Expert-led",
+            "why_it_fits": "Professional guidance for {pet}'s specific dietary needs.",
+            "what_we_source": "Booking with a certified pet nutritionist.",
+            "selection_rules": [
+                "Certified veterinary nutritionist",
+                "Review of current diet included",
+                "Customised meal plan provided",
+                "Follow-up support available"
+            ],
+            "safety_note": "This is guidance, not medical treatment.",
+            "questions": ["Main concern?", "Current health conditions?"]
+        },
     ],
     "stay": [
-        {"name": "Pet-friendly hotel shortlist", "icon": "hotel", "gradient": ["#3B82F6", "#60A5FA"], "specs": ["Policies verified", "Breed-friendly"]},
-        {"name": "Anxiety-friendly trial stay", "icon": "moon", "gradient": ["#8B5CF6", "#A78BFA"], "specs": ["Short exposure", "Gradual ramp-up"]},
-        {"name": "Temperament-matched boarding", "icon": "home", "gradient": ["#10B981", "#34D399"], "specs": ["Personality fit", "Not just availability"]},
-        {"name": "In-home sitter coordination", "icon": "user-check", "gradient": ["#06B6D4", "#22D3EE"], "specs": ["Live updates", "Background verified"]},
-        {"name": "Emergency sitter roster", "icon": "phone-call", "gradient": ["#EF4444", "#F87171"], "specs": ["24/7 available", "Pre-vetted"]},
+        {
+            "name": "Pet-friendly hotel shortlist",
+            "icon": "hotel",
+            "gradient": ["#3B82F6", "#60A5FA"],
+            "spec_chip": "Policies verified",
+            "why_it_fits": "Hotels where {pet} is genuinely welcome, not just tolerated.",
+            "what_we_source": "Curated list of hotels with verified pet policies.",
+            "selection_rules": [
+                "Direct confirmation of pet policy",
+                "Weight/breed restrictions checked",
+                "Pet amenities verified",
+                "Nearby walking areas mapped"
+            ],
+            "safety_note": "Always confirm policy before booking.",
+            "questions": ["Destination city?", "Travel dates?"]
+        },
+        {
+            "name": "Anxiety-friendly trial stay",
+            "icon": "moon",
+            "gradient": ["#8B5CF6", "#A78BFA"],
+            "spec_chip": "Gradual intro",
+            "why_it_fits": "A gentle introduction to boarding for anxious {pet}.",
+            "what_we_source": "Trial stay plan with anxiety-aware boarding facility.",
+            "selection_rules": [
+                "Short 2-4 hour initial visit",
+                "Familiar items allowed",
+                "Quiet space available",
+                "Regular photo/video updates"
+            ],
+            "safety_note": "Don't force if signs of extreme stress.",
+            "questions": ["Anxiety triggers?", "Comfort items?"]
+        },
+        {
+            "name": "Temperament-matched boarding",
+            "icon": "home",
+            "gradient": ["#10B981", "#34D399"],
+            "spec_chip": "Personality fit",
+            "why_it_fits": "A boarding match based on {pet}'s personality, not just availability.",
+            "what_we_source": "Home boarder matched to {pet}'s temperament.",
+            "selection_rules": [
+                "Temperament assessment completed",
+                "Home environment matched",
+                "Other pets compatibility checked",
+                "Experience with breed/size"
+            ],
+            "safety_note": "Meet-and-greet before first stay recommended.",
+            "questions": ["{pet}'s energy level?", "Good with other dogs?"]
+        },
+        {
+            "name": "In-home sitter coordination",
+            "icon": "user-check",
+            "gradient": ["#06B6D4", "#22D3EE"],
+            "spec_chip": "Live updates",
+            "why_it_fits": "{pet} stays home with a vetted sitter and you get peace of mind.",
+            "what_we_source": "Background-checked sitter with update schedule.",
+            "selection_rules": [
+                "Identity and background verified",
+                "Pet care experience confirmed",
+                "Daily photo/video updates",
+                "Emergency contact protocol"
+            ],
+            "safety_note": "Share vet details and emergency contacts.",
+            "questions": ["Duration needed?", "Daily routine details?"]
+        },
+        {
+            "name": "Emergency sitter roster",
+            "icon": "phone-call",
+            "gradient": ["#EF4444", "#F87171"],
+            "spec_chip": "24/7 backup",
+            "why_it_fits": "Pre-vetted sitters on standby for last-minute needs.",
+            "what_we_source": "List of 3 verified backup sitters in your area.",
+            "selection_rules": [
+                "Availability confirmed for emergencies",
+                "Quick response time (under 2 hours)",
+                "Familiar with your area",
+                "Experience with {pet}'s breed/size"
+            ],
+            "safety_note": "Keep list updated with current contacts.",
+            "questions": ["Location/area?", "Typical emergency scenarios?"]
+        },
     ],
     "travel": [
-        {"name": "Airline carrier sourcing", "icon": "plane", "gradient": ["#06B6D4", "#22D3EE"], "specs": ["Exact dimensions", "Weight matched"]},
-        {"name": "Airport movement plan", "icon": "map-pin", "gradient": ["#3B82F6", "#60A5FA"], "specs": ["Relief areas", "Quiet routes"]},
-        {"name": "Car travel safety setup", "icon": "car", "gradient": ["#10B981", "#34D399"], "specs": ["Harness fit", "Barrier setup"]},
-        {"name": "Pet-friendly itinerary", "icon": "route", "gradient": ["#F97316", "#FB923C"], "specs": ["Rest stops", "Vetted cafés"]},
-        {"name": "Travel calm kit", "icon": "heart-pulse", "gradient": ["#8B5CF6", "#A78BFA"], "specs": ["Non-medicated", "Familiar scents"]},
+        {
+            "name": "Airline carrier sourcing",
+            "icon": "plane",
+            "gradient": ["#06B6D4", "#22D3EE"],
+            "spec_chip": "Airline-approved",
+            "why_it_fits": "The exact carrier that meets your airline's requirements for {pet}.",
+            "what_we_source": "Carrier matched to airline specs and {pet}'s size.",
+            "selection_rules": [
+                "Airline-specific dimensions verified",
+                "Ventilation requirements met",
+                "Weight capacity confirmed",
+                "Comfort padding included"
+            ],
+            "safety_note": "Practice with carrier before travel day.",
+            "questions": ["Airline name?", "{pet}'s measurements?"]
+        },
+        {
+            "name": "Airport movement plan",
+            "icon": "map-pin",
+            "gradient": ["#3B82F6", "#60A5FA"],
+            "spec_chip": "Relief areas mapped",
+            "why_it_fits": "Stress-free airport navigation with pet relief spots marked.",
+            "what_we_source": "Custom airport guide with pet-friendly routes.",
+            "selection_rules": [
+                "Pet relief areas located",
+                "Quiet routes identified",
+                "Security process explained",
+                "Timing recommendations"
+            ],
+            "safety_note": "Arrive early to allow for pet breaks.",
+            "questions": ["Which airport?", "Departure time?"]
+        },
+        {
+            "name": "Car travel safety setup",
+            "icon": "car",
+            "gradient": ["#10B981", "#34D399"],
+            "spec_chip": "Crash-tested",
+            "why_it_fits": "Proper restraints to keep {pet} safe on road trips.",
+            "what_we_source": "Crash-tested harness or carrier for car travel.",
+            "selection_rules": [
+                "Crash test certification",
+                "Size matched to {pet}",
+                "Easy to install/remove",
+                "Comfort for long journeys"
+            ],
+            "safety_note": "Never let pets ride unrestrained.",
+            "questions": ["Vehicle type?", "Trip duration typical?"]
+        },
+        {
+            "name": "Pet-friendly itinerary",
+            "icon": "route",
+            "gradient": ["#F97316", "#FB923C"],
+            "spec_chip": "Rest stops mapped",
+            "why_it_fits": "A trip plan with {pet}-friendly stops along the way.",
+            "what_we_source": "Custom route with pet-friendly cafés and rest areas.",
+            "selection_rules": [
+                "Rest stops every 2-3 hours",
+                "Pet-friendly cafés verified",
+                "Off-leash areas identified",
+                "Emergency vet locations noted"
+            ],
+            "safety_note": "Never leave {pet} alone in parked car.",
+            "questions": ["Route/destination?", "Any must-visit spots?"]
+        },
+        {
+            "name": "Travel calm kit",
+            "icon": "heart-pulse",
+            "gradient": ["#8B5CF6", "#A78BFA"],
+            "spec_chip": "Non-medicated",
+            "why_it_fits": "Natural calming aids to ease {pet}'s travel anxiety.",
+            "what_we_source": "Calming treats, familiar scent items, and routine tips.",
+            "selection_rules": [
+                "Non-medicated calming treats",
+                "Pheromone spray or diffuser",
+                "Familiar blanket/toy included",
+                "Routine maintenance guide"
+            ],
+            "safety_note": "Test calming aids before travel day.",
+            "questions": ["Travel anxiety level?", "What's worked before?"]
+        },
     ],
     "care": [
-        {"name": "Coat-specialist groomer match", "icon": "scissors", "gradient": ["#8B5CF6", "#A78BFA"], "specs": ["Double/fine/curly", "Temperament aware"]},
-        {"name": "Matting rescue plan", "icon": "sparkles", "gradient": ["#EC4899", "#F472B6"], "specs": ["Detangle strategy", "Tools + cadence"]},
-        {"name": "Dental home-care system", "icon": "smile", "gradient": ["#3B82F6", "#60A5FA"], "specs": ["Brush + paste", "Habit training"]},
-        {"name": "Allergy-safe skin routine", "icon": "droplets", "gradient": ["#06B6D4", "#22D3EE"], "specs": ["Fragrance-free", "Gentle products"]},
-        {"name": "Post-walk hygiene protocol", "icon": "footprints", "gradient": ["#10B981", "#34D399"], "specs": ["Humid climate", "Wipes + balm"]},
+        {
+            "name": "Coat-specialist groomer match",
+            "icon": "scissors",
+            "gradient": ["#8B5CF6", "#A78BFA"],
+            "spec_chip": "Breed-specific",
+            "why_it_fits": "A groomer who truly understands {pet}'s coat type.",
+            "what_we_source": "Groomer specialised in {pet}'s coat (double/fine/curly).",
+            "selection_rules": [
+                "Experience with specific coat type",
+                "Gentle handling approach",
+                "Proper tools for breed",
+                "Fear-free certified preferred"
+            ],
+            "safety_note": "Share any skin sensitivities beforehand.",
+            "questions": ["Coat type?", "Previous grooming issues?"]
+        },
+        {
+            "name": "Matting rescue plan",
+            "icon": "sparkles",
+            "gradient": ["#EC4899", "#F472B6"],
+            "spec_chip": "Gentle detangle",
+            "why_it_fits": "A pain-free solution to {pet}'s matted coat.",
+            "what_we_source": "Detangling strategy, tools, and maintenance schedule.",
+            "selection_rules": [
+                "Assessment of mat severity",
+                "Appropriate detangling tools",
+                "Conditioning products included",
+                "Prevention routine established"
+            ],
+            "safety_note": "Severe mats may need professional shaving.",
+            "questions": ["Mat locations?", "How long since last groom?"]
+        },
+        {
+            "name": "Dental home-care system",
+            "icon": "smile",
+            "gradient": ["#3B82F6", "#60A5FA"],
+            "spec_chip": "Daily routine",
+            "why_it_fits": "A simple dental routine that {pet} will actually tolerate.",
+            "what_we_source": "Toothbrush, paste, and habit training guide.",
+            "selection_rules": [
+                "Pet-safe enzymatic toothpaste",
+                "Size-appropriate brush",
+                "Gradual introduction plan",
+                "Alternative options (dental chews)"
+            ],
+            "safety_note": "Never use human toothpaste on pets.",
+            "questions": ["Current dental health?", "Tolerance for handling?"]
+        },
+        {
+            "name": "Allergy-safe skin routine",
+            "icon": "droplets",
+            "gradient": ["#06B6D4", "#22D3EE"],
+            "spec_chip": "Fragrance-free",
+            "why_it_fits": "Gentle products for {pet}'s sensitive skin.",
+            "what_we_source": "Hypoallergenic shampoo, conditioner, and wipes.",
+            "selection_rules": [
+                "Fragrance-free formulas",
+                "pH balanced for dogs",
+                "No harsh chemicals",
+                "Vet-recommended brands"
+            ],
+            "safety_note": "Patch test new products first.",
+            "questions": ["Skin concerns?", "Current products used?"]
+        },
+        {
+            "name": "Post-walk hygiene protocol",
+            "icon": "footprints",
+            "gradient": ["#10B981", "#34D399"],
+            "spec_chip": "Humid climate",
+            "why_it_fits": "Keep {pet} clean and healthy after every walk.",
+            "what_we_source": "Paw wipes, balm, and quick-clean routine.",
+            "selection_rules": [
+                "Antibacterial paw wipes",
+                "Moisturising paw balm",
+                "Quick-dry coat spray",
+                "Ear cleaning if needed"
+            ],
+            "safety_note": "Check paws for cuts or foreign objects.",
+            "questions": ["Walking terrain?", "Any paw issues?"]
+        },
     ],
     "enjoy": [
-        {"name": "7-day enrichment rotation", "icon": "puzzle", "gradient": ["#F97316", "#FBBF24"], "specs": ["Toy schedule", "Boredom prevention"]},
-        {"name": "Rainy day indoors kit", "icon": "cloud-rain", "gradient": ["#3B82F6", "#60A5FA"], "specs": ["Snuffle, puzzles", "Hide-and-seek"]},
-        {"name": "Temperament-matched playdate", "icon": "users", "gradient": ["#10B981", "#34D399"], "specs": ["Safe location", "Personality fit"]},
-        {"name": "Pet café booking", "icon": "coffee", "gradient": ["#8B5CF6", "#A78BFA"], "specs": ["Rules verified", "Reservation done"]},
-        {"name": "Anxious dog sensory toys", "icon": "heart", "gradient": ["#EC4899", "#F472B6"], "specs": ["Non-medicated", "Gentle materials"]},
+        {
+            "name": "7-day enrichment rotation",
+            "icon": "puzzle",
+            "gradient": ["#F97316", "#FBBF24"],
+            "spec_chip": "Boredom-buster",
+            "why_it_fits": "A week of activities to keep {pet} mentally stimulated.",
+            "what_we_source": "7-day toy and activity rotation plan.",
+            "selection_rules": [
+                "Variety of toy types",
+                "Difficulty progression",
+                "Safe for unsupervised play",
+                "Easy to rotate and store"
+            ],
+            "safety_note": "Inspect toys regularly for damage.",
+            "questions": ["{pet}'s play style?", "Current favourite toys?"]
+        },
+        {
+            "name": "Rainy day indoors kit",
+            "icon": "cloud-rain",
+            "gradient": ["#3B82F6", "#60A5FA"],
+            "spec_chip": "Indoor activities",
+            "why_it_fits": "Fun activities for when {pet} can't go outside.",
+            "what_we_source": "Snuffle mats, puzzle feeders, and indoor games guide.",
+            "selection_rules": [
+                "Quiet indoor activities",
+                "Mental stimulation focus",
+                "Easy cleanup options",
+                "Training game ideas included"
+            ],
+            "safety_note": "Supervise new puzzle toys initially.",
+            "questions": ["Space available?", "Energy level indoors?"]
+        },
+        {
+            "name": "Temperament-matched playdate",
+            "icon": "users",
+            "gradient": ["#10B981", "#34D399"],
+            "spec_chip": "Safe socialising",
+            "why_it_fits": "A playmate matched to {pet}'s energy and temperament.",
+            "what_we_source": "Coordinated playdate with compatible dog.",
+            "selection_rules": [
+                "Similar size and energy",
+                "Compatible play styles",
+                "Neutral meeting location",
+                "Supervised introduction"
+            ],
+            "safety_note": "Watch body language for stress signs.",
+            "questions": ["{pet}'s play style?", "Good with which sizes?"]
+        },
+        {
+            "name": "Pet café booking",
+            "icon": "coffee",
+            "gradient": ["#8B5CF6", "#A78BFA"],
+            "spec_chip": "Rules verified",
+            "why_it_fits": "A café outing where {pet} is actually welcome.",
+            "what_we_source": "Verified pet-friendly café with reservation.",
+            "selection_rules": [
+                "Pet policy confirmed",
+                "Outdoor seating available",
+                "Water bowls provided",
+                "Quiet times identified"
+            ],
+            "safety_note": "Keep {pet} leashed and under control.",
+            "questions": ["Location preference?", "Time of day?"]
+        },
+        {
+            "name": "Anxious dog sensory toys",
+            "icon": "heart",
+            "gradient": ["#EC4899", "#F472B6"],
+            "spec_chip": "Calming play",
+            "why_it_fits": "Gentle toys that soothe rather than overstimulate {pet}.",
+            "what_we_source": "Calming toys and comfort items for anxious dogs.",
+            "selection_rules": [
+                "Soft, non-squeaky options",
+                "Snuggle-safe materials",
+                "Calming scent options",
+                "Heartbeat toys if helpful"
+            ],
+            "safety_note": "Remove if {pet} starts destructive chewing.",
+            "questions": ["Anxiety triggers?", "Current comfort items?"]
+        },
     ],
     "fit": [
-        {"name": "Breed-safe walk plan", "icon": "map", "gradient": ["#EF4444", "#F87171"], "specs": ["Climate-aware", "Distance tracked"]},
-        {"name": "Senior mobility play set", "icon": "accessibility", "gradient": ["#8B5CF6", "#A78BFA"], "specs": ["Low impact", "Joint-friendly"]},
-        {"name": "Weight management routine", "icon": "scale", "gradient": ["#10B981", "#34D399"], "specs": ["Portioning", "Activity cadence"]},
-        {"name": "Climate walk strategy", "icon": "thermometer", "gradient": ["#F97316", "#FB923C"], "specs": ["Time windows", "Appropriate gear"]},
-        {"name": "Weekend trail plan", "icon": "mountain", "gradient": ["#06B6D4", "#22D3EE"], "specs": ["Safety notes", "Tick/heat aware"]},
+        {
+            "name": "Breed-safe walk plan",
+            "icon": "map",
+            "gradient": ["#EF4444", "#F87171"],
+            "spec_chip": "Climate-aware",
+            "why_it_fits": "A walking routine perfect for {pet}'s breed and your climate.",
+            "what_we_source": "Custom walk schedule with distance and timing.",
+            "selection_rules": [
+                "Breed exercise needs considered",
+                "Weather-appropriate timing",
+                "Distance matched to fitness",
+                "Rest and hydration breaks"
+            ],
+            "safety_note": "Avoid hot pavement—check with hand first.",
+            "questions": ["Current walk routine?", "Any mobility issues?"]
+        },
+        {
+            "name": "Senior mobility play set",
+            "icon": "accessibility",
+            "gradient": ["#8B5CF6", "#A78BFA"],
+            "spec_chip": "Low-impact",
+            "why_it_fits": "Gentle activities that keep senior {pet} active without strain.",
+            "what_we_source": "Low-impact toys and gentle exercise guide.",
+            "selection_rules": [
+                "Joint-friendly activities",
+                "Soft, easy-grip toys",
+                "Short session durations",
+                "Indoor options included"
+            ],
+            "safety_note": "Watch for signs of pain or fatigue.",
+            "questions": ["Age and mobility level?", "Any joint issues?"]
+        },
+        {
+            "name": "Weight management routine",
+            "icon": "scale",
+            "gradient": ["#10B981", "#34D399"],
+            "spec_chip": "Vet-guided",
+            "why_it_fits": "A healthy weight plan tailored to {pet}'s needs.",
+            "what_we_source": "Portion guide, activity plan, and progress tracking.",
+            "selection_rules": [
+                "Calorie calculation provided",
+                "Gradual weight loss approach",
+                "Activity increase plan",
+                "Regular weigh-in schedule"
+            ],
+            "safety_note": "Rapid weight loss can be harmful.",
+            "questions": ["Current weight?", "Target weight from vet?"]
+        },
+        {
+            "name": "Climate walk strategy",
+            "icon": "thermometer",
+            "gradient": ["#F97316", "#FB923C"],
+            "spec_chip": "Weather-smart",
+            "why_it_fits": "Safe walk times and gear for your local climate.",
+            "what_we_source": "Seasonal walk schedule and protective gear.",
+            "selection_rules": [
+                "Temperature guidelines",
+                "Appropriate gear sourced",
+                "Alternative exercise options",
+                "Hydration reminders"
+            ],
+            "safety_note": "Brachycephalic breeds need extra heat care.",
+            "questions": ["Local climate?", "Breed type?"]
+        },
+        {
+            "name": "Weekend trail plan",
+            "icon": "mountain",
+            "gradient": ["#06B6D4", "#22D3EE"],
+            "spec_chip": "Adventure-ready",
+            "why_it_fits": "Trail recommendations perfect for {pet}'s fitness level.",
+            "what_we_source": "Pet-friendly trail list with safety notes.",
+            "selection_rules": [
+                "Difficulty matched to fitness",
+                "Dog-friendly trails only",
+                "Water sources identified",
+                "Emergency exit routes noted"
+            ],
+            "safety_note": "Check for ticks after every hike.",
+            "questions": ["Fitness level?", "Preferred terrain?"]
+        },
     ],
     "learn": [
-        {"name": "Positive trainer matching", "icon": "graduation-cap", "gradient": ["#10B981", "#34D399"], "specs": ["Force-free only", "Goal-matched"]},
-        {"name": "2-week leash manners plan", "icon": "dog", "gradient": ["#3B82F6", "#60A5FA"], "specs": ["Equipment sourced", "No aversives"]},
-        {"name": "Visitor behaviour protocol", "icon": "door-open", "gradient": ["#F97316", "#FB923C"], "specs": ["Door routine", "Place cue"]},
-        {"name": "Gentle crate training", "icon": "box", "gradient": ["#8B5CF6", "#A78BFA"], "specs": ["No flooding", "Gradual ramp-up"]},
-        {"name": "Separation anxiety support", "icon": "heart-handshake", "gradient": ["#EC4899", "#F472B6"], "specs": ["Expert consult", "Gradual approach"]},
+        {
+            "name": "Positive trainer matching",
+            "icon": "graduation-cap",
+            "gradient": ["#10B981", "#34D399"],
+            "spec_chip": "Force-free",
+            "why_it_fits": "A trainer who uses only positive methods with {pet}.",
+            "what_we_source": "Certified positive-reinforcement trainer.",
+            "selection_rules": [
+                "Force-free certification",
+                "Experience with your goal",
+                "Good reviews from pet parents",
+                "Training style matched"
+            ],
+            "safety_note": "Avoid trainers using punishment or fear.",
+            "questions": ["Training goal?", "Previous training?"]
+        },
+        {
+            "name": "2-week leash manners plan",
+            "icon": "dog",
+            "gradient": ["#3B82F6", "#60A5FA"],
+            "spec_chip": "Step-by-step",
+            "why_it_fits": "Transform {pet}'s walks in just 14 days.",
+            "what_we_source": "Daily training plan with equipment sourcing.",
+            "selection_rules": [
+                "Appropriate harness/collar selected",
+                "Daily 10-15 min sessions",
+                "Progress milestones set",
+                "Troubleshooting guide included"
+            ],
+            "safety_note": "Consistency is key—practice daily.",
+            "questions": ["Current leash issues?", "Walk frequency?"]
+        },
+        {
+            "name": "Visitor behaviour protocol",
+            "icon": "door-open",
+            "gradient": ["#F97316", "#FB923C"],
+            "spec_chip": "Door manners",
+            "why_it_fits": "Calm greetings when guests arrive instead of chaos.",
+            "what_we_source": "Door routine training plan and place cue guide.",
+            "selection_rules": [
+                "Management tools identified",
+                "Step-by-step protocol",
+                "Practice scenarios included",
+                "Emergency backup plan"
+            ],
+            "safety_note": "Safety first—use baby gates if needed.",
+            "questions": ["Current door behaviour?", "Guest frequency?"]
+        },
+        {
+            "name": "Gentle crate training",
+            "icon": "box",
+            "gradient": ["#8B5CF6", "#A78BFA"],
+            "spec_chip": "No flooding",
+            "why_it_fits": "Help {pet} love the crate, not fear it.",
+            "what_we_source": "Gradual crate introduction plan and setup.",
+            "selection_rules": [
+                "Crate size matched to {pet}",
+                "Comfort items included",
+                "Gradual duration increase",
+                "Positive association focus"
+            ],
+            "safety_note": "Never use crate as punishment.",
+            "questions": ["Previous crate experience?", "What's the goal?"]
+        },
+        {
+            "name": "Separation anxiety support",
+            "icon": "heart-handshake",
+            "gradient": ["#EC4899", "#F472B6"],
+            "spec_chip": "Expert-guided",
+            "why_it_fits": "Help {pet} feel safe when you're not home.",
+            "what_we_source": "Behaviour consult booking and management plan.",
+            "selection_rules": [
+                "Certified behaviour consultant",
+                "Gradual departure training",
+                "Environmental modifications",
+                "Progress tracking system"
+            ],
+            "safety_note": "This takes time—avoid rushing progress.",
+            "questions": ["Symptoms when alone?", "Duration triggers?"]
+        },
     ],
     "advisory": [
-        {"name": "Second opinion scheduling", "icon": "clipboard-check", "gradient": ["#6366F1", "#818CF8"], "specs": ["Record prep", "Specialist match"]},
-        {"name": "Specialist referral", "icon": "stethoscope", "gradient": ["#3B82F6", "#60A5FA"], "specs": ["Derm, dental, ortho", "Vet-supported"]},
-        {"name": "Behaviour consult booking", "icon": "brain", "gradient": ["#8B5CF6", "#A78BFA"], "specs": ["Reactivity/anxiety", "Expert matching"]},
-        {"name": "Vet question prep list", "icon": "list-checks", "gradient": ["#10B981", "#34D399"], "specs": ["Symptom-based", "Comprehensive"]},
-        {"name": "Health tracking setup", "icon": "activity", "gradient": ["#EF4444", "#F87171"], "specs": ["Logs + patterns", "Easy to use"]},
+        {
+            "name": "Second opinion scheduling",
+            "icon": "clipboard-check",
+            "gradient": ["#6366F1", "#818CF8"],
+            "spec_chip": "Record prep",
+            "why_it_fits": "Get another perspective on {pet}'s health concern.",
+            "what_we_source": "Specialist appointment with record compilation.",
+            "selection_rules": [
+                "Relevant specialist identified",
+                "Medical records compiled",
+                "Question list prepared",
+                "Appointment scheduled"
+            ],
+            "safety_note": "Inform primary vet about second opinion.",
+            "questions": ["Health concern?", "Current vet's opinion?"]
+        },
+        {
+            "name": "Specialist referral",
+            "icon": "stethoscope",
+            "gradient": ["#3B82F6", "#60A5FA"],
+            "spec_chip": "Expert network",
+            "why_it_fits": "Connect with the right specialist for {pet}'s needs.",
+            "what_we_source": "Referral to dermatologist, dentist, ortho, or oncologist.",
+            "selection_rules": [
+                "Specialisation matched to need",
+                "Credentials verified",
+                "Location convenient",
+                "Availability checked"
+            ],
+            "safety_note": "Specialists complement, not replace, primary vet.",
+            "questions": ["Specialist type needed?", "Urgency level?"]
+        },
+        {
+            "name": "Behaviour consult booking",
+            "icon": "brain",
+            "gradient": ["#8B5CF6", "#A78BFA"],
+            "spec_chip": "CAAB/DACVB",
+            "why_it_fits": "Expert help for {pet}'s behavioural challenges.",
+            "what_we_source": "Consultation with certified behaviourist.",
+            "selection_rules": [
+                "Board-certified preferred",
+                "Experience with issue type",
+                "Video consult option",
+                "Follow-up support included"
+            ],
+            "safety_note": "Rule out medical causes first.",
+            "questions": ["Behaviour concern?", "How long ongoing?"]
+        },
+        {
+            "name": "Vet question prep list",
+            "icon": "list-checks",
+            "gradient": ["#10B981", "#34D399"],
+            "spec_chip": "Comprehensive",
+            "why_it_fits": "Never forget to ask important questions at the vet.",
+            "what_we_source": "Custom question list based on {pet}'s symptoms.",
+            "selection_rules": [
+                "Symptom-specific questions",
+                "Treatment options to ask about",
+                "Follow-up care questions",
+                "Cost/timeline questions"
+            ],
+            "safety_note": "Write down vet's answers during visit.",
+            "questions": ["Upcoming vet visit reason?", "Main concerns?"]
+        },
+        {
+            "name": "Health tracking setup",
+            "icon": "activity",
+            "gradient": ["#EF4444", "#F87171"],
+            "spec_chip": "Pattern spotting",
+            "why_it_fits": "Track {pet}'s symptoms to spot patterns over time.",
+            "what_we_source": "Tracking templates for stool, itch, appetite, etc.",
+            "selection_rules": [
+                "Easy daily logging",
+                "Photo documentation option",
+                "Pattern analysis guidance",
+                "Vet-shareable format"
+            ],
+            "safety_note": "Consistent tracking reveals trends.",
+            "questions": ["What to track?", "Format preference?"]
+        },
     ],
     "paperwork": [
-        {"name": "Vaccination vault setup", "icon": "shield-check", "gradient": ["#64748B", "#94A3B8"], "specs": ["Digital storage", "Reminders set"]},
-        {"name": "Microchip registration", "icon": "cpu", "gradient": ["#3B82F6", "#60A5FA"], "specs": ["Contact updated", "Verified"]},
-        {"name": "Travel docs coordination", "icon": "file-text", "gradient": ["#06B6D4", "#22D3EE"], "specs": ["Airline forms", "Health certs"]},
-        {"name": "Insurance onboarding", "icon": "umbrella", "gradient": ["#10B981", "#34D399"], "specs": ["Plan comparison", "Claim help"]},
-        {"name": "Emergency contact card", "icon": "id-card", "gradient": ["#EF4444", "#F87171"], "specs": ["For collar/tag", "Printable"]},
+        {
+            "name": "Vaccination vault setup",
+            "icon": "shield-check",
+            "gradient": ["#64748B", "#94A3B8"],
+            "spec_chip": "Digital storage",
+            "why_it_fits": "All of {pet}'s vaccine records in one secure place.",
+            "what_we_source": "Digital vault setup with reminder system.",
+            "selection_rules": [
+                "Secure cloud storage",
+                "Easy vet sharing",
+                "Automatic reminders",
+                "Backup copies created"
+            ],
+            "safety_note": "Keep physical copies as backup.",
+            "questions": ["Current record format?", "Due dates known?"]
+        },
+        {
+            "name": "Microchip registration",
+            "icon": "cpu",
+            "gradient": ["#3B82F6", "#60A5FA"],
+            "spec_chip": "Contact updated",
+            "why_it_fits": "Ensure {pet} can be returned if ever lost.",
+            "what_we_source": "Registration completion and contact update.",
+            "selection_rules": [
+                "Chip number verified",
+                "All contact details updated",
+                "Backup contact added",
+                "Confirmation received"
+            ],
+            "safety_note": "Update after any move or phone change.",
+            "questions": ["Chip number?", "Current registration status?"]
+        },
+        {
+            "name": "Travel docs coordination",
+            "icon": "file-text",
+            "gradient": ["#06B6D4", "#22D3EE"],
+            "spec_chip": "Deadline tracked",
+            "why_it_fits": "All the paperwork sorted for stress-free travel with {pet}.",
+            "what_we_source": "Health certificates and airline forms completed.",
+            "selection_rules": [
+                "Destination requirements checked",
+                "Vet appointment scheduled",
+                "Forms pre-filled where possible",
+                "Timeline provided"
+            ],
+            "safety_note": "Health certificates have expiry dates.",
+            "questions": ["Destination?", "Travel date?"]
+        },
+        {
+            "name": "Insurance onboarding",
+            "icon": "umbrella",
+            "gradient": ["#10B981", "#34D399"],
+            "spec_chip": "Plan comparison",
+            "why_it_fits": "Find the right coverage for {pet}'s needs and your budget.",
+            "what_we_source": "Plan comparison and application support.",
+            "selection_rules": [
+                "Coverage comparison chart",
+                "Pre-existing conditions noted",
+                "Claim process explained",
+                "Best value identified"
+            ],
+            "safety_note": "Enrol early—pre-existing conditions excluded.",
+            "questions": ["Budget range?", "Coverage priorities?"]
+        },
+        {
+            "name": "Emergency contact card",
+            "icon": "id-card",
+            "gradient": ["#EF4444", "#F87171"],
+            "spec_chip": "Printable",
+            "why_it_fits": "Critical info on {pet}'s collar for emergencies.",
+            "what_we_source": "Custom emergency card with key details.",
+            "selection_rules": [
+                "Key health info included",
+                "Multiple contacts listed",
+                "Vet details added",
+                "Weatherproof material"
+            ],
+            "safety_note": "Review and update annually.",
+            "questions": ["Info to include?", "Format preference?"]
+        },
     ],
     "shop": [
-        {"name": "Need-state bundles", "icon": "package", "gradient": ["#EC4899", "#F472B6"], "specs": ["Dental, anxiety kit", "Seasonal"]},
-        {"name": "Subscription planning", "icon": "repeat", "gradient": ["#8B5CF6", "#A78BFA"], "specs": ["Food/treats cadence", "Auto-delivery"]},
-        {"name": "Hard-to-find sourcing", "icon": "search", "gradient": ["#F97316", "#FB923C"], "specs": ["Exact product", "Allergy-safe"]},
-        {"name": "Custom sizing support", "icon": "ruler", "gradient": ["#3B82F6", "#60A5FA"], "specs": ["Harness, collar", "Carrier fit"]},
-        {"name": "Try-3 sampling plan", "icon": "gift", "gradient": ["#10B981", "#34D399"], "specs": ["Treats/toys", "Feedback loop"]},
+        {
+            "name": "Need-state bundles",
+            "icon": "package",
+            "gradient": ["#EC4899", "#F472B6"],
+            "spec_chip": "Curated",
+            "why_it_fits": "Everything {pet} needs for a specific purpose, bundled.",
+            "what_we_source": "Themed product bundle (dental, anxiety, seasonal).",
+            "selection_rules": [
+                "All items work together",
+                "Quality brands only",
+                "Value vs individual purchase",
+                "Size/age appropriate"
+            ],
+            "safety_note": "Check individual product suitability.",
+            "questions": ["Bundle type needed?", "Budget range?"]
+        },
+        {
+            "name": "Subscription planning",
+            "icon": "repeat",
+            "gradient": ["#8B5CF6", "#A78BFA"],
+            "spec_chip": "Auto-delivery",
+            "why_it_fits": "Never run out of {pet}'s essentials again.",
+            "what_we_source": "Subscription setup for food, treats, or supplies.",
+            "selection_rules": [
+                "Delivery frequency optimised",
+                "Pause/cancel flexibility",
+                "Price comparison done",
+                "Quality assured"
+            ],
+            "safety_note": "Monitor for formula changes from brands.",
+            "questions": ["Items to subscribe?", "Delivery frequency?"]
+        },
+        {
+            "name": "Hard-to-find sourcing",
+            "icon": "search",
+            "gradient": ["#F97316", "#FB923C"],
+            "spec_chip": "Special order",
+            "why_it_fits": "We'll find that specific item you can't get locally.",
+            "what_we_source": "Specific product sourced from verified sellers.",
+            "selection_rules": [
+                "Authenticity verified",
+                "Best price found",
+                "Shipping time estimated",
+                "Return policy checked"
+            ],
+            "safety_note": "Beware of counterfeit products.",
+            "questions": ["Exact product name?", "Why hard to find?"]
+        },
+        {
+            "name": "Custom sizing support",
+            "icon": "ruler",
+            "gradient": ["#3B82F6", "#60A5FA"],
+            "spec_chip": "Perfect fit",
+            "why_it_fits": "Get the exact size for harness, collar, or carrier.",
+            "what_we_source": "Measurement guide and size recommendation.",
+            "selection_rules": [
+                "Measurement instructions provided",
+                "Brand-specific sizing checked",
+                "Growth room considered",
+                "Exchange policy noted"
+            ],
+            "safety_note": "Re-measure periodically for growing pups.",
+            "questions": ["Item type?", "{pet}'s measurements?"]
+        },
+        {
+            "name": "Try-3 sampling plan",
+            "icon": "gift",
+            "gradient": ["#10B981", "#34D399"],
+            "spec_chip": "Test before commit",
+            "why_it_fits": "Sample treats or toys before buying full-size.",
+            "what_we_source": "3 sample products with feedback collection.",
+            "selection_rules": [
+                "Variety in selection",
+                "Size appropriate samples",
+                "Feedback form provided",
+                "Full-size ordering easy"
+            ],
+            "safety_note": "Introduce new items one at a time.",
+            "questions": ["Category to sample?", "Any restrictions?"]
+        },
     ],
 }
 
