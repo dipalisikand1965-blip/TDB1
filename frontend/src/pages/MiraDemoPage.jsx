@@ -2220,6 +2220,24 @@ const MiraDemoPage = () => {
       const data = await response.json();
       
       // ═══════════════════════════════════════════════════════════════════
+      // UI ACTION HANDLER - Handle special actions like opening picks vault
+      // ═══════════════════════════════════════════════════════════════════
+      if (data.ui_action?.type === 'open_picks_vault') {
+        console.log('[UI ACTION] 🎁 Opening Picks Vault for:', data.ui_action.pet_name);
+        
+        // Add Mira's response to chat
+        setConversationHistory(prev => [
+          ...prev,
+          { type: 'mira', content: data.response?.message || 'Here are your personalized picks!' }
+        ]);
+        
+        // Open the unified picks vault
+        setShowUnifiedVault(true);
+        setIsLoading(false);
+        return; // Exit early - vault will handle the rest
+      }
+      
+      // ═══════════════════════════════════════════════════════════════════
       // REAL-TIME SOUL SCORE UPDATE - The Pet Soul grows with every conversation!
       // Triggers glow animation when score increases
       // ═══════════════════════════════════════════════════════════════════
