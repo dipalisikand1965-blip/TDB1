@@ -218,6 +218,8 @@ const MiraDemoPage = () => {
   const [showSoulFormModal, setShowSoulFormModal] = useState(false);
   // TOP PICKS PANEL: Personalized picks across all pillars
   const [showTopPicksPanel, setShowTopPicksPanel] = useState(false);
+  // UNIFIED PICKS VAULT: Replaces the old vault with tabbed interface
+  const [showUnifiedVault, setShowUnifiedVault] = useState(false);
   
   // Core conversation state
   const [query, setQuery] = useState('');
