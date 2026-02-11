@@ -33,6 +33,7 @@ import hapticFeedback from '../utils/haptic';
 import { correctSpelling } from '../utils/spellCorrect';
 import conversationIntelligence from '../utils/conversationIntelligence';
 import notificationSounds from '../utils/notificationSounds';
+import { ProductDetailModal } from '../components/ProductCard';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // VAULT SYSTEM - "Mira is the Brain, Concierge® is the Hands"
