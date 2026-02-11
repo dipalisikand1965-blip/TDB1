@@ -3547,64 +3547,66 @@ const MiraDemoPage = () => {
         />
       )}
       
-      {/* HEADER */}
-      <header className="mp-header">
-        <div className="mp-header-inner">
-          {/* Left: Mira Logo - Pink circle */}
-          <div className="mp-logo">
-            <div className="mp-logo-icon">
-              <Sparkles />
-            </div>
-            <div className="mp-logo-text">
-              <span className="mp-logo-title">Mira</span>
-              <span className="mp-logo-subtitle">Your Pet Companion</span>
-            </div>
-          </div>
-          
-          {/* Right side: Notification Bell + Pet Selector */}
-          <div className="flex items-center gap-2">
-            {/* Notification Bell */}
-            <NotificationBell userEmail={user?.email} />
-            
-            {/* Pet Selector - Extracted to PetSelector component */}
-            <PetSelector
-              currentPet={pet}
-              allPets={allPets}
-              isOpen={showPetSelector}
-              onToggle={() => setShowPetSelector(!showPetSelector)}
-              onSelectPet={switchPet}
-            />
-          </div>
-        </div>
-      </header>
-      
-      {/* NAVIGATION DOCK - Extracted to NavigationDock component */}
-      <NavigationDock
-        inputRef={inputRef}
-        onShowHelp={() => setShowHelpModal(true)}
-        onShowLearn={() => { 
+      {/* UNIFIED TOP BAR - Consolidates all actions */}
+      <MiraTopBar
+        pet={pet}
+        soulScore={pet?.soulScore || 0}
+        userCity={userCity}
+        userName={user?.name}
+        userEmail={user?.email}
+        isLoggedIn={!!user}
+        onOpenPicks={() => setShowTopPicksPanel(true)}
+        onOpenPastChats={() => { loadPastChats(); setShowPastChats(true); }}
+        onOpenInsights={() => setShowInsightsPanel(!showInsightsPanel)}
+        onRefreshChat={startNewSession}
+        onOpenSoul={() => setShowSoulFormModal(true)}
+        onOpenLearn={() => { 
           setShowLearnModal(true); 
           fetchLearnVideos('recommended');
-          // Clear the notification when Learn is opened
           setHasNewVideos(false);
           setNewVideosCount(0);
         }}
-        onShowSoul={() => setShowSoulFormModal(true)}
+        reminders={[
+          ...(proactiveAlerts.smartAlerts || []),
+          ...(proactiveAlerts.celebrations || []).map(c => ({
+            id: `celebration-${c.id || c.event}`,
+            title: c.event || 'Celebration',
+            message: c.message || `${c.event} coming up!`,
+            days_until: c.days_until,
+            type: 'celebration'
+          })),
+          ...(proactiveAlerts.healthReminders || []).map(r => ({
+            id: `health-${r.id || r.name}`,
+            title: r.title || r.name || 'Health Reminder',
+            message: r.message || `${r.name} needs attention`,
+            days_until: r.days_until,
+            type: 'health',
+            priority: r.needs_attention ? 'urgent' : 'normal'
+          }))
+        ]}
+        onDismissReminder={(id) => {
+          // Handle reminder dismissal
+          setProactiveAlerts(prev => ({
+            ...prev,
+            smartAlerts: (prev.smartAlerts || []).filter(a => a.id !== id),
+            celebrations: (prev.celebrations || []).filter(c => `celebration-${c.id || c.event}` !== id),
+            healthReminders: (prev.healthReminders || []).filter(r => `health-${r.id || r.name}` !== id)
+          }));
+        }}
         hasNewVideos={hasNewVideos}
         newVideosCount={newVideosCount}
       />
       
-      {/* FLOATING ACTION BAR - Extracted to FloatingActionBar component */}
-      <FloatingActionBar
-        isVisible={conversationHistory.length > 0}
-        showPastChats={showPastChats}
-        showInsights={showInsightsPanel}
-        showConcierge={showConciergePanel}
-        onPastChatsClick={() => { loadPastChats(); setShowPastChats(true); }}
-        onInsightsClick={() => setShowInsightsPanel(!showInsightsPanel)}
-        onConciergeClick={() => setShowConciergePanel(!showConciergePanel)}
-        onNewChatClick={startNewSession}
-      />
+      {/* PET SELECTOR - Now below top bar for switching pets */}
+      <div className="px-4 py-2 border-b border-white/5">
+        <PetSelector
+          currentPet={pet}
+          allPets={allPets}
+          isOpen={showPetSelector}
+          onToggle={() => setShowPetSelector(!showPetSelector)}
+          onSelectPet={switchPet}
+        />
+      </div>
       
       {/* INSIGHTS PANEL - Lazy loaded */}
       {showInsightsPanel && (
