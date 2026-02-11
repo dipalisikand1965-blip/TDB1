@@ -562,7 +562,8 @@ const PersonalizedPicksPanel = ({
   onClose,
   pet,
   token,
-  onSendSuccess // Callback when picks are sent successfully
+  onSendSuccess, // Callback when picks are sent successfully
+  onShowConfirmCard // NEW: Callback to show confirmation card in chat
 }) => {
   const [activePillar, setActivePillar] = useState('celebrate');
   const [picksData, setPicksData] = useState(null);
