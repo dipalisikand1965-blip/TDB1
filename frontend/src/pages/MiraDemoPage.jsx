@@ -179,6 +179,7 @@ const MiraDemoPage = () => {
     scheduleVoice,
     isListening,
     voiceError,
+    setVoiceError,
     voiceSupported,
     toggleListening,
     audioRef
