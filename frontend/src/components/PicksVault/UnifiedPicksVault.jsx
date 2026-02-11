@@ -10,6 +10,9 @@
  * - Smart badges (Trending, New, Reorder, Birthday Soon)
  * - Seasonal boosts (Diwali, Christmas, Monsoon, etc.)
  * - Haptic feedback on interactions
+ * - Category/Pillar picker for filtering
+ * - Individual item selection with checkboxes
+ * - No prices shown for Concierge Suggestion cards
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
@@ -17,7 +20,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   X, Gift, Lightbulb, Sparkles, ChevronRight, Send, Heart,
   ShoppingBag, Calendar, TrendingUp, RefreshCw, Star, Clock,
-  AlertCircle, Check, Info, Flame, Package
+  AlertCircle, Check, Info, Flame, Package, Filter, CheckSquare, Square
 } from 'lucide-react';
 import { API_URL } from '../../utils/api';
 import hapticFeedback from '../../utils/haptic';
@@ -59,8 +62,8 @@ const isPetBirthdayNear = (pet) => {
   return daysUntil >= -7 && daysUntil <= 14; // 1 week after to 2 weeks before
 };
 
-// Pick Card with Smart Badges
-const PickCard = ({ pick, pet, onAdd, onSendToConcierge }) => {
+// Pick Card with Smart Badges and Selection
+const PickCard = ({ pick, pet, onAdd, onSendToConcierge, isSelected, onToggleSelect, selectable = false }) => {
   const [showInfo, setShowInfo] = useState(false);
   const isConcierge = pick.pick_type === 'concierge';
   const badges = pick.badges || [];
@@ -71,11 +74,31 @@ const PickCard = ({ pick, pet, onAdd, onSendToConcierge }) => {
         isConcierge 
           ? 'bg-gradient-to-br from-purple-50 to-pink-50 border-2 border-dashed border-purple-200' 
           : 'bg-white border border-gray-100'
-      }`}
+      } ${isSelected ? 'ring-2 ring-amber-400' : ''}`}
       whileHover={{ scale: 1.03 }}
       whileTap={{ scale: 0.98 }}
-      onClick={() => hapticFeedback.light()}
+      onClick={() => {
+        hapticFeedback.light();
+        if (selectable) onToggleSelect?.(pick);
+      }}
     >
+      {/* Selection checkbox */}
+      {selectable && (
+        <button
+          className="absolute top-1 left-1 z-20 w-5 h-5 rounded bg-white/90 flex items-center justify-center shadow-sm"
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleSelect?.(pick);
+          }}
+        >
+          {isSelected ? (
+            <CheckSquare className="w-4 h-4 text-amber-500" />
+          ) : (
+            <Square className="w-4 h-4 text-gray-400" />
+          )}
+        </button>
+      )}
+      
       {/* Image */}
       <div className="relative h-24 bg-gray-50">
         {pick.image ? (
@@ -91,7 +114,7 @@ const PickCard = ({ pick, pet, onAdd, onSendToConcierge }) => {
         )}
         
         {/* Smart Badges */}
-        <div className="absolute top-1 left-1 flex flex-wrap gap-1">
+        <div className={`absolute ${selectable ? 'top-7' : 'top-1'} left-1 flex flex-wrap gap-1`}>
           {badges.map((badge, i) => {
             const config = SMART_BADGES[badge];
             if (!config) return null;
@@ -140,30 +163,35 @@ const PickCard = ({ pick, pet, onAdd, onSendToConcierge }) => {
         <h4 className="text-xs font-medium text-gray-900 line-clamp-2 leading-tight mb-1">
           {pick.name}
         </h4>
-        {pick.price ? (
+        {/* NO PRICE for concierge items - they will source and get back with price */}
+        {isConcierge ? (
+          <p className="text-[10px] text-purple-500 italic">Concierge® will source</p>
+        ) : pick.price ? (
           <p className="text-xs font-semibold text-pink-600">₹{pick.price}</p>
         ) : (
-          <p className="text-[10px] text-purple-500 italic">Concierge sourced</p>
+          <p className="text-[10px] text-gray-400">Price on request</p>
         )}
       </div>
       
-      {/* Add button */}
-      <div className="px-2 pb-2">
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            hapticFeedback.medium();
-            isConcierge ? onSendToConcierge?.(pick) : onAdd?.(pick);
-          }}
-          className={`w-full py-1 text-[10px] font-medium rounded-lg flex items-center justify-center gap-1 ${
-            isConcierge 
-              ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white' 
-              : 'bg-yellow-50 text-yellow-700 hover:bg-yellow-100'
-          }`}
-        >
-          {isConcierge ? 'Request' : <><Gift className="w-3 h-3" /> Add</>}
-        </button>
-      </div>
+      {/* Add button - only show if not in selection mode */}
+      {!selectable && (
+        <div className="px-2 pb-2">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              hapticFeedback.medium();
+              isConcierge ? onSendToConcierge?.(pick) : onAdd?.(pick);
+            }}
+            className={`w-full py-1 text-[10px] font-medium rounded-lg flex items-center justify-center gap-1 ${
+              isConcierge 
+                ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white' 
+                : 'bg-yellow-50 text-yellow-700 hover:bg-yellow-100'
+            }`}
+          >
+            {isConcierge ? 'Request' : <><Gift className="w-3 h-3" /> Add</>}
+          </button>
+        </div>
+      )}
     </motion.div>
   );
 };
