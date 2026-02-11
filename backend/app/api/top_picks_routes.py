@@ -331,7 +331,7 @@ async def get_pillar_picks(
     # Always add a Concierge Suggestion Card for service-heavy pillars
     # This gives users the option to request custom sourcing
     service_pillars = ["care", "stay", "travel", "fit", "learn", "advisory", "celebrate"]
-    if pillar in service_pillars and len(picks) < 8:
+    if pillar in service_pillars:
         concierge_card = {
             "id": f"concierge-{pillar}-{pet.get('name', 'pet')}",
             "name": f"Custom {pillar.title()} for {pet.get('name', 'your pet')}",
@@ -340,7 +340,7 @@ async def get_pillar_picks(
             "type": "concierge_suggestion",
             "pick_type": "concierge",
             "why_reason": f"Can't find what you need? Our Concierge® will source the perfect {pillar} solution for {pet.get('name', 'your pet')}",
-            "score": 50,  # Lower score so catalogue items appear first
+            "score": 40,  # Lower score so catalogue items appear first
             "badges": [],
             "specs": [
                 f"Tailored for {pet.get('breed', 'your dog')}",
