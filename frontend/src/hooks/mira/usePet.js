@@ -56,7 +56,7 @@ const transformPetData = (apiPet) => ({
   name: apiPet.name || 'Pet',
   breed: apiPet.breed || apiPet.pet_type || 'Dog',
   age: apiPet.age_display || (apiPet.age ? `${apiPet.age} years` : 'Unknown'),
-  photo: apiPet.photo || apiPet.image || null,
+  photo: apiPet.photo_url ? `${API_URL}${apiPet.photo_url}` : (apiPet.photo || apiPet.image || null),
   sensitivities: apiPet.sensitivities || apiPet.allergies || [],
   traits: apiPet.traits || apiPet.personality_traits || [],
   favorites: apiPet.favorites || [],
