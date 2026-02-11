@@ -287,12 +287,12 @@ const MiraTopBar = ({
                     data-testid={`pet-option-${p.id}`}
                   >
                     <div className="mtb-pet-option-avatar">
-                      {(p.image_url || p.photo_url) ? (
+                      {(p.image_url || p.photo_url || p.photo) ? (
                         <img 
                           src={
-                            (p.image_url || p.photo_url)?.startsWith('http') 
-                              ? (p.image_url || p.photo_url)
-                              : `${API_URL}${p.image_url || p.photo_url}`
+                            (p.image_url || p.photo_url || p.photo)?.startsWith('http') 
+                              ? (p.image_url || p.photo_url || p.photo)
+                              : `${API_URL}${p.image_url || p.photo_url || p.photo}`
                           }
                           alt={p.name}
                           onError={(e) => { e.target.style.display = 'none'; }}
