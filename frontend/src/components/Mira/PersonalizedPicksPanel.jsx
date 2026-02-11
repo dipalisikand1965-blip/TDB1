@@ -543,7 +543,7 @@ const PersonalizedPicksPanel = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm"
+        className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm"
         onClick={() => {
           hapticFeedback.modalClose();
           onClose();
@@ -554,7 +554,7 @@ const PersonalizedPicksPanel = ({
           animate={{ y: 0 }}
           exit={{ y: '100%' }}
           transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-          className="absolute inset-x-0 bottom-0 top-12 bg-gray-900 rounded-t-3xl overflow-hidden"
+          className="absolute inset-x-0 bottom-0 top-0 bg-gray-900 rounded-t-3xl overflow-hidden mt-3"
           onClick={e => e.stopPropagation()}
         >
           {/* Header */}
