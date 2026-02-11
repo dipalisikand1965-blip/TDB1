@@ -74,6 +74,11 @@ const ServiceQuickViewModal = ({
     onAskMira?.(service);
   };
   
+  const handleClose = () => {
+    hapticFeedback.modalClose();
+    onClose();
+  };
+  
   return (
     <AnimatePresence>
       <motion.div
