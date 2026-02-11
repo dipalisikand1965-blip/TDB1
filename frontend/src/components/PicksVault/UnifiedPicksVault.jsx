@@ -1513,91 +1513,101 @@ const UnifiedPicksVault = ({
                     </div>
                   ) : personalizedPicks ? (
                     <div className="space-y-4">
-                      {/* Pull to Refresh Indicator */}
-                      {isRefreshing && (
-                        <div className="flex items-center justify-center py-2">
-                          <RefreshCw className="w-5 h-5 text-amber-500 animate-spin" />
-                          <span className="ml-2 text-xs text-gray-500">Refreshing picks...</span>
+                      {/* Personalization Header - Mira's brain, Concierge's hands */}
+                      <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 border border-purple-100">
+                        <div className="flex items-start gap-3">
+                          <div className="w-10 h-10 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center flex-shrink-0">
+                            <Sparkles className="w-5 h-5 text-white" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-gray-800">
+                              Curated specially for {pet?.name} by Mira
+                            </p>
+                            <p className="text-xs text-gray-600 mt-0.5">
+                              {pet?.breed} • {personalizedPicks.pet?.size || 'Medium'} 
+                              {personalizedPicks.filters_applied?.allergies?.length > 0 && 
+                                ` • Avoiding ${personalizedPicks.filters_applied.allergies.join(', ')}`}
+                            </p>
+                            <p className="text-[11px] text-purple-600 mt-1">
+                              Just pick what you like — Concierge® handles the rest ✨
+                            </p>
+                          </div>
                         </div>
+                      </div>
+                      
+                      {/* Selection Summary Panel - Shows when items are selected */}
+                      {selectedItems.size > 0 && (
+                        <motion.div 
+                          className="bg-amber-50 rounded-xl p-3 border border-amber-200"
+                          initial={{ opacity: 0, y: -10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                        >
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-semibold text-amber-800">
+                              Your selections ({selectedItems.size})
+                            </span>
+                            <button
+                              onClick={clearSelection}
+                              className="text-xs text-amber-600 hover:text-amber-700"
+                            >
+                              Clear all
+                            </button>
+                          </div>
+                          <div className="flex flex-wrap gap-1.5">
+                            {getSelectedPickObjects().slice(0, 5).map((pick, i) => (
+                              <span 
+                                key={i}
+                                className="inline-flex items-center gap-1 px-2 py-1 bg-white rounded-lg text-xs text-gray-700 border border-amber-200"
+                              >
+                                {pick.name?.slice(0, 20)}{pick.name?.length > 20 ? '...' : ''}
+                                <button
+                                  onClick={() => toggleItemSelection(pick)}
+                                  className="text-amber-500 hover:text-amber-700"
+                                >
+                                  <X className="w-3 h-3" />
+                                </button>
+                              </span>
+                            ))}
+                            {selectedItems.size > 5 && (
+                              <span className="px-2 py-1 text-xs text-amber-600">
+                                +{selectedItems.size - 5} more
+                              </span>
+                            )}
+                          </div>
+                        </motion.div>
                       )}
                       
-                      {/* Quick stats */}
-                      <div className="flex gap-2 flex-wrap items-center">
-                        <span className="px-2.5 py-1.5 bg-purple-50 text-purple-600 text-xs rounded-full font-medium">
-                          🐕 {personalizedPicks.pet?.breed}
-                        </span>
-                        <span className="px-2.5 py-1.5 bg-blue-50 text-blue-600 text-xs rounded-full font-medium">
-                          📏 {personalizedPicks.pet?.size}
-                        </span>
-                        {personalizedPicks.filters_applied?.allergies?.length > 0 && (
-                          <span className="px-2.5 py-1.5 bg-red-50 text-red-600 text-xs rounded-full font-medium">
-                            ⚠️ Avoiding: {personalizedPicks.filters_applied.allergies.join(', ')}
-                          </span>
-                        )}
-                        {/* Refresh button */}
-                        <button
-                          onClick={() => fetchPersonalizedPicks(true)}
-                          className="ml-auto px-2 py-1 text-xs text-gray-500 hover:text-gray-700 flex items-center gap-1 touch-manipulation"
-                        >
-                          <RefreshCw className={`w-3 h-3 ${isRefreshing ? 'animate-spin' : ''}`} />
-                          Refresh
-                        </button>
+                      {/* Category/Pillar Picker Tabs */}
+                      <div 
+                        className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 snap-x"
+                        style={{ WebkitOverflowScrolling: 'touch' }}
+                      >
+                        {PILLAR_FILTERS.map((pillar) => (
+                          <button
+                            key={pillar.id}
+                            onClick={() => {
+                              hapticFeedback.buttonTap();
+                              setSelectedPillar(pillar.id);
+                            }}
+                            className={`flex-shrink-0 px-4 py-2.5 rounded-full text-xs font-medium transition-all min-h-[40px] touch-manipulation snap-start ${
+                              selectedPillar === pillar.id
+                                ? 'bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-md'
+                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200 active:bg-gray-300'
+                            }`}
+                          >
+                            <span className="mr-1.5">{pillar.emoji}</span>
+                            {pillar.name}
+                          </button>
+                        ))}
                       </div>
                       
-                      {/* Category/Pillar Picker */}
-                      <div className="bg-gray-50 rounded-xl p-2.5">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Filter className="w-4 h-4 text-gray-500" />
-                          <span className="text-xs font-medium text-gray-600">Filter by category</span>
-                        </div>
-                        <div 
-                          className="flex gap-2 overflow-x-auto pb-1 -mx-1 px-1 snap-x"
-                          style={{ WebkitOverflowScrolling: 'touch' }}
-                        >
-                          {PILLAR_FILTERS.map((pillar) => (
-                            <button
-                              key={pillar.id}
-                              onClick={() => {
-                                hapticFeedback.buttonTap();
-                                setSelectedPillar(pillar.id);
-                              }}
-                              className={`flex-shrink-0 px-3 py-2 rounded-lg text-xs font-medium transition-all min-h-[40px] touch-manipulation snap-start ${
-                                selectedPillar === pillar.id
-                                  ? 'bg-amber-400 text-white shadow-sm'
-                                  : 'bg-white text-gray-600 hover:bg-gray-100 active:bg-gray-200 border border-gray-200'
-                              }`}
-                            >
-                              <span className="mr-1">{pillar.emoji}</span>
-                              {pillar.name}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                      
-                      {/* Selection Mode Toggle */}
-                      <div className="flex items-center justify-between">
-                        <button
-                          onClick={() => {
-                            hapticFeedback.toggle();
-                            setSelectionMode(!selectionMode);
-                            if (selectionMode) clearSelection();
-                          }}
-                          className={`px-3 py-2 rounded-lg text-xs font-medium flex items-center gap-2 transition-all min-h-[40px] touch-manipulation ${
-                            selectionMode
-                              ? 'bg-amber-100 text-amber-700 border border-amber-300'
-                              : 'bg-gray-100 text-gray-600 hover:bg-gray-200 active:bg-gray-300'
-                          }`}
-                        >
-                          {selectionMode ? <CheckSquare className="w-4 h-4" /> : <Square className="w-4 h-4" />}
-                          {selectionMode ? `${selectedItems.size} selected` : 'Select items'}
-                        </button>
-                        
-                        {selectionMode && (
-                          <div className="flex items-center gap-2">
-                            <button
-                              onClick={selectAll}
-                              className="text-xs text-amber-600 font-medium hover:text-amber-700 min-h-[40px] px-2 touch-manipulation"
-                            >
+                      {/* "Anything else?" Custom Request Box */}
+                      <CustomRequestBox 
+                        pet={pet} 
+                        onSubmit={(data) => {
+                          onSendToConcierge?.({ type: 'custom_request', ...data });
+                        }} 
+                      />
                               Select All
                             </button>
                             {selectedItems.size > 0 && (
