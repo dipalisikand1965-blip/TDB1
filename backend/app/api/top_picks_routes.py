@@ -241,7 +241,7 @@ async def get_top_picks(pet_id: str):
     - Pet's health conditions
     """
     global db
-    if not db:
+    if db is None:
         raise HTTPException(status_code=500, detail="Database not initialized")
     
     # Get pet data
