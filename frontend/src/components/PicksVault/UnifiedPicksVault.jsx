@@ -1364,6 +1364,21 @@ const UnifiedPicksVault = ({
           </div>
         </motion.div>
       </motion.div>
+      
+      {/* Concierge Confirmation Modal */}
+      <ConciergeConfirmationModal
+        isOpen={showConfirmation}
+        onClose={() => setShowConfirmation(false)}
+        selectedPicks={getSelectedPickObjects()}
+        pet={pet}
+        onConfirm={(data) => {
+          onSendToConcierge?.(data);
+          clearSelection();
+        }}
+        onEdit={() => {
+          // Keep selection mode active for editing
+        }}
+      />
     </AnimatePresence>
   );
 };
