@@ -241,8 +241,12 @@ const WelcomeHero = ({
             ))}
           </div>
           
-          {/* Personalized Picks Card */}
-          <div className="mira-love-card" onClick={() => handleQuickReply(`Show me personalized picks for ${pet.name}`)}>
+          {/* Personalized Picks Card - Opens Top Picks Panel */}
+          <div 
+            className="mira-love-card" 
+            onClick={() => onShowTopPicks?.() || handleQuickReply(`Show me personalized picks for ${pet.name}`)}
+            data-testid="personalized-picks-btn"
+          >
             <div className="love-card-icon">
               <Sparkles className="w-5 h-5" />
             </div>
