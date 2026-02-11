@@ -269,14 +269,9 @@ const MiraTopBar = ({
         {/* Reminders - Dropdown */}
         <div className="mtb-dropdown-wrap" ref={remindersRef}>
           <button
+            ref={remindersBtnRef}
             className={`mtb-tab ${showReminders ? 'active' : ''} ${urgentCount > 0 ? 'has-urgent' : ''}`}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              hapticFeedback.light();
-              setShowReminders(!showReminders);
-              setShowConcierge(false);
-            }}
+            onClick={openReminders}
             data-testid="reminders-btn"
           >
             <Bell size={16} />
