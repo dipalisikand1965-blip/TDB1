@@ -216,6 +216,8 @@ const MiraDemoPage = () => {
   const [soulScoreUpdated, setSoulScoreUpdated] = useState(false);
   // SOUL FORM MODAL: Quick questions to enrich pet profile
   const [showSoulFormModal, setShowSoulFormModal] = useState(false);
+  // TOP PICKS PANEL: Personalized picks across all pillars
+  const [showTopPicksPanel, setShowTopPicksPanel] = useState(false);
   
   // Core conversation state
   const [query, setQuery] = useState('');
