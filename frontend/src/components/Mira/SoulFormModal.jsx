@@ -318,7 +318,7 @@ const SoulFormModal = ({
         {/* Progress dots */}
         {!isComplete && (
           <div className="flex justify-center gap-2 px-6 pb-4">
-            {QUICK_SOUL_QUESTIONS.map((_, idx) => (
+            {unansweredQuestions.map((_, idx) => (
               <div 
                 key={idx}
                 className={`w-2 h-2 rounded-full transition-all ${
