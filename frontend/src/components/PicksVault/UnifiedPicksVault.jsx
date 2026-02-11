@@ -655,6 +655,177 @@ const PickCard = ({
   );
 };
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// BEAUTIFUL CONCIERGE CARD - Gradient icons, stunning design
+// ═══════════════════════════════════════════════════════════════════════════════
+const ConciergeCard = ({ 
+  pick, 
+  pet, 
+  onSelect, 
+  isSelected, 
+  selectable = false 
+}) => {
+  const IconComponent = ICON_MAP[pick.icon] || Sparkles;
+  const gradient = pick.gradient || ['#8B5CF6', '#EC4899'];
+  
+  return (
+    <motion.div
+      className={`relative flex-shrink-0 w-32 rounded-2xl overflow-hidden ${
+        isSelected ? 'ring-2 ring-amber-400 ring-offset-2' : ''
+      }`}
+      style={{
+        background: `linear-gradient(135deg, ${gradient[0]}15 0%, ${gradient[1]}15 100%)`,
+        border: `1.5px solid ${gradient[0]}30`,
+      }}
+      whileHover={{ scale: 1.05, y: -4 }}
+      whileTap={{ scale: 0.95 }}
+      onClick={() => {
+        hapticFeedback.toggle();
+        if (selectable) onSelect?.(pick);
+      }}
+    >
+      {/* Selection indicator */}
+      {selectable && (
+        <motion.div 
+          className={`absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center z-10 ${
+            isSelected ? 'bg-amber-400' : 'bg-white/80'
+          }`}
+          initial={false}
+          animate={{ scale: isSelected ? 1 : 0.9 }}
+        >
+          {isSelected ? (
+            <Check className="w-4 h-4 text-white" />
+          ) : (
+            <div className="w-3 h-3 rounded-full border-2 border-gray-300" />
+          )}
+        </motion.div>
+      )}
+      
+      {/* Icon with gradient background */}
+      <div className="pt-4 pb-2 flex justify-center">
+        <motion.div
+          className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg"
+          style={{
+            background: `linear-gradient(135deg, ${gradient[0]} 0%, ${gradient[1]} 100%)`,
+          }}
+          whileHover={{ rotate: [0, -5, 5, 0] }}
+          transition={{ duration: 0.3 }}
+        >
+          <IconComponent className="w-7 h-7 text-white" />
+        </motion.div>
+      </div>
+      
+      {/* Content */}
+      <div className="px-2 pb-3 text-center">
+        <h4 className="text-[11px] font-semibold text-gray-800 leading-tight line-clamp-2 mb-1.5">
+          {pick.name}
+        </h4>
+        
+        {/* Specs tags */}
+        <div className="flex flex-wrap justify-center gap-1">
+          {pick.specs?.slice(0, 1).map((spec, i) => (
+            <span 
+              key={i}
+              className="text-[9px] px-1.5 py-0.5 rounded-full font-medium"
+              style={{
+                background: `${gradient[0]}20`,
+                color: gradient[0],
+              }}
+            >
+              {spec}
+            </span>
+          ))}
+        </div>
+      </div>
+      
+      {/* Bottom accent line */}
+      <div 
+        className="h-1 w-full"
+        style={{
+          background: `linear-gradient(90deg, ${gradient[0]} 0%, ${gradient[1]} 100%)`,
+        }}
+      />
+    </motion.div>
+  );
+};
+
+// "Anything Else?" Custom Request Box
+const CustomRequestBox = ({ pet, onSubmit }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [request, setRequest] = useState('');
+  
+  const handleSubmit = () => {
+    if (request.trim()) {
+      hapticFeedback.success();
+      onSubmit({ customRequest: request, pet });
+      setRequest('');
+      setIsExpanded(false);
+    }
+  };
+  
+  return (
+    <motion.div
+      className="mb-4 rounded-2xl overflow-hidden"
+      style={{
+        background: 'linear-gradient(135deg, #F3E8FF 0%, #FCE7F3 50%, #FEF3C7 100%)',
+        border: '1.5px solid rgba(139, 92, 246, 0.2)',
+      }}
+      layout
+    >
+      <button
+        onClick={() => {
+          hapticFeedback.buttonTap();
+          setIsExpanded(!isExpanded);
+        }}
+        className="w-full p-4 flex items-center gap-3 text-left"
+      >
+        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-md">
+          <MessageSquarePlus className="w-5 h-5 text-white" />
+        </div>
+        <div className="flex-1">
+          <h4 className="text-sm font-semibold text-gray-800">Anything else?</h4>
+          <p className="text-xs text-gray-600">Let our Concierge® know what you need</p>
+        </div>
+        <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`} />
+      </button>
+      
+      <AnimatePresence>
+        {isExpanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="px-4 pb-4 overflow-hidden"
+          >
+            <textarea
+              value={request}
+              onChange={(e) => setRequest(e.target.value)}
+              placeholder={`E.g., "I need a dog walker who can handle reactive dogs" or "Looking for a birthday cake with no wheat"`}
+              className="w-full p-3 rounded-xl border border-purple-200 text-sm resize-none h-24 focus:ring-2 focus:ring-purple-300 focus:border-purple-400 outline-none bg-white/80"
+            />
+            <div className="flex gap-2 mt-3">
+              <button
+                onClick={() => setIsExpanded(false)}
+                className="flex-1 py-2.5 bg-white/60 text-gray-600 font-medium rounded-xl text-sm"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSubmit}
+                disabled={!request.trim()}
+                className="flex-1 py-2.5 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium rounded-xl text-sm flex items-center justify-center gap-2 disabled:opacity-50"
+              >
+                <Send className="w-4 h-4" />
+                Send Request
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  );
+};
+
 // Tip Card Component
 const TipCard = ({ tip, onSave }) => (
   <motion.div
