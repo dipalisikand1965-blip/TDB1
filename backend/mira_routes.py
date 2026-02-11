@@ -1766,36 +1766,6 @@ async def search_real_products(
                 {"pet_type": {"$regex": "|".join(search_terms), "$options": "i"}}
             ]
             
-            # If pet_context specifies cat, search ONLY for cat products
-            pet_type_val = (pet_context.get("pet_type") or pet_context.get("type") or "").lower()
-            if pet_type_val == "cat":
-                # For cats, ONLY search cat-specific products
-                cat_filter = {"$or": [
-                    {"pet_type": "cat"},
-                    {"category": {"$regex": "cat", "$options": "i"}},
-                    {"tags": {"$in": ["cat", "kitten", "feline"]}}
-                ]}
-                cat_query = {"$and": [cat_filter, {"$or": query["$or"]}]}
-                cat_cursor = db.products_master.find(cat_query, {"_id": 0}).limit(limit)
-                cat_products = await cat_cursor.to_list(length=limit)
-                logger.info(f"[PRODUCT SEARCH] Cat filter applied - found {len(cat_products)} cat-specific products")
-                if cat_products:
-                    # For cats, return ONLY cat products, don't mix with general
-                    products = []
-                    for p in cat_products[:limit]:
-                        products.append({
-                            "name": p.get("name", "Product"),
-                            "price": p.get("base_price") or p.get("price") or 0,
-                            "image": p.get("images", [None])[0] if p.get("images") else p.get("image"),
-                            "images": p.get("images", []),
-                            "description": p.get("description", ""),
-                            "category": p.get("category", ""),
-                            "pet_type": p.get("pet_type", "cat"),
-                            "why_for_pet": f"Perfect for cats like {pet_context.get('name', 'your cat')}"
-                        })
-                    if products:
-                        return products
-            
             # For birthday context, restrict to cake categories
             if is_birthday_search:
                 query["category"] = {"$in": ["cakes", "breed-cakes", "hampers", "celebration", "mini-cakes"]}
