@@ -276,7 +276,7 @@ const PillarSection = ({ pillar, picks, petName, onAddToPicks, onSendToConcierge
   );
 };
 
-// Main Component
+// Main Component with Keyboard & Haptic Support
 const TopPicksPanel = ({
   isOpen,
   onClose,
@@ -293,6 +293,19 @@ const TopPicksPanel = ({
   const [showPetDropdown, setShowPetDropdown] = useState(false);
   
   const currentPet = selectedPet || pets[0];
+  
+  // Keyboard handler (Escape to close)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && isOpen) {
+        hapticFeedback.modalClose();
+        onClose();
+      }
+    };
+    
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
   
   // Fetch picks for current pet
   const fetchPicks = useCallback(async () => {
@@ -315,9 +328,11 @@ const TopPicksPanel = ({
       
       const data = await response.json();
       setPicksData(data);
+      hapticFeedback.success();
     } catch (err) {
       console.error('[TOP PICKS] Error:', err);
       setError('Unable to load personalized picks. Please try again.');
+      hapticFeedback.error();
     } finally {
       setLoading(false);
     }
@@ -330,8 +345,9 @@ const TopPicksPanel = ({
     }
   }, [isOpen, currentPet, fetchPicks]);
   
-  // Handle pet switch
+  // Handle pet switch with haptic
   const handlePetSwitch = (pet) => {
+    hapticFeedback.medium();
     onPetChange?.(pet);
     setShowPetDropdown(false);
   };
