@@ -401,14 +401,9 @@ const MiraTopBar = ({
         {/* Concierge® - Dropdown */}
         <div className="mtb-dropdown-wrap" ref={conciergeRef}>
           <button
+            ref={conciergeBtnRef}
             className={`mtb-tab mtb-tab-concierge ${showConcierge ? 'active' : ''}`}
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              hapticFeedback.light();
-              setShowConcierge(!showConcierge);
-              setShowReminders(false);
-            }}
+            onClick={openConcierge}
             data-testid="concierge-btn"
           >
             <span className="mtb-concierge-icon">C</span>
@@ -416,9 +411,18 @@ const MiraTopBar = ({
             {showConcierge ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
           </button>
 
-          {/* Concierge Dropdown */}
-          {showConcierge && (
-            <div className="mtb-dropdown mtb-concierge-dropdown" data-testid="concierge-dropdown">
+          {/* Concierge Dropdown - Rendered via Portal */}
+          {showConcierge && createPortal(
+            <div 
+              className="mtb-dropdown mtb-concierge-dropdown" 
+              data-testid="concierge-dropdown"
+              style={{
+                position: 'fixed',
+                top: dropdownPos.top,
+                left: dropdownPos.left,
+                transform: 'translateX(-50%)'
+              }}
+            >
               <div className="mtb-dropdown-header">
                 <span className="mtb-concierge-icon">C</span>
                 <span>Concierge® Help</span>
