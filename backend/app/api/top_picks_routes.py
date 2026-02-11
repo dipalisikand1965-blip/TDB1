@@ -257,6 +257,22 @@ async def get_pillar_picks(
         if life_stage in [t.lower() for t in lifestage_tags]:
             score += 15
         
+        # Seasonal boost
+        season = get_current_season()
+        if season:
+            category = (product.get("category") or "").lower()
+            name = (product.get("name") or "").lower()
+            if any(cat in category or cat in name for cat in season["categories"]):
+                score += season["boost"]
+        
+        # Birthday boost
+        birthday_info = is_pet_birthday_near(pet)
+        if birthday_info and pillar == "celebrate":
+            score += birthday_info["boost"]
+        
+        # Get smart badges
+        badges = get_smart_badges(product, pet, pillar)
+        
         picks.append({
             "id": product.get("id") or product.get("shopify_id"),
             "name": product.get("name"),
@@ -267,10 +283,13 @@ async def get_pillar_picks(
             "why_reason": build_why_reason(product, pet, pillar),
             "score": score,
             "category": product.get("category"),
+            "badges": badges,
+            "created_at": product.get("created_at"),
         })
     
     # Add services
     for service in services:
+        badges = get_smart_badges(service, pet, pillar)
         picks.append({
             "id": service.get("id") or service.get("service_id"),
             "name": service.get("name"),
@@ -281,6 +300,7 @@ async def get_pillar_picks(
             "why_reason": build_why_reason(service, pet, pillar),
             "score": 60,
             "category": service.get("category"),
+            "badges": badges,
         })
     
     # Sort by score and limit
