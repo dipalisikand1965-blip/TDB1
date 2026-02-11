@@ -433,7 +433,7 @@ async def get_top_picks(pet_id: str):
     pillar_picks = {}
     for pillar_info in INCLUDED_PILLARS:
         pillar_id = pillar_info["id"]
-        picks = await get_pillar_picks(db, pillar_id, pet, limit=4)
+        picks = await get_pillar_picks(db, pillar_id, pet, limit=5)  # Include space for concierge card
         
         pillar_picks[pillar_id] = {
             "pillar": pillar_info,
