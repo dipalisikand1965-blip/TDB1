@@ -688,6 +688,15 @@ const PersonalizedPicksPanel = ({
       
       hapticFeedback.success();
       setShowConfirmation(false);
+      
+      // Call success callback with selected items count and pet name
+      onSendSuccess?.({
+        count: selectedItems.length,
+        petName: pet?.name,
+        items: selectedItems,
+        additionalNotes
+      });
+      
       setSelectedItems([]);
       onClose();
     } catch (err) {
