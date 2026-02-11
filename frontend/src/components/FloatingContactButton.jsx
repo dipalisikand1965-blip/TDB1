@@ -110,10 +110,10 @@ const FloatingContactButton = ({ user, isLoggedIn }) => {
 
   return (
     <>
-      {/* Desktop Floating Button */}
+      {/* Desktop Floating Button - Positioned above Mira orb to avoid overlap */}
       <div 
         ref={menuRef}
-        className="fixed bottom-6 right-6 z-50 hidden md:block"
+        className="fixed bottom-28 right-6 z-50 hidden md:block"
         data-testid="floating-contact-btn"
       >
         {/* Expanded Menu */}
