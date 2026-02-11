@@ -229,10 +229,7 @@ async def get_pillar_picks(
 
 
 @router.get("/top-picks/{pet_id}")
-async def get_top_picks(
-    pet_id: str,
-    db: AsyncIOMotorDatabase = Depends(get_database)
-):
+async def get_top_picks(pet_id: str):
     """
     Get personalized top picks for a specific pet across all pillars.
     
@@ -243,6 +240,9 @@ async def get_top_picks(
     - Pet's age/life stage
     - Pet's health conditions
     """
+    global db
+    if not db:
+        raise HTTPException(status_code=500, detail="Database not initialized")
     
     # Get pet data
     pet = await db.pets.find_one({"id": pet_id}, {"_id": 0})
