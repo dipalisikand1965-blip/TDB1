@@ -4168,6 +4168,7 @@ const MiraDemoPage = () => {
             token={token}
             onShowConfirmCard={(items) => {
               // Set pending picks to show confirmation card in chat
+              console.log('[PICKS] Setting pending picks for confirm:', items);
               setPendingPicksForConfirm(items);
             }}
             onSendSuccess={(data) => {
