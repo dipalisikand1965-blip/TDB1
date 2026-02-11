@@ -242,6 +242,20 @@ const TabButton = ({ active, icon: Icon, label, count, onClick }) => (
   </button>
 );
 
+// Pillar filter options (excluding Adopt & Farewell)
+const PILLAR_FILTERS = [
+  { id: 'all', name: 'All', emoji: '✨' },
+  { id: 'celebrate', name: 'Celebrate', emoji: '🎂' },
+  { id: 'dine', name: 'Dine', emoji: '🍽️' },
+  { id: 'care', name: 'Care', emoji: '🛁' },
+  { id: 'stay', name: 'Stay', emoji: '🏨' },
+  { id: 'travel', name: 'Travel', emoji: '✈️' },
+  { id: 'learn', name: 'Learn', emoji: '📚' },
+  { id: 'fit', name: 'Fit', emoji: '🏋️' },
+  { id: 'enjoy', name: 'Enjoy', emoji: '🎉' },
+  { id: 'shop', name: 'Shop', emoji: '🛒' },
+];
+
 // Main Unified Picks Vault Component
 const UnifiedPicksVault = ({
   isOpen,
@@ -263,12 +277,53 @@ const UnifiedPicksVault = ({
   onShowFullTopPicks,
   token,
 }) => {
-  const [activeTab, setActiveTab] = useState('conversation');
+  const [activeTab, setActiveTab] = useState('forPet'); // Default to "For Pet" tab
   const [loading, setLoading] = useState(false);
   const [personalizedPicks, setPersonalizedPicks] = useState(null);
+  const [selectedPillar, setSelectedPillar] = useState('all'); // Category filter
+  const [selectedItems, setSelectedItems] = useState(new Set()); // Individual item selection
+  const [selectionMode, setSelectionMode] = useState(false); // Toggle selection mode
   
   const season = getCurrentSeason();
   const birthdayNear = isPetBirthdayNear(pet);
+  
+  // Toggle item selection
+  const toggleItemSelection = useCallback((pick) => {
+    const pickId = pick.id || pick.name;
+    setSelectedItems(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(pickId)) {
+        newSet.delete(pickId);
+      } else {
+        newSet.add(pickId);
+      }
+      return newSet;
+    });
+  }, []);
+  
+  // Clear selection
+  const clearSelection = useCallback(() => {
+    setSelectedItems(new Set());
+    setSelectionMode(false);
+  }, []);
+  
+  // Get all picks as flat array for selection
+  const getAllPicksFlat = useCallback(() => {
+    if (!personalizedPicks?.pillars) return [];
+    const allPicks = [];
+    Object.values(personalizedPicks.pillars).forEach(pillarData => {
+      if (pillarData.picks) {
+        allPicks.push(...pillarData.picks);
+      }
+    });
+    return allPicks;
+  }, [personalizedPicks]);
+  
+  // Get selected picks objects
+  const getSelectedPickObjects = useCallback(() => {
+    const allPicks = getAllPicksFlat();
+    return allPicks.filter(p => selectedItems.has(p.id || p.name));
+  }, [getAllPicksFlat, selectedItems]);
   
   // Add smart badges to picks
   const enhancePicksWithBadges = useCallback((picks, purchaseHistory = []) => {
