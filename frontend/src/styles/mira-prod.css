@@ -370,7 +370,10 @@
 .mp-messages {
   flex: 1;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: var(--space-lg) var(--space-xl);
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
 }
 
 .mp-messages-inner {
