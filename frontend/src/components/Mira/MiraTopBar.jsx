@@ -1,24 +1,21 @@
 /**
- * MiraTopBar - Unified Top Navigation Bar
- * =======================================
- * Consolidates all quick actions into a clean, unified top bar:
- * - Pet photo + Soul score
- * - Picks (personalized for pet)
- * - Past Chats
- * - Reminders (consolidated)
- * - Insights
- * - Contact (WhatsApp/Email/Call)
- * - Refresh Chat
- * - Dashboard link
- * 
- * Works on desktop (horizontal) and mobile (scrollable/compact)
+ * MiraTopBar - Unified Top Navigation Bar v2
+ * ==========================================
+ * Redesigned based on user feedback:
+ * - Mojo as the central hero with Soul Orb
+ * - Weather + Location in header
+ * - Logical tab order
+ * - Concierge® branding (not "Contact")
+ * - Working Reminders dropdown
+ * - No duplicates
  */
 
 import React, { useState, useRef, useEffect } from 'react';
 import { 
   Gift, History, Bell, Lightbulb, RefreshCw, 
-  LayoutDashboard, MessageCircle, Phone, Mail, X,
-  ChevronDown, ChevronUp, Sparkles, Heart, Play, Calendar
+  LayoutDashboard, Phone, Mail, X,
+  ChevronDown, ChevronUp, Heart, Play,
+  Cloud, Sun, CloudRain, Thermometer
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -39,6 +36,7 @@ const MiraTopBar = ({
   pet,
   soulScore = 0,
   userCity = 'Mumbai',
+  weather = null, // { temp: 26, condition: 'sunny' }
   onOpenPicks,
   onOpenPastChats,
   onOpenInsights,
@@ -56,9 +54,9 @@ const MiraTopBar = ({
 }) => {
   const navigate = useNavigate();
   const [showReminders, setShowReminders] = useState(false);
-  const [showContact, setShowContact] = useState(false);
+  const [showConcierge, setShowConcierge] = useState(false);
   const remindersRef = useRef(null);
-  const contactRef = useRef(null);
+  const conciergeRef = useRef(null);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -66,22 +64,26 @@ const MiraTopBar = ({
       if (remindersRef.current && !remindersRef.current.contains(e.target)) {
         setShowReminders(false);
       }
-      if (contactRef.current && !contactRef.current.contains(e.target)) {
-        setShowContact(false);
+      if (conciergeRef.current && !conciergeRef.current.contains(e.target)) {
+        setShowConcierge(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
   }, []);
 
-  // Contact handlers
+  // Concierge handlers
   const openWhatsApp = () => {
     hapticFeedback.medium();
     const message = encodeURIComponent(
       `Hi! I'm ${userName || 'a member'} and I need assistance for ${pet?.name || 'my pet'}.`
     );
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank');
-    setShowContact(false);
+    setShowConcierge(false);
   };
 
   const openEmail = () => {
@@ -91,67 +93,39 @@ const MiraTopBar = ({
       `Hi Concierge Team,\n\nI need assistance with:\n\n[Please describe your request]\n\nPet: ${pet?.name || 'N/A'}\n\nBest regards,\n${userName || 'Member'}\n${userEmail || ''}`
     );
     window.open(`mailto:${BUSINESS_EMAIL}?subject=${subject}&body=${body}`, '_blank');
-    setShowContact(false);
+    setShowConcierge(false);
   };
 
-  const openPhone = () => {
+  const openChat = () => {
     hapticFeedback.medium();
-    window.open(`tel:+${WHATSAPP_NUMBER}`, '_self');
-    setShowContact(false);
+    // This could open an in-app chat or redirect
+    setShowConcierge(false);
   };
 
   // Count urgent reminders
   const urgentCount = reminders.filter(r => r.days_until < 0 || r.priority === 'urgent').length;
   const totalReminders = reminders.length;
 
+  // Weather icon based on condition
+  const getWeatherIcon = () => {
+    if (!weather) return <Sun size={14} className="text-amber-400" />;
+    const condition = weather.condition?.toLowerCase() || '';
+    if (condition.includes('rain')) return <CloudRain size={14} className="text-blue-400" />;
+    if (condition.includes('cloud')) return <Cloud size={14} className="text-gray-400" />;
+    return <Sun size={14} className="text-amber-400" />;
+  };
+
   return (
-    <div className="mira-top-bar" data-testid="mira-top-bar">
-      {/* Row 1: Pet Photo + Soul Score + Location */}
-      <div className="mtb-pet-row">
-        {/* Pet Avatar with Soul Score Ring */}
-        <div 
-          className="mtb-pet-avatar-wrap"
-          onClick={() => {
-            hapticFeedback.light();
-            onOpenSoul?.();
-          }}
-          data-testid="pet-soul-btn"
-        >
-          <div 
-            className="mtb-pet-avatar"
-            style={{
-              background: `conic-gradient(
-                from 0deg,
-                #f59e0b ${soulScore * 3.6}deg,
-                rgba(255,255,255,0.1) ${soulScore * 3.6}deg
-              )`
-            }}
-          >
-            <div className="mtb-pet-photo">
-              {pet?.image_url || pet?.photo_url ? (
-                <img 
-                  src={pet.image_url || pet.photo_url} 
-                  alt={pet?.name || 'Pet'} 
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <span className="text-lg">{pet?.name?.[0] || '🐕'}</span>
-              )}
-            </div>
-          </div>
-          <div className="mtb-soul-score">
-            <Heart size={10} className="text-amber-400" />
-            <span>{Math.round(soulScore)}%</span>
+    <div className="mira-top-bar-v2" data-testid="mira-top-bar">
+      {/* Row 1: Location + Weather + Dashboard */}
+      <div className="mtb-header-row">
+        <div className="mtb-location-weather">
+          <span className="mtb-city">{userCity}</span>
+          <div className="mtb-weather">
+            {getWeatherIcon()}
+            <span>{weather?.temp || '--'}°C</span>
           </div>
         </div>
-
-        {/* Pet Name + Location */}
-        <div className="mtb-pet-info">
-          <span className="mtb-pet-name">{pet?.name || 'Your Pet'}</span>
-          <span className="mtb-location">{userCity}</span>
-        </div>
-
-        {/* Dashboard Button */}
         <button
           className="mtb-dashboard-btn"
           onClick={() => {
@@ -159,18 +133,79 @@ const MiraTopBar = ({
             navigate('/dashboard');
           }}
           data-testid="dashboard-btn"
-          title={`${pet?.name || 'Pet'}'s Dashboard`}
         >
           <LayoutDashboard size={16} />
-          <span className="hidden sm:inline">Dashboard</span>
+          <span>Dashboard</span>
         </button>
       </div>
 
-      {/* Row 2: Action Buttons */}
+      {/* Row 2: MOJO - The Hero with Soul Orb */}
+      <div className="mtb-hero-row">
+        <div 
+          className="mtb-soul-orb"
+          onClick={() => {
+            hapticFeedback.medium();
+            onOpenSoul?.();
+          }}
+          data-testid="soul-orb"
+        >
+          {/* Animated rings */}
+          <div className="mtb-orb-ring mtb-orb-ring-1" />
+          <div className="mtb-orb-ring mtb-orb-ring-2" />
+          <div className="mtb-orb-ring mtb-orb-ring-3" />
+          
+          {/* Soul score circle */}
+          <svg className="mtb-orb-progress" viewBox="0 0 100 100">
+            <circle
+              className="mtb-orb-bg"
+              cx="50"
+              cy="50"
+              r="45"
+              fill="none"
+              strokeWidth="4"
+            />
+            <circle
+              className="mtb-orb-fill"
+              cx="50"
+              cy="50"
+              r="45"
+              fill="none"
+              strokeWidth="4"
+              strokeDasharray={`${soulScore * 2.83} 283`}
+              strokeLinecap="round"
+              transform="rotate(-90 50 50)"
+            />
+          </svg>
+          
+          {/* Pet photo in center */}
+          <div className="mtb-pet-photo">
+            {pet?.image_url || pet?.photo_url ? (
+              <img 
+                src={pet.image_url || pet.photo_url} 
+                alt={pet?.name || 'Pet'} 
+              />
+            ) : (
+              <span className="mtb-pet-initial">{pet?.name?.[0] || '🐕'}</span>
+            )}
+          </div>
+          
+          {/* Soul score label */}
+          <div className="mtb-soul-label">
+            <Heart size={10} className="text-amber-400" />
+            <span>{Math.round(soulScore)}% Soul</span>
+          </div>
+        </div>
+        
+        {/* Pet name */}
+        <h2 className="mtb-pet-name">{pet?.name || 'Your Pet'}</h2>
+        <p className="mtb-pet-tagline">Mira knows {pet?.name || 'your pet'}</p>
+      </div>
+
+      {/* Row 3: Action Tabs - Logical Order */}
       <div className="mtb-actions-row">
-        {/* Personalized Picks */}
+        {/* Picks - Primary action */}
         <button
-          className="mtb-action-btn mtb-picks-btn"
+          className="mtb-tab mtb-tab-picks"
           onClick={() => {
             hapticFeedback.medium();
             onOpenPicks?.();
@@ -178,29 +213,32 @@ const MiraTopBar = ({
           data-testid="picks-btn"
         >
           <Gift size={16} />
-          <span>{pet?.name ? `${pet.name}'s Picks` : 'Picks'}</span>
+          <span>{pet?.name}'s Picks</span>
         </button>
 
-        {/* Past Chats */}
+        {/* History */}
         <button
-          className="mtb-action-btn"
+          className="mtb-tab"
           onClick={() => {
             hapticFeedback.light();
             onOpenPastChats?.();
           }}
-          data-testid="past-chats-btn"
+          data-testid="history-btn"
         >
           <History size={16} />
           <span>History</span>
         </button>
 
         {/* Reminders - Dropdown */}
-        <div className="relative" ref={remindersRef}>
+        <div className="mtb-dropdown-wrap" ref={remindersRef}>
           <button
-            className={`mtb-action-btn ${showReminders ? 'active' : ''} ${urgentCount > 0 ? 'has-urgent' : ''}`}
-            onClick={() => {
+            className={`mtb-tab ${showReminders ? 'active' : ''} ${urgentCount > 0 ? 'has-urgent' : ''}`}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
               hapticFeedback.light();
               setShowReminders(!showReminders);
+              setShowConcierge(false);
             }}
             data-testid="reminders-btn"
           >
@@ -216,10 +254,17 @@ const MiraTopBar = ({
 
           {/* Reminders Dropdown */}
           {showReminders && (
-            <div className="mtb-dropdown reminders-dropdown" data-testid="reminders-dropdown">
+            <div className="mtb-dropdown" data-testid="reminders-dropdown">
+              <div className="mtb-dropdown-header">
+                <Bell size={16} />
+                <span>Mira's Reminders</span>
+                {urgentCount > 0 && (
+                  <span className="mtb-badge urgent">{urgentCount} urgent</span>
+                )}
+              </div>
               {reminders.length === 0 ? (
                 <div className="mtb-dropdown-empty">
-                  <Bell size={20} className="opacity-40" />
+                  <Bell size={24} className="opacity-40" />
                   <p>No reminders for {pet?.name || 'now'}</p>
                 </div>
               ) : (
@@ -228,20 +273,27 @@ const MiraTopBar = ({
                     <div 
                       key={reminder.id || idx}
                       className={`mtb-reminder-item ${reminder.days_until < 0 ? 'overdue' : ''}`}
+                      onClick={() => {
+                        hapticFeedback.light();
+                        onReminderAction?.(reminder);
+                      }}
                     >
+                      <div className="mtb-reminder-icon">
+                        {reminder.type === 'health' ? '💊' : 
+                         reminder.type === 'celebration' ? '🎂' : 
+                         reminder.type === 'grooming' ? '✂️' : '📋'}
+                      </div>
                       <div className="mtb-reminder-content">
                         <h4>{reminder.title}</h4>
                         <p>{reminder.message}</p>
-                        {reminder.days_until !== undefined && (
-                          <span className="mtb-reminder-time">
-                            {reminder.days_until === 0 
-                              ? 'Today' 
-                              : reminder.days_until < 0 
-                                ? `${Math.abs(reminder.days_until)} days overdue`
-                                : `In ${reminder.days_until} days`
-                            }
-                          </span>
-                        )}
+                        <span className="mtb-reminder-time">
+                          {reminder.days_until === 0 
+                            ? 'Today' 
+                            : reminder.days_until < 0 
+                              ? `${Math.abs(reminder.days_until)} days overdue`
+                              : `In ${reminder.days_until} days`
+                          }
+                        </span>
                       </div>
                       <button
                         className="mtb-reminder-dismiss"
@@ -264,7 +316,7 @@ const MiraTopBar = ({
 
         {/* Insights */}
         <button
-          className="mtb-action-btn"
+          className="mtb-tab"
           onClick={() => {
             hapticFeedback.light();
             onOpenInsights?.();
@@ -275,9 +327,9 @@ const MiraTopBar = ({
           <span>Insights</span>
         </button>
 
-        {/* Soul - Quick Questions */}
+        {/* Soul */}
         <button
-          className="mtb-action-btn"
+          className="mtb-tab"
           onClick={() => {
             hapticFeedback.light();
             onOpenSoul?.();
@@ -288,9 +340,9 @@ const MiraTopBar = ({
           <span>Soul</span>
         </button>
 
-        {/* Learn - Videos */}
+        {/* Learn */}
         <button
-          className={`mtb-action-btn ${hasNewVideos ? 'has-new' : ''}`}
+          className={`mtb-tab ${hasNewVideos ? 'has-new' : ''}`}
           onClick={() => {
             hapticFeedback.light();
             onOpenLearn?.();
@@ -304,177 +356,134 @@ const MiraTopBar = ({
           )}
         </button>
 
-        {/* Contact - Dropdown (replaces Concierge) */}
-        <div className="relative" ref={contactRef}>
+        {/* Concierge® - Dropdown */}
+        <div className="mtb-dropdown-wrap" ref={conciergeRef}>
           <button
-            className={`mtb-action-btn mtb-contact-btn ${showContact ? 'active' : ''}`}
-            onClick={() => {
+            className={`mtb-tab mtb-tab-concierge ${showConcierge ? 'active' : ''}`}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
               hapticFeedback.light();
-              setShowContact(!showContact);
+              setShowConcierge(!showConcierge);
+              setShowReminders(false);
             }}
-            data-testid="contact-btn"
+            data-testid="concierge-btn"
           >
-            <MessageCircle size={16} />
-            <span>Contact</span>
-            {showContact ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
+            <span className="mtb-concierge-icon">C</span>
+            <span>Concierge<sup>®</sup></span>
+            {showConcierge ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
           </button>
 
-          {/* Contact Dropdown */}
-          {showContact && (
-            <div className="mtb-dropdown contact-dropdown" data-testid="contact-dropdown">
-              <button 
-                className="mtb-contact-option whatsapp"
-                onClick={openWhatsApp}
-              >
-                <div className="mtb-contact-icon whatsapp">
-                  <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-                    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                  </svg>
-                </div>
-                <div className="mtb-contact-text">
+          {/* Concierge Dropdown */}
+          {showConcierge && (
+            <div className="mtb-dropdown mtb-concierge-dropdown" data-testid="concierge-dropdown">
+              <div className="mtb-dropdown-header">
+                <span className="mtb-concierge-icon">C</span>
+                <span>Concierge® Help</span>
+              </div>
+              <p className="mtb-concierge-tagline">
+                Your pet Concierge® can help with anything for {pet?.name || 'your pet'}.
+              </p>
+              <div className="mtb-concierge-options">
+                <button 
+                  className="mtb-concierge-option whatsapp"
+                  onClick={openWhatsApp}
+                >
+                  <div className="mtb-option-icon whatsapp">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                    </svg>
+                  </div>
                   <span>WhatsApp</span>
-                  <small>Quick chat with us</small>
-                </div>
-              </button>
-              
-              <button 
-                className="mtb-contact-option email"
-                onClick={openEmail}
-              >
-                <div className="mtb-contact-icon email">
-                  <Mail size={20} />
-                </div>
-                <div className="mtb-contact-text">
+                </button>
+                
+                <button 
+                  className="mtb-concierge-option chat"
+                  onClick={openChat}
+                >
+                  <div className="mtb-option-icon chat">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                  </div>
+                  <span>Chat</span>
+                </button>
+                
+                <button 
+                  className="mtb-concierge-option email"
+                  onClick={openEmail}
+                >
+                  <div className="mtb-option-icon email">
+                    <Mail size={20} />
+                  </div>
                   <span>Email</span>
-                  <small>Send us a message</small>
-                </div>
-              </button>
-              
-              <button 
-                className="mtb-contact-option phone"
-                onClick={openPhone}
-              >
-                <div className="mtb-contact-icon phone">
-                  <Phone size={20} />
-                </div>
-                <div className="mtb-contact-text">
-                  <span>Call</span>
-                  <small>Talk to concierge</small>
-                </div>
-              </button>
+                </button>
+              </div>
             </div>
           )}
         </div>
 
-        {/* Refresh Chat */}
+        {/* New Chat */}
         <button
-          className="mtb-action-btn mtb-refresh-btn"
+          className="mtb-tab mtb-tab-new"
           onClick={() => {
             hapticFeedback.medium();
             onRefreshChat?.();
           }}
-          data-testid="refresh-chat-btn"
-          title="New Chat"
+          data-testid="new-chat-btn"
         >
           <RefreshCw size={16} />
-          <span className="hidden sm:inline">New Chat</span>
+          <span>New Chat</span>
         </button>
       </div>
 
-      {/* Styles */}
       <style>{`
-        .mira-top-bar {
-          padding: 12px 16px;
-          background: rgba(15, 7, 32, 0.95);
+        .mira-top-bar-v2 {
+          background: linear-gradient(180deg, rgba(15, 7, 32, 0.98) 0%, rgba(15, 7, 32, 0.95) 100%);
           backdrop-filter: blur(20px);
-          border-bottom: 1px solid rgba(255,255,255,0.08);
+          border-bottom: 1px solid rgba(255,255,255,0.06);
+          padding: 12px 16px 16px;
           position: sticky;
           top: 0;
           z-index: 40;
         }
 
-        /* Row 1: Pet Info */
-        .mtb-pet-row {
+        /* Row 1: Location + Weather */
+        .mtb-header-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 16px;
+        }
+
+        .mtb-location-weather {
           display: flex;
           align-items: center;
           gap: 12px;
-          margin-bottom: 12px;
-          padding-bottom: 12px;
-          border-bottom: 1px solid rgba(255,255,255,0.06);
         }
 
-        .mtb-pet-avatar-wrap {
-          position: relative;
-          cursor: pointer;
-          transition: transform 0.2s;
-        }
-        .mtb-pet-avatar-wrap:hover {
-          transform: scale(1.05);
-        }
-        .mtb-pet-avatar-wrap:active {
-          transform: scale(0.95);
+        .mtb-city {
+          font-size: 13px;
+          font-weight: 500;
+          color: rgba(255,255,255,0.7);
         }
 
-        .mtb-pet-avatar {
-          width: 48px;
-          height: 48px;
-          border-radius: 50%;
-          padding: 3px;
-          transition: all 0.3s;
-        }
-
-        .mtb-pet-photo {
-          width: 100%;
-          height: 100%;
-          border-radius: 50%;
-          background: linear-gradient(135deg, #1a0f35, #2d1b50);
+        .mtb-weather {
           display: flex;
           align-items: center;
-          justify-content: center;
-          overflow: hidden;
-          color: white;
-          font-weight: 600;
-        }
-
-        .mtb-soul-score {
-          position: absolute;
-          bottom: -4px;
-          left: 50%;
-          transform: translateX(-50%);
-          display: flex;
-          align-items: center;
-          gap: 2px;
-          background: rgba(15, 7, 32, 0.95);
-          padding: 2px 6px;
-          border-radius: 10px;
-          font-size: 10px;
-          font-weight: 600;
-          color: #f59e0b;
-          border: 1px solid rgba(245, 158, 11, 0.3);
-        }
-
-        .mtb-pet-info {
-          flex: 1;
-          display: flex;
-          flex-direction: column;
-        }
-
-        .mtb-pet-name {
-          font-size: 16px;
-          font-weight: 700;
-          color: white;
-        }
-
-        .mtb-location {
+          gap: 4px;
+          padding: 4px 10px;
+          background: rgba(255,255,255,0.05);
+          border-radius: 12px;
           font-size: 12px;
-          color: rgba(255,255,255,0.5);
+          color: rgba(255,255,255,0.8);
         }
 
         .mtb-dashboard-btn {
           display: flex;
           align-items: center;
           gap: 6px;
-          padding: 8px 12px;
+          padding: 8px 14px;
           background: rgba(255,255,255,0.05);
           border: 1px solid rgba(255,255,255,0.1);
           border-radius: 10px;
@@ -492,7 +501,115 @@ const MiraTopBar = ({
           transform: scale(0.95);
         }
 
-        /* Row 2: Actions */
+        /* Row 2: Hero - Pet with Soul Orb */
+        .mtb-hero-row {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          margin-bottom: 20px;
+        }
+
+        .mtb-soul-orb {
+          position: relative;
+          width: 100px;
+          height: 100px;
+          cursor: pointer;
+          margin-bottom: 12px;
+        }
+
+        .mtb-orb-ring {
+          position: absolute;
+          inset: -8px;
+          border-radius: 50%;
+          border: 1px solid rgba(245, 158, 11, 0.2);
+          animation: pulse-ring 3s ease-in-out infinite;
+        }
+        .mtb-orb-ring-1 { animation-delay: 0s; }
+        .mtb-orb-ring-2 { inset: -16px; animation-delay: 1s; opacity: 0.6; }
+        .mtb-orb-ring-3 { inset: -24px; animation-delay: 2s; opacity: 0.3; }
+
+        @keyframes pulse-ring {
+          0%, 100% { transform: scale(1); opacity: 0.3; }
+          50% { transform: scale(1.05); opacity: 0.6; }
+        }
+
+        .mtb-orb-progress {
+          width: 100%;
+          height: 100%;
+          transform: rotate(-90deg);
+        }
+
+        .mtb-orb-bg {
+          stroke: rgba(255,255,255,0.1);
+        }
+
+        .mtb-orb-fill {
+          stroke: url(#soul-gradient);
+          stroke: #f59e0b;
+          filter: drop-shadow(0 0 8px rgba(245, 158, 11, 0.5));
+          transition: stroke-dasharray 0.5s ease;
+        }
+
+        .mtb-pet-photo {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 70px;
+          height: 70px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #1a0f35, #2d1b50);
+          overflow: hidden;
+          border: 2px solid rgba(245, 158, 11, 0.3);
+        }
+        .mtb-pet-photo img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+        .mtb-pet-initial {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 100%;
+          height: 100%;
+          font-size: 28px;
+          font-weight: 700;
+          color: white;
+        }
+
+        .mtb-soul-label {
+          position: absolute;
+          bottom: -8px;
+          left: 50%;
+          transform: translateX(-50%);
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          background: rgba(15, 7, 32, 0.95);
+          padding: 4px 10px;
+          border-radius: 12px;
+          font-size: 11px;
+          font-weight: 600;
+          color: #f59e0b;
+          border: 1px solid rgba(245, 158, 11, 0.3);
+          white-space: nowrap;
+        }
+
+        .mtb-pet-name {
+          font-size: 22px;
+          font-weight: 700;
+          color: white;
+          margin: 0;
+        }
+
+        .mtb-pet-tagline {
+          font-size: 13px;
+          color: rgba(255,255,255,0.5);
+          margin: 4px 0 0;
+        }
+
+        /* Row 3: Action Tabs */
         .mtb-actions-row {
           display: flex;
           align-items: center;
@@ -500,18 +617,17 @@ const MiraTopBar = ({
           overflow-x: auto;
           -webkit-overflow-scrolling: touch;
           scrollbar-width: none;
-          -ms-overflow-style: none;
-          padding-bottom: 4px;
+          padding: 4px 0;
         }
         .mtb-actions-row::-webkit-scrollbar {
           display: none;
         }
 
-        .mtb-action-btn {
+        .mtb-tab {
           display: flex;
           align-items: center;
           gap: 5px;
-          padding: 8px 12px;
+          padding: 10px 14px;
           background: rgba(255,255,255,0.05);
           border: 1px solid rgba(255,255,255,0.08);
           border-radius: 20px;
@@ -523,39 +639,55 @@ const MiraTopBar = ({
           transition: all 0.2s;
           flex-shrink: 0;
         }
-        .mtb-action-btn:hover {
+        .mtb-tab:hover {
           background: rgba(255,255,255,0.1);
           color: white;
           border-color: rgba(255,255,255,0.15);
         }
-        .mtb-action-btn:active {
+        .mtb-tab:active {
           transform: scale(0.95);
         }
-        .mtb-action-btn.active {
+        .mtb-tab.active {
           background: rgba(139, 92, 246, 0.2);
           border-color: rgba(139, 92, 246, 0.4);
           color: #a78bfa;
         }
 
-        /* Picks button - highlighted */
-        .mtb-picks-btn {
+        /* Picks tab - highlighted */
+        .mtb-tab-picks {
           background: linear-gradient(135deg, rgba(233, 30, 154, 0.15), rgba(139, 92, 246, 0.15));
           border-color: rgba(233, 30, 154, 0.3);
           color: #f9a8d4;
         }
-        .mtb-picks-btn:hover {
+        .mtb-tab-picks:hover {
           background: linear-gradient(135deg, rgba(233, 30, 154, 0.25), rgba(139, 92, 246, 0.25));
           border-color: rgba(233, 30, 154, 0.5);
         }
 
-        /* Refresh button */
-        .mtb-refresh-btn {
-          background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(59, 130, 246, 0.15));
-          border-color: rgba(16, 185, 129, 0.3);
+        /* Concierge tab */
+        .mtb-tab-concierge {
+          background: rgba(16, 185, 129, 0.1);
+          border-color: rgba(16, 185, 129, 0.2);
           color: #6ee7b7;
         }
-        .mtb-refresh-btn:hover {
-          background: linear-gradient(135deg, rgba(16, 185, 129, 0.25), rgba(59, 130, 246, 0.25));
+        .mtb-concierge-icon {
+          width: 18px;
+          height: 18px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: linear-gradient(135deg, #10b981, #059669);
+          border-radius: 4px;
+          font-size: 11px;
+          font-weight: 700;
+          color: white;
+        }
+
+        /* New Chat tab */
+        .mtb-tab-new {
+          background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(139, 92, 246, 0.15));
+          border-color: rgba(59, 130, 246, 0.3);
+          color: #93c5fd;
         }
 
         /* Badges */
@@ -580,20 +712,26 @@ const MiraTopBar = ({
           background: linear-gradient(135deg, #f59e0b, #ef4444);
         }
 
-        .mtb-action-btn.has-urgent {
+        .mtb-tab.has-urgent {
           border-color: rgba(239, 68, 68, 0.4);
         }
-        .mtb-action-btn.has-new {
+        .mtb-tab.has-new {
           border-color: rgba(245, 158, 11, 0.4);
+        }
+
+        /* Dropdown wrapper */
+        .mtb-dropdown-wrap {
+          position: relative;
         }
 
         /* Dropdown */
         .mtb-dropdown {
           position: absolute;
           top: 100%;
-          right: 0;
+          left: 50%;
+          transform: translateX(-50%);
           margin-top: 8px;
-          min-width: 280px;
+          min-width: 300px;
           background: rgba(26, 15, 53, 0.98);
           backdrop-filter: blur(20px);
           border: 1px solid rgba(255,255,255,0.1);
@@ -607,12 +745,23 @@ const MiraTopBar = ({
         @keyframes dropdownSlide {
           from {
             opacity: 0;
-            transform: translateY(-10px);
+            transform: translateX(-50%) translateY(-10px);
           }
           to {
             opacity: 1;
-            transform: translateY(0);
+            transform: translateX(-50%) translateY(0);
           }
+        }
+
+        .mtb-dropdown-header {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 14px 16px;
+          border-bottom: 1px solid rgba(255,255,255,0.08);
+          color: white;
+          font-weight: 600;
+          font-size: 14px;
         }
 
         .mtb-dropdown-empty {
@@ -620,7 +769,7 @@ const MiraTopBar = ({
           flex-direction: column;
           align-items: center;
           justify-content: center;
-          padding: 24px;
+          padding: 32px;
           color: rgba(255,255,255,0.5);
           text-align: center;
           gap: 8px;
@@ -628,7 +777,7 @@ const MiraTopBar = ({
 
         /* Reminders List */
         .mtb-reminders-list {
-          max-height: 300px;
+          max-height: 320px;
           overflow-y: auto;
         }
 
@@ -636,8 +785,9 @@ const MiraTopBar = ({
           display: flex;
           align-items: flex-start;
           gap: 12px;
-          padding: 12px 16px;
+          padding: 14px 16px;
           border-bottom: 1px solid rgba(255,255,255,0.06);
+          cursor: pointer;
           transition: background 0.2s;
         }
         .mtb-reminder-item:hover {
@@ -647,23 +797,30 @@ const MiraTopBar = ({
           border-bottom: none;
         }
         .mtb-reminder-item.overdue {
-          background: rgba(239, 68, 68, 0.1);
+          background: rgba(239, 68, 68, 0.08);
           border-left: 3px solid #ef4444;
+        }
+
+        .mtb-reminder-icon {
+          font-size: 20px;
+          flex-shrink: 0;
         }
 
         .mtb-reminder-content {
           flex: 1;
+          min-width: 0;
         }
         .mtb-reminder-content h4 {
           font-size: 13px;
           font-weight: 600;
           color: white;
-          margin-bottom: 2px;
+          margin: 0 0 2px;
         }
         .mtb-reminder-content p {
           font-size: 11px;
           color: rgba(255,255,255,0.6);
           line-height: 1.4;
+          margin: 0;
         }
         .mtb-reminder-time {
           font-size: 10px;
@@ -676,109 +833,108 @@ const MiraTopBar = ({
         }
 
         .mtb-reminder-dismiss {
-          padding: 4px;
+          padding: 6px;
           background: rgba(255,255,255,0.1);
-          border-radius: 6px;
+          border-radius: 8px;
           color: rgba(255,255,255,0.5);
           cursor: pointer;
           transition: all 0.2s;
           flex-shrink: 0;
+          border: none;
         }
         .mtb-reminder-dismiss:hover {
           background: rgba(239, 68, 68, 0.2);
           color: #f87171;
         }
 
-        /* Contact Options */
-        .contact-dropdown {
-          padding: 8px;
+        /* Concierge Dropdown */
+        .mtb-concierge-dropdown {
+          padding-bottom: 16px;
         }
 
-        .mtb-contact-option {
+        .mtb-concierge-tagline {
+          padding: 0 16px 16px;
+          font-size: 13px;
+          color: rgba(255,255,255,0.6);
+          margin: 0;
+        }
+
+        .mtb-concierge-options {
           display: flex;
+          justify-content: center;
+          gap: 16px;
+          padding: 0 16px;
+        }
+
+        .mtb-concierge-option {
+          display: flex;
+          flex-direction: column;
           align-items: center;
-          gap: 12px;
-          width: 100%;
-          padding: 12px;
+          gap: 8px;
+          padding: 16px 24px;
           background: transparent;
           border: none;
-          border-radius: 12px;
           cursor: pointer;
           transition: all 0.2s;
         }
-        .mtb-contact-option:hover {
-          background: rgba(255,255,255,0.05);
+        .mtb-concierge-option:hover {
+          transform: scale(1.05);
         }
-        .mtb-contact-option:active {
-          transform: scale(0.98);
+        .mtb-concierge-option:active {
+          transform: scale(0.95);
+        }
+        .mtb-concierge-option span {
+          font-size: 12px;
+          font-weight: 500;
+          color: rgba(255,255,255,0.8);
         }
 
-        .mtb-contact-icon {
-          width: 40px;
-          height: 40px;
-          border-radius: 12px;
+        .mtb-option-icon {
+          width: 56px;
+          height: 56px;
+          border-radius: 16px;
           display: flex;
           align-items: center;
           justify-content: center;
           color: white;
         }
-        .mtb-contact-icon.whatsapp {
+        .mtb-option-icon svg {
+          width: 24px;
+          height: 24px;
+        }
+        .mtb-option-icon.whatsapp {
           background: linear-gradient(135deg, #25D366, #128C7E);
         }
-        .mtb-contact-icon.email {
-          background: linear-gradient(135deg, #e91e9a, #8b5cf6);
+        .mtb-option-icon.chat {
+          background: linear-gradient(135deg, #8b5cf6, #7c3aed);
         }
-        .mtb-contact-icon.phone {
+        .mtb-option-icon.email {
           background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-        }
-
-        .mtb-contact-text {
-          display: flex;
-          flex-direction: column;
-          align-items: flex-start;
-        }
-        .mtb-contact-text span {
-          font-size: 14px;
-          font-weight: 600;
-          color: white;
-        }
-        .mtb-contact-text small {
-          font-size: 11px;
-          color: rgba(255,255,255,0.5);
         }
 
         /* Mobile responsive */
         @media (max-width: 640px) {
-          .mira-top-bar {
-            padding: 10px 12px;
-          }
-          
-          .mtb-pet-row {
-            margin-bottom: 10px;
-            padding-bottom: 10px;
+          .mira-top-bar-v2 {
+            padding: 10px 12px 14px;
           }
 
-          .mtb-pet-avatar {
-            width: 40px;
-            height: 40px;
+          .mtb-soul-orb {
+            width: 80px;
+            height: 80px;
+          }
+
+          .mtb-pet-photo {
+            width: 56px;
+            height: 56px;
           }
 
           .mtb-pet-name {
-            font-size: 14px;
+            font-size: 18px;
           }
 
-          .mtb-action-btn {
-            padding: 6px 10px;
+          .mtb-tab {
+            padding: 8px 12px;
             font-size: 11px;
-          }
-
-          .mtb-action-btn span {
-            display: none;
-          }
-          
-          .mtb-picks-btn span,
-          .mtb-refresh-btn span {
-            display: inline;
           }
 
           .mtb-dropdown {
@@ -787,6 +943,7 @@ const MiraTopBar = ({
             bottom: 0;
             left: 0;
             right: 0;
+            transform: none;
             margin: 0;
             border-radius: 20px 20px 0 0;
             min-width: 100%;
