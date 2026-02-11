@@ -137,7 +137,7 @@ const ServiceQuickViewModal = ({
           </div>
           
           {/* Content */}
-          <div className={`p-4 sm:p-6 space-y-4 overflow-y-auto max-h-[50vh] ${
+          <div className={`p-4 sm:p-6 space-y-4 overflow-y-auto flex-1 ${
             isDark ? 'text-white' : 'text-gray-900'
           }`}>
             
