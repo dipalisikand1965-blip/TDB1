@@ -1065,8 +1065,9 @@ const MiraDemoPage = () => {
   useEffect(() => {
     const fetchWeather = async () => {
       try {
-        // Priority: pet profile location > geolocation > default
-        const weatherCity = pet?.location?.city || pet?.city || userCity;
+        // Priority: browser geolocation city > pet profile location > default
+        // This ensures we always show weather for user's CURRENT location
+        const weatherCity = userCity || pet?.location?.city || pet?.city || 'Mumbai';
         const response = await fetch(`${API_URL}/api/mira/weather/pet-activity?city=${encodeURIComponent(weatherCity)}`);
         if (response.ok) {
           const data = await response.json();
@@ -1084,7 +1085,7 @@ const MiraDemoPage = () => {
     // Refresh weather every 30 minutes
     const interval = setInterval(fetchWeather, 30 * 60 * 1000);
     return () => clearInterval(interval);
-  }, [pet?.city, pet?.location?.city, userCity]);
+  }, [userCity]); // Only depend on userCity (browser-detected location)
   
   // MULTI-PET: Fetch all user's pets
   useEffect(() => {
