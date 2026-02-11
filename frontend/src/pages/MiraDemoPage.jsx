@@ -3807,41 +3807,6 @@ const MiraDemoPage = () => {
           {conversationHistory.length > 0 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
               
-              {/* PROACTIVE ALERTS BANNER - Smart reminders from Mira */}
-              {proactiveAlerts.smartAlerts && proactiveAlerts.smartAlerts.length > 0 && (
-                <ProactiveAlertsBanner
-                  alerts={proactiveAlerts.smartAlerts}
-                  criticalCount={proactiveAlerts.criticalCount || 0}
-                  maxVisible={2}
-                  onAskMira={(message, alert) => {
-                    // "Ask Mira" - Start a conversation about this reminder
-                    setQuery(message);
-                    setTimeout(() => {
-                      handleSubmit({ preventDefault: () => {} });
-                    }, 100);
-                  }}
-                  onBookNow={(request, alert) => {
-                    // "Book Now" - Send request to Mira who will route to Concierge
-                    // The message format triggers service request detection on backend
-                    const bookingMessage = `I want to book ${request.title}. ${request.details}`;
-                    setQuery(bookingMessage);
-                    setTimeout(() => {
-                      handleSubmit({ preventDefault: () => {} });
-                    }, 100);
-                  }}
-                  onDismiss={async (alertId) => {
-                    try {
-                      await fetch(`${API_URL}/api/mira/proactive/dismiss/${alertId}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ user_email: user?.email })
-                      });
-                    } catch (e) { console.log('Could not dismiss alert'); }
-                  }}
-                  className="mb-4"
-                />
-              )}
-              
               {/* Collapsed Older Messages */}
               {conversationHistory.length > VISIBLE_MESSAGE_COUNT && (
                 <div className="mp-history-toggle" style={{
