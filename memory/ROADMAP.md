@@ -148,7 +148,7 @@
 
 ## Preview URL
 
-https://doggy-picks-panel.preview.emergentagent.com
+https://mira-picks-repair.preview.emergentagent.com
 
 ---
 
