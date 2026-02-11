@@ -455,7 +455,7 @@ sudo supervisorctl status
 tail -20 /var/log/supervisor/frontend.out.log
 
 # 3. Test API
-curl -s https://mira-os-preview-1.preview.emergentagent.com/api/health
+curl -s https://quality-check-27.preview.emergentagent.com/api/health
 
 # 4. View main file
 /app/frontend/src/pages/MiraDemoPage.jsx (3,299 lines)
@@ -629,5 +629,5 @@ curl -s https://mira-os-preview-1.preview.emergentagent.com/api/health
 
 
 **Last Updated**: February 10, 2026
-**Preview URL**: https://mira-os-preview-1.preview.emergentagent.com
+**Preview URL**: https://quality-check-27.preview.emergentagent.com
 **Original File**: 5,789 lines → **Current**: 3,299 lines (**43% reduction**)
