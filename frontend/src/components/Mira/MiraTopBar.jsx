@@ -63,7 +63,7 @@ const MiraTopBar = ({
   const openReminders = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    hapticFeedback.light();
+    hapticFeedback.buttonTap();
     
     if (remindersBtnRef.current) {
       const rect = remindersBtnRef.current.getBoundingClientRect();
@@ -90,7 +90,7 @@ const MiraTopBar = ({
   const openConcierge = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    hapticFeedback.light();
+    hapticFeedback.buttonTap();
     
     if (conciergeBtnRef.current) {
       const rect = conciergeBtnRef.current.getBoundingClientRect();
@@ -135,7 +135,7 @@ const MiraTopBar = ({
 
   // Concierge handlers
   const openWhatsApp = () => {
-    hapticFeedback.medium();
+    hapticFeedback.cardTap();
     const message = encodeURIComponent(
       `Hi! I'm ${userName || 'a member'} and I need assistance for ${pet?.name || 'my pet'}.`
     );
@@ -144,7 +144,7 @@ const MiraTopBar = ({
   };
 
   const openEmail = () => {
-    hapticFeedback.medium();
+    hapticFeedback.cardTap();
     const subject = encodeURIComponent(`Support Request - ${pet?.name || 'Pet Care'}`);
     const body = encodeURIComponent(
       `Hi Concierge Team,\n\nI need assistance with:\n\n[Please describe your request]\n\nPet: ${pet?.name || 'N/A'}\n\nBest regards,\n${userName || 'Member'}\n${userEmail || ''}`
@@ -154,7 +154,7 @@ const MiraTopBar = ({
   };
 
   const openChat = () => {
-    hapticFeedback.medium();
+    hapticFeedback.cardTap();
     // This could open an in-app chat or redirect
     setShowConcierge(false);
   };
@@ -186,7 +186,7 @@ const MiraTopBar = ({
         <button
           className="mtb-dashboard-btn"
           onClick={() => {
-            hapticFeedback.light();
+            hapticFeedback.buttonTap();
             navigate('/dashboard');
           }}
           data-testid="dashboard-btn"
@@ -201,7 +201,7 @@ const MiraTopBar = ({
         <div 
           className="mtb-soul-orb"
           onClick={() => {
-            hapticFeedback.medium();
+            hapticFeedback.cardTap();
             onOpenSoul?.();
           }}
           data-testid="soul-orb"
@@ -275,7 +275,7 @@ const MiraTopBar = ({
             <button
               className="mtb-pet-switch-btn"
               onClick={() => {
-                hapticFeedback.light();
+                hapticFeedback.buttonTap();
                 setShowPetSelector(!showPetSelector);
               }}
               data-testid="pet-selector-btn"
@@ -291,7 +291,7 @@ const MiraTopBar = ({
                     key={p.id}
                     className={`mtb-pet-option ${p.id === pet?.id ? 'active' : ''}`}
                     onClick={() => {
-                      hapticFeedback.medium();
+                      hapticFeedback.cardTap();
                       onSwitchPet?.(p);
                       setShowPetSelector(false);
                     }}
@@ -331,7 +331,7 @@ const MiraTopBar = ({
         <button
           className="mtb-tab mtb-tab-picks"
           onClick={() => {
-            hapticFeedback.medium();
+            hapticFeedback.cardTap();
             onOpenPicks?.();
           }}
           data-testid="picks-btn"
@@ -344,7 +344,7 @@ const MiraTopBar = ({
         <button
           className="mtb-tab"
           onClick={() => {
-            hapticFeedback.light();
+            hapticFeedback.buttonTap();
             onOpenPastChats?.();
           }}
           data-testid="history-btn"
@@ -402,7 +402,7 @@ const MiraTopBar = ({
                       key={reminder.id || idx}
                       className={`mtb-reminder-item ${reminder.days_until < 0 ? 'overdue' : ''}`}
                       onClick={() => {
-                        hapticFeedback.light();
+                        hapticFeedback.buttonTap();
                         onReminderAction?.(reminder);
                       }}
                     >
@@ -427,7 +427,7 @@ const MiraTopBar = ({
                         className="mtb-reminder-dismiss"
                         onClick={(e) => {
                           e.stopPropagation();
-                          hapticFeedback.light();
+                          hapticFeedback.buttonTap();
                           onDismissReminder?.(reminder.id);
                         }}
                         data-testid={`dismiss-reminder-${reminder.id}`}
@@ -447,7 +447,7 @@ const MiraTopBar = ({
         <button
           className="mtb-tab"
           onClick={() => {
-            hapticFeedback.light();
+            hapticFeedback.buttonTap();
             onOpenInsights?.();
           }}
           data-testid="insights-btn"
@@ -460,7 +460,7 @@ const MiraTopBar = ({
         <button
           className="mtb-tab"
           onClick={() => {
-            hapticFeedback.light();
+            hapticFeedback.buttonTap();
             onOpenSoul?.();
           }}
           data-testid="soul-btn"
@@ -473,7 +473,7 @@ const MiraTopBar = ({
         <button
           className={`mtb-tab ${hasNewVideos ? 'has-new' : ''}`}
           onClick={() => {
-            hapticFeedback.light();
+            hapticFeedback.buttonTap();
             onOpenLearn?.();
           }}
           data-testid="learn-btn"
@@ -561,7 +561,7 @@ const MiraTopBar = ({
         <button
           className="mtb-tab mtb-tab-new"
           onClick={() => {
-            hapticFeedback.medium();
+            hapticFeedback.cardTap();
             onRefreshChat?.();
           }}
           data-testid="new-chat-btn"
