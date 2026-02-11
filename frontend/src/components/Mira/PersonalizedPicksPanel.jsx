@@ -73,12 +73,13 @@ const ExpandablePickCard = ({
     return (
       <motion.div
         layout
-        className={`rounded-2xl overflow-hidden bg-gradient-to-br from-pink-50/10 to-purple-50/5 border border-pink-200/20 ${
+        className={`rounded-2xl overflow-visible bg-gradient-to-br from-pink-50/10 to-purple-50/5 border border-pink-200/20 ${
           isSelected ? 'ring-2 ring-pink-500' : ''
         }`}
+        style={{ minHeight: 'auto' }}
       >
         {/* Header with badge and info */}
-        <div className="p-4">
+        <div className="p-4 pb-2">
           <div className="flex items-center justify-between mb-3">
             <span className="px-3 py-1 bg-gradient-to-r from-pink-500 to-purple-500 text-white text-xs font-medium rounded-full">
               {pick.seasonal ? '☆ Seasonal' : 'Concierge Pick'}
