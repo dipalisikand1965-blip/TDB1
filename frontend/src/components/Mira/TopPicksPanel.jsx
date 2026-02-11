@@ -9,16 +9,29 @@
  * - Horizontal scroll within each pillar
  * - Pet switcher at top
  * - Catalogue vs Concierge Suggestion distinction
- * - "Why this pick?" tooltips
+ * - "Why this pick?" enhanced tooltips
+ * - Full haptic feedback
+ * - iOS safe area support
+ * - 44px touch targets
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   X, ChevronRight, ChevronDown, Sparkles, Gift, ShoppingBag,
-  RefreshCw, Info, Heart, Send, Check, AlertCircle
+  RefreshCw, Info, Heart, Send, Check, AlertCircle, Flame, Star
 } from 'lucide-react';
 import { API_URL } from '../../utils/api';
+import hapticFeedback from '../../utils/haptic';
+
+// Smart badge configurations
+const SMART_BADGES = {
+  trending: { icon: Flame, label: 'Trending', color: 'bg-orange-100 text-orange-600' },
+  new: { icon: Sparkles, label: 'New', color: 'bg-blue-100 text-blue-600' },
+  reorder: { icon: RefreshCw, label: 'Reorder', color: 'bg-green-100 text-green-600' },
+  birthday: { icon: Gift, label: 'Birthday!', color: 'bg-pink-100 text-pink-600' },
+  seasonal: { icon: Star, label: 'Seasonal', color: 'bg-purple-100 text-purple-600' },
+};
 
 // Pillar emoji mapping
 const PILLAR_EMOJIS = {
