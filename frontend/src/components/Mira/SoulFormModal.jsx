@@ -153,6 +153,7 @@ const SoulFormModal = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
   const [newScore, setNewScore] = useState(null);
+  const [liveScore, setLiveScore] = useState(pet?.soulScore || pet?.overall_score || 0);
   
   // Dynamically pick 3 unanswered questions
   const unansweredQuestions = useMemo(() => {
