@@ -106,82 +106,169 @@ const PastChatsPanel = ({
     onClose();
   };
   
-  return (
-    <div className="mp-past-chats">
-      <div className="mp-past-chats-header">
-        <h3 className="mp-past-chats-title">Past Chats</h3>
-        <button onClick={handleClose} className="mp-past-chats-close">
-          <X />
-        </button>
-      </div>
+  const panelContent = (
+    <>
+      {/* Backdrop */}
+      <div 
+        style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0, 0, 0, 0.5)',
+          zIndex: 9998
+        }}
+        onClick={handleClose}
+      />
       
-      <div className="mp-past-chats-list">
-        {isLoading ? (
-          <div style={{ padding: '20px', textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>
-            Loading...
-          </div>
-        ) : sessions.length === 0 ? (
-          <div style={{ padding: '20px', textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>
-            No past conversations
-          </div>
-        ) : (
-          sessions.map((session) => {
-            const retentionInfo = getRetentionInfo(session);
-            const isArchived = session.retention_status === 'archived';
-            const isSummarized = session.retention_status === 'compressed' || isArchived;
-            
-            return (
-              <button
-                key={session.session_id}
-                onClick={() => handleSessionClick(session)}
-                className={`mp-session-btn ${session.session_id === currentSessionId ? 'active' : ''} ${retentionInfo?.className || ''}`}
-                data-testid={`session-${session.session_id}`}
-                title={retentionInfo?.tooltip}
-              >
-                <div className="mp-session-meta">
-                  <PawPrint size={14} />
-                  <span className="mp-session-pet">{session.pet_name}</span>
-                  <span className="mp-session-date">{formatSessionDate(session.updated_at)}</span>
-                  {retentionInfo && (
-                    <span className={`mp-retention-badge ${retentionInfo.className}`}>
-                      {retentionInfo.icon}
-                      <span>{retentionInfo.label}</span>
+      {/* Panel */}
+      <div 
+        data-testid="past-chats-panel"
+        style={{
+          position: 'fixed',
+          top: '80px',
+          right: '16px',
+          width: '340px',
+          maxWidth: 'calc(100vw - 32px)',
+          maxHeight: 'calc(100vh - 120px)',
+          background: 'rgba(26, 15, 53, 0.98)',
+          backdropFilter: 'blur(20px)',
+          borderRadius: '16px',
+          border: '1px solid rgba(255, 255, 255, 0.1)',
+          boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
+          overflow: 'hidden',
+          zIndex: 9999,
+          animation: 'slideInRight 0.2s ease-out'
+        }}
+      >
+        {/* Header */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '16px',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.1)'
+        }}>
+          <h3 style={{ fontSize: '16px', fontWeight: 600, color: 'white', margin: 0 }}>
+            Past Chats
+          </h3>
+          <button 
+            onClick={handleClose}
+            style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '8px',
+              border: 'none',
+              background: 'rgba(255, 255, 255, 0.1)',
+              color: 'rgba(255, 255, 255, 0.7)',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+          >
+            <X size={18} />
+          </button>
+        </div>
+        
+        {/* List */}
+        <div style={{ maxHeight: '400px', overflowY: 'auto', padding: '8px' }}>
+          {isLoading ? (
+            <div style={{ padding: '20px', textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>
+              Loading...
+            </div>
+          ) : sessions.length === 0 ? (
+            <div style={{ padding: '20px', textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>
+              No past conversations
+            </div>
+          ) : (
+            sessions.map((session) => {
+              const retentionInfo = getRetentionInfo(session);
+              const isArchived = session.retention_status === 'archived';
+              const isSummarized = session.retention_status === 'compressed' || isArchived;
+              const isActive = session.session_id === currentSessionId;
+              
+              return (
+                <button
+                  key={session.session_id}
+                  onClick={() => handleSessionClick(session)}
+                  data-testid={`session-${session.session_id}`}
+                  title={retentionInfo?.tooltip}
+                  style={{
+                    display: 'block',
+                    width: '100%',
+                    padding: '12px',
+                    border: 'none',
+                    borderRadius: '12px',
+                    background: isActive ? 'rgba(139, 92, 246, 0.2)' : 'transparent',
+                    textAlign: 'left',
+                    cursor: 'pointer',
+                    marginBottom: '4px',
+                    transition: 'background 0.15s'
+                  }}
+                  onMouseEnter={(e) => { if (!isActive) e.target.style.background = 'rgba(139, 92, 246, 0.1)'; }}
+                  onMouseLeave={(e) => { if (!isActive) e.target.style.background = 'transparent'; }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                    <PawPrint size={14} style={{ color: '#a78bfa' }} />
+                    <span style={{ fontSize: '14px', fontWeight: 600, color: 'white' }}>{session.pet_name}</span>
+                    <span style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', marginLeft: 'auto' }}>
+                      {formatSessionDate(session.updated_at)}
                     </span>
-                  )}
-                </div>
-                
-                {/* Show summary for archived/compressed sessions */}
-                {isSummarized && session.summary ? (
-                  <div className="mp-session-summary">
-                    <Clock size={10} />
-                    <p>{session.summary.summary || session.summary.first_message || 'Conversation summarized'}</p>
-                    {session.summary.intents?.length > 0 && (
-                      <div className="mp-session-intents">
-                        {session.summary.intents.slice(0, 3).map((intent, i) => (
-                          <span key={i} className="mp-intent-tag">{intent}</span>
-                        ))}
-                      </div>
-                    )}
-                    {session.message_count && (
-                      <span className="mp-msg-count">{session.message_count} messages</span>
-                    )}
                   </div>
-                ) : (
-                  <p className="mp-session-preview">{session.preview || 'Empty conversation'}</p>
-                )}
-              </button>
-            );
-          })
-        )}
+                  
+                  {isSummarized && session.summary ? (
+                    <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', lineHeight: 1.4 }}>
+                      <p style={{ margin: 0 }}>{session.summary.summary || session.summary.first_message || 'Conversation summarized'}</p>
+                      {session.message_count && (
+                        <span style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)' }}>{session.message_count} messages</span>
+                      )}
+                    </div>
+                  ) : (
+                    <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)', margin: 0, lineHeight: 1.4 }}>
+                      {session.preview || 'Empty conversation'}
+                    </p>
+                  )}
+                </button>
+              );
+            })
+          )}
+        </div>
+        
+        {/* Footer */}
+        <div style={{ padding: '12px 16px', borderTop: '1px solid rgba(255, 255, 255, 0.1)' }}>
+          <button 
+            onClick={handleNewChat}
+            style={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '8px',
+              padding: '12px',
+              background: 'linear-gradient(135deg, #10b981, #059669)',
+              border: 'none',
+              borderRadius: '12px',
+              color: 'white',
+              fontWeight: 600,
+              fontSize: '14px',
+              cursor: 'pointer'
+            }}
+          >
+            <Plus size={18} /> Start New Chat
+          </button>
+        </div>
       </div>
       
-      <div className="mp-past-chats-footer">
-        <button onClick={handleNewChat} className="mp-concierge-btn">
-          <Plus /> Start New Chat
-        </button>
-      </div>
-    </div>
+      <style>{`
+        @keyframes slideInRight {
+          from { opacity: 0; transform: translateX(20px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+      `}</style>
+    </>
   );
+  
+  // Render via portal to ensure it's on top of everything
+  return createPortal(panelContent, document.body);
 };
 
 export default PastChatsPanel;
