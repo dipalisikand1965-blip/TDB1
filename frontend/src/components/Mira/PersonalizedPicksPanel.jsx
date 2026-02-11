@@ -25,6 +25,7 @@ import {
 import { API_URL } from '../../utils/api';
 import hapticFeedback from '../../utils/haptic';
 import ConciergeServiceStrip from './ConciergeServiceStrip';
+import ProductQuickViewModal from './ProductQuickViewModal';
 
 // Pillar configuration with emojis and gradients
 const PILLARS = [
