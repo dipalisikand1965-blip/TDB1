@@ -64,6 +64,9 @@ const ExpandablePickCard = ({
 
   const isConcierge = type === 'concierge';
   
+  // Get the "why" text - different field names for catalogue vs concierge
+  const whyText = pick.why_it_fits || pick.why_reason || pick.why_this_pick;
+  
   return (
     <motion.div
       layout
@@ -102,14 +105,23 @@ const ExpandablePickCard = ({
           
           {/* Content */}
           <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between">
-              <div>
+            <div className="flex items-start justify-between gap-2">
+              <div className="flex-1">
                 <h4 className="font-semibold text-white text-sm leading-tight">
                   {pick.name}
                 </h4>
-                {isConcierge && (
+                
+                {/* Spec chip for concierge */}
+                {isConcierge && pick.spec_chip && (
                   <span className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 bg-purple-500/30 text-purple-300 text-xs rounded-full">
-                    <Star className="w-3 h-3" /> Concierge Service
+                    <Star className="w-3 h-3" /> {pick.spec_chip}
+                  </span>
+                )}
+                
+                {/* Category for catalogue */}
+                {!isConcierge && pick.category && (
+                  <span className="inline-block mt-1 px-2 py-0.5 bg-gray-700/50 text-gray-400 text-xs rounded-full">
+                    {pick.category}
                   </span>
                 )}
               </div>
@@ -117,7 +129,7 @@ const ExpandablePickCard = ({
               {/* Select Button */}
               <button
                 onClick={handleSelect}
-                className={`w-8 h-8 rounded-full flex items-center justify-center transition-all ${
+                className={`w-8 h-8 rounded-full flex items-center justify-center transition-all flex-shrink-0 ${
                   isSelected 
                     ? 'bg-pink-500 text-white' 
                     : 'bg-gray-700/50 text-gray-400 hover:bg-gray-600'
@@ -128,10 +140,10 @@ const ExpandablePickCard = ({
             </div>
             
             {/* Why this pick - always visible */}
-            {pick.why_this_pick && (
+            {whyText && (
               <p className="mt-2 text-xs text-amber-400/90 flex items-start gap-1">
                 <Heart className="w-3 h-3 flex-shrink-0 mt-0.5" />
-                <span>For {petName}: {pick.why_this_pick}</span>
+                <span>{whyText}</span>
               </p>
             )}
           </div>
@@ -156,31 +168,49 @@ const ExpandablePickCard = ({
             exit={{ height: 0, opacity: 0 }}
             className="border-t border-gray-700/50 overflow-hidden"
           >
-            <div className="p-4 space-y-3">
-              {/* Description */}
-              {pick.description && (
-                <p className="text-sm text-gray-300">{pick.description}</p>
+            <div className="p-4 space-y-4">
+              {/* For Concierge: What we source */}
+              {isConcierge && pick.what_we_source && (
+                <div>
+                  <h5 className="text-xs font-semibold text-purple-400 uppercase tracking-wide mb-1">
+                    What We Source
+                  </h5>
+                  <p className="text-sm text-gray-300">{pick.what_we_source}</p>
+                </div>
               )}
               
-              {/* What's included (for concierge) */}
-              {pick.whats_included && (
+              {/* For Concierge: Selection Rules */}
+              {isConcierge && pick.selection_rules && pick.selection_rules.length > 0 && (
                 <div>
                   <h5 className="text-xs font-semibold text-purple-400 uppercase tracking-wide mb-2">
                     What's Included
                   </h5>
                   <ul className="space-y-1">
-                    {pick.whats_included.split(',').map((item, i) => (
+                    {pick.selection_rules.slice(0, 4).map((rule, i) => (
                       <li key={i} className="text-xs text-gray-400 flex items-start gap-2">
                         <Check className="w-3 h-3 text-green-400 flex-shrink-0 mt-0.5" />
-                        {item.trim()}
+                        <span>{rule}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
               )}
               
-              {/* Specs/Details */}
-              {(pick.brand || pick.size || pick.category) && (
+              {/* For Concierge: Safety Note */}
+              {isConcierge && pick.safety_note && (
+                <div className="flex items-start gap-2 p-2 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                  <AlertCircle className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
+                  <p className="text-xs text-amber-300">{pick.safety_note}</p>
+                </div>
+              )}
+              
+              {/* For Catalogue: Description */}
+              {!isConcierge && pick.description && (
+                <p className="text-sm text-gray-300">{pick.description}</p>
+              )}
+              
+              {/* For Catalogue: Product details */}
+              {!isConcierge && (
                 <div className="flex flex-wrap gap-2">
                   {pick.brand && (
                     <span className="px-2 py-1 bg-gray-700/50 text-gray-300 text-xs rounded-lg">
@@ -192,12 +222,19 @@ const ExpandablePickCard = ({
                       {pick.size}
                     </span>
                   )}
-                  {pick.category && (
-                    <span className="px-2 py-1 bg-gray-700/50 text-gray-300 text-xs rounded-lg">
-                      {pick.category}
+                  {pick.badges && pick.badges.length > 0 && pick.badges.map((badge, i) => (
+                    <span key={i} className="px-2 py-1 bg-pink-500/20 text-pink-300 text-xs rounded-lg">
+                      {badge}
                     </span>
-                  )}
+                  ))}
                 </div>
+              )}
+              
+              {/* Handpicked for */}
+              {pick.handpicked_for && (
+                <p className="text-xs text-purple-400 italic">
+                  Handpicked for {pick.handpicked_for}
+                </p>
               )}
             </div>
           </motion.div>
