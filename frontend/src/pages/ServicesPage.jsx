@@ -1035,6 +1035,7 @@ const ServicesPage = () => {
                     pet={selectedPet}
                     index={idx}
                     showWhyPicked={selectedPillar === 'recommended' && selectedPet && service._relevanceScore > 0}
+                    onQuickView={(svc) => setQuickViewService(svc)}
                   />
                 ))}
               </div>
