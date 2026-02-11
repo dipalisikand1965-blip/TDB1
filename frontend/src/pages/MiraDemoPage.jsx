@@ -3747,6 +3747,11 @@ const MiraDemoPage = () => {
           setShowUnifiedVault(false);
           setShowTopPicksPanel(true);
         }}
+        onOpenProductModal={(product) => {
+          // Close vault and open product detail modal
+          setShowUnifiedVault(false);
+          setSelectedProduct(product);
+        }}
       />
       
       {/* TEST SCENARIOS PANEL - Lazy loaded */}
