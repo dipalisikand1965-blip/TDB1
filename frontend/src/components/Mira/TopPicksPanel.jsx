@@ -364,25 +364,29 @@ const TopPicksPanel = ({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        onClick={onClose}
+        onClick={() => {
+          hapticFeedback.modalClose();
+          onClose();
+        }}
       >
         <motion.div
           className="absolute bottom-0 left-0 right-0 max-h-[85vh] bg-white rounded-t-3xl overflow-hidden"
+          style={{ paddingBottom: 'env(safe-area-inset-bottom, 20px)' }}
           initial={{ y: '100%' }}
           animate={{ y: 0 }}
           exit={{ y: '100%' }}
-          transition={{ type: 'spring', damping: 25 }}
+          transition={{ type: 'spring', damping: 25, stiffness: 300 }}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
           <div className="sticky top-0 bg-white z-10 px-4 pt-4 pb-3 border-b border-gray-100">
             {/* Drag handle */}
-            <div className="w-10 h-1 bg-gray-300 rounded-full mx-auto mb-3" />
+            <div className="w-12 h-1.5 bg-gray-300 rounded-full mx-auto mb-3 cursor-grab" />
             
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center">
-                  <Sparkles className="w-5 h-5 text-white" />
+                <div className="w-12 h-12 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center shadow-lg">
+                  <Sparkles className="w-6 h-6 text-white" />
                 </div>
                 <div>
                   <h2 className="text-lg font-bold text-gray-900">
@@ -394,11 +398,15 @@ const TopPicksPanel = ({
                 </div>
               </div>
               
+              {/* Close button - 44px touch target */}
               <button
-                onClick={onClose}
-                className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200"
+                onClick={() => {
+                  hapticFeedback.modalClose();
+                  onClose();
+                }}
+                className="w-11 h-11 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 active:bg-gray-300 touch-manipulation"
               >
-                <X className="w-4 h-4 text-gray-600" />
+                <X className="w-5 h-5 text-gray-600" />
               </button>
             </div>
             
@@ -406,8 +414,11 @@ const TopPicksPanel = ({
             {pets.length > 1 && (
               <div className="mt-3 relative">
                 <button
-                  onClick={() => setShowPetDropdown(!showPetDropdown)}
-                  className="w-full px-3 py-2 bg-gray-50 rounded-lg flex items-center justify-between hover:bg-gray-100"
+                  onClick={() => {
+                    hapticFeedback.light();
+                    setShowPetDropdown(!showPetDropdown);
+                  }}
+                  className="w-full px-3 py-2.5 bg-gray-50 rounded-lg flex items-center justify-between hover:bg-gray-100 active:bg-gray-200 min-h-[44px] touch-manipulation"
                 >
                   <span className="text-sm text-gray-700">
                     Viewing picks for: <strong>{currentPet?.name}</strong>
@@ -425,7 +436,7 @@ const TopPicksPanel = ({
                       <button
                         key={pet.id || pet.name}
                         onClick={() => handlePetSwitch(pet)}
-                        className={`w-full px-4 py-3 text-left hover:bg-gray-50 flex items-center gap-3 ${
+                        className={`w-full px-4 py-3 text-left hover:bg-gray-50 active:bg-gray-100 flex items-center gap-3 min-h-[48px] touch-manipulation ${
                           pet.name === currentPet?.name ? 'bg-pink-50' : ''
                         }`}
                       >
