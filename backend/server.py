@@ -11347,6 +11347,54 @@ async def update_pet_identity_alias(pet_id: str, identity_data: dict, current_us
     return {"message": "Identity updated", "updated_fields": list(update_fields.keys())}
 
 
+@api_router.post("/pet-soul/profile/{pet_id}/answers/bulk")
+async def save_pet_soul_answers_bulk(pet_id: str, answers: dict, current_user: dict = Depends(get_current_user_optional)):
+    """Save multiple Pet Soul answers at once - used by SoulFormModal quick questions"""
+    pet = await db.pets.find_one({"id": pet_id})
+    if not pet:
+        raise HTTPException(status_code=404, detail="Pet not found")
+    
+    if not answers:
+        raise HTTPException(status_code=400, detail="No answers provided")
+    
+    # Get current soul answers or initialize
+    soul_answers = pet.get("doggy_soul_answers", {})
+    
+    # Merge all new answers
+    for question_id, answer in answers.items():
+        if answer is not None and answer != '':
+            soul_answers[question_id] = answer
+    
+    # Recalculate score
+    score_data = calculate_pet_soul_score(soul_answers)
+    new_score = score_data["total_score"]
+    score_tier = score_data["tier"]["key"] if score_data.get("tier") else "newcomer"
+    
+    # Update pet in database
+    await db.pets.update_one(
+        {"id": pet_id},
+        {"$set": {
+            "doggy_soul_answers": soul_answers,
+            "overall_score": new_score,
+            "score_tier": score_tier,
+            "soulScore": new_score,  # Also update soulScore for compatibility
+            "updated_at": get_utc_timestamp()
+        }}
+    )
+    
+    logger.info(f"Bulk soul answers saved for pet {pet_id}: {list(answers.keys())}, new score: {new_score}")
+    
+    return {
+        "message": "All answers saved successfully",
+        "answers_saved": list(answers.keys()),
+        "scores": {
+            "overall": new_score,
+            "tier": score_tier,
+            "answered_count": score_data["answered_count"]
+        }
+    }
+
+
 
 
 @api_router.patch("/pets/{pet_id}/soul-answers")
