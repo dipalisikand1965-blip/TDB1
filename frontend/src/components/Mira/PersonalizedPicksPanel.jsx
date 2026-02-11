@@ -542,6 +542,8 @@ const PersonalizedPicksPanel = ({
   const [error, setError] = useState(null);
   const [selectedItems, setSelectedItems] = useState([]);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [showAllCatalogue, setShowAllCatalogue] = useState(false);
+  const [showAllConcierge, setShowAllConcierge] = useState(false);
   const scrollRef = useRef(null);
   
   // Fetch picks data
