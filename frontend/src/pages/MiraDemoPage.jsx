@@ -37,7 +37,7 @@ import notificationSounds from '../utils/notificationSounds';
 // ═══════════════════════════════════════════════════════════════════════════════
 // VAULT SYSTEM - "Mira is the Brain, Concierge® is the Hands"
 // ═══════════════════════════════════════════════════════════════════════════════
-import { VaultManager } from '../components/PicksVault';
+import { VaultManager, UnifiedPicksVault } from '../components/PicksVault';
 import MiraTray from '../components/Mira/MiraTray';
 import WelcomeHero from '../components/Mira/WelcomeHero';
 import ChatMessage from '../components/Mira/ChatMessage';
