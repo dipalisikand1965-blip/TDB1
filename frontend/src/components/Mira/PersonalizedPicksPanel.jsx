@@ -262,7 +262,7 @@ const MiniCart = ({
     <motion.div
       initial={{ y: 100 }}
       animate={{ y: 0 }}
-      className="fixed bottom-0 left-0 right-0 bg-gray-900 border-t border-purple-500/30 z-50"
+      className="fixed bottom-0 left-0 right-0 bg-gray-900 border-t border-purple-500/30 z-[110]"
       style={{ paddingBottom: 'env(safe-area-inset-bottom, 16px)' }}
     >
       {/* Expanded view */}
