@@ -172,32 +172,12 @@ const ExpandablePickCard = ({
                   <div className="flex items-start gap-2 p-2 bg-amber-500/10 rounded-lg border border-amber-500/20">
                     <AlertCircle className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
                     <p className="text-xs text-amber-300">{pick.safety_note}</p>
-                  </div>
-                )}
+                </div>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
-    );
-  }
-                      ))}
-                    </ul>
-                  </div>
-                )}
-                
-                {/* Safety Note */}
-                {pick.safety_note && (
-                  <div className="flex items-start gap-2 p-2 bg-amber-500/10 rounded-lg border border-amber-500/20">
-                    <AlertCircle className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
-                    <p className="text-xs text-amber-300">{pick.safety_note}</p>
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.div>
     );
   }
   
