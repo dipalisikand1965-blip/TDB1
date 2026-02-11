@@ -3548,7 +3548,7 @@ const MiraDemoPage = () => {
       {/* UNIFIED TOP BAR - Consolidates all actions */}
       <MiraTopBar
         pet={pet}
-        soulScore={pet?.soulScore || pet?.overall_score || 0}
+        soulScore={pet?.soulScore || pet?.overall_score || soulKnowledge?.soulScore || 0}
         userCity={userCity}
         weather={currentWeather?.current_weather ? {
           temp: currentWeather.current_weather.temperature,
