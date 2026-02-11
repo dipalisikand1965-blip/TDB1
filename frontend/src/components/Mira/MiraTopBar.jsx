@@ -110,6 +110,9 @@ const MiraTopBar = ({
       if (conciergeRef.current && !conciergeRef.current.contains(e.target)) {
         setShowConcierge(false);
       }
+      if (petSelectorRef.current && !petSelectorRef.current.contains(e.target)) {
+        setShowPetSelector(false);
+      }
     };
     document.addEventListener('mousedown', handleClickOutside);
     document.addEventListener('touchstart', handleClickOutside);
