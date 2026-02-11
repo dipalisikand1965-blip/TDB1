@@ -280,58 +280,29 @@ const ExpandablePickCard = ({
             className="border-t border-gray-700/50 overflow-hidden"
           >
             <div className="p-4 space-y-4">
-              )}
-              
-              {/* For Concierge: Selection Rules */}
-              {isConcierge && pick.selection_rules && pick.selection_rules.length > 0 && (
-                <div>
-                  <h5 className="text-xs font-semibold text-purple-400 uppercase tracking-wide mb-2">
-                    What's Included
-                  </h5>
-                  <ul className="space-y-1">
-                    {pick.selection_rules.slice(0, 4).map((rule, i) => (
-                      <li key={i} className="text-xs text-gray-400 flex items-start gap-2">
-                        <Check className="w-3 h-3 text-green-400 flex-shrink-0 mt-0.5" />
-                        <span>{rule}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-              
-              {/* For Concierge: Safety Note */}
-              {isConcierge && pick.safety_note && (
-                <div className="flex items-start gap-2 p-2 bg-amber-500/10 rounded-lg border border-amber-500/20">
-                  <AlertCircle className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
-                  <p className="text-xs text-amber-300">{pick.safety_note}</p>
-                </div>
-              )}
-              
-              {/* For Catalogue: Description */}
-              {!isConcierge && pick.description && (
+              {/* Description */}
+              {pick.description && (
                 <p className="text-sm text-gray-300">{pick.description}</p>
               )}
               
-              {/* For Catalogue: Product details */}
-              {!isConcierge && (
-                <div className="flex flex-wrap gap-2">
-                  {pick.brand && (
-                    <span className="px-2 py-1 bg-gray-700/50 text-gray-300 text-xs rounded-lg">
-                      {pick.brand}
-                    </span>
-                  )}
-                  {pick.size && (
-                    <span className="px-2 py-1 bg-gray-700/50 text-gray-300 text-xs rounded-lg">
-                      {pick.size}
-                    </span>
-                  )}
-                  {pick.badges && pick.badges.length > 0 && pick.badges.map((badge, i) => (
-                    <span key={i} className="px-2 py-1 bg-pink-500/20 text-pink-300 text-xs rounded-lg">
-                      {badge}
-                    </span>
-                  ))}
-                </div>
-              )}
+              {/* Product details */}
+              <div className="flex flex-wrap gap-2">
+                {pick.brand && (
+                  <span className="px-2 py-1 bg-gray-700/50 text-gray-300 text-xs rounded-lg">
+                    {pick.brand}
+                  </span>
+                )}
+                {pick.size && (
+                  <span className="px-2 py-1 bg-gray-700/50 text-gray-300 text-xs rounded-lg">
+                    {pick.size}
+                  </span>
+                )}
+                {pick.badges && pick.badges.length > 0 && pick.badges.map((badge, i) => (
+                  <span key={i} className="px-2 py-1 bg-pink-500/20 text-pink-300 text-xs rounded-lg">
+                    {badge}
+                  </span>
+                ))}
+              </div>
               
               {/* Handpicked for */}
               {pick.handpicked_for && (
