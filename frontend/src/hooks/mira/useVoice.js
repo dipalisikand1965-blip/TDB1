@@ -58,8 +58,24 @@ const detectVoicePersonality = (text) => {
  * @returns {Object} Voice state and controls
  */
 const useVoice = ({ onTranscript, onSubmit } = {}) => {
-  // Voice OUTPUT state (TTS)
-  const [voiceEnabled, setVoiceEnabled] = useState(true); // Voice ON by default per MIRA SPEED DOCTRINE
+  // Voice OUTPUT state (TTS) - Load from localStorage for persistence
+  const [voiceEnabled, setVoiceEnabledState] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('mira_voice_enabled');
+      // Default to false (off) for office/quiet environments
+      return saved !== null ? saved === 'true' : false;
+    }
+    return false;
+  });
+  
+  // Wrapper to persist voice preference
+  const setVoiceEnabled = useCallback((enabled) => {
+    setVoiceEnabledState(enabled);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('mira_voice_enabled', String(enabled));
+    }
+  }, []);
+  
   const [isSpeaking, setIsSpeaking] = useState(false);
   const audioRef = useRef(null);
   const voiceTimeoutRef = useRef(null);
