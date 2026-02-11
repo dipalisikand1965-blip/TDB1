@@ -180,25 +180,23 @@ const PickCard = ({ pick, petName, onAddToPicks, onSendToConcierge }) => {
           {pick.name}
         </h4>
         
-        {/* NO PRICE for concierge items - Concierge® will source and get back with price */}
+        {/* Concierge items show "Handpicked for [Pet]" */}
         {isConcierge ? (
-          <p className="text-xs text-purple-600 italic">Concierge® will source</p>
+          <>
+            <p className="text-xs text-purple-600 font-medium">Handpicked for {petName}</p>
+            {pick.why_it_fits && (
+              <p className="text-[10px] text-gray-500 mt-1 line-clamp-2">{pick.why_it_fits}</p>
+            )}
+            {pick.spec_chip && (
+              <span className="inline-block mt-1.5 px-2 py-0.5 text-[9px] font-medium text-purple-600 bg-purple-50 rounded-full border border-purple-200">
+                {pick.spec_chip}
+              </span>
+            )}
+          </>
         ) : pick.price ? (
           <p className="text-sm font-semibold text-pink-600">₹{pick.price}</p>
         ) : (
           <p className="text-xs text-gray-400">Price on request</p>
-        )}
-        
-        {/* Concierge specs */}
-        {isConcierge && pick.specs && (
-          <ul className="mt-1 space-y-0.5">
-            {pick.specs.slice(0, 2).map((spec, i) => (
-              <li key={i} className="text-[10px] text-gray-500 flex items-center gap-1">
-                <Check className="w-2.5 h-2.5 text-purple-400" />
-                {spec}
-              </li>
-            ))}
-          </ul>
         )}
       </div>
       
@@ -212,7 +210,7 @@ const PickCard = ({ pick, petName, onAddToPicks, onSendToConcierge }) => {
             }}
             className="w-full py-2.5 text-xs font-medium text-white bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg hover:opacity-90 active:opacity-80 min-h-[44px] touch-manipulation"
           >
-            Request via Concierge®
+            Request
           </button>
         ) : (
           <button
