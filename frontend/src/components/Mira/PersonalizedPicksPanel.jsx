@@ -130,7 +130,7 @@ const ExpandablePickCard = ({
           {/* Request Button */}
           <button
             onClick={handleSelect}
-            className={`w-full py-3 rounded-xl font-semibold text-sm transition-all ${
+            className={`w-full py-4 rounded-xl font-semibold text-sm transition-all active:scale-95 ${
               isSelected 
                 ? 'bg-green-500 text-white' 
                 : 'bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:opacity-90'
