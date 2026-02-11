@@ -3607,17 +3607,6 @@ const MiraDemoPage = () => {
         newVideosCount={newVideosCount}
       />
       
-      {/* PET SELECTOR - Now below top bar for switching pets */}
-      <div className="px-4 py-2 border-b border-white/5">
-        <PetSelector
-          currentPet={pet}
-          allPets={allPets}
-          isOpen={showPetSelector}
-          onToggle={() => setShowPetSelector(!showPetSelector)}
-          onSelectPet={switchPet}
-        />
-      </div>
-      
       {/* INSIGHTS PANEL - Lazy loaded */}
       {showInsightsPanel && (
         <Suspense fallback={<LazyFallback />}>
