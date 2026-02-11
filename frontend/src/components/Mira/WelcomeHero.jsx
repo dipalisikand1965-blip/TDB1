@@ -203,25 +203,7 @@ const WelcomeHero = ({
             ))}
           </div>
           
-          {/* Personalized Picks Card - Opens Top Picks Panel */}
-          <div 
-            className="mira-love-card" 
-            onClick={() => onShowTopPicks?.() || handleQuickReply(`Show me personalized picks for ${pet.name}`)}
-            data-testid="personalized-picks-btn"
-          >
-            <div className="love-card-icon">
-              <Sparkles className="w-5 h-5" />
-            </div>
-            <div className="love-card-content">
-              <p className="love-card-title">
-                "💕 Personalized picks for {pet.name}"
-              </p>
-              <p className="love-card-subtitle">
-                <Heart className="w-3 h-3" /> Mira knows {pet.name}
-              </p>
-            </div>
-            <Sparkles className="love-card-sparkle" />
-          </div>
+          {/* Personalized Picks Card - REMOVED: Now in MiraTopBar as "Mojo's Picks" tab */}
           
           {/* Health Vault Prompt */}
           {healthVault.completeness < 100 && healthVault.missing_fields.length > 0 && (
