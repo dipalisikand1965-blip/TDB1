@@ -41,6 +41,9 @@ Build and maintain the Mira AI Pet Companion feature for The Doggy Company platf
    - "Anything else? (optional)" text input
    - Cancel and Confirm buttons
 7. ✅ After confirm: Panel closes, success message in chat
+8. ✅ **BUG FIX**: Fixed duplicate/triple message issue by:
+   - Adding `isSending` flag in PersonalizedPicksPanel.jsx to prevent double-submission
+   - Adding deduplication check in onSendSuccess callback (2-second window)
 
 ### Backend
 - ✅ `/api/mira/top-picks/{pet_name}` - Returns 110+ picks across 11 pillars
