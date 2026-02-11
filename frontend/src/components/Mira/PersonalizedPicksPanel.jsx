@@ -663,16 +663,21 @@ const PersonalizedPicksPanel = ({
                 />
               </div>
             ) : (
-              <div className="space-y-6">
-                {/* Catalogue Products */}
+              <div className="space-y-8">
+                {/* ═══════════════════════════════════════════════════ */}
+                {/* FROM OUR CATALOGUE - Products ready to go */}
+                {/* ═══════════════════════════════════════════════════ */}
                 {cataloguePicks.length > 0 && (
-                  <div>
-                    <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-                      <Package className="w-4 h-4" />
-                      From Our Catalogue
-                    </h3>
+                  <CollapsibleSection
+                    title="From Our Catalogue"
+                    subtitle="Ready to fulfill"
+                    icon={<Package className="w-4 h-4" />}
+                    count={cataloguePicks.length}
+                    defaultExpanded={true}
+                    variant="catalogue"
+                  >
                     <div className="space-y-3">
-                      {cataloguePicks.map((pick, index) => (
+                      {cataloguePicks.slice(0, showAllCatalogue ? 10 : 3).map((pick, index) => (
                         <ExpandablePickCard
                           key={pick.id || index}
                           pick={pick}
@@ -682,19 +687,44 @@ const PersonalizedPicksPanel = ({
                           type="catalogue"
                         />
                       ))}
+                      {cataloguePicks.length > 3 && !showAllCatalogue && (
+                        <button
+                          onClick={() => {
+                            hapticFeedback.buttonTap();
+                            setShowAllCatalogue(true);
+                          }}
+                          className="w-full py-2 text-sm text-purple-400 hover:text-purple-300 transition-colors"
+                        >
+                          Show {cataloguePicks.length - 3} more →
+                        </button>
+                      )}
                     </div>
+                  </CollapsibleSection>
+                )}
+                
+                {/* Divider */}
+                {cataloguePicks.length > 0 && conciergePicks.length > 0 && (
+                  <div className="flex items-center gap-4 py-2">
+                    <div className="flex-1 h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent" />
+                    <Sparkles className="w-4 h-4 text-purple-500/50" />
+                    <div className="flex-1 h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent" />
                   </div>
                 )}
                 
-                {/* Concierge Services */}
+                {/* ═══════════════════════════════════════════════════ */}
+                {/* CONCIERGE CURATES - Personalized services */}
+                {/* ═══════════════════════════════════════════════════ */}
                 {conciergePicks.length > 0 && (
-                  <div>
-                    <h3 className="text-sm font-semibold text-purple-400 uppercase tracking-wider mb-3 flex items-center gap-2">
-                      <Star className="w-4 h-4" />
-                      Concierge Services
-                    </h3>
+                  <CollapsibleSection
+                    title={`Concierge Curates for ${pet?.name || 'Your Pet'}`}
+                    subtitle="Personalized services"
+                    icon={<Star className="w-4 h-4" />}
+                    count={conciergePicks.length}
+                    defaultExpanded={true}
+                    variant="concierge"
+                  >
                     <div className="space-y-3">
-                      {conciergePicks.map((pick, index) => (
+                      {conciergePicks.slice(0, showAllConcierge ? 10 : 3).map((pick, index) => (
                         <ExpandablePickCard
                           key={pick.id || index}
                           pick={pick}
@@ -704,8 +734,19 @@ const PersonalizedPicksPanel = ({
                           type="concierge"
                         />
                       ))}
+                      {conciergePicks.length > 3 && !showAllConcierge && (
+                        <button
+                          onClick={() => {
+                            hapticFeedback.buttonTap();
+                            setShowAllConcierge(true);
+                          }}
+                          className="w-full py-2 text-sm text-purple-400 hover:text-purple-300 transition-colors"
+                        >
+                          Show {conciergePicks.length - 3} more →
+                        </button>
+                      )}
                     </div>
-                  </div>
+                  </CollapsibleSection>
                 )}
                 
                 {/* Empty state */}
