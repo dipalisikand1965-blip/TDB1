@@ -66,7 +66,7 @@ const InsightsPanel = lazy(() => import('../components/Mira/InsightsPanel'));
 const ConciergePanel = lazy(() => import('../components/Mira/ConciergePanel'));
 const HelpModal = lazy(() => import('../components/Mira/HelpModal'));
 const LearnModal = lazy(() => import('../components/Mira/LearnModal'));
-const TopPicksPanel = lazy(() => import('../components/Mira/TopPicksPanel'));
+const PersonalizedPicksPanel = lazy(() => import('../components/Mira/PersonalizedPicksPanel'));
 const ServiceRequestModal = lazy(() => import('../components/Mira/ServiceRequestModal'));
 const HealthVaultWizard = lazy(() => import('../components/Mira/HealthVaultWizard'));
 const TestScenariosPanel = lazy(() => import('../components/Mira/TestScenariosPanel'));
