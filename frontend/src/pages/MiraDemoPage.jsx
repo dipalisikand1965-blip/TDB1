@@ -2236,7 +2236,7 @@ const MiraDemoPage = () => {
         
         // Open the personalized picks panel (TopPicksPanel = PersonalizedPicksPanel)
         setShowTopPicksPanel(true);
-        setIsLoading(false);
+        setIsProcessing(false);
         return; // Exit early - panel will handle the rest
       }
       
