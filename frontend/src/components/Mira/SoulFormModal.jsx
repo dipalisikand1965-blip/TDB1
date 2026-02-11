@@ -338,7 +338,7 @@ const SoulFormModal = ({
             <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center">
               <Sparkles className="text-white" size={24} />
             </div>
-            <div>
+            <div className="flex-1">
               <h2 className="text-xl font-bold text-white">
                 {isComplete ? '✨ Soul Updated!' : `Know ${pet.name} Better`}
               </h2>
@@ -349,6 +349,15 @@ const SoulFormModal = ({
                 }
               </p>
             </div>
+            {/* Live Score Display */}
+            {!isComplete && (
+              <div className="text-right">
+                <div className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-yellow-400">
+                  {Math.round(liveScore)}%
+                </div>
+                <div className="text-xs text-white/50">Soul Score</div>
+              </div>
+            )}
           </div>
         </div>
         
