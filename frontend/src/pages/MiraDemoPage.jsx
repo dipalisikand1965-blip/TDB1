@@ -11,9 +11,13 @@
  * - 2x2 product grid tiles
  * - Pet avatar with concentric rings
  * - Soul traits display
+ * 
+ * PERFORMANCE OPTIMIZED:
+ * - Heavy modals are lazy-loaded
+ * - Memoized components where possible
  */
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, lazy, Suspense, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Mic, MicOff, Send, MessageCircle, Package, Calendar, 
@@ -35,17 +39,9 @@ import notificationSounds from '../utils/notificationSounds';
 // ═══════════════════════════════════════════════════════════════════════════════
 import { VaultManager } from '../components/PicksVault';
 import MiraTray from '../components/Mira/MiraTray';
-import PastChatsPanel from '../components/Mira/PastChatsPanel';
 import WelcomeHero from '../components/Mira/WelcomeHero';
 import ChatMessage from '../components/Mira/ChatMessage';
-import InsightsPanel from '../components/Mira/InsightsPanel';
-import ConciergePanel from '../components/Mira/ConciergePanel';
-import HelpModal from '../components/Mira/HelpModal';
-import LearnModal from '../components/Mira/LearnModal';
-import ServiceRequestModal from '../components/Mira/ServiceRequestModal';
-import HealthVaultWizard from '../components/Mira/HealthVaultWizard';
 import ChatInputBar from '../components/Mira/ChatInputBar';
-import TestScenariosPanel from '../components/Mira/TestScenariosPanel';
 import PetSelector from '../components/Mira/PetSelector';
 import NavigationDock from '../components/Mira/NavigationDock';
 import FloatingActionBar from '../components/Mira/FloatingActionBar';
@@ -56,12 +52,28 @@ import NotificationBell from '../components/Mira/NotificationBell';
 import ConciergeConfirmation from '../components/Mira/ConciergeConfirmation';
 import PicksIndicator from '../components/Mira/PicksIndicator';
 import QuickReplies, { generateQuickReplies } from '../components/Mira/QuickReplies';
-import HandoffSummary from '../components/Mira/HandoffSummary';
 import MemoryWhisper from '../components/Mira/MemoryWhisper';
 import SoulKnowledgeTicker from '../components/Mira/SoulKnowledgeTicker';
-import SoulFormModal from '../components/Mira/SoulFormModal';
 import { FormattedText, TypedText } from '../components/Mira/TextComponents';
 import { triggerCelebrationConfetti } from '../utils/confetti';
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// LAZY LOADED COMPONENTS (Performance Optimization)
+// Heavy modals and panels that aren't needed on initial render
+// ═══════════════════════════════════════════════════════════════════════════════
+const PastChatsPanel = lazy(() => import('../components/Mira/PastChatsPanel'));
+const InsightsPanel = lazy(() => import('../components/Mira/InsightsPanel'));
+const ConciergePanel = lazy(() => import('../components/Mira/ConciergePanel'));
+const HelpModal = lazy(() => import('../components/Mira/HelpModal'));
+const LearnModal = lazy(() => import('../components/Mira/LearnModal'));
+const ServiceRequestModal = lazy(() => import('../components/Mira/ServiceRequestModal'));
+const HealthVaultWizard = lazy(() => import('../components/Mira/HealthVaultWizard'));
+const TestScenariosPanel = lazy(() => import('../components/Mira/TestScenariosPanel'));
+const HandoffSummary = lazy(() => import('../components/Mira/HandoffSummary'));
+const SoulFormModal = lazy(() => import('../components/Mira/SoulFormModal'));
+
+// Simple loading fallback for lazy components
+const LazyFallback = () => <div className="p-4 text-center text-gray-400">Loading...</div>;
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // EXTRACTED CONSTANTS & UTILITIES
