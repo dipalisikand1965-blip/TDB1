@@ -75,7 +75,7 @@ const PickCard = ({ pick, petName, onAddToPicks, onSendToConcierge }) => {
       }`}
       whileHover={{ scale: 1.02, y: -2 }}
       whileTap={{ scale: 0.98 }}
-      onClick={() => hapticFeedback.light()}
+      onClick={() => hapticFeedback.buttonTap()}
     >
       {/* Image */}
       <div className="relative h-28 bg-gray-100">
@@ -135,7 +135,7 @@ const PickCard = ({ pick, petName, onAddToPicks, onSendToConcierge }) => {
           className="absolute top-2 right-2 w-11 h-11 rounded-full bg-white/80 flex items-center justify-center hover:bg-white touch-manipulation"
           onClick={(e) => {
             e.stopPropagation();
-            hapticFeedback.light();
+            hapticFeedback.buttonTap();
             setShowTooltip(!showTooltip);
           }}
         >
@@ -207,7 +207,7 @@ const PickCard = ({ pick, petName, onAddToPicks, onSendToConcierge }) => {
         {isConcierge ? (
           <button
             onClick={() => {
-              hapticFeedback.medium();
+              hapticFeedback.toggle();
               onSendToConcierge?.(pick);
             }}
             className="w-full py-2.5 text-xs font-medium text-white bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg hover:opacity-90 active:opacity-80 min-h-[44px] touch-manipulation"
@@ -217,7 +217,7 @@ const PickCard = ({ pick, petName, onAddToPicks, onSendToConcierge }) => {
         ) : (
           <button
             onClick={() => {
-              hapticFeedback.medium();
+              hapticFeedback.toggle();
               onAddToPicks?.(pick);
             }}
             className="w-full py-2.5 text-xs font-medium text-pink-600 bg-pink-50 rounded-lg hover:bg-pink-100 active:bg-pink-200 flex items-center justify-center gap-1 min-h-[44px] touch-manipulation"
@@ -251,7 +251,7 @@ const PillarSection = ({ pillar, picks, petName, onAddToPicks, onSendToConcierge
         </div>
         <button
           onClick={() => {
-            hapticFeedback.light();
+            hapticFeedback.buttonTap();
             onSeeMore?.(pillar.id);
           }}
           className="text-xs text-gray-500 hover:text-gray-700 flex items-center gap-1 min-h-[44px] touch-manipulation"
@@ -347,7 +347,7 @@ const TopPicksPanel = ({
   
   // Handle pet switch with haptic
   const handlePetSwitch = (pet) => {
-    hapticFeedback.medium();
+    hapticFeedback.toggle();
     onPetChange?.(pet);
     setShowPetDropdown(false);
   };
@@ -415,7 +415,7 @@ const TopPicksPanel = ({
               <div className="mt-3 relative">
                 <button
                   onClick={() => {
-                    hapticFeedback.light();
+                    hapticFeedback.buttonTap();
                     setShowPetDropdown(!showPetDropdown);
                   }}
                   className="w-full px-3 py-2.5 bg-gray-50 rounded-lg flex items-center justify-between hover:bg-gray-100 active:bg-gray-200 min-h-[44px] touch-manipulation"
