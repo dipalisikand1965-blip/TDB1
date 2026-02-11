@@ -51,6 +51,90 @@ SEASONAL_EVENTS = {
     "summer": {"months": [4, 5, 6], "days": (1, 31), "categories": ["cooling", "hydration", "pool", "outdoor"], "boost": 15},
 }
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# CONCIERGE SUGGESTIONS BY PILLAR
+# These show the breadth of what Concierge® can do for users
+# ═══════════════════════════════════════════════════════════════════════════════
+CONCIERGE_SUGGESTIONS = {
+    "celebrate": [
+        {"name": "Custom allergy-safe birthday cake", "specs": ["Ingredient-controlled", "Portion-sized for pet"]},
+        {"name": "Pup-cuterie grazing board", "specs": ["Dog-safe proteins + veg", "No risky items"]},
+        {"name": "At-home party set-up", "specs": ["Decor, photo corner, cleanup"]},
+        {"name": "Pet photographer + shoot package", "specs": ["30-minute session", "Edited photos included"]},
+        {"name": "Personalised bandana or collar charm", "specs": ["Name + number engraved", "Size-matched"]},
+    ],
+    "dine": [
+        {"name": "Diet transition plan + sourcing", "specs": ["Exact formula sourcing", "Brand/variant matched"]},
+        {"name": "Limited ingredient treat sourcing", "specs": ["Single-protein", "Allergy-safe"]},
+        {"name": "Fresh topper sourcing", "specs": ["Freeze-dried options", "GI-friendly"]},
+        {"name": "Picky eater kit", "specs": ["Lick mats, warm-water gravy technique", "Safe toppers"]},
+        {"name": "Vet-led nutrition consult coordination", "specs": ["Expert referral", "Diet planning"]},
+    ],
+    "stay": [
+        {"name": "Vetted pet-friendly hotel shortlist", "specs": ["Real pet policies verified", "Breed-friendly"]},
+        {"name": "Trial night stay plan", "specs": ["For anxious dogs", "Short exposure ramp-up"]},
+        {"name": "Home boarding with temperament match", "specs": ["Not just availability", "Personality matched"]},
+        {"name": "In-home sitter coordination", "specs": ["Check-ins + live updates", "Background verified"]},
+        {"name": "Emergency backup sitter roster", "specs": ["Weekends/late nights", "Always available"]},
+    ],
+    "travel": [
+        {"name": "Airline-compliant carrier sourcing", "specs": ["Exact dimensions", "Weight class matched"]},
+        {"name": "Airport movement plan", "specs": ["Pet relief areas", "Quiet routes + timing"]},
+        {"name": "Car travel safety setup", "specs": ["Seat-belt harness fit", "Barrier setup"]},
+        {"name": "Pet-friendly itinerary", "specs": ["Rest stops mapped", "Vetted cafés"]},
+        {"name": "Travel calm kit", "specs": ["Non-medicated", "Familiar scents, chews"]},
+    ],
+    "care": [
+        {"name": "Groomer matching by coat type", "specs": ["Double/fine/curly specialist", "Temperament aware"]},
+        {"name": "Matting rescue plan", "specs": ["Detangle strategy + tools", "Cadence schedule"]},
+        {"name": "Dental home-care system", "specs": ["Brush + paste", "Habit training plan"]},
+        {"name": "Skin routine plan", "specs": ["Fragrance-free", "Allergy-safe lineup"]},
+        {"name": "Post-walk hygiene protocol", "specs": ["For humid climates", "Wipes + paw balm"]},
+    ],
+    "enjoy": [
+        {"name": "Enrichment rotation plan", "specs": ["7-day toy schedule", "Boredom prevention"]},
+        {"name": "Rainy day indoors kit", "specs": ["Snuffle, puzzle feeders", "Hide-and-seek prompts"]},
+        {"name": "Playdate coordination", "specs": ["Temperament-matched dogs", "Safe location"]},
+        {"name": "Pet-friendly café booking", "specs": ["Rules verified", "Reservation handled"]},
+        {"name": "Sensory toys for anxious dogs", "specs": ["Non-medicated calming", "Gentle materials"]},
+    ],
+    "fit": [
+        {"name": "Breed/age-safe walk plan", "specs": ["Intensity + timing by climate", "Distance tracked"]},
+        {"name": "Mobility-friendly play set", "specs": ["For seniors", "Low impact activities"]},
+        {"name": "Weight management routine", "specs": ["Portioning + activity cadence", "Progress tracking"]},
+        {"name": "Cooling/heating strategy", "specs": ["Walk time windows", "Appropriate gear"]},
+        {"name": "Weekend trail plan", "specs": ["Safety notes included", "Tick, heat, hydration aware"]},
+    ],
+    "learn": [
+        {"name": "Trainer sourcing", "specs": ["Positive-reinforcement only", "Goal-matched"]},
+        {"name": "2-week leash manners plan", "specs": ["Equipment sourcing", "No aversives"]},
+        {"name": "Visitors at home protocol", "specs": ["Door routine", "Place cue training"]},
+        {"name": "Crate training plan", "specs": ["Gentle ramp-up", "No distress flooding"]},
+        {"name": "Separation anxiety support", "specs": ["Behaviour consult coordination", "Gradual approach"]},
+    ],
+    "advisory": [
+        {"name": "Second opinion scheduling", "specs": ["Record compilation", "Specialist coordination"]},
+        {"name": "Specialist referral coordination", "specs": ["Derm, dental, ortho, oncology", "Vet-supported"]},
+        {"name": "Behaviour consult coordination", "specs": ["Reactivity/anxiety", "Expert matching"]},
+        {"name": "What to ask the vet list", "specs": ["Based on symptoms/history", "Question prep"]},
+        {"name": "Tracking plan setup", "specs": ["Stool, itch, appetite logs", "Pattern recognition"]},
+    ],
+    "paperwork": [
+        {"name": "Vaccination record vault setup", "specs": ["Digital storage", "Reminders set"]},
+        {"name": "Microchip registration help", "specs": ["Contact details updated", "Verified"]},
+        {"name": "Travel docs coordination", "specs": ["Airline pet forms", "Health certificates"]},
+        {"name": "Insurance onboarding support", "specs": ["Plan comparison", "Claim assistance"]},
+        {"name": "Emergency contact card creation", "specs": ["For collar/tag", "Printable"]},
+    ],
+    "shop": [
+        {"name": "Curated bundles by need-state", "specs": ["Dental starter, anxiety kit", "Seasonal kits"]},
+        {"name": "Subscription planning", "specs": ["Food/treats/grooming cadence", "Auto-delivery"]},
+        {"name": "Hard-to-find sourcing", "specs": ["Exact toy, specific treat", "Allergy-safe"]},
+        {"name": "Custom sizing support", "specs": ["Harness fit, collar width", "Carrier dimensions"]},
+        {"name": "Try 3 sampling plan", "specs": ["Treats/toys samples", "Feedback loop"]},
+    ],
+}
+
 def get_current_season() -> dict:
     """Get current seasonal event if any."""
     now = datetime.now()
