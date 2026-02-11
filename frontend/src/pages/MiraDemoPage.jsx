@@ -56,7 +56,6 @@ import MemoryWhisper from '../components/Mira/MemoryWhisper';
 import SoulKnowledgeTicker from '../components/Mira/SoulKnowledgeTicker';
 import { FormattedText, TypedText } from '../components/Mira/TextComponents';
 import { triggerCelebrationConfetti } from '../utils/confetti';
-import PickDetailCard from '../components/Mira/PickDetailCard';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // LAZY LOADED COMPONENTS (Performance Optimization)
