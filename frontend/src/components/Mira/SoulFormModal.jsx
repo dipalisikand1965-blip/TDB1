@@ -217,6 +217,38 @@ const SoulFormModal = ({
     return null;
   }
   
+  // Save a single answer immediately and get updated score
+  const saveAnswer = async (questionField, answerValue) => {
+    try {
+      const response = await fetch(`${API_URL}/api/pets/${pet.id}/soul-answer`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          question_id: questionField,
+          answer: answerValue
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        const updatedScore = data.new_score || data.overall_score || (liveScore + 5);
+        setLiveScore(updatedScore);
+        
+        // Notify parent about score update (live update)
+        if (onSoulUpdated) {
+          onSoulUpdated(updatedScore, { [questionField]: answerValue });
+        }
+        return updatedScore;
+      }
+    } catch (error) {
+      console.error('[SoulFormModal] Error saving answer:', error);
+    }
+    return liveScore + 5; // Fallback increment
+  };
+  
   const handleSelectOption = async (option) => {
     const newAnswers = {
       ...answers,
@@ -224,9 +256,13 @@ const SoulFormModal = ({
     };
     setAnswers(newAnswers);
     
+    // Save this answer immediately
+    const newScore = await saveAnswer(currentQuestion.field, option.value);
+    
     if (isLastQuestion) {
-      // Submit all answers
-      await submitAnswers(newAnswers);
+      // Show completion
+      setNewScore(newScore);
+      setIsComplete(true);
     } else {
       // Move to next question
       setCurrentStep(prev => prev + 1);
