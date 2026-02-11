@@ -325,13 +325,16 @@ async def get_pillar_picks(
             "badges": badges,
         })
     
-    # Sort by score and limit
+    # Sort by score 
     picks.sort(key=lambda x: x.get("score", 0), reverse=True)
     
-    # Always add a Concierge Suggestion Card for service-heavy pillars
-    # This gives users the option to request custom sourcing
+    # Take top items but leave room for concierge card if applicable
     service_pillars = ["care", "stay", "travel", "fit", "learn", "advisory", "celebrate"]
     if pillar in service_pillars:
+        # Keep top (limit-1) catalogue items
+        catalogue_picks = picks[:limit-1]
+        
+        # Add a Concierge Suggestion Card
         concierge_card = {
             "id": f"concierge-{pillar}-{pet.get('name', 'pet')}",
             "name": f"Custom {pillar.title()} for {pet.get('name', 'your pet')}",
@@ -340,7 +343,7 @@ async def get_pillar_picks(
             "type": "concierge_suggestion",
             "pick_type": "concierge",
             "why_reason": f"Can't find what you need? Our Concierge® will source the perfect {pillar} solution for {pet.get('name', 'your pet')}",
-            "score": 40,  # Lower score so catalogue items appear first
+            "score": 100,  # High score to show prominently
             "badges": [],
             "specs": [
                 f"Tailored for {pet.get('breed', 'your dog')}",
@@ -349,7 +352,11 @@ async def get_pillar_picks(
                 "Concierge® will get back with price"
             ]
         }
-        picks.append(concierge_card)
+        catalogue_picks.append(concierge_card)
+        picks = catalogue_picks
+    else:
+        # Non-service pillars, just limit
+        picks = picks[:limit]
     
     # If NO picks at all, add a prominent Concierge card
     if len(picks) == 0:
