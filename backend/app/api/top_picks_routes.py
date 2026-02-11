@@ -303,10 +303,14 @@ async def get_pillar_picks(
     # Note: in_stock may be None for some products, so we check for != False
     
     # First, get products with exact pillar match (highest priority)
+    # IMPORTANT: Exclude cat products - we are THE DOGGY COMPANY!
     exact_query = {
         "pillar": pillar,
         "in_stock": {"$ne": False},
-        "visibility.status": {"$in": ["active", None]}
+        "visibility.status": {"$in": ["active", None]},
+        # Filter out cat products
+        "name": {"$not": {"$regex": "cat|kitten|feline|meow|purr|kitty", "$options": "i"}},
+        "pet_type": {"$nin": ["cat", "cats", "feline"]},
     }
     cursor = db.unified_products.find(exact_query, {"_id": 0}).limit(20)
     products = await cursor.to_list(length=20)
