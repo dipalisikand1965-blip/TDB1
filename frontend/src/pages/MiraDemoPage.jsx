@@ -3533,9 +3533,9 @@ const MiraDemoPage = () => {
           }))}
           apiUrl={API_URL}
           onSoulQuestionClick={() => {
-            // Navigate to soul questions page
+            // Navigate to unified pet page for soul/profile management
             hapticFeedback.buttonTap();
-            navigate(`/pet-soul/${pet.id || ''}`);
+            navigate(`/pet/${pet?.id || ''}`);
           }}
           onKnowledgeItemClick={(item) => {
             // Convert knowledge item click to a query
