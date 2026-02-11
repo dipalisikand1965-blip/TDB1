@@ -257,6 +257,61 @@ const MiraTopBar = ({
         {/* Pet name */}
         <h2 className="mtb-pet-name">{pet?.name || 'Your Pet'}</h2>
         <p className="mtb-pet-tagline">Mira knows {pet?.name || 'your pet'}</p>
+        
+        {/* Multi-Pet Selector */}
+        {allPets.length > 1 && (
+          <div className="mtb-pet-selector" ref={petSelectorRef}>
+            <button
+              className="mtb-pet-switch-btn"
+              onClick={() => {
+                hapticFeedback.light();
+                setShowPetSelector(!showPetSelector);
+              }}
+              data-testid="pet-selector-btn"
+            >
+              <span>Switch Pet</span>
+              {showPetSelector ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+            </button>
+            
+            {showPetSelector && (
+              <div className="mtb-pet-dropdown" data-testid="pet-selector-dropdown">
+                {allPets.map((p) => (
+                  <button
+                    key={p.id}
+                    className={`mtb-pet-option ${p.id === pet?.id ? 'active' : ''}`}
+                    onClick={() => {
+                      hapticFeedback.medium();
+                      onSwitchPet?.(p);
+                      setShowPetSelector(false);
+                    }}
+                    data-testid={`pet-option-${p.id}`}
+                  >
+                    <div className="mtb-pet-option-avatar">
+                      {(p.image_url || p.photo_url) ? (
+                        <img 
+                          src={
+                            (p.image_url || p.photo_url)?.startsWith('http') 
+                              ? (p.image_url || p.photo_url)
+                              : `${API_URL}${p.image_url || p.photo_url}`
+                          }
+                          alt={p.name}
+                          onError={(e) => { e.target.style.display = 'none'; }}
+                        />
+                      ) : (
+                        <span>{p.name?.[0] || '🐕'}</span>
+                      )}
+                    </div>
+                    <div className="mtb-pet-option-info">
+                      <span className="mtb-pet-option-name">{p.name}</span>
+                      <span className="mtb-pet-option-breed">{p.breed || 'Pet'}</span>
+                    </div>
+                    {p.id === pet?.id && <span className="mtb-pet-option-check">✓</span>}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Row 3: Action Tabs - Logical Order */}
