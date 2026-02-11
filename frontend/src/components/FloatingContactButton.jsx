@@ -233,27 +233,27 @@ const FloatingContactButton = ({ user, isLoggedIn }) => {
           </div>
         )}
 
-        {/* Main FAB Button - TDC Paw/Concierge styled */}
+        {/* Main FAB Button - Subtle Concierge button (secondary to Mira) */}
         <button
           onClick={() => {
             setIsOpen(!isOpen);
             setShowQuickChat(false);
           }}
           className={`
-            w-14 h-14 rounded-full shadow-lg flex items-center justify-center
-            transition-all duration-300 hover:scale-110
+            w-12 h-12 rounded-full shadow-md flex items-center justify-center
+            transition-all duration-300 hover:scale-105
             ${isOpen 
-              ? 'bg-gray-800 rotate-90' 
-              : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:shadow-purple-500/30 hover:shadow-xl'
+              ? 'bg-gray-700 rotate-90' 
+              : 'bg-white border border-gray-200 hover:bg-gray-50 hover:border-gray-300 hover:shadow-lg'
             }
           `}
           data-testid="floating-contact-toggle"
         >
           {isOpen ? (
-            <X className="w-6 h-6 text-white" />
+            <X className="w-5 h-5 text-white" />
           ) : (
-            /* TDC "C" Logo Style */
-            <span className="text-white font-bold text-xl">C<sup className="text-[8px]">®</sup></span>
+            /* Concierge icon - subtle style */
+            <span className="text-purple-600 font-semibold text-sm">C<sup className="text-[6px]">®</sup></span>
           )}
         </button>
         
