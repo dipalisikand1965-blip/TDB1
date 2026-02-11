@@ -4,6 +4,8 @@
  * An abstract presence token - a softly animated orb with breathing light 
  * and listening pulses. Mira feels alive through motion and response.
  * 
+ * VISUAL STYLE: Pink-to-Purple gradient with white sparkle icon (matching landing page)
+ * 
  * States:
  * - idle: Gentle breathing pulse
  * - listening: Expanding ripples, ears perked
@@ -14,18 +16,19 @@
 
 import React, { useMemo, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Sparkles } from 'lucide-react';
 import hapticFeedback from '../utils/haptic';
 
-// Mira's soul colors - Enhanced for magical presence
+// Mira's soul colors - Pink to Purple gradient (matching landing page)
 const MIRA_COLORS = {
-  primary: '#9333EA',      // Purple - wisdom
-  secondary: '#EC4899',    // Pink - love
-  glow: '#C084FC',         // Light purple - aura
+  primary: '#EC4899',      // Pink - magenta/hot pink
+  secondary: '#9333EA',    // Purple - deep purple
+  glow: '#F472B6',         // Light pink - aura
   listening: '#3B82F6',    // Blue - attention
   thinking: '#F59E0B',     // Amber - processing
   speaking: '#10B981',     // Emerald - guidance
   celebrating: '#F472B6',  // Pink - joy
-  aura: '#A855F7',         // Violet - mystical aura
+  aura: '#DB2777',         // Rose - mystical aura
 };
 
 // Particle component for ambient effects - xOffset and yOffset pre-computed
