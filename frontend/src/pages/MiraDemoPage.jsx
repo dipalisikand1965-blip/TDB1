@@ -3548,8 +3548,12 @@ const MiraDemoPage = () => {
       {/* UNIFIED TOP BAR - Consolidates all actions */}
       <MiraTopBar
         pet={pet}
-        soulScore={pet?.soulScore || 0}
+        soulScore={pet?.soulScore || pet?.overall_score || 0}
         userCity={userCity}
+        weather={currentWeather?.current_weather ? {
+          temp: currentWeather.current_weather.temperature,
+          condition: currentWeather.current_weather.condition || 'clear'
+        } : null}
         userName={user?.name}
         userEmail={user?.email}
         isLoggedIn={!!user}
@@ -3568,8 +3572,8 @@ const MiraDemoPage = () => {
           ...(proactiveAlerts.smartAlerts || []),
           ...(proactiveAlerts.celebrations || []).map(c => ({
             id: `celebration-${c.id || c.event}`,
-            title: c.event || 'Celebration',
-            message: c.message || `${c.event} coming up!`,
+            title: c.event || c.name || 'Celebration',
+            message: c.message || `${c.event || c.name} coming up!`,
             days_until: c.days_until,
             type: 'celebration'
           })),
@@ -3578,8 +3582,8 @@ const MiraDemoPage = () => {
             title: r.title || r.name || 'Health Reminder',
             message: r.message || `${r.name} needs attention`,
             days_until: r.days_until,
-            type: 'health',
-            priority: r.needs_attention ? 'urgent' : 'normal'
+            type: r.type || 'health',
+            priority: r.needs_attention || r.is_overdue ? 'urgent' : 'normal'
           }))
         ]}
         onDismissReminder={(id) => {
@@ -3590,6 +3594,14 @@ const MiraDemoPage = () => {
             celebrations: (prev.celebrations || []).filter(c => `celebration-${c.id || c.event}` !== id),
             healthReminders: (prev.healthReminders || []).filter(r => `health-${r.id || r.name}` !== id)
           }));
+        }}
+        onReminderAction={(reminder) => {
+          // Handle clicking on a reminder - ask Mira about it
+          const message = reminder.type === 'celebration' 
+            ? `${pet?.name}'s ${reminder.title} is coming up! What should we do?`
+            : `Schedule ${reminder.title} for ${pet?.name}`;
+          setQuery(message);
+          setTimeout(() => handleSubmit({ preventDefault: () => {} }), 100);
         }}
         hasNewVideos={hasNewVideos}
         newVideosCount={newVideosCount}
