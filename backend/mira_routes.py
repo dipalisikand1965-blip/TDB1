@@ -4735,6 +4735,77 @@ def detect_intent(message: str) -> str:
     
     return "advisory"
 
+
+def detect_personalized_picks_intent(message: str, pets: list = None) -> dict:
+    """
+    Detect if user is asking to see personalized picks for their pet.
+    
+    Returns:
+        {
+            "is_picks_request": bool,
+            "pet_name": str or None,
+            "action": "open_picks_vault"
+        }
+    """
+    message_lower = message.lower()
+    
+    # Patterns that trigger the picks vault
+    picks_patterns = [
+        "show me personalized picks",
+        "personalized picks for",
+        "show picks for",
+        "show me picks for",
+        "top picks for",
+        "picks for",
+        "recommendations for",
+        "what do you recommend for",
+        "suggest products for",
+        "suggest items for",
+        "show me suggestions for",
+        "curated picks",
+        "my picks"
+    ]
+    
+    is_picks_request = any(pattern in message_lower for pattern in picks_patterns)
+    
+    if not is_picks_request:
+        return {"is_picks_request": False, "pet_name": None, "action": None}
+    
+    # Try to extract pet name from the message
+    pet_name = None
+    
+    # If we have user's pets, check if any pet name is mentioned
+    if pets:
+        for pet in pets:
+            pet_name_lower = (pet.get("name") or "").lower()
+            if pet_name_lower and pet_name_lower in message_lower:
+                pet_name = pet.get("name")
+                break
+    
+    # If no pet found from user's pets, try to extract from common patterns
+    if not pet_name:
+        import re
+        # Pattern: "picks for [Name]" or "for [Name]"
+        patterns = [
+            r"picks for (\w+)",
+            r"for (\w+)$",
+            r"recommendations for (\w+)",
+            r"suggest[ions]* for (\w+)"
+        ]
+        for pattern in patterns:
+            match = re.search(pattern, message_lower)
+            if match:
+                potential_name = match.group(1)
+                # Capitalize first letter
+                pet_name = potential_name.capitalize()
+                break
+    
+    return {
+        "is_picks_request": True,
+        "pet_name": pet_name,
+        "action": "open_picks_vault"
+    }
+
 async def generate_ticket_id(ticket_type: str) -> str:
     """Generate unique ticket ID based on type"""
     db = get_db()
