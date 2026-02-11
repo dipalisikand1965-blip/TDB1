@@ -199,7 +199,7 @@ const QuickActionsMenu = ({ pick, isVisible, onClose, onAction, position }) => {
         <button
           key={action.id}
           onClick={() => {
-            hapticFeedback.medium();
+            hapticFeedback.toggle();
             onAction(action.id, pick);
             onClose();
           }}
@@ -266,7 +266,7 @@ const PickCard = ({
       onTouchEnd={handleTouchEnd}
       onTouchMove={handleTouchEnd}
       onClick={() => {
-        hapticFeedback.light();
+        hapticFeedback.buttonTap();
         if (selectable) onToggleSelect?.(pick);
       }}
     >
@@ -276,7 +276,7 @@ const PickCard = ({
           className="absolute top-1 left-1 z-20 w-11 h-11 rounded-lg bg-white/90 flex items-center justify-center shadow-sm touch-manipulation"
           onClick={(e) => {
             e.stopPropagation();
-            hapticFeedback.medium();
+            hapticFeedback.toggle();
             onToggleSelect?.(pick);
           }}
         >
@@ -325,7 +325,7 @@ const PickCard = ({
           className="absolute top-1 right-1 w-11 h-11 rounded-full bg-white/80 flex items-center justify-center touch-manipulation"
           onClick={(e) => { 
             e.stopPropagation(); 
-            hapticFeedback.light();
+            hapticFeedback.buttonTap();
             setShowInfo(!showInfo); 
           }}
         >
@@ -373,7 +373,7 @@ const PickCard = ({
           <button
             onClick={(e) => {
               e.stopPropagation();
-              hapticFeedback.medium();
+              hapticFeedback.toggle();
               isConcierge ? onSendToConcierge?.(pick) : onAdd?.(pick);
             }}
             className={`w-full py-2 text-[11px] font-medium rounded-lg flex items-center justify-center gap-1 min-h-[36px] touch-manipulation ${
@@ -420,7 +420,7 @@ const TipCard = ({ tip, onSave }) => (
         {tip.action && (
           <button 
             className="mt-2 text-xs text-amber-600 font-medium flex items-center gap-1 min-h-[36px] touch-manipulation"
-            onClick={() => hapticFeedback.light()}
+            onClick={() => hapticFeedback.buttonTap()}
           >
             {tip.action} <ChevronRight className="w-3 h-3" />
           </button>
@@ -434,7 +434,7 @@ const TipCard = ({ tip, onSave }) => (
 const TabButton = ({ active, icon: Icon, label, count, onClick }) => (
   <button
     onClick={() => {
-      hapticFeedback.medium();
+      hapticFeedback.toggle();
       onClick();
     }}
     className={`flex-1 py-3 px-3 rounded-xl flex items-center justify-center gap-2 transition-all min-h-[48px] touch-manipulation ${
@@ -522,7 +522,7 @@ const UnifiedPicksVault = ({
   
   // Toggle item selection with haptic
   const toggleItemSelection = useCallback((pick) => {
-    hapticFeedback.medium();
+    hapticFeedback.toggle();
     const pickId = pick.id || pick.name;
     setSelectedItems(prev => {
       const newSet = new Set(prev);
@@ -537,14 +537,14 @@ const UnifiedPicksVault = ({
   
   // Clear selection
   const clearSelection = useCallback(() => {
-    hapticFeedback.light();
+    hapticFeedback.buttonTap();
     setSelectedItems(new Set());
     setSelectionMode(false);
   }, []);
   
   // Select all visible picks
   const selectAll = useCallback(() => {
-    hapticFeedback.medium();
+    hapticFeedback.toggle();
     const allPickIds = new Set();
     Object.values(personalizedPicks?.pillars || {}).forEach(pillarData => {
       if (selectedPillar === 'all' || pillarData.pillar?.id === selectedPillar) {
@@ -981,7 +981,7 @@ const UnifiedPicksVault = ({
                             <button
                               key={pillar.id}
                               onClick={() => {
-                                hapticFeedback.light();
+                                hapticFeedback.buttonTap();
                                 setSelectedPillar(pillar.id);
                               }}
                               className={`flex-shrink-0 px-3 py-2 rounded-lg text-xs font-medium transition-all min-h-[40px] touch-manipulation snap-start ${
@@ -1001,7 +1001,7 @@ const UnifiedPicksVault = ({
                       <div className="flex items-center justify-between">
                         <button
                           onClick={() => {
-                            hapticFeedback.medium();
+                            hapticFeedback.toggle();
                             setSelectionMode(!selectionMode);
                             if (selectionMode) clearSelection();
                           }}
@@ -1129,7 +1129,7 @@ const UnifiedPicksVault = ({
                 {!selectionMode && (
                   <button
                     onClick={() => {
-                      hapticFeedback.medium();
+                      hapticFeedback.toggle();
                       setSelectionMode(true);
                     }}
                     className="text-sm text-amber-600 font-medium hover:text-amber-700 min-h-[44px] touch-manipulation"
