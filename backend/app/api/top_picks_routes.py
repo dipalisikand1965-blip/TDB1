@@ -436,13 +436,12 @@ async def get_pillar_picks(
             "image": None,
             "type": "concierge_suggestion",
             "pick_type": "concierge",
+            "icon": suggestion.get("icon", "sparkles"),  # Lucide icon name
+            "gradient": suggestion.get("gradient", ["#8B5CF6", "#EC4899"]),  # Gradient colors
             "why_reason": f"Our Concierge® will curate this specially for {pet.get('name', 'your pet')}",
             "score": 50 - i,  # Descending score for ordering
             "badges": [],
-            "specs": suggestion.get("specs", []) + [
-                f"Tailored for {pet.get('breed', 'your dog')}",
-                "Concierge® will get back with price"
-            ]
+            "specs": suggestion.get("specs", [])
         }
         concierge_picks.append(concierge_card)
     
