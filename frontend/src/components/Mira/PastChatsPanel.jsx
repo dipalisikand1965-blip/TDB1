@@ -9,6 +9,7 @@
  */
 
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { X, Plus, PawPrint, Archive, FileText, Star, Clock } from 'lucide-react';
 import hapticFeedback from '../../utils/haptic';
 
