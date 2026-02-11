@@ -219,6 +219,8 @@ const MiraDemoPage = () => {
   const [showTopPicksPanel, setShowTopPicksPanel] = useState(false);
   // UNIFIED PICKS VAULT: Replaces the old vault with tabbed interface
   const [showUnifiedVault, setShowUnifiedVault] = useState(false);
+  // Product detail modal for viewing full product info
+  const [selectedProduct, setSelectedProduct] = useState(null);
   
   // Core conversation state
   const [query, setQuery] = useState('');
