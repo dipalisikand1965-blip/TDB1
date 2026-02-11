@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import { API_URL } from '../utils/api';
 import { useAuth } from '../context/AuthContext';
+import ServiceQuickViewModal from '../components/Mira/ServiceQuickViewModal';
 
 // =============================================================================
 // SERVICE CATEGORY ICONS & IMAGES
