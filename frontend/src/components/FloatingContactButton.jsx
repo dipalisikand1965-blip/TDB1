@@ -257,9 +257,9 @@ const FloatingContactButton = ({ user, isLoggedIn }) => {
           )}
         </button>
         
-        {/* Pulse animation when closed */}
+        {/* Small notification dot when closed */}
         {!isOpen && (
-          <span className="absolute top-0 right-0 w-3 h-3 bg-green-500 rounded-full animate-pulse border-2 border-white" />
+          <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 rounded-full border border-white" />
         )}
       </div>
 
