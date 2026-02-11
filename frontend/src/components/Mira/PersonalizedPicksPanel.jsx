@@ -572,6 +572,7 @@ const PersonalizedPicksPanel = ({
   const [showAllCatalogue, setShowAllCatalogue] = useState(false);
   const [showAllConcierge, setShowAllConcierge] = useState(false);
   const [customRequest, setCustomRequest] = useState('');
+  const [selectedProduct, setSelectedProduct] = useState(null); // For product detail modal
   const scrollRef = useRef(null);
   
   // Fetch picks data
