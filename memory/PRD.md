@@ -4,104 +4,91 @@
 Build and maintain the Mira AI Pet Companion feature for The Doggy Company platform. Key requirements:
 1. Personalized Picks Panel - A soulful concierge experience, not e-commerce
 2. Products and concierge services organized by pillars (Celebrate, Dine, Care, etc.)
-3. ProductDetailModal for selecting variants and adding items to request list
-4. "Send to My Concierge" flow with warm confirmation
-5. Mobile-first dark theme with haptic feedback
-6. "Anything Else?" custom request capability
+3. Multi-select flow: User can select multiple items before sending
+4. Confirmation modal INSIDE the panel (not in chat)
+5. After confirm, panel closes and success message appears in chat
+6. Mobile-first dark theme with haptic feedback
 
 ## Core Architecture
 ```
 /app
 ├── backend (FastAPI)
 │   ├── server.py - Main application
-│   ├── mira_routes.py - Chat intent detection
-│   └── concierge_routes.py - Picks request handling
+│   ├── concierge_routes.py - Added /api/concierge/picks-request endpoint
+│   └── mira_routes.py - Chat intent detection
 ├── frontend (React)
 │   └── src/
 │       ├── components/
-│       │   ├── Mira/
-│       │   │   ├── PersonalizedPicksPanel.jsx - Main picks component
-│       │   │   ├── SendToConciergeChatCard.jsx - NEW: In-chat confirmation card
-│       │   │   ├── ConciergeDetailModal.jsx - Service details modal
-│       │   │   └── ConciergeServiceStrip.jsx - Expandable service categories
-│       │   ├── PicksVault/
-│       │   │   └── UnifiedPicksVault.jsx - Conversation picks component
-│       │   └── ProductCard.jsx - ProductDetailModal with onAddToPicks
-│       ├── pages/MiraDemoPage.jsx - Main demo page
-│       └── hooks/mira/ - Custom hooks
+│       │   └── Mira/
+│       │       ├── PersonalizedPicksPanel.jsx - Multi-select panel with ConfirmationModal
+│       │       ├── ConciergeDetailModal.jsx - Service details modal
+│       │       └── ConciergeServiceStrip.jsx - Expandable service categories
+│       └── pages/MiraDemoPage.jsx - onSendSuccess callback for chat messages
 └── test_reports/ - Testing output
 ```
 
-## What's Been Implemented
-**Date: Feb 11, 2026**
+## What's Been Implemented (Feb 11, 2026)
 
-### Personalized Picks Panel (COMPLETE)
-- ✅ Dark theme sliding panel from bottom
-- ✅ Pillar-based navigation tabs (Celebrate, Dine, Care, Travel, Stay, Enjoy, Fit, Learn, Advisory, Services)
-- ✅ Side-by-side layout on desktop: Products left, Concierge services right
-- ✅ **NEW: Click-to-confirm flow** - Clicking any product/service:
-  1. Closes the panel
-  2. Shows "Send to Concierge" card in chat
-  3. User can add optional notes
-  4. Confirm sends to concierge
-  5. Success message appears in chat
-- ✅ SendToConciergeChatCard component with:
-  - Pink/purple gradient header
-  - "For Mojo" personalization
-  - Selected item with checkmark
-  - "Anything else? (optional)" text input
-  - Cancel and Confirm buttons
-- ✅ Full haptic feedback integration
-- ✅ iOS safe area padding for buttons
+### Personalized Picks Flow (COMPLETE)
+1. ✅ User opens PersonalizedPicksPanel from Mira interface
+2. ✅ Panel shows products (left) and concierge services (right) by pillar
+3. ✅ **Multi-select**: Clicking items toggles selection (pink checkmark + ring)
+4. ✅ Panel stays open - user can select multiple items
+5. ✅ MiniCart at bottom shows count and "Send to My Concierge" button
+6. ✅ **Confirmation modal appears INSIDE the panel** with:
+   - "Send to Concierge" header + "For [Pet]"
+   - List of selected items with checkmarks
+   - "Anything else? (optional)" text input
+   - Cancel and Confirm buttons
+7. ✅ After confirm: Panel closes, success message in chat
 
 ### Backend
 - ✅ `/api/mira/top-picks/{pet_name}` - Returns 110+ picks across 11 pillars
-- ✅ `/api/concierge/picks-request` - Handles picks request submission
-- ✅ Past chat sessions limited to 3
+- ✅ `/api/concierge/picks-request` - **NEW**: Saves picks request to database
 
-### Testing Status
-- ✅ Full flow tested (Feb 11, 2026)
-- ✅ Product click → Card appears → Confirm → Success message = WORKING
-- ✅ Concierge service click → Card appears → Confirm → Success message = WORKING
+### Mobile Optimization
+- ✅ Tested on 390x844 (iPhone) viewport
+- ✅ Fonts readable, adequate spacing
+- ✅ Touch-friendly targets (44px+)
+- ✅ Safe area insets for iPhone X+ notch
+- ✅ Horizontal scroll for pillar tabs
+- ✅ Haptic feedback via hapticFeedback utility
 
-## Current Status
-**P0 Issue: RESOLVED** - New click-to-confirm flow implemented
-**UI Status:** ✅ Working (verified Feb 11, 2026)
+### Testing
+- ✅ iteration_139.json: Full flow verified desktop + mobile
+- ✅ Backend: 100% - top-picks API works
+- ✅ Frontend: 100% - Multi-select → Confirm → Chat message
 
-## Prioritized Backlog
-
-### P0 - Critical (COMPLETED)
-- [x] Fix "Add to Picks" flow
-- [x] Implement in-chat confirmation card (SendToConciergeChatCard)
-- [x] Full send-to-concierge flow with success message
-
-### P1 - High Priority
-- [ ] Refactor: Extract ProductDetailModal to its own file
-- [ ] Remove deprecated TopPicksPanel and related dead code
-
-### P2 - Medium Priority  
-- [ ] Haptic & UX Audit - Remaining components need haptic feedback
-- [ ] Test ConciergeServiceStrip integration in Services pillar
-
-### P3 - Low Priority / Future
-- [ ] Full mobile/desktop visual polish
-- [ ] Performance optimizations for heavy MiraDemoPage
-- [ ] Refactor UnifiedPicksVault.jsx (4000+ lines)
-
-## Key API Endpoints
+## API Endpoints
 - `POST /api/mira/os/understand-with-products` - Main chat endpoint
-- `GET /api/mira/top-picks/<pet_name>` - Curated picks for pet (110+ picks)
-- `POST /api/concierge/picks-request` - Submit picks to concierge
+- `GET /api/mira/top-picks/<pet_name>` - Curated picks for pet
+- `POST /api/concierge/picks-request` - Submit picks to concierge (NEW)
 
 ## Test Credentials
 - Email: dipali@clubconcierge.in
 - Password: test123
 
-## Key UI Flow
-1. User opens PersonalizedPicksPanel from Mira interface
-2. Panel shows products (left) and concierge services (right) by pillar
-3. User clicks any item
-4. Panel closes, "Send to Concierge" card appears in chat
-5. User optionally adds notes
-6. User clicks "Confirm"
-7. Success message: "✨ Your X personalized picks for Mojo have been sent to your Concierge®!"
+## User Flow Summary
+```
+1. Click [data-testid="personalized-picks-btn"]
+2. Panel slides up with products + concierge services
+3. Click items to toggle selection (pink checkmark)
+4. Click "Send to My Concierge" button at bottom
+5. Confirmation modal appears IN PANEL
+6. Click "Confirm"
+7. Panel closes
+8. Chat shows: "✨ Your X personalized picks for [Pet] have been sent to your Concierge®!"
+```
+
+## Remaining Tasks
+### P1 - High Priority
+- [ ] Refactor: Extract ProductDetailModal to its own file
+- [ ] Remove deprecated TopPicksPanel and related dead code
+
+### P2 - Medium Priority
+- [ ] Consider icons-only mode for pillar tabs on narrow viewports
+- [ ] Show full product title on tap (currently truncated)
+
+### P3 - Low Priority
+- [ ] Performance optimization for heavy MiraDemoPage
+- [ ] Refactor UnifiedPicksVault.jsx (4000+ lines)
