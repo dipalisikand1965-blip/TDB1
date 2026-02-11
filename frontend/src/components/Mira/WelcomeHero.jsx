@@ -102,29 +102,17 @@ const WelcomeHero = ({
       {/* Hero Layout - Content Only (Avatar/Soul moved to MiraTopBar) */}
       <div className="hero-layout hero-content-only">
         {/* Content Side */}
-        <div className="hero-content" style={{ width: '100%', textAlign: 'center' }}>
-          <h1 className="hero-title">
+        <div className="hero-content" style={{ width: '100%' }}>
+          <h1 className="hero-title" style={{ textAlign: 'center' }}>
             For <span className="gradient-text">{pet.name}</span>
           </h1>
           
-          <p className="hero-subtitle">Curated with love for {pet.name}</p>
+          <p className="hero-subtitle" style={{ textAlign: 'center' }}>Curated with love for {pet.name}</p>
           
-          {/* Proactive Greeting */}
-          {proactiveGreeting && (
-            <div 
-              className={`proactive-greeting ${proactiveGreeting.hasAlert ? 'has-alert' : ''}`}
-              onClick={() => proactiveGreeting.hasAlert && handleQuickReply(proactiveGreeting.text)}
-            >
-              <span className="greeting-icon">{proactiveGreeting.icon}</span>
-              <span className="greeting-text">{proactiveGreeting.text}</span>
-              {proactiveGreeting.hasAlert && <ChevronRight className="greeting-arrow" />}
-            </div>
-          )}
+          {/* Proactive Greeting - REMOVED: Now in MiraTopBar Reminders dropdown */}
           
-          {/* SMART PROACTIVE ALERTS - REMOVED: Now in MiraTopBar Reminders dropdown */}
-          
-          {/* Soul Traits */}
-          <div className="soul-traits">
+          {/* Soul Traits - Centered */}
+          <div className="soul-traits" style={{ justifyContent: 'center' }}>
             {(pet.soulTraits || [
               { label: 'Glamorous soul', icon: '✨' },
               { label: 'Elegant paws', icon: '🎀' },
@@ -137,27 +125,7 @@ const WelcomeHero = ({
             ))}
           </div>
           
-          {/* Personalized Picks Card - REMOVED: Now in MiraTopBar as "Mojo's Picks" tab */}
-          
-          {/* Health Vault Prompt */}
-          {healthVault.completeness < 100 && healthVault.missing_fields.length > 0 && (
-            <div 
-              className="health-vault-prompt"
-              onClick={onShowHealthWizard}
-              data-testid="health-vault-prompt"
-            >
-              <div className="vault-icon">
-                <Shield className="w-5 h-5" />
-              </div>
-              <div className="vault-content">
-                <div className="vault-progress">
-                  <div className="vault-progress-bar" style={{ width: `${healthVault.completeness}%` }} />
-                </div>
-                <p className="vault-title">
-                  Complete {pet.name}'s Health Vault
-                </p>
-                <p className="vault-subtitle">
-                  {healthVault.completeness}% complete • {healthVault.missing_fields.length} items missing
+          {/* Health Vault Prompt - REMOVED: Now accessible via Reminders dropdown */}
                 </p>
               </div>
               <ChevronRight className="vault-arrow" />
