@@ -4111,18 +4111,28 @@ const MiraDemoPage = () => {
             pet={pet}
             token={token}
             onSendSuccess={(data) => {
-              // Add confirmation message to chat
-              const confirmationMessage = {
-                type: 'mira',
-                content: `✨ Your ${data.count} personalized pick${data.count > 1 ? 's' : ''} for ${data.petName} have been sent to your Concierge®! They're reviewing your selections now and will get back to you shortly to help arrange everything. Is there anything else I can help you with?`,
-                timestamp: new Date().toISOString(),
-                metadata: {
-                  type: 'picks_confirmation',
-                  itemCount: data.count,
-                  petName: data.petName
+              // Add confirmation message to chat (with deduplication)
+              setConversationHistory(prev => {
+                // Check if we already have a recent picks_confirmation message
+                const lastMsg = prev[prev.length - 1];
+                if (lastMsg?.metadata?.type === 'picks_confirmation' && 
+                    Date.now() - new Date(lastMsg.timestamp).getTime() < 2000) {
+                  // Skip duplicate - already added within last 2 seconds
+                  return prev;
                 }
-              };
-              setConversationHistory(prev => [...prev, confirmationMessage]);
+                
+                const confirmationMessage = {
+                  type: 'mira',
+                  content: `✨ Your ${data.count} personalized pick${data.count > 1 ? 's' : ''} for ${data.petName} have been sent to your Concierge®! They're reviewing your selections now and will get back to you shortly to help arrange everything. Is there anything else I can help you with?`,
+                  timestamp: new Date().toISOString(),
+                  metadata: {
+                    type: 'picks_confirmation',
+                    itemCount: data.count,
+                    petName: data.petName
+                  }
+                };
+                return [...prev, confirmationMessage];
+              });
             }}
           />
         </Suspense>
