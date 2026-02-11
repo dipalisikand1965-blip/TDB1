@@ -7,7 +7,7 @@ Build and maintain the Mira AI Pet Companion feature for The Doggy Company platf
 3. Multi-select flow: User can select multiple items before sending
 4. Confirmation modal INSIDE the panel (not in chat)
 5. After confirm, panel closes and success message appears in chat
-6. Mobile-first dark theme with haptic feedback
+6. **iOS Premium Experience** - Apple App Store quality across the site
 
 ## Core Architecture
 ```
@@ -23,11 +23,34 @@ Build and maintain the Mira AI Pet Companion feature for The Doggy Company platf
 │       │       ├── PersonalizedPicksPanel.jsx - Multi-select panel with ConfirmationModal
 │       │       ├── ConciergeDetailModal.jsx - Service details modal
 │       │       └── ConciergeServiceStrip.jsx - Expandable service categories
-│       └── pages/MiraDemoPage.jsx - onSendSuccess callback for chat messages
+│       ├── pages/MiraDemoPage.jsx - onSendSuccess callback for chat messages
+│       ├── styles/
+│       │   ├── mira-prod.css - Main production styles
+│       │   └── ios-premium.css - **NEW** iOS Golden Standards
+│       └── utils/
+│           └── haptic.js - **ENHANCED** Premium haptic feedback system
 └── test_reports/ - Testing output
 ```
 
 ## What's Been Implemented (Feb 11, 2026)
+
+### iOS Premium Experience (COMPLETE)
+1. ✅ **Premium CSS** (`ios-premium.css`) with:
+   - Spring physics animations (Apple-like bounces)
+   - iOS system colors and safe area support
+   - Touch interactions with tap states
+   - Glassmorphism effects
+   - Keyboard and input optimization (prevents iOS zoom)
+   - Reduced motion support (accessibility)
+2. ✅ **Enhanced Haptic System** (`haptic.js`) with 40+ feedback patterns:
+   - Selection/Deselection haptics
+   - Menu open/close
+   - Picks panel interactions (pickSelect, pickDeselect, picksConfirm, picksOpen)
+   - Premium effects (sparkle, magic, celebration)
+   - Keyboard and scroll feedback
+   - Pet-specific haptics
+3. ✅ Typography improvements (SF Pro feel, anti-aliased)
+4. ✅ Safe area insets for notched iPhones
 
 ### Personalized Picks Flow (COMPLETE)
 1. ✅ User opens PersonalizedPicksPanel from Mira interface
