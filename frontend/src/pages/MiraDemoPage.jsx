@@ -221,6 +221,8 @@ const MiraDemoPage = () => {
   const [showTopPicksPanel, setShowTopPicksPanel] = useState(false);
   // UNIFIED PICKS VAULT: Replaces the old vault with tabbed interface
   const [showUnifiedVault, setShowUnifiedVault] = useState(false);
+  // PICKS FROM CHAT: Items added to request from chat pick cards
+  const [chatPicksRequest, setChatPicksRequest] = useState([]);
   
   // Core conversation state
   const [query, setQuery] = useState('');
