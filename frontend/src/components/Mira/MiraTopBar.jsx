@@ -344,12 +344,6 @@ const MiraTopBar = ({
         <button
           className="mtb-tab"
           onClick={(e) => {
-            e.preventDefault();
-            hapticFeedback.buttonTap(e);
-            onOpenPastChats?.();
-          }}
-          onTouchEnd={(e) => {
-            e.preventDefault();
             hapticFeedback.buttonTap(e);
             onOpenPastChats?.();
           }}
