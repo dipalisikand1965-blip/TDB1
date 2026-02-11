@@ -56,8 +56,44 @@ const MiraTopBar = ({
   const navigate = useNavigate();
   const [showReminders, setShowReminders] = useState(false);
   const [showConcierge, setShowConcierge] = useState(false);
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0 });
   const remindersRef = useRef(null);
   const conciergeRef = useRef(null);
+  const remindersBtnRef = useRef(null);
+  const conciergeBtnRef = useRef(null);
+
+  // Calculate dropdown position when opening
+  const openReminders = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    hapticFeedback.light();
+    
+    if (remindersBtnRef.current) {
+      const rect = remindersBtnRef.current.getBoundingClientRect();
+      setDropdownPos({
+        top: rect.bottom + 8,
+        left: rect.left + rect.width / 2
+      });
+    }
+    setShowReminders(!showReminders);
+    setShowConcierge(false);
+  };
+
+  const openConcierge = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    hapticFeedback.light();
+    
+    if (conciergeBtnRef.current) {
+      const rect = conciergeBtnRef.current.getBoundingClientRect();
+      setDropdownPos({
+        top: rect.bottom + 8,
+        left: rect.left + rect.width / 2
+      });
+    }
+    setShowConcierge(!showConcierge);
+    setShowReminders(false);
+  };
 
   // Close dropdowns when clicking outside
   useEffect(() => {
