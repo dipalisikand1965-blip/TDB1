@@ -486,8 +486,9 @@ const ProductCard = ({ product, pillar = 'celebrate', selectedPet = null, miraCo
   );
 };
 
-const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null, miraContext = null, onClose }) => {
+const ProductDetailModal = ({ product, pillar = 'celebrate', selectedPet = null, miraContext = null, onClose, onAddToPicks = null }) => {
   // miraContext is now always passed (effectiveMiraContext from parent)
+  // onAddToPicks - callback for Mira picks panel (instead of cart)
   
   // Extract options from product (e.g., Base, Flavour, Weight)
   const productOptions = product.options || [];
