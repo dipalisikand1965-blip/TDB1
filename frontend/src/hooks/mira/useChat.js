@@ -686,15 +686,10 @@ export const buildMemoryPrefix = (memoryContext) => {
  * @returns {number} - Delay in milliseconds
  */
 export const calculateVoiceDelay = (text, miraMode) => {
-  if (!text) return 0;
-  
-  const typingSpeed = miraMode === 'comfort' ? 25 : 
-                      miraMode === 'emergency' ? 50 :
-                      miraMode === 'instant' ? 60 : 40;
-  const typingTime = (text.length / typingSpeed) * 1000;
-  
-  // Cap at 3 seconds to avoid too long wait
-  return Math.min(typingTime + 500, 3000);
+  // Voice starts immediately with no delay for better sync
+  // The text typing animation and voice happen in parallel
+  // This gives a more natural "Mira is speaking" experience
+  return 0; // Start voice immediately
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
