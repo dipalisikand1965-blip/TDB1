@@ -1251,21 +1251,33 @@ async def get_pillar_picks(
     # Generate Concierge picks from our detailed suggestions
     concierge_picks = []
     pillar_suggestions = CONCIERGE_SUGGESTIONS.get(pillar, [])
+    pet_name = pet.get('name', 'your pet')
     
     for i, suggestion in enumerate(pillar_suggestions[:5]):  # Up to 5 concierge suggestions
+        # Replace {pet} placeholder with actual pet name
+        why_it_fits = suggestion.get("why_it_fits", "").replace("{pet}", pet_name)
+        what_we_source = suggestion.get("what_we_source", "").replace("{pet}", pet_name)
+        selection_rules = [rule.replace("{pet}", pet_name) for rule in suggestion.get("selection_rules", [])]
+        questions = [q.replace("{pet}", pet_name) for q in suggestion.get("questions", [])]
+        
         concierge_card = {
-            "id": f"concierge-{pillar}-{i}-{pet.get('name', 'pet')}",
+            "id": f"concierge-{pillar}-{i}-{pet_name}",
             "name": suggestion["name"],
-            "price": None,  # Concierge will source and get back with price
+            "price": None,
             "image": None,
             "type": "concierge_suggestion",
             "pick_type": "concierge",
-            "icon": suggestion.get("icon", "sparkles"),  # Lucide icon name
-            "gradient": suggestion.get("gradient", ["#8B5CF6", "#EC4899"]),  # Gradient colors
-            "why_reason": f"Our Concierge® will curate this specially for {pet.get('name', 'your pet')}",
-            "score": 50 - i,  # Descending score for ordering
+            "icon": suggestion.get("icon", "sparkles"),
+            "gradient": suggestion.get("gradient", ["#8B5CF6", "#EC4899"]),
+            "spec_chip": suggestion.get("spec_chip", "Custom"),
+            "why_it_fits": why_it_fits,
+            "what_we_source": what_we_source,
+            "selection_rules": selection_rules,
+            "safety_note": suggestion.get("safety_note", ""),
+            "questions": questions,
+            "handpicked_for": pet_name,  # "Handpicked for Lola"
+            "score": 50 - i,
             "badges": [],
-            "specs": suggestion.get("specs", [])
         }
         concierge_picks.append(concierge_card)
     
