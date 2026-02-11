@@ -887,14 +887,54 @@ const PersonalizedPicksPanel = ({
                       </h3>
                       <div className="space-y-3">
                         {conciergePicks.slice(0, showAllConcierge ? 10 : 4).map((pick, index) => (
-                          <ExpandablePickCard
+                          <div 
                             key={pick.id || index}
-                            pick={pick}
-                            isSelected={isSelected(pick)}
-                            onSelect={toggleSelection}
-                            petName={pet?.name}
-                            type="concierge"
-                          />
+                            className={`p-3 rounded-xl bg-gradient-to-br from-purple-900/40 to-pink-900/20 border border-purple-500/30 cursor-pointer hover:border-purple-400 transition-all active:scale-[0.98] ${
+                              isSelected(pick) ? 'ring-2 ring-pink-500' : ''
+                            }`}
+                            onClick={() => {
+                              hapticFeedback.buttonTap();
+                              setSelectedConcierge(pick);
+                            }}
+                          >
+                            <div className="flex items-center gap-3">
+                              {/* Icon/Badge */}
+                              <div className="w-14 h-14 rounded-lg bg-gradient-to-br from-pink-500 to-purple-500 flex items-center justify-center flex-shrink-0">
+                                <Sparkles className="w-6 h-6 text-white" />
+                              </div>
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <span className="px-2 py-0.5 bg-pink-500/30 text-pink-300 text-xs rounded-full">
+                                    Concierge Pick
+                                  </span>
+                                </div>
+                                <h4 className="font-medium text-white text-sm truncate">{pick.name}</h4>
+                                {pick.spec_chip && (
+                                  <span className="text-xs text-purple-300">{pick.spec_chip}</span>
+                                )}
+                                {(pick.why_it_fits || pick.why_reason) && (
+                                  <p className="text-xs text-amber-400 mt-1 flex items-center gap-1">
+                                    <Heart className="w-3 h-3" />
+                                    <span className="truncate">{pick.why_it_fits || pick.why_reason}</span>
+                                  </p>
+                                )}
+                              </div>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  hapticFeedback.success();
+                                  toggleSelection(pick);
+                                }}
+                                className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all active:scale-90 ${
+                                  isSelected(pick) 
+                                    ? 'bg-pink-500 text-white' 
+                                    : 'bg-purple-700 text-purple-300 hover:bg-purple-600'
+                                }`}
+                              >
+                                {isSelected(pick) ? <Check className="w-4 h-4" /> : <span className="text-lg">+</span>}
+                              </button>
+                            </div>
+                          </div>
                         ))}
                         {conciergePicks.length > 4 && !showAllConcierge && (
                           <button
