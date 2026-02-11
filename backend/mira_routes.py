@@ -1752,7 +1752,7 @@ async def search_real_products(
             ]
             
             # If pet_context specifies cat, boost cat products
-            if request.pet_context and request.pet_context.get("pet_type") == "cat":
+            if pet_context and pet_context.get("pet_type") == "cat":
                 cat_query = {"pet_type": "cat", "$or": query["$or"]}
                 cat_cursor = db.products_master.find(cat_query, {"_id": 0}).limit(limit)
                 cat_products = await cat_cursor.to_list(length=limit)
