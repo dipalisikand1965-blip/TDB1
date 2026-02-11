@@ -48,10 +48,23 @@ const PILLAR_EMOJIS = {
   shop: '🛒',
 };
 
-// Product/Service Card Component
+// Product/Service Card Component with Haptic & Touch Improvements
 const PickCard = ({ pick, petName, onAddToPicks, onSendToConcierge }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const isConcierge = pick.pick_type === 'concierge';
+  const badges = pick.badges || [];
+  
+  // Build intelligent reasons for tooltip
+  const getReasons = () => {
+    const reasons = [];
+    if (badges.includes('trending')) reasons.push({ icon: '🔥', text: 'Popular with pet parents' });
+    if (badges.includes('new')) reasons.push({ icon: '✨', text: 'Just added' });
+    if (badges.includes('reorder')) reasons.push({ icon: '🔄', text: `${petName} loved this before` });
+    if (badges.includes('birthday')) reasons.push({ icon: '🎂', text: 'Perfect for birthday!' });
+    if (badges.includes('seasonal')) reasons.push({ icon: '⭐', text: 'Great for the season' });
+    if (pick.why_reason) reasons.push({ icon: '💡', text: pick.why_reason });
+    return reasons.length > 0 ? reasons : [{ icon: '🐕', text: `Curated for ${petName}` }];
+  };
   
   return (
     <motion.div
@@ -62,6 +75,7 @@ const PickCard = ({ pick, petName, onAddToPicks, onSendToConcierge }) => {
       }`}
       whileHover={{ scale: 1.02, y: -2 }}
       whileTap={{ scale: 0.98 }}
+      onClick={() => hapticFeedback.light()}
     >
       {/* Image */}
       <div className="relative h-28 bg-gray-100">
@@ -71,6 +85,7 @@ const PickCard = ({ pick, petName, onAddToPicks, onSendToConcierge }) => {
             alt={pick.name}
             className="w-full h-full object-cover"
             loading="lazy"
+            decoding="async"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
@@ -85,9 +100,32 @@ const PickCard = ({ pick, petName, onAddToPicks, onSendToConcierge }) => {
           </div>
         )}
         
+        {/* Smart Badges */}
+        {badges.length > 0 && (
+          <div className="absolute top-2 left-2 flex flex-wrap gap-1">
+            {badges.slice(0, 2).map((badge, i) => {
+              const config = SMART_BADGES[badge];
+              if (!config) return null;
+              const Icon = config.icon;
+              return (
+                <motion.span 
+                  key={i}
+                  className={`px-1.5 py-0.5 text-[9px] font-medium rounded-full flex items-center gap-0.5 ${config.color}`}
+                  initial={{ scale: 0.8, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: i * 0.1 }}
+                >
+                  <Icon className="w-2.5 h-2.5" />
+                  {config.label}
+                </motion.span>
+              );
+            })}
+          </div>
+        )}
+        
         {/* Type badge */}
         {pick.type === 'service' && (
-          <span className="absolute top-2 left-2 px-2 py-0.5 text-[10px] font-medium bg-blue-500 text-white rounded-full">
+          <span className="absolute bottom-2 left-2 px-2 py-0.5 text-[10px] font-medium bg-blue-500 text-white rounded-full">
             Service
           </span>
         )}
