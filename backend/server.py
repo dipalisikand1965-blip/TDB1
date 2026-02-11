@@ -15622,6 +15622,7 @@ app.include_router(mira_concierge_handoff_router)  # Mira Concierge Handoff at /
 app.include_router(mira_service_desk_router)  # Mira Service Desk at /api/mira/route_intent
 app.include_router(service_desk_router)  # Service Desk at /api/service_desk/*
 app.include_router(tts_router, prefix="/api")  # TTS at /api/tts/*
+app.include_router(top_picks_router)  # Top Picks at /api/mira/top-picks/*
 set_mira_db(db)  # Initialize Mira with database
 set_intelligence_db(db)  # Initialize Intelligence with database
 set_memory_routes_db(db)  # Initialize Memory with database
