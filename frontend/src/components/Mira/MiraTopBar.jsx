@@ -19,16 +19,7 @@ import {
   Cloud, Sun, CloudRain, Thermometer
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
-// Haptic feedback utility
-const hapticFeedback = {
-  light: () => {
-    if (window.navigator?.vibrate) window.navigator.vibrate(10);
-  },
-  medium: () => {
-    if (window.navigator?.vibrate) window.navigator.vibrate(20);
-  }
-};
+import hapticFeedback from '../../utils/haptic';
 
 const WHATSAPP_NUMBER = process.env.REACT_APP_WHATSAPP_NUMBER || '919663185747';
 const BUSINESS_EMAIL = process.env.REACT_APP_BUSINESS_EMAIL || 'woof@thedoggybakery.in';
