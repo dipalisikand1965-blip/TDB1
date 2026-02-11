@@ -575,6 +575,7 @@ const PersonalizedPicksPanel = ({
   const [customRequest, setCustomRequest] = useState('');
   const [selectedProduct, setSelectedProduct] = useState(null); // For product detail modal (fallback)
   const [selectedConcierge, setSelectedConcierge] = useState(null); // For concierge detail modal (fallback)
+  const [isSending, setIsSending] = useState(false); // Prevent double submission
   const scrollRef = useRef(null);
   
   // Fetch picks data
