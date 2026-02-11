@@ -225,14 +225,26 @@ const MiraTopBar = ({
           
           {/* Pet photo in center */}
           <div className="mtb-pet-photo">
-            {pet?.image_url || pet?.photo_url ? (
+            {(pet?.image_url || pet?.photo_url) ? (
               <img 
-                src={pet.image_url || pet.photo_url} 
-                alt={pet?.name || 'Pet'} 
+                src={
+                  (pet.image_url || pet.photo_url)?.startsWith('http') 
+                    ? (pet.image_url || pet.photo_url)
+                    : `${API_URL}${pet.image_url || pet.photo_url}`
+                } 
+                alt={pet?.name || 'Pet'}
+                onError={(e) => {
+                  e.target.style.display = 'none';
+                  e.target.nextSibling && (e.target.nextSibling.style.display = 'flex');
+                }}
               />
-            ) : (
-              <span className="mtb-pet-initial">{pet?.name?.[0] || '🐕'}</span>
-            )}
+            ) : null}
+            <span 
+              className="mtb-pet-initial" 
+              style={{ display: (pet?.image_url || pet?.photo_url) ? 'none' : 'flex' }}
+            >
+              {pet?.name?.[0] || '🐕'}
+            </span>
           </div>
           
           {/* Soul score label */}
