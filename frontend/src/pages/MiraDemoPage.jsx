@@ -3933,6 +3933,59 @@ const MiraDemoPage = () => {
                 />
               )}
               
+              {/* SEND TO CONCIERGE CONFIRMATION CARD - Shows when user selects a pick */}
+              {pendingPicksForConfirm && pendingPicksForConfirm.length > 0 && (
+                <div className="mp-msg-mira" data-testid="confirm-picks-message">
+                  <div className="mp-mira-avatar">
+                    <Sparkles className="w-4 h-4 text-white" />
+                  </div>
+                  <div className="mp-mira-body" style={{ padding: 0, background: 'transparent' }}>
+                    <SendToConciergeChatCard
+                      items={pendingPicksForConfirm}
+                      petName={pet?.name || 'your pet'}
+                      onConfirm={async (additionalNotes) => {
+                        // Send to concierge API
+                        try {
+                          await fetch(`${API_URL}/api/concierge/picks-request`, {
+                            method: 'POST',
+                            headers: {
+                              'Content-Type': 'application/json',
+                              ...(token && { Authorization: `Bearer ${token}` })
+                            },
+                            body: JSON.stringify({
+                              pet_name: pet?.name,
+                              selected_items: pendingPicksForConfirm,
+                              additional_notes: additionalNotes,
+                              timestamp: new Date().toISOString()
+                            })
+                          });
+                          
+                          // Add success message
+                          const count = pendingPicksForConfirm.length;
+                          const confirmationMessage = {
+                            type: 'mira',
+                            content: `✨ Your ${count} personalized pick${count > 1 ? 's' : ''} for ${pet?.name} have been sent to your Concierge®! They're reviewing your selections now and will get back to you shortly to help arrange everything. Is there anything else I can help you with?`,
+                            timestamp: new Date().toISOString(),
+                            metadata: {
+                              type: 'picks_confirmation',
+                              itemCount: count,
+                              petName: pet?.name
+                            }
+                          };
+                          setConversationHistory(prev => [...prev, confirmationMessage]);
+                          setPendingPicksForConfirm(null);
+                        } catch (err) {
+                          console.error('Error sending to concierge:', err);
+                        }
+                      }}
+                      onCancel={() => {
+                        setPendingPicksForConfirm(null);
+                      }}
+                    />
+                  </div>
+                </div>
+              )}
+              
               <div ref={messagesEndRef} />
               
               {/* CONVERSATION COMPLETE BANNER - Compact, non-intrusive */}
