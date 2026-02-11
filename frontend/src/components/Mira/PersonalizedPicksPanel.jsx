@@ -859,15 +859,8 @@ const PersonalizedPicksPanel = ({
                             }`}
                             onClick={() => {
                               hapticFeedback.buttonTap();
-                              // Show confirmation card in chat
-                              const itemWithMeta = {
-                                ...pick,
-                                pick_type: 'catalogue',
-                                pillar: activePillar,
-                                addedAt: new Date().toISOString()
-                              };
-                              onShowConfirmCard?.([itemWithMeta]);
-                              onClose();
+                              // Add/remove from selection (multi-select)
+                              toggleSelection(pick, 'catalogue');
                             }}
                           >
                             <div className="flex items-center gap-3">
@@ -886,26 +879,21 @@ const PersonalizedPicksPanel = ({
                                   <span className="text-xs text-gray-400">{pick.category}</span>
                                 )}
                                 {(pick.why_it_fits || pick.why_reason) && (
-                                  <p className="text-xs text-amber-400 mt-1 flex items-center gap-1">
+                                  <p className="text-xs text-purple-300 mt-1 flex items-center gap-1">
                                     <Heart className="w-3 h-3" />
                                     <span className="truncate">{pick.why_it_fits || pick.why_reason}</span>
                                   </p>
                                 )}
                               </div>
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  hapticFeedback.success();
-                                  toggleSelection(pick);
-                                }}
-                                className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all active:scale-90 ${
+                              <div
+                                className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 transition-all ${
                                   isSelected(pick) 
                                     ? 'bg-pink-500 text-white' 
-                                    : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
+                                    : 'bg-gray-700 text-gray-400'
                                 }`}
                               >
                                 {isSelected(pick) ? <Check className="w-4 h-4" /> : <span className="text-lg">+</span>}
-                              </button>
+                              </div>
                             </div>
                           </div>
                         ))}
