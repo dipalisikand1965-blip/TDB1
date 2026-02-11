@@ -125,22 +125,15 @@ const WelcomeHero = ({
             ))}
           </div>
           
-          {/* Health Vault Prompt - REMOVED: Now accessible via Reminders dropdown */}
-                </p>
-              </div>
-              <ChevronRight className="vault-arrow" />
-            </div>
-          )}
-          
-          {/* Proactive Alerts - REMOVED: Now in MiraTopBar Reminders dropdown */}
+          {/* Health Vault & Proactive Alerts - REMOVED: Now in MiraTopBar Reminders dropdown */}
         </div>
       </div>
       
-      {/* Feature Showcase */}
+      {/* Feature Showcase - Clean "Try asking Mira" section */}
       <div className="mira-feature-showcase" data-testid="feature-showcase">
-        <div className="feature-showcase-header">
+        <div className="feature-showcase-header" style={{ justifyContent: 'center' }}>
           <Sparkles className="w-4 h-4" />
-          <span>What can Mira help with?</span>
+          <span>Try asking Mira:</span>
         </div>
         
         {/* Weather Card */}
