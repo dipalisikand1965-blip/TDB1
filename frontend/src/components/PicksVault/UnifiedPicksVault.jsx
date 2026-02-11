@@ -726,6 +726,7 @@ const UnifiedPicksVault = ({
   const [selectedItems, setSelectedItems] = useState(new Set());
   const [selectionMode, setSelectionMode] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [showConfirmation, setShowConfirmation] = useState(false);  // Concierge confirmation modal
   
   const season = getCurrentSeason();
   const birthdayNear = isPetBirthdayNear(pet);
