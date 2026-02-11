@@ -6,16 +6,23 @@ This endpoint powers the "Top Picks for [Pet]" panel that shows
 intelligent, pet-aware recommendations across all pillars.
 """
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException
 from typing import Optional, Dict, Any, List
 import logging
 from datetime import datetime
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
-from ..database import get_database
-
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/mira", tags=["top-picks"])
+
+# Module-level database reference
+db: AsyncIOMotorDatabase = None
+
+def set_top_picks_db(database: AsyncIOMotorDatabase):
+    """Set the database reference for top picks routes."""
+    global db
+    db = database
+    logger.info("Top Picks routes initialized with database")
 
 # Pillars to include in Top Picks (excluding Adopt & Farewell)
 INCLUDED_PILLARS = [
