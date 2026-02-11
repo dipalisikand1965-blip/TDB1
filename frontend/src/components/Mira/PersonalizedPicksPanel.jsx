@@ -1039,9 +1039,15 @@ const PersonalizedPicksPanel = ({
               selectedPet={pet}
               miraContext={{
                 petName: pet?.name,
-                source: 'picks_panel'
+                source: 'picks_panel',
+                includeText: 'Add to Picks'
               }}
-              onClose={() => setSelectedProduct(null)} 
+              onClose={() => setSelectedProduct(null)}
+              onAddToPicks={(productWithOptions) => {
+                hapticFeedback.success();
+                toggleSelection(productWithOptions);
+                setSelectedProduct(null);
+              }}
             />,
             document.body
           )}
