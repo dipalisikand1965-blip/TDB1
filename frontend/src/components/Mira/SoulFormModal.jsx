@@ -399,7 +399,7 @@ const SoulFormModal = ({
               </div>
               
               <p className="text-center text-white/40 text-sm mt-4">
-                Question {currentStep + 1} of {QUICK_SOUL_QUESTIONS.length}
+                Question {currentStep + 1} of {unansweredQuestions.length}
               </p>
             </div>
           )}
