@@ -351,7 +351,8 @@ const MiraTopBar = ({
                   ))}
                 </div>
               )}
-            </div>
+            </div>,
+            document.body
           )}
         </div>
 
