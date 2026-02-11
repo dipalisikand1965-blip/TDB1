@@ -665,7 +665,8 @@ const ExpandablePickCard = ({
   onAdd, 
   onSendToConcierge,
   isSelected, 
-  onToggleSelect 
+  onToggleSelect,
+  onOpenModal  // NEW: Open full product modal
 }) => {
   const [showDetails, setShowDetails] = useState(false);
   const petName = pet?.name || 'your pet';
@@ -673,19 +674,29 @@ const ExpandablePickCard = ({
   return (
     <>
       <motion.div
-        className={`relative flex-shrink-0 w-36 rounded-xl overflow-hidden bg-white border ${
+        className={`relative flex-shrink-0 w-36 rounded-xl overflow-hidden bg-white border cursor-pointer ${
           isSelected ? 'border-amber-400 ring-2 ring-amber-400/30' : 'border-gray-200'
         }`}
         whileHover={{ scale: 1.03 }}
         whileTap={{ scale: 0.98 }}
         onClick={() => {
-          hapticFeedback.toggle();
-          onToggleSelect?.();
+          hapticFeedback.buttonTap();
+          // Open product modal if handler provided, otherwise toggle selection
+          if (onOpenModal && pick.id) {
+            onOpenModal(pick);
+          } else {
+            onToggleSelect?.();
+          }
         }}
       >
-        {/* Selection indicator */}
-        <div 
-          className={`absolute top-2 left-2 w-6 h-6 rounded-full flex items-center justify-center z-10 transition-all ${
+        {/* Selection checkbox - separate from card click */}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            hapticFeedback.toggle();
+            onToggleSelect?.();
+          }}
+          className={`absolute top-2 left-2 w-7 h-7 rounded-full flex items-center justify-center z-10 transition-all touch-manipulation ${
             isSelected 
               ? 'bg-amber-400 shadow-md' 
               : 'bg-white/90 border border-gray-300'
@@ -696,7 +707,7 @@ const ExpandablePickCard = ({
           ) : (
             <div className="w-2 h-2 rounded-full bg-gray-300" />
           )}
-        </div>
+        </button>
         
         {/* Info button */}
         <button
@@ -705,7 +716,7 @@ const ExpandablePickCard = ({
             hapticFeedback.buttonTap();
             setShowDetails(true);
           }}
-          className="absolute top-2 right-2 w-7 h-7 rounded-full bg-white/90 flex items-center justify-center hover:bg-white z-10 shadow-sm"
+          className="absolute top-2 right-2 w-7 h-7 rounded-full bg-white/90 flex items-center justify-center hover:bg-white z-10 shadow-sm touch-manipulation"
         >
           <Info className="w-4 h-4 text-gray-500" />
         </button>
