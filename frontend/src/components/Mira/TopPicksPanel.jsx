@@ -130,28 +130,45 @@ const PickCard = ({ pick, petName, onAddToPicks, onSendToConcierge }) => {
           </span>
         )}
         
-        {/* Info tooltip trigger */}
+        {/* Info tooltip trigger - 44px touch target */}
         <button
-          className="absolute top-2 right-2 w-5 h-5 rounded-full bg-white/80 flex items-center justify-center hover:bg-white"
+          className="absolute top-2 right-2 w-11 h-11 rounded-full bg-white/80 flex items-center justify-center hover:bg-white touch-manipulation"
           onClick={(e) => {
             e.stopPropagation();
+            hapticFeedback.light();
             setShowTooltip(!showTooltip);
           }}
         >
-          <Info className="w-3 h-3 text-gray-600" />
+          <Info className="w-4 h-4 text-gray-600" />
         </button>
         
-        {/* Tooltip */}
+        {/* Enhanced "Why this pick?" Tooltip */}
         <AnimatePresence>
           {showTooltip && (
             <motion.div
-              initial={{ opacity: 0, y: -5 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -5 }}
-              className="absolute top-10 right-2 left-2 bg-gray-900 text-white text-xs p-2 rounded-lg z-10"
+              initial={{ opacity: 0, y: -5, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -5, scale: 0.95 }}
+              className="absolute top-12 right-2 left-2 bg-gray-900 text-white text-xs p-3 rounded-xl z-20 shadow-xl"
+              onClick={(e) => e.stopPropagation()}
             >
-              <p className="font-medium mb-1">Why this pick?</p>
-              <p className="text-gray-300">{pick.why_reason}</p>
+              <div className="flex items-center justify-between mb-2">
+                <span className="font-semibold text-amber-400">Why this pick?</span>
+                <button 
+                  onClick={() => setShowTooltip(false)}
+                  className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </div>
+              <div className="space-y-1.5">
+                {getReasons().map((reason, i) => (
+                  <div key={i} className="flex items-start gap-2">
+                    <span>{reason.icon}</span>
+                    <span className="text-gray-200">{reason.text}</span>
+                  </div>
+                ))}
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
