@@ -656,96 +656,242 @@ const PickCard = ({
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// BEAUTIFUL CONCIERGE CARD - Gradient icons, stunning design
+// BEAUTIFUL CONCIERGE CARD - Matching the design spec exactly
+// Shows: Concierge Pick badge, icon, title, "Handpicked for Pet", why it fits, spec chip, Request button
+// Info panel shows: what we source, selection rules, safety note, questions
 // ═══════════════════════════════════════════════════════════════════════════════
 const ConciergeCard = ({ 
   pick, 
   pet, 
   onSelect, 
   isSelected, 
-  selectable = false 
+  selectable = false,
+  onRequest
 }) => {
+  const [showDetails, setShowDetails] = useState(false);
   const IconComponent = ICON_MAP[pick.icon] || Sparkles;
-  const gradient = pick.gradient || ['#8B5CF6', '#EC4899'];
+  const petName = pet?.name || 'your pet';
   
   return (
-    <motion.div
-      className={`relative flex-shrink-0 w-32 rounded-2xl overflow-hidden ${
-        isSelected ? 'ring-2 ring-amber-400 ring-offset-2' : ''
-      }`}
-      style={{
-        background: `linear-gradient(135deg, ${gradient[0]}15 0%, ${gradient[1]}15 100%)`,
-        border: `1.5px solid ${gradient[0]}30`,
-      }}
-      whileHover={{ scale: 1.05, y: -4 }}
-      whileTap={{ scale: 0.95 }}
-      onClick={() => {
-        hapticFeedback.toggle();
-        if (selectable) onSelect?.(pick);
-      }}
-    >
-      {/* Selection indicator */}
-      {selectable && (
-        <motion.div 
-          className={`absolute top-2 right-2 w-6 h-6 rounded-full flex items-center justify-center z-10 ${
-            isSelected ? 'bg-amber-400' : 'bg-white/80'
-          }`}
-          initial={false}
-          animate={{ scale: isSelected ? 1 : 0.9 }}
-        >
-          {isSelected ? (
-            <Check className="w-4 h-4 text-white" />
-          ) : (
-            <div className="w-3 h-3 rounded-full border-2 border-gray-300" />
-          )}
-        </motion.div>
-      )}
-      
-      {/* Icon with gradient background */}
-      <div className="pt-4 pb-2 flex justify-center">
-        <motion.div
-          className="w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg"
-          style={{
-            background: `linear-gradient(135deg, ${gradient[0]} 0%, ${gradient[1]} 100%)`,
-          }}
-          whileHover={{ rotate: [0, -5, 5, 0] }}
-          transition={{ duration: 0.3 }}
-        >
-          <IconComponent className="w-7 h-7 text-white" />
-        </motion.div>
-      </div>
-      
-      {/* Content */}
-      <div className="px-2 pb-3 text-center">
-        <h4 className="text-[11px] font-semibold text-gray-800 leading-tight line-clamp-2 mb-1.5">
-          {pick.name}
-        </h4>
-        
-        {/* Specs tags */}
-        <div className="flex flex-wrap justify-center gap-1">
-          {pick.specs?.slice(0, 1).map((spec, i) => (
-            <span 
-              key={i}
-              className="text-[9px] px-1.5 py-0.5 rounded-full font-medium"
-              style={{
-                background: `${gradient[0]}20`,
-                color: gradient[0],
-              }}
-            >
-              {spec}
-            </span>
-          ))}
-        </div>
-      </div>
-      
-      {/* Bottom accent line */}
-      <div 
-        className="h-1 w-full"
+    <>
+      <motion.div
+        className={`relative flex-shrink-0 w-40 rounded-2xl overflow-hidden bg-white ${
+          isSelected ? 'ring-2 ring-pink-400 ring-offset-2' : ''
+        }`}
         style={{
-          background: `linear-gradient(90deg, ${gradient[0]} 0%, ${gradient[1]} 100%)`,
+          border: '2px dashed #E879F9',
+          minHeight: '280px',
         }}
-      />
-    </motion.div>
+        whileHover={{ scale: 1.02, y: -2 }}
+        whileTap={{ scale: 0.98 }}
+        onClick={() => {
+          if (selectable) {
+            hapticFeedback.toggle();
+            onSelect?.(pick);
+          }
+        }}
+      >
+        {/* Top badge row */}
+        <div className="flex items-center justify-between px-2 pt-2">
+          <span className="px-2 py-1 text-[10px] font-semibold text-purple-600 bg-purple-50 rounded-full flex items-center gap-1">
+            <Sparkles className="w-3 h-3" />
+            Concierge Pick
+          </span>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              hapticFeedback.buttonTap();
+              setShowDetails(true);
+            }}
+            className="w-7 h-7 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200"
+          >
+            <Info className="w-4 h-4 text-gray-500" />
+          </button>
+        </div>
+        
+        {/* Selection indicator */}
+        {selectable && (
+          <motion.div 
+            className={`absolute top-2 left-2 w-5 h-5 rounded-full flex items-center justify-center z-10 ${
+              isSelected ? 'bg-pink-500' : 'bg-white border-2 border-gray-300'
+            }`}
+          >
+            {isSelected && <Check className="w-3 h-3 text-white" />}
+          </motion.div>
+        )}
+        
+        {/* Icon */}
+        <div className="flex justify-center py-3">
+          <div className="relative">
+            <IconComponent className="w-12 h-12 text-gray-800" strokeWidth={1.5} />
+            {/* Sparkle accents */}
+            <div className="absolute -top-1 -right-1 w-2 h-2 text-gray-400">✦</div>
+            <div className="absolute -bottom-1 -left-1 w-2 h-2 text-gray-400">✦</div>
+          </div>
+        </div>
+        
+        {/* Content */}
+        <div className="px-3 pb-2 text-center">
+          <h4 className="text-sm font-semibold text-gray-900 leading-tight line-clamp-2 mb-1">
+            {pick.name}
+          </h4>
+          
+          {/* Handpicked for Pet */}
+          <p className="text-xs text-purple-600 font-medium mb-2">
+            Handpicked for {petName}
+          </p>
+          
+          {/* Why it fits */}
+          <p className="text-[11px] text-gray-600 leading-snug line-clamp-3 mb-2">
+            {pick.why_it_fits}
+          </p>
+          
+          {/* Spec chip */}
+          <span className="inline-block px-2.5 py-1 text-[10px] font-medium text-pink-600 bg-pink-50 rounded-full border border-pink-200">
+            {pick.spec_chip}
+          </span>
+        </div>
+        
+        {/* Handpicked label */}
+        <div className="px-3 pb-2 text-center">
+          <p className="text-[10px] text-gray-500">Handpicked for {petName}</p>
+        </div>
+        
+        {/* Request Button */}
+        <div className="px-2 pb-2">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              hapticFeedback.toggle();
+              if (selectable) {
+                onSelect?.(pick);
+              } else {
+                onRequest?.(pick);
+              }
+            }}
+            className="w-full py-2.5 text-sm font-semibold text-white rounded-xl flex items-center justify-center gap-1.5 min-h-[42px] touch-manipulation"
+            style={{
+              background: 'linear-gradient(135deg, #EC4899 0%, #A855F7 100%)',
+            }}
+          >
+            Request
+          </button>
+        </div>
+      </motion.div>
+      
+      {/* Details Modal */}
+      <AnimatePresence>
+        {showDetails && (
+          <motion.div
+            className="fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowDetails(false)}
+          >
+            <motion.div
+              className="bg-white rounded-2xl w-full max-w-sm max-h-[80vh] overflow-hidden shadow-2xl"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Header */}
+              <div className="p-4 border-b border-gray-100 flex items-start justify-between">
+                <div className="flex items-center gap-3">
+                  <div 
+                    className="w-12 h-12 rounded-xl flex items-center justify-center"
+                    style={{
+                      background: `linear-gradient(135deg, ${pick.gradient?.[0] || '#8B5CF6'} 0%, ${pick.gradient?.[1] || '#EC4899'} 100%)`,
+                    }}
+                  >
+                    <IconComponent className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">{pick.name}</h3>
+                    <p className="text-xs text-purple-600">Handpicked for {petName}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowDetails(false)}
+                  className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center"
+                >
+                  <X className="w-4 h-4 text-gray-600" />
+                </button>
+              </div>
+              
+              {/* Content */}
+              <div className="p-4 overflow-y-auto" style={{ maxHeight: 'calc(80vh - 140px)' }}>
+                {/* What we will source */}
+                <div className="mb-4">
+                  <h4 className="text-sm font-semibold text-gray-700 mb-1">What we will source</h4>
+                  <p className="text-sm text-gray-600">{pick.what_we_source}</p>
+                </div>
+                
+                {/* Selection rules */}
+                <div className="mb-4">
+                  <h4 className="text-sm font-semibold text-gray-700 mb-2">Selection rules</h4>
+                  <ul className="space-y-1.5">
+                    {pick.selection_rules?.map((rule, i) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
+                        <Check className="w-4 h-4 text-green-500 flex-shrink-0 mt-0.5" />
+                        {rule}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                
+                {/* Safety note */}
+                {pick.safety_note && (
+                  <div className="mb-4 p-3 bg-amber-50 rounded-xl border border-amber-200">
+                    <div className="flex items-start gap-2">
+                      <AlertCircle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-xs font-semibold text-amber-700">Safety note</p>
+                        <p className="text-xs text-amber-600">{pick.safety_note}</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+                
+                {/* What we need from you */}
+                {pick.questions?.length > 0 && (
+                  <div className="mb-4">
+                    <h4 className="text-sm font-semibold text-gray-700 mb-2">What we'll ask you</h4>
+                    <div className="space-y-2">
+                      {pick.questions.map((q, i) => (
+                        <div key={i} className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
+                          <MessageSquarePlus className="w-4 h-4 text-purple-500" />
+                          <span className="text-sm text-gray-600">{q}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              {/* Footer */}
+              <div className="p-4 border-t border-gray-100">
+                <button
+                  onClick={() => {
+                    hapticFeedback.success();
+                    onRequest?.(pick);
+                    setShowDetails(false);
+                  }}
+                  className="w-full py-3 text-white font-semibold rounded-xl flex items-center justify-center gap-2"
+                  style={{
+                    background: 'linear-gradient(135deg, #EC4899 0%, #A855F7 100%)',
+                  }}
+                >
+                  <Send className="w-4 h-4" />
+                  Request This
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 
