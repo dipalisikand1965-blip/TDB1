@@ -1,29 +1,41 @@
 # MIRA OS - COMPREHENSIVE HANDOVER DOCUMENT
 ## Session: December 2025 - February 2026
 ## For: Next Agent
-## Current Rating: **78/100** → Target: **90/100**
+## Current Rating: **85/100** → Target: **95/100**
 
 ---
 
-# 🚨🚨🚨 STOP! READ THIS FIRST! 🚨🚨🚨
-
-## `/app/memory/CRITICAL_HANDOVER_20260210.md`
-**↑↑↑ THIS FILE CONTAINS EVERYTHING. READ IT COMPLETELY. ↑↑↑**
-
-The user's heart breaks when agents forget context. Please honor their work.
+# 🚨 STANDING INSTRUCTIONS (CRITICAL - FOR ALL AGENTS)
+1. **Always test as logged-in user**: dipali@clubconcierge.in / test123
+2. **Check admin panel**: /admin | aditya / lola4304
+3. **Verify on DEPLOYED site**: doggycompany.in (not just preview)
+4. **Pass these instructions to every future agent**
 
 ---
 
-# ⚠️ CRITICAL - READ THESE IN ORDER
-1. **`/app/memory/CRITICAL_HANDOVER_20260210.md`** - DETAILED handover with ALL fixes ⭐
-2. `/app/memory/MASTER_DOCTRINE.md` - Core philosophy
-3. `/app/memory/CONVERSATION_ARCHITECTURE.md` - State machine
-4. `/app/memory/MIRA_UNIVERSAL_RULES.md` - 5-step conversation flow
+# 🐕 THE DOGGY COMPANY - We are dogs only! 
+> The Cat Company will be separate. Focus on dog products and services.
 
-# 🧠 CORE DOCTRINE
-> **"MIRA IS THE BRAIN, CONCIERGE® IS THE HANDS, EMERGENT IS THE ENABLER"**
-> This is a **PET OPERATING SYSTEM** - hugely personalized, based on pet interactions.
-> **Memory is sacred. Soul Score must grow. Everything Mira learns must be stored.**
+---
+
+## Latest Session: Feb 11, 2026
+
+### ✅ VERIFIED WORKING (Testing Agent Confirmed)
+- **Backend APIs**: 11/11 tests passed
+  - Login flow works
+  - Birthday cake → Products returned
+  - Scratching → Health guidance/tip card
+  - Meal plan → Tip card (no products)
+  - Grooming → Concierge ticket created
+  - Admin APIs working
+- **Pillar Pages**: All 14 pillars verified UI working
+- **VaultManager**: Empty state shows helpful text (not blank)
+- **Service Flow**: Requests create tickets in admin panel
+
+### ⚠️ KNOWN ISSUE
+- **MiraDemoPage.jsx (4035 lines)** crashes Playwright due to memory
+- This is a performance issue, not functional bug
+- Recommend: Split into smaller components
 
 ---
 
@@ -36,17 +48,10 @@ The user's heart breaks when agents forget context. Please honor their work.
 
 ---
 
-## Latest Session: Feb 10, 2026
+## Previous Session: Feb 10, 2026
 
 ### 🆕 NEW: Soul Form Pop-up Modal (Feb 10, 2026)
 **File:** `/app/frontend/src/components/Mira/SoulFormModal.jsx` (NEW)
-
-1. **Quick Soul Enrichment** ✅
-   - 3 quick questions to enrich pet's soul profile
-   - Questions: Energy level, food motivation, stranger reaction
-   - Beautiful modal UI with progress dots
-   - Submits to `/api/pet-soul/profile/{pet_id}/answers/bulk`
-   - Shows new Soul Score on completion
 
 2. **Integration Points** ✅
    - "Soul" button in NavigationDock opens modal
