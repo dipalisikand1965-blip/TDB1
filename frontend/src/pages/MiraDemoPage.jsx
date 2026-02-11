@@ -966,9 +966,12 @@ const MiraDemoPage = () => {
     setUserHasOptedInForProducts(false);
     setShowPastChats(false);
     
+    // Clear picks/tips (tip cards are session-specific)
+    clearPicks();
+    
     console.log('[SESSION] Started new session:', newSessionId, 'for pet:', pet.name);
     return newSessionId;
-  }, [baseStartNewSession, pet.name]);
+  }, [baseStartNewSession, pet.name, clearPicks]);
   
   // ═══════════════════════════════════════════════════════════════════════════════
   // IDLE TIMEOUT - Auto-save conversation after 5 minutes of inactivity
