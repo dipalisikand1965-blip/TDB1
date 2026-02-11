@@ -4120,6 +4120,20 @@ const MiraDemoPage = () => {
             onClose={() => setShowTopPicksPanel(false)}
             pet={pet}
             token={token}
+            onSendSuccess={(data) => {
+              // Add confirmation message to chat
+              const confirmationMessage = {
+                type: 'mira',
+                content: `✨ Your ${data.count} personalized picks for ${data.petName} have been sent to your Concierge®! They're reviewing your selections now and will get back to you shortly to help arrange everything. Is there anything else I can help you with?`,
+                timestamp: new Date().toISOString(),
+                metadata: {
+                  type: 'picks_confirmation',
+                  itemCount: data.count,
+                  petName: data.petName
+                }
+              };
+              setConversationHistory(prev => [...prev, confirmationMessage]);
+            }}
           />
         </Suspense>
       )}
