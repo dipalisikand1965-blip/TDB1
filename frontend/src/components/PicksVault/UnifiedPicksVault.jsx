@@ -1887,16 +1887,16 @@ const UnifiedPicksVault = ({
             className="sticky bottom-0 bg-white border-t border-gray-100 px-4 py-3"
             style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 12px)' }}
           >
-            {selectionMode && selectedItems.size > 0 ? (
+            {selectedItems.size > 0 ? (
               <button
                 onClick={() => {
                   hapticFeedback.toggle();
-                  setShowConfirmation(true);  // Open confirmation modal
+                  setShowConfirmation(true);
                 }}
-                className="w-full py-3.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium rounded-xl flex items-center justify-center gap-2 min-h-[52px] touch-manipulation active:opacity-90"
+                className="w-full py-3.5 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-medium rounded-xl flex items-center justify-center gap-2 min-h-[52px] touch-manipulation active:opacity-90 shadow-lg"
               >
                 <Send className="w-5 h-5" />
-                Send {selectedItems.size} item{selectedItems.size > 1 ? 's' : ''} to Concierge®
+                Send {selectedItems.size} to Concierge®
               </button>
             ) : (
               <div className="text-center">
