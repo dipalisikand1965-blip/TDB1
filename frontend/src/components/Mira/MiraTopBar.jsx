@@ -982,7 +982,8 @@ const MiraTopBar = ({
 
         /* Dropdown - Portaled to body */
         .mtb-dropdown {
-          min-width: 300px;
+          min-width: 280px;
+          max-width: 320px;
           background: rgba(26, 15, 53, 0.98);
           backdrop-filter: blur(20px);
           border: 1px solid rgba(255,255,255,0.1);
@@ -994,7 +995,7 @@ const MiraTopBar = ({
         }
         
         .mtb-dropdown-portal {
-          max-width: 90vw;
+          max-width: 320px;
         }
 
         @keyframes dropdownSlide {
