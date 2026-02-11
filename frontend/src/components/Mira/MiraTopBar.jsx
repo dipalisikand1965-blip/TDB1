@@ -284,9 +284,18 @@ const MiraTopBar = ({
             {showReminders ? <ChevronUp size={12} /> : <ChevronDown size={12} />}
           </button>
 
-          {/* Reminders Dropdown */}
-          {showReminders && (
-            <div className="mtb-dropdown" data-testid="reminders-dropdown">
+          {/* Reminders Dropdown - Rendered via Portal */}
+          {showReminders && createPortal(
+            <div 
+              className="mtb-dropdown mtb-dropdown-portal" 
+              data-testid="reminders-dropdown"
+              style={{
+                position: 'fixed',
+                top: dropdownPos.top,
+                left: dropdownPos.left,
+                transform: 'translateX(-50%)'
+              }}
+            >
               <div className="mtb-dropdown-header">
                 <Bell size={16} />
                 <span>Mira's Reminders</span>
