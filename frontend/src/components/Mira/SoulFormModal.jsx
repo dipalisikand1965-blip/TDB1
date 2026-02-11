@@ -154,6 +154,25 @@ const SoulFormModal = ({
   const [isComplete, setIsComplete] = useState(false);
   const [newScore, setNewScore] = useState(null);
   
+  // Dynamically pick 3 unanswered questions
+  const unansweredQuestions = useMemo(() => {
+    if (!pet) return [];
+    const existingAnswers = pet.doggy_soul_answers || {};
+    
+    // Filter out questions that already have answers
+    const available = ALL_SOUL_QUESTIONS.filter(q => {
+      const existingAnswer = existingAnswers[q.field];
+      return !existingAnswer || existingAnswer === '' || existingAnswer === null;
+    });
+    
+    // Shuffle and pick up to 3
+    const shuffled = [...available].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, 3);
+  }, [pet, isOpen]);
+  
+  // If all questions answered, show completion message
+  const allQuestionsAnswered = unansweredQuestions.length === 0;
+  
   // Reset state when modal opens
   useEffect(() => {
     if (isOpen) {
@@ -166,8 +185,37 @@ const SoulFormModal = ({
   
   if (!isOpen || !pet) return null;
   
-  const currentQuestion = QUICK_SOUL_QUESTIONS[currentStep];
-  const isLastQuestion = currentStep === QUICK_SOUL_QUESTIONS.length - 1;
+  // If all questions are answered, show completion state
+  if (allQuestionsAnswered && !isComplete) {
+    return (
+      <div className="soul-form-modal-overlay" onClick={onClose}>
+        <div className="soul-form-modal" onClick={e => e.stopPropagation()}>
+          <button className="soul-form-close" onClick={onClose}>
+            <X size={20} />
+          </button>
+          <div className="soul-form-complete">
+            <div className="complete-icon">
+              <Sparkles size={48} />
+            </div>
+            <h2>Mira knows {pet.name} well!</h2>
+            <p>You've answered all the soul questions. {pet.name}'s soul profile is complete.</p>
+            <p className="soul-score-display">Soul Score: {pet.soulScore || pet.overall_score || 0}%</p>
+            <button className="soul-form-cta" onClick={onClose}>
+              Continue
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
+  const currentQuestion = unansweredQuestions[currentStep];
+  const isLastQuestion = currentStep === unansweredQuestions.length - 1;
+  
+  if (!currentQuestion) {
+    onClose();
+    return null;
+  }
   
   const handleSelectOption = async (option) => {
     const newAnswers = {
