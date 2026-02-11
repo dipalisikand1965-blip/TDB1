@@ -1366,12 +1366,17 @@ async def get_top_picks(pet_id: str):
     pillar_picks = {}
     for pillar_info in INCLUDED_PILLARS:
         pillar_id = pillar_info["id"]
-        picks = await get_pillar_picks(db, pillar_id, pet, limit=5)  # Include space for concierge card
+        all_picks = await get_pillar_picks(db, pillar_id, pet, limit=10)  # Get up to 10 (5 catalogue + 5 concierge)
+        
+        # Separate catalogue and concierge picks
+        catalogue_picks = [p for p in all_picks if p.get("pick_type") != "concierge"]
+        concierge_picks = [p for p in all_picks if p.get("pick_type") == "concierge"]
         
         pillar_picks[pillar_id] = {
             "pillar": pillar_info,
-            "picks": picks,
-            "total_picks": len(picks),
+            "picks": catalogue_picks[:5],  # Up to 5 catalogue
+            "concierge_picks": concierge_picks[:5],  # Up to 5 concierge
+            "total_picks": len(catalogue_picks) + len(concierge_picks),
         }
     
     # Calculate total picks
