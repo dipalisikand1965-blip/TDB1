@@ -226,11 +226,15 @@ const ServiceQuickViewModal = ({
           {/* Action buttons */}
           <div className={`p-4 border-t flex gap-3 ${
             isDark ? 'border-gray-800 bg-gray-900' : 'border-gray-100 bg-white'
-          }`} style={{ paddingBottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))' }}>
+          }`} style={{ 
+            paddingBottom: 'max(1rem, calc(env(safe-area-inset-bottom, 0px) + 1rem))',
+            position: 'sticky',
+            bottom: 0
+          }}>
             <button
               onClick={handleBook}
               disabled={isLoading}
-              className={`flex-1 py-3 rounded-xl font-semibold text-sm transition-all ${
+              className={`flex-1 py-4 rounded-xl font-semibold text-sm transition-all active:scale-95 ${
                 isDark
                   ? 'bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:opacity-90'
                   : 'bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:opacity-90'
@@ -240,7 +244,7 @@ const ServiceQuickViewModal = ({
             </button>
             <button
               onClick={handleAskMira}
-              className={`px-4 py-3 rounded-xl font-semibold text-sm transition-all ${
+              className={`px-5 py-4 rounded-xl font-semibold text-sm transition-all active:scale-95 ${
                 isDark
                   ? 'bg-gray-800 text-purple-400 hover:bg-gray-700'
                   : 'bg-purple-50 text-purple-600 hover:bg-purple-100'
