@@ -607,7 +607,8 @@ const PersonalizedPicksPanel = ({
   isOpen,
   onClose,
   pet,
-  token
+  token,
+  onSendSuccess // Callback when picks are sent successfully
 }) => {
   const [activePillar, setActivePillar] = useState('celebrate');
   const [picksData, setPicksData] = useState(null);
