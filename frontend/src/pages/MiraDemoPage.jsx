@@ -2223,7 +2223,7 @@ const MiraDemoPage = () => {
       // UI ACTION HANDLER - Handle special actions like opening picks vault
       // ═══════════════════════════════════════════════════════════════════
       if (data.ui_action?.type === 'open_picks_vault') {
-        console.log('[UI ACTION] 🎁 Opening Picks Vault for:', data.ui_action.pet_name);
+        console.log('[UI ACTION] 🎁 Opening Personalized Picks Panel for:', data.ui_action.pet_name);
         
         // Add Mira's response to chat
         setConversationHistory(prev => [
@@ -2231,10 +2231,10 @@ const MiraDemoPage = () => {
           { type: 'mira', content: data.response?.message || 'Here are your personalized picks!' }
         ]);
         
-        // Open the unified picks vault
-        setShowUnifiedVault(true);
+        // Open the personalized picks panel (TopPicksPanel = PersonalizedPicksPanel)
+        setShowTopPicksPanel(true);
         setIsLoading(false);
-        return; // Exit early - vault will handle the rest
+        return; // Exit early - panel will handle the rest
       }
       
       // ═══════════════════════════════════════════════════════════════════
