@@ -467,6 +467,7 @@ const PILLAR_FILTERS = [
   { id: 'fit', name: 'Fit', emoji: '🏋️' },
   { id: 'enjoy', name: 'Enjoy', emoji: '🎉' },
   { id: 'shop', name: 'Shop', emoji: '🛒' },
+  { id: 'advisory', name: 'Advisory', emoji: '💡' },
 ];
 
 // Main Unified Picks Vault Component
