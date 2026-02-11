@@ -99,76 +99,10 @@ const WelcomeHero = ({
   
   return (
     <div className="mira-hero-welcome">
-      {/* Action Buttons Row - REMOVED: Now in MiraTopBar */}
-      
-      {/* Hero Layout - Avatar Left, Content Right */}
-      <div className="hero-layout">
-        {/* Pet Avatar with Multiple Animated Rings */}
-        <div className="hero-avatar-container">
-          <div className="avatar-glow"></div>
-          <div className="avatar-ring ring-1"></div>
-          <div className="avatar-ring ring-2"></div>
-          <div className="avatar-ring ring-3"></div>
-          
-          {/* Pet Photo */}
-          <div className="avatar-photo">
-            {pet.photo ? (
-              <img 
-                src={pet.photo} 
-                alt={pet.name}
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = `https://api.dicebear.com/7.x/lorelei/svg?seed=${pet.name}&backgroundColor=ffdfbf`;
-                }}
-              />
-            ) : (
-              <div className="avatar-placeholder">
-                <PawPrint className="w-12 h-12" />
-              </div>
-            )}
-          </div>
-          
-          {/* Soul Score Badge - Dynamic with glow */}
-          {pet.soulScore > 10 ? (
-            <div 
-              className={`soul-score-badge soul-active ${isGlowing ? 'soul-growing' : ''}`} 
-              onClick={() => onShowSoulForm ? onShowSoulForm() : navigate(`/pet-soul/${pet.id || ''}`)}
-              title={`${pet.name}'s Soul Score - Click to grow`}
-              style={{ cursor: 'pointer' }}
-            >
-              <span className={`soul-percent ${isGlowing ? 'counting' : ''}`}>{displayScore}%</span>
-              <span className="soul-label">SOUL<br/>KNOWN</span>
-            </div>
-          ) : (
-            <div 
-              className="soul-score-badge soul-incomplete" 
-              onClick={() => onShowSoulForm ? onShowSoulForm() : navigate(`/pet-soul/${pet.id || ''}`)}
-              data-testid="soul-incomplete-prompt"
-              style={{ cursor: 'pointer' }}
-            >
-              <span className="soul-sparkle">✨</span>
-              <span className="soul-cta">Help Mira<br/>know {pet.name}</span>
-            </div>
-          )}
-          
-          {/* Health Tile */}
-          <a href="/dashboard" className="health-tile" data-testid="health-tile">
-            <div className="health-tile-icon">
-              <Heart size={16} />
-            </div>
-            <div className="health-tile-content">
-              <span className="health-tile-label">Health</span>
-              {healthVault.completeness < 100 ? (
-                <span className="health-tile-status incomplete">{healthVault.completeness}%</span>
-              ) : (
-                <span className="health-tile-status complete">✓</span>
-              )}
-            </div>
-          </a>
-        </div>
-        
+      {/* Hero Layout - Content Only (Avatar/Soul moved to MiraTopBar) */}
+      <div className="hero-layout hero-content-only">
         {/* Content Side */}
-        <div className="hero-content">
+        <div className="hero-content" style={{ width: '100%', textAlign: 'center' }}>
           <h1 className="hero-title">
             For <span className="gradient-text">{pet.name}</span>
           </h1>
