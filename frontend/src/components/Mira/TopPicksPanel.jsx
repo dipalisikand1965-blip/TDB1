@@ -112,10 +112,13 @@ const PickCard = ({ pick, petName, onAddToPicks, onSendToConcierge }) => {
           {pick.name}
         </h4>
         
-        {pick.price ? (
+        {/* NO PRICE for concierge items - Concierge® will source and get back with price */}
+        {isConcierge ? (
+          <p className="text-xs text-purple-600 italic">Concierge® will source</p>
+        ) : pick.price ? (
           <p className="text-sm font-semibold text-pink-600">₹{pick.price}</p>
         ) : (
-          <p className="text-xs text-purple-600 italic">Concierge will source</p>
+          <p className="text-xs text-gray-400">Price on request</p>
         )}
         
         {/* Concierge specs */}
