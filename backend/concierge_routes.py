@@ -626,6 +626,79 @@ async def create_general_concierge_request(request: ConciergeGeneralRequest):
     }
 
 
+
+# ─────────────────────────────────────────────────────────────────────────────
+# PERSONALIZED PICKS REQUEST - From Mira's Picks Panel
+# ─────────────────────────────────────────────────────────────────────────────
+
+class PicksRequestPayload(BaseModel):
+    """Request payload for picks from PersonalizedPicksPanel."""
+    pet_name: str
+    selected_items: List[Dict[str, Any]]
+    additional_notes: Optional[str] = ""
+    timestamp: Optional[str] = None
+
+
+@router.post("/picks-request")
+async def create_picks_request(payload: PicksRequestPayload):
+    """
+    Create a Concierge® request from Personalized Picks Panel.
+    This is called when user confirms their picks selection in Mira.
+    """
+    db = get_db()
+    import uuid
+    
+    request_id = f"picks-{uuid.uuid4().hex[:8]}"
+    ticket_id = f"TKT-{datetime.now(timezone.utc).strftime('%Y%m%d')}-{uuid.uuid4().hex[:4].upper()}"
+    now = datetime.now(timezone.utc)
+    
+    # Build item summaries for the request
+    item_summaries = []
+    for item in payload.selected_items:
+        item_summaries.append({
+            "name": item.get("name"),
+            "id": item.get("id"),
+            "type": item.get("pick_type", "unknown"),
+            "pillar": item.get("pillar"),
+            "price": item.get("price"),
+            "category": item.get("category")
+        })
+    
+    # Create the picks request document
+    picks_doc = {
+        "id": request_id,
+        "ticket_id": ticket_id,
+        "type": "personalized_picks",
+        "pet_name": payload.pet_name,
+        "items_count": len(payload.selected_items),
+        "items": item_summaries,
+        "additional_notes": payload.additional_notes,
+        "source": "mira_picks_panel",
+        "status": "new",
+        "created_at": now,
+        "updated_at": now,
+        "timeline": [
+            {
+                "status": "new",
+                "timestamp": now.isoformat(),
+                "note": f"Picks request submitted for {payload.pet_name} ({len(payload.selected_items)} items)"
+            }
+        ]
+    }
+    
+    # Insert into database
+    await db.concierge_picks_requests.insert_one(picks_doc)
+    logger.info(f"[PICKS REQUEST] Created picks request {request_id} for {payload.pet_name} with {len(payload.selected_items)} items")
+    
+    return {
+        "success": True,
+        "request_id": request_id,
+        "ticket_id": ticket_id,
+        "items_count": len(payload.selected_items),
+        "message": f"Your {len(payload.selected_items)} picks for {payload.pet_name} have been sent to your Concierge®!"
+    }
+
+
 @router.get("/requests")
 async def get_concierge_requests(
     pillar: Optional[str] = None,
