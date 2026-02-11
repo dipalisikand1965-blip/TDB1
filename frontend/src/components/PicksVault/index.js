@@ -38,5 +38,8 @@ export { default as AdoptionVault } from './AdoptionVault';
 // Manager - Auto-detects and renders appropriate vault
 export { default as VaultManager } from './VaultManager';
 
+// Unified Picks Vault - NEW: Combined picks, tips, and personalized picks
+export { default as UnifiedPicksVault } from './UnifiedPicksVault';
+
 // Configuration & Helpers
 export * from './vaultConfig';
