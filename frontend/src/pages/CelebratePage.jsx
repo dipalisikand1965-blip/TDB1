@@ -35,7 +35,7 @@ import { toast } from 'sonner';
 // Lazy load Soul Explainer for footer link
 const SoulExplainerVideo = lazy(() => import('../components/SoulExplainerVideo'));
 
-// Product categories for Celebrate pillar
+// Product categories for Celebrate pillar - Expanded with Cat, Rescue, Desi options
 const celebrateCategories = [
   { id: 'cakes', name: 'Birthday Cakes', icon: Cake, path: '/celebrate/cakes', color: 'bg-pink-100 text-pink-600' },
   { id: 'breed-cakes', name: 'Breed Cakes', icon: Heart, path: '/celebrate/breed-cakes', color: 'bg-purple-100 text-purple-600' },
@@ -43,6 +43,10 @@ const celebrateCategories = [
   { id: 'treats', name: 'Treats', icon: Gift, path: '/celebrate/treats', color: 'bg-green-100 text-green-600' },
   { id: 'hampers', name: 'Gift Hampers', icon: ShoppingBag, path: '/celebrate/hampers', color: 'bg-blue-100 text-blue-600' },
   { id: 'accessories', name: 'Party Accessories', icon: PartyPopper, path: '/celebrate/accessories', color: 'bg-rose-100 text-rose-600' },
+  { id: 'cat-celebration', name: 'Cat Celebrations', icon: Sparkles, path: '/celebrate/cats', color: 'bg-cyan-100 text-cyan-600' },
+  { id: 'rescue-celebration', name: 'Rescue & Gotcha', icon: Heart, path: '/celebrate/rescue', color: 'bg-orange-100 text-orange-600' },
+  { id: 'desi-treats', name: 'Desi Dog Treats', icon: Star, path: '/celebrate/desi', color: 'bg-amber-100 text-amber-700' },
+  { id: 'diy-kits', name: 'DIY Cake Kits', icon: Palette, path: '/celebrate/diy', color: 'bg-lime-100 text-lime-600' },
 ];
 
 const CelebratePage = () => {
