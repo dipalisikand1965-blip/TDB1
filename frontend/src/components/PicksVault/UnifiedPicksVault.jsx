@@ -1899,23 +1899,10 @@ const UnifiedPicksVault = ({
                 Send {selectedItems.size} to Concierge®
               </button>
             ) : (
-              <div className="text-center">
-                <p className="text-xs text-gray-500 mb-2">
-                  {selectionMode 
-                    ? 'Tap items to select, then send to Concierge®' 
-                    : `${personalizedPicks?.total_picks || 0} picks curated for ${pet?.name}`}
+              <div className="text-center py-1">
+                <p className="text-sm text-gray-600">
+                  Tap items to select • Concierge® handles the rest ✨
                 </p>
-                {!selectionMode && (
-                  <button
-                    onClick={() => {
-                      hapticFeedback.toggle();
-                      setSelectionMode(true);
-                    }}
-                    className="text-sm text-amber-600 font-medium hover:text-amber-700 min-h-[44px] touch-manipulation"
-                  >
-                    Select items to send →
-                  </button>
-                )}
               </div>
             )}
           </div>
