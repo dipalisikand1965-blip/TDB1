@@ -68,14 +68,137 @@ const ExpandablePickCard = ({
   // Get the "why" text - different field names for catalogue vs concierge
   const whyText = pick.why_it_fits || pick.why_reason || pick.why_this_pick;
   
+  // For CONCIERGE cards - new beautiful design matching reference
+  if (isConcierge) {
+    return (
+      <motion.div
+        layout
+        className={`rounded-2xl overflow-hidden bg-gradient-to-br from-pink-50/10 to-purple-50/5 border border-pink-200/20 ${
+          isSelected ? 'ring-2 ring-pink-500' : ''
+        }`}
+      >
+        {/* Header with badge and info */}
+        <div className="p-4">
+          <div className="flex items-center justify-between mb-3">
+            <span className="px-3 py-1 bg-gradient-to-r from-pink-500 to-purple-500 text-white text-xs font-medium rounded-full">
+              {pick.seasonal ? '☆ Seasonal' : 'Concierge Pick'}
+            </span>
+            <button 
+              onClick={handleToggle}
+              className="w-6 h-6 rounded-full bg-gray-800/50 flex items-center justify-center text-gray-400 hover:text-white"
+            >
+              <Info className="w-3.5 h-3.5" />
+            </button>
+          </div>
+          
+          {/* Sparkle Icon */}
+          <div className="flex justify-center my-4">
+            <div className="w-12 h-12 flex items-center justify-center">
+              <Sparkles className="w-8 h-8 text-gray-600" strokeWidth={1.5} />
+            </div>
+          </div>
+          
+          {/* Title */}
+          <h4 className="font-semibold text-white text-center text-sm mb-1">
+            {pick.name}
+          </h4>
+          
+          {/* Arranged for Pet */}
+          <p className="text-xs text-purple-400 text-center mb-3">
+            Arranged for {petName}
+          </p>
+          
+          {/* Description */}
+          <p className="text-xs text-gray-400 text-center mb-4 leading-relaxed">
+            {whyText || pick.description || `Handpicked service tailored for ${petName}.`}
+          </p>
+          
+          {/* Spec Chip */}
+          {pick.spec_chip && (
+            <div className="flex justify-center mb-4">
+              <span className="px-3 py-1 bg-pink-500/20 text-pink-300 text-xs rounded-full border border-pink-500/30">
+                {pick.spec_chip}
+              </span>
+            </div>
+          )}
+          
+          {/* Arranged for (bottom) */}
+          <p className="text-xs text-gray-500 text-center mb-3">
+            Arranged for {petName}
+          </p>
+          
+          {/* Request Button */}
+          <button
+            onClick={handleSelect}
+            className={`w-full py-3 rounded-xl font-semibold text-sm transition-all ${
+              isSelected 
+                ? 'bg-green-500 text-white' 
+                : 'bg-gradient-to-r from-pink-500 to-purple-500 text-white hover:opacity-90'
+            }`}
+          >
+            {isSelected ? '✓ Added' : 'Request'}
+          </button>
+        </div>
+        
+        {/* Expanded Details */}
+        <AnimatePresence>
+          {isExpanded && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="border-t border-pink-200/20 overflow-hidden"
+            >
+              <div className="p-4 space-y-3 bg-gray-900/50">
+                {/* What We Source */}
+                {pick.what_we_source && (
+                  <div>
+                    <h5 className="text-xs font-semibold text-purple-400 uppercase tracking-wide mb-1">
+                      What We Source
+                    </h5>
+                    <p className="text-sm text-gray-300">{pick.what_we_source}</p>
+                  </div>
+                )}
+                
+                {/* What's Included */}
+                {pick.selection_rules && pick.selection_rules.length > 0 && (
+                  <div>
+                    <h5 className="text-xs font-semibold text-purple-400 uppercase tracking-wide mb-2">
+                      What's Included
+                    </h5>
+                    <ul className="space-y-1">
+                      {pick.selection_rules.slice(0, 4).map((rule, i) => (
+                        <li key={i} className="text-xs text-gray-400 flex items-start gap-2">
+                          <Check className="w-3 h-3 text-green-400 flex-shrink-0 mt-0.5" />
+                          <span>{rule}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                
+                {/* Safety Note */}
+                {pick.safety_note && (
+                  <div className="flex items-start gap-2 p-2 bg-amber-500/10 rounded-lg border border-amber-500/20">
+                    <AlertCircle className="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
+                    <p className="text-xs text-amber-300">{pick.safety_note}</p>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
+    );
+  }
+  
+  // For CATALOGUE cards - existing expandable design
   return (
     <motion.div
       layout
-      className={`rounded-2xl overflow-hidden transition-all ${
-        isConcierge 
-          ? 'bg-gradient-to-br from-purple-900/60 to-pink-900/40 border border-purple-500/30' 
-          : 'bg-gray-800/60 border border-gray-700/50'
-      } ${isSelected ? 'ring-2 ring-pink-500' : ''}`}
+      className={`rounded-2xl overflow-hidden transition-all bg-gray-800/60 border border-gray-700/50 ${
+        isSelected ? 'ring-2 ring-pink-500' : ''
+      }`}
     >
       {/* Main Card */}
       <div 
@@ -83,10 +206,8 @@ const ExpandablePickCard = ({
         onClick={handleToggle}
       >
         <div className="flex items-start gap-3">
-          {/* Image/Icon */}
-          <div className={`w-16 h-16 rounded-xl flex-shrink-0 overflow-hidden ${
-            isConcierge ? 'bg-gradient-to-br from-purple-500 to-pink-500' : 'bg-gray-700'
-          }`}>
+          {/* Image */}
+          <div className="w-16 h-16 rounded-xl flex-shrink-0 overflow-hidden bg-gray-700">
             {pick.image_url || pick.image ? (
               <img 
                 src={pick.image_url || pick.image} 
@@ -95,11 +216,7 @@ const ExpandablePickCard = ({
               />
             ) : (
               <div className="w-full h-full flex items-center justify-center">
-                {isConcierge ? (
-                  <Sparkles className="w-6 h-6 text-white" />
-                ) : (
-                  <Package className="w-6 h-6 text-gray-400" />
-                )}
+                <Package className="w-6 h-6 text-gray-400" />
               </div>
             )}
           </div>
@@ -112,15 +229,8 @@ const ExpandablePickCard = ({
                   {pick.name}
                 </h4>
                 
-                {/* Spec chip for concierge */}
-                {isConcierge && pick.spec_chip && (
-                  <span className="inline-flex items-center gap-1 mt-1 px-2 py-0.5 bg-purple-500/30 text-purple-300 text-xs rounded-full">
-                    <Star className="w-3 h-3" /> {pick.spec_chip}
-                  </span>
-                )}
-                
-                {/* Category for catalogue */}
-                {!isConcierge && pick.category && (
+                {/* Category */}
+                {pick.category && (
                   <span className="inline-block mt-1 px-2 py-0.5 bg-gray-700/50 text-gray-400 text-xs rounded-full">
                     {pick.category}
                   </span>
@@ -140,7 +250,7 @@ const ExpandablePickCard = ({
               </button>
             </div>
             
-            {/* Why this pick - always visible */}
+            {/* Why this pick */}
             {whyText && (
               <p className="mt-2 text-xs text-amber-400/90 flex items-start gap-1">
                 <Heart className="w-3 h-3 flex-shrink-0 mt-0.5" />
@@ -170,14 +280,6 @@ const ExpandablePickCard = ({
             className="border-t border-gray-700/50 overflow-hidden"
           >
             <div className="p-4 space-y-4">
-              {/* For Concierge: What we source */}
-              {isConcierge && pick.what_we_source && (
-                <div>
-                  <h5 className="text-xs font-semibold text-purple-400 uppercase tracking-wide mb-1">
-                    What We Source
-                  </h5>
-                  <p className="text-sm text-gray-300">{pick.what_we_source}</p>
-                </div>
               )}
               
               {/* For Concierge: Selection Rules */}
