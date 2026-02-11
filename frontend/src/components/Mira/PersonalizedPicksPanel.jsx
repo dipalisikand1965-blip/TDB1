@@ -656,7 +656,8 @@ const PersonalizedPicksPanel = ({
         })
       });
       
-      hapticFeedback.success();
+      // Celebration haptic for confirmed picks - wow moment!
+      hapticFeedback.picksConfirm();
       setShowConfirmation(false);
       
       // Call success callback with selected items count and pet name (called once)
@@ -671,6 +672,7 @@ const PersonalizedPicksPanel = ({
       onClose();
     } catch (err) {
       console.error('Error sending to concierge:', err);
+      hapticFeedback.error();
     } finally {
       setIsSending(false);
     }
