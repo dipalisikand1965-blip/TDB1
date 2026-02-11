@@ -50,7 +50,8 @@ function ConditionalFloatingButton() {
   if (hiddenPaths.some(path => pathname === path || pathname.startsWith(path + '/'))) {
     return null;
   }
-  return <FloatingContactButton user={user} isLoggedIn={isAuthenticated} />;
+  // REMOVED: FloatingContactButton (the "C" button) - keeping only Mira orb
+  return null;
 }
 
 // ConditionalMobileNav - Show mobile nav bar only on appropriate pages
