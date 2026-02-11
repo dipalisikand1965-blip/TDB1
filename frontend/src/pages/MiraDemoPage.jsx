@@ -1460,6 +1460,7 @@ const MiraDemoPage = () => {
               name: p.name,
               breed: p.breed,
               age: p.age || 'Unknown',
+              photo: p.photo_url ? `${API_URL}${p.photo_url}` : (p.photo || null),
               traits: ensureArray(p.doggy_soul_answers?.describe_3_words, ['Loving']),
               sensitivities: ensureArray(p.doggy_soul_answers?.health_conditions),
               favorites: ensureArray(p.doggy_soul_answers?.favorite_treats)
