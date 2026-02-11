@@ -623,7 +623,7 @@ const PillarFilters = ({ selected, onSelect, selectedSubcat, onSelectSubcat, sel
 // =============================================================================
 // SERVICE CARD - With "Why for [PetName]" Breed Whisper
 // =============================================================================
-const ServiceCard = ({ service, pet, index, showWhyPicked = false }) => {
+const ServiceCard = ({ service, pet, index, showWhyPicked = false, onQuickView }) => {
   const navigate = useNavigate();
   const [isHovered, setIsHovered] = useState(false);
   
@@ -645,9 +645,14 @@ const ServiceCard = ({ service, pet, index, showWhyPicked = false }) => {
   const breedWhisper = getServiceBreedWhisper(service, petName, breed);
   
   const handleClick = () => {
-    const serviceId = service.id || service._id;
-    const pillar = service.pillar || service.pillars?.[0] || 'care';
-    navigate(`/services/${pillar}/${serviceId}`);
+    // Use quick view modal instead of navigation
+    if (onQuickView) {
+      onQuickView(service);
+    } else {
+      const serviceId = service.id || service._id;
+      const pillar = service.pillar || service.pillars?.[0] || 'care';
+      navigate(`/services/${pillar}/${serviceId}`);
+    }
   };
   
   return (
