@@ -7004,18 +7004,41 @@ def build_mira_system_prompt(user: Dict = None, pets: List[Dict] = None, pillar:
             pet_names_for_greeting.append(pet_name)
             breed = identity.get('breed') or pet.get('breed', 'Unknown breed')
             
+            # Get doggy soul answers for additional profile data
+            doggy_soul = pet.get('doggy_soul_answers', {})
+            
             pet_context += f"\n{pet_name} - {breed}\n"
             pet_context += f"- Species: {pet.get('species', 'dog')}, Gender: {pet.get('gender', 'unknown')}\n"
-            pet_context += f"- Age: {identity.get('age') or pet.get('age') or pet.get('age_years', 'Not specified')}\n"
-            pet_context += f"- Weight: {identity.get('weight', 'Not specified')}\n"
+            
+            # Age/Life stage - check multiple sources
+            life_stage = doggy_soul.get('life_stage') or identity.get('life_stage')
+            age = identity.get('age') or pet.get('age') or pet.get('age_years')
+            if life_stage:
+                pet_context += f"- Life Stage: {life_stage}\n"
+            if age:
+                pet_context += f"- Age: {age}\n"
+            
+            # Weight
+            weight = identity.get('weight') or pet.get('weight_kg') or pet.get('weight')
+            if weight:
+                pet_context += f"- Weight: {weight}kg\n"
             
             # Allergies (CRITICAL - NEVER recommend items with these)
-            allergies = preferences.get('allergies', []) or health.get('allergies', []) or pet.get('allergies', [])
+            # Check multiple sources for allergies
+            allergies = (
+                preferences.get('allergies', []) or 
+                health.get('allergies', []) or 
+                pet.get('allergies', []) or 
+                doggy_soul.get('food_allergies', '').split(',') if doggy_soul.get('food_allergies') else [] or
+                pet.get('health_vault', {}).get('allergies', [])
+            )
+            # Extract allergen names if they're objects
+            if allergies and isinstance(allergies, list) and len(allergies) > 0:
+                if isinstance(allergies[0], dict):
+                    allergies = [a.get('allergen', a.get('name', '')) for a in allergies if a]
+                allergies = [a.strip() for a in allergies if a and a.strip()]
             if allergies:
-                if isinstance(allergies, list) and allergies:
-                    pet_context += f"- ⚠️ ALLERGIES (NEVER RECOMMEND): {', '.join(allergies)}\n"
-                elif isinstance(allergies, str) and allergies.lower() != 'none':
-                    pet_context += f"- ⚠️ ALLERGIES (NEVER RECOMMEND): {allergies}\n"
+                pet_context += f"- ⚠️ ALLERGIES (NEVER RECOMMEND): {', '.join(allergies)}\n"
             
             # Favorite flavors/treats
             fav_flavors = preferences.get('favorite_flavors', [])
