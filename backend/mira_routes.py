@@ -205,7 +205,7 @@ async def get_mira_os_context(pet_id: str, pillar: str, intent: str, user_messag
                     "pet_name": pet.get("name", "your pet"),
                     "allergies": allergies if allergies else [],
                     "diet_restrictions": diet_restrictions if diet_restrictions else [],
-                    "birthday": pet.get("dob") or pet.get("birthday"),
+                    "birthday": pet.get("birth_date") or pet.get("birthday") or pet.get("dob") or pet.get("date_of_birth"),
                     "temperament": pet.get("temperament") or pet.get("personality"),
                     "preferences": pet.get("preferences", {})
                 }
