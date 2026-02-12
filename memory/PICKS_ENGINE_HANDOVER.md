@@ -768,11 +768,12 @@ If something seems wrong:
 ---
 
 *Handover created: December 2025*
-*Last updated: December 2025 (B4 patches applied)*
+*Last updated: December 2025 (B4 patch v2 - Stay & Travel fixes)*
 *B0, B1, B2, B3, B4: COMPLETE*
 *B5, B6, B7, B8: PENDING*
 *Total entries seeded: 1,100+*
 *Total unit tests: 49 passing*
+*Patches applied: 11 (hygiene + stay/travel)*
 
 ---
 
