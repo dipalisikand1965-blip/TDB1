@@ -155,6 +155,37 @@ It is NOT:
 | `service_modes` | Standardized service delivery | `["pickup_drop"]` |
 | `concierge_complexity` | Guides=low, Bookings=medium/high | Prevents over-showing concierge |
 
+### CONCIERGE LOGIC (B5) - KEY PRINCIPLES
+
+| Principle | Description |
+|-----------|-------------|
+| **Always On** | Concierge® is ALWAYS available (mode: "always_on") |
+| **Prominence Shifts** | CTA prominence shifts based on context: primary / secondary / quiet |
+| **Never Hidden** | Concierge is never "shown/hidden" - only prominence changes |
+
+### Concierge PRIMARY Triggers (Mandatory)
+
+| Trigger | Reason Code | When |
+|---------|-------------|------|
+| Safety | `safety_override` | `safety_level = "caution"` or `"emergency"` |
+| Ambiguity | `low_confidence` | `confidence < 0.65` |
+| Time Pressure | `tight_timeline` | "today", "tomorrow", "urgent", "asap" detected |
+| Multi-Step | `multi_step` | `len(service_verticals) >= 2` |
+| High Complexity | `pick_complexity` | `top_pick.concierge_complexity = "high"` |
+| Coordination | `coordination_value` | celebrate/travel/stay + booking intent |
+
+### Concierge Output Contract
+
+```json
+{
+  "mode": "always_on",
+  "cta_prominence": "primary|secondary|quiet",
+  "reason": "safety_override|tight_timeline|...",
+  "cta": "Have Concierge® coordinate",
+  "suppress_commerce": false
+}
+```
+
 ### CROSS-PILLAR BOOST RULES
 
 | Trigger | Boosted Pillar | Boost Value | Purpose |
