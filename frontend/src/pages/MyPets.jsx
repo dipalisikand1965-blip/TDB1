@@ -63,6 +63,11 @@ const MyPets = () => {
   const [expandedSoul, setExpandedSoul] = useState({});
   const [expandedHealth, setExpandedHealth] = useState({});
   
+  // "What Mira Knows" data
+  const [miraKnowledge, setMiraKnowledge] = useState({});
+  const [loadingKnowledge, setLoadingKnowledge] = useState({});
+  const [expandedKnowledge, setExpandedKnowledge] = useState({});
+  
   // Health data for each pet
   const [healthData, setHealthData] = useState({});
   const [loadingHealth, setLoadingHealth] = useState({});
@@ -79,6 +84,49 @@ const MyPets = () => {
   // View mode state - 'family' (dashboard) or 'detailed' (list)
   const [viewMode, setViewMode] = useState('family');
   const [selectedPetId, setSelectedPetId] = useState(null);
+  
+  // Handle URL query param for pet selection
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const petParam = params.get('pet');
+    if (petParam && pets.length > 0) {
+      setSelectedPetId(petParam);
+      setViewMode('detailed');
+      // Auto-expand the "What Mira Knows" for this pet
+      setExpandedKnowledge(prev => ({ ...prev, [petParam]: true }));
+      // Fetch Mira's knowledge for this pet
+      fetchMiraKnowledge(petParam);
+    }
+  }, [pets]);
+  
+  // Fetch "What Mira Knows" about a pet
+  const fetchMiraKnowledge = async (petId) => {
+    if (loadingKnowledge[petId] || miraKnowledge[petId]) return;
+    
+    setLoadingKnowledge(prev => ({ ...prev, [petId]: true }));
+    try {
+      const response = await fetch(`${API_URL}/api/mira/memory/pet/${petId}/what-mira-knows`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setMiraKnowledge(prev => ({ ...prev, [petId]: data }));
+      }
+    } catch (error) {
+      console.error('Error fetching Mira knowledge:', error);
+    } finally {
+      setLoadingKnowledge(prev => ({ ...prev, [petId]: false }));
+    }
+  };
+  
+  // Toggle "What Mira Knows" section
+  const toggleKnowledge = (petId) => {
+    const isExpanding = !expandedKnowledge[petId];
+    setExpandedKnowledge(prev => ({ ...prev, [petId]: isExpanding }));
+    if (isExpanding) {
+      fetchMiraKnowledge(petId);
+    }
+  };
   
   // Inline Pet Soul questions state
   const [expandedQuestions, setExpandedQuestions] = useState({});
