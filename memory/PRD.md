@@ -101,7 +101,7 @@ It is NOT:
 | B1 | Picks Catalogue | ✅ COMPLETE | - |
 | B2 | Classification Pipeline | ✅ COMPLETE | 28 passing |
 | B3 | Safety Gate | ✅ COMPLETE | 21 passing |
-| B4 | Scoring Function | ✅ COMPLETE | - |
+| B4 | Scoring Function | ✅ COMPLETE | 29 passing |
 
 ### ⏳ PENDING PHASES
 
@@ -117,11 +117,12 @@ It is NOT:
 ```
 /app/backend/classification_pipeline.py     ← B2 classification engine
 /app/backend/safety_gate.py                 ← B3 safety gate + first aid
-/app/backend/picks_scorer.py                ← B4 scoring + ranking
+/app/backend/scoring_logic.py               ← B4 scoring + ranking (NEW)
 /app/backend/scripts/seed_taxonomy.py       ← B0 seeder (idempotent)
-/app/backend/scripts/seed_picks_catalogue.py ← B1 seeder (idempotent)
+/app/backend/scripts/seed_picks_catalogue.py ← B1 seeder (idempotent, ENHANCED)
 /app/backend/tests/test_classification.py   ← 28 unit tests
 /app/backend/tests/test_safety_gate.py      ← 21 unit tests
+/app/backend/tests/test_scoring_logic.py    ← 29 unit tests (NEW)
 /app/memory/PICKS_ENGINE_HANDOVER.md        ← COMPLETE HANDOVER DOC
 ```
 
@@ -135,18 +136,28 @@ It is NOT:
 | service_vertical_synonyms | 46 | Service matching |
 | service_types | 8 | Fulfilment modes |
 | service_type_synonyms | 61 | Fulfilment matching |
-| picks_catalogue | 110 | Next-best-actions (with booking fields, temporal triggers) |
+| picks_catalogue | 110 | Next-best-actions (enhanced with doc_requirements, warning_type) |
 | events_log | Growing | Audit trail |
 
-### KEY SCHEMA PATTERNS
+### KEY SCHEMA PATTERNS (UPDATED Dec 2025)
 
 | Pattern | Purpose | Example |
 |---------|---------|---------|
 | `reason_template_enhanced` | Richer copy when profile complete | Uses `{breed}`, `{energy_level}` |
-| `required_booking_fields` | Questions before booking CTA | `["city", "start_date", "end_date"]` |
-| `temporal_triggers` | Boost picks on time-bound intent | `{"travel_window": true}` |
-| `if_brachycephalic` | Breed-specific safety warnings | For pugs, bulldogs, persians |
-| `if_allergies_present` | Question routing (not exclusion) | `"ask_question"` |
+| `required_booking_fields` | Questions before booking CTA | `["city", "airport", "transfer_date", "pickup_or_drop"]` |
+| `optional_booking_fields` | Non-blocking optional fields | `["flight_number", "pet_weight", "crate_size"]` |
+| `temporal_triggers` | Boost picks on time-bound intent | `{"travel_date": true}` |
+| `if_brachycephalic` | Breed-specific safety warnings | `"show_warning"` for pugs, bulldogs |
+| `warning_type` | Abstracted warning lookup | `"air_travel_brachy"` |
+| `doc_requirements` | Links picks to paperwork | `["fit_to_fly", "vaccination_records"]` |
+| `service_modes` | Standardized service delivery | `["pickup_drop"]` |
+| `concierge_complexity` | Guides=low, Bookings=medium/high | Prevents over-showing concierge |
+
+### CROSS-PILLAR BOOST RULES
+
+| Trigger | Boosted Pillar | Boost Value | Purpose |
+|---------|----------------|-------------|---------|
+| Travel intent detected | Paperwork | +15 | Proactive doc reminders |
 
 ---
 
