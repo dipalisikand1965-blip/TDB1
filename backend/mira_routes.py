@@ -10227,7 +10227,16 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
                 "saved": picks_saved_to_vault,
                 "ticket_id": picks_vault_ticket_id,
                 "picks_count": len(products) if products else 0
-            } if picks_saved_to_vault else None
+            } if picks_saved_to_vault else None,
+            # MIRA OS CONTEXT - Layer activation, temporal awareness, safety gates
+            "os_context": {
+                "layer_activation": os_context.get("layer_activation", pillar),
+                "temporal_context": os_context.get("temporal_context"),  # Birthday proximity, etc.
+                "safety_gates": os_context.get("safety_gates", []),  # Allergies, health constraints
+                "picks_update": os_context.get("picks_update", {"should_refresh": pillar in ["celebrate", "travel", "care", "dine", "stay"], "pillar": pillar}),
+                "proactive_alerts": os_context.get("proactive_alerts", []),  # Urgent reminders
+                "memory_recall": os_context.get("memory_recall")  # Relevant past memory
+            }
         }
         
     except Exception as e:
