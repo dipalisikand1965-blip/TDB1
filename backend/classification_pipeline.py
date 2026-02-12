@@ -346,22 +346,50 @@ class ClassificationPipeline:
         
         return "advisory"  # Default fallback
     
-    def _calculate_confidence(self, matched_tags: Dict, matched_synonyms: List) -> float:
-        """Calculate overall classification confidence."""
+    def _calculate_confidence(self, matched_tags: Dict, matched_synonyms: List, safety_level: str) -> float:
+        """
+        Calculate overall classification confidence.
+        
+        Confidence ceilings:
+        - Single synonym match: cap at 0.92
+        - Multi-synonym + tag + pillar agreement: up to 0.95
+        - Emergency hard matches only: up to 0.99
+        """
         if not matched_synonyms:
             return 0.0
         
-        # Average confidence of matched synonyms
+        # Base: average confidence of matched synonyms
         total_confidence = sum(s["confidence"] for s in matched_synonyms)
         avg_confidence = total_confidence / len(matched_synonyms)
         
-        # Boost for multiple matches
-        match_count_boost = min(len(matched_synonyms) * 0.05, 0.2)
+        # Start with base average (already capped at 0.95 in seed data)
+        confidence = avg_confidence
         
-        # Boost for protected (emergency) matches
-        protected_boost = 0.1 if any(matched_tags.get(s["tag"], {}).get("protected") for s in matched_synonyms) else 0
+        # Small boost for multiple matches (max +0.05)
+        if len(matched_synonyms) > 1:
+            match_count_boost = min((len(matched_synonyms) - 1) * 0.02, 0.05)
+            confidence += match_count_boost
         
-        confidence = min(avg_confidence + match_count_boost + protected_boost, 1.0)
+        # Check for pillar agreement (all tags from same pillar = +0.02)
+        pillars = set(s["pillar"] for s in matched_synonyms)
+        if len(pillars) == 1:
+            confidence += 0.02
+        
+        # Apply confidence ceilings based on safety level
+        if safety_level == "emergency":
+            # Emergency can go up to 0.99
+            has_protected = any(matched_tags.get(s["tag"], {}).get("protected") for s in matched_synonyms)
+            if has_protected:
+                confidence = min(confidence + 0.05, 0.99)
+            else:
+                confidence = min(confidence, 0.95)
+        else:
+            # Non-emergency: cap at 0.95 for multi-match, 0.92 for single
+            if len(matched_synonyms) > 1:
+                confidence = min(confidence, 0.95)
+            else:
+                confidence = min(confidence, 0.92)
+        
         return round(confidence, 2)
     
     def _get_missing_profile_fields(self, matched_tags: Dict) -> List[str]:
