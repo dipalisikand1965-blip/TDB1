@@ -17835,17 +17835,18 @@ async def get_learn_video_support(
             }
         
         video = videos[0]
+        video_id = video.get("id")
         
         return {
             "success": True,
             "has_video": True,
             "video": {
-                "id": video.get("video_id"),
+                "id": video_id,
                 "title": video.get("title"),
                 "thumbnail": video.get("thumbnail"),
-                "channel": video.get("channel_title"),
-                "url": f"https://www.youtube.com/watch?v={video.get('video_id')}",
-                "embed_url": f"https://www.youtube.com/embed/{video.get('video_id')}"
+                "channel": video.get("channel"),
+                "url": f"https://www.youtube.com/watch?v={video_id}",
+                "embed_url": f"https://www.youtube.com/embed/{video_id}"
             },
             "context": {
                 "topic": topic,
