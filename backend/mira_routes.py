@@ -11916,7 +11916,7 @@ Or, if you'd like to stay here, I can help you build a **{suggested_display}** i
         except Exception as ctx_err:
             logger.warning(f"[CONTEXT] Could not store context: {ctx_err}")
         
-        return {
+        response_data = {
             "response": response,
             "session_id": session_id,
             "ticket_id": ticket_id,
