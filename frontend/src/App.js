@@ -143,14 +143,14 @@ import Home from "./pages/Home";
 // AboutPage already imported via lazy loading below
 // Login - Lazy loaded to reduce initial bundle size
 const Login = lazy(() => import("./pages/Login"));
-import Register from "./pages/Register";
+const Register = lazy(() => import("./pages/Register"));
 import ShopPage from "./pages/ShopPage";
 import ProductDetailPage from "./pages/ProductDetailPage";
 import SearchResults from "./pages/SearchResults";
 
 // Occasion Box Builder - Standalone page
 const OccasionBoxPage = lazy(() => import("./pages/OccasionBoxPage"));
-import Checkout from "./pages/Checkout";
+const Checkout = lazy(() => import("./pages/Checkout"));
 import ProtectedRoute from "./components/ProtectedRoute";
 
 // =====================================================
@@ -215,7 +215,7 @@ const MiraDemoPage = lazy(() => import("./pages/MiraDemoPage"));
 const MiraDemoOriginalPage = lazy(() => import("./pages/MiraDemoOriginalPage"));
 // MiraDemoBackupPage - UNTOUCHED BACKUP for comparison during refactoring
 const MiraDemoBackupPage = lazy(() => import("./pages/MiraDemoBackupPage"));
-import ConciergeDashboard from "./pages/ConciergeDashboard";
+const ConciergeDashboard = lazy(() => import("./pages/ConciergeDashboard"));
 const AuthCallback = lazy(() => import("./pages/AuthCallback"));
 const CollectionPage = lazy(() => import("./pages/CollectionPage"));
 const PartnerOnboarding = lazy(() => import("./pages/PartnerOnboarding"));
