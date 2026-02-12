@@ -28,13 +28,17 @@ import os
 # Import Picks Engine modules
 import sys
 import os
-sys.path.insert(0, os.path.dirname(__file__))
 
-from backend.classification_pipeline import (
+# Add backend directory to path for imports
+backend_dir = os.path.dirname(os.path.abspath(__file__))
+if backend_dir not in sys.path:
+    sys.path.insert(0, backend_dir)
+
+from classification_pipeline import (
     ClassificationPipeline,
     ClassificationResult as ClassificationOutput,
 )
-from backend.scoring_logic import (
+from scoring_logic import (
     score_pick,
     rank_picks,
     create_test_classification,
@@ -45,7 +49,7 @@ from backend.scoring_logic import (
     TRAVEL_TAGS,
     PAPERWORK_PILLAR,
 )
-from backend.concierge_logic import (
+from concierge_logic import (
     determine_concierge_prominence,
     create_classification_context,
     create_top_pick_context,
