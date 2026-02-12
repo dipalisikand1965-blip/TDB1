@@ -21,6 +21,7 @@ export { default as useSession } from './useSession';
 export { default as useStreamingChat } from './useStreamingChat';
 export { default as useChatSubmit } from './useChatSubmit';
 export { default as useConversation } from './useConversation';
+export { default as useMiraUI } from './useMiraUI';
 export { 
   default as useChat,
   // Detection helpers
