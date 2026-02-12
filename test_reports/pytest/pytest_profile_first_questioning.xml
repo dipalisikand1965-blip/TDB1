@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="2" skipped="0" tests="11" time="56.539" timestamp="2026-02-12T07:24:12.253248+00:00" hostname="agent-env-fd2a69bf-42f4-44be-abe7-14a0748c8000"><testcase classname="backend.tests.test_profile_first_questioning.TestProfileFirstQuestioning" name="test_dine_meal_plan_uses_profile_allergy" time="14.018" /><testcase classname="backend.tests.test_profile_first_questioning.TestProfileFirstQuestioning" name="test_dine_does_not_introduce_cake_topics" time="4.078"><failure message="AssertionError: FAIL: DINE pillar introduced 'birthday' - pillar bleed!&#10;assert 'birthday' not in 'since mojo’...ducts below.'&#10;  &#10;  'birthday' is contained here:&#10;    since mojo’s birthday is just 2 days away on **14 february**, this is a great time to settle into a routine that keeps him feeling good and also lets you plan his celebration calmly.&#10;  ?              ++++++++&#10;    &#10;    before i lay out a simple daily structure, i want to respect his safety:  &#10;    mojo is **allergic to chicken**, so i’ll keep all suggestions completely **chicken‑free**....&#10;  &#10;  ...Full output truncated (7 lines hidden), use '-vv' to show">backend/tests/test_profile_first_questioning.py:147: in test_dine_does_not_introduce_cake_topics
+    assert topic not in mira_response, f"FAIL: DINE pillar introduced '{topic}' - pillar bleed!"
+E   AssertionError: FAIL: DINE pillar introduced 'birthday' - pillar bleed!
+E   assert 'birthday' not in 'since mojo’...ducts below.'
+E     
+E     'birthday' is contained here:
+E       since mojo’s birthday is just 2 days away on **14 february**, this is a great time to settle into a routine that keeps him feeling good and also lets you plan his celebration calmly.
+E     ?              ++++++++
+E       
+E       before i lay out a simple daily structure, i want to respect his safety:  
+E       mojo is **allergic to chicken**, so i’ll keep all suggestions completely **chicken‑free**....
+E     
+E     ...Full output truncated (7 lines hidden), use '-vv' to show</failure></testcase><testcase classname="backend.tests.test_profile_first_questioning.TestProfileFirstQuestioning" name="test_celebrate_cake_uses_profile_allergy_immediately" time="2.770" /><testcase classname="backend.tests.test_profile_first_questioning.TestProfileFirstQuestioning" name="test_celebrate_no_permission_loop" time="9.474" /><testcase classname="backend.tests.test_profile_first_questioning.TestProfileFirstQuestioning" name="test_stay_boarding_uses_profile_temperament" time="3.782" /><testcase classname="backend.tests.test_profile_first_questioning.TestProfileFirstQuestioning" name="test_travel_flying_uses_profile_breed_info" time="3.398" /><testcase classname="backend.tests.test_profile_first_questioning.TestProfileFirstQuestioning" name="test_travel_asks_only_moment_specific_questions" time="2.171" /><testcase classname="backend.tests.test_profile_first_questioning.TestProfileDataInOSContext" name="test_safety_gates_contain_allergies" time="4.291" /><testcase classname="backend.tests.test_profile_first_questioning.TestProfileDataInOSContext" name="test_temporal_context_birthday_detection" time="1.993" /><testcase classname="backend.tests.test_profile_first_questioning.TestPillarIsolation" name="test_dine_pillar_no_cake_unless_requested" time="6.315"><failure message="AssertionError: FAIL: DINE response mentions birthday&#10;assert 'birthday' not in 'since mojo’...s stomach?**'&#10;  &#10;  'birthday' is contained here:&#10;    since mojo’s **birthday is just 2 days away**, this is a lovely moment to keep lunch light, safe, and happy for him.&#10;  ?                ++++++++&#10;    &#10;    because he has a **chicken allergy**, i’ll avoid anything with chicken.&#10;    ...&#10;  &#10;  ...Full output truncated (16 lines hidden), use '-vv' to show">backend/tests/test_profile_first_questioning.py:485: in test_dine_pillar_no_cake_unless_requested
+    assert "birthday" not in mira_response, "FAIL: DINE response mentions birthday"
+E   AssertionError: FAIL: DINE response mentions birthday
+E   assert 'birthday' not in 'since mojo’...s stomach?**'
+E     
+E     'birthday' is contained here:
+E       since mojo’s **birthday is just 2 days away**, this is a lovely moment to keep lunch light, safe, and happy for him.
+E     ?                ++++++++
+E       
+E       because he has a **chicken allergy**, i’ll avoid anything with chicken.
+E       ...
+E     
+E     ...Full output truncated (16 lines hidden), use '-vv' to show</failure></testcase><testcase classname="backend.tests.test_profile_first_questioning.TestPillarIsolation" name="test_celebrate_pillar_explicit_cake_allowed" time="4.134" /></testsuite></testsuites>
