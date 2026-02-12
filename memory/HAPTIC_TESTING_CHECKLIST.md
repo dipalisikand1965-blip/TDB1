@@ -1,7 +1,7 @@
 # 📱 HAPTIC FEEDBACK TESTING CHECKLIST
 
 ## Test URL
-**https://mira-kibble-flow.preview.emergentagent.com/mira-demo**
+**https://mira-pillar-audit.preview.emergentagent.com/mira-demo**
 
 ---
 

@@ -44,6 +44,6 @@
   "seed_data_creation": "None",
   "retest_needed": false,
   "should_main_agent_self_test": true,
-  "context_for_next_testing_agent": "Full site tested successfully. Login→Dashboard→Mira Demo flow works. Sign Out button visible but has click timeout. /mira-demo page (3,299 lines) loads without crashing now. Backend Mira chat API working well. Preview URL: https://mira-kibble-flow.preview.emergentagent.com",
+  "context_for_next_testing_agent": "Full site tested successfully. Login→Dashboard→Mira Demo flow works. Sign Out button visible but has click timeout. /mira-demo page (3,299 lines) loads without crashing now. Backend Mira chat API working well. Preview URL: https://mira-pillar-audit.preview.emergentagent.com",
   "rca_of_the_issue": "Sign Out button click timeout: The button is visible and found by selector, but clicking times out. This suggests either: 1) An invisible overlay blocking clicks, 2) CSS z-index issue, or 3) Event listener conflict. The button HTML exists in DOM but click events aren't reaching it properly."
 }
