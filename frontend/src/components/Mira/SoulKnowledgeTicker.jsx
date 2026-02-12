@@ -393,21 +393,8 @@ const SoulKnowledgeTicker = ({
               <span>Help Mira know {petName} better</span>
             </button>
           )}
-            )}
-          </div>
-          
-          <div className="expanded-grid">
-            {Object.entries(
-              items.reduce((acc, item) => {
-                const cat = item.category || 'soul';
-                if (!acc[cat]) acc[cat] = [];
-                acc[cat].push(item);
-                return acc;
-              }, {})
-            ).map(([category, categoryItems]) => (
-              <div key={category} className="expanded-category">
-                <h4 className="category-title">
-                  {category.charAt(0).toUpperCase() + category.slice(1)}
+        </div>
+      )}
                 </h4>
                 <ul className="category-items">
                   {categoryItems.map((item, i) => (
