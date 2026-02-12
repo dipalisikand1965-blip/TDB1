@@ -18683,4 +18683,151 @@ async def migrate_pet_to_versioned_storage(pet_id: str, db=Depends(get_db)):
         return {"success": False, "error": str(e)}
 
 
+# ═══════════════════════════════════════════════════════════════════════════════
+# PRODUCT FEEDBACK - LEARNING WHAT DOESN'T WORK FOR A PET
+# ═══════════════════════════════════════════════════════════════════════════════
+
+class ProductFeedbackRequest(BaseModel):
+    pet_id: str
+    product_id: str
+    product_name: str
+    feedback_type: str  # "didn't_work", "caused_reaction", "pet_rejected", "poor_quality"
+    reason: Optional[str] = None
+    details: Optional[str] = None
+
+@router.post("/product-feedback/avoid")
+async def mark_product_to_avoid(request: ProductFeedbackRequest, db=Depends(get_db)):
+    """
+    Mark a product as "didn't work" for a specific pet.
+    This will be stored in the pet's profile and used to filter future recommendations.
+    
+    Mira will NEVER recommend this product again for this pet.
+    """
+    try:
+        pet = await db.pets.find_one({"id": request.pet_id})
+        if not pet:
+            raise HTTPException(status_code=404, detail="Pet not found")
+        
+        # Get existing avoided products list or create new
+        products_to_avoid = pet.get("products_to_avoid", [])
+        
+        # Check if already in list
+        existing = next((p for p in products_to_avoid if p.get("product_id") == request.product_id), None)
+        if existing:
+            return {"success": True, "message": "Product already marked to avoid", "already_avoided": True}
+        
+        # Add to avoid list
+        avoid_entry = {
+            "product_id": request.product_id,
+            "product_name": request.product_name,
+            "feedback_type": request.feedback_type,
+            "reason": request.reason,
+            "details": request.details,
+            "added_at": datetime.now(timezone.utc).isoformat(),
+            "source": "parent_feedback"
+        }
+        
+        products_to_avoid.append(avoid_entry)
+        
+        # Update pet profile
+        await db.pets.update_one(
+            {"id": request.pet_id},
+            {
+                "$set": {
+                    "products_to_avoid": products_to_avoid,
+                    "updated_at": datetime.now(timezone.utc)
+                }
+            }
+        )
+        
+        # Also store as a memory/learning
+        memory_entry = {
+            "pet_id": request.pet_id,
+            "memory_type": "product_feedback",
+            "category": "negative",
+            "content": f"Product '{request.product_name}' didn't work - {request.feedback_type}: {request.reason or 'No reason specified'}",
+            "product_id": request.product_id,
+            "product_name": request.product_name,
+            "created_at": datetime.now(timezone.utc)
+        }
+        await db.mira_memories.insert_one(memory_entry)
+        
+        logger.info(f"[PRODUCT FEEDBACK] Marked {request.product_name} to avoid for pet {request.pet_id}")
+        
+        return {
+            "success": True,
+            "message": f"Got it! I've noted that {request.product_name} didn't work for {pet.get('name', 'your pet')}. I won't recommend it again.",
+            "products_avoided_count": len(products_to_avoid)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"[PRODUCT FEEDBACK] Error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/product-feedback/avoided/{pet_id}")
+async def get_avoided_products(pet_id: str, db=Depends(get_db)):
+    """
+    Get list of products marked as "didn't work" for a pet.
+    """
+    try:
+        pet = await db.pets.find_one({"id": pet_id}, {"_id": 0, "products_to_avoid": 1, "name": 1})
+        if not pet:
+            raise HTTPException(status_code=404, detail="Pet not found")
+        
+        products_to_avoid = pet.get("products_to_avoid", [])
+        
+        return {
+            "pet_name": pet.get("name"),
+            "products_to_avoid": products_to_avoid,
+            "count": len(products_to_avoid)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"[GET AVOIDED] Error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/product-feedback/remove/{pet_id}/{product_id}")
+async def remove_avoided_product(pet_id: str, product_id: str, db=Depends(get_db)):
+    """
+    Remove a product from the avoided list (if parent wants to try again).
+    """
+    try:
+        pet = await db.pets.find_one({"id": pet_id})
+        if not pet:
+            raise HTTPException(status_code=404, detail="Pet not found")
+        
+        products_to_avoid = pet.get("products_to_avoid", [])
+        original_count = len(products_to_avoid)
+        
+        # Remove the product
+        products_to_avoid = [p for p in products_to_avoid if p.get("product_id") != product_id]
+        
+        if len(products_to_avoid) == original_count:
+            return {"success": False, "message": "Product was not in avoided list"}
+        
+        # Update pet profile
+        await db.pets.update_one(
+            {"id": pet_id},
+            {"$set": {"products_to_avoid": products_to_avoid}}
+        )
+        
+        return {
+            "success": True,
+            "message": "Product removed from avoided list. I can recommend it again now.",
+            "products_avoided_count": len(products_to_avoid)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"[REMOVE AVOIDED] Error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 
