@@ -134,7 +134,10 @@ class TestPillarDetection:
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
         
         data = response.json()
-        pillar = data.get("pillar", "").lower()
+        # Pillar is in 'current_pillar' field or in 'intelligence.last_search_context.pillar'
+        pillar = (data.get("current_pillar") or 
+                  data.get("intelligence", {}).get("last_search_context", {}).get("pillar") or 
+                  "").lower()
         
         print(f"Detected pillar: {pillar}")
         
@@ -160,7 +163,9 @@ class TestPillarDetection:
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
         
         data = response.json()
-        pillar = data.get("pillar", "").lower()
+        pillar = (data.get("current_pillar") or 
+                  data.get("intelligence", {}).get("last_search_context", {}).get("pillar") or 
+                  "").lower()
         
         print(f"'Buy dog food' → pillar='{pillar}'")
         
@@ -185,7 +190,9 @@ class TestPillarDetection:
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
         
         data = response.json()
-        pillar = data.get("pillar", "").lower()
+        pillar = (data.get("current_pillar") or 
+                  data.get("intelligence", {}).get("last_search_context", {}).get("pillar") or 
+                  "").lower()
         
         print(f"'Plan Lola birthday party' → pillar='{pillar}'")
         
@@ -213,7 +220,9 @@ class TestPillarDetection:
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
         
         data = response.json()
-        pillar = data.get("pillar", "").lower()
+        pillar = (data.get("current_pillar") or 
+                  data.get("intelligence", {}).get("last_search_context", {}).get("pillar") or 
+                  "").lower()
         
         print(f"'Book an Ola cab' → pillar='{pillar}'")
         
@@ -238,7 +247,9 @@ class TestPillarDetection:
         assert response.status_code == 200, f"Expected 200, got {response.status_code}"
         
         data = response.json()
-        pillar = data.get("pillar", "").lower()
+        pillar = (data.get("current_pillar") or 
+                  data.get("intelligence", {}).get("last_search_context", {}).get("pillar") or 
+                  "").lower()
         
         print(f"'Help me expand my dog's vocabulary' → pillar='{pillar}'")
         
@@ -279,7 +290,9 @@ class TestWordBoundaryEdgeCases:
         assert response.status_code == 200
         
         data = response.json()
-        pillar = data.get("pillar", "").lower()
+        pillar = (data.get("current_pillar") or 
+                  data.get("intelligence", {}).get("last_search_context", {}).get("pillar") or 
+                  "").lower()
         
         print(f"'Thunder sounds scare my dog' → pillar='{pillar}'")
         
@@ -304,7 +317,9 @@ class TestWordBoundaryEdgeCases:
         assert response.status_code == 200
         
         data = response.json()
-        pillar = data.get("pillar", "").lower()
+        pillar = (data.get("current_pillar") or 
+                  data.get("intelligence", {}).get("last_search_context", {}).get("pillar") or 
+                  "").lower()
         
         print(f"'Taking my dog on a car trip' → pillar='{pillar}'")
         
