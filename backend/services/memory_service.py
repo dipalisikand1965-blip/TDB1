@@ -161,6 +161,8 @@ class ConversationMemory:
         """
         Commit extracted signals to the pet's memory.
         Returns number of updates made.
+        
+        ENHANCED: Also stores to versioned storage for temporal tracking
         """
         if not self.extracted_signals:
             return 0
@@ -168,8 +170,16 @@ class ConversationMemory:
         try:
             updates = 0
             
+            # Try to import versioned storage for enhanced memory
+            try:
+                from services.versioned_storage import VersionedStorage
+                versioned_storage = VersionedStorage(self.db)
+                has_versioned = True
+            except ImportError:
+                has_versioned = False
+            
             for signal in self.extracted_signals:
-                # Create memory entry
+                # Create memory entry (original behavior)
                 memory_entry = {
                     "pet_id": self.pet_id,
                     "category": signal["category"],
@@ -185,6 +195,20 @@ class ConversationMemory:
                 
                 await self.db.conversation_memories.insert_one(memory_entry)
                 updates += 1
+                
+                # ENHANCED: Store to versioned storage as trait
+                if has_versioned:
+                    try:
+                        await versioned_storage.store_trait(
+                            pet_id=self.pet_id,
+                            trait_type=f"{signal['category']}_{signal['signal_type']}",
+                            trait_value=signal["value"],
+                            confidence=signal["confidence"],
+                            evidence_text=signal.get("raw_text", ""),
+                            source="conversation"
+                        )
+                    except Exception as vs_err:
+                        logger.debug(f"[MEMORY] Versioned storage error (non-critical): {vs_err}")
                 
                 # If high confidence, update pet profile directly
                 if signal["confidence"] >= 85:
