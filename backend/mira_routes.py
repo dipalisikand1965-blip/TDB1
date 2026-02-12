@@ -5994,7 +5994,10 @@ async def load_pet_soul(pet_id: str) -> Dict:
         # Doggy Soul answers (full)
         "soul_answers": doggy_soul,
         # Include the full doggy_soul_answers for system prompt
-        "doggy_soul_answers": doggy_soul
+        "doggy_soul_answers": doggy_soul,
+        # Include raw soul and preferences for intelligence scoring
+        "soul": soul_data,
+        "preferences": preferences
     }
     
     return {k: v for k, v in soul.items() if v is not None}  # Remove None values but keep 0
