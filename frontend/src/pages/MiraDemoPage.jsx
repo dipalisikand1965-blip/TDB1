@@ -4087,11 +4087,18 @@ const MiraDemoPage = () => {
             token={token}
             onSoulUpdated={(newScore, answers) => {
               if (newScore) {
-                setPet(prev => ({ ...prev, soulScore: Math.round(newScore) }));
+                const roundedScore = Math.round(newScore);
+                // Update current pet
+                setPet(prev => ({ ...prev, soulScore: roundedScore }));
+                // CRITICAL: Also update allPets array for score consistency across dropdown
+                setAllPets(prev => prev.map(p => 
+                  p.id === pet.id ? { ...p, soulScore: roundedScore } : p
+                ));
+                // Trigger glow animation
                 setSoulScoreUpdated(true);
                 setTimeout(() => setSoulScoreUpdated(false), 2000);
               }
-              console.log('[SOUL FORM] Pet soul updated:', { newScore, answers });
+              console.log('[SOUL FORM] Pet soul updated - syncing across all views:', { newScore, answers });
             }}
           />
         </Suspense>
