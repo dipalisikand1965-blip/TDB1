@@ -239,7 +239,7 @@ MIRA to function as a "Lifestyle OS" - context-aware, proactive, safe, OS-like b
 - **Admin**: username=aditya, password=lola4304
 - **Test Pet**: Mystique (pet-3661ae55d2e2), Shih Tzu, Senior, 10kg
 - **Test User**: dipali@clubconcierge.in
-- **Preview URL**: https://doggy-data-seed.preview.emergentagent.com
+- **Preview URL**: https://mira-backend-audit.preview.emergentagent.com
 
 ---
 
