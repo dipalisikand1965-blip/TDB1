@@ -54,7 +54,9 @@ class TestSoulFirstIntegration:
         )
         assert response.status_code == 200, f"Auth failed: {response.text}"
         data = response.json()
-        assert "token" in data, "No token in response"
+        # Token may be returned as 'token' or 'access_token'
+        token = data.get("token") or data.get("access_token")
+        assert token, f"No token in response: {list(data.keys())}"
         print(f"✓ Authentication successful, got token")
     
     def test_get_pet_profile_for_mystique(self, authenticated_session):
