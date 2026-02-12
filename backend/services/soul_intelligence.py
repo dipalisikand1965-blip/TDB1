@@ -203,17 +203,44 @@ def get_relevant_unanswered_questions(pet: Dict, pillar: str = None, topic: str 
     return [q for _, q in scored[:limit]]
 
 
-def get_soul_completion_score(pet: Dict) -> Dict:
+def get_soul_completion_score(pet: Dict, conversation_memories: List[Dict] = None) -> Dict:
     """
     Calculate the Soul completion score based on answered questions.
+    Now aggregates from ALL data sources:
+    - doggy_soul_answers (form data)
+    - soul (deep soul data)
+    - preferences (user preferences)
+    - insights (computed insights)
+    - conversation_memories (learned from chat)
+    
     Returns detailed breakdown by category.
     """
     if not pet:
-        return {"total_score": 0, "categories": {}}
+        return {"total_score": 0, "categories": {}, "data_sources": {}}
     
+    # Aggregate all data sources
     doggy_soul = pet.get("doggy_soul_answers", {})
     soul_data = pet.get("soul", {})
-    all_answers = {**doggy_soul, **soul_data, **pet}
+    preferences = pet.get("preferences", {})
+    insights = pet.get("insights", {})
+    deep_soul = pet.get("deep_soul", {})
+    
+    # Combine all sources
+    all_answers = {
+        **doggy_soul, 
+        **soul_data, 
+        **preferences,
+        **deep_soul,
+        **pet  # Top-level fields like breed, weight, birth_date
+    }
+    
+    # Track data sources for transparency
+    data_sources = {
+        "soul_form": len([k for k in doggy_soul.keys() if doggy_soul.get(k)]),
+        "deep_soul": len([k for k in soul_data.keys() if soul_data.get(k)]),
+        "preferences": len([k for k in preferences.keys() if preferences.get(k)]),
+        "conversation": len(conversation_memories) if conversation_memories else 0
+    }
     
     category_scores = {}
     total_questions = 0
@@ -238,13 +265,21 @@ def get_soul_completion_score(pet: Dict) -> Dict:
         total_questions += total
         total_answered += answered
     
-    overall_score = round((total_answered / total_questions) * 100, 1) if total_questions > 0 else 0
+    # Bonus for conversation learnings (up to 10% extra)
+    conversation_bonus = min(10, (data_sources["conversation"] * 2)) if conversation_memories else 0
+    
+    base_score = round((total_answered / total_questions) * 100, 1) if total_questions > 0 else 0
+    overall_score = min(100, base_score + conversation_bonus)
     
     return {
         "total_score": overall_score,
+        "base_score": base_score,
+        "conversation_bonus": conversation_bonus,
         "answered": total_answered,
         "total": total_questions,
-        "categories": category_scores
+        "categories": category_scores,
+        "data_sources": data_sources,
+        "total_data_points": sum(data_sources.values())
     }
 
 
