@@ -39,6 +39,7 @@ const SoulKnowledgeTicker = ({
   onSoulQuestionClick,
   onKnowledgeItemClick,
   apiUrl,
+  token,  // Auth token for fetching knowledge
   className = ''
 }) => {
   const navigate = useNavigate();
@@ -47,8 +48,32 @@ const SoulKnowledgeTicker = ({
   const [isGlowing, setIsGlowing] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [showExpanded, setShowExpanded] = useState(false);
+  const [showKnowledgeCard, setShowKnowledgeCard] = useState(false);
+  const [miraKnowledge, setMiraKnowledge] = useState(null);
+  const [loadingKnowledge, setLoadingKnowledge] = useState(false);
   const prevScoreRef = useRef(soulScore);
   const tickerRef = useRef(null);
+  
+  // Fetch "What Mira Knows" data
+  const fetchMiraKnowledge = async () => {
+    if (!petId || !apiUrl || loadingKnowledge || miraKnowledge) return;
+    
+    setLoadingKnowledge(true);
+    try {
+      const headers = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+      
+      const response = await fetch(`${apiUrl}/api/mira/memory/pet/${petId}/what-mira-knows`, { headers });
+      if (response.ok) {
+        const data = await response.json();
+        setMiraKnowledge(data);
+      }
+    } catch (err) {
+      console.debug('[TICKER] Could not fetch Mira knowledge:', err);
+    } finally {
+      setLoadingKnowledge(false);
+    }
+  };
   
   // Fetch knowledge items from backend - prioritize personal knowledge over places
   useEffect(() => {
@@ -74,6 +99,12 @@ const SoulKnowledgeTicker = ({
     
     fetchKnowledge();
   }, [petId, apiUrl]);
+  
+  // Reset knowledge when pet changes
+  useEffect(() => {
+    setMiraKnowledge(null);
+    setShowKnowledgeCard(false);
+  }, [petId]);
   
   // Update items when knowledgeItems prop changes (e.g., when switching pets)
   useEffect(() => {
