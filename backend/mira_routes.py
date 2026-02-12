@@ -4196,8 +4196,29 @@ PILLARS = {
     "dine": {
         "name": "Dine",
         "icon": "🍽️",
-        "keywords": ["restaurant", "dining out", "cafe", "brunch", "lunch", "dinner", "reservation", "pet-friendly restaurant", "dine out", "pet cafe", "dog cafe", "cat cafe"],
-        "urgency_default": "medium"
+        "keywords": [
+            # Home Nutrition (primary DINE use case per MIRA BIBLE)
+            "meal plan", "diet", "nutrition", "food plan", "feeding schedule", "what to feed",
+            "home cooked", "homemade food", "kibble", "wet food", "raw diet", "portion",
+            "how much to feed", "everyday meals", "daily meals", "regular food", "routine food",
+            "diet transition", "food transition", "switching food", "changing food",
+            "treat budget", "treat strategy", "hydration", "water intake",
+            "pantry", "staples", "refill", "food refill", "subscription food",
+            "breakfast", "dinner routine", "morning meal", "evening meal",
+            # Dining Out (secondary)
+            "restaurant", "dining out", "cafe", "brunch", "lunch", "dinner", "reservation",
+            "pet-friendly restaurant", "dine out", "pet cafe", "dog cafe", "cat cafe"
+        ],
+        "urgency_default": "medium",
+        # DINE Pillar Concierge Picks (per MIRA BIBLE)
+        "concierge_picks": [
+            {"title": "Diet Transition Plan", "cta": "Start", "service_type": "diet_transition"},
+            {"title": "Portioning & Feeding Schedule", "cta": "Plan", "service_type": "portioning_setup"},
+            {"title": "Treat Strategy Setup", "cta": "Arrange", "service_type": "treat_strategy"},
+            {"title": "Hydration Routine", "cta": "Plan", "service_type": "hydration_routine"},
+            {"title": "Nutrition Consult Coordination", "cta": "Book", "service_type": "nutrition_consult"},
+            {"title": "Pantry Reset & Refill Cadence", "cta": "Arrange", "service_type": "pantry_reset"}
+        ]
     },
     "stay": {
         "name": "Stay",
