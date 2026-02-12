@@ -5087,8 +5087,31 @@ PILLARS = {
     "learn": {
         "name": "Learn",
         "icon": "🎓",
-        "keywords": ["learn", "training", "course", "class", "puppy", "obedience", "behaviour", "behavior", "agility", "teach", "command", "sit", "stay", "come", "heel", "barking", "biting"],
-        "urgency_default": "low"
+        "keywords": [
+            # Training types
+            "learn", "training", "course", "class", "puppy class", "puppy training",
+            "obedience", "basic obedience", "advanced training",
+            # Specific behaviors
+            "behaviour", "behavior", "barking", "excessive barking", "whining", "howling",
+            "biting", "nipping", "mouthing", "jumping", "pulling", "leash pulling",
+            # Commands
+            "teach", "command", "trick", "sit", "stay", "come", "heel", "down", "leave it",
+            "recall", "drop it", "place",
+            # Anxiety and behavior issues
+            "separation anxiety", "fearful", "reactive", "aggression", "resource guarding",
+            "destructive", "chewing", "digging",
+            # Socialization
+            "socialization", "socializing", "puppy socialization", "desensitization"
+        ],
+        "urgency_default": "low",
+        # LEARN Pillar Concierge Picks
+        "concierge_picks": [
+            {"title": "Trainer Search by Need", "cta": "Find", "service_type": "trainer_search", "why": "Matched to behavior + training style"},
+            {"title": "Puppy Training Plan", "cta": "Plan", "service_type": "puppy_plan", "why": "Age-appropriate milestones"},
+            {"title": "Behavior Assessment", "cta": "Book", "service_type": "behavior_assessment", "why": "Professional evaluation first"},
+            {"title": "At-Home Training Guide", "cta": "Get", "service_type": "training_guide", "why": "Step-by-step for basic commands"},
+            {"title": "Socialization Plan", "cta": "Plan", "service_type": "socialization_plan", "why": "Safe exposure schedule"}
+        ]
     },
     "paperwork": {
         "name": "Paperwork",
