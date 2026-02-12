@@ -243,7 +243,7 @@ const SoulKnowledgeTicker = ({
         )}
       </div>
       
-      {/* Expanded Panel - Shows all knowledge */}
+      {/* Expanded Panel - Shows all knowledge (Soul, Breed, Memory sections) */}
       {showExpanded && (
         <div className="soul-knowledge-expanded" data-testid="soul-knowledge-expanded">
           <div className="expanded-header">
@@ -262,12 +262,137 @@ const SoulKnowledgeTicker = ({
           <div className="expanded-score">
             <div className={`score-circle ${isGlowing ? 'glowing' : ''}`}>
               <span className="score-number">{Math.round(displayScore)}%</span>
-              <span className="score-text">Soul Known</span>
+              <span className="score-text">SOUL KNOWN</span>
             </div>
             {displayScore < 50 && (
               <p className="score-hint">
                 Answer more soul questions to help Mira know {petName} better!
               </p>
+            )}
+          </div>
+          
+          {/* Action Buttons Row */}
+          <div className="expanded-actions-row">
+            <button className="action-icon-btn" title="History" onClick={() => navigate(`/my-pets?pet=${petId}`)}>
+              <span>⏱️</span>
+            </button>
+            <button className="action-icon-btn" title="Soul Questions" onClick={() => onSoulQuestionClick?.()}>
+              <Sparkles className="w-4 h-4" />
+            </button>
+            <button className="action-icon-btn" title="Profile" onClick={() => navigate(`/my-pets?pet=${petId}`)}>
+              <span>🔗</span>
+            </button>
+            <button className="action-icon-btn" title="Add Memory" onClick={() => navigate(`/mira-demo`)}>
+              <span>+</span>
+            </button>
+          </div>
+          
+          {/* Loading state */}
+          {loadingKnowledge && (
+            <div className="expanded-loading">
+              <Loader2 className="w-5 h-5 animate-spin" />
+              <span>Loading {petName}'s soul...</span>
+            </div>
+          )}
+          
+          {/* Content Grid - Soul, Breed, Memory sections */}
+          {!loadingKnowledge && (
+            <div className="expanded-grid">
+              {/* SOUL Section */}
+              <div className="expanded-category soul-section">
+                <h4 className="category-title">SOUL</h4>
+                <ul className="category-items">
+                  <li className="category-item soul-item">
+                    <span className="item-icon">💜</span>
+                    <span className="item-text">Soul Score: {Math.round(displayScore)}%</span>
+                  </li>
+                  {miraKnowledge?.soul_knowledge?.slice(1, 4).map((item, i) => (
+                    <li key={i} className="category-item soul-item" onClick={() => handleItemClick(item)}>
+                      <span className="item-icon">{item.icon}</span>
+                      <span className="item-text">{item.text}</span>
+                    </li>
+                  ))}
+                  <li className="category-item soul-item help-item" onClick={() => onSoulQuestionClick?.()}>
+                    <span className="item-icon">✨</span>
+                    <span className="item-text">Help Mira know {petName} better</span>
+                  </li>
+                </ul>
+              </div>
+              
+              {/* BREED Section */}
+              <div className="expanded-category breed-section">
+                <h4 className="category-title">BREED</h4>
+                <ul className="category-items">
+                  {miraKnowledge?.breed_knowledge?.length > 0 ? (
+                    miraKnowledge.breed_knowledge.map((item, i) => (
+                      <li key={i} className="category-item breed-item" onClick={() => handleItemClick(item)}>
+                        <span className="item-icon">{item.icon}</span>
+                        <span className="item-text">{item.text}</span>
+                      </li>
+                    ))
+                  ) : (
+                    items.filter(i => i.category === 'breed').slice(0, 3).map((item, i) => (
+                      <li key={i} className="category-item breed-item" onClick={() => handleItemClick(item)}>
+                        <span className="item-icon">{item.icon}</span>
+                        <span className="item-text">{item.text}</span>
+                      </li>
+                    ))
+                  )}
+                </ul>
+              </div>
+              
+              {/* MEMORY Section */}
+              <div className="expanded-category memory-section">
+                <h4 className="category-title">MEMORY</h4>
+                <ul className="category-items">
+                  {miraKnowledge?.memory_knowledge?.length > 0 ? (
+                    <>
+                      <li className="category-item memory-item">
+                        <span className="item-icon">📝</span>
+                        <span className="item-text">{miraKnowledge.memory_knowledge.length} memories with {petName}</span>
+                      </li>
+                      {miraKnowledge.memory_knowledge.slice(0, 2).map((item, i) => (
+                        <li key={i} className="category-item memory-item" onClick={() => handleItemClick(item)}>
+                          <span className="item-icon">💭</span>
+                          <span className="item-text">{petName}: {item.text?.substring(0, 30)}...</span>
+                        </li>
+                      ))}
+                    </>
+                  ) : (
+                    <li className="category-item memory-item">
+                      <span className="item-icon">💭</span>
+                      <span className="item-text">Chat with Mira to build memories</span>
+                    </li>
+                  )}
+                </ul>
+              </div>
+            </div>
+          )}
+          
+          {/* View Full Profile Button */}
+          <button 
+            className="expanded-view-profile-btn"
+            onClick={() => {
+              hapticFeedback.buttonTap();
+              navigate(`/my-pets?pet=${petId}`);
+            }}
+          >
+            <span>View Full Profile</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
+          
+          {displayScore < 80 && (
+            <button 
+              className="expanded-grow-btn"
+              onClick={() => {
+                setShowExpanded(false);
+                onSoulQuestionClick?.();
+              }}
+            >
+              <Sparkles className="w-4 h-4" />
+              <span>Help Mira know {petName} better</span>
+            </button>
+          )}
             )}
           </div>
           
