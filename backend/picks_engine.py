@@ -26,12 +26,16 @@ import logging
 import os
 
 # Import Picks Engine modules
-from classification_pipeline import (
+import sys
+import os
+sys.path.insert(0, os.path.dirname(__file__))
+
+from backend.classification_pipeline import (
     classify_message,
     ClassificationOutput,
     get_db as get_classification_db
 )
-from scoring_logic import (
+from backend.scoring_logic import (
     score_pick,
     rank_picks,
     create_test_classification,
@@ -42,7 +46,7 @@ from scoring_logic import (
     TRAVEL_TAGS,
     PAPERWORK_PILLAR,
 )
-from concierge_logic import (
+from backend.concierge_logic import (
     determine_concierge_prominence,
     create_classification_context,
     create_top_pick_context,
