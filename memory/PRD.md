@@ -5,6 +5,25 @@ Build and maintain the Mira AI Pet Companion feature with deep personalization.
 
 **Mira is the SOUL of the dog** - She is the brain, the super mother who knows every single dog intimately. She never gives general stuff - she associates with breed, age, lifestyle, likes, dislikes, allergies and more to be the Pet Operating System.
 
+## THE MIRA BIBLE (Critical - Read /app/memory/MIRA_BIBLE.md)
+
+> **Mira is NOT a chatbot, NOT a shop, NOT a dashboard.**
+> **Mira is a Lifestyle Operating System. Concierge is her hands.**
+
+### Mira's Essence:
+- She remembers the birthday.
+- She knows Mojo's temperament.
+- She quietly updates Picks.
+- She shapes options clearly.
+- She asks only what she must.
+
+### Core Principles:
+1. Everything is layered. Chat is always underneath.
+2. Each layer has one job (Mojo/Today/Picks/Services/Insights/Learn/Concierge)
+3. Mira asks as little as possible
+4. Catalogue-first, Concierge-always
+5. User never feels redirected - Mira expands, executes, returns
+
 ## Test Credentials (IMPORTANT!)
 - **Member**: dipali@clubconcierge.in / test123
 - **Admin**: aditya / lola4304
